@@ -17,13 +17,13 @@ def remove_if_exists(path):
         path (str):
     """
     if not os.path.exists(path):
-        logger.debug('Doesn\'t exist: {}'.format(path))
+        logger.debug("Doesn't exist: {}".format(path))
         return
     elif os.path.isdir(path):
-        logger.debug('Removing directory: {}'.format(path))
+        logger.debug("Removing directory: {}".format(path))
         shutil.rmtree(path)
     else:
-        logger.debug('Removing file: {}'.format(path))
+        logger.debug("Removing file: {}".format(path))
         os.remove(path)
 
 
@@ -37,8 +37,8 @@ def execute_subprocess(cmd, *args, **kwargs):
     Returns:
         subprocess.CalledProcessError: If the return code is nonzero
     """
-    cmd_str = ' '.join(cmd) if isinstance(cmd, (tuple, list)) else cmd
-    logger.info('Subprocess: {}'.format(cmd_str))
+    cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
+    logger.info("Subprocess: {}".format(cmd_str))
 
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, *args, **kwargs)
     (stdout, other) = proc.communicate()
@@ -58,4 +58,4 @@ def camelcase_to_snakecase(s):
     Returns:
         str:
     """
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", s).lower()

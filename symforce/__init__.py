@@ -34,7 +34,7 @@ def set_log_level(log_level):
 
 
 # Set default
-set_log_level(os.environ.get('SYMFORCE_LOGLEVEL', 'INFO'))
+set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "INFO"))
 
 # -------------------------------------------------------------------------------------------------
 # Symbolic backend configuration
@@ -68,9 +68,9 @@ def _use_sympy():
     # Hack in some key derivatives that sympy doesn't do. For all these
     # cases the derivative is zero except at the discrete switching point,
     # and assuming zero is correct for our numerical purposes.
-    setattr(sympy.floor, '_eval_derivative', lambda s, v: sympy.S.Zero)
-    setattr(sympy.sign, '_eval_derivative', lambda s, v: sympy.S.Zero)
-    setattr(sympy.Mod, '_eval_derivative', lambda s, v: sympy.S.Zero)
+    setattr(sympy.floor, "_eval_derivative", lambda s, v: sympy.S.Zero)
+    setattr(sympy.sign, "_eval_derivative", lambda s, v: sympy.S.Zero)
+    setattr(sympy.Mod, "_eval_derivative", lambda s, v: sympy.S.Zero)
 
 
 def use_backend(backend):
@@ -93,21 +93,21 @@ def use_backend(backend):
     else:
         logger.debug('backend: "{}"'.format(backend))
 
-    if backend == 'sympy':
+    if backend == "sympy":
         _use_sympy()
-    elif backend == 'symengine':
+    elif backend == "symengine":
         _use_symengine()
     else:
         raise NotImplementedError('Unknown backend: "{}"'.format(backend))
 
 
 # Set default to symforce if available, else sympy
-if 'SYMFORCE_BACKEND' in os.environ:
-    use_backend(os.environ['SYMFORCE_BACKEND'])
+if "SYMFORCE_BACKEND" in os.environ:
+    use_backend(os.environ["SYMFORCE_BACKEND"])
 else:
     try:
         import symengine
 
-        use_backend('symengine')
+        use_backend("symengine")
     except ImportError:
-        use_backend('sympy')
+        use_backend("sympy")

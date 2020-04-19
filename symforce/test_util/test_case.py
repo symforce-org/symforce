@@ -13,7 +13,7 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         # Store verbosity flag so tests can use
-        self.verbose = ('-v' in sys.argv) or ('--verbose' in sys.argv)
+        self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
     @staticmethod
     def main():

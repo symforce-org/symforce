@@ -23,11 +23,11 @@ def override_symbol_new(sympy_module):
     Args:
         sympy_module (module):
     """
-    if sympy_module.__package__ == 'symengine':
+    if sympy_module.__package__ == "symengine":
         original_symbol_init = sympy_module.Symbol.__init__
 
         def init_symbol(self, name, commutative=True, real=True, positive=False):
-            scoped_name = '.'.join(sympy_module.__scopes__ + [name])
+            scoped_name = ".".join(sympy_module.__scopes__ + [name])
             original_symbol_init(
                 self, scoped_name, commutative=commutative, real=real, positive=positive
             )
@@ -39,14 +39,14 @@ def override_symbol_new(sympy_module):
 
         sympy_module.Symbol.__init__ = init_symbol
     else:
-        assert sympy_module.__package__ == 'sympy'
+        assert sympy_module.__package__ == "sympy"
 
         # Save original
         original_symbol_new = sympy_module.Symbol.__new__
 
         @staticmethod
         def new_symbol(cls, name, commutative=True, real=True, positive=False):
-            name = '.'.join(sympy_module.__scopes__ + [name])
+            name = ".".join(sympy_module.__scopes__ + [name])
             obj = original_symbol_new(
                 cls, name, commutative=commutative, real=real, positive=positive
             )
@@ -85,10 +85,10 @@ def add_scoping(sympy_module):
     """
 
     def set_scope(scope):
-        sympy_module.__scopes__ = scope.split('.') if scope else []
+        sympy_module.__scopes__ = scope.split(".") if scope else []
 
-    setattr(sympy_module, 'set_scope', set_scope)
-    setattr(sympy_module, 'get_scope', lambda: '.'.join(sympy_module.__scopes__))
-    sympy_module.set_scope('')
+    setattr(sympy_module, "set_scope", set_scope)
+    setattr(sympy_module, "get_scope", lambda: ".".join(sympy_module.__scopes__))
+    sympy_module.set_scope("")
 
-    setattr(sympy_module, 'scope', create_named_scope(sympy_module.__scopes__))
+    setattr(sympy_module, "scope", create_named_scope(sympy_module.__scopes__))
