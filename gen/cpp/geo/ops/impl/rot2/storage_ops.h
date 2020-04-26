@@ -12,7 +12,7 @@ namespace geo {
 namespace rot2 {
 
 /**
- * C++ StorageOps implementation for <class 'symforce.geometry.rot2.Rot2'>.
+ * C++ StorageOps implementation for <class 'symforce.geo.rot2.Rot2'>.
  */
 template <typename Scalar>
 struct StorageOps {
@@ -20,8 +20,8 @@ struct StorageOps {
     return 2;
   }
 
-  static void ToList(const geo::Rot2<Scalar>& a, std::vector<Scalar>* vec);
-  static geo::Rot2<Scalar> FromList(const std::vector<Scalar>& vec);
+  static void ToStorage(const geo::Rot2<Scalar>& a, std::vector<Scalar>* vec);
+  static geo::Rot2<Scalar> FromStorage(const std::vector<Scalar>& vec);
 };
 
 }  // namespace rot2

@@ -14,7 +14,7 @@ void assertTrue(bool a) { assert(a); }
 
 void TestRot3() {
     // Make a random rotation
-  const geo::Rot3f rot = geo::Rot3f::Expmap(geo::Rot3f::TangentVec::Random());
+  const geo::Rot3f rot = geo::Rot3f::FromTangent(geo::Rot3f::TangentVec::Random());
 
   // Cast
   const geo::Rot3d rotd = rot.Cast<double>();
@@ -57,7 +57,7 @@ void TestRot3() {
 
 
 void TestRot2Pose2() {
-  const geo::Rot2f rot = geo::Rot2f::Expmap(geo::Rot2f::TangentVec::Random());
+  const geo::Rot2f rot = geo::Rot2f::FromTangent(geo::Rot2f::TangentVec::Random());
   const Eigen::Vector2f pos = Eigen::Vector2f::Random();
 
   // Cast
@@ -82,22 +82,22 @@ void TestStorageOps() {
   std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
 
   constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
-  assertTrue(value.Storage().rows() == storage_dim);
-  assertTrue(value.Storage().cols() == 1);
+  assertTrue(value.Data().rows() == storage_dim);
+  assertTrue(value.Data().cols() == 1);
 
   std::vector<Scalar> vec;
-  value.ToList(&vec);
+  value.ToStorage(&vec);
   assertTrue(vec.size() > 0);
   assertTrue(vec.size() == storage_dim);
   for (int i = 0; i < vec.size(); ++i) {
-    assertTrue(vec[i] == value.Storage()[i]);
+    assertTrue(vec[i] == value.Data()[i]);
   }
 
-  const T value2 = geo::StorageOps<T>::FromList(vec);
-  assertTrue(value.Storage() == value2.Storage());
+  const T value2 = geo::StorageOps<T>::FromStorage(vec);
+  assertTrue(value.Data() == value2.Data());
   vec[0] = 2.1;
-  const T value3 = geo::StorageOps<T>::FromList(vec);
-  assertTrue(value.Storage() != value3.Storage());
+  const T value3 = geo::StorageOps<T>::FromStorage(vec);
+  assertTrue(value.Data() != value3.Data());
 }
 
 template <typename T>
@@ -125,9 +125,9 @@ void TestLieGroupOps() {
   assertTrue(tangent_dim <= geo::StorageOps<T>::StorageDim());
 
   const TangentVec pertubation = TangentVec::Random();
-  const T value = geo::LieGroupOps<T>::Expmap(pertubation, epsilon);
+  const T value = geo::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
-  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::Logmap(value, epsilon);
+  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
   const T recovered_identity = geo::LieGroupOps<T>::Retract(

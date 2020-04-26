@@ -28,7 +28,7 @@ Rot3<Scalar> GroupOps<Scalar>::Identity() {
 template <typename Scalar>
 Rot3<Scalar> GroupOps<Scalar>::Inverse(const Rot3<Scalar>& a) {
     // Input arrays
-    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Storage();
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;
@@ -47,8 +47,8 @@ Rot3<Scalar> GroupOps<Scalar>::Inverse(const Rot3<Scalar>& a) {
 template <typename Scalar>
 Rot3<Scalar> GroupOps<Scalar>::Compose(const Rot3<Scalar>& a, const Rot3<Scalar>& b) {
     // Input arrays
-    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Storage();
-    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Storage();
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;
@@ -67,8 +67,8 @@ Rot3<Scalar> GroupOps<Scalar>::Compose(const Rot3<Scalar>& a, const Rot3<Scalar>
 template <typename Scalar>
 Rot3<Scalar> GroupOps<Scalar>::Between(const Rot3<Scalar>& a, const Rot3<Scalar>& b) {
     // Input arrays
-    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Storage();
-    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Storage();
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;

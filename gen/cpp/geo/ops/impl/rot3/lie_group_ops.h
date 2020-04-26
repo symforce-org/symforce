@@ -11,7 +11,7 @@ namespace geo {
 namespace rot3 {
 
 /**
- * C++ LieGroupOps implementation for <class 'symforce.geometry.rot3.Rot3'>.
+ * C++ LieGroupOps implementation for <class 'symforce.geo.rot3.Rot3'>.
  */
 template <typename Scalar>
 struct LieGroupOps {
@@ -19,8 +19,8 @@ struct LieGroupOps {
       return 3;
   }
 
-  static Rot3<Scalar> Expmap(const Eigen::Matrix<Scalar, 3, 1>& vec, const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 3, 1> Logmap(const Rot3<Scalar>& a, const Scalar epsilon);
+  static Rot3<Scalar> FromTangent(const Eigen::Matrix<Scalar, 3, 1>& vec, const Scalar epsilon);
+  static Eigen::Matrix<Scalar, 3, 1> ToTangent(const Rot3<Scalar>& a, const Scalar epsilon);
   static Rot3<Scalar> Retract(const Rot3<Scalar>& a, const Eigen::Matrix<Scalar, 3, 1>& vec, const Scalar epsilon);
   static Eigen::Matrix<Scalar, 3, 1> LocalCoordinates(const Rot3<Scalar>& a, const Rot3<Scalar>& b, const Scalar epsilon);
 };

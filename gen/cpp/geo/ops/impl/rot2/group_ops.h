@@ -11,7 +11,7 @@ namespace geo {
 namespace rot2 {
 
 /**
- * C++ GroupOps implementation for <class 'symforce.geometry.rot2.Rot2'>.
+ * C++ GroupOps implementation for <class 'symforce.geo.rot2.Rot2'>.
  */
 template <typename Scalar>
 struct GroupOps {

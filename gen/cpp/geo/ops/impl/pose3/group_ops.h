@@ -11,7 +11,7 @@ namespace geo {
 namespace pose3 {
 
 /**
- * C++ GroupOps implementation for <class 'symforce.geometry.pose3.Pose3'>.
+ * C++ GroupOps implementation for <class 'symforce.geo.pose3.Pose3'>.
  */
 template <typename Scalar>
 struct GroupOps {

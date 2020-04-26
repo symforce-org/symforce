@@ -14,6 +14,7 @@ def modify_symbolic_api(sympy_module):
     """
     override_symbol_new(sympy_module)
     add_scoping(sympy_module)
+    add_safe_methods(sympy_module)
 
 
 def override_symbol_new(sympy_module):
@@ -26,7 +27,7 @@ def override_symbol_new(sympy_module):
     if sympy_module.__package__ == "symengine":
         original_symbol_init = sympy_module.Symbol.__init__
 
-        def init_symbol(self, name, commutative=True, real=True, positive=False):
+        def init_symbol(self, name, commutative=True, real=True, positive=None):
             scoped_name = ".".join(sympy_module.__scopes__ + [name])
             original_symbol_init(
                 self, scoped_name, commutative=commutative, real=real, positive=positive
@@ -45,7 +46,7 @@ def override_symbol_new(sympy_module):
         original_symbol_new = sympy_module.Symbol.__new__
 
         @staticmethod
-        def new_symbol(cls, name, commutative=True, real=True, positive=False):
+        def new_symbol(cls, name, commutative=True, real=True, positive=None):
             name = ".".join(sympy_module.__scopes__ + [name])
             obj = original_symbol_new(
                 cls, name, commutative=commutative, real=real, positive=positive
@@ -92,3 +93,17 @@ def add_scoping(sympy_module):
     sympy_module.set_scope("")
 
     setattr(sympy_module, "scope", create_named_scope(sympy_module.__scopes__))
+
+
+def add_safe_methods(sympy_module):
+    """
+    Add safe helper methods to the symbolic API.
+
+    Args:
+        sympy_module (module):
+    """
+
+    def atan2_safe(y, x, epsilon=0):
+        return sympy_module.atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
+
+    setattr(sympy_module, "atan2_safe", atan2_safe)

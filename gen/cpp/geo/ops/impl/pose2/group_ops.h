@@ -11,7 +11,7 @@ namespace geo {
 namespace pose2 {
 
 /**
- * C++ GroupOps implementation for <class 'symforce.geometry.pose2.Pose2'>.
+ * C++ GroupOps implementation for <class 'symforce.geo.pose2.Pose2'>.
  */
 template <typename Scalar>
 struct GroupOps {

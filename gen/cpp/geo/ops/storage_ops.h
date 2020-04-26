@@ -16,8 +16,8 @@ template <typename T>
 struct StorageOps {
   using Scalar = typename T::Scalar;
   static constexpr int32_t StorageDim();
-  static void ToList(const T& a, std::vector<Scalar>* vec);
-  static T FromList(const std::vector<Scalar>& vec);
+  static void ToStorage(const T& a, std::vector<Scalar>* vec);
+  static T FromStorage(const std::vector<Scalar>& vec);
 };
 
 }  // namespace geo

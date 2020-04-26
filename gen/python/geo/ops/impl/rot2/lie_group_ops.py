@@ -3,11 +3,11 @@ import numpy
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementatino for <class 'symforce.geometry.rot2.Rot2'>.
+    Python LieGroupOps implementatino for <class 'symforce.geo.rot2.Rot2'>.
     """
 
     @staticmethod
-    def expmap(vec, epsilon):
+    def from_tangent(vec, epsilon):
         # Input arrays
 
         # Output array
@@ -22,9 +22,9 @@ class LieGroupOps(object):
         return res
 
     @staticmethod
-    def logmap(a, epsilon):
+    def to_tangent(a, epsilon):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 1
@@ -32,14 +32,14 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms (1)
-        res[0] = numpy.arctan2(_a[1], _a[0] + epsilon)
+        res[0] = numpy.arctan2(_a[1], _a[0] + epsilon*(numpy.sign(_a[0]) + 0.5))
 
         return res
 
     @staticmethod
     def retract(a, vec, epsilon):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 2
@@ -57,19 +57,20 @@ class LieGroupOps(object):
     @staticmethod
     def local_coordinates(a, b, epsilon):
         # Input arrays
-        _a = a.storage
-        _b = b.storage
+        _a = a.data
+        _b = b.data
 
         # Output array
         res = [0.] * 1
 
-        # Intermediate terms (3)
+        # Intermediate terms (4)
         _tmp0 = (_a[0]**2 + _a[1]**2)**(-1.0)
         _tmp1 = _b[1]*_tmp0
         _tmp2 = _b[0]*_tmp0
+        _tmp3 = _a[0]*_tmp2 + _a[1]*_tmp1
 
         # Output terms (1)
-        res[0] = numpy.arctan2(_a[0]*_tmp1 - _a[1]*_tmp2, _a[0]*_tmp2 + _a[1]*_tmp1 + epsilon)
+        res[0] = numpy.arctan2(_a[0]*_tmp1 - _a[1]*_tmp2, _tmp3 + epsilon*(numpy.sign(_tmp3) + 0.5))
 
         return res
 

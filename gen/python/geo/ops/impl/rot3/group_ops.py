@@ -3,7 +3,7 @@ import numpy
 
 class GroupOps(object):
     """
-    Python GroupOps implementation for <class 'symforce.geometry.rot3.Rot3'>.
+    Python GroupOps implementation for <class 'symforce.geo.rot3.Rot3'>.
     """
 
     @staticmethod
@@ -26,7 +26,7 @@ class GroupOps(object):
     @staticmethod
     def inverse(a):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 4
@@ -44,8 +44,8 @@ class GroupOps(object):
     @staticmethod
     def compose(a, b):
         # Input arrays
-        _a = a.storage
-        _b = b.storage
+        _a = a.data
+        _b = b.data
 
         # Output array
         res = [0.] * 4
@@ -63,8 +63,8 @@ class GroupOps(object):
     @staticmethod
     def between(a, b):
         # Input arrays
-        _a = a.storage
-        _b = b.storage
+        _a = a.data
+        _b = b.data
 
         # Output array
         res = [0.] * 4

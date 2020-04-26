@@ -28,7 +28,7 @@ Pose2<Scalar> GroupOps<Scalar>::Identity() {
 template <typename Scalar>
 Pose2<Scalar> GroupOps<Scalar>::Inverse(const Pose2<Scalar>& a) {
     // Input arrays
-    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Storage();
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;
@@ -50,8 +50,8 @@ Pose2<Scalar> GroupOps<Scalar>::Inverse(const Pose2<Scalar>& a) {
 template <typename Scalar>
 Pose2<Scalar> GroupOps<Scalar>::Compose(const Pose2<Scalar>& a, const Pose2<Scalar>& b) {
     // Input arrays
-    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Storage();
-    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Storage();
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;
@@ -70,8 +70,8 @@ Pose2<Scalar> GroupOps<Scalar>::Compose(const Pose2<Scalar>& a, const Pose2<Scal
 template <typename Scalar>
 Pose2<Scalar> GroupOps<Scalar>::Between(const Pose2<Scalar>& a, const Pose2<Scalar>& b) {
     // Input arrays
-    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Storage();
-    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Storage();
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;

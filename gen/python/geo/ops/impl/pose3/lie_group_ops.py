@@ -3,11 +3,11 @@ import numpy
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementatino for <class 'symforce.geometry.pose3.Pose3'>.
+    Python LieGroupOps implementatino for <class 'symforce.geo.pose3.Pose3'>.
     """
 
     @staticmethod
-    def expmap(vec, epsilon):
+    def from_tangent(vec, epsilon):
         # Input arrays
 
         # Output array
@@ -46,57 +46,54 @@ class LieGroupOps(object):
         return res
 
     @staticmethod
-    def logmap(a, epsilon):
+    def to_tangent(a, epsilon):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 6
 
-        # Intermediate terms (28)
-        _tmp0 = _a[0]**2
-        _tmp1 = _a[1]**2
-        _tmp2 = _a[2]**2
-        _tmp3 = _tmp0 + _tmp1 + _tmp2 + epsilon
-        _tmp4 = numpy.sqrt(_tmp3)
-        _tmp5 = _tmp4**(-1.0)
-        _tmp6 = numpy.arctan(_tmp4/(_a[3] + epsilon))
-        _tmp7 = _tmp5*_tmp6
-        _tmp8 = 2*_tmp7
-        _tmp9 = 4*_tmp6**2/_tmp3
-        _tmp10 = _tmp1*_tmp9
-        _tmp11 = -_tmp10
-        _tmp12 = _tmp2*_tmp9
-        _tmp13 = -_tmp12
-        _tmp14 = _tmp0*_tmp9
-        _tmp15 = _tmp10 + _tmp12 + _tmp14 + epsilon
-        _tmp16 = numpy.sqrt(_tmp15)
-        _tmp17 = 0.5*_tmp16
-        _tmp18 = (-1./2.*_tmp16*numpy.cos(_tmp17)/numpy.sin(_tmp17) + 1)/_tmp15
-        _tmp19 = _a[0]*_tmp18*_tmp9
-        _tmp20 = _a[2]*_tmp19
-        _tmp21 = 1.0*_tmp7
-        _tmp22 = _a[1]*_tmp21
-        _tmp23 = _a[1]*_tmp19
-        _tmp24 = 1.0*_a[2]*_tmp5*_tmp6
-        _tmp25 = _a[1]*_a[2]*_tmp18*_tmp9
-        _tmp26 = _a[0]*_tmp21
-        _tmp27 = -_tmp14
+        # Intermediate terms (25)
+        _tmp0 = numpy.arccos(numpy.amax((-1,numpy.amin((1,_a[3])))))
+        _tmp1 = numpy.amax((epsilon,1 - _a[3]**2))
+        _tmp2 = 1/numpy.sqrt(_tmp1)
+        _tmp3 = 2*_tmp0*_tmp2
+        _tmp4 = _tmp0*_tmp2
+        _tmp5 = _a[2]*_tmp4
+        _tmp6 = 4*_tmp0**2/_tmp1
+        _tmp7 = _a[1]**2*_tmp6
+        _tmp8 = _a[0]**2*_tmp6
+        _tmp9 = _a[2]**2*_tmp6
+        _tmp10 = _tmp7 + _tmp8 + _tmp9 + epsilon
+        _tmp11 = numpy.sqrt(_tmp10)
+        _tmp12 = 0.5*_tmp11
+        _tmp13 = (-1./2.*_tmp11*numpy.cos(_tmp12)/numpy.sin(_tmp12) + 1)/_tmp10
+        _tmp14 = _a[0]*_tmp13*_tmp6
+        _tmp15 = _a[1]*_tmp14
+        _tmp16 = 1.0*_tmp5
+        _tmp17 = _a[2]*_tmp14
+        _tmp18 = 1.0*_tmp4
+        _tmp19 = _a[1]*_tmp18
+        _tmp20 = -_tmp7
+        _tmp21 = -_tmp9
+        _tmp22 = _a[1]*_a[2]*_tmp13*_tmp6
+        _tmp23 = _a[0]*_tmp18
+        _tmp24 = -_tmp8
 
         # Output terms (6)
-        res[0] = _a[0]*_tmp8
-        res[1] = _a[1]*_tmp8
-        res[2] = _a[2]*_tmp8
-        res[3] = _a[4]*(_tmp18*(_tmp11 + _tmp13) + 1.0) + _a[5]*(_tmp23 + _tmp24) + _a[6]*(_tmp20 - _tmp22)
-        res[4] = _a[4]*(_tmp23 - _tmp24) + _a[5]*(_tmp18*(_tmp13 + _tmp27) + 1.0) + _a[6]*(_tmp25 + _tmp26)
-        res[5] = _a[4]*(_tmp20 + _tmp22) + _a[5]*(_tmp25 - _tmp26) + _a[6]*(_tmp18*(_tmp11 + _tmp27) + 1.0)
+        res[0] = _a[0]*_tmp3
+        res[1] = _a[1]*_tmp3
+        res[2] = 2*_tmp5
+        res[3] = _a[4]*(_tmp13*(_tmp20 + _tmp21) + 1.0) + _a[5]*(_tmp15 + _tmp16) + _a[6]*(_tmp17 - _tmp19)
+        res[4] = _a[4]*(_tmp15 - _tmp16) + _a[5]*(_tmp13*(_tmp21 + _tmp24) + 1.0) + _a[6]*(_tmp22 + _tmp23)
+        res[5] = _a[4]*(_tmp17 + _tmp19) + _a[5]*(_tmp22 - _tmp23) + _a[6]*(_tmp13*(_tmp20 + _tmp24) + 1.0)
 
         return res
 
     @staticmethod
     def retract(a, vec, epsilon):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 7
@@ -156,74 +153,72 @@ class LieGroupOps(object):
     @staticmethod
     def local_coordinates(a, b, epsilon):
         # Input arrays
-        _a = a.storage
-        _b = b.storage
+        _a = a.data
+        _b = b.data
 
         # Output array
         res = [0.] * 6
 
-        # Intermediate terms (53)
+        # Intermediate terms (51)
         _tmp0 = -_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0]
-        _tmp1 = _tmp0**2
-        _tmp2 = _a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1]
-        _tmp3 = _tmp2**2
-        _tmp4 = -_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2]
-        _tmp5 = _tmp4**2
-        _tmp6 = _tmp1 + _tmp3 + _tmp5 + epsilon
-        _tmp7 = numpy.sqrt(_tmp6)
-        _tmp8 = numpy.arctan(_tmp7/(_a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3] + epsilon))
-        _tmp9 = _tmp8/_tmp7
-        _tmp10 = 2*_tmp9
-        _tmp11 = 4*_tmp8**2/_tmp6
-        _tmp12 = _tmp1*_tmp11
-        _tmp13 = _tmp11*_tmp5
-        _tmp14 = _tmp11*_tmp3
-        _tmp15 = _tmp12 + _tmp13 + _tmp14 + epsilon
-        _tmp16 = numpy.sqrt(_tmp15)
-        _tmp17 = 0.5*_tmp16
-        _tmp18 = (-1./2.*_tmp16*numpy.cos(_tmp17)/numpy.sin(_tmp17) + 1)/_tmp15
-        _tmp19 = _tmp0*_tmp11*_tmp18*_tmp4
-        _tmp20 = 1.0*_tmp9
-        _tmp21 = _tmp2*_tmp20
-        _tmp22 = -2*_a[1]**2
-        _tmp23 = 1 - 2*_a[0]**2
-        _tmp24 = _tmp22 + _tmp23
-        _tmp25 = 2*_a[3]
-        _tmp26 = _a[0]*_tmp25
-        _tmp27 = 2*_a[1]*_a[2]
-        _tmp28 = -_tmp26 + _tmp27
-        _tmp29 = _a[1]*_tmp25
-        _tmp30 = 2*_a[0]
-        _tmp31 = _a[2]*_tmp30
-        _tmp32 = _tmp29 + _tmp31
-        _tmp33 = -_a[4]*_tmp32 - _a[5]*_tmp28 - _a[6]*_tmp24 + _b[4]*_tmp32 + _b[5]*_tmp28 + _b[6]*_tmp24
-        _tmp34 = -_tmp14
-        _tmp35 = -_tmp13
-        _tmp36 = -_tmp29 + _tmp31
-        _tmp37 = _a[2]*_tmp25
-        _tmp38 = _a[1]*_tmp30
-        _tmp39 = _tmp37 + _tmp38
-        _tmp40 = -2*_a[2]**2
-        _tmp41 = _tmp22 + _tmp40 + 1
-        _tmp42 = -_a[4]*_tmp41 - _a[5]*_tmp39 - _a[6]*_tmp36 + _b[4]*_tmp41 + _b[5]*_tmp39 + _b[6]*_tmp36
-        _tmp43 = _tmp11*_tmp18*_tmp2
-        _tmp44 = _tmp0*_tmp43
-        _tmp45 = _tmp20*_tmp4
-        _tmp46 = _tmp23 + _tmp40
-        _tmp47 = -_tmp37 + _tmp38
-        _tmp48 = _tmp26 + _tmp27
-        _tmp49 = -_a[4]*_tmp47 - _a[5]*_tmp46 - _a[6]*_tmp48 + _b[4]*_tmp47 + _b[5]*_tmp46 + _b[6]*_tmp48
-        _tmp50 = _tmp4*_tmp43
-        _tmp51 = _tmp0*_tmp20
-        _tmp52 = -_tmp12
+        _tmp1 = _a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3]
+        _tmp2 = numpy.arccos(numpy.amax((-1,numpy.amin((1,_tmp1)))))
+        _tmp3 = numpy.amax((epsilon,1 - _tmp1**2))
+        _tmp4 = 1/numpy.sqrt(_tmp3)
+        _tmp5 = _tmp2*_tmp4
+        _tmp6 = 2*_tmp5
+        _tmp7 = _a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1]
+        _tmp8 = -_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2]
+        _tmp9 = 4*_tmp2**2/_tmp3
+        _tmp10 = _tmp7**2*_tmp9
+        _tmp11 = _tmp8**2*_tmp9
+        _tmp12 = _tmp0**2*_tmp9
+        _tmp13 = _tmp10 + _tmp11 + _tmp12 + epsilon
+        _tmp14 = numpy.sqrt(_tmp13)
+        _tmp15 = 0.5*_tmp14
+        _tmp16 = (-1./2.*_tmp14*numpy.cos(_tmp15)/numpy.sin(_tmp15) + 1)/_tmp13
+        _tmp17 = _tmp0*_tmp16*_tmp8*_tmp9
+        _tmp18 = 1.0*_tmp5
+        _tmp19 = _tmp18*_tmp7
+        _tmp20 = -2*_a[1]**2
+        _tmp21 = 1 - 2*_a[0]**2
+        _tmp22 = _tmp20 + _tmp21
+        _tmp23 = 2*_a[3]
+        _tmp24 = _a[0]*_tmp23
+        _tmp25 = 2*_a[1]*_a[2]
+        _tmp26 = -_tmp24 + _tmp25
+        _tmp27 = _a[1]*_tmp23
+        _tmp28 = 2*_a[0]
+        _tmp29 = _a[2]*_tmp28
+        _tmp30 = _tmp27 + _tmp29
+        _tmp31 = -_a[4]*_tmp30 - _a[5]*_tmp26 - _a[6]*_tmp22 + _b[4]*_tmp30 + _b[5]*_tmp26 + _b[6]*_tmp22
+        _tmp32 = -_tmp10
+        _tmp33 = -_tmp11
+        _tmp34 = -_tmp27 + _tmp29
+        _tmp35 = _a[2]*_tmp23
+        _tmp36 = _a[1]*_tmp28
+        _tmp37 = _tmp35 + _tmp36
+        _tmp38 = -2*_a[2]**2
+        _tmp39 = _tmp20 + _tmp38 + 1
+        _tmp40 = -_a[4]*_tmp39 - _a[5]*_tmp37 - _a[6]*_tmp34 + _b[4]*_tmp39 + _b[5]*_tmp37 + _b[6]*_tmp34
+        _tmp41 = _tmp16*_tmp7*_tmp9
+        _tmp42 = _tmp0*_tmp41
+        _tmp43 = 1.0*_tmp2*_tmp4*_tmp8
+        _tmp44 = _tmp21 + _tmp38
+        _tmp45 = -_tmp35 + _tmp36
+        _tmp46 = _tmp24 + _tmp25
+        _tmp47 = -_a[4]*_tmp45 - _a[5]*_tmp44 - _a[6]*_tmp46 + _b[4]*_tmp45 + _b[5]*_tmp44 + _b[6]*_tmp46
+        _tmp48 = _tmp41*_tmp8
+        _tmp49 = _tmp0*_tmp18
+        _tmp50 = -_tmp12
 
         # Output terms (6)
-        res[0] = _tmp0*_tmp10
-        res[1] = _tmp10*_tmp2
-        res[2] = _tmp10*_tmp4
-        res[3] = _tmp33*(_tmp19 - _tmp21) + _tmp42*(_tmp18*(_tmp34 + _tmp35) + 1.0) + _tmp49*(_tmp44 + _tmp45)
-        res[4] = _tmp33*(_tmp50 + _tmp51) + _tmp42*(_tmp44 - _tmp45) + _tmp49*(_tmp18*(_tmp35 + _tmp52) + 1.0)
-        res[5] = _tmp33*(_tmp18*(_tmp34 + _tmp52) + 1.0) + _tmp42*(_tmp19 + _tmp21) + _tmp49*(_tmp50 - _tmp51)
+        res[0] = _tmp0*_tmp6
+        res[1] = _tmp6*_tmp7
+        res[2] = _tmp6*_tmp8
+        res[3] = _tmp31*(_tmp17 - _tmp19) + _tmp40*(_tmp16*(_tmp32 + _tmp33) + 1.0) + _tmp47*(_tmp42 + _tmp43)
+        res[4] = _tmp31*(_tmp48 + _tmp49) + _tmp40*(_tmp42 - _tmp43) + _tmp47*(_tmp16*(_tmp33 + _tmp50) + 1.0)
+        res[5] = _tmp31*(_tmp16*(_tmp32 + _tmp50) + 1.0) + _tmp40*(_tmp17 + _tmp19) + _tmp47*(_tmp48 - _tmp49)
 
         return res
 

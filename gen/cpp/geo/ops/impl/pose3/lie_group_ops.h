@@ -11,7 +11,7 @@ namespace geo {
 namespace pose3 {
 
 /**
- * C++ LieGroupOps implementation for <class 'symforce.geometry.pose3.Pose3'>.
+ * C++ LieGroupOps implementation for <class 'symforce.geo.pose3.Pose3'>.
  */
 template <typename Scalar>
 struct LieGroupOps {
@@ -19,8 +19,8 @@ struct LieGroupOps {
       return 6;
   }
 
-  static Pose3<Scalar> Expmap(const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 6, 1> Logmap(const Pose3<Scalar>& a, const Scalar epsilon);
+  static Pose3<Scalar> FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
+  static Eigen::Matrix<Scalar, 6, 1> ToTangent(const Pose3<Scalar>& a, const Scalar epsilon);
   static Pose3<Scalar> Retract(const Pose3<Scalar>& a, const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
   static Eigen::Matrix<Scalar, 6, 1> LocalCoordinates(const Pose3<Scalar>& a, const Pose3<Scalar>& b, const Scalar epsilon);
 };

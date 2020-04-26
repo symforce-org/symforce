@@ -11,12 +11,12 @@ template class geo::Pose2<float>;
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const geo::Pose2d& a) {
     const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
-    os << "<Pose2d " << a.Storage().transpose().format(fmt) << ">";
+    os << "<Pose2d " << a.Data().transpose().format(fmt) << ">";
     return os;
 }
 std::ostream& operator<<(std::ostream& os, const geo::Pose2f& a) {
     const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
-    os << "<Pose2f " << a.Storage().transpose().format(fmt) << ">";
+    os << "<Pose2f " << a.Data().transpose().format(fmt) << ">";
     return os;
 }
 

@@ -12,7 +12,7 @@ namespace geo {
 namespace pose2 {
 
 /**
- * C++ StorageOps implementation for <class 'symforce.geometry.pose2.Pose2'>.
+ * C++ StorageOps implementation for <class 'symforce.geo.pose2.Pose2'>.
  */
 template <typename Scalar>
 struct StorageOps {
@@ -20,8 +20,8 @@ struct StorageOps {
     return 4;
   }
 
-  static void ToList(const geo::Pose2<Scalar>& a, std::vector<Scalar>* vec);
-  static geo::Pose2<Scalar> FromList(const std::vector<Scalar>& vec);
+  static void ToStorage(const geo::Pose2<Scalar>& a, std::vector<Scalar>* vec);
+  static geo::Pose2<Scalar> FromStorage(const std::vector<Scalar>& vec);
 };
 
 }  // namespace pose2

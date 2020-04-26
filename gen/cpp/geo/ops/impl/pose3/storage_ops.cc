@@ -8,18 +8,18 @@ namespace geo {
 namespace pose3 {
 
 template <typename Scalar>
-void StorageOps<Scalar>::ToList(const geo::Pose3<Scalar>& a, std::vector<Scalar>* vec) {
+void StorageOps<Scalar>::ToStorage(const geo::Pose3<Scalar>& a, std::vector<Scalar>* vec) {
   assert(vec != nullptr);
-  const typename geo::Pose3<Scalar>::StorageVec& storage = a.Storage();
-  vec->resize(storage.size());
-  std::copy_n(storage.data(), storage.size(), vec->begin());
+  const typename geo::Pose3<Scalar>::DataVec& data = a.Data();
+  vec->resize(data.size());
+  std::copy_n(data.data(), data.size(), vec->begin());
 }
 
 template <typename Scalar>
-geo::Pose3<Scalar> StorageOps<Scalar>::FromList(const std::vector<Scalar>& vec) {
+geo::Pose3<Scalar> StorageOps<Scalar>::FromStorage(const std::vector<Scalar>& vec) {
   assert(vec.size() == StorageOps<Scalar>::StorageDim());
   return geo::Pose3<Scalar>(
-    Eigen::Map<const typename geo::Pose3<Scalar>::StorageVec>(vec.data()));
+    Eigen::Map<const typename geo::Pose3<Scalar>::DataVec>(vec.data()));
 }
 
 }  // namespace pose3

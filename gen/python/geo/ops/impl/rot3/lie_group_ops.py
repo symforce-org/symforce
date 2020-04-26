@@ -3,11 +3,11 @@ import numpy
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementatino for <class 'symforce.geometry.rot3.Rot3'>.
+    Python LieGroupOps implementatino for <class 'symforce.geo.rot3.Rot3'>.
     """
 
     @staticmethod
-    def expmap(vec, epsilon):
+    def from_tangent(vec, epsilon):
         # Input arrays
 
         # Output array
@@ -27,28 +27,27 @@ class LieGroupOps(object):
         return res
 
     @staticmethod
-    def logmap(a, epsilon):
+    def to_tangent(a, epsilon):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 3
 
-        # Intermediate terms (2)
-        _tmp0 = numpy.sqrt(_a[0]**2 + _a[1]**2 + _a[2]**2 + epsilon)
-        _tmp1 = 2*numpy.arctan(_tmp0/(_a[3] + epsilon))/_tmp0
+        # Intermediate terms (1)
+        _tmp0 = 2*numpy.arccos(numpy.amax((-1,numpy.amin((1,_a[3])))))/numpy.sqrt(numpy.amax((epsilon,1 - _a[3]**2)))
 
         # Output terms (3)
-        res[0] = _a[0]*_tmp1
-        res[1] = _a[1]*_tmp1
-        res[2] = _a[2]*_tmp1
+        res[0] = _a[0]*_tmp0
+        res[1] = _a[1]*_tmp0
+        res[2] = _a[2]*_tmp0
 
         return res
 
     @staticmethod
     def retract(a, vec, epsilon):
         # Input arrays
-        _a = a.storage
+        _a = a.data
 
         # Output array
         res = [0.] * 4
@@ -75,23 +74,20 @@ class LieGroupOps(object):
     @staticmethod
     def local_coordinates(a, b, epsilon):
         # Input arrays
-        _a = a.storage
-        _b = b.storage
+        _a = a.data
+        _b = b.data
 
         # Output array
         res = [0.] * 3
 
-        # Intermediate terms (5)
-        _tmp0 = -_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0]
-        _tmp1 = _a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1]
-        _tmp2 = -_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2]
-        _tmp3 = numpy.sqrt(_tmp0**2 + _tmp1**2 + _tmp2**2 + epsilon)
-        _tmp4 = 2*numpy.arctan(_tmp3/(_a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3] + epsilon))/_tmp3
+        # Intermediate terms (2)
+        _tmp0 = _a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3]
+        _tmp1 = 2*numpy.arccos(numpy.amax((-1,numpy.amin((1,_tmp0)))))/numpy.sqrt(numpy.amax((epsilon,1 - _tmp0**2)))
 
         # Output terms (3)
-        res[0] = _tmp0*_tmp4
-        res[1] = _tmp1*_tmp4
-        res[2] = _tmp2*_tmp4
+        res[0] = _tmp1*(-_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0])
+        res[1] = _tmp1*(_a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1])
+        res[2] = _tmp1*(-_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2])
 
         return res
 

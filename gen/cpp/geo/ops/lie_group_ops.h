@@ -19,8 +19,8 @@ struct LieGroupOps {
   static constexpr int32_t TangentDim();
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
-  static T Expmap(const TangentVec& vec, const Scalar epsilon);
-  static TangentVec Logmap(const T& a, const Scalar epsilon);
+  static T FromTangent(const TangentVec& vec, const Scalar epsilon);
+  static TangentVec ToTangent(const T& a, const Scalar epsilon);
   static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon);
   static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
 };

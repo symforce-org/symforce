@@ -44,7 +44,7 @@ sympy = None
 from . import initialization
 
 
-def _use_backend(sympy_module):
+def _set_backend(sympy_module):
     # Make symforce-specific modifications to the sympy API
     initialization.modify_symbolic_api(sympy_module)
 
@@ -56,13 +56,13 @@ def _use_backend(sympy_module):
 def _use_symengine():
     import symengine
 
-    _use_backend(symengine)
+    _set_backend(symengine)
 
 
 def _use_sympy():
     import sympy as sympy_py
 
-    _use_backend(sympy_py)
+    _set_backend(sympy_py)
     sympy_py.init_printing()
 
     # Hack in some key derivatives that sympy doesn't do. For all these
@@ -73,7 +73,7 @@ def _use_sympy():
     setattr(sympy.Mod, "_eval_derivative", lambda s, v: sympy.S.Zero)
 
 
-def use_backend(backend):
+def set_backend(backend):
     """
     Set the symbolic backend for symforce. The sympy backend is the default and pure python,
     whereas the symengine backend is C++ and requires building the symengine library. It can
@@ -87,6 +87,9 @@ def use_backend(backend):
     Args:
         backend (str): {sympy, symengine}
     """
+    # TODO(hayk): Could do a better job of checking what's imported and raising an error
+    # if this isn't the first thing imported/called from symforce.
+
     if sympy and backend == sympy.__package__:
         logger.debug('already on backend "{}"'.format(backend))
         return
@@ -103,11 +106,22 @@ def use_backend(backend):
 
 # Set default to symforce if available, else sympy
 if "SYMFORCE_BACKEND" in os.environ:
-    use_backend(os.environ["SYMFORCE_BACKEND"])
+    set_backend(os.environ["SYMFORCE_BACKEND"])
 else:
     try:
         import symengine
 
-        use_backend("symengine")
+        set_backend("symengine")
     except ImportError:
-        use_backend("sympy")
+        set_backend("sympy")
+
+
+def get_backend():
+    """
+    Return the current backend as a string.
+
+    Returns:
+        str:
+    """
+    assert sympy is not None
+    return sympy.__name__
