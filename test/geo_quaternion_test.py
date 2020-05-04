@@ -1,19 +1,17 @@
-import numpy as np
-
 from symforce import geo
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
 
 
-class ComplexTest(GroupOpsTestMixin, TestCase):
+class GeoQuaternionTest(GroupOpsTestMixin, TestCase):
     """
-    Test the Complex geometric class.
+    Test the Quaternion geometric class.
     Note the mixin that tests all storage and group ops.
     """
 
     @classmethod
     def element(cls):
-        return geo.Complex(-3.2, 2.8)
+        return geo.Quaternion(xyz=geo.V3(0.1, -0.3, 1.3), w=3.2)
 
 
 if __name__ == "__main__":

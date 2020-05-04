@@ -1,58 +1,34 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
-class Rot3Test(LieGroupOpsTestMixin, TestCase):
+class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
     """
-    Test the Rot3 geometric class.
+    Test the Rot2 geometric class.
     Note the mixin that tests all storage, group and lie group ops.
     """
 
     @classmethod
     def element(cls):
-        return geo.Rot3.from_axis_angle(geo.V3(1, 0, 0), 1.2)
+        return geo.Rot2.from_tangent([1.3])
 
     def test_default_construct(self):
         """
         Tests:
-            Rot3.__init__
+            Rot2.__init__
         """
-        self.assertEqual(geo.Rot3(), geo.Rot3.identity())
-
-    def test_angle_between(self):
-        """
-        Tests:
-            Rot3.angle_between
-        """
-        x_axis = geo.V3(1, 0, 0)
-        rot1 = geo.Rot3.from_axis_angle(x_axis, 0.3)
-        rot2 = geo.Rot3.from_axis_angle(x_axis, -1.1)
-        angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
-        self.assertAlmostEqual(angle, 1.4, places=7)
-
-    def test_from_two_unit_vectors(self):
-        """
-        Tests:
-            Rot3.from_two_unit_vectors
-        """
-        one = geo.V3(1, 0, 0)
-        two = geo.V3(1, 1, 0).normalized()
-        rot = geo.Rot3.from_two_unit_vectors(one, two)
-
-        one_rotated = rot * one
-        self.assertNear(one_rotated, two)
+        self.assertEqual(geo.Rot2(), geo.Rot2.identity())
 
     def test_lie_exponential(self):
         """
         Tests:
-            Rot3.hat
-            Rot3.expmap
-            Rot3.to_rotation_matrix
+            Rot2.hat
+            Rot2.expmap
+            Rot2.to_rotation_matrix
         """
         element = self.element()
         dim = LieGroupOps.tangent_dim(element)
@@ -67,7 +43,7 @@ class Rot3Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Rot3.expmap(pertubation, epsilon=self.EPSILON)
+        expmap = geo.Rot2.expmap(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_rotation_matrix()
 
         # They should match!

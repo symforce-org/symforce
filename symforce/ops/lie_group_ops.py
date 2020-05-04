@@ -133,22 +133,3 @@ class LieGroupOps(GroupOps):
             return a.local_coordinates(b, epsilon=epsilon)
 
         return LieGroupOps.to_tangent(LieGroupOps.between(a, b), epsilon=epsilon)
-
-    # TODO(hayk): Is this meaningful in this API?
-    @staticmethod
-    def matrix_dims(a):
-        """
-        Matrix dimensions of the vector space in which this manifold is embedded.
-
-        Args:
-            a (Element or type):
-
-        Returns:
-            tuple(int, int):
-        """
-        if hasattr(a, "MATRIX_DIMS"):
-            return a.MATRIX_DIMS
-        elif GroupOps.scalar_like(a):
-            return (1, 1)
-        else:
-            GroupOps._type_error(a)

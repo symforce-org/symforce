@@ -1,35 +1,27 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
-class Rot2Test(LieGroupOpsTestMixin, TestCase):
+class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
     """
-    Test the Rot2 geometric class.
+    Test the Pose3 geometric class.
     Note the mixin that tests all storage, group and lie group ops.
     """
 
     @classmethod
     def element(cls):
-        return geo.Rot2.from_tangent([1.3])
-
-    def test_default_construct(self):
-        """
-        Tests:
-            Rot2.__init__
-        """
-        self.assertEqual(geo.Rot2(), geo.Rot2.identity())
+        return geo.Pose3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
 
     def test_lie_exponential(self):
         """
         Tests:
-            Rot2.hat
-            Rot2.expmap
-            Rot2.to_rotation_matrix
+            Pose3.hat
+            Pose3.expmap
+            Pose3.to_homogenous_matrix
         """
         element = self.element()
         dim = LieGroupOps.tangent_dim(element)
@@ -44,8 +36,8 @@ class Rot2Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Rot2.expmap(pertubation, epsilon=self.EPSILON)
-        matrix_expected = expmap.to_rotation_matrix()
+        expmap = geo.Pose3.expmap(pertubation, epsilon=self.EPSILON)
+        matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)

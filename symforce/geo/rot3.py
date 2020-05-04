@@ -1,8 +1,8 @@
-import functools
 from symforce import sympy as sm
 
 from .base import LieGroup
-from .matrix import Matrix, Z3, V3, V4
+from .matrix import Matrix
+from .matrix import V3
 from .quaternion import Quaternion
 
 

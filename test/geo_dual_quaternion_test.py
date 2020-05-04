@@ -1,11 +1,9 @@
-import numpy as np
-
 from symforce import geo
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
 
 
-class DualQuaternionTest(GroupOpsTestMixin, TestCase):
+class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
     """
     Test the DualQuaternion geometric class.
     Note the mixin that tests all storage and group ops.

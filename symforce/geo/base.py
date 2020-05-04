@@ -171,9 +171,6 @@ class LieGroup(Group):
     # Dimension of the embedded manifold
     TANGENT_DIM = None
 
-    # Dimensions of the Euclidean space that contains the manifold
-    MATRIX_DIMS = None
-
     @classmethod
     def from_tangent(cls, vec, epsilon=0):
         """

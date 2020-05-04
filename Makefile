@@ -47,7 +47,7 @@ coverage_clean:
 	rm -rf $(COVERAGE_DIR)
 
 coverage_run:
-	$(TEST_ENV) coverage run --source=symforce $(TEST_CMD)
+	$(TEST_ENV) coverage run --source=symforce --omit=symforce/codegen/python/templates/* $(TEST_CMD)
 
 coverage_html:
 	coverage html -d $(COVERAGE_DIR)

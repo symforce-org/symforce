@@ -8,22 +8,24 @@ import numpy as np
 
 class Matrix(sm.Matrix, LieGroup):
     """
-    Group that represents the linear space of two dimensional matrices under the *addition*
-    operation. A vector space (also called a linear space) is a collection of objects called
-    vectors, which may be added together and multiplied ("scaled") by numbers, called scalars.
-    Scalars are often taken to be real numbers, but there are also vector spaces with scalar
-    multiplication by complex numbers, rational numbers, or generally any field.
+    Matrix type that inherits from the Sympy Matrix class.
 
     References:
 
+        https://docs.sympy.org/latest/tutorial/matrices.html
         https://en.wikipedia.org/wiki/Vector_space
+
+    It is also treated as lie group that represents the linear space of two dimensional matrices
+    under the *addition* operation. This causes some confusion between the naming of methods, such
+    as `.identity()` and `.inverse()`. The linear algebra equivalents are available at
+    `.matrix_identity()` and `.matrix_inverse()`. Splitting the matrix type and the lie group ops
+    is a possible action to make this better.
 
     NOTE(hayk): Unlike the other group types, this inherits from the storage type (sympy.Matrix)
     rather than keeping it an attribute. The reason is to be compatible with general sympy
     operations and to avoid a huge amount of wrapping. Doing this means that the type is of
-    dynamic dimensions rather than fixed size. For that reason, the interface is abused in that
-    MATRIX_DIMS and DIMS are properties of the instance instead of static members, and that many
-    @classmethods in the interface are overriden to require self to get the dimension.
+    dynamic dimensions rather than fixed size. For that reason, the interface is somewhat abused
+    in that things that typically only require the type require the instance.
     """
 
     @property

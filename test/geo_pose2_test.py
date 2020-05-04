@@ -1,13 +1,12 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
-class Pose2Test(LieGroupOpsTestMixin, TestCase):
+class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
     """
     Test the Pose2 geometric class.
     Note the mixin that tests all storage, group and lie group ops.
