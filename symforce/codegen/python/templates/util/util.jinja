@@ -1,0 +1,47 @@
+{# ------------------------------------------------------------------------- #}
+{# Utilities for Python code generation templates.                           #}
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (FunctionCodegen):
+ #}
+{% macro expr_code(spec) -%}
+# Input arrays
+{% for arg, T in spec.args -%}
+{% if ops.StorageOps.get_type(T) not in (Symbol, Matrix) %}
+_{{ arg }} = {{ arg }}.data
+{% endif %}
+{% endfor %}
+
+# Output array
+res = [0.] * {{ spec.output_terms.__len__() }}
+
+# Intermediate terms ({{ spec.intermediate_terms | length }})
+{% for lhs, rhs in spec.intermediate_terms %}
+{{ lhs }} = {{ rhs }}
+{% endfor %}
+
+# Output terms ({{ spec.output_terms | length }})
+{% for line in spec.output_terms %}
+res[{{ loop.index - 1 }}] = {{ line }}
+{% endfor %}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate a Python ops function.
+ #
+ # Args:
+ #     spec (FunctionCodegen):
+ #}
+{% macro ops_function(spec) -%}
+    @staticmethod
+    def {{ camelcase_to_snakecase(spec.name) }}(
+        {%- for arg, type in spec.args -%}
+        {{ arg }}{% if not loop.last %}, {% endif %}
+        {%- endfor -%}):
+        {{ expr_code(spec) | indent(8) }}
+        return res
+{% endmacro %}

@@ -54,7 +54,11 @@ def _set_backend(sympy_module):
 
 
 def _use_symengine():
-    import symengine
+    try:
+        import symengine
+    except ImportError:
+        logger.critical("Commanded to use symengine, but failed to import.")
+        raise
 
     _set_backend(symengine)
 
@@ -111,8 +115,10 @@ else:
     try:
         import symengine
 
+        logger.debug("No SYMFORCE_BACKEND set, found and using symengine.")
         set_backend("symengine")
     except ImportError:
+        logger.debug("No SYMFORCE_BACKEND set, no symengine found, using sympy.")
         set_backend("sympy")
 
 

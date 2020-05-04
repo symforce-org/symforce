@@ -67,7 +67,7 @@ class StorageOps(object):
             StorageOps._type_error(a)
 
     @staticmethod
-    def _get_type(a):
+    def get_type(a):
         """
         Returns the type of the element if its an instance, or a pass through if already a type.
 
@@ -93,7 +93,7 @@ class StorageOps(object):
         Raises:
             TypeError:
         """
-        a_type = StorageOps._get_type(a)
+        a_type = StorageOps.get_type(a)
         raise TypeError("val={}, type={}, mro={}, sm={}".format(a, a_type, a_type.__mro__, sm))
 
     @staticmethod
@@ -109,7 +109,7 @@ class StorageOps(object):
         Returns:
             bool:
         """
-        a_type = StorageOps._get_type(a)
+        a_type = StorageOps.get_type(a)
         if issubclass(a_type, (int, float, np.float32, np.float64)):
             return True
         is_expr = issubclass(a_type, sm.Expr)
@@ -129,7 +129,7 @@ class StorageOps(object):
         Returns:
             bool:
         """
-        a_type = StorageOps._get_type(a)
+        a_type = StorageOps.get_type(a)
         return issubclass(a_type, (list, tuple, np.ndarray))
 
     @staticmethod

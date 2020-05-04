@@ -16,7 +16,7 @@ reqs:
 	sudo pip install -r requirements.txt
 
 format:
-	black --line-length 100 . --exclude=symforce/codegen/python/templates --exclude=gen/
+	black --line-length 100 . --exclude 'symforce/codegen/python/templates|/gen/|test_data/'
 
 clean: docs_clean coverage_clean
 	rm -rf $(BUILD_DIR)
