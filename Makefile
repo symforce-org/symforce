@@ -2,6 +2,10 @@
 
 BUILD_DIR=build
 
+PYTHON=***REMOVED***/bin/***REMOVED***
+
+BLACK_EXCLUDE='symforce/codegen/python/templates|/gen/|test_data/'
+
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
@@ -12,16 +16,31 @@ all: clean docs coverage coverage_open docs_open
 # Install all needed packages
 all_reqs: reqs test_reqs docs_reqs
 
+# Install python requirements for core library
 reqs:
 	sudo pip install -r requirements.txt
 
+# Format using black
 format:
-	black --line-length 100 . --exclude 'symforce/codegen/python/templates|/gen/|test_data/'
+	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE)
 
+# Check formatting using black - print diff, do not modify files
+check_format:
+	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE) --check --diff
+
+# Check type hints using mypy
+check_types:
+	$(PYTHON) -m mypy --py2 . test
+
+# Lint check for formatting and type hints
+# This needs pass before any merge.
+lint: check_types check_format
+
+# Clean all artifacts
 clean: docs_clean coverage_clean
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all reqs format clean
+.PHONY: all reqs format check_format check_types lint clean
 
 # -----------------------------------------------------------------------------
 # Tests

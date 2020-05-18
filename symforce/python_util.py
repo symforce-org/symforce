@@ -1,20 +1,21 @@
 """
 General python utilities.
 """
+# mypy: disallow-untyped-defs
+
 import os
 import re
 import shutil
 import subprocess
 
 from symforce import logger
+from symforce import types as T
 
 
 def remove_if_exists(path):
+    # type: (str) -> None
     """
     Delete a file or directory if it exists.
-
-    Args:
-        path (str):
     """
     if not os.path.exists(path):
         logger.debug("Doesn't exist: {}".format(path))
@@ -27,20 +28,22 @@ def remove_if_exists(path):
         os.remove(path)
 
 
-def execute_subprocess(cmd, *args, **kwargs):
+def execute_subprocess(
+    cmd,  # type: T.Union[str, T.Sequence[str]]
+    *args,  # type: T.Any
+    **kwargs  # type: T.Any
+):
+    # type: (...) -> None
     """
     Execute subprocess and log command as well as stdout/stderr.
 
-    Args:
-        cmd (str or iterable(str)):
-
-    Returns:
+    Raises:
         subprocess.CalledProcessError: If the return code is nonzero
     """
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
     logger.info("Subprocess: {}".format(cmd_str))
 
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, *args, **kwargs)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, *args, **kwargs)  # type: ignore
     (stdout, other) = proc.communicate()
     logger.info(stdout)
 
@@ -49,13 +52,22 @@ def execute_subprocess(cmd, *args, **kwargs):
 
 
 def camelcase_to_snakecase(s):
+    # type: (str) -> str
     """
     Convert CamelCase -> snake_case.
-
-    Args:
-        s (str):
-
-    Returns:
-        str:
     """
     return re.sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
+
+
+def files_in_dir(dirname, relative=False):
+    # type: (str, bool) -> T.Iterator[str]
+    """
+    Return a list of files in the given directory.
+    """
+    for root, _, filenames in os.walk(dirname):
+        for filename in filenames:
+            abspath = os.path.join(root, filename)
+            if relative:
+                yield os.path.relpath(abspath, dirname)
+            else:
+                yield abspath

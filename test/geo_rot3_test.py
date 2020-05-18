@@ -1,6 +1,9 @@
+import logging
 import numpy as np
 
 from symforce import geo
+from symforce import logger
+from symforce import sympy as sm
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -45,6 +48,45 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
         one_rotated = rot * one
         self.assertNear(one_rotated, two)
+
+    def test_random(self):
+        """
+        Tests:
+            Rot3.random
+        """
+        np.random.seed(0)
+
+        elements = []
+        for _ in range(100):
+            element = geo.Rot3.random()
+            elements.append(element)
+
+            # Check unit norm
+            self.assertAlmostEqual(element.q.squared_norm(), 1.0, places=7)
+
+            # Check positive w (to go on one side of double cover)
+            self.assertGreaterEqual(element.q.w, 0.0)
+
+        # Rotate a point through
+        P = geo.V3(0, 0, 1)
+        Ps_rotated = [e * P for e in elements]
+
+        # Compute angles and check basic stats
+        angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+        self.assertLess(np.min(angles), 0.3)
+        self.assertGreater(np.max(angles), np.pi - 0.3)
+        self.assertAlmostEqual(np.mean(angles), np.pi / 2, places=1)
+
+        # Plot the sphere to show uniform distribution
+        if logger.level == logging.DEBUG and self.verbose:
+            from mpl_toolkits.mplot3d import Axes3D
+            import matplotlib.pyplot as plt
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection="3d")
+            ax.set_aspect("equal")
+            ax.scatter(*zip(*Ps_rotated))
+            plt.show()
 
     def test_lie_exponential(self):
         """

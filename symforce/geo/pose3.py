@@ -1,6 +1,9 @@
-from symforce import sympy as sm
+# mypy: disallow-untyped-defs
 
-from .base import LieGroup
+from symforce import sympy as sm
+from symforce import types as T
+
+from .base import LieGroup, Group
 from .matrix import Matrix
 from .matrix import Vector3
 from .matrix import Z3
@@ -25,12 +28,13 @@ class Pose3(LieGroup):
     STORAGE_DIM = 7
 
     def __init__(self, R=None, t=None):
+        # type: (Rot3, Matrix) -> None
         """
         Construct from elements in SO3 and R3.
 
         Args:
-            R (Rot3): Frame orientation
-            t (Matrix): Translation 3-vector in the global frame
+            R: Frame orientation
+            t: Translation 3-vector in the global frame
         """
         self.R = R or Rot3()
         self.t = t or Vector3()
@@ -44,15 +48,18 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     def __repr__(self):
+        # type: () -> str
         return "<Pose3 R={}, t=({}, {}, {})>".format(
             repr(self.R), repr(self.t[0]), repr(self.t[1]), repr(self.t[2])
         )
 
     def to_storage(self):
+        # type: () -> T.List[T.Scalar]
         return self.R.to_storage() + self.t.to_storage()
 
     @classmethod
     def from_storage(cls, vec):
+        # type: (T.List) -> Pose3
         assert len(vec) == cls.STORAGE_DIM
         return cls(
             R=Rot3.from_storage(vec[0 : Rot3.STORAGE_DIM]),
@@ -65,13 +72,16 @@ class Pose3(LieGroup):
 
     @classmethod
     def identity(cls):
+        # type: () -> Pose3
         return cls(R=Rot3.identity(), t=Z3())
 
     def compose(self, other):
+        # type: (Pose3) -> Pose3
         assert isinstance(other, self.__class__)
         return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
 
     def inverse(self):
+        # type: () -> Pose3
         so3_inv = self.R.inverse()
         return self.__class__(R=so3_inv, t=-(so3_inv * self.t))
 
@@ -81,6 +91,7 @@ class Pose3(LieGroup):
 
     @classmethod
     def expmap(cls, v, epsilon=0):
+        # type: (T.List, T.Scalar) -> Pose3
         if isinstance(v, (list, tuple)):
             v = Matrix(v)
 
@@ -101,6 +112,7 @@ class Pose3(LieGroup):
         return cls(R, V * t_tangent)
 
     def logmap(self, epsilon=0):
+        # type: (float) -> T.List
         R_tangent = Matrix(self.R.logmap(epsilon=epsilon))
         theta = sm.sqrt(R_tangent.dot(R_tangent) + epsilon)
         R_hat = Matrix(Rot3.hat(R_tangent))
@@ -119,6 +131,7 @@ class Pose3(LieGroup):
 
     @classmethod
     def hat(cls, vec):
+        # type: (T.List) -> Matrix
         R_tangent = Vector3(vec[0], vec[1], vec[2])
         t_tangent = Vector3(vec[3], vec[4], vec[5])
         return Matrix(Rot3.hat(R_tangent)).row_join(t_tangent).col_join(Matrix.zeros(1, 4)).tolist()
@@ -128,14 +141,9 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     def __mul__(self, right):
+        # type: (T.Union[Pose3, Matrix]) -> T.Any
         """
         Left-multiply with a compatible quantity.
-
-        Args:
-            right (Pose3 or R3):
-
-        Returns:
-            Pose3 or R3:
         """
         if isinstance(right, sm.MatrixBase):
             assert right.shape == (3, 1), right.shape
@@ -145,11 +153,9 @@ class Pose3(LieGroup):
         assert False, "unsupported type: {0}".format(type(right))
 
     def to_homogenous_matrix(self):
+        # type: () -> Matrix
         """
-        A matrix representation of this element in the Euclidean space that contains it.
-
-        Returns:
-            Matrix44: 4x4 matrix representing this pose transform
+        4x4 matrix representing this pose transform.
         """
         R = self.R.to_rotation_matrix()
         return (R.row_join(self.t)).col_join(Matrix(1, 4, [0, 0, 0, 1]))

@@ -17,7 +17,7 @@ class CppCodePrinter(CXX11CodePrinter):
         base_str = self._print(expr.base)
 
         if expr.exp == -1:
-            return "{} / ({})".format(self._print(sm.S.One), base_str)
+            return "1.0 / ({})".format(base_str)
         elif expr.exp == 2:
             return "({} * {})".format(base_str, base_str)
         elif expr.exp == 3:

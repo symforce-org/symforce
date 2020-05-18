@@ -93,7 +93,6 @@ template <typename Scalar>
   {%- endfor -%}
 ) {
     {{ expr_code(spec) | indent(4) }}
-
     {% set T_return = ops.StorageOps.get_type(spec.return_type) %}
     {% if T_return == cls %}
     return {{ format_typename(spec.return_type) }}(res);

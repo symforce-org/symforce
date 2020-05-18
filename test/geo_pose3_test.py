@@ -1,6 +1,10 @@
+# mypy: disallow-untyped-defs
+
 import numpy as np
 
 from symforce import geo
+from symforce import sympy as sm
+from symforce import types as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -14,9 +18,11 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls):
+        # type: () -> geo.Pose3
         return geo.Pose3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
 
     def test_lie_exponential(self):
+        # type: () -> None
         """
         Tests:
             Pose3.hat

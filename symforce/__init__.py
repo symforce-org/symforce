@@ -1,6 +1,7 @@
 """
 Initialization configuration for symforce, as minimal as possible.
 """
+import typing as T
 import os
 
 # -------------------------------------------------------------------------------------------------
@@ -39,7 +40,7 @@ set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "INFO"))
 # -------------------------------------------------------------------------------------------------
 # Symbolic backend configuration
 # -------------------------------------------------------------------------------------------------
-sympy = None
+sympy = None  # type: T.Any
 
 from . import initialization
 

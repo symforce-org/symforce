@@ -1,3 +1,5 @@
+# mypy: disallow-untyped-defs
+
 import numpy as np
 import os
 import random
@@ -5,7 +7,9 @@ import sys
 import unittest
 
 from symforce import logger
+from symforce import python_util
 from symforce import sympy as sm
+from symforce import types as T
 from symforce.ops import StorageOps
 
 
@@ -20,6 +24,7 @@ class TestCase(unittest.TestCase):
 
     @staticmethod
     def main():
+        # type: () -> None
         """
         Call this to run all tests in scope.
         """
@@ -33,10 +38,19 @@ class TestCase(unittest.TestCase):
         unittest.main()
 
     def setUp(self):
+        # type: () -> None
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
-    def assertNear(self, actual, desired, places=7, msg="", verbose=True):
+    def assertNear(
+        self,
+        actual,  # type: T.Any
+        desired,  # type: T.Any
+        places=7,  # type: int
+        msg="",  # type: str
+        verbose=True,  # type: bool
+    ):
+        # type: (...) -> None
         """
         Check that two elements are close. Handles sequences, scalars, and geometry types
         using StorageOps.
@@ -50,13 +64,10 @@ class TestCase(unittest.TestCase):
         )
 
     def compare_or_update(self, path, data):
+        # type: (str, str) -> None
         """
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
-
-        Args:
-            path (str): Path to test data file
-            data (str): Data resulting from the test
         """
         if TestCase.UPDATE:
             logger.debug('Updating data at: "{}"'.format(path))
@@ -73,5 +84,32 @@ class TestCase(unittest.TestCase):
                 expected_data = f.read()
 
             self.assertMultiLineEqual(
-                data, expected_data, "Failed, use --update to check diff and commit if desired."
+                data,
+                expected_data,
+                "Data did not match, use --update to check diff and commit if desired.",
             )
+
+    def compare_or_update_directory(self, actual_dir, expected_dir):
+        # type: (str, str) -> None
+        """
+        Check the contents of actual_dir match expected_dir, OR update the expected directory
+        if the --update flag was passed to the test.
+        """
+        logger.debug(
+            'Comparing directories: actual="{}", expected="{}"'.format(actual_dir, expected_dir)
+        )
+        actual_paths = list(python_util.files_in_dir(actual_dir, relative=True))
+        expected_paths = list(python_util.files_in_dir(expected_dir, relative=True))
+
+        if not self.UPDATE:
+            # If checking, make sure all file paths are the same
+            self.assertSequenceEqual(actual_paths, expected_paths)
+        else:
+            # If updating, remove any expected files not in actual
+            for only_in_expected in set(expected_paths).difference(set(actual_paths)):
+                os.remove(os.path.join(expected_dir, only_in_expected))
+
+        for path in actual_paths:
+            with open(os.path.join(actual_dir, path), "r") as f:
+                actual_data = f.read()
+            self.compare_or_update(os.path.join(expected_dir, path), actual_data)

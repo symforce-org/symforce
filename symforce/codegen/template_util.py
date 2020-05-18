@@ -6,7 +6,7 @@ import os
 
 from symforce import logger
 
-CURRENT_DIR = os.path.join(os.path.dirname(__file__))
+CURRENT_DIR = os.path.dirname(__file__)
 CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp", "templates")
 PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python", "templates")
 

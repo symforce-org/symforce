@@ -4,6 +4,7 @@
 #pragma once
 
 #include <ostream>
+#include <random>
 #include <vector>
 #include <Eigen/Dense>
 

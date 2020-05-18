@@ -40,7 +40,7 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const Rot3<Scalar>& a
     Eigen::Matrix<Scalar, 3, 1> res;
 
     // Intermediate terms (1)
-    const Scalar _tmp0 = 2*std::acos(std::max<Scalar>(-1, std::min<Scalar>(1, _a[3])))/std::sqrt(std::max<Scalar>(epsilon, 1 - (_a[3] * _a[3])));
+    const Scalar _tmp0 = 2*std::acos(std::max<Scalar>(-1, std::min<Scalar>(1, _a[3])))/std::sqrt(std::max<Scalar>(epsilon, -(_a[3] * _a[3]) + 1));
 
     // Output terms (3)
     res[0] = _a[0]*_tmp0;
@@ -58,22 +58,21 @@ Rot3<Scalar> LieGroupOps<Scalar>::Retract(const Rot3<Scalar>& a, const Eigen::Ma
     // Output array
     Eigen::Matrix<Scalar, 4, 1> res;
 
-    // Intermediate terms (9)
+    // Intermediate terms (8)
     const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
-    const Scalar _tmp1 = 1.0 / (_tmp0);
-    const Scalar _tmp2 = (1.0/2.0)*_tmp0;
-    const Scalar _tmp3 = std::sin(_tmp2);
-    const Scalar _tmp4 = _tmp1*_tmp3;
-    const Scalar _tmp5 = _a[1]*_tmp4;
-    const Scalar _tmp6 = _a[2]*_tmp4;
-    const Scalar _tmp7 = std::cos(_tmp2);
-    const Scalar _tmp8 = _a[0]*_tmp4;
+    const Scalar _tmp1 = (1.0/2.0)*_tmp0;
+    const Scalar _tmp2 = std::sin(_tmp1)/_tmp0;
+    const Scalar _tmp3 = _a[1]*_tmp2;
+    const Scalar _tmp4 = _a[2]*_tmp2;
+    const Scalar _tmp5 = std::cos(_tmp1);
+    const Scalar _tmp6 = _a[3]*_tmp2;
+    const Scalar _tmp7 = _a[0]*_tmp2;
 
     // Output terms (4)
-    res[0] = _a[0]*_tmp7 + _a[3]*_tmp1*_tmp3*vec[0] + _tmp5*vec[2] - _tmp6*vec[1];
-    res[1] = _a[1]*_tmp7 + _a[3]*_tmp4*vec[1] + _tmp6*vec[0] - _tmp8*vec[2];
-    res[2] = _a[2]*_tmp7 + _a[3]*_tmp4*vec[2] - _tmp5*vec[0] + _tmp8*vec[1];
-    res[3] = _a[3]*_tmp7 - _tmp5*vec[1] - _tmp6*vec[2] - _tmp8*vec[0];
+    res[0] = _a[0]*_tmp5 + _tmp3*vec[2] - _tmp4*vec[1] + _tmp6*vec[0];
+    res[1] = _a[1]*_tmp5 + _tmp4*vec[0] + _tmp6*vec[1] - _tmp7*vec[2];
+    res[2] = _a[2]*_tmp5 - _tmp3*vec[0] + _tmp6*vec[2] + _tmp7*vec[1];
+    res[3] = _a[3]*_tmp5 - _tmp3*vec[1] - _tmp4*vec[2] - _tmp7*vec[0];
 
     return Rot3<Scalar>(res);
 }
@@ -89,7 +88,7 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const Rot3<Sca
 
     // Intermediate terms (2)
     const Scalar _tmp0 = _a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3];
-    const Scalar _tmp1 = 2*std::acos(std::max<Scalar>(-1, std::min<Scalar>(1, _tmp0)))/std::sqrt(std::max<Scalar>(epsilon, 1 - (_tmp0 * _tmp0)));
+    const Scalar _tmp1 = 2*std::acos(std::max<Scalar>(-1, std::min<Scalar>(1, _tmp0)))/std::sqrt(std::max<Scalar>(epsilon, -(_tmp0 * _tmp0) + 1));
 
     // Output terms (3)
     res[0] = _tmp1*(-_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0]);

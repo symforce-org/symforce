@@ -32,7 +32,7 @@ class GroupOps(object):
         res = [0.] * 4
 
         # Intermediate terms (3)
-        _tmp0 = (_a[0]**2 + _a[1]**2)**(-1.0)
+        _tmp0 = 1/(_a[0]**2 + _a[1]**2)
         _tmp1 = _a[0]*_tmp0
         _tmp2 = _a[1]*_tmp0
 
@@ -73,7 +73,7 @@ class GroupOps(object):
         res = [0.] * 4
 
         # Intermediate terms (7)
-        _tmp0 = (_a[0]**2 + _a[1]**2)**(-1.0)
+        _tmp0 = 1/(_a[0]**2 + _a[1]**2)
         _tmp1 = _b[1]*_tmp0
         _tmp2 = _b[0]*_tmp0
         _tmp3 = _a[3]*_tmp0

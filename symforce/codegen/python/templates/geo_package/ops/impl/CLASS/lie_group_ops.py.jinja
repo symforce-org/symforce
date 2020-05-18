@@ -1,0 +1,13 @@
+{%- import "../../../../util/util.jinja" as util with context -%}
+
+import numpy
+
+
+class LieGroupOps(object):
+    """
+    Python LieGroupOps implementatino for {{ cls }}.
+    """
+
+    {% for spec in specs['LieGroupOps'] %}
+    {{ util.ops_function(spec) }}
+    {% endfor %}
