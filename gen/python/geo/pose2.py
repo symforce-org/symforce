@@ -83,7 +83,7 @@ class Pose2(object):
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        assert len(vec) == cls.tangent_dim(), '{}, {}'.format(len(vec), cls.tangent_dim())
+        assert len(vec) == self.tangent_dim(), '{}, {}'.format(len(vec), self.tangent_dim())
         return self.__class__.from_storage(ops.LieGroupOps.retract(self, vec, epsilon))
 
     def local_coordinates(self, b, epsilon=1e-8):
