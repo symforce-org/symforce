@@ -1,0 +1,17 @@
+#include <{{ spec.name }}/evaluator.h>
+
+namespace {{ spec.name }} {
+
+void Evaluator::_Execute(const {{ spec.scalar_type }} * inp, {{ spec.scalar_type }}* out) {
+    // Intermediate terms
+    {% for var, term in intermediate_terms %}
+    {{ spec.scalar_type }} {{ var }} = {{ term }};
+    {% endfor %}
+
+    // Output terms
+    {% for term in output_terms %}
+    out[{{ loop.index - 1}}] = {{ term }};
+    {% endfor %}
+}
+
+}  // namespace {{ spec.name }}

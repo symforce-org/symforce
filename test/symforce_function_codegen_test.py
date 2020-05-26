@@ -1,12 +1,13 @@
-import logging
+# mypy: disallow-untyped-defs
+
 import os
-import tempfile
 
 import symforce
 from symforce import geo
 from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
+from symforce import types as T
 from symforce.test_util import TestCase
 from symforce.codegen import FunctionCodegen
 from symforce.codegen import CodegenMode
@@ -17,6 +18,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "symforce_function_codegen_te
 
 # Test function
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon=0):
+    # type: (geo.Pose3, geo.Matrix, T.Scalar) -> geo.Matrix
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.
@@ -42,6 +44,8 @@ class SymforceFunctionCodegenTest(TestCase):
     """
 
     def test_codegen_cpp(self):
+        # type: () -> None
+
         # Create the specification
         spec = FunctionCodegen(
             name="AzElFromPoint",
@@ -60,6 +64,8 @@ class SymforceFunctionCodegenTest(TestCase):
         self.compare_or_update(expected_code_file, code)
 
     def test_codegen_python(self):
+        # type: () -> None
+
         # Create the specification
         spec = FunctionCodegen(
             name="az_el_from_point",
@@ -78,8 +84,10 @@ class SymforceFunctionCodegenTest(TestCase):
         self.compare_or_update(expected_code_file, code)
 
     def test_no_docstring(self):
+        # type: () -> None
+
         # Function with no docstring
-        def func_no_docstring(vector3, scalar):
+        def func_no_docstring(vector3, scalar):  # type: ignore
             return scalar * vector3
 
         # Create the specification

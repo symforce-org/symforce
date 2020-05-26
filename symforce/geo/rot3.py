@@ -176,13 +176,13 @@ class Rot3(LieGroup):
         return Matrix(self.local_coordinates(other, epsilon=epsilon)).norm()
 
     @classmethod
-    def random(self):
+    def random(cls):
         # type: () -> Rot3
         """
         Generate a random element of SO3.
         """
         u1, u2, u3 = np.random.uniform(low=0.0, high=1.0, size=(3,))
-        return self.random_from_uniform_samples(u1, u2, u3, pi=np.pi)
+        return cls.random_from_uniform_samples(u1, u2, u3, pi=np.pi)
 
     @classmethod
     def random_from_uniform_samples(cls, u1, u2, u3, pi=sm.pi):

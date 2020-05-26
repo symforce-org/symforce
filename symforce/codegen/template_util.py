@@ -1,3 +1,5 @@
+# mypy: disallow-untyped-defs
+
 from __future__ import absolute_import
 
 import collections
@@ -5,6 +7,7 @@ import jinja2
 import os
 
 from symforce import logger
+from symforce import types as T
 
 CURRENT_DIR = os.path.dirname(__file__)
 CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp", "templates")
@@ -19,20 +22,19 @@ class RelEnvironment(jinja2.Environment):
     """
 
     def join_path(self, template, parent):
-        return os.path.normpath(os.path.join(os.path.dirname(parent), template))
+        # type: (T.Union[jinja2.Template, unicode], unicode) -> unicode
+        return os.path.normpath(os.path.join(os.path.dirname(parent), str(template)))
 
 
 def render_template(template_path, data, output_path=None):
+    # type: (str, T.Dict[str, T.Any], T.Optional[str]) -> str
     """
     Boiler plate to render template. Returns the rendered string and optionally writes to file.
 
     Args:
-        template_path (str): file path of the template to render
-        data (dict): dictionary of inputs for template
-        output_path (str): If provided, writes to file
-
-    Returns:
-        (str): rendered template
+        template_path: file path of the template to render
+        data: dictionary of inputs for template
+        output_path: If provided, writes to file
     """
     logger.debug("Template  IN <-- {}".format(template_path))
     if output_path:
@@ -47,7 +49,7 @@ def render_template(template_path, data, output_path=None):
     )
 
     template = env.get_template(template_name)
-    rendered_str = template.render(**data)
+    rendered_str = str(template.render(**data))
 
     if output_path:
         directory = os.path.dirname(output_path)
@@ -69,14 +71,17 @@ class TemplateList(object):
     Entry = collections.namedtuple("TemplateListEntry", ["template_path", "output_path", "data"])
 
     def __init__(self):
-        self.items = []
+        # type: () -> None
+        self.items = []  # type: T.List
 
     def add(self, template_path, output_path, data):
+        # type: (str, str, T.Dict[str, T.Any]) -> None
         self.items.append(
             self.Entry(template_path=template_path, output_path=output_path, data=data)
         )
 
     def render(self):
+        # type: () -> None
         for entry in self.items:
             render_template(
                 template_path=entry.template_path, output_path=entry.output_path, data=entry.data

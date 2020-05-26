@@ -16,6 +16,7 @@ Guides
    notebooks/geometry_tutorial
    notebooks/function_codegen_tutorial
    notebooks/values_tutorial
+   notebooks/evaluator_codegen_tutorial
 
 :doc:`development`
     How to build, configure, and develop.
@@ -31,6 +32,9 @@ Guides
 
 :doc:`notebooks/values_tutorial`
     How to structure large groups of symbols and expressions
+
+:doc:`notebooks/evaluator_codegen_tutorial`
+    Advanced code generation of a runtime package from a set of symbolic expressions
 
 .. _api-reference:
 .. toctree::

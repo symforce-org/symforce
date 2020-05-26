@@ -1,0 +1,51 @@
+// Usage example for the symforce evaluator: "{{ spec.name }}"
+// Feel free to copy and modify this
+
+#include <iostream>
+
+#include <{{ spec.name }}/evaluator.h>
+#include <{{ spec.name }}/storage_ops.h>
+
+{% set input_keys = spec.types['input_t']['keys_recursive'] -%}
+{% set output_keys = spec.types['output_t']['keys_recursive'] -%}
+
+int main(int argc, char** argv) {
+  // --------------------------------------------------------------------------
+  // Evaluator usage
+  // --------------------------------------------------------------------------
+
+  // Create evaluator
+  {{ spec.name }}::Evaluator evaluator{};
+
+  // Create input and fill the first attribute
+  {{ spec.name }}::input_t input{};
+  input.{{ input_keys[0] }} = 1.0;
+
+  // Execute to compute output
+  {{ spec.name }}::output_t output;
+  evaluator.Execute(input, &output);
+
+  // Print first attribute of input and output
+  std::cout << "input.{{ input_keys[0] }}: " << input.{{ input_keys[0] }} << std::endl;
+  std::cout << "output.{{ output_keys[0] }}: " << output.{{ output_keys[0] }} << std::endl;
+
+  // --------------------------------------------------------------------------
+  // StorageOps usage
+  // --------------------------------------------------------------------------
+
+  // Get storage dimension
+  const size_t input_dim = {{ spec.name }}::StorageOps::StorageDim<{{ spec.name }}::input_t>();
+  const size_t output_dim = {{ spec.name }}::StorageOps::StorageDim<{{ spec.name }}::output_t>();
+  std::cout << "input dimension: " << input_dim << std::endl;
+  std::cout << "output dimension: " << output_dim << std::endl;
+
+  // Serialize type into a vector
+  std::vector<{{ spec.scalar_type }}> input_array;
+  {{ spec.name }}::StorageOps::ToStorage(input, &input_array);
+  assert(input_array.size() == input_dim);
+
+  // Re-assemble type from the vector
+  {{ spec.name }}::input_t input2;
+  {{ spec.name }}::StorageOps::FromStorage(input_array, &input2);
+  assert(input.{{ input_keys[0] }} == input2.{{ input_keys[0] }});
+}

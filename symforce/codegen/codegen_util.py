@@ -1,11 +1,14 @@
 """
 Shared helper code between codegen of all languages.
 """
+# mypy: disallow-untyped-defs
+
 from enum import Enum
 import imp
 import os
 
 from symforce import sympy as sm
+from symforce import types as T
 
 
 class CodegenMode(Enum):
@@ -21,26 +24,32 @@ class CodegenMode(Enum):
     CPP = "cpp"
 
 
-def perform_cse(input_symbols, output_exprs, substitute_inputs=True):
+def perform_cse(
+    input_symbols,  # type: T.Sequence[T.Scalar]
+    output_exprs,  # type: T.Sequence[T.Scalar]
+    substitute_inputs=True,  # type: bool
+):
+    # type: (...) -> T.Tuple[T.Sequence[T.Tuple[T.Scalar, T.Scalar]], T.Sequence[T.Scalar]]
     """
     Run common sub-expression elimination on the given input/output values.
 
     Args:
-        input_symbols (list(sm.Symbol)): AKA inputs.values_recursive()
-        output_exprs (list(sm.Expr)): AKA outputs.values_recursive()
-        substitute_inputs (bool): If True, replace all input symbols with a uniform array.
+        input_symbols: AKA inputs.values_recursive()
+        output_exprs: AKA outputs.values_recursive()
+        substitute_inputs: If True, replace all input symbols with a uniform array.
 
     Returns:
-        list((Symbol, Expr)): Temporary variables and their expressions
-        list(Expr): Output expressions based on temporaries
+        T.Sequence[T.Tuple[T.Scalar, T.Scalar]]: Temporary variables and their expressions
+        T.Sequence[T.Scalar]: Output expressions based on temporaries
     """
     # Perform CSE
     temps, simplified_outputs = sm.cse(output_exprs)
 
     def subs(value, *args, **kwargs):
+        # type: (T.Scalar, T.Any, T.Any) -> T.Scalar
         """ Substitute function that ignores types with no subs (like literals) """
         try:
-            return value.subs(*args, **kwargs)
+            return value.subs(*args, **kwargs)  # type: ignore
         except AttributeError:
             return value
 
@@ -65,14 +74,9 @@ def perform_cse(input_symbols, output_exprs, substitute_inputs=True):
 
 
 def get_code_printer(mode):
+    # type: (CodegenMode) -> sm.CodePrinter
     """
     Pick a code printer for the given mode.
-
-    Args:
-        mode (CodegenMode):
-
-    Returns:
-        (sympy.CodePrinter):
     """
     # TODO(hayk): Consider symengine printer if this becomes slow.
 
@@ -105,20 +109,27 @@ def get_code_printer(mode):
     return printer
 
 
-def print_code(input_symbols, output_exprs, mode, cse=True, substitute_inputs=True):
+def print_code(
+    input_symbols,  # type: T.Sequence[T.Scalar]
+    output_exprs,  # type: T.Sequence[T.Scalar]
+    mode,  # type: CodegenMode
+    cse=True,  # type: bool
+    substitute_inputs=True,  # type: bool
+):
+    # type: (...) -> T.Tuple[T.Sequence[T.Tuple[str, str]], T.Sequence[str]]
     """
     Return executable code lines from the given input/output values.
 
     Args:
-        input_symbols (list(sm.Symbol)): AKA inputs.values_recursive()
-        output_exprs (list(sm.Expr)): AKA outputs.values_recursive()
-        mode (CodegenMode):
-        cse (bool): Perform common sub-expression elimination
-        substitute_inputs (bool): If True, replace all input symbols with a uniform array.
+        input_symbols: AKA inputs.values_recursive()
+        output_exprs: AKA outputs.values_recursive()
+        mode:
+        cse: Perform common sub-expression elimination
+        substitute_inputs: If True, replace all input symbols with a uniform array.
 
     Returns:
-        list(str): Line of code per temporary variable
-        list(str): Line of code per output variable
+        T.Sequence[T.Tuple[str, str]]: Line of code per temporary variable
+        T.Sequence[str]: Line of code per output variable
     """
     # CSE If needed
     if cse:
@@ -135,21 +146,20 @@ def print_code(input_symbols, output_exprs, mode, cse=True, substitute_inputs=Tr
     printer = get_code_printer(mode)
 
     # Print code
-    temps_code = [(var, printer.doprint(t)) for var, t in temps]
+    temps_code = [(str(var), printer.doprint(t)) for var, t in temps]
     outputs_code = [printer.doprint(t) for t in simplified_outputs]
 
     return temps_code, outputs_code
 
 
 def load_generated_package(package_dir):
+    # type: (str) -> T.Any
     """
     Dynamically load generated package (or module).
-
-    Args:
-        package_dir (str):
-
-    Returns:
-        module:
     """
     find_data = imp.find_module(os.path.basename(package_dir), [os.path.dirname(package_dir)])
-    return imp.load_module(os.path.basename(package_dir), *find_data)
+
+    if find_data is None:
+        raise ImportError("Failed to find module: {}".format(package_dir))
+
+    return imp.load_module(os.path.basename(package_dir), *find_data)  # type: ignore
