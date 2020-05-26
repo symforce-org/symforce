@@ -1,4 +1,4 @@
-Jinja2==2.10.3
-mypy==0.770
-numpy==1.8.0rc1
-sympy==1.5
+Jinja2
+mypy
+numpy
+sympy

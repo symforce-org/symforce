@@ -1,0 +1,6 @@
+matplotlib
+nbsphinx
+nbstripout
+Sphinx
+sphinx-autodoc-typehints
+sphinx-rtd-theme

@@ -44,8 +44,8 @@ def execute_subprocess(
     logger.info("Subprocess: {}".format(cmd_str))
 
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, *args, **kwargs)  # type: ignore
-    (stdout, other) = proc.communicate()
-    logger.info(stdout)
+    (stdout, _) = proc.communicate()
+    logger.info(stdout.decode("utf-8"))
 
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(proc.returncode, cmd, stdout)

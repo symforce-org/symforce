@@ -3,6 +3,7 @@
 BUILD_DIR=build
 
 PYTHON=***REMOVED***/bin/***REMOVED***
+PYTHON2=***REMOVED***/bin/mc_python
 
 BLACK_EXCLUDE='symforce/codegen/python/templates|/gen/|test_data/'
 
@@ -18,7 +19,7 @@ all_reqs: reqs test_reqs docs_reqs
 
 # Install python requirements for core library
 reqs:
-	sudo pip install -r requirements.txt
+	${PYTHON} -m pip install -r requirements.txt
 
 # Format using black
 format:
@@ -50,10 +51,10 @@ TEST_ENV=SYMFORCE_LOGLEVEL=WARNING
 TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
 
 test_reqs:
-	sudo pip install -r test/requirements.txt
+	${PYTHON} -m pip install -r test/requirements.txt
 
 test:
-	$(TEST_ENV) python $(TEST_CMD)
+	$(TEST_ENV) $(PYTHON) $(TEST_CMD)
 
 .PHONY: test_reqs test
 
@@ -66,10 +67,10 @@ coverage_clean:
 	rm -rf $(COVERAGE_DIR)
 
 coverage_run:
-	$(TEST_ENV) coverage run --source=symforce --omit=symforce/codegen/python/templates/* $(TEST_CMD)
+	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce --omit=symforce/codegen/python/templates/* $(TEST_CMD)
 
 coverage_html:
-	coverage html -d $(COVERAGE_DIR)
+	$(PYTHON) -m coverage html -d $(COVERAGE_DIR) && echo "Coverage report at $(COVERAGE_DIR)/index.html"
 
 coverage: coverage_clean coverage_run coverage_html
 
@@ -84,7 +85,7 @@ coverage_open: coverage
 DOCS_DIR=$(BUILD_DIR)/docs
 
 docs_reqs:
-	sudo pip install -r test/requirements.txt
+	${PYTHON} -m pip install -r test/requirements.txt
 
 docs_clean:
 	rm -rf $(DOCS_DIR); rm -rf docs/api
@@ -93,7 +94,7 @@ docs_apidoc:
 	sphinx-apidoc --separate --module-first -o docs/api ./symforce
 
 docs_html:
-	SYMFORCE_LOGLEVEL=WARNING sphinx-build -b html docs $(DOCS_DIR) -j4
+	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j4
 
 docs: docs_clean docs_apidoc docs_html
 
@@ -107,4 +108,7 @@ docs_open: docs
 # -----------------------------------------------------------------------------
 
 notebook:
-	PYTHONPATH=..:../.. jupyter notebook --notebook-dir=docs/notebooks --ip=localhost --port=8777
+	PYTHONPATH=..:../.. $(PYTHON2) -m jupyter notebook --notebook-dir=notebooks --ip=0.0.0.0 --port=8777 --no-browser
+
+notebook_open:
+	PYTHONPATH=..:../.. $(PYTHON) -m jupyter notebook --notebook-dir=notebooks --ip=localhost --port=8777

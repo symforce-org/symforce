@@ -159,7 +159,13 @@ class Values(object):
             Values: Innermost sub-values containing key
             str: Key name within the values
         """
-        full_key = ".".join(self.__scopes__ + [key])
+        # Prepend the key scopes if not the latest symbol scopes already
+        key_scope_is_subset = sm.__scopes__[-len(self.__scopes__) :] == self.__scopes__
+        if len(sm.__scopes__) > len(self.__scopes__) and key_scope_is_subset:
+            full_key = key
+        else:
+            full_key = ".".join(self.__scopes__ + [key])
+
         split_key = full_key.split(".")
         key_path, key_name = split_key[:-1], split_key[-1]
 

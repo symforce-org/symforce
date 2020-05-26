@@ -25,7 +25,7 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         """
         element = self.element()
         dim = LieGroupOps.tangent_dim(element)
-        pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
+        pertubation = list(float(f) for f in np.random.normal(scale=0.1, size=(dim,)))
 
         # Compute the hat matrix
         hat = geo.M(element.hat(pertubation))

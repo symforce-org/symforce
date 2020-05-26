@@ -17,15 +17,15 @@ class SymforceValuesTest(TestCase):
         self.assertEqual(v["z"], 5)
         self.assertEqual(v["bar"], "foo")
 
-        keys = v.keys()
+        keys = list(v.keys())
         self.assertEqual(len(keys), 2)
         self.assertEqual(keys[0], "z")
 
-        values = v.values()
+        values = list(v.values())
         self.assertEqual(len(values), 2)
         self.assertEqual(values[0], 5)
 
-        items = v.items()
+        items = list(v.items())
         self.assertEqual(len(items), 2)
         self.assertEqual(items[0], ("z", 5))
 
@@ -106,7 +106,7 @@ class SymforceValuesTest(TestCase):
         self.assertEqual(v, v2)
 
         # Test flattened list of items equal
-        self.assertEqual(v.items_recursive(), v2.items_recursive())
+        self.assertEqual(list(v.items_recursive()), list(v2.items_recursive()))
 
         # Test attribute access
         x0 = v["states.x0"]
@@ -141,7 +141,30 @@ class SymforceValuesTest(TestCase):
         logger.debug(v_evalf)
 
         self.assertEqual(v["a"].evalf(), v_evalf["a"])
-        self.assertAlmostEqual(v_evalf["a"], 0.3333333, places=6)
+        self.assertNear(v_evalf["a"], 0.3333333, places=6)
+
+    def test_mixing_scopes(self):
+        v1 = Values()
+        v1.add("x")
+        with sm.scope("foo"):
+            v1.add("x")
+        self.assertEqual(v1["foo.x"], sm.Symbol("foo.x"))
+
+        v2 = Values()
+
+        v2.add(sm.Symbol("x"))
+
+        with sm.scope("foo"):
+            v2.add("x")
+            with v2.scope("bar"):
+                v2.add("x")
+
+        v2_expected = Values(
+            x=sm.Symbol("x"),
+            foo=Values(x=sm.Symbol("foo.x"), bar=Values(x=sm.Symbol("foo.bar.x"))),
+        )
+
+        self.assertEqual(v2, v2_expected)
 
 
 if __name__ == "__main__":

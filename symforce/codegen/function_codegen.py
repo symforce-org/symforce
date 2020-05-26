@@ -48,7 +48,12 @@ class FunctionCodegen(object):
         self.return_type = return_type
 
         # Match function arguments and names with provided types
-        self.arg_spec = inspect.getargspec(func)
+        # NOTE(hayk): This switch is for python 3 compatibility.
+        try:
+            self.arg_spec = inspect.getfullargspec(func)
+        except AttributeError:
+            self.arg_spec = inspect.getargspec(func)
+
         assert len(self.arg_spec.args) == len(self.arg_types)
         self.args = list(zip(self.arg_spec.args, arg_types))
 

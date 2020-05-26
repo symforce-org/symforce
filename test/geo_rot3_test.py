@@ -35,7 +35,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         rot1 = geo.Rot3.from_axis_angle(x_axis, 0.3)
         rot2 = geo.Rot3.from_axis_angle(x_axis, -1.1)
         angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
-        self.assertAlmostEqual(angle, 1.4, places=7)
+        self.assertNear(angle, 1.4, places=7)
 
     def test_from_two_unit_vectors(self):
         """
@@ -62,7 +62,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             elements.append(element)
 
             # Check unit norm
-            self.assertAlmostEqual(element.q.squared_norm(), 1.0, places=7)
+            self.assertNear(element.q.squared_norm(), 1.0, places=7)
 
             # Check positive w (to go on one side of double cover)
             self.assertGreaterEqual(element.q.w, 0.0)
@@ -75,7 +75,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
         self.assertLess(np.min(angles), 0.3)
         self.assertGreater(np.max(angles), np.pi - 0.3)
-        self.assertAlmostEqual(np.mean(angles), np.pi / 2, places=1)
+        self.assertNear(np.mean(angles), np.pi / 2, places=1)
 
         # Plot the sphere to show uniform distribution
         if logger.level == logging.DEBUG and self.verbose:
