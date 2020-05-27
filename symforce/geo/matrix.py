@@ -79,15 +79,6 @@ class Matrix(sm.Matrix, LieGroup):
     # Helper methods
     # -------------------------------------------------------------------------
 
-    def to_matrix(self):
-        """
-        A matrix representation of this element in the Euclidean space that contains it.
-
-        Returns:
-            (Matrix) Matrix of shape given by self.MATRIX_DIMS
-        """
-        return self
-
     def zero(self):
         """
         Matrix of zeros.
@@ -296,7 +287,9 @@ class Matrix(sm.Matrix, LieGroup):
         if StorageOps.scalar_like(right):
             return self.applyfunc(lambda x: x / right)
 
-        return sm.Matrix.__div__(self, right)
+        return sm.Matrix.__truediv__(self, right)
+
+    __truediv__ = __div__
 
     @staticmethod
     def are_parallel(a, b, epsilon):
@@ -376,17 +369,19 @@ def vector_constructor(dim, args):
     """
     if len(args) == 0:
         return Matrix.zeros(rows=dim, cols=1)
-    elif len(args) == dim:
-        return Matrix(args)
-    elif len(args) == 1 and isinstance(args[0], (list, tuple)) and len(args[0]) == dim:
-        return Matrix(args[0])
+    elif isinstance(args[0], (list, tuple, np.ndarray)):
+        # args contains an iterable object
+        if len(args[0]) == dim:
+            return Matrix(args[0])
     else:
-        raise ArithmeticError(
-            'Trying to construct vector of length {} with "{}".'.format(dim, args)
-        )
+        # args contains scalar-like objects
+        if len(args) == dim:
+            return Matrix(args)
+
+    raise ArithmeticError('Trying to construct vector of length {} with "{}".'.format(dim, args))
 
 
-# Vector constructor helper
+# Vector constructor helpers
 Vector1 = V1 = lambda *args: vector_constructor(dim=1, args=args)
 Vector2 = V2 = lambda *args: vector_constructor(dim=2, args=args)
 Vector3 = V3 = lambda *args: vector_constructor(dim=3, args=args)
@@ -397,18 +392,28 @@ Vector7 = V7 = lambda *args: vector_constructor(dim=7, args=args)
 Vector8 = V8 = lambda *args: vector_constructor(dim=8, args=args)
 Vector9 = V9 = lambda *args: vector_constructor(dim=9, args=args)
 
-# Zero vector constructors
-Z1 = Z11 = lambda: Matrix.zeros(rows=1, cols=1)
-Z2 = Z22 = lambda: Matrix.zeros(rows=2, cols=1)
-Z3 = Z33 = lambda: Matrix.zeros(rows=3, cols=1)
-Z4 = Z44 = lambda: Matrix.zeros(rows=4, cols=1)
-Z5 = Z55 = lambda: Matrix.zeros(rows=5, cols=1)
-Z6 = Z66 = lambda: Matrix.zeros(rows=6, cols=1)
-Z7 = Z77 = lambda: Matrix.zeros(rows=7, cols=1)
-Z8 = Z88 = lambda: Matrix.zeros(rows=8, cols=1)
-Z9 = Z99 = lambda: Matrix.zeros(rows=9, cols=1)
+# Zero matrix constructor helpers
+Z1 = lambda: Matrix.zeros(rows=1, cols=1)
+Z2 = lambda: Matrix.zeros(rows=2, cols=1)
+Z3 = lambda: Matrix.zeros(rows=3, cols=1)
+Z4 = lambda: Matrix.zeros(rows=4, cols=1)
+Z5 = lambda: Matrix.zeros(rows=5, cols=1)
+Z6 = lambda: Matrix.zeros(rows=6, cols=1)
+Z7 = lambda: Matrix.zeros(rows=7, cols=1)
+Z8 = lambda: Matrix.zeros(rows=8, cols=1)
+Z9 = lambda: Matrix.zeros(rows=9, cols=1)
 
-# Identity matrix short names
+Z11 = lambda: Matrix.zeros(rows=1, cols=1)
+Z22 = lambda: Matrix.zeros(rows=2, cols=2)
+Z33 = lambda: Matrix.zeros(rows=3, cols=3)
+Z44 = lambda: Matrix.zeros(rows=4, cols=4)
+Z55 = lambda: Matrix.zeros(rows=5, cols=5)
+Z66 = lambda: Matrix.zeros(rows=6, cols=6)
+Z77 = lambda: Matrix.zeros(rows=7, cols=7)
+Z88 = lambda: Matrix.zeros(rows=8, cols=8)
+Z99 = lambda: Matrix.zeros(rows=9, cols=9)
+
+# Identity matrix constructor helpers
 I1 = I11 = lambda: Matrix.eye(rows=1)
 I2 = I22 = lambda: Matrix.eye(rows=2)
 I3 = I33 = lambda: Matrix.eye(rows=3)

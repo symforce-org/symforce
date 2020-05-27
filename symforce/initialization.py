@@ -4,6 +4,8 @@ Internal initialization code. Should not be called by users.
 
 import contextlib
 
+from symforce import logger
+
 
 def modify_symbolic_api(sympy_module):
     """
@@ -13,6 +15,7 @@ def modify_symbolic_api(sympy_module):
         sympy_module (module):
     """
     override_symbol_new(sympy_module)
+    override_simplify(sympy_module)
     add_scoping(sympy_module)
     add_safe_methods(sympy_module)
 
@@ -54,6 +57,25 @@ def override_symbol_new(sympy_module):
             return obj
 
         sympy_module.Symbol.__new__ = new_symbol
+
+
+def override_simplify(sympy_module):
+    """
+    Override simplify so that we can use it with the symengine backend
+
+    Args:
+        sympy_module (module):
+    """
+    if hasattr(sympy_module, "simplify"):
+        return
+
+    import sympy
+
+    def simplify(*args, **kwargs):
+        logger.warning("Converting to sympy to use .simplify")
+        return sympy.S(sympy.simplify(sympy.S(*args), **kwargs))
+
+    sympy_module.simplify = simplify
 
 
 def create_named_scope(scopes_list):
