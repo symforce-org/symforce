@@ -1,6 +1,9 @@
+# mypy: disallow-untyped-defs
+
 import numpy as np
 
 from symforce import geo
+from symforce import sympy as sm
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -14,9 +17,11 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls):
+        # type: () -> geo.Pose2
         return geo.Pose2.from_tangent([-0.2, 5.3, 1.2])
 
     def test_lie_exponential(self):
+        # type: () -> None
         """
         Tests:
             Pose2.hat
@@ -41,6 +46,40 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
 
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
+
+    def pose2_operations(self, a, b):
+        # type: (geo.Pose2, geo.Pose2) -> None
+        """
+        Tests Pose2 operations
+        """
+        self.assertEqual(a * b, a.compose(b))
+        self.assertEqual(a * b.t, a.R * b.t + a.t)
+
+    def test_pose2_operations_numeric(self):
+        # type: () -> None
+        """
+        Tests:
+            Pose2.__mul__
+        """
+        R_a = geo.Rot2.random()
+        t_a = geo.V2(np.random.rand(2))
+        a = geo.Pose2(R_a, t_a)
+
+        R_b = geo.Rot2.random()
+        t_b = geo.V2(np.random.rand(2))
+        b = geo.Pose2(R_b, t_b)
+
+        self.pose2_operations(a, b)
+
+    def test_pose2_operations_symbolic(self):
+        # type: () -> None
+        """
+        Tests:
+            Pose2.__mul__
+        """
+        a = geo.Pose2.symbolic("a")
+        b = geo.Pose2.symbolic("b")
+        self.pose2_operations(a, b)
 
 
 if __name__ == "__main__":

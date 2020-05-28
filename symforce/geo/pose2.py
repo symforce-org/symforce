@@ -1,5 +1,7 @@
-import functools
+# mypy: disallow-untyped-defs
+
 from symforce import sympy as sm
+from symforce import types as T
 
 from .base import LieGroup
 from .matrix import Matrix
@@ -26,6 +28,7 @@ class Pose2(LieGroup):
     STORAGE_DIM = 4
 
     def __init__(self, R=None, t=None):
+        # type: (Rot2, Matrix) -> None
         """
         Construct from elements in SO2 and R2.
 
@@ -45,13 +48,16 @@ class Pose2(LieGroup):
     # -------------------------------------------------------------------------
 
     def __repr__(self):
+        # type: () -> str
         return "<Pose2 R={}, t=({}, {})>".format(repr(self.R), repr(self.t[0]), repr(self.t[1]))
 
     def to_storage(self):
+        # type: () -> T.List[T.Scalar]
         return self.R.to_storage() + self.t.to_storage()
 
     @classmethod
     def from_storage(cls, vec):
+        # type: (T.List[T.Scalar]) -> Pose2
         assert len(vec) == cls.STORAGE_DIM
         return cls(
             R=Rot2.from_storage(vec[0 : Rot2.STORAGE_DIM]),
@@ -64,13 +70,16 @@ class Pose2(LieGroup):
 
     @classmethod
     def identity(cls):
+        # type: () -> Pose2
         return cls(R=Rot2.identity(), t=Z2())
 
     def compose(self, other):
+        # type: (Pose2) -> Pose2
         assert isinstance(other, self.__class__)
         return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
 
     def inverse(self):
+        # type: () -> Pose2
         R_inv = self.R.inverse()
         return self.__class__(R=R_inv, t=-(R_inv * self.t))
 
@@ -80,6 +89,7 @@ class Pose2(LieGroup):
 
     @classmethod
     def expmap(cls, v, epsilon=0):
+        # type: (T.List[T.Scalar], T.Scalar) -> Pose2
         theta = v[2]
         R = Rot2.expmap([theta], epsilon=epsilon)
 
@@ -90,6 +100,7 @@ class Pose2(LieGroup):
         return Pose2(R, t)
 
     def logmap(self, epsilon=0):
+        # type: (T.Scalar) -> T.List[T.Scalar]
         theta = self.R.logmap(epsilon=epsilon)[0]
         halftheta = 0.5 * theta
         a = (halftheta * self.R.z.imag) / sm.Max(epsilon, 1 - self.R.z.real)
@@ -100,6 +111,7 @@ class Pose2(LieGroup):
 
     @classmethod
     def hat(cls, vec):
+        # type: (T.List[T.Scalar]) -> T.List[T.Scalar]
         t_tangent = Vector2(vec[0], vec[1])
         R_tangent = Vector1(vec[2])
         return Matrix(Rot2.hat(R_tangent)).row_join(t_tangent).col_join(Matrix.zeros(1, 3)).tolist()
@@ -109,6 +121,7 @@ class Pose2(LieGroup):
     # -------------------------------------------------------------------------
 
     def __mul__(self, right):
+        # type: (T.Union[Pose2, Matrix]) -> T.Union[Pose2, Matrix]
         """
         Left-multiply with a compatible quantity.
 
@@ -127,6 +140,7 @@ class Pose2(LieGroup):
             raise NotImplementedError('Unsupported type: "{}"'.format(right))
 
     def to_homogenous_matrix(self):
+        # type: () -> Matrix
         """
         A matrix representation of this element in the Euclidean space that contains it.
 

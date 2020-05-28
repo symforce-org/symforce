@@ -114,8 +114,18 @@ class Rot3(LieGroup):
     # Helper methods
     # -------------------------------------------------------------------------
 
+    @T.overload
+    def __mul__(self, right):  # pragma: no cover
+        # type: (Matrix) -> Matrix
+        pass
+
+    @T.overload
+    def __mul__(self, right):  # pragma: no cover
+        # type: (Rot3) -> Rot3
+        pass
+
     def __mul__(self, right):
-        # type: (T.Union[Matrix, Rot3]) -> T.Any
+        # type: (T.Union[Matrix, Rot3]) -> T.Union[Matrix, Rot3]
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -181,28 +191,12 @@ class Rot3(LieGroup):
         """
         Generate a random element of SO3.
         """
-        u1, u2, u3 = np.random.uniform(low=0.0, high=1.0, size=(3,))
-        return cls.random_from_uniform_samples(u1, u2, u3, pi=np.pi)
+        return cls(Quaternion.unit_random())
 
     @classmethod
     def random_from_uniform_samples(cls, u1, u2, u3, pi=sm.pi):
         # type: (T.Scalar, T.Scalar, T.Scalar, T.Scalar) -> Rot3
         """
         Generate a random element of SO3 from three variables uniformly sampled in [0, 1].
-
-        Reference:
-            http://planning.cs.uiuc.edu/node198.html
         """
-        w = sm.sqrt(u1) * sm.cos(2 * pi * u3)
-        # Multiply to keep w positive to only stay on one side of double-cover
-        w_sign = sm.sign(w)
-        return cls(
-            q=Quaternion(
-                xyz=V3(
-                    sm.sqrt(1 - u1) * sm.sin(2 * pi * u2) * w_sign,
-                    sm.sqrt(1 - u1) * sm.cos(2 * pi * u2) * w_sign,
-                    sm.sqrt(u1) * sm.sin(2 * pi * u3) * w_sign,
-                ),
-                w=w * w_sign,
-            )
-        )
+        return cls(Quaternion.unit_random_from_uniform_samples(u1, u2, u3, pi))

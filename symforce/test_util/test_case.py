@@ -33,12 +33,12 @@ class TestCase(unittest.TestCase):
             TestCase.UPDATE = True
             sys.argv.remove("--update")
 
-        np.random.seed(42)
-        random.seed(42)
         unittest.main()
 
     def setUp(self):
         # type: () -> None
+        np.random.seed(42)
+        random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 

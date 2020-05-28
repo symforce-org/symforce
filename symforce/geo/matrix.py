@@ -1,9 +1,12 @@
+# mypy: disallow-untyped-defs
+
+import numpy as np
+
 from symforce import sympy as sm
+from symforce import types as T
 from symforce.ops import StorageOps
 
 from .base import LieGroup
-
-import numpy as np
 
 
 class Matrix(sm.Matrix, LieGroup):
@@ -30,49 +33,54 @@ class Matrix(sm.Matrix, LieGroup):
 
     @property
     def MATRIX_DIMS(self):
+        # type: () -> T.Tuple[int, int]
         return self.shape
 
     @property
-    def TANGENT_DIM(self):
+    def TANGENT_DIM(self):  # type: ignore
         return self.MATRIX_DIMS[0] * self.MATRIX_DIMS[1]
 
     @property
-    def STORAGE_DIM(self):
+    def STORAGE_DIM(self):  # type: ignore
         return self.TANGENT_DIM
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def from_storage(self, vec):
+    def from_storage(self, vec):  # type: ignore
         return self.__class__(vec)
 
     def to_storage(self):
+        # type: () -> T.List[T.Scalar]
         return self.to_tangent()
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
     # -------------------------------------------------------------------------
 
-    def identity(self):
+    def identity(self):  # type: ignore
         return self.__class__.zeros(*self.MATRIX_DIMS)
 
     def compose(self, other):
+        # type: (Matrix) -> Matrix
         return self + other
 
     def inverse(self):
+        # type: () -> Matrix
         return -self
 
     # -------------------------------------------------------------------------
     # Lie group concept - see symforce.ops.lie_group_ops
     # -------------------------------------------------------------------------
 
-    def from_tangent(self, vec, epsilon=0):
+    def from_tangent(self, vec, epsilon=0):  # type: ignore
         if isinstance(vec, (list, tuple)):
             vec = self.__class__(vec)
         return self.__class__(vec.reshape(*self.MATRIX_DIMS).tolist())
 
     def to_tangent(self, epsilon=0):
+        # type: (T.Scalar) -> T.List[T.Scalar]
         return list(self.reshape(self.TANGENT_DIM, 1))
 
     # -------------------------------------------------------------------------
@@ -80,6 +88,7 @@ class Matrix(sm.Matrix, LieGroup):
     # -------------------------------------------------------------------------
 
     def zero(self):
+        # type: () -> Matrix
         """
         Matrix of zeros.
 
@@ -90,6 +99,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def zeros(cls, rows, cols):  # pylint: disable=signature-differs
+        # type: (int, int) -> Matrix
         """
         Matrix of zeros.
 
@@ -103,6 +113,7 @@ class Matrix(sm.Matrix, LieGroup):
         return cls([[sm.S.Zero] * cols for _ in range(rows)])
 
     def one(self):
+        # type: () -> Matrix
         """
         Matrix of ones.
 
@@ -113,6 +124,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def ones(cls, rows, cols):  # pylint: disable=signature-differs
+        # type: (int, int) -> Matrix
         """
         Matrix of ones.
 
@@ -127,6 +139,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def diag(cls, diagonal):  # pylint: disable=arguments-differ
+        # type: (T.List[T.Scalar]) -> Matrix
         """
         Construct a square matrix from the diagonal.
 
@@ -143,6 +156,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def eye(cls, rows, cols=None):  # pylint: disable=arguments-differ
+        # type: (int, int) -> Matrix
         """
         Construct an identity matrix of the given dimensions
 
@@ -161,6 +175,7 @@ class Matrix(sm.Matrix, LieGroup):
         return mat
 
     def matrix_identity(self):
+        # type: () -> Matrix
         """
         Identity matrix - ones on the diagonal, rest zeros.
 
@@ -170,6 +185,7 @@ class Matrix(sm.Matrix, LieGroup):
         return self.eye(*self.MATRIX_DIMS)
 
     def matrix_inverse(self):
+        # type: () -> Matrix
         """
         Inverse of the matrix.
 
@@ -179,7 +195,7 @@ class Matrix(sm.Matrix, LieGroup):
         return self.inv()
 
     # pylint: disable=no-member
-    def symbolic(self, name, **kwargs):
+    def symbolic(self, name, **kwargs):  # type: ignore
         """
         Create with symbols.
 
@@ -215,6 +231,7 @@ class Matrix(sm.Matrix, LieGroup):
         return self.__class__(sm.Matrix(symbols))
 
     def simplify(self, *args, **kwargs):
+        # type: (T.Any, T.Any) -> Matrix
         """
         Simplify this expression.
 
@@ -226,6 +243,7 @@ class Matrix(sm.Matrix, LieGroup):
         return self.__class__(sm.simplify(self, *args, **kwargs))
 
     def squared_norm(self):
+        # type: () -> T.Scalar
         """
         Squared norm of a vector, equivalent to the dot product with itself.
 
@@ -236,6 +254,7 @@ class Matrix(sm.Matrix, LieGroup):
         return self.dot(self)
 
     def norm(self, epsilon=0):
+        # type: (T.Scalar) -> T.Scalar
         """
         Norm of a vector (square root of magnitude).
 
@@ -248,6 +267,7 @@ class Matrix(sm.Matrix, LieGroup):
         return sm.sqrt(self.squared_norm() + epsilon)
 
     def normalized(self, epsilon=0):  # pylint: disable=arguments-differ
+        # type: (T.Scalar) -> Matrix
         """
         Returns a unit vector in this direction (divide by norm).
 
@@ -260,6 +280,7 @@ class Matrix(sm.Matrix, LieGroup):
         return self / self.norm(epsilon=epsilon)
 
     def __add__(self, right):
+        # type: (T.Scalar) -> Matrix
         """
         Add a scalar to a matrix.
 
@@ -275,6 +296,7 @@ class Matrix(sm.Matrix, LieGroup):
         return sm.Matrix.__add__(self, right)
 
     def __div__(self, right):
+        # type: (T.Scalar) -> Matrix
         """
         Divide a matrix by a scalar.
 
@@ -293,12 +315,13 @@ class Matrix(sm.Matrix, LieGroup):
 
     @staticmethod
     def are_parallel(a, b, epsilon):
+        # type: (Matrix, Matrix, T.Scalar) -> T.Scalar
         """
         Returns 1 if a and b are parallel within epsilon, and 0 otherwise.
 
         Args:
-            a (Vector):
-            b (Vector):
+            a (Matrix):
+            b (Matrix):
             epsilon (Scalar):
 
         Returns:
@@ -307,6 +330,7 @@ class Matrix(sm.Matrix, LieGroup):
         return (1 - sm.sign(a.cross(b).norm() - epsilon)) / 2
 
     def evalf(self, real=True):
+        # type: (bool) -> Matrix
         """
         Perform numerical evaluation of each element in the matrix.
 
@@ -321,6 +345,7 @@ class Matrix(sm.Matrix, LieGroup):
         )
 
     def to_numpy(self, scalar_type=np.float64):
+        # type: (type) -> np.ndarray
         """
         Returns:
             np.ndarray:
@@ -329,6 +354,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def column_stack(cls, *columns):
+        # type: (Matrix) -> Matrix
         """Take a sequence of 1-D vectors and stack them as columns to make a single 2-D Matrix.
 
         Args:
@@ -348,6 +374,7 @@ class Matrix(sm.Matrix, LieGroup):
         return cls([row for row in cols_as_rows]).T
 
     def _assert_is_vector(self):
+        # type: () -> None
         assert (self.shape[0] == 1) or (self.shape[1] == 1), "squared_norm() is only for vectors."
 
 
@@ -357,6 +384,7 @@ class Matrix(sm.Matrix, LieGroup):
 
 
 def vector_constructor(dim, args):
+    # type: (int, T.Sequence) -> Matrix
     """
     Construction helper for a vector with the given expected dimension.
 

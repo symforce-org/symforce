@@ -1,3 +1,5 @@
+# mypy: disallow-untyped-defs
+
 import numpy as np
 
 import symforce
@@ -15,6 +17,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls):
+        # type: () -> geo.Matrix
         return geo.Matrix([-0.2, 5.3, 1.2])
 
     # TODO(hayk): Test from_storage for matrices - how should shape be preserved?
@@ -54,6 +57,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.Matrix(), geo.Matrix.column_stack())
 
     def test_matrix_operations(self):
+        # type: () -> None
         """
         Tests:
             Matrix.Matrix_inverse
@@ -73,6 +77,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.Matrix.eye(2), test_matrix / test_matrix)
 
     def test_symbolic_operations(self):
+        # type: () -> None
         """
         Tests:
             Matrix.symbolic
@@ -100,6 +105,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertNear(numpy_mat, geo_mat.to_numpy())
 
     def test_constructor_helpers(self):
+        # type: () -> None
         """
         Tests:
             VectorX, ZX, IX constructor helpers
@@ -169,5 +175,4 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
 
 if __name__ == "__main__":
-    np.random.seed(42)
     TestCase.main()

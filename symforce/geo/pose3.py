@@ -150,7 +150,8 @@ class Pose3(LieGroup):
             return self.R * right + self.t
         elif isinstance(right, Pose3):
             return self.compose(right)
-        assert False, "unsupported type: {0}".format(type(right))
+        else:
+            raise NotImplementedError('Unsupported type: "{}"'.format(right))
 
     def to_homogenous_matrix(self):
         # type: () -> Matrix

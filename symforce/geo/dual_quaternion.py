@@ -1,3 +1,7 @@
+# mypy: disallow-untyped-defs
+
+from symforce import types as T
+
 from .base import Group
 from .quaternion import Quaternion
 
@@ -17,6 +21,7 @@ class DualQuaternion(Group):
     STORAGE_DIM = 2 * Quaternion.STORAGE_DIM
 
     def __init__(self, real_q, inf_q):
+        # type: (Quaternion, Quaternion) -> None
         """
         Construct from two quaternions - a real one and an infinitesimal one.
 
@@ -32,13 +37,16 @@ class DualQuaternion(Group):
     # -------------------------------------------------------------------------
 
     def __repr__(self):
+        # type: () -> str
         return "<DQ real={}, inf={}>".format(repr(self.real_q), repr(self.inf_q))
 
     def to_storage(self):
+        # type: () -> T.List[T.Scalar]
         return self.real_q.to_storage() + self.inf_q.to_storage()
 
     @classmethod
     def from_storage(cls, vec):
+        # type: (T.List) -> DualQuaternion
         assert len(vec) == cls.STORAGE_DIM
         return cls(
             real_q=Quaternion.from_storage(vec[0 : Quaternion.STORAGE_DIM]),
@@ -51,15 +59,18 @@ class DualQuaternion(Group):
 
     @classmethod
     def identity(cls):
+        # type: () -> DualQuaternion
         return cls(Quaternion.identity(), Quaternion.zero())
 
     def compose(self, other):
+        # type: (DualQuaternion) -> DualQuaternion
         return self.__class__(
             real_q=self.real_q * other.real_q,
             inf_q=self.real_q * other.inf_q + self.inf_q * other.real_q,
         )
 
     def inverse(self):
+        # type: () -> DualQuaternion
         return DualQuaternion(
             real_q=self.real_q.inverse(),
             inf_q=-self.real_q.inverse() * self.inf_q * self.real_q.inverse(),
@@ -70,6 +81,7 @@ class DualQuaternion(Group):
     # -------------------------------------------------------------------------
 
     def __mul__(self, right):
+        # type: (DualQuaternion) -> DualQuaternion
         """
         Left-multiply with another dual quaternion.
 
@@ -81,7 +93,8 @@ class DualQuaternion(Group):
         """
         return self.compose(right)
 
-    def __truediv__(self, scalar):
+    def __div__(self, scalar):
+        # type: (T.Scalar) -> DualQuaternion
         """
         Scalar division.
 
@@ -93,7 +106,10 @@ class DualQuaternion(Group):
         """
         return DualQuaternion(self.real_q / scalar, self.inf_q / scalar)
 
+    __truediv__ = __div__
+
     def squared_norm(self):
+        # type: () -> T.Scalar
         """
         Squared norm when considering the dual quaternion as 8-tuple.
 
@@ -103,6 +119,7 @@ class DualQuaternion(Group):
         return self.real_q.squared_norm() + self.inf_q.squared_norm()
 
     def conj(self):
+        # type: () -> DualQuaternion
         """
         Dual quaternion conjugate.
 

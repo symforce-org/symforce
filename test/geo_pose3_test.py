@@ -48,6 +48,40 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
 
+    def pose3_operations(self, a, b):
+        # type: (geo.Pose3, geo.Pose3) -> None
+        """
+        Tests Pose3 operations
+        """
+        self.assertEqual(a * b, a.compose(b))
+        self.assertEqual(a * b.t, a.R * b.t + a.t)
+
+    def test_pose3_operations_numeric(self):
+        # type: () -> None
+        """
+        Tests (numeric):
+            Pose3.__mul__
+        """
+        R_a = geo.Rot3.random()
+        t_a = geo.V3(np.random.rand(3))
+        a = geo.Pose3(R_a, t_a)
+
+        R_b = geo.Rot3.random()
+        t_b = geo.V3(np.random.rand(3))
+        b = geo.Pose3(R_b, t_b)
+
+        self.pose3_operations(a, b)
+
+    def test_pose3_operations_symbolic(self):
+        # type: () -> None
+        """
+        Tests (symbolic):
+            Pose3.__mul__
+        """
+        a = geo.Pose3.symbolic("a")
+        b = geo.Pose3.symbolic("b")
+        self.pose3_operations(a, b)
+
 
 if __name__ == "__main__":
     TestCase.main()

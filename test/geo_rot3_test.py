@@ -1,3 +1,5 @@
+# mypy: disallow-untyped-defs
+
 import logging
 import numpy as np
 
@@ -17,9 +19,11 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls):
+        # type: () -> geo.Rot3
         return geo.Rot3.from_axis_angle(geo.V3(1, 0, 0), 1.2)
 
     def test_default_construct(self):
+        # type: () -> None
         """
         Tests:
             Rot3.__init__
@@ -27,6 +31,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.Rot3(), geo.Rot3.identity())
 
     def test_angle_between(self):
+        # type: () -> None
         """
         Tests:
             Rot3.angle_between
@@ -38,6 +43,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         self.assertNear(angle, 1.4, places=7)
 
     def test_from_two_unit_vectors(self):
+        # type: () -> None
         """
         Tests:
             Rot3.from_two_unit_vectors
@@ -50,45 +56,54 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         self.assertNear(one_rotated, two)
 
     def test_random(self):
+        # type: () -> None
         """
         Tests:
             Rot3.random
+            Rot3.random_from_uniform_sample
         """
-        np.random.seed(0)
-
-        elements = []
+        random_elements = []
+        random_from_uniform_samples_elements = []
         for _ in range(100):
-            element = geo.Rot3.random()
-            elements.append(element)
+            random_element = geo.Rot3.random()
+            random_elements.append(random_element)
+
+            u1, u2, u3 = np.random.uniform(low=0.0, high=1.0, size=(3,))
+            rand_uniform_sample_element = geo.Rot3.random_from_uniform_samples(u1, u2, u3)
+            random_from_uniform_samples_elements.append(rand_uniform_sample_element)
 
             # Check unit norm
-            self.assertNear(element.q.squared_norm(), 1.0, places=7)
+            self.assertNear(random_element.q.squared_norm(), 1.0, places=7)
+            self.assertNear(rand_uniform_sample_element.q.squared_norm(), 1.0, places=7)
 
             # Check positive w (to go on one side of double cover)
-            self.assertGreaterEqual(element.q.w, 0.0)
+            self.assertGreaterEqual(random_element.q.w, 0.0)
+            self.assertGreaterEqual(rand_uniform_sample_element.q.w, 0.0)
 
-        # Rotate a point through
-        P = geo.V3(0, 0, 1)
-        Ps_rotated = [e * P for e in elements]
+        for elements in [random_elements, random_from_uniform_samples_elements]:
+            # Rotate a point through
+            P = geo.V3(0, 0, 1)
+            Ps_rotated = [e.evalf() * P for e in elements]
 
-        # Compute angles and check basic stats
-        angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
-        self.assertLess(np.min(angles), 0.3)
-        self.assertGreater(np.max(angles), np.pi - 0.3)
-        self.assertNear(np.mean(angles), np.pi / 2, places=1)
+            # Compute angles and check basic stats
+            angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+            self.assertLess(np.min(angles), 0.3)
+            self.assertGreater(np.max(angles), np.pi - 0.3)
+            self.assertNear(np.mean(angles), np.pi / 2, places=1)
 
-        # Plot the sphere to show uniform distribution
-        if logger.level == logging.DEBUG and self.verbose:
-            from mpl_toolkits.mplot3d import Axes3D
-            import matplotlib.pyplot as plt
+            # Plot the sphere to show uniform distribution
+            if logger.level == logging.DEBUG and self.verbose:
+                from mpl_toolkits.mplot3d import Axes3D
+                import matplotlib.pyplot as plt
 
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection="3d")
-            ax.set_aspect("equal")
-            ax.scatter(*zip(*Ps_rotated))
-            plt.show()
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection="3d")
+                ax.set_aspect("equal")
+                ax.scatter(*zip(*Ps_rotated))
+                plt.show()
 
     def test_lie_exponential(self):
+        # type: () -> None
         """
         Tests:
             Rot3.hat
@@ -113,6 +128,16 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
+
+    def test_logmap_signed_epsilon(self):
+        # type: () -> None
+        """
+        Tests:
+            Rot3.logmap_signed_epsilon
+        """
+        for _ in range(100):
+            rot = geo.Rot3.random()
+            self.assertNear(rot.logmap_signed_epsilon(), rot.logmap_signed_epsilon(), places=9)
 
 
 if __name__ == "__main__":
