@@ -6,6 +6,7 @@ import numpy as np
 from symforce import geo
 from symforce import logger
 from symforce import sympy as sm
+from symforce import types as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -41,6 +42,70 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         rot2 = geo.Rot3.from_axis_angle(x_axis, -1.1)
         angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
         self.assertNear(angle, 1.4, places=7)
+
+    def get_rotations_to_test(self):
+        # type: () -> T.List[geo.Rot3]
+        """
+        Returns a list of rotations to be used in rotation helper method tests.
+        """
+        rotations_to_test = []
+        # Test 90 degree rotations about each principal axis
+        for axis_index in range(3):
+            for angle in [0.0, np.pi / 2.0, np.pi, 3.0 * np.pi / 2.0, 2.0 * np.pi]:
+                axis = geo.Z3()
+                axis[axis_index] = 1.0
+                rotations_to_test.append(geo.Rot3.from_axis_angle(axis, angle))
+
+        # Test some random rotations
+        for _ in range(100):
+            rotations_to_test.append(geo.Rot3.random())
+
+        return rotations_to_test
+
+    def test_to_from_rotation_matrix(self):
+        # type: () -> None
+        """
+        Tests:
+            Rot3.from_rotation_matrix
+            Rot3.to_rotation_matrix
+        """
+
+        # Zero degree rotation
+        rot_0 = geo.I33()
+        R_0 = geo.Rot3.from_rotation_matrix(rot_0)
+        self.assertEqual(R_0, geo.Rot3.identity())
+        self.assertEqual(rot_0, R_0.to_rotation_matrix())
+
+        # 180 degree rotation
+        rot_180 = geo.Matrix([[1, 0, 0], [0, -1, 0], [0, 0, -1]])
+        R_180 = geo.Rot3.from_rotation_matrix(rot_180, epsilon=1e-10)
+        self.assertNear(rot_180, R_180.to_rotation_matrix())
+
+        # Check functions are inverses of each other
+        for rot in self.get_rotations_to_test():
+            rot_transformed = geo.Rot3.from_rotation_matrix(rot.to_rotation_matrix())
+            self.assertLieGroupNear(rot_transformed, rot)
+
+    def test_to_from_euler_ypr(self):
+        # type: () -> None
+        """
+        Tests:
+            Rot3.from_euler_ypr
+            Rot3.to_euler_ypr
+        """
+
+        # Rotations about principal axes
+        R_90_yaw = geo.Rot3.from_euler_ypr(np.pi / 2.0, 0, 0)
+        self.assertLieGroupNear(R_90_yaw, geo.Rot3.from_axis_angle(geo.V3(0, 0, 1), np.pi / 2.0))
+        R_90_pitch = geo.Rot3.from_euler_ypr(0, np.pi / 2.0, 0)
+        self.assertLieGroupNear(R_90_pitch, geo.Rot3.from_axis_angle(geo.V3(0, 1, 0), np.pi / 2.0))
+        R_90_roll = geo.Rot3.from_euler_ypr(0, 0, np.pi / 2.0)
+        self.assertLieGroupNear(R_90_roll, geo.Rot3.from_axis_angle(geo.V3(1, 0, 0), np.pi / 2.0))
+
+        # Check functions are inverses of each other
+        for rot in self.get_rotations_to_test():
+            rot_transformed = geo.Rot3.from_euler_ypr(*rot.to_euler_ypr(epsilon=1e-14))
+            self.assertLieGroupNear(rot_transformed, rot)
 
     def test_from_two_unit_vectors(self):
         # type: () -> None

@@ -140,9 +140,83 @@ class Rot3(LieGroup):
     def to_rotation_matrix(self):
         # type: () -> Matrix
         """
-        3x3 rotation matrix
+        Converts to a rotation matrix
+
+        Returns:
+            Matrix: 3x3 matrix representing this rotation
         """
-        return self.q.to_rotation_matrix()
+        return Matrix(
+            [
+                [
+                    1 - 2 * self.q.y ** 2 - 2 * self.q.z ** 2,
+                    2 * self.q.x * self.q.y - 2 * self.q.z * self.q.w,
+                    2 * self.q.x * self.q.z + 2 * self.q.y * self.q.w,
+                ],
+                [
+                    2 * self.q.x * self.q.y + 2 * self.q.z * self.q.w,
+                    1 - 2 * self.q.x ** 2 - 2 * self.q.z ** 2,
+                    2 * self.q.y * self.q.z - 2 * self.q.x * self.q.w,
+                ],
+                [
+                    2 * self.q.x * self.q.z - 2 * self.q.y * self.q.w,
+                    2 * self.q.y * self.q.z + 2 * self.q.x * self.q.w,
+                    1 - 2 * self.q.x ** 2 - 2 * self.q.y ** 2,
+                ],
+            ]
+        )
+
+    @classmethod
+    def from_rotation_matrix(cls, R, epsilon=0):
+        # type: (Matrix, T.Scalar) -> Rot3
+        """
+        Construct from a rotation matrix.
+
+        Source:
+            http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm
+        """
+        w = sm.sqrt(sm.Max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
+        x = sm.sqrt(sm.Max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
+        y = sm.sqrt(sm.Max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
+        z = sm.sqrt(sm.Max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
+        x = sm.copysign_no_zero(x, R[2, 1] - R[1, 2], epsilon=epsilon)
+        y = sm.copysign_no_zero(y, R[0, 2] - R[2, 0], epsilon=epsilon)
+        z = sm.copysign_no_zero(z, R[1, 0] - R[0, 1], epsilon=epsilon)
+        return cls(Quaternion(xyz=V3(x, y, z), w=w))
+
+    def to_euler_ypr(self, epsilon=0):
+        # type: (T.Scalar) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]
+        """
+        Compute the yaw, pitch, and roll Euler angles in radians of this rotation
+
+        Returns:
+            Scalar: Yaw angle [radians]
+            Scalar: Pitch angle [radians]
+            Scalar: Roll angle [radians]
+        """
+        y = sm.atan2_safe(
+            2 * self.q.x * self.q.y + 2 * self.q.w * self.q.z,
+            self.q.x * self.q.x + self.q.w * self.q.w - self.q.z * self.q.z - self.q.y * self.q.y,
+            epsilon,
+        )
+        p = -sm.asin_safe(2 * self.q.x * self.q.z - 2 * self.q.w * self.q.y, epsilon)
+        r = sm.atan2_safe(
+            2 * self.q.y * self.q.z + 2 * self.q.w * self.q.x,
+            self.q.z * self.q.z - self.q.y * self.q.y - self.q.x * self.q.x + self.q.w * self.q.w,
+            epsilon,
+        )
+        return y, p, r
+
+    @classmethod
+    def from_euler_ypr(cls, yaw, pitch, roll):
+        # type: (T.Scalar, T.Scalar, T.Scalar) -> Rot3
+        """
+        Construct from yaw, pitch, and roll Euler angles in radians
+        """
+        return (
+            Rot3.from_axis_angle(V3(0, 0, 1), yaw)
+            * Rot3.from_axis_angle(V3(0, 1, 0), pitch)
+            * Rot3.from_axis_angle(V3(1, 0, 0), roll)
+        )
 
     @classmethod
     def from_axis_angle(cls, axis, angle):
@@ -150,7 +224,7 @@ class Rot3(LieGroup):
         """
         Construct from a (normalized) axis as a 3-vector and an angle in radians.
         """
-        return cls(Quaternion.from_axis_angle(axis, angle))
+        return cls(Quaternion(xyz=axis * sm.sin(angle / 2), w=sm.cos(angle / 2)))
 
     @classmethod
     def from_two_unit_vectors(cls, a, b, epsilon=0):

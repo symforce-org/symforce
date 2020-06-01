@@ -6,11 +6,14 @@ import random
 import sys
 import unittest
 
+from symforce import geo
 from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.ops import StorageOps
+from symforce.ops import GroupOps
+from symforce.ops import LieGroupOps
 
 
 class TestCase(unittest.TestCase):
@@ -58,6 +61,31 @@ class TestCase(unittest.TestCase):
         return np.testing.assert_almost_equal(
             actual=StorageOps.evalf(StorageOps.to_storage(actual)),
             desired=StorageOps.evalf(StorageOps.to_storage(desired)),
+            decimal=places,
+            err_msg=msg,
+            verbose=verbose,
+        )
+
+    def assertLieGroupNear(
+        self,
+        actual,  # type: geo.base.LieGroup
+        desired,  # type: geo.base.LieGroup
+        places=7,  # type: int
+        msg="",  # type: str
+        verbose=True,  # type: bool
+    ):
+        # type: (...) -> None
+        """
+        Check that two LieGroup elements are close.
+        """
+        epsilon = 10 ** (-max(9, places + 1))
+        # Compute the tangent space pertubation around `actual` that produces `desired`
+        local_coordinates = LieGroupOps.local_coordinates(actual, desired, epsilon=epsilon)
+        # Compute the identity tangent space pertubation to compare against
+        identity = geo.Matrix.zeros(LieGroupOps.tangent_dim(actual), 1)
+        return np.testing.assert_almost_equal(
+            actual=StorageOps.evalf(local_coordinates),
+            desired=StorageOps.to_storage(identity),
             decimal=places,
             err_msg=msg,
             verbose=verbose,
