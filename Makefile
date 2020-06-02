@@ -67,7 +67,7 @@ coverage_clean:
 	rm -rf $(COVERAGE_DIR)
 
 coverage_run:
-	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce --omit=symforce/codegen/python/templates/* $(TEST_CMD)
+	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce,gen --omit=symforce/codegen/python/templates/* $(TEST_CMD)
 
 coverage_html:
 	$(PYTHON) -m coverage html -d $(COVERAGE_DIR) && echo "Coverage report at $(COVERAGE_DIR)/index.html"

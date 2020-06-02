@@ -37,10 +37,10 @@ class Evaluator {
     _Execute(input_array, output_array);
   }
 
+ private:
   // Underlying generated code, defined in the cc.
   static void _Execute(const {{ spec.scalar_type }} * inp, {{ spec.scalar_type }}* out);
 
- private:
   std::vector<{{ spec.scalar_type }}> input_array_;
   std::vector<{{ spec.scalar_type }}> output_array_;
 };

@@ -12,7 +12,7 @@ from .{{ subtype }} import {{ subtype }}
 {% endfor %}
 
 
-class {{ typename }}:
+class {{ typename }}(object):
     __slots__ = [
         {%+ for key in info['index'].keys() -%}
         '{{ key }}'{{ ',' if not loop.last }}
