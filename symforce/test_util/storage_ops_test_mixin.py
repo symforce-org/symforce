@@ -1,34 +1,38 @@
 import numpy as np
 
+from symforce import types as T
 from symforce.ops import StorageOps
+from symforce.test_util import TestCase
+
+if T.TYPE_CHECKING:
+    _Base = TestCase
+else:
+    _Base = object
 
 
-class StorageOpsTestMixin(object):
+class StorageOpsTestMixin(_Base):
     """
     Test helper for the StorageOps concept. Inherit a test case from this.
     """
 
     @classmethod
     def element(cls):
+        # type: () -> T.Any
         """
         Overriden by child to provide an example non-identity element.
-
-        Returns:
-            (instance):
         """
         raise NotImplementedError()
 
     @classmethod
     def element_type(cls):
+        # type: () -> T.Type
         """
         Returns the type of the StorageOps-compatible class being tested.
-
-        Returns:
-            (type):
         """
         return type(cls.element())
 
     def test_storage_ops(self):
+        # type: () -> None
         """
         Tests:
             storage_dim

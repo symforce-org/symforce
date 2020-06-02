@@ -1,5 +1,9 @@
 import numpy as np
 from symforce import sympy as sm
+from symforce import types as T
+
+Element = T.Any
+ElementOrType = T.Union[Element, T.Type]
 
 
 class StorageOps(object):
@@ -9,26 +13,22 @@ class StorageOps(object):
 
     @staticmethod
     def storage_dim(a):
+        # type: (ElementOrType) -> int
         """
         Size of the element's storage, aka the number of scalar values it contains.
-
-        Args:
-            a (Element or type):
-
-        Returns:
-            int:
         """
         if hasattr(a, "STORAGE_DIM"):
             return a.STORAGE_DIM
         elif StorageOps.scalar_like(a):
             return 1
-        elif StorageOps.array_like(a):
+        elif StorageOps.array_like(a) and isinstance(a, T.Sized):
             return len(a)
         else:
             StorageOps._type_error(a)
 
     @staticmethod
     def to_storage(a):
+        # type: (Element) -> T.List
         """
         Serialization of the underlying storage into a list. This is NOT a tangent space.
 
@@ -48,15 +48,9 @@ class StorageOps(object):
 
     @staticmethod
     def from_storage(cls, elements):
+        # type: (T.Type, T.List) -> T.Any
         """
         Construct from a flat list representation. Opposite of `.to_storage()`.
-
-        Args:
-            cls (type):
-            elements (list):
-
-        Returns:
-            cls:
         """
         if hasattr(cls, "from_storage"):
             return cls.from_storage(elements)
@@ -64,18 +58,13 @@ class StorageOps(object):
             assert len(elements) == 1, "Scalar needs one element."
             return elements[0]
         else:
-            StorageOps._type_error(a)
+            StorageOps._type_error(cls)
 
     @staticmethod
     def get_type(a):
+        # type: (ElementOrType) -> T.Type
         """
         Returns the type of the element if its an instance, or a pass through if already a type.
-
-        Args:
-            a (Element or type):
-
-        Returns:
-            type:
         """
         if isinstance(a, type):
             return a
@@ -84,30 +73,20 @@ class StorageOps(object):
 
     @staticmethod
     def _type_error(a):
+        # type: (ElementOrType) -> T.NoReturn
         """
         Raise an exception with type information.
-
-        Args:
-            a (Element or type):
-
-        Raises:
-            TypeError:
         """
         a_type = StorageOps.get_type(a)
         raise TypeError("val={}, type={}, mro={}, sm={}".format(a, a_type, a_type.__mro__, sm))
 
     @staticmethod
     def scalar_like(a):
+        # type: (ElementOrType) -> bool
         """
         Returns whether the element is scalar-like (an int, float, or sympy expression).
 
         This method does not rely on the value of a, only the type.
-
-        Args:
-            a (Element or type):
-
-        Returns:
-            bool:
         """
         a_type = StorageOps.get_type(a)
         if issubclass(a_type, (int, float, np.float32, np.float64)):
@@ -118,30 +97,20 @@ class StorageOps(object):
 
     @staticmethod
     def array_like(a):
+        # type: (ElementOrType) -> bool
         """
         Returns whether the element is array-like (tuple, list, numpy array).
 
         This method does not rely on the value of a, only the type.
-
-        Args:
-            a (Element or type):
-
-        Returns:
-            bool:
         """
         a_type = StorageOps.get_type(a)
         return issubclass(a_type, (list, tuple, np.ndarray))
 
     @staticmethod
     def evalf(a):
+        # type: (Element) -> Element
         """
         Evaluate to a numerical quantity (rationals, trig functions, etc).
-
-        Args:
-            a (Element):
-
-        Returns:
-            Element:
         """
         if hasattr(a, "evalf"):
             return a.evalf()
@@ -154,6 +123,7 @@ class StorageOps(object):
 
     @staticmethod
     def symbolic(a, name, **kwargs):
+        # type: (ElementOrType, str, T.Dict) -> T.Any
         """
         Construct a symbolic element with the given name prefix.
 

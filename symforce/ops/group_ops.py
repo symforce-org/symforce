@@ -1,4 +1,9 @@
+from symforce import types as T
+
 from .storage_ops import StorageOps
+
+Element = T.Any
+ElementOrType = T.Union[Element, T.Type]
 
 
 class GroupOps(StorageOps):
@@ -16,13 +21,14 @@ class GroupOps(StorageOps):
 
     @staticmethod
     def identity(a):
+        # type: (ElementOrType) -> Element
         """
         Identity element of the given type's group.
 
         This method does not rely on the value of a, only the type.
 
         Args:
-            a (Element|type):
+            a (ElementOrType):
 
         Returns:
             Element: b such that a @ b = a
@@ -36,6 +42,7 @@ class GroupOps(StorageOps):
 
     @staticmethod
     def compose(a, b):
+        # type: (Element, Element) -> Element
         """
         Composition of two elements in the group.
 
@@ -55,6 +62,7 @@ class GroupOps(StorageOps):
 
     @staticmethod
     def inverse(a):
+        # type: (Element) -> Element
         """
         Inverse of the element a.
 
@@ -73,6 +81,7 @@ class GroupOps(StorageOps):
 
     @staticmethod
     def between(a, b):
+        # type: (Element, Element) -> Element
         """
         Returns the element that when composed with a produces b. For vector spaces it is b - a.
 

@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 import logging
 import math
 import os
@@ -32,7 +30,7 @@ class SymforceGeoCodegenTest(TestCase):
         logger.debug("Creating temp directory: {}".format(output_dir))
 
         try:
-            geo_package_codegen.generate(output_dir, mode=CodegenMode.PYTHON2)
+            geo_package_codegen.generate(mode=CodegenMode.PYTHON2, output_dir=output_dir)
 
             # Run generated example / test from disk in a standalone process
             python_util.execute_subprocess(
@@ -79,7 +77,7 @@ class SymforceGeoCodegenTest(TestCase):
         logger.debug("Creating temp directory: {}".format(output_dir))
 
         try:
-            geo_package_codegen.generate(output_dir, mode=CodegenMode.CPP)
+            geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
             # Test against checked-in geo package
             # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,

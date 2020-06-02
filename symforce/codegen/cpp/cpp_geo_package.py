@@ -1,6 +1,7 @@
 import os
 
 from symforce import logger
+from symforce import types as T
 
 from ..codegen_util import CodegenMode
 from .. import function_codegen
@@ -12,6 +13,7 @@ TEMPLATE_DIR = os.path.join(template_util.CPP_TEMPLATE_DIR, "geo_package")
 
 
 def generate(output_dir, types=geo_package_common.DEFAULT_TYPES):
+    # type: (str, T.Tuple) -> None
     """
     Generate the runtime geometry package in C++.
 

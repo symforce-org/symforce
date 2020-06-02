@@ -17,6 +17,7 @@ logger = logging.getLogger(__package__)
 
 
 def set_log_level(log_level):
+    # type: (str) -> None
     """
     Set symforce logger level.
 
@@ -46,6 +47,7 @@ from . import initialization
 
 
 def _set_backend(sympy_module):
+    # type: (T.Type) -> None
     # Make symforce-specific modifications to the sympy API
     initialization.modify_symbolic_api(sympy_module)
 
@@ -55,6 +57,7 @@ def _set_backend(sympy_module):
 
 
 def _use_symengine():
+    # type: () -> None
     try:
         import symengine
     except ImportError:
@@ -65,6 +68,7 @@ def _use_symengine():
 
 
 def _use_sympy():
+    # type: () -> None
     import sympy as sympy_py
 
     _set_backend(sympy_py)
@@ -79,6 +83,7 @@ def _use_sympy():
 
 
 def set_backend(backend):
+    # type: (str) -> None
     """
     Set the symbolic backend for symforce. The sympy backend is the default and pure python,
     whereas the symengine backend is C++ and requires building the symengine library. It can
@@ -124,6 +129,7 @@ else:
 
 
 def get_backend():
+    # type: () -> str
     """
     Return the current backend as a string.
 

@@ -1,7 +1,6 @@
 """
 Shared helper code between codegen of all languages.
 """
-# mypy: disallow-untyped-defs
 
 from enum import Enum
 import imp

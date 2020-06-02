@@ -25,11 +25,13 @@ class GeoPackageTest(unittest.TestCase):
 
     def setUp(self):
         # type: () -> None
+        np.random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
     {% for cls in all_types %}
     def test_storage_ops_{{ cls.__name__ }}(self):
+        # type: () -> None
         """
         Tests:
             geo.{{ cls.__name__ }} StorageOps
@@ -54,6 +56,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertNotEqual(value.data, value3.data)
 
     def test_group_ops_{{ cls.__name__ }}(self):
+        # type: () -> None
         """
         Tests:
             geo.{{ cls.__name__ }} GroupOps
@@ -76,6 +79,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.between(identity))
 
     def test_lie_group_ops_{{ cls.__name__ }}(self):
+        # type: () -> None
         """
         Tests:
             geo.{{ cls.__name__ }} LieGroupOps
@@ -103,5 +107,4 @@ class GeoPackageTest(unittest.TestCase):
     {% endfor %}
 
 if __name__ == "__main__":
-    np.random.seed(42)
     unittest.main()

@@ -1,4 +1,9 @@
+from symforce import types as T
+
 from .group_ops import GroupOps
+
+Element = T.Any
+ElementOrType = T.Union[Element, T.Type]
 
 
 class LieGroupOps(GroupOps):
@@ -29,17 +34,12 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def tangent_dim(a):
+        # type: (ElementOrType) -> int
         """
         Size of the element's tangent space, aka the degrees of freedom it represents. The
         storage_dim is the higher dimensional space in which this manifold is embedded. For
         example SO3 could be a tangent_dim of 3 with a storage_dim of 4 if storing quaternions,
         or 9 if storing rotation matrices. For vector spaces they are equal.
-
-        Args:
-            a (Element or type):
-
-        Returns:
-            int:
         """
         if hasattr(a, "TANGENT_DIM"):
             return a.TANGENT_DIM
@@ -50,6 +50,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def from_tangent(a, vec, epsilon=0):
+        # type: (ElementOrType, T.List, T.Scalar) -> Element
         """
         Mapping from the tangent space approximation at identity into a group element of type a.
         For most manifold types this is implemented as the exponential map.
@@ -75,6 +76,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def to_tangent(a, epsilon=0):
+        # type: (Element, T.Scalar) -> T.List
         """
         Mapping from this element to the tangent space approximation at identity.
 
@@ -94,6 +96,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def retract(a, vec, epsilon=0):
+        # type: (Element, T.List, T.Scalar) -> Element
         """
         Apply a tangent space pertubation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
@@ -115,6 +118,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def local_coordinates(a, b, epsilon=0):
+        # type: (Element, T.Any, T.Scalar) -> T.List
         """
         Computes a tangent space pertubation around a to produce b. Often used in optimization
         to minimize the distance between two group elements.

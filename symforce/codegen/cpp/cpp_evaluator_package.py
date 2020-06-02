@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 import os
 
 from symforce import logger

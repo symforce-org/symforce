@@ -13,6 +13,7 @@ class SymforceValuesTest(TestCase):
     """
 
     def test_as_ordered_dict(self):
+        # type: () -> None
         v = Values(z=5, bar="foo")
         self.assertEqual(v["z"], 5)
         self.assertEqual(v["bar"], "foo")
@@ -57,6 +58,7 @@ class SymforceValuesTest(TestCase):
         logger.debug("v:\n" + string)
 
     def test_name_scope(self):
+        # type: () -> None
         s = sm.Symbol("foo.blah")
         self.assertEqual("foo.blah", s.name)
 
@@ -68,6 +70,7 @@ class SymforceValuesTest(TestCase):
         self.assertEqual("hey.there.what", w.name)
 
     def test_values(self):
+        # type: () -> None
         v = Values()
         self.assertEqual(len(v.keys()), 0)
 
@@ -131,6 +134,7 @@ class SymforceValuesTest(TestCase):
         logger.debug("v:\n" + string)
 
     def test_evalf(self):
+        # type: () -> None
         v = Values()
         v["a"] = sm.S.One / 3
         v["b"] = geo.Rot3.from_axis_angle(axis=geo.V3(1, 0, 0), angle=sm.pi / 2)
@@ -144,6 +148,7 @@ class SymforceValuesTest(TestCase):
         self.assertNear(v_evalf["a"], 0.3333333, places=6)
 
     def test_mixing_scopes(self):
+        # type: () -> None
         v1 = Values()
         v1.add("x")
         with sm.scope("foo"):

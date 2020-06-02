@@ -1,3 +1,6 @@
+from symforce import types as T
+
+
 class AttrAccessor(object):
     """
     Helper to provide dot access for Values. This is an internal-only class.
@@ -9,6 +12,7 @@ class AttrAccessor(object):
     """
 
     def __init__(self, values):
+        # type: (T.Dict[str, T.Any]) -> None
         """
         Construct by saving given values.
 
@@ -19,6 +23,7 @@ class AttrAccessor(object):
         self.__dict__["values"] = values
 
     def __getattr__(self, attr):
+        # type: (str) -> T.Any
         """
         Access a key with the given path.
 
@@ -37,6 +42,7 @@ class AttrAccessor(object):
             return self.values[attr]
 
     def __setattr__(self, attr, value):
+        # type: (str, T.Any) -> None
         """
         Set a key.
 
@@ -47,6 +53,7 @@ class AttrAccessor(object):
         self.values[attr] = value
 
     def __dir__(self):
+        # type: () -> T.List[str]
         """
         Enumerate the contained attributes, for introspection purposes like tab completion.
 

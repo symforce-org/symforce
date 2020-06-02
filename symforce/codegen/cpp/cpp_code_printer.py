@@ -10,6 +10,7 @@ class CppCodePrinter(CXX11CodePrinter):
     """
 
     def _print_Pow(self, expr):
+        # type: (sm.Pow) -> str
         """
         Customizations:
             * Convert small powers into multiplies, divides, and square roots.
@@ -30,6 +31,7 @@ class CppCodePrinter(CXX11CodePrinter):
             return "{}pow({}, {})".format(self._ns, base_str, self._print(expr.exp))
 
     def _print_Max(self, expr):
+        # type: (sm.Max) -> str
         """
         Customizations:
             * Emit template type to avoid deduction errors.
@@ -47,6 +49,7 @@ class CppCodePrinter(CXX11CodePrinter):
         return "{}max<Scalar>({}, {})".format(self._ns, expr.args[0], rhs)
 
     def _print_Min(self, expr):
+        # type: (sm.Min) -> str
         """
         Customizations:
             * Emit template type to avoid deduction errors.

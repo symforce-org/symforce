@@ -4,6 +4,7 @@ import numpy as np
 
 from symforce import logger
 from symforce import sympy as sm
+from symforce import types as T
 from symforce import geo
 from symforce import initialization
 from symforce.ops import StorageOps
@@ -24,6 +25,7 @@ class Values(object):
     """
 
     def __init__(self, **kwargs):
+        # type: (T.Any) -> None
         """
         Create like a Python dict.
 
@@ -31,14 +33,14 @@ class Values(object):
             kwargs (dict): Initial values
         """
         # Underlying storage - ordered dictionary
-        self.dict = collections.OrderedDict()
+        self.dict = collections.OrderedDict()  # type: T.Dict[str, T.Any]
 
         # Allow dot notation through this member
         # ex: v.attr.foo.bar = 12
         self.attr = AttrAccessor(self.dict)
 
         # Create context manager helpers for .scope()
-        self.__scopes__ = []
+        self.__scopes__ = []  # type: T.List[str]
         self.symbol_name_scoper = initialization.create_named_scope(sm.__scopes__)
         self.key_scoper = initialization.create_named_scope(self.__scopes__)
 
@@ -50,33 +52,28 @@ class Values(object):
     # -------------------------------------------------------------------------
 
     def keys(self):
+        # type: () -> T.List[str]
         """
         An object providing a view on contained keys.
-
-        Returns:
-            iterable:
         """
         return self.dict.keys()
 
     def values(self):
+        # type: () -> T.List[T.Any]
         """
         An object providing a view on contained values.
-
-        Returns:
-            iterable:
         """
         return self.dict.values()
 
     def items(self):
+        # type: () -> T.List[T.Tuple[str, T.Any]]
         """
         An object providng a view on contained key/value pairs.
-
-        Returns:
-            iterable:
         """
         return self.dict.items()
 
     def get(self, key, default=None):
+        # type: (str, T.Any) -> T.Any
         """
         Return the value for key if key is in the dictionary, else default.
 
@@ -90,11 +87,9 @@ class Values(object):
         return self.dict.get(key, default)
 
     def update(self, other):
+        # type: (T.Mapping[str, T.Any]) -> None
         """
         Updates keys in this Values from those of the other.
-
-        Args:
-            other (Values):
         """
         for key, value in other.items():
             self[key] = value
@@ -104,6 +99,7 @@ class Values(object):
     # -------------------------------------------------------------------------
 
     def format(self, indent=0):
+        # type: (int) -> str
         """
         Pretty format as an indented tree.
 
@@ -127,11 +123,9 @@ class Values(object):
         return "\n".join(indent_str + line for line in lines)
 
     def __repr__(self):
+        # type: () -> str
         """
         String representation, simply calls :func:`format()`.
-
-        Returns:
-            str:
         """
         return self.format()
 
@@ -140,6 +134,7 @@ class Values(object):
     # -------------------------------------------------------------------------
 
     def _get_subvalues_and_key(self, key, create=False):
+        # type: (str, bool) -> T.Tuple[Values, str]
         """
         Given a key, compute the full key name by applying name scopes and
         the innermost values that contains that key. Return the innermost values
@@ -184,18 +179,22 @@ class Values(object):
         return values, key_name
 
     def __getitem__(self, key):
+        # type: (str) -> T.Any
         values, key_name = self._get_subvalues_and_key(key)
         return values.dict[key_name]
 
     def __setitem__(self, key, value):
+        # type: (str, T.Any) -> None
         values, key_name = self._get_subvalues_and_key(key, create=True)
         values.dict[key_name] = value
 
     def __delitem__(self, key):
+        # type: (str) -> None
         values, key_name = self._get_subvalues_and_key(key)
         del values.dict[key_name]
 
     def __contains__(self, key):
+        # type: (str) -> bool
         values, key_name = self._get_subvalues_and_key(key)
         return values.dict.__contains__(key_name)
 
@@ -205,30 +204,24 @@ class Values(object):
 
     @contextlib.contextmanager
     def scope(self, scope):
+        # type: (str) -> T.Iterator[None]
         """
         Context manager to apply a name scope to both keys added to the values
         and new symbols created within the with block.
-
-        Args:
-            scope (str):
         """
         with self.symbol_name_scoper(scope), self.key_scoper(scope):
             yield None
 
     def _remove_scope(self, key):
+        # type: (str) -> str
         """
         Strips the current Values scope off of the given key if present.
-
-        Args:
-            key (str):
-
-        Returns:
-            str:
         """
         prefix = ".".join(self.__scopes__) + "."
         return key[key.startswith(prefix) and len(prefix) :]
 
     def add(self, value, **kwargs):
+        # type: (T.Union[str, sm.Symbol], T.Any) -> None
         """
         Add a symbol into the values using its given name, either a Symbol or a string.
         Allows avoiding duplication of the sort `v['foo'] = sm.Symbol('foo')`.
@@ -246,14 +239,9 @@ class Values(object):
 
     @staticmethod
     def _shape_to_dims(shape):
+        # type: (T.Sequence[int]) -> int
         """
         Compute the number of entries in an object of this shape.
-
-        Args:
-            shape (tuple):
-
-        Returns:
-            int:
         """
         return max(1, np.prod(shape))
 
@@ -262,6 +250,7 @@ class Values(object):
     # -------------------------------------------------------------------------
 
     def flatten(self):
+        # type: () -> T.Tuple[T.List[T.Any], T.Dict[str, T.List[T.Any]]]
         """
         Takes a dict of string keys to values and returns a flattened list of the values along
         with a dictionary from the original keys to their slices within the flattened vector.
@@ -272,7 +261,8 @@ class Values(object):
         """
         inx = 0
         index_dict = collections.OrderedDict()
-        vector_values = []
+        vector_values = []  # type: T.List[T.Any]
+        shape = tuple()  # type: T.Tuple
         for name, value in self.items():
             if isinstance(value, Values):
                 datatype = "Values"
@@ -323,16 +313,14 @@ class Values(object):
 
     @classmethod
     def from_storage(cls, vector_values, indices):
+        # type: (T.List[T.Any], T.Mapping[str, T.List[T.Any]]) -> Values
         """
         Takes a vectorized values and corresponding indices and reconstructs the original form.
         Reverse of :func:`to_storage()`.
 
         Args:
-            vector_values (Matrix): Vectorized values
+            vector_values (list): Vectorized values
             indices (dict(str, list)): Dict of key to the source (index, dimension, shape, item_index)
-
-        Returns:
-            Values:
         """
         values = cls()
         for name, (inx, datatype, shape, item_index) in indices.items():
@@ -354,26 +342,23 @@ class Values(object):
         return values
 
     def to_storage(self):
+        # type: () -> T.List[T.Any]
         """
         Returns a flat list of unique values for every scalar element in this object.
         Equivalent to the list from :func:`flatten()`.
-
-        Returns:
-            list:
         """
         return self.flatten()[0]
 
     def index(self):
+        # type: () -> T.Dict[str, T.List[T.Any]]
         """
         Returns the index with structural information to reconstruct this values
         in :func:`from_storage()`. Equivalent to the index from :func:`flatten()`.
-
-        Returns:
-            dict(str, list):
         """
         return self.flatten()[1]
 
     def keys_recursive(self):
+        # type: () -> T.List[str]
         """
         Returns a flat list of unique keys for every scalar element in this object.
 
@@ -384,14 +369,9 @@ class Values(object):
 
     @staticmethod
     def _shape_implies_a_vector(shape):
+        # type: (T.Tuple[int, int]) -> bool
         """
         Return True if the given shape is row or column vector-like.
-
-        Args:
-            shape (iterable(int)):
-
-        Returns:
-            bool:
         """
         return (
             len(shape) == 1
@@ -401,15 +381,10 @@ class Values(object):
 
     @classmethod
     def keys_recursive_from_index(cls, index):
+        # type: (T.Mapping[str, T.Any]) -> T.List[str]
         """
         Compute a flat list of keys from the given values index. The order matches
         the serialized order of elements in the `.to_storage()` vector.
-
-        Args:
-            index (dict):
-
-        Returns:
-            list(str):
         """
         vec = []
         for name, (inx, datatype, shape, item_index) in index.items():
@@ -434,21 +409,17 @@ class Values(object):
         return vec
 
     def values_recursive(self):
+        # type: () -> T.List[T.Any]
         """
         Returns a flat list of unique values for every scalar element in this object.
         This is identical to :func:`to_storage()`.
-
-        Returns:
-            list:
         """
         return self.to_storage()
 
     def items_recursive(self):
+        # type: () -> T.List[T.Tuple[str, T.Any]]
         """
         Returns a flat list of key/value pairs for every scalar element in this object.
-
-        Returns:
-            list(tuple(str, any)):
         """
         values, index = self.flatten()
         return zip(self.keys_recursive_from_index(index), values)
@@ -458,23 +429,19 @@ class Values(object):
     # -------------------------------------------------------------------------
 
     def __eq__(self, other):
+        # type: (T.Any) -> bool
         """
         Exact equality check.
-
-        Args:
-            other (Values):
-
-        Returns:
-            bool: True if equal
         """
-        return self.items() == other.items()
+        if isinstance(other, Values):
+            return self.items() == other.items()
+        else:
+            return False
 
     def evalf(self):
+        # type: () -> Values
         """
         Numerical evaluation.
-
-        Returns:
-            Values:
         """
         vals, index = self.flatten()
         return self.from_storage([StorageOps.evalf(e) for e in vals], index)

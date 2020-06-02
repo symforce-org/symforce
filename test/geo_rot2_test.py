@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 import numpy as np
 import logging
 

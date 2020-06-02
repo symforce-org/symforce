@@ -8,13 +8,13 @@ import sympy as sympy_py
 
 sympy_py.init_printing()
 
+from symforce import types as T
+
 
 def display(*args):
+    # type: (T.List) -> None
     """
     Display the given expressions in latex, or print if not an expression.
-
-    Args:
-        args (list):
     """
     try:
         IPython.display.display(sympy_py.S(*args))
@@ -23,6 +23,7 @@ def display(*args):
 
 
 def display_code(code, language):
+    # type: (str, str) -> None
     """
     Display code with syntax highlighting.
 
@@ -38,6 +39,7 @@ def display_code(code, language):
 
 
 def display_code_file(path, language):
+    # type: (str, str) -> None
     """
     Display code from a file path with syntax highlighting.
 

@@ -1,3 +1,4 @@
+from symforce import types as T
 from symforce.ops import GroupOps
 
 from .storage_ops_test_mixin import StorageOpsTestMixin
@@ -9,6 +10,7 @@ class GroupOpsTestMixin(StorageOpsTestMixin):
     """
 
     def test_group_ops(self):
+        # type: () -> None
         """
         Tests:
             identity

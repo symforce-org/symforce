@@ -10,6 +10,7 @@ class PythonCodePrinter(NumPyPrinter):
     """
 
     def _print_Rational(self, expr):
+        # type: (sm.Rational) -> str
         """
         Customizations:
             * Decimal points for Python2 support, doesn't exist in some sympy versions.

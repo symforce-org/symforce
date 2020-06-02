@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 import inspect
 import os
 import textwrap

@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 from symforce import types as T
 
 from .base import Group

@@ -31,7 +31,7 @@ check_format:
 
 # Check type hints using mypy
 check_types:
-	$(PYTHON) -m mypy --py2 . test
+	$(PYTHON) -m mypy --py2 . test --disallow-untyped-defs
 
 # Lint check for formatting and type hints
 # This needs pass before any merge.

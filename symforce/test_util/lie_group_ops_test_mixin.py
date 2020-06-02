@@ -3,6 +3,7 @@ import numpy as np
 from symforce import geo
 from symforce.ops import LieGroupOps
 
+
 from .group_ops_test_mixin import GroupOpsTestMixin
 
 
@@ -15,6 +16,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
     EPSILON = 1e-8
 
     def test_lie_group_ops(self):
+        # type: () -> None
         """
         Tests:
             tangent_dim

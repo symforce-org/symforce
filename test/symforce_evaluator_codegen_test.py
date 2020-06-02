@@ -5,6 +5,7 @@ from symforce import geo
 from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
+from symforce import types as T
 from symforce.codegen import EvaluatorCodegen
 from symforce.codegen import CodegenMode
 from symforce.test_util import TestCase
@@ -18,12 +19,9 @@ class SymforceEvaluatorCodegenTest(TestCase):
 
     @staticmethod
     def build_values():
+        # type: () -> T.Tuple[Values, Values]
         """
         Create some example input/output values.
-
-        Returns:
-            inputs (Values):
-            outputs (Values):
         """
         inputs = Values()
         x, y = sm.symbols("x y")
@@ -53,6 +51,7 @@ class SymforceEvaluatorCodegenTest(TestCase):
     # -------------------------------------------------------------------------
 
     def run_python_evaluator(self, evaluator):
+        # type: (T.Type) -> None
         """
         Execute and check results of a live loaded python evaluator instance.
 
@@ -71,6 +70,7 @@ class SymforceEvaluatorCodegenTest(TestCase):
         self.assertNear(out.bar, inp.constants.epsilon + sm.sin(inp.y) + inp.x ** 2)
 
     def test_codegen_python(self):
+        # type: () -> None
         """
         Test python code generation.
         """
@@ -99,6 +99,7 @@ class SymforceEvaluatorCodegenTest(TestCase):
     # -------------------------------------------------------------------------
 
     def run_cpp_evaluator(self, package_dir):
+        # type: (str) -> None
         """
         Execute and check results of a generated C++ evaluator package.
 
@@ -116,6 +117,7 @@ class SymforceEvaluatorCodegenTest(TestCase):
         python_util.execute_subprocess(os.path.join(example_dir, "example"))
 
     def test_codegen_cpp(self):
+        # type: () -> None
         """
         Test C++ code generation.
         """

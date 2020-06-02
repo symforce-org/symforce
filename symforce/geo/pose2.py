@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 from symforce import sympy as sm
 from symforce import types as T
 

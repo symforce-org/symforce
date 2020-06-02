@@ -1,5 +1,3 @@
-# mypy: disallow-untyped-defs
-
 import collections
 import numpy as np
 

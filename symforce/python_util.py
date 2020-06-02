@@ -1,7 +1,6 @@
 """
 General python utilities.
 """
-# mypy: disallow-untyped-defs
 
 import os
 import re

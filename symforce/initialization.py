@@ -1,4 +1,3 @@
-# mypy: disallow-untyped-defs
 """
 Internal initialization code. Should not be called by users.
 """

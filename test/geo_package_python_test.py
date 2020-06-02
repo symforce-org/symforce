@@ -25,10 +25,12 @@ class GeoPackageTest(unittest.TestCase):
 
     def setUp(self):
         # type: () -> None
+        np.random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
     def test_storage_ops_Rot2(self):
+        # type: () -> None
         """
         Tests:
             geo.Rot2 StorageOps
@@ -53,6 +55,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertNotEqual(value.data, value3.data)
 
     def test_group_ops_Rot2(self):
+        # type: () -> None
         """
         Tests:
             geo.Rot2 GroupOps
@@ -75,6 +78,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.between(identity))
 
     def test_lie_group_ops_Rot2(self):
+        # type: () -> None
         """
         Tests:
             geo.Rot2 LieGroupOps
@@ -100,6 +104,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
     def test_storage_ops_Pose2(self):
+        # type: () -> None
         """
         Tests:
             geo.Pose2 StorageOps
@@ -124,6 +129,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertNotEqual(value.data, value3.data)
 
     def test_group_ops_Pose2(self):
+        # type: () -> None
         """
         Tests:
             geo.Pose2 GroupOps
@@ -146,6 +152,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.between(identity))
 
     def test_lie_group_ops_Pose2(self):
+        # type: () -> None
         """
         Tests:
             geo.Pose2 LieGroupOps
@@ -171,6 +178,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
     def test_storage_ops_Rot3(self):
+        # type: () -> None
         """
         Tests:
             geo.Rot3 StorageOps
@@ -195,6 +203,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertNotEqual(value.data, value3.data)
 
     def test_group_ops_Rot3(self):
+        # type: () -> None
         """
         Tests:
             geo.Rot3 GroupOps
@@ -217,6 +226,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.between(identity))
 
     def test_lie_group_ops_Rot3(self):
+        # type: () -> None
         """
         Tests:
             geo.Rot3 LieGroupOps
@@ -242,6 +252,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
     def test_storage_ops_Pose3(self):
+        # type: () -> None
         """
         Tests:
             geo.Pose3 StorageOps
@@ -266,6 +277,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertNotEqual(value.data, value3.data)
 
     def test_group_ops_Pose3(self):
+        # type: () -> None
         """
         Tests:
             geo.Pose3 GroupOps
@@ -288,6 +300,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.between(identity))
 
     def test_lie_group_ops_Pose3(self):
+        # type: () -> None
         """
         Tests:
             geo.Pose3 LieGroupOps
@@ -314,5 +327,4 @@ class GeoPackageTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    np.random.seed(42)
     unittest.main()

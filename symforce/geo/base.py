@@ -3,7 +3,6 @@ Base classes for symengine geometric types.
 
 These types implement methods that fulfill the concepts defined in `symforce.ops`.
 """
-# mypy: disallow-untyped-defs
 
 from symforce import ops
 from symforce import sympy as sm

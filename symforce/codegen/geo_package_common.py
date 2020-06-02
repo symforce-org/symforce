@@ -5,6 +5,7 @@ from symforce import geo
 from symforce import ops
 from symforce import python_util
 from symforce import sympy as sm
+from symforce import types as T
 
 from .codegen_util import CodegenMode
 from .function_codegen import common_data
@@ -15,14 +16,9 @@ DEFAULT_TYPES = (geo.Rot2, geo.Pose2, geo.Rot3, geo.Pose3)
 
 
 def make_storage_ops_funcs(cls):
+    # type: (T.Type) -> T.List[FunctionCodegen]
     """
     Create func spec arguments for storage_ops on the given class.
-
-    Args:
-        cls (type):
-
-    Returns:
-        list(FunctionCodegen):
     """
     storage_vec = geo.M(range(ops.StorageOps.storage_dim(cls)))
     return [
@@ -34,14 +30,9 @@ def make_storage_ops_funcs(cls):
 
 
 def make_group_ops_funcs(cls):
+    # type: (T.Type) -> T.List[FunctionCodegen]
     """
     Create func spec arguments for group ops on the given class.
-
-    Args:
-        cls (type):
-
-    Returns:
-        list(FunctionCodegen):
     """
     return [
         FunctionCodegen("Identity", lambda: ops.GroupOps.identity(cls), [], cls,),
@@ -52,14 +43,9 @@ def make_group_ops_funcs(cls):
 
 
 def make_lie_group_ops_funcs(cls):
+    # type: (T.Type) -> T.List[FunctionCodegen]
     """
     Create func spec arguments for lie group ops on the given class.
-
-    Args:
-        cls (type):
-
-    Returns:
-        list(FunctionCodegen):
     """
     tangent_vec = geo.M(range(ops.LieGroupOps.tangent_dim(cls)))
     return [
@@ -81,15 +67,10 @@ def make_lie_group_ops_funcs(cls):
 
 
 def class_data(cls, mode):
+    # type: (T.Type, CodegenMode) -> T.Dict[str, T.Any]
     """
     Data for template generation of this class. Contains all useful info for
     class-specific templates.
-
-    Args:
-        cls (type):
-
-    Returns:
-        dict:
     """
     data = common_data()
     data["cls"] = cls
