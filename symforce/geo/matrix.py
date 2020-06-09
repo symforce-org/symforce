@@ -304,10 +304,7 @@ class Matrix(sm.Matrix, LieGroup):
         Returns:
             Matrix:
         """
-        if StorageOps.scalar_like(right):
-            return self.applyfunc(lambda x: x / right)
-
-        return sm.Matrix.__truediv__(self, right)
+        return self * (sm.S.One / right)
 
     __truediv__ = __div__
 
@@ -327,19 +324,16 @@ class Matrix(sm.Matrix, LieGroup):
         """
         return (1 - sm.sign(a.cross(b).norm() - epsilon)) / 2
 
-    def evalf(self, real=True):
-        # type: (bool) -> Matrix
+    def evalf(self):
+        # type: () -> Matrix
         """
         Perform numerical evaluation of each element in the matrix.
-
-        Args:
-            real (bool): If True, assume no complex part.
 
         Returns:
             (self.__class__):
         """
         return self.__class__(
-            [[self[i, j].evalf(real=real) for j in range(self.cols)] for i in range(self.rows)]
+            [[self[i, j].evalf() for j in range(self.cols)] for i in range(self.rows)]
         )
 
     def to_numpy(self, scalar_type=np.float64):
@@ -374,6 +368,10 @@ class Matrix(sm.Matrix, LieGroup):
     def _assert_is_vector(self):
         # type: () -> None
         assert (self.shape[0] == 1) or (self.shape[1] == 1), "squared_norm() is only for vectors."
+
+    def __hash__(self):
+        # type: () -> int
+        return LieGroup.__hash__(self)
 
 
 # -------------------------------------------------------------------------

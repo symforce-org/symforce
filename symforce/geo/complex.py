@@ -51,7 +51,7 @@ class Complex(Group):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List) -> Complex
+        # type: (T.Sequence[T.Scalar]) -> Complex
         assert len(vec) == cls.STORAGE_DIM
         return cls(real=vec[0], imag=vec[1])
 

@@ -29,6 +29,21 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
         self.assertEqual(geo.Rot3(), geo.Rot3.identity())
 
+    def test_symbolic_substitution(self):
+        # type: () -> None
+        """
+        Tests:
+            Rot3.subs
+        """
+        R_1 = geo.Rot3.symbolic("R_1")
+        R_2 = geo.Rot3.symbolic("R_2")
+        self.assertEqual(R_2, R_1.subs(R_1, R_2))
+        self.assertEqual(geo.M(R_2.to_tangent()), geo.M(R_1.to_tangent()).subs(R_1, R_2))
+        self.assertEqual(
+            geo.Rot3.from_tangent(R_2.to_tangent()),
+            geo.Rot3.from_tangent(R_1.to_tangent()).subs(R_1, R_2),
+        )
+
     def test_angle_between(self):
         # type: () -> None
         """

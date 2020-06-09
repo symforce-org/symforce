@@ -44,7 +44,7 @@ class Rot2(LieGroup):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List[T.Scalar]) -> Rot2
+        # type: (T.Sequence[T.Scalar]) -> Rot2
         return cls(Complex.from_storage(vec))
 
     @classmethod

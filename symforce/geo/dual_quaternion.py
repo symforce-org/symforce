@@ -44,7 +44,7 @@ class DualQuaternion(Group):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List) -> DualQuaternion
+        # type: (T.Sequence[T.Scalar]) -> DualQuaternion
         assert len(vec) == cls.STORAGE_DIM
         return cls(
             real_q=Quaternion.from_storage(vec[0 : Quaternion.STORAGE_DIM]),

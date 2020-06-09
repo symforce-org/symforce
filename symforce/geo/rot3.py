@@ -41,7 +41,7 @@ class Rot3(LieGroup):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List) -> Rot3
+        # type: (T.Sequence[T.Scalar]) -> Rot3
         return cls(Quaternion.from_storage(vec))
 
     @classmethod

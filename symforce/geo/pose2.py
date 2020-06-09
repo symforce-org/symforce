@@ -55,7 +55,7 @@ class Pose2(LieGroup):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List[T.Scalar]) -> Pose2
+        # type: (T.Sequence[T.Scalar]) -> Pose2
         assert len(vec) == cls.STORAGE_DIM
         return cls(
             R=Rot2.from_storage(vec[0 : Rot2.STORAGE_DIM]),
@@ -87,7 +87,7 @@ class Pose2(LieGroup):
 
     @classmethod
     def expmap(cls, v, epsilon=0):
-        # type: (T.List[T.Scalar], T.Scalar) -> Pose2
+        # type: (T.Sequence[T.Scalar], T.Scalar) -> Pose2
         theta = v[2]
         R = Rot2.expmap([theta], epsilon=epsilon)
 

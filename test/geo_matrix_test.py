@@ -1,6 +1,5 @@
 import numpy as np
 
-import symforce
 from symforce import geo
 from symforce import sympy as sm
 from symforce.test_util import TestCase
@@ -72,13 +71,12 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         diag_matrix = 2 * geo.Matrix.eye(2)
         self.assertEqual(geo.Matrix.eye(2), diag_matrix / 2)
 
-        self.assertEqual(geo.Matrix.eye(2), test_matrix / test_matrix)
-
     def test_symbolic_operations(self):
         # type: () -> None
         """
         Tests:
             Matrix.symbolic
+            Matrix.subs
             Matrix.simplify
             Matrix.evalf
             Matrix.to_numpy
@@ -88,6 +86,22 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(sym_vector.MATRIX_DIMS, (3, 1))
         sym_matrix = geo.I3().symbolic("matrix")
         self.assertEqual(sym_matrix.MATRIX_DIMS, (3, 3))
+
+        # Check substitution with the whole matrix as a key
+        num_vector = geo.V3(1, 2, -3.1)
+        self.assertEqual(num_vector, sym_vector.subs(sym_vector, num_vector))
+        self.assertNear(num_vector.norm(), sym_vector.norm().subs(sym_vector, num_vector), places=9)
+        self.assertNear(
+            num_vector.norm(), sym_vector.norm().subs({sym_vector: num_vector}), places=9
+        )
+        self.assertNear(
+            num_vector.norm(), sym_vector.norm().subs([(sym_vector, num_vector)]), places=9
+        )
+        self.assertNear(
+            num_vector * num_vector.T,
+            (sym_vector * sym_vector.T).subs(sym_vector, num_vector),
+            places=9,
+        )
 
         x = sm.Symbol("x")
         unsimple_matrix = geo.Matrix([x ** 2 - x, 0])

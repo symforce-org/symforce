@@ -70,7 +70,7 @@ class Quaternion(Group):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List[T.Scalar]) -> Quaternion
+        # type: (T.Sequence[T.Scalar]) -> Quaternion
         assert len(vec) == cls.STORAGE_DIM
         return cls(xyz=Matrix(vec[0:3]), w=vec[3])
 

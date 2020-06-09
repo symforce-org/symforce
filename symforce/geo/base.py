@@ -37,7 +37,7 @@ class Storage(object):
     @classmethod
     def from_storage(
         cls,  # type: T.Type[StorageT]
-        elements,  # type: T.List[T.Scalar]
+        elements,  # type: T.Sequence[T.Scalar]
     ):
         # type: (...) -> StorageT
         """
@@ -72,9 +72,10 @@ class Storage(object):
     ):
         # type: (...) -> StorageT
         """
-        Substitute given given values of each scalar element into a new instance.
+        Substitute given values of each scalar element into a new instance.
         """
-        return self.from_storage(sm.Matrix(self.to_storage()).subs(*args, **kwargs))
+        # TODO(hayk): If this is slow, compute the subs dict once.
+        return self.from_storage([sm.S(s).subs(*args, **kwargs) for s in self.to_storage()])
 
     # TODO(hayk): Way to get sm.simplify to work on these types directly?
     def simplify(self):
@@ -105,6 +106,19 @@ class Storage(object):
         Numerical evaluation.
         """
         return self.from_storage([ops.StorageOps.evalf(e) for e in self.to_storage()])
+
+    def __hash__(self):
+        # type: () -> int
+        """
+        Hash this object in immutable form, by combining all their scalar hashes.
+
+        NOTE(hayk, nathan): This is somewhat dangerous because we don't always guarantee
+        that Storage objects are immutable (e.g. geo.Matrix). If you add this object as
+        a key to a dict, modify it, and access the dict, it will show up as another key
+        because it breaks the abstraction that an object will maintain the same hash over
+        its lifetime.
+        """
+        return tuple(self.to_storage()).__hash__()
 
 
 class Group(Storage):
@@ -165,7 +179,7 @@ class LieGroup(Group):
     @classmethod
     def from_tangent(
         cls,  # type: T.Type[LieGroupT]
-        vec,  # type: T.List[T.Scalar]
+        vec,  # type: T.Sequence[T.Scalar]
         epsilon=0,  # type: T.Scalar
     ):
         # type: (...) -> LieGroupT
@@ -192,7 +206,7 @@ class LieGroup(Group):
 
     def retract(
         self,  # type: LieGroupT
-        vec,  # type: T.List[T.Scalar]
+        vec,  # type: T.Sequence[T.Scalar]
         epsilon=0,  # type: T.Scalar
     ):
         # type: (...) -> LieGroupT

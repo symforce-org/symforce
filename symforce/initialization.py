@@ -18,6 +18,7 @@ def modify_symbolic_api(sympy_module):
     """
     override_symbol_new(sympy_module)
     override_simplify(sympy_module)
+    override_subs(sympy_module)
     add_scoping(sympy_module)
     add_custom_methods(sympy_module)
 
@@ -117,6 +118,58 @@ def add_scoping(sympy_module):
     sympy_module.set_scope("")
 
     setattr(sympy_module, "scope", create_named_scope(sympy_module.__scopes__))
+
+
+def _flatten_storage_type_subs(subs_dict):
+    # type: (T.MutableMapping) -> None
+    """
+    Replace storage types with their scalar counterparts
+    """
+    keys = list(subs_dict.keys())
+    for key in keys:
+        if hasattr(key, "to_storage"):
+            new_keys = key.to_storage()
+            assert type(key) == type(subs_dict[key])
+            new_values = subs_dict[key].to_storage()
+            for i, new_key in enumerate(new_keys):
+                subs_dict[new_key] = new_values[i]
+            del subs_dict[key]
+
+
+def _get_subs_dict(*args):
+    # type: (T.Any) -> T.Dict
+    """
+    Handle args to subs being a single key-value pair or a dict.
+    """
+    if len(args) == 2:
+        subs_dict = {args[0]: args[1]}
+    elif len(args) == 1:
+        subs_dict = dict(args[0])
+
+    assert isinstance(subs_dict, T.Mapping)
+    _flatten_storage_type_subs(subs_dict)
+
+    return subs_dict
+
+
+def override_subs(sympy_module):
+    # type: (T.Type) -> None
+    """
+    Patch subs to support storage classes in substitution by calling to_storage() to flatten
+    the substitution dict. This has to be done slightly differently in symengine and sympy.
+    """
+    if sympy_module.__name__ == "symengine":
+        original_get_dict = sympy_module.lib.symengine_wrapper.get_dict
+        sympy_module.lib.symengine_wrapper.get_dict = lambda *args: original_get_dict(
+            _get_subs_dict(*args)
+        )
+    elif sympy_module.__name__ == "sympy":
+        original_subs = sympy_module.Basic.subs
+        sympy_module.Basic.subs = lambda self, *args, **kwargs: original_subs(
+            self, _get_subs_dict(*args), **kwargs
+        )
+    else:
+        raise NotImplementedError("Unknown backend: '{}'".format(sympy_module.__name__))
 
 
 def add_custom_methods(sympy_module):

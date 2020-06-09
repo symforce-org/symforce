@@ -57,7 +57,7 @@ class Pose3(LieGroup):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.List) -> Pose3
+        # type: (T.Sequence[T.Scalar]) -> Pose3
         assert len(vec) == cls.STORAGE_DIM
         return cls(
             R=Rot3.from_storage(vec[0 : Rot3.STORAGE_DIM]),
@@ -89,7 +89,7 @@ class Pose3(LieGroup):
 
     @classmethod
     def expmap(cls, v, epsilon=0):
-        # type: (T.List, T.Scalar) -> Pose3
+        # type: (T.Sequence[T.Scalar], T.Scalar) -> Pose3
         if isinstance(v, (list, tuple)):
             v = Matrix(v)
 
