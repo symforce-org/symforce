@@ -19,6 +19,8 @@ class TestCase(unittest.TestCase):
     Base class for symforce tests. Adds some useful helpers.
     """
 
+    LieGroupOpsType = T.Union[geo.base.LieGroup, T.Scalar]
+
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing
     UPDATE = False
@@ -66,8 +68,8 @@ class TestCase(unittest.TestCase):
 
     def assertLieGroupNear(
         self,
-        actual,  # type: geo.base.LieGroup
-        desired,  # type: geo.base.LieGroup
+        actual,  # type: LieGroupOpsType
+        desired,  # type: LieGroupOpsType
         places=7,  # type: int
         msg="",  # type: str
         verbose=True,  # type: bool

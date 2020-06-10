@@ -191,20 +191,20 @@ def add_custom_methods(sympy_module):
 
     setattr(sympy_module, "asin_safe", asin_safe)
 
-    def sign_no_zero(x, epsilon=0):
-        # type: (T.Scalar, T.Scalar) -> T.Scalar
+    def sign_no_zero(x):
+        # type: (T.Scalar) -> T.Scalar
         """
         Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero (given a positive epsilon).
         """
-        return sympy_module.sign(x + (sympy_module.sign(x) + sympy_module.S(1) / 2) * epsilon)
+        return 2 * sympy_module.Min(sympy_module.sign(x), 0) + 1
 
     setattr(sympy_module, "sign_no_zero", sign_no_zero)
 
-    def copysign_no_zero(x, y, epsilon=0):
-        # type: (T.Scalar, T.Scalar, T.Scalar) -> T.Scalar
+    def copysign_no_zero(x, y):
+        # type: (T.Scalar, T.Scalar) -> T.Scalar
         """
         Returns a value with the magnitude of x and sign of y. If y is zero, returns positive x.
         """
-        return sympy_module.Abs(x) * sign_no_zero(y, epsilon)
+        return sympy_module.Abs(x) * sign_no_zero(y)
 
     setattr(sympy_module, "copysign_no_zero", copysign_no_zero)

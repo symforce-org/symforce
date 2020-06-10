@@ -176,9 +176,9 @@ class Rot3(LieGroup):
         x = sm.sqrt(sm.Max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
         y = sm.sqrt(sm.Max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
         z = sm.sqrt(sm.Max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
-        x = sm.copysign_no_zero(x, R[2, 1] - R[1, 2], epsilon=epsilon)
-        y = sm.copysign_no_zero(y, R[0, 2] - R[2, 0], epsilon=epsilon)
-        z = sm.copysign_no_zero(z, R[1, 0] - R[0, 1], epsilon=epsilon)
+        x = sm.copysign_no_zero(x, R[2, 1] - R[1, 2])
+        y = sm.copysign_no_zero(y, R[0, 2] - R[2, 0])
+        z = sm.copysign_no_zero(z, R[1, 0] - R[0, 1])
         return cls(Quaternion(xyz=V3(x, y, z), w=w))
 
     def to_euler_ypr(self, epsilon=0):
