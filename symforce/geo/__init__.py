@@ -22,6 +22,3 @@ from .pose2 import Pose2
 from .pose3 import Pose3
 from .rot2 import Rot2
 from .rot3 import Rot3
-
-# Shorthand
-M = Matrix

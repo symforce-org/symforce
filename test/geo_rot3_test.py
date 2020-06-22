@@ -65,7 +65,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         # Test 90 degree rotations about each principal axis
         for axis_index in range(3):
             for angle in [0.0, np.pi / 2.0, np.pi, 3.0 * np.pi / 2.0, 2.0 * np.pi]:
-                axis = geo.Z3()
+                axis = geo.V3.zero()
                 axis[axis_index] = 1.0
                 rotations_to_test.append(geo.Rot3.from_axis_angle(axis, angle))
 

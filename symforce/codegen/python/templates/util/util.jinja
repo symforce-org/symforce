@@ -10,7 +10,7 @@
 {% macro expr_code(spec) -%}
 # Input arrays
 {% for arg, T in spec.args -%}
-{% if ops.StorageOps.get_type(T) not in (Symbol, Matrix) %}
+{% if not issubclass(ops.StorageOps.get_type(T), (Symbol, Matrix)) %}
 _{{ arg }} = {{ arg }}.data
 {% endif %}
 {% endfor %}

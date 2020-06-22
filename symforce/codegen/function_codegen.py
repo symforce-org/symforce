@@ -23,6 +23,7 @@ def common_data():
     data["Matrix"] = geo.Matrix
     data["scalar_types"] = ("double", "float")
     data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
+    data["issubclass"] = issubclass
 
     return data
 
@@ -110,9 +111,9 @@ class FunctionCodegen(object):
             # Name scalars differently
             # TODO(hayk): Use StorageOps.symbolic and change names in template?
             arg_cls = geo.StorageOps.get_type(arg_type)
-            if arg_cls == sm.Symbol:
+            if issubclass(arg_cls, sm.Symbol):
                 name_str = "{}"
-            elif arg_cls == geo.Matrix:
+            elif issubclass(arg_cls, geo.Matrix):
                 name_str = "{}[{}]"
             else:
                 # For a geo type, we extract the .data() with an underscore prefix

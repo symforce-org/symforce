@@ -4,8 +4,6 @@ from symforce import types as T
 from .base import LieGroup, Group
 from .matrix import Matrix
 from .matrix import Vector3
-from .matrix import Z3
-from .matrix import Z6
 from .rot3 import Rot3
 
 
@@ -71,7 +69,7 @@ class Pose3(LieGroup):
     @classmethod
     def identity(cls):
         # type: () -> Pose3
-        return cls(R=Rot3.identity(), t=Z3())
+        return cls(R=Rot3.identity(), t=Vector3.zero())
 
     def compose(self, other):
         # type: (Pose3) -> Pose3

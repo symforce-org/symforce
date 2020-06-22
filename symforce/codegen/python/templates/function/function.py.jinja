@@ -15,9 +15,9 @@ def {{ spec.name }}(
     {{ util.expr_code(spec) | indent(4) }}
 
     {% set return_type = ops.StorageOps.get_type(spec.return_type) %}
-    {% if return_type == Matrix %}
+    {% if issubclass(return_type, Matrix) %}
     return res
-    {% elif return_type == Symbol %}
+    {% elif issubclass(return_type, Symbol) %}
     return res[0]
     {% else %}
     return {{ return_type.__name__ }}(res)

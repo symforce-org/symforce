@@ -17,7 +17,60 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # type: () -> geo.Matrix
         return geo.Matrix([-0.2, 5.3, 1.2])
 
-    # TODO(hayk): Test from_storage for matrices - how should shape be preserved?
+    def test_construction(self):
+        # type: () -> None
+        """
+            Tests:
+                Matrix.__new__
+        """
+        # Numbers here match Matrix.__new__
+
+        # 1) Matrix32()  # Zero constructed Matrix32
+        self.assertEqual(geo.M32(), geo.M([[0, 0], [0, 0], [0, 0]]))
+
+        # 2) Matrix(sm.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
+        self.assertIsInstance(geo.M(sm.Matrix([[1, 2], [3, 4]])), geo.M22)
+        self.assertEqual(geo.M(sm.Matrix([[1, 2], [3, 4]])), geo.M([[1, 2], [3, 4]]))
+
+        # 3A) Matrix([[1, 2], [3, 4]])  # Matrix22 with [1, 2, 3, 4] data
+        self.assertIsInstance(geo.M([[1, 2], [3, 4]]), geo.M22)
+        self.assertEqual(geo.M([[1, 2], [3, 4]]), geo.M22([1, 2, 3, 4]))
+        self.assertRaises(AssertionError, lambda: geo.M([[1, 2], [3, 4, 5]]))
+
+        # 3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
+        self.assertIsInstance(geo.M22([1, 2, 3, 4]), geo.M22)
+        self.assertEqual(list(geo.M22([1, 2, 3, 4])), [1, 2, 3, 4])
+        self.assertRaises(AssertionError, lambda: geo.M22([1, 2, 3]))
+        self.assertRaises(AssertionError, lambda: geo.M22([1, 2, 3, 4, 5]))
+
+        # 3C) Matrix([1, 2, 3, 4])  # Matrix41 with [1, 2, 3, 4] data - column vector assumed
+        self.assertEqual(geo.M([1, 2, 3, 4]), geo.M([[1], [2], [3], [4]]))
+        self.assertEqual(geo.M41([1, 2, 3, 4]), geo.M([[1], [2], [3], [4]]))
+        self.assertRaises(AssertionError, lambda: geo.M31([1, 2, 3, 4]))
+
+        # 4) Matrix(4, 3)  # Zero constructed Matrix43
+        self.assertEqual(geo.M(4, 3), geo.M43.zero())
+
+        # 5) Matrix(2, 2, [1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (first two are shape)
+        self.assertEqual(geo.M(2, 2, [1, 2, 3, 4]), geo.M([[1, 2], [3, 4]]))
+
+        # 6) Matrix(2, 2, lambda row, col: row + col)  # Matrix22 with [0, 1, 1, 2] data
+        self.assertEqual(geo.M(2, 2, lambda row, col: row + col), geo.M22([0, 1, 1, 2]))
+
+        # 7) Matrix22(1, 2, 3, 4)  # Matrix22 with [1, 2, 3, 4] data (must match fixed length)
+        self.assertEqual(geo.M22(1, 2, 3, 4), geo.M22([1, 2, 3, 4]))
+        self.assertEqual(geo.V4(1, 2, 3, 4), geo.V4([1, 2, 3, 4]))
+        self.assertRaises(AssertionError, lambda: geo.M22(1, 2, 3))
+        self.assertRaises(AssertionError, lambda: geo.M22(1, 2, 3, 4, 5))
+
+        # Test large size (not statically defined)
+        self.assertEqual(type(geo.M(12, 4)).__name__, "Matrix12_4")
+        self.assertEqual(type(geo.M(1, 41)).__name__, "Matrix1_41")
+        self.assertEqual(type(geo.M(142, 432)).__name__, "Matrix142_432")
+
+        # TODO(hayk): For some reason the symengine constructor slows down to several seconds
+        # when the matrix size grows this big. Investigate.
+        # self.assertEqual(type(geo.M(1420, 4332)).__name__, 'Matrix1420_4332')
 
     def test_matrix_initialization(self):
         # type: () -> None
@@ -34,7 +87,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         """
         element = GeoMatrixTest.element()
 
-        dims = element.MATRIX_DIMS
+        dims = element.SHAPE
         self.assertEqual(element.zero(), geo.Matrix.zeros(dims[0], dims[1]))
         self.assertEqual(element.one(), geo.Matrix.ones(dims[0], dims[1]))
         self.assertNotEqual(element.one(), element.zero())
@@ -51,7 +104,6 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         vec3 = geo.V3([7, 8, 9])
         mat = geo.Matrix([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
         self.assertEqual(mat, geo.Matrix.column_stack(vec1, vec2, vec3))
-        self.assertEqual(geo.Matrix(), geo.Matrix.column_stack())
 
     def test_matrix_operations(self):
         # type: () -> None
@@ -70,6 +122,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         diag_matrix = 2 * geo.Matrix.eye(2)
         self.assertEqual(geo.Matrix.eye(2), diag_matrix / 2)
+        self.assertEqual(geo.Matrix.eye(2), sm.Matrix(test_matrix / test_matrix))
 
     def test_symbolic_operations(self):
         # type: () -> None
@@ -82,21 +135,18 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             Matrix.to_numpy
         """
 
-        sym_vector = geo.V3().symbolic("vector")
-        self.assertEqual(sym_vector.MATRIX_DIMS, (3, 1))
-        sym_matrix = geo.I3().symbolic("matrix")
-        self.assertEqual(sym_matrix.MATRIX_DIMS, (3, 3))
+        sym_vector = geo.V3.symbolic("vector")
+        self.assertEqual(sym_vector.SHAPE, (3, 1))
+        sym_matrix = geo.M33.symbolic("matrix")
+        self.assertEqual(sym_matrix.SHAPE, (3, 3))
 
         # Check substitution with the whole matrix as a key
         num_vector = geo.V3(1, 2, -3.1)
         self.assertEqual(num_vector, sym_vector.subs(sym_vector, num_vector))
-        self.assertNear(num_vector.norm(), sym_vector.norm().subs(sym_vector, num_vector), places=9)
-        self.assertNear(
-            num_vector.norm(), sym_vector.norm().subs({sym_vector: num_vector}), places=9
-        )
-        self.assertNear(
-            num_vector.norm(), sym_vector.norm().subs([(sym_vector, num_vector)]), places=9
-        )
+        norm = sm.S(sym_vector.norm())
+        self.assertNear(num_vector.norm(), norm.subs(sym_vector, num_vector), places=9)
+        self.assertNear(num_vector.norm(), norm.subs({sym_vector: num_vector}), places=9)
+        self.assertNear(num_vector.norm(), norm.subs([(sym_vector, num_vector)]), places=9)
         self.assertNear(
             num_vector * num_vector.T,
             (sym_vector * sym_vector.T).subs(sym_vector, num_vector),
@@ -108,13 +158,17 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         simple_matrix = geo.Matrix([x * (x - 1), 0])
         self.assertEqual(unsimple_matrix.simplify(), simple_matrix)
 
-        pi_mat = sm.pi * geo.I2()
+        pi_mat = sm.pi * geo.M22.matrix_identity()
         pi_mat_num = geo.Matrix([[3.14159265, 0], [0, 3.14159265]])
-        self.assertNear(pi_mat.evalf().to_storage(), pi_mat_num.to_storage())
+        self.assertNear(pi_mat, pi_mat_num)
 
         numpy_mat = np.array([[2.0, 1.0], [4.0, 3.0]])
         geo_mat = geo.Matrix([[2.0, 1.0], [4.0, 3.0]])
         self.assertNear(numpy_mat, geo_mat.to_numpy())
+
+        # Make sure we assert when calling a method that expects fixed size on geo.M
+        self.assertRaises(AssertionError, lambda: geo.M.symbolic("C"))
+        self.assertRaises(AssertionError, lambda: geo.M.from_storage([1, 2, 3]))
 
     def test_constructor_helpers(self):
         # type: () -> None
@@ -122,17 +176,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         Tests:
             VectorX, ZX, IX constructor helpers
         """
-        vector_constructors = [
-            geo.V1,
-            geo.V2,
-            geo.V3,
-            geo.V4,
-            geo.V5,
-            geo.V6,
-            geo.V7,
-            geo.V8,
-            geo.V9,
-        ]
+        vector_constructors = [geo.V1, geo.V2, geo.V3, geo.V4, geo.V5, geo.V6]
         for i, vec in enumerate(vector_constructors):
             self.assertEqual(vec(), geo.Matrix.zeros(i + 1, 1))
             rand_vec = np.random.rand(i + 1)
@@ -140,50 +184,14 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(vec(*rand_vec), geo.Matrix(rand_vec))
 
             rand_vec_long = np.random.rand(i + 2)
-            self.assertRaises(ArithmeticError, vec, rand_vec_long)
-            self.assertRaises(ArithmeticError, vec, *rand_vec_long)
+            self.assertRaises(AssertionError, vec, rand_vec_long)
+            self.assertRaises(AssertionError, vec, *rand_vec_long)
 
-        zero_matrix_constructors = [
-            geo.Z1,
-            geo.Z2,
-            geo.Z3,
-            geo.Z4,
-            geo.Z5,
-            geo.Z6,
-            geo.Z7,
-            geo.Z8,
-            geo.Z9,
-        ]
-        for i, mat in enumerate(zero_matrix_constructors):
-            self.assertEqual(mat(), geo.Matrix.zeros(i + 1, 1))
-
-        zero_matrix_constructors = [
-            geo.Z11,
-            geo.Z22,
-            geo.Z33,
-            geo.Z44,
-            geo.Z55,
-            geo.Z66,
-            geo.Z77,
-            geo.Z88,
-            geo.Z99,
-        ]
-        for i, mat in enumerate(zero_matrix_constructors):
-            self.assertEqual(mat(), geo.Matrix.zeros(i + 1, i + 1))
-
-        eye_matrix_constructors = [
-            geo.I1,
-            geo.I2,
-            geo.I3,
-            geo.I4,
-            geo.I5,
-            geo.I6,
-            geo.I7,
-            geo.I8,
-            geo.I9,
-        ]
+        eye_matrix_constructors = [geo.I1, geo.I2, geo.I3, geo.I4, geo.I5, geo.I6]
         for i, mat in enumerate(eye_matrix_constructors):
             self.assertEqual(mat(), geo.Matrix.eye(i + 1))
+
+    # TODO(hayk): Test row_join, col_join - seem to not use new and create inconsistent shapes.
 
 
 if __name__ == "__main__":

@@ -15,9 +15,9 @@ template <typename {{ util.format_typename(Symbol) }}>
 ) {
     {{ util.expr_code(spec) | indent(4) }}
 
-    {% if T_return == Matrix %}
+    {% if issubclass(spec.return_type, Matrix) %}
     return res;
-    {% elif T_return == Symbol %}
+    {% elif issubclass(spec.return_type, Symbol) %}
     return res[0];
     {% else %}
     return {{ util.format_typename(spec.return_type) }}(res);

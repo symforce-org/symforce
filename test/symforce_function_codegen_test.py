@@ -48,8 +48,8 @@ class SymforceFunctionCodegenTest(TestCase):
         spec = FunctionCodegen(
             name="AzElFromPoint",
             func=az_el_from_point,
-            arg_types=[geo.Pose3, geo.V3(), sm.Symbol],
-            return_type=geo.V2(),
+            arg_types=[geo.Pose3, geo.V3, sm.Symbol],
+            return_type=geo.V2,
         )
 
         # Emit function code
@@ -68,8 +68,8 @@ class SymforceFunctionCodegenTest(TestCase):
         spec = FunctionCodegen(
             name="az_el_from_point",
             func=az_el_from_point,
-            arg_types=[geo.Pose3, geo.V3(), sm.Symbol],
-            return_type=geo.V2(),
+            arg_types=[geo.Pose3, geo.V3, sm.Symbol],
+            return_type=geo.V2,
         )
 
         # Emit function code
@@ -92,8 +92,8 @@ class SymforceFunctionCodegenTest(TestCase):
         spec = FunctionCodegen(
             name="Foobar",
             func=func_no_docstring,
-            arg_types=[geo.V3(), sm.Symbol],
-            return_type=geo.V3(),
+            arg_types=[geo.V3, sm.Symbol],
+            return_type=geo.V3,
         )
 
         # Emit function code

@@ -48,5 +48,5 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const Pose3<Scalar>& nav_T_cam, const 
     res[1] = -std::acos(_tmp22/(epsilon + std::sqrt((_tmp11 * _tmp11) + (_tmp18 * _tmp18) + (_tmp22 * _tmp22)))) + M_PI_2;
 
 
-    return Eigen::Matrix<Scalar, 2, 1>(res);
+    return res;
 }

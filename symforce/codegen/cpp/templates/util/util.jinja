@@ -20,9 +20,9 @@ Eigen::Matrix<Scalar, {{ dim }}, 1>
  #}
 {%- macro format_typename(T_or_value) %}
     {%- set T = ops.StorageOps.get_type(T_or_value) -%}
-    {% if T == Symbol -%}
+    {% if issubclass(T, Symbol) -%}
         Scalar
-    {%- elif T == Matrix -%}
+    {%- elif issubclass(T, Matrix) -%}
         {{ vector_type(ops.StorageOps.storage_dim(T_or_value)) }}
     {%- else -%}
         {{ T.__name__ }}<Scalar>
@@ -58,7 +58,7 @@ Eigen::Matrix<Scalar, {{ dim }}, 1>
 {% macro expr_code(spec) -%}
 // Input arrays
 {% for arg, T in spec.args -%}
-{% if ops.StorageOps.get_type(T) not in (Symbol, Matrix) %}
+{% if not issubclass(ops.StorageOps.get_type(T), (Symbol, Matrix)) %}
 const {{ vector_type(ops.StorageOps.storage_dim(T)) }}& _{{ arg }} = {{ arg }}.Data();
 {% endif %}
 {% endfor %}
@@ -96,9 +96,9 @@ template <typename Scalar>
     {% set T_return = ops.StorageOps.get_type(spec.return_type) %}
     {% if T_return == cls %}
     return {{ format_typename(spec.return_type) }}(res);
-    {% elif T_return == Matrix %}
+    {% elif issubclass(T_return, Matrix) %}
     return res;
-    {% elif T_return == Symbol %}
+    {% elif issubclass(T_return, Symbol) %}
     return res[0];
     {% endif %}
 }

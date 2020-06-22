@@ -59,8 +59,8 @@ class TestCase(unittest.TestCase):
         using StorageOps.
         """
         return np.testing.assert_almost_equal(
-            actual=StorageOps.evalf(StorageOps.to_storage(actual)),
-            desired=StorageOps.evalf(StorageOps.to_storage(desired)),
+            actual=np.array(StorageOps.evalf(StorageOps.to_storage(actual)), dtype=np.double),
+            desired=np.array(StorageOps.evalf(StorageOps.to_storage(desired)), dtype=np.double),
             decimal=places,
             err_msg=msg,
             verbose=verbose,

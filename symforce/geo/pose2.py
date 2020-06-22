@@ -6,8 +6,6 @@ from .matrix import Matrix
 from .matrix import Vector1
 from .matrix import Vector2
 from .matrix import Vector3
-from .matrix import Z2
-from .matrix import Z3
 from .rot2 import Rot2
 
 
@@ -69,7 +67,7 @@ class Pose2(LieGroup):
     @classmethod
     def identity(cls):
         # type: () -> Pose2
-        return cls(R=Rot2.identity(), t=Z2())
+        return cls(R=Rot2.identity(), t=Vector2.zero())
 
     def compose(self, other):
         # type: (Pose2) -> Pose2

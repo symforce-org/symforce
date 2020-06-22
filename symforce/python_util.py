@@ -70,3 +70,15 @@ def files_in_dir(dirname, relative=False):
                 yield os.path.relpath(abspath, dirname)
             else:
                 yield abspath
+
+
+class classproperty(property):
+    """
+    This allows us to make properties that are treated as classmethods.
+
+    Source:
+        https://stackoverflow.com/questions/128573/using-property-on-classmethods/1383402
+    """
+
+    def __get__(self, cls, owner):  # type: ignore
+        return classmethod(self.fget).__get__(None, owner)()
