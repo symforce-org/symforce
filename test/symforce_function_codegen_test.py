@@ -16,7 +16,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "symforce_function_codegen_te
 
 # Test function
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon=0):
-    # type: (geo.Pose3, geo.Matrix, T.Scalar) -> geo.Matrix
+    # type: (geo.Pose3, geo.Matrix31, T.Scalar) -> geo.Matrix21
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.

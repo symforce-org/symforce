@@ -35,7 +35,7 @@ class SymforceEvaluatorCodegenTest(TestCase):
 
         with inputs.scope("states"):
             # Array element, turns into std::array
-            inputs["p"] = geo.V2().symbolic("p")
+            inputs["p"] = geo.V2.symbolic("p")
 
             # Vector element, turns into Eigen::Vector
             # inputs.add(sm.Symbol('q(0)'))

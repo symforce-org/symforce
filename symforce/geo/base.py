@@ -14,6 +14,8 @@ class Storage(object):
     __doc__ = ops.StorageOps.__doc__
 
     # Dimension of underlying storage
+    # TODO(nathan, hayk): Change STORAGE_DIM to classmethod storage_dim() to match C++ and avoid
+    # avoid complexities with inheritence (i.e. classproperty)
     STORAGE_DIM = -1  # type: int
 
     # Type that represents this or any subclasses

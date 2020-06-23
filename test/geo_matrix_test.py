@@ -181,6 +181,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(vec(), geo.Matrix.zeros(i + 1, 1))
             rand_vec = np.random.rand(i + 1)
             self.assertEqual(vec(rand_vec), geo.Matrix(rand_vec))
+            self.assertEqual(vec(vec(rand_vec)), geo.Matrix(rand_vec))
             self.assertEqual(vec(*rand_vec), geo.Matrix(rand_vec))
 
             rand_vec_long = np.random.rand(i + 2)

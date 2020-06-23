@@ -82,7 +82,7 @@ class Matrix(sm.Matrix, LieGroup):
         elif len(args) == 1 and isinstance(args[0], (T.Sequence, np.ndarray)):
             array = args[0]
             # 2D array, shape is known
-            if isinstance(array[0], (T.Sequence, np.ndarray)):
+            if len(array) > 0 and isinstance(array[0], (T.Sequence, np.ndarray)):
                 rows, cols = len(array), len(array[0])
                 assert all(len(arr) == cols for arr in array), "Inconsistent columns: {}".format(
                     args
@@ -398,6 +398,22 @@ class Matrix(sm.Matrix, LieGroup):
             return self.applyfunc(lambda x: x + right)
 
         return sm.Matrix.__add__(self, right)
+
+    def __mul__(self, right):
+        # type: (T.Scalar) -> Matrix
+        """
+        Multiply a matrix by a scalar
+
+        Args:
+            right (Scalar):
+
+        Returns:
+            Matrix:
+        """
+        if StorageOps.scalar_like(right):
+            return self.applyfunc(lambda x: x * right)
+
+        return sm.Matrix.__mul__(self, right)
 
     def __div__(self, right):
         # type: (T.Union[T.Scalar, Matrix]) -> Matrix
