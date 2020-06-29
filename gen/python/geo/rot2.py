@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 import numpy as np
 
-from .ops.impl import rot2 as ops
+from .ops import rot2 as ops
 
 
 class Rot2(object):

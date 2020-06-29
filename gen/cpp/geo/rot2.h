@@ -82,7 +82,7 @@ class Rot2 {
     return Compose(b);
   }
 
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // LieGroupOps concept
   // --------------------------------------------------------------------------
 
@@ -149,6 +149,6 @@ std::ostream& operator<<(std::ostream& os, const geo::Rot2<double>& a);
 std::ostream& operator<<(std::ostream& os, const geo::Rot2<float>& a);
 
 // Concept implementations for this class
-#include "./ops/impl/rot2/storage_ops.h"
-#include "./ops/impl/rot2/group_ops.h"
-#include "./ops/impl/rot2/lie_group_ops.h"
+#include "./ops/rot2/storage_ops.h"
+#include "./ops/rot2/group_ops.h"
+#include "./ops/rot2/lie_group_ops.h"

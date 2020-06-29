@@ -22,6 +22,6 @@ std::ostream& operator<<(std::ostream& os, const geo::Pose2f& a) {
 
 
 // Concept implementations for this class
-#include "./ops/impl/pose2/storage_ops.cc"
-#include "./ops/impl/pose2/group_ops.cc"
-#include "./ops/impl/pose2/lie_group_ops.cc"
+#include "./ops/pose2/storage_ops.cc"
+#include "./ops/pose2/group_ops.cc"
+#include "./ops/pose2/lie_group_ops.cc"

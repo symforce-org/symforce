@@ -3,6 +3,7 @@ import os
 import random
 import sys
 import unittest
+import logging
 
 from symforce import geo
 from symforce import logger
@@ -141,3 +142,26 @@ class TestCase(unittest.TestCase):
             with open(os.path.join(actual_dir, path), "r") as f:
                 actual_data = f.read()
             self.compare_or_update(os.path.join(expected_dir, path), actual_data)
+
+    @staticmethod
+    def compile_and_run_cpp(package_dir, executable_names):
+        # type: (str, T.Union[str, T.Sequence[str]]) -> None
+        """
+        Compile package using makefile in package_dir, then execute the executable with
+        name executable_name.
+        """
+
+        # Build package
+        make_cmd = ["make", "-C", package_dir]
+        if logger.level != logging.DEBUG:
+            make_cmd.append("--quiet")
+        python_util.execute_subprocess(make_cmd)
+
+        # Run executable(s)
+        if isinstance(executable_names, str):
+            # We just have one executable
+            python_util.execute_subprocess(os.path.join(package_dir, executable_names))
+        else:
+            # We have a list of executables
+            for name in executable_names:
+                python_util.execute_subprocess(os.path.join(package_dir, name))

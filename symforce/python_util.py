@@ -1,10 +1,11 @@
 """
 General python utilities.
 """
-
 import os
+import random
 import re
 import shutil
+import string
 import subprocess
 
 from symforce import logger
@@ -82,3 +83,12 @@ class classproperty(property):
 
     def __get__(self, cls, owner):  # type: ignore
         return classmethod(self.fget).__get__(None, owner)()
+
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    # type: (int, str) -> str
+    """
+    Generate a random string within a character set - for example "6U1S75".
+    This is not cryptographically secure.
+    """
+    return "".join(random.choice(chars) for _ in range(size))

@@ -239,7 +239,7 @@ class Rot3(LieGroup):
         # If a.dot(b) == -1, it's a degenerate case and we need to return a 180 rotation
         # about a *different* axis. We select either the unit X or unit Y axis.
         is_valid = (sm.sign(sm.Abs(a.dot(b) + one) - epsilon) + one) / two
-        is_x_vec = V3().are_parallel(a, V3(one, 0, 0), epsilon)
+        is_x_vec = V3.are_parallel(a, V3(one, 0, 0), epsilon)
         non_parallel_vec = is_x_vec * V3(0, one, 0) + (one - is_x_vec) * V3(one, 0, 0)
 
         m = sm.sqrt(two + two * a.dot(b) + epsilon)

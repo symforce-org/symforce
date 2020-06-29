@@ -61,7 +61,7 @@ class GeoPackageTest(unittest.TestCase):
             geo.Rot2 GroupOps
         """
         geo_class = geo.Rot2
-        group_ops = geo.ops.impl.rot2.GroupOps
+        group_ops = geo.ops.rot2.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -135,7 +135,7 @@ class GeoPackageTest(unittest.TestCase):
             geo.Pose2 GroupOps
         """
         geo_class = geo.Pose2
-        group_ops = geo.ops.impl.pose2.GroupOps
+        group_ops = geo.ops.pose2.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -209,7 +209,7 @@ class GeoPackageTest(unittest.TestCase):
             geo.Rot3 GroupOps
         """
         geo_class = geo.Rot3
-        group_ops = geo.ops.impl.rot3.GroupOps
+        group_ops = geo.ops.rot3.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -283,7 +283,7 @@ class GeoPackageTest(unittest.TestCase):
             geo.Pose3 GroupOps
         """
         geo_class = geo.Pose3
-        group_ops = geo.ops.impl.pose3.GroupOps
+        group_ops = geo.ops.pose3.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()

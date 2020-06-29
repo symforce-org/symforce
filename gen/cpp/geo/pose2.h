@@ -87,7 +87,7 @@ class Pose2 {
     return Compose(b);
   }
 
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // LieGroupOps concept
   // --------------------------------------------------------------------------
 
@@ -167,6 +167,6 @@ std::ostream& operator<<(std::ostream& os, const geo::Pose2<double>& a);
 std::ostream& operator<<(std::ostream& os, const geo::Pose2<float>& a);
 
 // Concept implementations for this class
-#include "./ops/impl/pose2/storage_ops.h"
-#include "./ops/impl/pose2/group_ops.h"
-#include "./ops/impl/pose2/lie_group_ops.h"
+#include "./ops/pose2/storage_ops.h"
+#include "./ops/pose2/group_ops.h"
+#include "./ops/pose2/lie_group_ops.h"

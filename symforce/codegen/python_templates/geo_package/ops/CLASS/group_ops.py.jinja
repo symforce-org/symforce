@@ -1,0 +1,15 @@
+{%- import "../../../util/util.jinja" as util with context -%}
+
+import numpy
+
+class GroupOps(object):
+    """
+    Python GroupOps implementation for {{ cls }}.
+    """
+
+    {% for spec in specs['GroupOps'] %}
+    @staticmethod
+    {{ util.function_declaration(spec) }}
+    {{ util.expr_code(spec) | indent(4) }}
+
+    {% endfor %}

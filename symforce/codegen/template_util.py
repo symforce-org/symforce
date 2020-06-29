@@ -8,8 +8,8 @@ from symforce import logger
 from symforce import types as T
 
 CURRENT_DIR = os.path.dirname(__file__)
-CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp", "templates")
-PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python", "templates")
+CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp_templates")
+PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python_templates")
 
 
 class RelEnvironment(jinja2.Environment):
@@ -43,7 +43,11 @@ def render_template(template_path, data, output_path=None):
 
     loader = jinja2.FileSystemLoader(template_dir)
     env = RelEnvironment(
-        loader=loader, trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True,
+        loader=loader,
+        trim_blocks=True,
+        lstrip_blocks=True,
+        keep_trailing_newline=True,
+        undefined=jinja2.StrictUndefined,
     )
 
     template = env.get_template(template_name)

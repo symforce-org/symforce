@@ -5,9 +5,17 @@ Shared helper code between codegen of all languages.
 from enum import Enum
 import imp
 import os
+import inspect
 
+from symforce import ops
+from symforce import geo
+from symforce.values import Values
 from symforce import sympy as sm
 from symforce import types as T
+from symforce.codegen import printers
+
+
+NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 
 
 class CodegenMode(Enum):
@@ -72,40 +80,45 @@ def perform_cse(
     return temps, simplified_outputs
 
 
-def get_code_printer(mode):
-    # type: (CodegenMode) -> sm.CodePrinter
+def format_symbols_for_codegen(inputs, outputs):
+    # type: (Values, Values) -> T.Tuple[Values, Values]
     """
-    Pick a code printer for the given mode.
+    Reformats symbolic variables used in inputs and outputs to be uniform across object
+    types. E.g. if we have a rotation object with symbols (R_re, R_im) we will replace
+    "R_re" with "_R[0]" and "R_im" with "_R[1]". This makes accessing data easier when doing
+    code generation.
+
+    Args:
+        inputs: Values containing symbolic objects
+        outputs: Values containing symbolic expressions in terms of symbols in inputs
     """
-    # TODO(hayk): Consider symengine printer if this becomes slow.
+    # Rename the symbolic inputs so that they match the code we generate
+    symbolic_args = []
+    for key, value in inputs.items():
+        arg_cls = ops.StorageOps.get_type(value)
+        if arg_cls == sm.Symbol:
+            name_str = "{}"
+        elif issubclass(arg_cls, geo.Matrix):
+            name_str = "{}[{}]"
+        else:
+            # For a geo type, we extract the .data() with an underscore prefix
+            # to keep the argument as the original variable name.
+            name_str = "_{}[{}]"
 
-    if mode in (CodegenMode.PYTHON2, CodegenMode.PYTHON3):
-        from .python.python_code_printer import PythonCodePrinter
+        if arg_cls == Values:
+            storage_dim = len(value.to_storage())
+        else:
+            storage_dim = ops.StorageOps.storage_dim(value)
+        symbols = [sm.Symbol(name_str.format(key, j)) for j in range(storage_dim)]
+        symbolic_args.extend(symbols)
 
-        # Support specifying python2 for different versions of sympy in different ways
-        settings = dict()
-        if "standard" in PythonCodePrinter._default_settings:
-            settings["standard"] = mode.value
+    inputs_reformatted = Values.from_storage(symbolic_args, inputs.index())
 
-        printer = PythonCodePrinter(settings=settings)
+    input_subs = dict(zip(inputs.values_recursive(), symbolic_args))
+    outputs_subbed = [v.subs(input_subs) for v in outputs.values_recursive()]
+    outputs_reformatted = Values.from_storage(outputs_subbed, outputs.index())
 
-        if hasattr(printer, "standard"):
-            printer.standard = mode.value
-
-    elif mode == CodegenMode.CPP:
-        from .cpp.cpp_code_printer import CppCodePrinter
-        from sympy.codegen import ast
-
-        printer = CppCodePrinter(
-            settings=dict(
-                # TODO(hayk): Emit separately for floats and doubles.
-                # type_aliases={ast.real: ast.float32}
-            )
-        )
-    else:
-        raise NotImplementedError("Unknown codegen mode: {}".format(mode))
-
-    return printer
+    return inputs_reformatted, outputs_reformatted
 
 
 def print_code(
@@ -151,6 +164,39 @@ def print_code(
     return temps_code, outputs_code
 
 
+def get_code_printer(mode):
+    # type: (CodegenMode) -> sm.CodePrinter
+    """
+    Pick a code printer for the given mode.
+    """
+    # TODO(hayk): Consider symengine printer if this becomes slow.
+
+    if mode in (CodegenMode.PYTHON2, CodegenMode.PYTHON3):
+        # Support specifying python2 for different versions of sympy in different ways
+        settings = dict()
+        if "standard" in printers.PythonCodePrinter._default_settings:
+            settings["standard"] = mode.value
+
+        printer = printers.PythonCodePrinter(settings=settings)
+
+        if hasattr(printer, "standard"):
+            printer.standard = mode.value
+
+    elif mode == CodegenMode.CPP:
+        from sympy.codegen import ast
+
+        printer = printers.CppCodePrinter(
+            settings=dict(
+                # TODO(hayk): Emit separately for floats and doubles.
+                # type_aliases={ast.real: ast.float32}
+            )
+        )
+    else:
+        raise NotImplementedError("Unknown codegen mode: {}".format(mode))
+
+    return printer
+
+
 def load_generated_package(package_dir):
     # type: (str) -> T.Any
     """
@@ -162,3 +208,14 @@ def load_generated_package(package_dir):
         raise ImportError("Failed to find module: {}".format(package_dir))
 
     return imp.load_module(os.path.basename(package_dir), *find_data)  # type: ignore
+
+
+def get_function_argspec(func):
+    # type: (T.Callable) -> inspect.ArgSpec
+    """
+    Python 2 and 3 compatible way to get the argspec of a function using the inspect package.
+    """
+    try:
+        return inspect.getfullargspec(func)  # type: ignore
+    except AttributeError:
+        return inspect.getargspec(func)

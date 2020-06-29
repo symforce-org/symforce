@@ -1,0 +1,90 @@
+{# ------------------------------------------------------------------------- #}
+{# Utilities for Python code generation templates.                           #}
+{# ------------------------------------------------------------------------- #}
+
+ {# Format function docstring
+ #
+ # Args:
+ #     docstring (str):
+ #}
+{% macro print_docstring(docstring) %}
+"""
+{%- for line in docstring.split('\n') %}
+{{ '{}'.format(line) }}
+{% endfor -%}
+"""
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate function declaration
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro function_declaration(spec) -%}
+def {{ camelcase_to_snakecase(spec.name) }}(
+    {%- for name in spec.inputs_formatted.keys() -%}
+    {{ name }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}):
+    {# TODO: mypy types? #}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro expr_code(spec) %}
+    # Input arrays
+    {% for name, type in spec.inputs_formatted.items() %}
+        {% set T = ops.StorageOps.get_type(type) %}
+        {% if T == Values %}
+    _{{ name }} = {{ name }}.to_storage()
+        {% elif not issubclass(T, Symbol) and not issubclass(T, Matrix) %}
+    _{{ name }} = {{ name }}.data
+        {% endif %}
+    {% endfor %}
+
+    # Intermediate terms
+    {% for lhs, rhs in spec.intermediate_terms %}
+    {{ lhs }} = {{ rhs }}
+    {% endfor %}
+
+    # Output terms
+    {% set ns = namespace(iter=0) %}
+    {% for name, type in spec.outputs_formatted.items() %}
+        {%- set T = ops.StorageOps.get_type(type) -%}
+        {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
+            {% set rows = type.shape[0] %}
+            {% set cols = type.shape[1] %}
+    _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
+            {% for i in range(rows) %}
+                {% for j in range(cols) %}
+    _{{ name }}[{{ i }}, {{ j }}] = {{ spec.output_terms[ns.iter] }}
+                    {% set ns.iter = ns.iter + 1 %}
+                {% endfor %}
+            {% endfor %}
+        {% elif not is_symbolic(type) %}
+            {% if T == Values %}
+                {% set dims = ops.StorageOps.storage_dim(type.flatten()[0]) %}
+            {% else %}
+                {% set dims = ops.StorageOps.storage_dim(type) %}
+            {% endif %}
+    _{{name}} = [0.] * {{ dims }}
+            {% for i in range(dims) %}
+    _{{ name }}[{{ i }}] = {{ spec.output_terms[ns.iter] }}
+                {% set ns.iter = ns.iter + 1 %}
+            {% endfor %}
+        {% else %}
+    _{{name}} = {{ spec.output_terms[ns.iter] }}
+            {% set ns.iter = ns.iter + 1 %}
+        {% endif %}
+    {% endfor %}
+    return
+    {%- for name, type in spec.outputs_formatted.items() %}
+ _{{name}}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}
+{% endmacro %}

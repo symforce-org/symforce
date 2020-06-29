@@ -1,0 +1,26 @@
+# Basic test for the cam library
+
+INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }}
+CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
+LDFLAGS = -shared -fpic
+
+CC_FILES =\
+{% for cls in all_types %}
+{% set name = camelcase_to_snakecase(cls.__name__) %}
+	../cam/{{ name }}.cc{% if not loop.last %}\{% endif %}
+
+{% endfor %}
+
+all: libsymforce_cam.so example example_function_gen
+
+libsymforce_cam.so: $(CC_FILES)
+	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_cam.so $(CC_FILES) $(INCLUDES)
+
+example: cam_package_cpp_test.cc
+	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam $(INCLUDES)
+
+example_function_gen: cam_function_codegen_cpp_test.cc
+	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam $(INCLUDES)
+
+clean:
+	rm -f libsymforce_cam.so; rm -f cam_package_cpp_test cam_function_codegen_cpp_test

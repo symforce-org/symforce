@@ -6,6 +6,7 @@ from symforce import logger
 from symforce import sympy as sm
 from symforce import types as T
 from symforce import geo
+from symforce import cam
 from symforce import initialization
 from symforce.ops import StorageOps
 
@@ -320,7 +321,7 @@ class Values(object):
 
         Args:
             vector_values (list): Vectorized values
-            indices (dict(str, list)): Dict of key to the source (index, dimension, shape, item_index)
+            indices (dict(str, list)): Dict of key to the source (index, datatype, shape, item_index)
         """
         values = cls()
         for name, (inx, datatype, shape, item_index) in indices.items():
@@ -334,6 +335,8 @@ class Values(object):
                 values[name] = cls.from_storage(vec, item_index)
             elif datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
                 values[name] = getattr(geo, datatype).from_storage(vec)
+            elif datatype in {"LinearCameraCal"}:
+                values[name] = getattr(cam, datatype).from_storage(vec)
             elif datatype == "np.ndarray":
                 values[name] = np.array(vec).reshape(*shape)
             else:

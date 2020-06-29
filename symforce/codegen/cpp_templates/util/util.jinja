@@ -1,0 +1,252 @@
+{# ------------------------------------------------------------------------- #}
+{# Utilities for C++ code generation templates.                              #}
+{# ------------------------------------------------------------------------- #}
+
+{# Vector type of a given dimension
+ #
+ # Args:
+ #     dim (int):
+ #}
+{%- macro vector_type(dim) -%}
+Eigen::Matrix<Scalar, {{ dim }}, 1>
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Matrix type of a given dimension
+ #
+ # Args:
+ #     rows (int):
+ #     cols (int):
+ #}
+{%- macro matrix_type(rows, cols) -%}
+Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Convert a class to the emitted string
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     generated_type_name (str): Optional name in case type is a generated struct
+ #     generated_type_namespace (str): Optional namespace in case type is a generated struct
+ #}
+{%- macro format_typename(T_or_value, generated_type_name="", namespace="") %}
+    {%- set T = ops.StorageOps.get_type(T_or_value) -%}
+    {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
+        Scalar
+    {%- elif T.__name__ == 'NoneType' -%}
+        void
+    {%- elif issubclass(T, Matrix) -%}
+        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1]) }}
+    {%- elif T == Values -%}
+        {{ camelcase_to_snakecase(namespace) }}_types::{{ generated_type_name }}_t
+    {%- else -%}
+        {%- if "geo" in T.__module__ -%}
+        geo::
+        {%- elif "cam" in T.__module__ -%}
+        cam::
+        {%- endif -%}
+        {{- T.__name__ -}}<Scalar>
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Get the type of the object in the ouput Values with key given by spec.return_key
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro get_return_type(spec) %}
+    {%- if spec.return_key is not none -%}
+        {{ format_typename(spec.outputs_formatted[spec.return_key], spec.return_key, spec.name) }}
+    {%- else -%}
+        void
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+ {# Format function docstring
+ #
+ # Args:
+ #     docstring (str):
+ #}
+{% macro print_docstring(docstring) %}
+/*
+{%- for line in docstring.split('\n') %}
+*{{ ' {}'.format(line).rstrip() }}
+{% endfor -%}
+*/
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function input argument
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     name (str):
+ #}
+{%- macro format_input_arg(T_or_value, name, namespace) %}
+    {%- set T = ops.StorageOps.get_type(T_or_value) -%}
+    {% if T == Symbol -%}
+        {#- Scalar type is just const -#}
+        const {{ format_typename(T_or_value) }} {{ name }}
+    {%- else -%}
+        {#- Otherwise assume const reference -#}
+        const {{ format_typename(T_or_value, name, namespace) }}& {{ name }}
+    {%- endif %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function pointer argument
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     name (str):
+ #}
+{%- macro format_pointer_arg(T_or_value, name, namespace) %}
+    {{- format_typename(T_or_value, name, namespace) -}}* const {{ name -}}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate input arguments declaration.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro input_args_declaration(spec) %}
+    {%- for name, type in spec.inputs_formatted.items() -%}
+        {%- if name != "self" -%}
+            {{ format_input_arg(type, name, spec.name) }}
+            {%- if not loop.last
+                or spec.outputs_formatted.items() | length > 1
+                or (spec.outputs_formatted.items() | length == 1 and spec.return_key is none) -%}
+            , {% endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+    {%- for name, type in spec.outputs_formatted.items() -%}
+        {%- if name != spec.return_key -%}
+            {{- format_pointer_arg(type, name, spec.name) -}}
+            {%- if not loop.last -%}
+                {%- if not (loop.revindex0 == 1 and loop.nextitem[0] == spec.return_key) -%}
+                , {% endif -%}
+            {% endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate function declaration
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro function_declaration(spec) -%}
+{{ get_return_type(spec) }} {{ spec.name }}({{- input_args_declaration(spec) -}})
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate function declaration with custom namespace
+ #
+ # Args:
+ #     spec (Codegen):
+ #     namespace (str):
+ #}
+{%- macro function_declaration_custom_namespace(spec, namespace) -%}
+{{ get_return_type(spec) }} {{ namespace }}::{{ spec.name }}({{- input_args_declaration(spec) -}})
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro expr_code(spec) -%}
+    // Input arrays
+    {% for name, type in spec.inputs_formatted.items() %}
+    {% set T = ops.StorageOps.get_type(type) %}
+        {% if T == Values %}
+    std::vector<Scalar> {{ name }}_array;
+    {{ camelcase_to_snakecase(spec.name) }}_types::StorageOps::ToStorage<{{ format_typename(type, name, spec.name) }}>({{ name }}, &{{ name }}_array);
+    const {{ vector_type(ops.StorageOps.storage_dim(type.flatten()[0])) }} _{{ name }}({{ name }}_array.data());
+        {% elif not issubclass(T, Matrix) and not issubclass(T, Symbol) %}
+            {% if name == "self" %}
+    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = Data();
+            {% else %}
+    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = {{ name }}.Data();
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% for name, type in spec.outputs_formatted.items() %}
+        {% if name != spec.return_key %}
+    assert( {{ name }} != nullptr );
+        {% endif %}
+    {% endfor %}
+
+    // Intermediate terms ({{ spec.intermediate_terms | length }})
+    {% for lhs, rhs in spec.intermediate_terms %}
+    const {{ format_typename(Symbol) }} {{ lhs }} = {{ rhs }};
+    {% endfor %}
+
+    // Output terms ({{ spec.outputs_formatted.items() | length }})
+    {# Populate the output vectors with the generated expressions #}
+    {# We have to use a namespace here because of jinja's scoping rules in loops #}
+    {% set ns = namespace(iter=0) %}
+    {% for name, type in spec.outputs_formatted.items() %}
+        {%- set T = ops.StorageOps.get_type(type) -%}
+        {% if issubclass(T, Matrix) %}
+            {% set rows = type.shape[0] %}
+            {% set cols = type.shape[1] %}
+    {{ matrix_type(rows, cols) }} _{{ name }};
+            {% for i in range(rows) %}
+                {% for j in range(cols) %}
+    _{{ name }}({{ i }}, {{ j }}) = {{ spec.output_terms[ns.iter] }};
+                    {% set ns.iter = ns.iter + 1 %}
+                {% endfor %}
+            {% endfor %}
+        {% elif is_symbolic(type) %}
+    {{ format_typename(type) }} _{{ name }};
+    _{{ name }} = {{ spec.output_terms[ns.iter] }};
+            {% set ns.iter = ns.iter + 1 %}
+        {% else %}
+            {% if T == Values %}
+                {% set dims = ops.StorageOps.storage_dim(type.flatten()[0]) %}
+            {% else %}
+                {% set dims = ops.StorageOps.storage_dim(type) %}
+            {% endif %}
+    {{ vector_type(dims) }} _{{name}};
+            {% for i in range(dims) %}
+    _{{ name }}[{{ i }}] = {{ spec.output_terms[ns.iter] }};
+                {% set ns.iter = ns.iter + 1 %}
+            {% endfor %}
+        {% endif %}
+        {% if name != spec.return_key %}
+            {% if issubclass(T, Matrix) or is_symbolic(type) %}
+    *{{ name }} = _{{ name }};
+            {% else %}
+    *{{ name }} = {{ format_typename(type, name, spec.name) }}(_{{ name }});
+            {% endif %}
+        {% endif %}
+
+    {% endfor %}
+    {% for name, type in spec.outputs_formatted.items() %}
+        {% set T_return = ops.StorageOps.get_type(type) %}
+        {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+            {%- if issubclass(T_return, Matrix) or is_symbolic(type) %}
+    return _{{ name }};
+            {%- else %}
+    return {{ format_typename(type, name, spec.name) }}(_{{ name }});
+            {%- endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}

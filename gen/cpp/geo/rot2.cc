@@ -22,6 +22,6 @@ std::ostream& operator<<(std::ostream& os, const geo::Rot2f& a) {
 
 
 // Concept implementations for this class
-#include "./ops/impl/rot2/storage_ops.cc"
-#include "./ops/impl/rot2/group_ops.cc"
-#include "./ops/impl/rot2/lie_group_ops.cc"
+#include "./ops/rot2/storage_ops.cc"
+#include "./ops/rot2/group_ops.cc"
+#include "./ops/rot2/lie_group_ops.cc"

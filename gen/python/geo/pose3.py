@@ -4,7 +4,7 @@
 import numpy as np
 
 from .rot3 import Rot3
-from .ops.impl import pose3 as ops
+from .ops import pose3 as ops
 
 
 class Pose3(object):

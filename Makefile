@@ -5,7 +5,7 @@ BUILD_DIR=build
 PYTHON=***REMOVED***/bin/***REMOVED***
 PYTHON2=***REMOVED***/bin/mc_python
 
-BLACK_EXCLUDE='symforce/codegen/python/templates|/gen/|test_data/'
+BLACK_EXCLUDE='symforce/codegen/python_templates|/gen/|test_data/'
 
 # -----------------------------------------------------------------------------
 # Main

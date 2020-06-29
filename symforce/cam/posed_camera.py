@@ -46,7 +46,6 @@ class PosedCamera(Camera):
 
     def global_point_from_pixel_coords(self, pixel_coords, range_to_point, epsilon=0):
         # type: (geo.Matrix21, T.Scalar, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
-
         """
         Computes a point written in the global frame along the ray passing through the center
         of the given pixel. The point is positioned at a given range along the ray.
