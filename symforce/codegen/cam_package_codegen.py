@@ -20,7 +20,11 @@ from .geo_package_codegen import make_storage_ops_funcs
 
 CURRENT_DIR = os.path.dirname(__file__)
 # Default cam types to generate
-DEFAULT_CAM_TYPES = (cam.LinearCameraCal,)
+DEFAULT_CAM_TYPES = (
+    cam.LinearCameraCal,
+    cam.EquidistantEpipolarCameraCal,
+    cam.ATANCameraCal,
+)
 
 
 def make_camera_funcs(cls, mode):

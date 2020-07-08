@@ -16,6 +16,8 @@
 #include <Eigen/Dense>
 
 #include <cam/linear_camera_cal.h>
+#include <cam/equidistant_epipolar_camera_cal.h>
+#include <cam/atan_camera_cal.h>
 #include <cam/camera.h>
 #include <cam/posed_camera.h>
 #include <geo/pose3.h>
@@ -44,6 +46,44 @@ std::vector<cam::LinearCameraCal<Scalar>> GetCamCalsLinearCameraCal() {
   Eigen::Matrix<Scalar, 4, 1> data3;
   data3 << 500, 500, 1000, 800;
   cam_cals.push_back(cam::LinearCameraCal<Scalar>(data3));
+
+  return cam_cals;
+}
+
+template <typename Scalar>
+std::vector<cam::EquidistantEpipolarCameraCal<Scalar>> GetCamCalsEquidistantEpipolarCameraCal() {
+  std::vector<cam::EquidistantEpipolarCameraCal<Scalar>> cam_cals;
+
+  Eigen::Matrix<Scalar, 4, 1> data1;
+  data1 << 90, 90, 60, 80;
+  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data1));
+
+  Eigen::Matrix<Scalar, 4, 1> data2;
+  data2 << 380, 380, 320, 240;
+  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data2));
+
+  Eigen::Matrix<Scalar, 4, 1> data3;
+  data3 << 500, 500, 1000, 800;
+  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data3));
+
+  return cam_cals;
+}
+
+template <typename Scalar>
+std::vector<cam::ATANCameraCal<Scalar>> GetCamCalsATANCameraCal() {
+  std::vector<cam::ATANCameraCal<Scalar>> cam_cals;
+
+  Eigen::Matrix<Scalar, 5, 1> data1;
+  data1 << 90, 90, 60, 80, 0.68;
+  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data1));
+
+  Eigen::Matrix<Scalar, 5, 1> data2;
+  data2 << 380, 380, 320, 240, 0.35;
+  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data2));
+
+  Eigen::Matrix<Scalar, 5, 1> data3;
+  data3 << 500, 500, 1000, 800, 0.21;
+  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data3));
 
   return cam_cals;
 }
@@ -182,12 +222,44 @@ int main(int argc, char** argv) {
     TestPosedCamera<cam::LinearCameraCal<double>>(cam_cal);
   }
 
+  std::vector<cam::EquidistantEpipolarCameraCal<double>> cam_cals_EquidistantEpipolarCameraCal_double = GetCamCalsEquidistantEpipolarCameraCal<double>();
+  for(auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_double) {
+    TestStorageOps<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestProjectDeproject<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestCamera<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestPosedCamera<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
+  }
+
+  std::vector<cam::ATANCameraCal<double>> cam_cals_ATANCameraCal_double = GetCamCalsATANCameraCal<double>();
+  for(auto cam_cal : cam_cals_ATANCameraCal_double) {
+    TestStorageOps<cam::ATANCameraCal<double>>(cam_cal);
+    TestProjectDeproject<cam::ATANCameraCal<double>>(cam_cal);
+    TestCamera<cam::ATANCameraCal<double>>(cam_cal);
+    TestPosedCamera<cam::ATANCameraCal<double>>(cam_cal);
+  }
+
   std::vector<cam::LinearCameraCal<float>> cam_cals_LinearCameraCal_float = GetCamCalsLinearCameraCal<float>();
   for(auto cam_cal : cam_cals_LinearCameraCal_float) {
     TestStorageOps<cam::LinearCameraCal<float>>(cam_cal);
     TestProjectDeproject<cam::LinearCameraCal<float>>(cam_cal);
     TestCamera<cam::LinearCameraCal<float>>(cam_cal);
     TestPosedCamera<cam::LinearCameraCal<float>>(cam_cal);
+  }
+
+  std::vector<cam::EquidistantEpipolarCameraCal<float>> cam_cals_EquidistantEpipolarCameraCal_float = GetCamCalsEquidistantEpipolarCameraCal<float>();
+  for(auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_float) {
+    TestStorageOps<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestProjectDeproject<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestCamera<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestPosedCamera<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
+  }
+
+  std::vector<cam::ATANCameraCal<float>> cam_cals_ATANCameraCal_float = GetCamCalsATANCameraCal<float>();
+  for(auto cam_cal : cam_cals_ATANCameraCal_float) {
+    TestStorageOps<cam::ATANCameraCal<float>>(cam_cal);
+    TestProjectDeproject<cam::ATANCameraCal<float>>(cam_cal);
+    TestCamera<cam::ATANCameraCal<float>>(cam_cal);
+    TestPosedCamera<cam::ATANCameraCal<float>>(cam_cal);
   }
 
 }

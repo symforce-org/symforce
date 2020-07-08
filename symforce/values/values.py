@@ -335,7 +335,7 @@ class Values(object):
                 values[name] = cls.from_storage(vec, item_index)
             elif datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
                 values[name] = getattr(geo, datatype).from_storage(vec)
-            elif datatype in {"LinearCameraCal"}:
+            elif datatype in {"LinearCameraCal", "EquidistantEpipolarCameraCal", "ATANCameraCal"}:
                 values[name] = getattr(cam, datatype).from_storage(vec)
             elif datatype == "np.ndarray":
                 values[name] = np.array(vec).reshape(*shape)

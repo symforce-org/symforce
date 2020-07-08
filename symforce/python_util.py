@@ -56,7 +56,7 @@ def camelcase_to_snakecase(s):
     """
     Convert CamelCase -> snake_case.
     """
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
+    return re.sub(r"(?<!^)(?=[A-Z][a-z])", "_", s).lower()
 
 
 def files_in_dir(dirname, relative=False):

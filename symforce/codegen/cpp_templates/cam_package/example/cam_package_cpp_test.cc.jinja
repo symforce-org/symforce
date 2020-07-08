@@ -50,6 +50,44 @@ std::vector<cam::LinearCameraCal<Scalar>> GetCamCalsLinearCameraCal() {
   return cam_cals;
 }
 
+template <typename Scalar>
+std::vector<cam::EquidistantEpipolarCameraCal<Scalar>> GetCamCalsEquidistantEpipolarCameraCal() {
+  std::vector<cam::EquidistantEpipolarCameraCal<Scalar>> cam_cals;
+
+  Eigen::Matrix<Scalar, 4, 1> data1;
+  data1 << 90, 90, 60, 80;
+  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data1));
+
+  Eigen::Matrix<Scalar, 4, 1> data2;
+  data2 << 380, 380, 320, 240;
+  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data2));
+
+  Eigen::Matrix<Scalar, 4, 1> data3;
+  data3 << 500, 500, 1000, 800;
+  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data3));
+
+  return cam_cals;
+}
+
+template <typename Scalar>
+std::vector<cam::ATANCameraCal<Scalar>> GetCamCalsATANCameraCal() {
+  std::vector<cam::ATANCameraCal<Scalar>> cam_cals;
+
+  Eigen::Matrix<Scalar, 5, 1> data1;
+  data1 << 90, 90, 60, 80, 0.68;
+  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data1));
+
+  Eigen::Matrix<Scalar, 5, 1> data2;
+  data2 << 380, 380, 320, 240, 0.35;
+  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data2));
+
+  Eigen::Matrix<Scalar, 5, 1> data3;
+  data3 << 500, 500, 1000, 800, 0.21;
+  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data3));
+
+  return cam_cals;
+}
+
 template <typename T>
 void TestStorageOps(const T& cam_cal) {
   using Scalar = typename T::Scalar;

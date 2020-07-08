@@ -24,7 +24,7 @@ class LinearCameraCal(CameraCal):
 
         Returns:
             value_if_is_valid: Result of projection if the point is valid
-            is_valid: 1 if the point is valid; 0 otherwise 
+            is_valid: 1 if the point is valid; 0 otherwise
         """
         x = point[0]
         y = point[1]
@@ -43,10 +43,8 @@ class LinearCameraCal(CameraCal):
         Convert point in unit-depth image plane to pixel coords by applying camera matrix.
         """
         return geo.Vector2(
-            [
-                unit_depth_coords[0] * self.focal_length[0] + self.principal_point[0],
-                unit_depth_coords[1] * self.focal_length[1] + self.principal_point[1],
-            ]
+            unit_depth_coords[0] * self.focal_length[0] + self.principal_point[0],
+            unit_depth_coords[1] * self.focal_length[1] + self.principal_point[1],
         )
 
     def unit_depth_from_pixel_coords(self, pixel_coord):
@@ -55,10 +53,8 @@ class LinearCameraCal(CameraCal):
         Convert point in pixel coordinates to unit-depth image plane by applying K_inv.
         """
         return geo.Vector2(
-            [
-                (pixel_coord[0] - self.principal_point[0]) / self.focal_length[0],
-                (pixel_coord[1] - self.principal_point[1]) / self.focal_length[1],
-            ]
+            (pixel_coord[0] - self.principal_point[0]) / self.focal_length[0],
+            (pixel_coord[1] - self.principal_point[1]) / self.focal_length[1],
         )
 
     def pixel_coords_from_camera_point(self, point, epsilon=0):

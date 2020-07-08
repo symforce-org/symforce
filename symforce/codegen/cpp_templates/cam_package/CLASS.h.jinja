@@ -58,7 +58,6 @@ class {{ cls.__name__ }} {
   // --------------------------------------------------------------------------
   // Camera model methods
   // --------------------------------------------------------------------------
-
   {% for spec in specs['CameraOps'] %}
   {{ util.print_docstring(spec.docstring) | indent(2) }}
   {{ util.function_declaration(spec) }} const;
