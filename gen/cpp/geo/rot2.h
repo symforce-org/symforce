@@ -125,6 +125,10 @@ class Rot2 {
     return Rot2<ToScalar>(Data().template cast<ToScalar>());
   }
 
+  bool operator==(const Rot2& rhs) const {
+    return data_ == rhs.Data();
+  }
+
   // Included from "custom_methods/rot2.h":
   // --------------------------------------------------------------------------
   // Handwritten methods for Rot2

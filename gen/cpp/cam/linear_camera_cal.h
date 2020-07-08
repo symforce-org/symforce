@@ -54,6 +54,7 @@ class LinearCameraCal {
   // Camera model methods
   // --------------------------------------------------------------------------
 
+  
   /**
   * Project a 3D point in the camera frame into 2D pixel coordinates.
   *
@@ -62,8 +63,8 @@ class LinearCameraCal {
   *     is_valid: 1 if the operation is within bounds else 0
   *
   */
-  Eigen::Matrix<Scalar, 2, 1> PixelCoordsFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid);
-
+  Eigen::Matrix<Scalar, 2, 1> PixelCoordsFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const;
+  
   /**
   * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
   *
@@ -72,8 +73,7 @@ class LinearCameraCal {
   *     is_valid: 1 if the operation is within bounds else 0
   *
   */
-  Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixelCoords(const Eigen::Matrix<Scalar, 2, 1>& pixel_coords, const Scalar epsilon, Scalar* const is_valid);
-
+  Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixelCoords(const Eigen::Matrix<Scalar, 2, 1>& pixel_coords, const Scalar epsilon, Scalar* const is_valid) const;
 
   // --------------------------------------------------------------------------
   // General Helpers
@@ -92,6 +92,10 @@ class LinearCameraCal {
   template <typename ToScalar>
   LinearCameraCal<ToScalar> Cast() const {
     return LinearCameraCal<ToScalar>(Data().template cast<ToScalar>());
+  }
+
+  bool operator==(const LinearCameraCal& rhs) const {
+    return data_ == rhs.Data();
   }
 
  protected:

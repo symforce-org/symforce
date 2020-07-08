@@ -12,7 +12,7 @@ template class cam::LinearCameraCal<float>;
 namespace cam {
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelCoordsFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) {
+Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelCoordsFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
     assert( is_valid != nullptr );
@@ -33,7 +33,7 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelCoordsFromCameraPoint(
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixelCoords(const Eigen::Matrix<Scalar, 2, 1>& pixel_coords, const Scalar epsilon, Scalar* const is_valid) {
+Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixelCoords(const Eigen::Matrix<Scalar, 2, 1>& pixel_coords, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
     assert( is_valid != nullptr );

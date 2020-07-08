@@ -29,18 +29,24 @@
 template <typename T>
 void TestGeneratedFunction() {
   using Scalar = typename T::Scalar;
+  Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
+  Scalar tolerance = 10.0 * epsilon; // For assessing approximate equality
 
-  Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1> data = Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1>::Random();
-
+  Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1> data;
+  std::mt19937 gen(42);
+  std::uniform_real_distribution<Scalar> cam_dist(100.0, 500.0);
+  for (int i = 0; i < geo::StorageOps<T>::StorageDim(); i++) {
+    data[i] = cam_dist(gen);
+  }
   T cam(data);
   std::cout << "*** Testing generated function with " << cam << " ***" << std::endl;
 
-  Scalar epsilon = 1e-6;
   int is_valid;
 
-  Eigen::Matrix<Scalar, 2, 1> pixel_coords = Eigen::Matrix<Scalar, 2, 1>::Random();
+  Eigen::Matrix<Scalar, 2, 1> pixel_coords;
+  pixel_coords << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);
   Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = pixel_to_ray_and_back_gen::PixelToRayAndBack<Scalar>(pixel_coords, cam, epsilon);
-  assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, epsilon));
+  assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, tolerance));
 }
 
 int main(int argc, char** argv) {

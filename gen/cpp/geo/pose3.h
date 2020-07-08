@@ -132,6 +132,10 @@ class Pose3 {
     return Pose3<ToScalar>(Data().template cast<ToScalar>());
   }
 
+  bool operator==(const Pose3& rhs) const {
+    return data_ == rhs.Data();
+  }
+
   // Included from "custom_methods/pose3.h":
   // --------------------------------------------------------------------------
   // Handwritten methods for Pose3
@@ -155,6 +159,10 @@ class Pose3 {
   // TODO(hayk): Could codegen this.
   Vector3 Compose(const Vector3& point) const {
       return Rotation() * point + Position();
+  }
+
+  Vector3 operator*(const Vector3& point) {
+    return Compose(point);
   }
 
  protected:

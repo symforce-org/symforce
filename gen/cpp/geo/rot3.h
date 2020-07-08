@@ -125,6 +125,10 @@ class Rot3 {
     return Rot3<ToScalar>(Data().template cast<ToScalar>());
   }
 
+  bool operator==(const Rot3& rhs) const {
+    return data_ == rhs.Data();
+  }
+
   // Included from "custom_methods/rot3.h":
   // --------------------------------------------------------------------------
   // Handwritten methods for Rot3

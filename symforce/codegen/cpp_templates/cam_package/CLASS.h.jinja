@@ -60,11 +60,8 @@ class {{ cls.__name__ }} {
   // --------------------------------------------------------------------------
 
   {% for spec in specs['CameraOps'] %}
-  {% if spec.docstring %}
-  {{ util.print_docstring(spec.docstring) | indent(2) -}}
-  {% endif %}
-  {{ util.function_declaration(spec) }};
-
+  {{ util.print_docstring(spec.docstring) | indent(2) }}
+  {{ util.function_declaration(spec) }} const;
   {% endfor %}
 
   // --------------------------------------------------------------------------
@@ -84,6 +81,10 @@ class {{ cls.__name__ }} {
   template <typename ToScalar>
   {{ cls.__name__ }}<ToScalar> Cast() const {
     return {{ cls.__name__ }}<ToScalar>(Data().template cast<ToScalar>());
+  }
+
+  bool operator==(const {{ cls.__name__ }}& rhs) const {
+    return data_ == rhs.Data();
   }
 
  protected:

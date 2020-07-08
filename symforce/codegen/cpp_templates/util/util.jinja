@@ -75,11 +75,14 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     docstring (str):
  #}
 {% macro print_docstring(docstring) %}
+{%- if docstring %}
+
 /*
 {%- for line in docstring.split('\n') %}
 *{{ ' {}'.format(line).rstrip() }}
 {% endfor -%}
 */
+{%- endif -%}
 {% endmacro %}
 
 {# ------------------------------------------------------------------------- #}

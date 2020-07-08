@@ -118,8 +118,8 @@ def geo_class_data(cls, mode):
     return data
 
 
-def generate(mode, output_dir=None):
-    # type: (CodegenMode, str) -> str
+def generate(mode, output_dir=None, gen_example=True):
+    # type: (CodegenMode, str, bool) -> str
     """
     Generate the geo package for the given language.
 
@@ -160,12 +160,13 @@ def generate(mode, output_dir=None):
         )
 
         # Test example
-        for name in ("geo_package_python_test.py",):
-            templates.add(
-                os.path.join(template_dir, "example", name) + ".jinja",
-                os.path.join(output_dir, "example", name),
-                dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES,),
-            )
+        if gen_example:
+            for name in ("geo_package_python_test.py",):
+                templates.add(
+                    os.path.join(template_dir, "example", name) + ".jinja",
+                    os.path.join(output_dir, "example", name),
+                    dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES,),
+                )
 
     elif mode == CodegenMode.CPP:
         logger.info('Creating C++ package at: "{}"'.format(package_dir))
@@ -198,22 +199,23 @@ def generate(mode, output_dir=None):
             )
 
         # Test example
-        for name in ("geo_package_cpp_test.cc", "Makefile"):
-            templates.add(
-                os.path.join(template_dir, "example", name) + ".jinja",
-                os.path.join(output_dir, "example", name),
-                dict(
-                    Codegen.common_data(),
-                    all_types=DEFAULT_GEO_TYPES,
-                    include_dir=output_dir,
-                    eigen_include_dir=os.path.realpath(
-                        os.path.join(
-                            CURRENT_DIR, "***REMOVED***/include/eigen3/"
-                        )
+        if gen_example:
+            for name in ("geo_package_cpp_test.cc", "Makefile"):
+                templates.add(
+                    os.path.join(template_dir, "example", name) + ".jinja",
+                    os.path.join(output_dir, "example", name),
+                    dict(
+                        Codegen.common_data(),
+                        all_types=DEFAULT_GEO_TYPES,
+                        include_dir=output_dir,
+                        eigen_include_dir=os.path.realpath(
+                            os.path.join(
+                                CURRENT_DIR, "***REMOVED***/include/eigen3/"
+                            )
+                        ),
+                        lib_dir=os.path.join(output_dir, "example"),
                     ),
-                    lib_dir=os.path.join(output_dir, "example"),
-                ),
-            )
+                )
 
     else:
         raise NotImplementedError('Unknown mode: "{}"'.format(mode))

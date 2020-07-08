@@ -139,6 +139,10 @@ class {{ cls.__name__ }} {
     return {{ cls.__name__ }}<ToScalar>(Data().template cast<ToScalar>());
   }
 
+  bool operator==(const {{ cls.__name__ }}& rhs) const {
+    return data_ == rhs.Data();
+  }
+
   {% set custom_template_name = "custom_methods/{}.h".format(cls.__name__.lower()) %}
   // Included from "{{ custom_template_name }}":
   {% include custom_template_name %}

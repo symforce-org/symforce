@@ -72,6 +72,39 @@ def cam_class_data(cls, mode):
     return data
 
 
+def class_template_data(cls, functions_to_doc):
+    # type: (T.Type, T.Sequence[function]) -> T.Dict[str, T.Any]
+    data = Codegen.common_data()
+    data["doc"] = dict()
+    data["doc"]["cls"] = textwrap.dedent(cls.__doc__).strip()  # type: ignore
+    for func in functions_to_doc:
+        if func.__doc__ is not None:
+            data["doc"][func.__name__] = textwrap.dedent(func.__doc__)
+        else:
+            data["doc"][func.__name__] = None
+    return data
+
+
+def camera_data():
+    # type: () -> T.Dict[str, T.Any]
+    functions_to_doc = [
+        cam.Camera.pixel_coords_from_camera_point,
+        cam.Camera.camera_ray_from_pixel_coords,
+        cam.Camera.maybe_check_in_view,
+        cam.Camera.in_view,
+    ]
+    return class_template_data(cam.Camera, functions_to_doc)
+
+
+def posed_camera_data():
+    # type: () -> T.Dict[str, T.Any]
+    functions_to_doc = [
+        cam.PosedCamera.pixel_coords_from_global_point,
+        cam.PosedCamera.global_point_from_pixel_coords,
+    ]
+    return class_template_data(cam.PosedCamera, functions_to_doc)
+
+
 def generate(mode, output_dir=None):
     # type: (CodegenMode, str) -> str
     """
@@ -93,7 +126,7 @@ def generate(mode, output_dir=None):
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
 
-        geo_package_codegen.generate(CodegenMode.CPP, output_dir)
+        geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir, gen_example=False)
 
         # Build up templates for each type
         for cls in DEFAULT_CAM_TYPES:
@@ -110,6 +143,18 @@ def generate(mode, output_dir=None):
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )
                 templates.add(template_path, output_path, data)
+
+        # Add Camera and PosedCamera
+        templates.add(
+            os.path.join(template_dir, "camera.h.jinja"),
+            os.path.join(cam_package_dir, "camera.h"),
+            camera_data(),
+        )
+        templates.add(
+            os.path.join(template_dir, "posed_camera.h.jinja"),
+            os.path.join(cam_package_dir, "posed_camera.h"),
+            posed_camera_data(),
+        )
 
         # Test example
         for name in (

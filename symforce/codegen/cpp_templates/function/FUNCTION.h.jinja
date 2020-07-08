@@ -13,10 +13,7 @@
 {% endif %}
 
 namespace {{ camelcase_to_snakecase(spec.name) }}_gen {
-
-{% if spec.docstring %}
-{{- util.print_docstring(spec.docstring) -}}
-{% endif -%}
+{{ util.print_docstring(spec.docstring) }}
 template <typename {{ util.format_typename(Symbol) }}>
 {{ util.function_declaration(spec) }} {
     {{ util.expr_code(spec) }}

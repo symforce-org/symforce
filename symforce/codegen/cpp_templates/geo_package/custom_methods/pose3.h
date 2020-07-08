@@ -21,3 +21,7 @@
   Vector3 Compose(const Vector3& point) const {
       return Rotation() * point + Position();
   }
+
+  Vector3 operator*(const Vector3& point) {
+    return Compose(point);
+  }

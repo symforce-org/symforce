@@ -130,6 +130,10 @@ class Pose2 {
     return Pose2<ToScalar>(Data().template cast<ToScalar>());
   }
 
+  bool operator==(const Pose2& rhs) const {
+    return data_ == rhs.Data();
+  }
+
   // Included from "custom_methods/pose2.h":
   // --------------------------------------------------------------------------
   // Handwritten methods for Pose2

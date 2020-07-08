@@ -12,9 +12,14 @@
  */
 
 #include <iostream>
+#include <random>
 #include <Eigen/Dense>
 
 #include <cam/linear_camera_cal.h>
+#include <cam/camera.h>
+#include <cam/posed_camera.h>
+#include <geo/pose3.h>
+#include <geo/rot3.h>
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
@@ -24,56 +29,165 @@
     throw std::runtime_error(o.str());                     \
   }
 
+template <typename Scalar>
+std::vector<cam::LinearCameraCal<Scalar>> GetCamCalsLinearCameraCal() {
+  std::vector<cam::LinearCameraCal<Scalar>> cam_cals;
+
+  Eigen::Matrix<Scalar, 4, 1> data1;
+  data1 << 90, 90, 60, 80;
+  cam_cals.push_back(cam::LinearCameraCal<Scalar>(data1));
+
+  Eigen::Matrix<Scalar, 4, 1> data2;
+  data2 << 380, 380, 320, 240;
+  cam_cals.push_back(cam::LinearCameraCal<Scalar>(data2));
+
+  Eigen::Matrix<Scalar, 4, 1> data3;
+  data3 << 500, 500, 1000, 800;
+  cam_cals.push_back(cam::LinearCameraCal<Scalar>(data3));
+
+  return cam_cals;
+}
+
 template <typename T>
-void TestStorageOps() {
+void TestStorageOps(const T& cam_cal) {
   using Scalar = typename T::Scalar;
 
-  Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1> data = Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1>::Random();
-
-  const T value(data);
-  std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
+  std::cout << "*** Testing StorageOps: " << cam_cal << " ***" << std::endl;
 
   constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
-  assertTrue(value.Data().rows() == storage_dim);
-  assertTrue(value.Data().cols() == 1);
+  assertTrue(cam_cal.Data().rows() == storage_dim);
+  assertTrue(cam_cal.Data().cols() == 1);
 
   std::vector<Scalar> vec;
-  value.ToStorage(&vec);
+  cam_cal.ToStorage(&vec);
   assertTrue(vec.size() > 0);
   assertTrue(vec.size() == storage_dim);
   for (int i = 0; i < vec.size(); ++i) {
-    assertTrue(vec[i] == value.Data()[i]);
+    assertTrue(vec[i] == cam_cal.Data()[i]);
   }
 
-  const T value2 = geo::StorageOps<T>::FromStorage(vec);
-  assertTrue(value.Data() == value2.Data());
+  const T cam_cal2 = geo::StorageOps<T>::FromStorage(vec);
+  assertTrue(cam_cal.Data() == cam_cal2.Data());
   vec[0] = 2.1;
-  const T value3 = geo::StorageOps<T>::FromStorage(vec);
-  assertTrue(value.Data() != value3.Data());
+  const T cam_cal3 = geo::StorageOps<T>::FromStorage(vec);
+  assertTrue(cam_cal.Data() != cam_cal3.Data());
 }
 
 template <typename T>
-void TestProjectDeproject() {
+void TestProjectDeproject(const T& cam_cal) {
   using Scalar = typename T::Scalar;
+  const Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar tolerance = 10.0 * epsilon; // For checking approx. equality
 
-  Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1> data = Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1>::Random();
+  std::cout << "*** Testing projection model: " << cam_cal << " ***" << std::endl;
 
-  T cam(data);
-  std::cout << "*** Testing projection model: " << cam << " ***" << std::endl;
+  std::mt19937 gen(42);
+  // Generate pixels around principal point
+  std::uniform_real_distribution<Scalar> pixel_x_dist(0.0, 2.0 * cam_cal.Data()[2]);
+  std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
+  for(int i = 0; i < 10; i++) {
+    Eigen::Matrix<Scalar, 2, 1> pixel_coords;
+    pixel_coords << pixel_x_dist(gen), pixel_y_dist(gen);
 
-  Scalar epsilon = 1e-6;
+    Scalar is_valid_camera_ray;
+    Scalar is_valid_pixel;
+    const Eigen::Matrix<Scalar, 3, 1> camera_ray = cam_cal.CameraRayFromPixelCoords(pixel_coords, epsilon, &is_valid_camera_ray);
+    const Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = cam_cal.PixelCoordsFromCameraPoint(camera_ray, epsilon, &is_valid_pixel);
+    if (is_valid_camera_ray == 1 && is_valid_pixel == 1) {
+      assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, tolerance));
+    }
+  }
+}
+
+template <typename T>
+void TestCamera(const T& cam_cal) {
+  using Scalar = typename T::Scalar;
+  const Scalar epsilon = 1e-6;
+
+  std::cout << "*** Testing Camera class with calibration: " << cam_cal << " ***" << std::endl;
+
+  // Assume the principal point is at the center of the image
+  Eigen::Matrix<int, 2, 1> image_size;
+  image_size << int(2.0 * cam_cal.Data()[2]), int(2.0 * cam_cal.Data()[3]);
+
+  const cam::Camera<T> cam(cam_cal, image_size);
   Scalar is_valid;
 
-  Eigen::Matrix<Scalar, 2, 1> pixel_coords = Eigen::Matrix<Scalar, 2, 1>::Random();
-  Eigen::Matrix<Scalar, 3, 1> camera_ray = cam.CameraRayFromPixelCoords(pixel_coords, epsilon, &is_valid);
-  Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = cam.PixelCoordsFromCameraPoint(camera_ray, epsilon, &is_valid);
-  assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, epsilon));
+  assertTrue(cam.Calibration() == cam_cal);
+  assertTrue(cam.ImageSize() == image_size);
+
+  // Check a pixel that's out of the image
+  Eigen::Matrix<Scalar, 2, 1> invalid_pixel;
+  invalid_pixel << -1, -1;
+  cam.CameraRayFromPixelCoords(invalid_pixel, epsilon, &is_valid);
+  assertTrue(is_valid == 0);
+  assertTrue(cam.MaybeCheckInView(invalid_pixel) == 0);
+  assertTrue(cam::Camera<T>::InView(invalid_pixel, image_size) == 0);
+
+  // Check a point that's at the center of the image
+  Eigen::Matrix<Scalar, 2, 1> valid_pixel;
+  valid_pixel << image_size[0] / 2.0, image_size[1] / 2.0;
+  const Eigen::Matrix<Scalar, 3, 1> valid_camera_point = cam.CameraRayFromPixelCoords(valid_pixel, epsilon, &is_valid);
+  assertTrue(is_valid == 1);
+  assertTrue(cam.MaybeCheckInView(valid_pixel) == 1);
+  assertTrue(cam::Camera<T>::InView(valid_pixel, image_size) == 1);
+
+  // Project a point into the camera and check validity
+  cam.PixelCoordsFromCameraPoint(valid_camera_point, epsilon, &is_valid);
+  assertTrue(is_valid == 1);
+}
+
+template <typename T>
+void TestPosedCamera(const T& cam_cal) {
+  using Scalar = typename T::Scalar;
+  const Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar tolerance = 10.0 * epsilon; // For assessing approximate equality
+
+  std::cout << "*** Testing PosedCamera class with calibration: " << cam_cal << " ***" << std::endl;
+
+  std::mt19937 gen(42);
+  // Generate pixels around principal point
+  std::uniform_real_distribution<Scalar> pixel_x_dist(0.0, 2.0 * cam_cal.Data()[2]);
+  std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
+  std::uniform_real_distribution<Scalar> range_dist(1.0, 5.0);
+  for(int i = 0; i < 10; i++) {
+    const geo::Rot3<Scalar> R = geo::Rot3<Scalar>::Random(gen);
+    const Eigen::Matrix<Scalar, 3, 1> t = Eigen::Matrix<Scalar, 3, 1>::Random();
+    const geo::Pose3<Scalar> pose(R, t);
+    const cam::PosedCamera<T> cam(pose, cam_cal);
+
+    assertTrue(cam.Pose() == pose);
+
+    Eigen::Matrix<Scalar, 2, 1> pixel_coords;
+    pixel_coords << pixel_x_dist(gen), pixel_y_dist(gen);
+    const Scalar range_to_point = range_dist(gen);
+
+    Scalar is_valid_global_point;
+    Scalar is_valid_pixel;
+    const Eigen::Matrix<Scalar, 3, 1> global_point = cam.GlobalPointFromPixelCoords(pixel_coords, range_to_point, epsilon, &is_valid_global_point);
+    const Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = cam.PixelCoordsFromGlobalPoint(global_point, epsilon, &is_valid_pixel);
+    if (is_valid_global_point == 1 && is_valid_pixel == 1) {
+      assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, tolerance));
+    }
+  }
 }
 
 int main(int argc, char** argv) {
-  TestStorageOps<cam::LinearCameraCal<double>>();
-  TestProjectDeproject<cam::LinearCameraCal<double>>();
-  TestStorageOps<cam::LinearCameraCal<float>>();
-  TestProjectDeproject<cam::LinearCameraCal<float>>();
+
+  std::vector<cam::LinearCameraCal<double>> cam_cals_LinearCameraCal_double = GetCamCalsLinearCameraCal<double>();
+  for(auto cam_cal : cam_cals_LinearCameraCal_double) {
+    TestStorageOps<cam::LinearCameraCal<double>>(cam_cal);
+    TestProjectDeproject<cam::LinearCameraCal<double>>(cam_cal);
+    TestCamera<cam::LinearCameraCal<double>>(cam_cal);
+    TestPosedCamera<cam::LinearCameraCal<double>>(cam_cal);
+  }
+
+  std::vector<cam::LinearCameraCal<float>> cam_cals_LinearCameraCal_float = GetCamCalsLinearCameraCal<float>();
+  for(auto cam_cal : cam_cals_LinearCameraCal_float) {
+    TestStorageOps<cam::LinearCameraCal<float>>(cam_cal);
+    TestProjectDeproject<cam::LinearCameraCal<float>>(cam_cal);
+    TestCamera<cam::LinearCameraCal<float>>(cam_cal);
+    TestPosedCamera<cam::LinearCameraCal<float>>(cam_cal);
+  }
 
 }
