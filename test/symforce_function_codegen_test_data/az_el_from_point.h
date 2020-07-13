@@ -5,7 +5,7 @@
 
 
 
-namespace az_el_from_point_gen {
+namespace symforce {
 
 /**
 * Transform a nav point into azimuth / elevation angles in the
@@ -58,4 +58,4 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const geo::Pose3<Scalar>& nav_T_cam, c
     return _res;
 }
 
-}  // namespace az_el_from_point_gen
+}  // namespace symforce

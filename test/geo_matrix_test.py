@@ -36,6 +36,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertIsInstance(geo.M([[1, 2], [3, 4]]), geo.M22)
         self.assertEqual(geo.M([[1, 2], [3, 4]]), geo.M22([1, 2, 3, 4]))
         self.assertRaises(AssertionError, lambda: geo.M([[1, 2], [3, 4, 5]]))
+        self.assertRaises(AssertionError, lambda: geo.M([[geo.M22(), geo.M23()]]))
 
         # 3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
         self.assertIsInstance(geo.M22([1, 2, 3, 4]), geo.M22)
@@ -193,6 +194,53 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(mat(), geo.Matrix.eye(i + 1))
 
     # TODO(hayk): Test row_join, col_join - seem to not use new and create inconsistent shapes.
+
+    def test_jacobian(self):
+        # type: () -> None
+        """
+        Tests:
+            Matrix.jacobian
+        """
+        vec = geo.V3.symbolic("vec")
+        pose = geo.Pose3.symbolic("pose")
+        new_vec = pose * vec
+
+        vec_D_pose = vec.jacobian(pose)
+        self.assertEqual(vec_D_pose, geo.Matrix(3, pose.TANGENT_DIM).zero())
+
+        new_vec_D_vec = new_vec.jacobian(vec)
+        new_vec_D_pose = new_vec.jacobian(pose)
+        self.assertEqual(new_vec_D_vec.shape, (3, 3))
+        self.assertEqual(new_vec_D_pose.shape, (3, pose.TANGENT_DIM))
+
+        vec_D_pose_storage = vec.jacobian(pose, tangent_space=False)
+        self.assertEqual(vec_D_pose_storage, geo.Matrix(3, pose.STORAGE_DIM).zero())
+
+    def test_block_matrix(self):
+        # type: () -> None
+        """
+        Tests:
+            Matrix.block_matrix
+        """
+        M22 = geo.M22([1, 1, 1, 1])
+        M23 = geo.M23([2, 2, 2, 2, 2, 2])
+        M11 = geo.M11([3])
+        M14 = geo.M14([4, 4, 4, 4])
+        self.assertEqual(
+            geo.M.block_matrix([[M22, M23], [M11, M14]]),
+            geo.M([[1, 1, 2, 2, 2], [1, 1, 2, 2, 2], [3, 4, 4, 4, 4]]),
+        )
+        M21 = geo.M21([5, 5])
+        M13 = geo.M13([6, 6, 6])
+        self.assertEqual(
+            geo.M.block_matrix([[M22, M21], [M13]]), geo.M([[1, 1, 5], [1, 1, 5], [6, 6, 6]]),
+        )
+        self.assertRaises(
+            AssertionError, lambda: geo.M.block_matrix([[M22, M23], [M11, geo.M15()]])
+        )
+        self.assertRaises(
+            AssertionError, lambda: geo.M.block_matrix([[M22, geo.M33()], [M11, M14]])
+        )
 
 
 if __name__ == "__main__":

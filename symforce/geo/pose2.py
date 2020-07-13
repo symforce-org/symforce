@@ -112,6 +112,14 @@ class Pose2(LieGroup):
         R_tangent = Vector1(vec[2])
         return Matrix(Rot2.hat(R_tangent)).row_join(t_tangent).col_join(Matrix.zeros(1, 3)).tolist()
 
+    def storage_D_tangent(self):
+        # type: () -> Matrix
+        storage_D_tangent_R = self.R.storage_D_tangent()
+        storage_D_tangent_t = self.R.to_rotation_matrix()
+        return Matrix.block_matrix(
+            [[Matrix.zeros(2, 2), storage_D_tangent_R], [storage_D_tangent_t, Matrix.zeros(2, 1)]]
+        )
+
     # -------------------------------------------------------------------------
     # Helper methods
     # -------------------------------------------------------------------------

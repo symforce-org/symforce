@@ -169,8 +169,8 @@ std::ostream& operator<<(std::ostream& os, const geo::{{ cls.__name__ }}<{{ scal
 {% endfor %}
 
 // Concept implementations for this class
-#include "./ops/{{ cls.__name__ | lower }}/storage_ops.h"
-#include "./ops/{{ cls.__name__ | lower }}/group_ops.h"
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"
 {% if is_lie_group %}
-#include "./ops/{{ cls.__name__ | lower }}/lie_group_ops.h"
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h"
 {% endif %}

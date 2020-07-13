@@ -90,6 +90,10 @@ class Rot2(LieGroup):
         theta = vec[0]
         return [[0, -theta], [theta, 0]]
 
+    def storage_D_tangent(self):
+        # type: () -> Matrix
+        return Matrix([[-self.z.imag], [self.z.real]])
+
     # -------------------------------------------------------------------------
     # Helper methods
     # -------------------------------------------------------------------------

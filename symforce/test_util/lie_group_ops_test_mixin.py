@@ -1,6 +1,8 @@
 import numpy as np
 
+from symforce import sympy as sm
 from symforce import geo
+from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
 
 
@@ -87,3 +89,23 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
             geo.M.zeros(dim, 1),
             places=7,
         )
+
+    def test_storage_D_tangent(self):
+        # type: () -> None
+        element = self.element()
+        # TODO(nathan): We have to convert to a geo.Matrix for scalars
+        # and elements without a hardcoded storage_D_tangent function
+        storage_D_tangent = geo.M(LieGroupOps.storage_D_tangent(element))
+
+        # Check that the jacobian is the correct dimension
+        storage_dim = StorageOps.storage_dim(element)
+        tangent_dim = LieGroupOps.tangent_dim(element)
+        self.assertEqual(storage_D_tangent.shape, (storage_dim, tangent_dim))
+
+        # Check that the jacobian is close to a numerical approximation
+        xi = geo.Matrix(tangent_dim, 1).symbolic("xi")
+        element_perturbed = LieGroupOps.retract(element, xi)
+        element_perturbed_storage = StorageOps.to_storage(element_perturbed)
+        storage_D_tangent_approx = geo.M(element_perturbed_storage).jacobian(xi)
+        storage_D_tangent_approx = storage_D_tangent_approx.subs(xi, self.EPSILON * xi.one())
+        self.assertNear(storage_D_tangent, storage_D_tangent_approx)

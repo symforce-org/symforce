@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
     double foo;
     double bar;
-    codegen_test_cpp_gen::CodegenTestCpp<double>(x, y, rot, constants, states, &foo, &bar);
+    symforce::CodegenTestCpp<double>(x, y, rot, constants, states, &foo, &bar);
     assertTrue(std::abs(foo - (std::pow(x, 2) + rot.Data()[3])) < 1e-8);
     assertTrue(std::abs(bar - (constants.epsilon + std::sin(y) + std::pow(x, 2))) < 1e-8);
 }

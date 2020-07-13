@@ -5,7 +5,7 @@
 
 
 
-namespace pixel_to_ray_and_back_gen {
+namespace symforce {
 
 /**
 * Transform a given pixel into a ray and project the ray back to
@@ -28,4 +28,4 @@ Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>&
     return _res;
 }
 
-}  // namespace pixel_to_ray_and_back_gen
+}  // namespace symforce

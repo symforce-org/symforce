@@ -10,7 +10,7 @@
 #include "./lie_group_ops.h"
 
 namespace geo {
-namespace {{ cls.__name__ | lower }} {
+namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 {% for spec in specs['LieGroupOps'] %}
 template <typename Scalar>
@@ -20,10 +20,10 @@ template <typename Scalar>
 
 {% endfor %}
 
-}  // namespace {{ cls.__name__ | lower }}
+}  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
 }  // namespace geo
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct geo::{{ cls.__name__ | lower }}::LieGroupOps<{{ Scalar }}>;
+template struct geo::{{ camelcase_to_snakecase(cls.__name__) }}::LieGroupOps<{{ Scalar }}>;
 {% endfor %}

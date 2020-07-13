@@ -129,7 +129,7 @@ template <typename T>
 void TestLieGroupOps() {
   using Scalar = typename T::Scalar;
   using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
-  const Scalar epsilon = 1e-8;
+  const Scalar epsilon = 1e-7;
 
   const T identity;
   std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
@@ -150,7 +150,7 @@ void TestLieGroupOps() {
 
   const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
     identity, recovered_identity, epsilon);
-  assertTrue((pertubation_zero - TangentVec::Zero()).norm() < std::sqrt(epsilon));
+  assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 }
 
 int main(int argc, char** argv) {

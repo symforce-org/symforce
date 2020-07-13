@@ -1,5 +1,8 @@
 from symforce import types as T
+from symforce import sympy as sm
+from symforce import logger
 
+from .storage_ops import StorageOps
 from .group_ops import GroupOps
 
 Element = T.Any
@@ -69,6 +72,8 @@ class LieGroupOps(GroupOps):
             return a.from_tangent(vec, epsilon=epsilon)
         elif GroupOps.scalar_like(a):
             assert len(vec) == 1
+            if isinstance(vec[0], sm.Symbol):
+                return vec[0]
             constructor = a if isinstance(a, type) else type(a)
             return constructor(vec[0])
         else:
@@ -137,3 +142,25 @@ class LieGroupOps(GroupOps):
             return a.local_coordinates(b, epsilon=epsilon)
 
         return LieGroupOps.to_tangent(LieGroupOps.between(a, b), epsilon=epsilon)
+
+    @staticmethod
+    def storage_D_tangent(a, epsilon=0):
+        # type: (Element) -> sm.Matrix
+        """
+        Computes the jacobian of the storage space of an element with respect to the tangent space around
+        that element.
+        """
+        if hasattr(a, "storage_D_tangent"):
+            # Use precomputed jacobian
+            return a.storage_D_tangent()
+        elif GroupOps.scalar_like(a):
+            # TODO(nathan): Returning a sm.Matrix instead of a geo.Matrix could cause problems
+            return sm.Matrix([1])
+        else:
+            a_type = a if isinstance(a, type) else type(a)
+            logger.error(
+                "storage_D_tangent not implemented for {}; use storage_D_tangent.ipynb to compute".format(
+                    a_type
+                )
+            )
+            GroupOps._type_error(a)

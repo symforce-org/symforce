@@ -118,7 +118,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         # Check functions are inverses of each other
         for rot in self.get_rotations_to_test():
             rot_transformed = geo.Rot3.from_euler_ypr(*rot.to_euler_ypr(epsilon=1e-14))
-            self.assertLieGroupNear(rot_transformed, rot)
+            self.assertLieGroupNear(rot_transformed, rot, places=6)
 
     def test_from_two_unit_vectors(self):
         # type: () -> None

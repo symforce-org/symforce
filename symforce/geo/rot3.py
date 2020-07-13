@@ -96,7 +96,9 @@ class Rot3(LieGroup):
         Implementation of logmap that uses epsilon with the Max and Min functions to avoid NaN.
         """
         norm = sm.sqrt(sm.Max(epsilon, 1 - self.q.w ** 2))
-        tangent = 2 * self.q.xyz / norm * sm.acos(sm.Max(-1, sm.Min(1, self.q.w)))
+        tangent = (
+            2 * self.q.xyz / norm * sm.acos(sm.Max(-1 + epsilon, sm.Min(1 - epsilon, self.q.w)))
+        )
         return tangent.to_storage()
 
     def logmap(self, epsilon=0):
@@ -107,6 +109,21 @@ class Rot3(LieGroup):
     def hat(cls, vec):
         # type: (T.List[T.Scalar]) -> T.List[T.List[T.Scalar]]
         return [[0, -vec[2], vec[1]], [vec[2], 0, -vec[0]], [-vec[1], vec[0], 0]]
+
+    def storage_D_tangent(self):
+        # type: () -> Matrix
+        return (
+            sm.S.One
+            / 2
+            * Matrix(
+                [
+                    [self.q.w, -self.q.z, self.q.y],
+                    [self.q.z, self.q.w, -self.q.x],
+                    [-self.q.y, self.q.x, self.q.w],
+                    [-self.q.x, -self.q.y, -self.q.z],
+                ]
+            )
+        )
 
     # -------------------------------------------------------------------------
     # Helper methods

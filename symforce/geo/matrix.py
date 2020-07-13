@@ -4,6 +4,7 @@ import symforce
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.ops import StorageOps
+from symforce.ops import LieGroupOps
 from symforce.python_util import classproperty
 
 from .base import LieGroup
@@ -83,6 +84,10 @@ class Matrix(sm.Matrix, LieGroup):
             array = args[0]
             # 2D array, shape is known
             if len(array) > 0 and isinstance(array[0], (T.Sequence, np.ndarray)):
+                # 2D array of scalars
+                assert not isinstance(
+                    array[0][0], Matrix
+                ), "Use Matrix.block_matrix to construct using matrices"
                 rows, cols = len(array), len(array[0])
                 assert all(len(arr) == cols for arr in array), "Inconsistent columns: {}".format(
                     args
@@ -203,6 +208,10 @@ class Matrix(sm.Matrix, LieGroup):
     def to_tangent(self, epsilon=0):
         # type: (T.Scalar) -> T.List[T.Scalar]
         return list(self.reshape(self.shape[0] * self.shape[1], 1))
+
+    def storage_D_tangent(self):
+        # type: () -> Matrix
+        return Matrix.eye(self.STORAGE_DIM, self.TANGENT_DIM)  # type: ignore
 
     # -------------------------------------------------------------------------
     # Helper methods
@@ -358,6 +367,49 @@ class Matrix(sm.Matrix, LieGroup):
 
         return cls(sm.Matrix(symbols))
 
+    @classmethod
+    def block_matrix(cls, array):
+        # type: (T.Sequence[T.Sequence[Matrix]]) -> Matrix
+        """
+        Constructs a matrix from block elements. For example:
+        [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]] -> Matrix35 with elements equal to given blocks
+        """
+        # Sum rows of matricies in the first column
+        rows = sum([mat_row[0].shape[0] for mat_row in array])
+        # Sum columns of matricies in the first row
+        cols = sum([mat.shape[1] for mat in array[0]])
+
+        # Check for size consistency
+        for mat_row in array:
+            block_rows = mat_row[0].shape[0]
+            block_cols = 0
+            for mat in mat_row:
+                assert (
+                    mat.shape[0] == block_rows
+                ), "Inconsistent row number accross block: expected {} got {}".format(
+                    block_rows, mat.shape[0]
+                )
+                block_cols += mat.shape[1]
+            assert (
+                block_cols == cols
+            ), "Inconsistent column number accross block: expected {} got {}".format(
+                cols, block_cols
+            )
+
+        # Fill the new matrix data vector
+        flat_list = []
+        for mat_row in array:
+            for row in range(mat_row[0].shape[0]):
+                for mat in mat_row:
+                    if mat.shape[1] == 1:
+                        flat_list += [mat[row]]
+                    else:
+                        flat_list += mat[row, :].to_storage()
+
+        # Get the proper fixed size child class
+        fixed_size_type = fixed_type_from_shape((rows, cols))
+        return sm.Matrix.__new__(fixed_size_type, rows, cols, flat_list)
+
     def simplify(self, *args, **kwargs):
         # type: (T.Any, T.Any) -> Matrix
         """
@@ -366,6 +418,25 @@ class Matrix(sm.Matrix, LieGroup):
         This overrides the sympy implementation because that clobbers the class type.
         """
         return self.__class__(sm.simplify(self, *args, **kwargs))
+
+    def jacobian(self, X, tangent_space=True):
+        # type: (T.Any, bool) -> Matrix
+        """
+        Compute the jacobian with respect to the tangent space of X if tangent_space = True,
+        otherwise returns the jacobian wih respect to the storage elements of X.
+
+        This overrides the sympy implementation so that we can construct jacobians with
+        respect to symforce objects.
+        """
+        # Compute jacobian wrt X storage
+        self_D_storage = super(Matrix, self).jacobian(Matrix(StorageOps.to_storage(X)))
+
+        if tangent_space:
+            # Return jacobian wrt X tangent space
+            return self_D_storage * LieGroupOps.storage_D_tangent(X)
+
+        # Return jacobian wrt X storage
+        return self_D_storage
 
     def squared_norm(self):
         # type: () -> T.Scalar

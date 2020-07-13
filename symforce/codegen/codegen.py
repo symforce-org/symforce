@@ -164,33 +164,6 @@ class Codegen(object):
             docstring=textwrap.dedent(docstring),
         )
 
-    def jacobian(self, name, symbols):
-        # type: (str, T.Sequence[sm.Symbol]) -> Codegen
-        """
-        Returns a Codegen object that computes the jacobian of this function with
-        respect to the given symbols.
-
-        Args:
-            name: Name of the resulting function that computes the jacobian
-            symbols: Symbolic variables that the jacobian is computed with respect to
-        """
-        # TODO (nathan): This function should be changed in the future after we decide
-        # on how derivatives should be computed. See here:
-        # ***REMOVED***
-
-        # TODO (nathan): Modify docstring
-        output_mat = geo.Matrix(self.outputs.values_recursive())
-        jacobian_mat = output_mat.jacobian(symbols)
-        return self.__class__(
-            name=name,
-            inputs=self.inputs,
-            outputs=Values(jacobian=jacobian_mat),
-            mode=self.mode,
-            return_key="jacobian",
-            scalar_type=self.scalar_type,
-            docstring=self.docstring,
-        )
-
     @staticmethod
     def common_data():
         # type: () -> T.Dict[str, T.Any]
@@ -284,9 +257,7 @@ class Codegen(object):
         """
         # If the function is an instance method, remove the type associated with the class
         input_types = [
-            ops.StorageOps.get_type(arg).__name__
-            for name, arg in inputs.items()
-            if name is not "self"
+            ops.StorageOps.get_type(arg).__name__ for name, arg in inputs.items() if name != "self"
         ]
         output_types = [ops.StorageOps.get_type(arg).__name__ for arg in outputs.values()]
 

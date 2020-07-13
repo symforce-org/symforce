@@ -7,7 +7,7 @@
 #include "./storage_ops.h"
 
 namespace geo {
-namespace {{ cls.__name__ | lower }} {
+namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 template <typename Scalar>
 void StorageOps<Scalar>::ToStorage(const geo::{{ cls.__name__ }}<Scalar>& a, std::vector<Scalar>* vec) {
@@ -24,11 +24,11 @@ geo::{{ cls.__name__ }}<Scalar> StorageOps<Scalar>::FromStorage(const std::vecto
     Eigen::Map<const typename geo::{{ cls.__name__ }}<Scalar>::DataVec>(vec.data()));
 }
 
-}  // namespace {{ cls.__name__ | lower }}
+}  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
 }  // namespace geo
 
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct geo::{{ cls.__name__ | lower }}::StorageOps<{{ Scalar }}>;
+template struct geo::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
 {% endfor %}

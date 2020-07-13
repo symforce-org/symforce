@@ -8,7 +8,7 @@ import numpy as np
 from .rot{{ cls.__name__[-1] }} import Rot{{ cls.__name__[-1] }}
 {% endif -%}
 
-from .ops import {{ cls.__name__ | lower }} as ops
+from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
 
 
 class {{ cls.__name__ }}(object):

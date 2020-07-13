@@ -144,8 +144,8 @@ class TestCase(unittest.TestCase):
             self.compare_or_update(os.path.join(expected_dir, path), actual_data)
 
     @staticmethod
-    def compile_and_run_cpp(package_dir, executable_names):
-        # type: (str, T.Union[str, T.Sequence[str]]) -> None
+    def compile_and_run_cpp(package_dir, executable_names, make_args=tuple()):
+        # type: (str, T.Union[str, T.Sequence[str]], T.Sequence[str]) -> None
         """
         Compile package using makefile in package_dir, then execute the executable with
         name executable_name.
@@ -153,6 +153,8 @@ class TestCase(unittest.TestCase):
 
         # Build package
         make_cmd = ["make", "-C", package_dir]
+        if make_args:
+            make_cmd += make_args
         if logger.level != logging.DEBUG:
             make_cmd.append("--quiet")
         python_util.execute_subprocess(make_cmd)

@@ -7,7 +7,7 @@
 #include "./group_ops.h"
 
 namespace geo {
-namespace {{ cls.__name__ | lower }} {
+namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 {% for spec in specs['GroupOps'] %}
 {% if spec.docstring %}
@@ -24,10 +24,10 @@ template <typename Scalar>
 
 {% endfor %}
 
-}  // namespace {{ cls.__name__ | lower }}
+}  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
 }  // namespace geo
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct geo::{{ cls.__name__ | lower }}::GroupOps<{{ Scalar }}>;
+template struct geo::{{ camelcase_to_snakecase(cls.__name__) }}::GroupOps<{{ Scalar }}>;
 {% endfor %}

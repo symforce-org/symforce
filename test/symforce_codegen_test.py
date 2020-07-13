@@ -193,18 +193,19 @@ class SymforceCodegenTest(TestCase):
                     expected_dir=os.path.join(test_data_dir, "codegen_test_cpp_types"),
                 )
 
-                try:
-                    TestCase.compile_and_run_cpp(
-                        os.path.join(SYMFORCE_DIR, "test"), "codegen_function_test"
-                    )
-                finally:
-                    if logger.level != logging.DEBUG:
-                        python_util.remove_if_exists(
-                            os.path.join(SYMFORCE_DIR, "test", "codegen_function_test")
+                if not self.UPDATE:
+                    try:
+                        TestCase.compile_and_run_cpp(
+                            os.path.join(SYMFORCE_DIR, "test"), "codegen_function_test"
                         )
-                        python_util.remove_if_exists(
-                            os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
-                        )
+                    finally:
+                        if logger.level != logging.DEBUG:
+                            python_util.remove_if_exists(
+                                os.path.join(SYMFORCE_DIR, "test", "codegen_function_test")
+                            )
+                            python_util.remove_if_exists(
+                                os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
+                            )
 
             # Clean up
             if logger.level != logging.DEBUG:
@@ -234,6 +235,54 @@ class SymforceCodegenTest(TestCase):
         # Clean up
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(az_el_codegen_data["output_dir"])
+
+    def test_cpp_nan(self):
+        # type: () -> None
+        inputs = Values()
+        inputs["R1"] = geo.Rot3.symbolic("R1")
+        inputs["e"] = sm.Symbol("e")
+        dist_to_identity = geo.M(
+            inputs["R1"].local_coordinates(geo.Rot3.identity(), epsilon=inputs["e"])
+        ).squared_norm()
+        dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
+
+        cpp_func = Codegen(
+            name="IdentityDistJacobian",
+            inputs=inputs,
+            outputs=Values(dist_D_R1=dist_D_R1),
+            return_key="dist_D_R1",
+            mode=CodegenMode.CPP,
+            scalar_type="double",
+        )
+        codegen_data = cpp_func.generate_function()
+
+        test_data_dir = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
+        # Compare the function file
+        expected_code_file = os.path.join(test_data_dir, "identity_dist_jacobian.h")
+        output_function = os.path.join(codegen_data["output_dir"], "identity_dist_jacobian.h")
+        with open(output_function) as f:
+            code = f.read()
+            self.compare_or_update(expected_code_file, code)
+
+        if not self.UPDATE:
+            try:
+                TestCase.compile_and_run_cpp(
+                    package_dir=os.path.join(SYMFORCE_DIR, "test"),
+                    executable_names="codegen_nan_test",
+                    make_args=("codegen_nan_test",),
+                )
+            finally:
+                if logger.level != logging.DEBUG:
+                    python_util.remove_if_exists(
+                        os.path.join(SYMFORCE_DIR, "test", "codegen_nan_test")
+                    )
+                    python_util.remove_if_exists(
+                        os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
+                    )
+
+        # Clean up
+        if logger.level != logging.DEBUG:
+            python_util.remove_if_exists(codegen_data["output_dir"])
 
 
 if __name__ == "__main__":
