@@ -24,7 +24,7 @@
  #}
 {%- macro function_declaration(spec) -%}
 def {{ camelcase_to_snakecase(spec.name) }}(
-    {%- for name in spec.inputs_formatted.keys() -%}
+    {%- for name in spec.inputs.keys() -%}
     {{ name }}{% if not loop.last %}, {% endif %}
     {%- endfor -%}):
     {# TODO: mypy types? #}
@@ -39,7 +39,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
  #}
 {% macro expr_code(spec) %}
     # Input arrays
-    {% for name, type in spec.inputs_formatted.items() %}
+    {% for name, type in spec.inputs.items() %}
         {% set T = ops.StorageOps.get_type(type) %}
         {% if T == Values %}
     _{{ name }} = {{ name }}.to_storage()
@@ -55,7 +55,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
 
     # Output terms
     {% set ns = namespace(iter=0) %}
-    {% for name, type in spec.outputs_formatted.items() %}
+    {% for name, type in spec.outputs.items() %}
         {%- set T = ops.StorageOps.get_type(type) -%}
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
             {% set rows = type.shape[0] %}
@@ -84,7 +84,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
         {% endif %}
     {% endfor %}
     return
-    {%- for name, type in spec.outputs_formatted.items() %}
+    {%- for name, type in spec.outputs.items() %}
  _{{name}}{% if not loop.last %}, {% endif %}
     {%- endfor -%}
 {% endmacro %}

@@ -1,6 +1,6 @@
 import numpy
 
-import codegen_test_python_types
+import codegen_test_python_ns
 
 def codegen_test_python(x, y, rot, constants, states):
     """

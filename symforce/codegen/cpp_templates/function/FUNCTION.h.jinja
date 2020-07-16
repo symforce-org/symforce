@@ -4,15 +4,16 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-{% for type in spec.generated_types %}
-#include "./{{ camelcase_to_snakecase(spec.name) }}_types/{{ type }}.h"
+{% for name, type in spec.typenames_dict.items() %}
+#include "./{{ spec.namespaces_dict[name] }}/{{ type }}.h"
 {% endfor %}
 
-{% if spec.generated_types | length != 0 %}
-#include "./{{ camelcase_to_snakecase(spec.name) }}_types/storage_ops.h"
-{% endif %}
+{% for namespace in spec.unique_namespaces %}
+#include "./{{ namespace }}/storage_ops.h"
+{% endfor %}
 
-namespace symforce {
+namespace {{ spec.namespace }} {
+
 {% if spec.docstring %}
 {{ util.print_docstring(spec.docstring) }}
 {% endif %}
@@ -21,4 +22,4 @@ template <typename {{ util.format_typename(Symbol) }}>
     {{ util.expr_code(spec) }}
 }
 
-}  // namespace symforce
+}  // namespace {{ spec.namespace }}

@@ -30,8 +30,3 @@ void FromStorage(const Container& elements, T* out) {
 
 }  // namespace StorageOps
 }  // namespace {{ name }}
-
-// Include StorageOps specializations for each type
-{% for typename in typenames %}
-#include "./storage_ops/{{ typename }}.h"
-{% endfor %}

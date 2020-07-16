@@ -113,21 +113,19 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Between(const geo::Pose2<Scalar>& a, const 
     const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
     const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-    // Intermediate terms (7)
+    // Intermediate terms (5)
     const Scalar _tmp0 = 1.0 / ((_a[0] * _a[0]) + (_a[1] * _a[1]));
-    const Scalar _tmp1 = _b[0]*_tmp0;
-    const Scalar _tmp2 = _b[1]*_tmp0;
-    const Scalar _tmp3 = _b[2]*_tmp0;
-    const Scalar _tmp4 = _b[3]*_tmp0;
-    const Scalar _tmp5 = _a[2]*_tmp0;
-    const Scalar _tmp6 = _a[3]*_tmp0;
+    const Scalar _tmp1 = _a[1]*_tmp0;
+    const Scalar _tmp2 = _a[0]*_tmp0;
+    const Scalar _tmp3 = _a[3]*_tmp0;
+    const Scalar _tmp4 = _a[2]*_tmp0;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 4, 1> _res;
-    _res[0] = _a[0]*_tmp1 + _a[1]*_tmp2;
-    _res[1] = _a[0]*_tmp2 - _a[1]*_tmp1;
-    _res[2] = _a[0]*_tmp3 - _a[0]*_tmp5 + _a[1]*_tmp4 - _a[1]*_tmp6;
-    _res[3] = _a[0]*_tmp4 - _a[0]*_tmp6 - _a[1]*_tmp3 + _a[1]*_tmp5;
+    _res[0] = _b[0]*_tmp2 + _b[1]*_tmp1;
+    _res[1] = -_b[0]*_tmp1 + _b[1]*_tmp2;
+    _res[2] = -_a[0]*_tmp4 - _a[1]*_tmp3 + _b[2]*_tmp2 + _b[3]*_tmp1;
+    _res[3] = -_a[0]*_tmp3 + _a[1]*_tmp4 - _b[2]*_tmp1 + _b[3]*_tmp2;
 
     return geo::Pose2<Scalar>(_res);
 }

@@ -5,7 +5,8 @@
 
 
 
-namespace symforce {
+namespace sym {
+
 
 /**
 * Transform a nav point into azimuth / elevation angles in the
@@ -26,29 +27,29 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const geo::Pose3<Scalar>& nav_T_cam, c
     const Eigen::Matrix<Scalar, 7, 1>& _nav_T_cam = nav_T_cam.Data();
 
     // Intermediate terms (23)
-    const Scalar _tmp0 = -2*(_nav_T_cam[0] * _nav_T_cam[0]);
-    const Scalar _tmp1 = -2*(_nav_T_cam[2] * _nav_T_cam[2]) + 1;
-    const Scalar _tmp2 = _tmp0 + _tmp1;
-    const Scalar _tmp3 = 2*_nav_T_cam[1];
-    const Scalar _tmp4 = _nav_T_cam[2]*_tmp3;
-    const Scalar _tmp5 = 2*_nav_T_cam[3];
-    const Scalar _tmp6 = _nav_T_cam[0]*_tmp5;
-    const Scalar _tmp7 = _tmp4 + _tmp6;
-    const Scalar _tmp8 = _nav_T_cam[0]*_tmp3;
-    const Scalar _tmp9 = _nav_T_cam[2]*_tmp5;
-    const Scalar _tmp10 = _tmp8 - _tmp9;
-    const Scalar _tmp11 = -_nav_T_cam[4]*_tmp10 - _nav_T_cam[5]*_tmp2 - _nav_T_cam[6]*_tmp7 + _tmp10*nav_t_point[0] + _tmp2*nav_t_point[1] + _tmp7*nav_t_point[2];
-    const Scalar _tmp12 = _tmp8 + _tmp9;
-    const Scalar _tmp13 = -2*(_nav_T_cam[1] * _nav_T_cam[1]);
-    const Scalar _tmp14 = _tmp1 + _tmp13;
-    const Scalar _tmp15 = 2*_nav_T_cam[0]*_nav_T_cam[2];
-    const Scalar _tmp16 = _nav_T_cam[1]*_tmp5;
-    const Scalar _tmp17 = _tmp15 - _tmp16;
-    const Scalar _tmp18 = -_nav_T_cam[4]*_tmp14 - _nav_T_cam[5]*_tmp12 - _nav_T_cam[6]*_tmp17 + _tmp12*nav_t_point[1] + _tmp14*nav_t_point[0] + _tmp17*nav_t_point[2];
-    const Scalar _tmp19 = _tmp15 + _tmp16;
-    const Scalar _tmp20 = _tmp4 - _tmp6;
-    const Scalar _tmp21 = _tmp0 + _tmp13 + 1;
-    const Scalar _tmp22 = -_nav_T_cam[4]*_tmp19 - _nav_T_cam[5]*_tmp20 - _nav_T_cam[6]*_tmp21 + _tmp19*nav_t_point[0] + _tmp20*nav_t_point[1] + _tmp21*nav_t_point[2];
+    const Scalar _tmp0 = 2*_nav_T_cam[0];
+    const Scalar _tmp1 = _nav_T_cam[3]*_tmp0;
+    const Scalar _tmp2 = 2*_nav_T_cam[1];
+    const Scalar _tmp3 = _nav_T_cam[2]*_tmp2;
+    const Scalar _tmp4 = _tmp1 + _tmp3;
+    const Scalar _tmp5 = -2*(_nav_T_cam[0] * _nav_T_cam[0]);
+    const Scalar _tmp6 = -2*(_nav_T_cam[2] * _nav_T_cam[2]) + 1;
+    const Scalar _tmp7 = _tmp5 + _tmp6;
+    const Scalar _tmp8 = 2*_nav_T_cam[2]*_nav_T_cam[3];
+    const Scalar _tmp9 = _nav_T_cam[1]*_tmp0;
+    const Scalar _tmp10 = -_tmp8 + _tmp9;
+    const Scalar _tmp11 = -_nav_T_cam[4]*_tmp10 - _nav_T_cam[5]*_tmp7 - _nav_T_cam[6]*_tmp4 + _tmp10*nav_t_point[0] + _tmp4*nav_t_point[2] + _tmp7*nav_t_point[1];
+    const Scalar _tmp12 = _nav_T_cam[3]*_tmp2;
+    const Scalar _tmp13 = _nav_T_cam[2]*_tmp0;
+    const Scalar _tmp14 = -_tmp12 + _tmp13;
+    const Scalar _tmp15 = _tmp8 + _tmp9;
+    const Scalar _tmp16 = -2*(_nav_T_cam[1] * _nav_T_cam[1]);
+    const Scalar _tmp17 = _tmp16 + _tmp6;
+    const Scalar _tmp18 = -_nav_T_cam[4]*_tmp17 - _nav_T_cam[5]*_tmp15 - _nav_T_cam[6]*_tmp14 + _tmp14*nav_t_point[2] + _tmp15*nav_t_point[1] + _tmp17*nav_t_point[0];
+    const Scalar _tmp19 = _tmp16 + _tmp5 + 1;
+    const Scalar _tmp20 = -_tmp1 + _tmp3;
+    const Scalar _tmp21 = _tmp12 + _tmp13;
+    const Scalar _tmp22 = -_nav_T_cam[4]*_tmp21 - _nav_T_cam[5]*_tmp20 - _nav_T_cam[6]*_tmp19 + _tmp19*nav_t_point[2] + _tmp20*nav_t_point[1] + _tmp21*nav_t_point[0];
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 2, 1> _res;
@@ -58,4 +59,4 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const geo::Pose3<Scalar>& nav_T_cam, c
     return _res;
 }
 
-}  // namespace symforce
+}  // namespace sym

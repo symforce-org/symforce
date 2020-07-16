@@ -50,11 +50,17 @@ clean: docs_clean coverage_clean
 TEST_ENV=SYMFORCE_LOGLEVEL=WARNING
 TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
 
+# Python files which generate code
+GEN_FILES=test/symforce_*.py
+
 test_reqs:
 	${PYTHON} -m pip install -r test/requirements.txt
 
 test:
 	$(TEST_ENV) $(PYTHON) $(TEST_CMD)
+
+test_update:
+	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) $(PYTHON2) $(file) --update;)
 
 .PHONY: test_reqs test
 

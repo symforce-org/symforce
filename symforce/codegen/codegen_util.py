@@ -52,20 +52,14 @@ def perform_cse(
     # Perform CSE
     temps, simplified_outputs = sm.cse(output_exprs)
 
-    def subs(value, *args, **kwargs):
-        # type: (T.Scalar, T.Any, T.Any) -> T.Scalar
-        """ Substitute function that ignores types with no subs (like literals) """
-        try:
-            return value.subs(*args, **kwargs)  # type: ignore
-        except AttributeError:
-            return value
-
     # Substitute names of temp symbols
     tmp_name = lambda i: "_tmp{}".format(i)
     temps_renames = [(t[0], sm.Symbol(tmp_name(i))) for i, t in enumerate(temps)]
     temps_renames_dict = dict(temps_renames)
-    temps = [(temps_renames[i][1], subs(t[1], temps_renames_dict)) for i, t in enumerate(temps)]
-    simplified_outputs = [subs(v, temps_renames_dict) for v in simplified_outputs]
+    temps = [
+        (temps_renames[i][1], sm.S(t[1]).subs(temps_renames_dict)) for i, t in enumerate(temps)
+    ]
+    simplified_outputs = [sm.S(v).subs(temps_renames_dict) for v in simplified_outputs]
 
     # Substitute symbols to an input array
     # Rather than having the code contain the names of each symbol, we convert the
@@ -80,17 +74,19 @@ def perform_cse(
     return temps, simplified_outputs
 
 
-def format_symbols_for_codegen(inputs, outputs):
-    # type: (Values, Values) -> T.Tuple[Values, Values]
+def format_symbols(
+    inputs,  # type: Values
+    intermediate_terms,  # type: T.Sequence[T.Tuple[T.Scalar, T.Scalar]]
+    output_terms,  # type: T.Sequence[T.Scalar]
+):
+    # type: (...) -> T.Tuple[T.Sequence[T.Tuple[T.Scalar, T.Scalar]], T.Sequence[T.Scalar]]
     """
-    Reformats symbolic variables used in inputs and outputs to be uniform across object
-    types. E.g. if we have a rotation object with symbols (R_re, R_im) we will replace
-    "R_re" with "_R[0]" and "R_im" with "_R[1]". This makes accessing data easier when doing
-    code generation.
+    Reformats symbolic variables used in intermediate and outputs terms to be uniform
+    across object types. E.g. if we have a rotation object with symbols (R_re, R_im) we will replace
+    "R_re" with "_R[0]" and "R_im" with "_R[1]".
 
-    Args:
-        inputs: Values containing symbolic objects
-        outputs: Values containing symbolic expressions in terms of symbols in inputs
+    NOTE(nathan): This function would need to be specialized for target languages that use a
+    different syntax for accessing data in arrays/matrices
     """
     # Rename the symbolic inputs so that they match the code we generate
     symbolic_args = []
@@ -112,30 +108,31 @@ def format_symbols_for_codegen(inputs, outputs):
         symbols = [sm.Symbol(name_str.format(key, j)) for j in range(storage_dim)]
         symbolic_args.extend(symbols)
 
-    inputs_reformatted = Values.from_storage(symbolic_args, inputs.index())
-
     input_subs = dict(zip(inputs.values_recursive(), symbolic_args))
-    outputs_subbed = [v.subs(input_subs) for v in outputs.values_recursive()]
-    outputs_reformatted = Values.from_storage(outputs_subbed, outputs.index())
+    intermediate_terms_formatted = [
+        (lhs, sm.S(rhs).subs(input_subs)) for lhs, rhs in intermediate_terms
+    ]
+    output_terms_formatted = [sm.S(out).subs(input_subs) for out in output_terms]
 
-    return inputs_reformatted, outputs_reformatted
+    return intermediate_terms_formatted, output_terms_formatted
 
 
 def print_code(
-    input_symbols,  # type: T.Sequence[T.Scalar]
-    output_exprs,  # type: T.Sequence[T.Scalar]
+    inputs,  # type: Values
+    outputs,  # type: Values
     mode,  # type: CodegenMode
     cse=True,  # type: bool
-    substitute_inputs=True,  # type: bool
+    substitute_inputs=False,  # type: bool
 ):
     # type: (...) -> T.Tuple[T.Sequence[T.Tuple[str, str]], T.Sequence[str]]
     """
     Return executable code lines from the given input/output values.
 
     Args:
-        input_symbols: AKA inputs.values_recursive()
-        output_exprs: AKA outputs.values_recursive()
-        mode:
+        inputs: Values object specifying names and symbolic inputs
+        outputs: Values object specifying names and output expressions (written in terms
+                of the symbolic inputs)
+        mode: Programming language in which to generate the expressions
         cse: Perform common sub-expression elimination
         substitute_inputs: If True, replace all input symbols with a uniform array.
 
@@ -143,6 +140,9 @@ def print_code(
         T.Sequence[T.Tuple[str, str]]: Line of code per temporary variable
         T.Sequence[str]: Line of code per output variable
     """
+    input_symbols, _ = inputs.flatten()
+    output_exprs, _ = outputs.flatten()
+
     # CSE If needed
     if cse:
         temps, simplified_outputs = perform_cse(
@@ -154,12 +154,17 @@ def print_code(
         temps = []
         simplified_outputs = output_exprs
 
+    # Replace default symbols with vector notation (e.g. "R_re" -> "_R[0]")
+    temps_formatted, simplified_outputs_formatted = format_symbols(
+        inputs, temps, simplified_outputs
+    )
+
     # Get printer
     printer = get_code_printer(mode)
 
     # Print code
-    temps_code = [(str(var), printer.doprint(t)) for var, t in temps]
-    outputs_code = [printer.doprint(t) for t in simplified_outputs]
+    temps_code = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
+    outputs_code = [printer.doprint(t) for t in simplified_outputs_formatted]
 
     return temps_code, outputs_code
 

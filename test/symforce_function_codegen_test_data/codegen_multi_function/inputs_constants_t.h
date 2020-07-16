@@ -5,12 +5,17 @@
 
 #include <array>
 
+#include "./storage_ops.h"
 
-namespace codegen_test_cpp_types {
 
-class states_t {
+namespace codegen_multi_function {
+
+class inputs_constants_t {
  public:
-  std::array<double, 2> p{};
+  double epsilon{};
 };
 
-}  // namespace codegen_test_cpp_types
+}  // namespace codegen_multi_function
+
+// Include StorageOps specialization
+#include "./storage_ops/inputs_constants_t.h"

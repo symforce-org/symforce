@@ -39,13 +39,13 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = numpy.cos(vec[0])
-        _tmp1 = numpy.sin(vec[0])
+        _tmp0 = numpy.sin(vec[0])
+        _tmp1 = numpy.cos(vec[0])
 
         # Output terms
         _res = [0.] * 2
-        _res[0] = _a[0]*_tmp0 - _a[1]*_tmp1
-        _res[1] = _a[0]*_tmp1 + _a[1]*_tmp0
+        _res[0] = _a[0]*_tmp1 - _a[1]*_tmp0
+        _res[1] = _a[0]*_tmp0 + _a[1]*_tmp1
         return _res
 
     @staticmethod
@@ -57,12 +57,12 @@ class LieGroupOps(object):
 
         # Intermediate terms
         _tmp0 = 1/(_a[0]**2 + _a[1]**2)
-        _tmp1 = _b[0]*_tmp0
-        _tmp2 = _b[1]*_tmp0
-        _tmp3 = _a[0]*_tmp1 + _a[1]*_tmp2
+        _tmp1 = _a[0]*_tmp0
+        _tmp2 = _a[1]*_tmp0
+        _tmp3 = _b[0]*_tmp1 + _b[1]*_tmp2
 
         # Output terms
         _res = [0.] * 1
-        _res[0] = numpy.arctan2(_a[0]*_tmp2 - _a[1]*_tmp1, _tmp3 + epsilon*(numpy.sign(_tmp3) + 0.5))
+        _res[0] = numpy.arctan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _tmp3 + epsilon*(numpy.sign(_tmp3) + 0.5))
         return _res
 

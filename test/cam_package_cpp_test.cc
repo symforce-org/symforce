@@ -126,15 +126,15 @@ void TestProjectDeproject(const T& cam_cal) {
   std::uniform_real_distribution<Scalar> pixel_x_dist(0.0, 2.0 * cam_cal.Data()[2]);
   std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
   for(int i = 0; i < 10; i++) {
-    Eigen::Matrix<Scalar, 2, 1> pixel_coords;
-    pixel_coords << pixel_x_dist(gen), pixel_y_dist(gen);
+    Eigen::Matrix<Scalar, 2, 1> pixel;
+    pixel << pixel_x_dist(gen), pixel_y_dist(gen);
 
     Scalar is_valid_camera_ray;
     Scalar is_valid_pixel;
-    const Eigen::Matrix<Scalar, 3, 1> camera_ray = cam_cal.CameraRayFromPixelCoords(pixel_coords, epsilon, &is_valid_camera_ray);
-    const Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = cam_cal.PixelCoordsFromCameraPoint(camera_ray, epsilon, &is_valid_pixel);
+    const Eigen::Matrix<Scalar, 3, 1> camera_ray = cam_cal.CameraRayFromPixel(pixel, epsilon, &is_valid_camera_ray);
+    const Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = cam_cal.PixelFromCameraPoint(camera_ray, epsilon, &is_valid_pixel);
     if (is_valid_camera_ray == 1 && is_valid_pixel == 1) {
-      assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, tolerance));
+      assertTrue(pixel.isApprox(pixel_reprojected, tolerance));
     }
   }
 }
@@ -142,7 +142,8 @@ void TestProjectDeproject(const T& cam_cal) {
 template <typename T>
 void TestCamera(const T& cam_cal) {
   using Scalar = typename T::Scalar;
-  const Scalar epsilon = 1e-6;
+  const Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar tolerance = 10.0 * epsilon; // For checking approx. equality
 
   std::cout << "*** Testing Camera class with calibration: " << cam_cal << " ***" << std::endl;
 
@@ -159,7 +160,7 @@ void TestCamera(const T& cam_cal) {
   // Check a pixel that's out of the image
   Eigen::Matrix<Scalar, 2, 1> invalid_pixel;
   invalid_pixel << -1, -1;
-  cam.CameraRayFromPixelCoords(invalid_pixel, epsilon, &is_valid);
+  cam.CameraRayFromPixel(invalid_pixel, epsilon, &is_valid);
   assertTrue(is_valid == 0);
   assertTrue(cam.MaybeCheckInView(invalid_pixel) == 0);
   assertTrue(cam::Camera<T>::InView(invalid_pixel, image_size) == 0);
@@ -167,13 +168,13 @@ void TestCamera(const T& cam_cal) {
   // Check a point that's at the center of the image
   Eigen::Matrix<Scalar, 2, 1> valid_pixel;
   valid_pixel << image_size[0] / 2.0, image_size[1] / 2.0;
-  const Eigen::Matrix<Scalar, 3, 1> valid_camera_point = cam.CameraRayFromPixelCoords(valid_pixel, epsilon, &is_valid);
+  const Eigen::Matrix<Scalar, 3, 1> valid_camera_point = cam.CameraRayFromPixel(valid_pixel, epsilon, &is_valid);
   assertTrue(is_valid == 1);
   assertTrue(cam.MaybeCheckInView(valid_pixel) == 1);
   assertTrue(cam::Camera<T>::InView(valid_pixel, image_size) == 1);
 
   // Project a point into the camera and check validity
-  cam.PixelCoordsFromCameraPoint(valid_camera_point, epsilon, &is_valid);
+  cam.PixelFromCameraPoint(valid_camera_point, epsilon, &is_valid);
   assertTrue(is_valid == 1);
 }
 
@@ -198,16 +199,16 @@ void TestPosedCamera(const T& cam_cal) {
 
     assertTrue(cam.Pose() == pose);
 
-    Eigen::Matrix<Scalar, 2, 1> pixel_coords;
-    pixel_coords << pixel_x_dist(gen), pixel_y_dist(gen);
+    Eigen::Matrix<Scalar, 2, 1> pixel;
+    pixel << pixel_x_dist(gen), pixel_y_dist(gen);
     const Scalar range_to_point = range_dist(gen);
 
     Scalar is_valid_global_point;
     Scalar is_valid_pixel;
-    const Eigen::Matrix<Scalar, 3, 1> global_point = cam.GlobalPointFromPixelCoords(pixel_coords, range_to_point, epsilon, &is_valid_global_point);
-    const Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = cam.PixelCoordsFromGlobalPoint(global_point, epsilon, &is_valid_pixel);
+    const Eigen::Matrix<Scalar, 3, 1> global_point = cam.GlobalPointFromPixel(pixel, range_to_point, epsilon, &is_valid_global_point);
+    const Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = cam.PixelFromGlobalPoint(global_point, epsilon, &is_valid_pixel);
     if (is_valid_global_point == 1 && is_valid_pixel == 1) {
-      assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, tolerance));
+      assertTrue(pixel.isApprox(pixel_reprojected, tolerance));
     }
   }
 }

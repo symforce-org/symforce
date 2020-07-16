@@ -57,12 +57,12 @@ class GroupOps(object):
 
         # Intermediate terms
         _tmp0 = 1/(_a[0]**2 + _a[1]**2)
-        _tmp1 = _b[0]*_tmp0
-        _tmp2 = _b[1]*_tmp0
+        _tmp1 = _a[1]*_tmp0
+        _tmp2 = _a[0]*_tmp0
 
         # Output terms
         _res = [0.] * 2
-        _res[0] = _a[0]*_tmp1 + _a[1]*_tmp2
-        _res[1] = _a[0]*_tmp2 - _a[1]*_tmp1
+        _res[0] = _b[0]*_tmp2 + _b[1]*_tmp1
+        _res[1] = -_b[0]*_tmp1 + _b[1]*_tmp2
         return _res
 

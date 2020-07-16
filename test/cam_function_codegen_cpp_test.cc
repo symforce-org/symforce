@@ -43,10 +43,10 @@ void TestGeneratedFunction() {
 
   int is_valid;
 
-  Eigen::Matrix<Scalar, 2, 1> pixel_coords;
-  pixel_coords << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);
-  Eigen::Matrix<Scalar, 2, 1> pixel_coords_reprojected = symforce::PixelToRayAndBack<Scalar>(pixel_coords, cam, epsilon);
-  assertTrue(pixel_coords.isApprox(pixel_coords_reprojected, epsilon));
+  Eigen::Matrix<Scalar, 2, 1> pixel;
+  pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);
+  Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = sym::PixelToRayAndBack<Scalar>(pixel, cam, epsilon);
+  assertTrue(pixel.isApprox(pixel_reprojected, epsilon));
 }
 
 int main(int argc, char** argv) {

@@ -28,19 +28,19 @@ class CamTestMixin(_Base):
         """
         raise NotImplementedError()
 
-    def test_pixel_coords_from_camera_point(self):
+    def test_pixel_from_camera_point(self):
         # type: () -> None
         """
         Tests:
-            pixel_coords_from_camera_point
+            pixel_from_camera_point
         """
         # Check that we can project a point in 3D into the image and back
         for _ in range(10):
             cam_cal = self.element()
             point = geo.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
 
-            pixel_coords, is_valid_forward_proj = cam_cal.pixel_coords_from_camera_point(point)
-            camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel_coords(pixel_coords)
+            pixel, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
+            camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
             if abs(StorageOps.evalf(is_valid_forward_proj) - 1) < self.EPSILON:
                 self.assertTrue(geo.Matrix.are_parallel(point, camera_ray, epsilon=self.EPSILON))
@@ -48,11 +48,11 @@ class CamTestMixin(_Base):
             else:
                 self.assertNear(is_valid_forward_proj, 0)
 
-    def test_camera_ray_from_pixel_coords(self):
+    def test_camera_ray_from_pixel(self):
         # type: () -> None
         """
         Tests:
-            camera_ray_from_pixel_coords
+            camera_ray_from_pixel
         """
         # Check that we can project a point in the image into 3D and back
         for _ in range(10):
@@ -60,19 +60,18 @@ class CamTestMixin(_Base):
 
             # Try to generate pixels over a range that includes both valid and invalid pixel coordinates
             cx, cy = cam_cal.principal_point
-            pixel_coords = geo.V2(
+            pixel = geo.V2(
                 np.random.uniform(low=-0.5 * cx, high=2.5 * cx),
                 np.random.uniform(low=-0.5 * cy, high=2.5 * cy),
             )
 
-            camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel_coords(pixel_coords)
-            (
-                pixel_coords_reprojected,
-                is_valid_forward_proj,
-            ) = cam_cal.pixel_coords_from_camera_point(camera_ray)
+            camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
+            (pixel_reprojected, is_valid_forward_proj,) = cam_cal.pixel_from_camera_point(
+                camera_ray
+            )
 
             if abs(StorageOps.evalf(is_valid_back_proj) - 1) < self.EPSILON:
-                self.assertNear(pixel_coords, pixel_coords_reprojected)
+                self.assertNear(pixel, pixel_reprojected)
                 self.assertNear(is_valid_forward_proj, 1)
             else:
                 self.assertNear(is_valid_back_proj, 0)

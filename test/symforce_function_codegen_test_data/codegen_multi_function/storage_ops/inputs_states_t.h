@@ -6,16 +6,16 @@
 #include <cassert>
 #include <vector>
 
-namespace codegen_test_cpp_types {
+namespace codegen_multi_function {
 namespace StorageOps {
 
 template<>
-inline size_t StorageDim<states_t>() {
+inline size_t StorageDim<inputs_states_t>() {
   return 2;
 };
 
 template<>
-inline void ToStorage<states_t>(const states_t& value, std::vector<double>* vec) {
+inline void ToStorage<inputs_states_t>(const inputs_states_t& value, std::vector<double>* vec) {
   assert(vec != nullptr);
   std::vector<double>& v = (*vec);
   v.resize(2);
@@ -25,11 +25,11 @@ inline void ToStorage<states_t>(const states_t& value, std::vector<double>* vec)
 }
 
 template<typename Container>
-void FromStorage(const Container& elements, states_t* out) {
+void FromStorage(const Container& elements, inputs_states_t* out) {
   assert(out != nullptr);
   out->p[0] = elements[0];
   out->p[1] = elements[1];
 }
 
 }  // namespace StorageOps
-}  // namespace codegen_test_cpp_types
+}  // namespace codegen_multi_function

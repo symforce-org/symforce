@@ -5,9 +5,11 @@
 
 #include <array>
 
+#include "./storage_ops.h"
+
 {% set info = types_dict[typename] -%}
 {% for subtype in info['subtypes'].values() %}
-#include <{{ types_dict[subtype]['full_typename'].replace('.', '/') }}.h>
+#include "{{ types_dict[subtype]['typename'].replace('.', '/') }}.h"
 {% endfor %}
 
 namespace {{ name }} {
@@ -26,3 +28,6 @@ class {{ typename }} {
 };
 
 }  // namespace {{ name }}
+
+// Include StorageOps specialization
+#include "./storage_ops/{{ typename }}.h"

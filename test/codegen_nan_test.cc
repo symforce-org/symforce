@@ -17,6 +17,6 @@ int main(int argc, char** argv) {
 
     geo::Rot3<double> rot = geo::Rot3<double>::Identity();
     double epsilon = 1e-6;
-    double res = symforce::IdentityDistJacobian<double>(rot, epsilon);
+    double res = sym::IdentityDistJacobian<double>(rot, epsilon);
     assertTrue(!std::isnan(res));
 }

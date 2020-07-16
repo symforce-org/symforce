@@ -56,13 +56,8 @@ class Codegen(object):
 
         assert isinstance(inputs, Values)
         assert isinstance(outputs, Values)
-        # Save the original inputs and outputs so that we can differentiate wrt the original symbols
         self.inputs = inputs
         self.outputs = outputs
-        # Reformat the symbolic inputs and outputs to make code generation cleaner
-        self.inputs_formatted, self.outputs_formatted = codegen_util.format_symbols_for_codegen(
-            inputs, outputs
-        )
 
         self.mode = mode
         self.scalar_type = scalar_type
@@ -74,13 +69,8 @@ class Codegen(object):
         self.docstring = docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
 
         # TODO(nathan): Consider moving into a different function so that we can generate code separately
-        input_values_recursive, _ = self.inputs_formatted.flatten()
-        output_values_recursive, _ = self.outputs_formatted.flatten()
         self.intermediate_terms, self.output_terms = codegen_util.print_code(
-            input_symbols=input_values_recursive,
-            output_exprs=output_values_recursive,
-            mode=self.mode,
-            substitute_inputs=False,
+            inputs=self.inputs, outputs=self.outputs, mode=self.mode
         )
 
     @classmethod
@@ -186,10 +176,32 @@ class Codegen(object):
         data["issubclass"] = issubclass
         return data
 
-    def generate_function(self, output_dir=None):
-        # type: (T.Optional[str]) -> T.Dict[str, T.Any]
+    def generate_function(
+        self,
+        output_dir=None,  # type: str
+        shared_types=None,  # type: T.Mapping[str, str]
+        namespace="sym",  # type: str
+    ):
+        # type: (...) -> T.Dict[str, T.Any]
         """
-        Generates a standalone function that computes the given outputs from the given inputs
+        Generates a function that computes the given outputs from the given inputs.
+
+        Usage for generating multiple functions with a shared type:
+            codegen_obj_1.generate_function(namespace="my_namespace")
+            shared_types = {"my_type": "my_namespace.my_type_t"}
+            codegen_obj_2.generate_function(shared_types=shared_types, namespace="my_namespace")
+
+        In the example above, both codegen_obj_1 and codegen_obj_2 use the type "my_type". During
+        the first call to "generate_function" we generate the type "my_type", and it then becomes
+        a shared type for the second call to "generate_function". This signals that "my_type" does
+        not need to be generated during the second call to "generate_function" as it already exists.
+
+        Args:
+            output_dir: Directory in which to output the generated function. Any generated types will
+                be located in a subdirectory with name equal to the namespace argument.
+            shared_types: Mapping between types defined as part of this codegen object (e.g. keys in
+                self.inputs that map to Values objects) and previously generated external types.
+            namespace: Namespace for the generated function and any generated types.
         """
         if output_dir is None:
             output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(self.name), dir="/tmp")
@@ -201,25 +213,32 @@ class Codegen(object):
         # Output types
         # Find each Values object in the inputs and outputs
         types_to_generate = []
-        for d in (self.inputs_formatted, self.outputs_formatted):
+        for d in (self.inputs, self.outputs):
             for key, value in d.items():
-                if type(value) == Values:
+                if isinstance(value, Values):
                     types_to_generate.append((key, value))
 
         # Generate types from the Values objects in our inputs and outputs
-        # TODO (nathan): Add passthrough for shared_types
         values_indices = {name: gen_type.index() for name, gen_type in types_to_generate}
         types_codegen_data = types_package_codegen.generate_types(
-            package_name=python_util.camelcase_to_snakecase(self.name) + "_types",
+            package_name=namespace,
             values_indices=values_indices,
+            shared_types=shared_types,
             mode=self.mode,
             scalar_type=self.scalar_type,
             output_dir=output_dir,
             templates=templates,
         )
-        # Record the generated types so we can include them in our generated function
-        self.generated_types = types_codegen_data["types_dict"]
+        # Maps typenames to generated types
+        self.typenames_dict = types_codegen_data["typenames_dict"]
+        # Maps typenames to namespaces
+        self.namespaces_dict = types_codegen_data["namespaces_dict"]
+        self.unique_namespaces = set(v for v in self.namespaces_dict.values())
 
+        # Namespace of this function + generated types
+        self.namespace = namespace
+
+        # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
             logger.info('Creating python function "{}" at "{}"'.format(self.name, output_dir))
             templates.add(

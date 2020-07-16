@@ -22,6 +22,9 @@ def generate_types(
     """
     Generate a package with type structs.
     """
+    # TODO(nathan): I feel like using shared_types for both types shared within the package as well
+    # as for external types is really confusing (I've spent far too long trying to figure out exactly
+    # what `shared_types` means/does).
     # Create output directory if needed
     if output_dir is None:
         output_dir = tempfile.mkdtemp(
@@ -110,6 +113,7 @@ def generate_types(
             )
 
         # Init that contains traits definition and imports all types
+        storage_ops_file = os.path.join(package_dir, "storage_ops.h")
         templates.add(
             os.path.join(template_dir, "storage_ops/storage_ops.h.jinja"),
             os.path.join(package_dir, "storage_ops.h"),
@@ -134,6 +138,18 @@ def generate_types(
     codegen_data["output_dir"] = output_dir
     codegen_data["package_dir"] = package_dir
     codegen_data["types_dict"] = types_dict
+
+    # TODO(nathan): This doesn't include subtypes yet
+    codegen_data["typenames_dict"] = dict()  # Maps typenames to generated types
+    codegen_data["namespaces_dict"] = dict()  # Maps typenames to namespaces
+    for name in values_indices.keys():
+        for typename, data in types_dict.items():
+            if name == data["unformatted_typename"]:
+                codegen_data["typenames_dict"][name] = typename.split(".")[-1]
+                if shared_types is not None and name in shared_types and "." in shared_types[name]:
+                    codegen_data["namespaces_dict"][name] = shared_types[name].split(".")[0]
+                else:
+                    codegen_data["namespaces_dict"][name] = package_name
 
     return codegen_data
 
@@ -187,6 +203,7 @@ def _fill_types_dict_recursive(
 
     typename = typename_from_key(key, shared_types)
     data["typename"] = typename
+    data["unformatted_typename"] = key
 
     # Add the current module for cases where it's not specified
     data["full_typename"] = typename if "." in typename else ".".join([package_name, typename])

@@ -1,9 +1,9 @@
 {%- import "../util/util.jinja" as util with context -%}
 import numpy
 
-{% if spec.generated_types | length != 0 %}
-import {{ spec.name }}_types
-{% endif %}
+{% for namespace in spec.unique_namespaces %}
+import {{ namespace }}
+{% endfor %}
 
 {{ util.function_declaration(spec) }}
     {%- if spec.docstring %}

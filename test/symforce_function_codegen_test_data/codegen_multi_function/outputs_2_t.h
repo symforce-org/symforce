@@ -5,12 +5,17 @@
 
 #include <array>
 
+#include "./storage_ops.h"
 
-namespace codegen_test_cpp_types {
 
-class constants_t {
+namespace codegen_multi_function {
+
+class outputs_2_t {
  public:
-  double epsilon{};
+  double foo{};
 };
 
-}  // namespace codegen_test_cpp_types
+}  // namespace codegen_multi_function
+
+// Include StorageOps specialization
+#include "./storage_ops/outputs_2_t.h"

@@ -34,22 +34,22 @@ def make_camera_funcs(cls, mode):
     """
     return [
         Codegen.function(
-            name="PixelCoordsFromCameraPoint",
-            func=cls.pixel_coords_from_camera_point,
+            name="PixelFromCameraPoint",
+            func=cls.pixel_from_camera_point,
             mode=mode,
             input_types=[cls, geo.V3, sm.Symbol],
-            output_names=["pixel_coords", "is_valid"],
-            return_key="pixel_coords",
-            docstring=cam.CameraCal.pixel_coords_from_camera_point.__doc__,
+            output_names=["pixel", "is_valid"],
+            return_key="pixel",
+            docstring=cam.CameraCal.pixel_from_camera_point.__doc__,
         ),
         Codegen.function(
-            name="CameraRayFromPixelCoords",
-            func=cls.camera_ray_from_pixel_coords,
+            name="CameraRayFromPixel",
+            func=cls.camera_ray_from_pixel,
             input_types=[cls, geo.V2, sm.Symbol],
             mode=mode,
             output_names=["camera_ray", "is_valid"],
             return_key="camera_ray",
-            docstring=cam.CameraCal.camera_ray_from_pixel_coords.__doc__,
+            docstring=cam.CameraCal.camera_ray_from_pixel.__doc__,
         ),
     ]
 
@@ -92,8 +92,8 @@ def class_template_data(cls, functions_to_doc):
 def camera_data():
     # type: () -> T.Dict[str, T.Any]
     functions_to_doc = [
-        cam.Camera.pixel_coords_from_camera_point,
-        cam.Camera.camera_ray_from_pixel_coords,
+        cam.Camera.pixel_from_camera_point,
+        cam.Camera.camera_ray_from_pixel,
         cam.Camera.maybe_check_in_view,
         cam.Camera.in_view,
     ]
@@ -103,8 +103,8 @@ def camera_data():
 def posed_camera_data():
     # type: () -> T.Dict[str, T.Any]
     functions_to_doc = [
-        cam.PosedCamera.pixel_coords_from_global_point,
-        cam.PosedCamera.global_point_from_pixel_coords,
+        cam.PosedCamera.pixel_from_global_point,
+        cam.PosedCamera.global_point_from_pixel,
     ]
     return class_template_data(cam.PosedCamera, functions_to_doc)
 

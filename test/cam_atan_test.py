@@ -31,7 +31,7 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
         for _ in range(10):
             cam_cal = self.element()
             point = geo.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
-            pixel_coords, is_valid_forward_proj = cam_cal.pixel_coords_from_camera_point(point)
+            pixel, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
 
             # Points behind the camera should be invalid
             if point[2] > 0:
@@ -39,12 +39,10 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
             else:
                 self.assertTrue(is_valid_forward_proj == 0)
 
-            _, is_valid_back_proj = cam_cal.camera_ray_from_pixel_coords(pixel_coords)
+            _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
             linear_camera_cal = cam.LinearCameraCal(cam_cal.focal_length, cam_cal.principal_point)
-            distorted_unit_depth_coords = linear_camera_cal.unit_depth_from_pixel_coords(
-                pixel_coords
-            )
+            distorted_unit_depth_coords = linear_camera_cal.unit_depth_from_pixel(pixel)
             distorted_radius = distorted_unit_depth_coords.norm()
             if abs(distorted_radius * cam_cal.distortion_coeffs[0]) >= np.pi / 2.0:
                 self.assertNear(is_valid_back_proj, 0)
@@ -67,7 +65,7 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
         for point in invalid_points:
             for _ in range(10):
                 cam_cal = self.element()
-                _, is_valid_forward_proj = cam_cal.pixel_coords_from_camera_point(point)
+                _, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
                 self.assertTrue(is_valid_forward_proj == 0)
 
     def test_invalid_pixels(self):
@@ -89,8 +87,8 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
             geo.V2(10000, 10000),
             geo.V2(-10000, -10000),
         ]
-        for pixel_coords in invalid_pixels:
-            _, is_valid_back_proj = cam_cal.camera_ray_from_pixel_coords(pixel_coords)
+        for pixel in invalid_pixels:
+            _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
             self.assertTrue(StorageOps.evalf(is_valid_back_proj) == 0.0)
 
 

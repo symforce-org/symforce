@@ -107,13 +107,13 @@ geo::Rot2<Scalar> GroupOps<Scalar>::Between(const geo::Rot2<Scalar>& a, const ge
 
     // Intermediate terms (3)
     const Scalar _tmp0 = 1.0 / ((_a[0] * _a[0]) + (_a[1] * _a[1]));
-    const Scalar _tmp1 = _b[0]*_tmp0;
-    const Scalar _tmp2 = _b[1]*_tmp0;
+    const Scalar _tmp1 = _a[1]*_tmp0;
+    const Scalar _tmp2 = _a[0]*_tmp0;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 2, 1> _res;
-    _res[0] = _a[0]*_tmp1 + _a[1]*_tmp2;
-    _res[1] = _a[0]*_tmp2 - _a[1]*_tmp1;
+    _res[0] = _b[0]*_tmp2 + _b[1]*_tmp1;
+    _res[1] = -_b[0]*_tmp1 + _b[1]*_tmp2;
 
     return geo::Rot2<Scalar>(_res);
 }

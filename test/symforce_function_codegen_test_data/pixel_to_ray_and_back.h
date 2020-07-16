@@ -5,7 +5,8 @@
 
 
 
-namespace symforce {
+namespace sym {
+
 
 /**
 * Transform a given pixel into a ray and project the ray back to
@@ -13,7 +14,7 @@ namespace symforce {
 *
 */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>& pixel_coords, const cam::LinearCameraCal<Scalar>& cam, const Scalar epsilon) {
+Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>& pixel, const cam::LinearCameraCal<Scalar>& cam, const Scalar epsilon) {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _cam = cam.Data();
 
@@ -22,10 +23,10 @@ Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>&
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 2, 1> _res;
-    _res(0, 0) = _cam[2] + _tmp0*(-_cam[2] + pixel_coords[0]);
-    _res(1, 0) = _cam[3] + _tmp0*(-_cam[3] + pixel_coords[1]);
+    _res(0, 0) = _cam[2] + _tmp0*(-_cam[2] + pixel[0]);
+    _res(1, 0) = _cam[3] + _tmp0*(-_cam[3] + pixel[1]);
 
     return _res;
 }
 
-}  // namespace symforce
+}  // namespace sym

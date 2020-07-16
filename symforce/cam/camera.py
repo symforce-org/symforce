@@ -20,6 +20,8 @@ class Camera(object):
         if image_size is not None:
             assert len(image_size) == 2
             self.image_size = geo.V2(image_size)
+        else:
+            self.image_size = None  # type: ignore
 
     @property
     def focal_length(self):
@@ -38,48 +40,52 @@ class Camera(object):
 
     def __repr__(self):
         # type: () -> str
+        if self.image_size:
+            image_size_str = repr(self.image_size.to_storage())
+        else:
+            image_size_str = "None"
         return "<{}\n  CameraCal={}\n  image_size={}>".format(
-            self.__class__.__name__, self.calibration.__repr__(), self.image_size.to_storage()
+            self.__class__.__name__, repr(self.calibration), image_size_str
         )
 
-    def pixel_coords_from_camera_point(self, point, epsilon=0):
+    def pixel_from_camera_point(self, point, epsilon=0):
         # type: (geo.Matrix31, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
         Return:
-            pixel_coords: (x, y) coordinate in pixels if valid
+            pixel: (x, y) coordinate in pixels if valid
             is_valid: 1 if the operation is within bounds (including image_size bounds) else 0
         """
-        pixel_coords, is_valid = self.calibration.pixel_coords_from_camera_point(point, epsilon)
-        is_valid *= self.maybe_check_in_view(pixel_coords)
-        return pixel_coords, is_valid
+        pixel, is_valid = self.calibration.pixel_from_camera_point(point, epsilon)
+        is_valid *= self.maybe_check_in_view(pixel)
+        return pixel, is_valid
 
-    def camera_ray_from_pixel_coords(self, pixel_coords, epsilon=0):
+    def camera_ray_from_pixel(self, pixel, epsilon=0):
         # type: (geo.Matrix21, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
-        NOTE: If image_size is specified and the given pixel_coords is out of
+        NOTE: If image_size is specified and the given pixel is out of
         bounds, is_valid will be set to zero.
 
         Return:
             camera_ray: The ray in the camera frame (NOT normalized)
             is_valid: 1 if the operation is within bounds else 0
         """
-        camera_ray, is_valid = self.calibration.camera_ray_from_pixel_coords(pixel_coords, epsilon)
-        is_valid *= self.maybe_check_in_view(pixel_coords)
+        camera_ray, is_valid = self.calibration.camera_ray_from_pixel(pixel, epsilon)
+        is_valid *= self.maybe_check_in_view(pixel)
         return camera_ray, is_valid
 
-    def maybe_check_in_view(self, pixel_coords):
+    def maybe_check_in_view(self, pixel):
         # type: (geo.Matrix21) -> int
         if not self.image_size:
             return sm.S.One
 
-        return self.in_view(pixel_coords, self.image_size)
+        return self.in_view(pixel, self.image_size)
 
     @staticmethod
-    def in_view(pixel_coords, image_size):
+    def in_view(pixel, image_size):
         # type: (geo.Matrix21, geo.Matrix21) -> int
         """
         Returns 1.0 if the pixel coords are in bounds of the image, 0.0 otherwise.
@@ -87,6 +93,6 @@ class Camera(object):
         return sm.Mul(
             *[
                 sm.Max(0, sm.sign(bound - value - sm.S.One) * sm.sign(value))
-                for bound, value in zip(image_size, pixel_coords)
+                for bound, value in zip(image_size, pixel)
             ]
         )

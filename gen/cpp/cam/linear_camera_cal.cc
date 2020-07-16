@@ -12,7 +12,7 @@ template class cam::LinearCameraCal<float>;
 namespace cam {
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelCoordsFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
+Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
     assert( is_valid != nullptr );
@@ -21,19 +21,19 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelCoordsFromCameraPoint(
     const Scalar _tmp0 = 1.0 / (std::max<Scalar>(epsilon, std::fabs(point[2])));
 
     // Output terms (2)
-    Eigen::Matrix<Scalar, 2, 1> _pixel_coords;
-    _pixel_coords(0, 0) = _self[0]*_tmp0*point[0] + _self[2];
-    _pixel_coords(1, 0) = _self[1]*_tmp0*point[1] + _self[3];
+    Eigen::Matrix<Scalar, 2, 1> _pixel;
+    _pixel(0, 0) = _self[0]*_tmp0*point[0] + _self[2];
+    _pixel(1, 0) = _self[1]*_tmp0*point[1] + _self[3];
 
     Scalar _is_valid;
     _is_valid = std::max<Scalar>(0, (((point[2]) > 0) - ((point[2]) < 0)));
     *is_valid = _is_valid;
 
-    return _pixel_coords;
+    return _pixel;
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixelCoords(const Eigen::Matrix<Scalar, 2, 1>& pixel_coords, const Scalar epsilon, Scalar* const is_valid) const {
+Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
     assert( is_valid != nullptr );
@@ -42,8 +42,8 @@ Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixelCoords(co
 
     // Output terms (2)
     Eigen::Matrix<Scalar, 3, 1> _camera_ray;
-    _camera_ray(0, 0) = (-_self[2] + pixel_coords[0])/_self[0];
-    _camera_ray(1, 0) = (-_self[3] + pixel_coords[1])/_self[1];
+    _camera_ray(0, 0) = (-_self[2] + pixel[0])/_self[0];
+    _camera_ray(1, 0) = (-_self[3] + pixel[1])/_self[1];
     _camera_ray(2, 0) = 1;
 
     Scalar _is_valid;

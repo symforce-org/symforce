@@ -37,7 +37,7 @@ class LinearCameraCal(CameraCal):
 
         return geo.Vector2(x / z, y / z), sm.Max(sm.sign(point[2]), 0)
 
-    def pixel_coords_from_unit_depth(self, unit_depth_coords):
+    def pixel_from_unit_depth(self, unit_depth_coords):
         # type: (geo.Matrix31) -> geo.Matrix21
         """
         Convert point in unit-depth image plane to pixel coords by applying camera matrix.
@@ -47,24 +47,24 @@ class LinearCameraCal(CameraCal):
             unit_depth_coords[1] * self.focal_length[1] + self.principal_point[1],
         )
 
-    def unit_depth_from_pixel_coords(self, pixel_coord):
+    def unit_depth_from_pixel(self, pixel):
         # type: (geo.Matrix21) -> geo.Matrix21
         """
         Convert point in pixel coordinates to unit-depth image plane by applying K_inv.
         """
         return geo.Vector2(
-            (pixel_coord[0] - self.principal_point[0]) / self.focal_length[0],
-            (pixel_coord[1] - self.principal_point[1]) / self.focal_length[1],
+            (pixel[0] - self.principal_point[0]) / self.focal_length[0],
+            (pixel[1] - self.principal_point[1]) / self.focal_length[1],
         )
 
-    def pixel_coords_from_camera_point(self, point, epsilon=0):
+    def pixel_from_camera_point(self, point, epsilon=0):
         # type: (geo.Matrix31, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
         unit_depth, is_valid = LinearCameraCal.project(point, epsilon=epsilon)
-        return self.pixel_coords_from_unit_depth(unit_depth), is_valid
+        return self.pixel_from_unit_depth(unit_depth), is_valid
 
-    def camera_ray_from_pixel_coords(self, pixel_coords, epsilon=0):
+    def camera_ray_from_pixel(self, pixel, epsilon=0):
         # type: (geo.Matrix21, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
-        unit_depth = self.unit_depth_from_pixel_coords(pixel_coords)
+        unit_depth = self.unit_depth_from_pixel(pixel)
         camera_ray = geo.Vector3(unit_depth[0], unit_depth[1], 1)
         is_valid = sm.S.One
         return camera_ray, is_valid

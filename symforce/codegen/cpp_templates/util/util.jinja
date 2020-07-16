@@ -29,10 +29,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #
  # Args:
  #     T_or_value (type or Element):
- #     generated_type_name (str): Optional name in case type is a generated struct
- #     generated_type_namespace (str): Optional namespace in case type is a generated struct
+ #     name (str): Optional name in case type is a generated struct
  #}
-{%- macro format_typename(T_or_value, generated_type_name="", namespace="") %}
+{%- macro format_typename(T_or_value, name="") %}
     {%- set T = ops.StorageOps.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
         Scalar
@@ -41,7 +40,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- elif issubclass(T, Matrix) -%}
         {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1]) }}
     {%- elif T == Values -%}
-        {{ camelcase_to_snakecase(namespace) }}_types::{{ generated_type_name }}_t
+        {{ spec.namespaces_dict[name] }}::{{ spec.typenames_dict[name] }}
     {%- else -%}
         {%- if "geo" in T.__module__ -%}
         geo::
@@ -61,7 +60,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #}
 {%- macro get_return_type(spec) %}
     {%- if spec.return_key is not none -%}
-        {{ format_typename(spec.outputs_formatted[spec.return_key], spec.return_key, spec.name) }}
+        {{ format_typename(spec.outputs[spec.return_key], spec.return_key) }}
     {%- else -%}
         void
     {%- endif -%}
@@ -93,14 +92,14 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     T_or_value (type or Element):
  #     name (str):
  #}
-{%- macro format_input_arg(T_or_value, name, namespace) %}
+{%- macro format_input_arg(T_or_value, name) %}
     {%- set T = ops.StorageOps.get_type(T_or_value) -%}
     {% if T == Symbol -%}
         {#- Scalar type is just const -#}
         const {{ format_typename(T_or_value) }} {{ name }}
     {%- else -%}
         {#- Otherwise assume const reference -#}
-        const {{ format_typename(T_or_value, name, namespace) }}& {{ name }}
+        const {{ format_typename(T_or_value, name) }}& {{ name }}
     {%- endif %}
 {% endmacro -%}
 
@@ -112,8 +111,8 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     T_or_value (type or Element):
  #     name (str):
  #}
-{%- macro format_pointer_arg(T_or_value, name, namespace) %}
-    {{- format_typename(T_or_value, name, namespace) -}}* const {{ name -}}
+{%- macro format_pointer_arg(T_or_value, name) %}
+    {{- format_typename(T_or_value, name) -}}* const {{ name -}}
 {% endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -124,18 +123,18 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     spec (Codegen):
  #}
 {%- macro input_args_declaration(spec) %}
-    {%- for name, type in spec.inputs_formatted.items() -%}
+    {%- for name, type in spec.inputs.items() -%}
         {%- if name != "self" -%}
-            {{ format_input_arg(type, name, spec.name) }}
+            {{ format_input_arg(type, name) }}
             {%- if not loop.last
-                or spec.outputs_formatted.items() | length > 1
-                or (spec.outputs_formatted.items() | length == 1 and spec.return_key is none) -%}
+                or spec.outputs.items() | length > 1
+                or (spec.outputs.items() | length == 1 and spec.return_key is none) -%}
             , {% endif -%}
         {%- endif -%}
     {%- endfor -%}
-    {%- for name, type in spec.outputs_formatted.items() -%}
+    {%- for name, type in spec.outputs.items() -%}
         {%- if name != spec.return_key -%}
-            {{- format_pointer_arg(type, name, spec.name) -}}
+            {{- format_pointer_arg(type, name) -}}
             {%- if not loop.last -%}
                 {%- if not (loop.revindex0 == 1 and loop.nextitem[0] == spec.return_key) -%}
                 , {% endif -%}
@@ -176,11 +175,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #}
 {% macro expr_code(spec) -%}
     // Input arrays
-    {% for name, type in spec.inputs_formatted.items() %}
+    {% for name, type in spec.inputs.items() %}
     {% set T = ops.StorageOps.get_type(type) %}
         {% if T == Values %}
     std::vector<Scalar> {{ name }}_array;
-    {{ camelcase_to_snakecase(spec.name) }}_types::StorageOps::ToStorage<{{ format_typename(type, name, spec.name) }}>({{ name }}, &{{ name }}_array);
+    {{ spec.namespaces_dict[name] }}::StorageOps::ToStorage<{{ format_typename(type, name) }}>({{ name }}, &{{ name }}_array);
     const {{ vector_type(ops.StorageOps.storage_dim(type.flatten()[0])) }} _{{ name }}({{ name }}_array.data());
         {% elif not issubclass(T, Matrix) and not issubclass(T, Symbol) %}
             {% if name == "self" %}
@@ -190,7 +189,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
             {% endif %}
         {% endif %}
     {% endfor %}
-    {% for name, type in spec.outputs_formatted.items() %}
+    {% for name, type in spec.outputs.items() %}
         {% if name != spec.return_key %}
     assert( {{ name }} != nullptr );
         {% endif %}
@@ -201,11 +200,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     const {{ format_typename(Symbol) }} {{ lhs }} = {{ rhs }};
     {% endfor %}
 
-    // Output terms ({{ spec.outputs_formatted.items() | length }})
+    // Output terms ({{ spec.outputs.items() | length }})
     {# Populate the output vectors with the generated expressions #}
     {# We have to use a namespace here because of jinja's scoping rules in loops #}
     {% set ns = namespace(iter=0) %}
-    {% for name, type in spec.outputs_formatted.items() %}
+    {% for name, type in spec.outputs.items() %}
         {%- set T = ops.StorageOps.get_type(type) -%}
         {% if issubclass(T, Matrix) %}
             {% set rows = type.shape[0] %}
@@ -236,19 +235,21 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
         {% if name != spec.return_key %}
             {% if issubclass(T, Matrix) or is_symbolic(type) %}
     *{{ name }} = _{{ name }};
+            {% elif T == Values %}
+    {{ spec.namespaces_dict[name] }}::StorageOps::FromStorage<{{ vector_type(dims) }}>(_{{name}}, {{ name }});
             {% else %}
-    *{{ name }} = {{ format_typename(type, name, spec.name) }}(_{{ name }});
+    *{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
             {% endif %}
         {% endif %}
 
     {% endfor %}
-    {% for name, type in spec.outputs_formatted.items() %}
+    {% for name, type in spec.outputs.items() %}
         {% set T_return = ops.StorageOps.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
             {%- if issubclass(T_return, Matrix) or is_symbolic(type) %}
     return _{{ name }};
             {%- else %}
-    return {{ format_typename(type, name, spec.name) }}(_{{ name }});
+    return {{ format_typename(type, name) }}(_{{ name }});
             {%- endif -%}
         {%- endif -%}
     {%- endfor -%}
