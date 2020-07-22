@@ -54,8 +54,18 @@ class Codegen(object):
 
         self.name = name
 
+        # Inputs and outputs must be Values objects
         assert isinstance(inputs, Values)
         assert isinstance(outputs, Values)
+
+        # All symbols in outputs must be present in inputs
+        input_symbols = set(inputs.to_storage())
+        assert all([v.free_symbols.issubset(input_symbols) for v in outputs.to_storage()])
+
+        # Names given by keys in inputs/outputs must be valid variable names
+        assert all([python_util.is_valid_variable_name(k) for k in inputs.subkeys_recursive()])
+        assert all([python_util.is_valid_variable_name(k) for k in outputs.subkeys_recursive()])
+
         self.inputs = inputs
         self.outputs = outputs
 

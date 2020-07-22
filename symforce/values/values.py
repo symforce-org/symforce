@@ -526,14 +526,28 @@ class Values(object):
         """
         Returns a flat list of unique keys for every element in this object.
         """
-        return list(zip(*self.items_recursive()))[0]
+        items = self.items_recursive()
+        if len(items) == 0:
+            return []
+        return list(zip(*items))[0]
 
     def values_recursive(self):
         # type: () -> T.List[T.Any]
         """
         Returns a flat list of elements stored in this Values object.
         """
-        return list(zip(*self.items_recursive()))[1]
+        items = self.items_recursive()
+        if len(items) == 0:
+            return []
+        return list(zip(*items))[1]
+
+    def subkeys_recursive(self):
+        # type: () -> T.List[str]
+        """
+        Returns a flat list of subkeys for every element in this object. Unlike keys_recursive,
+        subkeys_recursive does not return dot-separated keys.
+        """
+        return [k.split(".")[-1] for k in self.keys_recursive()]
 
     # -------------------------------------------------------------------------
     # Miscellaneous helpers

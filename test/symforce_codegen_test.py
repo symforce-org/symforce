@@ -16,6 +16,7 @@ from symforce.test_util import TestCase
 from symforce.values import Values
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
 
 # Test function
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon=0):
@@ -114,21 +115,16 @@ class SymforceCodegenTest(TestCase):
             self.assertNear(foo, x ** 2 + rot.data[3])
             self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
 
-            if scalar_type == "double" and sys.version.startswith("2"):
-                test_data_dir = os.path.join(
-                    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data"
-                )
+            if scalar_type == "double":
                 # Compare the function file
-                expected_code_file = os.path.join(test_data_dir, "codegen_test_python.py")
+                expected_code_file = os.path.join(TEST_DATA_DIR, "codegen_test_python.py")
                 output_function = os.path.join(codegen_data["output_dir"], "codegen_test_python.py")
-                with open(output_function) as f:
-                    code = f.read()
-                    self.compare_or_update(expected_code_file, code)
+                self.compare_or_update_file(expected_code_file, output_function)
 
                 # Compare the generated types
                 self.compare_or_update_directory(
                     actual_dir=os.path.join(codegen_data["output_dir"], namespace),
-                    expected_dir=os.path.join(test_data_dir, namespace),
+                    expected_dir=os.path.join(TEST_DATA_DIR, namespace),
                 )
 
             # Clean up
@@ -148,17 +144,9 @@ class SymforceCodegenTest(TestCase):
         az_el_codegen_data = az_el_codegen.generate_function()
 
         # Compare to expected
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("2"):
-            expected_code_file = os.path.join(
-                SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", "az_el_from_point.py"
-            )
-            output_function = os.path.join(az_el_codegen_data["output_dir"], "az_el_from_point.py")
-            with open(output_function) as f:
-                code = f.read()
-                self.compare_or_update(expected_code_file, code)
+        expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.py")
+        output_function = os.path.join(az_el_codegen_data["output_dir"], "az_el_from_point.py")
+        self.compare_or_update_file(expected_code_file, output_function)
 
         # Clean up
         if logger.level != logging.DEBUG:
@@ -183,25 +171,15 @@ class SymforceCodegenTest(TestCase):
             codegen_data = cpp_func.generate_function(namespace=namespace)
 
             if scalar_type == "double":
-                test_data_dir = os.path.join(
-                    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data"
-                )
-                # Compare the function file
-                # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-                # for a currently unknown reason, despite having the same version of sympy. For now
-                # only check if python 2 is running.
-                if sys.version.startswith("2"):
-                    expected_code_file = os.path.join(test_data_dir, "codegen_test_cpp.h")
-                    output_function = os.path.join(codegen_data["output_dir"], "codegen_test_cpp.h")
-                    with open(output_function) as f:
-                        code = f.read()
-                        self.compare_or_update(expected_code_file, code)
+                expected_code_file = os.path.join(TEST_DATA_DIR, "codegen_test_cpp.h")
+                output_function = os.path.join(codegen_data["output_dir"], "codegen_test_cpp.h")
+                self.compare_or_update_file(expected_code_file, output_function)
 
-                    # Compare the generated types
-                    self.compare_or_update_directory(
-                        actual_dir=os.path.join(codegen_data["output_dir"], namespace),
-                        expected_dir=os.path.join(test_data_dir, namespace),
-                    )
+                # Compare the generated types
+                self.compare_or_update_directory(
+                    actual_dir=os.path.join(codegen_data["output_dir"], namespace),
+                    expected_dir=os.path.join(TEST_DATA_DIR, namespace),
+                )
 
                 if not self.UPDATE:
                     try:
@@ -234,17 +212,9 @@ class SymforceCodegenTest(TestCase):
         az_el_codegen_data = az_el_codegen.generate_function()
 
         # Compare to expected
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("2"):
-            expected_code_file = os.path.join(
-                SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", "az_el_from_point.h"
-            )
-            output_function = os.path.join(az_el_codegen_data["output_dir"], "az_el_from_point.h")
-            with open(output_function) as f:
-                code = f.read()
-                self.compare_or_update(expected_code_file, code)
+        expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.h")
+        output_function = os.path.join(az_el_codegen_data["output_dir"], "az_el_from_point.h")
+        self.compare_or_update_file(expected_code_file, output_function)
 
         # Clean up
         if logger.level != logging.DEBUG:
@@ -270,17 +240,10 @@ class SymforceCodegenTest(TestCase):
         )
         codegen_data = cpp_func.generate_function()
 
-        test_data_dir = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
         # Compare the function file
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("2"):
-            expected_code_file = os.path.join(test_data_dir, "identity_dist_jacobian.h")
-            output_function = os.path.join(codegen_data["output_dir"], "identity_dist_jacobian.h")
-            with open(output_function) as f:
-                code = f.read()
-                self.compare_or_update(expected_code_file, code)
+        expected_code_file = os.path.join(TEST_DATA_DIR, "identity_dist_jacobian.h")
+        output_function = os.path.join(codegen_data["output_dir"], "identity_dist_jacobian.h")
+        self.compare_or_update_file(expected_code_file, output_function)
 
         if not self.UPDATE:
             try:
@@ -330,25 +293,17 @@ class SymforceCodegenTest(TestCase):
             output_dir=output_dir, shared_types=shared_types, namespace=namespace
         )
 
-        test_data_dir = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
+        # Compare the function files
+        for name in ("codegen_multi_function_test1.h", "codegen_multi_function_test2.h"):
+            expected_code_file = os.path.join(TEST_DATA_DIR, name)
+            output_function = os.path.join(output_dir, name)
+            self.compare_or_update_file(expected_code_file, output_function)
 
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("2"):
-            # Compare the function files
-            for name in ("codegen_multi_function_test1.h", "codegen_multi_function_test2.h"):
-                expected_code_file = os.path.join(test_data_dir, name)
-                output_function = os.path.join(output_dir, name)
-                with open(output_function) as f:
-                    code = f.read()
-                    self.compare_or_update(expected_code_file, code)
-
-            # Compare the generated types
-            self.compare_or_update_directory(
-                actual_dir=os.path.join(output_dir, namespace),
-                expected_dir=os.path.join(test_data_dir, namespace),
-            )
+        # Compare the generated types
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(output_dir, namespace),
+            expected_dir=os.path.join(TEST_DATA_DIR, namespace),
+        )
 
         if not self.UPDATE:
             try:
@@ -369,6 +324,39 @@ class SymforceCodegenTest(TestCase):
         # Clean up
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(output_dir)
+
+    def test_invalid_codegen_raises(self):
+        # type: () -> None
+        """
+        Tests:
+            Codegen outputs must be a function of given inputs
+            Codegen input/output names must be valid variable names
+        """
+        # Outputs have symbols not present in inputs
+        x = sm.Symbol("x")
+        y = sm.Symbol("y")
+        inputs = Values(input=x)
+        outputs = Values(output=x + y)
+        self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
+
+        # Inputs or outputs have keys that aren't valid variable names
+        invalid_name_values = Values()
+        invalid_name_values["1"] = x
+        valid_name_values = Values(x=x)
+        self.assertRaises(
+            AssertionError, Codegen, "test", invalid_name_values, valid_name_values, CodegenMode.CPP
+        )
+        self.assertRaises(
+            AssertionError, Codegen, "test", valid_name_values, invalid_name_values, CodegenMode.CPP
+        )
+        name_with_spaces = Values()
+        name_with_spaces[" spa ces "] = x
+        self.assertRaises(
+            AssertionError, Codegen, "test", name_with_spaces, valid_name_values, CodegenMode.CPP
+        )
+        self.assertRaises(
+            AssertionError, Codegen, "test", valid_name_values, name_with_spaces, CodegenMode.CPP
+        )
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@
 #include "./storage_ops.h"
 
 {% set info = types_dict[typename] -%}
-{% for subtype in info['subtypes'].values() %}
+{% for subtype in to_set(info['subtypes'].values()) %}
 #include "{{ types_dict[subtype]['typename'].replace('.', '/') }}.h"
 {% endfor %}
 

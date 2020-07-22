@@ -108,3 +108,12 @@ def scalar_like(a):
     is_expr = issubclass(a_type, sm.Expr)
     is_matrix = issubclass(a_type, sm.MatrixBase)
     return is_expr and not is_matrix
+
+
+def is_valid_variable_name(name):
+    # type: (str) -> bool
+    """
+    Returns true if name does not contain whitespace, has only alphanumeric characters,
+    and does not start with a number.
+    """
+    return re.match(".*\s.*|.*\W.*|^\d", name) is None

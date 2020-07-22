@@ -48,6 +48,7 @@ def generate_types(
         "name": package_name,
         "scalar_type": scalar_type,
         "types_dict": types_dict,
+        "to_set": lambda a: set(a),
     }
 
     if mode == codegen_util.CodegenMode.PYTHON2:

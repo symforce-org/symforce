@@ -18,6 +18,7 @@ from symforce.codegen import cam_package_codegen
 
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
 
 # For testing generation of functions that take camera objects as arguments
 def pixel_to_ray_and_back(pixel, cam, epsilon=0):
@@ -49,21 +50,9 @@ class SymforceCamCodegenTest(TestCase):
         function_path = os.path.join(output_dir, "symforce_function_codegen_test_data")
         cpp_data = my_func.generate_function(function_path)
 
-        # Compare to expected
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("2"):
-            expected_code_file = os.path.join(
-                SYMFORCE_DIR,
-                "test",
-                "symforce_function_codegen_test_data",
-                "pixel_to_ray_and_back.h",
-            )
-            output_function = os.path.join(function_path, "pixel_to_ray_and_back.h")
-            with open(output_function) as f:
-                code = f.read()
-                self.compare_or_update(expected_code_file, code)
+        expected_code_file = os.path.join(TEST_DATA_DIR, "pixel_to_ray_and_back.h")
+        output_function = os.path.join(function_path, "pixel_to_ray_and_back.h")
+        self.compare_or_update_file(expected_code_file, output_function)
 
     def test_codegen_cpp(self):
         # type: () -> None
@@ -77,26 +66,19 @@ class SymforceCamCodegenTest(TestCase):
             # Generate cam package + tests
             cam_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
-            # Test against checked-in cam package
-            # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-            # for a currently unknown reason, despite having the same version of sympy. For now
-            # only check if python 2 is running.
-            if sys.version.startswith("2"):
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(output_dir, "cam"),
-                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "cam"),
-                )
+            self.compare_or_update_directory(
+                actual_dir=os.path.join(output_dir, "cam"),
+                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "cam"),
+            )
 
             # Compare against the checked-in tests
             for test_name in (
                 "cam_package_cpp_test.cc",
                 "cam_function_codegen_cpp_test.cc",
             ):
-                with open(os.path.join(output_dir, "example", test_name)) as f:
-                    cam_test_contents = f.read()
-                self.compare_or_update(
-                    os.path.join(SYMFORCE_DIR, "test", test_name), cam_test_contents,
-                )
+                expected_code_file = os.path.join(SYMFORCE_DIR, "test", test_name)
+                generated_code_file = os.path.join(output_dir, "example", test_name)
+                self.compare_or_update_file(expected_code_file, generated_code_file)
 
             # Generate function that uses camera object as argument
             self.generate_example_function(output_dir)

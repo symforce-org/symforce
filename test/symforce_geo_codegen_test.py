@@ -33,26 +33,18 @@ class SymforceGeoCodegenTest(TestCase):
             geo_package_codegen.generate(mode=CodegenMode.PYTHON2, output_dir=output_dir)
 
             # Test against checked-in geo package
-            # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-            # for a currently unknown reason, despite having the same version of sympy. For now
-            # only check if python 2 is running.
-            if sys.version.startswith("2"):
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(output_dir, "geo"),
-                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "geo"),
-                )
+            self.compare_or_update_directory(
+                actual_dir=os.path.join(output_dir, "geo"),
+                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "geo"),
+            )
 
             # Compare against the checked-in test itself
-            with open(os.path.join(output_dir, "example", "geo_package_python_test.py")) as f:
-                geo_test_contents = f.read()
-            self.compare_or_update(
-                os.path.join(SYMFORCE_DIR, "test", "geo_package_python_test.py"), geo_test_contents
-            )
+            expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_python_test.py")
+            generated_code_file = os.path.join(output_dir, "example", "geo_package_python_test.py")
+            self.compare_or_update_file(expected_code_file, generated_code_file)
 
             # Run generated example / test from disk in a standalone process
-            python_util.execute_subprocess(
-                ["python", os.path.join(output_dir, "example", "geo_package_python_test.py")]
-            )
+            python_util.execute_subprocess(["python", generated_code_file])
 
             # Also hot load package directly in to this process
             geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "geo"))
@@ -80,22 +72,15 @@ class SymforceGeoCodegenTest(TestCase):
         try:
             geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
-            # Test against checked-in geo package
-            # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-            # for a currently unknown reason, despite having the same version of sympy. For now
-            # only check if python 2 is running.
-            if sys.version.startswith("2"):
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(output_dir, "geo"),
-                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "geo"),
-                )
+            self.compare_or_update_directory(
+                actual_dir=os.path.join(output_dir, "geo"),
+                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "geo"),
+            )
 
             # Compare against the checked-in test itself
-            with open(os.path.join(output_dir, "example", "geo_package_cpp_test.cc")) as f:
-                geo_test_contents = f.read()
-            self.compare_or_update(
-                os.path.join(SYMFORCE_DIR, "test", "geo_package_cpp_test.cc"), geo_test_contents
-            )
+            expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_cpp_test.cc")
+            generated_code_file = os.path.join(output_dir, "example", "geo_package_cpp_test.cc")
+            self.compare_or_update_file(expected_code_file, generated_code_file)
 
             # Compile and run the test
             if not self.UPDATE:

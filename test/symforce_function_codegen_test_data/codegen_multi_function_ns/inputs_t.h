@@ -7,8 +7,8 @@
 
 #include "./storage_ops.h"
 
-#include "inputs_states_t.h"
 #include "inputs_constants_t.h"
+#include "inputs_states_t.h"
 
 namespace codegen_multi_function_ns {
 
