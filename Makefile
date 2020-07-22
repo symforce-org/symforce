@@ -51,7 +51,7 @@ TEST_ENV=SYMFORCE_LOGLEVEL=WARNING
 TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
 
 # Python files which generate code
-GEN_FILES=test/symforce_*.py
+GEN_FILES=test/*codegen*.py
 
 test_reqs:
 	${PYTHON} -m pip install -r test/requirements.txt

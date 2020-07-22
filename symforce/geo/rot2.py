@@ -1,11 +1,13 @@
 import numpy as np
 
+from symforce.ops.interfaces.lie_group import LieGroup
 from symforce import sympy as sm
 from symforce import types as T
 
-from .base import LieGroup
 from .complex import Complex
 from .matrix import Matrix
+from .matrix import Matrix22
+from .matrix import Matrix21
 
 
 class Rot2(LieGroup):
@@ -13,11 +15,6 @@ class Rot2(LieGroup):
     Group of two-dimensional orthogonal matrices with determinant +1, representing rotations
     in 2D space. Backed by a complex number.
     """
-
-    TANGENT_DIM = 1
-    MATRIX_DIMS = (2, 2)
-    STORAGE_DIM = 2
-    STORAGE_TYPE = Complex
 
     def __init__(self, z=None):
         # type: (Complex) -> None
@@ -37,6 +34,11 @@ class Rot2(LieGroup):
     def __repr__(self):
         # type: () -> str
         return "<Rot2 {}>".format(repr(self.z))
+
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return 2
 
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
@@ -72,26 +74,32 @@ class Rot2(LieGroup):
     # -------------------------------------------------------------------------
     # Lie group implementation
     # -------------------------------------------------------------------------
+
     @classmethod
-    def expmap(cls, v, epsilon=0):
-        # type: (T.List[T.Scalar], T.Scalar) -> Rot2
+    def tangent_dim(cls):
+        # type: () -> int
+        return 1
+
+    @classmethod
+    def from_tangent(cls, v, epsilon=0):
+        # type: (T.Sequence[T.Scalar], T.Scalar) -> Rot2
         assert len(v) == 1
         theta = v[0]
         return Rot2(Complex(sm.cos(theta), sm.sin(theta)))
 
-    def logmap(self, epsilon=0):
+    def to_tangent(self, epsilon=0):
         # type: (T.Scalar) -> T.List[T.Scalar]
         return [sm.atan2_safe(self.z.imag, self.z.real, epsilon=epsilon)]
 
     @classmethod
     def hat(cls, vec):
-        # type: (T.List[T.Scalar]) -> T.List[T.List[T.Scalar]]
+        # type: (T.Sequence[T.Scalar]) -> T.List[T.List[T.Scalar]]
         assert len(vec) == 1
         theta = vec[0]
         return [[0, -theta], [theta, 0]]
 
     def storage_D_tangent(self):
-        # type: () -> Matrix
+        # type: () -> Matrix21
         return Matrix([[-self.z.imag], [self.z.real]])
 
     # -------------------------------------------------------------------------
@@ -100,7 +108,7 @@ class Rot2(LieGroup):
 
     @T.overload
     def __mul__(self, right):  # pragma: no cover
-        # type: (Matrix) -> Matrix
+        # type: (Matrix21) -> Matrix21
         pass
 
     @T.overload
@@ -109,15 +117,9 @@ class Rot2(LieGroup):
         pass
 
     def __mul__(self, right):
-        # type: (T.Union[Rot2, Matrix]) -> T.Union[Rot2, Matrix]
+        # type: (T.Union[Rot2, Matrix21]) -> T.Union[Rot2, Matrix21]
         """
         Left-multiplication. Either rotation concatenation or point transform.
-
-        Args:
-            right (Rot2 or Matrix):
-
-        Returns:
-            Rot2 or Matrix:
         """
         if isinstance(right, sm.Matrix):
             assert right.shape == (2, 1), right.shape
@@ -128,12 +130,9 @@ class Rot2(LieGroup):
             raise NotImplementedError('Unsupported type: "{}"'.format(type(right)))
 
     def to_rotation_matrix(self):
-        # type: () -> Matrix
+        # type: () -> Matrix22
         """
         A matrix representation of this element in the Euclidean space that contains it.
-
-        Returns:
-            Matrix: Matrix of shape given by self.MATRIX_DIMS
         """
         return Matrix([[self.z.real, -self.z.imag], [self.z.imag, self.z.real]])
 

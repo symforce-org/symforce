@@ -209,7 +209,7 @@ def _fill_types_dict_recursive(
     data["full_typename"] = typename if "." in typename else ".".join([package_name, typename])
 
     data["index"] = index
-    data["keys_recursive"] = Values.keys_recursive_from_index(index)
+    data["keys_recursive"] = Values.scalar_keys_recursive_from_index(index)
     data["storage_dims"] = {key: np.prod(info[2]) for key, info in index.items()}
 
     # Process child types

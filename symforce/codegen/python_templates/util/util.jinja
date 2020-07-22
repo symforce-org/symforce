@@ -40,8 +40,8 @@ def {{ camelcase_to_snakecase(spec.name) }}(
 {% macro expr_code(spec) %}
     # Input arrays
     {% for name, type in spec.inputs.items() %}
-        {% set T = ops.StorageOps.get_type(type) %}
-        {% if T == Values %}
+        {% set T = python_util.get_type(type) %}
+        {% if issubclass(T, Values) %}
     _{{ name }} = {{ name }}.to_storage()
         {% elif not issubclass(T, Symbol) and not issubclass(T, Matrix) %}
     _{{ name }} = {{ name }}.data
@@ -56,7 +56,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
     # Output terms
     {% set ns = namespace(iter=0) %}
     {% for name, type in spec.outputs.items() %}
-        {%- set T = ops.StorageOps.get_type(type) -%}
+        {%- set T = python_util.get_type(type) -%}
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
             {% set rows = type.shape[0] %}
             {% set cols = type.shape[1] %}
@@ -68,7 +68,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
                 {% endfor %}
             {% endfor %}
         {% elif not is_symbolic(type) %}
-            {% if T == Values %}
+            {% if issubclass(T, Values) %}
                 {% set dims = ops.StorageOps.storage_dim(type.flatten()[0]) %}
             {% else %}
                 {% set dims = ops.StorageOps.storage_dim(type) %}

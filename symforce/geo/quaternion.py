@@ -1,10 +1,11 @@
 from __future__ import division
 import numpy as np
 
+from symforce import ops
+from symforce.ops.interfaces import Group
 from symforce import sympy as sm
 from symforce import types as T
 
-from .base import Group
 from .matrix import Matrix
 from .matrix import Vector3
 
@@ -22,8 +23,6 @@ class Quaternion(Group):
 
         https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
     """
-
-    STORAGE_DIM = 4
 
     def __init__(self, xyz, w):
         # type: (Matrix, T.Scalar) -> None
@@ -64,6 +63,11 @@ class Quaternion(Group):
             repr(self.x), repr(self.y), repr(self.z), repr(self.w)
         )
 
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return 4
+
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return [self.x, self.y, self.z, self.w]
@@ -71,7 +75,7 @@ class Quaternion(Group):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> Quaternion
-        assert len(vec) == cls.STORAGE_DIM
+        assert len(vec) == cls.storage_dim()
         return cls(xyz=Matrix(vec[0:3]), w=vec[3])
 
     @classmethod
@@ -166,7 +170,7 @@ class Quaternion(Group):
         Returns:
             Quaternion:
         """
-        return cls.from_storage([0] * cls.STORAGE_DIM)
+        return cls.from_storage([0] * cls.storage_dim())
 
     def squared_norm(self):
         # type: () -> T.Scalar

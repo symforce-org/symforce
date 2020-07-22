@@ -1,10 +1,9 @@
 from __future__ import division, absolute_import
 import numpy as np
 
+from symforce.ops.interfaces import Group
 from symforce import sympy as sm
 from symforce import types as T
-
-from .base import Group
 
 
 class Complex(Group):
@@ -22,8 +21,6 @@ class Complex(Group):
 
         https://en.wikipedia.org/wiki/Complex_number
     """
-
-    STORAGE_DIM = 2
 
     def __init__(self, real, imag):
         # type: (T.Scalar, T.Scalar) -> None
@@ -45,6 +42,11 @@ class Complex(Group):
         # type: () -> str
         return "<C real={}, imag={}>".format(repr(self.real), repr(self.imag))
 
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return 2
+
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return [self.real, self.imag]
@@ -52,7 +54,7 @@ class Complex(Group):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> Complex
-        assert len(vec) == cls.STORAGE_DIM
+        assert len(vec) == cls.storage_dim()
         return cls(real=vec[0], imag=vec[1])
 
     @classmethod

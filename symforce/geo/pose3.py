@@ -1,7 +1,7 @@
+from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
 from symforce import types as T
 
-from .base import LieGroup, Group
 from .matrix import Matrix
 from .matrix import Vector3
 from .rot3 import Rot3
@@ -18,10 +18,6 @@ class Pose3(LieGroup):
     frame for lie operations. This can be useful but is more expensive than SO3 x R3 for often
     no benefit.
     """
-
-    TANGENT_DIM = 6
-    MATRIX_DIMS = (4, 4)
-    STORAGE_DIM = 7
 
     def __init__(self, R=None, t=None):
         # type: (Rot3, Matrix) -> None
@@ -49,6 +45,11 @@ class Pose3(LieGroup):
             repr(self.R), repr(self.t[0]), repr(self.t[1]), repr(self.t[2])
         )
 
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return Rot3.storage_dim() + Vector3.storage_dim()
+
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return self.R.to_storage() + self.t.to_storage()
@@ -56,10 +57,10 @@ class Pose3(LieGroup):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> Pose3
-        assert len(vec) == cls.STORAGE_DIM
+        assert len(vec) == cls.storage_dim()
         return cls(
-            R=Rot3.from_storage(vec[0 : Rot3.STORAGE_DIM]),
-            t=Vector3(*vec[Rot3.STORAGE_DIM : Rot3.STORAGE_DIM + 3]),
+            R=Rot3.from_storage(vec[0 : Rot3.storage_dim()]),
+            t=Vector3(*vec[Rot3.storage_dim() : Rot3.storage_dim() + 3]),
         )
 
     # -------------------------------------------------------------------------
@@ -86,7 +87,12 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def expmap(cls, v, epsilon=0):
+    def tangent_dim(cls):
+        # type: () -> int
+        return 6
+
+    @classmethod
+    def from_tangent(cls, v, epsilon=0):
         # type: (T.Sequence[T.Scalar], T.Scalar) -> Pose3
         if isinstance(v, (list, tuple)):
             v = Matrix(v)
@@ -94,7 +100,7 @@ class Pose3(LieGroup):
         R_tangent = Vector3(v[0], v[1], v[2])
         t_tangent = Vector3(v[3], v[4], v[5])
 
-        R = Rot3.expmap(R_tangent, epsilon=epsilon)
+        R = Rot3.from_tangent(R_tangent, epsilon=epsilon)
         R_hat = Matrix(Rot3.hat(R_tangent))
         R_hat_sq = R_hat * R_hat
         theta = sm.sqrt(R_tangent.dot(R_tangent) + epsilon ** 2)
@@ -107,9 +113,9 @@ class Pose3(LieGroup):
 
         return cls(R, V * t_tangent)
 
-    def logmap(self, epsilon=0):
-        # type: (float) -> T.List
-        R_tangent = Matrix(self.R.logmap(epsilon=epsilon))
+    def to_tangent(self, epsilon=0):
+        # type: (T.Scalar) -> T.List
+        R_tangent = Matrix(self.R.to_tangent(epsilon=epsilon))
         theta = sm.sqrt(R_tangent.dot(R_tangent) + epsilon)
         R_hat = Matrix(Rot3.hat(R_tangent))
 

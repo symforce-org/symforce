@@ -1,13 +1,11 @@
 import numpy as np
 
 import symforce
+from symforce import ops
+from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.ops import StorageOps
-from symforce.ops import LieGroupOps
-from symforce.python_util import classproperty
-
-from .base import LieGroup
+from symforce import python_util
 
 
 class Matrix(sm.Matrix, LieGroup):
@@ -35,12 +33,6 @@ class Matrix(sm.Matrix, LieGroup):
     # Once a matrix is constructed it should be of a type where the .shape instance variable matches
     # this class variable as a strong internal consistency check.
     SHAPE = (-1, -1)
-
-    @classproperty
-    def STORAGE_DIM(cls):  # type: ignore
-        return cls.SHAPE[0] * cls.SHAPE[1]
-
-    TANGENT_DIM = STORAGE_DIM  # type: ignore
 
     def __new__(cls, *args, **kwargs):
         # type: (T.Any, T.Any) -> Matrix
@@ -97,7 +89,7 @@ class Matrix(sm.Matrix, LieGroup):
             # 1D array - if fixed size this must match data length. If not, assume column vec.
             else:
                 if cls._is_fixed_size():
-                    assert len(array) == cls.STORAGE_DIM, "Gave args {} for {}".format(args, cls)
+                    assert len(array) == cls.storage_dim(), "Gave args {} for {}".format(args, cls)
                     rows, cols = cls.SHAPE
                 else:
                     rows, cols = len(array), 1
@@ -135,7 +127,7 @@ class Matrix(sm.Matrix, LieGroup):
         # 7) If we have args equal to the fixed type, treat that as a convenience constructor like
         # Matrix31(1, 2, 3) which is the same as Matrix31(3, 1, [1, 2, 3]). Also works for
         # Matrix22([1, 2, 3, 4]).
-        elif cls._is_fixed_size() and len(args) == cls.STORAGE_DIM:
+        elif cls._is_fixed_size() and len(args) == cls.storage_dim():
             rows, cols = cls.SHAPE
             flat_list = list(args)
 
@@ -161,6 +153,16 @@ class Matrix(sm.Matrix, LieGroup):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
+    def __repr__(self):
+        # type: () -> str
+        return super(Matrix, self).__repr__()
+
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+        return cls.SHAPE[0] * cls.SHAPE[1]
+
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> Matrix
@@ -170,10 +172,6 @@ class Matrix(sm.Matrix, LieGroup):
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return self.to_tangent()
-
-    def __repr__(self):
-        # type: () -> str
-        return super(Matrix, self).__repr__()
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
@@ -198,6 +196,11 @@ class Matrix(sm.Matrix, LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
+    def tangent_dim(cls):
+        # type: () -> int
+        return cls.storage_dim()
+
+    @classmethod
     def from_tangent(cls, vec, epsilon=0):
         # type: (T.Sequence[T.Scalar], T.Scalar) -> Matrix
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
@@ -211,7 +214,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     def storage_D_tangent(self):
         # type: () -> Matrix
-        return Matrix.eye(self.STORAGE_DIM, self.TANGENT_DIM)  # type: ignore
+        return Matrix.eye(self.storage_dim(), self.tangent_dim())  # type: ignore
 
     # -------------------------------------------------------------------------
     # Helper methods
@@ -367,6 +370,20 @@ class Matrix(sm.Matrix, LieGroup):
 
         return cls(sm.Matrix(symbols))
 
+    def row_join(self, vec):
+        # type: (Matrix) -> Matrix
+        """
+        Overrides sm.Matrix.row_join to force update SHAPE
+        """
+        return Matrix(super(Matrix, self).row_join(vec))
+
+    def col_join(self, vec):
+        # type: (Matrix) -> Matrix
+        """
+        Overrides sm.Matrix.col_join to force update SHAPE
+        """
+        return Matrix(super(Matrix, self).col_join(vec))
+
     @classmethod
     def block_matrix(cls, array):
         # type: (T.Sequence[T.Sequence[Matrix]]) -> Matrix
@@ -429,11 +446,11 @@ class Matrix(sm.Matrix, LieGroup):
         respect to symforce objects.
         """
         # Compute jacobian wrt X storage
-        self_D_storage = super(Matrix, self).jacobian(Matrix(StorageOps.to_storage(X)))
+        self_D_storage = super(Matrix, self).jacobian(Matrix(ops.StorageOps.to_storage(X)))
 
         if tangent_space:
             # Return jacobian wrt X tangent space
-            return self_D_storage * LieGroupOps.storage_D_tangent(X)
+            return self_D_storage * ops.LieGroupOps.storage_D_tangent(X)
 
         # Return jacobian wrt X storage
         return self_D_storage
@@ -465,7 +482,7 @@ class Matrix(sm.Matrix, LieGroup):
         """
         Add a scalar to a matrix.
         """
-        if StorageOps.scalar_like(right):
+        if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x + right)
 
         return sm.Matrix.__add__(self, right)
@@ -481,7 +498,7 @@ class Matrix(sm.Matrix, LieGroup):
         Returns:
             Matrix:
         """
-        if StorageOps.scalar_like(right):
+        if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x * right)
 
         return sm.Matrix.__mul__(self, right)
@@ -491,7 +508,7 @@ class Matrix(sm.Matrix, LieGroup):
         """
         Divide a matrix by a scalar or a matrix (which takes the inverse).
         """
-        if StorageOps.scalar_like(right):
+        if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x / right)
 
         return self * right.inv()  # type: ignore
@@ -511,7 +528,7 @@ class Matrix(sm.Matrix, LieGroup):
         """
         Perform numerical evaluation of each element in the matrix.
         """
-        return self.__class__.from_storage([StorageOps.evalf(v) for v in self.to_storage()])
+        return self.__class__.from_storage([ops.StorageOps.evalf(v) for v in self.to_storage()])
 
     def to_numpy(self, scalar_type=np.float64):
         # type: (type) -> np.ndarray

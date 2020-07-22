@@ -65,7 +65,7 @@ class StorageOpsTestMixin(_Base):
         # Exercise printing
         self.assertGreater(len(str(value)), 0)
 
-        # TODO(hayk): Test these basic functions
-        # value.simplify()
-        # value.subs({'x': 'y'})
-        # value.symbolic('f')
+        # Test symbolic operations
+        sym_element = StorageOps.symbolic(element, "name")
+        sym_element.subs({"x": "y"})
+        sym_element.simplify()

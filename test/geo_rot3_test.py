@@ -185,7 +185,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
         Tests:
             Rot3.hat
-            Rot3.expmap
+            Rot3.to_tangent
             Rot3.to_rotation_matrix
         """
         element = self.element()
@@ -201,7 +201,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Rot3.expmap(pertubation, epsilon=self.EPSILON)
+        expmap = geo.Rot3.from_tangent(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_rotation_matrix()
 
         # They should match!

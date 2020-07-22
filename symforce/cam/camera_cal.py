@@ -1,20 +1,16 @@
 from symforce import geo
+from symforce import ops
+from symforce.ops.interfaces import Storage
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.python_util import classproperty
 
 
-class CameraCal(geo.Storage):
+class CameraCal(Storage):
     """
     Base class for symbolic camera models.
     """
 
     NUM_DISTORTION_COEFFS = 0
-
-    @classproperty
-    def STORAGE_DIM(cls):  # type: ignore
-        # Focal length (x, y) + principal point (x, y) + distortion coefficients
-        return 4 + cls.NUM_DISTORTION_COEFFS
 
     def __init__(self, focal_length, principal_point, distortion_coeffs=tuple()):
         # type: (T.Sequence[T.Scalar], T.Sequence[T.Scalar], T.Sequence[T.Scalar]) -> None
@@ -27,6 +23,11 @@ class CameraCal(geo.Storage):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return 4 + cls.NUM_DISTORTION_COEFFS
+
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return (
@@ -38,7 +39,7 @@ class CameraCal(geo.Storage):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> CameraCal
-        assert len(vec) == cls.STORAGE_DIM
+        assert len(vec) == cls.storage_dim()
         return cls(focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:])
 
     @classmethod

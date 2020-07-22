@@ -1,6 +1,6 @@
+from symforce.ops.interfaces import Group
 from symforce import types as T
 
-from .base import Group
 from .quaternion import Quaternion
 
 
@@ -15,8 +15,6 @@ class DualQuaternion(Group):
 
         https://en.wikipedia.org/wiki/Dual_quaternion
     """
-
-    STORAGE_DIM = 2 * Quaternion.STORAGE_DIM
 
     def __init__(self, real_q, inf_q):
         # type: (Quaternion, Quaternion) -> None
@@ -38,6 +36,11 @@ class DualQuaternion(Group):
         # type: () -> str
         return "<DQ real={}, inf={}>".format(repr(self.real_q), repr(self.inf_q))
 
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return 2 * Quaternion.storage_dim()
+
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return self.real_q.to_storage() + self.inf_q.to_storage()
@@ -45,10 +48,10 @@ class DualQuaternion(Group):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> DualQuaternion
-        assert len(vec) == cls.STORAGE_DIM
+        assert len(vec) == cls.storage_dim()
         return cls(
-            real_q=Quaternion.from_storage(vec[0 : Quaternion.STORAGE_DIM]),
-            inf_q=Quaternion.from_storage(vec[Quaternion.STORAGE_DIM :]),
+            real_q=Quaternion.from_storage(vec[0 : Quaternion.storage_dim()]),
+            inf_q=Quaternion.from_storage(vec[Quaternion.storage_dim() :]),
         )
 
     # -------------------------------------------------------------------------

@@ -10,9 +10,6 @@ The design of these concepts is similar to those in GTSAM and Sophus:
     * https://github.com/strasdat/Sophus
 """
 
-from .base import Group
-from .base import LieGroup
-from .base import Storage
 from .complex import Complex
 from .dual_quaternion import DualQuaternion
 from .matrix import *  # pylint: disable=wildcard-import

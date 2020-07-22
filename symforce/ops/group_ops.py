@@ -1,5 +1,7 @@
 from symforce import types as T
+from symforce.python_util import get_type
 
+from .ops import Ops
 from .storage_ops import StorageOps
 
 Element = T.Any
@@ -33,12 +35,7 @@ class GroupOps(StorageOps):
         Returns:
             Element: b such that a @ b = a
         """
-        if hasattr(a, "identity"):
-            return a.identity()
-        elif StorageOps.scalar_like(a):
-            return 0
-        else:
-            StorageOps._type_error(a)
+        return Ops.implementation(get_type(a)).identity(a)
 
     @staticmethod
     def compose(a, b):
@@ -53,12 +50,7 @@ class GroupOps(StorageOps):
         Returns:
             Element: a @ b
         """
-        if hasattr(a, "compose"):
-            return a.compose(b)
-        elif StorageOps.scalar_like(a):
-            return a + b
-        else:
-            StorageOps._type_error(a)
+        return Ops.implementation(get_type(a)).compose(a, b)
 
     @staticmethod
     def inverse(a):
@@ -72,12 +64,7 @@ class GroupOps(StorageOps):
         Returns:
             Element: b such that a @ b = identity
         """
-        if hasattr(a, "inverse"):
-            return a.inverse()
-        elif StorageOps.scalar_like(a):
-            return -a
-        else:
-            StorageOps._type_error(a)
+        return Ops.implementation(get_type(a)).inverse(a)
 
     @staticmethod
     def between(a, b):

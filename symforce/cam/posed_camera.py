@@ -4,7 +4,6 @@ from .camera import Camera
 from symforce import geo
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.python_util import classproperty
 
 
 class PosedCamera(Camera):

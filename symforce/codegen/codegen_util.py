@@ -13,6 +13,7 @@ from symforce.values import Values
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import printers
+from symforce import python_util
 
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
@@ -91,7 +92,7 @@ def format_symbols(
     # Rename the symbolic inputs so that they match the code we generate
     symbolic_args = []
     for key, value in inputs.items():
-        arg_cls = ops.StorageOps.get_type(value)
+        arg_cls = python_util.get_type(value)
         if arg_cls == sm.Symbol:
             name_str = "{}"
         elif issubclass(arg_cls, geo.Matrix):
@@ -108,7 +109,8 @@ def format_symbols(
         symbols = [sm.Symbol(name_str.format(key, j)) for j in range(storage_dim)]
         symbolic_args.extend(symbols)
 
-    input_subs = dict(zip(inputs.values_recursive(), symbolic_args))
+    input_subs = dict(zip(inputs.to_storage(), symbolic_args))
+
     intermediate_terms_formatted = [
         (lhs, sm.S(rhs).subs(input_subs)) for lhs, rhs in intermediate_terms
     ]

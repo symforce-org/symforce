@@ -193,7 +193,15 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         for i, mat in enumerate(eye_matrix_constructors):
             self.assertEqual(mat(), geo.Matrix.eye(i + 1))
 
-    # TODO(hayk): Test row_join, col_join - seem to not use new and create inconsistent shapes.
+    def test_row_col_join(self):
+        # type: () -> None
+        """
+        Tests:
+            row_join
+            col_join
+        """
+        self.assertEqual(geo.M33().SHAPE, geo.M32().row_join(geo.M31()).SHAPE)
+        self.assertEqual(geo.M33().SHAPE, geo.M23().col_join(geo.M13()).SHAPE)
 
     def test_jacobian(self):
         # type: () -> None
@@ -206,15 +214,15 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         new_vec = pose * vec
 
         vec_D_pose = vec.jacobian(pose)
-        self.assertEqual(vec_D_pose, geo.Matrix(3, pose.TANGENT_DIM).zero())
+        self.assertEqual(vec_D_pose, geo.Matrix(3, pose.tangent_dim()).zero())
 
         new_vec_D_vec = new_vec.jacobian(vec)
         new_vec_D_pose = new_vec.jacobian(pose)
         self.assertEqual(new_vec_D_vec.shape, (3, 3))
-        self.assertEqual(new_vec_D_pose.shape, (3, pose.TANGENT_DIM))
+        self.assertEqual(new_vec_D_pose.shape, (3, pose.tangent_dim()))
 
         vec_D_pose_storage = vec.jacobian(pose, tangent_space=False)
-        self.assertEqual(vec_D_pose_storage, geo.Matrix(3, pose.STORAGE_DIM).zero())
+        self.assertEqual(vec_D_pose_storage, geo.Matrix(3, pose.storage_dim()).zero())
 
     def test_block_matrix(self):
         # type: () -> None

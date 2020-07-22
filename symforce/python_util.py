@@ -7,8 +7,10 @@ import re
 import shutil
 import string
 import subprocess
+import numpy as np
 
 from symforce import logger
+from symforce import sympy as sm
 from symforce import types as T
 
 
@@ -73,18 +75,6 @@ def files_in_dir(dirname, relative=False):
                 yield abspath
 
 
-class classproperty(property):
-    """
-    This allows us to make properties that are treated as classmethods.
-
-    Source:
-        https://stackoverflow.com/questions/128573/using-property-on-classmethods/1383402
-    """
-
-    def __get__(self, cls, owner):  # type: ignore
-        return classmethod(self.fget).__get__(None, owner)()
-
-
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     # type: (int, str) -> str
     """
@@ -92,3 +82,29 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     This is not cryptographically secure.
     """
     return "".join(random.choice(chars) for _ in range(size))
+
+
+def get_type(a):
+    # type: (T.Any) -> T.Type
+    """
+    Returns the type of the element if its an instance, or a pass through if already a type.
+    """
+    if isinstance(a, type):
+        return a
+    else:
+        return type(a)
+
+
+def scalar_like(a):
+    # type: (T.Any) -> bool
+    """
+    Returns whether the element is scalar-like (an int, float, or sympy expression).
+
+    This method does not rely on the value of a, only the type.
+    """
+    a_type = get_type(a)
+    if issubclass(a_type, (int, float, np.float32, np.float64)):
+        return True
+    is_expr = issubclass(a_type, sm.Expr)
+    is_matrix = issubclass(a_type, sm.MatrixBase)
+    return is_expr and not is_matrix

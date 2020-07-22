@@ -1,7 +1,9 @@
 from symforce import types as T
 from symforce import sympy as sm
 from symforce import logger
+from symforce.python_util import get_type
 
+from .ops import Ops
 from .storage_ops import StorageOps
 from .group_ops import GroupOps
 
@@ -44,16 +46,11 @@ class LieGroupOps(GroupOps):
         example SO3 could be a tangent_dim of 3 with a storage_dim of 4 if storing quaternions,
         or 9 if storing rotation matrices. For vector spaces they are equal.
         """
-        if hasattr(a, "TANGENT_DIM"):
-            return a.TANGENT_DIM
-        elif GroupOps.scalar_like(a):
-            return 1
-        else:
-            GroupOps._type_error(a)
+        return Ops.implementation(get_type(a)).tangent_dim(a)
 
     @staticmethod
     def from_tangent(a, vec, epsilon=0):
-        # type: (ElementOrType, T.List, T.Scalar) -> Element
+        # type: (ElementOrType, T.List[T.Scalar], T.Scalar) -> Element
         """
         Mapping from the tangent space approximation at identity into a group element of type a.
         For most manifold types this is implemented as the exponential map.
@@ -68,20 +65,11 @@ class LieGroupOps(GroupOps):
         Returns:
             Element: Valid group element that approximates vec around identity.
         """
-        if hasattr(a, "from_tangent"):
-            return a.from_tangent(vec, epsilon=epsilon)
-        elif GroupOps.scalar_like(a):
-            assert len(vec) == 1
-            if isinstance(vec[0], sm.Symbol):
-                return vec[0]
-            constructor = a if isinstance(a, type) else type(a)
-            return constructor(vec[0])
-        else:
-            GroupOps._type_error(a)
+        return Ops.implementation(get_type(a)).from_tangent(a, vec, epsilon)
 
     @staticmethod
     def to_tangent(a, epsilon=0):
-        # type: (Element, T.Scalar) -> T.List
+        # type: (Element, T.Scalar) -> T.List[T.Scalar]
         """
         Mapping from this element to the tangent space approximation at identity.
 
@@ -92,16 +80,11 @@ class LieGroupOps(GroupOps):
         Returns:
             list: Tangent space pertubation around identity that approximates a.
         """
-        if hasattr(a, "to_tangent"):
-            return a.to_tangent(epsilon=epsilon)
-        elif GroupOps.scalar_like(a):
-            return [a]
-        else:
-            GroupOps._type_error(a)
+        return Ops.implementation(get_type(a)).to_tangent(a, epsilon)
 
     @staticmethod
     def retract(a, vec, epsilon=0):
-        # type: (Element, T.List, T.Scalar) -> Element
+        # type: (Element, T.List[T.Scalar], T.Scalar) -> Element
         """
         Apply a tangent space pertubation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
@@ -116,14 +99,11 @@ class LieGroupOps(GroupOps):
         Returns:
             Element: Group element that conceptually represents "a + vec"
         """
-        if hasattr(a, "retract"):
-            return a.retract(vec, epsilon=epsilon)
-
         return LieGroupOps.compose(a, LieGroupOps.from_tangent(a, vec, epsilon=epsilon))
 
     @staticmethod
     def local_coordinates(a, b, epsilon=0):
-        # type: (Element, T.Any, T.Scalar) -> T.List
+        # type: (Element, Element, T.Scalar) -> T.List[T.Scalar]
         """
         Computes a tangent space pertubation around a to produce b. Often used in optimization
         to minimize the distance between two group elements.
@@ -138,29 +118,21 @@ class LieGroupOps(GroupOps):
         Returns:
             list: Tangent space pertubation that conceptually represents "b - a"
         """
-        if hasattr(a, "local_coordinates"):
-            return a.local_coordinates(b, epsilon=epsilon)
-
         return LieGroupOps.to_tangent(LieGroupOps.between(a, b), epsilon=epsilon)
 
-    @staticmethod
-    def storage_D_tangent(a, epsilon=0):
-        # type: (Element) -> sm.Matrix
+    @staticmethod  # type: ignore
+    def storage_D_tangent(a):
+        # type: (Element) -> geo.Matrix
         """
         Computes the jacobian of the storage space of an element with respect to the tangent space around
         that element.
         """
-        if hasattr(a, "storage_D_tangent"):
-            # Use precomputed jacobian
-            return a.storage_D_tangent()
-        elif GroupOps.scalar_like(a):
-            # TODO(nathan): Returning a sm.Matrix instead of a geo.Matrix could cause problems
-            return sm.Matrix([1])
-        else:
-            a_type = a if isinstance(a, type) else type(a)
+        try:
+            return Ops.implementation(get_type(a)).storage_D_tangent(a)
+        except NotImplementedError:
             logger.error(
                 "storage_D_tangent not implemented for {}; use storage_D_tangent.ipynb to compute".format(
-                    a_type
+                    get_type(a)
                 )
             )
-            GroupOps._type_error(a)
+            raise NotImplementedError()

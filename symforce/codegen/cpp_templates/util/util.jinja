@@ -32,14 +32,14 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     name (str): Optional name in case type is a generated struct
  #}
 {%- macro format_typename(T_or_value, name="") %}
-    {%- set T = ops.StorageOps.get_type(T_or_value) -%}
+    {%- set T = python_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
         Scalar
     {%- elif T.__name__ == 'NoneType' -%}
         void
     {%- elif issubclass(T, Matrix) -%}
         {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1]) }}
-    {%- elif T == Values -%}
+    {%- elif issubclass(T, Values) -%}
         {{ spec.namespaces_dict[name] }}::{{ spec.typenames_dict[name] }}
     {%- else -%}
         {%- if "geo" in T.__module__ -%}
@@ -93,7 +93,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     name (str):
  #}
 {%- macro format_input_arg(T_or_value, name) %}
-    {%- set T = ops.StorageOps.get_type(T_or_value) -%}
+    {%- set T = python_util.get_type(T_or_value) -%}
     {% if T == Symbol -%}
         {#- Scalar type is just const -#}
         const {{ format_typename(T_or_value) }} {{ name }}
@@ -176,8 +176,8 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 {% macro expr_code(spec) -%}
     // Input arrays
     {% for name, type in spec.inputs.items() %}
-    {% set T = ops.StorageOps.get_type(type) %}
-        {% if T == Values %}
+    {% set T = python_util.get_type(type) %}
+        {% if issubclass(T, Values) %}
     std::vector<Scalar> {{ name }}_array;
     {{ spec.namespaces_dict[name] }}::StorageOps::ToStorage<{{ format_typename(type, name) }}>({{ name }}, &{{ name }}_array);
     const {{ vector_type(ops.StorageOps.storage_dim(type.flatten()[0])) }} _{{ name }}({{ name }}_array.data());
@@ -205,7 +205,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {# We have to use a namespace here because of jinja's scoping rules in loops #}
     {% set ns = namespace(iter=0) %}
     {% for name, type in spec.outputs.items() %}
-        {%- set T = ops.StorageOps.get_type(type) -%}
+        {%- set T = python_util.get_type(type) -%}
         {% if issubclass(T, Matrix) %}
             {% set rows = type.shape[0] %}
             {% set cols = type.shape[1] %}
@@ -221,7 +221,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     _{{ name }} = {{ spec.output_terms[ns.iter] }};
             {% set ns.iter = ns.iter + 1 %}
         {% else %}
-            {% if T == Values %}
+            {% if issubclass(T, Values) %}
                 {% set dims = ops.StorageOps.storage_dim(type.flatten()[0]) %}
             {% else %}
                 {% set dims = ops.StorageOps.storage_dim(type) %}
@@ -235,7 +235,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
         {% if name != spec.return_key %}
             {% if issubclass(T, Matrix) or is_symbolic(type) %}
     *{{ name }} = _{{ name }};
-            {% elif T == Values %}
+            {% elif issubclass(T, Values) %}
     {{ spec.namespaces_dict[name] }}::StorageOps::FromStorage<{{ vector_type(dims) }}>(_{{name}}, {{ name }});
             {% else %}
     *{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
@@ -244,7 +244,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 
     {% endfor %}
     {% for name, type in spec.outputs.items() %}
-        {% set T_return = ops.StorageOps.get_type(type) %}
+        {% set T_return = python_util.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
             {%- if issubclass(T_return, Matrix) or is_symbolic(type) %}
     return _{{ name }};

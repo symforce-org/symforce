@@ -1,7 +1,7 @@
+from symforce.ops.interfaces.lie_group import LieGroup
 from symforce import sympy as sm
 from symforce import types as T
 
-from .base import LieGroup
 from .matrix import Matrix
 from .matrix import Vector1
 from .matrix import Vector2
@@ -18,10 +18,6 @@ class Pose2(LieGroup):
     The tangent space is two elements for translation followed by one angle for rotation.
     TODO(hayk): Flip this to match Pose3 with rotation first.
     """
-
-    TANGENT_DIM = 3
-    MATRIX_DIMS = (3, 3)
-    STORAGE_DIM = 4
 
     def __init__(self, R=None, t=None):
         # type: (Rot2, Matrix) -> None
@@ -47,6 +43,11 @@ class Pose2(LieGroup):
         # type: () -> str
         return "<Pose2 R={}, t=({}, {})>".format(repr(self.R), repr(self.t[0]), repr(self.t[1]))
 
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return Rot2.storage_dim() + Vector2.storage_dim()
+
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
         return self.R.to_storage() + self.t.to_storage()
@@ -54,10 +55,10 @@ class Pose2(LieGroup):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> Pose2
-        assert len(vec) == cls.STORAGE_DIM
+        assert len(vec) == cls.storage_dim()
         return cls(
-            R=Rot2.from_storage(vec[0 : Rot2.STORAGE_DIM]),
-            t=Vector2(*vec[Rot2.STORAGE_DIM : Rot2.STORAGE_DIM + 2]),
+            R=Rot2.from_storage(vec[0 : Rot2.storage_dim()]),
+            t=Vector2(*vec[Rot2.storage_dim() : Rot2.storage_dim() + 2]),
         )
 
     # -------------------------------------------------------------------------
@@ -84,10 +85,15 @@ class Pose2(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def expmap(cls, v, epsilon=0):
+    def tangent_dim(cls):
+        # type: () -> int
+        return 3
+
+    @classmethod
+    def from_tangent(cls, v, epsilon=0):
         # type: (T.Sequence[T.Scalar], T.Scalar) -> Pose2
         theta = v[2]
-        R = Rot2.expmap([theta], epsilon=epsilon)
+        R = Rot2.from_tangent([theta], epsilon=epsilon)
 
         a = R.z.imag / (theta + epsilon)
         b = (1 - R.z.real) / (theta + epsilon)
@@ -95,9 +101,9 @@ class Pose2(LieGroup):
         t = Vector2(a * v[0] - b * v[1], b * v[0] + a * v[1])
         return Pose2(R, t)
 
-    def logmap(self, epsilon=0):
+    def to_tangent(self, epsilon=0):
         # type: (T.Scalar) -> T.List[T.Scalar]
-        theta = self.R.logmap(epsilon=epsilon)[0]
+        theta = self.R.to_tangent(epsilon=epsilon)[0]
         halftheta = 0.5 * theta
         a = (halftheta * self.R.z.imag) / sm.Max(epsilon, 1 - self.R.z.real)
 
@@ -149,7 +155,7 @@ class Pose2(LieGroup):
         A matrix representation of this element in the Euclidean space that contains it.
 
         Returns:
-            (Matrix) Matrix of shape given by self.MATRIX_DIMS
+            3x3 Matrix
         """
         R = self.R.to_rotation_matrix()
         return (R.row_join(self.t)).col_join(Matrix(1, 3, [0, 0, 1]))

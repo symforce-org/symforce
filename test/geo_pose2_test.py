@@ -23,7 +23,7 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         """
         Tests:
             Pose2.hat
-            Pose2.expmap
+            Pose2.to_tangent
             Pose2.to_homogenous_matrix
         """
         element = self.element()
@@ -39,7 +39,7 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Pose2.expmap(pertubation, epsilon=self.EPSILON)
+        expmap = geo.Pose2.from_tangent(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!

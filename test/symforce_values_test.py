@@ -4,16 +4,28 @@ from symforce import logger
 from symforce import geo
 from symforce import sympy as sm
 from symforce.test_util import TestCase
+from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.values import Values
 
 
-class SymforceValuesTest(TestCase):
+class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     """
     Test symforce.values.Values.
     """
 
+    @classmethod
+    def element(cls):
+        # type: () -> Values
+        v = Values()
+        v["float"] = 3.0
+        v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)))
+        v["pose3"] = geo.Pose3.from_tangent(np.random.normal(size=(6,)))
+        v["values"] = v.copy()
+        return v
+
     def test_as_ordered_dict(self):
         # type: () -> None
+        # TODO(nathan): Disallow adding strings as elements? Certain functions break with string elements
         v = Values(z=5, bar="foo")
         self.assertEqual(v["z"], 5)
         self.assertEqual(v["bar"], "foo")
@@ -101,11 +113,15 @@ class SymforceValuesTest(TestCase):
 
         self.assertEqual(v["states.x0"], sm.Symbol("states.x0"))
 
-        keys_recursive = v.keys_recursive()
-        serialized, other = v.flatten()
-        self.assertEqual(len(serialized), len(keys_recursive))
+        # Test getting flattened list of elements/keys
+        vals = v.values_recursive()
+        for i, key in enumerate(v.keys_recursive()):
+            self.assertEqual(v[key], vals[i])
+        for key, val in v.items_recursive():
+            self.assertEqual(v[key], val)
 
-        v2 = v.from_storage(serialized, other)
+        serialized, other = v.flatten()
+        v2 = v.from_storage_index(serialized, other)
         self.assertEqual(v, v2)
 
         # Test flattened list of items equal
@@ -120,7 +136,7 @@ class SymforceValuesTest(TestCase):
         v["arr"] = np.array([1, 2, 3])
         v["list"] = [1, 2, 3]
         v["tuple"] = (4, 5, -6)
-        Values.from_storage(*v.flatten())
+        Values.from_storage_index(*v.flatten())
 
         # Unknown type
         class Floop(object):
@@ -132,6 +148,12 @@ class SymforceValuesTest(TestCase):
 
         string = repr(v)
         logger.debug("v:\n" + string)
+
+        # Copy into other values and change element
+        new_v = v.copy()
+        self.assertEqual(new_v, v)
+        v["list"].append(4)
+        self.assertNotEqual(new_v, v)
 
     def test_evalf(self):
         # type: () -> None

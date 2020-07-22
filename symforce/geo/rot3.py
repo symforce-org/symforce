@@ -1,10 +1,13 @@
 import numpy as np
 
+from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
 from symforce import types as T
 
-from .base import LieGroup
 from .matrix import Matrix
+from .matrix import Matrix31
+from .matrix import Matrix33
+from .matrix import Matrix43
 from .matrix import V3
 from .quaternion import Quaternion
 
@@ -14,10 +17,6 @@ class Rot3(LieGroup):
     Group of three-dimensional orthogonal matrices with determinant +1, representing
     rotations in 3D space. Backed by a quaternion with (x, y, z, w) storage.
     """
-
-    TANGENT_DIM = 3
-    MATRIX_DIMS = (3, 3)
-    STORAGE_DIM = Quaternion.STORAGE_DIM
 
     def __init__(self, q=None):
         # type: (Quaternion) -> None
@@ -34,6 +33,11 @@ class Rot3(LieGroup):
     def __repr__(self):
         # type: () -> str
         return "<Rot3 {}>".format(repr(self.q))
+
+    @classmethod
+    def storage_dim(cls):
+        # type: () -> int
+        return Quaternion.storage_dim()
 
     def to_storage(self):
         # type: () -> T.List[T.Scalar]
@@ -73,8 +77,13 @@ class Rot3(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def expmap(cls, v, epsilon=0):
-        # type: (T.List[T.Scalar], T.Scalar) -> Rot3
+    def tangent_dim(cls):
+        # type: () -> int
+        return 3
+
+    @classmethod
+    def from_tangent(cls, v, epsilon=0):
+        # type: (T.Sequence[T.Scalar], T.Scalar) -> Rot3
         vm = Matrix(v)
         theta_sq = vm.dot(vm)
         theta = sm.sqrt(theta_sq + epsilon ** 2)
@@ -82,7 +91,7 @@ class Rot3(LieGroup):
         return cls(Quaternion(xyz=sm.sin(theta / 2) / theta * vm, w=sm.cos(theta / 2)))
 
     def logmap_signed_epsilon(self, epsilon=0):
-        # type: (float) -> T.List[T.Scalar]
+        # type: (T.Scalar) -> T.List[T.Scalar]
         """
         Implementation of logmap that uses epsilon with the sign function to avoid NaN.
         """
@@ -91,7 +100,7 @@ class Rot3(LieGroup):
         return tangent.to_storage()
 
     def logmap_acos_clamp_max(self, epsilon=0):
-        # type: (float) -> T.List[T.Scalar]
+        # type: (T.Scalar) -> T.List[T.Scalar]
         """
         Implementation of logmap that uses epsilon with the Max and Min functions to avoid NaN.
         """
@@ -101,17 +110,17 @@ class Rot3(LieGroup):
         )
         return tangent.to_storage()
 
-    def logmap(self, epsilon=0):
-        # type: (float) -> T.List[T.Scalar]
+    def to_tangent(self, epsilon=0):
+        # type: (T.Scalar) -> T.List[T.Scalar]
         return self.logmap_acos_clamp_max(epsilon=epsilon)
 
     @classmethod
     def hat(cls, vec):
-        # type: (T.List[T.Scalar]) -> T.List[T.List[T.Scalar]]
+        # type: (T.Sequence[T.Scalar]) -> T.List[T.List[T.Scalar]]
         return [[0, -vec[2], vec[1]], [vec[2], 0, -vec[0]], [-vec[1], vec[0], 0]]
 
     def storage_D_tangent(self):
-        # type: () -> Matrix
+        # type: () -> Matrix43
         return (
             sm.S.One
             / 2
@@ -131,7 +140,7 @@ class Rot3(LieGroup):
 
     @T.overload
     def __mul__(self, right):  # pragma: no cover
-        # type: (Matrix) -> Matrix
+        # type: (Matrix31) -> Matrix31
         pass
 
     @T.overload
@@ -140,7 +149,7 @@ class Rot3(LieGroup):
         pass
 
     def __mul__(self, right):
-        # type: (T.Union[Matrix, Rot3]) -> T.Union[Matrix, Rot3]
+        # type: (T.Union[Matrix31, Rot3]) -> T.Union[Matrix31, Rot3]
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -153,12 +162,9 @@ class Rot3(LieGroup):
             raise NotImplementedError('Unsupported type: "{}"'.format(right))
 
     def to_rotation_matrix(self):
-        # type: () -> Matrix
+        # type: () -> Matrix33
         """
         Converts to a rotation matrix
-
-        Returns:
-            Matrix: 3x3 matrix representing this rotation
         """
         return Matrix(
             [
@@ -182,7 +188,7 @@ class Rot3(LieGroup):
 
     @classmethod
     def from_rotation_matrix(cls, R, epsilon=0):
-        # type: (Matrix, T.Scalar) -> Rot3
+        # type: (Matrix33, T.Scalar) -> Rot3
         """
         Construct from a rotation matrix.
 
@@ -235,7 +241,7 @@ class Rot3(LieGroup):
 
     @classmethod
     def from_axis_angle(cls, axis, angle):
-        # type: (Matrix, T.Scalar) -> Rot3
+        # type: (Matrix31, T.Scalar) -> Rot3
         """
         Construct from a (normalized) axis as a 3-vector and an angle in radians.
         """
@@ -243,7 +249,7 @@ class Rot3(LieGroup):
 
     @classmethod
     def from_two_unit_vectors(cls, a, b, epsilon=0):
-        # type: (Matrix, Matrix, T.Scalar) -> Rot3
+        # type: (Matrix31, Matrix31, T.Scalar) -> Rot3
         """
         Return a rotation that transforms a to b. Both inputs are three-vectors that
         are expected to be normalized.

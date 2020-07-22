@@ -6,6 +6,7 @@ import unittest
 import logging
 
 from symforce import geo
+from symforce.ops import interfaces
 from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
@@ -20,7 +21,7 @@ class TestCase(unittest.TestCase):
     Base class for symforce tests. Adds some useful helpers.
     """
 
-    LieGroupOpsType = T.Union[geo.base.LieGroup, T.Scalar]
+    LieGroupOpsType = T.Union[interfaces.LieGroup, T.Scalar]
 
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing

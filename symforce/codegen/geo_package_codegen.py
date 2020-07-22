@@ -28,13 +28,18 @@ def make_storage_ops_funcs(cls, mode):
     storage_vec = geo.M(range(ops.StorageOps.storage_dim(cls)))
     return [
         Codegen.function(
-            name="ToStorage", func=ops.StorageOps.to_storage, input_types=[cls], mode=mode
+            name="ToStorage",
+            func=ops.StorageOps.to_storage,
+            input_types=[cls],
+            mode=mode,
+            docstring=ops.StorageOps.to_storage.__doc__,
         ),
         Codegen.function(
             name="FromStorage",
             func=(lambda vec: ops.StorageOps.from_storage(cls, vec)),
             input_types=[storage_vec],
             mode=mode,
+            docstring=ops.StorageOps.from_storage.__doc__,
         ),
     ]
 
@@ -48,9 +53,19 @@ def make_group_ops_funcs(cls, mode):
         Codegen.function(
             name="Identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], mode=mode
         ),
-        Codegen.function(name="Inverse", func=ops.GroupOps.inverse, input_types=[cls], mode=mode),
         Codegen.function(
-            name="Compose", func=ops.GroupOps.compose, input_types=[cls, cls], mode=mode
+            name="Inverse",
+            func=ops.GroupOps.inverse,
+            input_types=[cls],
+            mode=mode,
+            docstring=ops.GroupOps.inverse.__doc__,
+        ),
+        Codegen.function(
+            name="Compose",
+            func=ops.GroupOps.compose,
+            input_types=[cls, cls],
+            mode=mode,
+            docstring=ops.GroupOps.compose.__doc__,
         ),
         Codegen.function(
             name="Between", func=ops.GroupOps.between, input_types=[cls, cls], mode=mode
@@ -70,24 +85,28 @@ def make_lie_group_ops_funcs(cls, mode):
             func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
             input_types=[tangent_vec, sm.Symbol],
             mode=mode,
+            docstring=ops.LieGroupOps.from_tangent.__doc__,
         ),
         Codegen.function(
             name="ToTangent",
             func=ops.LieGroupOps.to_tangent,
             input_types=[cls, sm.Symbol],
             mode=mode,
+            docstring=ops.LieGroupOps.to_tangent.__doc__,
         ),
         Codegen.function(
             name="Retract",
             func=ops.LieGroupOps.retract,
             input_types=[cls, tangent_vec, sm.Symbol],
             mode=mode,
+            docstring=ops.LieGroupOps.retract.__doc__,
         ),
         Codegen.function(
             name="LocalCoordinates",
             func=ops.LieGroupOps.local_coordinates,
             input_types=[cls, cls, sm.Symbol],
             mode=mode,
+            docstring=ops.LieGroupOps.local_coordinates.__doc__,
         ),
     ]
 

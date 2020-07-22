@@ -167,6 +167,7 @@ class Codegen(object):
         data["Values"] = Values
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
+        data["python_util"] = python_util
 
         def is_symbolic(T):
             # type: (T.Any) -> bool
@@ -276,9 +277,9 @@ class Codegen(object):
         """
         # If the function is an instance method, remove the type associated with the class
         input_types = [
-            ops.StorageOps.get_type(arg).__name__ for name, arg in inputs.items() if name != "self"
+            python_util.get_type(arg).__name__ for name, arg in inputs.items() if name != "self"
         ]
-        output_types = [ops.StorageOps.get_type(arg).__name__ for arg in outputs.values()]
+        output_types = [python_util.get_type(arg).__name__ for arg in outputs.values()]
 
         # TODO(nathan): This sometimes doesn't print the types in a nice way. For example,
         # scalar types are not printed as "Scalar" but instead "Symbol", "One", "Max", etc.

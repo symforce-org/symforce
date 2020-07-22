@@ -8,7 +8,8 @@ from symforce import types as T
 from symforce import geo
 from symforce import cam
 from symforce import initialization
-from symforce.ops import StorageOps
+from symforce import ops
+from symforce.ops.interfaces import Storage
 
 from .attr_accessor import AttrAccessor
 
@@ -88,12 +89,155 @@ class Values(object):
         return self.dict.get(key, default)
 
     def update(self, other):
-        # type: (T.Mapping[str, T.Any]) -> None
+        # type: (T.Union[Values, T.Mapping[str, T.Any]]) -> None
         """
         Updates keys in this Values from those of the other.
         """
         for key, value in other.items():
             self[key] = value
+
+    def copy(self):
+        # type: () -> Values
+        """
+        Returns a deepcopy of this Values.
+        """
+        return self.from_storage(self.to_storage())
+
+    # -------------------------------------------------------------------------
+    # Storage concept - see symforce.ops.storage_ops
+    # -------------------------------------------------------------------------
+
+    def storage_dim(self):
+        # type: () -> int
+        return sum([ops.StorageOps.storage_dim(v) for v in self.values()])
+
+    def to_storage(self):
+        # type: () -> T.List[T.Any]
+        """
+        Returns a flat list of unique values for every scalar element in this object.
+        Equivalent to the list from :func:`flatten()`.
+        """
+        return self.flatten()[0]
+
+    @classmethod
+    def from_storage_index(cls, vector_values, indices):
+        # type: (T.List[T.Scalar], T.Mapping[str, T.List[T.Any]]) -> Values
+        """
+        Takes a vectorized values and corresponding indices and reconstructs the original form.
+        Reverse of :func:`to_storage()`.
+
+        Args:
+            vector_values (list): Vectorized values
+            indices (dict(str, list)): Dict of key to the source (index, datatype, shape, item_index)
+        """
+        values = cls()
+        for name, (inx, datatype, shape, item_index) in indices.items():
+            vec = vector_values[inx : inx + cls._shape_to_dims(shape)]
+
+            if datatype == "Scalar":
+                values[name] = vec[0]
+            elif datatype == "Matrix":
+                values[name] = geo.Matrix(vec).reshape(*shape)
+            elif datatype == "Values":
+                values[name] = cls.from_storage_index(vec, item_index)
+            elif datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
+                values[name] = getattr(geo, datatype).from_storage(vec)
+            elif datatype in {"LinearCameraCal", "EquidistantEpipolarCameraCal", "ATANCameraCal"}:
+                values[name] = getattr(cam, datatype).from_storage(vec)
+            elif datatype == "np.ndarray":
+                values[name] = np.array(vec).reshape(*shape)
+            else:
+                raise NotImplementedError('Unknown datatype: "{}"'.format(datatype))
+
+        return values
+
+    def from_storage(self, elements, index=None):
+        # type: (T.List[T.Scalar], T.Dict[str, T.List[T.Any]]) -> Values
+        if index is None:
+            assert len(elements) == self.storage_dim()
+            return Values.from_storage_index(elements, self.index())
+        return Values.from_storage_index(elements, index)
+
+    def symbolic(self, name, **kwargs):
+        # type: (str, T.Dict) -> Values
+        symbolic_values = Values()
+        for k, v in self.items():
+            symbolic_values[k] = ops.StorageOps.symbolic(v, "{}_{}".format(name, k), **kwargs)
+        return symbolic_values
+
+    def evalf(self):
+        # type: () -> Values
+        """
+        Numerical evaluation.
+        """
+        vals, index = self.flatten()
+        return self.from_storage_index([ops.StorageOps.evalf(e) for e in vals], index)
+
+    # -------------------------------------------------------------------------
+    # Group concept - see symforce.ops.group_ops
+    # -------------------------------------------------------------------------
+
+    def identity(self):
+        # type: () -> Values
+        identity_values = Values()
+        for k, v in self.items():
+            identity_values[k] = ops.GroupOps.identity(v)
+        return identity_values
+
+    def compose(self, other):
+        # type: (Values) -> Values
+        assert self.index() == other.index()
+        composed_values = Values()
+        for k, v in self.items():
+            composed_values[k] = ops.GroupOps.compose(v, other[k])
+        return composed_values
+
+    def inverse(self):
+        # type: () -> Values
+        inverse_values = Values()
+        for k, v in self.items():
+            inverse_values[k] = ops.GroupOps.inverse(v)
+        return inverse_values
+
+    # -------------------------------------------------------------------------
+    # Lie group concept - see symforce.ops.lie_group_ops
+    # -------------------------------------------------------------------------
+
+    def tangent_dim(self):
+        # type: () -> int
+        return sum([ops.LieGroupOps.tangent_dim(v) for v in self.values()])
+
+    def from_tangent(self, vec, epsilon=0):
+        # type: (T.List[T.Scalar], T.Scalar) -> Values
+        updated_values = Values()
+        inx = 0
+        for k, v in self.items():
+            dim = ops.LieGroupOps.tangent_dim(v)
+            updated_values[k] = ops.LieGroupOps.from_tangent(v, vec[inx : inx + dim], epsilon)
+            inx += dim
+        return updated_values
+
+    def to_tangent(self, epsilon=0):
+        # type: (T.Scalar) -> T.List[T.Scalar]
+        vec = []
+        for v in self.values():
+            vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
+        return vec
+
+    def storage_D_tangent(self):
+        # type: () -> geo.Matrix
+        storage_D_tangent = geo.Matrix(self.storage_dim(), self.tangent_dim()).zero()
+        s_inx = 0
+        t_inx = 0
+        for v in self.values():
+            s_dim = ops.StorageOps.storage_dim(v)
+            t_dim = ops.LieGroupOps.tangent_dim(v)
+            storage_D_tangent[
+                s_inx : s_inx + s_dim, t_inx : t_inx + t_dim
+            ] = ops.LieGroupOps.storage_D_tangent(v)
+            s_inx += s_dim
+            t_inx += t_dim
+        return storage_D_tangent
 
     # -------------------------------------------------------------------------
     # Printing
@@ -288,7 +432,7 @@ class Values(object):
                 dim = int(np.prod(value.shape))
                 vec = value.reshape(dim, 1)
                 item_index = {}
-            elif isinstance(value, geo.Storage):
+            elif isinstance(value, Storage):
                 datatype = value.__class__.__name__
                 vec = geo.Matrix(value.to_storage())
                 shape = (len(vec),)
@@ -312,46 +456,6 @@ class Values(object):
 
         return vector_values, index_dict
 
-    @classmethod
-    def from_storage(cls, vector_values, indices):
-        # type: (T.List[T.Any], T.Mapping[str, T.List[T.Any]]) -> Values
-        """
-        Takes a vectorized values and corresponding indices and reconstructs the original form.
-        Reverse of :func:`to_storage()`.
-
-        Args:
-            vector_values (list): Vectorized values
-            indices (dict(str, list)): Dict of key to the source (index, datatype, shape, item_index)
-        """
-        values = cls()
-        for name, (inx, datatype, shape, item_index) in indices.items():
-            vec = vector_values[inx : inx + cls._shape_to_dims(shape)]
-
-            if datatype == "Scalar":
-                values[name] = vec[0]
-            elif datatype == "Matrix":
-                values[name] = geo.Matrix(vec).reshape(*shape)
-            elif datatype == "Values":
-                values[name] = cls.from_storage(vec, item_index)
-            elif datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
-                values[name] = getattr(geo, datatype).from_storage(vec)
-            elif datatype in {"LinearCameraCal", "EquidistantEpipolarCameraCal", "ATANCameraCal"}:
-                values[name] = getattr(cam, datatype).from_storage(vec)
-            elif datatype == "np.ndarray":
-                values[name] = np.array(vec).reshape(*shape)
-            else:
-                raise NotImplementedError('Unknown datatype: "{}"'.format(datatype))
-
-        return values
-
-    def to_storage(self):
-        # type: () -> T.List[T.Any]
-        """
-        Returns a flat list of unique values for every scalar element in this object.
-        Equivalent to the list from :func:`flatten()`.
-        """
-        return self.flatten()[0]
-
     def index(self):
         # type: () -> T.Dict[str, T.List[T.Any]]
         """
@@ -359,16 +463,6 @@ class Values(object):
         in :func:`from_storage()`. Equivalent to the index from :func:`flatten()`.
         """
         return self.flatten()[1]
-
-    def keys_recursive(self):
-        # type: () -> T.List[str]
-        """
-        Returns a flat list of unique keys for every scalar element in this object.
-
-        Returns:
-            list(str):
-        """
-        return self.keys_recursive_from_index(self.index())
 
     @staticmethod
     def _shape_implies_a_vector(shape):
@@ -383,7 +477,7 @@ class Values(object):
         )
 
     @classmethod
-    def keys_recursive_from_index(cls, index):
+    def scalar_keys_recursive_from_index(cls, index):
         # type: (T.Mapping[str, T.Any]) -> T.List[str]
         """
         Compute a flat list of keys from the given values index. The order matches
@@ -394,7 +488,7 @@ class Values(object):
             if len(shape) == 0:
                 vec.append(name)
             elif datatype == "Values":
-                sub_vec = cls.keys_recursive_from_index(item_index)
+                sub_vec = cls.scalar_keys_recursive_from_index(item_index)
                 vec.extend("{}.{}".format(name, val) for val in sub_vec)
             elif cls._shape_implies_a_vector(shape) or len(shape) == 2:
                 # Flatten row or column vectors to 1-D array
@@ -411,21 +505,35 @@ class Values(object):
         assert len(vec) == len(set(vec)), "Non-unique keys!\n{}".format(vec)
         return vec
 
-    def values_recursive(self):
-        # type: () -> T.List[T.Any]
-        """
-        Returns a flat list of unique values for every scalar element in this object.
-        This is identical to :func:`to_storage()`.
-        """
-        return self.to_storage()
-
     def items_recursive(self):
         # type: () -> T.List[T.Tuple[str, T.Any]]
         """
-        Returns a flat list of key/value pairs for every scalar element in this object.
+        Returns a flat list of key/value pairs for every element in this object.
         """
-        values, index = self.flatten()
-        return zip(self.keys_recursive_from_index(index), values)
+        flat_items = []
+        for k, v in self.items():
+            if isinstance(v, Values):
+                dot_seperated_sub_keys = [
+                    "{}.{}".format(k, sub_key) for sub_key in v.keys_recursive()
+                ]
+                flat_items.extend(zip(dot_seperated_sub_keys, v.values_recursive()))
+            else:
+                flat_items.append((k, v))
+        return flat_items
+
+    def keys_recursive(self):
+        # type: () -> T.List[str]
+        """
+        Returns a flat list of unique keys for every element in this object.
+        """
+        return list(zip(*self.items_recursive()))[0]
+
+    def values_recursive(self):
+        # type: () -> T.List[T.Any]
+        """
+        Returns a flat list of elements stored in this Values object.
+        """
+        return list(zip(*self.items_recursive()))[1]
 
     # -------------------------------------------------------------------------
     # Miscellaneous helpers
@@ -437,14 +545,25 @@ class Values(object):
         Exact equality check.
         """
         if isinstance(other, Values):
-            return self.items() == other.items()
+            return self.to_storage() == other.to_storage()
         else:
             return False
 
-    def evalf(self):
+    def subs(self, *args, **kwargs):
+        # type: (T.Any, T.Any) -> Values
+        """
+        Substitute given values of each scalar element into a new instance.
+        """
+        return self.from_storage([sm.S(s).subs(*args, **kwargs) for s in self.to_storage()])
+
+    def simplify(self):
         # type: () -> Values
         """
-        Numerical evaluation.
+        Simplify each scalar element into a new instance.
         """
-        vals, index = self.flatten()
-        return self.from_storage([StorageOps.evalf(e) for e in vals], index)
+        return self.from_storage(sm.simplify(sm.Matrix(self.to_storage())))
+
+
+from symforce.ops.impl.class_lie_group_ops import ClassLieGroupOps
+
+ops.StorageOps.register(Values, ClassLieGroupOps)
