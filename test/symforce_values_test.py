@@ -20,7 +20,13 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v["float"] = 3.0
         v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)))
         v["pose3"] = geo.Pose3.from_tangent(np.random.normal(size=(6,)))
-        v["values"] = v.copy()
+        other_values = v.copy()
+        v["values"] = other_values
+        v["vec_values"] = [other_values, other_values]
+        v["vec_rot3"] = [
+            geo.Rot3.from_tangent(np.random.normal(size=(3,))),
+            geo.Rot3.from_tangent(np.random.normal(size=(3,))),
+        ]
         return v
 
     def test_as_ordered_dict(self):
@@ -120,8 +126,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         for key, val in v.items_recursive():
             self.assertEqual(v[key], val)
 
-        serialized, other = v.flatten()
-        v2 = v.from_storage_index(serialized, other)
+        v2 = v.from_storage_index(v.to_storage(), v.index())
         self.assertEqual(v, v2)
 
         # Test flattened list of items equal
@@ -136,7 +141,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v["arr"] = np.array([1, 2, 3])
         v["list"] = [1, 2, 3]
         v["tuple"] = (4, 5, -6)
-        Values.from_storage_index(*v.flatten())
+        Values.from_storage_index(v.to_storage(), v.index())
 
         # Unknown type
         class Floop(object):

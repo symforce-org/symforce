@@ -81,7 +81,7 @@ def override_simplify(sympy_module):
     def simplify(*args, **kwargs):
         # type: (T.Any, T.Any) -> sympy.S
         logger.warning("Converting to sympy to use .simplify")
-        return sympy.S(sympy.simplify(sympy.S(*args), **kwargs))
+        return sympy_module.S(sympy.simplify(sympy.S(*args), **kwargs))
 
     sympy_module.simplify = simplify
 

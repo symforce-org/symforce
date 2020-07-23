@@ -1,6 +1,7 @@
 import numpy as np
 
 from symforce import types as T
+from symforce import sympy as sm
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 
@@ -67,5 +68,8 @@ class StorageOpsTestMixin(_Base):
 
         # Test symbolic operations
         sym_element = StorageOps.symbolic(element, "name")
-        sym_element.subs({"x": "y"})
-        sym_element.simplify()
+        self.assertEqual(
+            sym_element,
+            StorageOps.subs(sym_element, {sm.Symbol("var_not_in_element"): sm.Symbol("new_var")}),
+        )
+        self.assertEqual(sym_element, StorageOps.simplify(sym_element))

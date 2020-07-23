@@ -15,7 +15,7 @@ import numpy as np
 from symforce import sympy as sm
 from .impl.scalar_storage_ops import ScalarStorageOps
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
-from .impl.sequence_storage_ops import SequenceStorageOps
+from .impl.sequence_lie_group_ops import SequenceLieGroupOps
 
 # TODO(nathan): Not sure if we actually want to support ints. Currently there's a subtle
 # bug where you can perturb an integer by a scalar in the tangent space, but when we call
@@ -25,7 +25,11 @@ LieGroupOps.register(float, ScalarLieGroupOps)
 LieGroupOps.register(np.float32, ScalarLieGroupOps)
 LieGroupOps.register(np.float64, ScalarLieGroupOps)
 LieGroupOps.register(sm.Expr, ScalarLieGroupOps)
+StorageOps.register(np.int64, ScalarStorageOps)
 
-StorageOps.register(list, SequenceStorageOps)
-StorageOps.register(tuple, SequenceStorageOps)
-StorageOps.register(np.ndarray, SequenceStorageOps)
+LieGroupOps.register(list, SequenceLieGroupOps)
+LieGroupOps.register(tuple, SequenceLieGroupOps)
+# TODO(nathan): I think we need to write a new set of implementations for numpy arrays
+# because they can be 2D; the current SequenceOps won't work properly for them (except for
+# to_storage)
+LieGroupOps.register(np.ndarray, SequenceLieGroupOps)

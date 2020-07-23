@@ -60,7 +60,7 @@ class Codegen(object):
 
         # All symbols in outputs must be present in inputs
         input_symbols = set(inputs.to_storage())
-        assert all([v.free_symbols.issubset(input_symbols) for v in outputs.to_storage()])
+        assert all([sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage()])
 
         # Names given by keys in inputs/outputs must be valid variable names
         assert all([python_util.is_valid_variable_name(k) for k in inputs.subkeys_recursive()])

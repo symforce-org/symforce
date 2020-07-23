@@ -104,20 +104,170 @@ class Values(object):
         return self.from_storage(self.to_storage())
 
     # -------------------------------------------------------------------------
+    # Serialization
+    # -------------------------------------------------------------------------
+
+    def index(self):
+        # type: () -> T.Dict[str, T.List[T.Any]]
+        """
+        Returns the index with structural information to reconstruct this values
+        in :func:`from_storage()`.
+        """
+        return Values.get_index_from_items(self.items())
+
+    @staticmethod
+    def get_index_from_items(items):
+        # type: (T.Sequence[T.Tuple[str, T.Any]]) -> T.Dict[str, T.List[T.Any]]
+        """
+        Builds an index from a list of key/value pairs of objects. This function
+        can be called recursively either for the items of a Values object or for the
+        items of a list (using e.g. zip(my_keys, my_list), where my_keys are some
+        arbitrary names for each element in my_list)
+        """
+        inx = 0
+        index_dict = collections.OrderedDict()
+        shape = tuple()  # type: T.Tuple
+        for name, value in items:
+            vec = ops.StorageOps.to_storage(value)
+            if isinstance(value, Values):
+                datatype = "Values"
+                shape = (len(vec),)
+                item_index = value.index()
+            elif isinstance(value, np.ndarray):
+                datatype = "np.ndarray"
+                shape = value.shape
+                item_index = {}
+            elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
+                datatype = "Scalar"
+                shape = tuple()
+                item_index = {}
+            elif hasattr(value, "shape"):
+                datatype = "Matrix"
+                shape = value.shape
+                assert len(shape) > 0
+                item_index = {}
+            elif isinstance(value, Storage):
+                datatype = value.__class__.__name__
+                shape = (len(vec),)
+                item_index = {}
+            elif isinstance(value, (list, tuple)):
+                assert all([type(v) is type(value[0]) for v in value])
+                datatype = "List"
+                shape = (len(vec),)
+                name_list = ["{}_{}".format(name, i) for i in range(len(value))]
+                item_index = Values.get_index_from_items(zip(name_list, value))
+            else:
+                raise NotImplementedError(
+                    'Unknown type: "{}" for key "{}"'.format(type(value), name)
+                )
+
+            index_dict[name] = [inx, datatype, shape, item_index]
+            inx += Values._shape_to_dims(shape)
+
+        return index_dict
+
+    @staticmethod
+    def _shape_implies_a_vector(shape):
+        # type: (T.Tuple[int, int]) -> bool
+        """
+        Return True if the given shape is row or column vector-like.
+        """
+        return (
+            len(shape) == 1
+            or (len(shape) == 2 and shape[1] == 1)
+            or (len(shape) == 2 and shape[0] == 1)
+        )
+
+    @classmethod
+    def scalar_keys_recursive_from_index(cls, index):
+        # type: (T.Mapping[str, T.Any]) -> T.List[str]
+        """
+        Compute a flat list of keys from the given values index. The order matches
+        the serialized order of elements in the `.to_storage()` vector.
+        """
+        vec = []
+        for name, (inx, datatype, shape, item_index) in index.items():
+            if len(shape) == 0:
+                vec.append(name)
+            elif datatype == "Values":
+                sub_vec = cls.scalar_keys_recursive_from_index(item_index)
+                vec.extend("{}.{}".format(name, val) for val in sub_vec)
+            elif cls._shape_implies_a_vector(shape) or len(shape) == 2:
+                # Flatten row or column vectors to 1-D array
+                vec.extend("{}[{}]".format(name, i) for i in range(cls._shape_to_dims(shape)))
+            elif len(shape) == 2:
+                # TODO(hayk): This isn't run currently because of the len(shape) == 2 check above.
+                # Fix handling of matrices in codegen and re-enable this.
+                vec.extend(
+                    "{}[{},{}]".format(name, i, j) for i in range(shape[0]) for j in range(shape[1])
+                )
+            else:
+                raise NotImplementedError()
+
+        assert len(vec) == len(set(vec)), "Non-unique keys!\n{}".format(vec)
+        return vec
+
+    def items_recursive(self):
+        # type: () -> T.List[T.Tuple[str, T.Any]]
+        """
+        Returns a flat list of key/value pairs for every element in this object.
+        """
+        flat_items = []
+        for k, v in self.items():
+            if isinstance(v, Values):
+                dot_seperated_sub_keys = [
+                    "{}.{}".format(k, sub_key) for sub_key in v.keys_recursive()
+                ]
+                flat_items.extend(zip(dot_seperated_sub_keys, v.values_recursive()))
+            else:
+                flat_items.append((k, v))
+        return flat_items
+
+    def keys_recursive(self):
+        # type: () -> T.List[str]
+        """
+        Returns a flat list of unique keys for every element in this object.
+        """
+        items = self.items_recursive()
+        if len(items) == 0:
+            return []
+        return list(zip(*items))[0]
+
+    def values_recursive(self):
+        # type: () -> T.List[T.Any]
+        """
+        Returns a flat list of elements stored in this Values object.
+        """
+        items = self.items_recursive()
+        if len(items) == 0:
+            return []
+        return list(zip(*items))[1]
+
+    def subkeys_recursive(self):
+        # type: () -> T.List[str]
+        """
+        Returns a flat list of subkeys for every element in this object. Unlike keys_recursive,
+        subkeys_recursive does not return dot-separated keys.
+        """
+        return [k.split(".")[-1] for k in self.keys_recursive()]
+
+    # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
     def storage_dim(self):
         # type: () -> int
+        """
+        Dimension of the underlying storage
+        """
         return sum([ops.StorageOps.storage_dim(v) for v in self.values()])
 
     def to_storage(self):
         # type: () -> T.List[T.Any]
         """
         Returns a flat list of unique values for every scalar element in this object.
-        Equivalent to the list from :func:`flatten()`.
         """
-        return self.flatten()[0]
+        return [scalar for v in self.values() for scalar in ops.StorageOps.to_storage(v)]
 
     @classmethod
     def from_storage_index(cls, vector_values, indices):
@@ -146,6 +296,8 @@ class Values(object):
                 values[name] = getattr(cam, datatype).from_storage(vec)
             elif datatype == "np.ndarray":
                 values[name] = np.array(vec).reshape(*shape)
+            elif datatype == "List":
+                values[name] = [v for v in cls.from_storage_index(vec, item_index).values()]
             else:
                 raise NotImplementedError('Unknown datatype: "{}"'.format(datatype))
 
@@ -153,6 +305,10 @@ class Values(object):
 
     def from_storage(self, elements, index=None):
         # type: (T.List[T.Scalar], T.Dict[str, T.List[T.Any]]) -> Values
+        """
+        Create a Values object with the same structure as self but constructed
+        from a flat list representation. Opposite of `.to_storage()`.
+        """
         if index is None:
             assert len(elements) == self.storage_dim()
             return Values.from_storage_index(elements, self.index())
@@ -160,6 +316,11 @@ class Values(object):
 
     def symbolic(self, name, **kwargs):
         # type: (str, T.Dict) -> Values
+        """
+        Create a Values object with the same structure as self, where each element
+        is a symbolic element with the given name prefix. Kwargs are forwarded
+        to sm.Symbol (for example, sympy assumptions).
+        """
         symbolic_values = Values()
         for k, v in self.items():
             symbolic_values[k] = ops.StorageOps.symbolic(v, "{}_{}".format(name, k), **kwargs)
@@ -170,8 +331,9 @@ class Values(object):
         """
         Numerical evaluation.
         """
-        vals, index = self.flatten()
-        return self.from_storage_index([ops.StorageOps.evalf(e) for e in vals], index)
+        return self.from_storage_index(
+            [ops.StorageOps.evalf(e) for e in self.to_storage()], self.index()
+        )
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
@@ -179,6 +341,9 @@ class Values(object):
 
     def identity(self):
         # type: () -> Values
+        """
+        Returns Values object with same structure as self, but with each element as an identity element.
+        """
         identity_values = Values()
         for k, v in self.items():
             identity_values[k] = ops.GroupOps.identity(v)
@@ -186,6 +351,9 @@ class Values(object):
 
     def compose(self, other):
         # type: (Values) -> Values
+        """
+        Element-wise compose of each element with another Values of identical structure
+        """
         assert self.index() == other.index()
         composed_values = Values()
         for k, v in self.items():
@@ -194,6 +362,9 @@ class Values(object):
 
     def inverse(self):
         # type: () -> Values
+        """
+        Element-wise inverse of this Values
+        """
         inverse_values = Values()
         for k, v in self.items():
             inverse_values[k] = ops.GroupOps.inverse(v)
@@ -205,10 +376,18 @@ class Values(object):
 
     def tangent_dim(self):
         # type: () -> int
+        """
+        Sum of the dimensions of the embedded manifold of each element
+        """
         return sum([ops.LieGroupOps.tangent_dim(v) for v in self.values()])
 
     def from_tangent(self, vec, epsilon=0):
         # type: (T.List[T.Scalar], T.Scalar) -> Values
+        """
+        Returns a Values object with the same structure as self, but by computing
+        each element using the mapping from its corresponding tangent space vector
+        about identity into a group element.
+        """
         updated_values = Values()
         inx = 0
         for k, v in self.items():
@@ -219,6 +398,9 @@ class Values(object):
 
     def to_tangent(self, epsilon=0):
         # type: (T.Scalar) -> T.List[T.Scalar]
+        """
+        Returns flat vector representing concatentated tangent spaces of each element.
+        """
         vec = []
         for v in self.values():
             vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
@@ -226,6 +408,12 @@ class Values(object):
 
     def storage_D_tangent(self):
         # type: () -> geo.Matrix
+        """
+        Returns a matrix with dimensions (storage_dim x tangent_dim) which represents
+        the jacobian of the flat storage space of self wrt to the flat tangent space of
+        self. The resulting jacobian is a block diagonal matrix, where each block corresponds
+        to the storage_D_tangent for a single element or is zero.
+        """
         storage_D_tangent = geo.Matrix(self.storage_dim(), self.tangent_dim()).zero()
         s_inx = 0
         t_inx = 0
@@ -389,165 +577,6 @@ class Values(object):
         Compute the number of entries in an object of this shape.
         """
         return max(1, np.prod(shape))
-
-    # -------------------------------------------------------------------------
-    # Serialization
-    # -------------------------------------------------------------------------
-
-    def flatten(self):
-        # type: () -> T.Tuple[T.List[T.Any], T.Dict[str, T.List[T.Any]]]
-        """
-        Takes a dict of string keys to values and returns a flattened list of the values along
-        with a dictionary from the original keys to their slices within the flattened vector.
-
-        Return:
-            list: Vectorized values
-            dict(str, list): Dict of key to the source (index, datatype, shape, item_index)
-        """
-        inx = 0
-        index_dict = collections.OrderedDict()
-        vector_values = []  # type: T.List[T.Any]
-        shape = tuple()  # type: T.Tuple
-        for name, value in self.items():
-            if isinstance(value, Values):
-                datatype = "Values"
-                values_list, item_index = value.flatten()
-                shape = (len(values_list),)
-                vec = geo.Matrix(values_list)
-            elif isinstance(value, np.ndarray):
-                datatype = "np.ndarray"
-                shape = value.shape
-                dim = int(np.prod(value.shape))
-                vec = value.reshape(dim)
-                item_index = {}
-            elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
-                datatype = "Scalar"
-                shape = tuple()
-                vec = geo.Matrix([value])
-                item_index = {}
-            elif hasattr(value, "shape"):
-                datatype = "Matrix"
-                shape = value.shape
-                assert len(shape) > 0
-                dim = int(np.prod(value.shape))
-                vec = value.reshape(dim, 1)
-                item_index = {}
-            elif isinstance(value, Storage):
-                datatype = value.__class__.__name__
-                vec = geo.Matrix(value.to_storage())
-                shape = (len(vec),)
-                item_index = {}
-            elif isinstance(value, (list, tuple)):
-                datatype = "Matrix"
-                vec = geo.Matrix(value)
-                shape = vec.shape
-                dim = int(np.prod(vec.shape))
-                item_index = {}
-            else:
-                raise NotImplementedError(
-                    'Unknown type: "{}" for key "{}"'.format(type(value), name)
-                )
-
-            vector_values.extend(vec)
-
-            index_dict[name] = [inx, datatype, shape, item_index]
-
-            inx += self._shape_to_dims(shape)
-
-        return vector_values, index_dict
-
-    def index(self):
-        # type: () -> T.Dict[str, T.List[T.Any]]
-        """
-        Returns the index with structural information to reconstruct this values
-        in :func:`from_storage()`. Equivalent to the index from :func:`flatten()`.
-        """
-        return self.flatten()[1]
-
-    @staticmethod
-    def _shape_implies_a_vector(shape):
-        # type: (T.Tuple[int, int]) -> bool
-        """
-        Return True if the given shape is row or column vector-like.
-        """
-        return (
-            len(shape) == 1
-            or (len(shape) == 2 and shape[1] == 1)
-            or (len(shape) == 2 and shape[0] == 1)
-        )
-
-    @classmethod
-    def scalar_keys_recursive_from_index(cls, index):
-        # type: (T.Mapping[str, T.Any]) -> T.List[str]
-        """
-        Compute a flat list of keys from the given values index. The order matches
-        the serialized order of elements in the `.to_storage()` vector.
-        """
-        vec = []
-        for name, (inx, datatype, shape, item_index) in index.items():
-            if len(shape) == 0:
-                vec.append(name)
-            elif datatype == "Values":
-                sub_vec = cls.scalar_keys_recursive_from_index(item_index)
-                vec.extend("{}.{}".format(name, val) for val in sub_vec)
-            elif cls._shape_implies_a_vector(shape) or len(shape) == 2:
-                # Flatten row or column vectors to 1-D array
-                vec.extend("{}[{}]".format(name, i) for i in range(cls._shape_to_dims(shape)))
-            elif len(shape) == 2:
-                # TODO(hayk): This isn't run currently because of the len(shape) == 2 check above.
-                # Fix handling of matrices in codegen and re-enable this.
-                vec.extend(
-                    "{}[{},{}]".format(name, i, j) for i in range(shape[0]) for j in range(shape[1])
-                )
-            else:
-                raise NotImplementedError()
-
-        assert len(vec) == len(set(vec)), "Non-unique keys!\n{}".format(vec)
-        return vec
-
-    def items_recursive(self):
-        # type: () -> T.List[T.Tuple[str, T.Any]]
-        """
-        Returns a flat list of key/value pairs for every element in this object.
-        """
-        flat_items = []
-        for k, v in self.items():
-            if isinstance(v, Values):
-                dot_seperated_sub_keys = [
-                    "{}.{}".format(k, sub_key) for sub_key in v.keys_recursive()
-                ]
-                flat_items.extend(zip(dot_seperated_sub_keys, v.values_recursive()))
-            else:
-                flat_items.append((k, v))
-        return flat_items
-
-    def keys_recursive(self):
-        # type: () -> T.List[str]
-        """
-        Returns a flat list of unique keys for every element in this object.
-        """
-        items = self.items_recursive()
-        if len(items) == 0:
-            return []
-        return list(zip(*items))[0]
-
-    def values_recursive(self):
-        # type: () -> T.List[T.Any]
-        """
-        Returns a flat list of elements stored in this Values object.
-        """
-        items = self.items_recursive()
-        if len(items) == 0:
-            return []
-        return list(zip(*items))[1]
-
-    def subkeys_recursive(self):
-        # type: () -> T.List[str]
-        """
-        Returns a flat list of subkeys for every element in this object. Unlike keys_recursive,
-        subkeys_recursive does not return dot-separated keys.
-        """
-        return [k.split(".")[-1] for k in self.keys_recursive()]
 
     # -------------------------------------------------------------------------
     # Miscellaneous helpers

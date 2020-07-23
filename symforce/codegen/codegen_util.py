@@ -142,8 +142,8 @@ def print_code(
         T.Sequence[T.Tuple[str, str]]: Line of code per temporary variable
         T.Sequence[str]: Line of code per output variable
     """
-    input_symbols, _ = inputs.flatten()
-    output_exprs, _ = outputs.flatten()
+    input_symbols = inputs.to_storage()
+    output_exprs = outputs.to_storage()
 
     # CSE If needed
     if cse:

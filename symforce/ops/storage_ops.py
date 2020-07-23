@@ -67,3 +67,15 @@ class StorageOps(Ops):
         Evaluate to a numerical quantity (rationals, trig functions, etc).
         """
         return Ops.implementation(get_type(a)).evalf(a)
+
+    @staticmethod
+    def subs(a, *args, **kwargs):
+        # type: (Element, T.Any, T.Any) -> Element
+        return StorageOps.from_storage(
+            a, [sm.S(s).subs(*args, **kwargs) for s in StorageOps.to_storage(a)]
+        )
+
+    @staticmethod
+    def simplify(a):
+        # type: (Element) -> Element
+        return StorageOps.from_storage(a, sm.simplify(sm.Matrix(StorageOps.to_storage(a))))

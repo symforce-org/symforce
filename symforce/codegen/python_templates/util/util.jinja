@@ -68,11 +68,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
                 {% endfor %}
             {% endfor %}
         {% elif not is_symbolic(type) %}
-            {% if issubclass(T, Values) %}
-                {% set dims = ops.StorageOps.storage_dim(type.flatten()[0]) %}
-            {% else %}
-                {% set dims = ops.StorageOps.storage_dim(type) %}
-            {% endif %}
+            {% set dims = ops.StorageOps.storage_dim(type) %}
     _{{name}} = [0.] * {{ dims }}
             {% for i in range(dims) %}
     _{{ name }}[{{ i }}] = {{ spec.output_terms[ns.iter] }}
