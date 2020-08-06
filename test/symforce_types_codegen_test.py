@@ -72,7 +72,7 @@ class SymforceTypesCodegenTest(TestCase):
         self.assertSetEqual(set(types_dict.keys()), set(expected_types))
 
         # Check generated files
-        ext = {CodegenMode.CPP: ".h", CodegenMode.PYTHON2: ".py"}[mode]
+        ext = {CodegenMode.CPP: ".hpp", CodegenMode.PYTHON2: ".py"}[mode]
         for typename in expected_types:
             gen_path = os.path.join(
                 codegen_data["output_dir"], codegen_data["package_name"], typename + ext

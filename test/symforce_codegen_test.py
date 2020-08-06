@@ -87,10 +87,16 @@ class SymforceCodegenTest(TestCase):
 
         for scalar_type in ("double", "float"):
             python_func = Codegen(
-                "codegen_test_python", inputs, outputs, CodegenMode.PYTHON2, scalar_type=scalar_type
+                "python_function", inputs, outputs, CodegenMode.PYTHON2, scalar_type=scalar_type
             )
-            namespace = "codegen_test_python_ns"
+            namespace = "codegen_test_python"
             codegen_data = python_func.generate_function(namespace=namespace)
+            if scalar_type == "double":
+                self.compare_or_update_directory(
+                    actual_dir=codegen_data["output_dir"],
+                    expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+                )
+
             geo_package_codegen.generate(
                 mode=CodegenMode.PYTHON2, output_dir=codegen_data["output_dir"]
             )
@@ -111,21 +117,9 @@ class SymforceCodegenTest(TestCase):
             constants.epsilon = 1e-8
 
             gen_module = codegen_util.load_generated_package(codegen_data["output_dir"])
-            foo, bar = gen_module.codegen_test_python(x, y, rot, constants, states)
+            foo, bar = gen_module.python_function(x, y, rot, constants, states)
             self.assertNear(foo, x ** 2 + rot.data[3])
             self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
-
-            if scalar_type == "double":
-                # Compare the function file
-                expected_code_file = os.path.join(TEST_DATA_DIR, "codegen_test_python.py")
-                output_function = os.path.join(codegen_data["output_dir"], "codegen_test_python.py")
-                self.compare_or_update_file(expected_code_file, output_function)
-
-                # Compare the generated types
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(codegen_data["output_dir"], namespace),
-                    expected_dir=os.path.join(TEST_DATA_DIR, namespace),
-                )
 
             # Clean up
             if logger.level != logging.DEBUG:
@@ -167,18 +161,13 @@ class SymforceCodegenTest(TestCase):
             cpp_func = Codegen(
                 "CodegenTestCpp", inputs, outputs, CodegenMode.CPP, scalar_type=scalar_type
             )
-            namespace = "codegen_test_cpp_ns"
+            namespace = "codegen_test_cpp"
             codegen_data = cpp_func.generate_function(namespace=namespace)
 
             if scalar_type == "double":
-                expected_code_file = os.path.join(TEST_DATA_DIR, "codegen_test_cpp.h")
-                output_function = os.path.join(codegen_data["output_dir"], "codegen_test_cpp.h")
-                self.compare_or_update_file(expected_code_file, output_function)
-
-                # Compare the generated types
                 self.compare_or_update_directory(
-                    actual_dir=os.path.join(codegen_data["output_dir"], namespace),
-                    expected_dir=os.path.join(TEST_DATA_DIR, namespace),
+                    actual_dir=os.path.join(codegen_data["output_dir"]),
+                    expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
                 )
 
                 if not self.UPDATE:
@@ -283,7 +272,7 @@ class SymforceCodegenTest(TestCase):
             mode=CodegenMode.CPP,
         )
 
-        namespace = "codegen_multi_function_ns"
+        namespace = "codegen_multi_function"
         output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
         logger.debug("Creating temp directory: {}".format(output_dir))
 
@@ -293,16 +282,9 @@ class SymforceCodegenTest(TestCase):
             output_dir=output_dir, shared_types=shared_types, namespace=namespace
         )
 
-        # Compare the function files
-        for name in ("codegen_multi_function_test1.h", "codegen_multi_function_test2.h"):
-            expected_code_file = os.path.join(TEST_DATA_DIR, name)
-            output_function = os.path.join(output_dir, name)
-            self.compare_or_update_file(expected_code_file, output_function)
-
         # Compare the generated types
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir, namespace),
-            expected_dir=os.path.join(TEST_DATA_DIR, namespace),
+            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
         )
 
         if not self.UPDATE:

@@ -4,6 +4,7 @@ import tempfile
 
 from symforce import logger
 from symforce import types as T
+from symforce import python_util
 from symforce.values import Values
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
@@ -12,8 +13,8 @@ from symforce.codegen import codegen_util
 def generate_types(
     package_name,  # type: str
     values_indices,  # type: T.Mapping[str, T.Dict[str, T.Any]]
+    mode,  # type: codegen_util.CodegenMode
     shared_types=None,  # type: T.Mapping[str, str]
-    mode=codegen_util.CodegenMode.PYTHON2,  # type: codegen_util.CodegenMode
     scalar_type="double",  # type: str
     output_dir=None,  # type: T.Optional[str]
     templates=None,  # type: template_util.TemplateList
@@ -32,6 +33,7 @@ def generate_types(
         )
         logger.debug("Creating temp directory: {}".format(output_dir))
     package_dir = os.path.join(output_dir, package_name)
+    lcm_type_dir = os.path.join(output_dir, "lcm")
 
     using_external_templates = True
     if templates is None:
@@ -51,6 +53,21 @@ def generate_types(
         "to_set": lambda a: set(a),
     }
 
+    logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
+    lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "type.lcm.jinja")
+
+    for typename in types_dict:
+        # If a module is specified, this type is external - don't generate it
+        if "." in typename:
+            continue
+
+        # Type definition
+        templates.add(
+            lcm_template,
+            os.path.join(lcm_type_dir, "{}.lcm".format(typename)),
+            dict(data, typename=typename),
+        )
+
     if mode == codegen_util.CodegenMode.PYTHON2:
         logger.info('Creating Python types package at: "{}"'.format(package_dir))
         template_dir = os.path.join(template_util.PYTHON_TEMPLATE_DIR, "types_package")
@@ -62,13 +79,6 @@ def generate_types(
             if "." in typename:
                 continue
 
-            # Type definition
-            templates.add(
-                os.path.join(template_dir, "type.py.jinja"),
-                os.path.join(package_dir, "{}.py".format(typename)),
-                dict(data, typename=typename),
-            )
-
             # Storage ops
             templates.add(
                 os.path.join(template_dir, "storage_ops", "storage_ops_type.py.jinja"),
@@ -76,7 +86,7 @@ def generate_types(
                 dict(data, typename=typename),
             )
 
-        # Init that imports all types
+        # Init that imports all types and registers storage ops
         templates.add(
             os.path.join(template_dir, "__init__.py.jinja"),
             os.path.join(package_dir, "__init__.py"),
@@ -94,38 +104,39 @@ def generate_types(
         logger.info('Creating C++ types package at: "{}"'.format(package_dir))
         template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "types_package")
 
+        # Init that contains traits definition and imports all types
+        storage_ops_file = os.path.join(package_dir, "storage_ops.h")
+        if not os.path.isfile(storage_ops_file):
+            templates.add(
+                os.path.join(template_dir, "storage_ops.h.jinja"),
+                os.path.join(package_dir, "storage_ops.h"),
+                dict(data, typenames=types_dict.keys()),
+            )
+
         for typename in types_dict:
             # If a module is specified, this type is external - don't generate it
             if "." in typename:
                 continue
 
-            # Type definition
-            templates.add(
-                os.path.join(template_dir, "type.h.jinja"),
-                os.path.join(package_dir, "{}.h".format(typename)),
-                dict(data, typename=typename),
-            )
-
             # Storage ops
             templates.add(
-                os.path.join(template_dir, "storage_ops/storage_ops_type.h.jinja"),
+                os.path.join(template_dir, "storage_ops_type.h.jinja"),
                 os.path.join(package_dir, "storage_ops/{}.h".format(typename)),
                 dict(data, typename=typename),
             )
 
-        # Init that contains traits definition and imports all types
-        storage_ops_file = os.path.join(package_dir, "storage_ops.h")
-        templates.add(
-            os.path.join(template_dir, "storage_ops/storage_ops.h.jinja"),
-            os.path.join(package_dir, "storage_ops.h"),
-            dict(data, typenames=types_dict.keys()),
-        )
+            if os.path.isfile(storage_ops_file):
+                # The storage_ops file was already generated, so include any new types
+                with open(storage_ops_file, "a+") as f:
+                    if typename not in f.read():
+                        f.write('#include "./storage_ops/' + typename + '.h"')
 
     else:
         raise NotImplementedError('Unknown mode: "{}"'.format(mode))
 
     if not using_external_templates:
         templates.render()
+        codegen_util.generate_lcm_types(lcm_type_dir, output_dir, types_dict.keys(), mode)
 
     # Save input args for handy reference
     codegen_data = {}  # type: T.Dict[str, T.Any]
@@ -138,6 +149,7 @@ def generate_types(
     # Save outputs and intermediates
     codegen_data["output_dir"] = output_dir
     codegen_data["package_dir"] = package_dir
+    codegen_data["lcm_type_dir"] = lcm_type_dir
     codegen_data["types_dict"] = types_dict
 
     # TODO(nathan): This doesn't include subtypes yet

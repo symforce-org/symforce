@@ -10,6 +10,7 @@ from symforce import types as T
 CURRENT_DIR = os.path.dirname(__file__)
 CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp_templates")
 PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python_templates")
+LCM_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "lcm_templates")
 
 
 class RelEnvironment(jinja2.Environment):

@@ -273,6 +273,12 @@ class Codegen(object):
             raise NotImplementedError('Unknown mode: "{}"'.format(self.mode))
 
         templates.render()
+        codegen_util.generate_lcm_types(
+            lcm_type_dir=types_codegen_data["lcm_type_dir"],
+            output_dir=output_dir,
+            typenames=types_codegen_data["types_dict"].keys(),
+            mode=self.mode,
+        )
 
         return {
             "generated_files": [v[1] for v in templates.items],

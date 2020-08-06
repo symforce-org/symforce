@@ -5,7 +5,7 @@
 #pragma once
 
 {% for name, type in spec.typenames_dict.items() %}
-#include "./{{ spec.namespaces_dict[name] }}/{{ type }}.h"
+#include "./{{ spec.namespaces_dict[name] }}/{{ type }}.hpp"
 {% endfor %}
 
 {% for namespace in spec.unique_namespaces %}

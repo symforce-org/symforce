@@ -15,7 +15,9 @@ from symforce import types as T
 from symforce.codegen import printers
 from symforce import python_util
 
-
+# Command used to generate language-specific types from .lcm files
+SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
+LCM_GEN_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/lcm-gen")
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 
 
@@ -102,10 +104,7 @@ def format_symbols(
             # to keep the argument as the original variable name.
             name_str = "_{}[{}]"
 
-        if arg_cls == Values:
-            storage_dim = len(value.to_storage())
-        else:
-            storage_dim = ops.StorageOps.storage_dim(value)
+        storage_dim = ops.StorageOps.storage_dim(value)
         symbols = [sm.Symbol(name_str.format(key, j)) for j in range(storage_dim)]
         symbolic_args.extend(symbols)
 
@@ -226,3 +225,40 @@ def get_function_argspec(func):
         return inspect.getfullargspec(func)  # type: ignore
     except AttributeError:
         return inspect.getargspec(func)
+
+
+def generate_lcm_types(lcm_type_dir, output_dir, typenames, mode):
+    # type: (str, str, T.Sequence[str], CodegenMode) -> None
+    """
+    Generates the language-specific type files for all symforce generated ".lcm" files.
+
+    Args:
+        lcm_type_dir: Directory containing symforce-generated .lcm files
+        output_dir: Directory in which to put language-specific types
+        typenames: List of typenames defined by .lcm files. External types will be ignored.
+        mode: Language in which to output generated types
+    """
+    for name in typenames:
+        if "." in name:
+            # External type, skip
+            continue
+
+        lcm_file = os.path.join(lcm_type_dir, "{}.lcm".format(name))
+        if mode == CodegenMode.PYTHON2:
+            python_util.execute_subprocess(
+                [
+                    LCM_GEN_CMD,
+                    lcm_file,
+                    "--python",
+                    "--ppath",
+                    output_dir,
+                    "--python-no-init",
+                    "true",
+                ]
+            )
+        elif mode == CodegenMode.CPP:
+            python_util.execute_subprocess(
+                [LCM_GEN_CMD, lcm_file, "--cpp", "--cpp-hpath", output_dir]
+            )
+        else:
+            raise NotImplementedError('Unknown mode: "{}"'.format(mode))
