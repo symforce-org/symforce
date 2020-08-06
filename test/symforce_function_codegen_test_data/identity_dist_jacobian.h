@@ -4,7 +4,6 @@
 #pragma once
 
 
-
 namespace sym {
 
 
@@ -36,7 +35,9 @@ Scalar IdentityDistJacobian(const geo::Rot3<Scalar>& R1, const Scalar e) {
 
     // Output terms (1)
     Scalar _dist_D_R1;
+
     _dist_D_R1 = -_tmp0*_tmp8 + _tmp0*_tmp9 - _tmp10*_tmp8 + _tmp10*_tmp9 - _tmp11*_tmp8 + _tmp11*_tmp9;
+
 
     return _dist_D_R1;
 }

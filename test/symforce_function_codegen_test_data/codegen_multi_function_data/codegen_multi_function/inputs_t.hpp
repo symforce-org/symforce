@@ -9,6 +9,8 @@
 
 #include <lcm/lcm_coretypes.h>
 
+#include "codegen_multi_function/values_vec_t.hpp"
+#include "codegen_multi_function/values_vec_t.hpp"
 #include "codegen_multi_function/inputs_constants_t.hpp"
 #include "codegen_multi_function/inputs_states_t.hpp"
 
@@ -23,6 +25,16 @@ class inputs_t
         double     y;
 
         double     rot[4];
+
+        double     rot_vec[3][4];
+
+        double     scalar_vec[3];
+
+        double     list_of_lists[3][3][4];
+
+        codegen_multi_function::values_vec_t values_vec[3];
+
+        codegen_multi_function::values_vec_t values_vec_2D[2][1];
 
         codegen_multi_function::inputs_constants_t constants;
 
@@ -133,6 +145,33 @@ int inputs_t::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->rot[0], 4);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    for (int a0 = 0; a0 < 3; a0++) {
+        tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->rot_vec[a0][0], 4);
+        if(tlen < 0) return tlen; else pos += tlen;
+    }
+
+    tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->scalar_vec[0], 3);
+    if(tlen < 0) return tlen; else pos += tlen;
+
+    for (int a0 = 0; a0 < 3; a0++) {
+        for (int a1 = 0; a1 < 3; a1++) {
+            tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->list_of_lists[a0][a1][0], 4);
+            if(tlen < 0) return tlen; else pos += tlen;
+        }
+    }
+
+    for (int a0 = 0; a0 < 3; a0++) {
+        tlen = this->values_vec[a0]._encodeNoHash(buf, offset + pos, maxlen - pos);
+        if(tlen < 0) return tlen; else pos += tlen;
+    }
+
+    for (int a0 = 0; a0 < 2; a0++) {
+        for (int a1 = 0; a1 < 1; a1++) {
+            tlen = this->values_vec_2D[a0][a1]._encodeNoHash(buf, offset + pos, maxlen - pos);
+            if(tlen < 0) return tlen; else pos += tlen;
+        }
+    }
+
     tlen = this->constants._encodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -155,6 +194,33 @@ int inputs_t::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->rot[0], 4);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    for (int a0 = 0; a0 < 3; a0++) {
+        tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->rot_vec[a0][0], 4);
+        if(tlen < 0) return tlen; else pos += tlen;
+    }
+
+    tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->scalar_vec[0], 3);
+    if(tlen < 0) return tlen; else pos += tlen;
+
+    for (int a0 = 0; a0 < 3; a0++) {
+        for (int a1 = 0; a1 < 3; a1++) {
+            tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->list_of_lists[a0][a1][0], 4);
+            if(tlen < 0) return tlen; else pos += tlen;
+        }
+    }
+
+    for (int a0 = 0; a0 < 3; a0++) {
+        tlen = this->values_vec[a0]._decodeNoHash(buf, offset + pos, maxlen - pos);
+        if(tlen < 0) return tlen; else pos += tlen;
+    }
+
+    for (int a0 = 0; a0 < 2; a0++) {
+        for (int a1 = 0; a1 < 1; a1++) {
+            tlen = this->values_vec_2D[a0][a1]._decodeNoHash(buf, offset + pos, maxlen - pos);
+            if(tlen < 0) return tlen; else pos += tlen;
+        }
+    }
+
     tlen = this->constants._decodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -170,6 +236,17 @@ int inputs_t::_getEncodedSizeNoHash() const
     enc_size += __double_encoded_array_size(NULL, 1);
     enc_size += __double_encoded_array_size(NULL, 1);
     enc_size += __double_encoded_array_size(NULL, 4);
+    enc_size += 3 * __double_encoded_array_size(NULL, 4);
+    enc_size += __double_encoded_array_size(NULL, 3);
+    enc_size += 3 * 3 * __double_encoded_array_size(NULL, 4);
+    for (int a0 = 0; a0 < 3; a0++) {
+        enc_size += this->values_vec[a0]._getEncodedSizeNoHash();
+    }
+    for (int a0 = 0; a0 < 2; a0++) {
+        for (int a1 = 0; a1 < 1; a1++) {
+            enc_size += this->values_vec_2D[a0][a1]._getEncodedSizeNoHash();
+        }
+    }
     enc_size += this->constants._getEncodedSizeNoHash();
     enc_size += this->states._getEncodedSizeNoHash();
     return enc_size;
@@ -183,7 +260,9 @@ uint64_t inputs_t::_computeHash(const __lcm_hash_ptr *p)
             return 0;
     const __lcm_hash_ptr cp = { p, inputs_t::getHash };
 
-    uint64_t hash = 0x1812ddfd71d39f1bLL +
+    uint64_t hash = 0x22aa063ec20a5a12LL +
+         codegen_multi_function::values_vec_t::_computeHash(&cp) +
+         codegen_multi_function::values_vec_t::_computeHash(&cp) +
          codegen_multi_function::inputs_constants_t::_computeHash(&cp) +
          codegen_multi_function::inputs_states_t::_computeHash(&cp);
 

@@ -21,11 +21,30 @@ def generate_types(
 ):
     # type: (...) -> T.Dict[str, T.Any]
     """
-    Generate a package with type structs.
+    Generates LCM types from the given values_indices, including the necessary subtypes
+    and references to external LCM types.
+
+    Args:
+        package_name: Package of LCM types to be generated
+        values_indices: Mapping between the name each LCM type to be generated and its index (computed using Values.index())
+        mode: Language in which to generate language-specifc files from generated LCM files.
+        shared_types: Used to specify whether specific types and subtypes have already been generated, either externally or internally
+            (i.e. if one generated type is to represent multiple objects in values_indices).
+            Usage examples:
+                shared_types={"my_values" : "external_package.my_values"} (Reuse the implementation of "my_values" defined in package
+                    "external_package", meaning that "my_values" as defined in values_indices will not be generated. Note
+                    that "external_package" can equal package_name, e.g. when generating multiple functions in the same package which
+                    reuse the same types)
+                shared_types={"my_values.V1" : "my_subvalues_t", "my_values.V2" : "my_subvalues_t"} (Only generate one type named
+                    "my_subvalues_t" to represent Values objects defined by "my_values.V1" and "my_values.V2".
+        scalar_type: Type of scalars used in LCM type definition
+        output_dir: Where to output the files. ".lcm" files are output in "output_dir/lcm", and language-specific implementations
+            are generated in "output_dir/package_name".
+        templates: TemplateList used if types are being generated as part of a larger code generation (e.g. when generating the
+            types required by a generated function). If None, we generate both the ".lcm" files and the language-specific
+            implementations, else we assume the templates and language-specific type implementations will be rendered
+            in an external function.
     """
-    # TODO(nathan): I feel like using shared_types for both types shared within the package as well
-    # as for external types is really confusing (I've spent far too long trying to figure out exactly
-    # what `shared_types` means/does).
     # Create output directory if needed
     if output_dir is None:
         output_dir = tempfile.mkdtemp(
@@ -53,6 +72,8 @@ def generate_types(
         "to_set": lambda a: set(a),
     }
 
+    types_util = {"np.prod": np.prod}
+
     logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
     lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "type.lcm.jinja")
 
@@ -65,74 +86,8 @@ def generate_types(
         templates.add(
             lcm_template,
             os.path.join(lcm_type_dir, "{}.lcm".format(typename)),
-            dict(data, typename=typename),
+            dict(data, typename=typename, types_util=types_util),
         )
-
-    if mode == codegen_util.CodegenMode.PYTHON2:
-        logger.info('Creating Python types package at: "{}"'.format(package_dir))
-        template_dir = os.path.join(template_util.PYTHON_TEMPLATE_DIR, "types_package")
-
-        data["np_scalar_types"] = codegen_util.NUMPY_DTYPE_FROM_SCALAR_TYPE
-
-        for typename in types_dict:
-            # If a module is specified, this type is external - don't generate it
-            if "." in typename:
-                continue
-
-            # Storage ops
-            templates.add(
-                os.path.join(template_dir, "storage_ops", "storage_ops_type.py.jinja"),
-                os.path.join(package_dir, "storage_ops", "{}.py".format(typename)),
-                dict(data, typename=typename),
-            )
-
-        # Init that imports all types and registers storage ops
-        templates.add(
-            os.path.join(template_dir, "__init__.py.jinja"),
-            os.path.join(package_dir, "__init__.py"),
-            dict(data, typenames=types_dict.keys()),
-        )
-
-        # Init that contains a registration function to add ops to types
-        templates.add(
-            os.path.join(template_dir, "storage_ops", "__init__.py.jinja"),
-            os.path.join(package_dir, "storage_ops", "__init__.py"),
-            dict(data, typenames=types_dict.keys()),
-        )
-
-    elif mode == codegen_util.CodegenMode.CPP:
-        logger.info('Creating C++ types package at: "{}"'.format(package_dir))
-        template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "types_package")
-
-        # Init that contains traits definition and imports all types
-        storage_ops_file = os.path.join(package_dir, "storage_ops.h")
-        if not os.path.isfile(storage_ops_file):
-            templates.add(
-                os.path.join(template_dir, "storage_ops.h.jinja"),
-                os.path.join(package_dir, "storage_ops.h"),
-                dict(data, typenames=types_dict.keys()),
-            )
-
-        for typename in types_dict:
-            # If a module is specified, this type is external - don't generate it
-            if "." in typename:
-                continue
-
-            # Storage ops
-            templates.add(
-                os.path.join(template_dir, "storage_ops_type.h.jinja"),
-                os.path.join(package_dir, "storage_ops/{}.h".format(typename)),
-                dict(data, typename=typename),
-            )
-
-            if os.path.isfile(storage_ops_file):
-                # The storage_ops file was already generated, so include any new types
-                with open(storage_ops_file, "a+") as f:
-                    if typename not in f.read():
-                        f.write('#include "./storage_ops/' + typename + '.h"')
-
-    else:
-        raise NotImplementedError('Unknown mode: "{}"'.format(mode))
 
     if not using_external_templates:
         templates.render()
@@ -152,17 +107,34 @@ def generate_types(
     codegen_data["lcm_type_dir"] = lcm_type_dir
     codegen_data["types_dict"] = types_dict
 
-    # TODO(nathan): This doesn't include subtypes yet
+    # Save mapping between names of types and their namespace/typename. This is used, e.g.,
+    # to get the namespace of a type (whether internal or external) from the name of the variable
+    # when generating code.
+    # TODO(nathan): Not sure if all edge cases are caught in the following, could probably clean this up some
     codegen_data["typenames_dict"] = dict()  # Maps typenames to generated types
     codegen_data["namespaces_dict"] = dict()  # Maps typenames to namespaces
     for name in values_indices.keys():
-        for typename, data in types_dict.items():
-            if name == data["unformatted_typename"]:
-                codegen_data["typenames_dict"][name] = typename.split(".")[-1]
-                if shared_types is not None and name in shared_types and "." in shared_types[name]:
-                    codegen_data["namespaces_dict"][name] = shared_types[name].split(".")[0]
-                else:
-                    codegen_data["namespaces_dict"][name] = package_name
+        # Record namespace/typenames for top-level types. If the type is external, we get the
+        # namespace and typename from shared_types.
+        if shared_types is not None and name in shared_types:
+            codegen_data["typenames_dict"][name] = shared_types[name].split(".")[-1]
+            if "." in shared_types[name]:
+                codegen_data["namespaces_dict"][name] = shared_types[name].split(".")[0]
+            else:
+                codegen_data["namespaces_dict"][name] = package_name
+        else:
+            codegen_data["typenames_dict"][name] = "{}_t".format(name)
+            codegen_data["namespaces_dict"][name] = package_name
+    for typename, data in types_dict.items():
+        # Iterate through types in types_dict. If type is external, use the shared_types to
+        # get the namespace.
+        name = data["unformatted_typename"].split(".")[-1]  # type: ignore
+        if shared_types is not None and name in shared_types and "." in shared_types[name]:
+            codegen_data["typenames_dict"][name] = shared_types[name].split(".")[-1]
+            codegen_data["namespaces_dict"][name] = shared_types[name].split(".")[0]
+        else:
+            codegen_data["typenames_dict"][name] = "{}_t".format(name)
+            codegen_data["namespaces_dict"][name] = package_name
 
     return codegen_data
 
@@ -201,6 +173,22 @@ def typename_from_key(key, shared_types):
     return shared_types.get(key, key.replace(".", "_") + "_t")
 
 
+def get_subvalues_from_list_index(list_index):
+    # type: (T.Dict[str, T.Any]) -> T.Optional[T.Dict[str, T.Any]]
+    """
+    Returns index of Values object if base element of list is a Values object,
+    otherwise returns None
+    """
+    index_element = list(list_index.values())[0]
+    element_type = index_element[1]
+    element_index = index_element[3]
+    if element_type == "Values":
+        return element_index
+    elif element_type == "List":
+        return get_subvalues_from_list_index(element_index)
+    return None
+
+
 def _fill_types_dict_recursive(
     key,  # type: str
     index,  # type: T.Dict
@@ -222,13 +210,25 @@ def _fill_types_dict_recursive(
     data["full_typename"] = typename if "." in typename else ".".join([package_name, typename])
 
     data["index"] = index
-    data["keys_recursive"] = Values.scalar_keys_recursive_from_index(index)
     data["storage_dims"] = {key: np.prod(info[2]) for key, info in index.items()}
 
     # Process child types
     data["subtypes"] = {}
     for subkey, (_, datatype, _, item_index) in index.items():
-        if not datatype == "Values":
+        if key in shared_types and "." in shared_types[key]:
+            # This is a shared type. Don't generate any subtypes.
+            continue
+        if datatype == "Values":
+            element_index = item_index
+        elif datatype == "List" and (
+            list(item_index.values())[0][1] == "Values" or list(item_index.values())[0][1] == "List"
+        ):
+            # Assumes all elements in list are the same type as the first
+            element_index = get_subvalues_from_list_index(item_index)
+            if element_index is None:
+                # Not a list of Values
+                continue
+        else:
             continue
 
         full_subkey = "{}.{}".format(key, subkey)
@@ -236,14 +236,13 @@ def _fill_types_dict_recursive(
 
         _fill_types_dict_recursive(
             key=full_subkey,
-            index=item_index,
+            index=element_index,
             package_name=package_name,
             shared_types=shared_types,
             types_dict=types_dict,
         )
 
     if typename in types_dict:
-        assert set(types_dict[typename]["keys_recursive"]) == set(data["keys_recursive"])
         assert set(types_dict[typename]["full_typename"]) == set(data["full_typename"])
 
     types_dict[typename] = data

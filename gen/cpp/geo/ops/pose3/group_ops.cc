@@ -24,6 +24,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Identity() {
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
+
     _res[0] = 0;
     _res[1] = 0;
     _res[2] = 0;
@@ -31,6 +32,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Identity() {
     _res[4] = 0;
     _res[5] = 0;
     _res[6] = 0;
+
 
     return geo::Pose3<Scalar>(_res);
 }
@@ -66,6 +68,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose3<Scalar>& a) {
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
+
     _res[0] = -_a[0];
     _res[1] = -_a[1];
     _res[2] = -_a[2];
@@ -73,6 +76,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose3<Scalar>& a) {
     _res[4] = -_a[4]*(_tmp6 + _tmp7) - _a[5]*(_tmp4 + _tmp5) - _a[6]*(-_tmp0 + _tmp2);
     _res[5] = -_a[4]*(-_tmp4 + _tmp5) - _a[5]*(_tmp10 + _tmp7) - _a[6]*(_tmp8 + _tmp9);
     _res[6] = -_a[4]*(_tmp0 + _tmp2) - _a[5]*(-_tmp8 + _tmp9) - _a[6]*(_tmp10 + _tmp6 + 1);
+
 
     return geo::Pose3<Scalar>(_res);
 }
@@ -110,6 +114,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Compose(const geo::Pose3<Scalar>& a, const 
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
+
     _res[0] = _a[0]*_b[3] + _a[1]*_b[2] - _a[2]*_b[1] + _a[3]*_b[0];
     _res[1] = -_a[0]*_b[2] + _a[1]*_b[3] + _a[2]*_b[0] + _a[3]*_b[1];
     _res[2] = _a[0]*_b[1] - _a[1]*_b[0] + _a[2]*_b[3] + _a[3]*_b[2];
@@ -117,6 +122,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Compose(const geo::Pose3<Scalar>& a, const 
     _res[4] = _a[4] + _b[4]*(_tmp6 + _tmp7 + 1) + _b[5]*(-_tmp4 + _tmp5) + _b[6]*(_tmp1 + _tmp3);
     _res[5] = _a[5] + _b[4]*(_tmp4 + _tmp5) + _b[5]*(_tmp10 + _tmp6) + _b[6]*(-_tmp8 + _tmp9);
     _res[6] = _a[6] + _b[4]*(-_tmp1 + _tmp3) + _b[5]*(_tmp8 + _tmp9) + _b[6]*(_tmp10 + _tmp7);
+
 
     return geo::Pose3<Scalar>(_res);
 }
@@ -165,6 +171,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Between(const geo::Pose3<Scalar>& a, const 
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
+
     _res[0] = -_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0];
     _res[1] = _a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1];
     _res[2] = -_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2];
@@ -172,6 +179,7 @@ geo::Pose3<Scalar> GroupOps<Scalar>::Between(const geo::Pose3<Scalar>& a, const 
     _res[4] = -_a[4]*_tmp10 - _a[5]*_tmp7 - _a[6]*_tmp3 + _b[4]*_tmp10 + _b[5]*_tmp7 + _b[6]*_tmp3;
     _res[5] = -_a[4]*_tmp16 - _a[5]*_tmp15 - _a[6]*_tmp13 + _b[4]*_tmp16 + _b[5]*_tmp15 + _b[6]*_tmp13;
     _res[6] = -_a[4]*_tmp19 - _a[5]*_tmp18 - _a[6]*_tmp17 + _b[4]*_tmp19 + _b[5]*_tmp18 + _b[6]*_tmp17;
+
 
     return geo::Pose3<Scalar>(_res);
 }

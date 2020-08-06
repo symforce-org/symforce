@@ -66,6 +66,16 @@ class Codegen(object):
         assert all([python_util.is_valid_variable_name(k) for k in inputs.subkeys_recursive()])
         assert all([python_util.is_valid_variable_name(k) for k in outputs.subkeys_recursive()])
 
+        # Symbols in inputs must be unique
+        assert len(set(inputs.to_storage())) == len(
+            inputs.to_storage()
+        ), "Symbols in inputs must be unique. Duplicate symbols = {}".format(
+            [symbol for symbol in inputs.to_storage() if inputs.to_storage().count(symbol) > 1]
+        )
+
+        # Outputs must not have same variable names/keys as inputs
+        assert all([key not in outputs.keys() for key in inputs.keys()])
+
         self.inputs = inputs
         self.outputs = outputs
 
@@ -185,6 +195,7 @@ class Codegen(object):
 
         data["is_symbolic"] = is_symbolic
         data["issubclass"] = issubclass
+        data["is_sequence"] = lambda arg: isinstance(arg, (list, tuple))
         return data
 
     def generate_function(
@@ -226,8 +237,10 @@ class Codegen(object):
         types_to_generate = []
         for d in (self.inputs, self.outputs):
             for key, value in d.items():
-                if isinstance(value, Values):
-                    types_to_generate.append((key, value))
+                # If "value" is a list, extract an instance of a base element.
+                base_value = codegen_util.get_base_instance(value)
+                if isinstance(base_value, Values):
+                    types_to_generate.append((key, base_value))
 
         # Generate types from the Values objects in our inputs and outputs
         values_indices = {name: gen_type.index() for name, gen_type in types_to_generate}
@@ -240,6 +253,7 @@ class Codegen(object):
             output_dir=output_dir,
             templates=templates,
         )
+
         # Maps typenames to generated types
         self.typenames_dict = types_codegen_data["typenames_dict"]
         # Maps typenames to namespaces

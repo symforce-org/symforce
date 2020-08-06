@@ -4,6 +4,7 @@ import sys
 import os
 
 from symforce import geo
+from symforce import ops
 from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
@@ -58,6 +59,33 @@ class SymforceCodegenTest(TestCase):
 
         inputs["rot"] = geo.Rot3().symbolic("rot")
 
+        # Test lists of objects, scalars, and Values
+        inputs["rot_vec"] = [
+            geo.Rot3().symbolic("rot1"),
+            geo.Rot3().symbolic("rot2"),
+            geo.Rot3().symbolic("rot3"),
+        ]
+        inputs["scalar_vec"] = [
+            sm.Symbol("scalar1"),
+            sm.Symbol("scalar2"),
+            sm.Symbol("scalar3"),
+        ]
+        inputs["list_of_lists"] = [
+            ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec1"),
+            ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec2"),
+            ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec3"),
+        ]
+        inputs_copy = inputs.copy()
+        inputs["values_vec"] = [
+            inputs_copy.symbolic("inputs_copy1"),
+            inputs_copy.symbolic("inputs_copy2"),
+            inputs_copy.symbolic("inputs_copy3"),
+        ]
+        inputs["values_vec_2D"] = [
+            [inputs_copy.symbolic("inputs_copy11")],
+            [inputs_copy.symbolic("inputs_copy12")],
+        ]
+
         # Scalar
         inputs.add(sm.Symbol("constants.epsilon"))
 
@@ -71,6 +99,12 @@ class SymforceCodegenTest(TestCase):
         outputs = Values()
         outputs["foo"] = x ** 2 + inputs["rot"].q.w
         outputs["bar"] = inputs.attr.constants.epsilon + sm.sin(inputs.attr.y) + x ** 2
+        # Test outputing lists of objects, scalars, and Values
+        outputs["scalar_vec_out"] = ops.GroupOps.compose(inputs["scalar_vec"], inputs["scalar_vec"])
+        outputs["values_vec_out"] = ops.GroupOps.compose(inputs["values_vec"], inputs["values_vec"])
+        outputs["values_vec_2D_out"] = ops.GroupOps.compose(
+            inputs["values_vec_2D"], inputs["values_vec_2D"]
+        )
 
         return inputs, outputs
 
@@ -89,8 +123,16 @@ class SymforceCodegenTest(TestCase):
             python_func = Codegen(
                 "python_function", inputs, outputs, CodegenMode.PYTHON2, scalar_type=scalar_type
             )
+            shared_types = {
+                "values_vec": "values_vec_t",
+                "values_vec_out": "values_vec_t",
+                "values_vec_2D": "values_vec_t",
+                "values_vec_2D_out": "values_vec_t",
+            }
             namespace = "codegen_test_python"
-            codegen_data = python_func.generate_function(namespace=namespace)
+            codegen_data = python_func.generate_function(
+                shared_types=shared_types, namespace=namespace
+            )
             if scalar_type == "double":
                 self.compare_or_update_directory(
                     actual_dir=codegen_data["output_dir"],
@@ -111,13 +153,41 @@ class SymforceCodegenTest(TestCase):
             x = 2.0
             y = -5.0
             rot = geo_pkg.Rot3()
+            rot_vec = [geo_pkg.Rot3(), geo_pkg.Rot3(), geo_pkg.Rot3()]
+            scalar_vec = [1.0, 2.0, 3.0]
+            list_of_lists = [rot_vec, rot_vec, rot_vec]
+            values_vec = [
+                types_module.values_vec_t(),
+                types_module.values_vec_t(),
+                types_module.values_vec_t(),
+            ]
+            values_vec_2D = [[types_module.values_vec_t()], [types_module.values_vec_t()]]
+
             states = types_module.states_t()
             states.p = [1.0, 2.0]
             constants = types_module.constants_t()
             constants.epsilon = 1e-8
 
             gen_module = codegen_util.load_generated_package(codegen_data["output_dir"])
-            foo, bar = gen_module.python_function(x, y, rot, constants, states)
+            # TODO(nathan): Split this test into several different functions
+            (
+                foo,
+                bar,
+                scalar_vec_out,
+                values_vec_out,
+                values_vec_2D_out,
+            ) = gen_module.python_function(
+                x,
+                y,
+                rot,
+                rot_vec,
+                scalar_vec,
+                list_of_lists,
+                values_vec,
+                values_vec_2D,
+                constants,
+                states,
+            )
             self.assertNear(foo, x ** 2 + rot.data[3])
             self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
 
@@ -161,8 +231,16 @@ class SymforceCodegenTest(TestCase):
             cpp_func = Codegen(
                 "CodegenTestCpp", inputs, outputs, CodegenMode.CPP, scalar_type=scalar_type
             )
+            shared_types = {
+                "values_vec": "values_vec_t",
+                "values_vec_out": "values_vec_t",
+                "values_vec_2D": "values_vec_t",
+                "values_vec_2D_out": "values_vec_t",
+            }
             namespace = "codegen_test_cpp"
-            codegen_data = cpp_func.generate_function(namespace=namespace)
+            codegen_data = cpp_func.generate_function(
+                shared_types=shared_types, namespace=namespace
+            )
 
             if scalar_type == "double":
                 self.compare_or_update_directory(
@@ -276,8 +354,16 @@ class SymforceCodegenTest(TestCase):
         output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
         logger.debug("Creating temp directory: {}".format(output_dir))
 
-        cpp_func_1.generate_function(output_dir=output_dir, namespace=namespace)
-        shared_types = {"inputs": namespace + ".inputs_t"}
+        shared_types = {
+            "inputs.values_vec": "values_vec_t",
+            "outputs_1.values_vec_out": "values_vec_t",
+            "inputs.values_vec_2D": "values_vec_t",
+            "outputs_1.values_vec_2D_out": "values_vec_t",
+        }
+        cpp_func_1.generate_function(
+            output_dir=output_dir, shared_types=shared_types, namespace=namespace
+        )
+        shared_types["inputs"] = namespace + ".inputs_t"
         cpp_func_2.generate_function(
             output_dir=output_dir, shared_types=shared_types, namespace=namespace
         )
@@ -339,6 +425,16 @@ class SymforceCodegenTest(TestCase):
         self.assertRaises(
             AssertionError, Codegen, "test", valid_name_values, name_with_spaces, CodegenMode.CPP
         )
+
+        # Inputs have non-unique symbols
+        inputs = Values(in_x=x, in_y=x)
+        outputs = Values(out_x=x)
+        self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
+
+        # Inputs and outputs have non-unique keys
+        inputs = Values(x=x)
+        outputs = Values(x=x)
+        self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
 
 
 if __name__ == "__main__":

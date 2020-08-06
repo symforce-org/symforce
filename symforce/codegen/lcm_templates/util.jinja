@@ -1,0 +1,23 @@
+{# ------------------------------------------------------------------------- #}
+{# Utilities for LCM type generation template                                #}
+{# ------------------------------------------------------------------------- #}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Appends the number of subelements or the storage dim of the given index
+ #
+ # Args:
+ #     index: Index of a list
+ #}
+{%- macro get_list_dims(index) -%}
+[{{- index | length -}}]
+{%- set index_element = (index.values() | list)[0] -%}
+{%- set type = index_element[1] -%}
+{%- if type == 'List' -%}
+{%- set sub_index = index_element[3] -%}
+{{- get_list_dims(sub_index) -}}
+{%- elif type != 'Values' and type != 'Scalar' -%}
+{%- set element_storage_dim = types_util['np.prod'](index_element[2]) -%}
+[{{- element_storage_dim -}}]
+{%- endif -%}
+{%- endmacro -%}

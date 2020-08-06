@@ -41,9 +41,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
     # Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = python_util.get_type(type) %}
-        {% if issubclass(T, Values) %}
-    _{{ name }} = {{ name }}.to_storage()
-        {% elif not issubclass(T, Symbol) and not issubclass(T, Matrix) %}
+        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
     _{{ name }} = {{ name }}.data
         {% endif %}
     {% endfor %}
@@ -63,7 +61,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
     _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
             {% for i in range(rows) %}
                 {% for j in range(cols) %}
-    _{{ name }}[{{ i }}, {{ j }}] = {{ spec.output_terms[ns.iter] }}
+    _{{ name }}[{{ i }}, {{ j }}] = {{ spec.output_terms[ns.iter][1] }}
                     {% set ns.iter = ns.iter + 1 %}
                 {% endfor %}
             {% endfor %}
@@ -71,11 +69,11 @@ def {{ camelcase_to_snakecase(spec.name) }}(
             {% set dims = ops.StorageOps.storage_dim(type) %}
     _{{name}} = [0.] * {{ dims }}
             {% for i in range(dims) %}
-    _{{ name }}[{{ i }}] = {{ spec.output_terms[ns.iter] }}
+    _{{ name }}[{{ i }}] = {{ spec.output_terms[ns.iter][1] }}
                 {% set ns.iter = ns.iter + 1 %}
             {% endfor %}
         {% else %}
-    _{{name}} = {{ spec.output_terms[ns.iter] }}
+    _{{name}} = {{ spec.output_terms[ns.iter][1] }}
             {% set ns.iter = ns.iter + 1 %}
         {% endif %}
     {% endfor %}

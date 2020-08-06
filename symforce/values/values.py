@@ -162,7 +162,7 @@ class Values(object):
                 )
 
             index_dict[name] = [inx, datatype, shape, item_index]
-            inx += Values._shape_to_dims(shape)
+            inx += Values.shape_to_dims(shape)
 
         return index_dict
 
@@ -177,35 +177,6 @@ class Values(object):
             or (len(shape) == 2 and shape[1] == 1)
             or (len(shape) == 2 and shape[0] == 1)
         )
-
-    @classmethod
-    def scalar_keys_recursive_from_index(cls, index):
-        # type: (T.Mapping[str, T.Any]) -> T.List[str]
-        """
-        Compute a flat list of keys from the given values index. The order matches
-        the serialized order of elements in the `.to_storage()` vector.
-        """
-        vec = []
-        for name, (inx, datatype, shape, item_index) in index.items():
-            if len(shape) == 0:
-                vec.append(name)
-            elif datatype == "Values":
-                sub_vec = cls.scalar_keys_recursive_from_index(item_index)
-                vec.extend("{}.{}".format(name, val) for val in sub_vec)
-            elif cls._shape_implies_a_vector(shape) or len(shape) == 2:
-                # Flatten row or column vectors to 1-D array
-                vec.extend("{}[{}]".format(name, i) for i in range(cls._shape_to_dims(shape)))
-            elif len(shape) == 2:
-                # TODO(hayk): This isn't run currently because of the len(shape) == 2 check above.
-                # Fix handling of matrices in codegen and re-enable this.
-                vec.extend(
-                    "{}[{},{}]".format(name, i, j) for i in range(shape[0]) for j in range(shape[1])
-                )
-            else:
-                raise NotImplementedError()
-
-        assert len(vec) == len(set(vec)), "Non-unique keys!\n{}".format(vec)
-        return vec
 
     def items_recursive(self):
         # type: () -> T.List[T.Tuple[str, T.Any]]
@@ -282,7 +253,7 @@ class Values(object):
         """
         values = cls()
         for name, (inx, datatype, shape, item_index) in indices.items():
-            vec = vector_values[inx : inx + cls._shape_to_dims(shape)]
+            vec = vector_values[inx : inx + cls.shape_to_dims(shape)]
 
             if datatype == "Scalar":
                 values[name] = vec[0]
@@ -571,7 +542,7 @@ class Values(object):
             raise NameError("Expr of type {} has no .name".format(type(value)))
 
     @staticmethod
-    def _shape_to_dims(shape):
+    def shape_to_dims(shape):
         # type: (T.Sequence[int]) -> int
         """
         Compute the number of entries in an object of this shape.

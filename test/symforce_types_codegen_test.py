@@ -34,6 +34,10 @@ class SymforceTypesCodegenTest(TestCase):
         # Scalar
         inputs.add(sm.Symbol("constants.epsilon"))
 
+        # Vector
+        sub_values = inputs.copy()
+        inputs["values_vec"] = [sub_values, sub_values]
+
         with inputs.scope("states"):
             # Array element, turns into std::array
             inputs["p"] = geo.V2.symbolic("p")
@@ -94,7 +98,14 @@ class SymforceTypesCodegenTest(TestCase):
             mode=CodegenMode.PYTHON2,
             scalar_type="double",
             shared_types={},
-            expected_types=("input_t", "output_t", "input_states_t", "input_constants_t"),
+            expected_types=(
+                "input_t",
+                "output_t",
+                "input_states_t",
+                "input_constants_t",
+                "input_values_vec_t",
+                "input_values_vec_constants_t",
+            ),
         )
 
         package = codegen_util.load_generated_package(codegen_data["package_dir"])
@@ -103,14 +114,9 @@ class SymforceTypesCodegenTest(TestCase):
         inp.x = 1.2
         inp.y = 4.5
         inp.constants.epsilon = -2
-        inp2 = package.input_t.from_storage(inp.to_storage())
+        inp2 = package.input_t.decode(inp.encode())
         self.assertEqual(inp.x, inp2.x)
         self.assertEqual(inp.constants.epsilon, inp2.constants.epsilon)
-
-        states = package.input_states_t()
-        states.p[0] = 1.2
-        states.p[1] = 0.3
-        self.assertNear(states.p, states.to_storage(), places=9)
 
         # Clean up
         if logger.level != logging.DEBUG:
@@ -126,7 +132,14 @@ class SymforceTypesCodegenTest(TestCase):
             mode=CodegenMode.CPP,
             scalar_type="double",
             shared_types={},
-            expected_types=("input_t", "output_t", "input_states_t", "input_constants_t"),
+            expected_types=(
+                "input_t",
+                "output_t",
+                "input_states_t",
+                "input_constants_t",
+                "input_values_vec_t",
+                "input_values_vec_constants_t",
+            ),
         )
 
         # Clean up
@@ -138,8 +151,20 @@ class SymforceTypesCodegenTest(TestCase):
         """
         Give some fields specific names, still within the module.
         """
-        shared_types = {"input": "foo_t", "output": "bar_t", "input.states": "zoomba_t"}
-        expected_types = ("foo_t", "bar_t", "zoomba_t", "input_constants_t")
+        shared_types = {
+            "input": "foo_t",
+            "output": "bar_t",
+            "input.states": "zoomba_t",
+            "input.values_vec": "vec_t",
+        }
+        expected_types = (
+            "foo_t",
+            "bar_t",
+            "zoomba_t",
+            "input_constants_t",
+            "vec_t",
+            "input_values_vec_constants_t",
+        )
 
         codegen_data = self.types_codegen_helper(
             name="renames_cpp",
@@ -158,8 +183,20 @@ class SymforceTypesCodegenTest(TestCase):
         """
         Give some fields specific names, still within the module.
         """
-        shared_types = {"input": "foo_t", "output": "bar_t", "input.states": "zoomba_t"}
-        expected_types = ("foo_t", "bar_t", "zoomba_t", "input_constants_t")
+        shared_types = {
+            "input": "foo_t",
+            "output": "bar_t",
+            "input.states": "zoomba_t",
+            "input.values_vec": "vec_t",
+        }
+        expected_types = (
+            "foo_t",
+            "bar_t",
+            "zoomba_t",
+            "input_constants_t",
+            "vec_t",
+            "input_values_vec_constants_t",
+        )
 
         codegen_data = self.types_codegen_helper(
             name="renames_python",
@@ -175,14 +212,9 @@ class SymforceTypesCodegenTest(TestCase):
         inp.x = 1.2
         inp.y = 4.5
         inp.constants.epsilon = -2
-        inp2 = package.foo_t.from_storage(inp.to_storage())
+        inp2 = package.foo_t.decode(inp.encode())
         self.assertEqual(inp.x, inp2.x)
         self.assertEqual(inp.constants.epsilon, inp2.constants.epsilon)
-
-        states = package.zoomba_t()
-        states.p[0] = 1.2
-        states.p[1] = 0.3
-        self.assertNear(states.p, states.to_storage(), places=9)
 
         # Clean up
         if logger.level != logging.DEBUG:
@@ -193,8 +225,18 @@ class SymforceTypesCodegenTest(TestCase):
         """
         Use external types for some fields, don't generate them.
         """
-        shared_types = {"output": "other_module.bar_t", "input.states": "external.zoomba_t"}
-        expected_types = ("input_t", "other_module.bar_t", "external.zoomba_t", "input_constants_t")
+        shared_types = {
+            "output": "other_module.bar_t",
+            "input.states": "external.zoomba_t",
+            "input.values_vec": "external.vec_t",
+        }
+        expected_types = (
+            "input_t",
+            "other_module.bar_t",
+            "external.zoomba_t",
+            "input_constants_t",
+            "external.vec_t",
+        )
 
         codegen_data = self.types_codegen_helper(
             name="external_cpp",
@@ -213,8 +255,18 @@ class SymforceTypesCodegenTest(TestCase):
         """
         Use external types for some fields, don't generate them.
         """
-        shared_types = {"output": "other_module.bar_t", "input.states": "external.zoomba_t"}
-        expected_types = ("input_t", "other_module.bar_t", "external.zoomba_t", "input_constants_t")
+        shared_types = {
+            "output": "other_module.bar_t",
+            "input.states": "external.zoomba_t",
+            "input.values_vec": "external.vec_t",
+        }
+        expected_types = (
+            "input_t",
+            "other_module.bar_t",
+            "external.zoomba_t",
+            "input_constants_t",
+            "external.vec_t",
+        )
 
         codegen_data = self.types_codegen_helper(
             name="external_python",
@@ -273,8 +325,8 @@ class SymforceTypesCodegenTest(TestCase):
         inp.one = rot
         inp.two = rot
 
-        inp2 = package.input_t.from_storage(inp.to_storage())
-        self.assertNear(rot.to_storage(), inp2.two.to_storage(), places=9)
+        inp2 = package.input_t.decode(inp.encode())
+        self.assertNear(rot.R, inp2.two.R, places=9)
 
         # Clean up
         if logger.level != logging.DEBUG:

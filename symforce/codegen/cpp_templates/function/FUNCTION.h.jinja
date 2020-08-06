@@ -4,12 +4,10 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-{% for name, type in spec.typenames_dict.items() %}
-#include "./{{ spec.namespaces_dict[name] }}/{{ type }}.hpp"
-{% endfor %}
-
-{% for namespace in spec.unique_namespaces %}
-#include "./{{ namespace }}/storage_ops.h"
+{% for name in spec.inputs.keys() | list + spec.outputs.keys() | list %}
+{% if name in spec.typenames_dict %}
+#include "./{{ spec.namespaces_dict[name] }}/{{ spec.typenames_dict[name] }}.hpp"
+{% endif %}
 {% endfor %}
 
 namespace {{ spec.namespace }} {

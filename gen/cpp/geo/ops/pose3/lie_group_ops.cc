@@ -37,6 +37,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
+
     _res[0] = _tmp6*vec[0];
     _res[1] = _tmp6*vec[1];
     _res[2] = _tmp6*vec[2];
@@ -44,6 +45,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
     _res[4] = vec[3]*(_tmp7*(_tmp14 + _tmp15) + 1) + vec[4]*(_tmp12 - _tmp13) + vec[5]*(_tmp11 + _tmp9);
     _res[5] = vec[3]*(_tmp12 + _tmp13) + vec[4]*(_tmp7*(_tmp15 + _tmp18) + 1) + vec[5]*(_tmp16 - _tmp17);
     _res[6] = vec[3]*(-_tmp11 + _tmp9) + vec[4]*(_tmp16 + _tmp17) + vec[5]*(_tmp7*(_tmp14 + _tmp18) + 1);
+
 
     return geo::Pose3<Scalar>(_res);
 }
@@ -80,12 +82,14 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose3<Scal
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 6, 1> _res;
-    _res(0, 0) = _a[0]*_tmp3;
-    _res(1, 0) = _a[1]*_tmp3;
-    _res(2, 0) = _a[2]*_tmp3;
-    _res(3, 0) = _a[4]*(_tmp11*(_tmp18 + _tmp19) + 1.0) + _a[5]*(_tmp16 + _tmp17) + _a[6]*(_tmp13 - _tmp15);
-    _res(4, 0) = _a[4]*(_tmp16 - _tmp17) + _a[5]*(_tmp11*(_tmp19 + _tmp22) + 1.0) + _a[6]*(_tmp20 + _tmp21);
-    _res(5, 0) = _a[4]*(_tmp13 + _tmp15) + _a[5]*(_tmp20 - _tmp21) + _a[6]*(_tmp11*(_tmp18 + _tmp22) + 1.0);
+
+    _res[0] = _a[0]*_tmp3;
+    _res[1] = _a[1]*_tmp3;
+    _res[2] = _a[2]*_tmp3;
+    _res[3] = _a[4]*(_tmp11*(_tmp18 + _tmp19) + 1.0) + _a[5]*(_tmp16 + _tmp17) + _a[6]*(_tmp13 - _tmp15);
+    _res[4] = _a[4]*(_tmp16 - _tmp17) + _a[5]*(_tmp11*(_tmp19 + _tmp22) + 1.0) + _a[6]*(_tmp20 + _tmp21);
+    _res[5] = _a[4]*(_tmp13 + _tmp15) + _a[5]*(_tmp20 - _tmp21) + _a[6]*(_tmp11*(_tmp18 + _tmp22) + 1.0);
+
 
     return _res;
 }
@@ -137,6 +141,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a, con
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
+
     _res[0] = _a[0]*_tmp9 + _a[1]*_tmp7 - _a[2]*_tmp8 + _tmp10*vec[0];
     _res[1] = -_a[0]*_tmp7 + _a[1]*_tmp9 + _a[2]*_tmp11 + _a[3]*_tmp8;
     _res[2] = _a[0]*_tmp8 - _a[1]*_tmp11 + _a[2]*_tmp9 + _tmp10*vec[2];
@@ -144,6 +149,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a, con
     _res[4] = _a[4] + _tmp25*(_tmp13 + _tmp15) + _tmp31*(-_tmp26 + _tmp27) + _tmp34*(_tmp32 + _tmp33);
     _res[5] = _a[5] + _tmp25*(-_tmp35 + _tmp36) + _tmp31*(_tmp32 + _tmp37 + 1) + _tmp34*(_tmp26 + _tmp27);
     _res[6] = _a[6] + _tmp25*(_tmp33 + _tmp37) + _tmp31*(_tmp35 + _tmp36) + _tmp34*(-_tmp13 + _tmp15);
+
 
     return geo::Pose3<Scalar>(_res);
 }
@@ -208,12 +214,14 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 6, 1> _res;
-    _res(0, 0) = _tmp0*_tmp5;
-    _res(1, 0) = _tmp5*_tmp6;
-    _res(2, 0) = _tmp5*_tmp7;
-    _res(3, 0) = _tmp19*(_tmp29 - _tmp31) + _tmp38*(_tmp39 + _tmp40) + _tmp44*(_tmp27*(_tmp45 + _tmp46) + 1.0);
-    _res(4, 0) = _tmp19*(_tmp47 + _tmp48) + _tmp38*(_tmp27*(_tmp46 + _tmp49) + 1.0) + _tmp44*(_tmp39 - _tmp40);
-    _res(5, 0) = _tmp19*(_tmp27*(_tmp45 + _tmp49) + 1.0) + _tmp38*(_tmp47 - _tmp48) + _tmp44*(_tmp29 + _tmp31);
+
+    _res[0] = _tmp0*_tmp5;
+    _res[1] = _tmp5*_tmp6;
+    _res[2] = _tmp5*_tmp7;
+    _res[3] = _tmp19*(_tmp29 - _tmp31) + _tmp38*(_tmp39 + _tmp40) + _tmp44*(_tmp27*(_tmp45 + _tmp46) + 1.0);
+    _res[4] = _tmp19*(_tmp47 + _tmp48) + _tmp38*(_tmp27*(_tmp46 + _tmp49) + 1.0) + _tmp44*(_tmp39 - _tmp40);
+    _res[5] = _tmp19*(_tmp27*(_tmp45 + _tmp49) + 1.0) + _tmp38*(_tmp47 - _tmp48) + _tmp44*(_tmp29 + _tmp31);
+
 
     return _res;
 }
