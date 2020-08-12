@@ -248,7 +248,6 @@ class Codegen(object):
             package_name=namespace,
             values_indices=values_indices,
             shared_types=shared_types,
-            mode=self.mode,
             scalar_type=self.scalar_type,
             output_dir=output_dir,
             templates=templates,
@@ -263,41 +262,55 @@ class Codegen(object):
         # Namespace of this function + generated types
         self.namespace = namespace
 
+        output_data = {
+            "output_dir": output_dir,
+            "lcm_type_dir": types_codegen_data["lcm_type_dir"],
+        }
+
         # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
-            logger.info('Creating python function "{}" at "{}"'.format(self.name, output_dir))
+            python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
+            logger.info(
+                'Creating python function "{}" at "{}"'.format(self.name, python_function_dir)
+            )
             templates.add(
                 os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "FUNCTION.py.jinja"),
-                os.path.join(output_dir, self.name + ".py"),
+                os.path.join(python_function_dir, self.name + ".py"),
                 dict(self.common_data(), spec=self),
             )
             templates.add(
                 os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "__init__.py.jinja"),
-                os.path.join(output_dir, "__init__.py"),
+                os.path.join(python_function_dir, "__init__.py"),
                 dict(self.common_data(), spec=self),
             )
+
+            output_data["python_function_dir"] = python_function_dir
         elif self.mode == codegen_util.CodegenMode.CPP:
-            logger.info('Creating C++ function "{}" at "{}"'.format(self.name, output_dir))
+            cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
+            logger.info('Creating C++ function "{}" at "{}"'.format(self.name, cpp_function_dir))
+
             templates.add(
                 os.path.join(template_util.CPP_TEMPLATE_DIR, "function", "FUNCTION.h.jinja"),
-                os.path.join(output_dir, python_util.camelcase_to_snakecase(self.name) + ".h"),
+                os.path.join(
+                    cpp_function_dir, python_util.camelcase_to_snakecase(self.name) + ".h"
+                ),
                 dict(self.common_data(), spec=self),
             )
+
+            output_data["cpp_function_dir"] = cpp_function_dir
         else:
             raise NotImplementedError('Unknown mode: "{}"'.format(self.mode))
 
         templates.render()
-        codegen_util.generate_lcm_types(
+        lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data["lcm_type_dir"],
-            output_dir=output_dir,
             typenames=types_codegen_data["types_dict"].keys(),
-            mode=self.mode,
         )
+        output_data.update(lcm_data)
 
-        return {
-            "generated_files": [v[1] for v in templates.items],
-            "output_dir": output_dir,
-        }
+        output_data["generated_files"] = [v[1] for v in templates.items]
+
+        return output_data
 
     @staticmethod
     def default_docstring(inputs, outputs, original_function=None):

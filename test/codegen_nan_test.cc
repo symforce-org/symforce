@@ -1,8 +1,8 @@
 #include <iostream>
 #include <math.h>
 
-#include "../gen/cpp/geo/rot3.h"
-#include "./symforce_function_codegen_test_data/identity_dist_jacobian.h"
+#include <geo/rot3.h>
+#include <symforce/codegen_nan_test/identity_dist_jacobian.h>
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
@@ -17,6 +17,6 @@ int main(int argc, char** argv) {
 
     geo::Rot3<double> rot = geo::Rot3<double>::Identity();
     double epsilon = 1e-6;
-    double res = sym::IdentityDistJacobian<double>(rot, epsilon);
+    double res = codegen_nan_test::IdentityDistJacobian<double>(rot, epsilon);
     assertTrue(!std::isnan(res));
 }

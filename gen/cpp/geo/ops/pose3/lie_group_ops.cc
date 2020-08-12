@@ -15,36 +15,36 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
     // Input arrays
 
     // Intermediate terms (19)
-    const Scalar _tmp0 = (vec[2] * vec[2]);
-    const Scalar _tmp1 = (vec[1] * vec[1]);
-    const Scalar _tmp2 = (vec[0] * vec[0]);
+    const Scalar _tmp0 = (vec(2, 0) * vec(2, 0));
+    const Scalar _tmp1 = (vec(1, 0) * vec(1, 0));
+    const Scalar _tmp2 = (vec(0, 0) * vec(0, 0));
     const Scalar _tmp3 = _tmp0 + _tmp1 + _tmp2 + (epsilon * epsilon);
     const Scalar _tmp4 = std::sqrt(_tmp3);
     const Scalar _tmp5 = (1.0/2.0)*_tmp4;
     const Scalar _tmp6 = std::sin(_tmp5)/_tmp4;
     const Scalar _tmp7 = (_tmp4 - std::sin(_tmp4))/(_tmp3 * std::sqrt(_tmp3));
-    const Scalar _tmp8 = _tmp7*vec[0];
-    const Scalar _tmp9 = _tmp8*vec[2];
+    const Scalar _tmp8 = _tmp7*vec(0, 0);
+    const Scalar _tmp9 = _tmp8*vec(2, 0);
     const Scalar _tmp10 = (-std::cos(_tmp4) + 1)/_tmp3;
-    const Scalar _tmp11 = _tmp10*vec[1];
-    const Scalar _tmp12 = _tmp8*vec[1];
-    const Scalar _tmp13 = _tmp10*vec[2];
+    const Scalar _tmp11 = _tmp10*vec(1, 0);
+    const Scalar _tmp12 = _tmp8*vec(1, 0);
+    const Scalar _tmp13 = _tmp10*vec(2, 0);
     const Scalar _tmp14 = -_tmp1;
     const Scalar _tmp15 = -_tmp0;
-    const Scalar _tmp16 = _tmp7*vec[1]*vec[2];
-    const Scalar _tmp17 = _tmp10*vec[0];
+    const Scalar _tmp16 = _tmp7*vec(1, 0)*vec(2, 0);
+    const Scalar _tmp17 = _tmp10*vec(0, 0);
     const Scalar _tmp18 = -_tmp2;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
 
-    _res[0] = _tmp6*vec[0];
-    _res[1] = _tmp6*vec[1];
-    _res[2] = _tmp6*vec[2];
+    _res[0] = _tmp6*vec(0, 0);
+    _res[1] = _tmp6*vec(1, 0);
+    _res[2] = _tmp6*vec(2, 0);
     _res[3] = std::cos(_tmp5);
-    _res[4] = vec[3]*(_tmp7*(_tmp14 + _tmp15) + 1) + vec[4]*(_tmp12 - _tmp13) + vec[5]*(_tmp11 + _tmp9);
-    _res[5] = vec[3]*(_tmp12 + _tmp13) + vec[4]*(_tmp7*(_tmp15 + _tmp18) + 1) + vec[5]*(_tmp16 - _tmp17);
-    _res[6] = vec[3]*(-_tmp11 + _tmp9) + vec[4]*(_tmp16 + _tmp17) + vec[5]*(_tmp7*(_tmp14 + _tmp18) + 1);
+    _res[4] = vec(3, 0)*(_tmp7*(_tmp14 + _tmp15) + 1) + vec(4, 0)*(_tmp12 - _tmp13) + vec(5, 0)*(_tmp11 + _tmp9);
+    _res[5] = vec(3, 0)*(_tmp12 + _tmp13) + vec(4, 0)*(_tmp7*(_tmp15 + _tmp18) + 1) + vec(5, 0)*(_tmp16 - _tmp17);
+    _res[6] = vec(3, 0)*(-_tmp11 + _tmp9) + vec(4, 0)*(_tmp16 + _tmp17) + vec(5, 0)*(_tmp7*(_tmp14 + _tmp18) + 1);
 
 
     return geo::Pose3<Scalar>(_res);
@@ -83,12 +83,12 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose3<Scal
     // Output terms (1)
     Eigen::Matrix<Scalar, 6, 1> _res;
 
-    _res[0] = _a[0]*_tmp3;
-    _res[1] = _a[1]*_tmp3;
-    _res[2] = _a[2]*_tmp3;
-    _res[3] = _a[4]*(_tmp11*(_tmp18 + _tmp19) + 1.0) + _a[5]*(_tmp16 + _tmp17) + _a[6]*(_tmp13 - _tmp15);
-    _res[4] = _a[4]*(_tmp16 - _tmp17) + _a[5]*(_tmp11*(_tmp19 + _tmp22) + 1.0) + _a[6]*(_tmp20 + _tmp21);
-    _res[5] = _a[4]*(_tmp13 + _tmp15) + _a[5]*(_tmp20 - _tmp21) + _a[6]*(_tmp11*(_tmp18 + _tmp22) + 1.0);
+    _res(0, 0) = _a[0]*_tmp3;
+    _res(1, 0) = _a[1]*_tmp3;
+    _res(2, 0) = _a[2]*_tmp3;
+    _res(3, 0) = _a[4]*(_tmp11*(_tmp18 + _tmp19) + 1.0) + _a[5]*(_tmp16 + _tmp17) + _a[6]*(_tmp13 - _tmp15);
+    _res(4, 0) = _a[4]*(_tmp16 - _tmp17) + _a[5]*(_tmp11*(_tmp19 + _tmp22) + 1.0) + _a[6]*(_tmp20 + _tmp21);
+    _res(5, 0) = _a[4]*(_tmp13 + _tmp15) + _a[5]*(_tmp20 - _tmp21) + _a[6]*(_tmp11*(_tmp18 + _tmp22) + 1.0);
 
 
     return _res;
@@ -100,18 +100,18 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a, con
     const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
     // Intermediate terms (38)
-    const Scalar _tmp0 = (vec[2] * vec[2]);
-    const Scalar _tmp1 = (vec[1] * vec[1]);
-    const Scalar _tmp2 = (vec[0] * vec[0]);
+    const Scalar _tmp0 = (vec(2, 0) * vec(2, 0));
+    const Scalar _tmp1 = (vec(1, 0) * vec(1, 0));
+    const Scalar _tmp2 = (vec(0, 0) * vec(0, 0));
     const Scalar _tmp3 = _tmp0 + _tmp1 + _tmp2 + (epsilon * epsilon);
     const Scalar _tmp4 = std::sqrt(_tmp3);
     const Scalar _tmp5 = (1.0/2.0)*_tmp4;
     const Scalar _tmp6 = std::sin(_tmp5)/_tmp4;
-    const Scalar _tmp7 = _tmp6*vec[2];
-    const Scalar _tmp8 = _tmp6*vec[1];
+    const Scalar _tmp7 = _tmp6*vec(2, 0);
+    const Scalar _tmp8 = _tmp6*vec(1, 0);
     const Scalar _tmp9 = std::cos(_tmp5);
     const Scalar _tmp10 = _a[3]*_tmp6;
-    const Scalar _tmp11 = _tmp6*vec[0];
+    const Scalar _tmp11 = _tmp6*vec(0, 0);
     const Scalar _tmp12 = 2*_a[1];
     const Scalar _tmp13 = _a[3]*_tmp12;
     const Scalar _tmp14 = 2*_a[0];
@@ -119,22 +119,22 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a, con
     const Scalar _tmp16 = -_tmp2;
     const Scalar _tmp17 = -_tmp1;
     const Scalar _tmp18 = (_tmp4 - std::sin(_tmp4))/(_tmp3 * std::sqrt(_tmp3));
-    const Scalar _tmp19 = _tmp18*vec[1]*vec[2];
+    const Scalar _tmp19 = _tmp18*vec(1, 0)*vec(2, 0);
     const Scalar _tmp20 = (-std::cos(_tmp4) + 1)/_tmp3;
-    const Scalar _tmp21 = _tmp20*vec[0];
-    const Scalar _tmp22 = _tmp18*vec[0];
-    const Scalar _tmp23 = _tmp22*vec[2];
-    const Scalar _tmp24 = _tmp20*vec[1];
-    const Scalar _tmp25 = vec[3]*(_tmp23 - _tmp24) + vec[4]*(_tmp19 + _tmp21) + vec[5]*(_tmp18*(_tmp16 + _tmp17) + 1);
+    const Scalar _tmp21 = _tmp20*vec(0, 0);
+    const Scalar _tmp22 = _tmp18*vec(0, 0);
+    const Scalar _tmp23 = _tmp22*vec(2, 0);
+    const Scalar _tmp24 = _tmp20*vec(1, 0);
+    const Scalar _tmp25 = vec(3, 0)*(_tmp23 - _tmp24) + vec(4, 0)*(_tmp19 + _tmp21) + vec(5, 0)*(_tmp18*(_tmp16 + _tmp17) + 1);
     const Scalar _tmp26 = 2*_a[2]*_a[3];
     const Scalar _tmp27 = _a[0]*_tmp12;
     const Scalar _tmp28 = -_tmp0;
-    const Scalar _tmp29 = _tmp22*vec[1];
-    const Scalar _tmp30 = _tmp20*vec[2];
-    const Scalar _tmp31 = vec[3]*(_tmp29 + _tmp30) + vec[4]*(_tmp18*(_tmp16 + _tmp28) + 1) + vec[5]*(_tmp19 - _tmp21);
+    const Scalar _tmp29 = _tmp22*vec(1, 0);
+    const Scalar _tmp30 = _tmp20*vec(2, 0);
+    const Scalar _tmp31 = vec(3, 0)*(_tmp29 + _tmp30) + vec(4, 0)*(_tmp18*(_tmp16 + _tmp28) + 1) + vec(5, 0)*(_tmp19 - _tmp21);
     const Scalar _tmp32 = -2*(_a[2] * _a[2]);
     const Scalar _tmp33 = -2*(_a[1] * _a[1]) + 1;
-    const Scalar _tmp34 = vec[3]*(_tmp18*(_tmp17 + _tmp28) + 1) + vec[4]*(_tmp29 - _tmp30) + vec[5]*(_tmp23 + _tmp24);
+    const Scalar _tmp34 = vec(3, 0)*(_tmp18*(_tmp17 + _tmp28) + 1) + vec(4, 0)*(_tmp29 - _tmp30) + vec(5, 0)*(_tmp23 + _tmp24);
     const Scalar _tmp35 = _a[3]*_tmp14;
     const Scalar _tmp36 = _a[2]*_tmp12;
     const Scalar _tmp37 = -2*(_a[0] * _a[0]);
@@ -142,9 +142,9 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a, con
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 1> _res;
 
-    _res[0] = _a[0]*_tmp9 + _a[1]*_tmp7 - _a[2]*_tmp8 + _tmp10*vec[0];
+    _res[0] = _a[0]*_tmp9 + _a[1]*_tmp7 - _a[2]*_tmp8 + _tmp10*vec(0, 0);
     _res[1] = -_a[0]*_tmp7 + _a[1]*_tmp9 + _a[2]*_tmp11 + _a[3]*_tmp8;
-    _res[2] = _a[0]*_tmp8 - _a[1]*_tmp11 + _a[2]*_tmp9 + _tmp10*vec[2];
+    _res[2] = _a[0]*_tmp8 - _a[1]*_tmp11 + _a[2]*_tmp9 + _tmp10*vec(2, 0);
     _res[3] = -_a[0]*_tmp11 - _a[1]*_tmp8 - _a[2]*_tmp7 + _a[3]*_tmp9;
     _res[4] = _a[4] + _tmp25*(_tmp13 + _tmp15) + _tmp31*(-_tmp26 + _tmp27) + _tmp34*(_tmp32 + _tmp33);
     _res[5] = _a[5] + _tmp25*(-_tmp35 + _tmp36) + _tmp31*(_tmp32 + _tmp37 + 1) + _tmp34*(_tmp26 + _tmp27);
@@ -215,12 +215,12 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
     // Output terms (1)
     Eigen::Matrix<Scalar, 6, 1> _res;
 
-    _res[0] = _tmp0*_tmp5;
-    _res[1] = _tmp5*_tmp6;
-    _res[2] = _tmp5*_tmp7;
-    _res[3] = _tmp19*(_tmp29 - _tmp31) + _tmp38*(_tmp39 + _tmp40) + _tmp44*(_tmp27*(_tmp45 + _tmp46) + 1.0);
-    _res[4] = _tmp19*(_tmp47 + _tmp48) + _tmp38*(_tmp27*(_tmp46 + _tmp49) + 1.0) + _tmp44*(_tmp39 - _tmp40);
-    _res[5] = _tmp19*(_tmp27*(_tmp45 + _tmp49) + 1.0) + _tmp38*(_tmp47 - _tmp48) + _tmp44*(_tmp29 + _tmp31);
+    _res(0, 0) = _tmp0*_tmp5;
+    _res(1, 0) = _tmp5*_tmp6;
+    _res(2, 0) = _tmp5*_tmp7;
+    _res(3, 0) = _tmp19*(_tmp29 - _tmp31) + _tmp38*(_tmp39 + _tmp40) + _tmp44*(_tmp27*(_tmp45 + _tmp46) + 1.0);
+    _res(4, 0) = _tmp19*(_tmp47 + _tmp48) + _tmp38*(_tmp27*(_tmp46 + _tmp49) + 1.0) + _tmp44*(_tmp39 - _tmp40);
+    _res(5, 0) = _tmp19*(_tmp27*(_tmp45 + _tmp49) + 1.0) + _tmp38*(_tmp47 - _tmp48) + _tmp44*(_tmp29 + _tmp31);
 
 
     return _res;

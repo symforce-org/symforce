@@ -147,7 +147,7 @@ class SymforceCodegenTest(TestCase):
                 os.path.join(codegen_data["output_dir"], "geo")
             )
             types_module = codegen_util.load_generated_package(
-                os.path.join(codegen_data["output_dir"], namespace)
+                os.path.join(codegen_data["python_types_dir"], namespace)
             )
 
             x = 2.0
@@ -168,7 +168,7 @@ class SymforceCodegenTest(TestCase):
             constants = types_module.constants_t()
             constants.epsilon = 1e-8
 
-            gen_module = codegen_util.load_generated_package(codegen_data["output_dir"])
+            gen_module = codegen_util.load_generated_package(codegen_data["python_function_dir"])
             # TODO(nathan): Split this test into several different functions
             (
                 foo,
@@ -209,7 +209,9 @@ class SymforceCodegenTest(TestCase):
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.py")
-        output_function = os.path.join(az_el_codegen_data["output_dir"], "az_el_from_point.py")
+        output_function = os.path.join(
+            az_el_codegen_data["python_function_dir"], "az_el_from_point.py"
+        )
         self.compare_or_update_file(expected_code_file, output_function)
 
         # Clean up
@@ -280,7 +282,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.h")
-        output_function = os.path.join(az_el_codegen_data["output_dir"], "az_el_from_point.h")
+        output_function = os.path.join(az_el_codegen_data["cpp_function_dir"], "az_el_from_point.h")
         self.compare_or_update_file(expected_code_file, output_function)
 
         # Clean up
@@ -297,6 +299,7 @@ class SymforceCodegenTest(TestCase):
         ).squared_norm()
         dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
 
+        namespace = "codegen_nan_test"
         cpp_func = Codegen(
             name="IdentityDistJacobian",
             inputs=inputs,
@@ -305,12 +308,13 @@ class SymforceCodegenTest(TestCase):
             mode=CodegenMode.CPP,
             scalar_type="double",
         )
-        codegen_data = cpp_func.generate_function()
+        codegen_data = cpp_func.generate_function(namespace=namespace)
 
         # Compare the function file
-        expected_code_file = os.path.join(TEST_DATA_DIR, "identity_dist_jacobian.h")
-        output_function = os.path.join(codegen_data["output_dir"], "identity_dist_jacobian.h")
-        self.compare_or_update_file(expected_code_file, output_function)
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(codegen_data["output_dir"]),
+            expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+        )
 
         if not self.UPDATE:
             try:

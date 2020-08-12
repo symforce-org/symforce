@@ -1,8 +1,8 @@
-#include "../gen/cpp/geo/rot3.h"
-#include "./symforce_function_codegen_test_data/codegen_test_cpp_data/codegen_test_cpp/constants_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_test_cpp_data/codegen_test_cpp/states_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_test_cpp_data/codegen_test_cpp/values_vec_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_test_cpp_data/codegen_test_cpp.h"
+#include <geo/rot3.h>
+#include <lcmtypes/codegen_test_cpp/constants_t.hpp>
+#include <lcmtypes/codegen_test_cpp/states_t.hpp>
+#include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
+#include <symforce/codegen_test_cpp/codegen_test_cpp.h>
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \

@@ -15,16 +15,16 @@ geo::Rot3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3
     // Input arrays
 
     // Intermediate terms (3)
-    const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
+    const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec(0, 0) * vec(0, 0)) + (vec(1, 0) * vec(1, 0)) + (vec(2, 0) * vec(2, 0)));
     const Scalar _tmp1 = (1.0/2.0)*_tmp0;
     const Scalar _tmp2 = std::sin(_tmp1)/_tmp0;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 4, 1> _res;
 
-    _res[0] = _tmp2*vec[0];
-    _res[1] = _tmp2*vec[1];
-    _res[2] = _tmp2*vec[2];
+    _res[0] = _tmp2*vec(0, 0);
+    _res[1] = _tmp2*vec(1, 0);
+    _res[2] = _tmp2*vec(2, 0);
     _res[3] = std::cos(_tmp1);
 
 
@@ -42,9 +42,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot3<Scala
     // Output terms (1)
     Eigen::Matrix<Scalar, 3, 1> _res;
 
-    _res[0] = _a[0]*_tmp0;
-    _res[1] = _a[1]*_tmp0;
-    _res[2] = _a[2]*_tmp0;
+    _res(0, 0) = _a[0]*_tmp0;
+    _res(1, 0) = _a[1]*_tmp0;
+    _res(2, 0) = _a[2]*_tmp0;
 
 
     return _res;
@@ -56,7 +56,7 @@ geo::Rot3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Rot3<Scalar>& a, const
     const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
     // Intermediate terms (8)
-    const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
+    const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec(0, 0) * vec(0, 0)) + (vec(1, 0) * vec(1, 0)) + (vec(2, 0) * vec(2, 0)));
     const Scalar _tmp1 = (1.0/2.0)*_tmp0;
     const Scalar _tmp2 = std::sin(_tmp1)/_tmp0;
     const Scalar _tmp3 = _a[1]*_tmp2;
@@ -68,10 +68,10 @@ geo::Rot3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Rot3<Scalar>& a, const
     // Output terms (1)
     Eigen::Matrix<Scalar, 4, 1> _res;
 
-    _res[0] = _a[0]*_tmp5 + _tmp3*vec[2] - _tmp4*vec[1] + _tmp6*vec[0];
-    _res[1] = _a[1]*_tmp5 + _tmp4*vec[0] + _tmp6*vec[1] - _tmp7*vec[2];
-    _res[2] = _a[2]*_tmp5 - _tmp3*vec[0] + _tmp6*vec[2] + _tmp7*vec[1];
-    _res[3] = _a[3]*_tmp5 - _tmp3*vec[1] - _tmp4*vec[2] - _tmp7*vec[0];
+    _res[0] = _a[0]*_tmp5 + _tmp3*vec(2, 0) - _tmp4*vec(1, 0) + _tmp6*vec(0, 0);
+    _res[1] = _a[1]*_tmp5 + _tmp4*vec(0, 0) + _tmp6*vec(1, 0) - _tmp7*vec(2, 0);
+    _res[2] = _a[2]*_tmp5 - _tmp3*vec(0, 0) + _tmp6*vec(2, 0) + _tmp7*vec(1, 0);
+    _res[3] = _a[3]*_tmp5 - _tmp3*vec(1, 0) - _tmp4*vec(2, 0) - _tmp7*vec(0, 0);
 
 
     return geo::Rot3<Scalar>(_res);
@@ -90,9 +90,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot
     // Output terms (1)
     Eigen::Matrix<Scalar, 3, 1> _res;
 
-    _res[0] = _tmp1*(-_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0]);
-    _res[1] = _tmp1*(_a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1]);
-    _res[2] = _tmp1*(-_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2]);
+    _res(0, 0) = _tmp1*(-_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0]);
+    _res(1, 0) = _tmp1*(_a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1]);
+    _res(2, 0) = _tmp1*(-_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2]);
 
 
     return _res;

@@ -16,7 +16,7 @@
 
 // TODO(nathan): We just test linear camera for now, but could/should test other types in the future
 #include <cam/linear_camera_cal.h>
-#include "./symforce_function_codegen_test_data/pixel_to_ray_and_back.h"
+#include <symforce/cam_function_codegen_test/pixel_to_ray_and_back.h>
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
@@ -45,7 +45,7 @@ void TestGeneratedFunction() {
 
   Eigen::Matrix<Scalar, 2, 1> pixel;
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);
-  Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = sym::PixelToRayAndBack<Scalar>(pixel, cam, epsilon);
+  Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = cam_function_codegen_test::PixelToRayAndBack<Scalar>(pixel, cam, epsilon);
   assertTrue(pixel.isApprox(pixel_reprojected, epsilon));
 }
 

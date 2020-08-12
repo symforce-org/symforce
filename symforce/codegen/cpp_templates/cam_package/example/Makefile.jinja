@@ -19,7 +19,7 @@ example: cam_package_cpp_test.cc
 	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam -lsymforce_geo $(INCLUDES)
 
 example_function_gen: cam_function_codegen_cpp_test.cc
-	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam $(INCLUDES)
+	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam $(INCLUDES) -I../cpp
 
 clean:
 	rm -f libsymforce_cam.so; rm -f cam_package_cpp_test cam_function_codegen_cpp_test

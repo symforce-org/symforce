@@ -4,7 +4,7 @@
 #pragma once
 
 
-namespace sym {
+namespace cam_function_codegen_test {
 
 
 /**
@@ -23,11 +23,11 @@ Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>&
     // Output terms (1)
     Eigen::Matrix<Scalar, 2, 1> _res;
 
-    _res[0] = _cam[2] + _tmp0*(-_cam[2] + pixel[0]);
-    _res[1] = _cam[3] + _tmp0*(-_cam[3] + pixel[1]);
+    _res(0, 0) = _cam[2] + _tmp0*(-_cam[2] + pixel(0, 0));
+    _res(1, 0) = _cam[3] + _tmp0*(-_cam[3] + pixel(1, 0));
 
 
     return _res;
 }
 
-}  // namespace sym
+}  // namespace cam_function_codegen_test

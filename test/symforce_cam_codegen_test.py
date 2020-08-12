@@ -41,18 +41,19 @@ class SymforceCamCodegenTest(TestCase):
         # type: (str) -> None
 
         # Create the specification
+        namespace = "cam_function_codegen_test"
         my_func = Codegen.function(
             name="PixelToRayAndBack",
             func=pixel_to_ray_and_back,
             input_types=[geo.V2, cam.LinearCameraCal, sm.Symbol],
             mode=CodegenMode.CPP,
         )
-        function_path = os.path.join(output_dir, "symforce_function_codegen_test_data")
-        cpp_data = my_func.generate_function(function_path)
+        cpp_data = my_func.generate_function(output_dir=output_dir, namespace=namespace)
 
-        expected_code_file = os.path.join(TEST_DATA_DIR, "pixel_to_ray_and_back.h")
-        output_function = os.path.join(function_path, "pixel_to_ray_and_back.h")
-        self.compare_or_update_file(expected_code_file, output_function)
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(cpp_data["output_dir"], "cpp"),
+            expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data", "cpp"),
+        )
 
     def test_codegen_cpp(self):
         # type: () -> None

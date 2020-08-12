@@ -127,11 +127,18 @@ def get_formatted_flat_list(values, mode, format_as_inputs):
         # with the flattened Values object symbols.
         symbols = []
         if isinstance(value, (sm.Expr, sm.Symbol)):
-            name_str = "{}"
             symbols.append(sm.Symbol(key))
         elif issubclass(arg_cls, geo.Matrix):
-            name_str = "{}[{}]"
-            symbols.extend([sm.Symbol(name_str.format(key, j)) for j in range(storage_dim)])
+            if mode == CodegenMode.PYTHON2:
+                # TODO(nathan): Not sure this works for 2D matrices
+                symbols.extend([sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)])
+            elif mode == CodegenMode.CPP:
+                for i in range(value.shape[0]):
+                    for j in range(value.shape[1]):
+                        symbols.append(sm.Symbol("{}({}, {})".format(key, i, j)))
+            else:
+                raise NotImplementedError()
+
         elif issubclass(arg_cls, Values):
             # Term is a Values object, so we must flatten it. Here we loop over the index so that
             # we can use the same code with lists.
@@ -369,38 +376,41 @@ def get_base_instance(obj):
     return obj
 
 
-def generate_lcm_types(lcm_type_dir, output_dir, typenames, mode):
-    # type: (str, str, T.Sequence[str], CodegenMode) -> None
+def generate_lcm_types(
+    lcm_type_dir,  # type: str
+    typenames,  # type: T.Sequence[str]
+):
+    # type: (...) -> T.Dict[str, T.Any]
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.
 
     Args:
         lcm_type_dir: Directory containing symforce-generated .lcm files
-        output_dir: Directory in which to put language-specific types
         typenames: List of typenames defined by .lcm files. External types will be ignored.
-        mode: Language in which to output generated types
     """
+    python_types_dir = os.path.join(lcm_type_dir, "..", "python2.7", "lcmtypes")
+    cpp_types_dir = os.path.join(lcm_type_dir, "..", "cpp", "lcmtypes")
+    lcm_include_dir = os.path.join("lcmtypes")
+
     for name in typenames:
         if "." in name:
             # External type, skip
             continue
 
         lcm_file = os.path.join(lcm_type_dir, "{}.lcm".format(name))
-        if mode == CodegenMode.PYTHON2:
-            python_util.execute_subprocess(
-                [
-                    LCM_GEN_CMD,
-                    lcm_file,
-                    "--python",
-                    "--ppath",
-                    output_dir,
-                    "--python-no-init",
-                    "false",
-                ]
-            )
-        elif mode == CodegenMode.CPP:
-            python_util.execute_subprocess(
-                [LCM_GEN_CMD, lcm_file, "--cpp", "--cpp-hpath", output_dir]
-            )
-        else:
-            raise NotImplementedError('Unknown mode: "{}"'.format(mode))
+        python_util.execute_subprocess(
+            [LCM_GEN_CMD, lcm_file, "--python", "--ppath", python_types_dir]
+        )
+        python_util.execute_subprocess(
+            [
+                LCM_GEN_CMD,
+                lcm_file,
+                "--cpp",
+                "--cpp-hpath",
+                cpp_types_dir,
+                "--cpp-include",
+                lcm_include_dir,
+            ]
+        )
+
+    return {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}

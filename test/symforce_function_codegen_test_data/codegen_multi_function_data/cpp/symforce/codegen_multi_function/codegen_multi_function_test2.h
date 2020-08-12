@@ -3,8 +3,8 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-#include "./codegen_multi_function/inputs_t.hpp"
-#include "./codegen_multi_function/outputs_2_t.hpp"
+#include <lcmtypes/codegen_multi_function/inputs_t.hpp>
+#include <lcmtypes/codegen_multi_function/outputs_2_t.hpp>
 
 namespace codegen_multi_function {
 

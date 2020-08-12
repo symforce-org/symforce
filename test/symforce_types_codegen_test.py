@@ -51,7 +51,6 @@ class SymforceTypesCodegenTest(TestCase):
     def types_codegen_helper(
         self,
         name,  # type: str
-        mode,  # type: CodegenMode
         scalar_type,  # type: str
         shared_types,  # type: T.Mapping[str, str]
         expected_types,  # type: T.Sequence[str]
@@ -66,7 +65,6 @@ class SymforceTypesCodegenTest(TestCase):
             package_name=name,
             values_indices=dict(input=inputs.index(), output=outputs.index()),
             shared_types=shared_types,
-            mode=mode,
             scalar_type=scalar_type,
         )
 
@@ -76,26 +74,32 @@ class SymforceTypesCodegenTest(TestCase):
         self.assertSetEqual(set(types_dict.keys()), set(expected_types))
 
         # Check generated files
-        ext = {CodegenMode.CPP: ".hpp", CodegenMode.PYTHON2: ".py"}[mode]
         for typename in expected_types:
-            gen_path = os.path.join(
-                codegen_data["output_dir"], codegen_data["package_name"], typename + ext
+            python_gen_path = os.path.join(
+                codegen_data["python_types_dir"], codegen_data["package_name"], typename + ".py",
+            )
+            cpp_gen_path = os.path.join(
+                codegen_data["output_dir"],
+                "cpp",
+                "lcmtypes",
+                codegen_data["package_name"],
+                typename + ".hpp",
             )
 
             # If the typename has a module, it's assumed to be external and not generated.
             expecting_generated_type = "." not in typename
-            self.assertEqual(os.path.isfile(gen_path), expecting_generated_type)
+            self.assertEqual(os.path.isfile(python_gen_path), expecting_generated_type)
+            self.assertEqual(os.path.isfile(cpp_gen_path), expecting_generated_type)
 
         return codegen_data
 
-    def test_types_codegen_vanilla_python(self):
+    def test_types_codegen_vanilla(self):
         # type: () -> None
         """
         No shared types.
         """
         codegen_data = self.types_codegen_helper(
-            name="vanilla_python",
-            mode=CodegenMode.PYTHON2,
+            name="vanilla",
             scalar_type="double",
             shared_types={},
             expected_types=(
@@ -108,7 +112,8 @@ class SymforceTypesCodegenTest(TestCase):
             ),
         )
 
-        package = codegen_util.load_generated_package(codegen_data["package_dir"])
+        package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
+        package = codegen_util.load_generated_package(package_dir)
 
         inp = package.input_t()
         inp.x = 1.2
@@ -122,31 +127,7 @@ class SymforceTypesCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_types_codegen_vanilla_cpp(self):
-        # type: () -> None
-        """
-        No shared types.
-        """
-        codegen_data = self.types_codegen_helper(
-            name="vanilla_cpp",
-            mode=CodegenMode.CPP,
-            scalar_type="double",
-            shared_types={},
-            expected_types=(
-                "input_t",
-                "output_t",
-                "input_states_t",
-                "input_constants_t",
-                "input_values_vec_t",
-                "input_values_vec_constants_t",
-            ),
-        )
-
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
-
-    def test_types_codegen_renames_cpp(self):
+    def test_types_codegen_renames(self):
         # type: () -> None
         """
         Give some fields specific names, still within the module.
@@ -167,46 +148,14 @@ class SymforceTypesCodegenTest(TestCase):
         )
 
         codegen_data = self.types_codegen_helper(
-            name="renames_cpp",
-            mode=CodegenMode.CPP,
+            name="renames",
             scalar_type="double",
             shared_types=shared_types,
             expected_types=expected_types,
         )
 
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
-
-    def test_types_codegen_renames_python(self):
-        # type: () -> None
-        """
-        Give some fields specific names, still within the module.
-        """
-        shared_types = {
-            "input": "foo_t",
-            "output": "bar_t",
-            "input.states": "zoomba_t",
-            "input.values_vec": "vec_t",
-        }
-        expected_types = (
-            "foo_t",
-            "bar_t",
-            "zoomba_t",
-            "input_constants_t",
-            "vec_t",
-            "input_values_vec_constants_t",
-        )
-
-        codegen_data = self.types_codegen_helper(
-            name="renames_python",
-            mode=CodegenMode.PYTHON2,
-            scalar_type="double",
-            shared_types=shared_types,
-            expected_types=expected_types,
-        )
-
-        package = codegen_util.load_generated_package(codegen_data["package_dir"])
+        package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
+        package = codegen_util.load_generated_package(package_dir)
 
         inp = package.foo_t()
         inp.x = 1.2
@@ -220,7 +169,7 @@ class SymforceTypesCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_types_codegen_external_cpp(self):
+    def test_types_codegen_external(self):
         # type: () -> None
         """
         Use external types for some fields, don't generate them.
@@ -239,8 +188,7 @@ class SymforceTypesCodegenTest(TestCase):
         )
 
         codegen_data = self.types_codegen_helper(
-            name="external_cpp",
-            mode=CodegenMode.CPP,
+            name="external",
             scalar_type="double",
             shared_types=shared_types,
             expected_types=expected_types,
@@ -250,37 +198,7 @@ class SymforceTypesCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_types_codegen_external_python(self):
-        # type: () -> None
-        """
-        Use external types for some fields, don't generate them.
-        """
-        shared_types = {
-            "output": "other_module.bar_t",
-            "input.states": "external.zoomba_t",
-            "input.values_vec": "external.vec_t",
-        }
-        expected_types = (
-            "input_t",
-            "other_module.bar_t",
-            "external.zoomba_t",
-            "input_constants_t",
-            "external.vec_t",
-        )
-
-        codegen_data = self.types_codegen_helper(
-            name="external_python",
-            mode=CodegenMode.PYTHON2,
-            scalar_type="double",
-            shared_types=shared_types,
-            expected_types=expected_types,
-        )
-
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
-
-    def test_types_codegen_reuse_python(self):
+    def test_types_codegen_reuse(self):
         # type: () -> None
         """
         Use the same generated type multiple times within the input and output struct.
@@ -303,10 +221,9 @@ class SymforceTypesCodegenTest(TestCase):
         shared_types = {"input.one": "rot_t", "input.two": "rot_t", "output": "rot_t"}
 
         codegen_data = types_package_codegen.generate_types(
-            package_name="reuse_python",
+            package_name="reuse",
             values_indices=dict(input=inputs.index(), output=outputs.index()),
             shared_types=shared_types,
-            mode=CodegenMode.PYTHON2,
             scalar_type="double",
         )
 
@@ -314,7 +231,8 @@ class SymforceTypesCodegenTest(TestCase):
 
         self.assertEqual(set(types_dict.keys()), set(["input_t", "rot_t"]))
 
-        package = codegen_util.load_generated_package(codegen_data["package_dir"])
+        package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
+        package = codegen_util.load_generated_package(package_dir)
 
         rot = package.rot_t()
         rot.id = 1

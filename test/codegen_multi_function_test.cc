@@ -1,12 +1,12 @@
-#include "../gen/cpp/geo/rot3.h"
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function/inputs_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function/outputs_1_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function/outputs_2_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function/inputs_constants_t.hpp"
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function/inputs_states_t.hpp"
+#include <geo/rot3.h>
+#include <lcmtypes/codegen_multi_function/inputs_t.hpp>
+#include <lcmtypes/codegen_multi_function/outputs_1_t.hpp>
+#include <lcmtypes/codegen_multi_function/outputs_2_t.hpp>
+#include <lcmtypes/codegen_multi_function/inputs_constants_t.hpp>
+#include <lcmtypes/codegen_multi_function/inputs_states_t.hpp>
 
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function_test1.h"
-#include "./symforce_function_codegen_test_data/codegen_multi_function_data/codegen_multi_function_test2.h"
+#include <symforce/codegen_multi_function/codegen_multi_function_test1.h>
+#include <symforce/codegen_multi_function/codegen_multi_function_test2.h>
 
 
 // TODO(hayk): Use the catch unit testing framework (single header).
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     inputs.x = 2.0;
     inputs.y = -5.0;
     geo::Rot3<double> rot;
-    std::copy_n(rot.Data().data(), 4, inputs.rot);
+    std::copy_n(rot.Data().data(), 4, &inputs.rot[0]);
     inputs.states.p[0] = 1.0;
     inputs.states.p[1] = 2.0;
     inputs.constants.epsilon = 1e-8;

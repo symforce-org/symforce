@@ -6,7 +6,7 @@
 
 {% for name in spec.inputs.keys() | list + spec.outputs.keys() | list %}
 {% if name in spec.typenames_dict %}
-#include "./{{ spec.namespaces_dict[name] }}/{{ spec.typenames_dict[name] }}.hpp"
+#include <lcmtypes/{{ spec.namespaces_dict[name] }}/{{ spec.typenames_dict[name] }}.hpp>
 {% endif %}
 {% endfor %}
 

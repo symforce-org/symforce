@@ -19,8 +19,8 @@ geo::Rot2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 1
     // Output terms (1)
     Eigen::Matrix<Scalar, 2, 1> _res;
 
-    _res[0] = std::cos(vec[0]);
-    _res[1] = std::sin(vec[0]);
+    _res[0] = std::cos(vec(0, 0));
+    _res[1] = std::sin(vec(0, 0));
 
 
     return geo::Rot2<Scalar>(_res);
@@ -36,7 +36,7 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot2<Scala
     // Output terms (1)
     Eigen::Matrix<Scalar, 1, 1> _res;
 
-    _res[0] = std::atan2(_a[1], _a[0] + epsilon*((((_a[0]) > 0) - ((_a[0]) < 0)) + 0.5));
+    _res(0, 0) = std::atan2(_a[1], _a[0] + epsilon*((((_a[0]) > 0) - ((_a[0]) < 0)) + 0.5));
 
 
     return _res;
@@ -48,8 +48,8 @@ geo::Rot2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Rot2<Scalar>& a, const
     const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
 
     // Intermediate terms (2)
-    const Scalar _tmp0 = std::sin(vec[0]);
-    const Scalar _tmp1 = std::cos(vec[0]);
+    const Scalar _tmp0 = std::sin(vec(0, 0));
+    const Scalar _tmp1 = std::cos(vec(0, 0));
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 2, 1> _res;
@@ -76,7 +76,7 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot
     // Output terms (1)
     Eigen::Matrix<Scalar, 1, 1> _res;
 
-    _res[0] = std::atan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _tmp3 + epsilon*((((_tmp3) > 0) - ((_tmp3) < 0)) + 0.5));
+    _res(0, 0) = std::atan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _tmp3 + epsilon*((((_tmp3) > 0) - ((_tmp3) < 0)) + 0.5));
 
 
     return _res;

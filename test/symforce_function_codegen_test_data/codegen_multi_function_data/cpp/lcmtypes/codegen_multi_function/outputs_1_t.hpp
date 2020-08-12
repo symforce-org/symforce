@@ -9,8 +9,8 @@
 
 #include <lcm/lcm_coretypes.h>
 
-#include "codegen_multi_function/values_vec_t.hpp"
-#include "codegen_multi_function/values_vec_t.hpp"
+#include "lcmtypes/codegen_multi_function/values_vec_t.hpp"
+#include "lcmtypes/codegen_multi_function/values_vec_t.hpp"
 
 namespace codegen_multi_function
 {

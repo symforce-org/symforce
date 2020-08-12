@@ -13,7 +13,6 @@ from symforce.codegen import codegen_util
 def generate_types(
     package_name,  # type: str
     values_indices,  # type: T.Mapping[str, T.Dict[str, T.Any]]
-    mode,  # type: codegen_util.CodegenMode
     shared_types=None,  # type: T.Mapping[str, str]
     scalar_type="double",  # type: str
     output_dir=None,  # type: T.Optional[str]
@@ -27,7 +26,6 @@ def generate_types(
     Args:
         package_name: Package of LCM types to be generated
         values_indices: Mapping between the name each LCM type to be generated and its index (computed using Values.index())
-        mode: Language in which to generate language-specifc files from generated LCM files.
         shared_types: Used to specify whether specific types and subtypes have already been generated, either externally or internally
             (i.e. if one generated type is to represent multiple objects in values_indices).
             Usage examples:
@@ -51,8 +49,7 @@ def generate_types(
             prefix="sf_codegen_types_{}_".format(package_name), dir="/tmp"
         )
         logger.debug("Creating temp directory: {}".format(output_dir))
-    package_dir = os.path.join(output_dir, package_name)
-    lcm_type_dir = os.path.join(output_dir, "lcm")
+    lcm_type_dir = os.path.join(output_dir, "lcmtypes")
 
     using_external_templates = True
     if templates is None:
@@ -89,21 +86,15 @@ def generate_types(
             dict(data, typename=typename, types_util=types_util),
         )
 
-    if not using_external_templates:
-        templates.render()
-        codegen_util.generate_lcm_types(lcm_type_dir, output_dir, types_dict.keys(), mode)
-
     # Save input args for handy reference
     codegen_data = {}  # type: T.Dict[str, T.Any]
     codegen_data["package_name"] = package_name
     codegen_data["values_indices"] = values_indices
     codegen_data["shared_types"] = shared_types
-    codegen_data["mode"] = mode
     codegen_data["scalar_type"] = scalar_type
 
     # Save outputs and intermediates
     codegen_data["output_dir"] = output_dir
-    codegen_data["package_dir"] = package_dir
     codegen_data["lcm_type_dir"] = lcm_type_dir
     codegen_data["types_dict"] = types_dict
 
@@ -135,6 +126,11 @@ def generate_types(
         else:
             codegen_data["typenames_dict"][name] = "{}_t".format(name)
             codegen_data["namespaces_dict"][name] = package_name
+
+    if not using_external_templates:
+        templates.render()
+        lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, types_dict.keys())
+        codegen_data.update(lcm_data)
 
     return codegen_data
 

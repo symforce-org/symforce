@@ -4,7 +4,7 @@
 #pragma once
 
 
-namespace sym {
+namespace codegen_nan_test {
 
 
 /**
@@ -42,4 +42,4 @@ Scalar IdentityDistJacobian(const geo::Rot3<Scalar>& R1, const Scalar e) {
     return _dist_D_R1;
 }
 
-}  // namespace sym
+}  // namespace codegen_nan_test

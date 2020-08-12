@@ -15,9 +15,9 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
     // Input arrays
 
     // Intermediate terms (5)
-    const Scalar _tmp0 = std::cos(vec[2]);
-    const Scalar _tmp1 = std::sin(vec[2]);
-    const Scalar _tmp2 = 1.0 / (epsilon + vec[2]);
+    const Scalar _tmp0 = std::cos(vec(2, 0));
+    const Scalar _tmp1 = std::sin(vec(2, 0));
+    const Scalar _tmp2 = 1.0 / (epsilon + vec(2, 0));
     const Scalar _tmp3 = _tmp2*(-_tmp0 + 1);
     const Scalar _tmp4 = _tmp1*_tmp2;
 
@@ -26,8 +26,8 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
 
     _res[0] = _tmp0;
     _res[1] = _tmp1;
-    _res[2] = -_tmp3*vec[1] + _tmp4*vec[0];
-    _res[3] = _tmp3*vec[0] + _tmp4*vec[1];
+    _res[2] = -_tmp3*vec(1, 0) + _tmp4*vec(0, 0);
+    _res[3] = _tmp3*vec(0, 0) + _tmp4*vec(1, 0);
 
 
     return geo::Pose2<Scalar>(_res);
@@ -48,9 +48,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose2<Scal
     // Output terms (1)
     Eigen::Matrix<Scalar, 3, 1> _res;
 
-    _res[0] = _tmp2 + _tmp3*_tmp4;
-    _res[1] = _tmp2*_tmp4 - _tmp3;
-    _res[2] = _tmp0;
+    _res(0, 0) = _tmp2 + _tmp3*_tmp4;
+    _res(1, 0) = _tmp2*_tmp4 - _tmp3;
+    _res(2, 0) = _tmp0;
 
 
     return _res;
@@ -62,13 +62,13 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose2<Scalar>& a, con
     const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
     // Intermediate terms (7)
-    const Scalar _tmp0 = std::sin(vec[2]);
-    const Scalar _tmp1 = std::cos(vec[2]);
-    const Scalar _tmp2 = 1.0 / (epsilon + vec[2]);
+    const Scalar _tmp0 = std::sin(vec(2, 0));
+    const Scalar _tmp1 = std::cos(vec(2, 0));
+    const Scalar _tmp2 = 1.0 / (epsilon + vec(2, 0));
     const Scalar _tmp3 = _tmp0*_tmp2;
     const Scalar _tmp4 = _tmp2*(-_tmp1 + 1);
-    const Scalar _tmp5 = _tmp3*vec[1] + _tmp4*vec[0];
-    const Scalar _tmp6 = _tmp3*vec[0] - _tmp4*vec[1];
+    const Scalar _tmp5 = _tmp3*vec(1, 0) + _tmp4*vec(0, 0);
+    const Scalar _tmp6 = _tmp3*vec(0, 0) - _tmp4*vec(1, 0);
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 4, 1> _res;
@@ -103,9 +103,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
     // Output terms (1)
     Eigen::Matrix<Scalar, 3, 1> _res;
 
-    _res[0] = _tmp7 + _tmp8*_tmp9;
-    _res[1] = _tmp7*_tmp9 - _tmp8;
-    _res[2] = _tmp5;
+    _res(0, 0) = _tmp7 + _tmp8*_tmp9;
+    _res(1, 0) = _tmp7*_tmp9 - _tmp8;
+    _res(2, 0) = _tmp5;
 
 
     return _res;

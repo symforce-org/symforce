@@ -3,12 +3,12 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-#include "./codegen_test_cpp/values_vec_t.hpp"
-#include "./codegen_test_cpp/values_vec_t.hpp"
-#include "./codegen_test_cpp/constants_t.hpp"
-#include "./codegen_test_cpp/states_t.hpp"
-#include "./codegen_test_cpp/values_vec_t.hpp"
-#include "./codegen_test_cpp/values_vec_t.hpp"
+#include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
+#include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
+#include <lcmtypes/codegen_test_cpp/constants_t.hpp>
+#include <lcmtypes/codegen_test_cpp/states_t.hpp>
+#include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
+#include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
 
 namespace codegen_test_cpp {
 
