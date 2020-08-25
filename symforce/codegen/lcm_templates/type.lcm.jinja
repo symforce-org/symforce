@@ -15,10 +15,14 @@ struct {{ typename }} {
       {% if key in info['subtypes'].keys() %}
   {{ info['subtypes'][key] }} {{ key }}{{ util.get_list_dims(item_index) }};
       {% else %}
-  {{ scalar_type }} {{ key }}{{ util.get_list_dims(item_index) }};
+  {{ util.get_list_type(scalar_type, item_index) }} {{ key }}{{ util.get_list_dims(item_index) }};
       {% endif %}
     {% else %}
+      {% if not use_eigen_types %}
   {{ scalar_type }} {{ key }}[{{ info['storage_dims'][key] }}];
+      {% else %}
+  {{ util.eigen_lcm_type(scalar_type, info['storage_dims'][key]) }} {{ key }};
+      {% endif %}
     {% endif %}
   {% endfor %}
 }

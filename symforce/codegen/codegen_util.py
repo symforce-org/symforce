@@ -17,7 +17,11 @@ from symforce import python_util
 
 # Command used to generate language-specific types from .lcm files
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+USE_SKYMARSHAL = False
 LCM_GEN_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/lcm-gen")
+SKYMARSHAL_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/skymarshal")
+
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
 T_terms = T.Sequence[T.Tuple[T.Scalar, T.Scalar]]
@@ -478,19 +482,42 @@ def generate_lcm_types(
             continue
 
         lcm_file = os.path.join(lcm_type_dir, "{}.lcm".format(name))
-        python_util.execute_subprocess(
-            [LCM_GEN_CMD, lcm_file, "--python", "--ppath", python_types_dir]
-        )
-        python_util.execute_subprocess(
-            [
-                LCM_GEN_CMD,
-                lcm_file,
-                "--cpp",
-                "--cpp-hpath",
-                cpp_types_dir,
-                "--cpp-include",
-                lcm_include_dir,
-            ]
-        )
+        if USE_SKYMARSHAL:
+            python_util.execute_subprocess(
+                [
+                    SKYMARSHAL_CMD,
+                    lcm_file,
+                    "--python",
+                    "--python-path",
+                    python_types_dir,
+                    "--python-empty-init",
+                ]
+            )
+            python_util.execute_subprocess(
+                [
+                    SKYMARSHAL_CMD,
+                    lcm_file,
+                    "--cpp",
+                    "--cpp-hpath",
+                    cpp_types_dir,
+                    "--cpp-include",
+                    lcm_include_dir,
+                ]
+            )
+        else:
+            python_util.execute_subprocess(
+                [LCM_GEN_CMD, lcm_file, "--python", "--ppath", python_types_dir]
+            )
+            python_util.execute_subprocess(
+                [
+                    LCM_GEN_CMD,
+                    lcm_file,
+                    "--cpp",
+                    "--cpp-hpath",
+                    cpp_types_dir,
+                    "--cpp-include",
+                    lcm_include_dir,
+                ]
+            )
 
     return {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}

@@ -4,6 +4,48 @@
 
 {# ------------------------------------------------------------------------- #}
 
+{# Retruns declaration of an eigen lcm type
+ #
+ # Args:
+ #     scalar_type (str): double or float
+ #     dim (int): storage dimension
+ #}
+{%- macro eigen_lcm_type(scalar_type, dim) -%}
+{%- if scalar_type == "float" -%}
+eigen_lcm.Vector{{ dim }}f
+{%- else -%}
+eigen_lcm.Vector{{ dim }}d
+{%- endif -%}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Returns declaration of base element of a list (e.g. a type, double/float, or eigen vector)
+ #
+ # Args:
+ #     scalar_type (str): double or float
+ #     index: Index of a list
+ #}
+{% macro get_list_type(scalar_type, index) -%}
+{% set index_element = (index.values() | list)[0] -%}
+{% set type = index_element[1] -%}
+{% if type == 'List' -%}
+    {% set sub_index = index_element[3] -%}
+{{ get_list_type(scalar_type, sub_index) -}}
+{% elif type == 'Scalar' -%}
+{{ scalar_type -}}
+{% else -%}
+    {%- set element_storage_dim = types_util['np.prod'](index_element[2]) -%}
+    {% if use_eigen_types -%}
+{{ eigen_lcm_type(scalar_type, element_storage_dim) -}}
+    {% else -%}
+{{ scalar_type -}}
+    {% endif -%}
+{% endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
 {# Appends the number of subelements or the storage dim of the given index
  #
  # Args:
@@ -11,13 +53,14 @@
  #}
 {%- macro get_list_dims(index) -%}
 [{{- index | length -}}]
-{%- set index_element = (index.values() | list)[0] -%}
-{%- set type = index_element[1] -%}
+    {%- set index_element = (index.values() | list)[0] -%}
+    {%- set type = index_element[1] -%}
 {%- if type == 'List' -%}
-{%- set sub_index = index_element[3] -%}
+    {%- set sub_index = index_element[3] -%}
 {{- get_list_dims(sub_index) -}}
-{%- elif type != 'Values' and type != 'Scalar' -%}
-{%- set element_storage_dim = types_util['np.prod'](index_element[2]) -%}
+{%- elif type != 'Values' and type != 'Scalar' and not use_eigen_types -%}
+    {# if using eigen types, the dimension of the base element is given by the eigen vector dim #}
+    {%- set element_storage_dim = types_util['np.prod'](index_element[2]) -%}
 [{{- element_storage_dim -}}]
 {%- endif -%}
 {%- endmacro -%}

@@ -83,7 +83,12 @@ def generate_types(
         templates.add(
             lcm_template,
             os.path.join(lcm_type_dir, "{}.lcm".format(typename)),
-            dict(data, typename=typename, types_util=types_util),
+            dict(
+                data,
+                typename=typename,
+                types_util=types_util,
+                use_eigen_types=codegen_util.USE_SKYMARSHAL,
+            ),
         )
 
     # Save input args for handy reference
