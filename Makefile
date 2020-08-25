@@ -105,7 +105,7 @@ docs_html:
 docs: docs_clean docs_apidoc docs_html
 
 docs_open: docs
-	open $(DOCS_DIR)/index.html
+	xdg-open $(DOCS_DIR)/index.html
 
 .PHONY: docs_reqs docs_clean docs_apidoc docs_html docs docs_open
 

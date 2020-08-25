@@ -18,3 +18,10 @@ class PythonCodePrinter(NumPyPrinter):
         if self.standard == "python2":
             return "{}./{}.".format(expr.p, expr.q)
         return "{}/{}".format(expr.p, expr.q)
+
+    def _print_Heaviside(self, expr):
+        # type: (sm.Heaviside) -> str
+        """
+        Heaviside is not supported by default, so we add a version here.
+        """
+        return "numpy.heaviside({}, 0.5)".format(expr.args[0])
