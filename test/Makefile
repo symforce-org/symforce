@@ -18,5 +18,8 @@ codegen_nan_test: libsymforce_geo.so codegen_nan_test.cc
 codegen_multi_function_test: libsymforce_geo.so codegen_multi_function_test.cc
 	c++ $(CXXFLAGS) -o codegen_multi_function_test codegen_multi_function_test.cc -Wl,-rpath,'$$ORIGIN' -lsymforce_geo $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_multi_function_data/cpp
 
+codegen_sparse_matrix_test: codegen_sparse_matrix_test.cc
+	c++ $(CXXFLAGS) -o codegen_sparse_matrix_test codegen_sparse_matrix_test.cc $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_sparse_matrices_data/cpp
+
 libsymforce_geo.so: $(CC_FILES)
 	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_geo.so $(CC_FILES) $(INCLUDES)

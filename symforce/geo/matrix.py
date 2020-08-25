@@ -391,9 +391,9 @@ class Matrix(sm.Matrix, LieGroup):
         Constructs a matrix from block elements. For example:
         [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]] -> Matrix35 with elements equal to given blocks
         """
-        # Sum rows of matricies in the first column
+        # Sum rows of matrices in the first column
         rows = sum([mat_row[0].shape[0] for mat_row in array])
-        # Sum columns of matricies in the first row
+        # Sum columns of matrices in the first row
         cols = sum([mat.shape[1] for mat in array[0]])
 
         # Check for size consistency

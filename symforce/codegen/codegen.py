@@ -33,6 +33,7 @@ class Codegen(object):
         outputs,  # type: Values
         mode,  # type: codegen_util.CodegenMode
         return_key=None,  # type: str
+        sparse_matrices=None,  # type: T.List[str]
         scalar_type="double",  # type: str
         docstring=None,  # type: str
     ):
@@ -48,6 +49,7 @@ class Codegen(object):
             mode: Programming language in which the function is to be generated
             return_key: If specified, the output with this key is returned rather than filled
                 in as a named output argument.
+            sparse_matrices: Outputs with this key will be returned as sparse matrices
             scalar_type: Type used for generated scalar expressions
             docstring: The docstring to be used with the generated function
         """
@@ -86,11 +88,22 @@ class Codegen(object):
             assert return_key in outputs
         self.return_key = return_key
 
+        # Mapping between sparse matrix keys and constants needed for static CSC construction
+        self.sparse_mat_data = {}  # type: T.Dict[str, T.Dict[str, T.Any]]
+        if sparse_matrices is not None:
+            assert all([key in outputs for key in sparse_matrices])
+            assert all([isinstance(outputs[key], geo.Matrix) for key in sparse_matrices])
+            for key in sparse_matrices:
+                self.sparse_mat_data[key] = codegen_util.get_sparse_mat_data(outputs[key])
+
         self.docstring = docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
 
         # TODO(nathan): Consider moving into a different function so that we can generate code separately
-        self.intermediate_terms, self.output_terms = codegen_util.print_code(
-            inputs=self.inputs, outputs=self.outputs, mode=self.mode
+        self.intermediate_terms, self.output_terms, self.sparse_terms = codegen_util.print_code(
+            inputs=self.inputs,
+            outputs=self.outputs,
+            sparse_mat_data=self.sparse_mat_data,
+            mode=self.mode,
         )
 
     @classmethod

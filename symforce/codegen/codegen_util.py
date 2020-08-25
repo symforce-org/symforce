@@ -36,12 +36,83 @@ class CodegenMode(Enum):
     CPP = "cpp"
 
 
+def print_code(
+    inputs,  # type: Values
+    outputs,  # type: Values
+    sparse_mat_data,  # type: T.Dict[str, T.Dict[str, T.Any]]
+    mode,  # type: CodegenMode
+    cse=True,  # type: bool
+    substitute_inputs=False,  # type: bool
+):
+    # type: (...) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[T.Tuple[str, str]], T.List[T.Tuple[str, str]]]
+    """
+    Return executable code lines from the given input/output values.
+
+    Args:
+        inputs: Values object specifying names and symbolic inputs
+        outputs: Values object specifying names and output expressions (written in terms
+            of the symbolic inputs)
+        sparse_mat_data: Data used to represent sparse matrices
+        mode: Programming language in which to generate the expressions
+        sparse_mat_data: Data associated with sparse matrices. sparse_mat_data["keys"] stores
+            a list of the keys in outputs which should be treated as sparse matrices
+        cse: Perform common sub-expression elimination
+        substitute_inputs: If True, replace all input symbols with a uniform array.
+
+    Returns:
+        T.Sequence[T.Tuple[str, str]]: Line of code per temporary variable
+        T.Sequence[str]: Line of code per output variable
+    """
+    # Split outputs into dense and sparse outputs, since we treate them differently when doing codegen
+    dense_outputs = Values()
+    sparse_outputs = Values()
+    for key, value in outputs.items():
+        if key in sparse_mat_data:
+            sparse_outputs[key] = sparse_mat_data[key]["nonzero_elements"]
+        else:
+            dense_outputs[key] = value
+
+    input_symbols = inputs.to_storage()
+    output_exprs = dense_outputs.to_storage() + sparse_outputs.to_storage()
+
+    # CSE If needed
+    if cse:
+        temps, simplified_outputs = perform_cse(
+            input_symbols=input_symbols,
+            output_exprs=output_exprs,
+            substitute_inputs=substitute_inputs,
+        )
+    else:
+        temps = []
+        simplified_outputs = output_exprs
+
+    # Replace default symbols with vector notation (e.g. "R_re" -> "_R[0]")
+    temps_formatted, simplified_outputs_formatted, sparse_terms_formatted = format_symbols(
+        inputs=inputs,
+        dense_outputs=dense_outputs,
+        sparse_outputs=sparse_outputs,
+        intermediate_terms=temps,
+        output_terms=simplified_outputs,
+        mode=mode,
+    )
+
+    # Get printer
+    printer = get_code_printer(mode)
+
+    # Print code
+    temps_code = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
+    outputs_code = [(str(var), printer.doprint(t)) for var, t in simplified_outputs_formatted]
+    sparse_code = [(str(var), printer.doprint(t)) for var, t in sparse_terms_formatted]
+
+    return temps_code, outputs_code, sparse_code
+
+
 def perform_cse(
     input_symbols,  # type: T.Sequence[T.Scalar]
     output_exprs,  # type: T.Sequence[T.Scalar]
     substitute_inputs=True,  # type: bool
 ):
-    # type: (...) -> T.Tuple[T_terms, T.Sequence[T.Scalar]]
+    # type: (...) -> T.Tuple[T_terms, T.List[T.Scalar]]
     """
     Run common sub-expression elimination on the given input/output values.
 
@@ -81,12 +152,13 @@ def perform_cse(
 
 def format_symbols(
     inputs,  # type: Values
-    outputs,  # type: Values
+    dense_outputs,  # type: Values
+    sparse_outputs,  # type: Values
     intermediate_terms,  # type: T_terms
-    output_terms,  # type: T.Sequence[T.Scalar]
+    output_terms,  # type: T.List[T.Scalar]
     mode,  # type: CodegenMode
 ):
-    # type: (...) -> T.Tuple[T_terms, T_terms]
+    # type: (...) -> T.Tuple[T_terms, T_terms, T_terms]
     """
     Reformats symbolic variables used in intermediate and outputs terms to match structure of inputs/outputs.
     For example if we have an input array "arr" with symbolic elements [arr0, arr1], we will remap symbol "arr0" to
@@ -97,13 +169,29 @@ def format_symbols(
     symbolic_args = get_formatted_flat_list(inputs, mode, format_as_inputs=True)
     input_subs = dict(zip(inputs.to_storage(), symbolic_args))
     intermediate_terms_formatted = [
-        (lhs, sm.S(rhs).subs(input_subs)) for lhs, rhs in intermediate_terms
+        (lhs, ops.StorageOps.subs(rhs, input_subs)) for lhs, rhs in intermediate_terms
     ]
 
-    output_names_formatted = get_formatted_flat_list(outputs, mode, format_as_inputs=False)
-    output_terms_formatted = [sm.S(out).subs(input_subs) for out in output_terms]
+    dense_output_terms = output_terms[: dense_outputs.storage_dim()]
+    sparse_output_terms = output_terms[dense_outputs.storage_dim() :]
 
-    return intermediate_terms_formatted, zip(output_names_formatted, output_terms_formatted)
+    dense_output_lhs_formatted = get_formatted_flat_list(
+        dense_outputs, mode, format_as_inputs=False
+    )
+    dense_output_rhs_formatted = [
+        ops.StorageOps.subs(out, input_subs) for out in dense_output_terms
+    ]
+    assert len(dense_output_lhs_formatted) == len(dense_output_rhs_formatted)
+    dense_output_terms_formatted = zip(dense_output_lhs_formatted, dense_output_rhs_formatted)
+
+    sparse_output_lhs_formatted = get_formatted_sparse_flat_list(sparse_outputs, mode)
+    sparse_output_rhs_formatted = [
+        ops.StorageOps.subs(out, input_subs) for out in sparse_output_terms
+    ]
+    assert len(sparse_output_lhs_formatted) == len(sparse_output_rhs_formatted)
+    sparse_output_terms_formatted = zip(sparse_output_lhs_formatted, sparse_output_rhs_formatted)
+
+    return intermediate_terms_formatted, dense_output_terms_formatted, sparse_output_terms_formatted
 
 
 def get_formatted_flat_list(values, mode, format_as_inputs):
@@ -254,56 +342,48 @@ def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
     return vec
 
 
-def print_code(
-    inputs,  # type: Values
-    outputs,  # type: Values
-    mode,  # type: CodegenMode
-    cse=True,  # type: bool
-    substitute_inputs=False,  # type: bool
-):
-    # type: (...) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[T.Tuple[str, str]]]
+def get_sparse_mat_data(sparse_matrix):
+    # type: (geo.Matrix) -> T.Dict[str, T.Any]
     """
-    Return executable code lines from the given input/output values.
+    Returns a dictionary with the metadata required to represent a matrix as a sparse matrix
+    in CSC form.
 
     Args:
-        inputs: Values object specifying names and symbolic inputs
-        outputs: Values object specifying names and output expressions (written in terms
-                of the symbolic inputs)
-        mode: Programming language in which to generate the expressions
-        cse: Perform common sub-expression elimination
-        substitute_inputs: If True, replace all input symbols with a uniform array.
-
-    Returns:
-        T.Sequence[T.Tuple[str, str]]: Line of code per temporary variable
-        T.Sequence[str]: Line of code per output variable
+        sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
     """
-    input_symbols = inputs.to_storage()
-    output_exprs = outputs.to_storage()
+    sparse_mat_data = {}  # type: T.Dict[str, T.Any]
+    sparse_mat_data["kNumNonZero"] = 0
+    sparse_mat_data["kColPtrs"] = []
+    sparse_mat_data["kRowIndices"] = []
+    sparse_mat_data["nonzero_elements"] = []
+    data_inx = 0
+    # Loop through columns because we assume CSC form
+    for j in range(sparse_matrix.shape[1]):
+        sparse_mat_data["kColPtrs"].append(data_inx)
+        for i in range(sparse_matrix.shape[0]):
+            if sparse_matrix[i, j] == 0:
+                continue
+            sparse_mat_data["kNumNonZero"] += 1
+            sparse_mat_data["kRowIndices"].append(i)
+            sparse_mat_data["nonzero_elements"].append(sparse_matrix[i, j])
+            data_inx += 1
+    sparse_mat_data["kColPtrs"].append(data_inx)
 
-    # CSE If needed
-    if cse:
-        temps, simplified_outputs = perform_cse(
-            input_symbols=input_symbols,
-            output_exprs=output_exprs,
-            substitute_inputs=substitute_inputs,
-        )
-    else:
-        temps = []
-        simplified_outputs = output_exprs
+    return sparse_mat_data
 
-    # Replace default symbols with vector notation (e.g. "R_re" -> "_R[0]")
-    temps_formatted, simplified_outputs_formatted = format_symbols(
-        inputs, outputs, temps, simplified_outputs, mode
-    )
 
-    # Get printer
-    printer = get_code_printer(mode)
+def get_formatted_sparse_flat_list(sparse_outputs, mode):
+    # type: (Values, CodegenMode) -> T.List[T.Scalar]
+    """
+    Returns a flat list of symbols for use in generated functions for sparse matrices.
+    """
+    symbolic_args = []
+    # Each element of sparse_outputs is a list of the nonzero terms in the sparse matrix
+    for key, sparse_matrix_data in sparse_outputs.items():
+        for i in range(len(sparse_matrix_data)):
+            symbolic_args.append(sm.Symbol("{}_value_ptr[{}]".format(key, i)))
 
-    # Print code
-    temps_code = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
-    outputs_code = [(str(var), printer.doprint(t)) for var, t in simplified_outputs_formatted]
-
-    return temps_code, outputs_code
+    return symbolic_args
 
 
 def get_code_printer(mode):

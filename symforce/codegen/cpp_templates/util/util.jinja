@@ -38,7 +38,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- elif T.__name__ == 'NoneType' -%}
         void
     {%- elif issubclass(T, Matrix) -%}
+        {%- if spec is defined and name in spec.sparse_mat_data -%}
+        Eigen::SparseMatrix<Scalar>
+        {%- else -%}
         {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1]) }}
+        {%- endif -%}
     {%- elif issubclass(T, Values) -%}
         {{ spec.namespaces_dict[name] }}::{{ spec.typenames_dict[name] }}
     {%- elif is_sequence(T_or_value) -%}
@@ -170,6 +174,56 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 
 {# ------------------------------------------------------------------------- #}
 
+{# Initialize sparse matrix if appropriate
+ #
+ # Args:
+ #     name (str): Key of sparse matrix
+ #     element (Matrix): Sparse matrix
+ #     spec (Codegen): Codegen specification containing sparse_mat_data
+ #}
+{%- macro sparse_matrix_init(name, element, spec) -%}
+    static constexpr int kRows_{{ name }} = {{ element.shape[0] }};
+    static constexpr int kCols_{{ name }} = {{ element.shape[1] }};
+    static constexpr int kNumNonZero_{{ name }} = {{ spec.sparse_mat_data[name]["kNumNonZero"] }};
+    static constexpr int kColPtrs_{{ name }}[] = {
+    {%- for i in spec.sparse_mat_data[name]["kColPtrs"] -%}
+        {{ i }}{%- if not loop.last -%}, {% endif -%}
+    {%- endfor -%} };
+    static constexpr int kRowIndices_{{ name }}[] = {
+    {%- for i in spec.sparse_mat_data[name]["kRowIndices"] -%}
+        {{ i }}{%- if not loop.last -%}, {% endif -%}
+    {%- endfor -%} };
+    {% set T_return = python_util.get_type(element) %}
+    {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+    Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name]["kNumNonZero"] }}];
+    Eigen::SparseMatrix<Scalar> {{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
+        kRows_{{ name }},
+        kCols_{{ name }},
+        kNumNonZero_{{ name }},
+        kColPtrs_{{ name }},
+        kRowIndices_{{ name }},
+        {{ name }}_empty_value_ptr
+    );
+    Scalar* {{ name }}_value_ptr = {{ name }}.valuePtr();
+    {% else %}
+    if ({{ name }}->nonZeros() != {{ spec.sparse_mat_data[name]["kNumNonZero"] }} || {{ name }}->outerSize() != {{ element.shape[1] }} || {{ name }}->innerSize() != {{ element.shape[0] }} || !{{ name }}->isCompressed()) {
+        // Matrix does not have the expected layout, create a correctly initialized sparse matrix
+        Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name]["kNumNonZero"] }}];
+        *{{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
+            kRows_{{ name }},
+            kCols_{{ name }},
+            kNumNonZero_{{ name }},
+            kColPtrs_{{ name }},
+            kRowIndices_{{ name }},
+            {{ name }}_empty_value_ptr
+        );
+    }
+    Scalar* {{ name }}_value_ptr = {{ name }}->valuePtr();
+    {% endif %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
 {# Generate inner code for computing the given expression.
  #
  # Args:
@@ -192,6 +246,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     assert( {{ name }} != nullptr );
         {% endif %}
     {% endfor %}
+    {% for name, type in spec.outputs.items() %}
+        {% if name in spec.sparse_mat_data %}
+    {{ sparse_matrix_init(name, type, spec) }}
+        {% endif %}
+    {% endfor %}
 
     // Intermediate terms ({{ spec.intermediate_terms | length }})
     {% for lhs, rhs in spec.intermediate_terms %}
@@ -202,25 +261,30 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {# Populate the output vectors with the generated expressions #}
     {% for name, type in spec.outputs.items() %}
         {% set T = python_util.get_type(type) %}
-        {% if issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type) %}
-            {% set T_return = python_util.get_type(type) %}
-            {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
-                {# Create a new object to return #}
+        {% if name not in spec.sparse_mat_data %}
+            {% if (issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type)) %}
+                {% set T_return = python_util.get_type(type) %}
+                {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+                    {# Create a new object to return #}
     {{ format_typename(type, name) }} _{{ name }};
-            {% else %}
-                {# Get reference to output passed by reference #}
+                {% else %}
+                    {# Get reference to output passed by reference #}
     {{ format_typename(type, name) }}& _{{ name }} = (*{{ name }});
-            {% endif %}
-        {% else %}
-            {# geo/cam object. Since we can't access individual element of data, create a copy #}
-            {# TODO(nathan): Maybe add a [] operator to geo/cam objects so we don't have to do this? #}
-            {% set dims = ops.StorageOps.storage_dim(type) %}
+                {% endif %}
+            {% else %}
+                {# geo/cam object. Since we can't access individual element of data, create a copy #}
+                {# TODO(nathan): Maybe add a [] operator to geo/cam objects so we don't have to do this? #}
+                {% set dims = ops.StorageOps.storage_dim(type) %}
     {{ vector_type(dims) }} _{{ name }};
+            {% endif %}
         {% endif %}
     {% endfor %}
 
     {% for lhs, rhs in spec.output_terms %}
     _{{ lhs }} = {{ rhs }};
+    {% endfor %}
+    {% for lhs, rhs in spec.sparse_terms %}
+    {{ lhs }} = {{ rhs }};
     {% endfor %}
 
     {% for name, type in spec.outputs.items() %}
@@ -235,7 +299,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {% for name, type in spec.outputs.items() %}
         {% set T_return = python_util.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
-            {%- if issubclass(T_return, Matrix) or issubclass(T_return, Values) or is_symbolic(type) or is_sequence(type) %}
+            {%- if name in spec.sparse_mat_data %}
+    return {{ name }};
+            {%- elif issubclass(T_return, Matrix) or issubclass(T_return, Values) or is_symbolic(type) or is_sequence(type) %}
     return _{{ name }};
             {%- else %}
     return {{ format_typename(type, name) }}(_{{ name }});

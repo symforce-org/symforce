@@ -397,6 +397,76 @@ class SymforceCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(output_dir)
 
+    def test_sparse_matrix_codegen(self):
+        # type: () -> None
+        """
+        Tests:
+            Generation of code that outputs a sparse matrix
+        """
+        # Start with a dense matrix
+        dim = 100
+        inputs = Values()
+        inputs["matrix_in"] = geo.Matrix(dim, dim).symbolic("mat")
+
+        # Output a sparse matrix
+        outputs = Values()
+        outputs["matrix_out"] = geo.Matrix(dim, dim).zero()
+        for i in range(dim):
+            outputs["matrix_out"][i, i] = inputs["matrix_in"][i, i]
+
+        namespace = "codegen_sparse_matrices"
+        output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
+        logger.debug("Creating temp directory: {}".format(output_dir))
+
+        # Function that creates a sparse matrix
+        get_sparse_func = Codegen(
+            name="GetDiagonalSparse",
+            inputs=inputs,
+            outputs=outputs,
+            return_key="matrix_out",
+            mode=CodegenMode.CPP,
+            scalar_type="double",
+            sparse_matrices=["matrix_out"],
+        )
+        get_sparse_func_data = get_sparse_func.generate_function(
+            output_dir=output_dir, namespace=namespace
+        )
+
+        # Function that updates sparse matrix without copying
+        update_spase_func = Codegen(
+            name="UpdateSparseMat",
+            inputs=inputs,
+            outputs=Values(updated_mat=2 * outputs["matrix_out"]),
+            mode=CodegenMode.CPP,
+            scalar_type="double",
+            sparse_matrices=["updated_mat"],
+        )
+        update_spase_func_data = update_spase_func.generate_function(
+            output_dir=output_dir, namespace=namespace
+        )
+
+        # Compare the function files
+        self.compare_or_update_directory(
+            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+        )
+
+        if not self.UPDATE:
+            try:
+                TestCase.compile_and_run_cpp(
+                    package_dir=os.path.join(SYMFORCE_DIR, "test"),
+                    executable_names="codegen_sparse_matrix_test",
+                    make_args=("codegen_sparse_matrix_test",),
+                )
+            finally:
+                if logger.level != logging.DEBUG:
+                    python_util.remove_if_exists(
+                        os.path.join(SYMFORCE_DIR, "test", "codegen_sparse_matrix_test")
+                    )
+        # Clean up
+        if logger.level != logging.DEBUG:
+            python_util.remove_if_exists(get_sparse_func_data["output_dir"])
+            python_util.remove_if_exists(update_spase_func_data["output_dir"])
+
     def test_invalid_codegen_raises(self):
         # type: () -> None
         """
