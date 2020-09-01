@@ -14,14 +14,16 @@ namespace pose2 {
 /**
  * C++ StorageOps implementation for <class 'symforce.geo.pose2.Pose2'>.
  */
-template <typename Scalar>
+template <typename ScalarType>
 struct StorageOps {
+  using Scalar = typename geo::Pose2<ScalarType>::Scalar;
+
   static constexpr int32_t StorageDim() {
     return 4;
   }
 
-  static void ToStorage(const geo::Pose2<Scalar>& a, std::vector<Scalar>* vec);
-  static geo::Pose2<Scalar> FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const geo::Pose2<ScalarType>& a, ScalarType* out);
+  static geo::Pose2<ScalarType> FromStorage(const ScalarType* data);
 };
 
 }  // namespace pose2

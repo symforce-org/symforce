@@ -56,11 +56,13 @@ class Pose3 {
   }
 
   void ToStorage(std::vector<Scalar>* vec) const {
-    return StorageOps<Self>::ToStorage(*this, vec);
+    // TODO(hayk): Refactor ToStorage/FromStorage here to use pointers, like the ops do.
+    vec->resize(StorageDim());
+    return StorageOps<Self>::ToStorage(*this, vec->data());
   }
 
   static Pose3 FromStorage(const std::vector<Scalar>& vec) {
-    return StorageOps<Self>::FromStorage(vec);
+    return StorageOps<Self>::FromStorage(vec.data());
   }
 
   // --------------------------------------------------------------------------

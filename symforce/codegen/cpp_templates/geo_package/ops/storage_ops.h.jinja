@@ -16,8 +16,63 @@ template <typename T>
 struct StorageOps {
   using Scalar = typename T::Scalar;
   static constexpr int32_t StorageDim();
-  static void ToStorage(const T& a, std::vector<Scalar>* vec);
-  static T FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const T& a, Scalar* out);
+  static T FromStorage(const Scalar* data);
 };
+
+// Template specialization for scalars
+template <typename ScalarType>
+struct ScalarStorageOps {
+  using Scalar = ScalarType;
+  static_assert(std::is_floating_point<ScalarType>::value, "");
+
+  static constexpr int32_t StorageDim() {
+    return 1;
+  }
+
+  static void ToStorage(const ScalarType& a, ScalarType* out) {
+    assert(out != nullptr);
+    out[0] = a;
+  }
+
+  static ScalarType FromStorage(const ScalarType* data) {
+    assert(data != nullptr);
+    return data[0];
+  }
+};
+
+{% for scalar in scalar_types %}
+template<>
+struct StorageOps<{{ scalar }}> : public ScalarStorageOps<{{ scalar }}> {};
+{% endfor %}
+
+// Template specialization for fixed size matrices
+template <typename ScalarType, int Rows, int Cols>
+struct MatrixStorageOps {
+  using Scalar = ScalarType;
+  using T = Eigen::Matrix<Scalar, Rows, Cols>;
+  static_assert(std::is_floating_point<ScalarType>::value, "");
+
+  static constexpr int32_t StorageDim() {
+    return Rows * Cols;
+  }
+
+  static void ToStorage(const T& a, ScalarType* out) {
+    assert(out != nullptr);
+    std::copy_n(a.data(), a.size(), out);
+  }
+
+  static T FromStorage(const ScalarType* data) {
+    assert(data != nullptr);
+    return Eigen::Map<const T>(data);
+  }
+};
+
+{% for scalar in scalar_types %}
+{% for i in range(1, 10) %}
+template<>
+struct StorageOps<Eigen::Matrix<{{ scalar }}, {{ i }}, 1>> : public MatrixStorageOps<{{ scalar }}, {{ i }}, 1> {};
+{% endfor %}
+{% endfor %}
 
 }  // namespace geo

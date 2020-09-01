@@ -16,8 +16,93 @@ template <typename T>
 struct StorageOps {
   using Scalar = typename T::Scalar;
   static constexpr int32_t StorageDim();
-  static void ToStorage(const T& a, std::vector<Scalar>* vec);
-  static T FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const T& a, Scalar* out);
+  static T FromStorage(const Scalar* data);
 };
+
+// Template specialization for scalars
+template <typename ScalarType>
+struct ScalarStorageOps {
+  using Scalar = ScalarType;
+  static_assert(std::is_floating_point<ScalarType>::value, "");
+
+  static constexpr int32_t StorageDim() {
+    return 1;
+  }
+
+  static void ToStorage(const ScalarType& a, ScalarType* out) {
+    assert(out != nullptr);
+    out[0] = a;
+  }
+
+  static ScalarType FromStorage(const ScalarType* data) {
+    assert(data != nullptr);
+    return data[0];
+  }
+};
+
+template<>
+struct StorageOps<double> : public ScalarStorageOps<double> {};
+template<>
+struct StorageOps<float> : public ScalarStorageOps<float> {};
+
+// Template specialization for fixed size matrices
+template <typename ScalarType, int Rows, int Cols>
+struct MatrixStorageOps {
+  using Scalar = ScalarType;
+  using T = Eigen::Matrix<Scalar, Rows, Cols>;
+  static_assert(std::is_floating_point<ScalarType>::value, "");
+
+  static constexpr int32_t StorageDim() {
+    return Rows * Cols;
+  }
+
+  static void ToStorage(const T& a, ScalarType* out) {
+    assert(out != nullptr);
+    std::copy_n(a.data(), a.size(), out);
+  }
+
+  static T FromStorage(const ScalarType* data) {
+    assert(data != nullptr);
+    return Eigen::Map<const T>(data);
+  }
+};
+
+template<>
+struct StorageOps<Eigen::Matrix<double, 1, 1>> : public MatrixStorageOps<double, 1, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 2, 1>> : public MatrixStorageOps<double, 2, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 3, 1>> : public MatrixStorageOps<double, 3, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 4, 1>> : public MatrixStorageOps<double, 4, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 5, 1>> : public MatrixStorageOps<double, 5, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 6, 1>> : public MatrixStorageOps<double, 6, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 7, 1>> : public MatrixStorageOps<double, 7, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 8, 1>> : public MatrixStorageOps<double, 8, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<double, 9, 1>> : public MatrixStorageOps<double, 9, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 1, 1>> : public MatrixStorageOps<float, 1, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 2, 1>> : public MatrixStorageOps<float, 2, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 3, 1>> : public MatrixStorageOps<float, 3, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 4, 1>> : public MatrixStorageOps<float, 4, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 5, 1>> : public MatrixStorageOps<float, 5, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 6, 1>> : public MatrixStorageOps<float, 6, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 7, 1>> : public MatrixStorageOps<float, 7, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 8, 1>> : public MatrixStorageOps<float, 8, 1> {};
+template<>
+struct StorageOps<Eigen::Matrix<float, 9, 1>> : public MatrixStorageOps<float, 9, 1> {};
 
 }  // namespace geo

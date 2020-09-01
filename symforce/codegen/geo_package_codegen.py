@@ -214,7 +214,7 @@ def generate(mode, output_dir=None, gen_example=True):
             templates.add(
                 os.path.join(template_dir, "ops", template_name) + ".jinja",
                 os.path.join(package_dir, "ops", template_name),
-                dict(),
+                dict(Codegen.common_data()),
             )
 
         # Test example

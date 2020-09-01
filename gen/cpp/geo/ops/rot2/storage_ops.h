@@ -14,14 +14,16 @@ namespace rot2 {
 /**
  * C++ StorageOps implementation for <class 'symforce.geo.rot2.Rot2'>.
  */
-template <typename Scalar>
+template <typename ScalarType>
 struct StorageOps {
+  using Scalar = typename geo::Rot2<ScalarType>::Scalar;
+
   static constexpr int32_t StorageDim() {
     return 2;
   }
 
-  static void ToStorage(const geo::Rot2<Scalar>& a, std::vector<Scalar>* vec);
-  static geo::Rot2<Scalar> FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const geo::Rot2<ScalarType>& a, ScalarType* out);
+  static geo::Rot2<ScalarType> FromStorage(const ScalarType* data);
 };
 
 }  // namespace rot2

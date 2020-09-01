@@ -7,19 +7,17 @@
 namespace geo {
 namespace pose2 {
 
-template <typename Scalar>
-void StorageOps<Scalar>::ToStorage(const geo::Pose2<Scalar>& a, std::vector<Scalar>* vec) {
-  assert(vec != nullptr);
-  const typename geo::Pose2<Scalar>::DataVec& data = a.Data();
-  vec->resize(data.size());
-  std::copy_n(data.data(), data.size(), vec->begin());
+template <typename ScalarType>
+void StorageOps<ScalarType>::ToStorage(const geo::Pose2<ScalarType>& a, ScalarType* out) {
+  assert(out != nullptr);
+  std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
-template <typename Scalar>
-geo::Pose2<Scalar> StorageOps<Scalar>::FromStorage(const std::vector<Scalar>& vec) {
-  assert(vec.size() == StorageOps<Scalar>::StorageDim());
-  return geo::Pose2<Scalar>(
-    Eigen::Map<const typename geo::Pose2<Scalar>::DataVec>(vec.data()));
+template <typename ScalarType>
+geo::Pose2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+  assert(data != nullptr);
+  return geo::Pose2<ScalarType>(
+    Eigen::Map<const typename geo::Pose2<ScalarType>::DataVec>(data));
 }
 
 }  // namespace pose2

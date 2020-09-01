@@ -90,9 +90,9 @@ void TestRot2Pose2() {
 
 template <typename T>
 void TestStorageOps() {
-  using Scalar = typename T::Scalar;
+  using Scalar = typename geo::StorageOps<T>::Scalar;
 
-  const T value;
+  const T value{};
   std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
 
   constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
@@ -100,25 +100,76 @@ void TestStorageOps() {
   assertTrue(value.Data().cols() == 1);
 
   std::vector<Scalar> vec;
-  value.ToStorage(&vec);
+  vec.resize(storage_dim);
+  geo::StorageOps<T>::ToStorage(value, vec.data());
   assertTrue(vec.size() > 0);
   assertTrue(vec.size() == storage_dim);
   for (int i = 0; i < vec.size(); ++i) {
     assertTrue(vec[i] == value.Data()[i]);
   }
 
-  const T value2 = geo::StorageOps<T>::FromStorage(vec);
+  const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value.Data() == value2.Data());
   vec[0] = 2.1;
-  const T value3 = geo::StorageOps<T>::FromStorage(vec);
+  const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value.Data() != value3.Data());
 }
 
 template <typename T>
+void TestScalarStorageOps() {
+  using Scalar = typename geo::StorageOps<T>::Scalar;
+
+  const T value{};
+  std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
+
+  constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  assertTrue(storage_dim == 1);
+
+  std::vector<Scalar> vec;
+  vec.resize(storage_dim);
+  geo::StorageOps<T>::ToStorage(value, vec.data());
+  assertTrue(vec.size() == storage_dim);
+  assertTrue(vec[0] == value);
+
+  const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
+  assertTrue(value == value2);
+  vec[0] = 2.1;
+  const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
+  assertTrue(value != value3);
+}
+
+template <typename T>
+void TestMatrixStorageOps() {
+  using Scalar = typename geo::StorageOps<T>::Scalar;
+
+  const T value = T::Zero();
+  std::cout << "*** Testing Matrix StorageOps: " << value.transpose() << " ***" << std::endl;
+
+  constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  assertTrue(storage_dim == T::RowsAtCompileTime);
+
+  std::vector<Scalar> vec;
+  vec.resize(storage_dim);
+  geo::StorageOps<T>::ToStorage(value, vec.data());
+  assertTrue(vec.size() == storage_dim);
+  for (int i = 0; i < vec.size(); ++i) {
+    assertTrue(vec[i] == value[i]);
+  }
+
+  const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
+  assertTrue(value == value2);
+  vec[0] = 2.1;
+  const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
+  assertTrue(value != value3);
+}
+
+template <typename T>
 void TestGroupOps() {
-  const T identity;
+  const T identity{};
   std::cout << "*** Testing GroupOps: " << identity << " ***" << std::endl;
 
+  // TODO(hayk): Make geo::StorageOps<T>::IsApprox that uses ToStorage to compare, then
+  // get rid of the custom scalar version below.
   assertTrue(identity.IsApprox(geo::GroupOps<T>::Identity(), 1e-9));
   assertTrue(identity.IsApprox(geo::GroupOps<T>::Compose(identity, identity), 1e-9));
   assertTrue(identity.IsApprox(geo::GroupOps<T>::Inverse(identity), 1e-9));
@@ -126,12 +177,34 @@ void TestGroupOps() {
 }
 
 template <typename T>
+void TestScalarGroupOps() {
+  const T identity{};
+  std::cout << "*** Testing GroupOps: " << identity << " ***" << std::endl;
+
+  assertTrue(identity == geo::GroupOps<T>::Identity());
+  assertTrue(identity == geo::GroupOps<T>::Compose(identity, identity));
+  assertTrue(identity == geo::GroupOps<T>::Inverse(identity));
+  assertTrue(identity == geo::GroupOps<T>::Between(identity, identity));
+}
+
+template <typename T>
+void TestMatrixGroupOps() {
+  const T identity = T::Zero();
+  std::cout << "*** Testing Matrix GroupOps: " << identity.transpose() << " ***" << std::endl;
+
+  assertTrue(identity == geo::GroupOps<T>::Identity());
+  assertTrue(identity == geo::GroupOps<T>::Compose(identity, identity));
+  assertTrue(identity == geo::GroupOps<T>::Inverse(identity));
+  assertTrue(identity == geo::GroupOps<T>::Between(identity, identity));
+}
+
+template <typename T>
 void TestLieGroupOps() {
-  using Scalar = typename T::Scalar;
+  using Scalar = typename geo::StorageOps<T>::Scalar;
   using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
   const Scalar epsilon = 1e-7;
 
-  const T identity;
+  const T identity = geo::GroupOps<T>::Identity();
   std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
 
   constexpr int32_t tangent_dim = geo::LieGroupOps<T>::TangentDim();
@@ -153,39 +226,157 @@ void TestLieGroupOps() {
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 }
 
+template <typename T>
+void TestScalarLieGroupOps() {
+  using Scalar = typename geo::StorageOps<T>::Scalar;
+  using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
+  const Scalar epsilon = 1e-7;
+
+  const T identity = geo::GroupOps<T>::Identity();
+  std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
+
+  constexpr int32_t tangent_dim = geo::LieGroupOps<T>::TangentDim();
+  assertTrue(tangent_dim > 0);
+  assertTrue(tangent_dim <= geo::StorageOps<T>::StorageDim());
+
+  const TangentVec pertubation = TangentVec::Random();
+  const T value = geo::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+
+  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+  assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
+
+  const T recovered_identity = geo::LieGroupOps<T>::Retract(
+    value, -recovered_pertubation, epsilon);
+  assertTrue(fabs(recovered_identity - identity) < std::sqrt(epsilon));
+
+  const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
+    identity, recovered_identity, epsilon);
+  assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
+}
+
+template <typename T>
+void TestMatrixLieGroupOps() {
+  using Scalar = typename geo::StorageOps<T>::Scalar;
+  using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
+  const Scalar epsilon = 1e-7;
+
+  const T identity = geo::GroupOps<T>::Identity();
+  std::cout << "*** Testing Matrix LieGroupOps: " << identity.transpose() << " ***" << std::endl;
+
+  constexpr int32_t tangent_dim = geo::LieGroupOps<T>::TangentDim();
+  assertTrue(tangent_dim > 0);
+  assertTrue(tangent_dim <= geo::StorageOps<T>::StorageDim());
+
+  const TangentVec pertubation = TangentVec::Random();
+  const T value = geo::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+
+  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+  assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
+
+  const T recovered_identity = geo::LieGroupOps<T>::Retract(
+    value, -recovered_pertubation, epsilon);
+  assertTrue(recovered_identity.isApprox(identity, std::sqrt(epsilon)));
+
+  const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
+    identity, recovered_identity, epsilon);
+  assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
+}
+
 int main(int argc, char** argv) {
+  // Test geo types
   TestStorageOps<geo::Rot2<double>>();
   TestGroupOps<geo::Rot2<double>>();
   TestLieGroupOps<geo::Rot2<double>>();
-
   TestStorageOps<geo::Pose2<double>>();
   TestGroupOps<geo::Pose2<double>>();
   TestLieGroupOps<geo::Pose2<double>>();
-
   TestStorageOps<geo::Rot3<double>>();
   TestGroupOps<geo::Rot3<double>>();
   TestLieGroupOps<geo::Rot3<double>>();
-
   TestStorageOps<geo::Pose3<double>>();
   TestGroupOps<geo::Pose3<double>>();
   TestLieGroupOps<geo::Pose3<double>>();
 
+  // Test scalar types
+  TestScalarStorageOps<double>();
+  TestScalarGroupOps<double>();
+  TestScalarLieGroupOps<double>();
+
+  // Test fixed size matrix types
+  TestMatrixStorageOps<Eigen::Matrix<double, 1, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 1, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 1, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 2, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 2, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 2, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 3, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 3, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 3, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 4, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 4, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 4, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 5, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 5, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 5, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 6, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 6, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 6, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 7, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 7, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 7, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 8, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 8, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 8, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<double, 9, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<double, 9, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<double, 9, 1>>();
+  // Test geo types
   TestStorageOps<geo::Rot2<float>>();
   TestGroupOps<geo::Rot2<float>>();
   TestLieGroupOps<geo::Rot2<float>>();
-
   TestStorageOps<geo::Pose2<float>>();
   TestGroupOps<geo::Pose2<float>>();
   TestLieGroupOps<geo::Pose2<float>>();
-
   TestStorageOps<geo::Rot3<float>>();
   TestGroupOps<geo::Rot3<float>>();
   TestLieGroupOps<geo::Rot3<float>>();
-
   TestStorageOps<geo::Pose3<float>>();
   TestGroupOps<geo::Pose3<float>>();
   TestLieGroupOps<geo::Pose3<float>>();
 
+  // Test scalar types
+  TestScalarStorageOps<float>();
+  TestScalarGroupOps<float>();
+  TestScalarLieGroupOps<float>();
+
+  // Test fixed size matrix types
+  TestMatrixStorageOps<Eigen::Matrix<float, 1, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 1, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 1, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 2, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 2, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 2, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 3, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 3, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 3, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 4, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 4, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 4, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 5, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 5, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 5, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 6, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 6, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 6, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 7, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 7, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 7, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 8, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 8, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 8, 1>>();
+  TestMatrixStorageOps<Eigen::Matrix<float, 9, 1>>();
+  TestMatrixGroupOps<Eigen::Matrix<float, 9, 1>>();
+  TestMatrixLieGroupOps<Eigen::Matrix<float, 9, 1>>();
   TestRot3();
   TestRot2Pose2();
 }
