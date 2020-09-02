@@ -1,0 +1,36 @@
+package sym;
+
+struct key_t {
+  // TODO(hayk): Issue for alignment?
+  byte letter;
+  int64_t subscript;
+  int64_t superscript;
+};
+
+struct index_entry_t {
+  key_t key;
+  symforce.type_t type;
+
+  // Location within the data array
+  int32_t offset;
+
+  // Size parameters
+  int32_t storage_dim;
+  int32_t tangent_dim;
+};
+
+struct index_t {
+  int32_t storage_dim;
+  int32_t tangent_dim;
+  index_entry_t entries[];
+};
+
+struct values_t {
+  index_t index;
+  double data[];
+};
+
+struct valuesf_t {
+  index_t index;
+  float data[];
+};

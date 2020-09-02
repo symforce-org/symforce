@@ -5,18 +5,18 @@ CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
 LDFLAGS = -shared -fpic
 
 CC_FILES_CAM = ../cam/*.cc
-CC_FILES_GEO = ../geo/*.cc
+CC_FILES_GEO = ../geo/*.cc ../geo/ops/**/*.cc
 
-all: libsymforce_cam.so libsymforce_geo.so example example_function_gen
+all: libsymforce_cam.so libsymforce_gen.so example example_function_gen
 
 libsymforce_cam.so: $(CC_FILES_CAM)
 	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_cam.so $(CC_FILES_CAM) $(INCLUDES)
 
-libsymforce_geo.so: $(CC_FILES_GEO)
-	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_geo.so $(CC_FILES_GEO) $(INCLUDES)
+libsymforce_gen.so: $(CC_FILES_GEO)
+	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_gen.so $(CC_FILES_GEO) $(INCLUDES)
 
 example: cam_package_cpp_test.cc
-	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam -lsymforce_geo $(INCLUDES)
+	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam -lsymforce_gen $(INCLUDES)
 
 example_function_gen: cam_function_codegen_cpp_test.cc
 	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam $(INCLUDES) -I../cpp

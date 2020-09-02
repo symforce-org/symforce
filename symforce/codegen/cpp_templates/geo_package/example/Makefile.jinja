@@ -1,21 +1,16 @@
-# Basic test for the geo library
+# Basic test for geo library
 
 INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }}
 CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
 LDFLAGS = -shared -fpic
 
-CC_FILES =\
-{% for cls in all_types %}
-{% set name = cls.__name__ | lower %}
-	../geo/{{ name }}.cc{% if not loop.last %}\{% endif %}
+CC_FILES =../geo/*.cc ../geo/ops/**/*.cc
 
-{% endfor %}
+example: libsymforce_gen.so geo_package_cpp_test.cc
+	c++ $(CXXFLAGS) -o geo_package_cpp_test geo_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen $(INCLUDES)
 
-example: libsymforce_geo.so geo_package_cpp_test.cc
-	c++ $(CXXFLAGS) -o geo_package_cpp_test geo_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_geo $(INCLUDES)
-
-libsymforce_geo.so: $(CC_FILES)
-	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_geo.so $(CC_FILES) $(INCLUDES)
+libsymforce_gen.so: $(CC_FILES)
+	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_gen.so $(CC_FILES) $(INCLUDES)
 
 clean:
-	rm -f libsymforce_geo.so; rm -f geo_package_cpp_test
+	rm -f libsymforce_gen.so; rm -f geo_package_cpp_test

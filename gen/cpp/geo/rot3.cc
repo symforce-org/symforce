@@ -20,8 +20,3 @@ std::ostream& operator<<(std::ostream& os, const geo::Rot3f& a) {
     return os;
 }
 
-
-// Concept implementations for this class
-#include "./ops/rot3/storage_ops.cc"
-#include "./ops/rot3/group_ops.cc"
-#include "./ops/rot3/lie_group_ops.cc"

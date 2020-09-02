@@ -20,8 +20,3 @@ std::ostream& operator<<(std::ostream& os, const geo::Pose2f& a) {
     return os;
 }
 
-
-// Concept implementations for this class
-#include "./ops/pose2/storage_ops.cc"
-#include "./ops/pose2/group_ops.cc"
-#include "./ops/pose2/lie_group_ops.cc"

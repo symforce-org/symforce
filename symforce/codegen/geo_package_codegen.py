@@ -8,6 +8,7 @@ import collections
 from symforce import ops
 from symforce import geo
 from symforce import logger
+from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import Codegen
@@ -209,11 +210,16 @@ def generate(mode, output_dir=None, gen_example=True):
                 output_path = os.path.join(package_dir, path).replace("CLASS", cls.__name__.lower())
                 templates.add(template_path, output_path, data)
 
-        # Concept headers
-        for template_name in ("storage_ops.h", "group_ops.h", "lie_group_ops.h"):
+        # Render non geo type specific templates
+        for template_name in python_util.files_in_dir(
+            os.path.join(template_dir, "ops"), relative=True
+        ):
+            if "CLASS" in template_name:
+                continue
+
             templates.add(
-                os.path.join(template_dir, "ops", template_name) + ".jinja",
-                os.path.join(package_dir, "ops", template_name),
+                os.path.join(template_dir, "ops", template_name),
+                os.path.join(package_dir, "ops", template_name[:-6]),
                 dict(Codegen.common_data()),
             )
 

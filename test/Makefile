@@ -7,7 +7,9 @@ INCLUDES = -I../gen/cpp -I./ -I***REMOVED***/include/eigen3
 CXXFLAGS = -std=c++17 -L./ `pkg-config --cflags lcm`
 LDFLAGS = -shared -fpic
 
-CC_FILES =../gen/cpp/geo/*.cc
+CC_FILES =../gen/cpp/geo/*.cc ../gen/cpp/geo/ops/**/*.cc
+
+CC_FILES_VALUES =../symforce/opt/*.cc
 
 codegen_function_test: libsymforce_geo.so codegen_function_test.cc
 	c++ $(CXXFLAGS) -o codegen_function_test codegen_function_test.cc -Wl,-rpath,'$$ORIGIN' -lsymforce_geo $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_test_cpp_data/cpp

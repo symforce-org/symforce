@@ -1,0 +1,177 @@
+#include "./values.h"
+
+namespace sym {
+
+template <typename Scalar>
+Values<Scalar>::Values() {}
+
+template <typename Scalar>
+Values<Scalar>::Values(const LcmType& msg) {
+  for (const index_entry_t& entry : msg.index.entries) {
+    map_[entry.key] = entry;
+  }
+  data_ = msg.data;
+}
+
+template <typename Scalar>
+bool Values<Scalar>::Has(const Key& key) const {
+  return map_.find(key) != map_.end();
+}
+
+template <typename Scalar>
+int32_t Values<Scalar>::NumEntries() const {
+  return map_.size();
+}
+
+template <typename Scalar>
+std::vector<Key> Values<Scalar>::Keys(const bool sort_by_offset) const {
+  std::vector<Key> keys;
+  keys.reserve(map_.size());
+  for (const auto& kv : map_) {
+    keys.push_back(kv.first);
+  }
+
+  // Sort the keys by offset so iterating through is saner and more memory friendly
+  if (sort_by_offset) {
+    std::sort(keys.begin(), keys.end(), [&](const sym::Key& a, const sym::Key& b) {
+      return map_.at(a).offset < map_.at(b).offset;
+    });
+  }
+
+  return keys;
+}
+
+template <typename Scalar>
+const typename Values<Scalar>::MapType& Values<Scalar>::Items() const {
+  return map_;
+}
+
+template <typename Scalar>
+const typename Values<Scalar>::ArrayType& Values<Scalar>::Data() const {
+  return data_;
+}
+
+template <typename Scalar>
+bool Values<Scalar>::Remove(const Key& key) {
+  size_t num_removed = map_.erase(key);
+  return static_cast<bool>(num_removed);
+}
+
+template <typename Scalar>
+void Values<Scalar>::RemoveAll() {
+  map_.clear();
+  data_.clear();
+}
+
+template <typename Scalar>
+size_t Values<Scalar>::Cleanup() {
+  // Copy the original data
+  const ArrayType data_copy = data_;
+
+  // Build an index of all keys
+  const index_t full_index = CreateIndex(Keys());
+
+  // Re-allocate data to the appropriate size
+  data_.resize(full_index.storage_dim);
+  assert(data_copy.size() >= data_.size());
+
+  // Copy into new data and update the offset in the map
+  size_t new_offset = 0;
+  for (const index_entry_t& entry : full_index.entries) {
+    std::copy_n(data_copy.begin() + entry.offset, entry.storage_dim, data_.begin() + new_offset);
+    map_[entry.key].offset = new_offset;
+    new_offset += entry.storage_dim;
+  }
+
+  return data_copy.size() - data_.size();
+}
+
+template <typename Scalar>
+index_t Values<Scalar>::CreateIndex(const std::vector<Key>& keys) const {
+  index_t index{};
+  index.entries.reserve(keys.size());
+  for (const Key& key : keys) {
+    const index_entry_t& entry = map_.at(key);
+    index.entries.push_back(entry);
+    index.storage_dim += entry.storage_dim;
+    index.tangent_dim += entry.tangent_dim;
+  }
+  return index;
+}
+
+template <typename Scalar>
+void Values<Scalar>::FillLcmType(LcmType* msg) const {
+  assert(msg != nullptr);
+  msg->index = CreateIndex(Keys());
+  msg->data = data_;
+}
+
+template <typename Scalar>
+typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType() const {
+  LcmType msg;
+  FillLcmType(&msg);
+  return msg;
+}
+
+/**
+ * Polymorphic helper to apply a retraction.
+ */
+template <typename T, typename Scalar = typename geo::StorageOps<T>::Scalar>
+void RetractHelper(const Scalar* tangent_data, const Scalar epsilon, Scalar* t_ptr) {
+  const T t_in = geo::StorageOps<T>::FromStorage(t_ptr);
+  const Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1> tangent_vec(tangent_data);
+  const T t_out = geo::LieGroupOps<T>::Retract(t_in, tangent_vec, epsilon);
+  geo::StorageOps<T>::ToStorage(t_out, t_ptr);
+}
+BY_TYPE_HELPER(RetractByType, RetractHelper);
+
+template <typename Scalar>
+void Values<Scalar>::Retract(const index_t& index, const Scalar* delta, const Scalar epsilon) {
+  size_t tangent_inx = 0;
+  for (const index_entry_t& entry : index.entries) {
+    RetractByType<Scalar>(entry.type, /* tangent_data */ delta + tangent_inx, epsilon,
+                          /* t_ptr */ data_.data() + entry.offset);
+    tangent_inx += entry.tangent_dim;
+  }
+}
+
+template <typename T>
+void PrintHelper(std::ostream& os, const typename geo::StorageOps<T>::Scalar* data_ptr) {
+  os << geo::StorageOps<T>::FromStorage(data_ptr);
+}
+BY_TYPE_HELPER(PrintByType, PrintHelper);
+
+}  // namespace sym
+
+// Explicit instantiation
+template class sym::Values<double>;
+template class sym::Values<float>;
+
+// ----------------------------------------------------------------------------
+// Printing
+// ----------------------------------------------------------------------------
+
+template <typename Scalar>
+std::ostream& operator<<(std::ostream& os, const sym::Values<Scalar>& v) {
+  // Make an index so we iterate through in offset order
+  const sym::index_t index = v.CreateIndex(v.Keys(/* sort by offset */ true));
+
+  // Print header
+  os << "<Values" << typeid(Scalar).name() << " entries=" << index.entries.size()
+     << " array=" << v.Data().size() << " storage_dim=" << index.storage_dim
+     << " tangent_dim=" << index.tangent_dim << std::endl;
+
+  // Print each element
+  for (const sym::index_entry_t& entry : index.entries) {
+    os << "  " << sym::Key(entry.key) << " [" << entry.offset << ":"
+       << entry.offset + entry.storage_dim << "] --> ";
+    sym::PrintByType<Scalar>(entry.type, os, v.Data().data() + entry.offset);
+    os << std::endl;
+  }
+
+  os << ">";
+  return os;
+}
+
+template std::ostream& operator<<<float>(std::ostream& os, const sym::Values<float>& v);
+template std::ostream& operator<<<double>(std::ostream& os, const sym::Values<double>& v);

@@ -26,10 +26,3 @@ extern template struct geo::StorageOps<{{ scalar }}>;
 extern template struct geo::GroupOps<{{ scalar }}>;
 extern template struct geo::LieGroupOps<{{ scalar }}>;
 {% endfor %} #}
-
-// Concept implementations for this class
-#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.cc"
-#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.cc"
-{% if is_lie_group %}
-#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.cc"
-{% endif %}

@@ -1,0 +1,36 @@
+// TODO(hayk): For some reason if this is generated under the package sym instead of symforce
+// and then aliased in type_ops.h, it generates compiler errors failing to find ostream methods
+// for the geo types as called from the BY_TYPE_HELPER. I've tried changing the name of the type
+// and the enum values in case of a name collision, but does not seem to help.
+package symforce;
+
+/**
+ * Data types that can be stored in a Values object.
+ */
+enum type_t : int32_t {
+  INVALID = 0,
+
+  // Scalar type
+  SCALAR = 1,
+
+  // Geometry types
+  ROT2 = 2,
+  ROT3 = 3,
+  POSE2 = 4,
+  POSE3 = 5,
+
+  // Vector types, dynamic and fixed
+  VECTORX = 10,
+  VECTOR1 = 11,
+  VECTOR2 = 12,
+  VECTOR3 = 13,
+  VECTOR4 = 14,
+  VECTOR5 = 15,
+  VECTOR6 = 16,
+  VECTOR7 = 17,
+  VECTOR8 = 18,
+  VECTOR9 = 19,
+
+  // Camera calibrations
+  LINEAR_CAMERA_CAL = 20,
+};

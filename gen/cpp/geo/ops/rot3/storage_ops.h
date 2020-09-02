@@ -3,9 +3,6 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-#include <vector>
-#include <Eigen/Dense>
-
 #include <geo/rot3.h>
 
 namespace geo {

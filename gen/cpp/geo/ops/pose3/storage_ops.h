@@ -3,9 +3,6 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-#include <vector>
-#include <Eigen/Dense>
-
 #include <geo/pose3.h>
 
 namespace geo {
