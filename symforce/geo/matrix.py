@@ -445,8 +445,12 @@ class Matrix(sm.Matrix, LieGroup):
         This overrides the sympy implementation so that we can construct jacobians with
         respect to symforce objects.
         """
+        assert self.cols == 1, "Jacobian is for column vectors."
+
         # Compute jacobian wrt X storage
-        self_D_storage = super(Matrix, self).jacobian(Matrix(ops.StorageOps.to_storage(X)))
+        self_D_storage = Matrix(
+            [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in self]
+        )
 
         if tangent_space:
             # Return jacobian wrt X tangent space

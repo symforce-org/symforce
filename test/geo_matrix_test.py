@@ -224,6 +224,13 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         vec_D_pose_storage = vec.jacobian(pose, tangent_space=False)
         self.assertEqual(vec_D_pose_storage, geo.Matrix(3, pose.storage_dim()).zero())
 
+        x = geo.M21.symbolic("x")
+        self.assertEqual(geo.M22.matrix_identity(), x.jacobian(x))
+
+        mat = geo.M22.symbolic("a")
+        vec = mat[:, 0]
+        self.assertRaises(AssertionError, lambda: mat.jacobian(vec))
+
     def test_block_matrix(self):
         # type: () -> None
         """
