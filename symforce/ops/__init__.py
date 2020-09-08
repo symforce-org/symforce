@@ -17,15 +17,15 @@ from .impl.scalar_storage_ops import ScalarStorageOps
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
 
-# TODO(nathan): Not sure if we actually want to support ints. Currently there's a subtle
-# bug where you can perturb an integer by a scalar in the tangent space, but when we call
-# "from_tangent" the decimal part will be dropped.
-StorageOps.register(int, ScalarStorageOps)
 LieGroupOps.register(float, ScalarLieGroupOps)
 LieGroupOps.register(np.float32, ScalarLieGroupOps)
 LieGroupOps.register(np.float64, ScalarLieGroupOps)
 LieGroupOps.register(sm.Expr, ScalarLieGroupOps)
-StorageOps.register(np.int64, ScalarStorageOps)
+
+# NOTE(hayk): It's weird to call integers lie groups, but the implementation of ScalarLieGroupOps
+# converts everything to symbolic types so it acts like a floating point.
+LieGroupOps.register(int, ScalarLieGroupOps)
+LieGroupOps.register(np.int64, ScalarLieGroupOps)
 
 LieGroupOps.register(list, SequenceLieGroupOps)
 LieGroupOps.register(tuple, SequenceLieGroupOps)

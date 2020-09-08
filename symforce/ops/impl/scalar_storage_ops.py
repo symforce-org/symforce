@@ -21,7 +21,7 @@ class ScalarStorageOps(object):
     def from_storage(a, elements):
         # type: (T.Any, T.List[T.Scalar]) -> Element
         assert len(elements) == 1, "Scalar needs one element."
-        return elements[0]
+        return sm.S(elements[0])
 
     @staticmethod
     def symbolic(a, name, **kwargs):

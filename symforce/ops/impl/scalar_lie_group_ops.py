@@ -20,10 +20,7 @@ class ScalarLieGroupOps(ScalarGroupOps):
     def from_tangent(a, vec, epsilon):
         # type: (ElementOrType, T.List[T.Scalar], T.Scalar) -> Element
         assert len(vec) == 1
-        if isinstance(vec[0], sm.Symbol):
-            return vec[0]
-        typ = python_util.get_type(a)
-        return typ(vec[0])
+        return sm.S(vec[0])
 
     @staticmethod
     def to_tangent(a, epsilon):

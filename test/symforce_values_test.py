@@ -198,6 +198,23 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         self.assertEqual(v2, v2_expected)
 
+    def test_from_tangent_scalar(self):
+        # type: () -> None
+        """
+        Ensure `.from_tangent` works with native python types as keys.
+        """
+        keys = ["a", "b", "c", "d", "e"]
+        entries = [2, 1.2, sm.S(3.4), sm.Symbol("x"), 5 * sm.Symbol("x") ** -2]
+
+        v = Values()
+        for key, entry in zip(keys, entries):
+            # Add correct type but different value
+            v[key] = entry + 10
+
+        # Make sure from_tangent and from_storage run and we get correct values back
+        self.assertSequenceEqual(list(zip(keys, entries)), v.from_tangent(entries).items())
+        self.assertSequenceEqual(list(zip(keys, entries)), v.from_storage(entries).items())
+
 
 if __name__ == "__main__":
     TestCase.main()
