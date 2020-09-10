@@ -114,7 +114,7 @@ class Codegen(object):
         input_types,  # type: T.Sequence[T.Type]
         mode,  # type: codegen_util.CodegenMode
         output_names=None,  # type: T.Sequence[str]
-        return_key="",  # type: str
+        return_key=None,  # type: str
         docstring=None,  # type: str
     ):
         # type: (...)  -> Codegen
@@ -147,18 +147,15 @@ class Codegen(object):
         if isinstance(res, tuple):
             # Function returns multiple objects
             output_terms = res
-            assert output_names is not None
-            if return_key:
-                # If a return key is given, it must be valid (i.e. in output_names)
-                assert return_key in output_names
+            assert output_names is not None, "Must give output_names for multiple outputs"
+            # If a return key is given, it must be valid (i.e. in output_names)
+            if return_key is not None:
+                assert return_key in output_names, "Return key not found in named outputs"
         else:
             # Function returns single object
             output_terms = (res,)
             if output_names is None:
                 output_names = ["res"]
-            if return_key == "":
-                # NOTE: We allow return_key to be None, which would signify that the object
-                # should be returned using a pointer arugment
                 return_key = output_names[0]
         assert len(output_terms) == len(output_names)
 
@@ -248,12 +245,18 @@ class Codegen(object):
         # Output types
         # Find each Values object in the inputs and outputs
         types_to_generate = []
+        # Also keep track of non-Values types used so we can have the proper includes - things like
+        # geo types and cameras
+        self.types_included = set()
         for d in (self.inputs, self.outputs):
             for key, value in d.items():
                 # If "value" is a list, extract an instance of a base element.
                 base_value = codegen_util.get_base_instance(value)
+
                 if isinstance(base_value, Values):
                     types_to_generate.append((key, base_value))
+                else:
+                    self.types_included.add(type(base_value).__name__)
 
         # Generate types from the Values objects in our inputs and outputs
         values_indices = {name: gen_type.index() for name, gen_type in types_to_generate}

@@ -3,6 +3,10 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
+
 
 namespace codegen_sparse_matrices {
 

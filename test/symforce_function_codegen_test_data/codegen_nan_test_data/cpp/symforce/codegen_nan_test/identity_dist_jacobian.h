@@ -3,6 +3,10 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <Eigen/Dense>
+
+#include <geo/rot3.h>
+
 
 namespace codegen_nan_test {
 

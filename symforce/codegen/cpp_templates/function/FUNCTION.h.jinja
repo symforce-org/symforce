@@ -4,6 +4,18 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+{# Conditional? #}
+#include <Eigen/Dense>
+{% if spec.sparse_mat_data.__len__() > 0 -%}
+#include <Eigen/Sparse>
+{% endif %}
+
+{% for typename in ('Rot3', 'Rot2', 'Pose3', 'Pose2') %}
+{% if typename in spec.types_included %}
+#include <geo/{{ python_util.camelcase_to_snakecase(typename) }}.h>
+{% endif %}
+{% endfor %}
+
 {% for name in spec.inputs.keys() | list + spec.outputs.keys() | list %}
 {% if name in spec.typenames_dict %}
 #include <lcmtypes/{{ spec.namespaces_dict[name] }}/{{ spec.typenames_dict[name] }}.hpp>

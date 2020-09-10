@@ -3,6 +3,10 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <Eigen/Dense>
+
+#include <geo/rot3.h>
+
 #include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
 #include <lcmtypes/codegen_test_cpp/values_vec_t.hpp>
 #include <lcmtypes/codegen_test_cpp/constants_t.hpp>

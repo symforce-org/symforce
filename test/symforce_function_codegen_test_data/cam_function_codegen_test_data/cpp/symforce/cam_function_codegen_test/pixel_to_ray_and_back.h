@@ -3,6 +3,9 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <Eigen/Dense>
+
+
 
 namespace cam_function_codegen_test {
 

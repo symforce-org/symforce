@@ -3,6 +3,9 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <Eigen/Dense>
+
+
 #include <lcmtypes/codegen_multi_function/inputs_t.hpp>
 #include <lcmtypes/codegen_multi_function/outputs_2_t.hpp>
 
