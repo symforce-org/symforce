@@ -363,3 +363,92 @@ class Codegen(object):
                 ", ".join(input_types), ", ".join(output_types),
             )
         return textwrap.dedent(docstring)
+
+    def create_with_jacobians(
+        self,
+        which_args=None,  # type: T.Sequence[int]
+        include_result=True,  # type: bool
+        name=None,  # type: str
+        use_product_manifold_for_pose3=True,  # type: bool
+    ):
+        # type: (...) -> Codegen
+        """
+        Given a codegen object that takes some number of inputs and computes a single result,
+        create a codegen object that additionally computes jacobians with respect to
+        the given input arguments. Flexible to produce the value and all jacobians, just the
+        jacobians, or any combination of one or more jacobians.
+
+        Args:
+            self: Existing codegen object that return a single value
+            which_args: Indices of args for which to compute jacobians. If not given, uses all.
+            include_result: Whether this codegen object computes the value in addition to jacobians
+            name: Generated function name. If not given, picks a reasonable name.
+            use_product_manifold_for_pose3: If True, treat Pose3 as SO3xR3. If False, treat as SE3.
+                                            If we fully convert Pose3 to always SO3xR3, remove this.
+        """
+        if not which_args:
+            which_args = range(len(self.inputs.keys()))
+
+        # Get docstring
+        docstring_lines = self.docstring.split("\n")[:-1]
+
+        # Helper to handle use_product_manifold_for_pose3
+        def storage_D_tangent(v):
+            # type: (T.Any) -> geo.Matrix
+            if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
+                v = Values(R=v.R, t=v.t)
+            return ops.LieGroupOps.storage_D_tangent(v)
+
+        # Ensure the previous codegen has one output
+        assert len(self.outputs.keys()) == 1
+        result_name, result = list(self.outputs.items())[0]
+
+        # Make the new outputs
+        outputs = Values()
+        return_key = None
+        if include_result:
+            outputs[result_name] = result
+        else:
+            # Remove return val line from docstring
+            docstring_lines = docstring_lines[:-1]
+
+        # Compute jacobians in the space of the storage, then chain rule on the left and right sides
+        # to get jacobian wrt the tangent space of both the arg and the result
+        input_args = list(self.inputs.items())
+        result_storage = geo.M(ops.StorageOps.to_storage(result))
+        result_tangent_D_storage = storage_D_tangent(result).T
+        for arg_index in which_args:
+            arg_name, arg = input_args[arg_index]
+            result_storage_D_arg_storage = result_storage.jacobian(ops.StorageOps.to_storage(arg))
+            outputs["{}_D_{}".format(result_name, arg_name)] = (
+                result_tangent_D_storage * result_storage_D_arg_storage * storage_D_tangent(arg)
+            )
+            docstring_lines.append(
+                "    geo.Matrix: Jacobian for arg {} ({})".format(arg_index, arg_name)
+            )
+
+        # If just computing a single jacobian, return it instead of output arg
+        if len(outputs.keys()) == 1 or include_result:
+            return_key = list(outputs.keys())[0]
+
+        # Cutely pick a function name if not given
+        if not name:
+            name = self.name + "_"
+            if include_result:
+                name += "ValueAnd"
+            if len(which_args) == 1:
+                name += "Jacobian{}".format(which_args[0])
+            elif len(which_args) == len(input_args):
+                name += "Jacobians"
+            else:
+                name += "Jacobians{}".format("".join(str(s) for s in which_args))
+
+        return Codegen(
+            name=name,
+            inputs=self.inputs,
+            outputs=outputs,
+            mode=self.mode,
+            return_key=return_key,
+            scalar_type=self.scalar_type,
+            docstring="\n".join(docstring_lines),
+        )

@@ -1,3 +1,4 @@
+import collections
 import logging
 import tempfile
 import sys
@@ -509,6 +510,52 @@ class SymforceCodegenTest(TestCase):
         inputs = Values(x=x)
         outputs = Values(x=x)
         self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
+
+    def test_create_with_jacobians(self):
+        # type: () -> None
+        """
+        Tests:
+            Codegen.create_with_jacobians
+        """
+        output_dir = tempfile.mkdtemp(prefix="sf_codegen_create_with_jacobians_", dir="/tmp")
+
+        # Let's pick Pose3 compose
+        cls = geo.Pose3
+        codegen = Codegen.function(
+            name="Compose" + cls.__name__,
+            func=ops.GroupOps.compose,
+            input_types=[cls, cls],
+            mode=CodegenMode.CPP,
+        )
+
+        codegens = collections.OrderedDict()
+
+        # By default should return the value and have jacobians for each input arg
+        codegens["value_and_all_jacs"] = codegen.create_with_jacobians()
+
+        # All jacobians, no value - should return jacobians as output args
+        codegens["all_jacs"] = codegen.create_with_jacobians(include_result=False)
+
+        # First jacobian, no value - should return the jacobian
+        codegens["jac_0"] = codegen.create_with_jacobians([0], include_result=False)
+
+        # Second jacobian, no value - should return the jacobian
+        codegens["jac_1"] = codegen.create_with_jacobians([1], include_result=False)
+
+        # Value and first jacobian - should return the value
+        codegens["value_and_jac_0"] = codegen.create_with_jacobians([0], include_result=True)
+
+        # Value and second jacobian - should return the value
+        codegens["value_and_jac_1"] = codegen.create_with_jacobians([1], include_result=True)
+
+        # Generate all
+        for codegen in codegens.values():
+            codegen.generate_function(output_dir=output_dir)
+
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
+            expected_dir=os.path.join(TEST_DATA_DIR, "create_with_jacobians"),
+        )
 
 
 if __name__ == "__main__":
