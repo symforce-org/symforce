@@ -51,6 +51,8 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         # 4) Matrix(4, 3)  # Zero constructed Matrix43
         self.assertEqual(geo.M(4, 3), geo.M43.zero())
+        self.assertEqual(geo.M(2, 1), geo.M21.zero())
+        self.assertEqual(geo.M(1, 2), geo.M12.zero())
 
         # 5) Matrix(2, 2, [1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (first two are shape)
         self.assertEqual(geo.M(2, 2, [1, 2, 3, 4]), geo.M([[1, 2], [3, 4]]))
@@ -61,6 +63,8 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 7) Matrix22(1, 2, 3, 4)  # Matrix22 with [1, 2, 3, 4] data (must match fixed length)
         self.assertEqual(geo.M22(1, 2, 3, 4), geo.M22([1, 2, 3, 4]))
         self.assertEqual(geo.V4(1, 2, 3, 4), geo.V4([1, 2, 3, 4]))
+        self.assertEqual(geo.M21(1, 2), geo.M([[1], [2]]))
+        self.assertEqual(geo.M12(1, 2), geo.M([[1, 2]]))
         self.assertRaises(AssertionError, lambda: geo.M22(1, 2, 3))
         self.assertRaises(AssertionError, lambda: geo.M22(1, 2, 3, 4, 5))
 
@@ -256,6 +260,21 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertRaises(
             AssertionError, lambda: geo.M.block_matrix([[M22, geo.M33()], [M11, M14]])
         )
+
+    def test_transpose(self):
+        # type: () -> None
+        """
+        Tests:
+            Matrix.T
+        """
+        m22 = geo.M22([1, 2, 3, 4])
+        self.assertEqual(m22.T, geo.M22([1, 3, 2, 4]))
+
+        m21 = geo.M21([1, 2])
+        self.assertEqual(m21.T, geo.M12([1, 2]))
+
+        m12 = geo.M12([1, 2])
+        self.assertEqual(m12.T, geo.M21([1, 2]))
 
 
 if __name__ == "__main__":

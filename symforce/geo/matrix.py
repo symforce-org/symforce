@@ -459,6 +459,15 @@ class Matrix(sm.Matrix, LieGroup):
         # Return jacobian wrt X storage
         return self_D_storage
 
+    def transpose(self):
+        # type: () -> Matrix
+        """
+        Helper for saner handling of transpose, in particular resolving an ambiguity that comes
+        from transposing geo.M21 between the (rows, cols) and fixed size helper constructors.
+        """
+        mat_T = sm.Matrix(self.tolist()).T
+        return fixed_type_from_shape(mat_T.shape)(mat_T)
+
     def squared_norm(self):
         # type: () -> T.Scalar
         """
