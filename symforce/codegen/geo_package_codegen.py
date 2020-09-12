@@ -217,9 +217,12 @@ def generate(mode, output_dir=None, gen_example=True):
             if "CLASS" in template_name:
                 continue
 
+            if not template_name.endswith(".jinja"):
+                continue
+
             templates.add(
                 os.path.join(template_dir, "ops", template_name),
-                os.path.join(package_dir, "ops", template_name[:-6]),
+                os.path.join(package_dir, "ops", template_name[: -len(".jinja")]),
                 dict(Codegen.common_data()),
             )
 
