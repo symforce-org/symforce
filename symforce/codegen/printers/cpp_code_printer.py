@@ -46,7 +46,7 @@ class CppCodePrinter(CXX11CodePrinter):
         else:
             rhs = self._print(Max(*expr.args[1:]))
 
-        return "{}max<Scalar>({}, {})".format(self._ns, expr.args[0], rhs)
+        return "{}max<Scalar>({}, {})".format(self._ns, self._print(expr.args[0]), rhs)
 
     def _print_Min(self, expr):
         # type: (sm.Min) -> str
@@ -64,4 +64,4 @@ class CppCodePrinter(CXX11CodePrinter):
         else:
             rhs = self._print(Min(*expr.args[1:]))
 
-        return "{}min<Scalar>({}, {})".format(self._ns, expr.args[0], rhs)
+        return "{}min<Scalar>({}, {})".format(self._ns, self._print(expr.args[0]), rhs)
