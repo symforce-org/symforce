@@ -95,16 +95,17 @@ class Matrix(sm.Matrix, LieGroup):
                     rows, cols = len(array), 1
                 flat_list = list(array)
 
-        # 4) If there are two integer arguments and the type is not a 2-vector, treat that as
-        # a zero constructor with the given shape. If it's a 2-vector, skip - we'll treat as values.
-        elif (
-            len(args) == 2
-            and isinstance(args[0], int)
-            and isinstance(args[1], int)
-            and cls.SHAPE not in ((2, 1), (1, 2))
-        ):
-            rows = args[0]
-            cols = args[1]
+        # 4) If there are two arguments and this is not a fixed size matrix, treat it as a size
+        # constructor with (rows, cols) arguments.
+        # NOTE(hayk): I've had to override several routines on Matrix that in their symengine
+        # versions construct a result with __class__(rows, cols), which for a fixed size type fails
+        # here. We need it to fail because it's ambiguous in the case of geo.M21(10, 20) whether
+        # the args are values or sizes. So I've overriden several operator methods to first convert
+        # to an sm.Matrix, do the operation, then convert back.
+        elif len(args) == 2 and cls.SHAPE == (-1, -1):
+            rows, cols = args[0], args[1]
+            assert isinstance(rows, int)
+            assert isinstance(cols, int)
             flat_list = [0 for row in range(rows) for col in range(cols)]
 
         # 5) If there are two integer arguments and then a sequence, treat this as a shape and a
@@ -225,9 +226,6 @@ class Matrix(sm.Matrix, LieGroup):
         # type: () -> Matrix
         """
         Matrix of zeros.
-
-        Returns:
-            Matrix:
         """
         return cls.identity()
 
@@ -236,13 +234,6 @@ class Matrix(sm.Matrix, LieGroup):
         # type: (int, int) -> Matrix
         """
         Matrix of zeros.
-
-        Args:
-            rows (int):
-            cols (int):
-
-        Returns:
-            Matrix:
         """
         return cls([[sm.S.Zero] * cols for _ in range(rows)])
 
@@ -251,9 +242,6 @@ class Matrix(sm.Matrix, LieGroup):
         # type: () -> Matrix
         """
         Matrix of ones.
-
-        Returns:
-            Matrix:
         """
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
         return cls.ones(*cls.SHAPE)
@@ -263,13 +251,6 @@ class Matrix(sm.Matrix, LieGroup):
         # type: (int, int) -> Matrix
         """
         Matrix of ones.
-
-        Args:
-            rows (int):
-            cols (int):
-
-        Returns:
-            Matrix:
         """
         return cls([[sm.S.One] * cols for _ in range(rows)])
 
@@ -278,12 +259,6 @@ class Matrix(sm.Matrix, LieGroup):
         # type: (T.List[T.Scalar]) -> Matrix
         """
         Construct a square matrix from the diagonal.
-
-        Args:
-            diagonal (Matrix): Diagonal vector
-
-        Returns:
-            Matrix:
         """
         mat = cls.zeros(len(diagonal), len(diagonal))
         for i in range(len(diagonal)):
@@ -294,14 +269,7 @@ class Matrix(sm.Matrix, LieGroup):
     def eye(cls, rows, cols=None):  # pylint: disable=arguments-differ
         # type: (int, int) -> Matrix
         """
-        Construct an identity matrix of the given dimensions
-
-        Args:
-            rows (int):
-            cols (int):  constructs a rows x rows square matrix if cols in None
-
-        Returns:
-            Matrix:
+        Construct an identity matrix of the given dimensions. Square if cols is None.
         """
         if cols is None:
             cols = rows
@@ -315,20 +283,21 @@ class Matrix(sm.Matrix, LieGroup):
         # type: () -> Matrix
         """
         Identity matrix - ones on the diagonal, rest zeros.
-
-        Returns:
-            Matrix:
         """
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
         return cls.eye(*cls.SHAPE)
+
+    def inv(self, method="LU"):
+        # type: (str) -> Matrix
+        """
+        Inverse of the matrix.
+        """
+        return self.__class__(sm.Matrix(self).inv(method=method))
 
     def matrix_inverse(self):
         # type: () -> Matrix
         """
         Inverse of the matrix.
-
-        Returns:
-            Matrix:
         """
         return self.inv()
 
@@ -341,9 +310,6 @@ class Matrix(sm.Matrix, LieGroup):
         Args:
             name (str): Name prefix of the symbols
             **kwargs (dict): Forwarded to `sm.Symbol`
-
-        Returns:
-            Matrix:
         """
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
         rows, cols = cls.SHAPE  # pylint: disable=unpacking-non-sequence
@@ -396,11 +362,14 @@ class Matrix(sm.Matrix, LieGroup):
         # Sum columns of matrices in the first row
         cols = sum([mat.shape[1] for mat in array[0]])
 
+        sm_array = [[sm.Matrix(mat) for mat in mat_row] for mat_row in array]
+
         # Check for size consistency
-        for mat_row in array:
+        for mat_row in sm_array:
             block_rows = mat_row[0].shape[0]
             block_cols = 0
             for mat in mat_row:
+                mat = sm.Matrix(mat)
                 assert (
                     mat.shape[0] == block_rows
                 ), "Inconsistent row number accross block: expected {} got {}".format(
@@ -415,13 +384,13 @@ class Matrix(sm.Matrix, LieGroup):
 
         # Fill the new matrix data vector
         flat_list = []
-        for mat_row in array:
+        for mat_row in sm_array:
             for row in range(mat_row[0].shape[0]):
                 for mat in mat_row:
                     if mat.shape[1] == 1:
                         flat_list += [mat[row]]
                     else:
-                        flat_list += mat[row, :].to_storage()
+                        flat_list += mat[row, :].tolist()[0]
 
         # Get the proper fixed size child class
         fixed_size_type = fixed_type_from_shape((rows, cols))
@@ -459,6 +428,13 @@ class Matrix(sm.Matrix, LieGroup):
         # Return jacobian wrt X storage
         return self_D_storage
 
+    def diff(self, *args):
+        # type: (T.Tuple[T.Scalar]) -> Matrix
+        """
+        Differentiate wrt a scalar.
+        """
+        return self.__class__(sm.Matrix(self).diff(*args))
+
     def transpose(self):
         # type: () -> Matrix
         """
@@ -467,6 +443,23 @@ class Matrix(sm.Matrix, LieGroup):
         """
         mat_T = sm.Matrix(self.tolist()).T
         return fixed_type_from_shape(mat_T.shape)(mat_T)
+
+    def dot(self, other):
+        # type: (Matrix) -> Matrix
+        """
+        Dot product.
+        """
+        ret = sm.Matrix(self).dot(other)
+        if isinstance(ret, sm.Matrix):
+            ret = self.__class__(ret)
+        return ret
+
+    def cross(self, other):
+        # type: (Matrix) -> Matrix
+        """
+        Cross product.
+        """
+        return self.__class__(sm.Matrix(self).cross(other))
 
     def squared_norm(self):
         # type: () -> T.Scalar
@@ -490,31 +483,62 @@ class Matrix(sm.Matrix, LieGroup):
         """
         return self / self.norm(epsilon=epsilon)
 
-    def __add__(self, right):
-        # type: (T.Scalar) -> Matrix
+    def __getitem__(self, item):
+        # type: (T.Any) -> T.Any
         """
-        Add a scalar to a matrix.
+        Get a scalar value or submatrix slice.
+        """
+        ret = sm.Matrix(self).__getitem__(item)
+        if isinstance(ret, sm.Matrix):
+            ret = self.__class__(ret)
+        return ret
+
+    def __neg__(self):
+        # type: () -> Matrix
+        """
+        Negate matrix.
+        """
+        return self.applyfunc(lambda x: -x)
+
+    def __add__(self, right):
+        # type: (T.Union[T.Scalar, Matrix]) -> Matrix
+        """
+        Add a scalar or matrix to this matrix.
         """
         if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x + right)
 
-        return sm.Matrix.__add__(self, right)
+        return self.__class__(sm.Matrix(self) + right)
+
+    def __sub__(self, right):
+        # type: (T.Union[T.Scalar, Matrix]) -> Matrix
+        """
+        Subtract a scalar or matrix from this matrix.
+        """
+        if python_util.scalar_like(right):
+            return self.applyfunc(lambda x: x - right)
+
+        return self.__class__(sm.Matrix(self) - right)
 
     def __mul__(self, right):
         # type: (T.Scalar) -> Matrix
         """
         Multiply a matrix by a scalar
-
-        Args:
-            right (Scalar):
-
-        Returns:
-            Matrix:
         """
         if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x * right)
 
-        return sm.Matrix.__mul__(self, right)
+        return self.__class__(sm.Matrix(self) * right)
+
+    def __rmul__(self, left):
+        # type: (T.Scalar) -> Matrix
+        """
+        Left multiply a matrix by a scalar
+        """
+        if python_util.scalar_like(left):
+            return self.applyfunc(lambda x: x * left)
+
+        return self.__class__(left * sm.Matrix(self))
 
     def __div__(self, right):
         # type: (T.Union[T.Scalar, Matrix]) -> Matrix
@@ -525,6 +549,45 @@ class Matrix(sm.Matrix, LieGroup):
             return self.applyfunc(lambda x: x / right)
 
         return self * right.inv()  # type: ignore
+
+    def LU(self):
+        # type: () -> T.Tuple[Matrix, Matrix]
+        """
+        LU matrix decomposition
+        """
+        L, U = sm.Matrix(self).LU()
+        return self.__class__(L), self.__class__(U)
+
+    def LDL(self):
+        # type: () -> T.Tuple[Matrix, Matrix]
+        """
+        LDL matrix decomposition (stable cholesky)
+        """
+        L, D = sm.Matrix(self).LU()
+        return self.__class__(L), self.__class__(D)
+
+    def FFLU(self):
+        # type: () -> T.Tuple[Matrix, Matrix]
+        """
+        Fraction-free LU matrix decomposition
+        """
+        L, U = sm.Matrix(self).FFLU()
+        return self.__class__(L), self.__class__(U)
+
+    def FFLDU(self):
+        # type: () -> T.Tuple[Matrix, Matrix, Matrix]
+        """
+        Fraction-free LDU matrix decomposition
+        """
+        L, D, U = sm.Matrix(self).FFLDU()
+        return self.__class__(L), self.__class__(D), self.__class__(U)
+
+    def solve(self, b, method="LU"):
+        # type: (Matrix, str) -> Matrix
+        """
+        Solve a linear system using the given method.
+        """
+        return self.__class__(sm.Matrix(self).solve(b, method=method))
 
     __truediv__ = __div__
 

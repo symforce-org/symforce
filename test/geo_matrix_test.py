@@ -63,8 +63,9 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 7) Matrix22(1, 2, 3, 4)  # Matrix22 with [1, 2, 3, 4] data (must match fixed length)
         self.assertEqual(geo.M22(1, 2, 3, 4), geo.M22([1, 2, 3, 4]))
         self.assertEqual(geo.V4(1, 2, 3, 4), geo.V4([1, 2, 3, 4]))
-        self.assertEqual(geo.M21(1, 2), geo.M([[1], [2]]))
-        self.assertEqual(geo.M12(1, 2), geo.M([[1, 2]]))
+        self.assertEqual(geo.M21(4, 3), geo.M([[4], [3]]))
+        self.assertEqual(geo.M12(4, 3), geo.M([[4, 3]]))
+        self.assertEqual(geo.M(4, 3), geo.M.zeros(4, 3))
         self.assertRaises(AssertionError, lambda: geo.M22(1, 2, 3))
         self.assertRaises(AssertionError, lambda: geo.M22(1, 2, 3, 4, 5))
 
@@ -275,6 +276,9 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         m12 = geo.M12([1, 2])
         self.assertEqual(m12.T, geo.M21([1, 2]))
+
+        self.assertEqual(geo.M12() * geo.M21(), geo.M11())
+        self.assertEqual(geo.M21() * geo.M12(), geo.M22())
 
 
 if __name__ == "__main__":

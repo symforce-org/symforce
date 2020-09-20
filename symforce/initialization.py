@@ -194,7 +194,7 @@ def add_custom_methods(sympy_module):
     def sign_no_zero(x):
         # type: (T.Scalar) -> T.Scalar
         """
-        Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero (given a positive epsilon).
+        Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.
         """
         return 2 * sympy_module.Min(sympy_module.sign(x), 0) + 1
 
