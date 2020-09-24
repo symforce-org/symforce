@@ -19,6 +19,8 @@ struct LieGroupOps {
       return 6;
   }
 
+  using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
+
   static geo::Pose3<Scalar> FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
   static Eigen::Matrix<Scalar, 6, 1> ToTangent(const geo::Pose3<Scalar>& a, const Scalar epsilon);
   static geo::Pose3<Scalar> Retract(const geo::Pose3<Scalar>& a, const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);

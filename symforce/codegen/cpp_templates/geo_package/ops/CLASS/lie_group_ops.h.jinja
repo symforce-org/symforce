@@ -21,6 +21,8 @@ struct LieGroupOps {
       return {{ ops.LieGroupOps.tangent_dim(cls) }};
   }
 
+  using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
+
   {% for spec in specs['LieGroupOps'] %}
   static {{ util.function_declaration(spec) -}};
   {% endfor %}
