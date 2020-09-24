@@ -149,8 +149,8 @@ class TestCase(unittest.TestCase):
         logger.debug(
             'Comparing directories: actual="{}", expected="{}"'.format(actual_dir, expected_dir)
         )
-        actual_paths = list(python_util.files_in_dir(actual_dir, relative=True))
-        expected_paths = list(python_util.files_in_dir(expected_dir, relative=True))
+        actual_paths = sorted(list(python_util.files_in_dir(actual_dir, relative=True)))
+        expected_paths = sorted(list(python_util.files_in_dir(expected_dir, relative=True)))
 
         if not self.UPDATE:
             # If checking, make sure all file paths are the same

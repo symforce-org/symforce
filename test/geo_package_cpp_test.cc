@@ -111,6 +111,7 @@ void TestStorageOps() {
   const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value.Data() == value2.Data());
   vec[0] = 2.1;
+  vec[vec.size() - 1] = 1.2;
   const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value.Data() != value3.Data());
 }

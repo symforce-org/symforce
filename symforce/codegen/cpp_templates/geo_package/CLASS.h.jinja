@@ -42,7 +42,13 @@ class {{ cls.__name__ }} {
   {% endif %}
 
   // Construct from data vec
+  {% if cls.__name__.startswith('Rot') %}
+  // For rotation types the storage is normalized on construction.
+  // This ensures numerical stability as this constructor is called after each codegen operation.
+  explicit {{ cls.__name__ }}(const DataVec& data) : data_(data.normalized()) {}
+  {% else %}
   explicit {{ cls.__name__ }}(const DataVec& data) : data_(data) {}
+  {% endif %}
 
   // Default construct to identity
   {{ cls.__name__ }}() : {{ cls.__name__ }}(GroupOps<Self>::Identity()) {}

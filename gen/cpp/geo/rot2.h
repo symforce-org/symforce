@@ -30,7 +30,9 @@ class Rot2 {
   using TangentVec = Eigen::Matrix<Scalar, 1, 1>;
 
   // Construct from data vec
-  explicit Rot2(const DataVec& data) : data_(data) {}
+  // For rotation types the storage is normalized on construction.
+  // This ensures numerical stability as this constructor is called after each codegen operation.
+  explicit Rot2(const DataVec& data) : data_(data.normalized()) {}
 
   // Default construct to identity
   Rot2() : Rot2(GroupOps<Self>::Identity()) {}
