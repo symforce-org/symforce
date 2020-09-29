@@ -1,5 +1,7 @@
 #include "./values.h"
 
+#include "./assert.h"
+
 namespace sym {
 
 template <typename Scalar>
@@ -73,7 +75,7 @@ size_t Values<Scalar>::Cleanup() {
 
   // Re-allocate data to the appropriate size
   data_.resize(full_index.storage_dim);
-  assert(data_copy.size() >= data_.size());
+  SYM_ASSERT(data_copy.size() >= data_.size());
 
   // Copy into new data and update the offset in the map
   size_t new_offset = 0;
@@ -101,7 +103,7 @@ index_t Values<Scalar>::CreateIndex(const std::vector<Key>& keys) const {
 
 template <typename Scalar>
 void Values<Scalar>::FillLcmType(LcmType* msg) const {
-  assert(msg != nullptr);
+  SYM_ASSERT(msg != nullptr);
   msg->index = CreateIndex(Keys());
   msg->data = data_;
 }
@@ -111,6 +113,15 @@ typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType() const {
   LcmType msg;
   FillLcmType(&msg);
   return msg;
+}
+
+template <typename Scalar>
+void Values<Scalar>::Update(const index_t& index, const Values<Scalar>& other) {
+  SYM_ASSERT(data_.size() == other.data_.size());
+  for (const index_entry_t& entry : index.entries) {
+    std::copy_n(other.data_.template begin() + entry.offset, entry.storage_dim,
+                data_.template begin() + entry.offset);
+  }
 }
 
 /**

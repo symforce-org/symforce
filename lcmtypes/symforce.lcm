@@ -34,3 +34,63 @@ struct valuesf_t {
   index_t index;
   float data[];
 };
+
+// ------------------------------------------------------------------------------------------------
+// Storage for the linearization of a factor
+// ------------------------------------------------------------------------------------------------
+
+struct linearized_factor_t {
+  // Index containing keys of this factor and their offsets within the factor residual/jacobian
+  index_t index;
+
+  eigen_lcm.VectorXd residual;  // b
+  eigen_lcm.MatrixXd jacobian;  // J
+
+  eigen_lcm.MatrixXd hessian;  // H, JtJ
+  eigen_lcm.VectorXd rhs;      // Jtb
+};
+
+// Same as linearized_factor_t but for floats.
+struct linearized_factorf_t {
+  index_t index;
+
+  eigen_lcm.VectorXf residual;  // b
+  eigen_lcm.MatrixXf jacobian;  // J
+
+  eigen_lcm.MatrixXf hessian;  // H, JtJ
+  eigen_lcm.VectorXf rhs;      // Jtb
+};
+
+// ------------------------------------------------------------------------------------------------
+// Helpers for building a full optimization problem from linearized factors
+// ------------------------------------------------------------------------------------------------
+
+// Index information for a single key within a linearized factor
+// Aids with rapid repeated linearization
+struct linearization_key_helper_t {
+  // Offset of this key within the factor's state vector
+  int32_t factor_offset;
+  // Offset of this key within the whole problem's state vector
+  int32_t combined_offset;
+  // Tangent dimension of the key
+  int32_t tangent_dim;
+  // For each column of this key's block in the factor jacobian, the sparse storage valuePtr array offsets
+  int32_t jacobian_storage_col_starts[];
+  // For each other key (from 0 to this key's index), the sparse storage valuePtr array offsets
+  // NOTE(hayk): Currently num_other_cols is not constant in actual use - this type likely
+  // can't be serialized right now. Perhaps try to store a flatter structure of slices.
+  int32_t num_other_keys;
+  int32_t num_other_cols;
+  int32_t hessian_storage_col_starts[num_other_keys][num_other_cols];
+};
+
+// Index information for a linearized factor into the combined problem
+// Aids with rapid repeated linearization
+struct linearization_factor_helper_t {
+  // Total residual dimension of the factor
+  int32_t residual_dim;
+  // Offset of this factor's residual slice within the whole problem residual
+  int32_t combined_residual_offset;
+  // Data about each key's state offsets
+  linearization_key_helper_t key_helpers[];
+};

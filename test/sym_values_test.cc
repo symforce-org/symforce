@@ -120,38 +120,92 @@ void TestValues() {
   assertTrue(v.Data().size() == 0);
 }
 
-// TODO(hayk): Fix this
+void TestImplicitConstruction() {
+  sym::Valuesd values;
+  values.Set<double>('x', 1.0);
+  values.Set<double>('y', 2.0);
+  values.Set<double>('z', -3.0);
+  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
+  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
+  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  std::cout << values << std::endl;
+}
+
+void TestIndexedUpdate() {
+  // Create some data
+  sym::Valuesd values;
+  values.Set<double>('x', 1.0);
+  values.Set<double>('y', 2.0);
+  values.Set<double>('z', -3.0);
+  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
+  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
+  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+
+  // Create an index for a subset of keys
+  const sym::index_t index = values.CreateIndex({'x', 'y', {'R', 1}});
+
+  // Copy into another Values
+  sym::Valuesd values2 = values;
+
+  // Modify some keys in the original
+  values.Set<double>('x', 7.7);
+  values.Set<geo::Rot3d>({'R', 1}, values.At<geo::Rot3d>({'R', 2}));
+
+  assertTrue(values.At<double>('x') == 7.7);
+  assertTrue(values2.At<double>('x') == 1.0);
+
+  // Efficiently update keys into the new values
+  values2.Update(index, values);
+
+  assertTrue(values2.At<double>('x') == 7.7);
+}
+
 template <typename Scalar>
 void TestRetract() {
   std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> Retract ***" << std::endl;
-  const Scalar epsilon = 1e-6;
-  const Scalar tolerance = 10 * epsilon;
+  const Scalar epsilon = 1e-9;
 
-  // Create a values object that stores an identity rotation
+  // Create a values object that stores an identity rotation, and an index for it
   sym::Values<Scalar> v;
-  sym::Key key('k', 1);
-  geo::Rot3<Scalar> rot = geo::Rot3<Scalar>::Identity();
-  v.Set(key, rot);
+  const geo::Rot3<Scalar> rot = geo::Rot3<Scalar>::Identity();
+  v.Set('R', rot);
+  const sym::index_t index = v.CreateIndex({'R'});
 
-  // Perturb the rotation in the tangent space
-  // TODO(nathan): Try several random perturbations
-  geo::Rot3<Scalar> perturbation = geo::Rot3<Scalar>::FromYawPitchRoll(1.0, 0.0, 0.0);
-  Eigen::Matrix<Scalar, 3, 1> tangent_mat =
-      geo::LieGroupOps<geo::Rot3<Scalar>>::ToTangent(perturbation, epsilon);
+  // Test a bunch of retractions
+  std::mt19937 gen(42);
+  for (int i = 0; i < 100; ++i) {
+    v.Set('R', rot);
 
-  const sym::index_t index = v.CreateIndex({key});
-  const std::vector<Scalar> tangent_vec(tangent_mat.data(),
-                                        tangent_mat.data() + tangent_mat.size());
-  v.Retract(index, tangent_vec.data(), epsilon);
+    const geo::Rot3<Scalar> random_rot = geo::Rot3<Scalar>::Random(gen);
+    const Eigen::Matrix<Scalar, 3, 1> tangent_vec =
+        geo::LieGroupOps<geo::Rot3<Scalar>>::ToTangent(random_rot, epsilon);
 
-  geo::Rot3<Scalar> perturbed_rot = v.template At<geo::Rot3<Scalar>>(key);
-  assertTrue(perturbation.IsApprox(perturbed_rot, tolerance));
+    v.Retract(index, tangent_vec.data(), epsilon);
+
+    const geo::Rot3<Scalar> retracted_rot = v.template At<geo::Rot3<Scalar>>('R');
+    assertTrue(random_rot.IsApprox(retracted_rot, 1e-6));
+  }
+}
+
+void TestMoveOperator() {
+  static_assert(std::is_move_assignable<sym::Values<float>>::value, "");
+  sym::Valuesf values;
+  values.Set<float>('x', 1.0f);
+  values.Set<float>('y', 2.0f);
+  values.Set<geo::Rot3f>({'R', 1}, geo::Rot3f::Identity());
+  sym::Valuesf values2 = std::move(values);
+  assertTrue(values2.At<float>('x') == 1.0f);
 }
 
 int main(int argc, char** argv) {
   TestValues<float>();
   TestValues<double>();
 
+  TestImplicitConstruction();
+
   TestRetract<float>();
   TestRetract<double>();
+
+  TestIndexedUpdate();
+  TestMoveOperator();
 }

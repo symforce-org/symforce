@@ -71,8 +71,9 @@ def generate_types(
 
     types_util = {"np.prod": np.prod}
 
-    logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
-    lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "type.lcm.jinja")
+    if len(types_dict) > 0:
+        logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
+        lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "type.lcm.jinja")
 
     for typename in types_dict:
         # If a module is specified, this type is external - don't generate it

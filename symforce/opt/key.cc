@@ -1,5 +1,16 @@
 #include "./key.h"
 
+#include <tuple>
+
+namespace sym {
+
+bool Key::LexicalLessThan(const Key& a, const Key& b) {
+  return std::make_tuple(a.Letter(), a.Sub(), a.Super()) <
+         std::make_tuple(b.Letter(), b.Sub(), b.Super());
+}
+
+}  // namespace sym
+
 std::ostream& operator<<(std::ostream& os, const sym::Key& key) {
   if (key.Letter() == sym::Key::kInvalidLetter) {
     os << "NULLKEY";

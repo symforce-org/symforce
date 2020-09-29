@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <unordered_map>
 
 #include <lcmtypes/sym/values_t.hpp>
@@ -132,6 +131,12 @@ class Values {
    */
   template <typename T>
   void Set(const index_entry_t& key, const T& value);
+
+  /**
+   * Efficiently update the keys given by this index from other into this. This purely copies
+   * slices of the data arrays, the index MUST be valid for both objects!
+   */
+  void Update(const index_t& index, const Values<Scalar>& other);
 
   /**
    * Perform a retraction from an update vector.

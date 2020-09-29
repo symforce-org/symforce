@@ -1,3 +1,5 @@
+#include "./assert.h"
+
 /**
  * Template method implementations for Values.
  */
@@ -34,12 +36,16 @@ template <typename T>
 bool Values<Scalar>::Set(const Key& key, const T& value) {
   static_assert(std::is_same<Scalar, typename geo::StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
-
   const type_t type = GetType<Scalar, T>();
   bool is_new = false;
 
   // Create the entry if not present.
-  index_entry_t& entry = map_[key];
+  auto it = map_.find(key);
+  if (it == map_.end()) {
+    it = map_.emplace(key, index_entry_t{}).first;
+  }
+  index_entry_t& entry = it->second;
+
   if (entry.type == type_t::INVALID) {
     is_new = true;
     entry.key = key.GetLcmType();
@@ -67,8 +73,8 @@ template <typename T>
 void Values<Scalar>::Set(const index_entry_t& entry, const T& value) {
   static_assert(std::is_same<Scalar, typename geo::StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
-  assert((entry.type == GetType<Scalar, T>()));
-  assert((entry.offset + entry.storage_dim < data_.size()));
+  SYM_ASSERT((entry.type == GetType<Scalar, T>()));
+  SYM_ASSERT((entry.offset + entry.storage_dim < data_.size()));
   geo::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }
 

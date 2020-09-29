@@ -11,6 +11,8 @@ namespace sym {
 /**
  * Key type for Values. Contains a letter plus an integral subscript and superscript.
  * Can construct with a letter + sub, letter + sub + super, but not letter + super.
+ *
+ * TODO(hayk): Consider an abstraction where Key contains a type enum.
  */
 class Key {
  public:
@@ -24,7 +26,7 @@ class Key {
   Key(const char letter, const subscript_t sub, const superscript_t super)
       : letter_(letter), sub_(sub), super_(super) {}
   Key(const char letter, const subscript_t sub) : Key(letter, sub, kInvalidSuper) {}
-  explicit Key(const char letter) : Key(letter, kInvalidSub, kInvalidSuper) {}
+  Key(const char letter) : Key(letter, kInvalidSub, kInvalidSuper) {}
   Key() : Key(kInvalidLetter, kInvalidSub, kInvalidSuper) {}
 
   Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
@@ -52,6 +54,11 @@ class Key {
   bool operator==(const Key& other) const {
     return (other.letter_ == letter_) && (other.sub_ == sub_) && (other.super_ == super_);
   }
+
+  /**
+   * Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).
+   */
+  static bool LexicalLessThan(const Key& a, const Key& b);
 
  protected:
   char letter_;
