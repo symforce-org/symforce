@@ -65,3 +65,10 @@ class CppCodePrinter(CXX11CodePrinter):
             rhs = self._print(Min(*expr.args[1:]))
 
         return "{}min<Scalar>({}, {})".format(self._ns, self._print(expr.args[0]), rhs)
+
+    def _print_Heaviside(self, expr):
+        # type: (sm.Heaviside) -> str
+        """
+        Heaviside is not supported by default in C++, so we add a version here.
+        """
+        return "0.5*(((({0}) >= 0) - (({0}) < 0)) + 1)".format(self._print(expr.args[0]))

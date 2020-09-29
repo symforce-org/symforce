@@ -1,10 +1,21 @@
+import logging
+import os
+
+import symforce
+
+symforce.set_backend("sympy")
+
 from symforce import logger
 from symforce import python_util
 from symforce import types as T
 from symforce.test_util import TestCase
+from symforce.values import Values
 
-from symforce.codegen import codegen_util, CodegenMode
+from symforce.codegen import codegen_util, Codegen, CodegenMode
 from symforce import sympy as sm
+
+SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
 
 
 class SymforceCppCodePrinterTest(TestCase):
@@ -24,6 +35,29 @@ class SymforceCppCodePrinterTest(TestCase):
 
         expr = sm.Min(a ** 2, b ** 2)
         self.assertEqual(printer.doprint(expr), "std::min<Scalar>((a * a), (b * b))")
+
+    def test_heaviside(self):
+        # type: () -> None
+
+        def f(x):
+            # type: (sm.Symbol) -> sm.Symbol
+            return sm.functions.special.delta_functions.Heaviside(x)
+
+        heaviside_codegen = Codegen.function(
+            name="Heaviside", func=f, input_types=[sm.Symbol], mode=CodegenMode.CPP
+        )
+        heaviside_codegen_data = heaviside_codegen.generate_function(
+            namespace="cpp_code_printer_test"
+        )
+
+        # Compare to expected
+        expected_code_file = os.path.join(TEST_DATA_DIR, "heaviside.h")
+        output_function = os.path.join(heaviside_codegen_data["cpp_function_dir"], "heaviside.h")
+        self.compare_or_update_file(expected_code_file, output_function)
+
+        # Clean up
+        if logger.level != logging.DEBUG:
+            python_util.remove_if_exists(heaviside_codegen_data["output_dir"])
 
 
 if __name__ == "__main__":
