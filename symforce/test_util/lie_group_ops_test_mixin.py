@@ -109,3 +109,26 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         storage_D_tangent_approx = geo.M(element_perturbed_storage).jacobian(xi)
         storage_D_tangent_approx = storage_D_tangent_approx.subs(xi, self.EPSILON * xi.one())
         self.assertNear(storage_D_tangent, storage_D_tangent_approx)
+
+    def test_tangent_D_storage(self):
+        # type: () -> None
+        element = self.element()
+        # TODO(nathan): We have to convert to a geo.Matrix for scalars
+        tangent_D_storage = geo.M(LieGroupOps.tangent_D_storage(element))
+
+        # Check that the jacobian is the correct dimension
+        storage_dim = StorageOps.storage_dim(element)
+        tangent_dim = LieGroupOps.tangent_dim(element)
+        self.assertEqual(tangent_D_storage.shape, (tangent_dim, storage_dim))
+
+        # Check that the jacobian is close to a numerical approximation
+        xi = geo.Matrix(storage_dim, 1).symbolic("xi")
+        storage_perturbed = geo.M(LieGroupOps.to_storage(element)) + xi
+        element_perturbed = LieGroupOps.from_storage(element, storage_perturbed)
+        element_perturbed_tangent = geo.M(
+            LieGroupOps.local_coordinates(element, element_perturbed, self.EPSILON)
+        )
+        tangent_D_storage_approx = element_perturbed_tangent.jacobian(xi)
+        tangent_D_storage_approx = tangent_D_storage_approx.subs(xi, xi.zero())
+
+        self.assertNear(tangent_D_storage, tangent_D_storage_approx)

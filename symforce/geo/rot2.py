@@ -6,6 +6,7 @@ from symforce import types as T
 
 from .complex import Complex
 from .matrix import Matrix
+from .matrix import Matrix12
 from .matrix import Matrix22
 from .matrix import Matrix21
 
@@ -100,7 +101,17 @@ class Rot2(LieGroup):
 
     def storage_D_tangent(self):
         # type: () -> Matrix21
+        """
+        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        """
         return Matrix([[-self.z.imag], [self.z.real]])
+
+    def tangent_D_storage(self):
+        # type: () -> Matrix12
+        """
+        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        """
+        return self.storage_D_tangent().T
 
     # -------------------------------------------------------------------------
     # Helper methods

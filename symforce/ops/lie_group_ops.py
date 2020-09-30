@@ -136,3 +136,20 @@ class LieGroupOps(GroupOps):
                 )
             )
             raise NotImplementedError()
+
+    @staticmethod  # type: ignore
+    def tangent_D_storage(a, epsilon=0):
+        # type: (Element) -> geo.Matrix
+        """
+        Computes the jacobian of the tangent space around an element with respect to the storage space of
+        that element.
+        """
+        try:
+            return Ops.implementation(get_type(a)).tangent_D_storage(a)
+        except NotImplementedError:
+            logger.error(
+                "tangent_D_storage not implemented for {}; use tangent_D_storage.ipynb to compute".format(
+                    get_type(a)
+                )
+            )
+            raise NotImplementedError()

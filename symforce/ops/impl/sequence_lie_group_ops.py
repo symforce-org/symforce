@@ -29,7 +29,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
     @staticmethod
     def to_tangent(a, epsilon):
         # type: (Element, T.Scalar) -> T.List[Element]
-        return get_type(a)([LieGroupOps.to_tangent(v, epsilon) for v in a])
+        return get_type(a)([x for v in a for x in LieGroupOps.to_tangent(v, epsilon)])
 
     @staticmethod  # type: ignore
     def storage_D_tangent(a):
@@ -45,4 +45,20 @@ class SequenceLieGroupOps(SequenceGroupOps):
             mat[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = LieGroupOps.storage_D_tangent(v)
             s_inx += s_dim
             t_inx += t_dim
+        return mat
+
+    @staticmethod  # type: ignore
+    def tangent_D_storage(a):
+        # type: (Element) -> geo.Matrix
+        from symforce import geo
+
+        mat = geo.Matrix(LieGroupOps.tangent_dim(a), StorageOps.storage_dim(a))
+        t_inx = 0
+        s_inx = 0
+        for v in a:
+            t_dim = LieGroupOps.tangent_dim(v)
+            s_dim = StorageOps.storage_dim(v)
+            mat[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = LieGroupOps.tangent_D_storage(v)
+            t_inx += t_dim
+            s_inx += s_dim
         return mat

@@ -105,10 +105,16 @@ class Pose2(LieGroup):
 
     def to_tangent(self, epsilon=0):
         # type: (T.Scalar) -> T.List[T.Scalar]
+
+        # This uses atan2, so the resulting theta is between -pi and pi
         theta = self.R.to_tangent(epsilon=epsilon)[0]
-        halftheta = 0.5 * theta
-        numerator = halftheta * self.R.z.imag
-        a = (numerator + epsilon * sm.sign_no_zero(numerator)) / sm.Max(epsilon, 1 - self.R.z.real)
+
+        halftheta = 0.5 * (theta + sm.sign_no_zero(theta) * epsilon)
+        a = (
+            halftheta
+            * (1 + self.R.z.real)
+            / (self.R.z.imag + sm.sign_no_zero(self.R.z.imag) * epsilon)
+        )
 
         V_inv = Matrix([[a, halftheta], [-halftheta, a]])
         t_tangent = V_inv * self.t
@@ -123,10 +129,24 @@ class Pose2(LieGroup):
 
     def storage_D_tangent(self):
         # type: () -> Matrix
+        """
+        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        """
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = self.R.to_rotation_matrix()
         return Matrix.block_matrix(
             [[Matrix.zeros(2, 2), storage_D_tangent_R], [storage_D_tangent_t, Matrix.zeros(2, 1)]]
+        )
+
+    def tangent_D_storage(self):
+        # type: () -> Matrix
+        """
+        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        """
+        tangent_D_storage_R = self.R.tangent_D_storage()
+        tangent_D_storage_t = self.R.to_rotation_matrix().T
+        return Matrix.block_matrix(
+            [[Matrix.zeros(2, 2), tangent_D_storage_t], [tangent_D_storage_R, Matrix.zeros(1, 2)]]
         )
 
     # -------------------------------------------------------------------------

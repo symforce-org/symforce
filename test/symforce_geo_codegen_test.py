@@ -4,16 +4,20 @@ import os
 import sys
 import tempfile
 
+from symforce import ops
 from symforce import logger
 from symforce import python_util
+from symforce import sympy as sm
 from symforce import types as T
 from symforce.test_util import TestCase
+from symforce.codegen import Codegen
 from symforce.codegen import CodegenMode
 from symforce.codegen import codegen_util
 from symforce.codegen import geo_package_codegen
 
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
 
 
 class SymforceGeoCodegenTest(TestCase):
@@ -77,8 +81,27 @@ class SymforceGeoCodegenTest(TestCase):
                 expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "geo"),
             )
 
+            # Generate functions for testing tangent_D_storage numerical derivatives
+            for cls in geo_package_codegen.DEFAULT_GEO_TYPES:
+                tangent_D_storage_codegen = Codegen.function(
+                    name="Tangent_D_Storage",
+                    func=ops.LieGroupOps.tangent_D_storage,
+                    input_types=[cls, sm.Symbol],
+                    mode=CodegenMode.CPP,
+                )
+                tangent_D_storage_codegen.generate_function(
+                    # Underscore here because of how python_util.camelcase_to_snakecase works
+                    output_dir=output_dir,
+                    generated_file_name="Tangent_DStorage" + cls.__name__,
+                )
+
+            self.compare_or_update_directory(
+                actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
+                expected_dir=os.path.join(TEST_DATA_DIR, "tangent_d_storage"),
+            )
+
             # Compare against the checked-in test itself
-            expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_cpp_test.cc")
+            expected_code_file = os.path.join(TEST_DATA_DIR, "example", "geo_package_cpp_test.cc")
             generated_code_file = os.path.join(output_dir, "example", "geo_package_cpp_test.cc")
             self.compare_or_update_file(expected_code_file, generated_code_file)
 

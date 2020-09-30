@@ -217,6 +217,10 @@ class Matrix(sm.Matrix, LieGroup):
         # type: () -> Matrix
         return Matrix.eye(self.storage_dim(), self.tangent_dim())  # type: ignore
 
+    def tangent_D_storage(self):
+        # type: () -> Matrix
+        return Matrix.eye(self.tangent_dim(), self.storage_dim())  # type: ignore
+
     # -------------------------------------------------------------------------
     # Helper methods
     # -------------------------------------------------------------------------

@@ -7,6 +7,7 @@ from symforce import types as T
 from .matrix import Matrix
 from .matrix import Matrix31
 from .matrix import Matrix33
+from .matrix import Matrix34
 from .matrix import Matrix43
 from .matrix import V3
 from .quaternion import Quaternion
@@ -121,6 +122,9 @@ class Rot3(LieGroup):
 
     def storage_D_tangent(self):
         # type: () -> Matrix43
+        """
+        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        """
         return (
             sm.S.One
             / 2
@@ -133,6 +137,13 @@ class Rot3(LieGroup):
                 ]
             )
         )
+
+    def tangent_D_storage(self):
+        # type: () -> Matrix34
+        """
+        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        """
+        return 4 * self.storage_D_tangent().T
 
     # -------------------------------------------------------------------------
     # Helper methods

@@ -236,6 +236,7 @@ def generate(mode, output_dir=None, gen_example=True):
                         Codegen.common_data(),
                         all_types=DEFAULT_GEO_TYPES,
                         include_dir=output_dir,
+                        symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
                         eigen_include_dir=os.path.realpath(
                             os.path.join(
                                 CURRENT_DIR, "***REMOVED***/include/eigen3/"

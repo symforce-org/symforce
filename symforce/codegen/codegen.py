@@ -213,6 +213,7 @@ class Codegen(object):
         output_dir=None,  # type: str
         shared_types=None,  # type: T.Mapping[str, str]
         namespace="sym",  # type: str
+        generated_file_name=None,  # type: str
     ):
         # type: (...) -> T.Dict[str, T.Any]
         """
@@ -234,6 +235,7 @@ class Codegen(object):
             shared_types: Mapping between types defined as part of this codegen object (e.g. keys in
                 self.inputs that map to Values objects) and previously generated external types.
             namespace: Namespace for the generated function and any generated types.
+            generated_file_name: Stem for the filename into which the function is generated, with no file extension
         """
         if output_dir is None:
             output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(self.name), dir="/tmp")
@@ -283,15 +285,19 @@ class Codegen(object):
             "lcm_type_dir": types_codegen_data["lcm_type_dir"],
         }
 
+        if generated_file_name is None:
+            generated_file_name = self.name
+
         # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
             python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
             logger.info(
                 'Creating python function "{}" at "{}"'.format(self.name, python_function_dir)
             )
+
             templates.add(
                 os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "FUNCTION.py.jinja"),
-                os.path.join(python_function_dir, self.name + ".py"),
+                os.path.join(python_function_dir, generated_file_name + ".py"),
                 dict(self.common_data(), spec=self),
             )
             templates.add(
@@ -308,7 +314,7 @@ class Codegen(object):
             templates.add(
                 os.path.join(template_util.CPP_TEMPLATE_DIR, "function", "FUNCTION.h.jinja"),
                 os.path.join(
-                    cpp_function_dir, python_util.camelcase_to_snakecase(self.name) + ".h"
+                    cpp_function_dir, python_util.camelcase_to_snakecase(generated_file_name) + ".h"
                 ),
                 dict(self.common_data(), spec=self),
             )

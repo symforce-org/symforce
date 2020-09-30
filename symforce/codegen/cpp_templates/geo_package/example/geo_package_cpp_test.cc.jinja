@@ -17,6 +17,13 @@
 #include <geo/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 {% endfor %}
 
+{% for cls in all_types %}
+#include "../cpp/symforce/sym/tangent_d_storage_{{ camelcase_to_snakecase(cls.__name__) }}.h"
+{% endfor %}
+
+#include <symforce/opt/util.h>
+#include <symforce/util/random.h>
+
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
   if (!(a)) {                                              \
@@ -204,6 +211,8 @@ template <typename T>
 void TestLieGroupOps() {
   using Scalar = typename geo::StorageOps<T>::Scalar;
   using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
+  constexpr const int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  using StorageVec = Eigen::Matrix<Scalar, storage_dim, 1>;
   const Scalar epsilon = 1e-7;
 
   const T identity = geo::GroupOps<T>::Identity();
@@ -236,9 +245,32 @@ void TestLieGroupOps() {
       small_perturbation(i) = std::sqrt(epsilon);
       const T value = geo::LieGroupOps<T>::FromTangent(small_perturbation, epsilon);
       const TangentVec recovered_perturbation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
-      assertTrue(small_perturbation.isApprox(recovered_perturbation, epsilon));
+      assertTrue(small_perturbation.isApprox(recovered_perturbation, 10 * epsilon));
       small_perturbation(i) = 0;
     }
+  }
+
+  // Test tangent_D_storage generated from the symbolic version in SymForce against numerical
+  // derivatives
+  std::mt19937 gen(24362);
+  for (size_t i = 0; i < 10000; i++) {
+    const T a = sym::Random<T>(gen);
+
+    StorageVec storage;
+    geo::StorageOps<T>::ToStorage(a, storage.data());
+    const Eigen::Matrix<Scalar, tangent_dim, storage_dim> numerical_tangent_D_storage =
+        sym::NumericalDerivative(
+            [epsilon, &a](const StorageVec& storage_perturbed) {
+              return geo::LieGroupOps<T>::LocalCoordinates(
+                  a, geo::StorageOps<T>::FromStorage(storage_perturbed.data()), epsilon);
+            },
+            storage, epsilon, std::sqrt(epsilon));
+
+    const Eigen::Matrix<Scalar, tangent_dim, storage_dim> symforce_tangent_D_storage =
+        sym::Tangent_D_Storage(a, epsilon);
+
+    assertTrue(
+        numerical_tangent_D_storage.isApprox(symforce_tangent_D_storage, 10 * std::sqrt(epsilon)));
   }
 }
 

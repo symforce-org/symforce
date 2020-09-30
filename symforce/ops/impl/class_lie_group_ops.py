@@ -26,3 +26,8 @@ class ClassLieGroupOps(ClassGroupOps):
     def storage_D_tangent(a):
         # type: (Element) -> geo.Matrix
         return a.storage_D_tangent()
+
+    @staticmethod  # type: ignore
+    def tangent_D_storage(a):
+        # type: (Element) -> geo.Matrix
+        return a.tangent_D_storage()

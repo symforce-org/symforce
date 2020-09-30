@@ -398,6 +398,27 @@ class Values(object):
             t_inx += t_dim
         return storage_D_tangent
 
+    def tangent_D_storage(self):
+        # type: () -> geo.Matrix
+        """
+        Returns a matrix with dimensions (tangent_dim x storage_dim) which represents
+        the jacobian of the flat tangent space of self wrt to the flat storage space of
+        self. The resulting jacobian is a block diagonal matrix, where each block corresponds
+        to the tangent_D_storage for a single element or is zero.
+        """
+        tangent_D_storage = geo.Matrix(self.tangent_dim(), self.storage_dim()).zero()
+        t_inx = 0
+        s_inx = 0
+        for v in self.values():
+            t_dim = ops.LieGroupOps.tangent_dim(v)
+            s_dim = ops.StorageOps.storage_dim(v)
+            tangent_D_storage[
+                t_inx : t_inx + t_dim, s_inx : s_inx + s_dim
+            ] = ops.LieGroupOps.tangent_D_storage(v)
+            t_inx += t_dim
+            s_inx += s_dim
+        return tangent_D_storage
+
     # -------------------------------------------------------------------------
     # Printing
     # -------------------------------------------------------------------------

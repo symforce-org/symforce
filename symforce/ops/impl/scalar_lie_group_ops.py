@@ -33,3 +33,10 @@ class ScalarLieGroupOps(ScalarGroupOps):
         from symforce import geo
 
         return geo.Matrix([1])
+
+    @staticmethod  # type: ignore
+    def tangent_D_storage(a):
+        # type: (Element) -> geo.Matrix
+        from symforce import geo
+
+        return geo.Matrix([1])
