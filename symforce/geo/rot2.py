@@ -89,7 +89,7 @@ class Rot2(LieGroup):
 
     def to_tangent(self, epsilon=0):
         # type: (T.Scalar) -> T.List[T.Scalar]
-        return [sm.atan2_safe(self.z.imag, self.z.real, epsilon=epsilon)]
+        return [sm.atan2(self.z.imag, self.z.real)]
 
     @classmethod
     def hat(cls, vec):

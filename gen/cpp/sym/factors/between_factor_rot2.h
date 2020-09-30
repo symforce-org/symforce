@@ -36,48 +36,47 @@ void BetweenFactorRot2(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b, c
     assert( res != nullptr );
     assert( jac != nullptr );
 
-    // Intermediate terms (33)
-    const Scalar _tmp0 = 1.0 / ((_a_T_b[0] * _a_T_b[0]) + (_a_T_b[1] * _a_T_b[1]));
-    const Scalar _tmp1 = (_a[1] * _a[1]);
-    const Scalar _tmp2 = (_a[0] * _a[0]);
-    const Scalar _tmp3 = _tmp1 + _tmp2;
-    const Scalar _tmp4 = 1.0 / (_tmp3);
-    const Scalar _tmp5 = _b[1]*_tmp4;
-    const Scalar _tmp6 = _b[0]*_tmp4;
-    const Scalar _tmp7 = _tmp0*(_a[0]*_tmp5 - _a[1]*_tmp6);
-    const Scalar _tmp8 = _tmp0*(_a[0]*_tmp6 + _a[1]*_tmp5);
-    const Scalar _tmp9 = _a_T_b[0]*_tmp7 - _a_T_b[1]*_tmp8;
-    const Scalar _tmp10 = _a_T_b[0]*_tmp8 + _a_T_b[1]*_tmp7;
-    const Scalar _tmp11 = _tmp10 + epsilon*((((_tmp10) > 0) - ((_tmp10) < 0)) + 0.5);
-    const Scalar _tmp12 = 2/(_tmp3 * _tmp3);
-    const Scalar _tmp13 = _a[0]*_a[1]*_tmp12;
-    const Scalar _tmp14 = _b[0]*_tmp13;
-    const Scalar _tmp15 = _tmp1*_tmp12;
-    const Scalar _tmp16 = -_b[1]*_tmp15 - _tmp14 + _tmp5;
-    const Scalar _tmp17 = _a_T_b[0]*_tmp0;
-    const Scalar _tmp18 = -_b[1]*_tmp13;
-    const Scalar _tmp19 = _b[0]*_tmp15 + _tmp18 - _tmp6;
-    const Scalar _tmp20 = _a_T_b[1]*_tmp0;
-    const Scalar _tmp21 = (_tmp11 * _tmp11);
-    const Scalar _tmp22 = _tmp9/_tmp21;
-    const Scalar _tmp23 = 1.0 / (_tmp11);
-    const Scalar _tmp24 = _tmp21*sqrt_info(0, 0)/(_tmp21 + (_tmp9 * _tmp9));
-    const Scalar _tmp25 = _tmp12*_tmp2;
-    const Scalar _tmp26 = -_b[0]*_tmp25 + _tmp18 + _tmp6;
-    const Scalar _tmp27 = -_b[1]*_tmp25 + _tmp14 + _tmp5;
-    const Scalar _tmp28 = _a[1]*_tmp4;
-    const Scalar _tmp29 = _tmp17*_tmp28;
-    const Scalar _tmp30 = _a[0]*_tmp4;
-    const Scalar _tmp31 = _tmp20*_tmp30;
-    const Scalar _tmp32 = _tmp17*_tmp30 - _tmp20*_tmp28;
+    // Intermediate terms (32)
+    const Scalar _tmp0 = (_a[1] * _a[1]);
+    const Scalar _tmp1 = (_a[0] * _a[0]);
+    const Scalar _tmp2 = _tmp0 + _tmp1;
+    const Scalar _tmp3 = 1.0 / (_tmp2);
+    const Scalar _tmp4 = _b[1]*_tmp3;
+    const Scalar _tmp5 = _b[0]*_tmp3;
+    const Scalar _tmp6 = _a[0]*_tmp4 - _a[1]*_tmp5;
+    const Scalar _tmp7 = 1.0 / ((_a_T_b[0] * _a_T_b[0]) + (_a_T_b[1] * _a_T_b[1]));
+    const Scalar _tmp8 = _a_T_b[0]*_tmp7;
+    const Scalar _tmp9 = _a[0]*_tmp5 + _a[1]*_tmp4;
+    const Scalar _tmp10 = _a_T_b[1]*_tmp7;
+    const Scalar _tmp11 = -_tmp10*_tmp9 + _tmp6*_tmp8;
+    const Scalar _tmp12 = _tmp10*_tmp6 + _tmp8*_tmp9;
+    const Scalar _tmp13 = 2/(_tmp2 * _tmp2);
+    const Scalar _tmp14 = _a[0]*_a[1]*_tmp13;
+    const Scalar _tmp15 = _b[0]*_tmp14;
+    const Scalar _tmp16 = _tmp0*_tmp13;
+    const Scalar _tmp17 = -_b[1]*_tmp16 - _tmp15 + _tmp4;
+    const Scalar _tmp18 = -_b[1]*_tmp14;
+    const Scalar _tmp19 = _b[0]*_tmp16 + _tmp18 - _tmp5;
+    const Scalar _tmp20 = (_tmp12 * _tmp12);
+    const Scalar _tmp21 = _tmp11/_tmp20;
+    const Scalar _tmp22 = 1.0 / (_tmp12);
+    const Scalar _tmp23 = _tmp20*sqrt_info(0, 0)/((_tmp11 * _tmp11) + _tmp20);
+    const Scalar _tmp24 = _tmp1*_tmp13;
+    const Scalar _tmp25 = -_b[0]*_tmp24 + _tmp18 + _tmp5;
+    const Scalar _tmp26 = -_b[1]*_tmp24 + _tmp15 + _tmp4;
+    const Scalar _tmp27 = _a[1]*_tmp3;
+    const Scalar _tmp28 = _tmp27*_tmp8;
+    const Scalar _tmp29 = _a[0]*_tmp3;
+    const Scalar _tmp30 = _tmp10*_tmp29;
+    const Scalar _tmp31 = -_tmp10*_tmp27 + _tmp29*_tmp8;
 
     // Output terms (2)
     Eigen::Matrix<Scalar, 1, 1>& _res = (*res);
     Eigen::Matrix<Scalar, 1, 2>& _jac = (*jac);
 
-    _res(0, 0) = sqrt_info(0, 0)*std::atan2(_tmp9, _tmp11);
-    _jac(0, 0) = _a[0]*_tmp24*(-_tmp22*(_tmp16*_tmp17 + _tmp19*_tmp20) + _tmp23*(-_tmp16*_tmp20 + _tmp17*_tmp19)) - _a[1]*_tmp24*(-_tmp22*(_tmp17*_tmp26 + _tmp20*_tmp27) + _tmp23*(_tmp17*_tmp27 - _tmp20*_tmp26));
-    _jac(0, 1) = _b[0]*_tmp24*(-_tmp22*(_tmp29 + _tmp31) + _tmp23*_tmp32) - _b[1]*_tmp24*(-_tmp22*_tmp32 + _tmp23*(-_tmp29 - _tmp31));
+    _res(0, 0) = sqrt_info(0, 0)*std::atan2(_tmp11, _tmp12);
+    _jac(0, 0) = _a[0]*_tmp23*(-_tmp21*(_tmp10*_tmp19 + _tmp17*_tmp8) + _tmp22*(-_tmp10*_tmp17 + _tmp19*_tmp8)) - _a[1]*_tmp23*(-_tmp21*(_tmp10*_tmp26 + _tmp25*_tmp8) + _tmp22*(-_tmp10*_tmp25 + _tmp26*_tmp8));
+    _jac(0, 1) = _b[0]*_tmp23*(-_tmp21*(_tmp28 + _tmp30) + _tmp22*_tmp31) - _b[1]*_tmp23*(-_tmp21*_tmp31 + _tmp22*(-_tmp28 - _tmp30));
 
 
 

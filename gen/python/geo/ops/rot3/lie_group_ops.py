@@ -31,13 +31,14 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = 2*numpy.arccos(numpy.amax((epsilon - 1,numpy.amin((_a[3],-epsilon + 1)))))/numpy.sqrt(numpy.amax((epsilon,-_a[3]**2 + 1)))
+        _tmp0 = numpy.amax((epsilon - 1,numpy.amin((_a[3],-epsilon + 1))))
+        _tmp1 = 2*numpy.arccos(_tmp0)/numpy.sqrt(-_tmp0**2 + 1)
 
         # Output terms
         _res = [0.] * 3
-        _res[0] = _a[0]*_tmp0
-        _res[1] = _a[1]*_tmp0
-        _res[2] = _a[2]*_tmp0
+        _res[0] = _a[0]*_tmp1
+        _res[1] = _a[1]*_tmp1
+        _res[2] = _a[2]*_tmp1
         return _res
 
     @staticmethod
@@ -72,8 +73,8 @@ class LieGroupOps(object):
         _b = b.data
 
         # Intermediate terms
-        _tmp0 = _a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3]
-        _tmp1 = 2*numpy.arccos(numpy.amax((epsilon - 1,numpy.amin((_tmp0,-epsilon + 1)))))/numpy.sqrt(numpy.amax((epsilon,-_tmp0**2 + 1)))
+        _tmp0 = numpy.amax((epsilon - 1,numpy.amin((-epsilon + 1,_a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3]))))
+        _tmp1 = 2*numpy.arccos(_tmp0)/numpy.sqrt(-_tmp0**2 + 1)
 
         # Output terms
         _res = [0.] * 3

@@ -36,7 +36,7 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot2<Scala
     // Output terms (1)
     Eigen::Matrix<Scalar, 1, 1> _res;
 
-    _res(0, 0) = std::atan2(_a[1], _a[0] + epsilon*((((_a[0]) > 0) - ((_a[0]) < 0)) + 0.5));
+    _res(0, 0) = std::atan2(_a[1], _a[0]);
 
 
     return _res;
@@ -67,16 +67,15 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot
     const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
     const Eigen::Matrix<Scalar, 2, 1>& _b = b.Data();
 
-    // Intermediate terms (4)
+    // Intermediate terms (3)
     const Scalar _tmp0 = 1.0 / ((_a[0] * _a[0]) + (_a[1] * _a[1]));
     const Scalar _tmp1 = _a[0]*_tmp0;
     const Scalar _tmp2 = _a[1]*_tmp0;
-    const Scalar _tmp3 = _b[0]*_tmp1 + _b[1]*_tmp2;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 1, 1> _res;
 
-    _res(0, 0) = std::atan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _tmp3 + epsilon*((((_tmp3) > 0) - ((_tmp3) < 0)) + 0.5));
+    _res(0, 0) = std::atan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _b[0]*_tmp1 + _b[1]*_tmp2);
 
 
     return _res;

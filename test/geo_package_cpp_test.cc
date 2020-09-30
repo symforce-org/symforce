@@ -225,6 +225,20 @@ void TestLieGroupOps() {
   const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
     identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
+
+  // Test perturbing one axis at a time by sqrt(epsilon)
+  // Makes sure special cases of one-axis perturbations are handled correctly, and that distortion
+  // due to epsilon doesn't extend too far away from 0
+  {
+    TangentVec small_perturbation = TangentVec::Zero();
+    for (size_t i = 0; i < geo::LieGroupOps<T>::TangentDim(); i++) {
+      small_perturbation(i) = std::sqrt(epsilon);
+      const T value = geo::LieGroupOps<T>::FromTangent(small_perturbation, epsilon);
+      const TangentVec recovered_perturbation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+      assertTrue(small_perturbation.isApprox(recovered_perturbation, epsilon));
+      small_perturbation(i) = 0;
+    }
+  }
 }
 
 template <typename T>

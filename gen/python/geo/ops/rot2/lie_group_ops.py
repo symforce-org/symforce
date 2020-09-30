@@ -29,7 +29,7 @@ class LieGroupOps(object):
 
         # Output terms
         _res = [0.] * 1
-        _res[0] = numpy.arctan2(_a[1], _a[0] + epsilon*(numpy.sign(_a[0]) + 0.5))
+        _res[0] = numpy.arctan2(_a[1], _a[0])
         return _res
 
     @staticmethod
@@ -59,10 +59,9 @@ class LieGroupOps(object):
         _tmp0 = 1/(_a[0]**2 + _a[1]**2)
         _tmp1 = _a[0]*_tmp0
         _tmp2 = _a[1]*_tmp0
-        _tmp3 = _b[0]*_tmp1 + _b[1]*_tmp2
 
         # Output terms
         _res = [0.] * 1
-        _res[0] = numpy.arctan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _tmp3 + epsilon*(numpy.sign(_tmp3) + 0.5))
+        _res[0] = numpy.arctan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _b[0]*_tmp1 + _b[1]*_tmp2)
         return _res
 

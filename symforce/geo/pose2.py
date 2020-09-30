@@ -95,8 +95,10 @@ class Pose2(LieGroup):
         theta = v[2]
         R = Rot2.from_tangent([theta], epsilon=epsilon)
 
-        a = R.z.imag / (theta + epsilon)
-        b = (1 - R.z.real) / (theta + epsilon)
+        a = (R.z.imag + epsilon * sm.sign_no_zero(R.z.imag)) / (
+            theta + epsilon * sm.sign_no_zero(theta)
+        )
+        b = (1 - R.z.real) / (theta + epsilon * sm.sign_no_zero(theta))
 
         t = Vector2(a * v[0] - b * v[1], b * v[0] + a * v[1])
         return Pose2(R, t)
@@ -105,7 +107,8 @@ class Pose2(LieGroup):
         # type: (T.Scalar) -> T.List[T.Scalar]
         theta = self.R.to_tangent(epsilon=epsilon)[0]
         halftheta = 0.5 * theta
-        a = (halftheta * self.R.z.imag) / sm.Max(epsilon, 1 - self.R.z.real)
+        numerator = halftheta * self.R.z.imag
+        a = (numerator + epsilon * sm.sign_no_zero(numerator)) / sm.Max(epsilon, 1 - self.R.z.real)
 
         V_inv = Matrix([[a, halftheta], [-halftheta, a]])
         t_tangent = V_inv * self.t

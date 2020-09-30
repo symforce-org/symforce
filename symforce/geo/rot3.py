@@ -95,8 +95,9 @@ class Rot3(LieGroup):
         """
         Implementation of logmap that uses epsilon with the sign function to avoid NaN.
         """
-        norm = sm.sqrt(1 + epsilon - self.q.w ** 2)
-        tangent = 2 * self.q.xyz / norm * sm.acos(self.q.w - sm.sign(self.q.w) * epsilon)
+        w_safe = self.q.w - sm.sign_no_zero(self.q.w) * epsilon
+        norm = sm.sqrt(1 - w_safe ** 2)
+        tangent = 2 * self.q.xyz / norm * sm.acos(w_safe)
         return tangent.to_storage()
 
     def logmap_acos_clamp_max(self, epsilon=0):
@@ -104,10 +105,9 @@ class Rot3(LieGroup):
         """
         Implementation of logmap that uses epsilon with the Max and Min functions to avoid NaN.
         """
-        norm = sm.sqrt(sm.Max(epsilon, 1 - self.q.w ** 2))
-        tangent = (
-            2 * self.q.xyz / norm * sm.acos(sm.Max(-1 + epsilon, sm.Min(1 - epsilon, self.q.w)))
-        )
+        w_safe = sm.Max(-1 + epsilon, sm.Min(1 - epsilon, self.q.w))
+        norm = sm.sqrt(1 - w_safe ** 2)
+        tangent = 2 * self.q.xyz / norm * sm.acos(w_safe)
         return tangent.to_storage()
 
     def to_tangent(self, epsilon=0):
