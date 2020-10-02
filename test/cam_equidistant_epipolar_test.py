@@ -38,7 +38,9 @@ class EquidistantEpipolarTest(StorageOpsTestMixin, CamTestMixin, TestCase):
 
             _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
-            linear_camera_cal = cam.LinearCameraCal(cam_cal.focal_length, cam_cal.principal_point)
+            linear_camera_cal = cam.LinearCameraCal(
+                cam_cal.focal_length.to_flat_list(), cam_cal.principal_point.to_flat_list()
+            )
             unit_depth = linear_camera_cal.unit_depth_from_pixel(pixel)
             if (
                 abs(StorageOps.evalf(unit_depth[0])) >= np.pi / 2.0

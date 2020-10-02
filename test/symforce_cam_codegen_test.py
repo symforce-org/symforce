@@ -22,7 +22,7 @@ TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_te
 
 # For testing generation of functions that take camera objects as arguments
 def pixel_to_ray_and_back(pixel, cam, epsilon=0):
-    # type: (geo.Matrix, cam.LinearCameraCal, T.Scalar) -> geo.Matrix
+    # type: (geo.Matrix21, cam.LinearCameraCal, T.Scalar) -> geo.Matrix21
     """
     Transform a given pixel into a ray and project the ray back to
     pixel coordinates. Input and output should match.

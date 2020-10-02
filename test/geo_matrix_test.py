@@ -40,7 +40,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         # 3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
         self.assertIsInstance(geo.M22([1, 2, 3, 4]), geo.M22)
-        self.assertEqual(list(geo.M22([1, 2, 3, 4])), [1, 2, 3, 4])
+        self.assertEqual(geo.M22([1, 2, 3, 4]).to_flat_list(), [1, 2, 3, 4])
         self.assertRaises(AssertionError, lambda: geo.M22([1, 2, 3]))
         self.assertRaises(AssertionError, lambda: geo.M22([1, 2, 3, 4, 5]))
 
@@ -128,7 +128,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         diag_matrix = 2 * geo.Matrix.eye(2)
         self.assertEqual(geo.Matrix.eye(2), diag_matrix / 2)
-        self.assertEqual(geo.Matrix.eye(2), sm.Matrix(test_matrix / test_matrix))
+        self.assertEqual(geo.Matrix.eye(2), geo.Matrix(test_matrix / test_matrix))
 
     def test_symbolic_operations(self):
         # type: () -> None

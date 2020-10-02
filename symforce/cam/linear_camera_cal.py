@@ -38,7 +38,7 @@ class LinearCameraCal(CameraCal):
         return geo.Vector2(x / z, y / z), sm.Max(sm.sign(point[2]), 0)
 
     def pixel_from_unit_depth(self, unit_depth_coords):
-        # type: (geo.Matrix31) -> geo.Matrix21
+        # type: (geo.Matrix21) -> geo.Matrix21
         """
         Convert point in unit-depth image plane to pixel coords by applying camera matrix.
         """

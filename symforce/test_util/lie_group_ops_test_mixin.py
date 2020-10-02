@@ -52,9 +52,8 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         self.assertNear(pertubation, recovered_pertubation, places=6)
 
         # Element from zero tangent vector is identity
-        identity_actual = LieGroupOps.from_tangent(
-            element, geo.M.zeros(dim, 1), epsilon=self.EPSILON
-        )
+        identity_actual = LieGroupOps.from_tangent(element, [0] * dim, epsilon=self.EPSILON)
+
         self.assertNear(identity, identity_actual, places=7)
 
         # Tangent vector of identity element is zero
@@ -66,7 +65,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         self.assertNear(retracted_element, LieGroupOps.compose(element, value), places=7)
 
         # Test zero retraction
-        element_actual = LieGroupOps.retract(element, geo.M.zeros(dim, 1), epsilon=self.EPSILON)
+        element_actual = LieGroupOps.retract(element, [0] * dim, epsilon=self.EPSILON)
         self.assertNear(element_actual, element, places=7)
 
         # Test local_coordinates behaves as expected (between and to_tangent)
@@ -104,7 +103,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
 
         # Check that the jacobian is close to a numerical approximation
         xi = geo.Matrix(tangent_dim, 1).symbolic("xi")
-        element_perturbed = LieGroupOps.retract(element, xi)
+        element_perturbed = LieGroupOps.retract(element, xi.to_flat_list())
         element_perturbed_storage = StorageOps.to_storage(element_perturbed)
         storage_D_tangent_approx = geo.M(element_perturbed_storage).jacobian(xi)
         storage_D_tangent_approx = storage_D_tangent_approx.subs(xi, self.EPSILON * xi.one())
@@ -124,7 +123,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         # Check that the jacobian is close to a numerical approximation
         xi = geo.Matrix(storage_dim, 1).symbolic("xi")
         storage_perturbed = geo.M(LieGroupOps.to_storage(element)) + xi
-        element_perturbed = LieGroupOps.from_storage(element, storage_perturbed)
+        element_perturbed = LieGroupOps.from_storage(element, storage_perturbed.to_flat_list())
         element_perturbed_tangent = geo.M(
             LieGroupOps.local_coordinates(element, element_perturbed, self.EPSILON)
         )

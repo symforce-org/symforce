@@ -3,6 +3,9 @@ from symforce import sympy as sm
 from symforce import types as T
 
 from .matrix import Matrix
+from .matrix import Matrix14
+from .matrix import Matrix31
+from .matrix import Matrix44
 from .matrix import Vector3
 from .rot3 import Rot3
 
@@ -20,7 +23,7 @@ class Pose3(LieGroup):
     """
 
     def __init__(self, R=None, t=None):
-        # type: (Rot3, Matrix) -> None
+        # type: (Rot3, Matrix31) -> None
         """
         Construct from elements in SO3 and R3.
 
@@ -32,7 +35,7 @@ class Pose3(LieGroup):
         self.t = t or Vector3()
 
         assert isinstance(self.R, Rot3)
-        assert isinstance(self.t, sm.MatrixBase)
+        assert isinstance(self.t, Vector3)
         assert self.t.shape == (3, 1), self.t.shape
 
     # -------------------------------------------------------------------------
@@ -94,16 +97,14 @@ class Pose3(LieGroup):
     @classmethod
     def from_tangent(cls, v, epsilon=0):
         # type: (T.Sequence[T.Scalar], T.Scalar) -> Pose3
-        if isinstance(v, (list, tuple)):
-            v = Matrix(v)
-
-        R_tangent = Vector3(v[0], v[1], v[2])
-        t_tangent = Vector3(v[3], v[4], v[5])
+        R_tangent = (v[0], v[1], v[2])
+        t_tangent_vector = Vector3(v[3], v[4], v[5])
 
         R = Rot3.from_tangent(R_tangent, epsilon=epsilon)
-        R_hat = Matrix(Rot3.hat(R_tangent))
+        R_hat = Rot3.hat(R_tangent)
         R_hat_sq = R_hat * R_hat
-        theta = sm.sqrt(R_tangent.dot(R_tangent) + epsilon ** 2)
+        R_tangent_vector = Vector3(R_tangent)
+        theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon ** 2)
 
         V = (
             Matrix.eye(3)
@@ -111,13 +112,14 @@ class Pose3(LieGroup):
             + (theta - sm.sin(theta)) / (theta ** 3) * R_hat_sq
         )
 
-        return cls(R, V * t_tangent)
+        return cls(R, V * t_tangent_vector)
 
     def to_tangent(self, epsilon=0):
-        # type: (T.Scalar) -> T.List
-        R_tangent = Matrix(self.R.to_tangent(epsilon=epsilon))
-        theta = sm.sqrt(R_tangent.dot(R_tangent) + epsilon)
-        R_hat = Matrix(Rot3.hat(R_tangent))
+        # type: (T.Scalar) -> T.List[T.Scalar]
+        R_tangent = self.R.to_tangent(epsilon=epsilon)
+        R_tangent_vector = Vector3(R_tangent)
+        theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon)
+        R_hat = Rot3.hat(R_tangent)
 
         half_theta = 0.5 * theta
 
@@ -129,14 +131,17 @@ class Pose3(LieGroup):
             * (R_hat * R_hat)
         )
         t_tangent = V_inv * self.t
-        return list(R_tangent.col_join(t_tangent))
+        return R_tangent_vector.col_join(t_tangent).to_flat_list()
 
     @classmethod
     def hat(cls, vec):
-        # type: (T.List) -> Matrix
-        R_tangent = Vector3(vec[0], vec[1], vec[2])
-        t_tangent = Vector3(vec[3], vec[4], vec[5])
-        return Matrix(Rot3.hat(R_tangent)).row_join(t_tangent).col_join(Matrix.zeros(1, 4)).tolist()
+        # type: (T.List) -> Matrix44
+        R_tangent = [vec[0], vec[1], vec[2]]
+        t_tangent = [vec[3], vec[4], vec[5]]
+        top_left = Rot3.hat(R_tangent)
+        top_right = Matrix31(t_tangent)
+        bottom = Matrix14.zero()
+        return T.cast(Matrix44, top_left.row_join(top_right).col_join(bottom))
 
     def storage_D_tangent(self):
         # type: () -> Matrix
@@ -169,7 +174,7 @@ class Pose3(LieGroup):
         """
         Left-multiply with a compatible quantity.
         """
-        if isinstance(right, sm.MatrixBase):
+        if isinstance(right, Matrix):
             assert right.shape == (3, 1), right.shape
             return self.R * right + self.t
         elif isinstance(right, Pose3):

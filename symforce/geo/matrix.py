@@ -4,11 +4,11 @@ import symforce
 from symforce import ops
 from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import types as _T  # We already have a Matrix.T which collides
 from symforce import python_util
 
 
-class Matrix(sm.Matrix, LieGroup):
+class Matrix(LieGroup):
     """
     Matrix type that inherits from the Sympy Matrix class. Care has been taken to allow this class
     to create fixed-size child classes like Matrix31. Anytime __new__ is called, the appropriate
@@ -28,6 +28,9 @@ class Matrix(sm.Matrix, LieGroup):
     is a possible action to make this better.
     """
 
+    # Type that represents this or any subclasses
+    MatrixT = _T.TypeVar("MatrixT", bound="Matrix")
+
     # Static dimensions of this type. (-1, -1) means there is no size information, like if
     # we are using geo.Matrix directly instead of geo.Matrix31.
     # Once a matrix is constructed it should be of a type where the .shape instance variable matches
@@ -35,12 +38,7 @@ class Matrix(sm.Matrix, LieGroup):
     SHAPE = (-1, -1)
 
     def __new__(cls, *args, **kwargs):
-        # type: (T.Any, T.Any) -> Matrix
-        return cls._new(*args, **kwargs)
-
-    @classmethod
-    def _new(cls, *args, **kwargs):
-        # type: (T.Any, T.Any) -> Matrix
+        # type: (_T.Any, _T.Any) -> Matrix
         """
         Beast of a method for creating a Matrix. Handles a variety of construction use cases
         and *always* returns a fixed size child class of Matrix rather than Matrix itself. The
@@ -72,10 +70,10 @@ class Matrix(sm.Matrix, LieGroup):
             flat_list = list(args[0])
 
         # 3) If there's one argument and it's an array, works for fixed or dynamic size.
-        elif len(args) == 1 and isinstance(args[0], (T.Sequence, np.ndarray)):
+        elif len(args) == 1 and isinstance(args[0], (_T.Sequence, np.ndarray)):
             array = args[0]
             # 2D array, shape is known
-            if len(array) > 0 and isinstance(array[0], (T.Sequence, np.ndarray)):
+            if len(array) > 0 and isinstance(array[0], (_T.Sequence, np.ndarray)):
                 # 2D array of scalars
                 assert not isinstance(
                     array[0][0], Matrix
@@ -92,7 +90,11 @@ class Matrix(sm.Matrix, LieGroup):
                     assert len(array) == cls.storage_dim(), "Gave args {} for {}".format(args, cls)
                     rows, cols = cls.SHAPE
                 else:
-                    rows, cols = len(array), 1
+                    # Only set the second dimension to 1 if the array is nonempty
+                    if len(array) == 0:
+                        rows, cols = 0, 0
+                    else:
+                        rows, cols = len(array), 1
                 flat_list = list(array)
 
         # 4) If there are two arguments and this is not a fixed size matrix, treat it as a size
@@ -110,7 +112,7 @@ class Matrix(sm.Matrix, LieGroup):
 
         # 5) If there are two integer arguments and then a sequence, treat this as a shape and a
         # data list directly.
-        elif len(args) == 3 and isinstance(args[-1], (np.ndarray, T.Sequence)):
+        elif len(args) == 3 and isinstance(args[-1], (np.ndarray, _T.Sequence)):
             assert isinstance(args[0], int), args
             assert isinstance(args[1], int), args
             rows, cols = args[0], args[1]
@@ -139,16 +141,44 @@ class Matrix(sm.Matrix, LieGroup):
         # Get the proper fixed size child class
         fixed_size_type = fixed_type_from_shape((rows, cols))
 
-        if symforce.get_backend() == "sympy":
-            # NOTE(hayk): Need to do this because sympy will recursively call _new otherwise.
-            obj = object.__new__(fixed_size_type)
-            obj.rows = rows
-            obj.cols = cols
-            obj._mat = flat_list
-        else:
-            obj = sm.Matrix.__new__(fixed_size_type, rows, cols, flat_list, **kwargs)
+        # Build object
+        instance = LieGroup.__new__(fixed_size_type)
 
-        return obj
+        # Set the underlying sympy array
+        instance.mat = sm.Matrix(rows, cols, flat_list)
+
+        return instance
+
+    def __init__(self, *args, **kwargs):
+        # type: (_T.Any, _T.Any) -> None
+        if _T.TYPE_CHECKING:
+            self.mat = sm.Matrix()
+
+        assert self.__class__.SHAPE == self.mat.shape, "Inconsistent Matrix"
+
+    @property
+    def rows(self):
+        # type: () -> int
+        return self.mat.rows
+
+    @property
+    def cols(self):
+        # type: () -> int
+        return self.mat.cols
+
+    @property
+    def shape(self):
+        # type: () -> _T.Sequence[int]
+        return self.mat.shape
+
+    def __len__(self):
+        # type: () -> int
+        return len(self.mat)
+
+    @property
+    def is_Matrix(self):
+        # type: () -> bool
+        return True
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
@@ -156,7 +186,7 @@ class Matrix(sm.Matrix, LieGroup):
 
     def __repr__(self):
         # type: () -> str
-        return super(Matrix, self).__repr__()
+        return self.mat.__repr__()
 
     @classmethod
     def storage_dim(cls):
@@ -166,12 +196,12 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Matrix
+        # type: (_T.Sequence[_T.Scalar]) -> Matrix
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
         return cls(vec)
 
     def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+        # type: () -> _T.List[_T.Scalar]
         return self.to_tangent()
 
     # -------------------------------------------------------------------------
@@ -180,16 +210,15 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def identity(cls):
-        # type: () -> Matrix
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
-        return cls.zeros(*cls.SHAPE)
+        # type: (_T.Type[MatrixT]) -> MatrixT
+        return cls.zero()
 
     def compose(self, other):
-        # type: (Matrix) -> Matrix
+        # type: (MatrixT, MatrixT) -> MatrixT
         return self + other
 
     def inverse(self):
-        # type: () -> Matrix
+        # type: (MatrixT) -> MatrixT
         return -self
 
     # -------------------------------------------------------------------------
@@ -203,15 +232,13 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=0):
-        # type: (T.Sequence[T.Scalar], T.Scalar) -> Matrix
+        # type: (_T.Sequence[_T.Scalar], _T.Scalar) -> Matrix
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
-        if isinstance(vec, (list, tuple)):
-            vec = cls(vec)
-        return cls(vec.reshape(*cls.SHAPE).tolist())  # type: ignore
+        return cls(cls.SHAPE[0], cls.SHAPE[1], list(vec))
 
     def to_tangent(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
-        return list(self.reshape(self.shape[0] * self.shape[1], 1))
+        # type: (_T.Scalar) -> _T.List[_T.Scalar]
+        return list(self.mat)
 
     def storage_D_tangent(self):
         # type: () -> Matrix
@@ -227,11 +254,12 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def zero(cls):
-        # type: () -> Matrix
+        # type: (_T.Type[MatrixT]) -> MatrixT
         """
         Matrix of zeros.
         """
-        return cls.identity()
+        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+        return cls.zeros(*cls.SHAPE)  # type: ignore
 
     @classmethod
     def zeros(cls, rows, cols):  # pylint: disable=signature-differs
@@ -243,12 +271,12 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def one(cls):
-        # type: () -> Matrix
+        # type: (_T.Type[MatrixT]) -> MatrixT
         """
         Matrix of ones.
         """
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
-        return cls.ones(*cls.SHAPE)
+        return cls.ones(*cls.SHAPE)  # type: ignore
 
     @classmethod
     def ones(cls, rows, cols):  # pylint: disable=signature-differs
@@ -259,8 +287,8 @@ class Matrix(sm.Matrix, LieGroup):
         return cls([[sm.S.One] * cols for _ in range(rows)])
 
     @classmethod
-    def diag(cls, diagonal):  # pylint: disable=arguments-differ
-        # type: (T.List[T.Scalar]) -> Matrix
+    def diag(cls, diagonal):
+        # type: (_T.List[_T.Scalar]) -> Matrix
         """
         Construct a square matrix from the diagonal.
         """
@@ -270,7 +298,7 @@ class Matrix(sm.Matrix, LieGroup):
         return mat
 
     @classmethod
-    def eye(cls, rows, cols=None):  # pylint: disable=arguments-differ
+    def eye(cls, rows, cols=None):
         # type: (int, int) -> Matrix
         """
         Construct an identity matrix of the given dimensions. Square if cols is None.
@@ -284,30 +312,23 @@ class Matrix(sm.Matrix, LieGroup):
 
     @classmethod
     def matrix_identity(cls):
-        # type: () -> Matrix
+        # type: (_T.Type[MatrixT]) -> MatrixT
         """
         Identity matrix - ones on the diagonal, rest zeros.
         """
         assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
-        return cls.eye(*cls.SHAPE)
+        return cls.eye(*cls.SHAPE)  #  type: ignore
 
-    def inv(self, method="LU"):
-        # type: (str) -> Matrix
+    def matrix_inverse(self, method="LU"):
+        # type: (MatrixT, str) -> MatrixT
         """
         Inverse of the matrix.
         """
-        return self.__class__(sm.Matrix(self).inv(method=method))
-
-    def matrix_inverse(self):
-        # type: () -> Matrix
-        """
-        Inverse of the matrix.
-        """
-        return self.inv()
+        return self.__class__(self.mat.inv(method=method))
 
     @classmethod
     def symbolic(cls, name, **kwargs):
-        # type: (str, T.Any) -> Matrix
+        # type: (_T.Type[MatrixT], str, _T.Any) -> MatrixT
         """
         Create with symbols.
 
@@ -340,23 +361,23 @@ class Matrix(sm.Matrix, LieGroup):
 
         return cls(sm.Matrix(symbols))
 
-    def row_join(self, vec):
+    def row_join(self, right):
         # type: (Matrix) -> Matrix
         """
-        Overrides sm.Matrix.row_join to force update SHAPE
+        Concatenates self with another matrix on the right
         """
-        return Matrix(super(Matrix, self).row_join(vec))
+        return Matrix(self.mat.row_join(right.mat))
 
-    def col_join(self, vec):
+    def col_join(self, bottom):
         # type: (Matrix) -> Matrix
         """
-        Overrides sm.Matrix.col_join to force update SHAPE
+        Concatenates self with another matrix below
         """
-        return Matrix(super(Matrix, self).col_join(vec))
+        return Matrix(self.mat.col_join(bottom.mat))
 
     @classmethod
     def block_matrix(cls, array):
-        # type: (T.Sequence[T.Sequence[Matrix]]) -> Matrix
+        # type: (_T.Sequence[_T.Sequence[Matrix]]) -> Matrix
         """
         Constructs a matrix from block elements. For example:
         [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]] -> Matrix35 with elements equal to given blocks
@@ -366,14 +387,11 @@ class Matrix(sm.Matrix, LieGroup):
         # Sum columns of matrices in the first row
         cols = sum([mat.shape[1] for mat in array[0]])
 
-        sm_array = [[sm.Matrix(mat) for mat in mat_row] for mat_row in array]
-
         # Check for size consistency
-        for mat_row in sm_array:
+        for mat_row in array:
             block_rows = mat_row[0].shape[0]
             block_cols = 0
             for mat in mat_row:
-                mat = sm.Matrix(mat)
                 assert (
                     mat.shape[0] == block_rows
                 ), "Inconsistent row number accross block: expected {} got {}".format(
@@ -388,29 +406,27 @@ class Matrix(sm.Matrix, LieGroup):
 
         # Fill the new matrix data vector
         flat_list = []
-        for mat_row in sm_array:
+        for mat_row in array:
             for row in range(mat_row[0].shape[0]):
                 for mat in mat_row:
                     if mat.shape[1] == 1:
                         flat_list += [mat[row]]
                     else:
-                        flat_list += mat[row, :].tolist()[0]
+                        flat_list += list(mat[row, :])
 
-        # Get the proper fixed size child class
-        fixed_size_type = fixed_type_from_shape((rows, cols))
-        return sm.Matrix.__new__(fixed_size_type, rows, cols, flat_list)
+        return Matrix(rows, cols, flat_list)
 
     def simplify(self, *args, **kwargs):
-        # type: (T.Any, T.Any) -> Matrix
+        # type: (_T.Any, _T.Any) -> Matrix
         """
         Simplify this expression.
 
         This overrides the sympy implementation because that clobbers the class type.
         """
-        return self.__class__(sm.simplify(self, *args, **kwargs))
+        return self.__class__(sm.simplify(self.mat, *args, **kwargs))
 
     def jacobian(self, X, tangent_space=True):
-        # type: (T.Any, bool) -> Matrix
+        # type: (_T.Any, bool) -> Matrix
         """
         Compute the jacobian with respect to the tangent space of X if tangent_space = True,
         otherwise returns the jacobian wih respect to the storage elements of X.
@@ -422,7 +438,7 @@ class Matrix(sm.Matrix, LieGroup):
 
         # Compute jacobian wrt X storage
         self_D_storage = Matrix(
-            [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in self]
+            [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in self.mat]
         )
 
         if tangent_space:
@@ -433,157 +449,233 @@ class Matrix(sm.Matrix, LieGroup):
         return self_D_storage
 
     def diff(self, *args):
-        # type: (T.Tuple[T.Scalar]) -> Matrix
+        # type: (_T.Tuple[_T.Scalar]) -> Matrix
         """
         Differentiate wrt a scalar.
         """
-        return self.__class__(sm.Matrix(self).diff(*args))
+        return self.__class__(self.mat.diff(*args))
+
+    @property
+    def T(self):
+        # type: () -> Matrix
+        """
+        Matrix Transpose
+        """
+        return self.transpose()
 
     def transpose(self):
         # type: () -> Matrix
         """
-        Helper for saner handling of transpose, in particular resolving an ambiguity that comes
-        from transposing geo.M21 between the (rows, cols) and fixed size helper constructors.
+        Matrix Transpose
         """
-        mat_T = sm.Matrix(self.tolist()).T
-        return fixed_type_from_shape(mat_T.shape)(mat_T)
+        return self.__class__(self.mat.transpose())
+
+    def reshape(self, rows, cols):
+        # type: (int, int) -> Matrix
+        return self.__class__(self.mat.reshape(rows, cols))
 
     def dot(self, other):
         # type: (Matrix) -> Matrix
         """
         Dot product.
         """
-        ret = sm.Matrix(self).dot(other)
+        ret = self.mat.dot(other.mat)
         if isinstance(ret, sm.Matrix):
             ret = self.__class__(ret)
+        else:
+            # Result is a Scalar, wrap in a Matrix
+            ret = self.__class__([[ret]])
         return ret
 
     def cross(self, other):
-        # type: (Matrix) -> Matrix
+        # type: (Matrix31) -> Matrix31
         """
         Cross product.
         """
-        return self.__class__(sm.Matrix(self).cross(other))
+        if self.shape != (3, 1):
+            raise TypeError(
+                "Cross can only be called on shape (3, 1), this matrix is shape {}".format(
+                    self.shape
+                )
+            )
+
+        return Matrix31(self.mat.cross(other.mat))
 
     def squared_norm(self):
-        # type: () -> T.Scalar
+        # type: () -> _T.Scalar
         """
         Squared norm of a vector, equivalent to the dot product with itself.
         """
         self._assert_is_vector()
-        return self.dot(self)
+        return self.dot(self)[0, 0]
 
     def norm(self, epsilon=0):
-        # type: (T.Scalar) -> T.Scalar
+        # type: (_T.Scalar) -> _T.Scalar
         """
         Norm of a vector (square root of magnitude).
         """
         return sm.sqrt(self.squared_norm() + epsilon)
 
-    def normalized(self, epsilon=0):  # pylint: disable=arguments-differ
-        # type: (T.Scalar) -> Matrix
+    def normalized(self, epsilon=0):
+        # type: (MatrixT, _T.Scalar) -> MatrixT
         """
         Returns a unit vector in this direction (divide by norm).
         """
         return self / self.norm(epsilon=epsilon)
 
+    def applyfunc(self, func):
+        # type: (MatrixT, _T.Callable) -> MatrixT
+        """
+        Apply a unary operation to every scalar.
+        """
+        return self.__class__(self.mat.applyfunc(func))
+
     def __getitem__(self, item):
-        # type: (T.Any) -> T.Any
+        # type: (_T.Any) -> _T.Any
         """
         Get a scalar value or submatrix slice.
         """
-        ret = sm.Matrix(self).__getitem__(item)
+        ret = self.mat.__getitem__(item)
+        if isinstance(ret, sm.Matrix):
+            ret = self.__class__(ret)
+        return ret
+
+    def __setitem__(self, key, value):
+        # type: (_T.Any, _T.Scalar) -> None
+        if isinstance(value, Matrix):
+            value = value.mat
+        ret = self.mat.__setitem__(key, value)
         if isinstance(ret, sm.Matrix):
             ret = self.__class__(ret)
         return ret
 
     def __neg__(self):
-        # type: () -> Matrix
+        # type: (MatrixT) -> MatrixT
         """
         Negate matrix.
         """
-        return self.applyfunc(lambda x: -x)
+        return self.__class__(-self.mat)
 
     def __add__(self, right):
-        # type: (T.Union[T.Scalar, Matrix]) -> Matrix
+        # type: (MatrixT, _T.Union[_T.Scalar, MatrixT]) -> MatrixT
         """
         Add a scalar or matrix to this matrix.
         """
         if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x + right)
-
-        return self.__class__(sm.Matrix(self) + right)
+        elif isinstance(right, Matrix):
+            return self.__class__(self.mat + right.mat)
+        else:
+            return self.__class__(self.mat + right)
 
     def __sub__(self, right):
-        # type: (T.Union[T.Scalar, Matrix]) -> Matrix
+        # type: (MatrixT, _T.Union[_T.Scalar, MatrixT]) -> MatrixT
         """
         Subtract a scalar or matrix from this matrix.
         """
         if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x - right)
+        elif isinstance(right, Matrix):
+            return self.__class__(self.mat - right.mat)
+        else:
+            return self.__class__(self.mat - right)
 
-        return self.__class__(sm.Matrix(self) - right)
+    @_T.overload
+    def __mul__(self, right):  # pragma: no cover
+        # type: (MatrixT, _T.Scalar) -> MatrixT
+        pass
+
+    @_T.overload
+    def __mul__(self, right):  # pragma: no cover
+        # type: (_T.Union[Matrix, sm.Matrix]) -> Matrix
+        pass
 
     def __mul__(self, right):
-        # type: (T.Scalar) -> Matrix
+        # type: (_T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]) -> _T.Union[MatrixT, Matrix]
         """
-        Multiply a matrix by a scalar
+        Multiply a matrix by a scalar or matrix
         """
         if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x * right)
+        elif isinstance(right, Matrix):
+            return self.__class__(self.mat * right.mat)
+        else:
+            return self.__class__(self.mat * right)
 
-        return self.__class__(sm.Matrix(self) * right)
+    @_T.overload
+    def __rmul__(self, left):  # pragma: no cover
+        # type: (MatrixT, _T.Scalar) -> MatrixT
+        pass
+
+    @_T.overload
+    def __rmul__(self, left):  # pragma: no cover
+        # type: (_T.Union[Matrix, sm.Matrix]) -> Matrix
+        pass
 
     def __rmul__(self, left):
-        # type: (T.Scalar) -> Matrix
+        # type: (_T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]) -> _T.Union[MatrixT, Matrix]
         """
-        Left multiply a matrix by a scalar
+        Left multiply a matrix by a scalar or matrix
         """
         if python_util.scalar_like(left):
-            return self.applyfunc(lambda x: x * left)
+            return self.applyfunc(lambda x: left * x)
+        elif isinstance(left, Matrix):
+            return self.__class__(left.mat * self.mat)
+        else:
+            return self.__class__(left * self.mat)
 
-        return self.__class__(left * sm.Matrix(self))
+    @_T.overload
+    def __div__(self, right):  # pragma: no cover
+        # type: (MatrixT, _T.Scalar) -> MatrixT
+        pass
+
+    @_T.overload
+    def __div__(self, right):  # pragma: no cover
+        # type: (_T.Union[Matrix, sm.Matrix]) -> Matrix
+        pass
 
     def __div__(self, right):
-        # type: (T.Union[T.Scalar, Matrix]) -> Matrix
+        # type: (_T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]) -> _T.Union[MatrixT, Matrix]
         """
         Divide a matrix by a scalar or a matrix (which takes the inverse).
         """
         if python_util.scalar_like(right):
-            return self.applyfunc(lambda x: x / right)
-
-        return self * right.inv()  # type: ignore
+            return self.applyfunc(lambda x: x / sm.S(right))
+        elif isinstance(right, Matrix):
+            return self * right.matrix_inverse()
+        else:
+            return self.__class__(self.mat * _T.cast(sm.Matrix, right).inv())
 
     def LU(self):
-        # type: () -> T.Tuple[Matrix, Matrix]
+        # type: () -> _T.Tuple[Matrix, Matrix]
         """
         LU matrix decomposition
         """
-        L, U = sm.Matrix(self).LU()
+        L, U = self.mat.LU()
         return self.__class__(L), self.__class__(U)
 
     def LDL(self):
-        # type: () -> T.Tuple[Matrix, Matrix]
+        # type: () -> _T.Tuple[Matrix, Matrix]
         """
         LDL matrix decomposition (stable cholesky)
         """
-        L, D = sm.Matrix(self).LU()
+        L, D = self.mat.LU()
         return self.__class__(L), self.__class__(D)
 
     def FFLU(self):
-        # type: () -> T.Tuple[Matrix, Matrix]
+        # type: () -> _T.Tuple[Matrix, Matrix]
         """
         Fraction-free LU matrix decomposition
         """
-        L, U = sm.Matrix(self).FFLU()
+        L, U = self.mat.FFLU()
         return self.__class__(L), self.__class__(U)
 
     def FFLDU(self):
-        # type: () -> T.Tuple[Matrix, Matrix, Matrix]
+        # type: () -> _T.Tuple[Matrix, Matrix, Matrix]
         """
         Fraction-free LDU matrix decomposition
         """
-        L, D, U = sm.Matrix(self).FFLDU()
+        L, D, U = self.mat.FFLDU()
         return self.__class__(L), self.__class__(D), self.__class__(U)
 
     def solve(self, b, method="LU"):
@@ -591,13 +683,13 @@ class Matrix(sm.Matrix, LieGroup):
         """
         Solve a linear system using the given method.
         """
-        return self.__class__(sm.Matrix(self).solve(b, method=method))
+        return self.__class__(self.mat.solve(b, method=method))
 
     __truediv__ = __div__
 
     @staticmethod
     def are_parallel(a, b, epsilon):
-        # type: (Matrix, Matrix, T.Scalar) -> T.Scalar
+        # type: (Matrix31, Matrix31, _T.Scalar) -> _T.Scalar
         """
         Returns 1 if a and b are parallel within epsilon, and 0 otherwise.
         """
@@ -609,6 +701,20 @@ class Matrix(sm.Matrix, LieGroup):
         Perform numerical evaluation of each element in the matrix.
         """
         return self.__class__.from_storage([ops.StorageOps.evalf(v) for v in self.to_storage()])
+
+    def to_list(self):
+        # type: () -> _T.List[_T.List[_T.Scalar]]
+        """
+        Convert to a nested list
+        """
+        return self.mat.tolist()
+
+    def to_flat_list(self):
+        # type: () -> _T.List[_T.Scalar]
+        """
+        Convert to a flattened list
+        """
+        return list(self.mat)
 
     def to_numpy(self, scalar_type=np.float64):
         # type: (type) -> np.ndarray
@@ -636,7 +742,7 @@ class Matrix(sm.Matrix, LieGroup):
             assert col.shape == columns[0].shape
             assert sum([dim > 1 for dim in col.shape]) <= 1
 
-        return cls([list(col) for col in columns]).T
+        return cls([col.to_flat_list() for col in columns]).T
 
     def _assert_is_vector(self):
         # type: () -> None
@@ -659,6 +765,45 @@ class Matrix(sm.Matrix, LieGroup):
         Return True if this is a type with fixed dimensions set, ie Matrix31 instead of Matrix.
         """
         return cls.SHAPE[0] > 0 and cls.SHAPE[1] > 0
+
+    def _ipython_display_(self):
+        # type: () -> None
+        """
+        Display self.mat in IPython, with SymPy's pretty printing
+        """
+        display(self.mat)  # type: ignore # not defined outside of ipython
+
+    @staticmethod
+    def init_printing():
+        # type: () -> None
+        """
+        Initialize SymPy pretty printing
+
+        _ipython_display_ is sufficient in Jupyter, but this covers other locations
+        """
+        ip = None
+        try:
+            ip = get_ipython()  # type: ignore # only exists in ipython
+        except NameError:
+            pass
+
+        if ip is not None:
+            plaintext_formatter = ip.display_formatter.formatters["text/plain"]
+            sympy_plaintext_formatter = plaintext_formatter.for_type(sm.Matrix)
+            if sympy_plaintext_formatter is not None:
+                plaintext_formatter.for_type(
+                    Matrix, lambda arg, p, cycle: sympy_plaintext_formatter(arg.mat, p, cycle)
+                )
+
+            png_formatter = ip.display_formatter.formatters["image/png"]
+            sympy_png_formatter = png_formatter.for_type(sm.Matrix)
+            if sympy_png_formatter is not None:
+                png_formatter.for_type(Matrix, lambda o: sympy_png_formatter(o.mat))
+
+            latex_formatter = ip.display_formatter.formatters["text/latex"]
+            sympy_latex_formatter = latex_formatter.for_type(sm.Matrix)
+            if sympy_latex_formatter is not None:
+                latex_formatter.for_type(Matrix, lambda o: sympy_latex_formatter(o.mat))
 
 
 # -----------------------------------------------------------------------------
@@ -869,11 +1014,11 @@ DIMS_TO_FIXED_TYPE = {
         Matrix81,
         Matrix91,
     )
-}  # type: T.Dict[T.Tuple[int, int], type]
+}  # type: _T.Dict[_T.Tuple[int, int], type]
 
 
 def fixed_type_from_shape(shape):
-    # type: (T.Tuple[int, int]) -> type
+    # type: (_T.Tuple[int, int]) -> type
     """
     Return a fixed size matrix type (like Matrix32) given a shape. Either use the statically
     defined ones or dynamically create a new one if not available.
@@ -938,3 +1083,7 @@ I3 = I33 = M33.matrix_identity
 I4 = I44 = M44.matrix_identity
 I5 = I55 = M55.matrix_identity
 I6 = I66 = M66.matrix_identity
+
+
+# Register printing for ipython
+Matrix.init_printing()

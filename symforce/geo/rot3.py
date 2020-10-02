@@ -86,7 +86,7 @@ class Rot3(LieGroup):
     def from_tangent(cls, v, epsilon=0):
         # type: (T.Sequence[T.Scalar], T.Scalar) -> Rot3
         vm = Matrix(v)
-        theta_sq = vm.dot(vm)
+        theta_sq = vm.squared_norm()
         theta = sm.sqrt(theta_sq + epsilon ** 2)
         assert theta != 0, "Trying to divide by zero, provide epsilon!"
         return cls(Quaternion(xyz=sm.sin(theta / 2) / theta * vm, w=sm.cos(theta / 2)))
@@ -117,8 +117,8 @@ class Rot3(LieGroup):
 
     @classmethod
     def hat(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> T.List[T.List[T.Scalar]]
-        return [[0, -vec[2], vec[1]], [vec[2], 0, -vec[0]], [-vec[1], vec[0], 0]]
+        # type: (T.Sequence[T.Scalar]) -> Matrix33
+        return Matrix33([[0, -vec[2], vec[1]], [vec[2], 0, -vec[0]], [-vec[1], vec[0], 0]])
 
     def storage_D_tangent(self):
         # type: () -> Matrix43
@@ -143,7 +143,7 @@ class Rot3(LieGroup):
         """
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
-        return 4 * self.storage_D_tangent().T
+        return 4 * T.cast(Matrix34, self.storage_D_tangent().T)
 
     # -------------------------------------------------------------------------
     # Helper methods
@@ -164,9 +164,8 @@ class Rot3(LieGroup):
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
-        if isinstance(right, sm.Matrix):
-            assert right.shape == (3, 1), right.shape
-            return self.to_rotation_matrix() * right
+        if isinstance(right, V3):
+            return T.cast(Matrix31, self.to_rotation_matrix() * right)
         elif isinstance(right, Rot3):
             return self.compose(right)
         else:
@@ -177,7 +176,7 @@ class Rot3(LieGroup):
         """
         Converts to a rotation matrix
         """
-        return Matrix(
+        return Matrix33(
             [
                 [
                     1 - 2 * self.q.y ** 2 - 2 * self.q.z ** 2,
@@ -272,11 +271,11 @@ class Rot3(LieGroup):
 
         # If a.dot(b) == -1, it's a degenerate case and we need to return a 180 rotation
         # about a *different* axis. We select either the unit X or unit Y axis.
-        is_valid = (sm.sign(sm.Abs(a.dot(b) + one) - epsilon) + one) / two
+        is_valid = (sm.sign(sm.Abs(a.dot(b)[0, 0] + one) - epsilon) + one) / two
         is_x_vec = V3.are_parallel(a, V3(one, 0, 0), epsilon)
         non_parallel_vec = is_x_vec * V3(0, one, 0) + (one - is_x_vec) * V3(one, 0, 0)
 
-        m = sm.sqrt(two + two * a.dot(b) + epsilon)
+        m = sm.sqrt(two + two * a.dot(b)[0, 0] + epsilon)
         return cls(
             Quaternion(
                 xyz=is_valid * a.cross(b) / m + (one - is_valid) * non_parallel_vec,

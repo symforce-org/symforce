@@ -13,6 +13,9 @@ from symforce.codegen import template_util
 from symforce.codegen import codegen_util
 from symforce.codegen import types_package_codegen
 
+Element = T.Any
+ElementOrType = T.Union[Element, T.Type]
+
 CURRENT_DIR = os.path.dirname(__file__)
 
 
@@ -111,7 +114,7 @@ class Codegen(object):
         cls,
         name,  # type: str
         func,  # type: T.Callable
-        input_types,  # type: T.Sequence[T.Type]
+        input_types,  # type: T.Sequence[ElementOrType]
         mode,  # type: codegen_util.CodegenMode
         output_names=None,  # type: T.Sequence[str]
         return_key=None,  # type: str

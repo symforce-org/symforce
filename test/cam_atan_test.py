@@ -41,7 +41,9 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
 
             _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
-            linear_camera_cal = cam.LinearCameraCal(cam_cal.focal_length, cam_cal.principal_point)
+            linear_camera_cal = cam.LinearCameraCal(
+                cam_cal.focal_length.to_flat_list(), cam_cal.principal_point.to_flat_list()
+            )
             distorted_unit_depth_coords = linear_camera_cal.unit_depth_from_pixel(pixel)
             distorted_radius = distorted_unit_depth_coords.norm()
             if abs(distorted_radius * cam_cal.distortion_coeffs[0]) >= np.pi / 2.0:

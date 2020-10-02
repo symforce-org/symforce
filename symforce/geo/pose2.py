@@ -3,6 +3,9 @@ from symforce import sympy as sm
 from symforce import types as T
 
 from .matrix import Matrix
+from .matrix import Matrix13
+from .matrix import Matrix21
+from .matrix import Matrix33
 from .matrix import Vector1
 from .matrix import Vector2
 from .matrix import Vector3
@@ -32,7 +35,7 @@ class Pose2(LieGroup):
         self.t = t or Vector2()
 
         assert isinstance(self.R, Rot2)
-        assert isinstance(self.t, sm.MatrixBase)
+        assert isinstance(self.t, Vector2)
         assert self.t.shape == (2, 1), self.t.shape
 
     # -------------------------------------------------------------------------
@@ -122,10 +125,13 @@ class Pose2(LieGroup):
 
     @classmethod
     def hat(cls, vec):
-        # type: (T.List[T.Scalar]) -> T.List[T.Scalar]
-        t_tangent = Vector2(vec[0], vec[1])
-        R_tangent = Vector1(vec[2])
-        return Matrix(Rot2.hat(R_tangent)).row_join(t_tangent).col_join(Matrix.zeros(1, 3)).tolist()
+        # type: (T.List[T.Scalar]) -> Matrix33
+        t_tangent = [vec[0], vec[1]]
+        R_tangent = [vec[2]]
+        top_left = Rot2.hat(R_tangent)
+        top_right = Matrix21(t_tangent)
+        bottom = Matrix13.zero()
+        return T.cast(Matrix33, top_left.row_join(top_right).col_join(bottom))
 
     def storage_D_tangent(self):
         # type: () -> Matrix
@@ -164,7 +170,7 @@ class Pose2(LieGroup):
         Returns:
             (Pose2 | R2)
         """
-        if isinstance(right, sm.MatrixBase):
+        if isinstance(right, Matrix):
             assert right.shape == (2, 1), right.shape
             return self.R * right + self.t
         elif isinstance(right, Pose2):

@@ -48,14 +48,15 @@ class CameraCal(Storage):
         with sm.scope(name):
             if cls.NUM_DISTORTION_COEFFS > 0:
                 return cls(
-                    focal_length=geo.V2(sm.symbols("f_x f_y")),
-                    principal_point=geo.V2(sm.symbols("c_x c_y")),
-                    distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1).symbolic("C"),
+                    focal_length=sm.symbols("f_x f_y"),
+                    principal_point=sm.symbols("c_x c_y"),
+                    distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
+                    .symbolic("C")
+                    .to_flat_list(),
                 )
             else:
                 return cls(
-                    focal_length=geo.V2(sm.symbols("f_x f_y")),
-                    principal_point=geo.V2(sm.symbols("c_x c_y")),
+                    focal_length=sm.symbols("f_x f_y"), principal_point=sm.symbols("c_x c_y"),
                 )
 
     def __repr__(self):

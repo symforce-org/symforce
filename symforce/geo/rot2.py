@@ -94,24 +94,24 @@ class Rot2(LieGroup):
 
     @classmethod
     def hat(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> T.List[T.List[T.Scalar]]
+        # type: (T.Sequence[T.Scalar]) -> Matrix22
         assert len(vec) == 1
         theta = vec[0]
-        return [[0, -theta], [theta, 0]]
+        return Matrix22([[0, -theta], [theta, 0]])
 
     def storage_D_tangent(self):
         # type: () -> Matrix21
         """
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
-        return Matrix([[-self.z.imag], [self.z.real]])
+        return Matrix21([[-self.z.imag], [self.z.real]])
 
     def tangent_D_storage(self):
         # type: () -> Matrix12
         """
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
-        return self.storage_D_tangent().T
+        return T.cast(Matrix12, self.storage_D_tangent().T)
 
     # -------------------------------------------------------------------------
     # Helper methods
@@ -127,14 +127,19 @@ class Rot2(LieGroup):
         # type: (Rot2) -> Rot2
         pass
 
+    @T.overload
+    def __mul__(self, right):  # pragma: no cover
+        # type: (sm.Matrix) -> sm.Matrix
+        pass
+
     def __mul__(self, right):
         # type: (T.Union[Rot2, Matrix21]) -> T.Union[Rot2, Matrix21]
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
-        if isinstance(right, sm.Matrix):
+        if isinstance(right, (sm.Matrix, Matrix)):
             assert right.shape == (2, 1), right.shape
-            return self.to_rotation_matrix() * right
+            return T.cast(Matrix21, self.to_rotation_matrix() * right)
         elif isinstance(right, Rot2):
             return self.compose(right)
         else:
@@ -145,7 +150,7 @@ class Rot2(LieGroup):
         """
         A matrix representation of this element in the Euclidean space that contains it.
         """
-        return Matrix([[self.z.real, -self.z.imag], [self.z.imag, self.z.real]])
+        return Matrix22([[self.z.real, -self.z.imag], [self.z.imag, self.z.real]])
 
     @classmethod
     def random(cls):

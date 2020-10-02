@@ -92,6 +92,6 @@ class Camera(object):
         return sm.Mul(
             *[
                 sm.Max(0, sm.sign(bound - value - sm.S.One) * sm.sign(value))
-                for bound, value in zip(image_size, pixel)
+                for bound, value in zip(image_size.to_flat_list(), pixel.to_flat_list())
             ]
         )

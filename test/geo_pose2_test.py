@@ -31,12 +31,12 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         pertubation = list(float(f) for f in np.random.normal(scale=0.1, size=(dim,)))
 
         # Compute the hat matrix
-        hat = geo.M(element.hat(pertubation))
+        hat = element.hat(pertubation)
 
         # Take the matrix exponential (only supported with sympy)
         import sympy
 
-        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
+        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
         expmap = geo.Pose2.from_tangent(pertubation, epsilon=self.EPSILON)

@@ -51,12 +51,12 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
 
         # Compute the hat matrix
-        hat = geo.M(element.hat(pertubation))
+        hat = element.hat(pertubation)
 
         # Take the matrix exponential (only supported with sympy)
         import sympy
 
-        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
+        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
         expmap = geo.Rot2.from_tangent(pertubation, epsilon=self.EPSILON)
@@ -92,7 +92,9 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats
-            angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+            angles = np.array(
+                [sm.acos(P.dot(P_rot)[0, 0]) for P_rot in Ps_rotated], dtype=np.float64
+            )
 
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
@@ -103,8 +105,8 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
                 import matplotlib.pyplot as plt
 
                 _, ax = plt.subplots()
-                x = zip(*Ps_rotated)[0]
-                y = zip(*Ps_rotated)[1]
+                x = [point[0] for point in Ps_rotated]
+                y = [point[1] for point in Ps_rotated]
                 ax.plot(x, y, ".")
                 ax.set_aspect("equal")
                 plt.show()

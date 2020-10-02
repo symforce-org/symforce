@@ -90,7 +90,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(rot_0, R_0.to_rotation_matrix())
 
         # 180 degree rotation
-        rot_180 = geo.Matrix([[1, 0, 0], [0, -1, 0], [0, 0, -1]])
+        rot_180 = geo.Matrix33([[1, 0, 0], [0, -1, 0], [0, 0, -1]])
         R_180 = geo.Rot3.from_rotation_matrix(rot_180, epsilon=1e-10)
         self.assertNear(rot_180, R_180.to_rotation_matrix())
 
@@ -164,7 +164,9 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats
-            angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+            angles = np.array(
+                [sm.acos(P.dot(P_rot)[0, 0]) for P_rot in Ps_rotated], dtype=np.float64
+            )
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
             self.assertNear(np.mean(angles), np.pi / 2, places=1)
@@ -177,7 +179,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection="3d")
                 ax.set_aspect("equal")
-                ax.scatter(*zip(*Ps_rotated))
+                ax.scatter(*zip(point.to_flat_list() for point in Ps_rotated))
                 plt.show()
 
     def test_lie_exponential(self):
@@ -198,7 +200,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         # Take the matrix exponential (only supported with sympy)
         import sympy
 
-        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.Matrix(hat))))
+        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
         expmap = geo.Rot3.from_tangent(pertubation, epsilon=self.EPSILON)

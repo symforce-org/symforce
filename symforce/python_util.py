@@ -106,7 +106,7 @@ def scalar_like(a):
     if issubclass(a_type, (int, float, np.float32, np.float64)):
         return True
     is_expr = issubclass(a_type, sm.Expr)
-    is_matrix = issubclass(a_type, sm.MatrixBase)
+    is_matrix = issubclass(a_type, sm.MatrixBase) or (hasattr(a, "is_Matrix") and a.is_Matrix)
     return is_expr and not is_matrix
 
 

@@ -23,7 +23,9 @@ class EquidistantEpipolarCameraCal(CameraCal):
         ud_x = sm.atan2(point[0], cam_yz_norm)
         ud_y = sm.atan2(point[1], point[2] + epsilon)
 
-        linear_camera_cal = LinearCameraCal(self.focal_length, self.principal_point)
+        linear_camera_cal = LinearCameraCal(
+            self.focal_length.to_flat_list(), self.principal_point.to_flat_list()
+        )
         pixel = linear_camera_cal.pixel_from_unit_depth(geo.V2(ud_x, ud_y))
 
         is_valid = sm.Max(sm.sign(point[2]), 0)
@@ -31,7 +33,9 @@ class EquidistantEpipolarCameraCal(CameraCal):
 
     def camera_ray_from_pixel(self, pixel, epsilon=0):
         # type: (geo.Matrix21, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
-        linear_camera_cal = LinearCameraCal(self.focal_length, self.principal_point)
+        linear_camera_cal = LinearCameraCal(
+            self.focal_length.to_flat_list(), self.principal_point.to_flat_list()
+        )
         unit_depth = linear_camera_cal.unit_depth_from_pixel(pixel)
         xyz = geo.V3(
             sm.sin(unit_depth[0]),

@@ -7,6 +7,7 @@ from symforce import sympy as sm
 from symforce import types as T
 
 from .matrix import Matrix
+from .matrix import Matrix31
 from .matrix import Vector3
 
 
@@ -25,7 +26,7 @@ class Quaternion(Group):
     """
 
     def __init__(self, xyz, w):
-        # type: (Matrix, T.Scalar) -> None
+        # type: (Matrix31, T.Scalar) -> None
         """
         Construct from a real scalar and an imaginary unit vector.
 
@@ -33,8 +34,7 @@ class Quaternion(Group):
             xyz (Matrix): 3x1 vector
             w (Scalar):
         """
-        assert isinstance(xyz, sm.MatrixBase)
-        assert xyz.shape == (3, 1), xyz.shape
+        assert len(xyz) == 3
         self.xyz = xyz
         self.w = w
 
@@ -76,7 +76,7 @@ class Quaternion(Group):
     def from_storage(cls, vec):
         # type: (T.Sequence[T.Scalar]) -> Quaternion
         assert len(vec) == cls.storage_dim()
-        return cls(xyz=Matrix(vec[0:3]), w=vec[3])
+        return cls(xyz=Vector3(vec[0:3]), w=vec[3])
 
     @classmethod
     def symbolic(cls, name, **kwargs):
@@ -98,7 +98,7 @@ class Quaternion(Group):
         # type: (Quaternion) -> Quaternion
         return self.__class__(
             xyz=self.w * other.xyz + other.w * self.xyz + self.xyz.cross(other.xyz),
-            w=self.w * other.w - self.xyz.dot(other.xyz),
+            w=self.w * other.w - self.xyz.dot(other.xyz)[0, 0],
         )
 
     def inverse(self):
@@ -180,7 +180,7 @@ class Quaternion(Group):
         Returns:
             Scalar:
         """
-        return self.xyz.dot(self.xyz) + self.w ** 2
+        return self.xyz.dot(self.xyz)[0, 0] + self.w ** 2
 
     def conj(self):
         # type: () -> Quaternion
