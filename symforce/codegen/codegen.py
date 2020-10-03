@@ -401,12 +401,18 @@ class Codegen(object):
         # Get docstring
         docstring_lines = self.docstring.split("\n")[:-1]
 
-        # Helper to handle use_product_manifold_for_pose3
+        # Helpers to handle use_product_manifold_for_pose3
         def storage_D_tangent(v):
             # type: (T.Any) -> geo.Matrix
             if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
                 v = Values(R=v.R, t=v.t)
             return ops.LieGroupOps.storage_D_tangent(v)
+
+        def tangent_D_storage(v):
+            # type: (T.Any) -> geo.Matrix
+            if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
+                v = Values(R=v.R, t=v.t)
+            return ops.LieGroupOps.tangent_D_storage(v)
 
         # Ensure the previous codegen has one output
         assert len(self.outputs.keys()) == 1
@@ -425,7 +431,7 @@ class Codegen(object):
         # to get jacobian wrt the tangent space of both the arg and the result
         input_args = list(self.inputs.items())
         result_storage = geo.M(ops.StorageOps.to_storage(result))
-        result_tangent_D_storage = storage_D_tangent(result).T
+        result_tangent_D_storage = tangent_D_storage(result)
         for arg_index in which_args:
             arg_name, arg = input_args[arg_index]
             result_storage_D_arg_storage = result_storage.jacobian(ops.StorageOps.to_storage(arg))
