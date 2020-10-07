@@ -462,7 +462,7 @@ def get_base_instance(obj):
 
 def generate_lcm_types(
     lcm_type_dir,  # type: str
-    typenames,  # type: T.Sequence[str]
+    lcm_files,  # type: T.Sequence[str]
 ):
     # type: (...) -> T.Dict[str, T.Any]
     """
@@ -470,23 +470,19 @@ def generate_lcm_types(
 
     Args:
         lcm_type_dir: Directory containing symforce-generated .lcm files
-        typenames: List of typenames defined by .lcm files. External types will be ignored.
+        lcm_files: List of .lcm files to process
     """
     python_types_dir = os.path.join(lcm_type_dir, "..", "python2.7", "lcmtypes")
     cpp_types_dir = os.path.join(lcm_type_dir, "..", "cpp", "lcmtypes")
     lcm_include_dir = os.path.join("lcmtypes")
 
-    for name in typenames:
-        if "." in name:
-            # External type, skip
-            continue
-
-        lcm_file = os.path.join(lcm_type_dir, "{}.lcm".format(name))
+    for lcm_file in lcm_files:
+        lcm_file_path = os.path.join(lcm_type_dir, lcm_file)
         if USE_SKYMARSHAL:
             python_util.execute_subprocess(
                 [
                     SKYMARSHAL_CMD,
-                    lcm_file,
+                    lcm_file_path,
                     "--python",
                     "--python-path",
                     python_types_dir,
@@ -496,7 +492,7 @@ def generate_lcm_types(
             python_util.execute_subprocess(
                 [
                     SKYMARSHAL_CMD,
-                    lcm_file,
+                    lcm_file_path,
                     "--cpp",
                     "--cpp-hpath",
                     cpp_types_dir,
@@ -506,12 +502,12 @@ def generate_lcm_types(
             )
         else:
             python_util.execute_subprocess(
-                [LCM_GEN_CMD, lcm_file, "--python", "--ppath", python_types_dir]
+                [LCM_GEN_CMD, lcm_file_path, "--python", "--ppath", python_types_dir]
             )
             python_util.execute_subprocess(
                 [
                     LCM_GEN_CMD,
-                    lcm_file,
+                    lcm_file_path,
                     "--cpp",
                     "--cpp-hpath",
                     cpp_types_dir,

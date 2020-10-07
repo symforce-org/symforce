@@ -329,7 +329,7 @@ class Codegen(object):
         templates.render()
         lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data["lcm_type_dir"],
-            typenames=types_codegen_data["types_dict"].keys(),
+            lcm_files=types_codegen_data["lcm_files"],
         )
         output_data.update(lcm_data)
 

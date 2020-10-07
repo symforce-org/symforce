@@ -71,22 +71,27 @@ def generate_types(
 
     types_util = {"np.prod": np.prod}
 
-    if len(types_dict) > 0:
-        logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
-        lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "type.lcm.jinja")
-
+    types_to_generate = []
     for typename in types_dict:
         # If a module is specified, this type is external - don't generate it
         if "." in typename:
             continue
+        types_to_generate.append(typename)
+
+    lcm_files = []
+    if len(types_to_generate) > 0:
+        logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
+        lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "types.lcm.jinja")
 
         # Type definition
+        lcm_file_name = "{}.lcm".format(package_name)
+        lcm_files.append(lcm_file_name)
         templates.add(
             lcm_template,
-            os.path.join(lcm_type_dir, "{}.lcm".format(typename)),
+            os.path.join(lcm_type_dir, lcm_file_name),
             dict(
                 data,
-                typename=typename,
+                types_to_generate=types_to_generate,
                 types_util=types_util,
                 use_eigen_types=codegen_util.USE_SKYMARSHAL,
             ),
@@ -102,6 +107,7 @@ def generate_types(
     # Save outputs and intermediates
     codegen_data["output_dir"] = output_dir
     codegen_data["lcm_type_dir"] = lcm_type_dir
+    codegen_data["lcm_files"] = lcm_files
     codegen_data["types_dict"] = types_dict
 
     # Save mapping between names of types and their namespace/typename. This is used, e.g.,
@@ -135,7 +141,7 @@ def generate_types(
 
     if not using_external_templates:
         templates.render()
-        lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, types_dict.keys())
+        lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, lcm_files)
         codegen_data.update(lcm_data)
 
     return codegen_data
