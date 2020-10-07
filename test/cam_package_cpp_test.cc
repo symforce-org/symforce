@@ -157,6 +157,13 @@ void TestCamera(const T& cam_cal) {
   assertTrue(cam.Calibration() == cam_cal);
   assertTrue(cam.ImageSize() == image_size);
 
+  assertTrue(cam.FocalLength() == cam_cal.FocalLength());
+  assertTrue(cam.PrincipalPoint() == cam_cal.PrincipalPoint());
+  const auto focal_length_expected = cam_cal.Data().template head<2>();
+  assertTrue(cam.FocalLength() == focal_length_expected);
+  const auto principal_point_expected = cam_cal.Data().template segment<2>(2);
+  assertTrue(cam.PrincipalPoint() == principal_point_expected);
+
   // Check a pixel that's out of the image
   Eigen::Matrix<Scalar, 2, 1> invalid_pixel;
   invalid_pixel << -1, -1;

@@ -53,7 +53,17 @@ class LinearCameraCal {
   // --------------------------------------------------------------------------
   // Camera model methods
   // --------------------------------------------------------------------------
-  
+
+  /**
+  * Return the focal length.
+  */
+  Eigen::Matrix<Scalar, 2, 1> FocalLength() const;
+
+  /**
+  * Return the principal point.
+  */
+  Eigen::Matrix<Scalar, 2, 1> PrincipalPoint() const;
+
   /**
   * Project a 3D point in the camera frame into 2D pixel coordinates.
   *
@@ -63,7 +73,7 @@ class LinearCameraCal {
   *
   */
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const;
-  
+
   /**
   * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
   *

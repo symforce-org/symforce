@@ -23,6 +23,15 @@ class Camera {
     : calibration_(calibration),
       image_size_(image_size) {
   }
+
+  Eigen::Matrix<Scalar, 2, 1> FocalLength() const {
+    return calibration_.FocalLength();
+  }
+
+  Eigen::Matrix<Scalar, 2, 1> PrincipalPoint() const {
+    return calibration_.PrincipalPoint();
+  }
+
   {{ util.print_docstring(doc.pixel_from_camera_point) | indent(2) }}
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
     const Eigen::Matrix<Scalar, 2, 1> pixel = calibration_.PixelFromCameraPoint(point, epsilon, is_valid);

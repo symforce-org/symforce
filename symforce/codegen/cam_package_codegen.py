@@ -34,6 +34,24 @@ def make_camera_funcs(cls, mode):
     """
     return [
         Codegen.function(
+            name="FocalLength",
+            func=lambda self: self.focal_length,
+            input_types=[cls],
+            mode=mode,
+            output_names=["focal_length"],
+            return_key="focal_length",
+            docstring="\nReturn the focal length.",
+        ),
+        Codegen.function(
+            name="PrincipalPoint",
+            func=lambda self: self.principal_point,
+            input_types=[cls],
+            mode=mode,
+            output_names=["principal_point"],
+            return_key="principal_point",
+            docstring="\nReturn the principal point.",
+        ),
+        Codegen.function(
             name="PixelFromCameraPoint",
             func=cls.pixel_from_camera_point,
             mode=mode,

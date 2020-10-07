@@ -21,6 +21,15 @@ class Camera {
     : calibration_(calibration),
       image_size_(image_size) {
   }
+
+  Eigen::Matrix<Scalar, 2, 1> FocalLength() const {
+    return calibration_.FocalLength();
+  }
+
+  Eigen::Matrix<Scalar, 2, 1> PrincipalPoint() const {
+    return calibration_.PrincipalPoint();
+  }
+
   
   /**
   * Project a 3D point in the camera frame into 2D pixel coordinates.

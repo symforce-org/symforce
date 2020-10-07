@@ -12,6 +12,40 @@ template class cam::EquidistantEpipolarCameraCal<float>;
 namespace cam {
 
 template <typename Scalar>
+Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::FocalLength() const {
+    // Input arrays
+    const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+    // Intermediate terms (0)
+
+    // Output terms (1)
+    Eigen::Matrix<Scalar, 2, 1> _focal_length;
+
+    _focal_length(0, 0) = _self[0];
+    _focal_length(1, 0) = _self[1];
+
+
+    return _focal_length;
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PrincipalPoint() const {
+    // Input arrays
+    const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+    // Intermediate terms (0)
+
+    // Output terms (1)
+    Eigen::Matrix<Scalar, 2, 1> _principal_point;
+
+    _principal_point(0, 0) = _self[2];
+    _principal_point(1, 0) = _self[3];
+
+
+    return _principal_point;
+}
+
+template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
