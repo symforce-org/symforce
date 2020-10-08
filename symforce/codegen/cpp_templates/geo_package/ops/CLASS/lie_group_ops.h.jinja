@@ -7,7 +7,12 @@
 
 #include <Eigen/Dense>
 
-#include <geo/{{ camelcase_to_snakecase(cls.__name__) }}.h>
+#include "../lie_group_ops.h"
+
+// Forward declare class, without including header
+namespace geo {
+template<typename ScalarType> class {{ cls.__name__ }};
+}  // namespace geo
 
 namespace geo {
 namespace {{ camelcase_to_snakecase(cls.__name__) }} {
@@ -24,7 +29,7 @@ struct LieGroupOps {
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
   {% for spec in specs['LieGroupOps'] %}
-  static {{ util.function_declaration(spec) -}};
+  static {{ util.function_declaration(spec, is_declaration=True) -}};
   {% endfor %}
 };
 

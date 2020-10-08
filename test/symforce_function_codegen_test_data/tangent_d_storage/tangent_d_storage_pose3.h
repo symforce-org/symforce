@@ -85,7 +85,6 @@ Eigen::Matrix<Scalar, 6, 7> Tangent_D_Storage(const geo::Pose3<Scalar>& a, const
     _res(5, 5) = -_tmp14 + _tmp15;
     _res(5, 6) = _tmp13 + _tmp7 + 1;
 
-
     return _res;
 }
 

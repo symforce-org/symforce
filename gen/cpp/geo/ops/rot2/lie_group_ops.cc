@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <geo/rot2.h>
 
 #include "./lie_group_ops.h"
 
@@ -22,7 +23,6 @@ geo::Rot2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 1
     _res[0] = std::cos(vec(0, 0));
     _res[1] = std::sin(vec(0, 0));
 
-
     return geo::Rot2<Scalar>(_res);
 }
 
@@ -37,7 +37,6 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot2<Scala
     Eigen::Matrix<Scalar, 1, 1> _res;
 
     _res(0, 0) = std::atan2(_a[1], _a[0]);
-
 
     return _res;
 }
@@ -57,7 +56,6 @@ geo::Rot2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Rot2<Scalar>& a, const
     _res[0] = _a[0]*_tmp1 - _a[1]*_tmp0;
     _res[1] = _a[0]*_tmp0 + _a[1]*_tmp1;
 
-
     return geo::Rot2<Scalar>(_res);
 }
 
@@ -76,7 +74,6 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot
     Eigen::Matrix<Scalar, 1, 1> _res;
 
     _res(0, 0) = std::atan2(-_b[0]*_tmp2 + _b[1]*_tmp1, _b[0]*_tmp1 + _b[1]*_tmp2);
-
 
     return _res;
 }

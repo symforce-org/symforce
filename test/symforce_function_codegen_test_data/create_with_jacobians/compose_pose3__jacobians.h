@@ -23,12 +23,10 @@ namespace sym {
 *     geo.Matrix: Jacobian for arg 1 (b)
 */
 template <typename Scalar>
-void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, Eigen::Matrix<Scalar, 6, 6>* const res_D_a, Eigen::Matrix<Scalar, 6, 6>* const res_D_b) {
+void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
     // Input arrays
     const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
     const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
-    assert( res_D_a != nullptr );
-    assert( res_D_b != nullptr );
 
     // Intermediate terms (190)
     const Scalar _tmp0 = _a[0]*_b[3] + _a[1]*_b[2] - _a[2]*_b[1] + _a[3]*_b[0];
@@ -223,82 +221,87 @@ void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar
     const Scalar _tmp189 = _tmp172 + _tmp173;
 
     // Output terms (2)
-    Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
-    Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
+    if ( res_D_a != nullptr ) {
+        Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = -_a[0]*_tmp14 + _tmp20*_tmp21 - _tmp28*_tmp29 + _tmp37*_tmp38;
-    _res_D_a(0, 1) = -_a[1]*_tmp14 + _tmp20*_tmp38 - _tmp21*_tmp37 + _tmp28*_tmp39;
-    _res_D_a(0, 2) = -_tmp13*_tmp21 - _tmp20*_tmp39 + _tmp28*_tmp38 + _tmp29*_tmp37;
-    _res_D_a(0, 3) = 0;
-    _res_D_a(0, 4) = 0;
-    _res_D_a(0, 5) = 0;
-    _res_D_a(1, 0) = -_a[1]*_tmp42 + _tmp21*_tmp44 + _tmp38*_tmp46 - _tmp39*_tmp40;
-    _res_D_a(1, 1) = _a[0]*_tmp42 - _tmp21*_tmp46 - _tmp29*_tmp40 + _tmp38*_tmp44;
-    _res_D_a(1, 2) = _a[3]*_tmp42 - _tmp21*_tmp40 + _tmp29*_tmp46 - _tmp39*_tmp44;
-    _res_D_a(1, 3) = 0;
-    _res_D_a(1, 4) = 0;
-    _res_D_a(1, 5) = 0;
-    _res_D_a(2, 0) = _tmp21*_tmp49 - _tmp29*_tmp48 + _tmp38*_tmp50 - _tmp39*_tmp47;
-    _res_D_a(2, 1) = -_tmp21*_tmp50 - _tmp29*_tmp47 + _tmp38*_tmp49 + _tmp39*_tmp48;
-    _res_D_a(2, 2) = -_tmp21*_tmp47 + _tmp29*_tmp50 + _tmp38*_tmp48 - _tmp39*_tmp49;
-    _res_D_a(2, 3) = 0;
-    _res_D_a(2, 4) = 0;
-    _res_D_a(2, 5) = 0;
-    _res_D_a(3, 0) = _tmp21*_tmp83 - _tmp29*_tmp73 + _tmp38*_tmp94 - _tmp39*_tmp89;
-    _res_D_a(3, 1) = -_tmp21*_tmp94 - _tmp29*_tmp89 + _tmp38*_tmp83 + _tmp39*_tmp73;
-    _res_D_a(3, 2) = -_tmp21*_tmp89 + _tmp29*_tmp94 + _tmp38*_tmp73 - _tmp39*_tmp83;
-    _res_D_a(3, 3) = _tmp104;
-    _res_D_a(3, 4) = _tmp111;
-    _res_D_a(3, 5) = _tmp115;
-    _res_D_a(4, 0) = -_tmp122*_tmp39 - _tmp123*_tmp29 + _tmp124*_tmp21 + _tmp125*_tmp38;
-    _res_D_a(4, 1) = -_tmp122*_tmp29 + _tmp123*_tmp39 + _tmp124*_tmp38 - _tmp125*_tmp21;
-    _res_D_a(4, 2) = -_tmp122*_tmp21 + _tmp123*_tmp38 - _tmp124*_tmp39 + _tmp125*_tmp29;
-    _res_D_a(4, 3) = _tmp126;
-    _res_D_a(4, 4) = _tmp127;
-    _res_D_a(4, 5) = _tmp128;
-    _res_D_a(5, 0) = -_tmp132*_tmp29 - _tmp133*_tmp39 + _tmp134*_tmp21 + _tmp135*_tmp38;
-    _res_D_a(5, 1) = _tmp132*_tmp39 - _tmp133*_tmp29 + _tmp134*_tmp38 - _tmp135*_tmp21;
-    _res_D_a(5, 2) = _tmp132*_tmp38 - _tmp133*_tmp21 - _tmp134*_tmp39 + _tmp135*_tmp29;
-    _res_D_a(5, 3) = _tmp136;
-    _res_D_a(5, 4) = _tmp137;
-    _res_D_a(5, 5) = _tmp138;
-    _res_D_b(0, 0) = _tmp145 + _tmp152 + _tmp157*_tmp158 + _tmp160;
-    _res_D_b(0, 1) = -_tmp143*_tmp151 + _tmp157*_tmp162 + _tmp161 - _tmp163;
-    _res_D_b(0, 2) = -_tmp144*_tmp157 + _tmp150*_tmp162 - _tmp164 + _tmp165;
-    _res_D_b(0, 3) = 0;
-    _res_D_b(0, 4) = 0;
-    _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = -_tmp151*_tmp166 - _tmp161 + _tmp162*_tmp167 + _tmp163;
-    _res_D_b(1, 1) = _tmp144*_tmp166 + _tmp152 + _tmp168;
-    _res_D_b(1, 2) = -_tmp150*_tmp158 + _tmp162*_tmp166 - _tmp169 + _tmp170;
-    _res_D_b(1, 3) = 0;
-    _res_D_b(1, 4) = 0;
-    _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = -_tmp144*_tmp167 + _tmp162*_tmp171 + _tmp164 - _tmp165;
-    _res_D_b(2, 1) = _tmp143*_tmp162 - _tmp158*_tmp171 + _tmp169 - _tmp170;
-    _res_D_b(2, 2) = _tmp145 + _tmp151*_tmp171 + _tmp168;
-    _res_D_b(2, 3) = 0;
-    _res_D_b(2, 4) = 0;
-    _res_D_b(2, 5) = 0;
-    _res_D_b(3, 0) = 0;
-    _res_D_b(3, 1) = 0;
-    _res_D_b(3, 2) = 0;
-    _res_D_b(3, 3) = _tmp104*_tmp180 + _tmp111*_tmp177 + _tmp115*_tmp174;
-    _res_D_b(3, 4) = _tmp104*_tmp186 + _tmp111*_tmp185 + _tmp115*_tmp183;
-    _res_D_b(3, 5) = _tmp104*_tmp189 + _tmp111*_tmp187 + _tmp115*_tmp188;
-    _res_D_b(4, 0) = 0;
-    _res_D_b(4, 1) = 0;
-    _res_D_b(4, 2) = 0;
-    _res_D_b(4, 3) = _tmp126*_tmp180 + _tmp127*_tmp177 + _tmp128*_tmp174;
-    _res_D_b(4, 4) = _tmp126*_tmp186 + _tmp127*_tmp185 + _tmp128*_tmp183;
-    _res_D_b(4, 5) = _tmp126*_tmp189 + _tmp127*_tmp187 + _tmp128*_tmp188;
-    _res_D_b(5, 0) = 0;
-    _res_D_b(5, 1) = 0;
-    _res_D_b(5, 2) = 0;
-    _res_D_b(5, 3) = _tmp136*_tmp180 + _tmp137*_tmp177 + _tmp138*_tmp174;
-    _res_D_b(5, 4) = _tmp136*_tmp186 + _tmp137*_tmp185 + _tmp138*_tmp183;
-    _res_D_b(5, 5) = _tmp136*_tmp189 + _tmp137*_tmp187 + _tmp138*_tmp188;
+        _res_D_a(0, 0) = -_a[0]*_tmp14 + _tmp20*_tmp21 - _tmp28*_tmp29 + _tmp37*_tmp38;
+        _res_D_a(0, 1) = -_a[1]*_tmp14 + _tmp20*_tmp38 - _tmp21*_tmp37 + _tmp28*_tmp39;
+        _res_D_a(0, 2) = -_tmp13*_tmp21 - _tmp20*_tmp39 + _tmp28*_tmp38 + _tmp29*_tmp37;
+        _res_D_a(0, 3) = 0;
+        _res_D_a(0, 4) = 0;
+        _res_D_a(0, 5) = 0;
+        _res_D_a(1, 0) = -_a[1]*_tmp42 + _tmp21*_tmp44 + _tmp38*_tmp46 - _tmp39*_tmp40;
+        _res_D_a(1, 1) = _a[0]*_tmp42 - _tmp21*_tmp46 - _tmp29*_tmp40 + _tmp38*_tmp44;
+        _res_D_a(1, 2) = _a[3]*_tmp42 - _tmp21*_tmp40 + _tmp29*_tmp46 - _tmp39*_tmp44;
+        _res_D_a(1, 3) = 0;
+        _res_D_a(1, 4) = 0;
+        _res_D_a(1, 5) = 0;
+        _res_D_a(2, 0) = _tmp21*_tmp49 - _tmp29*_tmp48 + _tmp38*_tmp50 - _tmp39*_tmp47;
+        _res_D_a(2, 1) = -_tmp21*_tmp50 - _tmp29*_tmp47 + _tmp38*_tmp49 + _tmp39*_tmp48;
+        _res_D_a(2, 2) = -_tmp21*_tmp47 + _tmp29*_tmp50 + _tmp38*_tmp48 - _tmp39*_tmp49;
+        _res_D_a(2, 3) = 0;
+        _res_D_a(2, 4) = 0;
+        _res_D_a(2, 5) = 0;
+        _res_D_a(3, 0) = _tmp21*_tmp83 - _tmp29*_tmp73 + _tmp38*_tmp94 - _tmp39*_tmp89;
+        _res_D_a(3, 1) = -_tmp21*_tmp94 - _tmp29*_tmp89 + _tmp38*_tmp83 + _tmp39*_tmp73;
+        _res_D_a(3, 2) = -_tmp21*_tmp89 + _tmp29*_tmp94 + _tmp38*_tmp73 - _tmp39*_tmp83;
+        _res_D_a(3, 3) = _tmp104;
+        _res_D_a(3, 4) = _tmp111;
+        _res_D_a(3, 5) = _tmp115;
+        _res_D_a(4, 0) = -_tmp122*_tmp39 - _tmp123*_tmp29 + _tmp124*_tmp21 + _tmp125*_tmp38;
+        _res_D_a(4, 1) = -_tmp122*_tmp29 + _tmp123*_tmp39 + _tmp124*_tmp38 - _tmp125*_tmp21;
+        _res_D_a(4, 2) = -_tmp122*_tmp21 + _tmp123*_tmp38 - _tmp124*_tmp39 + _tmp125*_tmp29;
+        _res_D_a(4, 3) = _tmp126;
+        _res_D_a(4, 4) = _tmp127;
+        _res_D_a(4, 5) = _tmp128;
+        _res_D_a(5, 0) = -_tmp132*_tmp29 - _tmp133*_tmp39 + _tmp134*_tmp21 + _tmp135*_tmp38;
+        _res_D_a(5, 1) = _tmp132*_tmp39 - _tmp133*_tmp29 + _tmp134*_tmp38 - _tmp135*_tmp21;
+        _res_D_a(5, 2) = _tmp132*_tmp38 - _tmp133*_tmp21 - _tmp134*_tmp39 + _tmp135*_tmp29;
+        _res_D_a(5, 3) = _tmp136;
+        _res_D_a(5, 4) = _tmp137;
+        _res_D_a(5, 5) = _tmp138;
+    }
 
+    if ( res_D_b != nullptr ) {
+        Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
+
+        _res_D_b(0, 0) = _tmp145 + _tmp152 + _tmp157*_tmp158 + _tmp160;
+        _res_D_b(0, 1) = -_tmp143*_tmp151 + _tmp157*_tmp162 + _tmp161 - _tmp163;
+        _res_D_b(0, 2) = -_tmp144*_tmp157 + _tmp150*_tmp162 - _tmp164 + _tmp165;
+        _res_D_b(0, 3) = 0;
+        _res_D_b(0, 4) = 0;
+        _res_D_b(0, 5) = 0;
+        _res_D_b(1, 0) = -_tmp151*_tmp166 - _tmp161 + _tmp162*_tmp167 + _tmp163;
+        _res_D_b(1, 1) = _tmp144*_tmp166 + _tmp152 + _tmp168;
+        _res_D_b(1, 2) = -_tmp150*_tmp158 + _tmp162*_tmp166 - _tmp169 + _tmp170;
+        _res_D_b(1, 3) = 0;
+        _res_D_b(1, 4) = 0;
+        _res_D_b(1, 5) = 0;
+        _res_D_b(2, 0) = -_tmp144*_tmp167 + _tmp162*_tmp171 + _tmp164 - _tmp165;
+        _res_D_b(2, 1) = _tmp143*_tmp162 - _tmp158*_tmp171 + _tmp169 - _tmp170;
+        _res_D_b(2, 2) = _tmp145 + _tmp151*_tmp171 + _tmp168;
+        _res_D_b(2, 3) = 0;
+        _res_D_b(2, 4) = 0;
+        _res_D_b(2, 5) = 0;
+        _res_D_b(3, 0) = 0;
+        _res_D_b(3, 1) = 0;
+        _res_D_b(3, 2) = 0;
+        _res_D_b(3, 3) = _tmp104*_tmp180 + _tmp111*_tmp177 + _tmp115*_tmp174;
+        _res_D_b(3, 4) = _tmp104*_tmp186 + _tmp111*_tmp185 + _tmp115*_tmp183;
+        _res_D_b(3, 5) = _tmp104*_tmp189 + _tmp111*_tmp187 + _tmp115*_tmp188;
+        _res_D_b(4, 0) = 0;
+        _res_D_b(4, 1) = 0;
+        _res_D_b(4, 2) = 0;
+        _res_D_b(4, 3) = _tmp126*_tmp180 + _tmp127*_tmp177 + _tmp128*_tmp174;
+        _res_D_b(4, 4) = _tmp126*_tmp186 + _tmp127*_tmp185 + _tmp128*_tmp183;
+        _res_D_b(4, 5) = _tmp126*_tmp189 + _tmp127*_tmp187 + _tmp128*_tmp188;
+        _res_D_b(5, 0) = 0;
+        _res_D_b(5, 1) = 0;
+        _res_D_b(5, 2) = 0;
+        _res_D_b(5, 3) = _tmp136*_tmp180 + _tmp137*_tmp177 + _tmp138*_tmp174;
+        _res_D_b(5, 4) = _tmp136*_tmp186 + _tmp137*_tmp185 + _tmp138*_tmp183;
+        _res_D_b(5, 5) = _tmp136*_tmp189 + _tmp137*_tmp187 + _tmp138*_tmp188;
+    }
 
 
 }

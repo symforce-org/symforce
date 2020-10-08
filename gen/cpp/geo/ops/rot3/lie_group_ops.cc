@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <geo/rot3.h>
 
 #include "./lie_group_ops.h"
 
@@ -27,7 +28,6 @@ geo::Rot3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3
     _res[2] = _tmp2*vec(2, 0);
     _res[3] = std::cos(_tmp1);
 
-
     return geo::Rot3<Scalar>(_res);
 }
 
@@ -46,7 +46,6 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot3<Scala
     _res(0, 0) = _a[0]*_tmp1;
     _res(1, 0) = _a[1]*_tmp1;
     _res(2, 0) = _a[2]*_tmp1;
-
 
     return _res;
 }
@@ -74,7 +73,6 @@ geo::Rot3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Rot3<Scalar>& a, const
     _res[2] = _a[2]*_tmp5 - _tmp3*vec(0, 0) + _tmp6*vec(2, 0) + _tmp7*vec(1, 0);
     _res[3] = _a[3]*_tmp5 - _tmp3*vec(1, 0) - _tmp4*vec(2, 0) - _tmp7*vec(0, 0);
 
-
     return geo::Rot3<Scalar>(_res);
 }
 
@@ -94,7 +92,6 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot
     _res(0, 0) = _tmp1*(-_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0]);
     _res(1, 0) = _tmp1*(_a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1]);
     _res(2, 0) = _tmp1*(-_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2]);
-
 
     return _res;
 }

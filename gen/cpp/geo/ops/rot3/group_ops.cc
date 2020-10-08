@@ -30,7 +30,6 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Identity() {
     _res[2] = 0;
     _res[3] = 1;
 
-
     return geo::Rot3<Scalar>(_res);
 }
 
@@ -59,7 +58,6 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Inverse(const geo::Rot3<Scalar>& a) {
     _res[1] = -_a[1];
     _res[2] = -_a[2];
     _res[3] = _a[3];
-
 
     return geo::Rot3<Scalar>(_res);
 }
@@ -91,7 +89,6 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Compose(const geo::Rot3<Scalar>& a, const ge
     _res[1] = -_a[0]*_b[2] + _a[1]*_b[3] + _a[2]*_b[0] + _a[3]*_b[1];
     _res[2] = _a[0]*_b[1] - _a[1]*_b[0] + _a[2]*_b[3] + _a[3]*_b[2];
     _res[3] = -_a[0]*_b[0] - _a[1]*_b[1] - _a[2]*_b[2] + _a[3]*_b[3];
-
 
     return geo::Rot3<Scalar>(_res);
 }
@@ -126,6 +123,344 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Between(const geo::Rot3<Scalar>& a, const ge
     _res[2] = -_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2];
     _res[3] = _a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3];
 
+    return geo::Rot3<Scalar>(_res);
+}
+
+/**
+ *
+ * Inverse of the element a.
+ *
+ * Args:
+ *     a (Element):
+ *
+ * Returns:
+ *     Element: b such that a @ b = identity
+ *     geo.Matrix: Jacobian for arg 0 (a)
+ */
+template <typename Scalar>
+geo::Rot3<Scalar> GroupOps<Scalar>::InverseWithJacobian(const geo::Rot3<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
+    // Input arrays
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+
+    // Intermediate terms (13)
+    const Scalar _tmp0 = (_a[2] * _a[2]);
+    const Scalar _tmp1 = (_a[0] * _a[0]);
+    const Scalar _tmp2 = -(_a[3] * _a[3]);
+    const Scalar _tmp3 = (_a[1] * _a[1]);
+    const Scalar _tmp4 = _tmp2 + _tmp3;
+    const Scalar _tmp5 = -2*_a[0]*_a[1];
+    const Scalar _tmp6 = 2*_a[2];
+    const Scalar _tmp7 = _a[3]*_tmp6;
+    const Scalar _tmp8 = -_a[0]*_tmp6;
+    const Scalar _tmp9 = 2*_a[3];
+    const Scalar _tmp10 = _a[1]*_tmp9;
+    const Scalar _tmp11 = _a[0]*_tmp9;
+    const Scalar _tmp12 = -_a[1]*_tmp6;
+
+    // Output terms (2)
+    Eigen::Matrix<Scalar, 4, 1> _res;
+
+    _res[0] = -_a[0];
+    _res[1] = -_a[1];
+    _res[2] = -_a[2];
+    _res[3] = _a[3];
+
+    if ( res_D_a != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
+
+        _res_D_a(0, 0) = _tmp0 - _tmp1 + _tmp4;
+        _res_D_a(0, 1) = _tmp5 + _tmp7;
+        _res_D_a(0, 2) = -_tmp10 + _tmp8;
+        _res_D_a(1, 0) = _tmp5 - _tmp7;
+        _res_D_a(1, 1) = _tmp0 + _tmp1 + _tmp2 - _tmp3;
+        _res_D_a(1, 2) = _tmp11 + _tmp12;
+        _res_D_a(2, 0) = _tmp10 + _tmp8;
+        _res_D_a(2, 1) = -_tmp11 + _tmp12;
+        _res_D_a(2, 2) = -_tmp0 + _tmp1 + _tmp4;
+    }
+
+    return geo::Rot3<Scalar>(_res);
+}
+
+/**
+ *
+ * Composition of two elements in the group.
+ *
+ * Args:
+ *     a (Element):
+ *     b (Element):
+ *
+ * Returns:
+ *     Element: a @ b
+ *     geo.Matrix: Jacobian for arg 0 (a)
+ *     geo.Matrix: Jacobian for arg 1 (b)
+ */
+template <typename Scalar>
+geo::Rot3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+    // Input arrays
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
+
+    // Intermediate terms (79)
+    const Scalar _tmp0 = _a[0]*_b[3] + _a[1]*_b[2] - _a[2]*_b[1] + _a[3]*_b[0];
+    const Scalar _tmp1 = -_a[0]*_b[2] + _a[1]*_b[3] + _a[2]*_b[0] + _a[3]*_b[1];
+    const Scalar _tmp2 = _a[0]*_b[1] - _a[1]*_b[0] + _a[2]*_b[3] + _a[3]*_b[2];
+    const Scalar _tmp3 = -_a[0]*_b[0] - _a[1]*_b[1] - _a[2]*_b[2] + _a[3]*_b[3];
+    const Scalar _tmp4 = 2*_tmp2;
+    const Scalar _tmp5 = _b[0]*_tmp4;
+    const Scalar _tmp6 = 2*_tmp3;
+    const Scalar _tmp7 = _b[1]*_tmp6;
+    const Scalar _tmp8 = 2*_tmp1;
+    const Scalar _tmp9 = _b[3]*_tmp8;
+    const Scalar _tmp10 = 2*_tmp0;
+    const Scalar _tmp11 = _b[2]*_tmp10;
+    const Scalar _tmp12 = _tmp11 - _tmp9;
+    const Scalar _tmp13 = _tmp12 + _tmp5 - _tmp7;
+    const Scalar _tmp14 = (1.0/2.0)*_a[1];
+    const Scalar _tmp15 = _b[2]*_tmp8;
+    const Scalar _tmp16 = _b[0]*_tmp6;
+    const Scalar _tmp17 = _b[3]*_tmp10;
+    const Scalar _tmp18 = _b[1]*_tmp4;
+    const Scalar _tmp19 = -_tmp17 + _tmp18;
+    const Scalar _tmp20 = -_tmp15 + _tmp16 + _tmp19;
+    const Scalar _tmp21 = (1.0/2.0)*_a[0];
+    const Scalar _tmp22 = _b[0]*_tmp8;
+    const Scalar _tmp23 = _b[3]*_tmp4;
+    const Scalar _tmp24 = _b[1]*_tmp10;
+    const Scalar _tmp25 = _b[2]*_tmp6;
+    const Scalar _tmp26 = _tmp22 + _tmp23 + _tmp24 + _tmp25;
+    const Scalar _tmp27 = (1.0/2.0)*_a[2];
+    const Scalar _tmp28 = _b[0]*_tmp10;
+    const Scalar _tmp29 = _b[1]*_tmp8;
+    const Scalar _tmp30 = -_tmp29;
+    const Scalar _tmp31 = _b[2]*_tmp4;
+    const Scalar _tmp32 = -_tmp31;
+    const Scalar _tmp33 = _b[3]*_tmp6;
+    const Scalar _tmp34 = _tmp28 + _tmp30 + _tmp32 + _tmp33;
+    const Scalar _tmp35 = (1.0/2.0)*_a[3];
+    const Scalar _tmp36 = _tmp12 - _tmp5 + _tmp7;
+    const Scalar _tmp37 = _tmp15 + _tmp16 + _tmp17 + _tmp18;
+    const Scalar _tmp38 = -_tmp28 + _tmp33;
+    const Scalar _tmp39 = _tmp29 + _tmp32 + _tmp38;
+    const Scalar _tmp40 = _tmp22 - _tmp23;
+    const Scalar _tmp41 = _tmp24 - _tmp25 + _tmp40;
+    const Scalar _tmp42 = -_tmp24 + _tmp25 + _tmp40;
+    const Scalar _tmp43 = _tmp30 + _tmp31 + _tmp38;
+    const Scalar _tmp44 = _tmp15 - _tmp16 + _tmp19;
+    const Scalar _tmp45 = _tmp11 + _tmp5 + _tmp7 + _tmp9;
+    const Scalar _tmp46 = _a[2]*_tmp10;
+    const Scalar _tmp47 = _a[3]*_tmp8;
+    const Scalar _tmp48 = _a[0]*_tmp4;
+    const Scalar _tmp49 = _a[1]*_tmp6;
+    const Scalar _tmp50 = _tmp46 - _tmp47 - _tmp48 + _tmp49;
+    const Scalar _tmp51 = (1.0/2.0)*_b[1];
+    const Scalar _tmp52 = -_tmp50*_tmp51;
+    const Scalar _tmp53 = _a[0]*_tmp8;
+    const Scalar _tmp54 = _a[3]*_tmp4;
+    const Scalar _tmp55 = _a[1]*_tmp10;
+    const Scalar _tmp56 = _a[2]*_tmp6;
+    const Scalar _tmp57 = -_tmp53 + _tmp54 + _tmp55 - _tmp56;
+    const Scalar _tmp58 = (1.0/2.0)*_b[2];
+    const Scalar _tmp59 = _a[0]*_tmp6;
+    const Scalar _tmp60 = _a[3]*_tmp10;
+    const Scalar _tmp61 = _a[1]*_tmp4;
+    const Scalar _tmp62 = _a[2]*_tmp8;
+    const Scalar _tmp63 = _tmp59 - _tmp60 + _tmp61 - _tmp62;
+    const Scalar _tmp64 = (1.0/2.0)*_b[0];
+    const Scalar _tmp65 = _a[0]*_tmp10 + _a[1]*_tmp8 + _a[2]*_tmp4 + _a[3]*_tmp6;
+    const Scalar _tmp66 = (1.0/2.0)*_b[3];
+    const Scalar _tmp67 = _tmp65*_tmp66;
+    const Scalar _tmp68 = -_tmp63*_tmp64 + _tmp67;
+    const Scalar _tmp69 = _tmp50*_tmp64;
+    const Scalar _tmp70 = _tmp58*_tmp65;
+    const Scalar _tmp71 = _tmp58*_tmp63;
+    const Scalar _tmp72 = _tmp51*_tmp65;
+    const Scalar _tmp73 = -_tmp59 + _tmp60 - _tmp61 + _tmp62;
+    const Scalar _tmp74 = _tmp53 - _tmp54 - _tmp55 + _tmp56;
+    const Scalar _tmp75 = -_tmp58*_tmp74;
+    const Scalar _tmp76 = _tmp64*_tmp65;
+    const Scalar _tmp77 = _tmp51*_tmp74;
+    const Scalar _tmp78 = -_tmp46 + _tmp47 + _tmp48 - _tmp49;
+
+    // Output terms (3)
+    Eigen::Matrix<Scalar, 4, 1> _res;
+
+    _res[0] = _tmp0;
+    _res[1] = _tmp1;
+    _res[2] = _tmp2;
+    _res[3] = _tmp3;
+
+    if ( res_D_a != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
+
+        _res_D_a(0, 0) = -_tmp13*_tmp14 - _tmp20*_tmp21 + _tmp26*_tmp27 + _tmp34*_tmp35;
+        _res_D_a(0, 1) = _tmp13*_tmp21 - _tmp14*_tmp20 + _tmp26*_tmp35 - _tmp27*_tmp34;
+        _res_D_a(0, 2) = _tmp13*_tmp35 + _tmp14*_tmp34 - _tmp20*_tmp27 - _tmp21*_tmp26;
+        _res_D_a(1, 0) = -_tmp14*_tmp37 - _tmp21*_tmp36 + _tmp27*_tmp39 + _tmp35*_tmp41;
+        _res_D_a(1, 1) = -_tmp14*_tmp36 + _tmp21*_tmp37 - _tmp27*_tmp41 + _tmp35*_tmp39;
+        _res_D_a(1, 2) = _tmp14*_tmp41 - _tmp21*_tmp39 - _tmp27*_tmp36 + _tmp35*_tmp37;
+        _res_D_a(2, 0) = -_tmp14*_tmp43 - _tmp21*_tmp42 + _tmp27*_tmp44 + _tmp35*_tmp45;
+        _res_D_a(2, 1) = -_tmp14*_tmp42 + _tmp21*_tmp43 - _tmp27*_tmp45 + _tmp35*_tmp44;
+        _res_D_a(2, 2) = _tmp14*_tmp45 - _tmp21*_tmp44 - _tmp27*_tmp42 + _tmp35*_tmp43;
+    }
+
+    if ( res_D_b != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
+
+        _res_D_b(0, 0) = _tmp52 + _tmp57*_tmp58 + _tmp68;
+        _res_D_b(0, 1) = -_tmp51*_tmp63 + _tmp57*_tmp66 + _tmp69 - _tmp70;
+        _res_D_b(0, 2) = _tmp50*_tmp66 - _tmp57*_tmp64 - _tmp71 + _tmp72;
+        _res_D_b(1, 0) = -_tmp51*_tmp73 + _tmp66*_tmp74 - _tmp69 + _tmp70;
+        _res_D_b(1, 1) = _tmp52 + _tmp64*_tmp73 + _tmp67 + _tmp75;
+        _res_D_b(1, 2) = -_tmp50*_tmp58 + _tmp66*_tmp73 - _tmp76 + _tmp77;
+        _res_D_b(2, 0) = -_tmp64*_tmp74 + _tmp66*_tmp78 + _tmp71 - _tmp72;
+        _res_D_b(2, 1) = -_tmp58*_tmp78 + _tmp63*_tmp66 + _tmp76 - _tmp77;
+        _res_D_b(2, 2) = _tmp51*_tmp78 + _tmp68 + _tmp75;
+    }
+
+    return geo::Rot3<Scalar>(_res);
+}
+
+/**
+ *
+ * Returns the element that when composed with a produces b. For vector spaces it is b - a.
+ *
+ * Implementation is simply `compose(inverse(a), b)`.
+ *
+ * Args:
+ *     a (Element):
+ *     b (Element):
+ *
+ * Returns:
+ *     Element: c such that a @ c = b
+ *     geo.Matrix: Jacobian for arg 0 (a)
+ *     geo.Matrix: Jacobian for arg 1 (b)
+ */
+template <typename Scalar>
+geo::Rot3<Scalar> GroupOps<Scalar>::BetweenWithJacobians(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+    // Input arrays
+    const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+    const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
+
+    // Intermediate terms (82)
+    const Scalar _tmp0 = -_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0];
+    const Scalar _tmp1 = _a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1];
+    const Scalar _tmp2 = -_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2];
+    const Scalar _tmp3 = _a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3];
+    const Scalar _tmp4 = 2*_tmp2;
+    const Scalar _tmp5 = _b[1]*_tmp4;
+    const Scalar _tmp6 = 2*_tmp3;
+    const Scalar _tmp7 = _b[0]*_tmp6;
+    const Scalar _tmp8 = 2*_tmp0;
+    const Scalar _tmp9 = _b[3]*_tmp8;
+    const Scalar _tmp10 = 2*_b[2];
+    const Scalar _tmp11 = -_tmp1*_tmp10;
+    const Scalar _tmp12 = _tmp11 - _tmp9;
+    const Scalar _tmp13 = _tmp12 + _tmp5 + _tmp7;
+    const Scalar _tmp14 = (1.0/2.0)*_a[0];
+    const Scalar _tmp15 = 2*_tmp1;
+    const Scalar _tmp16 = _b[3]*_tmp15;
+    const Scalar _tmp17 = _b[1]*_tmp6;
+    const Scalar _tmp18 = _tmp0*_tmp10;
+    const Scalar _tmp19 = -_b[0]*_tmp4;
+    const Scalar _tmp20 = -_tmp18 + _tmp19;
+    const Scalar _tmp21 = _tmp16 + _tmp17 + _tmp20;
+    const Scalar _tmp22 = (1.0/2.0)*_a[1];
+    const Scalar _tmp23 = _b[0]*_tmp15;
+    const Scalar _tmp24 = -_tmp23;
+    const Scalar _tmp25 = -_b[1]*_tmp8;
+    const Scalar _tmp26 = _b[3]*_tmp4;
+    const Scalar _tmp27 = -_tmp26;
+    const Scalar _tmp28 = _tmp10*_tmp3;
+    const Scalar _tmp29 = _tmp24 + _tmp25 + _tmp27 - _tmp28;
+    const Scalar _tmp30 = (1.0/2.0)*_a[2];
+    const Scalar _tmp31 = _b[1]*_tmp15;
+    const Scalar _tmp32 = _tmp10*_tmp2;
+    const Scalar _tmp33 = _b[0]*_tmp8;
+    const Scalar _tmp34 = -_b[3]*_tmp6;
+    const Scalar _tmp35 = _tmp31 + _tmp32 - _tmp33 + _tmp34;
+    const Scalar _tmp36 = (1.0/2.0)*_a[3];
+    const Scalar _tmp37 = -_tmp16;
+    const Scalar _tmp38 = _tmp17 + _tmp18 + _tmp19 + _tmp37;
+    const Scalar _tmp39 = -_tmp5;
+    const Scalar _tmp40 = _tmp12 + _tmp39 - _tmp7;
+    const Scalar _tmp41 = _tmp33 + _tmp34;
+    const Scalar _tmp42 = -_tmp31 + _tmp32 + _tmp41;
+    const Scalar _tmp43 = _tmp25 + _tmp28;
+    const Scalar _tmp44 = _tmp24 + _tmp26 + _tmp43;
+    const Scalar _tmp45 = _tmp23 + _tmp27 + _tmp43;
+    const Scalar _tmp46 = _tmp31 - _tmp32 + _tmp41;
+    const Scalar _tmp47 = _tmp11 + _tmp39 + _tmp7 + _tmp9;
+    const Scalar _tmp48 = -_tmp17 + _tmp20 + _tmp37;
+    const Scalar _tmp49 = _a[2]*_tmp8;
+    const Scalar _tmp50 = _a[3]*_tmp15;
+    const Scalar _tmp51 = _a[1]*_tmp6;
+    const Scalar _tmp52 = _a[0]*_tmp4;
+    const Scalar _tmp53 = -1.0/2.0*_tmp49 - 1.0/2.0*_tmp50 - 1.0/2.0*_tmp51 + (1.0/2.0)*_tmp52;
+    const Scalar _tmp54 = -_b[1]*_tmp53;
+    const Scalar _tmp55 = _a[1]*_tmp8;
+    const Scalar _tmp56 = _a[0]*_tmp15;
+    const Scalar _tmp57 = _a[3]*_tmp4;
+    const Scalar _tmp58 = _a[2]*_tmp6;
+    const Scalar _tmp59 = -_tmp55 + _tmp56 + _tmp57 + _tmp58;
+    const Scalar _tmp60 = (1.0/2.0)*_b[2];
+    const Scalar _tmp61 = _a[3]*_tmp8;
+    const Scalar _tmp62 = _a[1]*_tmp4;
+    const Scalar _tmp63 = _a[2]*_tmp15;
+    const Scalar _tmp64 = _a[0]*_tmp6;
+    const Scalar _tmp65 = -_tmp61 - _tmp62 + _tmp63 - _tmp64;
+    const Scalar _tmp66 = (1.0/2.0)*_b[0];
+    const Scalar _tmp67 = -_a[0]*_tmp8 - _a[1]*_tmp15 - _a[2]*_tmp4 + _a[3]*_tmp6;
+    const Scalar _tmp68 = (1.0/2.0)*_b[3];
+    const Scalar _tmp69 = _tmp67*_tmp68;
+    const Scalar _tmp70 = -_tmp65*_tmp66 + _tmp69;
+    const Scalar _tmp71 = (1.0/2.0)*_b[1];
+    const Scalar _tmp72 = _b[0]*_tmp53;
+    const Scalar _tmp73 = _tmp60*_tmp67;
+    const Scalar _tmp74 = _tmp60*_tmp65;
+    const Scalar _tmp75 = _tmp67*_tmp71;
+    const Scalar _tmp76 = _tmp61 + _tmp62 - _tmp63 + _tmp64;
+    const Scalar _tmp77 = _tmp55 - _tmp56 - _tmp57 - _tmp58;
+    const Scalar _tmp78 = -_tmp60*_tmp77;
+    const Scalar _tmp79 = _tmp66*_tmp67;
+    const Scalar _tmp80 = _tmp71*_tmp77;
+    const Scalar _tmp81 = _tmp49 + _tmp50 + _tmp51 - _tmp52;
+
+    // Output terms (3)
+    Eigen::Matrix<Scalar, 4, 1> _res;
+
+    _res[0] = _tmp0;
+    _res[1] = _tmp1;
+    _res[2] = _tmp2;
+    _res[3] = _tmp3;
+
+    if ( res_D_a != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
+
+        _res_D_a(0, 0) = -_tmp13*_tmp14 - _tmp21*_tmp22 + _tmp29*_tmp30 + _tmp35*_tmp36;
+        _res_D_a(0, 1) = -_tmp13*_tmp22 + _tmp14*_tmp21 + _tmp29*_tmp36 - _tmp30*_tmp35;
+        _res_D_a(0, 2) = -_tmp13*_tmp30 - _tmp14*_tmp29 + _tmp21*_tmp36 + _tmp22*_tmp35;
+        _res_D_a(1, 0) = -_tmp14*_tmp38 - _tmp22*_tmp40 + _tmp30*_tmp42 + _tmp36*_tmp44;
+        _res_D_a(1, 1) = _tmp14*_tmp40 - _tmp22*_tmp38 - _tmp30*_tmp44 + _tmp36*_tmp42;
+        _res_D_a(1, 2) = -_tmp14*_tmp42 + _tmp22*_tmp44 - _tmp30*_tmp38 + _tmp36*_tmp40;
+        _res_D_a(2, 0) = -_tmp14*_tmp45 - _tmp22*_tmp46 + _tmp30*_tmp47 + _tmp36*_tmp48;
+        _res_D_a(2, 1) = _tmp14*_tmp46 - _tmp22*_tmp45 - _tmp30*_tmp48 + _tmp36*_tmp47;
+        _res_D_a(2, 2) = -_tmp14*_tmp47 + _tmp22*_tmp48 - _tmp30*_tmp45 + _tmp36*_tmp46;
+    }
+
+    if ( res_D_b != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
+
+        _res_D_b(0, 0) = _tmp54 + _tmp59*_tmp60 + _tmp70;
+        _res_D_b(0, 1) = _tmp59*_tmp68 - _tmp65*_tmp71 + _tmp72 - _tmp73;
+        _res_D_b(0, 2) = _b[3]*_tmp53 - _tmp59*_tmp66 - _tmp74 + _tmp75;
+        _res_D_b(1, 0) = _tmp68*_tmp77 - _tmp71*_tmp76 - _tmp72 + _tmp73;
+        _res_D_b(1, 1) = _tmp54 + _tmp66*_tmp76 + _tmp69 + _tmp78;
+        _res_D_b(1, 2) = -_b[2]*_tmp53 + _tmp68*_tmp76 - _tmp79 + _tmp80;
+        _res_D_b(2, 0) = -_tmp66*_tmp77 + _tmp68*_tmp81 + _tmp74 - _tmp75;
+        _res_D_b(2, 1) = -_tmp60*_tmp81 + _tmp65*_tmp68 + _tmp79 - _tmp80;
+        _res_D_b(2, 2) = _tmp70 + _tmp71*_tmp81 + _tmp78;
+    }
 
     return geo::Rot3<Scalar>(_res);
 }

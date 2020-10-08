@@ -27,12 +27,10 @@ namespace sym {
 *
 */
 template <typename Scalar>
-void PriorFactorRot3(const geo::Rot3<Scalar>& value, const geo::Rot3<Scalar>& prior, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res, Eigen::Matrix<Scalar, 3, 3>* const jac) {
+void PriorFactorRot3(const geo::Rot3<Scalar>& value, const geo::Rot3<Scalar>& prior, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res = nullptr, Eigen::Matrix<Scalar, 3, 3>* const jac = nullptr) {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _value = value.Data();
     const Eigen::Matrix<Scalar, 4, 1>& _prior = prior.Data();
-    assert( res != nullptr );
-    assert( jac != nullptr );
 
     // Intermediate terms (67)
     const Scalar _tmp0 = -_prior[0]*_value[1] + _prior[1]*_value[0] - _prior[2]*_value[3] + _prior[3]*_value[2];
@@ -104,22 +102,27 @@ void PriorFactorRot3(const geo::Rot3<Scalar>& value, const geo::Rot3<Scalar>& pr
     const Scalar _tmp66 = (1.0/2.0)*_tmp65;
 
     // Output terms (2)
-    Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
-    Eigen::Matrix<Scalar, 3, 3>& _jac = (*jac);
+    if ( res != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp0*_tmp9 + _tmp11*_tmp8 + _tmp13*sqrt_info(0, 0);
-    _res(1, 0) = _tmp0*_tmp14 + _tmp10*_tmp15 + _tmp12*_tmp16;
-    _res(2, 0) = _tmp10*_tmp18 + _tmp13*sqrt_info(2, 0) + _tmp17*_tmp8;
-    _jac(0, 0) = _tmp30*_value[2] - _tmp37*_value[0] - _tmp42*_value[1] + _tmp47*_tmp48;
-    _jac(0, 1) = _tmp29*_tmp48 - _tmp37*_value[1] + _tmp42*_value[0] - _tmp49*_value[2];
-    _jac(0, 2) = -_tmp30*_value[0] - _tmp37*_value[2] + _tmp42*_value[3] + _tmp49*_value[1];
-    _jac(1, 0) = _tmp48*_tmp56 - _tmp52*_value[1] - _tmp53*_value[0] + _tmp55*_value[2];
-    _jac(1, 1) = _tmp48*_tmp54 + _tmp52*_value[0] - _tmp53*_value[1] - _tmp57*_value[2];
-    _jac(1, 2) = _tmp52*_value[3] - _tmp53*_value[2] - _tmp55*_value[0] + _tmp57*_value[1];
-    _jac(2, 0) = _tmp48*_tmp65 - _tmp60*_value[0] + _tmp63*_value[2] - _tmp64*_value[1];
-    _jac(2, 1) = -_tmp60*_value[1] + _tmp63*_value[3] + _tmp64*_value[0] - _tmp66*_value[2];
-    _jac(2, 2) = -_tmp60*_value[2] - _tmp63*_value[0] + _tmp64*_value[3] + _tmp66*_value[1];
+        _res(0, 0) = _tmp0*_tmp9 + _tmp11*_tmp8 + _tmp13*sqrt_info(0, 0);
+        _res(1, 0) = _tmp0*_tmp14 + _tmp10*_tmp15 + _tmp12*_tmp16;
+        _res(2, 0) = _tmp10*_tmp18 + _tmp13*sqrt_info(2, 0) + _tmp17*_tmp8;
+    }
 
+    if ( jac != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 3>& _jac = (*jac);
+
+        _jac(0, 0) = _tmp30*_value[2] - _tmp37*_value[0] - _tmp42*_value[1] + _tmp47*_tmp48;
+        _jac(0, 1) = _tmp29*_tmp48 - _tmp37*_value[1] + _tmp42*_value[0] - _tmp49*_value[2];
+        _jac(0, 2) = -_tmp30*_value[0] - _tmp37*_value[2] + _tmp42*_value[3] + _tmp49*_value[1];
+        _jac(1, 0) = _tmp48*_tmp56 - _tmp52*_value[1] - _tmp53*_value[0] + _tmp55*_value[2];
+        _jac(1, 1) = _tmp48*_tmp54 + _tmp52*_value[0] - _tmp53*_value[1] - _tmp57*_value[2];
+        _jac(1, 2) = _tmp52*_value[3] - _tmp53*_value[2] - _tmp55*_value[0] + _tmp57*_value[1];
+        _jac(2, 0) = _tmp48*_tmp65 - _tmp60*_value[0] + _tmp63*_value[2] - _tmp64*_value[1];
+        _jac(2, 1) = -_tmp60*_value[1] + _tmp63*_value[3] + _tmp64*_value[0] - _tmp66*_value[2];
+        _jac(2, 2) = -_tmp60*_value[2] - _tmp63*_value[0] + _tmp64*_value[3] + _tmp66*_value[1];
+    }
 
 
 }

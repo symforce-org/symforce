@@ -15,10 +15,17 @@ namespace rot2 {
  */
 template <typename Scalar>
 struct GroupOps {
+  using SelfJacobian = Eigen::Matrix<Scalar,
+                                     geo::LieGroupOps<Rot2<Scalar>>::TangentDim(),
+                                     geo::LieGroupOps<Rot2<Scalar>>::TangentDim()>;
+
   static geo::Rot2<Scalar> Identity();
   static geo::Rot2<Scalar> Inverse(const geo::Rot2<Scalar>& a);
   static geo::Rot2<Scalar> Compose(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b);
   static geo::Rot2<Scalar> Between(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b);
+  static geo::Rot2<Scalar> InverseWithJacobian(const geo::Rot2<Scalar>& a, Eigen::Matrix<Scalar, 1, 1>* const res_D_a = nullptr);
+  static geo::Rot2<Scalar> ComposeWithJacobians(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b, Eigen::Matrix<Scalar, 1, 1>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 1, 1>* const res_D_b = nullptr);
+  static geo::Rot2<Scalar> BetweenWithJacobians(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b, Eigen::Matrix<Scalar, 1, 1>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 1, 1>* const res_D_b = nullptr);
 };
 
 }  // namespace rot2

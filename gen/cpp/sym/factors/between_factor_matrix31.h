@@ -27,10 +27,8 @@ namespace sym {
 *
 */
 template <typename Scalar>
-void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a, const Eigen::Matrix<Scalar, 3, 1>& b, const Eigen::Matrix<Scalar, 3, 1>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res, Eigen::Matrix<Scalar, 3, 6>* const jac) {
+void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a, const Eigen::Matrix<Scalar, 3, 1>& b, const Eigen::Matrix<Scalar, 3, 1>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res = nullptr, Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
     // Input arrays
-    assert( res != nullptr );
-    assert( jac != nullptr );
 
     // Intermediate terms (3)
     const Scalar _tmp0 = -a(2, 0) - a_T_b(2, 0) + b(2, 0);
@@ -38,31 +36,36 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a, const Eigen::Ma
     const Scalar _tmp2 = -a(0, 0) - a_T_b(0, 0) + b(0, 0);
 
     // Output terms (2)
-    Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
-    Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+    if ( res != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp0*sqrt_info(0, 2) + _tmp1*sqrt_info(0, 1) + _tmp2*sqrt_info(0, 0);
-    _res(1, 0) = _tmp0*sqrt_info(1, 2) + _tmp1*sqrt_info(1, 1) + _tmp2*sqrt_info(1, 0);
-    _res(2, 0) = _tmp0*sqrt_info(2, 2) + _tmp1*sqrt_info(2, 1) + _tmp2*sqrt_info(2, 0);
-    _jac(0, 0) = -sqrt_info(0, 0);
-    _jac(0, 1) = -sqrt_info(0, 1);
-    _jac(0, 2) = -sqrt_info(0, 2);
-    _jac(0, 3) = sqrt_info(0, 0);
-    _jac(0, 4) = sqrt_info(0, 1);
-    _jac(0, 5) = sqrt_info(0, 2);
-    _jac(1, 0) = -sqrt_info(1, 0);
-    _jac(1, 1) = -sqrt_info(1, 1);
-    _jac(1, 2) = -sqrt_info(1, 2);
-    _jac(1, 3) = sqrt_info(1, 0);
-    _jac(1, 4) = sqrt_info(1, 1);
-    _jac(1, 5) = sqrt_info(1, 2);
-    _jac(2, 0) = -sqrt_info(2, 0);
-    _jac(2, 1) = -sqrt_info(2, 1);
-    _jac(2, 2) = -sqrt_info(2, 2);
-    _jac(2, 3) = sqrt_info(2, 0);
-    _jac(2, 4) = sqrt_info(2, 1);
-    _jac(2, 5) = sqrt_info(2, 2);
+        _res(0, 0) = _tmp0*sqrt_info(0, 2) + _tmp1*sqrt_info(0, 1) + _tmp2*sqrt_info(0, 0);
+        _res(1, 0) = _tmp0*sqrt_info(1, 2) + _tmp1*sqrt_info(1, 1) + _tmp2*sqrt_info(1, 0);
+        _res(2, 0) = _tmp0*sqrt_info(2, 2) + _tmp1*sqrt_info(2, 1) + _tmp2*sqrt_info(2, 0);
+    }
 
+    if ( jac != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+
+        _jac(0, 0) = -sqrt_info(0, 0);
+        _jac(0, 1) = -sqrt_info(0, 1);
+        _jac(0, 2) = -sqrt_info(0, 2);
+        _jac(0, 3) = sqrt_info(0, 0);
+        _jac(0, 4) = sqrt_info(0, 1);
+        _jac(0, 5) = sqrt_info(0, 2);
+        _jac(1, 0) = -sqrt_info(1, 0);
+        _jac(1, 1) = -sqrt_info(1, 1);
+        _jac(1, 2) = -sqrt_info(1, 2);
+        _jac(1, 3) = sqrt_info(1, 0);
+        _jac(1, 4) = sqrt_info(1, 1);
+        _jac(1, 5) = sqrt_info(1, 2);
+        _jac(2, 0) = -sqrt_info(2, 0);
+        _jac(2, 1) = -sqrt_info(2, 1);
+        _jac(2, 2) = -sqrt_info(2, 2);
+        _jac(2, 3) = sqrt_info(2, 0);
+        _jac(2, 4) = sqrt_info(2, 1);
+        _jac(2, 5) = sqrt_info(2, 2);
+    }
 
 
 }

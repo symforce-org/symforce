@@ -44,7 +44,6 @@ Scalar IdentityDistJacobian(const geo::Rot3<Scalar>& R1, const Scalar e) {
 
     _dist_D_R1 = _tmp0*_tmp11 - _tmp0*_tmp9 + _tmp10*_tmp13 + _tmp11*_tmp12 - _tmp12*_tmp9 - _tmp13*_tmp8;
 
-
     return _dist_D_R1;
 }
 

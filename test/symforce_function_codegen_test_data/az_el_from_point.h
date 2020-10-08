@@ -60,7 +60,6 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const geo::Pose3<Scalar>& nav_T_cam, c
     _res(0, 0) = std::atan2(_tmp11, _tmp18 + epsilon*((((_tmp18) > 0) - ((_tmp18) < 0)) + 0.5));
     _res(1, 0) = -std::acos(_tmp22/(epsilon + std::sqrt((_tmp11 * _tmp11) + (_tmp18 * _tmp18) + (_tmp22 * _tmp22)))) + M_PI_2;
 
-
     return _res;
 }
 

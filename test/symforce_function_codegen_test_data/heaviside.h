@@ -29,7 +29,6 @@ Scalar Heaviside(const Scalar x) {
 
     _res = 0.5*((((x) >= 0) - ((x) < 0)) + 1);
 
-
     return _res;
 }
 

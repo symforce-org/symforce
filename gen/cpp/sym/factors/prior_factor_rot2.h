@@ -27,12 +27,10 @@ namespace sym {
 *
 */
 template <typename Scalar>
-void PriorFactorRot2(const geo::Rot2<Scalar>& value, const geo::Rot2<Scalar>& prior, const Eigen::Matrix<Scalar, 1, 1>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 1, 1>* const res, Eigen::Matrix<Scalar, 1, 1>* const jac) {
+void PriorFactorRot2(const geo::Rot2<Scalar>& value, const geo::Rot2<Scalar>& prior, const Eigen::Matrix<Scalar, 1, 1>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 1, 1>* const res = nullptr, Eigen::Matrix<Scalar, 1, 1>* const jac = nullptr) {
     // Input arrays
     const Eigen::Matrix<Scalar, 2, 1>& _value = value.Data();
     const Eigen::Matrix<Scalar, 2, 1>& _prior = prior.Data();
-    assert( res != nullptr );
-    assert( jac != nullptr );
 
     // Intermediate terms (9)
     const Scalar _tmp0 = 1.0 / ((_prior[0] * _prior[0]) + (_prior[1] * _prior[1]));
@@ -46,12 +44,17 @@ void PriorFactorRot2(const geo::Rot2<Scalar>& value, const geo::Rot2<Scalar>& pr
     const Scalar _tmp8 = _tmp5*sqrt_info(0, 0)/((_tmp3 * _tmp3) + _tmp5);
 
     // Output terms (2)
-    Eigen::Matrix<Scalar, 1, 1>& _res = (*res);
-    Eigen::Matrix<Scalar, 1, 1>& _jac = (*jac);
+    if ( res != nullptr ) {
+        Eigen::Matrix<Scalar, 1, 1>& _res = (*res);
 
-    _res(0, 0) = sqrt_info(0, 0)*std::atan2(_tmp3, _tmp4);
-    _jac(0, 0) = _tmp8*_value[0]*(_tmp1*_tmp7 - _tmp2*_tmp6) - _tmp8*_value[1]*(-_tmp1*_tmp6 - _tmp2*_tmp7);
+        _res(0, 0) = sqrt_info(0, 0)*std::atan2(_tmp3, _tmp4);
+    }
 
+    if ( jac != nullptr ) {
+        Eigen::Matrix<Scalar, 1, 1>& _jac = (*jac);
+
+        _jac(0, 0) = _tmp8*_value[0]*(_tmp1*_tmp7 - _tmp2*_tmp6) - _tmp8*_value[1]*(-_tmp1*_tmp6 - _tmp2*_tmp7);
+    }
 
 
 }

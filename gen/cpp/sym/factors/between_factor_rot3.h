@@ -28,13 +28,11 @@ namespace sym {
 *
 */
 template <typename Scalar>
-void BetweenFactorRot3(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, const geo::Rot3<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res, Eigen::Matrix<Scalar, 3, 6>* const jac) {
+void BetweenFactorRot3(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, const geo::Rot3<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res = nullptr, Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
     const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
     const Eigen::Matrix<Scalar, 4, 1>& _a_T_b = a_T_b.Data();
-    assert( res != nullptr );
-    assert( jac != nullptr );
 
     // Intermediate terms (191)
     const Scalar _tmp0 = _a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1];
@@ -230,31 +228,36 @@ void BetweenFactorRot3(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, c
     const Scalar _tmp190 = _tmp123*_tmp21 + _tmp127*_tmp173 + _tmp127*_tmp175 - _tmp127*_tmp177 + _tmp127*_tmp188 + _tmp130*sqrt_info(2, 0) + _tmp132*_tmp176 - _tmp138*sqrt_info(2, 0) - _tmp139*sqrt_info(2, 2);
 
     // Output terms (2)
-    Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
-    Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+    if ( res != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp13*_tmp4 + _tmp14*_tmp15 + _tmp16*_tmp17;
-    _res(1, 0) = _tmp14*_tmp19 + _tmp18*sqrt_info(1, 2) + _tmp20*sqrt_info(1, 0);
-    _res(2, 0) = _tmp14*_tmp21 + _tmp18*sqrt_info(2, 2) + _tmp20*sqrt_info(2, 0);
-    _jac(0, 0) = -_a[0]*_tmp68 - _a[1]*_tmp81 + _a[3]*_tmp103 + _tmp93*_tmp94;
-    _jac(0, 1) = _a[0]*_tmp81 - _a[1]*_tmp68 + _a[3]*_tmp104 - _tmp102*_tmp94;
-    _jac(0, 2) = -_a[0]*_tmp104 + _a[1]*_tmp103 + _a[3]*_tmp81 - _tmp67*_tmp94;
-    _jac(0, 3) = -_b[0]*_tmp124 - _b[1]*_tmp131 + _tmp136*_tmp137 + _tmp140*_tmp141;
-    _jac(0, 4) = _b[0]*_tmp131 - _b[1]*_tmp124 + _tmp136*_tmp141 - _tmp137*_tmp140;
-    _jac(0, 5) = -_b[2]*_tmp124 + _b[3]*_tmp131 - _tmp136*_tmp142 + _tmp140*_tmp143;
-    _jac(1, 0) = -_a[0]*_tmp154 - _a[1]*_tmp150 + _a[3]*_tmp159 + _tmp155*_tmp94;
-    _jac(1, 1) = _a[0]*_tmp150 - _a[1]*_tmp154 + _tmp155*_tmp160 - _tmp158*_tmp94;
-    _jac(1, 2) = _a[1]*_tmp159 + _a[3]*_tmp150 - _tmp153*_tmp94 - _tmp155*_tmp161;
-    _jac(1, 3) = -_b[0]*_tmp168 - _b[1]*_tmp163 + _tmp137*_tmp170 + _tmp141*_tmp171;
-    _jac(1, 4) = _b[0]*_tmp163 - _tmp137*_tmp171 + _tmp141*_tmp170 - _tmp143*_tmp167;
-    _jac(1, 5) = -_b[2]*_tmp168 + _b[3]*_tmp163 - _tmp142*_tmp170 + _tmp143*_tmp171;
-    _jac(2, 0) = -_a[0]*_tmp179 - _a[1]*_tmp181 + _a[3]*_tmp183 + _tmp180*_tmp94;
-    _jac(2, 1) = _a[0]*_tmp181 - _a[1]*_tmp179 + _tmp160*_tmp180 - _tmp182*_tmp94;
-    _jac(2, 2) = _a[1]*_tmp183 + _a[3]*_tmp181 - _tmp161*_tmp180 - _tmp178*_tmp94;
-    _jac(2, 3) = -_b[0]*_tmp186 - _b[1]*_tmp187 + _tmp137*_tmp189 + _tmp141*_tmp190;
-    _jac(2, 4) = _b[0]*_tmp187 - _tmp137*_tmp190 + _tmp141*_tmp189 - _tmp143*_tmp185;
-    _jac(2, 5) = -_b[2]*_tmp186 + _b[3]*_tmp187 - _tmp142*_tmp189 + _tmp143*_tmp190;
+        _res(0, 0) = _tmp13*_tmp4 + _tmp14*_tmp15 + _tmp16*_tmp17;
+        _res(1, 0) = _tmp14*_tmp19 + _tmp18*sqrt_info(1, 2) + _tmp20*sqrt_info(1, 0);
+        _res(2, 0) = _tmp14*_tmp21 + _tmp18*sqrt_info(2, 2) + _tmp20*sqrt_info(2, 0);
+    }
 
+    if ( jac != nullptr ) {
+        Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+
+        _jac(0, 0) = -_a[0]*_tmp68 - _a[1]*_tmp81 + _a[3]*_tmp103 + _tmp93*_tmp94;
+        _jac(0, 1) = _a[0]*_tmp81 - _a[1]*_tmp68 + _a[3]*_tmp104 - _tmp102*_tmp94;
+        _jac(0, 2) = -_a[0]*_tmp104 + _a[1]*_tmp103 + _a[3]*_tmp81 - _tmp67*_tmp94;
+        _jac(0, 3) = -_b[0]*_tmp124 - _b[1]*_tmp131 + _tmp136*_tmp137 + _tmp140*_tmp141;
+        _jac(0, 4) = _b[0]*_tmp131 - _b[1]*_tmp124 + _tmp136*_tmp141 - _tmp137*_tmp140;
+        _jac(0, 5) = -_b[2]*_tmp124 + _b[3]*_tmp131 - _tmp136*_tmp142 + _tmp140*_tmp143;
+        _jac(1, 0) = -_a[0]*_tmp154 - _a[1]*_tmp150 + _a[3]*_tmp159 + _tmp155*_tmp94;
+        _jac(1, 1) = _a[0]*_tmp150 - _a[1]*_tmp154 + _tmp155*_tmp160 - _tmp158*_tmp94;
+        _jac(1, 2) = _a[1]*_tmp159 + _a[3]*_tmp150 - _tmp153*_tmp94 - _tmp155*_tmp161;
+        _jac(1, 3) = -_b[0]*_tmp168 - _b[1]*_tmp163 + _tmp137*_tmp170 + _tmp141*_tmp171;
+        _jac(1, 4) = _b[0]*_tmp163 - _tmp137*_tmp171 + _tmp141*_tmp170 - _tmp143*_tmp167;
+        _jac(1, 5) = -_b[2]*_tmp168 + _b[3]*_tmp163 - _tmp142*_tmp170 + _tmp143*_tmp171;
+        _jac(2, 0) = -_a[0]*_tmp179 - _a[1]*_tmp181 + _a[3]*_tmp183 + _tmp180*_tmp94;
+        _jac(2, 1) = _a[0]*_tmp181 - _a[1]*_tmp179 + _tmp160*_tmp180 - _tmp182*_tmp94;
+        _jac(2, 2) = _a[1]*_tmp183 + _a[3]*_tmp181 - _tmp161*_tmp180 - _tmp178*_tmp94;
+        _jac(2, 3) = -_b[0]*_tmp186 - _b[1]*_tmp187 + _tmp137*_tmp189 + _tmp141*_tmp190;
+        _jac(2, 4) = _b[0]*_tmp187 - _tmp137*_tmp190 + _tmp141*_tmp189 - _tmp143*_tmp185;
+        _jac(2, 5) = -_b[2]*_tmp186 + _b[3]*_tmp187 - _tmp142*_tmp189 + _tmp143*_tmp190;
+    }
 
 
 }

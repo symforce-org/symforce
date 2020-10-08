@@ -116,10 +116,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  # Args:
  #     T_or_value (type or Element):
  #     name (str):
+ #     add_default (bool): Include a default to nullptr?
  #}
-{%- macro format_pointer_arg(T_or_value, name) %}
-    {{- format_typename(T_or_value, name) -}}* const {{ name -}}
-{% endmacro -%}
+{%- macro format_pointer_arg(T_or_value, name, add_default) %}
+    {{- format_typename(T_or_value, name) -}}* const {{ name }}{% if add_default %} = nullptr{% endif %}
+{%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
 
@@ -127,8 +128,10 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #
  # Args:
  #     spec (Codegen):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
  #}
-{%- macro input_args_declaration(spec) %}
+{%- macro input_args_declaration(spec, is_declaration) %}
     {%- for name, type in spec.inputs.items() -%}
         {%- if name != "self" -%}
             {{ format_input_arg(type, name) }}
@@ -140,7 +143,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- endfor -%}
     {%- for name, type in spec.outputs.items() -%}
         {%- if name != spec.return_key -%}
-            {{- format_pointer_arg(type, name) -}}
+            {{- format_pointer_arg(type, name, is_declaration) -}}
             {%- if not loop.last -%}
                 {%- if not (loop.revindex0 == 1 and loop.nextitem[0] == spec.return_key) -%}
                 , {% endif -%}
@@ -155,9 +158,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #
  # Args:
  #     spec (Codegen):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
  #}
-{%- macro function_declaration(spec) -%}
-{{ get_return_type(spec) }} {{ spec.name }}({{- input_args_declaration(spec) -}})
+{%- macro function_declaration(spec, is_declaration) -%}
+{{ get_return_type(spec) }} {{ spec.name }}({{- input_args_declaration(spec, is_declaration) -}})
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -167,9 +172,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  # Args:
  #     spec (Codegen):
  #     namespace (str):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
  #}
-{%- macro function_declaration_custom_namespace(spec, namespace) -%}
-{{ get_return_type(spec) }} {{ namespace }}::{{ spec.name }}({{- input_args_declaration(spec) -}})
+{%- macro function_declaration_custom_namespace(spec, namespace, is_declaration) -%}
+{{ get_return_type(spec) }} {{ namespace }}::{{ spec.name }}({{- input_args_declaration(spec, is_declaration) -}})
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -224,6 +231,45 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 
 {# ------------------------------------------------------------------------- #}
 
+{# Helper to generate code to fill out an output object, either returned or as an output argument pointer
+ #
+ # Args:
+ #     name (str): Name of the output object
+ #     type (type): Type of the output object
+ #     terms (List[Tuple[str]]): List of output terms for this object
+ #     spec (Codegen):
+ #}
+{% macro format_output_dense(name, type, terms, spec) -%}
+{% set T = python_util.get_type(type) %}
+{% if (issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type)) %}
+    {% set T_return = python_util.get_type(type) %}
+    {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+        {# Create a new object to return #}
+{{ format_typename(type, name) }} _{{ name }};
+    {% else %}
+        {# Get reference to output passed by reference #}
+{{ format_typename(type, name) }}& _{{ name }} = (*{{ name }});
+    {% endif %}
+{% else %}
+    {# geo/cam object. Since we can't access individual element of data, create a copy #}
+    {# TODO(nathan): Maybe add a [] operator to geo/cam objects so we don't have to do this? #}
+    {% set dims = ops.StorageOps.storage_dim(type) %}
+{{ vector_type(dims) }} _{{ name }};
+{% endif %}
+
+{% for lhs, rhs in terms %}
+_{{ lhs }} = {{ rhs }};
+{% endfor %}
+{% if name != spec.return_key %}
+    {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
+
+*{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
+    {% endif %}
+{% endif %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
 {# Generate inner code for computing the given expression.
  #
  # Args:
@@ -241,16 +287,6 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
             {% endif %}
         {% endif %}
     {% endfor %}
-    {% for name, type in spec.outputs.items() %}
-        {% if name != spec.return_key %}
-    assert( {{ name }} != nullptr );
-        {% endif %}
-    {% endfor %}
-    {% for name, type in spec.outputs.items() %}
-        {% if name in spec.sparse_mat_data %}
-    {{ sparse_matrix_init(name, type, spec) }}
-        {% endif %}
-    {% endfor %}
 
     // Intermediate terms ({{ spec.intermediate_terms | length }})
     {% for lhs, rhs in spec.intermediate_terms %}
@@ -259,43 +295,39 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 
     // Output terms ({{ spec.outputs.items() | length }})
     {# Populate the output vectors with the generated expressions #}
-    {% for name, type in spec.outputs.items() %}
-        {% set T = python_util.get_type(type) %}
-        {% if name not in spec.sparse_mat_data %}
-            {% if (issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type)) %}
-                {% set T_return = python_util.get_type(type) %}
-                {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
-                    {# Create a new object to return #}
-    {{ format_typename(type, name) }} _{{ name }};
-                {% else %}
-                    {# Get reference to output passed by reference #}
-    {{ format_typename(type, name) }}& _{{ name }} = (*{{ name }});
-                {% endif %}
-            {% else %}
-                {# geo/cam object. Since we can't access individual element of data, create a copy #}
-                {# TODO(nathan): Maybe add a [] operator to geo/cam objects so we don't have to do this? #}
-                {% set dims = ops.StorageOps.storage_dim(type) %}
-    {{ vector_type(dims) }} _{{ name }};
-            {% endif %}
+    {% for name, type, terms in spec.output_terms %}
+        {% if name == spec.return_key %}
+    {{ format_output_dense(name, type, terms, spec) | indent(width=4) | trim }}
+        {% else %}
+    if ( {{ name }} != nullptr ) {
+        {{ format_output_dense(name, type, terms, spec) | indent(width=8) | trim }}
+    }
         {% endif %}
-    {% endfor %}
 
-    {% for lhs, rhs in spec.output_terms %}
-    _{{ lhs }} = {{ rhs }};
     {% endfor %}
-    {% for lhs, rhs in spec.sparse_terms %}
+    {% for name, type, terms in spec.sparse_terms %}
+        {% set T = python_util.get_type(type) %}
+        {% if name == spec.return_key %}
+    {{ sparse_matrix_init(name, spec.outputs[name], spec) }}
+
+            {% for lhs, rhs in terms %}
     {{ lhs }} = {{ rhs }};
-    {% endfor %}
+            {% endfor %}
+        {% else %}
+    if ( {{ name }} != nullptr ) {
+        {{ sparse_matrix_init(name, spec.outputs[name], spec) | indent(width=4) }}
 
-    {% for name, type in spec.outputs.items() %}
-        {% set T = python_util.get_type(type) %}
-        {% if name != spec.return_key %}
+            {% for lhs, rhs in terms %}
+        {{ lhs }} = {{ rhs }};
+            {% endfor %}
             {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
-    *{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
-            {% endif %}
-        {% endif %}
-    {% endfor %}
 
+        *{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
+            {% endif %}
+    }
+        {% endif %}
+
+    {% endfor %}
     {% for name, type in spec.outputs.items() %}
         {% set T_return = python_util.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}

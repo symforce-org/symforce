@@ -20,17 +20,17 @@ namespace codegen_multi_function {
 *
 */
 template <typename Scalar>
-void CodegenMultiFunctionTest2(const codegen_multi_function::inputs_t& inputs, codegen_multi_function::outputs_2_t* const outputs_2) {
+void CodegenMultiFunctionTest2(const codegen_multi_function::inputs_t& inputs, codegen_multi_function::outputs_2_t* const outputs_2 = nullptr) {
     // Input arrays
-    assert( outputs_2 != nullptr );
 
     // Intermediate terms (0)
 
     // Output terms (1)
-    codegen_multi_function::outputs_2_t& _outputs_2 = (*outputs_2);
+    if ( outputs_2 != nullptr ) {
+        codegen_multi_function::outputs_2_t& _outputs_2 = (*outputs_2);
 
-    _outputs_2.foo = inputs.x + (inputs.y * inputs.y * inputs.y);
-
+        _outputs_2.foo = inputs.x + (inputs.y * inputs.y * inputs.y);
+    }
 
 
 }

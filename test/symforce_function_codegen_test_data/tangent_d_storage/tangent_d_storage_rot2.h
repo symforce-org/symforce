@@ -29,7 +29,6 @@ Eigen::Matrix<Scalar, 1, 2> Tangent_D_Storage(const geo::Rot2<Scalar>& a, const 
     _res(0, 0) = -_a[1];
     _res(0, 1) = _a[0];
 
-
     return _res;
 }
 

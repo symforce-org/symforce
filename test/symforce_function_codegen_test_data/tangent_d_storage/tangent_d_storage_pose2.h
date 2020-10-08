@@ -40,7 +40,6 @@ Eigen::Matrix<Scalar, 3, 4> Tangent_D_Storage(const geo::Pose2<Scalar>& a, const
     _res(2, 2) = 0;
     _res(2, 3) = 0;
 
-
     return _res;
 }
 

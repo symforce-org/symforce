@@ -23,11 +23,10 @@ namespace sym {
 *     geo.Matrix: Jacobian for arg 1 (b)
 */
 template <typename Scalar>
-geo::Pose3<Scalar> ComposePose3_ValueAndJacobian1(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, Eigen::Matrix<Scalar, 6, 6>* const res_D_b) {
+geo::Pose3<Scalar> ComposePose3_ValueAndJacobian1(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
     // Input arrays
     const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
     const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
-    assert( res_D_b != nullptr );
 
     // Intermediate terms (110)
     const Scalar _tmp0 = _a[0]*_b[3] + _a[1]*_b[2] - _a[2]*_b[1] + _a[3]*_b[0];
@@ -143,7 +142,6 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobian1(const geo::Pose3<Scalar>& a, c
 
     // Output terms (2)
     Eigen::Matrix<Scalar, 7, 1> _res;
-    Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
 
     _res[0] = _tmp0;
     _res[1] = _tmp1;
@@ -152,43 +150,47 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobian1(const geo::Pose3<Scalar>& a, c
     _res[4] = _a[4] + _b[4]*_tmp15 + _b[5]*_tmp12 + _b[6]*_tmp8;
     _res[5] = _a[5] + _b[4]*_tmp21 + _b[5]*_tmp20 + _b[6]*_tmp18;
     _res[6] = _a[6] + _b[4]*_tmp24 + _b[5]*_tmp23 + _b[6]*_tmp22;
-    _res_D_b(0, 0) = _tmp32 + _tmp38*_tmp39 + _tmp50;
-    _res_D_b(0, 1) = _b[3]*_tmp52 - _tmp31*_tmp45 + _tmp51 - _tmp53;
-    _res_D_b(0, 2) = -_b[0]*_tmp52 + _tmp30*_tmp48 - _tmp54 + _tmp55;
-    _res_D_b(0, 3) = 0;
-    _res_D_b(0, 4) = 0;
-    _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = _b[3]*_tmp58 - _tmp31*_tmp56 - _tmp51 + _tmp53;
-    _res_D_b(1, 1) = _tmp32 + _tmp46*_tmp56 + _tmp49 + _tmp59;
-    _res_D_b(1, 2) = -_tmp30*_tmp39 + _tmp48*_tmp56 - _tmp60 + _tmp61;
-    _res_D_b(1, 3) = 0;
-    _res_D_b(1, 4) = 0;
-    _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = -_b[0]*_tmp58 + _tmp48*_tmp62 + _tmp54 - _tmp55;
-    _res_D_b(2, 1) = -_tmp39*_tmp62 + _tmp45*_tmp48 + _tmp60 - _tmp61;
-    _res_D_b(2, 2) = _tmp31*_tmp62 + _tmp50 + _tmp59;
-    _res_D_b(2, 3) = 0;
-    _res_D_b(2, 4) = 0;
-    _res_D_b(2, 5) = 0;
-    _res_D_b(3, 0) = 0;
-    _res_D_b(3, 1) = 0;
-    _res_D_b(3, 2) = 0;
-    _res_D_b(3, 3) = _tmp66*_tmp76 + _tmp80*_tmp81 + _tmp84*_tmp85;
-    _res_D_b(3, 4) = _tmp76*_tmp88 + _tmp81*_tmp90 + _tmp85*_tmp91;
-    _res_D_b(3, 5) = _tmp76*_tmp93 + _tmp81*_tmp92 + _tmp85*_tmp94;
-    _res_D_b(4, 0) = 0;
-    _res_D_b(4, 1) = 0;
-    _res_D_b(4, 2) = 0;
-    _res_D_b(4, 3) = _tmp101*_tmp66 + _tmp102*_tmp80 + _tmp103*_tmp84;
-    _res_D_b(4, 4) = _tmp101*_tmp88 + _tmp102*_tmp90 + _tmp103*_tmp91;
-    _res_D_b(4, 5) = _tmp101*_tmp93 + _tmp102*_tmp92 + _tmp103*_tmp94;
-    _res_D_b(5, 0) = 0;
-    _res_D_b(5, 1) = 0;
-    _res_D_b(5, 2) = 0;
-    _res_D_b(5, 3) = _tmp107*_tmp66 + _tmp108*_tmp80 + _tmp109*_tmp84;
-    _res_D_b(5, 4) = _tmp107*_tmp88 + _tmp108*_tmp90 + _tmp109*_tmp91;
-    _res_D_b(5, 5) = _tmp107*_tmp93 + _tmp108*_tmp92 + _tmp109*_tmp94;
 
+    if ( res_D_b != nullptr ) {
+        Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
+
+        _res_D_b(0, 0) = _tmp32 + _tmp38*_tmp39 + _tmp50;
+        _res_D_b(0, 1) = _b[3]*_tmp52 - _tmp31*_tmp45 + _tmp51 - _tmp53;
+        _res_D_b(0, 2) = -_b[0]*_tmp52 + _tmp30*_tmp48 - _tmp54 + _tmp55;
+        _res_D_b(0, 3) = 0;
+        _res_D_b(0, 4) = 0;
+        _res_D_b(0, 5) = 0;
+        _res_D_b(1, 0) = _b[3]*_tmp58 - _tmp31*_tmp56 - _tmp51 + _tmp53;
+        _res_D_b(1, 1) = _tmp32 + _tmp46*_tmp56 + _tmp49 + _tmp59;
+        _res_D_b(1, 2) = -_tmp30*_tmp39 + _tmp48*_tmp56 - _tmp60 + _tmp61;
+        _res_D_b(1, 3) = 0;
+        _res_D_b(1, 4) = 0;
+        _res_D_b(1, 5) = 0;
+        _res_D_b(2, 0) = -_b[0]*_tmp58 + _tmp48*_tmp62 + _tmp54 - _tmp55;
+        _res_D_b(2, 1) = -_tmp39*_tmp62 + _tmp45*_tmp48 + _tmp60 - _tmp61;
+        _res_D_b(2, 2) = _tmp31*_tmp62 + _tmp50 + _tmp59;
+        _res_D_b(2, 3) = 0;
+        _res_D_b(2, 4) = 0;
+        _res_D_b(2, 5) = 0;
+        _res_D_b(3, 0) = 0;
+        _res_D_b(3, 1) = 0;
+        _res_D_b(3, 2) = 0;
+        _res_D_b(3, 3) = _tmp66*_tmp76 + _tmp80*_tmp81 + _tmp84*_tmp85;
+        _res_D_b(3, 4) = _tmp76*_tmp88 + _tmp81*_tmp90 + _tmp85*_tmp91;
+        _res_D_b(3, 5) = _tmp76*_tmp93 + _tmp81*_tmp92 + _tmp85*_tmp94;
+        _res_D_b(4, 0) = 0;
+        _res_D_b(4, 1) = 0;
+        _res_D_b(4, 2) = 0;
+        _res_D_b(4, 3) = _tmp101*_tmp66 + _tmp102*_tmp80 + _tmp103*_tmp84;
+        _res_D_b(4, 4) = _tmp101*_tmp88 + _tmp102*_tmp90 + _tmp103*_tmp91;
+        _res_D_b(4, 5) = _tmp101*_tmp93 + _tmp102*_tmp92 + _tmp103*_tmp94;
+        _res_D_b(5, 0) = 0;
+        _res_D_b(5, 1) = 0;
+        _res_D_b(5, 2) = 0;
+        _res_D_b(5, 3) = _tmp107*_tmp66 + _tmp108*_tmp80 + _tmp109*_tmp84;
+        _res_D_b(5, 4) = _tmp107*_tmp88 + _tmp108*_tmp90 + _tmp109*_tmp91;
+        _res_D_b(5, 5) = _tmp107*_tmp93 + _tmp108*_tmp92 + _tmp109*_tmp94;
+    }
 
     return geo::Pose3<Scalar>(_res);
 }

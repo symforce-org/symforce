@@ -213,6 +213,7 @@ void TestLieGroupOps() {
   using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
   constexpr const int32_t storage_dim = geo::StorageOps<T>::StorageDim();
   using StorageVec = Eigen::Matrix<Scalar, storage_dim, 1>;
+  using SelfJacobian = typename geo::GroupOps<T>::SelfJacobian;
   const Scalar epsilon = 1e-7;
 
   const T identity = geo::GroupOps<T>::Identity();
@@ -235,6 +236,10 @@ void TestLieGroupOps() {
   const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
     identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
+
+  SelfJacobian inverse_jacobian;
+  geo::GroupOps<T>::InverseWithJacobian(identity, &inverse_jacobian);
+  assertTrue(inverse_jacobian.isApprox(-SelfJacobian::Identity(), epsilon));
 
   // Test perturbing one axis at a time by sqrt(epsilon)
   // Makes sure special cases of one-axis perturbations are handled correctly, and that distortion
@@ -271,6 +276,21 @@ void TestLieGroupOps() {
 
     assertTrue(
         numerical_tangent_D_storage.isApprox(symforce_tangent_D_storage, 10 * std::sqrt(epsilon)));
+  }
+
+  // Test ComposeWithJacobians against numerical derivatives
+  for (size_t i = 0; i < 10000; i++) {
+    const T a = sym::Random<T>(gen);
+    const T b = sym::Random<T>(gen);
+
+    const SelfJacobian numerical_jacobian = sym::NumericalDerivative(
+        std::bind(&geo::GroupOps<T>::Compose, std::placeholders::_1, b), a,
+        epsilon, std::sqrt(epsilon));
+
+    SelfJacobian symforce_jacobian;
+    geo::GroupOps<T>::ComposeWithJacobians(a, b, &symforce_jacobian, nullptr);
+
+    assertTrue(numerical_jacobian.isApprox(symforce_jacobian, 10 * std::sqrt(epsilon)));
   }
 }
 

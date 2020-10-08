@@ -15,7 +15,7 @@ namespace cam {
 
 {% for spec in specs['CameraOps'] %}
 template <typename Scalar>
-{{ util.function_declaration_custom_namespace(spec, cls.__name__ + "<Scalar>") }} const {
+{{ util.function_declaration_custom_namespace(spec, cls.__name__ + "<Scalar>", is_declaration=False) }} const {
     {{ util.expr_code(spec) }}
 }
 

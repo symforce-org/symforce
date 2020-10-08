@@ -50,26 +50,43 @@ def make_group_ops_funcs(cls, mode):
     """
     Create func spec arguments for group ops on the given class.
     """
+    identity = Codegen.function(
+        name="Identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], mode=mode
+    )
+
+    inverse = Codegen.function(
+        name="Inverse",
+        func=ops.GroupOps.inverse,
+        input_types=[cls],
+        mode=mode,
+        docstring=ops.GroupOps.inverse.__doc__,
+    )
+
+    compose = Codegen.function(
+        name="Compose",
+        func=ops.GroupOps.compose,
+        input_types=[cls, cls],
+        mode=mode,
+        docstring=ops.GroupOps.compose.__doc__,
+    )
+
+    between = Codegen.function(
+        name="Between", func=ops.GroupOps.between, input_types=[cls, cls], mode=mode
+    )
+
     return [
-        Codegen.function(
-            name="Identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], mode=mode
+        identity,
+        inverse,
+        compose,
+        between,
+        inverse.create_with_jacobians(
+            name="InverseWithJacobian", use_product_manifold_for_pose3=False
         ),
-        Codegen.function(
-            name="Inverse",
-            func=ops.GroupOps.inverse,
-            input_types=[cls],
-            mode=mode,
-            docstring=ops.GroupOps.inverse.__doc__,
+        compose.create_with_jacobians(
+            name="ComposeWithJacobians", use_product_manifold_for_pose3=False
         ),
-        Codegen.function(
-            name="Compose",
-            func=ops.GroupOps.compose,
-            input_types=[cls, cls],
-            mode=mode,
-            docstring=ops.GroupOps.compose.__doc__,
-        ),
-        Codegen.function(
-            name="Between", func=ops.GroupOps.between, input_types=[cls, cls], mode=mode
+        between.create_with_jacobians(
+            name="BetweenWithJacobians", use_product_manifold_for_pose3=False
         ),
     ]
 

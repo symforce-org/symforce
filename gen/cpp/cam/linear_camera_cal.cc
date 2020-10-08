@@ -24,7 +24,6 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::FocalLength() const {
     _focal_length(0, 0) = _self[0];
     _focal_length(1, 0) = _self[1];
 
-
     return _focal_length;
 }
 
@@ -41,7 +40,6 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PrincipalPoint() const {
     _principal_point(0, 0) = _self[2];
     _principal_point(1, 0) = _self[3];
 
-
     return _principal_point;
 }
 
@@ -49,19 +47,21 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
-    assert( is_valid != nullptr );
 
     // Intermediate terms (1)
     const Scalar _tmp0 = 1.0 / (std::max<Scalar>(epsilon, std::fabs(point(2, 0))));
 
     // Output terms (2)
     Eigen::Matrix<Scalar, 2, 1> _pixel;
-    Scalar& _is_valid = (*is_valid);
 
     _pixel(0, 0) = _self[0]*_tmp0*point(0, 0) + _self[2];
     _pixel(1, 0) = _self[1]*_tmp0*point(1, 0) + _self[3];
-    _is_valid = std::max<Scalar>(0, (((point(2, 0)) > 0) - ((point(2, 0)) < 0)));
 
+    if ( is_valid != nullptr ) {
+        Scalar& _is_valid = (*is_valid);
+
+        _is_valid = std::max<Scalar>(0, (((point(2, 0)) > 0) - ((point(2, 0)) < 0)));
+    }
 
     return _pixel;
 }
@@ -70,19 +70,21 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
     // Input arrays
     const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
-    assert( is_valid != nullptr );
 
     // Intermediate terms (0)
 
     // Output terms (2)
     Eigen::Matrix<Scalar, 3, 1> _camera_ray;
-    Scalar& _is_valid = (*is_valid);
 
     _camera_ray(0, 0) = (-_self[2] + pixel(0, 0))/_self[0];
     _camera_ray(1, 0) = (-_self[3] + pixel(1, 0))/_self[1];
     _camera_ray(2, 0) = 1;
-    _is_valid = 1;
 
+    if ( is_valid != nullptr ) {
+        Scalar& _is_valid = (*is_valid);
+
+        _is_valid = 1;
+    }
 
     return _camera_ray;
 }

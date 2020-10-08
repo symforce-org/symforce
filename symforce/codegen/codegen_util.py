@@ -2,8 +2,10 @@
 Shared helper code between codegen of all languages.
 """
 
+import collections
 from enum import Enum
 import imp
+import itertools
 import os
 import inspect
 
@@ -25,6 +27,10 @@ SKYMARSHAL_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/skymarshal")
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
 T_terms = T.Sequence[T.Tuple[T.Scalar, T.Scalar]]
+T_nested_terms = T.Sequence[T_terms]
+
+DenseAndSparseOutputTerms = collections.namedtuple("DenseAndSparseOutputTerms", ["dense", "sparse"])
+OutputWithTerms = collections.namedtuple("OutputWithTerms", ["name", "type", "terms"])
 
 
 class CodegenMode(Enum):
@@ -48,7 +54,7 @@ def print_code(
     cse=True,  # type: bool
     substitute_inputs=False,  # type: bool
 ):
-    # type: (...) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[T.Tuple[str, str]], T.List[T.Tuple[str, str]]]
+    # type: (...) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[OutputWithTerms], T.List[OutputWithTerms]]
     """
     Return executable code lines from the given input/output values.
 
@@ -77,7 +83,10 @@ def print_code(
             dense_outputs[key] = value
 
     input_symbols = inputs.to_storage()
-    output_exprs = dense_outputs.to_storage() + sparse_outputs.to_storage()
+    output_exprs = DenseAndSparseOutputTerms(
+        dense=[ops.StorageOps.to_storage(value) for key, value in dense_outputs.items()],
+        sparse=[ops.StorageOps.to_storage(value) for key, value in sparse_outputs.items()],
+    )
 
     # CSE If needed
     if cse:
@@ -105,18 +114,36 @@ def print_code(
 
     # Print code
     temps_code = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
-    outputs_code = [(str(var), printer.doprint(t)) for var, t in simplified_outputs_formatted]
-    sparse_code = [(str(var), printer.doprint(t)) for var, t in sparse_terms_formatted]
+    outputs_code_no_names = [
+        [(str(var), printer.doprint(t)) for var, t in single_output_terms]
+        for single_output_terms in simplified_outputs_formatted
+    ]
+    sparse_outputs_code_no_names = [
+        [(str(var), printer.doprint(t)) for var, t in single_output_terms]
+        for single_output_terms in sparse_terms_formatted
+    ]
 
-    return temps_code, outputs_code, sparse_code
+    # Pack names and types with outputs
+    outputs_code = [
+        OutputWithTerms(key, value, output_code_no_name)
+        for output_code_no_name, (key, value) in zip(outputs_code_no_names, outputs.items())
+    ]
+    sparse_outputs_code = [
+        OutputWithTerms(key, value, sparse_output_code_no_name)
+        for sparse_output_code_no_name, (key, value) in zip(
+            sparse_outputs_code_no_names, sparse_outputs.items()
+        )
+    ]
+
+    return temps_code, outputs_code, sparse_outputs_code
 
 
 def perform_cse(
     input_symbols,  # type: T.Sequence[T.Scalar]
-    output_exprs,  # type: T.Sequence[T.Scalar]
+    output_exprs,  # type: DenseAndSparseOutputTerms
     substitute_inputs=True,  # type: bool
 ):
-    # type: (...) -> T.Tuple[T_terms, T.List[T.Scalar]]
+    # type: (...) -> T.Tuple[T_terms, DenseAndSparseOutputTerms]
     """
     Run common sub-expression elimination on the given input/output values.
 
@@ -130,7 +157,20 @@ def perform_cse(
         T.Sequence[T.Scalar]: Output expressions based on temporaries
     """
     # Perform CSE
-    temps, simplified_outputs = sm.cse(output_exprs)
+    flat_output_exprs = [
+        x for storage in (output_exprs.dense + output_exprs.sparse) for x in storage
+    ]
+    temps, flat_simplified_outputs = sm.cse(flat_output_exprs)
+
+    # Unflatten output of CSE
+    simplified_outputs = DenseAndSparseOutputTerms(dense=[], sparse=[])
+    flat_i = 0
+    for storage in output_exprs.dense:
+        simplified_outputs.dense.append(flat_simplified_outputs[flat_i : flat_i + len(storage)])
+        flat_i += len(storage)
+    for storage in output_exprs.sparse:
+        simplified_outputs.sparse.append(flat_simplified_outputs[flat_i : flat_i + len(storage)])
+        flat_i += len(storage)
 
     # Substitute names of temp symbols
     tmp_name = lambda i: "_tmp{}".format(i)
@@ -139,7 +179,16 @@ def perform_cse(
     temps = [
         (temps_renames[i][1], sm.S(t[1]).subs(temps_renames_dict)) for i, t in enumerate(temps)
     ]
-    simplified_outputs = [sm.S(v).subs(temps_renames_dict) for v in simplified_outputs]
+    simplified_outputs = DenseAndSparseOutputTerms(
+        dense=[
+            [sm.S(v).subs(temps_renames_dict) for v in storage]
+            for storage in simplified_outputs.dense
+        ],
+        sparse=[
+            [sm.S(v).subs(temps_renames_dict) for v in storage]
+            for storage in simplified_outputs.sparse
+        ],
+    )
 
     # Substitute symbols to an input array
     # Rather than having the code contain the names of each symbol, we convert the
@@ -149,7 +198,10 @@ def perform_cse(
         input_array = [sm.Symbol(input_name(i)) for i in range(len(input_symbols))]
         input_subs = dict(zip(input_symbols, input_array))
         temps = [(var, term.subs(input_subs)) for var, term in temps]
-        simplified_outputs = [t.subs(input_subs) for t in simplified_outputs]
+        simplified_outputs = DenseAndSparseOutputTerms(
+            dense=[[t.subs(input_subs) for t in storage] for storage in simplified_outputs.dense],
+            sparse=[[t.subs(input_subs) for t in storage] for storage in simplified_outputs.sparse],
+        )
 
     return temps, simplified_outputs
 
@@ -159,10 +211,10 @@ def format_symbols(
     dense_outputs,  # type: Values
     sparse_outputs,  # type: Values
     intermediate_terms,  # type: T_terms
-    output_terms,  # type: T.List[T.Scalar]
+    output_terms,  # type: DenseAndSparseOutputTerms
     mode,  # type: CodegenMode
 ):
-    # type: (...) -> T.Tuple[T_terms, T_terms, T_terms]
+    # type: (...) -> T.Tuple[T_terms, T_nested_terms, T_nested_terms]
     """
     Reformats symbolic variables used in intermediate and outputs terms to match structure of inputs/outputs.
     For example if we have an input array "arr" with symbolic elements [arr0, arr1], we will remap symbol "arr0" to
@@ -170,38 +222,33 @@ def format_symbols(
     """
     # Rename the symbolic inputs so that they match the code we generate
 
-    symbolic_args = get_formatted_flat_list(inputs, mode, format_as_inputs=True)
+    symbolic_args = list(
+        itertools.chain.from_iterable(get_formatted_list(inputs, mode, format_as_inputs=True))
+    )
     input_subs = dict(zip(inputs.to_storage(), symbolic_args))
     intermediate_terms_formatted = [
         (lhs, ops.StorageOps.subs(rhs, input_subs)) for lhs, rhs in intermediate_terms
     ]
 
-    dense_output_terms = output_terms[: dense_outputs.storage_dim()]
-    sparse_output_terms = output_terms[dense_outputs.storage_dim() :]
-
-    dense_output_lhs_formatted = get_formatted_flat_list(
-        dense_outputs, mode, format_as_inputs=False
-    )
-    dense_output_rhs_formatted = [
-        ops.StorageOps.subs(out, input_subs) for out in dense_output_terms
+    dense_output_lhs_formatted = get_formatted_list(dense_outputs, mode, format_as_inputs=False)
+    dense_output_terms_formatted = [
+        zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs))
+        for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
     ]
-    assert len(dense_output_lhs_formatted) == len(dense_output_rhs_formatted)
-    dense_output_terms_formatted = zip(dense_output_lhs_formatted, dense_output_rhs_formatted)
 
-    sparse_output_lhs_formatted = get_formatted_sparse_flat_list(sparse_outputs, mode)
-    sparse_output_rhs_formatted = [
-        ops.StorageOps.subs(out, input_subs) for out in sparse_output_terms
+    sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs, mode)
+    sparse_output_terms_formatted = [
+        zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs))
+        for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
     ]
-    assert len(sparse_output_lhs_formatted) == len(sparse_output_rhs_formatted)
-    sparse_output_terms_formatted = zip(sparse_output_lhs_formatted, sparse_output_rhs_formatted)
 
     return intermediate_terms_formatted, dense_output_terms_formatted, sparse_output_terms_formatted
 
 
-def get_formatted_flat_list(values, mode, format_as_inputs):
-    # type: (Values, CodegenMode, bool) -> T.List[T.Scalar]
+def get_formatted_list(values, mode, format_as_inputs):
+    # type: (Values, CodegenMode, bool) -> T.List[T.List[T.Scalar]]
     """
-    Returns a flat list of symbols for use in generated functions.
+    Returns a nested list of symbols for use in generated functions.
 
     Args:
         values: Values object mapping keys to different objects. Here we only
@@ -214,17 +261,17 @@ def get_formatted_flat_list(values, mode, format_as_inputs):
         arg_cls = python_util.get_type(value)
         storage_dim = ops.StorageOps.storage_dim(value)
 
-        # For each item in the given Values object, we construct a flat list of symbols used
+        # For each item in the given Values object, we construct a list of symbols used
         # to access the scalar elements of the object. These symbols will later be matched up
         # with the flattened Values object symbols.
-        symbols = []
         if isinstance(value, (sm.Expr, sm.Symbol)):
-            symbols.append(sm.Symbol(key))
+            symbols = [sm.Symbol(key)]
         elif issubclass(arg_cls, geo.Matrix):
             if mode == CodegenMode.PYTHON2:
                 # TODO(nathan): Not sure this works for 2D matrices
-                symbols.extend([sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)])
+                symbols = [sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)]
             elif mode == CodegenMode.CPP:
+                symbols = []
                 for i in range(value.shape[0]):
                     for j in range(value.shape[1]):
                         symbols.append(sm.Symbol("{}({}, {})".format(key, i, j)))
@@ -234,26 +281,24 @@ def get_formatted_flat_list(values, mode, format_as_inputs):
         elif issubclass(arg_cls, Values):
             # Term is a Values object, so we must flatten it. Here we loop over the index so that
             # we can use the same code with lists.
-            vec = []
+            symbols = []
             for name, index_value in value.index().items():
                 # Elements of a Values object are accessed with the "." operator
-                vec.extend(
+                symbols.extend(
                     _get_scalar_keys_recursive(
                         index_value, prefix="{}.{}".format(key, name), mode=mode, use_data=False
                     )
                 )
 
-            assert len(vec) == len(set(vec)), "Non-unique keys:\n{}".format(
-                [symbol for symbol in vec if vec.count(symbol) > 1]
+            assert len(symbols) == len(set(symbols)), "Non-unique keys:\n{}".format(
+                [symbol for symbol in symbols if symbols.count(symbol) > 1]
             )
-
-            symbols.extend(vec)
         elif issubclass(arg_cls, (list, tuple)):
             # Term is a list, so we loop over the index of the list, i.e. "values.index()[key][3]".
-            vec = []
+            symbols = []
             for i, sub_index_val in enumerate(values.index()[key][3].values()):
                 # Elements of a list are accessed with the "[]" operator.
-                vec.extend(
+                symbols.extend(
                     _get_scalar_keys_recursive(
                         sub_index_val,
                         prefix="{}[{}]".format(key, i),
@@ -262,30 +307,28 @@ def get_formatted_flat_list(values, mode, format_as_inputs):
                     )
                 )
 
-            assert len(vec) == len(set(vec)), "Non-unique keys:\n{}".format(
-                [symbol for symbol in vec if vec.count(symbol) > 1]
+            assert len(symbols) == len(set(symbols)), "Non-unique keys:\n{}".format(
+                [symbol for symbol in symbols if symbols.count(symbol) > 1]
             )
-
-            symbols.extend(vec)
         else:
             if format_as_inputs:
                 # For readability, we will store the data of geo/cam objects in a temp vector named "_key"
                 # where "key" is the name of the given input variable (can be "self" for member functions accessing
                 # object data)
-                symbols.extend([sm.Symbol("_{}[{}]".format(key, j)) for j in range(storage_dim)])
+                symbols = [sm.Symbol("_{}[{}]".format(key, j)) for j in range(storage_dim)]
             else:
                 # For geo/cam objects being output, we can't access "data" directly, so in the
                 # jinja template we will construct a new object from a vector
-                symbols.extend([sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)])
+                symbols = [sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)]
 
-        symbolic_args.extend(symbols)
+        symbolic_args.append(symbols)
     return symbolic_args
 
 
 def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
     # type: (T.Any, str, CodegenMode, bool) -> T.List[str]
     """
-    Returns a flat vector of keys, recursing on Values or List objects to get sub-elements.
+    Returns a vector of keys, recursing on Values or List objects to get sub-elements.
 
     Args:
         index_value: Entry in a given index consisting of (inx, datatype, shape, item_index)
@@ -343,6 +386,7 @@ def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
     assert len(vec) == len(set(vec)), "Non-unique keys:\n{}".format(
         [symbol for symbol in vec if vec.count(symbol) > 1]
     )
+
     return vec
 
 
@@ -376,16 +420,17 @@ def get_sparse_mat_data(sparse_matrix):
     return sparse_mat_data
 
 
-def get_formatted_sparse_flat_list(sparse_outputs, mode):
-    # type: (Values, CodegenMode) -> T.List[T.Scalar]
+def get_formatted_sparse_list(sparse_outputs, mode):
+    # type: (Values, CodegenMode) -> T.List[T.List[T.Scalar]]
     """
-    Returns a flat list of symbols for use in generated functions for sparse matrices.
+    Returns a nested list of symbols for use in generated functions for sparse matrices.
     """
     symbolic_args = []
     # Each element of sparse_outputs is a list of the nonzero terms in the sparse matrix
     for key, sparse_matrix_data in sparse_outputs.items():
-        for i in range(len(sparse_matrix_data)):
-            symbolic_args.append(sm.Symbol("{}_value_ptr[{}]".format(key, i)))
+        symbolic_args.append(
+            [sm.Symbol("{}_value_ptr[{}]".format(key, i)) for i in range(len(sparse_matrix_data))]
+        )
 
     return symbolic_args
 

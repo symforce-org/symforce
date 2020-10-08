@@ -15,10 +15,17 @@ namespace pose2 {
  */
 template <typename Scalar>
 struct GroupOps {
+  using SelfJacobian = Eigen::Matrix<Scalar,
+                                     geo::LieGroupOps<Pose2<Scalar>>::TangentDim(),
+                                     geo::LieGroupOps<Pose2<Scalar>>::TangentDim()>;
+
   static geo::Pose2<Scalar> Identity();
   static geo::Pose2<Scalar> Inverse(const geo::Pose2<Scalar>& a);
   static geo::Pose2<Scalar> Compose(const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b);
   static geo::Pose2<Scalar> Between(const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b);
+  static geo::Pose2<Scalar> InverseWithJacobian(const geo::Pose2<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr);
+  static geo::Pose2<Scalar> ComposeWithJacobians(const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 3, 3>* const res_D_b = nullptr);
+  static geo::Pose2<Scalar> BetweenWithJacobians(const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 3, 3>* const res_D_b = nullptr);
 };
 
 }  // namespace pose2

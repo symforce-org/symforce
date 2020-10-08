@@ -28,7 +28,7 @@ namespace {{ spec.namespace }} {
 {{ util.print_docstring(spec.docstring) }}
 {% endif %}
 template <typename {{ util.format_typename(Symbol) }}>
-{{ util.function_declaration(spec) }} {
+{{ util.function_declaration(spec, is_declaration=True) }} {
     {{ util.expr_code(spec) }}
 }
 

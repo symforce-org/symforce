@@ -3,6 +3,8 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include "./lie_group_ops.h"
+
 namespace geo {
 
 /**
@@ -15,6 +17,16 @@ struct GroupOps {
   static T Inverse(const T& a);
   static T Compose(const T& a, const T& b);
   static T Between(const T& a, const T& b);
+
+  using SelfJacobian = typename geo::LieGroupOps<T>::SelfJacobian;
+
+  static T InverseWithJacobian(const T& a, SelfJacobian* const res_D_a);
+
+  static T ComposeWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a,
+                                SelfJacobian* const res_D_b);
+
+  static T BetweenWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a,
+                                SelfJacobian* const res_D_b);
 };
 
 }  // namespace geo

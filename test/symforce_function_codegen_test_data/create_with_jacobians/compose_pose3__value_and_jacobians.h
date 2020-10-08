@@ -24,12 +24,10 @@ namespace sym {
 *     geo.Matrix: Jacobian for arg 1 (b)
 */
 template <typename Scalar>
-geo::Pose3<Scalar> ComposePose3_ValueAndJacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, Eigen::Matrix<Scalar, 6, 6>* const res_D_a, Eigen::Matrix<Scalar, 6, 6>* const res_D_b) {
+geo::Pose3<Scalar> ComposePose3_ValueAndJacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
     // Input arrays
     const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
     const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
-    assert( res_D_a != nullptr );
-    assert( res_D_b != nullptr );
 
     // Intermediate terms (190)
     const Scalar _tmp0 = _a[0]*_b[3] + _a[1]*_b[2] - _a[2]*_b[1] + _a[3]*_b[0];
@@ -225,8 +223,6 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobians(const geo::Pose3<Scalar>& a, c
 
     // Output terms (3)
     Eigen::Matrix<Scalar, 7, 1> _res;
-    Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
-    Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
 
     _res[0] = _tmp0;
     _res[1] = _tmp1;
@@ -235,79 +231,88 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobians(const geo::Pose3<Scalar>& a, c
     _res[4] = _a[4] + _b[4]*_tmp15 + _b[5]*_tmp12 + _b[6]*_tmp8;
     _res[5] = _a[5] + _b[4]*_tmp21 + _b[5]*_tmp20 + _b[6]*_tmp18;
     _res[6] = _a[6] + _b[4]*_tmp24 + _b[5]*_tmp23 + _b[6]*_tmp22;
-    _res_D_a(0, 0) = -_tmp34*_tmp35 + _tmp42*_tmp43 - _tmp49*_tmp50 + _tmp58*_tmp59;
-    _res_D_a(0, 1) = -_tmp34*_tmp50 + _tmp35*_tmp49 + _tmp42*_tmp59 - _tmp43*_tmp58;
-    _res_D_a(0, 2) = -_tmp34*_tmp43 - _tmp35*_tmp42 + _tmp49*_tmp59 + _tmp50*_tmp58;
-    _res_D_a(0, 3) = 0;
-    _res_D_a(0, 4) = 0;
-    _res_D_a(0, 5) = 0;
-    _res_D_a(1, 0) = -_tmp35*_tmp61 + _tmp43*_tmp65 - _tmp50*_tmp63 + _tmp59*_tmp67;
-    _res_D_a(1, 1) = _tmp35*_tmp63 - _tmp43*_tmp67 - _tmp50*_tmp61 + _tmp59*_tmp65;
-    _res_D_a(1, 2) = -_tmp35*_tmp65 - _tmp43*_tmp61 + _tmp50*_tmp67 + _tmp59*_tmp63;
-    _res_D_a(1, 3) = 0;
-    _res_D_a(1, 4) = 0;
-    _res_D_a(1, 5) = 0;
-    _res_D_a(2, 0) = -_tmp35*_tmp68 + _tmp43*_tmp70 - _tmp50*_tmp69 + _tmp59*_tmp71;
-    _res_D_a(2, 1) = _tmp35*_tmp69 - _tmp43*_tmp71 - _tmp50*_tmp68 + _tmp59*_tmp70;
-    _res_D_a(2, 2) = -_tmp35*_tmp70 - _tmp43*_tmp68 + _tmp50*_tmp71 + _tmp59*_tmp69;
-    _res_D_a(2, 3) = 0;
-    _res_D_a(2, 4) = 0;
-    _res_D_a(2, 5) = 0;
-    _res_D_a(3, 0) = _a[3]*_tmp112 + _tmp102*_tmp43 - _tmp108*_tmp35 - _tmp50*_tmp93;
-    _res_D_a(3, 1) = -_a[2]*_tmp112 + _tmp102*_tmp59 - _tmp108*_tmp50 + _tmp35*_tmp93;
-    _res_D_a(3, 2) = _a[1]*_tmp112 - _tmp102*_tmp35 - _tmp108*_tmp43 + _tmp59*_tmp93;
-    _res_D_a(3, 3) = _tmp113;
-    _res_D_a(3, 4) = _tmp114;
-    _res_D_a(3, 5) = _tmp115;
-    _res_D_a(4, 0) = _a[2]*_tmp124 - _tmp122*_tmp35 - _tmp123*_tmp50 + _tmp125*_tmp59;
-    _res_D_a(4, 1) = _a[3]*_tmp124 - _tmp122*_tmp50 + _tmp123*_tmp35 - _tmp125*_tmp43;
-    _res_D_a(4, 2) = -_a[0]*_tmp124 - _tmp122*_tmp43 + _tmp123*_tmp59 + _tmp125*_tmp50;
-    _res_D_a(4, 3) = _tmp126;
-    _res_D_a(4, 4) = _tmp127;
-    _res_D_a(4, 5) = _tmp128;
-    _res_D_a(5, 0) = -_tmp132*_tmp50 - _tmp133*_tmp35 + _tmp134*_tmp43 + _tmp135*_tmp59;
-    _res_D_a(5, 1) = _tmp132*_tmp35 - _tmp133*_tmp50 + _tmp134*_tmp59 - _tmp135*_tmp43;
-    _res_D_a(5, 2) = _tmp132*_tmp59 - _tmp133*_tmp43 - _tmp134*_tmp35 + _tmp135*_tmp50;
-    _res_D_a(5, 3) = _tmp136;
-    _res_D_a(5, 4) = _tmp137;
-    _res_D_a(5, 5) = _tmp138;
-    _res_D_b(0, 0) = _b[2]*_tmp157 + _tmp145 + _tmp152 + _tmp160;
-    _res_D_b(0, 1) = _b[3]*_tmp157 - _tmp143*_tmp151 + _tmp161 - _tmp163;
-    _res_D_b(0, 2) = -_b[0]*_tmp157 + _tmp150*_tmp159 - _tmp164 + _tmp165;
-    _res_D_b(0, 3) = 0;
-    _res_D_b(0, 4) = 0;
-    _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = _b[3]*_tmp167 - _tmp151*_tmp166 - _tmp161 + _tmp163;
-    _res_D_b(1, 1) = _tmp144*_tmp166 + _tmp152 + _tmp168;
-    _res_D_b(1, 2) = -_tmp150*_tmp162 + _tmp159*_tmp166 - _tmp169 + _tmp170;
-    _res_D_b(1, 3) = 0;
-    _res_D_b(1, 4) = 0;
-    _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = -_b[0]*_tmp167 + _tmp159*_tmp171 + _tmp164 - _tmp165;
-    _res_D_b(2, 1) = _tmp143*_tmp159 - _tmp162*_tmp171 + _tmp169 - _tmp170;
-    _res_D_b(2, 2) = _tmp145 + _tmp151*_tmp171 + _tmp168;
-    _res_D_b(2, 3) = 0;
-    _res_D_b(2, 4) = 0;
-    _res_D_b(2, 5) = 0;
-    _res_D_b(3, 0) = 0;
-    _res_D_b(3, 1) = 0;
-    _res_D_b(3, 2) = 0;
-    _res_D_b(3, 3) = _tmp113*_tmp180 + _tmp114*_tmp177 + _tmp115*_tmp174;
-    _res_D_b(3, 4) = _tmp113*_tmp186 + _tmp114*_tmp185 + _tmp115*_tmp183;
-    _res_D_b(3, 5) = _tmp113*_tmp189 + _tmp114*_tmp187 + _tmp115*_tmp188;
-    _res_D_b(4, 0) = 0;
-    _res_D_b(4, 1) = 0;
-    _res_D_b(4, 2) = 0;
-    _res_D_b(4, 3) = _tmp126*_tmp180 + _tmp127*_tmp177 + _tmp128*_tmp174;
-    _res_D_b(4, 4) = _tmp126*_tmp186 + _tmp127*_tmp185 + _tmp128*_tmp183;
-    _res_D_b(4, 5) = _tmp126*_tmp189 + _tmp127*_tmp187 + _tmp128*_tmp188;
-    _res_D_b(5, 0) = 0;
-    _res_D_b(5, 1) = 0;
-    _res_D_b(5, 2) = 0;
-    _res_D_b(5, 3) = _tmp136*_tmp180 + _tmp137*_tmp177 + _tmp138*_tmp174;
-    _res_D_b(5, 4) = _tmp136*_tmp186 + _tmp137*_tmp185 + _tmp138*_tmp183;
-    _res_D_b(5, 5) = _tmp136*_tmp189 + _tmp137*_tmp187 + _tmp138*_tmp188;
 
+    if ( res_D_a != nullptr ) {
+        Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
+
+        _res_D_a(0, 0) = -_tmp34*_tmp35 + _tmp42*_tmp43 - _tmp49*_tmp50 + _tmp58*_tmp59;
+        _res_D_a(0, 1) = -_tmp34*_tmp50 + _tmp35*_tmp49 + _tmp42*_tmp59 - _tmp43*_tmp58;
+        _res_D_a(0, 2) = -_tmp34*_tmp43 - _tmp35*_tmp42 + _tmp49*_tmp59 + _tmp50*_tmp58;
+        _res_D_a(0, 3) = 0;
+        _res_D_a(0, 4) = 0;
+        _res_D_a(0, 5) = 0;
+        _res_D_a(1, 0) = -_tmp35*_tmp61 + _tmp43*_tmp65 - _tmp50*_tmp63 + _tmp59*_tmp67;
+        _res_D_a(1, 1) = _tmp35*_tmp63 - _tmp43*_tmp67 - _tmp50*_tmp61 + _tmp59*_tmp65;
+        _res_D_a(1, 2) = -_tmp35*_tmp65 - _tmp43*_tmp61 + _tmp50*_tmp67 + _tmp59*_tmp63;
+        _res_D_a(1, 3) = 0;
+        _res_D_a(1, 4) = 0;
+        _res_D_a(1, 5) = 0;
+        _res_D_a(2, 0) = -_tmp35*_tmp68 + _tmp43*_tmp70 - _tmp50*_tmp69 + _tmp59*_tmp71;
+        _res_D_a(2, 1) = _tmp35*_tmp69 - _tmp43*_tmp71 - _tmp50*_tmp68 + _tmp59*_tmp70;
+        _res_D_a(2, 2) = -_tmp35*_tmp70 - _tmp43*_tmp68 + _tmp50*_tmp71 + _tmp59*_tmp69;
+        _res_D_a(2, 3) = 0;
+        _res_D_a(2, 4) = 0;
+        _res_D_a(2, 5) = 0;
+        _res_D_a(3, 0) = _a[3]*_tmp112 + _tmp102*_tmp43 - _tmp108*_tmp35 - _tmp50*_tmp93;
+        _res_D_a(3, 1) = -_a[2]*_tmp112 + _tmp102*_tmp59 - _tmp108*_tmp50 + _tmp35*_tmp93;
+        _res_D_a(3, 2) = _a[1]*_tmp112 - _tmp102*_tmp35 - _tmp108*_tmp43 + _tmp59*_tmp93;
+        _res_D_a(3, 3) = _tmp113;
+        _res_D_a(3, 4) = _tmp114;
+        _res_D_a(3, 5) = _tmp115;
+        _res_D_a(4, 0) = _a[2]*_tmp124 - _tmp122*_tmp35 - _tmp123*_tmp50 + _tmp125*_tmp59;
+        _res_D_a(4, 1) = _a[3]*_tmp124 - _tmp122*_tmp50 + _tmp123*_tmp35 - _tmp125*_tmp43;
+        _res_D_a(4, 2) = -_a[0]*_tmp124 - _tmp122*_tmp43 + _tmp123*_tmp59 + _tmp125*_tmp50;
+        _res_D_a(4, 3) = _tmp126;
+        _res_D_a(4, 4) = _tmp127;
+        _res_D_a(4, 5) = _tmp128;
+        _res_D_a(5, 0) = -_tmp132*_tmp50 - _tmp133*_tmp35 + _tmp134*_tmp43 + _tmp135*_tmp59;
+        _res_D_a(5, 1) = _tmp132*_tmp35 - _tmp133*_tmp50 + _tmp134*_tmp59 - _tmp135*_tmp43;
+        _res_D_a(5, 2) = _tmp132*_tmp59 - _tmp133*_tmp43 - _tmp134*_tmp35 + _tmp135*_tmp50;
+        _res_D_a(5, 3) = _tmp136;
+        _res_D_a(5, 4) = _tmp137;
+        _res_D_a(5, 5) = _tmp138;
+    }
+
+    if ( res_D_b != nullptr ) {
+        Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
+
+        _res_D_b(0, 0) = _b[2]*_tmp157 + _tmp145 + _tmp152 + _tmp160;
+        _res_D_b(0, 1) = _b[3]*_tmp157 - _tmp143*_tmp151 + _tmp161 - _tmp163;
+        _res_D_b(0, 2) = -_b[0]*_tmp157 + _tmp150*_tmp159 - _tmp164 + _tmp165;
+        _res_D_b(0, 3) = 0;
+        _res_D_b(0, 4) = 0;
+        _res_D_b(0, 5) = 0;
+        _res_D_b(1, 0) = _b[3]*_tmp167 - _tmp151*_tmp166 - _tmp161 + _tmp163;
+        _res_D_b(1, 1) = _tmp144*_tmp166 + _tmp152 + _tmp168;
+        _res_D_b(1, 2) = -_tmp150*_tmp162 + _tmp159*_tmp166 - _tmp169 + _tmp170;
+        _res_D_b(1, 3) = 0;
+        _res_D_b(1, 4) = 0;
+        _res_D_b(1, 5) = 0;
+        _res_D_b(2, 0) = -_b[0]*_tmp167 + _tmp159*_tmp171 + _tmp164 - _tmp165;
+        _res_D_b(2, 1) = _tmp143*_tmp159 - _tmp162*_tmp171 + _tmp169 - _tmp170;
+        _res_D_b(2, 2) = _tmp145 + _tmp151*_tmp171 + _tmp168;
+        _res_D_b(2, 3) = 0;
+        _res_D_b(2, 4) = 0;
+        _res_D_b(2, 5) = 0;
+        _res_D_b(3, 0) = 0;
+        _res_D_b(3, 1) = 0;
+        _res_D_b(3, 2) = 0;
+        _res_D_b(3, 3) = _tmp113*_tmp180 + _tmp114*_tmp177 + _tmp115*_tmp174;
+        _res_D_b(3, 4) = _tmp113*_tmp186 + _tmp114*_tmp185 + _tmp115*_tmp183;
+        _res_D_b(3, 5) = _tmp113*_tmp189 + _tmp114*_tmp187 + _tmp115*_tmp188;
+        _res_D_b(4, 0) = 0;
+        _res_D_b(4, 1) = 0;
+        _res_D_b(4, 2) = 0;
+        _res_D_b(4, 3) = _tmp126*_tmp180 + _tmp127*_tmp177 + _tmp128*_tmp174;
+        _res_D_b(4, 4) = _tmp126*_tmp186 + _tmp127*_tmp185 + _tmp128*_tmp183;
+        _res_D_b(4, 5) = _tmp126*_tmp189 + _tmp127*_tmp187 + _tmp128*_tmp188;
+        _res_D_b(5, 0) = 0;
+        _res_D_b(5, 1) = 0;
+        _res_D_b(5, 2) = 0;
+        _res_D_b(5, 3) = _tmp136*_tmp180 + _tmp137*_tmp177 + _tmp138*_tmp174;
+        _res_D_b(5, 4) = _tmp136*_tmp186 + _tmp137*_tmp185 + _tmp138*_tmp183;
+        _res_D_b(5, 5) = _tmp136*_tmp189 + _tmp137*_tmp187 + _tmp138*_tmp188;
+    }
 
     return geo::Pose3<Scalar>(_res);
 }

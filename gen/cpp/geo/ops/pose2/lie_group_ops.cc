@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <geo/pose2.h>
 
 #include "./lie_group_ops.h"
 
@@ -29,7 +30,6 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
     _res[2] = -_tmp3*vec(1, 0) + _tmp4*vec(0, 0);
     _res[3] = _tmp3*vec(0, 0) + _tmp4*vec(1, 0);
 
-
     return geo::Pose2<Scalar>(_res);
 }
 
@@ -51,7 +51,6 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose2<Scal
     _res(0, 0) = _tmp2 + _tmp3*_tmp4;
     _res(1, 0) = _tmp2*_tmp4 - _tmp3;
     _res(2, 0) = _tmp0;
-
 
     return _res;
 }
@@ -77,7 +76,6 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose2<Scalar>& a, con
     _res[1] = _a[0]*_tmp0 + _a[1]*_tmp1;
     _res[2] = _a[0]*_tmp6 - _a[1]*_tmp5 + _a[2];
     _res[3] = _a[0]*_tmp5 + _a[1]*_tmp6 + _a[3];
-
 
     return geo::Pose2<Scalar>(_res);
 }
@@ -106,7 +104,6 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
     _res(0, 0) = _tmp7 + _tmp8*_tmp9;
     _res(1, 0) = _tmp7*_tmp9 - _tmp8;
     _res(2, 0) = _tmp5;
-
 
     return _res;
 }

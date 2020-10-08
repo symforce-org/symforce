@@ -197,7 +197,6 @@ Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian0(const geo::Pose3<Scalar>& a, 
     _res_D_a(5, 4) = _tmp104*_tmp121 + _tmp106*_tmp122 + _tmp107*_tmp123;
     _res_D_a(5, 5) = _tmp108*_tmp121 + _tmp109*_tmp122 + _tmp110*_tmp123;
 
-
     return _res_D_a;
 }
 

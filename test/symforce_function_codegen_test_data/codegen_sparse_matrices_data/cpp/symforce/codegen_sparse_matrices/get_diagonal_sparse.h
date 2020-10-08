@@ -21,6 +21,10 @@ namespace codegen_sparse_matrices {
 template <typename Scalar>
 Eigen::SparseMatrix<Scalar> GetDiagonalSparse(const Eigen::Matrix<Scalar, 100, 100>& matrix_in) {
     // Input arrays
+
+    // Intermediate terms (0)
+
+    // Output terms (1)
     static constexpr int kRows_matrix_out = 100;
     static constexpr int kCols_matrix_out = 100;
     static constexpr int kNumNonZero_matrix_out = 100;
@@ -37,10 +41,6 @@ Eigen::SparseMatrix<Scalar> GetDiagonalSparse(const Eigen::Matrix<Scalar, 100, 1
     );
     Scalar* matrix_out_value_ptr = matrix_out.valuePtr();
 
-
-    // Intermediate terms (0)
-
-    // Output terms (1)
 
     matrix_out_value_ptr[0] = matrix_in(0, 0);
     matrix_out_value_ptr[1] = matrix_in(1, 1);
@@ -142,7 +142,6 @@ Eigen::SparseMatrix<Scalar> GetDiagonalSparse(const Eigen::Matrix<Scalar, 100, 1
     matrix_out_value_ptr[97] = matrix_in(97, 97);
     matrix_out_value_ptr[98] = matrix_in(98, 98);
     matrix_out_value_ptr[99] = matrix_in(99, 99);
-
 
     return matrix_out;
 }

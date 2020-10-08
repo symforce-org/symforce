@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <geo/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 
 #include "./lie_group_ops.h"
 
@@ -14,7 +15,7 @@ namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 {% for spec in specs['LieGroupOps'] %}
 template <typename Scalar>
-{{ util.function_declaration_custom_namespace(spec, "LieGroupOps<Scalar>") }} {
+{{ util.function_declaration_custom_namespace(spec, "LieGroupOps<Scalar>", is_declaration=False) }} {
     {{ util.expr_code(spec) }}
 }
 

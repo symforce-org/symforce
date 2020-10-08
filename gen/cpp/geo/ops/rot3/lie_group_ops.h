@@ -5,7 +5,12 @@
 
 #include <Eigen/Dense>
 
-#include <geo/rot3.h>
+#include "../lie_group_ops.h"
+
+// Forward declare class, without including header
+namespace geo {
+template<typename ScalarType> class Rot3;
+}  // namespace geo
 
 namespace geo {
 namespace rot3 {

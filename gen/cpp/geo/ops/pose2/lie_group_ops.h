@@ -5,7 +5,12 @@
 
 #include <Eigen/Dense>
 
-#include <geo/pose2.h>
+#include "../lie_group_ops.h"
+
+// Forward declare class, without including header
+namespace geo {
+template<typename ScalarType> class Pose2;
+}  // namespace geo
 
 namespace geo {
 namespace pose2 {

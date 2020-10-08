@@ -33,6 +33,7 @@ class Pose2 {
   using Self = Pose2<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 4, 1>;
   using TangentVec = Eigen::Matrix<Scalar, 3, 1>;
+  using SelfJacobian = Eigen::Matrix<Scalar, 3, 3>;
 
   // Construct from data vec
   explicit Pose2(const DataVec& data) : data_(data) {}
@@ -82,6 +83,21 @@ class Pose2 {
   Self Between(const Self& b) const {
     return GroupOps<Self>::Between(*this, b);
   }
+
+  Self InverseWithJacobian(SelfJacobian* const res_D_a = nullptr) const {
+    return GroupOps<Self>::InverseWithJacobian(*this, res_D_a);
+  }
+
+  Self ComposeWithJacobians(const Self& b, SelfJacobian* const res_D_a = nullptr,
+                            SelfJacobian* const res_D_b = nullptr) const {
+    return GroupOps<Self>::ComposeWithJacobians(*this, b, res_D_a, res_D_b);
+  }
+
+  Self BetweenWithJacobians(const Self& b, SelfJacobian* const res_D_a = nullptr,
+                            SelfJacobian* const res_D_b = nullptr) const {
+    return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
+  }
+
 
   // Compose shorthand
   template <typename Other>
@@ -174,5 +190,5 @@ std::ostream& operator<<(std::ostream& os, const geo::Pose2<float>& a);
 
 // Concept implementations for this class
 #include "./ops/pose2/storage_ops.h"
-#include "./ops/pose2/group_ops.h"
 #include "./ops/pose2/lie_group_ops.h"
+#include "./ops/pose2/group_ops.h"

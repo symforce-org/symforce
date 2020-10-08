@@ -28,6 +28,7 @@ class Rot2 {
   using Self = Rot2<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 2, 1>;
   using TangentVec = Eigen::Matrix<Scalar, 1, 1>;
+  using SelfJacobian = Eigen::Matrix<Scalar, 1, 1>;
 
   // Construct from data vec
   // For rotation types the storage is normalized on construction.
@@ -79,6 +80,21 @@ class Rot2 {
   Self Between(const Self& b) const {
     return GroupOps<Self>::Between(*this, b);
   }
+
+  Self InverseWithJacobian(SelfJacobian* const res_D_a = nullptr) const {
+    return GroupOps<Self>::InverseWithJacobian(*this, res_D_a);
+  }
+
+  Self ComposeWithJacobians(const Self& b, SelfJacobian* const res_D_a = nullptr,
+                            SelfJacobian* const res_D_b = nullptr) const {
+    return GroupOps<Self>::ComposeWithJacobians(*this, b, res_D_a, res_D_b);
+  }
+
+  Self BetweenWithJacobians(const Self& b, SelfJacobian* const res_D_a = nullptr,
+                            SelfJacobian* const res_D_b = nullptr) const {
+    return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
+  }
+
 
   // Compose shorthand
   template <typename Other>
@@ -170,5 +186,5 @@ std::ostream& operator<<(std::ostream& os, const geo::Rot2<float>& a);
 
 // Concept implementations for this class
 #include "./ops/rot2/storage_ops.h"
-#include "./ops/rot2/group_ops.h"
 #include "./ops/rot2/lie_group_ops.h"
+#include "./ops/rot2/group_ops.h"

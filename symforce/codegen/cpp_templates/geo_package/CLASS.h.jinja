@@ -39,6 +39,7 @@ class {{ cls.__name__ }} {
   using DataVec = Eigen::Matrix<Scalar, {{ ops.StorageOps.storage_dim(cls) }}, 1>;
   {% if is_lie_group %}
   using TangentVec = Eigen::Matrix<Scalar, {{ ops.LieGroupOps.tangent_dim(cls) }}, 1>;
+  using SelfJacobian = Eigen::Matrix<Scalar, {{ ops.LieGroupOps.tangent_dim(cls) }}, {{ ops.LieGroupOps.tangent_dim(cls) }}>;
   {% endif %}
 
   // Construct from data vec
@@ -95,6 +96,21 @@ class {{ cls.__name__ }} {
   Self Between(const Self& b) const {
     return GroupOps<Self>::Between(*this, b);
   }
+
+  Self InverseWithJacobian(SelfJacobian* const res_D_a = nullptr) const {
+    return GroupOps<Self>::InverseWithJacobian(*this, res_D_a);
+  }
+
+  Self ComposeWithJacobians(const Self& b, SelfJacobian* const res_D_a = nullptr,
+                            SelfJacobian* const res_D_b = nullptr) const {
+    return GroupOps<Self>::ComposeWithJacobians(*this, b, res_D_a, res_D_b);
+  }
+
+  Self BetweenWithJacobians(const Self& b, SelfJacobian* const res_D_a = nullptr,
+                            SelfJacobian* const res_D_b = nullptr) const {
+    return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
+  }
+
 
   // Compose shorthand
   template <typename Other>
@@ -178,7 +194,7 @@ std::ostream& operator<<(std::ostream& os, const geo::{{ cls.__name__ }}<{{ scal
 
 // Concept implementations for this class
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
-#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"
 {% if is_lie_group %}
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h"
 {% endif %}
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"
