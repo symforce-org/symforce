@@ -4,6 +4,7 @@
 #include <Eigen/Sparse>
 
 #include <symforce/codegen_sparse_matrices/get_diagonal_sparse.h>
+#include <symforce/codegen_sparse_matrices/get_multiple_dense_and_sparse.h>
 #include <symforce/codegen_sparse_matrices/update_sparse_mat.h>
 
 
@@ -27,6 +28,23 @@ int main(int argc, char** argv) {
     for (int i = 0; i < DIM; ++i) {
       assertTrue(sparse_mat.coeff(i, i) == 1);
     }
+
+    // Create and return multiple sparse and dense matrices
+    Eigen::SparseMatrix<double> sparse_mat2;
+    Eigen::Matrix4d dense_mat2;
+    Eigen::SparseMatrix<double> sparse_mat3;
+    const Eigen::Matrix3d dense_mat3 = codegen_sparse_matrices::GetMultipleDenseAndSparse(
+        dense_mat, &sparse_mat2, &dense_mat2, &sparse_mat3);
+    assertTrue(sparse_mat2.nonZeros() == DIM);
+    for (int i = 0; i < DIM; ++i) {
+      assertTrue(sparse_mat2.coeff(i, i) == 2);
+    }
+    assertTrue(dense_mat2 == 3 * Eigen::Matrix4d::Identity());
+    assertTrue(sparse_mat3.nonZeros() == DIM);
+    for (int i = 0; i < DIM; ++i) {
+      assertTrue(sparse_mat3.coeff(i, i) == 4);
+    }
+    assertTrue(dense_mat3 == Eigen::Matrix3d::Zero());
 
     // If a pre-constructed sparse matrix of the correct dimensions is passed, we should only update its data
     codegen_sparse_matrices::UpdateSparseMat<double>(dense_mat, &sparse_mat);

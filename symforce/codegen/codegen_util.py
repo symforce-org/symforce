@@ -126,7 +126,7 @@ def print_code(
     # Pack names and types with outputs
     outputs_code = [
         OutputWithTerms(key, value, output_code_no_name)
-        for output_code_no_name, (key, value) in zip(outputs_code_no_names, outputs.items())
+        for output_code_no_name, (key, value) in zip(outputs_code_no_names, dense_outputs.items())
     ]
     sparse_outputs_code = [
         OutputWithTerms(key, value, sparse_output_code_no_name)

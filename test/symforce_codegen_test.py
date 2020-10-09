@@ -433,6 +433,26 @@ class SymforceCodegenTest(TestCase):
             output_dir=output_dir, namespace=namespace
         )
 
+        # Function that generates both dense and sparse outputs
+        multiple_outputs = Values()
+        multiple_outputs["sparse_first"] = 2 * outputs["matrix_out"]
+        multiple_outputs["dense"] = 3 * geo.Matrix44.matrix_identity()
+        multiple_outputs["sparse_second"] = 4 * outputs["matrix_out"]
+        multiple_outputs["result"] = geo.Matrix33().zero()
+
+        get_dense_and_sparse_func = Codegen(
+            name="GetMultipleDenseAndSparse",
+            inputs=inputs,
+            outputs=multiple_outputs,
+            return_key="result",
+            mode=CodegenMode.CPP,
+            scalar_type="double",
+            sparse_matrices=["sparse_first", "sparse_second"],
+        )
+        get_dense_and_sparse_func_data = get_dense_and_sparse_func.generate_function(
+            output_dir=output_dir, namespace=namespace
+        )
+
         # Function that updates sparse matrix without copying
         update_spase_func = Codegen(
             name="UpdateSparseMat",
