@@ -12,6 +12,7 @@ from symforce.codegen import codegen_util
 
 def generate_types(
     package_name,  # type: str
+    file_name,  # type: str
     values_indices,  # type: T.Mapping[str, T.Dict[str, T.Any]]
     shared_types=None,  # type: T.Mapping[str, str]
     scalar_type="double",  # type: str
@@ -25,6 +26,7 @@ def generate_types(
 
     Args:
         package_name: Package of LCM types to be generated
+        file_name: Name of the LCM file to generate (without the extension)
         values_indices: Mapping between the name each LCM type to be generated and its index (computed using Values.index())
         shared_types: Used to specify whether specific types and subtypes have already been generated, either externally or internally
             (i.e. if one generated type is to represent multiple objects in values_indices).
@@ -84,7 +86,7 @@ def generate_types(
         lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "types.lcm.jinja")
 
         # Type definition
-        lcm_file_name = "{}.lcm".format(package_name)
+        lcm_file_name = "{}.lcm".format(file_name)
         lcm_files.append(lcm_file_name)
         templates.add(
             lcm_template,

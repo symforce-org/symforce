@@ -63,6 +63,7 @@ class SymforceTypesCodegenTest(TestCase):
 
         codegen_data = types_package_codegen.generate_types(
             package_name=name,
+            file_name=name,
             values_indices=dict(input=inputs.index(), output=outputs.index()),
             shared_types=shared_types,
             scalar_type=scalar_type,
@@ -222,6 +223,7 @@ class SymforceTypesCodegenTest(TestCase):
 
         codegen_data = types_package_codegen.generate_types(
             package_name="reuse",
+            file_name="reuse",
             values_indices=dict(input=inputs.index(), output=outputs.index()),
             shared_types=shared_types,
             scalar_type="double",

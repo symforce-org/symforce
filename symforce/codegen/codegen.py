@@ -244,6 +244,9 @@ class Codegen(object):
             output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(self.name), dir="/tmp")
             logger.debug("Creating temp directory: {}".format(output_dir))
 
+        if generated_file_name is None:
+            generated_file_name = self.name
+
         # List of (template_path, output_path, data)
         templates = template_util.TemplateList()
 
@@ -267,6 +270,7 @@ class Codegen(object):
         values_indices = {name: gen_type.index() for name, gen_type in types_to_generate}
         types_codegen_data = types_package_codegen.generate_types(
             package_name=namespace,
+            file_name=python_util.camelcase_to_snakecase(generated_file_name),
             values_indices=values_indices,
             shared_types=shared_types,
             scalar_type=self.scalar_type,
@@ -287,9 +291,6 @@ class Codegen(object):
             "output_dir": output_dir,
             "lcm_type_dir": types_codegen_data["lcm_type_dir"],
         }
-
-        if generated_file_name is None:
-            generated_file_name = self.name
 
         # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
