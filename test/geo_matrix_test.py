@@ -137,6 +137,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             Matrix.symbolic
             Matrix.subs
             Matrix.simplify
+            Matrix.limit
             Matrix.evalf
             Matrix.to_numpy
         """
@@ -163,6 +164,11 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         unsimple_matrix = geo.Matrix([x ** 2 - x, 0])
         simple_matrix = geo.Matrix([x * (x - 1), 0])
         self.assertEqual(unsimple_matrix.simplify(), simple_matrix)
+
+        y = sm.Symbol("y")
+        mat = geo.Matrix([x * y / (x + y), (x + y) / (x * y + 1), sm.sin(y) / y])
+        mat_lim_y_to_0 = geo.Matrix([0, x, 1])
+        self.assertEqual(mat.limit(y, 0), mat_lim_y_to_0)
 
         pi_mat = sm.pi * geo.M22.matrix_identity()
         pi_mat_num = geo.Matrix([[3.14159265, 0], [0, 3.14159265]])

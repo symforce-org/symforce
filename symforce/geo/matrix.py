@@ -425,6 +425,15 @@ class Matrix(LieGroup):
         """
         return self.__class__(sm.simplify(self.mat, *args, **kwargs))
 
+    def limit(self, *args, **kwargs):
+        # type: (_T.Any, _T.Any) -> Matrix
+        """
+        Take the limit at z = z0
+
+        This overrides the sympy implementation because that clobbers the class type.
+        """
+        return self.from_storage([sm.limit(e, *args, **kwargs) for e in self.to_storage()])
+
     def jacobian(self, X, tangent_space=True):
         # type: (_T.Any, bool) -> Matrix
         """

@@ -18,6 +18,7 @@ def modify_symbolic_api(sympy_module):
     """
     override_symbol_new(sympy_module)
     override_simplify(sympy_module)
+    override_limit(sympy_module)
     override_subs(sympy_module)
     add_scoping(sympy_module)
     add_custom_methods(sympy_module)
@@ -84,6 +85,27 @@ def override_simplify(sympy_module):
         return sympy_module.S(sympy.simplify(sympy.S(*args), **kwargs))
 
     sympy_module.simplify = simplify
+
+
+def override_limit(sympy_module):
+    # type: (T.Type) -> None
+    """
+    Override limit so that we can use it with the symengine backend
+
+    Args:
+        sympy_module (module):
+    """
+    if hasattr(sympy_module, "limit"):
+        return
+
+    import sympy
+
+    def limit(e, z, z0, dir="+"):
+        # type: (T.Any, T.Any, T.Any, str) -> sympy.S
+        logger.warning("Converting to sympy to use .limit")
+        return sympy_module.S(sympy.limit(sympy.S(e), sympy.S(z), sympy.S(z0), dir=dir))
+
+    sympy_module.limit = limit
 
 
 def create_named_scope(scopes_list):
