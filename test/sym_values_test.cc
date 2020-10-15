@@ -160,6 +160,44 @@ void TestIndexedUpdate() {
   assertTrue(values2.At<double>('x') == 7.7);
 }
 
+void TestKeyUpdate() {
+  // Create some data
+  sym::Valuesd values;
+  values.Set<double>('x', 1.0);
+  values.Set<double>('y', 2.0);
+  values.Set<double>('z', -3.0);
+  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
+  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
+  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+
+  // Create an index for a subset of keys (random order should be supported)
+  const std::vector<sym::Key> keys = {{'R', 1}, 'x', 'y'};
+  const sym::index_t index = values.CreateIndex(keys);
+
+  // Another different structured Values
+  sym::Valuesd values2;
+  values2.Set<double>('z', 10.0);
+
+  // Update from a different structure
+  values2.UpdateOrSet(index, values);
+
+  // Test for update
+  assertTrue(values2.At<double>('x') == 1.0);
+  assertTrue(values2.At<double>('y') == 2.0);
+  assertTrue(values2.At<geo::Rot3d>({'R', 1}) == geo::Rot3d::Identity());
+
+  // Test for not clobbering other field
+  assertTrue(values2.At<double>('z') == 10.0);
+
+  // Test efficient update with cached index
+  const sym::index_t index2 = values2.CreateIndex(keys);
+  values.Set<double>('x', -10.0);
+  values.Set<double>('y', 20.0);
+  values2.Update(index2, index, values);
+  assertTrue(values2.At<double>('x') == -10.0);
+  assertTrue(values2.At<double>('y') == 20.0);
+}
+
 template <typename Scalar>
 void TestRetract() {
   std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> Retract ***" << std::endl;
@@ -207,5 +245,6 @@ int main(int argc, char** argv) {
   TestRetract<double>();
 
   TestIndexedUpdate();
+  TestKeyUpdate();
   TestMoveOperator();
 }

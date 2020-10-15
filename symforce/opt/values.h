@@ -56,6 +56,15 @@ class Values {
   bool Set(const Key& key, const T& value);
 
   /**
+   * Update or add keys to this Values base on other Values of different structure.
+   * index MUST be valid for other.
+   *
+   * NOTE(alvin): it is less efficient than the Update methods below if index objects are
+   *              created and cached. This method performs map lookup for each key of the index
+   */
+  void UpdateOrSet(const index_t& index, const Values<Scalar>& other);
+
+  /**
    * Number of keys.
    */
   int32_t NumEntries() const;
@@ -137,6 +146,13 @@ class Values {
    * slices of the data arrays, the index MUST be valid for both objects!
    */
   void Update(const index_t& index, const Values<Scalar>& other);
+
+  /**
+   * Efficiently update the keys from a different structured Values, given by
+   * this index and other index. This pureply copies slices of the data arrays.
+   * index_this MUST be valid for this object; index_other MUST be valid for other object.
+   */
+  void Update(const index_t& index_this, const index_t& index_other, const Values<Scalar>& other);
 
   /**
    * Perform a retraction from an update vector.
