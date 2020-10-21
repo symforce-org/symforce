@@ -29,6 +29,7 @@ Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>&
   _res(1, 0) = _cam[3] + _tmp0 * (-_cam[3] + pixel(1, 0));
 
   return _res;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace cam_function_codegen_test

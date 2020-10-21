@@ -316,6 +316,7 @@ Eigen::Matrix<Scalar, 3, 3> GetMultipleDenseAndSparse(
   }
 
   return _result;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_sparse_matrices

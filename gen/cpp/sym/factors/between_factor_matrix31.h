@@ -68,6 +68,7 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
     _jac(2, 4) = sqrt_info(2, 1);
     _jac(2, 5) = sqrt_info(2, 2);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

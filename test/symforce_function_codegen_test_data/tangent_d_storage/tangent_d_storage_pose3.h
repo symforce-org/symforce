@@ -83,6 +83,7 @@ Eigen::Matrix<Scalar, 6, 7> Tangent_D_Storage(const geo::Pose3<Scalar>& a, const
   _res(5, 6) = _tmp13 + _tmp7 + 1;
 
   return _res;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

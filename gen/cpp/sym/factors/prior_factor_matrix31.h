@@ -57,6 +57,7 @@ void PriorFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& value,
     _jac(2, 1) = sqrt_info(2, 1);
     _jac(2, 2) = sqrt_info(2, 2);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

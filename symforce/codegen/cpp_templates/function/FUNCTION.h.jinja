@@ -29,7 +29,8 @@ namespace {{ spec.namespace }} {
 {% endif %}
 template <typename {{ util.format_typename(Symbol) }}>
 {{ util.function_declaration(spec, is_declaration=True) }} {
-    {{ util.expr_code(spec) }}
-}
+    {{ util.expr_code(spec) -}}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace {{ spec.namespace }}

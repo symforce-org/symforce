@@ -145,6 +145,7 @@ Eigen::SparseMatrix<Scalar> GetDiagonalSparse(const Eigen::Matrix<Scalar, 100, 1
   matrix_out_value_ptr[99] = matrix_in(99, 99);
 
   return matrix_out;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_sparse_matrices

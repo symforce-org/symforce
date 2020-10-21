@@ -270,31 +270,8 @@ _{{ lhs }} = {{ rhs }};
 
 {# ------------------------------------------------------------------------- #}
 
-{# Generate inner code for computing the given expression.
- #
- # Args:
- #     spec (Codegen):
- #}
-{% macro expr_code(spec) -%}
-    // Input arrays
-    {% for name, type in spec.inputs.items() %}
-        {% set T = python_util.get_type(type) %}
-        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
-            {% if name == "self" %}
-    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = Data();
-            {% else %}
-    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = {{ name }}.Data();
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-
-    // Intermediate terms ({{ spec.intermediate_terms | length }})
-    {% for lhs, rhs in spec.intermediate_terms %}
-    const {{ format_typename(Symbol) }} {{ lhs }} = {{ rhs }};
-    {% endfor %}
-
-    // Output terms ({{ spec.outputs.items() | length }})
-    {# Populate the output vectors with the generated expressions #}
+{# Helper to generate all pointer outputs #}
+{% macro format_outputs_dense_and_sparse(spec) -%}
     {% for name, type, terms in spec.output_terms %}
         {% if name == spec.return_key %}
     {{ format_output_dense(name, type, terms, spec) | indent(width=4) | trim }}
@@ -328,16 +305,47 @@ _{{ lhs }} = {{ rhs }};
         {% endif %}
 
     {% endfor %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro expr_code(spec) -%}
+    // Input arrays
+    {% for name, type in spec.inputs.items() %}
+        {% set T = python_util.get_type(type) %}
+        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
+            {% if name == "self" %}
+    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = Data();
+            {% else %}
+    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = {{ name }}.Data();
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    // Intermediate terms ({{ spec.intermediate_terms | length }})
+    {% for lhs, rhs in spec.intermediate_terms %}
+    const {{ format_typename(Symbol) }} {{ lhs }} = {{ rhs }};
+    {% endfor %}
+
+    // Output terms ({{ spec.outputs.items() | length }})
+    {{ format_outputs_dense_and_sparse(spec) | trim }}
+    {# Populate the output vectors with the generated expressions #}
     {% for name, type in spec.outputs.items() %}
         {% set T_return = python_util.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
-            {%- if name in spec.sparse_mat_data %}
+
+            {% if name in spec.sparse_mat_data %}
     return {{ name }};
-            {%- elif issubclass(T_return, Matrix) or issubclass(T_return, Values) or is_symbolic(type) or is_sequence(type) %}
+            {% elif issubclass(T_return, Matrix) or issubclass(T_return, Values) or is_symbolic(type) or is_sequence(type) %}
     return _{{ name }};
-            {%- else %}
+            {% else %}
     return {{ format_typename(type, name) }}(_{{ name }});
-            {%- endif -%}
-        {%- endif -%}
-    {%- endfor -%}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
 {%- endmacro -%}

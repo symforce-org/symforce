@@ -181,6 +181,7 @@ Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const geo::Pose3<Scalar>& a,
   _res_D_b(5, 5) = _tmp107 * _tmp93 + _tmp108 * _tmp92 + _tmp109 * _tmp94;
 
   return _res_D_b;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

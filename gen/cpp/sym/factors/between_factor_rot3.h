@@ -333,6 +333,7 @@ void BetweenFactorRot3(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
     _jac(2, 4) = _b[0] * _tmp187 - _tmp137 * _tmp190 + _tmp141 * _tmp189 - _tmp143 * _tmp185;
     _jac(2, 5) = -_b[2] * _tmp186 + _b[3] * _tmp187 - _tmp142 * _tmp189 + _tmp143 * _tmp190;
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

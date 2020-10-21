@@ -44,6 +44,7 @@ Scalar IdentityDistJacobian(const geo::Rot3<Scalar>& R1, const Scalar e) {
                _tmp13 * _tmp8;
 
   return _dist_D_R1;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_nan_test

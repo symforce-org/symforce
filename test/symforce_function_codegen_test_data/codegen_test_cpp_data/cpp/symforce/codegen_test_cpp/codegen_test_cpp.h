@@ -728,6 +728,7 @@ void CodegenTestCpp(
         (values_vec_2D[1][0].list_of_lists[2][2][2] * values_vec_2D[1][0].list_of_lists[2][2][2]) +
         (values_vec_2D[1][0].list_of_lists[2][2][3] * values_vec_2D[1][0].list_of_lists[2][2][3]);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_test_cpp

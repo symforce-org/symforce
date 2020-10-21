@@ -319,6 +319,7 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobians(
   }
 
   return geo::Pose3<Scalar>(_res);
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

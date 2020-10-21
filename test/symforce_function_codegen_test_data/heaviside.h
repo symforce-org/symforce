@@ -27,6 +27,7 @@ Scalar Heaviside(const Scalar x) {
   _res = 0.5 * ((((x) >= 0) - ((x) < 0)) + 1);
 
   return _res;
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace cpp_code_printer_test

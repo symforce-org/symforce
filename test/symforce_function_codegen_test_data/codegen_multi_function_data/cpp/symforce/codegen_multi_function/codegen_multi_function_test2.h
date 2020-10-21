@@ -30,6 +30,7 @@ void CodegenMultiFunctionTest2(const codegen_multi_function::inputs_t& inputs,
 
     _outputs_2.foo = inputs.x + (inputs.y * inputs.y * inputs.y);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_multi_function

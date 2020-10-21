@@ -56,6 +56,7 @@ void PriorFactorRot2(const geo::Rot2<Scalar>& value, const geo::Rot2<Scalar>& pr
     _jac(0, 0) = _tmp8 * _value[0] * (_tmp1 * _tmp7 - _tmp2 * _tmp6) -
                  _tmp8 * _value[1] * (-_tmp1 * _tmp6 - _tmp2 * _tmp7);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

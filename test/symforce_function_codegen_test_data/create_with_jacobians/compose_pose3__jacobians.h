@@ -302,6 +302,7 @@ void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar
     _res_D_b(5, 4) = _tmp136 * _tmp186 + _tmp137 * _tmp185 + _tmp138 * _tmp183;
     _res_D_b(5, 5) = _tmp136 * _tmp189 + _tmp137 * _tmp187 + _tmp138 * _tmp188;
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

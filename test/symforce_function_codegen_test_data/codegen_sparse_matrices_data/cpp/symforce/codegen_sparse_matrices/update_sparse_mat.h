@@ -150,6 +150,7 @@ void UpdateSparseMat(const Eigen::Matrix<Scalar, 100, 100>& matrix_in,
     updated_mat_value_ptr[98] = 2 * matrix_in(98, 98);
     updated_mat_value_ptr[99] = 2 * matrix_in(99, 99);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_sparse_matrices

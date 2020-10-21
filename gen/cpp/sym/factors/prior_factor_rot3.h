@@ -168,6 +168,7 @@ void PriorFactorRot3(const geo::Rot3<Scalar>& value, const geo::Rot3<Scalar>& pr
     _jac(2, 1) = -_tmp60 * _value[1] + _tmp63 * _value[3] + _tmp64 * _value[0] - _tmp66 * _value[2];
     _jac(2, 2) = -_tmp60 * _value[2] - _tmp63 * _value[0] + _tmp64 * _value[3] + _tmp66 * _value[1];
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym

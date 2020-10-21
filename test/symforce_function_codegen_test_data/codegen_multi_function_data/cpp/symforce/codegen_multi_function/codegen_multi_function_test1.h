@@ -951,6 +951,7 @@ void CodegenMultiFunctionTest1(const codegen_multi_function::inputs_t& inputs,
         (inputs.values_vec_2D[1][0].list_of_lists[2][2][3] *
          inputs.values_vec_2D[1][0].list_of_lists[2][2][3]);
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_multi_function

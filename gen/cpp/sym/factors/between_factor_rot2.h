@@ -87,6 +87,7 @@ void BetweenFactorRot2(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b,
     _jac(0, 1) = _b[0] * _tmp23 * (-_tmp21 * (_tmp28 + _tmp30) + _tmp22 * _tmp31) -
                  _b[1] * _tmp23 * (-_tmp21 * _tmp31 + _tmp22 * (-_tmp28 - _tmp30));
   }
-}
+}  // NOLINT(readability/fn_size)
 
+// NOLINTNEXTLINE(readability/fn_size)
 }  // namespace sym
