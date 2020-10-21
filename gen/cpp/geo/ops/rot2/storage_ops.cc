@@ -16,13 +16,11 @@ void StorageOps<ScalarType>::ToStorage(const geo::Rot2<ScalarType>& a, ScalarTyp
 template <typename ScalarType>
 geo::Rot2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return geo::Rot2<ScalarType>(
-    Eigen::Map<const typename geo::Rot2<ScalarType>::DataVec>(data));
+  return geo::Rot2<ScalarType>(Eigen::Map<const typename geo::Rot2<ScalarType>::DataVec>(data));
 }
 
 }  // namespace rot2
 }  // namespace geo
-
 
 // Explicit instantiation
 template struct geo::rot2::StorageOps<double>;

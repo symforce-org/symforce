@@ -4,15 +4,16 @@
 #pragma once
 
 #include <vector>
-#include <Eigen/Dense>
 
+#include <Eigen/Dense>
 #include <cam/equidistant_epipolar_camera_cal.h>
 
 namespace cam {
 namespace equidistant_epipolar_camera_cal {
 
 /**
- * C++ StorageOps implementation for <class 'symforce.cam.equidistant_epipolar_cal.EquidistantEpipolarCameraCal'>.
+ * C++ StorageOps implementation for <class
+ * 'symforce.cam.equidistant_epipolar_cal.EquidistantEpipolarCameraCal'>.
  */
 template <typename Scalar>
 struct StorageOps {
@@ -20,7 +21,8 @@ struct StorageOps {
     return 4;
   }
 
-  static void ToStorage(const cam::EquidistantEpipolarCameraCal<Scalar>& a, std::vector<Scalar>* vec);
+  static void ToStorage(const cam::EquidistantEpipolarCameraCal<Scalar>& a,
+                        std::vector<Scalar>* vec);
   static cam::EquidistantEpipolarCameraCal<Scalar> FromStorage(const std::vector<Scalar>& vec);
 };
 
@@ -31,8 +33,10 @@ struct StorageOps {
 namespace geo {
 
 template <>
-struct StorageOps<cam::EquidistantEpipolarCameraCal<double>> : public cam::equidistant_epipolar_camera_cal::StorageOps<double> {};
+struct StorageOps<cam::EquidistantEpipolarCameraCal<double>>
+    : public cam::equidistant_epipolar_camera_cal::StorageOps<double> {};
 template <>
-struct StorageOps<cam::EquidistantEpipolarCameraCal<float>> : public cam::equidistant_epipolar_camera_cal::StorageOps<float> {};
+struct StorageOps<cam::EquidistantEpipolarCameraCal<float>>
+    : public cam::equidistant_epipolar_camera_cal::StorageOps<float> {};
 
 }  // namespace geo

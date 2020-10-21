@@ -167,7 +167,7 @@ class {{ cls.__name__ }} {
     return data_ == rhs.Data();
   }
 
-  {% set custom_template_name = "custom_methods/{}.h".format(cls.__name__.lower()) %}
+  {% set custom_template_name = "custom_methods/{}.h.jinja".format(cls.__name__.lower()) %}
   // Included from "{{ custom_template_name }}":
   {% include custom_template_name %}
 
@@ -192,9 +192,11 @@ extern template class geo::{{ cls.__name__ }}<{{ scalar }}>;
 std::ostream& operator<<(std::ostream& os, const geo::{{ cls.__name__ }}<{{ scalar }}>& a);
 {% endfor %}
 
-// Concept implementations for this class
+// Concept implementations for this class (include order matters here)
+// clang-format off
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
 {% if is_lie_group %}
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h"
 {% endif %}
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"
+// clang-format on

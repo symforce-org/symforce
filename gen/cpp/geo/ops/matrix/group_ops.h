@@ -38,41 +38,41 @@ struct GroupOps {
 
 }  // namespace matrix
 
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 1, 1>> : public matrix::GroupOps<double, 1, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 2, 1>> : public matrix::GroupOps<double, 2, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 3, 1>> : public matrix::GroupOps<double, 3, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 4, 1>> : public matrix::GroupOps<double, 4, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 5, 1>> : public matrix::GroupOps<double, 5, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 6, 1>> : public matrix::GroupOps<double, 6, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 7, 1>> : public matrix::GroupOps<double, 7, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 8, 1>> : public matrix::GroupOps<double, 8, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<double, 9, 1>> : public matrix::GroupOps<double, 9, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 1, 1>> : public matrix::GroupOps<float, 1, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 2, 1>> : public matrix::GroupOps<float, 2, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 3, 1>> : public matrix::GroupOps<float, 3, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 4, 1>> : public matrix::GroupOps<float, 4, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 5, 1>> : public matrix::GroupOps<float, 5, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 6, 1>> : public matrix::GroupOps<float, 6, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 7, 1>> : public matrix::GroupOps<float, 7, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 8, 1>> : public matrix::GroupOps<float, 8, 1> {};
-template<>
+template <>
 struct GroupOps<Eigen::Matrix<float, 9, 1>> : public matrix::GroupOps<float, 9, 1> {};
 
 }  // namespace geo

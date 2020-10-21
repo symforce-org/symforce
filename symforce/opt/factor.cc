@@ -9,7 +9,7 @@ Factor<Scalar> Factor<Scalar>::Jacobian(const JacobianFunc& jacobian_func,
                                         const std::vector<Key>& keys) {
   return Factor<Scalar>(
       [jacobian_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                       MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
+                      MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
         SYM_ASSERT(residual != nullptr);
         SYM_ASSERT(hessian != nullptr);
         jacobian_func(values, residual, jacobian);

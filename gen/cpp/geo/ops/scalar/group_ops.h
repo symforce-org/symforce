@@ -38,9 +38,9 @@ struct GroupOps {
 
 }  // namespace scalar
 
-template<>
+template <>
 struct GroupOps<double> : public scalar::GroupOps<double> {};
-template<>
+template <>
 struct GroupOps<float> : public scalar::GroupOps<float> {};
 
 }  // namespace geo

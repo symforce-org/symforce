@@ -4,7 +4,6 @@
 #pragma once
 
 #include <Eigen/Dense>
-
 #include <geo/rot3.h>
 
 namespace geo {
@@ -15,17 +14,23 @@ namespace rot3 {
  */
 template <typename Scalar>
 struct GroupOps {
-  using SelfJacobian = Eigen::Matrix<Scalar,
-                                     geo::LieGroupOps<Rot3<Scalar>>::TangentDim(),
+  using SelfJacobian = Eigen::Matrix<Scalar, geo::LieGroupOps<Rot3<Scalar>>::TangentDim(),
                                      geo::LieGroupOps<Rot3<Scalar>>::TangentDim()>;
 
   static geo::Rot3<Scalar> Identity();
   static geo::Rot3<Scalar> Inverse(const geo::Rot3<Scalar>& a);
   static geo::Rot3<Scalar> Compose(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b);
   static geo::Rot3<Scalar> Between(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b);
-  static geo::Rot3<Scalar> InverseWithJacobian(const geo::Rot3<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr);
-  static geo::Rot3<Scalar> ComposeWithJacobians(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 3, 3>* const res_D_b = nullptr);
-  static geo::Rot3<Scalar> BetweenWithJacobians(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr, Eigen::Matrix<Scalar, 3, 3>* const res_D_b = nullptr);
+  static geo::Rot3<Scalar> InverseWithJacobian(
+      const geo::Rot3<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr);
+  static geo::Rot3<Scalar> ComposeWithJacobians(
+      const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
+      Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr,
+      Eigen::Matrix<Scalar, 3, 3>* const res_D_b = nullptr);
+  static geo::Rot3<Scalar> BetweenWithJacobians(
+      const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
+      Eigen::Matrix<Scalar, 3, 3>* const res_D_a = nullptr,
+      Eigen::Matrix<Scalar, 3, 3>* const res_D_b = nullptr);
 };
 
 }  // namespace rot3

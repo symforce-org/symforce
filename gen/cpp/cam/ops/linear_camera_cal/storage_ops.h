@@ -4,8 +4,8 @@
 #pragma once
 
 #include <vector>
-#include <Eigen/Dense>
 
+#include <Eigen/Dense>
 #include <cam/linear_camera_cal.h>
 
 namespace cam {
@@ -31,8 +31,10 @@ struct StorageOps {
 namespace geo {
 
 template <>
-struct StorageOps<cam::LinearCameraCal<double>> : public cam::linear_camera_cal::StorageOps<double> {};
+struct StorageOps<cam::LinearCameraCal<double>>
+    : public cam::linear_camera_cal::StorageOps<double> {};
 template <>
-struct StorageOps<cam::LinearCameraCal<float>> : public cam::linear_camera_cal::StorageOps<float> {};
+struct StorageOps<cam::LinearCameraCal<float>> : public cam::linear_camera_cal::StorageOps<float> {
+};
 
 }  // namespace geo

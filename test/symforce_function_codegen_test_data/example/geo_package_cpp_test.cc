@@ -13,18 +13,17 @@
 
 #include <iostream>
 
-#include <geo/rot2.h>
 #include <geo/pose2.h>
-#include <geo/rot3.h>
 #include <geo/pose3.h>
-
-#include "../cpp/symforce/sym/tangent_d_storage_rot2.h"
-#include "../cpp/symforce/sym/tangent_d_storage_pose2.h"
-#include "../cpp/symforce/sym/tangent_d_storage_rot3.h"
-#include "../cpp/symforce/sym/tangent_d_storage_pose3.h"
-
+#include <geo/rot2.h>
+#include <geo/rot3.h>
 #include <symforce/opt/util.h>
 #include <symforce/util/random.h>
+
+#include "../cpp/symforce/sym/tangent_d_storage_pose2.h"
+#include "../cpp/symforce/sym/tangent_d_storage_pose3.h"
+#include "../cpp/symforce/sym/tangent_d_storage_rot2.h"
+#include "../cpp/symforce/sym/tangent_d_storage_rot3.h"
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
@@ -74,7 +73,8 @@ void TestRot3() {
   assertTrue((pose_inv * point).norm() < 1e-6);
 
   // Check zero comparison
-  assertTrue(geo::Rot3f(Eigen::Vector4f::Zero()).IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
+  assertTrue(
+      geo::Rot3f(Eigen::Vector4f::Zero()).IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
   assertTrue(!geo::Rot3f().IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
 }
 
@@ -229,12 +229,11 @@ void TestLieGroupOps() {
   const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
-  const T recovered_identity = geo::LieGroupOps<T>::Retract(
-    value, -recovered_pertubation, epsilon);
+  const T recovered_identity = geo::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
   assertTrue(recovered_identity.IsApprox(identity, std::sqrt(epsilon)));
 
-  const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
-    identity, recovered_identity, epsilon);
+  const TangentVec pertubation_zero =
+      geo::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 
   SelfJacobian inverse_jacobian;
@@ -283,9 +282,9 @@ void TestLieGroupOps() {
     const T a = sym::Random<T>(gen);
     const T b = sym::Random<T>(gen);
 
-    const SelfJacobian numerical_jacobian = sym::NumericalDerivative(
-        std::bind(&geo::GroupOps<T>::Compose, std::placeholders::_1, b), a,
-        epsilon, std::sqrt(epsilon));
+    const SelfJacobian numerical_jacobian =
+        sym::NumericalDerivative(std::bind(&geo::GroupOps<T>::Compose, std::placeholders::_1, b), a,
+                                 epsilon, std::sqrt(epsilon));
 
     SelfJacobian symforce_jacobian;
     geo::GroupOps<T>::ComposeWithJacobians(a, b, &symforce_jacobian, nullptr);
@@ -313,12 +312,11 @@ void TestScalarLieGroupOps() {
   const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
-  const T recovered_identity = geo::LieGroupOps<T>::Retract(
-    value, -recovered_pertubation, epsilon);
+  const T recovered_identity = geo::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
   assertTrue(fabs(recovered_identity - identity) < std::sqrt(epsilon));
 
-  const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
-    identity, recovered_identity, epsilon);
+  const TangentVec pertubation_zero =
+      geo::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 }
 
@@ -341,12 +339,11 @@ void TestMatrixLieGroupOps() {
   const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
-  const T recovered_identity = geo::LieGroupOps<T>::Retract(
-    value, -recovered_pertubation, epsilon);
+  const T recovered_identity = geo::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
   assertTrue(recovered_identity.isApprox(identity, std::sqrt(epsilon)));
 
-  const TangentVec pertubation_zero = geo::LieGroupOps<T>::LocalCoordinates(
-    identity, recovered_identity, epsilon);
+  const TangentVec pertubation_zero =
+      geo::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 }
 

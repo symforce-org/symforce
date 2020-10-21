@@ -6,12 +6,13 @@
 #include <ostream>
 #include <random>
 #include <vector>
+
 #include <Eigen/Dense>
 
-#include "./rot3.h"
-#include "./ops/storage_ops.h"
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"
+#include "./ops/storage_ops.h"
+#include "./rot3.h"
 
 namespace geo {
 
@@ -45,7 +46,7 @@ class Pose3 {
 
   // Access underlying storage as const
   inline const DataVec& Data() const {
-      return data_;
+    return data_;
   }
 
   // --------------------------------------------------------------------------
@@ -100,7 +101,6 @@ class Pose3 {
     return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
   }
 
-
   // Compose shorthand
   template <typename Other>
   Other operator*(const Other& b) const {
@@ -154,7 +154,7 @@ class Pose3 {
     return data_ == rhs.Data();
   }
 
-  // Included from "custom_methods/pose3.h":
+  // Included from "custom_methods/pose3.h.jinja":
   // --------------------------------------------------------------------------
   // Handwritten methods for Pose3
   // --------------------------------------------------------------------------
@@ -167,16 +167,16 @@ class Pose3 {
   }
 
   Rot3<Scalar> Rotation() const {
-      return Rot3<Scalar>(data_.template head<4>());
+    return Rot3<Scalar>(data_.template head<4>());
   }
 
   Vector3 Position() const {
-      return data_.template tail<3>();
+    return data_.template tail<3>();
   }
 
   // TODO(hayk): Could codegen this.
   Vector3 Compose(const Vector3& point) const {
-      return Rotation() * point + Position();
+    return Rotation() * point + Position();
   }
 
   Vector3 operator*(const Vector3& point) {
@@ -201,7 +201,9 @@ extern template class geo::Pose3<float>;
 std::ostream& operator<<(std::ostream& os, const geo::Pose3<double>& a);
 std::ostream& operator<<(std::ostream& os, const geo::Pose3<float>& a);
 
-// Concept implementations for this class
+// Concept implementations for this class (include order matters here)
+// clang-format off
 #include "./ops/pose3/storage_ops.h"
 #include "./ops/pose3/lie_group_ops.h"
 #include "./ops/pose3/group_ops.h"
+// clang-format on

@@ -13,12 +13,12 @@
 
 #include <iostream>
 #include <random>
-#include <Eigen/Dense>
 
-#include <cam/linear_camera_cal.h>
-#include <cam/equidistant_epipolar_camera_cal.h>
+#include <Eigen/Dense>
 #include <cam/atan_camera_cal.h>
 #include <cam/camera.h>
+#include <cam/equidistant_epipolar_camera_cal.h>
+#include <cam/linear_camera_cal.h>
 #include <cam/posed_camera.h>
 #include <geo/pose3.h>
 #include <geo/rot3.h>
@@ -116,8 +116,8 @@ void TestStorageOps(const T& cam_cal) {
 template <typename T>
 void TestProjectDeproject(const T& cam_cal) {
   using Scalar = typename T::Scalar;
-  const Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
-  const Scalar tolerance = 10.0 * epsilon; // For checking approx. equality
+  const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar tolerance = 10.0 * epsilon;  // For checking approx. equality
 
   std::cout << "*** Testing projection model: " << cam_cal << " ***" << std::endl;
 
@@ -125,14 +125,16 @@ void TestProjectDeproject(const T& cam_cal) {
   // Generate pixels around principal point
   std::uniform_real_distribution<Scalar> pixel_x_dist(0.0, 2.0 * cam_cal.Data()[2]);
   std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
-  for(int i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     Eigen::Matrix<Scalar, 2, 1> pixel;
     pixel << pixel_x_dist(gen), pixel_y_dist(gen);
 
     Scalar is_valid_camera_ray;
     Scalar is_valid_pixel;
-    const Eigen::Matrix<Scalar, 3, 1> camera_ray = cam_cal.CameraRayFromPixel(pixel, epsilon, &is_valid_camera_ray);
-    const Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = cam_cal.PixelFromCameraPoint(camera_ray, epsilon, &is_valid_pixel);
+    const Eigen::Matrix<Scalar, 3, 1> camera_ray =
+        cam_cal.CameraRayFromPixel(pixel, epsilon, &is_valid_camera_ray);
+    const Eigen::Matrix<Scalar, 2, 1> pixel_reprojected =
+        cam_cal.PixelFromCameraPoint(camera_ray, epsilon, &is_valid_pixel);
     if (is_valid_camera_ray == 1 && is_valid_pixel == 1) {
       assertTrue(pixel.isApprox(pixel_reprojected, tolerance));
     }
@@ -142,8 +144,8 @@ void TestProjectDeproject(const T& cam_cal) {
 template <typename T>
 void TestCamera(const T& cam_cal) {
   using Scalar = typename T::Scalar;
-  const Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
-  const Scalar tolerance = 10.0 * epsilon; // For checking approx. equality
+  const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar tolerance = 10.0 * epsilon;  // For checking approx. equality
 
   std::cout << "*** Testing Camera class with calibration: " << cam_cal << " ***" << std::endl;
 
@@ -175,7 +177,8 @@ void TestCamera(const T& cam_cal) {
   // Check a point that's at the center of the image
   Eigen::Matrix<Scalar, 2, 1> valid_pixel;
   valid_pixel << image_size[0] / 2.0, image_size[1] / 2.0;
-  const Eigen::Matrix<Scalar, 3, 1> valid_camera_point = cam.CameraRayFromPixel(valid_pixel, epsilon, &is_valid);
+  const Eigen::Matrix<Scalar, 3, 1> valid_camera_point =
+      cam.CameraRayFromPixel(valid_pixel, epsilon, &is_valid);
   assertTrue(is_valid == 1);
   assertTrue(cam.MaybeCheckInView(valid_pixel) == 1);
   assertTrue(cam::Camera<T>::InView(valid_pixel, image_size) == 1);
@@ -188,8 +191,8 @@ void TestCamera(const T& cam_cal) {
 template <typename T>
 void TestPosedCamera(const T& cam_cal) {
   using Scalar = typename T::Scalar;
-  const Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
-  const Scalar tolerance = 10.0 * epsilon; // For assessing approximate equality
+  const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar tolerance = 10.0 * epsilon;  // For assessing approximate equality
 
   std::cout << "*** Testing PosedCamera class with calibration: " << cam_cal << " ***" << std::endl;
 
@@ -198,7 +201,7 @@ void TestPosedCamera(const T& cam_cal) {
   std::uniform_real_distribution<Scalar> pixel_x_dist(0.0, 2.0 * cam_cal.Data()[2]);
   std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
   std::uniform_real_distribution<Scalar> range_dist(1.0, 5.0);
-  for(int i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     const geo::Rot3<Scalar> R = geo::Rot3<Scalar>::Random(gen);
     const Eigen::Matrix<Scalar, 3, 1> t = Eigen::Matrix<Scalar, 3, 1>::Random();
     const geo::Pose3<Scalar> pose(R, t);
@@ -212,8 +215,10 @@ void TestPosedCamera(const T& cam_cal) {
 
     Scalar is_valid_global_point;
     Scalar is_valid_pixel;
-    const Eigen::Matrix<Scalar, 3, 1> global_point = cam.GlobalPointFromPixel(pixel, range_to_point, epsilon, &is_valid_global_point);
-    const Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = cam.PixelFromGlobalPoint(global_point, epsilon, &is_valid_pixel);
+    const Eigen::Matrix<Scalar, 3, 1> global_point =
+        cam.GlobalPointFromPixel(pixel, range_to_point, epsilon, &is_valid_global_point);
+    const Eigen::Matrix<Scalar, 2, 1> pixel_reprojected =
+        cam.PixelFromGlobalPoint(global_point, epsilon, &is_valid_pixel);
     if (is_valid_global_point == 1 && is_valid_pixel == 1) {
       assertTrue(pixel.isApprox(pixel_reprojected, tolerance));
     }
@@ -221,53 +226,58 @@ void TestPosedCamera(const T& cam_cal) {
 }
 
 int main(int argc, char** argv) {
-
-  std::vector<cam::LinearCameraCal<double>> cam_cals_LinearCameraCal_double = GetCamCalsLinearCameraCal<double>();
-  for(auto cam_cal : cam_cals_LinearCameraCal_double) {
+  std::vector<cam::LinearCameraCal<double>> cam_cals_LinearCameraCal_double =
+      GetCamCalsLinearCameraCal<double>();
+  for (auto cam_cal : cam_cals_LinearCameraCal_double) {
     TestStorageOps<cam::LinearCameraCal<double>>(cam_cal);
     TestProjectDeproject<cam::LinearCameraCal<double>>(cam_cal);
     TestCamera<cam::LinearCameraCal<double>>(cam_cal);
     TestPosedCamera<cam::LinearCameraCal<double>>(cam_cal);
   }
 
-  std::vector<cam::EquidistantEpipolarCameraCal<double>> cam_cals_EquidistantEpipolarCameraCal_double = GetCamCalsEquidistantEpipolarCameraCal<double>();
-  for(auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_double) {
+  std::vector<cam::EquidistantEpipolarCameraCal<double>>
+      cam_cals_EquidistantEpipolarCameraCal_double =
+          GetCamCalsEquidistantEpipolarCameraCal<double>();
+  for (auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_double) {
     TestStorageOps<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
     TestProjectDeproject<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
     TestCamera<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
     TestPosedCamera<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
   }
 
-  std::vector<cam::ATANCameraCal<double>> cam_cals_ATANCameraCal_double = GetCamCalsATANCameraCal<double>();
-  for(auto cam_cal : cam_cals_ATANCameraCal_double) {
+  std::vector<cam::ATANCameraCal<double>> cam_cals_ATANCameraCal_double =
+      GetCamCalsATANCameraCal<double>();
+  for (auto cam_cal : cam_cals_ATANCameraCal_double) {
     TestStorageOps<cam::ATANCameraCal<double>>(cam_cal);
     TestProjectDeproject<cam::ATANCameraCal<double>>(cam_cal);
     TestCamera<cam::ATANCameraCal<double>>(cam_cal);
     TestPosedCamera<cam::ATANCameraCal<double>>(cam_cal);
   }
 
-  std::vector<cam::LinearCameraCal<float>> cam_cals_LinearCameraCal_float = GetCamCalsLinearCameraCal<float>();
-  for(auto cam_cal : cam_cals_LinearCameraCal_float) {
+  std::vector<cam::LinearCameraCal<float>> cam_cals_LinearCameraCal_float =
+      GetCamCalsLinearCameraCal<float>();
+  for (auto cam_cal : cam_cals_LinearCameraCal_float) {
     TestStorageOps<cam::LinearCameraCal<float>>(cam_cal);
     TestProjectDeproject<cam::LinearCameraCal<float>>(cam_cal);
     TestCamera<cam::LinearCameraCal<float>>(cam_cal);
     TestPosedCamera<cam::LinearCameraCal<float>>(cam_cal);
   }
 
-  std::vector<cam::EquidistantEpipolarCameraCal<float>> cam_cals_EquidistantEpipolarCameraCal_float = GetCamCalsEquidistantEpipolarCameraCal<float>();
-  for(auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_float) {
+  std::vector<cam::EquidistantEpipolarCameraCal<float>>
+      cam_cals_EquidistantEpipolarCameraCal_float = GetCamCalsEquidistantEpipolarCameraCal<float>();
+  for (auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_float) {
     TestStorageOps<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
     TestProjectDeproject<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
     TestCamera<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
     TestPosedCamera<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
   }
 
-  std::vector<cam::ATANCameraCal<float>> cam_cals_ATANCameraCal_float = GetCamCalsATANCameraCal<float>();
-  for(auto cam_cal : cam_cals_ATANCameraCal_float) {
+  std::vector<cam::ATANCameraCal<float>> cam_cals_ATANCameraCal_float =
+      GetCamCalsATANCameraCal<float>();
+  for (auto cam_cal : cam_cals_ATANCameraCal_float) {
     TestStorageOps<cam::ATANCameraCal<float>>(cam_cal);
     TestProjectDeproject<cam::ATANCameraCal<float>>(cam_cal);
     TestCamera<cam::ATANCameraCal<float>>(cam_cal);
     TestPosedCamera<cam::ATANCameraCal<float>>(cam_cal);
   }
-
 }

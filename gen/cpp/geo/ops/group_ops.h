@@ -31,5 +31,5 @@ struct GroupOps {
 
 }  // namespace geo
 
-#include "./scalar/group_ops.h"
 #include "./matrix/group_ops.h"
+#include "./scalar/group_ops.h"

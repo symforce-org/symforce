@@ -19,12 +19,11 @@ template <typename Scalar>
 ATANCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const std::vector<Scalar>& vec) {
   assert(vec.size() == StorageOps<Scalar>::StorageDim());
   return ATANCameraCal<Scalar>(
-    Eigen::Map<const typename ATANCameraCal<Scalar>::DataVec>(vec.data()));
+      Eigen::Map<const typename ATANCameraCal<Scalar>::DataVec>(vec.data()));
 }
 
 }  // namespace atan_camera_cal
 }  // namespace cam
-
 
 // Explicit instantiation
 template struct cam::atan_camera_cal::StorageOps<double>;

@@ -28,12 +28,12 @@ struct RangeGenerator<0, S...> {
 
 template <typename F, size_t... Is>
 auto indices_impl(F f, std::index_sequence<Is...>) {
-    return f(std::integral_constant<size_t, Is>()...);
+  return f(std::integral_constant<size_t, Is>()...);
 }
 
 template <size_t N, typename F>
 auto indices(F f) {
-    return indices_impl(f, std::make_index_sequence<N>());
+  return indices_impl(f, std::make_index_sequence<N>());
 }
 
 // ------------------------------------------------------------------------------------------------

@@ -6,11 +6,12 @@
 #include <ostream>
 #include <random>
 #include <vector>
+
 #include <Eigen/Dense>
 
-#include "./ops/storage_ops.h"
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"
+#include "./ops/storage_ops.h"
 
 namespace geo {
 
@@ -40,7 +41,7 @@ class Rot2 {
 
   // Access underlying storage as const
   inline const DataVec& Data() const {
-      return data_;
+    return data_;
   }
 
   // --------------------------------------------------------------------------
@@ -95,7 +96,6 @@ class Rot2 {
     return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
   }
 
-
   // Compose shorthand
   template <typename Other>
   Other operator*(const Other& b) const {
@@ -149,7 +149,7 @@ class Rot2 {
     return data_ == rhs.Data();
   }
 
-  // Included from "custom_methods/rot2.h":
+  // Included from "custom_methods/rot2.h.jinja":
   // --------------------------------------------------------------------------
   // Handwritten methods for Rot2
   // --------------------------------------------------------------------------
@@ -184,7 +184,9 @@ extern template class geo::Rot2<float>;
 std::ostream& operator<<(std::ostream& os, const geo::Rot2<double>& a);
 std::ostream& operator<<(std::ostream& os, const geo::Rot2<float>& a);
 
-// Concept implementations for this class
+// Concept implementations for this class (include order matters here)
+// clang-format off
 #include "./ops/rot2/storage_ops.h"
 #include "./ops/rot2/lie_group_ops.h"
 #include "./ops/rot2/group_ops.h"
+// clang-format on

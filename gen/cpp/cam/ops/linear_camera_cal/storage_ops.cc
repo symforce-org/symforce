@@ -19,12 +19,11 @@ template <typename Scalar>
 LinearCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const std::vector<Scalar>& vec) {
   assert(vec.size() == StorageOps<Scalar>::StorageDim());
   return LinearCameraCal<Scalar>(
-    Eigen::Map<const typename LinearCameraCal<Scalar>::DataVec>(vec.data()));
+      Eigen::Map<const typename LinearCameraCal<Scalar>::DataVec>(vec.data()));
 }
 
 }  // namespace linear_camera_cal
 }  // namespace cam
-
 
 // Explicit instantiation
 template struct cam::linear_camera_cal::StorageOps<double>;

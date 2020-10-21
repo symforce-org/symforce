@@ -6,12 +6,13 @@
 #include <ostream>
 #include <random>
 #include <vector>
+
 #include <Eigen/Dense>
 
-#include "./rot2.h"
-#include "./ops/storage_ops.h"
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"
+#include "./ops/storage_ops.h"
+#include "./rot2.h"
 
 namespace geo {
 
@@ -43,7 +44,7 @@ class Pose2 {
 
   // Access underlying storage as const
   inline const DataVec& Data() const {
-      return data_;
+    return data_;
   }
 
   // --------------------------------------------------------------------------
@@ -98,7 +99,6 @@ class Pose2 {
     return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
   }
 
-
   // Compose shorthand
   template <typename Other>
   Other operator*(const Other& b) const {
@@ -152,7 +152,7 @@ class Pose2 {
     return data_ == rhs.Data();
   }
 
-  // Included from "custom_methods/pose2.h":
+  // Included from "custom_methods/pose2.h.jinja":
   // --------------------------------------------------------------------------
   // Handwritten methods for Pose2
   // --------------------------------------------------------------------------
@@ -163,11 +163,11 @@ class Pose2 {
   }
 
   Rot2<Scalar> Rotation() const {
-      return Rot2<Scalar>(data_.template head<2>());
+    return Rot2<Scalar>(data_.template head<2>());
   }
 
   Eigen::Matrix<Scalar, 2, 1> Position() const {
-      return data_.template tail<2>();
+    return data_.template tail<2>();
   }
 
  protected:
@@ -188,7 +188,9 @@ extern template class geo::Pose2<float>;
 std::ostream& operator<<(std::ostream& os, const geo::Pose2<double>& a);
 std::ostream& operator<<(std::ostream& os, const geo::Pose2<float>& a);
 
-// Concept implementations for this class
+// Concept implementations for this class (include order matters here)
+// clang-format off
 #include "./ops/pose2/storage_ops.h"
 #include "./ops/pose2/lie_group_ops.h"
 #include "./ops/pose2/group_ops.h"
+// clang-format on

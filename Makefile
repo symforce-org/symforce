@@ -10,6 +10,8 @@ PYTHON=$(PYTHON3)
 
 BLACK_EXCLUDE='symforce/codegen/python_templates|/gen/|test_data/'
 
+CPP_FORMAT=clang-format-8
+
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
@@ -24,13 +26,28 @@ all_reqs: reqs test_reqs docs_reqs
 reqs:
 	${PYTHON} -m pip install -r requirements.txt
 
-# Format using black
+CPP_FILES=$(shell find . -not -path "*/lcmtypes/*" \( \
+	-name "*.c" \
+	-o -name "*.cpp" \
+	-o -name "*.cxx" \
+	-o -name "*.h" \
+	-o -name "*.hpp" \
+	-o -name "*.hxx" \
+	-o -name "*.cu" \
+	-o -name "*.cuh" \
+	-o -name "*.cc" \
+	-o -name "*.tcc" \
+	\) )
+
+# Format using black and clang-format
 format:
 	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE)
+	$(CPP_FORMAT) -i $(CPP_FILES)
 
-# Check formatting using black - print diff, do not modify files
+# Check formatting using black and clang-format - print diff, do not modify files
 check_format:
 	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE) --check --diff
+	$(foreach file, $(CPP_FILES), $(CPP_FORMAT) $(file) | diff --unified $(file) -;)
 
 # Check type hints using mypy
 check_types:

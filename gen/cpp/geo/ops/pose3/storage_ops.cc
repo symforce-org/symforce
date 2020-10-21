@@ -16,13 +16,11 @@ void StorageOps<ScalarType>::ToStorage(const geo::Pose3<ScalarType>& a, ScalarTy
 template <typename ScalarType>
 geo::Pose3<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return geo::Pose3<ScalarType>(
-    Eigen::Map<const typename geo::Pose3<ScalarType>::DataVec>(data));
+  return geo::Pose3<ScalarType>(Eigen::Map<const typename geo::Pose3<ScalarType>::DataVec>(data));
 }
 
 }  // namespace pose3
 }  // namespace geo
-
 
 // Explicit instantiation
 template struct geo::pose3::StorageOps<double>;

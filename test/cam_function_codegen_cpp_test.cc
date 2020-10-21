@@ -7,11 +7,12 @@
 // And then run `symforce_function_codegen_test --update`.
 // -----------------------------------------------------------------------------
 /**
- * Tests for generated functions that accept C++ camera types as arguments. Mostly testing that everything
- * compiles.
+ * Tests for generated functions that accept C++ camera types as arguments. Mostly testing that
+ * everything compiles.
  */
 
 #include <iostream>
+
 #include <Eigen/Dense>
 
 // TODO(nathan): We just test linear camera for now, but could/should test other types in the future
@@ -29,8 +30,8 @@
 template <typename T>
 void TestGeneratedFunction() {
   using Scalar = typename T::Scalar;
-  Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
-  Scalar tolerance = 10.0 * epsilon; // For assessing approximate equality
+  Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
+  Scalar tolerance = 10.0 * epsilon;  // For assessing approximate equality
 
   Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1> data;
   std::mt19937 gen(42);
@@ -45,7 +46,8 @@ void TestGeneratedFunction() {
 
   Eigen::Matrix<Scalar, 2, 1> pixel;
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);
-  Eigen::Matrix<Scalar, 2, 1> pixel_reprojected = cam_function_codegen_test::PixelToRayAndBack<Scalar>(pixel, cam, epsilon);
+  Eigen::Matrix<Scalar, 2, 1> pixel_reprojected =
+      cam_function_codegen_test::PixelToRayAndBack<Scalar>(pixel, cam, epsilon);
   assertTrue(pixel.isApprox(pixel_reprojected, epsilon));
 }
 

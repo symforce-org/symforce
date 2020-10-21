@@ -19,5 +19,5 @@ struct StorageOps {
 
 }  // namespace geo
 
-#include "./scalar/storage_ops.h"
 #include "./matrix/storage_ops.h"
+#include "./scalar/storage_ops.h"

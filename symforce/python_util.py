@@ -32,25 +32,39 @@ def remove_if_exists(path):
 
 def execute_subprocess(
     cmd,  # type: T.Union[str, T.Sequence[str]]
-    *args,  # type: T.Any
+    stdin_data=None,  # type: T.Optional[str]
+    log_stdout=True,  # type: bool
     **kwargs  # type: T.Any
 ):
-    # type: (...) -> None
+    # type: (...) -> unicode
     """
     Execute subprocess and log command as well as stdout/stderr.
+
+    Args:
+        stdin_data (bytes): Data to pass to stdin
+        log_stdout (bool): Write process stdout to the logger?
 
     Raises:
         subprocess.CalledProcessError: If the return code is nonzero
     """
+    if stdin_data is not None:
+        stdin_data_encoded = stdin_data.encode("utf-8")
+    else:
+        stdin_data_encoded = bytes()
+
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
     logger.info("Subprocess: {}".format(cmd_str))
 
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, *args, **kwargs)  # type: ignore
-    (stdout, _) = proc.communicate()
-    logger.info(stdout.decode("utf-8"))
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)  # type: ignore
+    (stdout, _) = proc.communicate(stdin_data_encoded)
+    stdout_decoded = stdout.decode("utf-8")
+    if log_stdout:
+        logger.info(stdout_decoded)
 
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(proc.returncode, cmd, stdout)
+
+    return stdout_decoded
 
 
 def camelcase_to_snakecase(s):

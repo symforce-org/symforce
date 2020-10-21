@@ -13,10 +13,10 @@
   }
 
 int main(int argc, char** argv) {
-    std::cout << "*** Testing codegen function for NaNs ***" << std::endl;
+  std::cout << "*** Testing codegen function for NaNs ***" << std::endl;
 
-    geo::Rot3<double> rot = geo::Rot3<double>::Identity();
-    double epsilon = 1e-6;
-    double res = codegen_nan_test::IdentityDistJacobian<double>(rot, epsilon);
-    assertTrue(!std::isnan(res));
+  geo::Rot3<double> rot = geo::Rot3<double>::Identity();
+  double epsilon = 1e-6;
+  double res = codegen_nan_test::IdentityDistJacobian<double>(rot, epsilon);
+  assertTrue(!std::isnan(res));
 }

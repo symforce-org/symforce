@@ -39,9 +39,9 @@ struct LieGroupOps {
 
 }  // namespace scalar
 
-template<>
+template <>
 struct LieGroupOps<double> : public scalar::LieGroupOps<double> {};
-template<>
+template <>
 struct LieGroupOps<float> : public scalar::LieGroupOps<float> {};
 
 }  // namespace geo

@@ -27,5 +27,5 @@ struct LieGroupOps {
 
 }  // namespace geo
 
-#include "./scalar/lie_group_ops.h"
 #include "./matrix/lie_group_ops.h"
+#include "./scalar/lie_group_ops.h"

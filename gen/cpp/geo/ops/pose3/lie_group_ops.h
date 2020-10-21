@@ -9,7 +9,8 @@
 
 // Forward declare class, without including header
 namespace geo {
-template<typename ScalarType> class Pose3;
+template <typename ScalarType>
+class Pose3;
 }  // namespace geo
 
 namespace geo {
@@ -21,15 +22,19 @@ namespace pose3 {
 template <typename Scalar>
 struct LieGroupOps {
   static constexpr int32_t TangentDim() {
-      return 6;
+    return 6;
   }
 
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
-  static geo::Pose3<Scalar> FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
+  static geo::Pose3<Scalar> FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec,
+                                        const Scalar epsilon);
   static Eigen::Matrix<Scalar, 6, 1> ToTangent(const geo::Pose3<Scalar>& a, const Scalar epsilon);
-  static geo::Pose3<Scalar> Retract(const geo::Pose3<Scalar>& a, const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 6, 1> LocalCoordinates(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b, const Scalar epsilon);
+  static geo::Pose3<Scalar> Retract(const geo::Pose3<Scalar>& a,
+                                    const Eigen::Matrix<Scalar, 6, 1>& vec, const Scalar epsilon);
+  static Eigen::Matrix<Scalar, 6, 1> LocalCoordinates(const geo::Pose3<Scalar>& a,
+                                                      const geo::Pose3<Scalar>& b,
+                                                      const Scalar epsilon);
 };
 
 }  // namespace pose3

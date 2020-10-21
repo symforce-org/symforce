@@ -6,6 +6,7 @@ import os
 
 from symforce import logger
 from symforce import types as T
+from symforce.codegen import format_util
 
 CURRENT_DIR = os.path.dirname(__file__)
 CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp_templates")
@@ -53,6 +54,22 @@ def render_template(template_path, data, output_path=None):
 
     template = env.get_template(template_name)
     rendered_str = str(template.render(**data))
+
+    if not template_path.endswith(".jinja"):
+        raise ValueError("template must be of the form path/to/file.ext.jinja")
+    template_filename_without_jinja = os.path.basename(template_path)[: -len(".jinja")]
+    extension = template_filename_without_jinja.split(".")[-1]
+    if extension in ("c", "cpp", "cxx", "cc", "tcc", "h", "hpp", "hxx", "hh", "cu", "cuh"):
+        # Come up with a fake filename to give to the formatter just for formatting purposes, even
+        # if this isn't being written to disk
+        if output_path is not None:
+            format_cpp_filename = os.path.basename(output_path)
+        else:
+            format_cpp_filename = template_filename_without_jinja
+
+        rendered_str = format_util.format_cpp(
+            rendered_str, filename=os.path.join(CURRENT_DIR, format_cpp_filename)
+        )
 
     if output_path:
         directory = os.path.dirname(output_path)

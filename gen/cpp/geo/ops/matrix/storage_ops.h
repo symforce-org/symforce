@@ -36,41 +36,41 @@ struct StorageOps {
 
 }  // namespace matrix
 
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 1, 1>> : public matrix::StorageOps<double, 1, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 2, 1>> : public matrix::StorageOps<double, 2, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 3, 1>> : public matrix::StorageOps<double, 3, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 4, 1>> : public matrix::StorageOps<double, 4, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 5, 1>> : public matrix::StorageOps<double, 5, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 6, 1>> : public matrix::StorageOps<double, 6, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 7, 1>> : public matrix::StorageOps<double, 7, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 8, 1>> : public matrix::StorageOps<double, 8, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<double, 9, 1>> : public matrix::StorageOps<double, 9, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 1, 1>> : public matrix::StorageOps<float, 1, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 2, 1>> : public matrix::StorageOps<float, 2, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 3, 1>> : public matrix::StorageOps<float, 3, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 4, 1>> : public matrix::StorageOps<float, 4, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 5, 1>> : public matrix::StorageOps<float, 5, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 6, 1>> : public matrix::StorageOps<float, 6, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 7, 1>> : public matrix::StorageOps<float, 7, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 8, 1>> : public matrix::StorageOps<float, 8, 1> {};
-template<>
+template <>
 struct StorageOps<Eigen::Matrix<float, 9, 1>> : public matrix::StorageOps<float, 9, 1> {};
 
 }  // namespace geo

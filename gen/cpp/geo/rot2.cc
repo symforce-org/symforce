@@ -10,13 +10,12 @@ template class geo::Rot2<float>;
 
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const geo::Rot2d& a) {
-    const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
-    os << "<Rot2d " << a.Data().transpose().format(fmt) << ">";
-    return os;
+  const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
+  os << "<Rot2d " << a.Data().transpose().format(fmt) << ">";
+  return os;
 }
 std::ostream& operator<<(std::ostream& os, const geo::Rot2f& a) {
-    const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
-    os << "<Rot2f " << a.Data().transpose().format(fmt) << ">";
-    return os;
+  const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
+  os << "<Rot2f " << a.Data().transpose().format(fmt) << ">";
+  return os;
 }
-

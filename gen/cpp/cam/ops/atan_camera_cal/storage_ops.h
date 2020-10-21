@@ -4,8 +4,8 @@
 #pragma once
 
 #include <vector>
-#include <Eigen/Dense>
 
+#include <Eigen/Dense>
 #include <cam/atan_camera_cal.h>
 
 namespace cam {

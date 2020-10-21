@@ -36,9 +36,9 @@ struct StorageOps {
 
 }  // namespace scalar
 
-template<>
+template <>
 struct StorageOps<double> : public scalar::StorageOps<double> {};
-template<>
+template <>
 struct StorageOps<float> : public scalar::StorageOps<float> {};
 
 }  // namespace geo

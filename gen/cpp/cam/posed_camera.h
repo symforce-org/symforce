@@ -4,8 +4,8 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <geo/pose3.h>
 #include <cam/camera.h>
+#include <geo/pose3.h>
 
 namespace cam {
 
@@ -19,46 +19,52 @@ class PosedCamera : public Camera<CameraCalType> {
  public:
   using Scalar = typename CameraCalType::Scalar;
 
-  PosedCamera(const geo::Pose3<Scalar>& pose, const CameraCalType& calibration, const Eigen::Vector2i& image_size=Eigen::Vector2i(-1, -1))
-    : Camera<CameraCalType>(calibration, image_size),
-      pose_(pose) {}
-  
+  PosedCamera(const geo::Pose3<Scalar>& pose, const CameraCalType& calibration,
+              const Eigen::Vector2i& image_size = Eigen::Vector2i(-1, -1))
+      : Camera<CameraCalType>(calibration, image_size), pose_(pose) {}
+
   /**
-  * Transforms the given point into the camera frame using the given camera pose and then
-  * uses the given camera calibration to compute the resulted pixel coordinates of the
-  * projected point.
-  *
-  * Args:
-  *     point: Vector written in camera frame.
-  *     epsilon: Small value intended to prevent division by 0.
-  *
-  * Return:
-  *     pixel: UV coodinates in pixel units, assuming the point is in view
-  *     is_valid: 1 if point is valid
-  *
-  */
-  Eigen::Matrix<Scalar, 2, 1> PixelFromGlobalPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
+   * Transforms the given point into the camera frame using the given camera pose and then
+   * uses the given camera calibration to compute the resulted pixel coordinates of the
+   * projected point.
+   *
+   * Args:
+   *     point: Vector written in camera frame.
+   *     epsilon: Small value intended to prevent division by 0.
+   *
+   * Return:
+   *     pixel: UV coodinates in pixel units, assuming the point is in view
+   *     is_valid: 1 if point is valid
+   *
+   */
+  Eigen::Matrix<Scalar, 2, 1> PixelFromGlobalPoint(const Eigen::Matrix<Scalar, 3, 1>& point,
+                                                   const Scalar epsilon,
+                                                   Scalar* const is_valid) const {
     const Eigen::Matrix<Scalar, 3, 1> camera_point = pose_.Inverse() * point;
-    const Eigen::Matrix<Scalar, 2, 1> pixel = Camera<CameraCalType>::PixelFromCameraPoint(camera_point, epsilon, is_valid);
+    const Eigen::Matrix<Scalar, 2, 1> pixel =
+        Camera<CameraCalType>::PixelFromCameraPoint(camera_point, epsilon, is_valid);
     return pixel;
   }
-  
+
   /**
-  * Computes a point written in the global frame along the ray passing through the center
-  * of the given pixel. The point is positioned at a given range along the ray.
-  *
-  * Args:
-  *     pixel: Vector in pixels in camera image.
-  *     range_to_point: Distance of the returned point along the ray passing through pixel
-  *     epsilon: Small value intended to prevent division by 0.
-  *
-  * Return:
-  *     global_point: The point in the global frame.
-  *     is_valid: 1 if point is valid
-  *
-  */
-  Eigen::Matrix<Scalar, 3, 1> GlobalPointFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel, Scalar range_to_point, const Scalar epsilon, Scalar* const is_valid) const {
-    const Eigen::Matrix<Scalar, 3, 1> camera_ray = Camera<CameraCalType>::CameraRayFromPixel(pixel, epsilon, is_valid);
+   * Computes a point written in the global frame along the ray passing through the center
+   * of the given pixel. The point is positioned at a given range along the ray.
+   *
+   * Args:
+   *     pixel: Vector in pixels in camera image.
+   *     range_to_point: Distance of the returned point along the ray passing through pixel
+   *     epsilon: Small value intended to prevent division by 0.
+   *
+   * Return:
+   *     global_point: The point in the global frame.
+   *     is_valid: 1 if point is valid
+   *
+   */
+  Eigen::Matrix<Scalar, 3, 1> GlobalPointFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel,
+                                                   Scalar range_to_point, const Scalar epsilon,
+                                                   Scalar* const is_valid) const {
+    const Eigen::Matrix<Scalar, 3, 1> camera_ray =
+        Camera<CameraCalType>::CameraRayFromPixel(pixel, epsilon, is_valid);
     const Eigen::Matrix<Scalar, 3, 1> camera_point = range_to_point * camera_ray.normalized();
     const Eigen::Matrix<Scalar, 3, 1> global_point = pose_ * camera_point;
     return global_point;
@@ -68,8 +74,8 @@ class PosedCamera : public Camera<CameraCalType> {
     return pose_;
   }
 
-  private:
-    geo::Pose3<Scalar> pose_;
+ private:
+  geo::Pose3<Scalar> pose_;
 };
 
 }  // namespace cam

@@ -39,41 +39,41 @@ struct LieGroupOps {
 
 }  // namespace matrix
 
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 1, 1>> : public matrix::LieGroupOps<double, 1, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 2, 1>> : public matrix::LieGroupOps<double, 2, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 3, 1>> : public matrix::LieGroupOps<double, 3, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 4, 1>> : public matrix::LieGroupOps<double, 4, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 5, 1>> : public matrix::LieGroupOps<double, 5, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 6, 1>> : public matrix::LieGroupOps<double, 6, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 7, 1>> : public matrix::LieGroupOps<double, 7, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 8, 1>> : public matrix::LieGroupOps<double, 8, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<double, 9, 1>> : public matrix::LieGroupOps<double, 9, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 1, 1>> : public matrix::LieGroupOps<float, 1, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 2, 1>> : public matrix::LieGroupOps<float, 2, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 3, 1>> : public matrix::LieGroupOps<float, 3, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 4, 1>> : public matrix::LieGroupOps<float, 4, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 5, 1>> : public matrix::LieGroupOps<float, 5, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 6, 1>> : public matrix::LieGroupOps<float, 6, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 7, 1>> : public matrix::LieGroupOps<float, 7, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 8, 1>> : public matrix::LieGroupOps<float, 8, 1> {};
-template<>
+template <>
 struct LieGroupOps<Eigen::Matrix<float, 9, 1>> : public matrix::LieGroupOps<float, 9, 1> {};
 
 }  // namespace geo

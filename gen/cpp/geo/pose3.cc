@@ -10,13 +10,12 @@ template class geo::Pose3<float>;
 
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const geo::Pose3d& a) {
-    const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
-    os << "<Pose3d " << a.Data().transpose().format(fmt) << ">";
-    return os;
+  const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
+  os << "<Pose3d " << a.Data().transpose().format(fmt) << ">";
+  return os;
 }
 std::ostream& operator<<(std::ostream& os, const geo::Pose3f& a) {
-    const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
-    os << "<Pose3f " << a.Data().transpose().format(fmt) << ">";
-    return os;
+  const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
+  os << "<Pose3f " << a.Data().transpose().format(fmt) << ">";
+  return os;
 }
-

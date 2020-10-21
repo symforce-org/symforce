@@ -6,8 +6,8 @@
 #include <ostream>
 #include <random>
 #include <vector>
-#include <Eigen/Dense>
 
+#include <Eigen/Dense>
 #include <geo/ops/storage_ops.h>
 
 namespace cam {
@@ -35,7 +35,7 @@ class ATANCameraCal {
 
   // Access underlying storage as const
   inline const DataVec& Data() const {
-      return data_;
+    return data_;
   }
 
   // --------------------------------------------------------------------------
@@ -59,34 +59,38 @@ class ATANCameraCal {
   // --------------------------------------------------------------------------
 
   /**
-  * Return the focal length.
-  */
+   * Return the focal length.
+   */
   Eigen::Matrix<Scalar, 2, 1> FocalLength() const;
 
   /**
-  * Return the principal point.
-  */
+   * Return the principal point.
+   */
   Eigen::Matrix<Scalar, 2, 1> PrincipalPoint() const;
 
   /**
-  * Project a 3D point in the camera frame into 2D pixel coordinates.
-  *
-  * Return:
-  *     pixel: (x, y) coordinate in pixels if valid
-  *     is_valid: 1 if the operation is within bounds else 0
-  *
-  */
-  Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid = nullptr) const;
+   * Project a 3D point in the camera frame into 2D pixel coordinates.
+   *
+   * Return:
+   *     pixel: (x, y) coordinate in pixels if valid
+   *     is_valid: 1 if the operation is within bounds else 0
+   *
+   */
+  Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point,
+                                                   const Scalar epsilon,
+                                                   Scalar* const is_valid = nullptr) const;
 
   /**
-  * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
-  *
-  * Return:
-  *     camera_ray: The ray in the camera frame (NOT normalized)
-  *     is_valid: 1 if the operation is within bounds else 0
-  *
-  */
-  Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid = nullptr) const;
+   * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
+   *
+   * Return:
+   *     camera_ray: The ray in the camera frame (NOT normalized)
+   *     is_valid: 1 if the operation is within bounds else 0
+   *
+   */
+  Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel,
+                                                 const Scalar epsilon,
+                                                 Scalar* const is_valid = nullptr) const;
 
   // --------------------------------------------------------------------------
   // General Helpers
