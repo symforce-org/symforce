@@ -47,7 +47,7 @@ format:
 # Check formatting using black and clang-format - print diff, do not modify files
 check_format:
 	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE) --check --diff
-	$(foreach file, $(CPP_FILES), $(CPP_FORMAT) $(file) | diff --unified $(file) -;)
+	$(foreach file, $(CPP_FILES), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
 
 # Check type hints using mypy
 check_types:

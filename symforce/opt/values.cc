@@ -22,7 +22,7 @@ bool Values<Scalar>::Has(const Key& key) const {
 
 template <typename Scalar>
 void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& other) {
-  for (const auto& entry_other: index.entries) {
+  for (const auto& entry_other : index.entries) {
     const auto offset_other = other.data_.template begin() + entry_other.offset;
     const Key key(entry_other.key);
     auto it = map_.find(key);
@@ -34,8 +34,7 @@ void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& oth
       entry_this.offset = static_cast<int32_t>(data_.size());
       // extend end of data
       data_.insert(data_.end(), offset_other, offset_other + entry_other.storage_dim);
-    }
-    else {
+    } else {
       std::copy_n(offset_other, entry_other.storage_dim,
                   data_.template begin() + it->second.offset);
     }
