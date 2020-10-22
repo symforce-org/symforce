@@ -43,6 +43,8 @@ struct GroupOps {
 template<>
 struct GroupOps<Eigen::Matrix<{{ scalar }}, {{ i }}, 1>> : public matrix::GroupOps<{{ scalar }}, {{ i }}, 1> {};
 {% endfor %}
+template<int Rows, int Cols>
+struct GroupOps<Eigen::Matrix<{{ scalar }}, Rows, Cols>> : public matrix::GroupOps<{{ scalar }}, Rows, Cols> {};
 {% endfor %}
 
 }  // namespace geo

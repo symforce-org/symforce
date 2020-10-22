@@ -41,6 +41,8 @@ struct StorageOps {
 template<>
 struct StorageOps<Eigen::Matrix<{{ scalar }}, {{ i }}, 1>> : public matrix::StorageOps<{{ scalar }}, {{ i }}, 1> {};
 {% endfor %}
+template<int Rows, int Cols>
+struct StorageOps<Eigen::Matrix<{{ scalar }}, Rows, Cols>> : public matrix::StorageOps<{{ scalar }}, Rows, Cols> {};
 {% endfor %}
 
 }  // namespace geo

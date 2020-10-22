@@ -56,6 +56,8 @@ template <>
 struct GroupOps<Eigen::Matrix<double, 8, 1>> : public matrix::GroupOps<double, 8, 1> {};
 template <>
 struct GroupOps<Eigen::Matrix<double, 9, 1>> : public matrix::GroupOps<double, 9, 1> {};
+template <int Rows, int Cols>
+struct GroupOps<Eigen::Matrix<double, Rows, Cols>> : public matrix::GroupOps<double, Rows, Cols> {};
 template <>
 struct GroupOps<Eigen::Matrix<float, 1, 1>> : public matrix::GroupOps<float, 1, 1> {};
 template <>
@@ -74,5 +76,7 @@ template <>
 struct GroupOps<Eigen::Matrix<float, 8, 1>> : public matrix::GroupOps<float, 8, 1> {};
 template <>
 struct GroupOps<Eigen::Matrix<float, 9, 1>> : public matrix::GroupOps<float, 9, 1> {};
+template <int Rows, int Cols>
+struct GroupOps<Eigen::Matrix<float, Rows, Cols>> : public matrix::GroupOps<float, Rows, Cols> {};
 
 }  // namespace geo

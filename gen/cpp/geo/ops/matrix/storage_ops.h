@@ -54,6 +54,9 @@ template <>
 struct StorageOps<Eigen::Matrix<double, 8, 1>> : public matrix::StorageOps<double, 8, 1> {};
 template <>
 struct StorageOps<Eigen::Matrix<double, 9, 1>> : public matrix::StorageOps<double, 9, 1> {};
+template <int Rows, int Cols>
+struct StorageOps<Eigen::Matrix<double, Rows, Cols>>
+    : public matrix::StorageOps<double, Rows, Cols> {};
 template <>
 struct StorageOps<Eigen::Matrix<float, 1, 1>> : public matrix::StorageOps<float, 1, 1> {};
 template <>
@@ -72,5 +75,8 @@ template <>
 struct StorageOps<Eigen::Matrix<float, 8, 1>> : public matrix::StorageOps<float, 8, 1> {};
 template <>
 struct StorageOps<Eigen::Matrix<float, 9, 1>> : public matrix::StorageOps<float, 9, 1> {};
+template <int Rows, int Cols>
+struct StorageOps<Eigen::Matrix<float, Rows, Cols>> : public matrix::StorageOps<float, Rows, Cols> {
+};
 
 }  // namespace geo

@@ -57,6 +57,9 @@ template <>
 struct LieGroupOps<Eigen::Matrix<double, 8, 1>> : public matrix::LieGroupOps<double, 8, 1> {};
 template <>
 struct LieGroupOps<Eigen::Matrix<double, 9, 1>> : public matrix::LieGroupOps<double, 9, 1> {};
+template <int Rows, int Cols>
+struct LieGroupOps<Eigen::Matrix<double, Rows, Cols>>
+    : public matrix::LieGroupOps<double, Rows, Cols> {};
 template <>
 struct LieGroupOps<Eigen::Matrix<float, 1, 1>> : public matrix::LieGroupOps<float, 1, 1> {};
 template <>
@@ -75,5 +78,8 @@ template <>
 struct LieGroupOps<Eigen::Matrix<float, 8, 1>> : public matrix::LieGroupOps<float, 8, 1> {};
 template <>
 struct LieGroupOps<Eigen::Matrix<float, 9, 1>> : public matrix::LieGroupOps<float, 9, 1> {};
+template <int Rows, int Cols>
+struct LieGroupOps<Eigen::Matrix<float, Rows, Cols>>
+    : public matrix::LieGroupOps<float, Rows, Cols> {};
 
 }  // namespace geo
