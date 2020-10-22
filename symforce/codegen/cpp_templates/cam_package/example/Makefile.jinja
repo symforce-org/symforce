@@ -1,6 +1,6 @@
 # Basic test for the cam library
 
-INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }}
+INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }} -I{{ symforce_include_dir }}
 CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
 LDFLAGS = -shared -fpic
 

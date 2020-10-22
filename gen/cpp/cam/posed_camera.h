@@ -70,6 +70,46 @@ class PosedCamera : public Camera<CameraCalType> {
     return global_point;
   }
 
+  /**
+   * Project a pixel in this camera into another camera.
+   *
+   * Args:
+   *     pixel: Pixel in the source camera
+   *     inverse_range: Inverse distance along the ray to the global point
+   *     target_cam: Camera to project global point into
+   *
+   * Return:
+   *     pixel: Pixel in the target camera
+   *     is_valid: 1 if given point is valid in source camera and target camera
+   *
+   */
+  Eigen::Matrix<Scalar, 2, 1> WarpPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel,
+                                        Scalar inverse_range, const PosedCamera& target_cam,
+                                        const Scalar epsilon, Scalar* const is_valid) const {
+    if (inverse_range == 0) {
+      Scalar is_valid_ray;
+      const Eigen::Matrix<Scalar, 3, 1> camera_ray_self =
+          Camera<CameraCalType>::CameraRayFromPixel(pixel, epsilon, &is_valid_ray);
+      const Eigen::Matrix<Scalar, 3, 1> camera_ray_target =
+          target_cam.Pose().Rotation().Inverse() * (pose_.Rotation() * camera_ray_self);
+      Scalar is_valid_projection;
+      const Eigen::Matrix<Scalar, 2, 1> target_pixel =
+          target_cam.PixelFromCameraPoint(camera_ray_target, epsilon, &is_valid_projection);
+      *is_valid = is_valid_ray * is_valid_projection;
+      return target_pixel;
+    }
+
+    Scalar is_valid_point;
+    const Eigen::Matrix<Scalar, 3, 1> global_point =
+        GlobalPointFromPixel(pixel, 1 / (inverse_range + epsilon), epsilon, &is_valid_point);
+    Scalar is_valid_projection;
+    const Eigen::Matrix<Scalar, 2, 1> target_pixel =
+        target_cam.PixelFromGlobalPoint(global_point, epsilon, &is_valid_projection);
+
+    *is_valid = is_valid_point * is_valid_projection;
+    return target_pixel;
+  }
+
   const geo::Pose3<Scalar>& Pose() const {
     return pose_;
   }

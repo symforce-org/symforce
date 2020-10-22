@@ -123,6 +123,7 @@ def posed_camera_data():
     functions_to_doc = [
         cam.PosedCamera.pixel_from_global_point,
         cam.PosedCamera.global_point_from_pixel,
+        cam.PosedCamera.warp_pixel,
     ]
     return class_template_data(cam.PosedCamera, functions_to_doc)
 
@@ -196,6 +197,7 @@ def generate(mode, output_dir=None):
                             CURRENT_DIR, "***REMOVED***/include/eigen3/"
                         )
                     ),
+                    symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
                     lib_dir=os.path.join(output_dir, "example"),
                 ),
             )

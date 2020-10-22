@@ -22,6 +22,7 @@
 #include <cam/posed_camera.h>
 #include <geo/pose3.h>
 #include <geo/rot3.h>
+#include <symforce/util/random.h>
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
@@ -202,9 +203,7 @@ void TestPosedCamera(const T& cam_cal) {
   std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
   std::uniform_real_distribution<Scalar> range_dist(1.0, 5.0);
   for (int i = 0; i < 10; i++) {
-    const geo::Rot3<Scalar> R = geo::Rot3<Scalar>::Random(gen);
-    const Eigen::Matrix<Scalar, 3, 1> t = Eigen::Matrix<Scalar, 3, 1>::Random();
-    const geo::Pose3<Scalar> pose(R, t);
+    const geo::Pose3<Scalar> pose = sym::Random<geo::Pose3<Scalar>>(gen);
     const cam::PosedCamera<T> cam(pose, cam_cal);
 
     assertTrue(cam.Pose() == pose);
@@ -221,6 +220,21 @@ void TestPosedCamera(const T& cam_cal) {
         cam.PixelFromGlobalPoint(global_point, epsilon, &is_valid_pixel);
     if (is_valid_global_point == 1 && is_valid_pixel == 1) {
       assertTrue(pixel.isApprox(pixel_reprojected, tolerance));
+    }
+
+    const geo::Pose3<Scalar> pose2 = sym::Random<geo::Pose3<Scalar>>(gen);
+    const cam::PosedCamera<T> cam2(pose2, cam_cal);
+    Scalar is_valid_warped_pixel;
+    const Scalar inverse_range = 1 / (range_to_point + epsilon);
+    const Eigen::Matrix<Scalar, 2, 1> warped_pixel =
+        cam.WarpPixel(pixel, inverse_range, cam2, epsilon, &is_valid_warped_pixel);
+    const Scalar range2 = (cam2.Pose().Inverse() * global_point).norm();
+    const Scalar inverse_range2 = 1 / (range2 + epsilon);
+    Scalar is_valid_rewarped_pixel;
+    const Eigen::Matrix<Scalar, 2, 1> rewarped_pixel =
+        cam2.WarpPixel(warped_pixel, inverse_range2, cam, epsilon, &is_valid_rewarped_pixel);
+    if (is_valid_warped_pixel == 1 && is_valid_rewarped_pixel == 1) {
+      assertTrue(pixel.isApprox(rewarped_pixel, std::sqrt(epsilon)));
     }
   }
 }
