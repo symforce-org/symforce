@@ -11,17 +11,30 @@ Factor<Scalar> Factor<Scalar>::Jacobian(const JacobianFunc& jacobian_func,
       [jacobian_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
                       MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
         SYM_ASSERT(residual != nullptr);
-        SYM_ASSERT(hessian != nullptr);
         jacobian_func(values, residual, jacobian);
-        SYM_ASSERT(residual->rows() == jacobian->rows());
+        SYM_ASSERT(jacobian == nullptr || residual->rows() == jacobian->rows());
 
-        // Compute the RHS and lower triangle of the hessian
-        hessian->resize(jacobian->cols(), jacobian->cols());
-        hessian->template triangularView<Eigen::Lower>().setZero();
-        hessian->template selfadjointView<Eigen::Lower>().rankUpdate(jacobian->transpose());
-        (*rhs) = jacobian->transpose() * (*residual);
+        // Compute the lower triangle of the hessian if needed
+        if (hessian != nullptr) {
+          SYM_ASSERT(jacobian != nullptr);
+          hessian->resize(jacobian->cols(), jacobian->cols());
+          hessian->template triangularView<Eigen::Lower>().setZero();
+          hessian->template selfadjointView<Eigen::Lower>().rankUpdate(jacobian->transpose());
+        }
+
+        // Compute RHS if needed
+        if (rhs != nullptr) {
+          SYM_ASSERT(jacobian != nullptr);
+          (*rhs) = jacobian->transpose() * (*residual);
+        }
       },
       keys);
+}
+
+template <typename Scalar>
+void Factor<Scalar>::Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
+                               MatrixX<Scalar>* jacobian) const {
+  hessian_func_(values, residual, jacobian, nullptr, nullptr);
 }
 
 template <typename Scalar>

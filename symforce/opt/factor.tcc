@@ -103,15 +103,24 @@ Factor<Scalar> JacobianDynamic(Functor func, const std::vector<Key>& keys_to_fun
       [func, keys_to_func, keys_to_optimize](const Values<Scalar>& values,
                                              VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
                                              MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
+        SYM_ASSERT(residual != nullptr);
         JacobianFuncValuesExtractor<Scalar, Functor>::Invoke(func, values, keys_to_func, residual,
                                                              jacobian);
-        SYM_ASSERT(residual->rows() == jacobian->rows());
+        SYM_ASSERT(jacobian == nullptr || residual->rows() == jacobian->rows());
 
-        // Compute the RHS and lower triangle of the hessian
-        hessian->resize(jacobian->cols(), jacobian->cols());
-        hessian->template triangularView<Eigen::Lower>().setZero();
-        hessian->template selfadjointView<Eigen::Lower>().rankUpdate(jacobian->transpose());
-        (*rhs) = jacobian->transpose() * (*residual);
+        // Compute the lower triangle of the hessian if needed
+        if (hessian != nullptr) {
+          SYM_ASSERT(jacobian);
+          hessian->resize(jacobian->cols(), jacobian->cols());
+          hessian->template triangularView<Eigen::Lower>().setZero();
+          hessian->template selfadjointView<Eigen::Lower>().rankUpdate(jacobian->transpose());
+        }
+
+        // Compute RHS if needed
+        if (rhs != nullptr) {
+          SYM_ASSERT(jacobian);
+          (*rhs) = jacobian->transpose() * (*residual);
+        }
       },
       keys_to_optimize);
 }
@@ -145,10 +154,18 @@ struct JacobianFuncFixedSizeWrapper {
   static auto Wrap(Functor func, Sequence<S...>) {
     return [func](ArgType<S>... args, VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian) {
       Eigen::Matrix<Scalar, M, 1> residual_fixed;
-      Eigen::Matrix<Scalar, M, N> jacobian_fixed;
-      func(args..., &residual_fixed, &jacobian_fixed);
+
+      if (jacobian != nullptr) {
+        // jacobian is requested
+        Eigen::Matrix<Scalar, M, N> jacobian_fixed;
+        func(args..., &residual_fixed, &jacobian_fixed);
+        (*jacobian) = jacobian_fixed;
+      } else {
+        // jacobian not requested
+        func(args..., &residual_fixed, nullptr);
+      }
+
       (*residual) = residual_fixed;
-      (*jacobian) = jacobian_fixed;
     };
   }
 

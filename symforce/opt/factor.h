@@ -96,6 +96,13 @@ class Factor {
   // ----------------------------------------------------------------------------------------------
 
   /**
+   * Evaluate the factor at the given linearization point and output just the
+   * numerical values of the residual and jacobian.
+   */
+  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual,
+                 MatrixX<ScalarType>* jacobian = nullptr) const;
+
+  /**
    * Evaluate the factor at the given linearization point and output a LinearizedFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    */

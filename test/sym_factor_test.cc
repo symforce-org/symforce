@@ -212,7 +212,10 @@ void TestLinearizedValues() {
   const auto func = [](Scalar a, Scalar b, Eigen::Matrix<Scalar, 1, 1>* res,
                        Eigen::Matrix<Scalar, 1, 2>* jac) {
     (*res) << a * a + b;
-    (*jac) << 2 * a, 1;
+
+    if (jac) {
+      (*jac) << 2 * a, 1;
+    }
   };
 
   // Check with keys {x, y} so a = 1, b = 2
@@ -230,6 +233,17 @@ void TestLinearizedValues() {
   assertTrue(fabs(linearized2.residual[0] - 10) < 1e-3);
   assertTrue(fabs(linearized2.jacobian(0, 0) - (-6)) < 1e-3);
   assertTrue(fabs(linearized2.jacobian(0, 1) - 1) < 1e-3);
+
+  // Check Linearize with residual
+  sym::VectorX<Scalar> residual;
+  factor2.Linearize(values, &residual);
+  assertTrue(residual.isApprox(linearized2.residual));
+
+  // Check Linearize with residual and jacobian
+  sym::MatrixX<Scalar> jacobian;
+  factor2.Linearize(values, &residual, &jacobian);
+  assertTrue(residual.isApprox(linearized2.residual));
+  assertTrue(jacobian.isApprox(linearized2.jacobian));
 }
 
 int main(int argc, char** argv) {
