@@ -47,11 +47,11 @@ class {{ cls.__name__ }} {
     return geo::StorageOps<Self>::StorageDim();
   }
 
-  void ToStorage(std::vector<Scalar>* vec) const {
+  void ToStorage(Scalar* const vec) const {
     return geo::StorageOps<Self>::ToStorage(*this, vec);
   }
 
-  static {{ cls.__name__ }} FromStorage(const std::vector<Scalar>& vec) {
+  static {{ cls.__name__ }} FromStorage(const Scalar* const vec) {
     return geo::StorageOps<Self>::FromStorage(vec);
   }
 
@@ -85,6 +85,10 @@ class {{ cls.__name__ }} {
   bool operator==(const {{ cls.__name__ }}& rhs) const {
     return data_ == rhs.Data();
   }
+
+  {% set custom_template_name = "custom_methods/{}.h.jinja".format(python_util.camelcase_to_snakecase(cls.__name__)) %}
+  // Included from "{{ custom_template_name }}":
+  {% include custom_template_name ignore missing %}
 
  protected:
   DataVec data_;

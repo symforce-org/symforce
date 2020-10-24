@@ -46,11 +46,11 @@ class ATANCameraCal {
     return geo::StorageOps<Self>::StorageDim();
   }
 
-  void ToStorage(std::vector<Scalar>* vec) const {
+  void ToStorage(Scalar* const vec) const {
     return geo::StorageOps<Self>::ToStorage(*this, vec);
   }
 
-  static ATANCameraCal FromStorage(const std::vector<Scalar>& vec) {
+  static ATANCameraCal FromStorage(const Scalar* const vec) {
     return geo::StorageOps<Self>::FromStorage(vec);
   }
 
@@ -114,6 +114,8 @@ class ATANCameraCal {
   bool operator==(const ATANCameraCal& rhs) const {
     return data_ == rhs.Data();
   }
+
+  // Included from "custom_methods/atan_camera_cal.h.jinja":
 
  protected:
   DataVec data_;

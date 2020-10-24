@@ -1,0 +1,10 @@
+  // --------------------------------------------------------------------------
+  // Handwritten methods for LinearCameraCal
+  // --------------------------------------------------------------------------
+
+  // Construct from FocalLength and PrincipalPoint
+  explicit LinearCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                           const Eigen::Matrix<Scalar, 2, 1>& principal_point) {
+    data_.template head<2>() = focal_length;
+    data_.template tail<2>() = principal_point;
+  }

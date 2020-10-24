@@ -9,19 +9,16 @@ namespace equidistant_epipolar_camera_cal {
 
 template <typename Scalar>
 void StorageOps<Scalar>::ToStorage(const EquidistantEpipolarCameraCal<Scalar>& a,
-                                   std::vector<Scalar>* vec) {
+                                   Scalar* const vec) {
   assert(vec != nullptr);
-  const typename EquidistantEpipolarCameraCal<Scalar>::DataVec& data = a.Data();
-  vec->resize(data.size());
-  std::copy_n(data.data(), data.size(), vec->begin());
+  std::copy_n(a.Data().data(), a.StorageDim(), vec);
 }
 
 template <typename Scalar>
-EquidistantEpipolarCameraCal<Scalar> StorageOps<Scalar>::FromStorage(
-    const std::vector<Scalar>& vec) {
-  assert(vec.size() == StorageOps<Scalar>::StorageDim());
+EquidistantEpipolarCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const Scalar* const vec) {
+  assert(vec != nullptr);
   return EquidistantEpipolarCameraCal<Scalar>(
-      Eigen::Map<const typename EquidistantEpipolarCameraCal<Scalar>::DataVec>(vec.data()));
+      Eigen::Map<const typename EquidistantEpipolarCameraCal<Scalar>::DataVec>(vec));
 }
 
 }  // namespace equidistant_epipolar_camera_cal

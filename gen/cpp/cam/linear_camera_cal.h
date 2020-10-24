@@ -42,11 +42,11 @@ class LinearCameraCal {
     return geo::StorageOps<Self>::StorageDim();
   }
 
-  void ToStorage(std::vector<Scalar>* vec) const {
+  void ToStorage(Scalar* const vec) const {
     return geo::StorageOps<Self>::ToStorage(*this, vec);
   }
 
-  static LinearCameraCal FromStorage(const std::vector<Scalar>& vec) {
+  static LinearCameraCal FromStorage(const Scalar* const vec) {
     return geo::StorageOps<Self>::FromStorage(vec);
   }
 
@@ -109,6 +109,18 @@ class LinearCameraCal {
 
   bool operator==(const LinearCameraCal& rhs) const {
     return data_ == rhs.Data();
+  }
+
+  // Included from "custom_methods/linear_camera_cal.h.jinja":
+  // --------------------------------------------------------------------------
+  // Handwritten methods for LinearCameraCal
+  // --------------------------------------------------------------------------
+
+  // Construct from FocalLength and PrincipalPoint
+  explicit LinearCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                           const Eigen::Matrix<Scalar, 2, 1>& principal_point) {
+    data_.template head<2>() = focal_length;
+    data_.template tail<2>() = principal_point;
   }
 
  protected:

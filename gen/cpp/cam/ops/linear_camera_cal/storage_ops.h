@@ -20,8 +20,8 @@ struct StorageOps {
     return 4;
   }
 
-  static void ToStorage(const cam::LinearCameraCal<Scalar>& a, std::vector<Scalar>* vec);
-  static cam::LinearCameraCal<Scalar> FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const cam::LinearCameraCal<Scalar>& a, Scalar* const vec);
+  static cam::LinearCameraCal<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace linear_camera_cal

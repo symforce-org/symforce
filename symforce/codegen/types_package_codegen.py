@@ -17,6 +17,7 @@ def generate_types(
     shared_types=None,  # type: T.Mapping[str, str]
     scalar_type="double",  # type: str
     output_dir=None,  # type: T.Optional[str]
+    lcm_bindings_output_dir=None,  # type: T.Optional[str]
     templates=None,  # type: template_util.TemplateList
 ):
     # type: (...) -> T.Dict[str, T.Any]
@@ -38,8 +39,9 @@ def generate_types(
                 shared_types={"my_values.V1" : "my_subvalues_t", "my_values.V2" : "my_subvalues_t"} (Only generate one type named
                     "my_subvalues_t" to represent Values objects defined by "my_values.V1" and "my_values.V2".
         scalar_type: Type of scalars used in LCM type definition
-        output_dir: Where to output the files. ".lcm" files are output in "output_dir/lcm", and language-specific implementations
+        output_dir: Where to output the files. ".lcm" files are output in "output_dir/lcmtypes", and language-specific implementations
             are generated in "output_dir/package_name".
+        lcm_bindings_output_dir: Where to output language-specific LCM bindings.  Defaults to output_dir
         templates: TemplateList used if types are being generated as part of a larger code generation (e.g. when generating the
             types required by a generated function). If None, we generate both the ".lcm" files and the language-specific
             implementations, else we assume the templates and language-specific type implementations will be rendered
@@ -109,6 +111,7 @@ def generate_types(
     # Save outputs and intermediates
     codegen_data["output_dir"] = output_dir
     codegen_data["lcm_type_dir"] = lcm_type_dir
+    codegen_data["lcm_bindings_output_dir"] = lcm_bindings_output_dir
     codegen_data["lcm_files"] = lcm_files
     codegen_data["types_dict"] = types_dict
 
@@ -143,7 +146,7 @@ def generate_types(
 
     if not using_external_templates:
         templates.render()
-        lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, lcm_files)
+        lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, lcm_files, lcm_bindings_output_dir)
         codegen_data.update(lcm_data)
 
     return codegen_data

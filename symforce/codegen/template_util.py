@@ -26,8 +26,8 @@ class RelEnvironment(jinja2.Environment):
         return os.path.normpath(os.path.join(os.path.dirname(parent), str(template)))
 
 
-def render_template(template_path, data, output_path=None):
-    # type: (str, T.Dict[str, T.Any], T.Optional[str]) -> str
+def render_template(template_path, data, output_path=None, template_dir=CURRENT_DIR):
+    # type: (str, T.Dict[str, T.Any], T.Optional[str], str) -> str
     """
     Boiler plate to render template. Returns the rendered string and optionally writes to file.
 
@@ -35,12 +35,12 @@ def render_template(template_path, data, output_path=None):
         template_path: file path of the template to render
         data: dictionary of inputs for template
         output_path: If provided, writes to file
+        template_dir: Base directory where templates are found, defaults to symforce/codegen
     """
     logger.debug("Template  IN <-- {}".format(template_path))
     if output_path:
         logger.debug("Template OUT --> {}".format(output_path))
 
-    template_dir = CURRENT_DIR
     template_name = os.path.relpath(template_path, template_dir)
 
     loader = jinja2.FileSystemLoader(template_dir)

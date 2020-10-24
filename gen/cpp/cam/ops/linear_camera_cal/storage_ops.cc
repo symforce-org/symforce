@@ -8,18 +8,15 @@ namespace cam {
 namespace linear_camera_cal {
 
 template <typename Scalar>
-void StorageOps<Scalar>::ToStorage(const LinearCameraCal<Scalar>& a, std::vector<Scalar>* vec) {
+void StorageOps<Scalar>::ToStorage(const LinearCameraCal<Scalar>& a, Scalar* const vec) {
   assert(vec != nullptr);
-  const typename LinearCameraCal<Scalar>::DataVec& data = a.Data();
-  vec->resize(data.size());
-  std::copy_n(data.data(), data.size(), vec->begin());
+  std::copy_n(a.Data().data(), a.StorageDim(), vec);
 }
 
 template <typename Scalar>
-LinearCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const std::vector<Scalar>& vec) {
-  assert(vec.size() == StorageOps<Scalar>::StorageDim());
-  return LinearCameraCal<Scalar>(
-      Eigen::Map<const typename LinearCameraCal<Scalar>::DataVec>(vec.data()));
+LinearCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const Scalar* const vec) {
+  assert(vec != nullptr);
+  return LinearCameraCal<Scalar>(Eigen::Map<const typename LinearCameraCal<Scalar>::DataVec>(vec));
 }
 
 }  // namespace linear_camera_cal

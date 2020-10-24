@@ -242,11 +242,11 @@ class Matrix(LieGroup):
 
     def storage_D_tangent(self):
         # type: () -> Matrix
-        return Matrix.eye(self.storage_dim(), self.tangent_dim())  # type: ignore
+        return Matrix.eye(self.storage_dim(), self.tangent_dim())
 
     def tangent_D_storage(self):
         # type: () -> Matrix
-        return Matrix.eye(self.tangent_dim(), self.storage_dim())  # type: ignore
+        return Matrix.eye(self.tangent_dim(), self.storage_dim())
 
     # -------------------------------------------------------------------------
     # Helper methods
@@ -654,6 +654,29 @@ class Matrix(LieGroup):
             return self * right.matrix_inverse()
         else:
             return self.__class__(self.mat * _T.cast(sm.Matrix, right).inv())
+
+    def compute_AtA(self, lower_only=False):
+        # type: (bool) -> Matrix
+        """
+        Compute a symmetric product A.transpose() * A faster by respecting symmetry of the output.
+
+        Args:
+            lower_only (bool): If given, only fill the lower half and set upper to zero
+
+        Returns:
+            (Matrix(N, N)): Symmetric matrix AtA = self.transpose() * self
+
+        """
+        N = self.cols
+        AtA = Matrix(N, N)
+        for i in range(N):
+            row = self[:, i]
+            for j in range(i, N):
+                val = row.dot(self[:, j])
+                AtA[j, i] = val
+                if i != j:
+                    AtA[i, j] = val if not lower_only else 0
+        return AtA
 
     def LU(self):
         # type: () -> _T.Tuple[Matrix, Matrix]

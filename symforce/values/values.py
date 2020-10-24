@@ -178,21 +178,41 @@ class Values(object):
             or (len(shape) == 2 and shape[0] == 1)
         )
 
+    @staticmethod
+    def _items_recursive(v):
+        # type: (T.Union[T.Sequence, Values]) -> T.List[T.Tuple[str, T.Any]]
+        """
+        Helper for items_recursive that handles sequences
+        """
+        flat_items = []  # type: T.List[T.Tuple[str, T.Any]]
+
+        if isinstance(v, Values):
+            key_value_pairs = v.items()
+        else:
+            key_value_pairs = [(str(i), sub_value) for i, sub_value in enumerate(v)]
+
+        for sub_key, sub_value in key_value_pairs:
+            if isinstance(v, Values):
+                formatted_sub_key = ".{}".format(sub_key)
+            else:
+                formatted_sub_key = "[{}]".format(sub_key)
+
+            if isinstance(sub_value, (Values, list, tuple)):
+                flat_items.extend(
+                    ("{}{}".format(formatted_sub_key, sub_sub_key), sub_sub_value)
+                    for sub_sub_key, sub_sub_value in Values._items_recursive(sub_value)
+                )
+            else:
+                flat_items.append((formatted_sub_key, sub_value))
+
+        return flat_items
+
     def items_recursive(self):
         # type: () -> T.List[T.Tuple[str, T.Any]]
         """
         Returns a flat list of key/value pairs for every element in this object.
         """
-        flat_items = []
-        for k, v in self.items():
-            if isinstance(v, Values):
-                dot_seperated_sub_keys = [
-                    "{}.{}".format(k, sub_key) for sub_key in v.keys_recursive()
-                ]
-                flat_items.extend(zip(dot_seperated_sub_keys, v.values_recursive()))
-            else:
-                flat_items.append((k, v))
-        return flat_items
+        return [(key[len(".") :], value) for key, value in Values._items_recursive(self)]
 
     def keys_recursive(self):
         # type: () -> T.List[str]
@@ -221,6 +241,20 @@ class Values(object):
         subkeys_recursive does not return dot-separated keys.
         """
         return [k.split(".")[-1] for k in self.keys_recursive()]
+
+    def scalar_keys_recursive(self):
+        # type: () -> T.List[str]
+        """
+        Returns a flat list of keys to each scalar in this object
+        """
+        flat_scalar_keys = []  # type: T.List[str]
+        for key, value in self.items_recursive():
+            storage_dim = ops.StorageOps.storage_dim(value)
+            if storage_dim > 1:
+                flat_scalar_keys.extend("{}[{}]".format(key, i) for i in range(storage_dim))
+            else:
+                flat_scalar_keys.append(key)
+        return flat_scalar_keys
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops

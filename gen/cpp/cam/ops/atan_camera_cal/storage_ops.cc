@@ -8,18 +8,15 @@ namespace cam {
 namespace atan_camera_cal {
 
 template <typename Scalar>
-void StorageOps<Scalar>::ToStorage(const ATANCameraCal<Scalar>& a, std::vector<Scalar>* vec) {
+void StorageOps<Scalar>::ToStorage(const ATANCameraCal<Scalar>& a, Scalar* const vec) {
   assert(vec != nullptr);
-  const typename ATANCameraCal<Scalar>::DataVec& data = a.Data();
-  vec->resize(data.size());
-  std::copy_n(data.data(), data.size(), vec->begin());
+  std::copy_n(a.Data().data(), a.StorageDim(), vec);
 }
 
 template <typename Scalar>
-ATANCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const std::vector<Scalar>& vec) {
-  assert(vec.size() == StorageOps<Scalar>::StorageDim());
-  return ATANCameraCal<Scalar>(
-      Eigen::Map<const typename ATANCameraCal<Scalar>::DataVec>(vec.data()));
+ATANCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const Scalar* const vec) {
+  assert(vec != nullptr);
+  return ATANCameraCal<Scalar>(Eigen::Map<const typename ATANCameraCal<Scalar>::DataVec>(vec));
 }
 
 }  // namespace atan_camera_cal

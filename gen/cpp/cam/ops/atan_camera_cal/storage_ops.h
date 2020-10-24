@@ -20,8 +20,8 @@ struct StorageOps {
     return 5;
   }
 
-  static void ToStorage(const cam::ATANCameraCal<Scalar>& a, std::vector<Scalar>* vec);
-  static cam::ATANCameraCal<Scalar> FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const cam::ATANCameraCal<Scalar>& a, Scalar* const vec);
+  static cam::ATANCameraCal<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace atan_camera_cal

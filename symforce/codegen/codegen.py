@@ -68,8 +68,9 @@ class Codegen(object):
         assert all([sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage()])
 
         # Names given by keys in inputs/outputs must be valid variable names
-        assert all([python_util.is_valid_variable_name(k) for k in inputs.subkeys_recursive()])
-        assert all([python_util.is_valid_variable_name(k) for k in outputs.subkeys_recursive()])
+        # TODO(aaron): Also check recursively
+        assert all([python_util.is_valid_variable_name(k) for k in inputs.keys()])
+        assert all([python_util.is_valid_variable_name(k) for k in outputs.keys()])
 
         # Symbols in inputs must be unique
         assert len(set(inputs.to_storage())) == len(
@@ -214,6 +215,7 @@ class Codegen(object):
     def generate_function(
         self,
         output_dir=None,  # type: str
+        lcm_bindings_output_dir=None,  # type: str
         shared_types=None,  # type: T.Mapping[str, str]
         namespace="sym",  # type: str
         generated_file_name=None,  # type: str
@@ -235,6 +237,7 @@ class Codegen(object):
         Args:
             output_dir: Directory in which to output the generated function. Any generated types will
                 be located in a subdirectory with name equal to the namespace argument.
+            lcm_bindings_output_dir: Directory in which to output language-specific LCM bindings
             shared_types: Mapping between types defined as part of this codegen object (e.g. keys in
                 self.inputs that map to Values objects) and previously generated external types.
             namespace: Namespace for the generated function and any generated types.
@@ -243,6 +246,9 @@ class Codegen(object):
         if output_dir is None:
             output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(self.name), dir="/tmp")
             logger.debug("Creating temp directory: {}".format(output_dir))
+
+        if lcm_bindings_output_dir is None:
+            lcm_bindings_output_dir = output_dir
 
         if generated_file_name is None:
             generated_file_name = self.name
@@ -275,6 +281,7 @@ class Codegen(object):
             shared_types=shared_types,
             scalar_type=self.scalar_type,
             output_dir=output_dir,
+            lcm_bindings_output_dir=lcm_bindings_output_dir,
             templates=templates,
         )
 
@@ -331,6 +338,7 @@ class Codegen(object):
         lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data["lcm_type_dir"],
             lcm_files=types_codegen_data["lcm_files"],
+            lcm_output_dir=types_codegen_data["lcm_bindings_output_dir"],
         )
         output_data.update(lcm_data)
 

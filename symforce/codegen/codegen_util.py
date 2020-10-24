@@ -400,6 +400,8 @@ def get_sparse_mat_data(sparse_matrix):
         sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
     """
     sparse_mat_data = {}  # type: T.Dict[str, T.Any]
+    sparse_mat_data["kRows"] = sparse_matrix.rows
+    sparse_mat_data["kCols"] = sparse_matrix.cols
     sparse_mat_data["kNumNonZero"] = 0
     sparse_mat_data["kColPtrs"] = []
     sparse_mat_data["kRowIndices"] = []
@@ -508,6 +510,7 @@ def get_base_instance(obj):
 def generate_lcm_types(
     lcm_type_dir,  # type: str
     lcm_files,  # type: T.Sequence[str]
+    lcm_output_dir=None,  # type: T.Optional[str]
 ):
     # type: (...) -> T.Dict[str, T.Any]
     """
@@ -517,8 +520,11 @@ def generate_lcm_types(
         lcm_type_dir: Directory containing symforce-generated .lcm files
         lcm_files: List of .lcm files to process
     """
-    python_types_dir = os.path.join(lcm_type_dir, "..", "python2.7", "lcmtypes")
-    cpp_types_dir = os.path.join(lcm_type_dir, "..", "cpp", "lcmtypes")
+    if lcm_output_dir is None:
+        lcm_output_dir = os.path.join(lcm_type_dir, "..")
+
+    python_types_dir = os.path.join(lcm_output_dir, "python2.7")
+    cpp_types_dir = os.path.join(lcm_output_dir, "cpp")
     lcm_include_dir = os.path.join("lcmtypes")
 
     for lcm_file in lcm_files:
@@ -546,6 +552,8 @@ def generate_lcm_types(
                 ]
             )
         else:
+            python_types_dir = os.path.join(python_types_dir, "lcmtypes")
+            cpp_types_dir = os.path.join(cpp_types_dir, "lcmtypes")
             python_util.execute_subprocess(
                 [LCM_GEN_CMD, lcm_file_path, "--python", "--ppath", python_types_dir]
             )

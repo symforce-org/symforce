@@ -46,11 +46,11 @@ class EquidistantEpipolarCameraCal {
     return geo::StorageOps<Self>::StorageDim();
   }
 
-  void ToStorage(std::vector<Scalar>* vec) const {
+  void ToStorage(Scalar* const vec) const {
     return geo::StorageOps<Self>::ToStorage(*this, vec);
   }
 
-  static EquidistantEpipolarCameraCal FromStorage(const std::vector<Scalar>& vec) {
+  static EquidistantEpipolarCameraCal FromStorage(const Scalar* const vec) {
     return geo::StorageOps<Self>::FromStorage(vec);
   }
 
@@ -114,6 +114,8 @@ class EquidistantEpipolarCameraCal {
   bool operator==(const EquidistantEpipolarCameraCal& rhs) const {
     return data_ == rhs.Data();
   }
+
+  // Included from "custom_methods/equidistant_epipolar_camera_cal.h.jinja":
 
  protected:
   DataVec data_;

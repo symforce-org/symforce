@@ -99,18 +99,16 @@ void TestStorageOps(const T& cam_cal) {
   assertTrue(cam_cal.Data().rows() == storage_dim);
   assertTrue(cam_cal.Data().cols() == 1);
 
-  std::vector<Scalar> vec;
-  cam_cal.ToStorage(&vec);
-  assertTrue(vec.size() > 0);
-  assertTrue(vec.size() == storage_dim);
-  for (int i = 0; i < vec.size(); ++i) {
-    assertTrue(vec[i] == cam_cal.Data()[i]);
+  std::array<Scalar, storage_dim> arr;
+  cam_cal.ToStorage(arr.data());
+  for (int i = 0; i < arr.size(); ++i) {
+    assertTrue(arr[i] == cam_cal.Data()[i]);
   }
 
-  const T cam_cal2 = geo::StorageOps<T>::FromStorage(vec);
+  const T cam_cal2 = geo::StorageOps<T>::FromStorage(arr.data());
   assertTrue(cam_cal.Data() == cam_cal2.Data());
-  vec[0] = 2.1;
-  const T cam_cal3 = geo::StorageOps<T>::FromStorage(vec);
+  arr[0] = 2.1;
+  const T cam_cal3 = geo::StorageOps<T>::FromStorage(arr.data());
   assertTrue(cam_cal.Data() != cam_cal3.Data());
 }
 

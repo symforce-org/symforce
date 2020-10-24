@@ -21,9 +21,8 @@ struct StorageOps {
     return 4;
   }
 
-  static void ToStorage(const cam::EquidistantEpipolarCameraCal<Scalar>& a,
-                        std::vector<Scalar>* vec);
-  static cam::EquidistantEpipolarCameraCal<Scalar> FromStorage(const std::vector<Scalar>& vec);
+  static void ToStorage(const cam::EquidistantEpipolarCameraCal<Scalar>& a, Scalar* const vec);
+  static cam::EquidistantEpipolarCameraCal<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace equidistant_epipolar_camera_cal
