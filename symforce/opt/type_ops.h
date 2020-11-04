@@ -8,16 +8,11 @@
 #include <geo/pose3.h>
 #include <geo/rot2.h>
 #include <geo/rot3.h>
+#include <symforce/opt/typedefs.h>
 
 #include <lcmtypes/symforce/type_t.hpp>
 
 namespace sym {
-
-template <typename Scalar>
-using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
-
-template <typename Scalar>
-using MatrixX = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
 
 using type_t = symforce::type_t;
 

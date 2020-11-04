@@ -2,8 +2,15 @@
 
 #include <geo/ops/lie_group_ops.h>
 #include <geo/ops/storage_ops.h>
+#include <symforce/opt/typedefs.h>
 
 namespace sym {
+
+// ensure self-adjoint property of symmetric matrices (correction from numerical errors)
+template <typename Scalar>
+MatrixX<Scalar> Symmetrize(const MatrixX<Scalar>& mat) {
+  return (mat + mat.transpose()) / 2;
+}
 
 /**
  * Interpolation between Lie group elements a and b.  Result is a linear interpolation by

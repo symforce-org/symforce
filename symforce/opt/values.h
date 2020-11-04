@@ -34,6 +34,14 @@ class Values {
   Values();
 
   /**
+   * Construct from a list of other Values objects. The order of Keys are preserved by
+   * the order of the Values in the initializer list
+   *
+   * NOTE(alvin): others Values should not contain overlapping Keys
+   */
+  explicit Values(std::initializer_list<Values<Scalar>> others);
+
+  /**
    * Construct from serialized form.
    */
   explicit Values(const LcmType& msg);
@@ -163,6 +171,17 @@ class Values {
    *   epsilon: Small constant to avoid singularities (do not use zero)
    */
   void Retract(const index_t& index, const Scalar* delta, const Scalar epsilon);
+
+  /**
+   * Express this Values in the local coordinate of others Values, i.e., this \ominus others
+   *
+   * Args:
+   *   others: The other Values that the local coordinate is relative to
+   *   index: Ordered list of keys to include (MUST be valid for both this and others Values)
+   *   epsilon: Small constant to avoid singularities (do not use zero)
+   */
+  VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, const index_t& index,
+                                   const Scalar epsilon);
 
   /**
    * Serialize to LCM.

@@ -121,6 +121,8 @@ void TestValues() {
 }
 
 void TestImplicitConstruction() {
+  std::cout << "*** Testing Values Implicit Construction ***" << std::endl;
+
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
@@ -131,7 +133,37 @@ void TestImplicitConstruction() {
   std::cout << values << std::endl;
 }
 
+void TestInitializerListConstruction() {
+  std::cout << "*** Testing Values Initializer List Construction ***" << std::endl;
+
+  sym::Valuesd v1;
+  v1.Set<double>('x', 1.0);
+  v1.Set<double>('y', 2.0);
+  v1.Set<double>('z', -3.0);
+
+  sym::Valuesd v2;
+  v2.Set<geo::Rot3d>('R', geo::Rot3d::Identity());
+
+  // construct v3 by merging v1 and v2
+  sym::Valuesd v3({v1, v2});
+
+  // test data
+  assertTrue(v3.At<double>('x') == 1.0);
+  assertTrue(v3.At<double>('y') == 2.0);
+  assertTrue(v3.At<double>('z') == -3.0);
+  assertTrue(v3.At<geo::Rot3d>('R') == geo::Rot3d::Identity());
+
+  // test preserving key ordering
+  const auto v3_keys = v3.Keys();
+  assertTrue(v3_keys[0] == 'x');
+  assertTrue(v3_keys[1] == 'y');
+  assertTrue(v3_keys[2] == 'z');
+  assertTrue(v3_keys[3] == 'R');
+}
+
 void TestIndexedUpdate() {
+  std::cout << "*** Testing Values Indexed Update ***" << std::endl;
+
   // Create some data
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -161,6 +193,8 @@ void TestIndexedUpdate() {
 }
 
 void TestKeyUpdate() {
+  std::cout << "*** Testing Values Key Update ***" << std::endl;
+
   // Create some data
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -199,29 +233,34 @@ void TestKeyUpdate() {
 }
 
 template <typename Scalar>
-void TestRetract() {
-  std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> Retract ***" << std::endl;
+void TestLieGroupOps() {
+  std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> LieGroupOps ***" << std::endl;
   const Scalar epsilon = 1e-9;
 
   // Create a values object that stores an identity rotation, and an index for it
-  sym::Values<Scalar> v;
+  sym::Values<Scalar> v1;
   const geo::Rot3<Scalar> rot = geo::Rot3<Scalar>::Identity();
-  v.Set('R', rot);
-  const sym::index_t index = v.CreateIndex({'R'});
+  v1.Set('R', rot);
+  const sym::index_t index = v1.CreateIndex({'R'});
 
-  // Test a bunch of retractions
+  // Test a bunch of retractions and local coordinates
   std::mt19937 gen(42);
   for (int i = 0; i < 100; ++i) {
-    v.Set('R', rot);
+    v1.Set('R', rot);
+    const sym::Values<Scalar> v2 = v1;
 
     const geo::Rot3<Scalar> random_rot = geo::Rot3<Scalar>::Random(gen);
     const Eigen::Matrix<Scalar, 3, 1> tangent_vec =
         geo::LieGroupOps<geo::Rot3<Scalar>>::ToTangent(random_rot, epsilon);
 
-    v.Retract(index, tangent_vec.data(), epsilon);
-
-    const geo::Rot3<Scalar> retracted_rot = v.template At<geo::Rot3<Scalar>>('R');
+    // test retraction
+    v1.Retract(index, tangent_vec.data(), epsilon);
+    const geo::Rot3<Scalar> retracted_rot = v1.template At<geo::Rot3<Scalar>>('R');
     assertTrue(random_rot.IsApprox(retracted_rot, 1e-6));
+
+    // test local coordinates
+    const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
+    assertTrue(local_coords.isApprox(tangent_vec));
   }
 }
 
@@ -240,9 +279,10 @@ int main(int argc, char** argv) {
   TestValues<double>();
 
   TestImplicitConstruction();
+  TestInitializerListConstruction();
 
-  TestRetract<float>();
-  TestRetract<double>();
+  TestLieGroupOps<float>();
+  TestLieGroupOps<double>();
 
   TestIndexedUpdate();
   TestKeyUpdate();
