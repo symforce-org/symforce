@@ -8,7 +8,7 @@ from symforce import ops
 from symforce import python_util
 from symforce import types as T
 from symforce import sympy as sm
-from symforce.test_util import TestCase
+from symforce.test_util import TestCase, slow_on_sympy
 from symforce.codegen import CodegenMode
 from symforce.codegen import Codegen
 
@@ -152,6 +152,7 @@ class SymFactorCodegenTest(TestCase):
     Test generating some derivatives of geo types that are commonly used to make factors.
     """
 
+    @slow_on_sympy
     def test_factor_codegen(self):
         # type: () -> None
         """

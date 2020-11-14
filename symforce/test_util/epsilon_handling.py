@@ -53,15 +53,15 @@ def is_value_with_epsilon_correct(
     expr_eps = func(x, epsilon)
     expr_raw = expr_eps.subs(epsilon, 0)
 
-    if display_func:
-        display_func("Expressions (raw / eps):")
-        display_func(expr_raw)
-        display_func(expr_eps)
-
     # Sub in zero
     expr_eps_at_x_zero = expr_eps.subs(x, singularity)
     if expr_eps_at_x_zero == sm.S.NaN:
-        display_func("[ERROR] Epsilon handling failed, expression at 0 is NaN.")
+        if display_func:
+            display_func("Expressions (raw / eps):")
+            display_func(expr_raw)
+            display_func(expr_eps)
+
+            display_func("[ERROR] Epsilon handling failed, expression at 0 is NaN.")
         is_correct = False
 
     # Take constant approximation at singularity and check equivalence
@@ -73,6 +73,12 @@ def is_value_with_epsilon_correct(
     value_x0_eps_sub2 = _limit_and_simplify(value_x0_eps, epsilon, 0, "+")
     if value_x0_eps_sub2 != value_x0_raw:
         if display_func:
+            # Only show the original expressions if we didn't show already
+            if is_correct:
+                display_func("Expressions (raw / eps):")
+                display_func(expr_raw)
+                display_func(expr_eps)
+
             display_func(
                 "[ERROR] Values at x={} not match (raw / eps / eps.limit):".format(singularity)
             )
@@ -122,11 +128,6 @@ def is_derivative_with_epsilon_correct(
     expr_eps = func(x, epsilon)
     expr_raw = expr_eps.subs(epsilon, 0)
 
-    if display_func:
-        display_func("Expressions (raw / eps):")
-        display_func(expr_raw)
-        display_func(expr_eps)
-
     # Take linear approximation at singularity and check equivalence
     if expected_derivative is None:
         derivative_x0_raw = _limit_and_simplify(expr_raw.diff(x), x, singularity, limit_direction)
@@ -136,6 +137,10 @@ def is_derivative_with_epsilon_correct(
     derivative_x0_eps_sub2 = _limit_and_simplify(derivative_x0_eps, epsilon, 0, "+")
     if derivative_x0_eps_sub2 != derivative_x0_raw:
         if display_func:
+            display_func("Expressions (raw / eps):")
+            display_func(expr_raw)
+            display_func(expr_eps)
+
             display_func(
                 "[ERROR] Derivatives at x={} not match (raw / eps / eps.limit):".format(singularity)
             )

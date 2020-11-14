@@ -1,3 +1,4 @@
+import multiprocessing
 import numpy as np
 import os
 import random
@@ -5,6 +6,7 @@ import sys
 import unittest
 import logging
 
+import symforce
 from symforce import geo
 from symforce.ops import interfaces
 from symforce import logger
@@ -22,6 +24,30 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
     """
 
     LieGroupOpsType = T.Union[interfaces.LieGroup, T.Scalar]
+
+    # Set by the --run_slow_tests flag to indicate that we should run all tests even
+    # if we're on the SymPy backend
+    _RUN_SLOW_TESTS = False
+
+    @staticmethod
+    def should_run_slow_tests():
+        # type: () -> bool
+
+        # NOTE(aaron):  This needs to be accessible before main() is called, so we do it here
+        # instead.  This should also be called from main to make sure it runs at least once
+        if "--run_slow_tests" in sys.argv:
+            TestCase._RUN_SLOW_TESTS = True
+            sys.argv.remove("--run_slow_tests")
+        return TestCase._RUN_SLOW_TESTS
+
+    @staticmethod
+    def main():
+        # type: () -> None
+        """
+        Call this to run all tests in scope.
+        """
+        TestCase.should_run_slow_tests()
+        SymforceTestCaseMixin.main()
 
     def setUp(self):
         # type: () -> None
@@ -85,7 +111,7 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
         """
 
         # Build package
-        make_cmd = ["make", "-C", package_dir]
+        make_cmd = ["make", "-C", package_dir, "-j{}".format(multiprocessing.cpu_count() - 1)]
         if make_args:
             make_cmd += make_args
         if logger.level != logging.DEBUG:
@@ -100,3 +126,28 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
             # We have a list of executables
             for name in executable_names:
                 python_util.execute_subprocess(os.path.join(package_dir, name))
+
+
+def requires_sympy(func):
+    # type: (T.Callable) -> T.Callable
+    """
+    Decorator to mark a test to only run on the SymPy backend, and skip otherwise
+    """
+    backend = symforce.get_backend()
+    if backend != "sympy":
+        return unittest.skip("This test only runs on the SymPy backend")(func)
+    else:
+        return func
+
+
+def slow_on_sympy(func):
+    # type: (T.Callable) -> T.Callable
+    """
+    Decorator to mark a test as slow on the sympy backend.  Will be skipped unless passed the
+    --run_slow_tests flag
+    """
+    backend = symforce.get_backend()
+    if backend == "sympy" and not TestCase.should_run_slow_tests():
+        return unittest.skip("This test is too slow on the SymPy backend")(func)
+    else:
+        return func

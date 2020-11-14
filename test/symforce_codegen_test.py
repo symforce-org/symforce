@@ -14,7 +14,7 @@ from symforce.codegen import CodegenMode
 from symforce.codegen import Codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
-from symforce.test_util import TestCase
+from symforce.test_util import TestCase, slow_on_sympy
 from symforce.values import Values
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -113,6 +113,7 @@ class SymforceCodegenTest(TestCase):
     # Python
     # -------------------------------------------------------------------------
 
+    @slow_on_sympy
     def test_codegen_python(self):
         # type: () -> None
         """
@@ -223,6 +224,7 @@ class SymforceCodegenTest(TestCase):
     # C++
     # -------------------------------------------------------------------------
 
+    @slow_on_sympy
     def test_codegen_cpp(self):
         # type: () -> None
         """
@@ -336,6 +338,7 @@ class SymforceCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
+    @slow_on_sympy
     def test_multi_function_codegen_cpp(self):
         # type: () -> None
         inputs, outputs_1 = self.build_values()
@@ -398,6 +401,7 @@ class SymforceCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(output_dir)
 
+    @slow_on_sympy
     def test_sparse_matrix_codegen(self):
         # type: () -> None
         """

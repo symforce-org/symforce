@@ -3,7 +3,7 @@ import numpy as np
 from symforce import logger
 from symforce import geo
 from symforce import sympy as sm
-from symforce.test_util import TestCase
+from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.values import Values
 
@@ -212,8 +212,13 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v[key] = entry + 10
 
         # Make sure from_tangent and from_storage run and we get correct values back
-        self.assertSequenceEqual(list(zip(keys, entries)), v.from_tangent(entries).items())
-        self.assertSequenceEqual(list(zip(keys, entries)), v.from_storage(entries).items())
+        self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_tangent(entries).items()))
+        self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_storage(entries).items()))
+
+    @slow_on_sympy
+    def test_tangent_D_storage(self):
+        # type: () -> None
+        super(SymforceValuesTest, self).test_tangent_D_storage()
 
 
 if __name__ == "__main__":

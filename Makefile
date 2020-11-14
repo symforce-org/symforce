@@ -76,13 +76,18 @@ GEN_FILES=test/*codegen*.py
 test_reqs:
 	${PYTHON} -m pip install -r test/requirements.txt
 
-test:
-	$(TEST_ENV) $(PYTHON) $(TEST_CMD)
+test_symengine:
+	$(TEST_ENV) SYMFORCE_BACKEND=symengine $(PYTHON) $(TEST_CMD)
+
+test_sympy:
+	$(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) $(TEST_CMD)
 
 test_update:
 	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) $(PYTHON2) $(file) --update;)
 
-.PHONY: test_reqs test
+test: test_symengine test_sympy
+
+.PHONY: test_reqs test_symengine test_sympy test
 
 # -----------------------------------------------------------------------------
 # Test coverage

@@ -15,10 +15,10 @@ libsymforce_cam.so: $(CC_FILES_CAM)
 libsymforce_gen.so: $(CC_FILES_GEO)
 	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_gen.so $(CC_FILES_GEO) $(INCLUDES)
 
-example: cam_package_cpp_test.cc
+example: cam_package_cpp_test.cc libsymforce_cam.so libsymforce_gen.so
 	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam -lsymforce_gen $(INCLUDES)
 
-example_function_gen: cam_function_codegen_cpp_test.cc
+example_function_gen: cam_function_codegen_cpp_test.cc libsymforce_cam.so
 	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_cam $(INCLUDES) -I../cpp
 
 clean:

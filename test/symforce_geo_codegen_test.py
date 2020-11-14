@@ -9,7 +9,7 @@ from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.test_util import TestCase
+from symforce.test_util import TestCase, slow_on_sympy
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenMode
 from symforce.codegen import codegen_util
@@ -65,6 +65,7 @@ class SymforceGeoCodegenTest(TestCase):
             if logger.level != logging.DEBUG:
                 python_util.remove_if_exists(output_dir)
 
+    @slow_on_sympy
     def test_codegen_cpp(self):
         # type: () -> None
         """

@@ -3,12 +3,10 @@ import os
 
 import symforce
 
-symforce.set_backend("sympy")
-
 from symforce import logger
 from symforce import python_util
 from symforce import types as T
-from symforce.test_util import TestCase
+from symforce.test_util import TestCase, requires_sympy
 from symforce.values import Values
 
 from symforce.codegen import codegen_util, Codegen, CodegenMode
@@ -36,9 +34,9 @@ class SymforceCppCodePrinterTest(TestCase):
         expr = sm.Min(a ** 2, b ** 2)
         self.assertEqual(printer.doprint(expr), "std::min<Scalar>((a * a), (b * b))")
 
+    @requires_sympy
     def test_heaviside(self):
         # type: () -> None
-
         def f(x):
             # type: (sm.Symbol) -> sm.Symbol
             return sm.functions.special.delta_functions.Heaviside(x)
