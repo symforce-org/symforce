@@ -6,6 +6,27 @@
 
 namespace sym {
 
+namespace internal {
+
+/**
+ * Helpers to get TangentDim at runtime for dynamic vectors and matrices
+ */
+template <typename T>
+struct TangentDimHelper {
+  static int32_t TangentDim(const T& x) {
+    return geo::LieGroupOps<T>::TangentDim();
+  }
+};
+
+template <typename Scalar, int Rows, int Cols>
+struct TangentDimHelper<Eigen::Matrix<Scalar, Rows, Cols>> {
+  static int32_t TangentDim(const Eigen::Matrix<Scalar, Rows, Cols>& x) {
+    return x.rows() * x.cols();
+  }
+};
+
+}  // namespace internal
+
 // ensure self-adjoint property of symmetric matrices (correction from numerical errors)
 template <typename Scalar>
 MatrixX<Scalar> Symmetrize(const MatrixX<Scalar>& mat) {
@@ -56,10 +77,12 @@ auto NumericalDerivative(const F f, const X& x,
                 "X and Y must have same scalar type");
 
   const Y f0 = f(x);
-  typename geo::LieGroupOps<X>::TangentVec dx = geo::LieGroupOps<X>::TangentVec::Zero();
+  typename geo::LieGroupOps<X>::TangentVec dx =
+      geo::LieGroupOps<X>::TangentVec::Zero(internal::TangentDimHelper<X>::TangentDim(x));
 
-  JacobianMat J = JacobianMat::Zero();
-  for (size_t i = 0; i < geo::LieGroupOps<X>::TangentDim(); i++) {
+  JacobianMat J = JacobianMat::Zero(internal::TangentDimHelper<Y>::TangentDim(f0),
+                                    internal::TangentDimHelper<X>::TangentDim(x));
+  for (size_t i = 0; i < internal::TangentDimHelper<X>::TangentDim(x); i++) {
     dx(i) = delta;
     const typename geo::LieGroupOps<Y>::TangentVec y_plus = geo::LieGroupOps<Y>::LocalCoordinates(
         f0, f(geo::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);

@@ -20,8 +20,17 @@ struct LieGroupOps {
   static_assert(std::is_floating_point<ScalarType>::value, "");
 
   static constexpr int32_t TangentDim() {
+    if (Rows == Eigen::Dynamic) {
+      return Eigen::Dynamic;
+    }
+
+    if (Cols == Eigen::Dynamic) {
+      return Eigen::Dynamic;
+    }
+
     return Rows * Cols;
   }
+
   using TangentVec = T;
   static T FromTangent(const TangentVec& vec, const Scalar epsilon) {
     return vec;
