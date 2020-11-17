@@ -35,8 +35,9 @@ class Linearization {
    *     factors: Only stores a pointer, MUST be in scope for the lifetime of this object!
    *     values: This is used to evaluate factors, but not copied or stored.
    *     key_order: If provided, acts as an ordered set of keys that form the state vector
-   *                to optimize. Must equal the set of all factor keys. If not provided,
-   *                it is computed from the factors using a default ordering.
+   *                to optimize. Can equal the set of all factor keys or a subset of all
+   *                factor keys. If not provided, it is computed from all keys for all
+   *                factors using a default ordering.
    */
   Linearization(const std::vector<Factor<Scalar>>& factors, const Values<Scalar>& values,
                 const std::vector<Key>& key_order = {});

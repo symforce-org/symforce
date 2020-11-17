@@ -9,10 +9,18 @@ namespace sym {
 template <typename ScalarType>
 std::unordered_map<key_t, index_entry_t> Linearization<ScalarType>::ComputeStateIndex(
     const std::vector<LinearizedFactor>& factors, const std::vector<Key>& keys) {
+  // Convert keys to set
+  const std::unordered_set<Key> key_set(keys.begin(), keys.end());
+
   // Aggregate index entries from linearized factors
   std::unordered_map<key_t, index_entry_t> state_index;
   for (const auto& factor : factors) {
     for (const index_entry_t& entry : factor.index.entries) {
+      // Skip keys that are not optimized (i.e. not in keys)
+      if (key_set.count(entry.key) == 0) {
+        continue;
+      }
+
       // Add the entry if not present, otherwise just check consistency
       auto it = state_index.find(entry.key);
       if (it == state_index.end()) {
@@ -73,7 +81,7 @@ void ComputeKeyHelperSparseColOffsets(
     const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
     linearization_factor_helper_t& factor_helper) {
-  for (int key_i = 0; key_i < linearized_factor.index.entries.size(); ++key_i) {
+  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
     linearization_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
@@ -96,11 +104,21 @@ void ComputeKeyHelperSparseColOffsets(
     // Off diagonal blocks
     for (int key_j = 0; key_j < key_i; key_j++) {
       const linearization_key_helper_t& j_key_helper = factor_helper.key_helpers[key_j];
-      std::vector<int32_t>& j_col_starts = key_helper.hessian_storage_col_starts[key_j];
-      j_col_starts.resize(j_key_helper.tangent_dim);
-      for (int32_t j_col = 0; j_col < j_key_helper.tangent_dim; ++j_col) {
-        j_col_starts[j_col] = hessian_row_col_to_storage_offset.at(
-            std::make_pair(key_helper.combined_offset, j_key_helper.combined_offset + j_col));
+      std::vector<int32_t>& col_starts = key_helper.hessian_storage_col_starts[key_j];
+
+      // If key_j comes after key_i in the full problem, we need to transpose things
+      if (j_key_helper.combined_offset < key_helper.combined_offset) {
+        col_starts.resize(j_key_helper.tangent_dim);
+        for (int32_t j_col = 0; j_col < j_key_helper.tangent_dim; ++j_col) {
+          col_starts[j_col] = hessian_row_col_to_storage_offset.at(
+              std::make_pair(key_helper.combined_offset, j_key_helper.combined_offset + j_col));
+        }
+      } else {
+        col_starts.resize(key_helper.tangent_dim);
+        for (int32_t i_col = 0; i_col < key_helper.tangent_dim; ++i_col) {
+          col_starts[i_col] = hessian_row_col_to_storage_offset.at(
+              std::make_pair(j_key_helper.combined_offset, key_helper.combined_offset + i_col));
+        }
       }
     }
   }
@@ -153,10 +171,16 @@ linearization_factor_helper_t ComputeFactorHelper(
   factor_helper.residual_dim = factor.residual.rows();
   factor_helper.combined_residual_offset = combined_residual_offset;
 
-  factor_helper.key_helpers.resize(factor.index.entries.size());
   for (int key_i = 0; key_i < factor.index.entries.size(); ++key_i) {
     const index_entry_t& entry = factor.index.entries[key_i];
-    linearization_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
+
+    const bool key_is_optimized = state_index.count(entry.key) > 0;
+    if (!key_is_optimized) {
+      continue;
+    }
+
+    factor_helper.key_helpers.emplace_back();
+    linearization_key_helper_t& key_helper = factor_helper.key_helpers.back();
 
     // Offset of this key within the factor's state
     key_helper.factor_offset = entry.offset;
@@ -307,7 +331,7 @@ void Linearization<ScalarType>::UpdateFromLinearizedFactorIntoDense(
       linearized_factor.residual;
 
   // For each key
-  for (int key_i = 0; key_i < linearized_factor.index.entries.size(); ++key_i) {
+  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
     const linearization_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     // Fill in jacobian block
@@ -331,10 +355,21 @@ void Linearization<ScalarType>::UpdateFromLinearizedFactorIntoDense(
     // Add contributions from off-diagonal hessian blocks
     for (int key_j = 0; key_j < key_i; ++key_j) {
       const linearization_key_helper_t& key_helper_j = factor_helper.key_helpers[key_j];
-      hessian_lower_.block(key_helper.combined_offset, key_helper_j.combined_offset,
-                           key_helper.tangent_dim, key_helper_j.tangent_dim) +=
-          linearized_factor.hessian.block(key_helper.factor_offset, key_helper_j.factor_offset,
-                                          key_helper.tangent_dim, key_helper_j.tangent_dim);
+      if (key_helper.combined_offset > key_helper_j.combined_offset) {
+        hessian_lower_.block(key_helper.combined_offset, key_helper_j.combined_offset,
+                             key_helper.tangent_dim, key_helper_j.tangent_dim) +=
+            linearized_factor.hessian.block(key_helper.factor_offset, key_helper_j.factor_offset,
+                                            key_helper.tangent_dim, key_helper_j.tangent_dim);
+      } else {
+        // If key_j is actually after key_i in the full problem, swap indices to put it in the lower
+        // triangle
+        hessian_lower_.block(key_helper_j.combined_offset, key_helper.combined_offset,
+                             key_helper_j.tangent_dim, key_helper.tangent_dim) +=
+            linearized_factor.hessian
+                .block(key_helper.factor_offset, key_helper_j.factor_offset, key_helper.tangent_dim,
+                       key_helper_j.tangent_dim)
+                .transpose();
+      }
     }
   }
 }
@@ -347,7 +382,7 @@ void Linearization<ScalarType>::UpdateFromLinearizedFactorIntoSparse(
       linearized_factor.residual;
 
   // For each key
-  for (int key_i = 0; key_i < linearized_factor.index.entries.size(); ++key_i) {
+  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
     const linearization_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     // Fill in jacobian block, column by column
@@ -381,12 +416,24 @@ void Linearization<ScalarType>::UpdateFromLinearizedFactorIntoSparse(
     for (int key_j = 0; key_j < key_i; key_j++) {
       const linearization_key_helper_t& key_helper_j = factor_helper.key_helpers[key_j];
       const std::vector<int32_t>& col_starts = key_helper.hessian_storage_col_starts[key_j];
-      for (int32_t col_j = 0; col_j < col_starts.size(); ++col_j) {
-        Eigen::Map<sym::VectorX<Scalar>>(hessian_lower_sparse_.valuePtr() + col_starts[col_j],
-                                         key_helper.tangent_dim) =
-            linearized_factor.hessian.block(key_helper.factor_offset,
-                                            key_helper_j.factor_offset + col_j,
-                                            key_helper.tangent_dim, 1);
+
+      if (key_helper_j.combined_offset < key_helper.combined_offset) {
+        for (int32_t col_j = 0; col_j < col_starts.size(); ++col_j) {
+          Eigen::Map<sym::VectorX<Scalar>>(hessian_lower_sparse_.valuePtr() + col_starts[col_j],
+                                           key_helper.tangent_dim) +=
+              linearized_factor.hessian.block(key_helper.factor_offset,
+                                              key_helper_j.factor_offset + col_j,
+                                              key_helper.tangent_dim, 1);
+        }
+      } else {
+        for (int32_t col_i = 0; col_i < col_starts.size(); ++col_i) {
+          Eigen::Map<sym::VectorX<Scalar>>(hessian_lower_sparse_.valuePtr() + col_starts[col_i],
+                                           key_helper_j.tangent_dim) +=
+              linearized_factor.hessian
+                  .block(key_helper.factor_offset + col_i, key_helper_j.factor_offset, 1,
+                         key_helper_j.tangent_dim)
+                  .transpose();
+        }
       }
     }
   }

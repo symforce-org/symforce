@@ -64,27 +64,28 @@ class Optimizer {
 
   Optimizer(const levenberg_marquardt::lm_params_t& params,
             const std::vector<Factor<Scalar>>& factors, const Scalar epsilon = 1e-9,
-            bool debug_stats = false)
+            const std::vector<Key>& keys = {}, bool debug_stats = false)
       : factors_(factors),
         lm_optimizer_(params, "sym::Optimize"),
         epsilon_(epsilon),
         debug_stats_(debug_stats),
-        keys_(ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)),
-        linearize_func_(LinearizationWrapperLM<Scalar>::LinearizeFunc(factors_)) {
+        keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
+        linearize_func_(LinearizationWrapperLM<Scalar>::LinearizeFunc(factors_, keys_)) {
     iterations_.reserve(params.iterations);
   }
 
   /**
-   * Version with a move constructor for factors.
+   * Version with move constructors for factors and keys.
    */
   Optimizer(const levenberg_marquardt::lm_params_t& params, std::vector<Factor<Scalar>>&& factors,
-            const Scalar epsilon = 1e-9, bool debug_stats = false)
+            const Scalar epsilon = 1e-9, std::vector<Key>&& keys = {}, bool debug_stats = false)
       : factors_(std::move(factors)),
         lm_optimizer_(params, "sym::Optimize"),
         epsilon_(epsilon),
         debug_stats_(debug_stats),
-        keys_(ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)),
-        linearize_func_(LinearizationWrapperLM<Scalar>::LinearizeFunc(factors_)) {
+        keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)
+                           : std::move(keys)),
+        linearize_func_(LinearizationWrapperLM<Scalar>::LinearizeFunc(factors_, keys_)) {
     iterations_.reserve(params.iterations);
   }
 

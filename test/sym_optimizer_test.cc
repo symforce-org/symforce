@@ -2,6 +2,7 @@
 #include <sym/factors/prior_factor_rot3.h>
 
 #include "../symforce/opt/optimizer.h"
+#include "../symforce/util/random.h"
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
@@ -159,13 +160,110 @@ void TestRotSmoothing() {
   std::cout << "Iterations: " << last_iter.iteration << std::endl;
   std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
   std::cout << "Final error: " << last_iter.new_error << std::endl;
+
+  // Check successful convergence
   assertTrue(last_iter.iteration == 6);
   assertTrue(fabs(last_iter.current_lambda - 0.000244) < 1e-3);
   assertTrue(fabs(last_iter.new_error - 2.174) < 1e-3);
+
+  // Check that H = J^T J
+  const sym::Linearizationd linearization(factors, values);
+  const Eigen::SparseMatrix<double> jtj =
+      linearization.JacobianSparse().transpose() * linearization.JacobianSparse();
+  assertTrue(linearization.HessianLowerSparse().triangularView<Eigen::Lower>().isApprox(
+      jtj.triangularView<Eigen::Lower>(), 1e-6));
+}
+
+/**
+ * Test manifold optimization of Rot3
+ *
+ * Creates a pose graph with every pose connected to every other pose (in both directions) by
+ * between factors with a measurement of identity and isotropic covariance
+ *
+ * First pose is frozen, others are optimized
+ *
+ * Tests that frozen variables and factors with out-of-order keys work
+ */
+void TestNontrivialKeys() {
+  // Constants
+  const double epsilon = 1e-15;
+  const int num_keys = 3;
+
+  // Costs
+  const double between_sigma = 0.5;  // [rad]
+
+  std::vector<sym::Factord> factors;
+
+  // Add between factors in both directions
+  for (int i = 0; i < num_keys; i++) {
+    for (int j = 0; j < num_keys; j++) {
+      if (i == j) {
+        continue;
+      }
+
+      factors.push_back(sym::Factord::Jacobian(
+          [&between_sigma, &epsilon](const geo::Rot3d& a, const geo::Rot3d& b,
+                                     Eigen::Vector3d* const res,
+                                     Eigen::Matrix<double, 3, 6>* const jac) {
+            const Eigen::Matrix3d sqrt_info =
+                Eigen::Vector3d::Constant(1 / between_sigma).asDiagonal();
+            const geo::Rot3d a_T_b = geo::Rot3d::Identity();
+            sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
+          },
+          /* keys */ {{'R', i}, {'R', j}}));
+    }
+  }
+
+  // Create initial values as random pertubations from the first prior
+  sym::Valuesd values;
+
+  std::mt19937 gen(42);
+
+  for (int i = 0; i < num_keys; ++i) {
+    const geo::Rot3d value = geo::Rot3d::FromTangent(0.4 * sym::RandomNormalVector<double, 3>(gen));
+    values.Set<geo::Rot3d>({'R', i}, value);
+  }
+
+  std::cout << "Initial values: " << values << std::endl;
+
+  // Optimize
+  levenberg_marquardt::lm_params_t params = DefaultLmParams();
+  params.iterations = 50;
+  params.early_exit_min_reduction = 0.0001;
+
+  std::vector<sym::Key> optimized_keys;
+  for (int i = 1; i < num_keys; i++) {
+    optimized_keys.emplace_back('R', i);
+  }
+
+  sym::Optimizer<double> optimizer(params, factors, epsilon, optimized_keys);
+  optimizer.Optimize(&values);
+
+  std::cout << "Optimized values: " << values << std::endl;
+
+  const auto& iteration_stats = optimizer.IterationStats();
+  const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
+  std::cout << "Iterations: " << last_iter.iteration << std::endl;
+  std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
+  std::cout << "Final error: " << last_iter.new_error << std::endl;
+
+  // Check successful convergence
+  assertTrue(last_iter.iteration == 5);
+  assertTrue(last_iter.current_lambda < 1e-3);
+  assertTrue(last_iter.new_error < 1e-15);
+
+  // Check that H = J^T J
+  const sym::Linearizationd linearization(factors, values, optimized_keys);
+  const Eigen::SparseMatrix<double> jtj =
+      linearization.JacobianSparse().transpose() * linearization.JacobianSparse();
+  assertTrue(linearization.HessianLowerSparse().triangularView<Eigen::Lower>().isApprox(
+      jtj.triangularView<Eigen::Lower>(), 1e-6));
 }
 
 int main(int argc, char** argv) {
   TestNonlinear();
 
   TestRotSmoothing();
+
+  TestNontrivialKeys();
 }

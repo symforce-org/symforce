@@ -48,10 +48,12 @@ class LinearizationWrapperLM : public levenberg_marquardt::LinearizationBase {
   /**
    * Linearization function to pass to the LM optimizer.
    */
-  static auto LinearizeFunc(const std::vector<Factor<Scalar>>& factors) {
-    return [&factors](const Values<Scalar>& values, LinearizationWrapperLM<Scalar>* linearization) {
+  static auto LinearizeFunc(const std::vector<Factor<Scalar>>& factors,
+                            const std::vector<Key>& key_order = {}) {
+    return [&factors, &key_order](const Values<Scalar>& values,
+                                  LinearizationWrapperLM<Scalar>* linearization) {
       if (!linearization->IsInitialized()) {
-        linearization->lin_ = Linearization<Scalar>(factors, values);
+        linearization->lin_ = Linearization<Scalar>(factors, values, key_order);
       } else {
         linearization->lin_.Relinearize(values);
       }
