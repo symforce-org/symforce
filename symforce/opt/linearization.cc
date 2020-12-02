@@ -48,6 +48,50 @@ std::unordered_map<key_t, index_entry_t> Linearization<ScalarType>::ComputeState
   return state_index;
 }
 
+// Ordered map from (row, col) location in a dense matrix to a storage offset in a sparse matrix
+// Ordered by column then row, and only supports constructing with strictly increasing keys and size
+// known ahead of time
+class CoordsToStorageOrderedMap {
+ public:
+  CoordsToStorageOrderedMap() : data_() {}
+
+  void reserve(const size_t size) {
+    data_.reserve(size);
+  }
+
+  void insert(const std::pair<std::pair<int32_t, int32_t>, int32_t>& key_and_value) {
+    const auto& key = key_and_value.first;
+    const auto& value = key_and_value.second;
+    SYM_ASSERT(data_.empty() || ColumnOrderingLessThan(data_.back().first, key));
+    data_.emplace_back(key, value);
+  }
+
+  int32_t at(const std::pair<int32_t, int32_t>& key) const {
+    // Binary search data_ for key
+    const auto at_and_after_iterator =
+        std::equal_range(data_.begin(), data_.end(), std::make_pair(key, /* unused value */ 0),
+                         ColumnOrderingPairLessThan);
+    if (at_and_after_iterator.first + 1 != at_and_after_iterator.second) {
+      throw std::out_of_range("Key not in CoordsToStorageMap");
+    }
+    return at_and_after_iterator.first->second;
+  }
+
+ private:
+  static bool ColumnOrderingPairLessThan(
+      const std::pair<std::pair<int32_t, int32_t>, int32_t>& a_pair,
+      const std::pair<std::pair<int32_t, int32_t>, int32_t>& b_pair) {
+    return ColumnOrderingLessThan(a_pair.first, b_pair.first);
+  }
+
+  static bool ColumnOrderingLessThan(const std::pair<int32_t, int32_t>& a,
+                                     const std::pair<int32_t, int32_t>& b) {
+    return std::make_pair(a.second, a.first) < std::make_pair(b.second, b.first);
+  }
+
+  std::vector<std::pair<std::pair<int32_t, int32_t>, int32_t>> data_;
+};
+
 struct StdPairHash {
  public:
   template <typename T, typename U>
@@ -58,16 +102,19 @@ struct StdPairHash {
   }
 };
 
-// Hashmap from (row, col) location in a dense matrix to a storage offset in a sparse matrix
-using CoordsToStorageMap = std::unordered_map<std::pair<int32_t, int32_t>, int32_t, StdPairHash>;
+// TODO(aaron):  For large enough problems we'll probably want the option to switch this to
+// std::unordered_map
+using CoordsToStorageMap = CoordsToStorageOrderedMap;
 
 template <typename Scalar>
 CoordsToStorageMap CoordsToStorageOffset(const Eigen::SparseMatrix<Scalar>& mat) {
   CoordsToStorageMap coords_to_storage_offset;
+  coords_to_storage_offset.reserve(mat.nonZeros());
   int32_t storage_index = 0;
   for (int col = 0; col < mat.outerSize(); ++col) {
     for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(mat, col); it; ++it) {
-      coords_to_storage_offset[std::make_pair(it.row(), it.col())] = storage_index;
+      coords_to_storage_offset.insert(
+          std::make_pair(std::make_pair(it.row(), it.col()), storage_index));
       storage_index += 1;
     }
   }

@@ -59,65 +59,81 @@ namespace sym {
 template <typename Scalar>
 class Optimizer {
  public:
-  using LMOptimizer =
-      levenberg_marquardt::Optimizer<Values<Scalar>, LinearizationWrapperLM<Scalar>>;
-
-  Optimizer(const levenberg_marquardt::lm_params_t& params,
-            const std::vector<Factor<Scalar>>& factors, const Scalar epsilon = 1e-9,
-            const std::vector<Key>& keys = {}, bool debug_stats = false)
-      : factors_(factors),
-        lm_optimizer_(params, "sym::Optimize"),
-        epsilon_(epsilon),
-        debug_stats_(debug_stats),
-        keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
-        linearize_func_(LinearizationWrapperLM<Scalar>::LinearizeFunc(factors_, keys_)) {
-    iterations_.reserve(params.iterations);
-  }
+  using Linearization = LinearizationWrapperLM<Scalar>;
+  using LMOptimizer = levenberg_marquardt::Optimizer<Values<Scalar>, Linearization>;
+  using LMOptimizerIterations = std::vector<levenberg_marquardt::levenberg_marquardt_iteration_t>;
 
   /**
-   * Version with move constructors for factors and keys.
+   * Constructor that copies in factors and keys
+   */
+  Optimizer(const levenberg_marquardt::lm_params_t& params,
+            const std::vector<Factor<Scalar>>& factors, const Scalar epsilon = 1e-9,
+            const std::vector<Key>& keys = {}, bool debug_stats = false);
+
+  /**
+   * Constructor with move constructors for factors and keys.
    */
   Optimizer(const levenberg_marquardt::lm_params_t& params, std::vector<Factor<Scalar>>&& factors,
-            const Scalar epsilon = 1e-9, std::vector<Key>&& keys = {}, bool debug_stats = false)
-      : factors_(std::move(factors)),
-        lm_optimizer_(params, "sym::Optimize"),
-        epsilon_(epsilon),
-        debug_stats_(debug_stats),
-        keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)
-                           : std::move(keys)),
-        linearize_func_(LinearizationWrapperLM<Scalar>::LinearizeFunc(factors_, keys_)) {
-    iterations_.reserve(params.iterations);
-  }
+            const Scalar epsilon = 1e-9, std::vector<Key>&& keys = {}, bool debug_stats = false);
 
-  void Optimize(Values<Scalar>* values) {
-    // Initialization that depends on having a values
-    if (index_.entries.size() == 0) {
-      index_ = values->CreateIndex(keys_);
-      update_func_ = LinearizationWrapperLM<Scalar>::UpdateFunc(index_, epsilon_);
-    }
+  // This cannot be moved or copied because the linearization keeps a pointer to the factors
+  Optimizer(Optimizer&&) = delete;
+  Optimizer& operator=(Optimizer&&) = delete;
+  Optimizer(const Optimizer&) = delete;
+  Optimizer& operator=(const Optimizer&) = delete;
 
-    // Clear state for this run
-    lm_optimizer_.ResetState(*values, &state_);
-    iterations_.clear();
+  /**
+   * Optimize the given values in-place
+   *
+   * If num_iterations < 0 (the default), uses the number of iterations specified by the LM
+   * Optimizer params at construction
+   */
+  bool Optimize(Values<Scalar>* values, int num_iterations = -1);
 
-    // Iterate
-    for (int i = 0; i < lm_optimizer_.Params().iterations; i++) {
-      const bool early_exit =
-          lm_optimizer_.Iterate(linearize_func_, update_func_, &state_, &iterations_, debug_stats_);
-      if (early_exit) {
-        break;
-      }
-    }
+  /**
+   * Linearize the problem around the given values
+   */
+  Linearization Linearize(const Values<Scalar>& values);
 
-    // Save best results
-    (*values) = state_.Best().inputs;
-  }
+  /**
+   * Get the optimized keys
+   */
+  const std::vector<Key>& Keys() const;
 
-  const std::vector<levenberg_marquardt::levenberg_marquardt_iteration_t>& IterationStats() const {
-    return iterations_;
-  }
+  /*
+   * Get the underlying LM Optimizer state
+   */
+  const levenberg_marquardt::State<Values<Scalar>, LinearizationWrapperLM<Scalar>>&
+  LMOptimizerState() const;
+
+  /**
+   * Get the LM Optimizer iterations
+   */
+  const LMOptimizerIterations& IterationStats() const;
 
  private:
+  /**
+   * Build the linearize_func functor for the LM Optimizer
+   */
+  static typename LMOptimizer::LinearizeFunc BuildLinearizeFunc(
+      sym::Optimizer<Scalar>* const optimizer, const index_t& index,
+      const std::vector<sym::Factor<Scalar>>& factors, const std::vector<sym::Key>& keys,
+      const Scalar epsilon);
+
+  /**
+   * Do initialization that depends on having a values
+   */
+  void Initialize(const Values<Scalar>& values);
+
+  /**
+   * Helper to get an already initialized sym::Linearization object, linearized around the given
+   * values.  Used to initialize multiple blocks in the LM Optimizer state without reanalyzing the
+   * problem structure.
+   */
+  const sym::Linearization<Scalar>& GetInitializedLinearization(
+      const std::vector<sym::Factor<Scalar>>& factors, const Values<Scalar>& values,
+      const std::vector<Key>& key_order = {});
+
   // Store a copy of the nonlinear factors. The Linearization object in the state keeps a
   // pointer to this memory.
   std::vector<Factor<Scalar>> factors_;
@@ -126,12 +142,16 @@ class Optimizer {
   LMOptimizer lm_optimizer_;
 
   // State block for the optimizer.
-  // TODO(hayk): Right now there are three state blocks inside the LM optimizer, each of which
-  // separately computes the indices for linearization, even though they are identical.
   levenberg_marquardt::State<Values<Scalar>, LinearizationWrapperLM<Scalar>> state_;
 
+  // There are three state blocks inside the LM optimizer, each of which needs the indices for
+  // linearization, which are identical.  So, this linearization is used to initialize each of them.
+  // It will compute the indices once, but it will be relinearized around each block's initial
+  // values when the block is created
+  sym::Linearization<Scalar> linearization_;
+
   // Iteration stats
-  std::vector<levenberg_marquardt::levenberg_marquardt_iteration_t> iterations_;
+  LMOptimizerIterations iterations_;
 
   Scalar epsilon_;
   bool debug_stats_;

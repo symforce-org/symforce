@@ -49,6 +49,11 @@ class Linearization {
   void Relinearize(const Values<Scalar>& values);
 
   /**
+   * Whether this contains values, versus having only been default constructed.
+   */
+  bool IsInitialized() const;
+
+  /**
    * Basic accessors.
    */
   const std::vector<LinearizedFactor>& LinearizedFactors() const;
@@ -59,11 +64,6 @@ class Linearization {
   const Eigen::SparseMatrix<Scalar>& HessianLowerSparse() const;
 
  private:
-  /**
-   * Whether this contains values, versus having only been default constructed.
-   */
-  bool IsInitialized() const;
-
   /**
    * Allocate all factor storage and compute sparsity pattern. This does a lot of index
    * computation on the first linearization, such that repeated linearization can be fast.

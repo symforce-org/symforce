@@ -78,6 +78,13 @@ class Values {
   int32_t NumEntries() const;
 
   /**
+   * Has zero keys.
+   */
+  bool Empty() const {
+    return NumEntries() == 0;
+  }
+
+  /**
    * Get all keys.
    *
    * Args:

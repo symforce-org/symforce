@@ -170,6 +170,11 @@ def generate(mode, output_dir=None, gen_example=True):
     package_dir = os.path.join(output_dir, "geo")
     templates = template_util.TemplateList()
 
+    # First generate the sym/util package as it's a dependency of the geo package
+    from symforce.codegen import sym_util_package_codegen
+
+    sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
+
     if mode == CodegenMode.PYTHON2:
         logger.info('Creating Python package at: "{}"'.format(package_dir))
         template_dir = os.path.join(template_util.PYTHON_TEMPLATE_DIR, "geo_package")

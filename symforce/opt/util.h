@@ -2,7 +2,7 @@
 
 #include <geo/ops/lie_group_ops.h>
 #include <geo/ops/storage_ops.h>
-#include <symforce/opt/typedefs.h>
+#include <sym/util/typedefs.h>
 
 namespace sym {
 

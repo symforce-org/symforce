@@ -107,7 +107,8 @@ void TestRotSmoothing() {
   const auto create_prior_factor = [&epsilon](const sym::Key& key, const geo::Rot3d& prior,
                                               const double sigma) {
     return sym::Factord::Jacobian(
-        [&](const geo::Rot3d& rot, Eigen::Vector3d* const res, Eigen::Matrix3d* const jac) {
+        [&prior, sigma, &epsilon](const geo::Rot3d& rot, Eigen::Vector3d* const res,
+                                  Eigen::Matrix3d* const jac) {
           const Eigen::Matrix3d sqrt_info = Eigen::Vector3d::Constant(1 / sigma).asDiagonal();
           sym::PriorFactorRot3<double>(rot, prior, sqrt_info, epsilon, res, jac);
         },

@@ -11,12 +11,52 @@ from symforce import sympy as sm
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.codegen import CodegenMode
 from symforce.codegen import Codegen
+from symforce.values import Values
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-TYPES = (geo.Rot2, geo.Rot3, geo.V3)
+TYPES = (geo.Rot2, geo.Rot3, geo.V3, geo.Pose2, geo.Pose3)
 
 Element = T.Any
+
+
+def get_between_factor_docstring(between_argument_name):
+    # type: (str) -> str
+    return """
+    Residual that penalizes the difference between between(a, b) and {a_T_b}.
+
+    In vector space terms that would be:
+        (b - a) - {a_T_b}
+
+    In lie group terms:
+        local_coordinates({a_T_b}, between(a, b))
+        to_tangent(compose(inverse({a_T_b}), compose(inverse(a), b)))
+
+    Args:
+        sqrt_info: Square root information matrix to whiten residual. This can be computed from
+                   a covariance matrix as the cholesky decomposition of the inverse. In the case
+                   of a diagonal it will contain 1/sigma values. Must match the tangent dim.
+    """.format(
+        a_T_b=between_argument_name
+    )
+
+
+def get_prior_docstring():
+    # type: () -> str
+    return """
+    Residual that penalizes the difference between a value and prior (desired / measured value).
+
+    In vector space terms that would be:
+        prior - value
+
+    In lie group terms:
+        to_tangent(compose(inverse(value), prior))
+
+    Args:
+        sqrt_info: Square root information matrix to whiten residual. This can be computed from
+                   a covariance matrix as the cholesky decomposition of the inverse. In the case
+                   of a diagonal it will contain 1/sigma values. Must match the tangent dim.
+    """
 
 
 def between_factor(
@@ -27,21 +67,6 @@ def between_factor(
     epsilon=0,  # type: T.Scalar
 ):
     # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
-    """
-    Residual that penalizes the difference between(a, b) and a_T_b.
-
-    In vector space terms that would be:
-        (b - a) - a_T_b
-
-    In lie group terms:
-        local_coordinates(a_T_b, between(a, b))
-        to_tangent(compose(inverse(a_T_b), compose(inverse(a), b)))
-
-    Args:
-        sqrt_info: Square root information matrix to whiten residual. This can be computed from
-                   a covariance matrix as the cholesky decomposition of the inverse. In the case
-                   of a diagonal it will contain 1/sigma values. Must match the tangent dim.
-    """
     assert type(a) == type(b) == type(a_T_b)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
 
@@ -66,20 +91,6 @@ def prior_factor(
     epsilon=0,  # type: T.Scalar
 ):
     # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
-    """
-    Residual that penalizes the difference between a value and prior (desired / measured value).
-
-    In vector space terms that would be:
-        prior - value
-
-    In lie group terms:
-        to_tangent(compose(inverse(value), prior))
-
-    Args:
-        sqrt_info: Square root information matrix to whiten residual. This can be computed from
-                   a covariance matrix as the cholesky decomposition of the inverse. In the case
-                   of a diagonal it will contain 1/sigma values. Must match the tangent dim.
-    """
     assert type(value) == type(prior)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
 
@@ -115,6 +126,14 @@ def get_function_code(codegen, cleanup=True):
     return func_code
 
 
+def get_filename(codegen):
+    # type: (Codegen) -> str
+    """
+    Helper to get appropriate filename
+    """
+    return python_util.camelcase_to_snakecase(codegen.name) + ".h"
+
+
 def get_between_factors(types):
     # type: (T.Sequence[T.Type]) -> T.Dict[str, str]
     """
@@ -122,9 +141,6 @@ def get_between_factors(types):
     """
     files_dict = {}  # type: T.Dict[str, str]
     for cls in types:
-        # Helper to get appropriate filename
-        get_filename = lambda cg: python_util.camelcase_to_snakecase(cg.name) + ".h"
-
         tangent_dim = ops.LieGroupOps.tangent_dim(cls)
         between_codegen = Codegen.function(
             name="BetweenFactor{}".format(cls.__name__),
@@ -132,6 +148,7 @@ def get_between_factors(types):
             input_types=[cls, cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
             output_names=["res", "jac"],
             mode=CodegenMode.CPP,
+            docstring=get_between_factor_docstring("a_T_b"),
         )
         files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
 
@@ -141,10 +158,222 @@ def get_between_factors(types):
             input_types=[cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
             output_names=["res", "jac"],
             mode=CodegenMode.CPP,
+            docstring=get_prior_docstring(),
         )
         files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
 
     return files_dict
+
+
+def get_pose3_extra_factors(files_dict):
+    # type: (T.Dict[str, str]) -> None
+    """
+    Generates factors specific to Poses which penalize individual components
+
+    This includes factors for only the position or rotation components of a Pose, or for both, but
+    with the residual and sqrt information on the product manifold.  This can't be done by
+    wrapping the other generated functions because we need jacobians with respect to the full pose,
+    and for the product manifold version we want to specify the full covariance with correlations
+    between rotation and position.
+    """
+
+    def between_factor_pose3_rotation(
+        a,  # type: geo.Pose3
+        b,  # type: geo.Pose3
+        a_R_b,  # type: geo.Rot3
+        sqrt_info,  # type: geo.Matrix
+        epsilon=0,  # type: T.Scalar
+    ):
+        # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
+        tangent_error = ops.LieGroupOps.local_coordinates(
+            a_R_b, ops.LieGroupOps.between(a, b).R, epsilon=epsilon
+        )
+
+        residual = sqrt_info * geo.M(tangent_error)
+        jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
+        return residual, jacobian
+
+    def between_factor_pose3_position(
+        a,  # type: geo.Pose3
+        b,  # type: geo.Pose3
+        a_t_b,  # type: geo.Matrix
+        sqrt_info,  # type: geo.Matrix
+        epsilon=0,  # type: T.Scalar
+    ):
+        # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
+        tangent_error = ops.LieGroupOps.local_coordinates(
+            a_t_b, ops.LieGroupOps.between(a, b).t, epsilon=epsilon
+        )
+
+        residual = sqrt_info * geo.M(tangent_error)
+        jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
+        return residual, jacobian
+
+    def between_factor_pose3_product(
+        a,  # type: geo.Pose3
+        b,  # type: geo.Pose3
+        a_T_b,  # type: geo.Pose3
+        sqrt_info,  # type: geo.Matrix
+        epsilon=0,  # type: T.Scalar
+    ):
+        # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
+        a_T_b_est = ops.LieGroupOps.between(a, b)
+
+        product_a_T_b = Values()
+        product_a_T_b["R"] = a_T_b.R
+        product_a_T_b["t"] = a_T_b.t
+
+        product_a_T_b_est = Values()
+        product_a_T_b_est["R"] = a_T_b_est.R
+        product_a_T_b_est["t"] = a_T_b_est.t
+
+        tangent_error = ops.LieGroupOps.local_coordinates(
+            product_a_T_b, product_a_T_b_est, epsilon=epsilon
+        )
+
+        residual = sqrt_info * geo.M(tangent_error)
+        jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
+        return residual, jacobian
+
+    def prior_factor_pose3_rotation(
+        value,  # type: geo.Pose3
+        prior,  # type: geo.Rot3
+        sqrt_info,  # type: geo.Matrix
+        epsilon=0,  # type: T.Scalar
+    ):
+        # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
+        tangent_error = ops.LieGroupOps.local_coordinates(prior, value.R, epsilon=epsilon)
+        residual = sqrt_info * geo.M(tangent_error)
+        jacobian = residual.jacobian(value)
+        return residual, jacobian
+
+    def prior_factor_pose3_position(
+        value,  # type: geo.Pose3
+        prior,  # type: geo.Matrix
+        sqrt_info,  # type: geo.Matrix
+        epsilon=0,  # type: T.Scalar
+    ):
+        # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
+        tangent_error = ops.LieGroupOps.local_coordinates(prior, value.t, epsilon=epsilon)
+        residual = sqrt_info * geo.M(tangent_error)
+        jacobian = residual.jacobian(value)
+        return residual, jacobian
+
+    def prior_factor_pose3_product(
+        value,  # type: geo.Pose3
+        prior,  # type: geo.Pose3
+        sqrt_info,  # type: geo.Matrix
+        epsilon=0,  # type: T.Scalar
+    ):
+        # type: (...) -> T.Tuple[geo.Matrix, geo.Matrix]
+        product_value = Values()
+        product_value["R"] = value.R
+        product_value["t"] = value.t
+
+        product_prior = Values()
+        product_prior["R"] = prior.R
+        product_prior["t"] = prior.t
+
+        tangent_error = ops.LieGroupOps.local_coordinates(
+            product_prior, product_value, epsilon=epsilon
+        )
+        residual = sqrt_info * geo.M(tangent_error)
+        jacobian = residual.jacobian(value)
+        return residual, jacobian
+
+    between_rotation_codegen = Codegen.function(
+        name="BetweenFactor{}Rotation".format(geo.Pose3.__name__),
+        func=between_factor_pose3_rotation,
+        input_types=[
+            geo.Pose3,
+            geo.Pose3,
+            geo.Rot3,
+            geo.M(geo.Rot3.tangent_dim(), geo.Rot3.tangent_dim()),
+            sm.Symbol,
+        ],
+        output_names=["res", "jac"],
+        mode=CodegenMode.CPP,
+        docstring=get_between_factor_docstring("a_R_b"),
+    )
+
+    between_position_codegen = Codegen.function(
+        name="BetweenFactor{}Position".format(geo.Pose3.__name__),
+        func=between_factor_pose3_position,
+        input_types=[
+            geo.Pose3,
+            geo.Pose3,
+            geo.V3,
+            geo.M(geo.V3.tangent_dim(), geo.V3.tangent_dim()),
+            sm.Symbol,
+        ],
+        output_names=["res", "jac"],
+        mode=CodegenMode.CPP,
+        docstring=get_between_factor_docstring("a_t_b"),
+    )
+
+    between_pose_codegen = Codegen.function(
+        name="BetweenFactor{}Product".format(geo.Pose3.__name__),
+        func=between_factor_pose3_product,
+        input_types=[
+            geo.Pose3,
+            geo.Pose3,
+            geo.Pose3,
+            geo.M(geo.Pose3.tangent_dim(), geo.Pose3.tangent_dim()),
+            sm.Symbol,
+        ],
+        output_names=["res", "jac"],
+        mode=CodegenMode.CPP,
+        docstring=get_between_factor_docstring("a_T_b"),
+    )
+
+    prior_rotation_codegen = Codegen.function(
+        name="PriorFactor{}Rotation".format(geo.Pose3.__name__),
+        func=prior_factor_pose3_rotation,
+        input_types=[
+            geo.Pose3,
+            geo.Rot3,
+            geo.M(geo.Rot3.tangent_dim(), geo.Rot3.tangent_dim()),
+            sm.Symbol,
+        ],
+        output_names=["res", "jac"],
+        mode=CodegenMode.CPP,
+        docstring=get_prior_docstring(),
+    )
+
+    prior_position_codegen = Codegen.function(
+        name="PriorFactor{}Position".format(geo.Pose3.__name__),
+        func=prior_factor_pose3_position,
+        input_types=[
+            geo.Pose3,
+            geo.V3,
+            geo.M(geo.V3.tangent_dim(), geo.V3.tangent_dim()),
+            sm.Symbol,
+        ],
+        output_names=["res", "jac"],
+        mode=CodegenMode.CPP,
+        docstring=get_prior_docstring(),
+    )
+
+    prior_pose_codegen = Codegen.function(
+        name="PriorFactor{}Product".format(geo.Pose3.__name__),
+        func=prior_factor_pose3_product,
+        input_types=[
+            geo.Pose3,
+            geo.Pose3,
+            geo.M(geo.Pose3.tangent_dim(), geo.Pose3.tangent_dim()),
+            sm.Symbol,
+        ],
+        output_names=["res", "jac"],
+        mode=CodegenMode.CPP,
+        docstring=get_prior_docstring(),
+    )
+
+    files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
+    files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)
+    files_dict[get_filename(between_pose_codegen)] = get_function_code(between_pose_codegen)
+    files_dict[get_filename(prior_rotation_codegen)] = get_function_code(prior_rotation_codegen)
+    files_dict[get_filename(prior_position_codegen)] = get_function_code(prior_position_codegen)
+    files_dict[get_filename(prior_pose_codegen)] = get_function_code(prior_pose_codegen)
 
 
 class SymFactorCodegenTest(TestCase):
@@ -164,6 +393,7 @@ class SymFactorCodegenTest(TestCase):
         try:
             # Compute code
             files_dict = get_between_factors(types=TYPES)
+            get_pose3_extra_factors(files_dict)
 
             # Create output dir
             factors_dir = os.path.join(output_dir, "factors")

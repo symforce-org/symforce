@@ -8,7 +8,7 @@
 #include <geo/pose3.h>
 #include <geo/rot2.h>
 #include <geo/rot3.h>
-#include <symforce/opt/typedefs.h>
+#include <sym/util/typedefs.h>
 
 #include <lcmtypes/symforce/type_t.hpp>
 

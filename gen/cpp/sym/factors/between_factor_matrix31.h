@@ -8,7 +8,7 @@
 namespace sym {
 
 /**
- * Residual that penalizes the difference between(a, b) and a_T_b.
+ * Residual that penalizes the difference between between(a, b) and a_T_b.
  *
  * In vector space terms that would be:
  *     (b - a) - a_T_b

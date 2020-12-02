@@ -60,6 +60,15 @@ class Key {
    */
   static bool LexicalLessThan(const Key& a, const Key& b);
 
+  /**
+   * Implementation of the Compare spec for use in containers
+   */
+  struct LexicalCompare {
+    bool operator()(const Key& a, const Key& b) const {
+      return LexicalLessThan(a, b);
+    }
+  };
+
  protected:
   char letter_;
   subscript_t sub_;
