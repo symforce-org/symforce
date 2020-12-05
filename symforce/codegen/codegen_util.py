@@ -547,7 +547,7 @@ def generate_lcm_types(
                     lcm_file_path,
                     "--python",
                     "--python-path",
-                    python_types_dir,
+                    os.path.join(python_types_dir, "lcmtypes"),
                     "--python-empty-init",
                 ]
             )
@@ -557,7 +557,7 @@ def generate_lcm_types(
                     lcm_file_path,
                     "--cpp",
                     "--cpp-hpath",
-                    cpp_types_dir,
+                    os.path.join(cpp_types_dir, "lcmtypes"),
                     "--cpp-include",
                     lcm_include_dir,
                 ]
@@ -580,7 +580,7 @@ def generate_lcm_types(
                 ]
             )
 
-            # Autoformat generated python files
-            format_util.format_py_dir(python_types_dir)
+        # Autoformat generated python files
+        format_util.format_py_dir(python_types_dir)
 
     return {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}
