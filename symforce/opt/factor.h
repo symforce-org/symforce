@@ -70,8 +70,20 @@ class Factor {
   static Factor Jacobian(const JacobianFunc& jacobian_func, const std::vector<Key>& keys);
 
   /**
-   * Helper constructor that handles a variety of functors that take in individual input arguments
-   * rather than a Values object.
+   * Create from a function that computes the jacobian. The hessian will be computed using the
+   * Gauss Newton approximation:
+   *    H   = J.T * J
+   *    rhs = J.T * b
+   *
+   * This verion handles a variety of functors that take in individual input arguments
+   * rather than a Values object - the last two arguments to `func` should be outputs for the
+   * residual and jacobian; arguments before that should be inputs to `func`.
+   *
+   * If generating this factor from a single Python function, you probably want to use the
+   * Factor::Hessian constructor instead (it'll likely result in faster linearization).  If you
+   * really want to generate a factor and use this constructor, `func` can be generated easily by
+   * creating a Codegen object from a Python function which returns the residual, then calling
+   * create_with_jacobians with jacobian_generation_mode=STACKED
    *
    * See `sym_factor_test.cc` for many examples.
    */
@@ -90,6 +102,37 @@ class Factor {
   template <typename Functor>
   static Factor Jacobian(Functor func, const std::vector<Key>& keys_to_func,
                          const std::vector<Key>& keys_to_optimize);
+
+  /**
+   * Create from a functor that computes the full linearization, but takes in individual input
+   * arguments rather than a Values object.  The last four arguments to `func` should be outputs for
+   * the residual, jacobian, hessian, and rhs; arguments before that should be inputs to `func`.
+   *
+   * This should be used in cases where computing J^T J using a matrix multiplication is slower than
+   * evaluating J^T J symbolically; for instance, if the jacobian is sparse or J^T J has structure
+   * so that CSE is very effective.
+   *
+   * `func` can be generated easily by creating a Codegen object from a Python function which
+   * returns the residual, then calling create_with_jacobians with
+   * jacobian_generation_mode=LINEARIZATION
+   *
+   * See `sym_factor_test.cc` for many examples.
+   */
+  template <typename Functor>
+  static Factor Hessian(Functor func, const std::vector<Key>& keys);
+
+  /**
+   * Same as the above, but allows extra constant keys into the function which are not optimized.
+   * For example, to pass through epsilon.
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
+   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
+   *                     be a subset of keys_to_func.
+   */
+  template <typename Functor>
+  static Factor Hessian(Functor func, const std::vector<Key>& keys_to_func,
+                        const std::vector<Key>& keys_to_optimize);
 
   // ----------------------------------------------------------------------------------------------
   // Linearization

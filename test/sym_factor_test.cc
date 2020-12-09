@@ -198,6 +198,287 @@ void TestJacobianConstructors() {
   std::cout << binary_rot3_with_epsilon.Linearize(values) << std::endl;
 }
 
+void TestHessianConstructors() {
+  std::cout << "*** TestHessianConstructors() ***" << std::endl;
+  sym::Valuesd values;
+  values.Set<double>('x', 1.0);
+  values.Set<double>('y', 2.0);
+  values.Set<double>('z', -3.0);
+  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
+  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.3, 0.5));
+  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  values.Set<double>('e', 1e-9);
+
+  // Unary / v1 output with fixed size
+  const sym::Factord unary_v1 = sym::Factord::Hessian(
+      [](double a, Eigen::Matrix<double, 1, 1>* res, Eigen::Matrix<double, 1, 1>* jac,
+         Eigen::Matrix<double, 1, 1>* hessian, Eigen::Matrix<double, 1, 1>* rhs) {
+        (*res) << a * a;
+        (*jac) << 2 * a;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x'});
+  std::cout << unary_v1.Linearize(values) << std::endl;
+
+  // Unary / v1 output with dynamic size
+  const sym::Factord unary_v1_dyn = sym::Factord::Hessian(
+      [](double a, Eigen::VectorXd* res, Eigen::MatrixXd* jac, Eigen::MatrixXd* hessian,
+         Eigen::VectorXd* rhs) {
+        res->resize(1);
+        (*res) << a * a;
+        jac->resize(1, 1);
+        (*jac) << 2 * a;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x'});
+  std::cout << unary_v1_dyn.Linearize(values) << std::endl;
+
+  // Unary / v2 output with fixed size
+  const sym::Factord unary_v2 = sym::Factord::Hessian(
+      [](double a, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 1>* jac,
+         Eigen::Matrix<double, 1, 1>* hessian, Eigen::Matrix<double, 1, 1>* rhs) {
+        (*res) << a * a, a - 1;
+        (*jac) << 2 * a, 1.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x'});
+  std::cout << unary_v2.Linearize(values) << std::endl;
+
+  // Unary / v2 output with dynamic size
+  const sym::Factord unary_v2_dyn = sym::Factord::Hessian(
+      [](double a, Eigen::VectorXd* res, Eigen::MatrixXd* jac, Eigen::MatrixXd* hessian,
+         Eigen::VectorXd* rhs) {
+        res->resize(2);
+        (*res) << a * a, a - 1;
+        jac->resize(2, 1);
+        (*jac) << 2 * a, 1.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x'});
+  std::cout << unary_v2_dyn.Linearize(values) << std::endl;
+
+  // Unary / v3 output with fixed size
+  const sym::Factord unary_v3 = sym::Factord::Hessian(
+      [](double a, Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 1>* jac,
+         Eigen::Matrix<double, 1, 1>* hessian, Eigen::Matrix<double, 1, 1>* rhs) {
+        (*res) << a * a, a - 1, 4.0;
+        (*jac) << 2 * a, 1.0, 0.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x'});
+  std::cout << unary_v3.Linearize(values) << std::endl;
+
+  // Unary / v3 output with dynamic size
+  const sym::Factord unary_v3_dyn = sym::Factord::Hessian(
+      [](double a, Eigen::VectorXd* res, Eigen::MatrixXd* jac, Eigen::MatrixXd* hessian,
+         Eigen::VectorXd* rhs) {
+        res->resize(3);
+        (*res) << a * a, a - 1, 4.0;
+        jac->resize(3, 1);
+        (*jac) << 2 * a, 1.0, 0.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x'});
+  std::cout << unary_v3_dyn.Linearize(values) << std::endl;
+
+  // Binary / v1 output with fixed size
+  const sym::Factord binary_v1 = sym::Factord::Hessian(
+      [](double a, double b, Eigen::Matrix<double, 1, 1>* res, Eigen::Matrix<double, 1, 2>* jac,
+         Eigen::Matrix<double, 2, 2>* hessian, Eigen::Matrix<double, 2, 1>* rhs) {
+        (*res) << a * a + 2 * b;
+        (*jac) << 2 * a, 2.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y'});
+  std::cout << binary_v1.Linearize(values) << std::endl;
+
+  // Binary / v1 output with dynamic size
+  const sym::Factord binary_v1_dyn = sym::Factord::Hessian(
+      [](double a, double b, Eigen::VectorXd* res, Eigen::MatrixXd* jac, Eigen::MatrixXd* hessian,
+         Eigen::VectorXd* rhs) {
+        res->resize(1);
+        (*res) << a * a + 2 * b;
+        jac->resize(1, 2);
+        (*jac) << 2 * a, 2.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y'});
+  std::cout << binary_v1_dyn.Linearize(values) << std::endl;
+
+  // Binary / v2 output with fixed size
+  const sym::Factord binary_v2 = sym::Factord::Hessian(
+      [](double a, double b, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 2>* jac,
+         Eigen::Matrix<double, 2, 2>* hessian, Eigen::Matrix<double, 2, 1>* rhs) {
+        (*res) << a * a, 2 * b;
+        (*jac) << 2 * a, 0.0, 0.0, 2.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y'});
+  std::cout << binary_v2.Linearize(values) << std::endl;
+
+  // Binary / v2 output with dynamic size
+  const sym::Factord binary_v2_dyn = sym::Factord::Hessian(
+      [](double a, double b, Eigen::VectorXd* res, Eigen::MatrixXd* jac, Eigen::MatrixXd* hessian,
+         Eigen::VectorXd* rhs) {
+        res->resize(2);
+        (*res) << a * a, 2 * b;
+        jac->resize(2, 2);
+        (*jac) << 2 * a, 0.0, 0.0, 2.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y'});
+  std::cout << binary_v2_dyn.Linearize(values) << std::endl;
+
+  // Ternary / v3 output with fixed size
+  const sym::Factord ternary_v3 = sym::Factord::Hessian(
+      [](double a, double b, double c, Eigen::Matrix<double, 3, 1>* res,
+         Eigen::Matrix<double, 3, 3>* jac, Eigen::Matrix<double, 3, 3>* hessian,
+         Eigen::Matrix<double, 3, 1>* rhs) {
+        (*res) << a * a, 2 * b, b + c;
+        (*jac) << 2 * a, 0.0, 0.0,  //
+            0.0, 2.0, 0.0,          //
+            0.0, 1.0, 1.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y', 'z'});
+  std::cout << ternary_v3.Linearize(values) << std::endl;
+
+  // Ternary / v3 output with dynamic size
+  const sym::Factord ternary_v3_dyn = sym::Factord::Hessian(
+      [](double a, double b, double c, Eigen::VectorXd* res, Eigen::MatrixXd* jac,
+         Eigen::MatrixXd* hessian, Eigen::VectorXd* rhs) {
+        res->resize(3);
+        (*res) << a * a, 2 * b, b + c;
+        jac->resize(3, 3);
+        (*jac) << 2 * a, 0.0, 0.0,  //
+            0.0, 2.0, 0.0,          //
+            0.0, 1.0, 1.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y', 'z'});
+  std::cout << ternary_v3_dyn.Linearize(values) << std::endl;
+
+  // Unary with Rot3
+  const sym::Factord unary_rot3 = sym::Factord::Hessian(
+      [](const geo::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 3>* jac,
+         Eigen::Matrix<double, 3, 3>* hessian, Eigen::Matrix<double, 3, 1>* rhs) {
+        (*res) << rot.YawPitchRoll().tail<2>();
+        (*jac) << 2.0 * rot.ToTangent().transpose(), -1.0 * rot.ToTangent().transpose();  // fake
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {{'R', 2}});
+  std::cout << unary_rot3.Linearize(values) << std::endl;
+
+  // Binary with Rot3
+  const sym::Factord binary_rot3 = sym::Factord::Hessian(
+      [](const geo::Rot3d& a, const geo::Rot3d& b, Eigen::Matrix<double, 3, 1>* res,
+         Eigen::Matrix<double, 3, 6>* jac, Eigen::Matrix<double, 6, 6>* hessian,
+         Eigen::Matrix<double, 6, 1>* rhs) {
+        (*res) << a.LocalCoordinates(b);
+        (*jac) << a.Matrix(), b.Matrix();  // fake
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {{'R', 1}, {'R', 2}});
+  std::cout << binary_rot3.Linearize(values) << std::endl;
+
+  // Huge one
+  const sym::Factord big_factor = sym::Factord::Hessian(
+      [](double x, const geo::Rot3d& R1, double y, const geo::Rot3d& R2, const geo::Pose3d& P,
+         double z, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 15>* jac,
+         Eigen::Matrix<double, 15, 15>* hessian, Eigen::Matrix<double, 15, 1>* rhs) {
+        (*res)[0] = x + 2 * y + 3 * z;
+        (*res)[1] = R1.Between(R2).Between(P.Rotation()).YawPitchRoll()[0];
+
+        // FAKE
+        (*jac).row(0) << 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3;
+        (*jac).row(1) << 0, R1.ToTangent(), 0.0, R2.ToTangent(), 0, 0, 0, P.Rotation().ToTangent(),
+            0.0;
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', {'R', 1}, 'y', {'R', 2}, 'P', 'z'});
+  std::cout << big_factor.Linearize(values) << std::endl;
+
+  // Test keys_to_func != keys_to_optimize - pass in extra epsilon not being optimized
+  const std::vector<sym::Key> keys_to_optimize = {{'R', 1}, {'R', 2}};
+  std::vector<sym::Key> keys_to_func = keys_to_optimize;
+  keys_to_func.push_back('e');
+  const sym::Factord binary_rot3_with_epsilon = sym::Factord::Hessian(
+      [](const geo::Rot3d& a, const geo::Rot3d& b, const double epsilon,
+         Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 6>* jac,
+         Eigen::Matrix<double, 6, 6>* hessian, Eigen::Matrix<double, 6, 1>* rhs) {
+        assertTrue(epsilon == 1e-9);
+        (*res) << a.LocalCoordinates(b, epsilon);
+        (*jac) << a.Matrix(), b.Matrix();  // fake
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->triangularView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).triangularView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      keys_to_func, keys_to_optimize);
+  std::cout << binary_rot3_with_epsilon.Linearize(values) << std::endl;
+}
+
 template <typename Scalar>
 void TestLinearizedValues() {
   sym::Key x('x');
@@ -251,4 +532,5 @@ int main(int argc, char** argv) {
   TestLinearizedValues<float>();
 
   TestJacobianConstructors();
+  TestHessianConstructors();
 }
