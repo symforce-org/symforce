@@ -8,6 +8,7 @@
 
 #include "./factor.h"
 #include "./values.h"
+#include "third_party_modules/ac_sparse_math/sparse_solver.h"
 
 namespace sym {
 
@@ -47,6 +48,15 @@ class Linearization {
    * This is more efficient than reconstructing this object repeatedly.
    */
   void Relinearize(const Values<Scalar>& values);
+
+  /**
+   * Compute and return covariances for all optimized variables individually by inverting the
+   * given hessian using the given solver.  Requires that the linearization has already been
+   * initialized
+   */
+  std::unordered_map<Key, MatrixX<Scalar>> ComputeCovariances(
+      const Eigen::Map<const Eigen::SparseMatrix<Scalar>>& hessian, const Scalar epsilon,
+      math::SparseSolver<Eigen::SparseMatrix<Scalar>>* const solver) const;
 
   /**
    * Whether this contains values, versus having only been default constructed.
@@ -110,6 +120,9 @@ class Linearization {
 
   // Keys that form the state vector
   std::vector<Key> keys_;
+
+  // Index of the keys in the state vector
+  std::unordered_map<key_t, index_entry_t> state_index_;
 
   // Helpers for updating the combined problem from linearized factors
   std::vector<linearization_factor_helper_t> factor_update_helpers_;

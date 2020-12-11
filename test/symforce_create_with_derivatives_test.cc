@@ -2,7 +2,7 @@
 
 #include <symforce/opt/util.h>
 
-#include "symforce_function_codegen_test_data/create_with_jacobians/compose_pose3__value_and_jacobian0.h"
+#include "symforce_function_codegen_test_data/create_with_derivatives/compose_pose3__value_and_jacobian0.h"
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \

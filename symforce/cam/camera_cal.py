@@ -10,6 +10,9 @@ class CameraCal(Storage):
     Base class for symbolic camera models.
     """
 
+    # Type that represents this or any subclasses
+    CameraCalT = T.TypeVar("CameraCalT", bound="CameraCal")
+
     NUM_DISTORTION_COEFFS = 0
 
     def __init__(self, focal_length, principal_point, distortion_coeffs=tuple()):
@@ -38,13 +41,13 @@ class CameraCal(Storage):
 
     @classmethod
     def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> CameraCal
+        # type: (T.Type[CameraCalT], T.Sequence[T.Scalar]) -> CameraCalT
         assert len(vec) == cls.storage_dim()
         return cls(focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:])
 
     @classmethod
     def symbolic(cls, name, **kwargs):
-        # type: (str, T.Any) -> CameraCal
+        # type: (T.Type[CameraCalT], str, T.Any) -> CameraCalT
         with sm.scope(name):
             if cls.NUM_DISTORTION_COEFFS > 0:
                 return cls(

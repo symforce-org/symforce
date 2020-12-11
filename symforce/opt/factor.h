@@ -83,7 +83,7 @@ class Factor {
    * Factor::Hessian constructor instead (it'll likely result in faster linearization).  If you
    * really want to generate a factor and use this constructor, `func` can be generated easily by
    * creating a Codegen object from a Python function which returns the residual, then calling
-   * create_with_jacobians with jacobian_generation_mode=STACKED
+   * create_with_derivatives with derivative_generation_mode=STACKED_JACOBIAN
    *
    * See `sym_factor_test.cc` for many examples.
    */
@@ -113,8 +113,8 @@ class Factor {
    * so that CSE is very effective.
    *
    * `func` can be generated easily by creating a Codegen object from a Python function which
-   * returns the residual, then calling create_with_jacobians with
-   * jacobian_generation_mode=LINEARIZATION
+   * returns the residual, then calling create_with_derivatives with
+   * derivative_generation_mode=FULL_LINEARIZATION
    *
    * See `sym_factor_test.cc` for many examples.
    */

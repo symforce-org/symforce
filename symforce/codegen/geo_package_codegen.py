@@ -79,13 +79,13 @@ def make_group_ops_funcs(cls, mode):
         inverse,
         compose,
         between,
-        inverse.create_with_jacobians(
+        inverse.create_with_derivatives(
             name="InverseWithJacobian", use_product_manifold_for_pose3=False
         ),
-        compose.create_with_jacobians(
+        compose.create_with_derivatives(
             name="ComposeWithJacobians", use_product_manifold_for_pose3=False
         ),
-        between.create_with_jacobians(
+        between.create_with_derivatives(
             name="BetweenWithJacobians", use_product_manifold_for_pose3=False
         ),
     ]

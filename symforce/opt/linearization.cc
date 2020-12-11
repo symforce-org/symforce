@@ -254,22 +254,21 @@ void Linearization<ScalarType>::InitializeStorageAndIndices() {
   }
 
   // Compute state vector index
-  const std::unordered_map<key_t, index_entry_t> state_index =
-      ComputeStateIndex(linearized_factors_, keys_);
+  state_index_ = ComputeStateIndex(linearized_factors_, keys_);
 
   // Create factor helpers
   int32_t combined_residual_offset = 0;
   factor_update_helpers_.reserve(linearized_factors_.size());
   for (const auto& factor : linearized_factors_) {
     factor_update_helpers_.push_back(
-        ComputeFactorHelper<Scalar>(factor, state_index, combined_residual_offset));
+        ComputeFactorHelper<Scalar>(factor, state_index_, combined_residual_offset));
   }
   // Sanity check
   SYM_ASSERT(combined_residual_offset == M);
 
   // Get the state dimension
   int32_t N = 0;
-  for (const auto& pair : state_index) {
+  for (const auto& pair : state_index_) {
     N += pair.second.tangent_dim;
   }
 
@@ -330,6 +329,32 @@ void Linearization<ScalarType>::Relinearize(const Values<Scalar>& values) {
 #else
   BuildCombinedProblemDenseThenSparseView(linearized_factors_);
 #endif
+}
+
+template <typename ScalarType>
+std::unordered_map<Key, MatrixX<ScalarType>> Linearization<ScalarType>::ComputeCovariances(
+    const Eigen::Map<const Eigen::SparseMatrix<Scalar>>& hessian, const Scalar epsilon,
+    math::SparseSolver<Eigen::SparseMatrix<Scalar>>* const solver) const {
+  SYM_ASSERT(IsInitialized());
+
+  Eigen::SparseMatrix<Scalar> damped_hessian = hessian;
+  damped_hessian.diagonal().array() += epsilon;
+
+  // NOTE(hayk, aaron): This solver assumes a dense RHS. Fix this or just profile a full dense
+  // inversion for small problems
+  solver->Factorize(damped_hessian);
+  const sym::MatrixX<Scalar> covariance =
+      solver->Solve(sym::MatrixX<Scalar>::Identity(damped_hessian.rows(), damped_hessian.rows()));
+
+  std::unordered_map<Key, MatrixX<Scalar>> covariances;
+  for (const auto& key_and_entry : state_index_) {
+    const auto& key = key_and_entry.first;
+    const auto& entry = key_and_entry.second;
+    covariances[key] =
+        covariance.block(entry.offset, entry.offset, entry.tangent_dim, entry.tangent_dim);
+  }
+
+  return covariances;
 }
 
 template <typename ScalarType>

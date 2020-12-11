@@ -68,13 +68,16 @@ class Optimizer {
    */
   Optimizer(const levenberg_marquardt::lm_params_t& params,
             const std::vector<Factor<Scalar>>& factors, const Scalar epsilon = 1e-9,
-            const std::vector<Key>& keys = {}, bool debug_stats = false);
+            const std::vector<Key>& keys = {}, const std::string& name = "sym::Optimize",
+            bool debug_stats = false, bool check_derivatives = false);
 
   /**
    * Constructor with move constructors for factors and keys.
    */
   Optimizer(const levenberg_marquardt::lm_params_t& params, std::vector<Factor<Scalar>>&& factors,
-            const Scalar epsilon = 1e-9, std::vector<Key>&& keys = {}, bool debug_stats = false);
+            const Scalar epsilon = 1e-9, std::vector<Key>&& keys = {},
+            const std::string& name = "sym::Optimize", bool debug_stats = false,
+            bool check_derivatives = false);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
   Optimizer(Optimizer&&) = delete;
@@ -91,9 +94,24 @@ class Optimizer {
   bool Optimize(Values<Scalar>* values, int num_iterations = -1);
 
   /**
+   * Continue optimizing, starting from the given values but not clearing the other optimizer state
+   * (i.e. the iterations and lambda)
+   *
+   * If num_iterations < 0 (the default), uses the number of iterations specified by the LM
+   * Optimizer params at construction
+   */
+  bool OptimizeContinue(Values<Scalar>* const values, int num_iterations = -1);
+
+  /**
    * Linearize the problem around the given values
    */
   Linearization Linearize(const Values<Scalar>& values);
+
+  /**
+   * Get covariances for each optimized key at the current best values (requires that Optimize has
+   * been called previously)
+   */
+  std::unordered_map<Key, Eigen::MatrixXd> ComputeCovariancesAtBest();
 
   /**
    * Get the optimized keys
@@ -111,14 +129,27 @@ class Optimizer {
    */
   const LMOptimizerIterations& IterationStats() const;
 
+  /**
+   * Update the underlying LM optimizer params
+   */
+  void UpdateLMOptimizerParams(const levenberg_marquardt::lm_params_t& params);
+
  private:
+  /**
+   * Call lm_optimize_.Iterate on the given values (updating in place) until out of iterations or
+   * converged
+   */
+  bool IterateToConvergence(Values<Scalar>* const values, const size_t num_iterations);
+
   /**
    * Build the linearize_func functor for the LM Optimizer
    */
   static typename LMOptimizer::LinearizeFunc BuildLinearizeFunc(
       sym::Optimizer<Scalar>* const optimizer, const index_t& index,
       const std::vector<sym::Factor<Scalar>>& factors, const std::vector<sym::Key>& keys,
-      const Scalar epsilon);
+      const Scalar epsilon, const bool check_derivatives);
+
+  bool IsInitialized() const;
 
   /**
    * Do initialization that depends on having a values
@@ -147,7 +178,8 @@ class Optimizer {
   // There are three state blocks inside the LM optimizer, each of which needs the indices for
   // linearization, which are identical.  So, this linearization is used to initialize each of them.
   // It will compute the indices once, but it will be relinearized around each block's initial
-  // values when the block is created
+  // values when the block is created.  This linearization is also used for computing covariances
+  // when requested.
   sym::Linearization<Scalar> linearization_;
 
   // Iteration stats

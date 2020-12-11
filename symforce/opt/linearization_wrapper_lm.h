@@ -77,8 +77,8 @@ class LinearizationWrapperLM : public levenberg_marquardt::LinearizationBase {
    * Update / retraction function to pass to the LM optimizer.
    */
   static auto UpdateFunc(const index_t& index, const Scalar epsilon) {
-    return [&index, &epsilon](const Values<Scalar>& v, const VectorX<Scalar>& update,
-                              Values<Scalar>* updated_inputs) {
+    return [&index, epsilon](const Values<Scalar>& v, const VectorX<Scalar>& update,
+                             Values<Scalar>* updated_inputs) {
       SYM_ASSERT(update.rows() == index.tangent_dim);
 
       if (updated_inputs->NumEntries() == 0) {
@@ -109,8 +109,10 @@ class LinearizationWrapperLM : public levenberg_marquardt::LinearizationBase {
       linearize_func(values, linearization);
 
       // Save symbolic results for comparison
+      const Eigen::VectorXd symbolic_residual = linearization->Residual();
+      const Eigen::VectorXd symbolic_Jtb = linearization->Jtb();
       const Eigen::MatrixXd symbolic_jacobian = linearization->Jacobian();
-      const Eigen::MatrixXd hessian_dense = linearization->Hessian();
+      const Eigen::MatrixXd symbolic_hessian = linearization->Hessian();
 
       // Check numerical jacobian
       {
@@ -143,8 +145,8 @@ class LinearizationWrapperLM : public levenberg_marquardt::LinearizationBase {
 
       // Check hessian
       {
-        Eigen::MatrixXd full_hessian = hessian_dense + hessian_dense.transpose();
-        full_hessian.diagonal() = hessian_dense.diagonal();
+        Eigen::MatrixXd full_hessian = symbolic_hessian + symbolic_hessian.transpose();
+        full_hessian.diagonal() = symbolic_hessian.diagonal();
 
         const Eigen::MatrixXd numerical_hessian = symbolic_jacobian.transpose() * symbolic_jacobian;
         const bool hessian_matches = full_hessian.isApprox(numerical_hessian, std::sqrt(epsilon));
@@ -155,6 +157,20 @@ class LinearizationWrapperLM : public levenberg_marquardt::LinearizationBase {
           ss << "Numerical (J^T * J) Hessian:\n" << numerical_hessian << std::endl;
           std::cout << ss.str() << std::endl;
           SYM_ASSERT(hessian_matches);
+        }
+      }
+
+      // Check Jtb
+      {
+        const Eigen::VectorXd numerical_Jtb = symbolic_jacobian.transpose() * symbolic_residual;
+        const bool Jtb_matches = symbolic_Jtb.isApprox(numerical_Jtb, std::sqrt(epsilon));
+        if (!Jtb_matches) {
+          std::ostringstream ss;
+          ss << "Generated Jtb does not match J^T * b" << std::endl;
+          ss << "Symbolic (sym::Linearization) Jtb:\n" << symbolic_Jtb.transpose() << std::endl;
+          ss << "Numerical (J^T * b) Jtb:\n" << numerical_Jtb.transpose() << std::endl;
+          std::cout << ss.str() << std::endl;
+          SYM_ASSERT(Jtb_matches);
         }
       }
 
