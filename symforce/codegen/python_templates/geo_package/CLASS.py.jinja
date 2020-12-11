@@ -106,6 +106,6 @@ class {{ cls.__name__ }}(object):
         else:
             raise NotImplementedError('Cannot compose {} with {}.'.format(type(self), type(other)))
 
-    {% set custom_template_name = "custom_methods/{}.py".format(cls.__name__.lower()) %}
+    {% set custom_template_name = "custom_methods/{}.py.jinja".format(cls.__name__.lower()) %}
     # Included from "{{ custom_template_name }}":
     {% include custom_template_name %}

@@ -85,7 +85,7 @@ class Factor {
    * creating a Codegen object from a Python function which returns the residual, then calling
    * create_with_derivatives with derivative_generation_mode=STACKED_JACOBIAN
    *
-   * See `sym_factor_test.cc` for many examples.
+   * See `symforce_factor_test.cc` for many examples.
    */
   template <typename Functor>
   static Factor Jacobian(Functor func, const std::vector<Key>& keys);
@@ -116,7 +116,7 @@ class Factor {
    * returns the residual, then calling create_with_derivatives with
    * derivative_generation_mode=FULL_LINEARIZATION
    *
-   * See `sym_factor_test.cc` for many examples.
+   * See `symforce_factor_test.cc` for many examples.
    */
   template <typename Functor>
   static Factor Hessian(Functor func, const std::vector<Key>& keys);
