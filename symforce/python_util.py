@@ -34,6 +34,7 @@ def execute_subprocess(
     cmd,  # type: T.Union[str, T.Sequence[str]]
     stdin_data=None,  # type: T.Optional[str]
     log_stdout=True,  # type: bool
+    log_stdout_to_error_on_error=True,  # type: bool
     **kwargs  # type: T.Any
 ):
     # type: (...) -> unicode
@@ -43,6 +44,7 @@ def execute_subprocess(
     Args:
         stdin_data (bytes): Data to pass to stdin
         log_stdout (bool): Write process stdout to the logger?
+        log_stdout_to_error_on_error: Write output to logger.error if the command fails?
 
     Raises:
         subprocess.CalledProcessError: If the return code is nonzero
@@ -57,9 +59,19 @@ def execute_subprocess(
 
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)  # type: ignore
     (stdout, _) = proc.communicate(stdin_data_encoded)
+
+    going_to_log_to_err = proc.returncode != 0 and log_stdout_to_error_on_error
+
     stdout_decoded = stdout.decode("utf-8")
-    if log_stdout:
+    if log_stdout and not going_to_log_to_err:
         logger.info(stdout_decoded)
+
+    if going_to_log_to_err:
+        logger.error(
+            "Subprocess {} exited with code: {}.  Output:\n{}".format(
+                cmd, proc.returncode, stdout_decoded
+            )
+        )
 
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(proc.returncode, cmd, stdout)
