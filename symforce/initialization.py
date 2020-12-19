@@ -208,8 +208,8 @@ def add_custom_methods(sympy_module):
 
     def asin_safe(x, epsilon=0):
         # type: (T.Scalar, T.Scalar) -> T.Scalar
-        # TODO (nathan): Consider using asin(max(-1, min(1, x))) in the future
-        return sympy_module.asin(x - sympy_module.sign(x) * epsilon)
+        x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
+        return sympy_module.asin(x_safe)
 
     setattr(sympy_module, "asin_safe", asin_safe)
 

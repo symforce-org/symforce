@@ -54,7 +54,7 @@ class CameraCal(Storage):
                     focal_length=sm.symbols("f_x f_y"),
                     principal_point=sm.symbols("c_x c_y"),
                     distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
-                    .symbolic("C")
+                    .symbolic("C", **kwargs)
                     .to_flat_list(),
                 )
             else:
