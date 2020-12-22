@@ -83,7 +83,7 @@ test_sympy:
 	$(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) $(TEST_CMD)
 
 test_update:
-	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) $(PYTHON2) $(file) --update;)
+	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) $(PYTHON) $(file) --update;)
 
 test: test_symengine test_sympy
 

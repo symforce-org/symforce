@@ -3,6 +3,7 @@ import os
 import sys
 import unittest
 
+import symforce
 from symforce import logger
 from symforce import python_util
 from symforce import types as T
@@ -36,11 +37,11 @@ class SymforceTestCaseMixin(object):
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
         """
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("3"):
+        # TODO(aaron): Remove this check
+        if symforce.get_backend() == "sympy":
+            logger.warning("Not comparing output because we're on the SymPy backend")
             return
+
         if SymforceTestCaseMixin.UPDATE:
             logger.debug('Updating data at: "{}"'.format(path))
 
@@ -63,11 +64,11 @@ class SymforceTestCaseMixin(object):
 
     def compare_or_update_file(self, path, new_file):
         # type: (str, str) -> None
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("3"):
+        # TODO(aaron): Remove this check
+        if symforce.get_backend() == "sympy":
+            logger.warning("Not comparing output because we're on the SymPy backend")
             return
+
         with open(new_file) as f:
             code = f.read()
         self.compare_or_update(path, code)
