@@ -79,11 +79,11 @@ class SymforceTestCaseMixin(object):
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.
         """
-        # NOTE(hayk): The output of CSE depends on whether it was run with python 2 or 3,
-        # for a currently unknown reason, despite having the same version of sympy. For now
-        # only check if python 2 is running.
-        if sys.version.startswith("3"):
+        # TODO(aaron): Remove this check
+        if symforce.get_backend() == "sympy":
+            logger.warning("Not comparing output because we're on the SymPy backend")
             return
+
         logger.debug(
             'Comparing directories: actual="{}", expected="{}"'.format(actual_dir, expected_dir)
         )

@@ -12,12 +12,12 @@ struct values_vec_t {
   double list_of_lists[3][3][4];
 }
 
-struct outputs_1_t {
-  double foo;
-  double bar;
-  double scalar_vec_out[3];
-  values_vec_t values_vec_out[3];
-  values_vec_t values_vec_2D_out[2][1];
+struct inputs_constants_t {
+  double epsilon;
+}
+
+struct inputs_states_t {
+  double p[2];
 }
 
 struct inputs_t {
@@ -33,10 +33,10 @@ struct inputs_t {
   inputs_states_t states;
 }
 
-struct inputs_states_t {
-  double p[2];
-}
-
-struct inputs_constants_t {
-  double epsilon;
+struct outputs_1_t {
+  double foo;
+  double bar;
+  double scalar_vec_out[3];
+  values_vec_t values_vec_out[3];
+  values_vec_t values_vec_2D_out[2][1];
 }

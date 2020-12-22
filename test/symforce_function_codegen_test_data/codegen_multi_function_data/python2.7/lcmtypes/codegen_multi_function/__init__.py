@@ -4,8 +4,8 @@ DO NOT MODIFY BY HAND!!!!
 """
 
 from .values_vec_t import values_vec_t
-from .outputs_1_t import outputs_1_t
-from .inputs_t import inputs_t
-from .inputs_states_t import inputs_states_t
 from .inputs_constants_t import inputs_constants_t
+from .inputs_states_t import inputs_states_t
+from .inputs_t import inputs_t
+from .outputs_1_t import outputs_1_t
 from .outputs_2_t import outputs_2_t

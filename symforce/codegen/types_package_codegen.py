@@ -136,13 +136,17 @@ def generate_types(
     for typename, data in types_dict.items():
         # Iterate through types in types_dict. If type is external, use the shared_types to
         # get the namespace.
-        name = data["unformatted_typename"].split(".")[-1]  # type: ignore
-        if shared_types is not None and name in shared_types and "." in shared_types[name]:
-            codegen_data["typenames_dict"][name] = shared_types[name].split(".")[-1]
-            codegen_data["namespaces_dict"][name] = shared_types[name].split(".")[0]
-        else:
-            codegen_data["typenames_dict"][name] = "{}_t".format(name)
-            codegen_data["namespaces_dict"][name] = package_name
+        unformatted_typenames = T.cast(T.List[str], data["unformatted_typenames"])
+        for unformatted_typename in unformatted_typenames:
+            name = unformatted_typename.split(".")[-1]  # type: ignore
+            if shared_types is not None and name in shared_types:
+                name = shared_types[name]
+            if "." in name:
+                codegen_data["typenames_dict"][name] = name.split(".")[-1]
+                codegen_data["namespaces_dict"][name] = name.split(".")[0]
+            else:
+                codegen_data["typenames_dict"][name] = "{}_t".format(name)
+                codegen_data["namespaces_dict"][name] = package_name
 
     if not using_external_templates:
         templates.render()
@@ -217,7 +221,7 @@ def _fill_types_dict_recursive(
 
     typename = typename_from_key(key, shared_types)
     data["typename"] = typename
-    data["unformatted_typename"] = key
+    data["unformatted_typenames"] = [key]
 
     # Add the current module for cases where it's not specified
     data["full_typename"] = typename if "." in typename else ".".join([package_name, typename])
@@ -256,6 +260,18 @@ def _fill_types_dict_recursive(
         )
 
     if typename in types_dict:
-        assert set(types_dict[typename]["full_typename"]) == set(data["full_typename"])
 
-    types_dict[typename] = data
+        def assert_equal(field):
+            # type: (str) -> None
+            assert types_dict[typename][field] == data[field]
+
+        # Everything had better be the same, except unformatted_typenames
+        assert_equal("full_typename")
+        assert_equal("typename")
+        assert_equal("index")
+        assert_equal("storage_dims")
+        assert_equal("subtypes")
+
+        types_dict[typename]["unformatted_typenames"].extend(data["unformatted_typenames"])
+    else:
+        types_dict[typename] = data
