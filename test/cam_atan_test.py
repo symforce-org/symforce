@@ -8,7 +8,7 @@ from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
 from symforce.test_util.cam_test_mixin import CamTestMixin
 
 
-class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
+class CamATANTest(StorageOpsTestMixin, CamTestMixin, TestCase):
     """
     Test the ATANCameraCal class.
     Note the mixin that tests all storage ops and camera projection/reprojection ops.
