@@ -14,7 +14,7 @@ from symforce import types as T
 
 class SphericalCameraCal(CameraCal):
     """
-    Camera model where radial distortion is modeled relative to the 3D angle theta
+    Kannala-Brandt camera model, where radial distortion is modeled relative to the 3D angle theta
     off the optical axis as opposed to radius within the image plane (i.e. ATANCamera)
 
     I.e. the radius in the image plane as a function of the angle theta from the camera z-axis is
@@ -62,7 +62,9 @@ class SphericalCameraCal(CameraCal):
         if critical_theta is not None:
             self.critical_theta = critical_theta
         else:
-            if any([isinstance(c, sm.Expr) for c in distortion_coeffs]):
+            if any(
+                [isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs]
+            ):
                 raise ValueError(
                     "critical_theta must be provided if the distortion_coeffs are not all numerical"
                 )
@@ -103,7 +105,7 @@ class SphericalCameraCal(CameraCal):
                 return cls(
                     focal_length=sm.symbols("f_x f_y"),
                     principal_point=sm.symbols("c_x c_y"),
-                    critical_theta=sm.Symbol("theta_c"),
+                    critical_theta=sm.Symbol("theta_crit"),
                     distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
                     .symbolic("C", **kwargs)
                     .to_flat_list(),

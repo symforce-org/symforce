@@ -1,0 +1,132 @@
+import numpy as np
+import unittest
+
+from symforce import cam
+from symforce import geo
+from symforce import sympy as sm
+from symforce import types as T
+from symforce.ops import StorageOps
+from symforce.test_util import TestCase
+from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
+from symforce.test_util.cam_test_mixin import CamTestMixin
+
+
+class DoubleSphereTest(StorageOpsTestMixin, CamTestMixin, TestCase):
+    """
+    Test the DoubleSphereCameraCal class.
+    Note the mixin that tests all storage ops and camera projection/reprojection ops.
+    """
+
+    EPS = 1e-6
+
+    @classmethod
+    def element(cls) -> cam.DoubleSphereCameraCal:
+        [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
+        xi = np.random.uniform(low=-1.0, high=10.0)
+        alpha = np.random.uniform(high=0.9, low=-10.0)
+        return cam.DoubleSphereCameraCal(
+            focal_length=(f_x, f_y), principal_point=(c_x, c_y), distortion_coeffs=(xi, alpha)
+        )
+
+    @staticmethod
+    def _make_cal(xi: float, alpha: float) -> cam.DoubleSphereCameraCal:
+        focal_length = (800, 800)
+        principal_point = (400, 400)
+
+        return cam.DoubleSphereCameraCal(
+            focal_length=focal_length,
+            principal_point=principal_point,
+            distortion_coeffs=(xi, alpha),
+        )
+
+    def test_is_valid_forward(self) -> None:
+        """
+        Tests if strategically chosen points have valid projections
+        """
+
+        def point_from_angle(angle: float) -> geo.V3:
+            """
+            Generate a point a given angle away from the optical axis, with random distance from
+            origin and random rotation about the optical axis
+            """
+            norm = np.random.uniform(0.1, 100)
+
+            P = (
+                geo.Rot3.from_axis_angle(geo.V3(0, 0, 1), np.random.uniform(0, 2 * np.pi))
+                * geo.Rot3.from_axis_angle(axis=geo.V3(0, 1, 0), angle=angle)
+                * geo.V3(0, 0, norm)
+            )
+
+            return P
+
+        def check_forward_is_valid_on_boundary(xi: float, alpha: float, angle: float) -> None:
+            """
+            Check that is_valid is True on the valid side and False on the invalid side of a
+            boundary
+            """
+            cal = self._make_cal(xi, alpha)
+
+            with self.subTest(angle=angle, xi=xi, alpha=alpha):
+                point = point_from_angle(angle - self.EPS)
+                pixel, is_valid = cal.pixel_from_camera_point(point)
+                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 1.0)
+
+            with self.subTest(angle=angle, xi=xi, alpha=alpha):
+                point = point_from_angle(angle + self.EPS)
+                pixel, is_valid = cal.pixel_from_camera_point(point)
+                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 0.0)
+
+        # linear is_valid for trivial case
+        check_forward_is_valid_on_boundary(0, 0, np.pi / 2)
+
+        # linear is_valid for spheres overlapping, linear focal point inside second sphere
+        check_forward_is_valid_on_boundary(0.3, 0, 1.8754889)
+
+        # linear is_valid for spheres not overlapping, linear focal point near top of second sphere
+        check_forward_is_valid_on_boundary(2, -10, 1.4145612)
+
+        # linear is_valid for spheres overlapping, linear focal point outside second sphere
+        check_forward_is_valid_on_boundary(0.3, 0.7, 2.2881935)
+
+        # sphere is_valid for spheres far apart
+        check_forward_is_valid_on_boundary(3, 0.7, 1.9106332)
+
+    def test_is_valid_backward(self) -> None:
+        """
+        Test if strategically chosen pixels have valid backprojections
+        """
+
+        def pixel_from_radius(radius: float) -> geo.V2:
+            """
+            Generate a pixel a given radius away from the principal point, at a random angle
+            """
+            return (
+                (geo.Rot2.from_tangent([np.random.uniform(0, 2 * np.pi)]) * geo.V2(radius, 0))
+            ) + geo.V2(400, 400)
+
+        def check_backward_is_valid_on_boundary(xi: float, alpha: float, radius: float) -> None:
+            """
+            Check that is_valid is True on the valid side and False on the invalid side of a
+            boundary
+            """
+            cal = self._make_cal(xi, alpha)
+
+            with self.subTest(radius=radius, xi=xi, alpha=alpha):
+                pixel = pixel_from_radius(radius - self.EPS)
+                point, is_valid = cal.camera_ray_from_pixel(pixel)
+                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 1.0)
+
+            with self.subTest(radius=radius, xi=xi, alpha=alpha):
+                pixel = pixel_from_radius(radius + self.EPS)
+                point, is_valid = cal.camera_ray_from_pixel(pixel)
+                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 0.0)
+
+        # sphere is_valid for spheres far apart
+        check_backward_is_valid_on_boundary(3, 0.7, 271.321813)
+
+        # linear is_valid for spheres overlapping, linear focal point outside second sphere
+        check_backward_is_valid_on_boundary(0.3, 0.7, 1264.911064)
+
+
+if __name__ == "__main__":
+    TestCase.main()

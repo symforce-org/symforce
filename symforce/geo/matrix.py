@@ -497,6 +497,14 @@ class Matrix(LieGroup):
         """
         return self.__class__(self.mat.applyfunc(func))
 
+    # Dummy __iter__ method for mypy
+    # Matrix is Iterable because it implements __getitem__(int), but mypy only recognizes __iter__:
+    # https://github.com/python/mypy/issues/2220
+    if _T.TYPE_CHECKING:  # pragma: no cover
+
+        def __iter__(self) -> _T.Iterator[_T.Any]:
+            raise NotImplementedError()
+
     def __getitem__(self, item: _T.Any) -> _T.Any:
         """
         Get a scalar value or submatrix slice.

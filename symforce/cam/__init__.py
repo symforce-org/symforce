@@ -2,6 +2,7 @@
 Package for symbolic camera models.
 """
 from .camera_cal import CameraCal
+from .double_sphere_camera_cal import DoubleSphereCameraCal
 from .linear_camera_cal import LinearCameraCal
 from .spherical_camera_cal import SphericalCameraCal
 from .polynomial_camera_cal import PolynomialCameraCal
