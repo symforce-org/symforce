@@ -10,8 +10,6 @@ PYTHON=$(PYTHON3)
 
 PYTHON_VERSION=$(shell $(PYTHON) -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
 
-BLACK_EXCLUDE='symforce/codegen/python_templates|/gen/|test_data/'
-
 CPP_FORMAT=clang-format-8
 
 # -----------------------------------------------------------------------------
@@ -43,12 +41,12 @@ CPP_FILES=$(shell find . -not -path "*/lcmtypes/*" \( \
 
 # Format using black and clang-format
 format:
-	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE)
+	$(PYTHON) -m black --line-length 100 .
 	$(CPP_FORMAT) -i $(CPP_FILES)
 
 # Check formatting using black and clang-format - print diff, do not modify files
 check_format:
-	$(PYTHON) -m black --line-length 100 . --exclude $(BLACK_EXCLUDE) --check --diff
+	$(PYTHON) -m black --line-length 100 . --check --diff
 	$(foreach file, $(CPP_FILES), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
 
 # Check type hints using mypy

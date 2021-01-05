@@ -14,10 +14,10 @@ class Rot2(object):
     in 2D space. Backed by a complex number.
     """
 
-    __slots__ = ['data']
+    __slots__ = ["data"]
 
     def __repr__(self):
-        return '<{} {}>'.format(self.__class__.__name__, self.data)
+        return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # StorageOps concept
@@ -39,8 +39,9 @@ class Rot2(object):
         else:
             instance.data = list(vec)
 
-        assert len(vec) == cls.storage_dim(), '{} has storage dim {}, got {}.'.format(
-            cls.__name__, cls.storage_dim(), len(vec))
+        assert len(vec) == cls.storage_dim(), "{} has storage dim {}, got {}.".format(
+            cls.__name__, cls.storage_dim(), len(vec)
+        )
 
         return instance
 
@@ -71,14 +72,14 @@ class Rot2(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        assert len(vec) == cls.tangent_dim(), '{}, {}'.format(len(vec), cls.tangent_dim())
+        assert len(vec) == cls.tangent_dim(), "{}, {}".format(len(vec), cls.tangent_dim())
         return cls.from_storage(ops.LieGroupOps.from_tangent(vec, epsilon))
 
     def to_tangent(self, epsilon=1e-8):
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        assert len(vec) == self.tangent_dim(), '{}, {}'.format(len(vec), self.tangent_dim())
+        assert len(vec) == self.tangent_dim(), "{}, {}".format(len(vec), self.tangent_dim())
         return self.__class__.from_storage(ops.LieGroupOps.retract(self, vec, epsilon))
 
     def local_coordinates(self, b, epsilon=1e-8):
@@ -94,7 +95,7 @@ class Rot2(object):
         if isinstance(other, self.__class__):
             return self.compose(other)
         else:
-            raise NotImplementedError('Cannot compose {} with {}.'.format(type(self), type(other)))
+            raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))
 
     # Included from "custom_methods/rot2.py.jinja":
     # --------------------------------------------------------------------------

@@ -9,6 +9,7 @@ except ImportError:
     from io import BytesIO
 import struct
 
+
 class inputs_constants_t(object):
     __slots__ = ["epsilon"]
 
@@ -29,33 +30,40 @@ class inputs_constants_t(object):
         buf.write(struct.pack(">d", self.epsilon))
 
     def decode(data):
-        if hasattr(data, 'read'):
+        if hasattr(data, "read"):
             buf = data
         else:
             buf = BytesIO(data)
         if buf.read(8) != inputs_constants_t._get_packed_fingerprint():
             raise ValueError("Decode error")
         return inputs_constants_t._decode_one(buf)
+
     decode = staticmethod(decode)
 
     def _decode_one(buf):
         self = inputs_constants_t()
         self.epsilon = struct.unpack(">d", buf.read(8))[0]
         return self
+
     _decode_one = staticmethod(_decode_one)
 
     _hash = None
+
     def _get_hash_recursive(parents):
-        if inputs_constants_t in parents: return 0
-        tmphash = (0x152f505c823f2cbc) & 0xffffffffffffffff
-        tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
+        if inputs_constants_t in parents:
+            return 0
+        tmphash = (0x152F505C823F2CBC) & 0xFFFFFFFFFFFFFFFF
+        tmphash = (((tmphash << 1) & 0xFFFFFFFFFFFFFFFF) + (tmphash >> 63)) & 0xFFFFFFFFFFFFFFFF
         return tmphash
+
     _get_hash_recursive = staticmethod(_get_hash_recursive)
     _packed_fingerprint = None
 
     def _get_packed_fingerprint():
         if inputs_constants_t._packed_fingerprint is None:
-            inputs_constants_t._packed_fingerprint = struct.pack(">Q", inputs_constants_t._get_hash_recursive([]))
+            inputs_constants_t._packed_fingerprint = struct.pack(
+                ">Q", inputs_constants_t._get_hash_recursive([])
+            )
         return inputs_constants_t._packed_fingerprint
-    _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)
 
+    _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)

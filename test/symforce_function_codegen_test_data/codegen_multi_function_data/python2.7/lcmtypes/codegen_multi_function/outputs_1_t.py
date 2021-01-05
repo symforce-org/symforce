@@ -11,19 +11,28 @@ import struct
 
 import codegen_multi_function.values_vec_t
 
+
 class outputs_1_t(object):
     __slots__ = ["foo", "bar", "scalar_vec_out", "values_vec_out", "values_vec_2D_out"]
 
-    __typenames__ = ["double", "double", "double", "codegen_multi_function.values_vec_t", "codegen_multi_function.values_vec_t"]
+    __typenames__ = [
+        "double",
+        "double",
+        "double",
+        "codegen_multi_function.values_vec_t",
+        "codegen_multi_function.values_vec_t",
+    ]
 
     __dimensions__ = [None, None, [3], [3], [2, 1]]
 
     def __init__(self):
         self.foo = 0.0
         self.bar = 0.0
-        self.scalar_vec_out = [ 0.0 for dim0 in range(3) ]
-        self.values_vec_out = [ codegen_multi_function.values_vec_t() for dim0 in range(3) ]
-        self.values_vec_2D_out = [ [ codegen_multi_function.values_vec_t() for dim1 in range(1) ] for dim0 in range(2) ]
+        self.scalar_vec_out = [0.0 for dim0 in range(3)]
+        self.values_vec_out = [codegen_multi_function.values_vec_t() for dim0 in range(3)]
+        self.values_vec_2D_out = [
+            [codegen_multi_function.values_vec_t() for dim1 in range(1)] for dim0 in range(2)
+        ]
 
     def encode(self):
         buf = BytesIO()
@@ -33,47 +42,64 @@ class outputs_1_t(object):
 
     def _encode_one(self, buf):
         buf.write(struct.pack(">dd", self.foo, self.bar))
-        buf.write(struct.pack('>3d', *self.scalar_vec_out[:3]))
+        buf.write(struct.pack(">3d", *self.scalar_vec_out[:3]))
         for i0 in range(3):
-            assert self.values_vec_out[i0]._get_packed_fingerprint() == codegen_multi_function.values_vec_t._get_packed_fingerprint()
+            assert (
+                self.values_vec_out[i0]._get_packed_fingerprint()
+                == codegen_multi_function.values_vec_t._get_packed_fingerprint()
+            )
             self.values_vec_out[i0]._encode_one(buf)
         for i0 in range(2):
             for i1 in range(1):
-                assert self.values_vec_2D_out[i0][i1]._get_packed_fingerprint() == codegen_multi_function.values_vec_t._get_packed_fingerprint()
+                assert (
+                    self.values_vec_2D_out[i0][i1]._get_packed_fingerprint()
+                    == codegen_multi_function.values_vec_t._get_packed_fingerprint()
+                )
                 self.values_vec_2D_out[i0][i1]._encode_one(buf)
 
     def decode(data):
-        if hasattr(data, 'read'):
+        if hasattr(data, "read"):
             buf = data
         else:
             buf = BytesIO(data)
         if buf.read(8) != outputs_1_t._get_packed_fingerprint():
             raise ValueError("Decode error")
         return outputs_1_t._decode_one(buf)
+
     decode = staticmethod(decode)
 
     def _decode_one(buf):
         self = outputs_1_t()
         self.foo, self.bar = struct.unpack(">dd", buf.read(16))
-        self.scalar_vec_out = struct.unpack('>3d', buf.read(24))
+        self.scalar_vec_out = struct.unpack(">3d", buf.read(24))
         self.values_vec_out = []
         for i0 in range(3):
             self.values_vec_out.append(codegen_multi_function.values_vec_t._decode_one(buf))
         self.values_vec_2D_out = []
         for i0 in range(2):
-            self.values_vec_2D_out.append ([])
+            self.values_vec_2D_out.append([])
             for i1 in range(1):
-                self.values_vec_2D_out[i0].append(codegen_multi_function.values_vec_t._decode_one(buf))
+                self.values_vec_2D_out[i0].append(
+                    codegen_multi_function.values_vec_t._decode_one(buf)
+                )
         return self
+
     _decode_one = staticmethod(_decode_one)
 
     _hash = None
+
     def _get_hash_recursive(parents):
-        if outputs_1_t in parents: return 0
+        if outputs_1_t in parents:
+            return 0
         newparents = parents + [outputs_1_t]
-        tmphash = (0x56da9f927edddf51+ codegen_multi_function.values_vec_t._get_hash_recursive(newparents)+ codegen_multi_function.values_vec_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
-        tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
+        tmphash = (
+            0x56DA9F927EDDDF51
+            + codegen_multi_function.values_vec_t._get_hash_recursive(newparents)
+            + codegen_multi_function.values_vec_t._get_hash_recursive(newparents)
+        ) & 0xFFFFFFFFFFFFFFFF
+        tmphash = (((tmphash << 1) & 0xFFFFFFFFFFFFFFFF) + (tmphash >> 63)) & 0xFFFFFFFFFFFFFFFF
         return tmphash
+
     _get_hash_recursive = staticmethod(_get_hash_recursive)
     _packed_fingerprint = None
 
@@ -81,5 +107,5 @@ class outputs_1_t(object):
         if outputs_1_t._packed_fingerprint is None:
             outputs_1_t._packed_fingerprint = struct.pack(">Q", outputs_1_t._get_hash_recursive([]))
         return outputs_1_t._packed_fingerprint
-    _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)
 
+    _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)

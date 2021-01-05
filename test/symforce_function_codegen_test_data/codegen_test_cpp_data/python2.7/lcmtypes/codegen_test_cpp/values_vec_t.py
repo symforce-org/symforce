@@ -9,6 +9,7 @@ except ImportError:
     from io import BytesIO
 import struct
 
+
 class values_vec_t(object):
     __slots__ = ["x", "y", "rot", "rot_vec", "scalar_vec", "list_of_lists"]
 
@@ -19,10 +20,12 @@ class values_vec_t(object):
     def __init__(self):
         self.x = 0.0
         self.y = 0.0
-        self.rot = [ 0.0 for dim0 in range(4) ]
-        self.rot_vec = [ [ 0.0 for dim1 in range(4) ] for dim0 in range(3) ]
-        self.scalar_vec = [ 0.0 for dim0 in range(3) ]
-        self.list_of_lists = [ [ [ 0.0 for dim2 in range(4) ] for dim1 in range(3) ] for dim0 in range(3) ]
+        self.rot = [0.0 for dim0 in range(4)]
+        self.rot_vec = [[0.0 for dim1 in range(4)] for dim0 in range(3)]
+        self.scalar_vec = [0.0 for dim0 in range(3)]
+        self.list_of_lists = [
+            [[0.0 for dim2 in range(4)] for dim1 in range(3)] for dim0 in range(3)
+        ]
 
     def encode(self):
         buf = BytesIO()
@@ -32,52 +35,59 @@ class values_vec_t(object):
 
     def _encode_one(self, buf):
         buf.write(struct.pack(">dd", self.x, self.y))
-        buf.write(struct.pack('>4d', *self.rot[:4]))
+        buf.write(struct.pack(">4d", *self.rot[:4]))
         for i0 in range(3):
-            buf.write(struct.pack('>4d', *self.rot_vec[i0][:4]))
-        buf.write(struct.pack('>3d', *self.scalar_vec[:3]))
+            buf.write(struct.pack(">4d", *self.rot_vec[i0][:4]))
+        buf.write(struct.pack(">3d", *self.scalar_vec[:3]))
         for i0 in range(3):
             for i1 in range(3):
-                buf.write(struct.pack('>4d', *self.list_of_lists[i0][i1][:4]))
+                buf.write(struct.pack(">4d", *self.list_of_lists[i0][i1][:4]))
 
     def decode(data):
-        if hasattr(data, 'read'):
+        if hasattr(data, "read"):
             buf = data
         else:
             buf = BytesIO(data)
         if buf.read(8) != values_vec_t._get_packed_fingerprint():
             raise ValueError("Decode error")
         return values_vec_t._decode_one(buf)
+
     decode = staticmethod(decode)
 
     def _decode_one(buf):
         self = values_vec_t()
         self.x, self.y = struct.unpack(">dd", buf.read(16))
-        self.rot = struct.unpack('>4d', buf.read(32))
+        self.rot = struct.unpack(">4d", buf.read(32))
         self.rot_vec = []
         for i0 in range(3):
-            self.rot_vec.append(struct.unpack('>4d', buf.read(32)))
-        self.scalar_vec = struct.unpack('>3d', buf.read(24))
+            self.rot_vec.append(struct.unpack(">4d", buf.read(32)))
+        self.scalar_vec = struct.unpack(">3d", buf.read(24))
         self.list_of_lists = []
         for i0 in range(3):
             self.list_of_lists.append([])
             for i1 in range(3):
-                self.list_of_lists[i0].append(struct.unpack('>4d', buf.read(32)))
+                self.list_of_lists[i0].append(struct.unpack(">4d", buf.read(32)))
         return self
+
     _decode_one = staticmethod(_decode_one)
 
     _hash = None
+
     def _get_hash_recursive(parents):
-        if values_vec_t in parents: return 0
-        tmphash = (0xa16b5be908bd71cf) & 0xffffffffffffffff
-        tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
+        if values_vec_t in parents:
+            return 0
+        tmphash = (0xA16B5BE908BD71CF) & 0xFFFFFFFFFFFFFFFF
+        tmphash = (((tmphash << 1) & 0xFFFFFFFFFFFFFFFF) + (tmphash >> 63)) & 0xFFFFFFFFFFFFFFFF
         return tmphash
+
     _get_hash_recursive = staticmethod(_get_hash_recursive)
     _packed_fingerprint = None
 
     def _get_packed_fingerprint():
         if values_vec_t._packed_fingerprint is None:
-            values_vec_t._packed_fingerprint = struct.pack(">Q", values_vec_t._get_hash_recursive([]))
+            values_vec_t._packed_fingerprint = struct.pack(
+                ">Q", values_vec_t._get_hash_recursive([])
+            )
         return values_vec_t._packed_fingerprint
-    _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)
 
+    _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)

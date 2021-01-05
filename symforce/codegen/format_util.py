@@ -1,5 +1,12 @@
+import black  # type: ignore
+import os
+import pathlib
+
 from symforce import python_util
 from symforce import types as T
+
+# TODO(aaron): Put this in a pyproject.toml and fetch from there
+BLACK_FILE_MODE = black.FileMode(line_length=100)
 
 
 def format_cpp(file_contents: str, filename: str) -> str:
@@ -26,3 +33,25 @@ def format_cpp(file_contents: str, filename: str) -> str:
     )
 
     return formatted_file_contents
+
+
+def format_py(file_contents: str) -> str:
+    """
+    Autoformat a given Python file using black
+    """
+    return black.format_str(file_contents, mode=BLACK_FILE_MODE)
+
+
+def format_py_dir(dirname: str) -> None:
+    """
+    Autoformat python files in a directory (recursively) in-place
+    """
+    for root, dirs, files in os.walk(dirname):
+        for filename in files:
+            if filename.endswith(".py"):
+                black.format_file_in_place(
+                    pathlib.Path(os.path.join(dirname, root, filename)),
+                    fast=True,
+                    mode=BLACK_FILE_MODE,
+                    write_back=black.WriteBack.YES,
+                )

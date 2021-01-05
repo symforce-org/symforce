@@ -12,15 +12,15 @@ class LieGroupOps(object):
         # Input arrays
 
         # Intermediate terms
-        _tmp0 = numpy.sqrt(epsilon**2 + vec[0]**2 + vec[1]**2 + vec[2]**2)
-        _tmp1 = (1./2.)*_tmp0
-        _tmp2 = numpy.sin(_tmp1)/_tmp0
+        _tmp0 = numpy.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
+        _tmp1 = (1.0 / 2.0) * _tmp0
+        _tmp2 = numpy.sin(_tmp1) / _tmp0
 
         # Output terms
-        _res = [0.] * 4
-        _res[0] = _tmp2*vec[0]
-        _res[1] = _tmp2*vec[1]
-        _res[2] = _tmp2*vec[2]
+        _res = [0.0] * 4
+        _res[0] = _tmp2 * vec[0]
+        _res[1] = _tmp2 * vec[1]
+        _res[2] = _tmp2 * vec[2]
         _res[3] = numpy.cos(_tmp1)
         return _res
 
@@ -31,14 +31,14 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = numpy.amax((epsilon - 1,numpy.amin((_a[3],-epsilon + 1))))
-        _tmp1 = 2*numpy.arccos(_tmp0)/numpy.sqrt(-_tmp0**2 + 1)
+        _tmp0 = numpy.amax((epsilon - 1, numpy.amin((_a[3], -epsilon + 1))))
+        _tmp1 = 2 * numpy.arccos(_tmp0) / numpy.sqrt(-(_tmp0 ** 2) + 1)
 
         # Output terms
-        _res = [0.] * 3
-        _res[0] = _a[0]*_tmp1
-        _res[1] = _a[1]*_tmp1
-        _res[2] = _a[2]*_tmp1
+        _res = [0.0] * 3
+        _res[0] = _a[0] * _tmp1
+        _res[1] = _a[1] * _tmp1
+        _res[2] = _a[2] * _tmp1
         return _res
 
     @staticmethod
@@ -48,21 +48,21 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = numpy.sqrt(epsilon**2 + vec[0]**2 + vec[1]**2 + vec[2]**2)
-        _tmp1 = (1./2.)*_tmp0
-        _tmp2 = numpy.sin(_tmp1)/_tmp0
-        _tmp3 = _a[1]*_tmp2
-        _tmp4 = _a[2]*_tmp2
+        _tmp0 = numpy.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
+        _tmp1 = (1.0 / 2.0) * _tmp0
+        _tmp2 = numpy.sin(_tmp1) / _tmp0
+        _tmp3 = _a[1] * _tmp2
+        _tmp4 = _a[2] * _tmp2
         _tmp5 = numpy.cos(_tmp1)
-        _tmp6 = _a[3]*_tmp2
-        _tmp7 = _a[0]*_tmp2
+        _tmp6 = _a[3] * _tmp2
+        _tmp7 = _a[0] * _tmp2
 
         # Output terms
-        _res = [0.] * 4
-        _res[0] = _a[0]*_tmp5 + _tmp3*vec[2] - _tmp4*vec[1] + _tmp6*vec[0]
-        _res[1] = _a[1]*_tmp5 + _tmp4*vec[0] + _tmp6*vec[1] - _tmp7*vec[2]
-        _res[2] = _a[2]*_tmp5 - _tmp3*vec[0] + _tmp6*vec[2] + _tmp7*vec[1]
-        _res[3] = _a[3]*_tmp5 - _tmp3*vec[1] - _tmp4*vec[2] - _tmp7*vec[0]
+        _res = [0.0] * 4
+        _res[0] = _a[0] * _tmp5 + _tmp3 * vec[2] - _tmp4 * vec[1] + _tmp6 * vec[0]
+        _res[1] = _a[1] * _tmp5 + _tmp4 * vec[0] + _tmp6 * vec[1] - _tmp7 * vec[2]
+        _res[2] = _a[2] * _tmp5 - _tmp3 * vec[0] + _tmp6 * vec[2] + _tmp7 * vec[1]
+        _res[3] = _a[3] * _tmp5 - _tmp3 * vec[1] - _tmp4 * vec[2] - _tmp7 * vec[0]
         return _res
 
     @staticmethod
@@ -73,13 +73,19 @@ class LieGroupOps(object):
         _b = b.data
 
         # Intermediate terms
-        _tmp0 = numpy.amax((epsilon - 1,numpy.amin((-epsilon + 1,_a[0]*_b[0] + _a[1]*_b[1] + _a[2]*_b[2] + _a[3]*_b[3]))))
-        _tmp1 = 2*numpy.arccos(_tmp0)/numpy.sqrt(-_tmp0**2 + 1)
+        _tmp0 = numpy.amax(
+            (
+                epsilon - 1,
+                numpy.amin(
+                    (-epsilon + 1, _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3])
+                ),
+            )
+        )
+        _tmp1 = 2 * numpy.arccos(_tmp0) / numpy.sqrt(-(_tmp0 ** 2) + 1)
 
         # Output terms
-        _res = [0.] * 3
-        _res[0] = _tmp1*(-_a[0]*_b[3] - _a[1]*_b[2] + _a[2]*_b[1] + _a[3]*_b[0])
-        _res[1] = _tmp1*(_a[0]*_b[2] - _a[1]*_b[3] - _a[2]*_b[0] + _a[3]*_b[1])
-        _res[2] = _tmp1*(-_a[0]*_b[1] + _a[1]*_b[0] - _a[2]*_b[3] + _a[3]*_b[2])
+        _res = [0.0] * 3
+        _res[0] = _tmp1 * (-_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0])
+        _res[1] = _tmp1 * (_a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1])
+        _res[2] = _tmp1 * (-_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2])
         return _res
-

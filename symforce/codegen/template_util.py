@@ -71,6 +71,8 @@ def render_template(
         rendered_str = format_util.format_cpp(
             rendered_str, filename=os.path.join(CURRENT_DIR, format_cpp_filename)
         )
+    elif extension == "py":
+        rendered_str = format_util.format_py(rendered_str)
 
     if output_path:
         directory = os.path.dirname(output_path)

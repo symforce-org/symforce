@@ -14,7 +14,7 @@ from symforce import geo
 from symforce.values import Values
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.codegen import printers
+from symforce.codegen import printers, format_util
 from symforce import python_util
 
 # Command used to generate language-specific types from .lcm files
@@ -551,5 +551,8 @@ def generate_lcm_types(
                     lcm_include_dir,
                 ]
             )
+
+            # Autoformat generated python files
+            format_util.format_py_dir(python_types_dir)
 
     return {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}
