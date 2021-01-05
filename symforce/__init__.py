@@ -16,8 +16,7 @@ logging.basicConfig(format=LOGGING_FORMAT)
 logger = logging.getLogger(__package__)
 
 
-def set_log_level(log_level):
-    # type: (str) -> None
+def set_log_level(log_level: str) -> None:
     """
     Set symforce logger level.
 
@@ -31,7 +30,7 @@ def set_log_level(log_level):
     """
     # Set default log level
     if not hasattr(logging, log_level.upper()):
-        raise RuntimeError('Unknown log level: "{}"'.format(log_level))
+        raise RuntimeError(f'Unknown log level: "{log_level}"')
     logger.setLevel(getattr(logging, log_level.upper()))
 
 
@@ -41,13 +40,12 @@ set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "INFO"))
 # -------------------------------------------------------------------------------------------------
 # Symbolic backend configuration
 # -------------------------------------------------------------------------------------------------
-sympy = None  # type: T.Any
+sympy: T.Any = None
 
 from . import initialization
 
 
-def _set_backend(sympy_module):
-    # type: (T.Type) -> None
+def _set_backend(sympy_module: T.Type) -> None:
     # Make symforce-specific modifications to the sympy API
     initialization.modify_symbolic_api(sympy_module)
 
@@ -56,8 +54,7 @@ def _set_backend(sympy_module):
     sympy = sympy_module
 
 
-def _use_symengine():
-    # type: () -> None
+def _use_symengine() -> None:
     try:
         import symengine
     except ImportError:
@@ -67,8 +64,7 @@ def _use_symengine():
     _set_backend(symengine)
 
 
-def _use_sympy():
-    # type: () -> None
+def _use_sympy() -> None:
     import sympy as sympy_py
 
     _set_backend(sympy_py)
@@ -82,8 +78,7 @@ def _use_sympy():
     setattr(sympy.Mod, "_eval_derivative", lambda s, v: sympy.S.Zero)
 
 
-def set_backend(backend):
-    # type: (str) -> None
+def set_backend(backend: str) -> None:
     """
     Set the symbolic backend for symforce. The sympy backend is the default and pure python,
     whereas the symengine backend is C++ and requires building the symengine library. It can
@@ -101,17 +96,17 @@ def set_backend(backend):
     # if this isn't the first thing imported/called from symforce.
 
     if sympy and backend == sympy.__package__:
-        logger.debug('already on backend "{}"'.format(backend))
+        logger.debug(f'already on backend "{backend}"')
         return
     else:
-        logger.debug('backend: "{}"'.format(backend))
+        logger.debug(f'backend: "{backend}"')
 
     if backend == "sympy":
         _use_sympy()
     elif backend == "symengine":
         _use_symengine()
     else:
-        raise NotImplementedError('Unknown backend: "{}"'.format(backend))
+        raise NotImplementedError(f'Unknown backend: "{backend}"')
 
 
 # Set default to symforce if available, else sympy
@@ -128,8 +123,7 @@ else:
         set_backend("sympy")
 
 
-def get_backend():
-    # type: () -> str
+def get_backend() -> str:
     """
     Return the current backend as a string.
 

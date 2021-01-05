@@ -15,12 +15,10 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> geo.Pose3
+    def element(cls) -> geo.Pose3:
         return geo.Pose3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
 
-    def test_lie_exponential(self):
-        # type: () -> None
+    def test_lie_exponential(self) -> None:
         """
         Tests:
             Pose3.hat
@@ -46,16 +44,14 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
 
-    def pose3_operations(self, a, b):
-        # type: (geo.Pose3, geo.Pose3) -> None
+    def pose3_operations(self, a: geo.Pose3, b: geo.Pose3) -> None:
         """
         Tests Pose3 operations
         """
         self.assertEqual(a * b, a.compose(b))
         self.assertEqual(a * b.t, a.R * b.t + a.t)
 
-    def test_pose3_operations_numeric(self):
-        # type: () -> None
+    def test_pose3_operations_numeric(self) -> None:
         """
         Tests (numeric):
             Pose3.__mul__
@@ -70,8 +66,7 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
 
         self.pose3_operations(a, b)
 
-    def test_pose3_operations_symbolic(self):
-        # type: () -> None
+    def test_pose3_operations_symbolic(self) -> None:
         """
         Tests (symbolic):
             Pose3.__mul__

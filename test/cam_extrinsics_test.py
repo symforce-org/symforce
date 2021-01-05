@@ -13,15 +13,13 @@ class CameraTest(CamTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> cam.Camera
+    def element(cls) -> cam.Camera:
         return cam.Camera(
             calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
             image_size=(640, 480),
         )
 
-    def test_image_size(self):
-        # type: () -> None
+    def test_image_size(self) -> None:
         """
         Tests:
             Camera.in_view
@@ -50,16 +48,14 @@ class PosedCameraTest(CamTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> cam.PosedCamera
+    def element(cls) -> cam.PosedCamera:
         return cam.PosedCamera(
             pose=geo.Pose3(R=geo.Rot3.from_euler_ypr(0.0, np.pi / 2.0, 0.0), t=geo.V3(0, 0, 100)),
             calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
             image_size=(640, 480),
         )
 
-    def test_posed_camera(self):
-        # type: () -> None
+    def test_posed_camera(self) -> None:
         """
         Tests:
             PosedCamera.pixel_from_global_point
@@ -87,8 +83,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
             pixel_reprojected, _ = posed_cam.pixel_from_global_point(global_point)
             self.assertNear(pixel, pixel_reprojected)
 
-    def test_warp_pixel(self):
-        # type: () -> None
+    def test_warp_pixel(self) -> None:
         """
         Tests:
             PosedCamera.warp_pixel

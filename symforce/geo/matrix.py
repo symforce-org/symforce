@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 import symforce
@@ -37,8 +39,7 @@ class Matrix(LieGroup):
     # this class variable as a strong internal consistency check.
     SHAPE = (-1, -1)
 
-    def __new__(cls, *args, **kwargs):
-        # type: (_T.Any, _T.Any) -> Matrix
+    def __new__(cls, *args: _T.Any, **kwargs: _T.Any) -> Matrix:
         """
         Beast of a method for creating a Matrix. Handles a variety of construction use cases
         and *always* returns a fixed size child class of Matrix rather than Matrix itself. The
@@ -87,7 +88,7 @@ class Matrix(LieGroup):
             # 1D array - if fixed size this must match data length. If not, assume column vec.
             else:
                 if cls._is_fixed_size():
-                    assert len(array) == cls.storage_dim(), "Gave args {} for {}".format(args, cls)
+                    assert len(array) == cls.storage_dim(), f"Gave args {args} for {cls}"
                     rows, cols = cls.SHAPE
                 else:
                     # Only set the second dimension to 1 if the array is nonempty
@@ -116,7 +117,7 @@ class Matrix(LieGroup):
             assert isinstance(args[0], int), args
             assert isinstance(args[1], int), args
             rows, cols = args[0], args[1]
-            assert len(args[2]) == rows * cols, "Inconsistent args: {}".format(args)
+            assert len(args[2]) == rows * cols, f"Inconsistent args: {args}"
             flat_list = list(args[2])
 
         # 6) Two integer arguments plus a callable to initialize values based on (row, col)
@@ -136,7 +137,7 @@ class Matrix(LieGroup):
 
         # 8) No match, error out.
         else:
-            raise AssertionError("Unknown {} constructor for: {}".format(cls, args))
+            raise AssertionError(f"Unknown {cls} constructor for: {args}")
 
         # Get the proper fixed size child class
         fixed_size_type = fixed_type_from_shape((rows, cols))
@@ -149,59 +150,49 @@ class Matrix(LieGroup):
 
         return instance
 
-    def __init__(self, *args, **kwargs):
-        # type: (_T.Any, _T.Any) -> None
+    def __init__(self, *args: _T.Any, **kwargs: _T.Any) -> None:
         if _T.TYPE_CHECKING:
             self.mat = sm.Matrix()
 
         assert self.__class__.SHAPE == self.mat.shape, "Inconsistent Matrix"
 
     @property
-    def rows(self):
-        # type: () -> int
+    def rows(self) -> int:
         return self.mat.rows
 
     @property
-    def cols(self):
-        # type: () -> int
+    def cols(self) -> int:
         return self.mat.cols
 
     @property
-    def shape(self):
-        # type: () -> _T.Sequence[int]
+    def shape(self) -> _T.Sequence[int]:
         return self.mat.shape
 
-    def __len__(self):
-        # type: () -> int
+    def __len__(self) -> int:
         return len(self.mat)
 
     @property
-    def is_Matrix(self):
-        # type: () -> bool
+    def is_Matrix(self) -> bool:
         return True
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return self.mat.__repr__()
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+    def storage_dim(cls) -> int:
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         return cls.SHAPE[0] * cls.SHAPE[1]
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (_T.Sequence[_T.Scalar]) -> Matrix
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+    def from_storage(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         return cls(vec)
 
-    def to_storage(self):
-        # type: () -> _T.List[_T.Scalar]
+    def to_storage(self) -> _T.List[_T.Scalar]:
         return self.to_tangent()
 
     # -------------------------------------------------------------------------
@@ -209,16 +200,13 @@ class Matrix(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: (_T.Type[MatrixT]) -> MatrixT
+    def identity(cls: _T.Type[MatrixT]) -> MatrixT:
         return cls.zero()
 
-    def compose(self, other):
-        # type: (MatrixT, MatrixT) -> MatrixT
+    def compose(self: MatrixT, other: MatrixT) -> MatrixT:
         return self + other
 
-    def inverse(self):
-        # type: (MatrixT) -> MatrixT
+    def inverse(self: MatrixT) -> MatrixT:
         return -self
 
     # -------------------------------------------------------------------------
@@ -226,26 +214,21 @@ class Matrix(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def tangent_dim(cls):
-        # type: () -> int
+    def tangent_dim(cls) -> int:
         return cls.storage_dim()
 
     @classmethod
-    def from_tangent(cls, vec, epsilon=0):
-        # type: (_T.Sequence[_T.Scalar], _T.Scalar) -> Matrix
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+    def from_tangent(cls, vec: _T.Sequence[_T.Scalar], epsilon: _T.Scalar = 0) -> Matrix:
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         return cls(cls.SHAPE[0], cls.SHAPE[1], list(vec))
 
-    def to_tangent(self, epsilon=0):
-        # type: (_T.Scalar) -> _T.List[_T.Scalar]
+    def to_tangent(self, epsilon: _T.Scalar = 0) -> _T.List[_T.Scalar]:
         return list(self.mat)
 
-    def storage_D_tangent(self):
-        # type: () -> Matrix
+    def storage_D_tangent(self) -> Matrix:
         return Matrix.eye(self.storage_dim(), self.tangent_dim())
 
-    def tangent_D_storage(self):
-        # type: () -> Matrix
+    def tangent_D_storage(self) -> Matrix:
         return Matrix.eye(self.tangent_dim(), self.storage_dim())
 
     # -------------------------------------------------------------------------
@@ -253,42 +236,37 @@ class Matrix(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def zero(cls):
-        # type: (_T.Type[MatrixT]) -> MatrixT
+    def zero(cls: _T.Type[MatrixT]) -> MatrixT:
         """
         Matrix of zeros.
         """
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         return cls.zeros(*cls.SHAPE)  # type: ignore
 
     @classmethod
-    def zeros(cls, rows, cols):  # pylint: disable=signature-differs
-        # type: (int, int) -> Matrix
+    def zeros(cls, rows: int, cols: int) -> Matrix:  # pylint: disable=signature-differs
         """
         Matrix of zeros.
         """
         return cls([[sm.S.Zero] * cols for _ in range(rows)])
 
     @classmethod
-    def one(cls):
-        # type: (_T.Type[MatrixT]) -> MatrixT
+    def one(cls: _T.Type[MatrixT]) -> MatrixT:
         """
         Matrix of ones.
         """
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         return cls.ones(*cls.SHAPE)  # type: ignore
 
     @classmethod
-    def ones(cls, rows, cols):  # pylint: disable=signature-differs
-        # type: (int, int) -> Matrix
+    def ones(cls, rows: int, cols: int) -> Matrix:  # pylint: disable=signature-differs
         """
         Matrix of ones.
         """
         return cls([[sm.S.One] * cols for _ in range(rows)])
 
     @classmethod
-    def diag(cls, diagonal):
-        # type: (_T.List[_T.Scalar]) -> Matrix
+    def diag(cls, diagonal: _T.List[_T.Scalar]) -> Matrix:
         """
         Construct a square matrix from the diagonal.
         """
@@ -298,8 +276,7 @@ class Matrix(LieGroup):
         return mat
 
     @classmethod
-    def eye(cls, rows, cols=None):
-        # type: (int, int) -> Matrix
+    def eye(cls, rows: int, cols: int = None) -> Matrix:
         """
         Construct an identity matrix of the given dimensions. Square if cols is None.
         """
@@ -311,24 +288,21 @@ class Matrix(LieGroup):
         return mat
 
     @classmethod
-    def matrix_identity(cls):
-        # type: (_T.Type[MatrixT]) -> MatrixT
+    def matrix_identity(cls: _T.Type[MatrixT]) -> MatrixT:
         """
         Identity matrix - ones on the diagonal, rest zeros.
         """
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         return cls.eye(*cls.SHAPE)  #  type: ignore
 
-    def matrix_inverse(self, method="LU"):
-        # type: (MatrixT, str) -> MatrixT
+    def matrix_inverse(self: MatrixT, method: str = "LU") -> MatrixT:
         """
         Inverse of the matrix.
         """
         return self.__class__(self.mat.inv(method=method))
 
     @classmethod
-    def symbolic(cls, name, **kwargs):
-        # type: (_T.Type[MatrixT], str, _T.Any) -> MatrixT
+    def symbolic(cls: _T.Type[MatrixT], name: str, **kwargs: _T.Any) -> MatrixT:
         """
         Create with symbols.
 
@@ -336,7 +310,7 @@ class Matrix(LieGroup):
             name (str): Name prefix of the symbols
             **kwargs (dict): Forwarded to `sm.Symbol`
         """
-        assert cls._is_fixed_size(), "Type has no size info: {}".format(cls)
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         rows, cols = cls.SHAPE  # pylint: disable=unpacking-non-sequence
 
         row_names = [str(r_i) for r_i in range(rows)]
@@ -361,23 +335,20 @@ class Matrix(LieGroup):
 
         return cls(sm.Matrix(symbols))
 
-    def row_join(self, right):
-        # type: (Matrix) -> Matrix
+    def row_join(self, right: Matrix) -> Matrix:
         """
         Concatenates self with another matrix on the right
         """
         return Matrix(self.mat.row_join(right.mat))
 
-    def col_join(self, bottom):
-        # type: (Matrix) -> Matrix
+    def col_join(self, bottom: Matrix) -> Matrix:
         """
         Concatenates self with another matrix below
         """
         return Matrix(self.mat.col_join(bottom.mat))
 
     @classmethod
-    def block_matrix(cls, array):
-        # type: (_T.Sequence[_T.Sequence[Matrix]]) -> Matrix
+    def block_matrix(cls, array: _T.Sequence[_T.Sequence[Matrix]]) -> Matrix:
         """
         Constructs a matrix from block elements. For example:
         [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]] -> Matrix35 with elements equal to given blocks
@@ -416,8 +387,7 @@ class Matrix(LieGroup):
 
         return Matrix(rows, cols, flat_list)
 
-    def simplify(self, *args, **kwargs):
-        # type: (_T.Any, _T.Any) -> Matrix
+    def simplify(self, *args: _T.Any, **kwargs: _T.Any) -> Matrix:
         """
         Simplify this expression.
 
@@ -425,8 +395,7 @@ class Matrix(LieGroup):
         """
         return self.__class__(sm.simplify(self.mat, *args, **kwargs))
 
-    def limit(self, *args, **kwargs):
-        # type: (_T.Any, _T.Any) -> Matrix
+    def limit(self, *args: _T.Any, **kwargs: _T.Any) -> Matrix:
         """
         Take the limit at z = z0
 
@@ -434,8 +403,7 @@ class Matrix(LieGroup):
         """
         return self.from_storage([sm.limit(e, *args, **kwargs) for e in self.to_storage()])
 
-    def jacobian(self, X, tangent_space=True):
-        # type: (_T.Any, bool) -> Matrix
+    def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
         """
         Compute the jacobian with respect to the tangent space of X if tangent_space = True,
         otherwise returns the jacobian wih respect to the storage elements of X.
@@ -457,34 +425,29 @@ class Matrix(LieGroup):
         # Return jacobian wrt X storage
         return self_D_storage
 
-    def diff(self, *args):
-        # type: (_T.Tuple[_T.Scalar]) -> Matrix
+    def diff(self, *args: _T.Tuple[_T.Scalar]) -> Matrix:
         """
         Differentiate wrt a scalar.
         """
         return self.__class__(self.mat.diff(*args))
 
     @property
-    def T(self):
-        # type: () -> Matrix
+    def T(self) -> Matrix:
         """
         Matrix Transpose
         """
         return self.transpose()
 
-    def transpose(self):
-        # type: () -> Matrix
+    def transpose(self) -> Matrix:
         """
         Matrix Transpose
         """
         return self.__class__(self.mat.transpose())
 
-    def reshape(self, rows, cols):
-        # type: (int, int) -> Matrix
+    def reshape(self, rows: int, cols: int) -> Matrix:
         return self.__class__(self.mat.reshape(rows, cols))
 
-    def dot(self, other):
-        # type: (Matrix) -> Matrix
+    def dot(self, other: Matrix) -> Matrix:
         """
         Dot product.
         """
@@ -496,8 +459,7 @@ class Matrix(LieGroup):
             ret = self.__class__([[ret]])
         return ret
 
-    def cross(self, other):
-        # type: (Matrix31) -> Matrix31
+    def cross(self, other: Matrix31) -> Matrix31:
         """
         Cross product.
         """
@@ -510,37 +472,32 @@ class Matrix(LieGroup):
 
         return Matrix31(self.mat.cross(other.mat))
 
-    def squared_norm(self):
-        # type: () -> _T.Scalar
+    def squared_norm(self) -> _T.Scalar:
         """
         Squared norm of a vector, equivalent to the dot product with itself.
         """
         self._assert_is_vector()
         return self.dot(self)[0, 0]
 
-    def norm(self, epsilon=0):
-        # type: (_T.Scalar) -> _T.Scalar
+    def norm(self, epsilon: _T.Scalar = 0) -> _T.Scalar:
         """
         Norm of a vector (square root of magnitude).
         """
         return sm.sqrt(self.squared_norm() + epsilon)
 
-    def normalized(self, epsilon=0):
-        # type: (MatrixT, _T.Scalar) -> MatrixT
+    def normalized(self: MatrixT, epsilon: _T.Scalar = 0) -> MatrixT:
         """
         Returns a unit vector in this direction (divide by norm).
         """
         return self / self.norm(epsilon=epsilon)
 
-    def applyfunc(self, func):
-        # type: (MatrixT, _T.Callable) -> MatrixT
+    def applyfunc(self: MatrixT, func: _T.Callable) -> MatrixT:
         """
         Apply a unary operation to every scalar.
         """
         return self.__class__(self.mat.applyfunc(func))
 
-    def __getitem__(self, item):
-        # type: (_T.Any) -> _T.Any
+    def __getitem__(self, item: _T.Any) -> _T.Any:
         """
         Get a scalar value or submatrix slice.
         """
@@ -549,8 +506,7 @@ class Matrix(LieGroup):
             ret = self.__class__(ret)
         return ret
 
-    def __setitem__(self, key, value):
-        # type: (_T.Any, _T.Scalar) -> None
+    def __setitem__(self, key: _T.Any, value: _T.Union[_T.Scalar, Matrix, sm.Matrix]) -> None:
         if isinstance(value, Matrix):
             value = value.mat
         ret = self.mat.__setitem__(key, value)
@@ -558,15 +514,13 @@ class Matrix(LieGroup):
             ret = self.__class__(ret)
         return ret
 
-    def __neg__(self):
-        # type: (MatrixT) -> MatrixT
+    def __neg__(self: MatrixT) -> MatrixT:
         """
         Negate matrix.
         """
         return self.__class__(-self.mat)
 
-    def __add__(self, right):
-        # type: (MatrixT, _T.Union[_T.Scalar, MatrixT]) -> MatrixT
+    def __add__(self: MatrixT, right: _T.Union[_T.Scalar, MatrixT]) -> MatrixT:
         """
         Add a scalar or matrix to this matrix.
         """
@@ -577,8 +531,7 @@ class Matrix(LieGroup):
         else:
             return self.__class__(self.mat + right)
 
-    def __sub__(self, right):
-        # type: (MatrixT, _T.Union[_T.Scalar, MatrixT]) -> MatrixT
+    def __sub__(self: MatrixT, right: _T.Union[_T.Scalar, MatrixT]) -> MatrixT:
         """
         Subtract a scalar or matrix from this matrix.
         """
@@ -590,17 +543,16 @@ class Matrix(LieGroup):
             return self.__class__(self.mat - right)
 
     @_T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (MatrixT, _T.Scalar) -> MatrixT
+    def __mul__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
     @_T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (_T.Union[Matrix, sm.Matrix]) -> Matrix
+    def __mul__(self, right: _T.Union[Matrix, sm.Matrix]) -> Matrix:  # pragma: no cover
         pass
 
-    def __mul__(self, right):
-        # type: (_T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]) -> _T.Union[MatrixT, Matrix]
+    def __mul__(
+        self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]
+    ) -> _T.Union[MatrixT, Matrix]:
         """
         Multiply a matrix by a scalar or matrix
         """
@@ -612,17 +564,16 @@ class Matrix(LieGroup):
             return self.__class__(self.mat * right)
 
     @_T.overload
-    def __rmul__(self, left):  # pragma: no cover
-        # type: (MatrixT, _T.Scalar) -> MatrixT
+    def __rmul__(self: MatrixT, left: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
     @_T.overload
-    def __rmul__(self, left):  # pragma: no cover
-        # type: (_T.Union[Matrix, sm.Matrix]) -> Matrix
+    def __rmul__(self, left: _T.Union[Matrix, sm.Matrix]) -> Matrix:  # pragma: no cover
         pass
 
-    def __rmul__(self, left):
-        # type: (_T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]) -> _T.Union[MatrixT, Matrix]
+    def __rmul__(
+        self, left: _T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]
+    ) -> _T.Union[MatrixT, Matrix]:
         """
         Left multiply a matrix by a scalar or matrix
         """
@@ -634,17 +585,16 @@ class Matrix(LieGroup):
             return self.__class__(left * self.mat)
 
     @_T.overload
-    def __div__(self, right):  # pragma: no cover
-        # type: (MatrixT, _T.Scalar) -> MatrixT
+    def __div__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
     @_T.overload
-    def __div__(self, right):  # pragma: no cover
-        # type: (_T.Union[Matrix, sm.Matrix]) -> Matrix
+    def __div__(self, right: _T.Union[Matrix, sm.Matrix]) -> Matrix:  # pragma: no cover
         pass
 
-    def __div__(self, right):
-        # type: (_T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]) -> _T.Union[MatrixT, Matrix]
+    def __div__(
+        self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]
+    ) -> _T.Union[MatrixT, Matrix]:
         """
         Divide a matrix by a scalar or a matrix (which takes the inverse).
         """
@@ -655,8 +605,7 @@ class Matrix(LieGroup):
         else:
             return self.__class__(self.mat * _T.cast(sm.Matrix, right).inv())
 
-    def compute_AtA(self, lower_only=False):
-        # type: (bool) -> Matrix
+    def compute_AtA(self, lower_only: bool = False) -> Matrix:
         """
         Compute a symmetric product A.transpose() * A faster by respecting symmetry of the output.
 
@@ -678,40 +627,35 @@ class Matrix(LieGroup):
                     AtA[i, j] = val if not lower_only else 0
         return AtA
 
-    def LU(self):
-        # type: () -> _T.Tuple[Matrix, Matrix]
+    def LU(self) -> _T.Tuple[Matrix, Matrix]:
         """
         LU matrix decomposition
         """
         L, U = self.mat.LU()
         return self.__class__(L), self.__class__(U)
 
-    def LDL(self):
-        # type: () -> _T.Tuple[Matrix, Matrix]
+    def LDL(self) -> _T.Tuple[Matrix, Matrix]:
         """
         LDL matrix decomposition (stable cholesky)
         """
         L, D = self.mat.LU()
         return self.__class__(L), self.__class__(D)
 
-    def FFLU(self):
-        # type: () -> _T.Tuple[Matrix, Matrix]
+    def FFLU(self) -> _T.Tuple[Matrix, Matrix]:
         """
         Fraction-free LU matrix decomposition
         """
         L, U = self.mat.FFLU()
         return self.__class__(L), self.__class__(U)
 
-    def FFLDU(self):
-        # type: () -> _T.Tuple[Matrix, Matrix, Matrix]
+    def FFLDU(self) -> _T.Tuple[Matrix, Matrix, Matrix]:
         """
         Fraction-free LDU matrix decomposition
         """
         L, D, U = self.mat.FFLDU()
         return self.__class__(L), self.__class__(D), self.__class__(U)
 
-    def solve(self, b, method="LU"):
-        # type: (Matrix, str) -> Matrix
+    def solve(self, b: Matrix, method: str = "LU") -> Matrix:
         """
         Solve a linear system using the given method.
         """
@@ -720,44 +664,38 @@ class Matrix(LieGroup):
     __truediv__ = __div__
 
     @staticmethod
-    def are_parallel(a, b, epsilon):
-        # type: (Matrix31, Matrix31, _T.Scalar) -> _T.Scalar
+    def are_parallel(a: Matrix31, b: Matrix31, epsilon: _T.Scalar) -> _T.Scalar:
         """
         Returns 1 if a and b are parallel within epsilon, and 0 otherwise.
         """
         return (1 - sm.sign(a.cross(b).norm() - epsilon)) / 2
 
-    def evalf(self):
-        # type: () -> Matrix
+    def evalf(self) -> Matrix:
         """
         Perform numerical evaluation of each element in the matrix.
         """
         return self.__class__.from_storage([ops.StorageOps.evalf(v) for v in self.to_storage()])
 
-    def to_list(self):
-        # type: () -> _T.List[_T.List[_T.Scalar]]
+    def to_list(self) -> _T.List[_T.List[_T.Scalar]]:
         """
         Convert to a nested list
         """
         return self.mat.tolist()
 
-    def to_flat_list(self):
-        # type: () -> _T.List[_T.Scalar]
+    def to_flat_list(self) -> _T.List[_T.Scalar]:
         """
         Convert to a flattened list
         """
         return list(self.mat)
 
-    def to_numpy(self, scalar_type=np.float64):
-        # type: (type) -> np.ndarray
+    def to_numpy(self, scalar_type: type = np.float64) -> np.ndarray:
         """
         Convert to a numpy array.
         """
         return np.array(self.evalf().to_storage(), dtype=scalar_type).reshape(self.shape)
 
     @classmethod
-    def column_stack(cls, *columns):
-        # type: (Matrix) -> Matrix
+    def column_stack(cls, *columns: Matrix) -> Matrix:
         """Take a sequence of 1-D vectors and stack them as columns to make a single 2-D Matrix.
 
         Args:
@@ -776,38 +714,32 @@ class Matrix(LieGroup):
 
         return cls([col.to_flat_list() for col in columns]).T
 
-    def _assert_is_vector(self):
-        # type: () -> None
+    def _assert_is_vector(self) -> None:
         assert (self.shape[0] == 1) or (self.shape[1] == 1), "Not a vector."
 
-    def _assert_sanity(self):
-        # type: () -> None
+    def _assert_sanity(self) -> None:
         assert self.shape == self.SHAPE, "Inconsistent Matrix!. shape={}, SHAPE={}".format(
             self.shape, self.SHAPE
         )
 
-    def __hash__(self):
-        # type: () -> int
+    def __hash__(self) -> int:
         return LieGroup.__hash__(self)
 
     @classmethod
-    def _is_fixed_size(cls):
-        # type: () -> bool
+    def _is_fixed_size(cls) -> bool:
         """
         Return True if this is a type with fixed dimensions set, ie Matrix31 instead of Matrix.
         """
         return cls.SHAPE[0] > 0 and cls.SHAPE[1] > 0
 
-    def _ipython_display_(self):
-        # type: () -> None
+    def _ipython_display_(self) -> None:
         """
         Display self.mat in IPython, with SymPy's pretty printing
         """
         display(self.mat)  # type: ignore # not defined outside of ipython
 
     @staticmethod
-    def init_printing():
-        # type: () -> None
+    def init_printing() -> None:
         """
         Initialize SymPy pretty printing
 
@@ -1003,7 +935,7 @@ class Matrix66(Matrix):
 
 
 # Dictionary of shapes to static types.
-DIMS_TO_FIXED_TYPE = {
+DIMS_TO_FIXED_TYPE: _T.Dict[_T.Tuple[int, int], type] = {
     m.SHAPE: m
     for m in (
         Matrix11,
@@ -1046,11 +978,10 @@ DIMS_TO_FIXED_TYPE = {
         Matrix81,
         Matrix91,
     )
-}  # type: _T.Dict[_T.Tuple[int, int], type]
+}
 
 
-def fixed_type_from_shape(shape):
-    # type: (_T.Tuple[int, int]) -> type
+def fixed_type_from_shape(shape: _T.Tuple[int, int]) -> type:
     """
     Return a fixed size matrix type (like Matrix32) given a shape. Either use the statically
     defined ones or dynamically create a new one if not available.

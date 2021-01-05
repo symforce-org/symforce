@@ -16,20 +16,17 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> geo.Rot2
+    def element(cls) -> geo.Rot2:
         return geo.Rot2.from_tangent([1.3])
 
-    def test_default_construct(self):
-        # type: () -> None
+    def test_default_construct(self) -> None:
         """
         Tests:
             Rot2.__init__
         """
         self.assertEqual(geo.Rot2(), geo.Rot2.identity())
 
-    def test_symbolic_constructor(self):
-        # type: () -> None
+    def test_symbolic_constructor(self) -> None:
         """
         Tests:
             Rot2.symbolic
@@ -38,8 +35,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         comp = geo.Complex.symbolic("rot")
         self.assertEqual(rot, geo.Rot2(comp))
 
-    def test_lie_exponential(self):
-        # type: () -> None
+    def test_lie_exponential(self) -> None:
         """
         Tests:
             Rot2.hat
@@ -65,8 +61,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
 
-    def test_random(self):
-        # type: () -> None
+    def test_random(self) -> None:
         """
         Tests:
             Rot2.random

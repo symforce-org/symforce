@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
 from symforce import types as T
@@ -22,8 +24,7 @@ class Pose3(LieGroup):
     no benefit.
     """
 
-    def __init__(self, R=None, t=None):
-        # type: (Rot3, Matrix31) -> None
+    def __init__(self, R: Rot3 = None, t: Matrix31 = None) -> None:
         """
         Construct from elements in SO3 and R3.
 
@@ -42,24 +43,20 @@ class Pose3(LieGroup):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<Pose3 R={}, t=({}, {}, {})>".format(
             repr(self.R), repr(self.t[0]), repr(self.t[1]), repr(self.t[2])
         )
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return Rot3.storage_dim() + Vector3.storage_dim()
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return self.R.to_storage() + self.t.to_storage()
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Pose3
+    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> Pose3:
         assert len(vec) == cls.storage_dim()
         return cls(
             R=Rot3.from_storage(vec[0 : Rot3.storage_dim()]),
@@ -71,17 +68,14 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Pose3
+    def identity(cls) -> Pose3:
         return cls(R=Rot3.identity(), t=Vector3.zero())
 
-    def compose(self, other):
-        # type: (Pose3) -> Pose3
+    def compose(self, other: Pose3) -> Pose3:
         assert isinstance(other, self.__class__)
         return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
 
-    def inverse(self):
-        # type: () -> Pose3
+    def inverse(self) -> Pose3:
         so3_inv = self.R.inverse()
         return self.__class__(R=so3_inv, t=-(so3_inv * self.t))
 
@@ -90,13 +84,11 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def tangent_dim(cls):
-        # type: () -> int
+    def tangent_dim(cls) -> int:
         return 6
 
     @classmethod
-    def from_tangent(cls, v, epsilon=0):
-        # type: (T.Sequence[T.Scalar], T.Scalar) -> Pose3
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3:
         R_tangent = (v[0], v[1], v[2])
         t_tangent_vector = Vector3(v[3], v[4], v[5])
 
@@ -114,8 +106,7 @@ class Pose3(LieGroup):
 
         return cls(R, V * t_tangent_vector)
 
-    def to_tangent(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
+    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         R_tangent = self.R.to_tangent(epsilon=epsilon)
         R_tangent_vector = Vector3(R_tangent)
         theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon)
@@ -134,8 +125,7 @@ class Pose3(LieGroup):
         return R_tangent_vector.col_join(t_tangent).to_flat_list()
 
     @classmethod
-    def hat(cls, vec):
-        # type: (T.List) -> Matrix44
+    def hat(cls, vec: T.List) -> Matrix44:
         R_tangent = [vec[0], vec[1], vec[2]]
         t_tangent = [vec[3], vec[4], vec[5]]
         top_left = Rot3.hat(R_tangent)
@@ -143,8 +133,7 @@ class Pose3(LieGroup):
         bottom = Matrix14.zero()
         return T.cast(Matrix44, top_left.row_join(top_right).col_join(bottom))
 
-    def storage_D_tangent(self):
-        # type: () -> Matrix
+    def storage_D_tangent(self) -> Matrix:
         """
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
@@ -154,8 +143,7 @@ class Pose3(LieGroup):
             [[storage_D_tangent_R, Matrix.zeros(4, 3)], [Matrix.zeros(3, 3), storage_D_tangent_t],]
         )
 
-    def tangent_D_storage(self):
-        # type: () -> Matrix
+    def tangent_D_storage(self) -> Matrix:
         """
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
@@ -169,8 +157,7 @@ class Pose3(LieGroup):
     # Helper methods
     # -------------------------------------------------------------------------
 
-    def __mul__(self, right):
-        # type: (T.Union[Pose3, Matrix]) -> T.Any
+    def __mul__(self, right: T.Union[Pose3, Matrix]) -> T.Any:
         """
         Left-multiply with a compatible quantity.
         """
@@ -180,10 +167,9 @@ class Pose3(LieGroup):
         elif isinstance(right, Pose3):
             return self.compose(right)
         else:
-            raise NotImplementedError('Unsupported type: "{}"'.format(right))
+            raise NotImplementedError(f'Unsupported type: "{right}"')
 
-    def to_homogenous_matrix(self):
-        # type: () -> Matrix
+    def to_homogenous_matrix(self) -> Matrix:
         """
         4x4 matrix representing this pose transform.
         """

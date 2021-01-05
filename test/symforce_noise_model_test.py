@@ -6,8 +6,7 @@ from symforce.test_util import TestCase, requires_sympy, epsilon_handling
 
 
 class NoiseModelTest(TestCase):
-    def test_barron_noise_model(self):
-        # type: () -> None
+    def test_barron_noise_model(self) -> None:
         """
         Some simple tests on the Barron noise model.
         """
@@ -59,8 +58,7 @@ class NoiseModelTest(TestCase):
         self.assertNear(test4, 0.0)
 
     @requires_sympy
-    def test_barron_noise_model_epsilon_handling(self):
-        # type: () -> None
+    def test_barron_noise_model_epsilon_handling(self) -> None:
         """
         Epsilon handling for BarronNoiseModel.whiten_norm should be correct (i.e. value and
         derivative at 0 should be correct as epsilon->0)
@@ -68,10 +66,8 @@ class NoiseModelTest(TestCase):
         scale = 10
         weight = 2
 
-        def test_epsilon_at_alpha(alpha):
-            # type: (T.Scalar) -> bool
-            def whiten_ratio(x, epsilon):
-                # type: (T.Scalar, T.Scalar) -> T.Scalar
+        def test_epsilon_at_alpha(alpha: T.Scalar) -> bool:
+            def whiten_ratio(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
                 noise_model = nm.BarronNoiseModel(
                     alpha=alpha,
                     scale=scale,

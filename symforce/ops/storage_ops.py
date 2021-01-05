@@ -16,16 +16,14 @@ class StorageOps(Ops):
     """
 
     @staticmethod
-    def storage_dim(a):
-        # type: (ElementOrType) -> int
+    def storage_dim(a: ElementOrType) -> int:
         """
         Size of the element's storage, aka the number of scalar values it contains.
         """
         return Ops.implementation(get_type(a)).storage_dim(a)
 
     @staticmethod
-    def to_storage(a):
-        # type: (Element) -> T.List
+    def to_storage(a: Element) -> T.List:
         """
         Serialization of the underlying storage into a list. This is NOT a tangent space.
 
@@ -37,16 +35,14 @@ class StorageOps(Ops):
         return Ops.implementation(get_type(a)).to_storage(a)
 
     @staticmethod
-    def from_storage(a, elements):
-        # type: (ElementOrType, T.Sequence[T.Scalar]) -> Element
+    def from_storage(a: ElementOrType, elements: T.Sequence[T.Scalar]) -> Element:
         """
         Construct from a flat list representation. Opposite of `.to_storage()`.
         """
         return Ops.implementation(get_type(a)).from_storage(a, elements)
 
     @staticmethod
-    def symbolic(a, name, **kwargs):
-        # type: (ElementOrType, str, T.Dict) -> Element
+    def symbolic(a: ElementOrType, name: str, **kwargs: T.Dict) -> Element:
         """
         Construct a symbolic element with the given name prefix.
 
@@ -61,21 +57,18 @@ class StorageOps(Ops):
         return Ops.implementation(get_type(a)).symbolic(a, name, **kwargs)
 
     @staticmethod
-    def evalf(a):
-        # type: (Element) -> Element
+    def evalf(a: Element) -> Element:
         """
         Evaluate to a numerical quantity (rationals, trig functions, etc).
         """
         return Ops.implementation(get_type(a)).evalf(a)
 
     @staticmethod
-    def subs(a, *args, **kwargs):
-        # type: (Element, T.Any, T.Any) -> Element
+    def subs(a: Element, *args: T.Any, **kwargs: T.Any) -> Element:
         return StorageOps.from_storage(
             a, [sm.S(s).subs(*args, **kwargs) for s in StorageOps.to_storage(a)]
         )
 
     @staticmethod
-    def simplify(a):
-        # type: (Element) -> Element
+    def simplify(a: Element) -> Element:
         return StorageOps.from_storage(a, sm.simplify(sm.Matrix(StorageOps.to_storage(a))))

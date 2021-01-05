@@ -15,8 +15,12 @@ class CameraCal(Storage):
 
     NUM_DISTORTION_COEFFS = 0
 
-    def __init__(self, focal_length, principal_point, distortion_coeffs=tuple()):
-        # type: (T.Sequence[T.Scalar], T.Sequence[T.Scalar], T.Sequence[T.Scalar]) -> None
+    def __init__(
+        self,
+        focal_length: T.Sequence[T.Scalar],
+        principal_point: T.Sequence[T.Scalar],
+        distortion_coeffs: T.Sequence[T.Scalar] = tuple(),
+    ) -> None:
         assert len(distortion_coeffs) == self.NUM_DISTORTION_COEFFS
         self.distortion_coeffs = geo.M(distortion_coeffs)
         self.focal_length = geo.V2(focal_length)
@@ -27,12 +31,10 @@ class CameraCal(Storage):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return 4 + cls.NUM_DISTORTION_COEFFS
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return (
             self.focal_length.to_storage()
             + self.principal_point.to_storage()
@@ -40,14 +42,12 @@ class CameraCal(Storage):
         )
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Type[CameraCalT], T.Sequence[T.Scalar]) -> CameraCalT
+    def from_storage(cls: T.Type[CameraCalT], vec: T.Sequence[T.Scalar]) -> CameraCalT:
         assert len(vec) == cls.storage_dim()
         return cls(focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:])
 
     @classmethod
-    def symbolic(cls, name, **kwargs):
-        # type: (T.Type[CameraCalT], str, T.Any) -> CameraCalT
+    def symbolic(cls: T.Type[CameraCalT], name: str, **kwargs: T.Any) -> CameraCalT:
         with sm.scope(name):
             if cls.NUM_DISTORTION_COEFFS > 0:
                 return cls(
@@ -62,8 +62,7 @@ class CameraCal(Storage):
                     focal_length=sm.symbols("f_x f_y"), principal_point=sm.symbols("c_x c_y"),
                 )
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{}\n  focal_length={},\n  principal_point={},\n  distortion_coeffs={}>".format(
             self.__class__.__name__,
             self.focal_length.to_storage(),
@@ -75,8 +74,9 @@ class CameraCal(Storage):
     # Required camera methods
     # -------------------------------------------------------------------------
 
-    def pixel_from_camera_point(self, point, epsilon=0):
-        # type: (geo.Matrix31, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
+    def pixel_from_camera_point(
+        self, point: geo.Matrix31, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -86,8 +86,9 @@ class CameraCal(Storage):
         """
         raise NotImplementedError()
 
-    def camera_ray_from_pixel(self, pixel, epsilon=0):
-        # type: (geo.Matrix21, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
+    def camera_ray_from_pixel(
+        self, pixel: geo.Matrix21, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 

@@ -17,20 +17,17 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> geo.Rot3
+    def element(cls) -> geo.Rot3:
         return geo.Rot3.from_axis_angle(geo.V3(1, 0, 0), 1.2)
 
-    def test_default_construct(self):
-        # type: () -> None
+    def test_default_construct(self) -> None:
         """
         Tests:
             Rot3.__init__
         """
         self.assertEqual(geo.Rot3(), geo.Rot3.identity())
 
-    def test_symbolic_substitution(self):
-        # type: () -> None
+    def test_symbolic_substitution(self) -> None:
         """
         Tests:
             Rot3.subs
@@ -44,8 +41,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             geo.Rot3.from_tangent(R_1.to_tangent()).subs(R_1, R_2),
         )
 
-    def test_angle_between(self):
-        # type: () -> None
+    def test_angle_between(self) -> None:
         """
         Tests:
             Rot3.angle_between
@@ -56,8 +52,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
         self.assertNear(angle, 1.4, places=7)
 
-    def get_rotations_to_test(self):
-        # type: () -> T.List[geo.Rot3]
+    def get_rotations_to_test(self) -> T.List[geo.Rot3]:
         """
         Returns a list of rotations to be used in rotation helper method tests.
         """
@@ -75,8 +70,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
         return rotations_to_test
 
-    def test_to_from_rotation_matrix(self):
-        # type: () -> None
+    def test_to_from_rotation_matrix(self) -> None:
         """
         Tests:
             Rot3.from_rotation_matrix
@@ -99,8 +93,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             rot_transformed = geo.Rot3.from_rotation_matrix(rot.to_rotation_matrix())
             self.assertLieGroupNear(rot_transformed, rot)
 
-    def test_to_from_euler_ypr(self):
-        # type: () -> None
+    def test_to_from_euler_ypr(self) -> None:
         """
         Tests:
             Rot3.from_euler_ypr
@@ -120,8 +113,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             rot_transformed = geo.Rot3.from_euler_ypr(*rot.to_euler_ypr(epsilon=1e-14))
             self.assertLieGroupNear(rot_transformed, rot, places=6)
 
-    def test_from_two_unit_vectors(self):
-        # type: () -> None
+    def test_from_two_unit_vectors(self) -> None:
         """
         Tests:
             Rot3.from_two_unit_vectors
@@ -133,8 +125,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         one_rotated = rot * one
         self.assertNear(one_rotated, two)
 
-    def test_random(self):
-        # type: () -> None
+    def test_random(self) -> None:
         """
         Tests:
             Rot3.random
@@ -182,8 +173,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
                 ax.scatter(*zip(point.to_flat_list() for point in Ps_rotated))
                 plt.show()
 
-    def test_lie_exponential(self):
-        # type: () -> None
+    def test_lie_exponential(self) -> None:
         """
         Tests:
             Rot3.hat
@@ -209,8 +199,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
 
-    def test_logmap_signed_epsilon(self):
-        # type: () -> None
+    def test_logmap_signed_epsilon(self) -> None:
         """
         Tests:
             Rot3.logmap_signed_epsilon

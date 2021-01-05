@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import os
 import tempfile
 import textwrap
@@ -27,8 +25,7 @@ DEFAULT_CAM_TYPES = (
 )
 
 
-def make_camera_funcs(cls, mode):
-    # type: (T.Type, codegen_util.CodegenMode) -> T.List[Codegen]
+def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
     """
     Create func spec arguments for common camera operations for the given class.
     """
@@ -72,8 +69,7 @@ def make_camera_funcs(cls, mode):
     ]
 
 
-def cam_class_data(cls, mode):
-    # type: (T.Type, CodegenMode) -> T.Dict[str, T.Any]
+def cam_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
     """
     Data for template generation of this class. Contains all useful info for
     class-specific templates.
@@ -94,8 +90,9 @@ def cam_class_data(cls, mode):
     return data
 
 
-def class_template_data(cls, functions_to_doc):
-    # type: (T.Type, T.Sequence[function]) -> T.Dict[str, T.Any]
+def class_template_data(
+    cls: T.Type, functions_to_doc: T.Sequence["function"]
+) -> T.Dict[str, T.Any]:
     data = Codegen.common_data()
     data["doc"] = dict()
     data["doc"]["cls"] = textwrap.dedent(cls.__doc__).strip()  # type: ignore
@@ -107,8 +104,7 @@ def class_template_data(cls, functions_to_doc):
     return data
 
 
-def camera_data():
-    # type: () -> T.Dict[str, T.Any]
+def camera_data() -> T.Dict[str, T.Any]:
     functions_to_doc = [
         cam.Camera.pixel_from_camera_point,
         cam.Camera.camera_ray_from_pixel,
@@ -118,8 +114,7 @@ def camera_data():
     return class_template_data(cam.Camera, functions_to_doc)
 
 
-def posed_camera_data():
-    # type: () -> T.Dict[str, T.Any]
+def posed_camera_data() -> T.Dict[str, T.Any]:
     functions_to_doc = [
         cam.PosedCamera.pixel_from_global_point,
         cam.PosedCamera.global_point_from_pixel,
@@ -128,22 +123,21 @@ def posed_camera_data():
     return class_template_data(cam.PosedCamera, functions_to_doc)
 
 
-def generate(mode, output_dir=None):
-    # type: (CodegenMode, str) -> str
+def generate(mode: CodegenMode, output_dir: str = None) -> str:
     """
     Generate the cam package for the given language.
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(mode.name), dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{mode.name}_", dir="/tmp")
+        logger.debug(f"Creating temp directory: {output_dir}")
 
     # Subdirectory for everything we'll generate
     cam_package_dir = os.path.join(output_dir, "cam")
     templates = template_util.TemplateList()
 
     if mode == CodegenMode.CPP:
-        logger.info('Creating C++ cam package at: "{}"'.format(cam_package_dir))
+        logger.info(f'Creating C++ cam package at: "{cam_package_dir}"')
         template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "cam_package")
 
         # First generate the geo package as it's a dependency of the cam package
@@ -202,7 +196,7 @@ def generate(mode, output_dir=None):
                 ),
             )
     else:
-        raise NotImplementedError('Unknown mode: "{}"'.format(mode))
+        raise NotImplementedError(f'Unknown mode: "{mode}"')
 
     templates.render()
 

@@ -30,8 +30,7 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
     _RUN_SLOW_TESTS = False
 
     @staticmethod
-    def should_run_slow_tests():
-        # type: () -> bool
+    def should_run_slow_tests() -> bool:
 
         # NOTE(aaron):  This needs to be accessible before main() is called, so we do it here
         # instead.  This should also be called from main to make sure it runs at least once
@@ -41,30 +40,22 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
         return TestCase._RUN_SLOW_TESTS
 
     @staticmethod
-    def main():
-        # type: () -> None
+    def main() -> None:
         """
         Call this to run all tests in scope.
         """
         TestCase.should_run_slow_tests()
         SymforceTestCaseMixin.main()
 
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         np.random.seed(42)
         random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
     def assertNear(
-        self,
-        actual,  # type: T.Any
-        desired,  # type: T.Any
-        places=7,  # type: int
-        msg="",  # type: str
-        verbose=True,  # type: bool
-    ):
-        # type: (...) -> None
+        self, actual: T.Any, desired: T.Any, places: int = 7, msg: str = "", verbose: bool = True,
+    ) -> None:
         """
         Check that two elements are close. Handles sequences, scalars, and geometry types
         using StorageOps.
@@ -79,13 +70,12 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
 
     def assertLieGroupNear(
         self,
-        actual,  # type: LieGroupOpsType
-        desired,  # type: LieGroupOpsType
-        places=7,  # type: int
-        msg="",  # type: str
-        verbose=True,  # type: bool
-    ):
-        # type: (...) -> None
+        actual: LieGroupOpsType,
+        desired: LieGroupOpsType,
+        places: int = 7,
+        msg: str = "",
+        verbose: bool = True,
+    ) -> None:
         """
         Check that two LieGroup elements are close.
         """
@@ -103,8 +93,11 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
         )
 
     @staticmethod
-    def compile_and_run_cpp(package_dir, executable_names, make_args=tuple()):
-        # type: (str, T.Union[str, T.Sequence[str]], T.Sequence[str]) -> None
+    def compile_and_run_cpp(
+        package_dir: str,
+        executable_names: T.Union[str, T.Sequence[str]],
+        make_args: T.Sequence[str] = tuple(),
+    ) -> None:
         """
         Compile package using makefile in package_dir, then execute the executable with
         name executable_name.
@@ -128,8 +121,7 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
                 python_util.execute_subprocess(os.path.join(package_dir, name))
 
 
-def requires_sympy(func):
-    # type: (T.Callable) -> T.Callable
+def requires_sympy(func: T.Callable) -> T.Callable:
     """
     Decorator to mark a test to only run on the SymPy backend, and skip otherwise
     """
@@ -140,8 +132,7 @@ def requires_sympy(func):
         return func
 
 
-def slow_on_sympy(func):
-    # type: (T.Callable) -> T.Callable
+def slow_on_sympy(func: T.Callable) -> T.Callable:
     """
     Decorator to mark a test as slow on the sympy backend.  Will be skipped unless passed the
     --run_slow_tests flag

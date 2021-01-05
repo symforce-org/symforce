@@ -14,8 +14,7 @@ class SymforceLinterTest(TestCase):
     Make sure linting passes, as a merge guard.
     """
 
-    def test_linter(self):
-        # type: () -> None
+    def test_linter(self) -> None:
         try:
             python_util.execute_subprocess(["make", "lint"], cwd=SYMFORCE_DIR)
         except subprocess.CalledProcessError as exc:

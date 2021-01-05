@@ -17,8 +17,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
     # Small number to avoid singularities
     EPSILON = 1e-8
 
-    def test_lie_group_ops(self):
-        # type: () -> None
+    def test_lie_group_ops(self) -> None:
         """
         Tests:
             tangent_dim
@@ -89,8 +88,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
             places=7,
         )
 
-    def test_storage_D_tangent(self):
-        # type: () -> None
+    def test_storage_D_tangent(self) -> None:
         element = self.element()
         # TODO(nathan): We have to convert to a geo.Matrix for scalars
         # and elements without a hardcoded storage_D_tangent function
@@ -109,8 +107,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         storage_D_tangent_approx = storage_D_tangent_approx.subs(xi, self.EPSILON * xi.one())
         self.assertNear(storage_D_tangent, storage_D_tangent_approx)
 
-    def test_tangent_D_storage(self):
-        # type: () -> None
+    def test_tangent_D_storage(self) -> None:
         element = self.element()
         # TODO(nathan): We have to convert to a geo.Matrix for scalars
         tangent_D_storage = geo.M(LieGroupOps.tangent_D_storage(element))

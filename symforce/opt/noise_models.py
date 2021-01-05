@@ -3,38 +3,33 @@ from symforce import sympy as sm
 from symforce import types as T
 
 
-class NoiseModel(object):
+class NoiseModel:
     """
     Base class for computing a least squares error term from a residual vector.
     """
 
-    def __init__(self, epsilon):
-        # type: (T.Scalar) -> None
+    def __init__(self, epsilon: T.Scalar) -> None:
         self.epsilon = epsilon
 
-    def reduce(self, whitened_residual):
-        # type: (geo.Matrix) -> T.Scalar
+    def reduce(self, whitened_residual: geo.Matrix) -> T.Scalar:
         """
         Take the sum of squares of the residual.
         """
         return whitened_residual.squared_norm() / 2
 
-    def _whiten(self, residual, epsilon):
-        # type: (geo.Matrix.MatrixT, T.Scalar) -> geo.Matrix.MatrixT
+    def _whiten(self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar) -> geo.Matrix.MatrixT:
         """
         Whiten the residual vector with the given epsilon.
         """
         raise NotImplementedError()
 
-    def whiten(self, residual):
-        # type: (geo.Matrix.MatrixT) -> geo.Matrix.MatrixT
+    def whiten(self, residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
         """
         Whiten the residual vector.
         """
         return self._whiten(residual, self.epsilon)
 
-    def whiten_norm(self, residual):
-        # type: (geo.Matrix.MatrixT) -> geo.Matrix.MatrixT
+    def whiten_norm(self, residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
         """
         Whiten the norm of the residual vector.
 
@@ -53,8 +48,7 @@ class NoiseModel(object):
         scale_factor = whitened_norm / norm
         return scale_factor * residual
 
-    def error(self, residual):
-        # type: (geo.Matrix) -> T.Scalar
+    def error(self, residual: geo.Matrix) -> T.Scalar:
         """
         Return a scalar error.
         """
@@ -83,8 +77,14 @@ class BarronNoiseModel(NoiseModel):
     alpha=-inf -> Welsch loss
     """
 
-    def __init__(self, alpha, scale, weight, x_epsilon, alpha_epsilon=None):
-        # type: (T.Scalar, T.Scalar, T.Scalar, T.Scalar, T.Scalar) -> None
+    def __init__(
+        self,
+        alpha: T.Scalar,
+        scale: T.Scalar,
+        weight: T.Scalar,
+        x_epsilon: T.Scalar,
+        alpha_epsilon: T.Scalar = None,
+    ) -> None:
         """
         Args:
             alpha (Scalar): shape parameter
@@ -93,14 +93,13 @@ class BarronNoiseModel(NoiseModel):
                                 to alpha_epsilon
             alpha_epsilon (Scalar): small value used for handling singularities around alpha
         """
-        super(BarronNoiseModel, self).__init__(epsilon=x_epsilon)
+        super().__init__(epsilon=x_epsilon)
         self.alpha = alpha
         self.scale = scale
         self.weight = weight
         self.alpha_epsilon = x_epsilon if alpha_epsilon is None else alpha_epsilon
 
-    def barron_error(self, x):
-        # type: (T.Scalar) -> T.Scalar
+    def barron_error(self, x: T.Scalar) -> T.Scalar:
         """
         Return the barron cost function error for the argument x.
 
@@ -114,10 +113,8 @@ class BarronNoiseModel(NoiseModel):
         d = self.alpha + (sm.sign_no_zero(self.alpha) * self.alpha_epsilon)
         return (b / d) * ((((x / self.scale) ** 2) / b + 1) ** (d / 2) - 1)
 
-    def _whiten(self, residual, epsilon):
-        # type: (geo.Matrix.MatrixT, T.Scalar) -> geo.Matrix.MatrixT
-        def whiten_scalar(r):
-            # type: (T.Scalar) -> T.Scalar
+    def _whiten(self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar) -> geo.Matrix.MatrixT:
+        def whiten_scalar(r: T.Scalar) -> T.Scalar:
             return sm.sqrt(self.weight) * (
                 sm.sqrt(2 * self.barron_error(r) + epsilon) - sm.sqrt(epsilon)
             )

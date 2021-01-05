@@ -12,12 +12,10 @@ class GeoScalarTest(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> T.Scalar
+    def element(cls) -> T.Scalar:
         return sm.S(3.2)
 
-    def test_construction_by_type(self):
-        # type: () -> None
+    def test_construction_by_type(self) -> None:
         """
         Check that we get correect sympy types out from scalar expressions of various forms.
         """

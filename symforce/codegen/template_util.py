@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import collections
 import jinja2
 import os
@@ -21,13 +19,16 @@ class RelEnvironment(jinja2.Environment):
     https://stackoverflow.com/questions/8512677/how-to-include-a-template-with-relative-path-in-jinja2
     """
 
-    def join_path(self, template, parent):
-        # type: (T.Union[jinja2.Template, unicode], unicode) -> unicode
+    def join_path(self, template: T.Union[jinja2.Template, str], parent: str) -> str:
         return os.path.normpath(os.path.join(os.path.dirname(parent), str(template)))
 
 
-def render_template(template_path, data, output_path=None, template_dir=CURRENT_DIR):
-    # type: (str, T.Dict[str, T.Any], T.Optional[str], str) -> str
+def render_template(
+    template_path: str,
+    data: T.Dict[str, T.Any],
+    output_path: T.Optional[str] = None,
+    template_dir: str = CURRENT_DIR,
+) -> str:
     """
     Boiler plate to render template. Returns the rendered string and optionally writes to file.
 
@@ -37,9 +38,9 @@ def render_template(template_path, data, output_path=None, template_dir=CURRENT_
         output_path: If provided, writes to file
         template_dir: Base directory where templates are found, defaults to symforce/codegen
     """
-    logger.debug("Template  IN <-- {}".format(template_path))
+    logger.debug(f"Template  IN <-- {template_path}")
     if output_path:
-        logger.debug("Template OUT --> {}".format(output_path))
+        logger.debug(f"Template OUT --> {output_path}")
 
     template_name = os.path.relpath(template_path, template_dir)
 
@@ -82,7 +83,7 @@ def render_template(template_path, data, output_path=None, template_dir=CURRENT_
     return rendered_str
 
 
-class TemplateList(object):
+class TemplateList:
     """
     Helper class to keep a list of (template_path, output_path, data) and render
     all templates in one go.
@@ -90,18 +91,15 @@ class TemplateList(object):
 
     Entry = collections.namedtuple("TemplateListEntry", ["template_path", "output_path", "data"])
 
-    def __init__(self):
-        # type: () -> None
-        self.items = []  # type: T.List
+    def __init__(self) -> None:
+        self.items: T.List = []
 
-    def add(self, template_path, output_path, data):
-        # type: (str, str, T.Dict[str, T.Any]) -> None
+    def add(self, template_path: str, output_path: str, data: T.Dict[str, T.Any]) -> None:
         self.items.append(
             self.Entry(template_path=template_path, output_path=output_path, data=data)
         )
 
-    def render(self):
-        # type: () -> None
+    def render(self) -> None:
         for entry in self.items:
             render_template(
                 template_path=entry.template_path, output_path=entry.output_path, data=entry.data

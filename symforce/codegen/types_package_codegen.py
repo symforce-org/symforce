@@ -11,16 +11,15 @@ from symforce.codegen import codegen_util
 
 
 def generate_types(
-    package_name,  # type: str
-    file_name,  # type: str
-    values_indices,  # type: T.Mapping[str, T.Dict[str, T.Any]]
-    shared_types=None,  # type: T.Mapping[str, str]
-    scalar_type="double",  # type: str
-    output_dir=None,  # type: T.Optional[str]
-    lcm_bindings_output_dir=None,  # type: T.Optional[str]
-    templates=None,  # type: template_util.TemplateList
-):
-    # type: (...) -> T.Dict[str, T.Any]
+    package_name: str,
+    file_name: str,
+    values_indices: T.Mapping[str, T.Dict[str, T.Any]],
+    shared_types: T.Mapping[str, str] = None,
+    scalar_type: str = "double",
+    output_dir: T.Optional[str] = None,
+    lcm_bindings_output_dir: T.Optional[str] = None,
+    templates: template_util.TemplateList = None,
+) -> T.Dict[str, T.Any]:
     """
     Generates LCM types from the given values_indices, including the necessary subtypes
     and references to external LCM types.
@@ -49,10 +48,8 @@ def generate_types(
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(
-            prefix="sf_codegen_types_{}_".format(package_name), dir="/tmp"
-        )
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_types_{package_name}_", dir="/tmp")
+        logger.debug(f"Creating temp directory: {output_dir}")
     lcm_type_dir = os.path.join(output_dir, "lcmtypes")
 
     using_external_templates = True
@@ -84,11 +81,11 @@ def generate_types(
 
     lcm_files = []
     if len(types_to_generate) > 0:
-        logger.info('Creating LCM type at: "{}"'.format(lcm_type_dir))
+        logger.info(f'Creating LCM type at: "{lcm_type_dir}"')
         lcm_template = os.path.join(template_util.LCM_TEMPLATE_DIR, "types.lcm.jinja")
 
         # Type definition
-        lcm_file_name = "{}.lcm".format(file_name)
+        lcm_file_name = f"{file_name}.lcm"
         lcm_files.append(lcm_file_name)
         templates.add(
             lcm_template,
@@ -102,7 +99,7 @@ def generate_types(
         )
 
     # Save input args for handy reference
-    codegen_data = {}  # type: T.Dict[str, T.Any]
+    codegen_data: T.Dict[str, T.Any] = {}
     codegen_data["package_name"] = package_name
     codegen_data["values_indices"] = values_indices
     codegen_data["shared_types"] = shared_types
@@ -131,21 +128,21 @@ def generate_types(
             else:
                 codegen_data["namespaces_dict"][name] = package_name
         else:
-            codegen_data["typenames_dict"][name] = "{}_t".format(name)
+            codegen_data["typenames_dict"][name] = f"{name}_t"
             codegen_data["namespaces_dict"][name] = package_name
     for typename, data in types_dict.items():
         # Iterate through types in types_dict. If type is external, use the shared_types to
         # get the namespace.
         unformatted_typenames = T.cast(T.List[str], data["unformatted_typenames"])
         for unformatted_typename in unformatted_typenames:
-            name = unformatted_typename.split(".")[-1]  # type: ignore
+            name = unformatted_typename.split(".")[-1]
             if shared_types is not None and name in shared_types:
                 name = shared_types[name]
             if "." in name:
                 codegen_data["typenames_dict"][name] = name.split(".")[-1]
                 codegen_data["namespaces_dict"][name] = name.split(".")[0]
             else:
-                codegen_data["typenames_dict"][name] = "{}_t".format(name)
+                codegen_data["typenames_dict"][name] = f"{name}_t"
                 codegen_data["namespaces_dict"][name] = package_name
 
     if not using_external_templates:
@@ -157,18 +154,17 @@ def generate_types(
 
 
 def build_types_dict(
-    package_name,  # type: str
-    values_indices,  # type: T.Mapping[str, T.Dict[str, T.Any]]
-    shared_types=None,  # type: T.Mapping[str, str]
-):
-    # type: (...) -> T.Dict[str, T.Dict[str, T.Any]]
+    package_name: str,
+    values_indices: T.Mapping[str, T.Dict[str, T.Any]],
+    shared_types: T.Mapping[str, str] = None,
+) -> T.Dict[str, T.Dict[str, T.Any]]:
     """
     Compute the structure of the types we need to generate for the given Values.
     """
     if shared_types is None:
         shared_types = dict()
 
-    types_dict = dict()  # type: T.Dict[str, T.Dict[str, T.Any]]
+    types_dict: T.Dict[str, T.Dict[str, T.Any]] = dict()
 
     for key, index in values_indices.items():
         _fill_types_dict_recursive(
@@ -182,16 +178,14 @@ def build_types_dict(
     return types_dict
 
 
-def typename_from_key(key, shared_types):
-    # type: (str, T.Mapping[str, str]) -> str
+def typename_from_key(key: str, shared_types: T.Mapping[str, str]) -> str:
     """
     Compute a typename from a key, or from shared_types if provided by the user.
     """
     return shared_types.get(key, key.replace(".", "_") + "_t")
 
 
-def get_subvalues_from_list_index(list_index):
-    # type: (T.Dict[str, T.Any]) -> T.Optional[T.Dict[str, T.Any]]
+def get_subvalues_from_list_index(list_index: T.Dict[str, T.Any]) -> T.Optional[T.Dict[str, T.Any]]:
     """
     Returns index of Values object if base element of list is a Values object,
     otherwise returns None
@@ -207,17 +201,16 @@ def get_subvalues_from_list_index(list_index):
 
 
 def _fill_types_dict_recursive(
-    key,  # type: str
-    index,  # type: T.Dict
-    package_name,  # type: str
-    shared_types,  # type: T.Mapping[str, str]
-    types_dict,  # type: T.Dict[str, T.Dict[str, T.Any]]
-):
-    # type: (...) -> None
+    key: str,
+    index: T.Dict,
+    package_name: str,
+    shared_types: T.Mapping[str, str],
+    types_dict: T.Dict[str, T.Dict[str, T.Any]],
+) -> None:
     """
     Recursively compute type information from the key and values index and fill into types_dict.
     """
-    data = {}  # type: T.Dict[str, T.Any]
+    data: T.Dict[str, T.Any] = {}
 
     typename = typename_from_key(key, shared_types)
     data["typename"] = typename
@@ -248,7 +241,7 @@ def _fill_types_dict_recursive(
         else:
             continue
 
-        full_subkey = "{}.{}".format(key, subkey)
+        full_subkey = f"{key}.{subkey}"
         data["subtypes"][subkey] = typename_from_key(full_subkey, shared_types)
 
         _fill_types_dict_recursive(
@@ -261,8 +254,7 @@ def _fill_types_dict_recursive(
 
     if typename in types_dict:
 
-        def assert_equal(field):
-            # type: (str) -> None
+        def assert_equal(field: str) -> None:
             assert types_dict[typename][field] == data[field]
 
         # Everything had better be the same, except unformatted_typenames

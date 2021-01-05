@@ -19,8 +19,7 @@ class SymforceTypesCodegenTest(TestCase):
     """
 
     @staticmethod
-    def build_values():
-        # type: () -> T.Tuple[Values, Values]
+    def build_values() -> T.Tuple[Values, Values]:
         """
         Create some example input/output values.
         """
@@ -50,12 +49,11 @@ class SymforceTypesCodegenTest(TestCase):
 
     def types_codegen_helper(
         self,
-        name,  # type: str
-        scalar_type,  # type: str
-        shared_types,  # type: T.Mapping[str, str]
-        expected_types,  # type: T.Sequence[str]
-    ):
-        # type: (...) -> T.Dict[str, T.Any]
+        name: str,
+        scalar_type: str,
+        shared_types: T.Mapping[str, str],
+        expected_types: T.Sequence[str],
+    ) -> T.Dict[str, T.Any]:
         """
         Helper to test generation with less duplicated code.
         """
@@ -94,8 +92,7 @@ class SymforceTypesCodegenTest(TestCase):
 
         return codegen_data
 
-    def test_types_codegen_vanilla(self):
-        # type: () -> None
+    def test_types_codegen_vanilla(self) -> None:
         """
         No shared types.
         """
@@ -128,8 +125,7 @@ class SymforceTypesCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_types_codegen_renames(self):
-        # type: () -> None
+    def test_types_codegen_renames(self) -> None:
         """
         Give some fields specific names, still within the module.
         """
@@ -170,8 +166,7 @@ class SymforceTypesCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_types_codegen_external(self):
-        # type: () -> None
+    def test_types_codegen_external(self) -> None:
         """
         Use external types for some fields, don't generate them.
         """
@@ -199,8 +194,7 @@ class SymforceTypesCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_types_codegen_reuse(self):
-        # type: () -> None
+    def test_types_codegen_reuse(self) -> None:
         """
         Use the same generated type multiple times within the input and output struct.
         """
@@ -231,7 +225,7 @@ class SymforceTypesCodegenTest(TestCase):
 
         types_dict = codegen_data["types_dict"]
 
-        self.assertEqual(set(types_dict.keys()), set(["input_t", "rot_t"]))
+        self.assertEqual(set(types_dict.keys()), {"input_t", "rot_t"})
 
         package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
         package = codegen_util.load_generated_package(package_dir)

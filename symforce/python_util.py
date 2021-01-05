@@ -14,30 +14,28 @@ from symforce import sympy as sm
 from symforce import types as T
 
 
-def remove_if_exists(path):
-    # type: (str) -> None
+def remove_if_exists(path: str) -> None:
     """
     Delete a file or directory if it exists.
     """
     if not os.path.exists(path):
-        logger.debug("Doesn't exist: {}".format(path))
+        logger.debug(f"Doesn't exist: {path}")
         return
     elif os.path.isdir(path):
-        logger.debug("Removing directory: {}".format(path))
+        logger.debug(f"Removing directory: {path}")
         shutil.rmtree(path)
     else:
-        logger.debug("Removing file: {}".format(path))
+        logger.debug(f"Removing file: {path}")
         os.remove(path)
 
 
 def execute_subprocess(
-    cmd,  # type: T.Union[str, T.Sequence[str]]
-    stdin_data=None,  # type: T.Optional[str]
-    log_stdout=True,  # type: bool
-    log_stdout_to_error_on_error=True,  # type: bool
-    **kwargs  # type: T.Any
-):
-    # type: (...) -> unicode
+    cmd: T.Union[str, T.Sequence[str]],
+    stdin_data: T.Optional[str] = None,
+    log_stdout: bool = True,
+    log_stdout_to_error_on_error: bool = True,
+    **kwargs: T.Any,
+) -> str:
     """
     Execute subprocess and log command as well as stdout/stderr.
 
@@ -55,7 +53,7 @@ def execute_subprocess(
         stdin_data_encoded = bytes()
 
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
-    logger.info("Subprocess: {}".format(cmd_str))
+    logger.info(f"Subprocess: {cmd_str}")
 
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)  # type: ignore
     (stdout, _) = proc.communicate(stdin_data_encoded)
@@ -68,27 +66,23 @@ def execute_subprocess(
 
     if going_to_log_to_err:
         logger.error(
-            "Subprocess {} exited with code: {}.  Output:\n{}".format(
-                cmd, proc.returncode, stdout_decoded
-            )
+            f"Subprocess {cmd} exited with code: {proc.returncode}.  Output:\n{stdout_decoded}"
         )
 
     if proc.returncode != 0:
-        raise subprocess.CalledProcessError(proc.returncode, cmd, stdout)
+        raise subprocess.CalledProcessError(proc.returncode, cmd, stdout_decoded)
 
     return stdout_decoded
 
 
-def camelcase_to_snakecase(s):
-    # type: (str) -> str
+def camelcase_to_snakecase(s: str) -> str:
     """
     Convert CamelCase -> snake_case.
     """
     return re.sub(r"(?<!^)(?=[A-Z][a-z])", "_", s).lower()
 
 
-def files_in_dir(dirname, relative=False):
-    # type: (str, bool) -> T.Iterator[str]
+def files_in_dir(dirname: str, relative: bool = False) -> T.Iterator[str]:
     """
     Return a list of files in the given directory.
     """
@@ -101,8 +95,7 @@ def files_in_dir(dirname, relative=False):
                 yield abspath
 
 
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    # type: (int, str) -> str
+def id_generator(size: int = 6, chars: str = string.ascii_uppercase + string.digits) -> str:
     """
     Generate a random string within a character set - for example "6U1S75".
     This is not cryptographically secure.
@@ -110,8 +103,7 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return "".join(random.choice(chars) for _ in range(size))
 
 
-def get_type(a):
-    # type: (T.Any) -> T.Type
+def get_type(a: T.Any) -> T.Type:
     """
     Returns the type of the element if its an instance, or a pass through if already a type.
     """
@@ -121,8 +113,7 @@ def get_type(a):
         return type(a)
 
 
-def scalar_like(a):
-    # type: (T.Any) -> bool
+def scalar_like(a: T.Any) -> bool:
     """
     Returns whether the element is scalar-like (an int, float, or sympy expression).
 
@@ -136,10 +127,9 @@ def scalar_like(a):
     return is_expr and not is_matrix
 
 
-def is_valid_variable_name(name):
-    # type: (str) -> bool
+def is_valid_variable_name(name: str) -> bool:
     """
     Returns true if name does not contain whitespace, has only alphanumeric characters,
     and does not start with a number.
     """
-    return re.match(".*\s.*|.*\W.*|^\d", name) is None
+    return re.match(r".*\s.*|.*\W.*|^\d", name) is None

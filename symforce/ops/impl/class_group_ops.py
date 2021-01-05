@@ -8,16 +8,13 @@ ElementOrType = T.Union[Element, T.Type]
 
 class ClassGroupOps(ClassStorageOps):
     @staticmethod
-    def identity(a):
-        # type: (ElementOrType) -> Element
+    def identity(a: ElementOrType) -> Element:
         return a.identity()
 
     @staticmethod
-    def compose(a, b):
-        # type: (Element, Element) -> Element
+    def compose(a: Element, b: Element) -> Element:
         return a.compose(b)
 
     @staticmethod
-    def inverse(a):
-        # type: (Element) -> Element
+    def inverse(a: Element) -> Element:
         return a.inverse()

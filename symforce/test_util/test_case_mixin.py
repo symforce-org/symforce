@@ -9,7 +9,7 @@ from symforce import python_util
 from symforce import types as T
 
 
-class SymforceTestCaseMixin(object):
+class SymforceTestCaseMixin:
     """
     Mixin for SymForce tests, adds useful helpers for code generation
     """
@@ -19,8 +19,7 @@ class SymforceTestCaseMixin(object):
     UPDATE = False
 
     @staticmethod
-    def main():
-        # type: () -> None
+    def main() -> None:
         """
         Call this to run all tests in scope.
         """
@@ -31,8 +30,7 @@ class SymforceTestCaseMixin(object):
 
         unittest.main()
 
-    def compare_or_update(self, path, data):
-        # type: (str, str) -> None
+    def compare_or_update(self, path: str, data: str) -> None:
         """
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
@@ -43,7 +41,7 @@ class SymforceTestCaseMixin(object):
             return
 
         if SymforceTestCaseMixin.UPDATE:
-            logger.debug('Updating data at: "{}"'.format(path))
+            logger.debug(f'Updating data at: "{path}"')
 
             dirname = os.path.dirname(path)
             if not os.path.exists(dirname):
@@ -52,7 +50,7 @@ class SymforceTestCaseMixin(object):
             with open(path, "w") as f:
                 f.write(data)
         else:
-            logger.debug('Comparing data at: "{}"'.format(path))
+            logger.debug(f'Comparing data at: "{path}"')
             with open(path) as f:
                 expected_data = f.read()
 
@@ -62,8 +60,7 @@ class SymforceTestCaseMixin(object):
                 "Data did not match, use --update to check diff and commit if desired.",
             )
 
-    def compare_or_update_file(self, path, new_file):
-        # type: (str, str) -> None
+    def compare_or_update_file(self, path: str, new_file: str) -> None:
         # TODO(aaron): Remove this check
         if symforce.get_backend() == "sympy":
             logger.warning("Not comparing output because we're on the SymPy backend")
@@ -73,8 +70,7 @@ class SymforceTestCaseMixin(object):
             code = f.read()
         self.compare_or_update(path, code)
 
-    def compare_or_update_directory(self, actual_dir, expected_dir):
-        # type: (str, str) -> None
+    def compare_or_update_directory(self, actual_dir: str, expected_dir: str) -> None:
         """
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.
@@ -84,9 +80,7 @@ class SymforceTestCaseMixin(object):
             logger.warning("Not comparing output because we're on the SymPy backend")
             return
 
-        logger.debug(
-            'Comparing directories: actual="{}", expected="{}"'.format(actual_dir, expected_dir)
-        )
+        logger.debug(f'Comparing directories: actual="{actual_dir}", expected="{expected_dir}"')
         actual_paths = sorted(list(python_util.files_in_dir(actual_dir, relative=True)))
         expected_paths = sorted(list(python_util.files_in_dir(expected_dir, relative=True)))
 

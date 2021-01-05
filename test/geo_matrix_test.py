@@ -13,12 +13,10 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> geo.Matrix
+    def element(cls) -> geo.Matrix:
         return geo.Matrix([-0.2, 5.3, 1.2])
 
-    def test_construction(self):
-        # type: () -> None
+    def test_construction(self) -> None:
         """
             Tests:
                 Matrix.__new__
@@ -78,8 +76,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # when the matrix size grows this big. Investigate.
         # self.assertEqual(type(geo.M(1420, 4332)).__name__, 'Matrix1420_4332')
 
-    def test_matrix_initialization(self):
-        # type: () -> None
+    def test_matrix_initialization(self) -> None:
         """
         Tests:
             Matrix.zero
@@ -111,8 +108,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         mat = geo.Matrix([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
         self.assertEqual(mat, geo.Matrix.column_stack(vec1, vec2, vec3))
 
-    def test_matrix_operations(self):
-        # type: () -> None
+    def test_matrix_operations(self) -> None:
         """
         Tests:
             Matrix.Matrix_inverse
@@ -130,8 +126,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.Matrix.eye(2), diag_matrix / 2)
         self.assertEqual(geo.Matrix.eye(2), geo.Matrix(test_matrix / test_matrix))
 
-    def test_symbolic_operations(self):
-        # type: () -> None
+    def test_symbolic_operations(self) -> None:
         """
         Tests:
             Matrix.symbolic
@@ -182,8 +177,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertRaises(AssertionError, lambda: geo.M.symbolic("C"))
         self.assertRaises(AssertionError, lambda: geo.M.from_storage([1, 2, 3]))
 
-    def test_constructor_helpers(self):
-        # type: () -> None
+    def test_constructor_helpers(self) -> None:
         """
         Tests:
             VectorX, ZX, IX constructor helpers
@@ -204,8 +198,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         for i, mat in enumerate(eye_matrix_constructors):
             self.assertEqual(mat(), geo.Matrix.eye(i + 1))
 
-    def test_row_col_join(self):
-        # type: () -> None
+    def test_row_col_join(self) -> None:
         """
         Tests:
             row_join
@@ -214,8 +207,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.M33().SHAPE, geo.M32().row_join(geo.M31()).SHAPE)
         self.assertEqual(geo.M33().SHAPE, geo.M23().col_join(geo.M13()).SHAPE)
 
-    def test_jacobian(self):
-        # type: () -> None
+    def test_jacobian(self) -> None:
         """
         Tests:
             Matrix.jacobian
@@ -242,8 +234,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         vec = mat[:, 0]
         self.assertRaises(AssertionError, lambda: mat.jacobian(vec))
 
-    def test_block_matrix(self):
-        # type: () -> None
+    def test_block_matrix(self) -> None:
         """
         Tests:
             Matrix.block_matrix
@@ -268,8 +259,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             AssertionError, lambda: geo.M.block_matrix([[M22, geo.M33()], [M11, M14]])
         )
 
-    def test_transpose(self):
-        # type: () -> None
+    def test_transpose(self) -> None:
         """
         Tests:
             Matrix.T

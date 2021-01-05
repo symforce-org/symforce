@@ -8,6 +8,8 @@ PYTHON3=***REMOVED***/bin/***REMOVED***
 # with Python 3 because of 2/3 gen differences. Resolve this.
 PYTHON=$(PYTHON3)
 
+PYTHON_VERSION=$(shell $(PYTHON) -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
+
 BLACK_EXCLUDE='symforce/codegen/python_templates|/gen/|test_data/'
 
 CPP_FORMAT=clang-format-8
@@ -50,8 +52,18 @@ check_format:
 	$(foreach file, $(CPP_FILES), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
 
 # Check type hints using mypy
+# NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
+# See https://github.com/python/mypy/issues/8548
+# We don't need to run find on `symforce` because we know the whole thing is a package
+# TODO(aaron): also lint generated python
+MYPY_COMMAND=$(PYTHON) -m mypy --python-version $(PYTHON_VERSION) --disallow-untyped-defs
 check_types:
-	$(PYTHON) -m mypy --py2 . test --disallow-untyped-defs
+	$(MYPY_COMMAND) symforce $(shell find . \
+		-path ./symforce -prune -false \
+		-o -path "./test/*/lcmtypes/*" -prune -false \
+		-o -path "./test/symforce_function_codegen_test_data" -prune -false \
+		-o -path ./gen -prune -false \
+		-o -name "*.py")
 
 # Lint check for formatting and type hints
 # This needs pass before any merge.

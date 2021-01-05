@@ -21,15 +21,13 @@ class CamTestMixin(_Base):
     EPSILON = 1e-8
 
     @classmethod
-    def element(cls):
-        # type: () -> T.Any
+    def element(cls) -> T.Any:
         """
         Overriden by child to provide an example of a camera or camera calibration object.
         """
         raise NotImplementedError()
 
-    def test_pixel_from_camera_point(self):
-        # type: () -> None
+    def test_pixel_from_camera_point(self) -> None:
         """
         Tests:
             pixel_from_camera_point
@@ -48,8 +46,7 @@ class CamTestMixin(_Base):
             else:
                 self.assertNear(is_valid_forward_proj, 0)
 
-    def test_camera_ray_from_pixel(self):
-        # type: () -> None
+    def test_camera_ray_from_pixel(self) -> None:
         """
         Tests:
             camera_ray_from_pixel

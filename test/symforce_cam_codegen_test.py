@@ -21,8 +21,9 @@ SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
 
 # For testing generation of functions that take camera objects as arguments
-def pixel_to_ray_and_back(pixel, cam, epsilon=0):
-    # type: (geo.Matrix21, cam.LinearCameraCal, T.Scalar) -> geo.Matrix21
+def pixel_to_ray_and_back(
+    pixel: geo.Matrix21, cam: cam.LinearCameraCal, epsilon: T.Scalar = 0
+) -> geo.Matrix21:
     """
     Transform a given pixel into a ray and project the ray back to
     pixel coordinates. Input and output should match.
@@ -37,8 +38,7 @@ class SymforceCamCodegenTest(TestCase):
     Test symforce.codegen.cam_package_codegen.
     """
 
-    def generate_example_function(self, output_dir):
-        # type: (str) -> None
+    def generate_example_function(self, output_dir: str) -> None:
 
         # Create the specification
         namespace = "cam_function_codegen_test"
@@ -55,13 +55,12 @@ class SymforceCamCodegenTest(TestCase):
             expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data", "cpp"),
         )
 
-    def test_codegen_cpp(self):
-        # type: () -> None
+    def test_codegen_cpp(self) -> None:
         """
         Test C++ code generation from camera types.
         """
         output_dir = tempfile.mkdtemp(prefix="sf_cam_package_codegen_test_", dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        logger.debug(f"Creating temp directory: {output_dir}")
 
         try:
             # Generate cam package + tests

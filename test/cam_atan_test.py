@@ -15,16 +15,14 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> cam.ATANCameraCal
+    def element(cls) -> cam.ATANCameraCal:
         [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
         omega = np.random.uniform(low=0.1, high=0.8)
         return cam.ATANCameraCal(
             focal_length=(f_x, f_y), principal_point=(c_x, c_y), distortion_coeffs=[omega]
         )
 
-    def test_is_valid(self):
-        # type: () -> None
+    def test_is_valid(self) -> None:
         """
         Tests if random points and pixels are correctly labeled as valid/invalid
         """
@@ -51,8 +49,7 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
             else:
                 self.assertNear(is_valid_back_proj, 1)
 
-    def test_invalid_points(self):
-        # type: () -> None
+    def test_invalid_points(self) -> None:
         """
         Tests if specific invalid points are correctly labeled as invalid
         """
@@ -70,8 +67,7 @@ class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
                 _, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
                 self.assertTrue(is_valid_forward_proj == 0)
 
-    def test_invalid_pixels(self):
-        # type: () -> None
+    def test_invalid_pixels(self) -> None:
         """
         Tests if specific invalid pixels are correctly labeled as invalid
         """

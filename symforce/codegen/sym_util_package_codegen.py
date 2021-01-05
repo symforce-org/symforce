@@ -6,15 +6,14 @@ from symforce.codegen import CodegenMode
 from symforce.codegen import template_util
 
 
-def generate(mode, output_dir=None):
-    # type: (CodegenMode, str) -> str
+def generate(mode: CodegenMode, output_dir: str = None) -> str:
     """
     Generate the sym util package for the given language.
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(mode.name), dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{mode.name}_", dir="/tmp")
+        logger.debug(f"Creating temp directory: {output_dir}")
 
     # Subdirectory for everything we'll generate
     package_dir = os.path.join(output_dir, "sym", "util")

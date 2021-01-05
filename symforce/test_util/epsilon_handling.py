@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import symforce
 from symforce import sympy as sm
 from symforce import types as T
@@ -11,19 +9,19 @@ except NameError:
     _default_display_func = print
 
 
-def _limit_and_simplify(expr, x, value, limit_direction):
-    # type: (sm.Expr, T.Scalar, T.Scalar, str) -> T.Scalar
+def _limit_and_simplify(
+    expr: sm.Expr, x: T.Scalar, value: T.Scalar, limit_direction: str
+) -> T.Scalar:
     return sm.simplify(expr.limit(x, value, limit_direction))
 
 
 def is_value_with_epsilon_correct(
-    func,  # type: T.Callable[[T.Scalar, T.Scalar], sm.Expr]
-    singularity=0,  # type: T.Scalar
-    limit_direction="+",  # type: str
-    display_func=_default_display_func,  # type: T.Callable[[T.Any], None]
-    expected_value=None,  # type: T.Scalar
-):
-    # type: (...) -> bool
+    func: T.Callable[[T.Scalar, T.Scalar], sm.Expr],
+    singularity: T.Scalar = 0,
+    limit_direction: str = "+",
+    display_func: T.Callable[[T.Any], None] = _default_display_func,
+    expected_value: T.Scalar = None,
+) -> bool:
     """
     Check epsilon handling for the value of a function that accepts a single value and an epsilon.
 
@@ -79,9 +77,7 @@ def is_value_with_epsilon_correct(
                 display_func(expr_raw)
                 display_func(expr_eps)
 
-            display_func(
-                "[ERROR] Values at x={} not match (raw / eps / eps.limit):".format(singularity)
-            )
+            display_func(f"[ERROR] Values at x={singularity} not match (raw / eps / eps.limit):")
             display_func(value_x0_raw)
             display_func(value_x0_eps)
             display_func(value_x0_eps_sub2)
@@ -91,13 +87,12 @@ def is_value_with_epsilon_correct(
 
 
 def is_derivative_with_epsilon_correct(
-    func,  # type: T.Callable[[T.Scalar, T.Scalar], sm.Expr]
-    singularity=0,  # type: T.Scalar
-    limit_direction="+",  # type: str
-    display_func=_default_display_func,  # type: T.Callable[[T.Any], None]
-    expected_derivative=None,  # type: T.Scalar
-):
-    # type: (...) -> bool
+    func: T.Callable[[T.Scalar, T.Scalar], sm.Expr],
+    singularity: T.Scalar = 0,
+    limit_direction: str = "+",
+    display_func: T.Callable[[T.Any], None] = _default_display_func,
+    expected_derivative: T.Scalar = None,
+) -> bool:
     """
     Check epsilon handling for the derivative of a function that accepts a single value and an
     epsilon.
@@ -142,7 +137,7 @@ def is_derivative_with_epsilon_correct(
             display_func(expr_eps)
 
             display_func(
-                "[ERROR] Derivatives at x={} not match (raw / eps / eps.limit):".format(singularity)
+                f"[ERROR] Derivatives at x={singularity} not match (raw / eps / eps.limit):"
             )
             display_func(derivative_x0_raw)
             display_func(derivative_x0_eps)
@@ -153,14 +148,13 @@ def is_derivative_with_epsilon_correct(
 
 
 def is_epsilon_correct(
-    func,  # type: T.Callable[[T.Scalar, T.Scalar], T.Scalar]
-    singularity=0,  # type: T.Scalar
-    limit_direction="+",  # type: str
-    display_func=_default_display_func,  # type: T.Callable[[T.Any], None]
-    expected_value=None,  # type: T.Scalar
-    expected_derivative=None,  # type: T.Scalar
-):
-    # type: (...) -> bool
+    func: T.Callable[[T.Scalar, T.Scalar], T.Scalar],
+    singularity: T.Scalar = 0,
+    limit_direction: str = "+",
+    display_func: T.Callable[[T.Any], None] = _default_display_func,
+    expected_value: T.Scalar = None,
+    expected_derivative: T.Scalar = None,
+) -> bool:
     """
     Check epsilon handling for a function that accepts a single value and an epsilon.
 

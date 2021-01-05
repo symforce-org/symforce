@@ -14,8 +14,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> Values
+    def element(cls) -> Values:
         v = Values()
         v["float"] = 3.0
         v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)))
@@ -29,22 +28,21 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         ]
         return v
 
-    def test_as_ordered_dict(self):
-        # type: () -> None
+    def test_as_ordered_dict(self) -> None:
         # TODO(nathan): Disallow adding strings as elements? Certain functions break with string elements
         v = Values(z=5, bar="foo")
         self.assertEqual(v["z"], 5)
         self.assertEqual(v["bar"], "foo")
 
-        keys = list(v.keys())
+        keys = v.keys()
         self.assertEqual(len(keys), 2)
         self.assertEqual(keys[0], "z")
 
-        values = list(v.values())
+        values = v.values()
         self.assertEqual(len(values), 2)
         self.assertEqual(values[0], 5)
 
-        items = list(v.items())
+        items = v.items()
         self.assertEqual(len(items), 2)
         self.assertEqual(items[0], ("z", 5))
 
@@ -75,8 +73,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         string = repr(v)
         logger.debug("v:\n" + string)
 
-    def test_name_scope(self):
-        # type: () -> None
+    def test_name_scope(self) -> None:
         s = sm.Symbol("foo.blah")
         self.assertEqual("foo.blah", s.name)
 
@@ -87,8 +84,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual("hey.you", v.name)
         self.assertEqual("hey.there.what", w.name)
 
-    def test_values(self):
-        # type: () -> None
+    def test_values(self) -> None:
         v = Values()
         self.assertEqual(len(v.keys()), 0)
 
@@ -144,7 +140,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         Values.from_storage_index(v.to_storage(), v.index())
 
         # Unknown type
-        class Floop(object):
+        class Floop:
             pass
 
         v["uhoh"] = Floop()
@@ -160,8 +156,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v["list"].append(4)
         self.assertNotEqual(new_v, v)
 
-    def test_evalf(self):
-        # type: () -> None
+    def test_evalf(self) -> None:
         v = Values()
         v["a"] = sm.S.One / 3
         v["b"] = geo.Rot3.from_axis_angle(axis=geo.V3(1, 0, 0), angle=sm.pi / 2)
@@ -174,8 +169,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(v["a"].evalf(), v_evalf["a"])
         self.assertNear(v_evalf["a"], 0.3333333, places=6)
 
-    def test_mixing_scopes(self):
-        # type: () -> None
+    def test_mixing_scopes(self) -> None:
         v1 = Values()
         v1.add("x")
         with sm.scope("foo"):
@@ -198,8 +192,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         self.assertEqual(v2, v2_expected)
 
-    def test_from_tangent_scalar(self):
-        # type: () -> None
+    def test_from_tangent_scalar(self) -> None:
         """
         Ensure `.from_tangent` works with native python types as keys.
         """
@@ -216,9 +209,8 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_storage(entries).items()))
 
     @slow_on_sympy
-    def test_tangent_D_storage(self):
-        # type: () -> None
-        super(SymforceValuesTest, self).test_tangent_D_storage()
+    def test_tangent_D_storage(self) -> None:
+        super().test_tangent_D_storage()
 
 
 if __name__ == "__main__":

@@ -21,8 +21,9 @@ SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
 
 # Test function
-def az_el_from_point(nav_T_cam, nav_t_point, epsilon=0):
-    # type: (geo.Pose3, geo.Matrix, T.Scalar) -> geo.Matrix
+def az_el_from_point(
+    nav_T_cam: geo.Pose3, nav_t_point: geo.Matrix, epsilon: T.Scalar = 0
+) -> geo.Matrix:
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.
@@ -48,8 +49,7 @@ class SymforceCodegenTest(TestCase):
     """
 
     @staticmethod
-    def build_values():
-        # type: () -> T.Tuple[Values, Values]
+    def build_values() -> T.Tuple[Values, Values]:
         """
         Create some example input/output values.
         """
@@ -114,8 +114,7 @@ class SymforceCodegenTest(TestCase):
     # -------------------------------------------------------------------------
 
     @slow_on_sympy
-    def test_codegen_python(self):
-        # type: () -> None
+    def test_codegen_python(self) -> None:
         """
         Test python code generation.
         """
@@ -197,8 +196,7 @@ class SymforceCodegenTest(TestCase):
             if logger.level != logging.DEBUG:
                 python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_function_codegen_python(self):
-        # type: () -> None
+    def test_function_codegen_python(self) -> None:
 
         # Create the specification
         az_el_codegen = Codegen.function(
@@ -225,8 +223,7 @@ class SymforceCodegenTest(TestCase):
     # -------------------------------------------------------------------------
 
     @slow_on_sympy
-    def test_codegen_cpp(self):
-        # type: () -> None
+    def test_codegen_cpp(self) -> None:
         """
         Test C++ code generation.
         """
@@ -271,8 +268,7 @@ class SymforceCodegenTest(TestCase):
             if logger.level != logging.DEBUG:
                 python_util.remove_if_exists(codegen_data["output_dir"])
 
-    def test_function_codegen_cpp(self):
-        # type: () -> None
+    def test_function_codegen_cpp(self) -> None:
 
         # Create the specification
         az_el_codegen = Codegen.function(
@@ -292,8 +288,7 @@ class SymforceCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(az_el_codegen_data["output_dir"])
 
-    def test_cpp_nan(self):
-        # type: () -> None
+    def test_cpp_nan(self) -> None:
         inputs = Values()
         inputs["R1"] = geo.Rot3.symbolic("R1")
         inputs["e"] = sm.Symbol("e")
@@ -339,8 +334,7 @@ class SymforceCodegenTest(TestCase):
             python_util.remove_if_exists(codegen_data["output_dir"])
 
     @slow_on_sympy
-    def test_multi_function_codegen_cpp(self):
-        # type: () -> None
+    def test_multi_function_codegen_cpp(self) -> None:
         inputs, outputs_1 = self.build_values()
         outputs_2 = Values()
         outputs_2["foo"] = inputs["y"] ** 3 + inputs["x"]
@@ -360,7 +354,7 @@ class SymforceCodegenTest(TestCase):
 
         namespace = "codegen_multi_function"
         output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        logger.debug(f"Creating temp directory: {output_dir}")
 
         shared_types = {
             "inputs.values_vec": "values_vec_t",
@@ -402,8 +396,7 @@ class SymforceCodegenTest(TestCase):
             python_util.remove_if_exists(output_dir)
 
     @slow_on_sympy
-    def test_sparse_matrix_codegen(self):
-        # type: () -> None
+    def test_sparse_matrix_codegen(self) -> None:
         """
         Tests:
             Generation of code that outputs a sparse matrix
@@ -421,7 +414,7 @@ class SymforceCodegenTest(TestCase):
 
         namespace = "codegen_sparse_matrices"
         output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        logger.debug(f"Creating temp directory: {output_dir}")
 
         # Function that creates a sparse matrix
         get_sparse_func = Codegen(
@@ -492,8 +485,7 @@ class SymforceCodegenTest(TestCase):
             python_util.remove_if_exists(get_sparse_func_data["output_dir"])
             python_util.remove_if_exists(update_spase_func_data["output_dir"])
 
-    def test_invalid_codegen_raises(self):
-        # type: () -> None
+    def test_invalid_codegen_raises(self) -> None:
         """
         Tests:
             Codegen outputs must be a function of given inputs
@@ -535,8 +527,7 @@ class SymforceCodegenTest(TestCase):
         outputs = Values(x=x)
         self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
 
-    def test_create_with_derivatives(self):
-        # type: () -> None
+    def test_create_with_derivatives(self) -> None:
         """
         Tests:
             Codegen.create_with_derivatives

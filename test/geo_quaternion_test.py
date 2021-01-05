@@ -13,8 +13,7 @@ class GeoQuaternionTest(GroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> geo.Quaternion
+    def element(cls) -> geo.Quaternion:
         return geo.Quaternion(xyz=geo.V3(0.1, -0.3, 1.3), w=3.2)
 
 

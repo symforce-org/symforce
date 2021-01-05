@@ -17,8 +17,9 @@ class EquidistantEpipolarCameraCal(CameraCal):
 
     NUM_DISTORTION_COEFFS = 0
 
-    def pixel_from_camera_point(self, point, epsilon=0):
-        # type: (geo.Matrix31, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
+    def pixel_from_camera_point(
+        self, point: geo.Matrix31, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
         cam_yz_norm = sm.sqrt(point[1] ** 2 + point[2] ** 2 + epsilon)
         ud_x = sm.atan2(point[0], cam_yz_norm)
         ud_y = sm.atan2(point[1], point[2] + epsilon)
@@ -31,8 +32,9 @@ class EquidistantEpipolarCameraCal(CameraCal):
         is_valid = sm.Max(sm.sign(point[2]), 0)
         return pixel, is_valid
 
-    def camera_ray_from_pixel(self, pixel, epsilon=0):
-        # type: (geo.Matrix21, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
+    def camera_ray_from_pixel(
+        self, pixel: geo.Matrix21, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
         linear_camera_cal = LinearCameraCal(
             self.focal_length.to_flat_list(), self.principal_point.to_flat_list()
         )

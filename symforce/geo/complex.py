@@ -1,4 +1,5 @@
-from __future__ import division, absolute_import
+from __future__ import annotations
+
 import numpy as np
 
 from symforce.ops.interfaces import Group
@@ -22,8 +23,7 @@ class Complex(Group):
         https://en.wikipedia.org/wiki/Complex_number
     """
 
-    def __init__(self, real, imag):
-        # type: (T.Scalar, T.Scalar) -> None
+    def __init__(self, real: T.Scalar, imag: T.Scalar) -> None:
         """
         Construct from a real and imaginary scalar.
 
@@ -38,50 +38,40 @@ class Complex(Group):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<C real={}, imag={}>".format(repr(self.real), repr(self.imag))
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return 2
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return [self.real, self.imag]
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Complex
+    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> Complex:
         assert len(vec) == cls.storage_dim()
         return cls(real=vec[0], imag=vec[1])
 
     @classmethod
-    def symbolic(cls, name, **kwargs):
-        # type: (str, T.Any) -> Complex
-        return cls.from_storage(
-            [sm.Symbol("{}_{}".format(name, v), **kwargs) for v in ["re", "im"]]
-        )
+    def symbolic(cls, name: str, **kwargs: T.Any) -> Complex:
+        return cls.from_storage([sm.Symbol(f"{name}_{v}", **kwargs) for v in ["re", "im"]])
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Complex
+    def identity(cls) -> Complex:
         return Complex(1, 0)
 
-    def compose(self, other):
-        # type: (Complex) -> Complex
+    def compose(self, other: Complex) -> Complex:
         return self.__class__(
             real=self.real * other.real - self.imag * other.imag,
             imag=self.imag * other.real + self.real * other.imag,
         )
 
-    def inverse(self):
-        # type: () -> Complex
+    def inverse(self) -> Complex:
         return self.conj() / self.squared_norm()
 
     # -------------------------------------------------------------------------
@@ -89,8 +79,7 @@ class Complex(Group):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def zero(cls):
-        # type: () -> Complex
+    def zero(cls) -> Complex:
         """
         Zero value.
 
@@ -99,8 +88,7 @@ class Complex(Group):
         """
         return cls(0, 0)
 
-    def conj(self):
-        # type: () -> Complex
+    def conj(self) -> Complex:
         """
         Complex conjugate (real, -imag).
 
@@ -109,8 +97,7 @@ class Complex(Group):
         """
         return self.__class__(self.real, -self.imag)
 
-    def squared_norm(self):
-        # type: () -> T.Scalar
+    def squared_norm(self) -> T.Scalar:
         """
         Squared norm of the two-vector.
 
@@ -119,8 +106,7 @@ class Complex(Group):
         """
         return self.real ** 2 + self.imag ** 2
 
-    def __mul__(self, right):
-        # type: (Complex) -> Complex
+    def __mul__(self, right: Complex) -> Complex:
         """
         Complex multiplication (composition).
 
@@ -132,8 +118,7 @@ class Complex(Group):
         """
         return self.compose(right)
 
-    def __add__(self, right):
-        # type: (Complex) -> Complex
+    def __add__(self, right: Complex) -> Complex:
         """
         Element-wise addition.
 
@@ -145,8 +130,7 @@ class Complex(Group):
         """
         return self.__class__(self.real + right.real, self.imag + right.imag)
 
-    def __neg__(self):
-        # type: () -> Complex
+    def __neg__(self) -> Complex:
         """
         Element-wise negation.
 
@@ -155,8 +139,7 @@ class Complex(Group):
         """
         return self.__class__(-self.real, -self.imag)
 
-    def __div__(self, scalar):
-        # type: (T.Scalar) -> Complex
+    def __div__(self, scalar: T.Scalar) -> Complex:
         """
         Scalar element-wise division.
 
@@ -171,8 +154,7 @@ class Complex(Group):
     __truediv__ = __div__
 
     @classmethod
-    def random_uniform(cls, low, high):
-        # type: (T.Scalar, T.Scalar) -> Complex
+    def random_uniform(cls, low: T.Scalar, high: T.Scalar) -> Complex:
         """
         Generate a random complex number with real and imaginary parts between the given bounds
         """
@@ -181,8 +163,7 @@ class Complex(Group):
         return Complex(re, im)
 
     @classmethod
-    def unit_random(cls):
-        # type: () -> Complex
+    def unit_random(cls) -> Complex:
         """
         Generate a unit-norm random complex number
         """
@@ -190,8 +171,7 @@ class Complex(Group):
         return cls.unit_random_from_uniform_sample(u1, pi=np.pi)
 
     @classmethod
-    def unit_random_from_uniform_sample(cls, u1, pi=sm.pi):
-        # type: (T.Scalar, T.Scalar) -> Complex
+    def unit_random_from_uniform_sample(cls, u1: T.Scalar, pi: T.Scalar = sm.pi) -> Complex:
         """
         Generate a unit-norm random Complex number from a variable sampled uniformly on [0, 1]
         """

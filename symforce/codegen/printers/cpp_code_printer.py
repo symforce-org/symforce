@@ -9,8 +9,7 @@ class CppCodePrinter(CXX11CodePrinter):
     behavior for codegen compatibility and efficiency.
     """
 
-    def _print_Pow(self, expr):
-        # type: (sm.Pow) -> str
+    def _print_Pow(self, expr: sm.Pow) -> str:
         """
         Customizations:
             * Convert small powers into multiplies, divides, and square roots.
@@ -18,20 +17,19 @@ class CppCodePrinter(CXX11CodePrinter):
         base_str = self._print(expr.base)
 
         if expr.exp == -1:
-            return "1.0 / ({})".format(base_str)
+            return f"1.0 / ({base_str})"
         elif expr.exp == 2:
-            return "({} * {})".format(base_str, base_str)
+            return f"({base_str} * {base_str})"
         elif expr.exp == 3:
-            return "({} * {} * {})".format(base_str, base_str, base_str)
+            return f"({base_str} * {base_str} * {base_str})"
         elif expr.exp == sm.S.One / 2:
-            return "{}sqrt({})".format(self._ns, base_str)
+            return f"{self._ns}sqrt({base_str})"
         elif expr.exp == sm.S(3) / 2:
-            return "({} * {}sqrt({}))".format(base_str, self._ns, base_str)
+            return f"({base_str} * {self._ns}sqrt({base_str}))"
         else:
             return "{}pow({}, {})".format(self._ns, base_str, self._print(expr.exp))
 
-    def _print_Max(self, expr):
-        # type: (sm.Max) -> str
+    def _print_Max(self, expr: sm.Max) -> str:
         """
         Customizations:
             * Emit template type to avoid deduction errors.
@@ -48,8 +46,7 @@ class CppCodePrinter(CXX11CodePrinter):
 
         return "{}max<Scalar>({}, {})".format(self._ns, self._print(expr.args[0]), rhs)
 
-    def _print_Min(self, expr):
-        # type: (sm.Min) -> str
+    def _print_Min(self, expr: sm.Min) -> str:
         """
         Customizations:
             * Emit template type to avoid deduction errors.
@@ -66,8 +63,7 @@ class CppCodePrinter(CXX11CodePrinter):
 
         return "{}min<Scalar>({}, {})".format(self._ns, self._print(expr.args[0]), rhs)
 
-    def _print_Heaviside(self, expr):
-        # type: (sm.Heaviside) -> str
+    def _print_Heaviside(self, expr: "sm.Heaviside") -> str:
         """
         Heaviside is not supported by default in C++, so we add a version here.
         """

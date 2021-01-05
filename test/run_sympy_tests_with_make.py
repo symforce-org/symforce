@@ -13,8 +13,7 @@ class SymforceMakeTestSymPy(TestCase):
     Run `make test_sympy`, which runs all python tests on SymPy
     """
 
-    def test_with_make(self):
-        # type: () -> None
+    def test_with_make(self) -> None:
         try:
             python_util.execute_subprocess(["make", "test_sympy"], cwd=SYMFORCE_DIR)
         except subprocess.CalledProcessError as exc:

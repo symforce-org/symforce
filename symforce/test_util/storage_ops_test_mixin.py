@@ -17,23 +17,20 @@ class StorageOpsTestMixin(_Base):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> T.Any
+    def element(cls) -> T.Any:
         """
         Overriden by child to provide an example non-identity element.
         """
         raise NotImplementedError()
 
     @classmethod
-    def element_type(cls):
-        # type: () -> T.Type
+    def element_type(cls) -> T.Type:
         """
         Returns the type of the StorageOps-compatible class being tested.
         """
         return type(cls.element())
 
-    def test_storage_ops(self):
-        # type: () -> None
+    def test_storage_ops(self) -> None:
         """
         Tests:
             storage_dim

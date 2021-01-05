@@ -5,7 +5,7 @@ from symforce import sympy as sm
 from symforce import types as T
 
 
-class Storage(object):
+class Storage:
     """
     Interface for objects that implement the storage concept. Because this
     class is registered using ClassStorageOps (see bottom of this file), any
@@ -23,22 +23,19 @@ class Storage(object):
     StorageT = T.TypeVar("StorageT", bound="Storage")
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         """
         Dimension of underlying storage
         """
         raise NotImplementedError()
 
-    def __repr__(self):
-        # type: (StorageT) -> str
+    def __repr__(self: StorageT) -> str:
         """
         String representation of this type.
         """
         raise NotImplementedError()
 
-    def to_storage(self):
-        # type: (StorageT) -> T.List[T.Scalar]
+    def to_storage(self: StorageT) -> T.List[T.Scalar]:
         """
         Flat list representation of the underlying storage, length of STORAGE_DIM.
         This is used purely for plumbing, it is NOT like a tangent space.
@@ -46,21 +43,13 @@ class Storage(object):
         raise NotImplementedError()
 
     @classmethod
-    def from_storage(
-        cls,  # type: T.Type[StorageT]
-        elements,  # type: T.Sequence[T.Scalar]
-    ):
-        # type: (...) -> StorageT
+    def from_storage(cls: T.Type[StorageT], elements: T.Sequence[T.Scalar],) -> StorageT:
         """
         Construct from a flat list representation. Opposite of `.to_storage()`.
         """
         raise NotImplementedError()
 
-    def __eq__(
-        self,  # type: StorageT
-        other,  # type: T.Any
-    ):
-        # type: (...) -> bool
+    def __eq__(self: StorageT, other: T.Any,) -> bool:
         """
         Returns exact equality between self and other.
         """
@@ -76,12 +65,7 @@ class Storage(object):
 
         return True
 
-    def subs(
-        self,  # type: StorageT
-        *args,  # type: T.Any
-        **kwargs  # type: T.Any
-    ):
-        # type: (...) -> StorageT
+    def subs(self: StorageT, *args: T.Any, **kwargs: T.Any) -> StorageT:
         """
         Substitute given values of each scalar element into a new instance.
         """
@@ -89,37 +73,29 @@ class Storage(object):
         return self.from_storage([sm.S(s).subs(*args, **kwargs) for s in self.to_storage()])
 
     # TODO(hayk): Way to get sm.simplify to work on these types directly?
-    def simplify(self):
-        # type: (StorageT) -> StorageT
+    def simplify(self: StorageT) -> StorageT:
         """
         Simplify each scalar element into a new instance.
         """
         return self.from_storage(sm.simplify(sm.Matrix(self.to_storage())))
 
     @classmethod
-    def symbolic(
-        cls,  # type: T.Type[StorageT]
-        name,  # type: str
-        **kwargs  # type: T.Any
-    ):
-        # type: (...) -> StorageT
+    def symbolic(cls: T.Type[StorageT], name: str, **kwargs: T.Any) -> StorageT:
         """
         Construct a symbolic element with the given name prefix. Kwargs are forwarded
         to sm.Symbol (for example, sympy assumptions).
         """
         return cls.from_storage(
-            [sm.Symbol("{}_{}".format(name, i), **kwargs) for i in range(cls.storage_dim())]
+            [sm.Symbol(f"{name}_{i}", **kwargs) for i in range(cls.storage_dim())]
         )
 
-    def evalf(self):
-        # type: (StorageT) -> StorageT
+    def evalf(self: StorageT) -> StorageT:
         """
         Numerical evaluation.
         """
         return self.from_storage([ops.StorageOps.evalf(e) for e in self.to_storage()])
 
-    def __hash__(self):
-        # type: () -> int
+    def __hash__(self) -> int:
         """
         Hash this object in immutable form, by combining all their scalar hashes.
 

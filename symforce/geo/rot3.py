@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from symforce.ops.interfaces import LieGroup
@@ -19,8 +21,7 @@ class Rot3(LieGroup):
     rotations in 3D space. Backed by a quaternion with (x, y, z, w) storage.
     """
 
-    def __init__(self, q=None):
-        # type: (Quaternion) -> None
+    def __init__(self, q: Quaternion = None) -> None:
         """
         Construct from a unit quaternion, or identity if none provided.
         """
@@ -31,27 +32,22 @@ class Rot3(LieGroup):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<Rot3 {}>".format(repr(self.q))
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return Quaternion.storage_dim()
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return self.q.to_storage()
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Rot3
+    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> Rot3:
         return cls(Quaternion.from_storage(vec))
 
     @classmethod
-    def symbolic(cls, name, **kwargs):
-        # type: (str, T.Any) -> Rot3
+    def symbolic(cls, name: str, **kwargs: T.Any) -> Rot3:
         return cls(Quaternion.symbolic(name, **kwargs))
 
     # -------------------------------------------------------------------------
@@ -59,16 +55,13 @@ class Rot3(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Rot3
+    def identity(cls) -> Rot3:
         return cls(Quaternion.identity())
 
-    def compose(self, other):
-        # type: (Rot3) -> Rot3
+    def compose(self, other: Rot3) -> Rot3:
         return Rot3(self.q * other.q)
 
-    def inverse(self):
-        # type: () -> Rot3
+    def inverse(self) -> Rot3:
         # NOTE(hayk): Since we have a unit quaternion, no need to call q.inv()
         # and divide by the squared norm.
         return self.__class__(self.q.conj())
@@ -78,21 +71,18 @@ class Rot3(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def tangent_dim(cls):
-        # type: () -> int
+    def tangent_dim(cls) -> int:
         return 3
 
     @classmethod
-    def from_tangent(cls, v, epsilon=0):
-        # type: (T.Sequence[T.Scalar], T.Scalar) -> Rot3
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Rot3:
         vm = Matrix(v)
         theta_sq = vm.squared_norm()
         theta = sm.sqrt(theta_sq + epsilon ** 2)
         assert theta != 0, "Trying to divide by zero, provide epsilon!"
         return cls(Quaternion(xyz=sm.sin(theta / 2) / theta * vm, w=sm.cos(theta / 2)))
 
-    def logmap_signed_epsilon(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
+    def logmap_signed_epsilon(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Implementation of logmap that uses epsilon with the sign function to avoid NaN.
         """
@@ -101,8 +91,7 @@ class Rot3(LieGroup):
         tangent = 2 * self.q.xyz / norm * sm.acos(w_safe)
         return tangent.to_storage()
 
-    def logmap_acos_clamp_max(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
+    def logmap_acos_clamp_max(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Implementation of logmap that uses epsilon with the Max and Min functions to avoid NaN.
         """
@@ -111,17 +100,14 @@ class Rot3(LieGroup):
         tangent = 2 * self.q.xyz / norm * sm.acos(w_safe)
         return tangent.to_storage()
 
-    def to_tangent(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
+    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         return self.logmap_acos_clamp_max(epsilon=epsilon)
 
     @classmethod
-    def hat(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Matrix33
+    def hat(cls, vec: T.Sequence[T.Scalar]) -> Matrix33:
         return Matrix33([[0, -vec[2], vec[1]], [vec[2], 0, -vec[0]], [-vec[1], vec[0], 0]])
 
-    def storage_D_tangent(self):
-        # type: () -> Matrix43
+    def storage_D_tangent(self) -> Matrix43:
         """
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
@@ -138,8 +124,7 @@ class Rot3(LieGroup):
             )
         )
 
-    def tangent_D_storage(self):
-        # type: () -> Matrix34
+    def tangent_D_storage(self) -> Matrix34:
         """
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
@@ -150,17 +135,14 @@ class Rot3(LieGroup):
     # -------------------------------------------------------------------------
 
     @T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (Matrix31) -> Matrix31
+    def __mul__(self, right: Matrix31) -> Matrix31:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (Rot3) -> Rot3
+    def __mul__(self, right: Rot3) -> Rot3:  # pragma: no cover
         pass
 
-    def __mul__(self, right):
-        # type: (T.Union[Matrix31, Rot3]) -> T.Union[Matrix31, Rot3]
+    def __mul__(self, right: T.Union[Matrix31, Rot3]) -> T.Union[Matrix31, Rot3]:
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -169,10 +151,9 @@ class Rot3(LieGroup):
         elif isinstance(right, Rot3):
             return self.compose(right)
         else:
-            raise NotImplementedError('Unsupported type: "{}"'.format(right))
+            raise NotImplementedError(f'Unsupported type: "{right}"')
 
-    def to_rotation_matrix(self):
-        # type: () -> Matrix33
+    def to_rotation_matrix(self) -> Matrix33:
         """
         Converts to a rotation matrix
         """
@@ -197,8 +178,7 @@ class Rot3(LieGroup):
         )
 
     @classmethod
-    def from_rotation_matrix(cls, R, epsilon=0):
-        # type: (Matrix33, T.Scalar) -> Rot3
+    def from_rotation_matrix(cls, R: Matrix33, epsilon: T.Scalar = 0) -> Rot3:
         """
         Construct from a rotation matrix.
 
@@ -214,8 +194,7 @@ class Rot3(LieGroup):
         z = sm.copysign_no_zero(z, R[1, 0] - R[0, 1])
         return cls(Quaternion(xyz=V3(x, y, z), w=w))
 
-    def to_euler_ypr(self, epsilon=0):
-        # type: (T.Scalar) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]
+    def to_euler_ypr(self, epsilon: T.Scalar = 0) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
         """
         Compute the yaw, pitch, and roll Euler angles in radians of this rotation
 
@@ -238,8 +217,7 @@ class Rot3(LieGroup):
         return y, p, r
 
     @classmethod
-    def from_euler_ypr(cls, yaw, pitch, roll):
-        # type: (T.Scalar, T.Scalar, T.Scalar) -> Rot3
+    def from_euler_ypr(cls, yaw: T.Scalar, pitch: T.Scalar, roll: T.Scalar) -> Rot3:
         """
         Construct from yaw, pitch, and roll Euler angles in radians
         """
@@ -250,16 +228,14 @@ class Rot3(LieGroup):
         )
 
     @classmethod
-    def from_axis_angle(cls, axis, angle):
-        # type: (Matrix31, T.Scalar) -> Rot3
+    def from_axis_angle(cls, axis: Matrix31, angle: T.Scalar) -> Rot3:
         """
         Construct from a (normalized) axis as a 3-vector and an angle in radians.
         """
         return cls(Quaternion(xyz=axis * sm.sin(angle / 2), w=sm.cos(angle / 2)))
 
     @classmethod
-    def from_two_unit_vectors(cls, a, b, epsilon=0):
-        # type: (Matrix31, Matrix31, T.Scalar) -> Rot3
+    def from_two_unit_vectors(cls, a: Matrix31, b: Matrix31, epsilon: T.Scalar = 0) -> Rot3:
         """
         Return a rotation that transforms a to b. Both inputs are three-vectors that
         are expected to be normalized.
@@ -283,24 +259,23 @@ class Rot3(LieGroup):
             )
         )
 
-    def angle_between(self, other, epsilon=0):
-        # type: (Rot3, T.Scalar) -> T.Scalar
+    def angle_between(self, other: Rot3, epsilon: T.Scalar = 0) -> T.Scalar:
         """
         Return the angle between this rotation and the other in radians.
         """
         return Matrix(self.local_coordinates(other, epsilon=epsilon)).norm()
 
     @classmethod
-    def random(cls):
-        # type: () -> Rot3
+    def random(cls) -> Rot3:
         """
         Generate a random element of SO3.
         """
         return cls(Quaternion.unit_random())
 
     @classmethod
-    def random_from_uniform_samples(cls, u1, u2, u3, pi=sm.pi):
-        # type: (T.Scalar, T.Scalar, T.Scalar, T.Scalar) -> Rot3
+    def random_from_uniform_samples(
+        cls, u1: T.Scalar, u2: T.Scalar, u3: T.Scalar, pi: T.Scalar = sm.pi
+    ) -> Rot3:
         """
         Generate a random element of SO3 from three variables uniformly sampled in [0, 1].
         """

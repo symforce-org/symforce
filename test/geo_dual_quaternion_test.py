@@ -13,15 +13,13 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls):
-        # type: () -> geo.DualQuaternion
+    def element(cls) -> geo.DualQuaternion:
         return geo.DualQuaternion(
             real_q=geo.Quaternion(xyz=geo.V3(0.1, -0.3, 1.3), w=3.2),
             inf_q=geo.Quaternion(xyz=geo.V3(1.2, 0.3, 0.7), w=0.1),
         )
 
-    def dual_quaternion_operations(self, a, b):
-        # type: (geo.DualQuaternion, geo.DualQuaternion) -> None
+    def dual_quaternion_operations(self, a: geo.DualQuaternion, b: geo.DualQuaternion) -> None:
         """
         Tests dual quaternion operations
         """
@@ -32,8 +30,7 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
         self.assertEqual(a.squared_norm(), a.real_q.squared_norm() + a.inf_q.squared_norm())
         self.assertEqual(a.conj(), geo.DualQuaternion(a.real_q.conj(), a.inf_q.conj()))
 
-    def test_dual_quaternion_operations_numeric(self):
-        # type: () -> None
+    def test_dual_quaternion_operations_numeric(self) -> None:
         """
         Tests (numeric case):
             DualQuaternion.__mul__
@@ -49,8 +46,7 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
         b = geo.DualQuaternion(b_real, b_inf)
         self.dual_quaternion_operations(a, b)
 
-    def test_dual_quaternion_operations_symbolic(self):
-        # type: () -> None
+    def test_dual_quaternion_operations_symbolic(self) -> None:
         """
         Tests (symbolic case):
             DualQuaternion.__mul__

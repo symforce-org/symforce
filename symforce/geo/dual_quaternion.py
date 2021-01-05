@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from symforce.ops.interfaces import Group
 from symforce import types as T
 
@@ -16,8 +18,7 @@ class DualQuaternion(Group):
         https://en.wikipedia.org/wiki/Dual_quaternion
     """
 
-    def __init__(self, real_q, inf_q):
-        # type: (Quaternion, Quaternion) -> None
+    def __init__(self, real_q: Quaternion, inf_q: Quaternion) -> None:
         """
         Construct from two quaternions - a real one and an infinitesimal one.
 
@@ -32,22 +33,18 @@ class DualQuaternion(Group):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<DQ real={}, inf={}>".format(repr(self.real_q), repr(self.inf_q))
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return 2 * Quaternion.storage_dim()
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return self.real_q.to_storage() + self.inf_q.to_storage()
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> DualQuaternion
+    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> DualQuaternion:
         assert len(vec) == cls.storage_dim()
         return cls(
             real_q=Quaternion.from_storage(vec[0 : Quaternion.storage_dim()]),
@@ -59,19 +56,16 @@ class DualQuaternion(Group):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> DualQuaternion
+    def identity(cls) -> DualQuaternion:
         return cls(Quaternion.identity(), Quaternion.zero())
 
-    def compose(self, other):
-        # type: (DualQuaternion) -> DualQuaternion
+    def compose(self, other: DualQuaternion) -> DualQuaternion:
         return self.__class__(
             real_q=self.real_q * other.real_q,
             inf_q=self.real_q * other.inf_q + self.inf_q * other.real_q,
         )
 
-    def inverse(self):
-        # type: () -> DualQuaternion
+    def inverse(self) -> DualQuaternion:
         return DualQuaternion(
             real_q=self.real_q.inverse(),
             inf_q=-self.real_q.inverse() * self.inf_q * self.real_q.inverse(),
@@ -81,8 +75,7 @@ class DualQuaternion(Group):
     # Helper methods
     # -------------------------------------------------------------------------
 
-    def __mul__(self, right):
-        # type: (DualQuaternion) -> DualQuaternion
+    def __mul__(self, right: DualQuaternion) -> DualQuaternion:
         """
         Left-multiply with another dual quaternion.
 
@@ -94,8 +87,7 @@ class DualQuaternion(Group):
         """
         return self.compose(right)
 
-    def __div__(self, scalar):
-        # type: (T.Scalar) -> DualQuaternion
+    def __div__(self, scalar: T.Scalar) -> DualQuaternion:
         """
         Scalar division.
 
@@ -109,8 +101,7 @@ class DualQuaternion(Group):
 
     __truediv__ = __div__
 
-    def squared_norm(self):
-        # type: () -> T.Scalar
+    def squared_norm(self) -> T.Scalar:
         """
         Squared norm when considering the dual quaternion as 8-tuple.
 
@@ -119,8 +110,7 @@ class DualQuaternion(Group):
         """
         return self.real_q.squared_norm() + self.inf_q.squared_norm()
 
-    def conj(self):
-        # type: () -> DualQuaternion
+    def conj(self) -> DualQuaternion:
         """
         Dual quaternion conjugate.
 

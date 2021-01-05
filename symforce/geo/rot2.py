@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from symforce.ops.interfaces.lie_group import LieGroup
@@ -17,8 +19,7 @@ class Rot2(LieGroup):
     in 2D space. Backed by a complex number.
     """
 
-    def __init__(self, z=None):
-        # type: (Complex) -> None
+    def __init__(self, z: Complex = None) -> None:
         """
         Construct from a unit complex number, or identity if none provided.
 
@@ -32,27 +33,22 @@ class Rot2(LieGroup):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<Rot2 {}>".format(repr(self.z))
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return 2
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return self.z.to_storage()
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Rot2
+    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> Rot2:
         return cls(Complex.from_storage(vec))
 
     @classmethod
-    def symbolic(cls, name, **kwargs):
-        # type: (str, T.Any) -> Rot2
+    def symbolic(cls, name: str, **kwargs: T.Any) -> Rot2:
         return cls(Complex.symbolic(name, **kwargs))
 
     # -------------------------------------------------------------------------
@@ -60,16 +56,13 @@ class Rot2(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Rot2
+    def identity(cls) -> Rot2:
         return cls(Complex.identity())
 
-    def compose(self, other):
-        # type: (Rot2) -> Rot2
+    def compose(self, other: Rot2) -> Rot2:
         return self.__class__(self.z * other.z)
 
-    def inverse(self):
-        # type: () -> Rot2
+    def inverse(self) -> Rot2:
         return self.__class__(self.z.inverse())
 
     # -------------------------------------------------------------------------
@@ -77,37 +70,31 @@ class Rot2(LieGroup):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def tangent_dim(cls):
-        # type: () -> int
+    def tangent_dim(cls) -> int:
         return 1
 
     @classmethod
-    def from_tangent(cls, v, epsilon=0):
-        # type: (T.Sequence[T.Scalar], T.Scalar) -> Rot2
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Rot2:
         assert len(v) == 1
         theta = v[0]
         return Rot2(Complex(sm.cos(theta), sm.sin(theta)))
 
-    def to_tangent(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
+    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         return [sm.atan2(self.z.imag, self.z.real)]
 
     @classmethod
-    def hat(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Matrix22
+    def hat(cls, vec: T.Sequence[T.Scalar]) -> Matrix22:
         assert len(vec) == 1
         theta = vec[0]
         return Matrix22([[0, -theta], [theta, 0]])
 
-    def storage_D_tangent(self):
-        # type: () -> Matrix21
+    def storage_D_tangent(self) -> Matrix21:
         """
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
         return Matrix21([[-self.z.imag], [self.z.real]])
 
-    def tangent_D_storage(self):
-        # type: () -> Matrix12
+    def tangent_D_storage(self) -> Matrix12:
         """
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
@@ -118,22 +105,18 @@ class Rot2(LieGroup):
     # -------------------------------------------------------------------------
 
     @T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (Matrix21) -> Matrix21
+    def __mul__(self, right: Matrix21) -> Matrix21:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (Rot2) -> Rot2
+    def __mul__(self, right: Rot2) -> Rot2:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, right):  # pragma: no cover
-        # type: (sm.Matrix) -> sm.Matrix
+    def __mul__(self, right: sm.Matrix) -> sm.Matrix:  # pragma: no cover
         pass
 
-    def __mul__(self, right):
-        # type: (T.Union[Rot2, Matrix21]) -> T.Union[Rot2, Matrix21]
+    def __mul__(self, right: T.Union[Rot2, Matrix21]) -> T.Union[Rot2, Matrix21]:
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -145,24 +128,21 @@ class Rot2(LieGroup):
         else:
             raise NotImplementedError('Unsupported type: "{}"'.format(type(right)))
 
-    def to_rotation_matrix(self):
-        # type: () -> Matrix22
+    def to_rotation_matrix(self) -> Matrix22:
         """
         A matrix representation of this element in the Euclidean space that contains it.
         """
         return Matrix22([[self.z.real, -self.z.imag], [self.z.imag, self.z.real]])
 
     @classmethod
-    def random(cls):
-        # type: () -> Rot2
+    def random(cls) -> Rot2:
         """
         Generate a random element of SO3.
         """
         return Rot2(Complex.unit_random())
 
     @classmethod
-    def random_from_uniform_sample(cls, u1, pi=sm.pi):
-        # type: (T.Scalar, T.Scalar) -> Rot2
+    def random_from_uniform_sample(cls, u1: T.Scalar, pi: T.Scalar = sm.pi) -> Rot2:
         """
         Generate a random element of SO2 from a variable uniformly sampled on [0, 1].
         """

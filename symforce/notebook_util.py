@@ -11,8 +11,7 @@ sympy_py.init_printing()
 from symforce import types as T
 
 
-def display(*args):
-    # type: (T.List) -> None
+def display(*args: T.List) -> None:
     """
     Display the given expressions in latex, or print if not an expression.
     """
@@ -22,8 +21,7 @@ def display(*args):
         IPython.display.display(*args)
 
 
-def display_code(code, language):
-    # type: (str, str) -> None
+def display_code(code: str, language: str) -> None:
     """
     Display code with syntax highlighting.
 
@@ -38,8 +36,7 @@ def display_code(code, language):
     IPython.display.display(IPython.display.HTML(html))
 
 
-def display_code_file(path, language):
-    # type: (str, str) -> None
+def display_code_file(path: str, language: str) -> None:
     """
     Display code from a file path with syntax highlighting.
 

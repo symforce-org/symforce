@@ -2,8 +2,7 @@ from symforce import python_util
 from symforce import types as T
 
 
-def format_cpp(file_contents, filename):
-    # type: (str, str) -> str
+def format_cpp(file_contents: str, filename: str) -> str:
     """
     Autoformat a given C++ file using clang-format
 
@@ -20,7 +19,7 @@ def format_cpp(file_contents, filename):
     formatted_file_contents = T.cast(
         str,
         python_util.execute_subprocess(
-            ["clang-format-8", "-assume-filename={}".format(filename)],
+            ["clang-format-8", f"-assume-filename={filename}"],
             stdin_data=file_contents,
             log_stdout=False,
         ),

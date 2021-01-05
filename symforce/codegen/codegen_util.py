@@ -47,14 +47,13 @@ class CodegenMode(Enum):
 
 
 def print_code(
-    inputs,  # type: Values
-    outputs,  # type: Values
-    sparse_mat_data,  # type: T.Dict[str, T.Dict[str, T.Any]]
-    mode,  # type: CodegenMode
-    cse=True,  # type: bool
-    substitute_inputs=False,  # type: bool
-):
-    # type: (...) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[OutputWithTerms], T.List[OutputWithTerms]]
+    inputs: Values,
+    outputs: Values,
+    sparse_mat_data: T.Dict[str, T.Dict[str, T.Any]],
+    mode: CodegenMode,
+    cse: bool = True,
+    substitute_inputs: bool = False,
+) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[OutputWithTerms], T.List[OutputWithTerms]]:
     """
     Return executable code lines from the given input/output values.
 
@@ -139,11 +138,10 @@ def print_code(
 
 
 def perform_cse(
-    input_symbols,  # type: T.Sequence[T.Scalar]
-    output_exprs,  # type: DenseAndSparseOutputTerms
-    substitute_inputs=True,  # type: bool
-):
-    # type: (...) -> T.Tuple[T_terms, DenseAndSparseOutputTerms]
+    input_symbols: T.Sequence[T.Scalar],
+    output_exprs: DenseAndSparseOutputTerms,
+    substitute_inputs: bool = True,
+) -> T.Tuple[T_terms, DenseAndSparseOutputTerms]:
     """
     Run common sub-expression elimination on the given input/output values.
 
@@ -173,7 +171,7 @@ def perform_cse(
         flat_i += len(storage)
 
     # Substitute names of temp symbols
-    tmp_name = lambda i: "_tmp{}".format(i)
+    tmp_name = lambda i: f"_tmp{i}"
     temps_renames = [(t[0], sm.Symbol(tmp_name(i))) for i, t in enumerate(temps)]
     temps_renames_dict = dict(temps_renames)
     temps = [
@@ -194,7 +192,7 @@ def perform_cse(
     # Rather than having the code contain the names of each symbol, we convert the
     # inputs to elements of an array to make generation more uniform.
     if substitute_inputs:
-        input_name = lambda i: "inp[{}]".format(i)
+        input_name = lambda i: f"inp[{i}]"
         input_array = [sm.Symbol(input_name(i)) for i in range(len(input_symbols))]
         input_subs = dict(zip(input_symbols, input_array))
         temps = [(var, term.subs(input_subs)) for var, term in temps]
@@ -207,14 +205,13 @@ def perform_cse(
 
 
 def format_symbols(
-    inputs,  # type: Values
-    dense_outputs,  # type: Values
-    sparse_outputs,  # type: Values
-    intermediate_terms,  # type: T_terms
-    output_terms,  # type: DenseAndSparseOutputTerms
-    mode,  # type: CodegenMode
-):
-    # type: (...) -> T.Tuple[T_terms, T_nested_terms, T_nested_terms]
+    inputs: Values,
+    dense_outputs: Values,
+    sparse_outputs: Values,
+    intermediate_terms: T_terms,
+    output_terms: DenseAndSparseOutputTerms,
+    mode: CodegenMode,
+) -> T.Tuple[T_terms, T_nested_terms, T_nested_terms]:
     """
     Reformats symbolic variables used in intermediate and outputs terms to match structure of inputs/outputs.
     For example if we have an input array "arr" with symbolic elements [arr0, arr1], we will remap symbol "arr0" to
@@ -232,21 +229,22 @@ def format_symbols(
 
     dense_output_lhs_formatted = get_formatted_list(dense_outputs, mode, format_as_inputs=False)
     dense_output_terms_formatted = [
-        zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs))
+        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
         for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
     ]
 
     sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs, mode)
     sparse_output_terms_formatted = [
-        zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs))
+        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
         for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
     ]
 
     return intermediate_terms_formatted, dense_output_terms_formatted, sparse_output_terms_formatted
 
 
-def get_formatted_list(values, mode, format_as_inputs):
-    # type: (Values, CodegenMode, bool) -> T.List[T.List[T.Scalar]]
+def get_formatted_list(
+    values: Values, mode: CodegenMode, format_as_inputs: bool
+) -> T.List[T.List[T.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions.
 
@@ -269,12 +267,12 @@ def get_formatted_list(values, mode, format_as_inputs):
         elif issubclass(arg_cls, geo.Matrix):
             if mode == CodegenMode.PYTHON2:
                 # TODO(nathan): Not sure this works for 2D matrices
-                symbols = [sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)]
+                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             elif mode == CodegenMode.CPP:
                 symbols = []
                 for i in range(value.shape[0]):
                     for j in range(value.shape[1]):
-                        symbols.append(sm.Symbol("{}({}, {})".format(key, i, j)))
+                        symbols.append(sm.Symbol(f"{key}({i}, {j})"))
             else:
                 raise NotImplementedError()
 
@@ -286,7 +284,7 @@ def get_formatted_list(values, mode, format_as_inputs):
                 # Elements of a Values object are accessed with the "." operator
                 symbols.extend(
                     _get_scalar_keys_recursive(
-                        index_value, prefix="{}.{}".format(key, name), mode=mode, use_data=False
+                        index_value, prefix=f"{key}.{name}", mode=mode, use_data=False
                     )
                 )
 
@@ -300,10 +298,7 @@ def get_formatted_list(values, mode, format_as_inputs):
                 # Elements of a list are accessed with the "[]" operator.
                 symbols.extend(
                     _get_scalar_keys_recursive(
-                        sub_index_val,
-                        prefix="{}[{}]".format(key, i),
-                        mode=mode,
-                        use_data=format_as_inputs,
+                        sub_index_val, prefix=f"{key}[{i}]", mode=mode, use_data=format_as_inputs,
                     )
                 )
 
@@ -315,18 +310,19 @@ def get_formatted_list(values, mode, format_as_inputs):
                 # For readability, we will store the data of geo/cam objects in a temp vector named "_key"
                 # where "key" is the name of the given input variable (can be "self" for member functions accessing
                 # object data)
-                symbols = [sm.Symbol("_{}[{}]".format(key, j)) for j in range(storage_dim)]
+                symbols = [sm.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
             else:
                 # For geo/cam objects being output, we can't access "data" directly, so in the
                 # jinja template we will construct a new object from a vector
-                symbols = [sm.Symbol("{}[{}]".format(key, j)) for j in range(storage_dim)]
+                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
 
         symbolic_args.append(symbols)
     return symbolic_args
 
 
-def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
-    # type: (T.Any, str, CodegenMode, bool) -> T.List[str]
+def _get_scalar_keys_recursive(
+    index_value: T.Any, prefix: str, mode: CodegenMode, use_data: bool
+) -> T.List[str]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
 
@@ -351,7 +347,7 @@ def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
         for name, sub_index_val in item_index.items():
             vec.extend(
                 _get_scalar_keys_recursive(
-                    sub_index_val, prefix="{}.{}".format(prefix, name), mode=mode, use_data=False
+                    sub_index_val, prefix=f"{prefix}.{name}", mode=mode, use_data=False
                 )
             )
     elif datatype == "List":
@@ -360,25 +356,19 @@ def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
         for i, sub_index_val in enumerate(item_index.values()):
             vec.extend(
                 _get_scalar_keys_recursive(
-                    sub_index_val, prefix="{}[{}]".format(prefix, i), mode=mode, use_data=use_data
+                    sub_index_val, prefix=f"{prefix}[{i}]", mode=mode, use_data=use_data
                 )
             )
     elif datatype == "Matrix" or not use_data:
         # TODO(nathan): I don't think this deals with 2D matrices correctly
-        vec.extend(
-            sm.Symbol("{}[{}]".format(prefix, i)) for i in range(Values.shape_to_dims(shape))
-        )
+        vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(Values.shape_to_dims(shape)))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
         if mode == CodegenMode.PYTHON2:
-            vec.extend(
-                sm.Symbol("{}.data[{}]".format(prefix, i))
-                for i in range(Values.shape_to_dims(shape))
-            )
+            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(Values.shape_to_dims(shape)))
         elif mode == CodegenMode.CPP:
             vec.extend(
-                sm.Symbol("{}.Data()[{}]".format(prefix, i))
-                for i in range(Values.shape_to_dims(shape))
+                sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(Values.shape_to_dims(shape))
             )
         else:
             raise NotImplementedError()
@@ -390,8 +380,7 @@ def _get_scalar_keys_recursive(index_value, prefix, mode, use_data):
     return vec
 
 
-def get_sparse_mat_data(sparse_matrix):
-    # type: (geo.Matrix) -> T.Dict[str, T.Any]
+def get_sparse_mat_data(sparse_matrix: geo.Matrix) -> T.Dict[str, T.Any]:
     """
     Returns a dictionary with the metadata required to represent a matrix as a sparse matrix
     in CSC form.
@@ -399,7 +388,7 @@ def get_sparse_mat_data(sparse_matrix):
     Args:
         sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
     """
-    sparse_mat_data = {}  # type: T.Dict[str, T.Any]
+    sparse_mat_data: T.Dict[str, T.Any] = {}
     sparse_mat_data["kRows"] = sparse_matrix.rows
     sparse_mat_data["kCols"] = sparse_matrix.cols
     sparse_mat_data["kNumNonZero"] = 0
@@ -422,8 +411,9 @@ def get_sparse_mat_data(sparse_matrix):
     return sparse_mat_data
 
 
-def get_formatted_sparse_list(sparse_outputs, mode):
-    # type: (Values, CodegenMode) -> T.List[T.List[T.Scalar]]
+def get_formatted_sparse_list(
+    sparse_outputs: Values, mode: CodegenMode
+) -> T.List[T.List[T.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions for sparse matrices.
     """
@@ -431,14 +421,13 @@ def get_formatted_sparse_list(sparse_outputs, mode):
     # Each element of sparse_outputs is a list of the nonzero terms in the sparse matrix
     for key, sparse_matrix_data in sparse_outputs.items():
         symbolic_args.append(
-            [sm.Symbol("{}_value_ptr[{}]".format(key, i)) for i in range(len(sparse_matrix_data))]
+            [sm.Symbol(f"{key}_value_ptr[{i}]") for i in range(len(sparse_matrix_data))]
         )
 
     return symbolic_args
 
 
-def get_code_printer(mode):
-    # type: (CodegenMode) -> sm.CodePrinter
+def get_code_printer(mode: CodegenMode) -> "sm.CodePrinter":
     """
     Pick a code printer for the given mode.
     """
@@ -465,26 +454,24 @@ def get_code_printer(mode):
             )
         )
     else:
-        raise NotImplementedError("Unknown codegen mode: {}".format(mode))
+        raise NotImplementedError(f"Unknown codegen mode: {mode}")
 
     return printer
 
 
-def load_generated_package(package_dir):
-    # type: (str) -> T.Any
+def load_generated_package(package_dir: str) -> T.Any:
     """
     Dynamically load generated package (or module).
     """
     find_data = imp.find_module(os.path.basename(package_dir), [os.path.dirname(package_dir)])
 
     if find_data is None:
-        raise ImportError("Failed to find module: {}".format(package_dir))
+        raise ImportError(f"Failed to find module: {package_dir}")
 
     return imp.load_module(os.path.basename(package_dir), *find_data)  # type: ignore
 
 
-def get_function_argspec(func):
-    # type: (T.Callable) -> inspect.ArgSpec
+def get_function_argspec(func: T.Callable) -> inspect.ArgSpec:
     """
     Python 2 and 3 compatible way to get the argspec of a function using the inspect package.
     """
@@ -494,8 +481,7 @@ def get_function_argspec(func):
         return inspect.getargspec(func)
 
 
-def get_base_instance(obj):
-    # type: (T.Sequence[T.Any]) -> T.Any
+def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
     """
     Returns an instance of the base element (e.g. Scalar, Values, Matrix, etc.) of an object.
     If input is a list (incl. multidimensional lists), we return an instance of one of the base
@@ -508,11 +494,8 @@ def get_base_instance(obj):
 
 
 def generate_lcm_types(
-    lcm_type_dir,  # type: str
-    lcm_files,  # type: T.Sequence[str]
-    lcm_output_dir=None,  # type: T.Optional[str]
-):
-    # type: (...) -> T.Dict[str, T.Any]
+    lcm_type_dir: str, lcm_files: T.Sequence[str], lcm_output_dir: T.Optional[str] = None,
+) -> T.Dict[str, T.Any]:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.
 

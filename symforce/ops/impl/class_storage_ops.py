@@ -4,28 +4,23 @@ Element = T.Any
 ElementOrType = T.Union[Element, T.Type]
 
 
-class ClassStorageOps(object):
+class ClassStorageOps:
     @staticmethod
-    def storage_dim(a):
-        # type: (ElementOrType) -> int
+    def storage_dim(a: ElementOrType) -> int:
         return a.storage_dim()
 
     @staticmethod
-    def to_storage(a):
-        # type: (Element) -> T.List[T.Scalar]
+    def to_storage(a: Element) -> T.List[T.Scalar]:
         return a.to_storage()
 
     @staticmethod
-    def from_storage(a, elements):
-        # type: (ElementOrType, T.List[T.Scalar]) -> Element
+    def from_storage(a: ElementOrType, elements: T.List[T.Scalar]) -> Element:
         return a.from_storage(elements)
 
     @staticmethod
-    def symbolic(a, name, **kwargs):
-        # type: (ElementOrType, str, T.Dict) -> Element
+    def symbolic(a: ElementOrType, name: str, **kwargs: T.Dict) -> Element:
         return a.symbolic(name, **kwargs)
 
     @staticmethod
-    def evalf(a):
-        # type: (Element) -> Element
+    def evalf(a: Element) -> Element:
         return a.evalf()

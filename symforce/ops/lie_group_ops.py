@@ -10,6 +10,9 @@ from .group_ops import GroupOps
 Element = T.Any
 ElementOrType = T.Union[Element, T.Type]
 
+if T.TYPE_CHECKING:
+    from symforce import geo
+
 
 class LieGroupOps(GroupOps):
     """
@@ -38,8 +41,7 @@ class LieGroupOps(GroupOps):
     """
 
     @staticmethod
-    def tangent_dim(a):
-        # type: (ElementOrType) -> int
+    def tangent_dim(a: ElementOrType) -> int:
         """
         Size of the element's tangent space, aka the degrees of freedom it represents. The
         storage_dim is the higher dimensional space in which this manifold is embedded. For
@@ -49,8 +51,7 @@ class LieGroupOps(GroupOps):
         return Ops.implementation(get_type(a)).tangent_dim(a)
 
     @staticmethod
-    def from_tangent(a, vec, epsilon=0):
-        # type: (ElementOrType, T.List[T.Scalar], T.Scalar) -> Element
+    def from_tangent(a: ElementOrType, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Element:
         """
         Mapping from the tangent space approximation at identity into a group element of type a.
         For most manifold types this is implemented as the exponential map.
@@ -68,8 +69,7 @@ class LieGroupOps(GroupOps):
         return Ops.implementation(get_type(a)).from_tangent(a, vec, epsilon)
 
     @staticmethod
-    def to_tangent(a, epsilon=0):
-        # type: (Element, T.Scalar) -> T.List[T.Scalar]
+    def to_tangent(a: Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Mapping from this element to the tangent space approximation at identity.
 
@@ -83,8 +83,7 @@ class LieGroupOps(GroupOps):
         return Ops.implementation(get_type(a)).to_tangent(a, epsilon)
 
     @staticmethod
-    def retract(a, vec, epsilon=0):
-        # type: (Element, T.List[T.Scalar], T.Scalar) -> Element
+    def retract(a: Element, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Element:
         """
         Apply a tangent space pertubation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
@@ -102,8 +101,7 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.compose(a, LieGroupOps.from_tangent(a, vec, epsilon=epsilon))
 
     @staticmethod
-    def local_coordinates(a, b, epsilon=0):
-        # type: (Element, Element, T.Scalar) -> T.List[T.Scalar]
+    def local_coordinates(a: Element, b: Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Computes a tangent space pertubation around a to produce b. Often used in optimization
         to minimize the distance between two group elements.
@@ -120,9 +118,8 @@ class LieGroupOps(GroupOps):
         """
         return LieGroupOps.to_tangent(LieGroupOps.between(a, b), epsilon=epsilon)
 
-    @staticmethod  # type: ignore
-    def storage_D_tangent(a):
-        # type: (Element) -> geo.Matrix
+    @staticmethod
+    def storage_D_tangent(a: Element) -> "geo.Matrix":
         """
         Computes the jacobian of the storage space of an element with respect to the tangent space around
         that element.
@@ -137,9 +134,8 @@ class LieGroupOps(GroupOps):
             )
             raise NotImplementedError()
 
-    @staticmethod  # type: ignore
-    def tangent_D_storage(a, epsilon=0):
-        # type: (Element) -> geo.Matrix
+    @staticmethod
+    def tangent_D_storage(a: Element, epsilon: Element = 0) -> "geo.Matrix":
         """
         Computes the jacobian of the tangent space around an element with respect to the storage space of
         that element.

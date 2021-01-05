@@ -18,8 +18,9 @@ class ATANCameraCal(CameraCal):
 
     NUM_DISTORTION_COEFFS = 1
 
-    def pixel_from_camera_point(self, point, epsilon=0):
-        # type: (geo.Matrix31, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
+    def pixel_from_camera_point(
+        self, point: geo.Matrix31, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
 
         # Compute undistorted point in unit depth image plane
         linear_camera_cal = LinearCameraCal(
@@ -39,8 +40,9 @@ class ATANCameraCal(CameraCal):
         pixel = linear_camera_cal.pixel_from_unit_depth(distorted_unit_depth_coords)
         return pixel, is_valid
 
-    def camera_ray_from_pixel(self, pixel, epsilon=0):
-        # type: (geo.Matrix21, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
+    def camera_ray_from_pixel(
+        self, pixel: geo.Matrix21, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
 
         # Compute distorted unit depth coords
         linear_camera_cal = LinearCameraCal(

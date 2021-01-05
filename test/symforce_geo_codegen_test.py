@@ -25,13 +25,12 @@ class SymforceGeoCodegenTest(TestCase):
     Test symforce.codegen.geo_package_codegen.
     """
 
-    def test_codegen_python(self):
-        # type: () -> None
+    def test_codegen_python(self) -> None:
         """
         Test Python code generation from geometry types.
         """
         output_dir = tempfile.mkdtemp(prefix="sf_geo_package_codegen_test_", dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        logger.debug(f"Creating temp directory: {output_dir}")
 
         try:
             geo_package_codegen.generate(mode=CodegenMode.PYTHON2, output_dir=output_dir)
@@ -66,13 +65,12 @@ class SymforceGeoCodegenTest(TestCase):
                 python_util.remove_if_exists(output_dir)
 
     @slow_on_sympy
-    def test_codegen_cpp(self):
-        # type: () -> None
+    def test_codegen_cpp(self) -> None:
         """
         Test C++ code generation from geometry types.
         """
         output_dir = tempfile.mkdtemp(prefix="sf_geo_package_codegen_test_", dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        logger.debug(f"Creating temp directory: {output_dir}")
 
         try:
             geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)

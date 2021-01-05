@@ -22,8 +22,7 @@ class GroupOps(StorageOps):
     """
 
     @staticmethod
-    def identity(a):
-        # type: (ElementOrType) -> Element
+    def identity(a: ElementOrType) -> Element:
         """
         Identity element of the given type's group.
 
@@ -38,8 +37,7 @@ class GroupOps(StorageOps):
         return Ops.implementation(get_type(a)).identity(a)
 
     @staticmethod
-    def compose(a, b):
-        # type: (Element, Element) -> Element
+    def compose(a: Element, b: Element) -> Element:
         """
         Composition of two elements in the group.
 
@@ -53,8 +51,7 @@ class GroupOps(StorageOps):
         return Ops.implementation(get_type(a)).compose(a, b)
 
     @staticmethod
-    def inverse(a):
-        # type: (Element) -> Element
+    def inverse(a: Element) -> Element:
         """
         Inverse of the element a.
 
@@ -67,8 +64,7 @@ class GroupOps(StorageOps):
         return Ops.implementation(get_type(a)).inverse(a)
 
     @staticmethod
-    def between(a, b):
-        # type: (Element, Element) -> Element
+    def between(a: Element, b: Element) -> Element:
         """
         Returns the element that when composed with a produces b. For vector spaces it is b - a.
 

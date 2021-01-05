@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .camera_cal import CameraCal
 from .camera import Camera
 
@@ -13,19 +15,20 @@ class PosedCamera(Camera):
     projection of 3D points into the image frame) are in the image frame and thus valid/invalid.
     """
 
-    def __init__(self, pose, calibration, image_size=None):
-        # type: (geo.Pose3, CameraCal, T.Sequence[int]) -> None
-        super(PosedCamera, self).__init__(calibration=calibration, image_size=image_size)
+    def __init__(
+        self, pose: geo.Pose3, calibration: CameraCal, image_size: T.Sequence[int] = None
+    ) -> None:
+        super().__init__(calibration=calibration, image_size=image_size)
         self.pose = pose  # global_T_cam
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{}\n  Pose={}\n  Camera={}>".format(
-            self.__class__.__name__, self.pose.__repr__(), super(PosedCamera, self).__repr__()
+            self.__class__.__name__, self.pose.__repr__(), super().__repr__()
         )
 
-    def pixel_from_global_point(self, point, epsilon=0):
-        # type: (geo.Matrix31, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
+    def pixel_from_global_point(
+        self, point: geo.Matrix31, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
         """
         Transforms the given point into the camera frame using the given camera pose and then
         uses the given camera calibration to compute the resulted pixel coordinates of the
@@ -43,8 +46,9 @@ class PosedCamera(Camera):
         pixel, is_valid = self.pixel_from_camera_point(camera_point, epsilon)
         return pixel, is_valid
 
-    def global_point_from_pixel(self, pixel, range_to_point, epsilon=0):
-        # type: (geo.Matrix21, T.Scalar, T.Scalar) -> T.Tuple[geo.Matrix31, T.Scalar]
+    def global_point_from_pixel(
+        self, pixel: geo.Matrix21, range_to_point: T.Scalar, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
         """
         Computes a point written in the global frame along the ray passing through the center
         of the given pixel. The point is positioned at a given range along the ray.
@@ -64,8 +68,13 @@ class PosedCamera(Camera):
         global_point = self.pose * camera_point
         return global_point, is_valid
 
-    def warp_pixel(self, pixel, inverse_range, target_cam, epsilon=0):
-        # type: (geo.Matrix21, T.Scalar, PosedCamera, T.Scalar) -> T.Tuple[geo.Matrix21, T.Scalar]
+    def warp_pixel(
+        self,
+        pixel: geo.Matrix21,
+        inverse_range: T.Scalar,
+        target_cam: PosedCamera,
+        epsilon: T.Scalar = 0,
+    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
         """
         Project a pixel in this camera into another camera.
 

@@ -21,8 +21,7 @@ class SymforceCppCodePrinterTest(TestCase):
     Test CppCodePrinter
     """
 
-    def test_max_min(self):
-        # type: () -> None
+    def test_max_min(self) -> None:
         printer = codegen_util.get_code_printer(CodegenMode.CPP)
 
         a = sm.Symbol("a")
@@ -35,10 +34,8 @@ class SymforceCppCodePrinterTest(TestCase):
         self.assertEqual(printer.doprint(expr), "std::min<Scalar>((a * a), (b * b))")
 
     @requires_sympy
-    def test_heaviside(self):
-        # type: () -> None
-        def f(x):
-            # type: (sm.Symbol) -> sm.Symbol
+    def test_heaviside(self) -> None:
+        def f(x: sm.Symbol) -> sm.Symbol:
             return sm.functions.special.delta_functions.Heaviside(x)
 
         heaviside_codegen = Codegen.function(

@@ -1,4 +1,5 @@
-from __future__ import division
+from __future__ import annotations
+
 import numpy as np
 
 from symforce import ops
@@ -25,8 +26,7 @@ class Quaternion(Group):
         https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
     """
 
-    def __init__(self, xyz, w):
-        # type: (Matrix31, T.Scalar) -> None
+    def __init__(self, xyz: Matrix31, w: T.Scalar) -> None:
         """
         Construct from a real scalar and an imaginary unit vector.
 
@@ -39,78 +39,64 @@ class Quaternion(Group):
         self.w = w
 
     @property
-    def x(self):
-        # type: () -> T.Scalar
+    def x(self) -> T.Scalar:
         return self.xyz[0]
 
     @property
-    def y(self):
-        # type: () -> T.Scalar
+    def y(self) -> T.Scalar:
         return self.xyz[1]
 
     @property
-    def z(self):
-        # type: () -> T.Scalar
+    def z(self) -> T.Scalar:
         return self.xyz[2]
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<Q xyzw=[{}, {}, {}, {}]>".format(
             repr(self.x), repr(self.y), repr(self.z), repr(self.w)
         )
 
     @classmethod
-    def storage_dim(cls):
-        # type: () -> int
+    def storage_dim(cls) -> int:
         return 4
 
-    def to_storage(self):
-        # type: () -> T.List[T.Scalar]
+    def to_storage(self) -> T.List[T.Scalar]:
         return [self.x, self.y, self.z, self.w]
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[T.Scalar]) -> Quaternion
+    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> Quaternion:
         assert len(vec) == cls.storage_dim()
         return cls(xyz=Vector3(vec[0:3]), w=vec[3])
 
     @classmethod
-    def symbolic(cls, name, **kwargs):
-        # type: (str, T.Any) -> Quaternion
-        return cls.from_storage(
-            [sm.Symbol("{}_{}".format(name, v), **kwargs) for v in ["x", "y", "z", "w"]]
-        )
+    def symbolic(cls, name: str, **kwargs: T.Any) -> Quaternion:
+        return cls.from_storage([sm.Symbol(f"{name}_{v}", **kwargs) for v in ["x", "y", "z", "w"]])
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Quaternion
+    def identity(cls) -> Quaternion:
         return cls(xyz=Vector3(0, 0, 0), w=1)
 
-    def compose(self, other):
-        # type: (Quaternion) -> Quaternion
+    def compose(self, other: Quaternion) -> Quaternion:
         return self.__class__(
             xyz=self.w * other.xyz + other.w * self.xyz + self.xyz.cross(other.xyz),
             w=self.w * other.w - self.xyz.dot(other.xyz)[0, 0],
         )
 
-    def inverse(self):
-        # type: () -> Quaternion
+    def inverse(self) -> Quaternion:
         return self.conj() / self.squared_norm()
 
     # -------------------------------------------------------------------------
     # Quaternion math helper methods
     # -------------------------------------------------------------------------
 
-    def __mul__(self, right):
-        # type: (Quaternion) -> Quaternion
+    def __mul__(self, right: Quaternion) -> Quaternion:
         """
         Quaternion multiplication.
 
@@ -122,8 +108,7 @@ class Quaternion(Group):
         """
         return self.compose(right)
 
-    def __neg__(self):
-        # type: () -> Quaternion
+    def __neg__(self) -> Quaternion:
         """
         Negation of all entries.
 
@@ -132,8 +117,7 @@ class Quaternion(Group):
         """
         return self.__class__(xyz=-self.xyz, w=-self.w)
 
-    def __add__(self, right):
-        # type: (Quaternion) -> Quaternion
+    def __add__(self, right: Quaternion) -> Quaternion:
         """
         Quaternion addition.
 
@@ -145,8 +129,7 @@ class Quaternion(Group):
         """
         return self.__class__(xyz=self.xyz + right.xyz, w=self.w + right.w)
 
-    def __div__(self, scalar):
-        # type: (T.Scalar) -> Quaternion
+    def __div__(self, scalar: T.Scalar) -> Quaternion:
         """
         Scalar division.
 
@@ -162,8 +145,7 @@ class Quaternion(Group):
     __truediv__ = __div__
 
     @classmethod
-    def zero(cls):
-        # type: () -> Quaternion
+    def zero(cls) -> Quaternion:
         """
         Construct with all zeros.
 
@@ -172,8 +154,7 @@ class Quaternion(Group):
         """
         return cls.from_storage([0] * cls.storage_dim())
 
-    def squared_norm(self):
-        # type: () -> T.Scalar
+    def squared_norm(self) -> T.Scalar:
         """
         Squared norm when considering the quaternion as 4-tuple.
 
@@ -182,8 +163,7 @@ class Quaternion(Group):
         """
         return self.xyz.dot(self.xyz)[0, 0] + self.w ** 2
 
-    def conj(self):
-        # type: () -> Quaternion
+    def conj(self) -> Quaternion:
         """
         Quaternion conjugate.
 
@@ -193,8 +173,7 @@ class Quaternion(Group):
         return Quaternion(xyz=-self.xyz, w=self.w)
 
     @classmethod
-    def unit_random(cls):
-        # type: () -> Quaternion
+    def unit_random(cls) -> Quaternion:
         """
         Generate a random unit quaternion
         """
@@ -202,8 +181,9 @@ class Quaternion(Group):
         return cls.unit_random_from_uniform_samples(u1, u2, u3, pi=np.pi)
 
     @classmethod
-    def unit_random_from_uniform_samples(cls, u1, u2, u3, pi=sm.pi):
-        # type: (T.Scalar, T.Scalar, T.Scalar, T.Scalar) -> Quaternion
+    def unit_random_from_uniform_samples(
+        cls, u1: T.Scalar, u2: T.Scalar, u3: T.Scalar, pi: T.Scalar = sm.pi
+    ) -> Quaternion:
         """
         Generate a random unit quaternion from three variables uniformly sampled in [0, 1].
 

@@ -7,16 +7,17 @@ from .sequence_group_ops import SequenceGroupOps
 
 Element = T.Sequence[T.Scalar]
 
+if T.TYPE_CHECKING:
+    from symforce import geo
+
 
 class SequenceLieGroupOps(SequenceGroupOps):
     @staticmethod
-    def tangent_dim(a):
-        # type: (Element) -> int
+    def tangent_dim(a: Element) -> int:
         return sum([LieGroupOps.tangent_dim(v) for v in a])
 
     @staticmethod
-    def from_tangent(a, vec, epsilon):
-        # type: (Element, T.List[T.Scalar], T.Scalar) -> Element
+    def from_tangent(a: Element, vec: T.List[T.Scalar], epsilon: T.Scalar) -> Element:
         assert len(vec) == SequenceLieGroupOps.tangent_dim(a)
         new_a = get_type(a)()
         inx = 0
@@ -27,13 +28,11 @@ class SequenceLieGroupOps(SequenceGroupOps):
         return new_a
 
     @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (Element, T.Scalar) -> T.List[Element]
+    def to_tangent(a: Element, epsilon: T.Scalar) -> T.List[Element]:
         return get_type(a)([x for v in a for x in LieGroupOps.to_tangent(v, epsilon)])
 
     @staticmethod  # type: ignore
-    def storage_D_tangent(a):
-        # type: (Element) -> geo.Matrix
+    def storage_D_tangent(a: Element) -> "geo.Matrix":
         from symforce import geo
 
         mat = geo.Matrix(StorageOps.storage_dim(a), LieGroupOps.tangent_dim(a))
@@ -48,8 +47,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
         return mat
 
     @staticmethod  # type: ignore
-    def tangent_D_storage(a):
-        # type: (Element) -> geo.Matrix
+    def tangent_D_storage(a: Element) -> "geo.Matrix":
         from symforce import geo
 
         mat = geo.Matrix(LieGroupOps.tangent_dim(a), StorageOps.storage_dim(a))

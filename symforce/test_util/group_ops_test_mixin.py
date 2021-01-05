@@ -9,8 +9,7 @@ class GroupOpsTestMixin(StorageOpsTestMixin):
     Test helper for the GroupOps concept. Inherit a test case from this.
     """
 
-    def test_group_ops(self):
-        # type: () -> None
+    def test_group_ops(self) -> None:
         """
         Tests:
             identity

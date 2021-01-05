@@ -6,7 +6,7 @@ from symforce import sympy as sm
 from symforce import types as T
 
 
-class Ops(object):
+class Ops:
     """
     Class for specifying how Storage/Group/LieGroup ops functions should
     be implemented for specific types (e.g. scalars, geo objects, etc.).
@@ -20,11 +20,10 @@ class Ops(object):
     of the ops for that class. This is similar to template specialization in C++.
     """
 
-    IMPLEMENTATIONS = {}  # type: T.Dict[T.Type, T.Type]
+    IMPLEMENTATIONS: T.Dict[T.Type, T.Type] = {}
 
     @classmethod
-    def register(cls, impl_type, impl_ops):
-        # type: (T.Type, T.Type) -> None
+    def register(cls, impl_type: T.Type, impl_ops: T.Type) -> None:
         """
         Register the operations class for a given type. Once a type is
         registered, child classes of Ops will be able to call functions
@@ -42,8 +41,7 @@ class Ops(object):
         cls.IMPLEMENTATIONS[impl_type] = impl_ops
 
     @classmethod
-    def implementation(cls, impl_type):
-        # type: (T.Type) -> T.Type
+    def implementation(cls, impl_type: T.Type) -> T.Type:
         """
         Returns the class defining the operations for the given type or one of
         its parent classes.
@@ -52,4 +50,4 @@ class Ops(object):
             impl = cls.IMPLEMENTATIONS.get(base_class, None)
             if impl is not None:
                 return impl
-        raise NotImplementedError("Unsupported type: {}".format(impl_type))
+        raise NotImplementedError(f"Unsupported type: {impl_type}")

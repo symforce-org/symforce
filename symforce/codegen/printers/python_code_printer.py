@@ -9,18 +9,16 @@ class PythonCodePrinter(NumPyPrinter):
     behavior for codegen compatibility and efficiency.
     """
 
-    def _print_Rational(self, expr):
-        # type: (sm.Rational) -> str
+    def _print_Rational(self, expr: sm.Rational) -> str:
         """
         Customizations:
             * Decimal points for Python2 support, doesn't exist in some sympy versions.
         """
         if self.standard == "python2":
-            return "{}./{}.".format(expr.p, expr.q)
-        return "{}/{}".format(expr.p, expr.q)
+            return f"{expr.p}./{expr.q}."
+        return f"{expr.p}/{expr.q}"
 
-    def _print_Heaviside(self, expr):
-        # type: (sm.Heaviside) -> str
+    def _print_Heaviside(self, expr: "sm.Heaviside") -> str:
         """
         Heaviside is not supported by default, so we add a version here.
         """

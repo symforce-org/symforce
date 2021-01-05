@@ -17,13 +17,12 @@ class SymforceSymUtilCodegenTest(TestCase):
     Generate C++ utils
     """
 
-    def test_codegen_cpp(self):
-        # type: () -> None
+    def test_codegen_cpp(self) -> None:
         """
         Generate typedefs.h
         """
         output_dir = tempfile.mkdtemp(prefix="sf_opt_codegen_test_", dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        logger.debug(f"Creating temp directory: {output_dir}")
 
         try:
             sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)

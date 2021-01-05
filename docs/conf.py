@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -23,12 +22,12 @@ os.environ["PYTHONPATH"] = package_path + ":" + os.environ.get("PYTHONPATH", "")
 
 # -- Project information -----------------------------------------------------
 
-project = u"symforce"
-copyright = u"2020, Skydio, Inc"
-author = u"Skydio"
+project = "symforce"
+copyright = "2020, Skydio, Inc"
+author = "Skydio"
 
 # The short X.Y version
-version = u"0.10"
+version = "0.20"
 # The full version, including alpha/beta/rc tags
 release = version
 
@@ -157,7 +156,7 @@ htmlhelp_basename = "symforcedoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements = {
+latex_elements: dict = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -170,13 +169,13 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-}  # type: T.Dict
+}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "symforce.tex", u"symforce Documentation", u"Hayk Martiros", "manual"),
+    (master_doc, "symforce.tex", "symforce Documentation", "Hayk Martiros", "manual"),
 ]
 
 
@@ -184,7 +183,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "symforce", u"symforce Documentation", [author], 1)]
+man_pages = [(master_doc, "symforce", "symforce Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -196,7 +195,7 @@ texinfo_documents = [
     (
         master_doc,
         "symforce",
-        u"symforce Documentation",
+        "symforce Documentation",
         author,
         "symforce",
         "One line description of project.",

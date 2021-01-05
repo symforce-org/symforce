@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import contextlib
 import numpy as np
@@ -14,7 +16,7 @@ from symforce.ops.interfaces import Storage
 from .attr_accessor import AttrAccessor
 
 
-class Values(object):
+class Values:
     """
     Ordered dictionary serializable storage. This class is the basis for specifying both inputs
     and outputs in symforce. The hierarchy of nested values get code generated into types, and
@@ -26,8 +28,7 @@ class Values(object):
         attr: Access with dot notation, such as `v.attr.states.x0` instead of `v['states.x0']`.
     """
 
-    def __init__(self, **kwargs):
-        # type: (T.Any) -> None
+    def __init__(self, **kwargs: T.Any) -> None:
         """
         Create like a Python dict.
 
@@ -35,14 +36,14 @@ class Values(object):
             kwargs (dict): Initial values
         """
         # Underlying storage - ordered dictionary
-        self.dict = collections.OrderedDict()  # type: T.Dict[str, T.Any]
+        self.dict: T.Dict[str, T.Any] = collections.OrderedDict()
 
         # Allow dot notation through this member
         # ex: v.attr.foo.bar = 12
         self.attr = AttrAccessor(self.dict)
 
         # Create context manager helpers for .scope()
-        self.__scopes__ = []  # type: T.List[str]
+        self.__scopes__: T.List[str] = []
         self.symbol_name_scoper = initialization.create_named_scope(sm.__scopes__)
         self.key_scoper = initialization.create_named_scope(self.__scopes__)
 
@@ -53,29 +54,25 @@ class Values(object):
     # Dict API
     # -------------------------------------------------------------------------
 
-    def keys(self):
-        # type: () -> T.List[str]
+    def keys(self) -> T.List[str]:
         """
         An object providing a view on contained keys.
         """
-        return self.dict.keys()
+        return list(self.dict.keys())
 
-    def values(self):
-        # type: () -> T.List[T.Any]
+    def values(self) -> T.List[T.Any]:
         """
         An object providing a view on contained values.
         """
-        return self.dict.values()
+        return list(self.dict.values())
 
-    def items(self):
-        # type: () -> T.List[T.Tuple[str, T.Any]]
+    def items(self) -> T.List[T.Tuple[str, T.Any]]:
         """
         An object providng a view on contained key/value pairs.
         """
-        return self.dict.items()
+        return list(self.dict.items())
 
-    def get(self, key, default=None):
-        # type: (str, T.Any) -> T.Any
+    def get(self, key: str, default: T.Any = None) -> T.Any:
         """
         Return the value for key if key is in the dictionary, else default.
 
@@ -88,16 +85,14 @@ class Values(object):
         """
         return self.dict.get(key, default)
 
-    def update(self, other):
-        # type: (T.Union[Values, T.Mapping[str, T.Any]]) -> None
+    def update(self, other: T.Union[Values, T.Mapping[str, T.Any]]) -> None:
         """
         Updates keys in this Values from those of the other.
         """
         for key, value in other.items():
             self[key] = value
 
-    def copy(self):
-        # type: () -> Values
+    def copy(self) -> Values:
         """
         Returns a deepcopy of this Values.
         """
@@ -107,8 +102,7 @@ class Values(object):
     # Serialization
     # -------------------------------------------------------------------------
 
-    def index(self):
-        # type: () -> T.Dict[str, T.List[T.Any]]
+    def index(self) -> T.Dict[str, T.List[T.Any]]:
         """
         Returns the index with structural information to reconstruct this values
         in :func:`from_storage()`.
@@ -116,8 +110,7 @@ class Values(object):
         return Values.get_index_from_items(self.items())
 
     @staticmethod
-    def get_index_from_items(items):
-        # type: (T.Sequence[T.Tuple[str, T.Any]]) -> T.Dict[str, T.List[T.Any]]
+    def get_index_from_items(items: T.Iterable[T.Tuple[str, T.Any]]) -> T.Dict[str, T.List[T.Any]]:
         """
         Builds an index from a list of key/value pairs of objects. This function
         can be called recursively either for the items of a Values object or for the
@@ -126,7 +119,7 @@ class Values(object):
         """
         inx = 0
         index_dict = collections.OrderedDict()
-        shape = tuple()  # type: T.Tuple
+        shape: T.Tuple = tuple()
         for name, value in items:
             vec = ops.StorageOps.to_storage(value)
             if isinstance(value, Values):
@@ -151,10 +144,10 @@ class Values(object):
                 shape = (len(vec),)
                 item_index = {}
             elif isinstance(value, (list, tuple)):
-                assert all([type(v) is type(value[0]) for v in value])
+                assert all([type(v) == type(value[0]) for v in value])
                 datatype = "List"
                 shape = (len(vec),)
-                name_list = ["{}_{}".format(name, i) for i in range(len(value))]
+                name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
             else:
                 raise NotImplementedError(
@@ -167,8 +160,7 @@ class Values(object):
         return index_dict
 
     @staticmethod
-    def _shape_implies_a_vector(shape):
-        # type: (T.Tuple[int, int]) -> bool
+    def _shape_implies_a_vector(shape: T.Tuple[int, int]) -> bool:
         """
         Return True if the given shape is row or column vector-like.
         """
@@ -179,12 +171,11 @@ class Values(object):
         )
 
     @staticmethod
-    def _items_recursive(v):
-        # type: (T.Union[T.Sequence, Values]) -> T.List[T.Tuple[str, T.Any]]
+    def _items_recursive(v: T.Union[T.Sequence, Values]) -> T.List[T.Tuple[str, T.Any]]:
         """
         Helper for items_recursive that handles sequences
         """
-        flat_items = []  # type: T.List[T.Tuple[str, T.Any]]
+        flat_items: T.List[T.Tuple[str, T.Any]] = []
 
         if isinstance(v, Values):
             key_value_pairs = v.items()
@@ -193,13 +184,13 @@ class Values(object):
 
         for sub_key, sub_value in key_value_pairs:
             if isinstance(v, Values):
-                formatted_sub_key = ".{}".format(sub_key)
+                formatted_sub_key = f".{sub_key}"
             else:
-                formatted_sub_key = "[{}]".format(sub_key)
+                formatted_sub_key = f"[{sub_key}]"
 
             if isinstance(sub_value, (Values, list, tuple)):
                 flat_items.extend(
-                    ("{}{}".format(formatted_sub_key, sub_sub_key), sub_sub_value)
+                    (f"{formatted_sub_key}{sub_sub_key}", sub_sub_value)
                     for sub_sub_key, sub_sub_value in Values._items_recursive(sub_value)
                 )
             else:
@@ -207,15 +198,13 @@ class Values(object):
 
         return flat_items
 
-    def items_recursive(self):
-        # type: () -> T.List[T.Tuple[str, T.Any]]
+    def items_recursive(self) -> T.List[T.Tuple[str, T.Any]]:
         """
         Returns a flat list of key/value pairs for every element in this object.
         """
         return [(key[len(".") :], value) for key, value in Values._items_recursive(self)]
 
-    def keys_recursive(self):
-        # type: () -> T.List[str]
+    def keys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of unique keys for every element in this object.
         """
@@ -224,8 +213,7 @@ class Values(object):
             return []
         return list(zip(*items))[0]
 
-    def values_recursive(self):
-        # type: () -> T.List[T.Any]
+    def values_recursive(self) -> T.List[T.Any]:
         """
         Returns a flat list of elements stored in this Values object.
         """
@@ -234,24 +222,22 @@ class Values(object):
             return []
         return list(zip(*items))[1]
 
-    def subkeys_recursive(self):
-        # type: () -> T.List[str]
+    def subkeys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of subkeys for every element in this object. Unlike keys_recursive,
         subkeys_recursive does not return dot-separated keys.
         """
         return [k.split(".")[-1] for k in self.keys_recursive()]
 
-    def scalar_keys_recursive(self):
-        # type: () -> T.List[str]
+    def scalar_keys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of keys to each scalar in this object
         """
-        flat_scalar_keys = []  # type: T.List[str]
+        flat_scalar_keys: T.List[str] = []
         for key, value in self.items_recursive():
             storage_dim = ops.StorageOps.storage_dim(value)
             if storage_dim > 1:
-                flat_scalar_keys.extend("{}[{}]".format(key, i) for i in range(storage_dim))
+                flat_scalar_keys.extend(f"{key}[{i}]" for i in range(storage_dim))
             else:
                 flat_scalar_keys.append(key)
         return flat_scalar_keys
@@ -260,23 +246,22 @@ class Values(object):
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------
 
-    def storage_dim(self):
-        # type: () -> int
+    def storage_dim(self) -> int:
         """
         Dimension of the underlying storage
         """
         return sum([ops.StorageOps.storage_dim(v) for v in self.values()])
 
-    def to_storage(self):
-        # type: () -> T.List[T.Any]
+    def to_storage(self) -> T.List[T.Any]:
         """
         Returns a flat list of unique values for every scalar element in this object.
         """
         return [scalar for v in self.values() for scalar in ops.StorageOps.to_storage(v)]
 
     @classmethod
-    def from_storage_index(cls, vector_values, indices):
-        # type: (T.List[T.Scalar], T.Mapping[str, T.List[T.Any]]) -> Values
+    def from_storage_index(
+        cls, vector_values: T.List[T.Scalar], indices: T.Mapping[str, T.List[T.Any]]
+    ) -> Values:
         """
         Takes a vectorized values and corresponding indices and reconstructs the original form.
         Reverse of :func:`to_storage()`.
@@ -304,12 +289,13 @@ class Values(object):
             elif datatype == "List":
                 values[name] = [v for v in cls.from_storage_index(vec, item_index).values()]
             else:
-                raise NotImplementedError('Unknown datatype: "{}"'.format(datatype))
+                raise NotImplementedError(f'Unknown datatype: "{datatype}"')
 
         return values
 
-    def from_storage(self, elements, index=None):
-        # type: (T.List[T.Scalar], T.Dict[str, T.List[T.Any]]) -> Values
+    def from_storage(
+        self, elements: T.List[T.Scalar], index: T.Dict[str, T.List[T.Any]] = None
+    ) -> Values:
         """
         Create a Values object with the same structure as self but constructed
         from a flat list representation. Opposite of `.to_storage()`.
@@ -319,8 +305,7 @@ class Values(object):
             return Values.from_storage_index(elements, self.index())
         return Values.from_storage_index(elements, index)
 
-    def symbolic(self, name, **kwargs):
-        # type: (str, T.Dict) -> Values
+    def symbolic(self, name: str, **kwargs: T.Dict) -> Values:
         """
         Create a Values object with the same structure as self, where each element
         is a symbolic element with the given name prefix. Kwargs are forwarded
@@ -328,11 +313,10 @@ class Values(object):
         """
         symbolic_values = Values()
         for k, v in self.items():
-            symbolic_values[k] = ops.StorageOps.symbolic(v, "{}_{}".format(name, k), **kwargs)
+            symbolic_values[k] = ops.StorageOps.symbolic(v, f"{name}_{k}", **kwargs)
         return symbolic_values
 
-    def evalf(self):
-        # type: () -> Values
+    def evalf(self) -> Values:
         """
         Numerical evaluation.
         """
@@ -344,8 +328,7 @@ class Values(object):
     # Group concept - see symforce.ops.group_ops
     # -------------------------------------------------------------------------
 
-    def identity(self):
-        # type: () -> Values
+    def identity(self) -> Values:
         """
         Returns Values object with same structure as self, but with each element as an identity element.
         """
@@ -354,8 +337,7 @@ class Values(object):
             identity_values[k] = ops.GroupOps.identity(v)
         return identity_values
 
-    def compose(self, other):
-        # type: (Values) -> Values
+    def compose(self, other: Values) -> Values:
         """
         Element-wise compose of each element with another Values of identical structure
         """
@@ -365,8 +347,7 @@ class Values(object):
             composed_values[k] = ops.GroupOps.compose(v, other[k])
         return composed_values
 
-    def inverse(self):
-        # type: () -> Values
+    def inverse(self) -> Values:
         """
         Element-wise inverse of this Values
         """
@@ -379,15 +360,13 @@ class Values(object):
     # Lie group concept - see symforce.ops.lie_group_ops
     # -------------------------------------------------------------------------
 
-    def tangent_dim(self):
-        # type: () -> int
+    def tangent_dim(self) -> int:
         """
         Sum of the dimensions of the embedded manifold of each element
         """
         return sum([ops.LieGroupOps.tangent_dim(v) for v in self.values()])
 
-    def from_tangent(self, vec, epsilon=0):
-        # type: (T.List[T.Scalar], T.Scalar) -> Values
+    def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Values:
         """
         Returns a Values object with the same structure as self, but by computing
         each element using the mapping from its corresponding tangent space vector
@@ -401,8 +380,7 @@ class Values(object):
             inx += dim
         return updated_values
 
-    def to_tangent(self, epsilon=0):
-        # type: (T.Scalar) -> T.List[T.Scalar]
+    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Returns flat vector representing concatentated tangent spaces of each element.
         """
@@ -411,8 +389,7 @@ class Values(object):
             vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
         return vec
 
-    def storage_D_tangent(self):
-        # type: () -> geo.Matrix
+    def storage_D_tangent(self) -> geo.Matrix:
         """
         Returns a matrix with dimensions (storage_dim x tangent_dim) which represents
         the jacobian of the flat storage space of self wrt to the flat tangent space of
@@ -432,8 +409,7 @@ class Values(object):
             t_inx += t_dim
         return storage_D_tangent
 
-    def tangent_D_storage(self):
-        # type: () -> geo.Matrix
+    def tangent_D_storage(self) -> geo.Matrix:
         """
         Returns a matrix with dimensions (tangent_dim x storage_dim) which represents
         the jacobian of the flat tangent space of self wrt to the flat storage space of
@@ -457,8 +433,7 @@ class Values(object):
     # Printing
     # -------------------------------------------------------------------------
 
-    def format(self, indent=0):
-        # type: (int) -> str
+    def format(self, indent: int = 0) -> str:
         """
         Pretty format as an indented tree.
 
@@ -476,13 +451,12 @@ class Values(object):
             else:
                 value_str = str(value)
 
-            lines.append("  {}: {},".format(key, value_str))
+            lines.append(f"  {key}: {value_str},")
         lines.append(")")
         indent_str = " " * indent
         return "\n".join(indent_str + line for line in lines)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         """
         String representation, simply calls :func:`format()`.
         """
@@ -492,8 +466,7 @@ class Values(object):
     # Dict magic methods
     # -------------------------------------------------------------------------
 
-    def _get_subvalues_and_key(self, key, create=False):
-        # type: (str, bool) -> T.Tuple[Values, str]
+    def _get_subvalues_and_key(self, key: str, create: bool = False) -> T.Tuple[Values, str]:
         """
         Given a key, compute the full key name by applying name scopes and
         the innermost values that contains that key. Return the innermost values
@@ -537,23 +510,19 @@ class Values(object):
 
         return values, key_name
 
-    def __getitem__(self, key):
-        # type: (str) -> T.Any
+    def __getitem__(self, key: str) -> T.Any:
         values, key_name = self._get_subvalues_and_key(key)
         return values.dict[key_name]
 
-    def __setitem__(self, key, value):
-        # type: (str, T.Any) -> None
+    def __setitem__(self, key: str, value: T.Any) -> None:
         values, key_name = self._get_subvalues_and_key(key, create=True)
         values.dict[key_name] = value
 
-    def __delitem__(self, key):
-        # type: (str) -> None
+    def __delitem__(self, key: str) -> None:
         values, key_name = self._get_subvalues_and_key(key)
         del values.dict[key_name]
 
-    def __contains__(self, key):
-        # type: (str) -> bool
+    def __contains__(self, key: str) -> bool:
         values, key_name = self._get_subvalues_and_key(key)
         return values.dict.__contains__(key_name)
 
@@ -562,8 +531,7 @@ class Values(object):
     # -------------------------------------------------------------------------
 
     @contextlib.contextmanager
-    def scope(self, scope):
-        # type: (str) -> T.Iterator[None]
+    def scope(self, scope: str) -> T.Iterator[None]:
         """
         Context manager to apply a name scope to both keys added to the values
         and new symbols created within the with block.
@@ -571,16 +539,14 @@ class Values(object):
         with self.symbol_name_scoper(scope), self.key_scoper(scope):
             yield None
 
-    def _remove_scope(self, key):
-        # type: (str) -> str
+    def _remove_scope(self, key: str) -> str:
         """
         Strips the current Values scope off of the given key if present.
         """
         prefix = ".".join(self.__scopes__) + "."
         return key[key.startswith(prefix) and len(prefix) :]
 
-    def add(self, value, **kwargs):
-        # type: (T.Union[str, sm.Symbol], T.Any) -> None
+    def add(self, value: T.Union[str, sm.Symbol], **kwargs: T.Any) -> None:
         """
         Add a symbol into the values using its given name, either a Symbol or a string.
         Allows avoiding duplication of the sort `v['foo'] = sm.Symbol('foo')`.
@@ -597,8 +563,7 @@ class Values(object):
             raise NameError("Expr of type {} has no .name".format(type(value)))
 
     @staticmethod
-    def shape_to_dims(shape):
-        # type: (T.Sequence[int]) -> int
+    def shape_to_dims(shape: T.Sequence[int]) -> int:
         """
         Compute the number of entries in an object of this shape.
         """
@@ -608,8 +573,7 @@ class Values(object):
     # Miscellaneous helpers
     # -------------------------------------------------------------------------
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         """
         Exact equality check.
         """
@@ -618,15 +582,13 @@ class Values(object):
         else:
             return False
 
-    def subs(self, *args, **kwargs):
-        # type: (T.Any, T.Any) -> Values
+    def subs(self, *args: T.Any, **kwargs: T.Any) -> Values:
         """
         Substitute given values of each scalar element into a new instance.
         """
         return self.from_storage([sm.S(s).subs(*args, **kwargs) for s in self.to_storage()])
 
-    def simplify(self):
-        # type: () -> Values
+    def simplify(self) -> Values:
         """
         Simplify each scalar element into a new instance.
         """

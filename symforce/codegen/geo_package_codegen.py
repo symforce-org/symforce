@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import os
 import tempfile
 import textwrap
@@ -21,12 +19,11 @@ CURRENT_DIR = os.path.dirname(__file__)
 DEFAULT_GEO_TYPES = (geo.Rot2, geo.Pose2, geo.Rot3, geo.Pose3)
 
 
-def make_storage_ops_funcs(cls, mode):
-    # type: (T.Type, codegen_util.CodegenMode) -> T.List[Codegen]
+def make_storage_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
     """
     Create func spec arguments for storage_ops on the given class.
     """
-    storage_vec = geo.M(range(ops.StorageOps.storage_dim(cls)))
+    storage_vec = geo.M(ops.StorageOps.storage_dim(cls), 1)
     return [
         Codegen.function(
             name="ToStorage",
@@ -45,8 +42,7 @@ def make_storage_ops_funcs(cls, mode):
     ]
 
 
-def make_group_ops_funcs(cls, mode):
-    # type: (T.Type, codegen_util.CodegenMode) -> T.List[Codegen]
+def make_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
     """
     Create func spec arguments for group ops on the given class.
     """
@@ -91,12 +87,11 @@ def make_group_ops_funcs(cls, mode):
     ]
 
 
-def make_lie_group_ops_funcs(cls, mode):
-    # type: (T.Type, codegen_util.CodegenMode) -> T.List[Codegen]
+def make_lie_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
     """
     Create func spec arguments for lie group ops on the given class.
     """
-    tangent_vec = geo.M(range(ops.LieGroupOps.tangent_dim(cls)))
+    tangent_vec = geo.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
     return [
         Codegen.function(
             name="FromTangent",
@@ -129,8 +124,7 @@ def make_lie_group_ops_funcs(cls, mode):
     ]
 
 
-def geo_class_data(cls, mode):
-    # type: (T.Type, CodegenMode) -> T.Dict[str, T.Any]
+def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
     """
     Data for template generation of this class. Contains all useful info for
     class-specific templates.
@@ -155,8 +149,7 @@ def geo_class_data(cls, mode):
     return data
 
 
-def generate(mode, output_dir=None, gen_example=True):
-    # type: (CodegenMode, str, bool) -> str
+def generate(mode: CodegenMode, output_dir: str = None, gen_example: bool = True) -> str:
     """
     Generate the geo package for the given language.
 
@@ -164,8 +157,8 @@ def generate(mode, output_dir=None, gen_example=True):
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(mode.name), dir="/tmp")
-        logger.debug("Creating temp directory: {}".format(output_dir))
+        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{mode.name}_", dir="/tmp")
+        logger.debug(f"Creating temp directory: {output_dir}")
     # Subdirectory for everything we'll generate
     package_dir = os.path.join(output_dir, "geo")
     templates = template_util.TemplateList()
@@ -176,7 +169,7 @@ def generate(mode, output_dir=None, gen_example=True):
     sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
     if mode == CodegenMode.PYTHON2:
-        logger.info('Creating Python package at: "{}"'.format(package_dir))
+        logger.info(f'Creating Python package at: "{package_dir}"')
         template_dir = os.path.join(template_util.PYTHON_TEMPLATE_DIR, "geo_package")
 
         # Build up templates for each type
@@ -211,7 +204,7 @@ def generate(mode, output_dir=None, gen_example=True):
                 )
 
     elif mode == CodegenMode.CPP:
-        logger.info('Creating C++ package at: "{}"'.format(package_dir))
+        logger.info(f'Creating C++ package at: "{package_dir}"')
         template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "geo_package")
 
         # Build up templates for each type
@@ -269,7 +262,7 @@ def generate(mode, output_dir=None, gen_example=True):
                 )
 
     else:
-        raise NotImplementedError('Unknown mode: "{}"'.format(mode))
+        raise NotImplementedError(f'Unknown mode: "{mode}"')
 
     templates.render()
 

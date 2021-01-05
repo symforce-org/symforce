@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import enum
 import os
 import tempfile
@@ -43,7 +45,7 @@ class DerivativeMode(enum.Enum):
     FULL_LINEARIZATION = "full_linearization"
 
 
-class Codegen(object):
+class Codegen:
     """
     Class used for generating code from symbolic expressions or functions.
 
@@ -55,16 +57,15 @@ class Codegen(object):
 
     def __init__(
         self,
-        name,  # type: str
-        inputs,  # type: Values
-        outputs,  # type: Values
-        mode,  # type: codegen_util.CodegenMode
-        return_key=None,  # type: T.Optional[str]
-        sparse_matrices=None,  # type: T.List[str]
-        scalar_type="double",  # type: str
-        docstring=None,  # type: str
-    ):
-        # type: (...) -> None
+        name: str,
+        inputs: Values,
+        outputs: Values,
+        mode: codegen_util.CodegenMode,
+        return_key: T.Optional[str] = None,
+        sparse_matrices: T.List[str] = None,
+        scalar_type: str = "double",
+        docstring: str = None,
+    ) -> None:
         """
         Creates the Codegen specification.
 
@@ -104,7 +105,7 @@ class Codegen(object):
         )
 
         # Outputs must not have same variable names/keys as inputs
-        assert all([key not in outputs.keys() for key in inputs.keys()])
+        assert all([key not in list(outputs.keys()) for key in inputs.keys()])
 
         self.inputs = inputs
         self.outputs = outputs
@@ -117,7 +118,7 @@ class Codegen(object):
         self.return_key = return_key
 
         # Mapping between sparse matrix keys and constants needed for static CSC construction
-        self.sparse_mat_data = {}  # type: T.Dict[str, T.Dict[str, T.Any]]
+        self.sparse_mat_data: T.Dict[str, T.Dict[str, T.Any]] = {}
         if sparse_matrices is not None:
             assert all([key in outputs for key in sparse_matrices])
             assert all([isinstance(outputs[key], geo.Matrix) for key in sparse_matrices])
@@ -137,15 +138,14 @@ class Codegen(object):
     @classmethod
     def function(
         cls,
-        name,  # type: str
-        func,  # type: T.Callable
-        input_types,  # type: T.Sequence[ElementOrType]
-        mode,  # type: codegen_util.CodegenMode
-        output_names=None,  # type: T.Sequence[str]
-        return_key=None,  # type: str
-        docstring=None,  # type: str
-    ):
-        # type: (...)  -> Codegen
+        name: str,
+        func: T.Callable,
+        input_types: T.Sequence[ElementOrType],
+        mode: codegen_util.CodegenMode,
+        output_names: T.Sequence[str] = None,
+        return_key: str = None,
+        docstring: str = None,
+    ) -> Codegen:
         """
         Creates a Codegen object from a symbolic python function.
 
@@ -213,12 +213,11 @@ class Codegen(object):
         )
 
     @staticmethod
-    def common_data():
-        # type: () -> T.Dict[str, T.Any]
+    def common_data() -> T.Dict[str, T.Any]:
         """
         Return common template data for code generation.
         """
-        data = {}  # type: T.Dict[str, T.Any]
+        data: T.Dict[str, T.Any] = {}
         data["ops"] = ops
         data["Symbol"] = sm.Symbol
         data["Matrix"] = geo.Matrix
@@ -227,8 +226,7 @@ class Codegen(object):
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util
 
-        def is_symbolic(T):
-            # type: (T.Any) -> bool
+        def is_symbolic(T: T.Any) -> bool:
             return isinstance(T, (sm.Expr, sm.Symbol))
 
         data["is_symbolic"] = is_symbolic
@@ -238,13 +236,12 @@ class Codegen(object):
 
     def generate_function(
         self,
-        output_dir=None,  # type: str
-        lcm_bindings_output_dir=None,  # type: str
-        shared_types=None,  # type: T.Mapping[str, str]
-        namespace="sym",  # type: str
-        generated_file_name=None,  # type: str
-    ):
-        # type: (...) -> T.Dict[str, T.Any]
+        output_dir: str = None,
+        lcm_bindings_output_dir: str = None,
+        shared_types: T.Mapping[str, str] = None,
+        namespace: str = "sym",
+        generated_file_name: str = None,
+    ) -> T.Dict[str, T.Any]:
         """
         Generates a function that computes the given outputs from the given inputs.
 
@@ -268,8 +265,8 @@ class Codegen(object):
             generated_file_name: Stem for the filename into which the function is generated, with no file extension
         """
         if output_dir is None:
-            output_dir = tempfile.mkdtemp(prefix="sf_codegen_{}_".format(self.name), dir="/tmp")
-            logger.debug("Creating temp directory: {}".format(output_dir))
+            output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp")
+            logger.debug(f"Creating temp directory: {output_dir}")
 
         if lcm_bindings_output_dir is None:
             lcm_bindings_output_dir = output_dir
@@ -313,7 +310,7 @@ class Codegen(object):
         self.typenames_dict = types_codegen_data["typenames_dict"]
         # Maps typenames to namespaces
         self.namespaces_dict = types_codegen_data["namespaces_dict"]
-        self.unique_namespaces = set(v for v in self.namespaces_dict.values())
+        self.unique_namespaces = {v for v in self.namespaces_dict.values()}
 
         # Namespace of this function + generated types
         self.namespace = namespace
@@ -326,9 +323,7 @@ class Codegen(object):
         # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
             python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
-            logger.info(
-                'Creating python function "{}" at "{}"'.format(self.name, python_function_dir)
-            )
+            logger.info(f'Creating python function "{self.name}" at "{python_function_dir}"')
 
             templates.add(
                 os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "FUNCTION.py.jinja"),
@@ -344,7 +339,7 @@ class Codegen(object):
             output_data["python_function_dir"] = python_function_dir
         elif self.mode == codegen_util.CodegenMode.CPP:
             cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
-            logger.info('Creating C++ function "{}" at "{}"'.format(self.name, cpp_function_dir))
+            logger.info(f'Creating C++ function "{self.name}" at "{cpp_function_dir}"')
 
             templates.add(
                 os.path.join(template_util.CPP_TEMPLATE_DIR, "function", "FUNCTION.h.jinja"),
@@ -356,7 +351,7 @@ class Codegen(object):
 
             output_data["cpp_function_dir"] = cpp_function_dir
         else:
-            raise NotImplementedError('Unknown mode: "{}"'.format(self.mode))
+            raise NotImplementedError(f'Unknown mode: "{self.mode}"')
 
         templates.render()
         lcm_data = codegen_util.generate_lcm_types(
@@ -371,8 +366,9 @@ class Codegen(object):
         return output_data
 
     @staticmethod
-    def default_docstring(inputs, outputs, original_function=None):
-        # type: (Values, Values, T.Callable) -> str
+    def default_docstring(
+        inputs: Values, outputs: Values, original_function: T.Callable = None
+    ) -> str:
         """
         Create a default docstring if no other is available from the function or caller.
         """
@@ -408,13 +404,12 @@ class Codegen(object):
 
     def create_with_derivatives(
         self,
-        which_args=None,  # type: T.Sequence[int]
-        include_result=True,  # type: bool
-        name=None,  # type: str
-        use_product_manifold_for_pose3=True,  # type: bool
-        derivative_generation_mode=DerivativeMode.SEPARATE_JACOBIANS,  # type: DerivativeMode
-    ):
-        # type: (...) -> Codegen
+        which_args: T.Sequence[int] = None,
+        include_result: bool = True,
+        name: str = None,
+        use_product_manifold_for_pose3: bool = True,
+        derivative_generation_mode: DerivativeMode = DerivativeMode.SEPARATE_JACOBIANS,
+    ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
         create a codegen object that additionally computes jacobians with respect to
@@ -439,26 +434,24 @@ class Codegen(object):
                                         FULL_LINEARIZATION it will be an output argument.
         """
         if not which_args:
-            which_args = range(len(self.inputs.keys()))
+            which_args = list(range(len(list(self.inputs.keys()))))
 
         # Get docstring
         docstring_lines = self.docstring.split("\n")[:-1]
 
         # Helpers to handle use_product_manifold_for_pose3
-        def storage_D_tangent(v):
-            # type: (T.Any) -> geo.Matrix
+        def storage_D_tangent(v: T.Any) -> geo.Matrix:
             if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
                 v = Values(R=v.R, t=v.t)
             return ops.LieGroupOps.storage_D_tangent(v)
 
-        def tangent_D_storage(v):
-            # type: (T.Any) -> geo.Matrix
+        def tangent_D_storage(v: T.Any) -> geo.Matrix:
             if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
                 v = Values(R=v.R, t=v.t)
             return ops.LieGroupOps.tangent_D_storage(v)
 
         # Ensure the previous codegen has one output
-        assert len(self.outputs.keys()) == 1
+        assert len(list(self.outputs.keys())) == 1
         result_name, result = list(self.outputs.items())[0]
 
         if derivative_generation_mode == DerivativeMode.FULL_LINEARIZATION:
@@ -497,14 +490,12 @@ class Codegen(object):
                 else:
                     jacobian = jacobian.row_join(arg_jacobian)
 
-                docstring_args.append("{} ({})".format(arg_index, arg_name))
+                docstring_args.append(f"{arg_index} ({arg_name})")
             elif derivative_generation_mode == DerivativeMode.SEPARATE_JACOBIANS:
-                outputs["{}_D_{}".format(result_name, arg_name)] = (
+                outputs[f"{result_name}_D_{arg_name}"] = (
                     result_tangent_D_storage * result_storage_D_arg_storage * storage_D_tangent(arg)
                 )
-                docstring_lines.append(
-                    "    geo.Matrix: Jacobian for arg {} ({})".format(arg_index, arg_name)
-                )
+                docstring_lines.append(f"    geo.Matrix: Jacobian for arg {arg_index} ({arg_name})")
 
         if derivative_generation_mode in (
             DerivativeMode.STACKED_JACOBIAN,
@@ -532,7 +523,7 @@ class Codegen(object):
         # If just computing a single jacobian, return it instead of output arg
         return_key = None
         return_result = derivative_generation_mode == DerivativeMode.SEPARATE_JACOBIANS
-        if len(outputs.keys()) == 1 or (include_result and return_result):
+        if len(list(outputs.keys())) == 1 or (include_result and return_result):
             return_key = list(outputs.keys())[0]
 
         # Cutely pick a function name if not given

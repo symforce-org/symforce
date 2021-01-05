@@ -21,35 +21,25 @@ class Group(Storage):
     GroupT = T.TypeVar("GroupT", bound="Group")
 
     @classmethod
-    def identity(cls):
-        # type: (T.Type[GroupT]) -> GroupT
+    def identity(cls: T.Type[GroupT]) -> GroupT:
         """
         Identity element such that `compose(a, identity) = a`.
         """
         raise NotImplementedError()
 
-    def compose(
-        self,  # type: GroupT
-        other,  # type: GroupT
-    ):
-        # type: (...) -> GroupT
+    def compose(self: GroupT, other: GroupT,) -> GroupT:
         """
         Apply the group operation with other.
         """
         raise NotImplementedError()
 
-    def inverse(self):
-        # type: (GroupT) -> GroupT
+    def inverse(self: GroupT) -> GroupT:
         """
         Group inverse, such that `compose(a, inverse(a)) = a`.
         """
         raise NotImplementedError()
 
-    def between(
-        self,  # type: GroupT
-        b,  # type: GroupT
-    ):
-        # type: (...) -> GroupT
+    def between(self: GroupT, b: GroupT,) -> GroupT:
         """
         Returns the element that when composed with this produces b. For vector spaces it is `this - a`.
 

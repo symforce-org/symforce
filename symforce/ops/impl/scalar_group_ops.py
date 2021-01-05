@@ -8,16 +8,13 @@ ElementOrType = T.Union[Element, T.Type]
 
 class ScalarGroupOps(ScalarStorageOps):
     @staticmethod
-    def identity(a):
-        # type: (ElementOrType) -> Element
+    def identity(a: ElementOrType) -> Element:
         return 0.0
 
     @staticmethod
-    def compose(a, b):
-        # type: (Element, Element) -> Element
+    def compose(a: Element, b: Element) -> Element:
         return a + b
 
     @staticmethod
-    def inverse(a):
-        # type: (Element) -> Element
+    def inverse(a: Element) -> Element:
         return -a
