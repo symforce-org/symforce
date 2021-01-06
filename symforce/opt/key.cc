@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& os, const sym::Key& key) {
     if (key.Sub() < 0) {
       os << 'n';
     }
-    os << abs(key.Sub());
+    os << std::abs(key.Sub());
   }
 
   if (key.Super() != sym::Key::kInvalidSuper) {
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const sym::Key& key) {
     if (key.Super() < 0) {
       os << 'n';
     }
-    os << abs(key.Super());
+    os << std::abs(key.Super());
   }
 
   return os;
