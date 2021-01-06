@@ -1,4 +1,6 @@
 # For compiling codegen tests
+#
+# Expects SYMFORCE_TEST_BACKEND to be set to either 'symengine' or 'sympy'
 
 ***REMOVED***=***REMOVED***
 export PKG_CONFIG_PATH=***REMOVED***/lib/pkgconfig/
@@ -11,17 +13,10 @@ CC_FILES =../gen/cpp/geo/*.cc ../gen/cpp/geo/ops/**/*.cc
 
 CC_FILES_VALUES =../symforce/opt/*.cc
 
-codegen_function_test: libsymforce_geo.so codegen_function_test.cc
-	c++ $(CXXFLAGS) -o codegen_function_test codegen_function_test.cc -Wl,-rpath,'$$ORIGIN' -lsymforce_geo $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_test_cpp_data/cpp
-
-codegen_nan_test: libsymforce_geo.so codegen_nan_test.cc
-	c++ $(CXXFLAGS) -o codegen_nan_test codegen_nan_test.cc -Wl,-rpath,'$$ORIGIN' -lsymforce_geo $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_nan_test_data/cpp
-
-codegen_multi_function_test: libsymforce_geo.so codegen_multi_function_test.cc
-	c++ $(CXXFLAGS) -o codegen_multi_function_test codegen_multi_function_test.cc -Wl,-rpath,'$$ORIGIN' -lsymforce_geo $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_multi_function_data/cpp
-
-codegen_sparse_matrix_test: codegen_sparse_matrix_test.cc
-	c++ $(CXXFLAGS) -o codegen_sparse_matrix_test codegen_sparse_matrix_test.cc $(INCLUDES) -I./symforce_function_codegen_test_data/codegen_sparse_matrices_data/cpp
+codegen_%_test: codegen_%_test.cc libsymforce_geo.so
+	c++ $(CXXFLAGS) -o codegen_$*_test codegen_$*_test.cc \
+		-Wl,-rpath,'$$ORIGIN' -lsymforce_geo $(INCLUDES) \
+		-I./symforce_function_codegen_test_data/$(SYMFORCE_TEST_BACKEND)/codegen_$*_test_data/cpp
 
 libsymforce_geo.so: $(CC_FILES)
 	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_geo.so $(CC_FILES) $(INCLUDES)

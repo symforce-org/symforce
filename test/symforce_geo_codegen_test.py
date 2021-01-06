@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 
+import symforce
 from symforce import ops
 from symforce import logger
 from symforce import python_util
@@ -17,7 +18,9 @@ from symforce.codegen import geo_package_codegen
 
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
+TEST_DATA_DIR = os.path.join(
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+)
 
 
 class SymforceGeoCodegenTest(TestCase):
@@ -35,11 +38,12 @@ class SymforceGeoCodegenTest(TestCase):
         try:
             geo_package_codegen.generate(mode=CodegenMode.PYTHON2, output_dir=output_dir)
 
-            # Test against checked-in geo package
-            self.compare_or_update_directory(
-                actual_dir=os.path.join(output_dir, "geo"),
-                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "geo"),
-            )
+            # Test against checked-in geo package (only on SymEngine)
+            if symforce.get_backend() == "symengine":
+                self.compare_or_update_directory(
+                    actual_dir=os.path.join(output_dir, "geo"),
+                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "geo"),
+                )
 
             # Compare against the checked-in test itself
             expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_python_test.py")
@@ -75,10 +79,12 @@ class SymforceGeoCodegenTest(TestCase):
         try:
             geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
-            self.compare_or_update_directory(
-                actual_dir=os.path.join(output_dir, "geo"),
-                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "geo"),
-            )
+            # Test against checked-in geo package (only on SymEngine)
+            if symforce.get_backend() == "symengine":
+                self.compare_or_update_directory(
+                    actual_dir=os.path.join(output_dir, "geo"),
+                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "geo"),
+                )
 
             # Generate functions for testing tangent_D_storage numerical derivatives
             for cls in geo_package_codegen.DEFAULT_GEO_TYPES:

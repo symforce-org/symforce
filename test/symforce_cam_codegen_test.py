@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 
+import symforce
 from symforce import logger
 from symforce import python_util
 from symforce import types as T
@@ -18,7 +19,9 @@ from symforce.codegen import cam_package_codegen
 
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
+TEST_DATA_DIR = os.path.join(
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+)
 
 # For testing generation of functions that take camera objects as arguments
 def pixel_to_ray_and_back(
@@ -66,10 +69,12 @@ class SymforceCamCodegenTest(TestCase):
             # Generate cam package + tests
             cam_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
-            self.compare_or_update_directory(
-                actual_dir=os.path.join(output_dir, "cam"),
-                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "cam"),
-            )
+            # Check against existing cam package (only on SymEngine)
+            if symforce.get_backend() == "symengine":
+                self.compare_or_update_directory(
+                    actual_dir=os.path.join(output_dir, "cam"),
+                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "cam"),
+                )
 
             # Compare against the checked-in tests
             for test_name in (

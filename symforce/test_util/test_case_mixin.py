@@ -35,11 +35,6 @@ class SymforceTestCaseMixin:
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
         """
-        # TODO(aaron): Remove this check
-        if symforce.get_backend() == "sympy":
-            logger.warning("Not comparing output because we're on the SymPy backend")
-            return
-
         if SymforceTestCaseMixin.UPDATE:
             logger.debug(f'Updating data at: "{path}"')
 
@@ -61,11 +56,6 @@ class SymforceTestCaseMixin:
             )
 
     def compare_or_update_file(self, path: str, new_file: str) -> None:
-        # TODO(aaron): Remove this check
-        if symforce.get_backend() == "sympy":
-            logger.warning("Not comparing output because we're on the SymPy backend")
-            return
-
         with open(new_file) as f:
             code = f.read()
         self.compare_or_update(path, code)
@@ -75,11 +65,6 @@ class SymforceTestCaseMixin:
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.
         """
-        # TODO(aaron): Remove this check
-        if symforce.get_backend() == "sympy":
-            logger.warning("Not comparing output because we're on the SymPy backend")
-            return
-
         logger.debug(f'Comparing directories: actual="{actual_dir}", expected="{expected_dir}"')
         actual_paths = sorted(list(python_util.files_in_dir(actual_dir, relative=True)))
         expected_paths = sorted(list(python_util.files_in_dir(expected_dir, relative=True)))

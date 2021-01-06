@@ -2,6 +2,7 @@ import logging
 import os
 import tempfile
 
+import symforce
 from symforce import logger
 from symforce import geo
 from symforce import ops
@@ -363,10 +364,12 @@ class SymFactorCodegenTest(TestCase):
 
             logger.info(f"Wrote factors out at: {factors_dir}")
 
-            self.compare_or_update_directory(
-                actual_dir=factors_dir,
-                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym", "factors"),
-            )
+            # Only test on SymEngine backend
+            if symforce.get_backend() == "symengine":
+                self.compare_or_update_directory(
+                    actual_dir=factors_dir,
+                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym", "factors"),
+                )
 
         finally:
             if logger.level != logging.DEBUG:

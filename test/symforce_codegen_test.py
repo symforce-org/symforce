@@ -4,6 +4,7 @@ import tempfile
 import sys
 import os
 
+import symforce
 from symforce import geo
 from symforce import ops
 from symforce import logger
@@ -18,7 +19,9 @@ from symforce.test_util import TestCase, slow_on_sympy
 from symforce.values import Values
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(SYMFORCE_DIR, "test", "symforce_function_codegen_test_data")
+TEST_DATA_DIR = os.path.join(
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+)
 
 # Test function
 def az_el_from_point(
@@ -130,7 +133,7 @@ class SymforceCodegenTest(TestCase):
                 "values_vec_2D": "values_vec_t",
                 "values_vec_2D_out": "values_vec_t",
             }
-            namespace = "codegen_test_python"
+            namespace = "codegen_python_test"
             codegen_data = python_func.generate_function(
                 shared_types=shared_types, namespace=namespace
             )
@@ -231,7 +234,7 @@ class SymforceCodegenTest(TestCase):
 
         for scalar_type in ("double", "float"):
             cpp_func = Codegen(
-                "CodegenTestCpp", inputs, outputs, CodegenMode.CPP, scalar_type=scalar_type
+                "CodegenCppTest", inputs, outputs, CodegenMode.CPP, scalar_type=scalar_type
             )
             shared_types = {
                 "values_vec": "values_vec_t",
@@ -239,7 +242,7 @@ class SymforceCodegenTest(TestCase):
                 "values_vec_2D": "values_vec_t",
                 "values_vec_2D_out": "values_vec_t",
             }
-            namespace = "codegen_test_cpp"
+            namespace = "codegen_cpp_test"
             codegen_data = cpp_func.generate_function(
                 shared_types=shared_types, namespace=namespace
             )
@@ -253,12 +256,17 @@ class SymforceCodegenTest(TestCase):
                 if not self.UPDATE:
                     try:
                         TestCase.compile_and_run_cpp(
-                            os.path.join(SYMFORCE_DIR, "test"), "codegen_function_test"
+                            os.path.join(SYMFORCE_DIR, "test"),
+                            "codegen_cpp_test",
+                            make_args=(
+                                "codegen_cpp_test",
+                                f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
+                            ),
                         )
                     finally:
                         if logger.level != logging.DEBUG:
                             python_util.remove_if_exists(
-                                os.path.join(SYMFORCE_DIR, "test", "codegen_function_test")
+                                os.path.join(SYMFORCE_DIR, "test", "codegen_cpp_test")
                             )
                             python_util.remove_if_exists(
                                 os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
@@ -319,7 +327,10 @@ class SymforceCodegenTest(TestCase):
                 TestCase.compile_and_run_cpp(
                     package_dir=os.path.join(SYMFORCE_DIR, "test"),
                     executable_names="codegen_nan_test",
-                    make_args=("codegen_nan_test",),
+                    make_args=(
+                        "codegen_nan_test",
+                        f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
+                    ),
                 )
             finally:
                 if logger.level != logging.DEBUG:
@@ -352,7 +363,7 @@ class SymforceCodegenTest(TestCase):
             mode=CodegenMode.CPP,
         )
 
-        namespace = "codegen_multi_function"
+        namespace = "codegen_multi_function_test"
         output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
         logger.debug(f"Creating temp directory: {output_dir}")
 
@@ -380,7 +391,10 @@ class SymforceCodegenTest(TestCase):
                 TestCase.compile_and_run_cpp(
                     package_dir=os.path.join(SYMFORCE_DIR, "test"),
                     executable_names="codegen_multi_function_test",
-                    make_args=("codegen_multi_function_test",),
+                    make_args=(
+                        "codegen_multi_function_test",
+                        f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
+                    ),
                 )
             finally:
                 if logger.level != logging.DEBUG:
@@ -412,7 +426,7 @@ class SymforceCodegenTest(TestCase):
         for i in range(dim):
             outputs["matrix_out"][i, i] = inputs["matrix_in"][i, i]
 
-        namespace = "codegen_sparse_matrices"
+        namespace = "codegen_sparse_matrix_test"
         output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
         logger.debug(f"Creating temp directory: {output_dir}")
 
@@ -473,7 +487,10 @@ class SymforceCodegenTest(TestCase):
                 TestCase.compile_and_run_cpp(
                     package_dir=os.path.join(SYMFORCE_DIR, "test"),
                     executable_names="codegen_sparse_matrix_test",
-                    make_args=("codegen_sparse_matrix_test",),
+                    make_args=(
+                        "codegen_sparse_matrix_test",
+                        f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
+                    ),
                 )
             finally:
                 if logger.level != logging.DEBUG:

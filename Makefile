@@ -4,8 +4,6 @@ BUILD_DIR=build
 
 PYTHON2=***REMOVED***/bin/mc_python
 PYTHON3=***REMOVED***/bin/***REMOVED***
-# TODO(hayk): Right now test_update is broken for symforce_geo_codegen_test because we don't generate
-# with Python 3 because of 2/3 gen differences. Resolve this.
 PYTHON=$(PYTHON3)
 
 PYTHON_VERSION=$(shell $(PYTHON) -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")

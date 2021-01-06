@@ -1,4 +1,4 @@
-#include "symforce_function_codegen_test_data/heaviside.h"
+#include "symforce_function_codegen_test_data/sympy/heaviside.h"
 
 // TODO(hayk): Use the catch unit testing framework (single header).
 #define assertTrue(a)                                      \
