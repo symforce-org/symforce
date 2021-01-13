@@ -34,6 +34,8 @@ std::unordered_map<key_t, index_entry_t> Linearization<ScalarType>::ComputeState
   }
 
   // Sanity check
+  // NOTE(aaron): If this fails, it probably means you've passed keys to optimize that don't have
+  // any corresponding factors
   SYM_ASSERT(state_index.size() == keys.size());
 
   // Go back through and set offsets relative to the key ordering
