@@ -93,6 +93,10 @@ test_sympy:
 test_update:
 	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) $(PYTHON) $(file) --update;)
 
+test_update_all:
+	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) $(PYTHON) $(file) --update;)
+	$(foreach file, $(wildcard $(GEN_FILES)), $(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) $(file) --update --run_slow_tests;)
+
 test: test_symengine test_sympy
 
 .PHONY: test_reqs test_symengine test_sympy test
