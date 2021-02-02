@@ -37,7 +37,7 @@ void BetweenFactorPose3(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b
 
   // Intermediate terms (862)
   const Scalar _tmp0 = -2 * (_a_T_b[0] * _a_T_b[0]);
-  const Scalar _tmp1 = -2 * (_a_T_b[1] * _a_T_b[1]) + 1;
+  const Scalar _tmp1 = 1 - 2 * (_a_T_b[1] * _a_T_b[1]);
   const Scalar _tmp2 = _tmp0 + _tmp1;
   const Scalar _tmp3 = 2 * _a_T_b[3];
   const Scalar _tmp4 = _a_T_b[0] * _tmp3;
@@ -50,7 +50,7 @@ void BetweenFactorPose3(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b
   const Scalar _tmp11 = 2 * (_a[1] * _a[1]);
   const Scalar _tmp12 = -_tmp11;
   const Scalar _tmp13 = 2 * (_a[0] * _a[0]);
-  const Scalar _tmp14 = -_tmp13 + 1;
+  const Scalar _tmp14 = 1 - _tmp13;
   const Scalar _tmp15 = _tmp12 + _tmp14;
   const Scalar _tmp16 = 2 * _a[3];
   const Scalar _tmp17 = _a[0] * _tmp16;
@@ -89,11 +89,11 @@ void BetweenFactorPose3(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b
   const Scalar _tmp46 =
       _a_T_b[0] * _tmp44 + _a_T_b[1] * _tmp43 + _a_T_b[2] * _tmp42 + _a_T_b[3] * _tmp45;
   const Scalar _tmp47 = std::fabs(_tmp46);
-  const Scalar _tmp48 = -epsilon + 1;
+  const Scalar _tmp48 = 1 - epsilon;
   const Scalar _tmp49 = std::min<Scalar>(_tmp47, _tmp48);
   const Scalar _tmp50 = std::acos(_tmp49);
   const Scalar _tmp51 = (_tmp50 * _tmp50);
-  const Scalar _tmp52 = -(_tmp49 * _tmp49) + 1;
+  const Scalar _tmp52 = 1 - (_tmp49 * _tmp49);
   const Scalar _tmp53 = 1.0 / (_tmp52);
   const Scalar _tmp54 = _tmp51 * _tmp53;
   const Scalar _tmp55 =
@@ -954,7 +954,7 @@ void BetweenFactorPose3(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b
   const Scalar _tmp755 = _b[0] * _tmp723;
   const Scalar _tmp756 = _b[1] * _tmp735;
   const Scalar _tmp757 = _tmp755 + _tmp756;
-  const Scalar _tmp758 = -2 * (_b[0] * _b[0]) + 1;
+  const Scalar _tmp758 = 1 - 2 * (_b[0] * _b[0]);
   const Scalar _tmp759 = _tmp745 + _tmp758;
   const Scalar _tmp760 = -_tmp724 + _tmp725;
   const Scalar _tmp761 = _tmp746 + _tmp758;

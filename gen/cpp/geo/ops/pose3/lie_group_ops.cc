@@ -28,7 +28,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
   const Scalar _tmp7 = (_tmp4 - std::sin(_tmp4)) / (_tmp3 * std::sqrt(_tmp3));
   const Scalar _tmp8 = _tmp7 * vec(0, 0);
   const Scalar _tmp9 = _tmp8 * vec(2, 0);
-  const Scalar _tmp10 = (-std::cos(_tmp4) + 1) / _tmp3;
+  const Scalar _tmp10 = (1 - std::cos(_tmp4)) / _tmp3;
   const Scalar _tmp11 = _tmp10 * vec(1, 0);
   const Scalar _tmp12 = _tmp8 * vec(1, 0);
   const Scalar _tmp13 = _tmp10 * vec(2, 0);
@@ -63,9 +63,9 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose3<Scal
 
   // Intermediate terms (26)
   const Scalar _tmp0 = 2 * std::min<Scalar>(0, (((_a[3]) > 0) - ((_a[3]) < 0))) + 1;
-  const Scalar _tmp1 = std::min<Scalar>(std::fabs(_a[3]), -epsilon + 1);
+  const Scalar _tmp1 = std::min<Scalar>(std::fabs(_a[3]), 1 - epsilon);
   const Scalar _tmp2 = std::acos(_tmp1);
-  const Scalar _tmp3 = -(_tmp1 * _tmp1) + 1;
+  const Scalar _tmp3 = 1 - (_tmp1 * _tmp1);
   const Scalar _tmp4 = _tmp0 * _tmp2 / std::sqrt(_tmp3);
   const Scalar _tmp5 = 2 * _tmp4;
   const Scalar _tmp6 = _a[2] * _tmp4;
@@ -133,7 +133,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a,
   const Scalar _tmp17 = -_tmp1;
   const Scalar _tmp18 = (_tmp4 - std::sin(_tmp4)) / (_tmp3 * std::sqrt(_tmp3));
   const Scalar _tmp19 = _tmp18 * vec(1, 0) * vec(2, 0);
-  const Scalar _tmp20 = (-std::cos(_tmp4) + 1) / _tmp3;
+  const Scalar _tmp20 = (1 - std::cos(_tmp4)) / _tmp3;
   const Scalar _tmp21 = _tmp20 * vec(0, 0);
   const Scalar _tmp22 = _tmp18 * vec(0, 0);
   const Scalar _tmp23 = _tmp22 * vec(2, 0);
@@ -149,7 +149,7 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a,
                         vec(4, 0) * (_tmp18 * (_tmp16 + _tmp28) + 1) +
                         vec(5, 0) * (_tmp19 - _tmp21);
   const Scalar _tmp32 = -2 * (_a[2] * _a[2]);
-  const Scalar _tmp33 = -2 * (_a[1] * _a[1]) + 1;
+  const Scalar _tmp33 = 1 - 2 * (_a[1] * _a[1]);
   const Scalar _tmp34 = vec(3, 0) * (_tmp18 * (_tmp17 + _tmp28) + 1) +
                         vec(4, 0) * (_tmp29 - _tmp30) + vec(5, 0) * (_tmp23 + _tmp24);
   const Scalar _tmp35 = _a[3] * _tmp14;
@@ -184,8 +184,8 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
   // Intermediate terms (53)
   const Scalar _tmp0 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0];
   const Scalar _tmp1 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3];
-  const Scalar _tmp2 = std::min<Scalar>(std::fabs(_tmp1), -epsilon + 1);
-  const Scalar _tmp3 = -(_tmp2 * _tmp2) + 1;
+  const Scalar _tmp2 = std::min<Scalar>(std::fabs(_tmp1), 1 - epsilon);
+  const Scalar _tmp3 = 1 - (_tmp2 * _tmp2);
   const Scalar _tmp4 = 2 * std::min<Scalar>(0, (((_tmp1) > 0) - ((_tmp1) < 0))) + 1;
   const Scalar _tmp5 = std::acos(_tmp2);
   const Scalar _tmp6 = _tmp4 * _tmp5 / std::sqrt(_tmp3);
@@ -194,7 +194,7 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
   const Scalar _tmp9 = _tmp6 * _tmp8;
   const Scalar _tmp10 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2];
   const Scalar _tmp11 = -2 * (_a[0] * _a[0]);
-  const Scalar _tmp12 = -2 * (_a[1] * _a[1]) + 1;
+  const Scalar _tmp12 = 1 - 2 * (_a[1] * _a[1]);
   const Scalar _tmp13 = _tmp11 + _tmp12;
   const Scalar _tmp14 = 2 * _a[0];
   const Scalar _tmp15 = _a[3] * _tmp14;

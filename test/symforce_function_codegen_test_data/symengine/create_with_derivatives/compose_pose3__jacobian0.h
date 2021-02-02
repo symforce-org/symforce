@@ -91,7 +91,7 @@ Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian0(const geo::Pose3<Scalar>& a,
   const Scalar _tmp62 = _tmp15 * _tmp9;
   const Scalar _tmp63 = _tmp61 + _tmp62;
   const Scalar _tmp64 = -2 * (_tmp0 * _tmp0);
-  const Scalar _tmp65 = -2 * (_tmp6 * _tmp6) + 1;
+  const Scalar _tmp65 = 1 - 2 * (_tmp6 * _tmp6);
   const Scalar _tmp66 = _tmp64 + _tmp65;
   const Scalar _tmp67 = 4 * _b[4];
   const Scalar _tmp68 = _b[5] * _tmp55;
@@ -127,7 +127,7 @@ Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian0(const geo::Pose3<Scalar>& a,
   const Scalar _tmp97 = _a[1] * _tmp47;
   const Scalar _tmp98 = _tmp96 + _tmp97;
   const Scalar _tmp99 = -2 * (_a[1] * _a[1]);
-  const Scalar _tmp100 = -2 * (_a[2] * _a[2]) + 1;
+  const Scalar _tmp100 = 1 - 2 * (_a[2] * _a[2]);
   const Scalar _tmp101 = _tmp100 + _tmp99;
   const Scalar _tmp102 = _a[3] * _tmp47;
   const Scalar _tmp103 = _a[2] * _tmp49;

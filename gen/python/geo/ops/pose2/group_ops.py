@@ -28,7 +28,7 @@ class GroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = 1 / (_a[0] ** 2 + _a[1] ** 2)
+        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
         _tmp1 = _a[0] * _tmp0
         _tmp2 = _a[1] * _tmp0
 
@@ -65,7 +65,7 @@ class GroupOps(object):
         _b = b.data
 
         # Intermediate terms
-        _tmp0 = 1 / (_a[0] ** 2 + _a[1] ** 2)
+        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
         _tmp1 = _a[1] * _tmp0
         _tmp2 = _a[0] * _tmp0
         _tmp3 = _a[3] * _tmp0
@@ -89,12 +89,12 @@ class GroupOps(object):
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
-        _tmp3 = 1 / _tmp2
+        _tmp3 = _tmp2 ** (-1.0)
         _tmp4 = _a[0] * _tmp3
         _tmp5 = _a[1] * _tmp3
         _tmp6 = _a[3] * _tmp3
         _tmp7 = _a[2] * _tmp3
-        _tmp8 = _tmp2 ** (-2)
+        _tmp8 = _tmp2 ** (-2.0)
         _tmp9 = _tmp0 * _tmp8
         _tmp10 = _tmp1 * _tmp8
         _tmp11 = -_tmp10 - _tmp9
@@ -198,7 +198,7 @@ class GroupOps(object):
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
-        _tmp3 = 1 / _tmp2
+        _tmp3 = _tmp2 ** (-1.0)
         _tmp4 = _b[1] * _tmp3
         _tmp5 = _b[0] * _tmp3
         _tmp6 = _a[0] * _tmp5 + _a[1] * _tmp4

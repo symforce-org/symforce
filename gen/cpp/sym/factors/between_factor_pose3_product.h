@@ -61,9 +61,9 @@ void BetweenFactorPose3Product(const geo::Pose3<Scalar>& a, const geo::Pose3<Sca
   const Scalar _tmp20 =
       _a_T_b[0] * _tmp18 + _a_T_b[1] * _tmp15 + _a_T_b[2] * _tmp17 + _a_T_b[3] * _tmp16;
   const Scalar _tmp21 = std::fabs(_tmp20);
-  const Scalar _tmp22 = -epsilon + 1;
+  const Scalar _tmp22 = 1 - epsilon;
   const Scalar _tmp23 = std::min<Scalar>(_tmp21, _tmp22);
-  const Scalar _tmp24 = -(_tmp23 * _tmp23) + 1;
+  const Scalar _tmp24 = 1 - (_tmp23 * _tmp23);
   const Scalar _tmp25 = 2 / std::sqrt(_tmp24);
   const Scalar _tmp26 = std::acos(_tmp23);
   const Scalar _tmp27 = (((_tmp20) > 0) - ((_tmp20) < 0));
@@ -77,7 +77,7 @@ void BetweenFactorPose3Product(const geo::Pose3<Scalar>& a, const geo::Pose3<Sca
   const Scalar _tmp35 = _a[1] * _tmp34;
   const Scalar _tmp36 = _tmp33 + _tmp35;
   const Scalar _tmp37 = 2 * (_a[2] * _a[2]);
-  const Scalar _tmp38 = -_tmp37 + 1;
+  const Scalar _tmp38 = 1 - _tmp37;
   const Scalar _tmp39 = _tmp12 + _tmp38;
   const Scalar _tmp40 = _tmp5 + _tmp7;
   const Scalar _tmp41 = -_a[4] * _tmp36 - _a[5] * _tmp39 - _a[6] * _tmp40 - _a_T_b[5] +
@@ -361,7 +361,7 @@ void BetweenFactorPose3Product(const geo::Pose3<Scalar>& a, const geo::Pose3<Sca
   const Scalar _tmp282 =
       _tmp13 * sqrt_info(0, 5) + _tmp40 * sqrt_info(0, 4) + _tmp45 * sqrt_info(0, 3);
   const Scalar _tmp283 = -2 * (_b[1] * _b[1]);
-  const Scalar _tmp284 = -2 * (_b[2] * _b[2]) + 1;
+  const Scalar _tmp284 = 1 - 2 * (_b[2] * _b[2]);
   const Scalar _tmp285 = _tmp283 + _tmp284;
   const Scalar _tmp286 =
       _tmp36 * sqrt_info(0, 4) + _tmp4 * sqrt_info(0, 5) + _tmp42 * sqrt_info(0, 3);

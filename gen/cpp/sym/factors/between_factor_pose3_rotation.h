@@ -46,9 +46,9 @@ void BetweenFactorPose3Rotation(const geo::Pose3<Scalar>& a, const geo::Pose3<Sc
   const Scalar _tmp5 =
       _a_R_b[0] * _tmp1 + _a_R_b[1] * _tmp0 + _a_R_b[2] * _tmp3 + _a_R_b[3] * _tmp2;
   const Scalar _tmp6 = std::fabs(_tmp5);
-  const Scalar _tmp7 = -epsilon + 1;
+  const Scalar _tmp7 = 1 - epsilon;
   const Scalar _tmp8 = std::min<Scalar>(_tmp6, _tmp7);
-  const Scalar _tmp9 = -(_tmp8 * _tmp8) + 1;
+  const Scalar _tmp9 = 1 - (_tmp8 * _tmp8);
   const Scalar _tmp10 = 2 / std::sqrt(_tmp9);
   const Scalar _tmp11 = std::acos(_tmp8);
   const Scalar _tmp12 = (((_tmp5) > 0) - ((_tmp5) < 0));

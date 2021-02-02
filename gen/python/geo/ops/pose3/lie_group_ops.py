@@ -22,7 +22,7 @@ class LieGroupOps(object):
         _tmp7 = (_tmp4 - numpy.sin(_tmp4)) / _tmp3 ** (3.0 / 2.0)
         _tmp8 = _tmp7 * vec[0]
         _tmp9 = _tmp8 * vec[2]
-        _tmp10 = (-numpy.cos(_tmp4) + 1) / _tmp3
+        _tmp10 = (1 - numpy.cos(_tmp4)) / _tmp3
         _tmp11 = _tmp10 * vec[1]
         _tmp12 = _tmp8 * vec[1]
         _tmp13 = _tmp10 * vec[2]
@@ -62,10 +62,10 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = 2 * numpy.amin((0, numpy.sign(_a[3]))) + 1
-        _tmp1 = numpy.amin((abs(_a[3]), -epsilon + 1))
+        _tmp0 = 2 * numpy.amin((0, numpy.sign(_a[3])), axis=0) + 1
+        _tmp1 = numpy.amin((abs(_a[3]), 1 - epsilon), axis=0)
         _tmp2 = numpy.arccos(_tmp1)
-        _tmp3 = -(_tmp1 ** 2) + 1
+        _tmp3 = 1 - _tmp1 ** 2
         _tmp4 = _tmp0 * _tmp2 / numpy.sqrt(_tmp3)
         _tmp5 = 2 * _tmp4
         _tmp6 = _a[2] * _tmp4
@@ -138,7 +138,7 @@ class LieGroupOps(object):
         _tmp17 = -_tmp1
         _tmp18 = (_tmp4 - numpy.sin(_tmp4)) / _tmp3 ** (3.0 / 2.0)
         _tmp19 = _tmp18 * vec[1] * vec[2]
-        _tmp20 = (-numpy.cos(_tmp4) + 1) / _tmp3
+        _tmp20 = (1 - numpy.cos(_tmp4)) / _tmp3
         _tmp21 = _tmp20 * vec[0]
         _tmp22 = _tmp18 * vec[0]
         _tmp23 = _tmp22 * vec[2]
@@ -159,7 +159,7 @@ class LieGroupOps(object):
             + vec[5] * (_tmp19 - _tmp21)
         )
         _tmp32 = -2 * _a[2] ** 2
-        _tmp33 = -2 * _a[1] ** 2 + 1
+        _tmp33 = 1 - 2 * _a[1] ** 2
         _tmp34 = (
             vec[3] * (_tmp18 * (_tmp17 + _tmp28) + 1)
             + vec[4] * (_tmp29 - _tmp30)
@@ -205,9 +205,9 @@ class LieGroupOps(object):
         # Intermediate terms
         _tmp0 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
         _tmp1 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _tmp2 = numpy.amin((abs(_tmp1), -epsilon + 1))
-        _tmp3 = -(_tmp2 ** 2) + 1
-        _tmp4 = 2 * numpy.amin((0, numpy.sign(_tmp1))) + 1
+        _tmp2 = numpy.amin((abs(_tmp1), 1 - epsilon), axis=0)
+        _tmp3 = 1 - _tmp2 ** 2
+        _tmp4 = 2 * numpy.amin((0, numpy.sign(_tmp1)), axis=0) + 1
         _tmp5 = numpy.arccos(_tmp2)
         _tmp6 = _tmp4 * _tmp5 / numpy.sqrt(_tmp3)
         _tmp7 = 2 * _tmp6
@@ -215,7 +215,7 @@ class LieGroupOps(object):
         _tmp9 = _tmp6 * _tmp8
         _tmp10 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]
         _tmp11 = -2 * _a[0] ** 2
-        _tmp12 = -2 * _a[1] ** 2 + 1
+        _tmp12 = 1 - 2 * _a[1] ** 2
         _tmp13 = _tmp11 + _tmp12
         _tmp14 = 2 * _a[0]
         _tmp15 = _a[3] * _tmp14

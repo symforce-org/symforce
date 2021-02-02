@@ -27,7 +27,7 @@ Eigen::Matrix<Scalar, 6, 7> Tangent_D_Storage(const geo::Pose3<Scalar>& a, const
   const Scalar _tmp5 = -_tmp4;
   const Scalar _tmp6 = -_tmp1;
   const Scalar _tmp7 = -2 * (_a[1] * _a[1]);
-  const Scalar _tmp8 = -2 * (_a[2] * _a[2]) + 1;
+  const Scalar _tmp8 = 1 - 2 * (_a[2] * _a[2]);
   const Scalar _tmp9 = _a[3] * _tmp1;
   const Scalar _tmp10 = _a[0] * _tmp2;
   const Scalar _tmp11 = _a[1] * _tmp0;

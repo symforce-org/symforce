@@ -24,12 +24,12 @@ Scalar IdentityDistJacobian(const geo::Rot3<Scalar>& R1, const Scalar e) {
   const Scalar _tmp0 = (_R1[0] * _R1[0]);
   const Scalar _tmp1 = (((_R1[3]) > 0) - ((_R1[3]) < 0));
   const Scalar _tmp2 = std::fabs(_R1[3]);
-  const Scalar _tmp3 = -e + 1;
+  const Scalar _tmp3 = 1 - e;
   const Scalar _tmp4 = 4 * _tmp1 * ((((-_tmp2 + _tmp3) > 0) - ((-_tmp2 + _tmp3) < 0)) + 1) *
                        (2 * std::min<Scalar>(0, _tmp1) + 1 * 2 * std::min<Scalar>(0, _tmp1) + 1);
   const Scalar _tmp5 = std::min<Scalar>(_tmp2, _tmp3);
   const Scalar _tmp6 = std::acos(_tmp5);
-  const Scalar _tmp7 = -(_tmp5 * _tmp5) + 1;
+  const Scalar _tmp7 = 1 - (_tmp5 * _tmp5);
   const Scalar _tmp8 = _tmp6 / (_tmp7 * std::sqrt(_tmp7));
   const Scalar _tmp9 = _tmp4 * _tmp8;
   const Scalar _tmp10 = _tmp5 * (_tmp6 * _tmp6) / (_tmp7 * _tmp7);

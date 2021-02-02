@@ -31,12 +31,12 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms
-        _tmp0 = numpy.amin((abs(_a[3]), -epsilon + 1))
+        _tmp0 = numpy.amin((abs(_a[3]), 1 - epsilon), axis=0)
         _tmp1 = (
             2
-            * (2 * numpy.amin((0, numpy.sign(_a[3]))) + 1)
+            * (2 * numpy.amin((0, numpy.sign(_a[3])), axis=0) + 1)
             * numpy.arccos(_tmp0)
-            / numpy.sqrt(-(_tmp0 ** 2) + 1)
+            / numpy.sqrt(1 - _tmp0 ** 2)
         )
 
         # Output terms
@@ -79,12 +79,12 @@ class LieGroupOps(object):
 
         # Intermediate terms
         _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _tmp1 = numpy.amin((abs(_tmp0), -epsilon + 1))
+        _tmp1 = numpy.amin((abs(_tmp0), 1 - epsilon), axis=0)
         _tmp2 = (
             2
-            * (2 * numpy.amin((0, numpy.sign(_tmp0))) + 1)
+            * (2 * numpy.amin((0, numpy.sign(_tmp0)), axis=0) + 1)
             * numpy.arccos(_tmp1)
-            / numpy.sqrt(-(_tmp1 ** 2) + 1)
+            / numpy.sqrt(1 - _tmp1 ** 2)
         )
 
         # Output terms

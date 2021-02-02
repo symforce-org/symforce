@@ -42,10 +42,10 @@ void PriorFactorPose3Product(const geo::Pose3<Scalar>& value, const geo::Pose3<S
   const Scalar _tmp4 = (((_tmp3) > 0) - ((_tmp3) < 0));
   const Scalar _tmp5 = 2 * std::min<Scalar>(0, _tmp4) + 1;
   const Scalar _tmp6 = std::fabs(_tmp3);
-  const Scalar _tmp7 = -epsilon + 1;
+  const Scalar _tmp7 = 1 - epsilon;
   const Scalar _tmp8 = std::min<Scalar>(_tmp6, _tmp7);
   const Scalar _tmp9 = std::acos(_tmp8);
-  const Scalar _tmp10 = -(_tmp8 * _tmp8) + 1;
+  const Scalar _tmp10 = 1 - (_tmp8 * _tmp8);
   const Scalar _tmp11 = 2 * _tmp9 / std::sqrt(_tmp10);
   const Scalar _tmp12 = _tmp11 * _tmp5;
   const Scalar _tmp13 = _tmp12 * _tmp2;
@@ -122,7 +122,7 @@ void PriorFactorPose3Product(const geo::Pose3<Scalar>& value, const geo::Pose3<S
   const Scalar _tmp70 = _tmp64 * _value[3];
   const Scalar _tmp71 = _tmp60 * _value[1];
   const Scalar _tmp72 = _tmp70 + _tmp71;
-  const Scalar _tmp73 = -2 * (_value[0] * _value[0]) + 1;
+  const Scalar _tmp73 = 1 - 2 * (_value[0] * _value[0]);
   const Scalar _tmp74 = _tmp67 + _tmp73;
   const Scalar _tmp75 = -_tmp63 + _tmp65;
   const Scalar _tmp76 = _tmp68 + _tmp73;

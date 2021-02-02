@@ -91,14 +91,16 @@ class TemplateList:
     all templates in one go.
     """
 
-    Entry = collections.namedtuple("TemplateListEntry", ["template_path", "output_path", "data"])
+    TemplateListEntry = collections.namedtuple(
+        "TemplateListEntry", ["template_path", "output_path", "data"]
+    )
 
     def __init__(self) -> None:
         self.items: T.List = []
 
     def add(self, template_path: str, output_path: str, data: T.Dict[str, T.Any]) -> None:
         self.items.append(
-            self.Entry(template_path=template_path, output_path=output_path, data=data)
+            self.TemplateListEntry(template_path=template_path, output_path=output_path, data=data)
         )
 
     def render(self) -> None:

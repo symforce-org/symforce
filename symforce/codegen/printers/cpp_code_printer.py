@@ -1,4 +1,4 @@
-from sympy.printing.cxxcode import CXX11CodePrinter
+from sympy.printing.cxx import CXX11CodePrinter
 
 from symforce import sympy as sm
 

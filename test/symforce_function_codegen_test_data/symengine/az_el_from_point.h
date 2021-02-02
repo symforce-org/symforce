@@ -35,7 +35,7 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const geo::Pose3<Scalar>& nav_T_cam,
   const Scalar _tmp3 = _nav_T_cam[2] * _tmp2;
   const Scalar _tmp4 = _tmp1 + _tmp3;
   const Scalar _tmp5 = -2 * (_nav_T_cam[0] * _nav_T_cam[0]);
-  const Scalar _tmp6 = -2 * (_nav_T_cam[2] * _nav_T_cam[2]) + 1;
+  const Scalar _tmp6 = 1 - 2 * (_nav_T_cam[2] * _nav_T_cam[2]);
   const Scalar _tmp7 = _tmp5 + _tmp6;
   const Scalar _tmp8 = 2 * _nav_T_cam[2] * _nav_T_cam[3];
   const Scalar _tmp9 = _nav_T_cam[1] * _tmp0;

@@ -14,9 +14,9 @@ class LieGroupOps(object):
         # Intermediate terms
         _tmp0 = numpy.cos(vec[2])
         _tmp1 = numpy.sin(vec[2])
-        _tmp2 = 1 / (epsilon * (2 * numpy.amin((0, numpy.sign(vec[2]))) + 1) + vec[2])
-        _tmp3 = _tmp2 * (-_tmp0 + 1)
-        _tmp4 = _tmp2 * (_tmp1 + epsilon * (2 * numpy.amin((0, numpy.sign(_tmp1))) + 1))
+        _tmp2 = (epsilon * (2 * numpy.amin((0, numpy.sign(vec[2])), axis=0) + 1) + vec[2]) ** (-1.0)
+        _tmp3 = _tmp2 * (1 - _tmp0)
+        _tmp4 = _tmp2 * (_tmp1 + epsilon * (2 * numpy.amin((0, numpy.sign(_tmp1)), axis=0) + 1))
 
         # Output terms
         _res = [0.0] * 4
@@ -34,10 +34,12 @@ class LieGroupOps(object):
 
         # Intermediate terms
         _tmp0 = numpy.arctan2(_a[1], _a[0])
-        _tmp1 = 0.5 * _tmp0 + 0.5 * epsilon * (2 * numpy.amin((0, numpy.sign(_tmp0))) + 1)
+        _tmp1 = 0.5 * _tmp0 + 0.5 * epsilon * (2 * numpy.amin((0, numpy.sign(_tmp0)), axis=0) + 1)
         _tmp2 = _a[3] * _tmp1
         _tmp3 = _a[2] * _tmp1
-        _tmp4 = (_a[0] + 1) / (_a[1] + epsilon * (2 * numpy.amin((0, numpy.sign(_a[1]))) + 1))
+        _tmp4 = (_a[0] + 1) / (
+            _a[1] + epsilon * (2 * numpy.amin((0, numpy.sign(_a[1])), axis=0) + 1)
+        )
 
         # Output terms
         _res = [0.0] * 3
@@ -55,9 +57,9 @@ class LieGroupOps(object):
         # Intermediate terms
         _tmp0 = numpy.sin(vec[2])
         _tmp1 = numpy.cos(vec[2])
-        _tmp2 = 1 / (epsilon * (2 * numpy.amin((0, numpy.sign(vec[2]))) + 1) + vec[2])
-        _tmp3 = _tmp2 * (_tmp0 + epsilon * (2 * numpy.amin((0, numpy.sign(_tmp0))) + 1))
-        _tmp4 = _tmp2 * (-_tmp1 + 1)
+        _tmp2 = (epsilon * (2 * numpy.amin((0, numpy.sign(vec[2])), axis=0) + 1) + vec[2]) ** (-1.0)
+        _tmp3 = _tmp2 * (_tmp0 + epsilon * (2 * numpy.amin((0, numpy.sign(_tmp0)), axis=0) + 1))
+        _tmp4 = _tmp2 * (1 - _tmp1)
         _tmp5 = _tmp3 * vec[1] + _tmp4 * vec[0]
         _tmp6 = _tmp3 * vec[0] - _tmp4 * vec[1]
 
@@ -77,16 +79,18 @@ class LieGroupOps(object):
         _b = b.data
 
         # Intermediate terms
-        _tmp0 = 1 / (_a[0] ** 2 + _a[1] ** 2)
+        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
         _tmp1 = _a[0] * _tmp0
         _tmp2 = _a[1] * _tmp0
         _tmp3 = -_b[0] * _tmp2 + _b[1] * _tmp1
         _tmp4 = _b[0] * _tmp1 + _b[1] * _tmp2
         _tmp5 = numpy.arctan2(_tmp3, _tmp4)
-        _tmp6 = 0.5 * _tmp5 + 0.5 * epsilon * (2 * numpy.amin((0, numpy.sign(_tmp5))) + 1)
+        _tmp6 = 0.5 * _tmp5 + 0.5 * epsilon * (2 * numpy.amin((0, numpy.sign(_tmp5)), axis=0) + 1)
         _tmp7 = _tmp6 * (_a[2] * _tmp2 - _a[3] * _tmp1 - _b[2] * _tmp2 + _b[3] * _tmp1)
         _tmp8 = _tmp6 * (-_a[2] * _tmp1 - _a[3] * _tmp2 + _b[2] * _tmp1 + _b[3] * _tmp2)
-        _tmp9 = (_tmp4 + 1) / (_tmp3 + epsilon * (2 * numpy.amin((0, numpy.sign(_tmp3))) + 1))
+        _tmp9 = (_tmp4 + 1) / (
+            _tmp3 + epsilon * (2 * numpy.amin((0, numpy.sign(_tmp3)), axis=0) + 1)
+        )
 
         # Output terms
         _res = [0.0] * 3

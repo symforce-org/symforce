@@ -105,7 +105,7 @@ void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar
   const Scalar _tmp72 = -_tmp15 + _tmp17 + _tmp19 + _tmp21;
   const Scalar _tmp73 = -2 * (_tmp72 * _tmp72);
   const Scalar _tmp74 = _tmp10 + _tmp12 + _tmp6 - _tmp8;
-  const Scalar _tmp75 = -2 * (_tmp74 * _tmp74) + 1;
+  const Scalar _tmp75 = 1 - 2 * (_tmp74 * _tmp74);
   const Scalar _tmp76 = _tmp73 + _tmp75;
   const Scalar _tmp77 = _a[0] * _tmp67;
   const Scalar _tmp78 = 2 * _b[4];
@@ -145,7 +145,7 @@ void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar
   const Scalar _tmp112 = -_b[6] * _tmp110 + _tmp79 + _tmp94;
   const Scalar _tmp113 = _tmp109 * _tmp76 + _tmp111 * _tmp84 + _tmp112 * _tmp91;
   const Scalar _tmp114 = -2 * (_a[1] * _a[1]);
-  const Scalar _tmp115 = -2 * (_a[2] * _a[2]) + 1;
+  const Scalar _tmp115 = 1 - 2 * (_a[2] * _a[2]);
   const Scalar _tmp116 = _tmp114 + _tmp115;
   const Scalar _tmp117 = 2 * _a[1];
   const Scalar _tmp118 = _a[0] * _tmp117;
@@ -233,7 +233,7 @@ void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar
   const Scalar _tmp197 = _b[3] * _tmp191;
   const Scalar _tmp198 = _tmp196 - _tmp197;
   const Scalar _tmp199 = -2 * (_b[1] * _b[1]);
-  const Scalar _tmp200 = -2 * (_b[2] * _b[2]) + 1;
+  const Scalar _tmp200 = 1 - 2 * (_b[2] * _b[2]);
   const Scalar _tmp201 = _tmp199 + _tmp200;
   const Scalar _tmp202 = _tmp192 - _tmp194;
   const Scalar _tmp203 = 2 * _b[0] * _b[3];

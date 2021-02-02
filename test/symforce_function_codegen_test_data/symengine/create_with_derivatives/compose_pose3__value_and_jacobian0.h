@@ -42,7 +42,7 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobian0(
   const Scalar _tmp11 = _a[1] * _tmp6;
   const Scalar _tmp12 = -_tmp10 + _tmp11;
   const Scalar _tmp13 = -2 * (_a[1] * _a[1]);
-  const Scalar _tmp14 = -2 * (_a[2] * _a[2]) + 1;
+  const Scalar _tmp14 = 1 - 2 * (_a[2] * _a[2]);
   const Scalar _tmp15 = _tmp13 + _tmp14;
   const Scalar _tmp16 = _a[3] * _tmp6;
   const Scalar _tmp17 = _a[2] * _tmp4;
@@ -145,7 +145,7 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobian0(
   const Scalar _tmp113 = _tmp25 * _tmp3;
   const Scalar _tmp114 = _tmp1 * _tmp30;
   const Scalar _tmp115 = _tmp113 + _tmp114;
-  const Scalar _tmp116 = -2 * (_tmp0 * _tmp0) + 1;
+  const Scalar _tmp116 = 1 - 2 * (_tmp0 * _tmp0);
   const Scalar _tmp117 = _tmp116 + _tmp85;
   const Scalar _tmp118 = -_tmp82 + _tmp83;
   const Scalar _tmp119 = _tmp102 * _tmp117 + _tmp104 * _tmp115 + _tmp105 * _tmp118;

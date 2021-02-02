@@ -47,9 +47,9 @@ void BetweenFactorRot3(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
   const Scalar _tmp7 = 2 * std::min<Scalar>(0, _tmp6) + 1;
   const Scalar _tmp8 = _tmp7 * sqrt_info(0, 1);
   const Scalar _tmp9 = std::fabs(_tmp5);
-  const Scalar _tmp10 = -epsilon + 1;
+  const Scalar _tmp10 = 1 - epsilon;
   const Scalar _tmp11 = std::min<Scalar>(_tmp10, _tmp9);
-  const Scalar _tmp12 = -(_tmp11 * _tmp11) + 1;
+  const Scalar _tmp12 = 1 - (_tmp11 * _tmp11);
   const Scalar _tmp13 = std::acos(_tmp11);
   const Scalar _tmp14 = 2 * _tmp13 / std::sqrt(_tmp12);
   const Scalar _tmp15 = _tmp14 * _tmp8;

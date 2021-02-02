@@ -567,7 +567,7 @@ class Values:
         """
         Compute the number of entries in an object of this shape.
         """
-        return max(1, np.prod(shape))
+        return max(1, T.cast(int, np.prod(shape)))
 
     # -------------------------------------------------------------------------
     # Miscellaneous helpers

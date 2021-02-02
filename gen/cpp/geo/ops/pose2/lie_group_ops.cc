@@ -23,7 +23,7 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
   const Scalar _tmp2 =
       1.0 / (epsilon * (2 * std::min<Scalar>(0, (((vec(2, 0)) > 0) - ((vec(2, 0)) < 0))) + 1) +
              vec(2, 0));
-  const Scalar _tmp3 = _tmp2 * (-_tmp0 + 1);
+  const Scalar _tmp3 = _tmp2 * (1 - _tmp0);
   const Scalar _tmp4 =
       _tmp2 * (_tmp1 + epsilon * (2 * std::min<Scalar>(0, (((_tmp1) > 0) - ((_tmp1) < 0))) + 1));
 
@@ -79,7 +79,7 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose2<Scalar>& a,
              vec(2, 0));
   const Scalar _tmp3 =
       _tmp2 * (_tmp0 + epsilon * (2 * std::min<Scalar>(0, (((_tmp0) > 0) - ((_tmp0) < 0))) + 1));
-  const Scalar _tmp4 = _tmp2 * (-_tmp1 + 1);
+  const Scalar _tmp4 = _tmp2 * (1 - _tmp1);
   const Scalar _tmp5 = _tmp3 * vec(1, 0) + _tmp4 * vec(0, 0);
   const Scalar _tmp6 = _tmp3 * vec(0, 0) - _tmp4 * vec(1, 0);
 

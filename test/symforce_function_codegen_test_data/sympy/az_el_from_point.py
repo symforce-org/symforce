@@ -28,7 +28,7 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
     _tmp6 = _nav_T_cam[2] * _tmp0
     _tmp7 = _tmp5 + _tmp6
     _tmp8 = -2 * _nav_T_cam[0] ** 2
-    _tmp9 = -2 * _nav_T_cam[2] ** 2 + 1
+    _tmp9 = 1 - 2 * _nav_T_cam[2] ** 2
     _tmp10 = _tmp8 + _tmp9
     _tmp11 = (
         -_nav_T_cam[4] * _tmp4

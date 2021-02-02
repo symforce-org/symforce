@@ -41,10 +41,10 @@ void PriorFactorPose3Rotation(const geo::Pose3<Scalar>& value, const geo::Rot3<S
   const Scalar _tmp2 = (((_tmp1) > 0) - ((_tmp1) < 0));
   const Scalar _tmp3 = 2 * std::min<Scalar>(0, _tmp2) + 1;
   const Scalar _tmp4 = std::fabs(_tmp1);
-  const Scalar _tmp5 = -epsilon + 1;
+  const Scalar _tmp5 = 1 - epsilon;
   const Scalar _tmp6 = std::min<Scalar>(_tmp4, _tmp5);
   const Scalar _tmp7 = std::acos(_tmp6);
-  const Scalar _tmp8 = -(_tmp6 * _tmp6) + 1;
+  const Scalar _tmp8 = 1 - (_tmp6 * _tmp6);
   const Scalar _tmp9 = 2 * _tmp7 / std::sqrt(_tmp8);
   const Scalar _tmp10 = _tmp3 * _tmp9;
   const Scalar _tmp11 = _tmp0 * _tmp10;

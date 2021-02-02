@@ -45,7 +45,7 @@ void PriorFactorPose3Position(const geo::Pose3<Scalar>& value,
   const Scalar _tmp9 = _tmp3 * _value[0];
   const Scalar _tmp10 = _tmp8 + _tmp9;
   const Scalar _tmp11 = -2 * (_value[2] * _value[2]);
-  const Scalar _tmp12 = -2 * (_value[1] * _value[1]) + 1;
+  const Scalar _tmp12 = 1 - 2 * (_value[1] * _value[1]);
   const Scalar _tmp13 = _tmp11 + _tmp12;
   const Scalar _tmp14 = _tmp5 * _value[3];
   const Scalar _tmp15 = _tmp3 * _value[2];

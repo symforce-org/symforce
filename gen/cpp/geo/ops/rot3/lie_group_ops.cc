@@ -41,9 +41,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot3<Scala
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
   // Intermediate terms (2)
-  const Scalar _tmp0 = std::min<Scalar>(std::fabs(_a[3]), -epsilon + 1);
+  const Scalar _tmp0 = std::min<Scalar>(std::fabs(_a[3]), 1 - epsilon);
   const Scalar _tmp1 = 2 * (2 * std::min<Scalar>(0, (((_a[3]) > 0) - ((_a[3]) < 0))) + 1) *
-                       std::acos(_tmp0) / std::sqrt(-(_tmp0 * _tmp0) + 1);
+                       std::acos(_tmp0) / std::sqrt(1 - (_tmp0 * _tmp0));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
@@ -94,9 +94,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot
 
   // Intermediate terms (3)
   const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3];
-  const Scalar _tmp1 = std::min<Scalar>(std::fabs(_tmp0), -epsilon + 1);
+  const Scalar _tmp1 = std::min<Scalar>(std::fabs(_tmp0), 1 - epsilon);
   const Scalar _tmp2 = 2 * (2 * std::min<Scalar>(0, (((_tmp0) > 0) - ((_tmp0) < 0))) + 1) *
-                       std::acos(_tmp1) / std::sqrt(-(_tmp1 * _tmp1) + 1);
+                       std::acos(_tmp1) / std::sqrt(1 - (_tmp1 * _tmp1));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;

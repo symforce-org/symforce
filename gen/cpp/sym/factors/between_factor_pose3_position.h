@@ -48,7 +48,7 @@ void BetweenFactorPose3Position(const geo::Pose3<Scalar>& a, const geo::Pose3<Sc
   const Scalar _tmp10 = 2 * (_a[0] * _a[0]);
   const Scalar _tmp11 = -_tmp10;
   const Scalar _tmp12 = 2 * (_a[1] * _a[1]);
-  const Scalar _tmp13 = -_tmp12 + 1;
+  const Scalar _tmp13 = 1 - _tmp12;
   const Scalar _tmp14 = _tmp11 + _tmp13;
   const Scalar _tmp15 = -_a[4] * _tmp4 - _a[5] * _tmp9 - _a[6] * _tmp14 + _b[4] * _tmp4 +
                         _b[5] * _tmp9 + _b[6] * _tmp14 - a_t_b(2, 0);
@@ -147,7 +147,7 @@ void BetweenFactorPose3Position(const geo::Pose3<Scalar>& a, const geo::Pose3<Sc
   const Scalar _tmp98 =
       _tmp22 * sqrt_info(0, 1) + _tmp26 * sqrt_info(0, 0) + _tmp9 * sqrt_info(0, 2);
   const Scalar _tmp99 = -2 * (_b[2] * _b[2]);
-  const Scalar _tmp100 = -2 * (_b[1] * _b[1]) + 1;
+  const Scalar _tmp100 = 1 - 2 * (_b[1] * _b[1]);
   const Scalar _tmp101 = _tmp100 + _tmp99;
   const Scalar _tmp102 =
       _tmp19 * sqrt_info(0, 1) + _tmp25 * sqrt_info(0, 0) + _tmp4 * sqrt_info(0, 2);
