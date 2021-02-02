@@ -82,22 +82,25 @@ class Rot3(LieGroup):
         assert theta != 0, "Trying to divide by zero, provide epsilon!"
         return cls(Quaternion(xyz=sm.sin(theta / 2) / theta * vm, w=sm.cos(theta / 2)))
 
-    def logmap_signed_epsilon(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
-        """
-        Implementation of logmap that uses epsilon with the sign function to avoid NaN.
-        """
-        w_safe = self.q.w - sm.sign_no_zero(self.q.w) * epsilon
-        norm = sm.sqrt(1 - w_safe ** 2)
-        tangent = 2 * self.q.xyz / norm * sm.acos(w_safe)
-        return tangent.to_storage()
-
     def logmap_acos_clamp_max(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
-        Implementation of logmap that uses epsilon with the Max and Min functions to avoid NaN.
+        Implementation of logmap that uses epsilon with the Min function to
+        avoid the singularity in the sqrt at w == 1
+
+        Also flips the sign of the quaternion of w is negative, which makes sure
+        that the resulting tangent vector has norm <= pi
+
+        See discussion:
+        ***REMOVED***
+        ***REMOVED***
+        ***REMOVED***
+        As well as symforce/notebooks/epsilon-sandbox.ipynb
         """
-        w_safe = sm.Max(-1 + epsilon, sm.Min(1 - epsilon, self.q.w))
+        w_positive = sm.Abs(self.q.w)
+        w_safe = sm.Min(1 - epsilon, w_positive)
+        xyz_w_positive = self.q.xyz * sm.sign_no_zero(self.q.w)
         norm = sm.sqrt(1 - w_safe ** 2)
-        tangent = 2 * self.q.xyz / norm * sm.acos(w_safe)
+        tangent = 2 * xyz_w_positive / norm * sm.acos(w_safe)
         return tangent.to_storage()
 
     def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:

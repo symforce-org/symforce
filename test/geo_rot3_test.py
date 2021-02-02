@@ -145,10 +145,6 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             self.assertNear(random_element.q.squared_norm(), 1.0, places=7)
             self.assertNear(rand_uniform_sample_element.q.squared_norm(), 1.0, places=7)
 
-            # Check positive w (to go on one side of double cover)
-            self.assertGreaterEqual(random_element.q.w, 0.0)
-            self.assertGreaterEqual(rand_uniform_sample_element.q.w, 0.0)
-
         for elements in [random_elements, random_from_uniform_samples_elements]:
             # Rotate a point through
             P = geo.V3(0, 0, 1)
@@ -161,6 +157,10 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
             self.assertNear(np.mean(angles), np.pi / 2, places=1)
+
+            # Check that we've included both sides of the double cover
+            self.assertLess(min([e.evalf().q.w for e in elements]), -0.8)
+            self.assertGreater(max([e.evalf().q.w for e in elements]), 0.8)
 
             # Plot the sphere to show uniform distribution
             if logger.level == logging.DEBUG and self.verbose:
@@ -198,15 +198,6 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
         # They should match!
         self.assertNear(hat_exp, matrix_expected, places=5)
-
-    def test_logmap_signed_epsilon(self) -> None:
-        """
-        Tests:
-            Rot3.logmap_signed_epsilon
-        """
-        for _ in range(100):
-            rot = geo.Rot3.random()
-            self.assertNear(rot.logmap_signed_epsilon(), rot.logmap_signed_epsilon(), places=9)
 
 
 if __name__ == "__main__":

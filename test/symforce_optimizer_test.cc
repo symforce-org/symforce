@@ -163,8 +163,8 @@ void TestRotSmoothing() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  assertTrue(last_iter.iteration == 6);
-  assertTrue(fabs(last_iter.current_lambda - 0.000244) < 1e-3);
+  assertTrue(last_iter.iteration == 7);
+  assertTrue(fabs(last_iter.current_lambda - 6.1e-5) < 1e-6);
   assertTrue(fabs(last_iter.new_error - 2.174) < 1e-3);
 
   // Check that H = J^T J

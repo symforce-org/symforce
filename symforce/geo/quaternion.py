@@ -191,13 +191,11 @@ class Quaternion(Group):
             http://planning.cs.uiuc.edu/node198.html
         """
         w = sm.sqrt(u1) * sm.cos(2 * pi * u3)
-        # Multiply to keep w positive to only stay on one side of double-cover
-        w_sign = sm.sign(w)
         return Quaternion(
             xyz=Vector3(
-                sm.sqrt(1 - u1) * sm.sin(2 * pi * u2) * w_sign,
-                sm.sqrt(1 - u1) * sm.cos(2 * pi * u2) * w_sign,
-                sm.sqrt(u1) * sm.sin(2 * pi * u3) * w_sign,
+                sm.sqrt(1 - u1) * sm.sin(2 * pi * u2),
+                sm.sqrt(1 - u1) * sm.cos(2 * pi * u2),
+                sm.sqrt(u1) * sm.sin(2 * pi * u3),
             ),
-            w=w * w_sign,
+            w=w,
         )
