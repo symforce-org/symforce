@@ -75,7 +75,7 @@ class Factor {
    *    H   = J.T * J
    *    rhs = J.T * b
    *
-   * This verion handles a variety of functors that take in individual input arguments
+   * This version handles a variety of functors that take in individual input arguments
    * rather than a Values object - the last two arguments to `func` should be outputs for the
    * residual and jacobian; arguments before that should be inputs to `func`.
    *
