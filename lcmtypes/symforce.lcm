@@ -94,3 +94,71 @@ struct linearization_factor_helper_t {
   // Data about each key's state offsets
   linearization_key_helper_t key_helpers[];
 };
+
+// Parameters for the Optimizer
+struct optimizer_params_t {
+  // Print information for every iteration?
+  boolean verbose;
+
+  // Damping value (lambda) on the first iteration of the LM loop
+  double initial_lambda;
+  // Factor greater than one to multiply by lambda
+  double lambda_up_factor;
+  // Factor less than one to multiply by lambda
+  double lambda_down_factor;
+  // Smallest allowed value for lambda
+  double lambda_lower_bound;
+  // Largest allowed value for lambda
+  double lambda_upper_bound;
+
+  // Damp the Hessian adaptively based on the values on its diagonal?
+  boolean use_diagonal_damping;
+  // Damp the Hessian with a constant lambda?
+  boolean use_unit_damping;
+  // Use the elementwise max of the diagonal over all past iterations, instead
+  // of the current diagonal? (Only used when use_diagonal_damping is turned on)
+  boolean keep_max_diagonal_damping;
+  // Initial values of the diagonal when using keep_max_diagonal_damping (i.e.
+  // if the max for a particular element on the diagonal is less than
+  // diagonal_damping_min, that element of the diagonal is set to
+  // diagonal_damping_min)
+  double diagonal_damping_min;
+
+  // Max number of LM iterations to run in an optimization
+  int32_t iterations;
+  // Early exit from the optimization if the relative reduction is positive and
+  // less than this amount
+  double early_exit_min_reduction;
+  // Allow uphill movements in the optimization?
+  boolean enable_bold_updates;
+}
+
+// Debug stats for a single iteration of the Levenberg Marquardt optimizer
+struct optimizer_iteration_t {
+  // Zero-indexed iteration number (Information before the first iteration is
+  // included at index -1)
+  int16_t iteration;
+
+  // Value of lambda at this iteration
+  float current_lambda;
+  // Error after the iteration, using the linearized cost
+  float new_error_linear;
+  // Error after the iteration, using the full nonlinear cost function
+  float new_error;
+  // Relative reduction in error between the initial and updated states for
+  // this iteration
+  float relative_reduction;
+
+  // Was the update accepted?
+  boolean update_accepted;
+  // Angle between previous update and current update
+  float update_angle_change;
+
+  // The residual and jacobian are only populated in when debug_stats is true,
+  // otherwise they are size 0
+
+  // The problem residual
+  eigen_lcm.VectorXf residual;
+  // The problem jacobian, as CSC format sparse data
+  eigen_lcm.VectorXf jacobian_values;
+}

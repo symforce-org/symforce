@@ -8,12 +8,17 @@
 
 namespace sym {
 
+template <typename Scalar, size_t M, size_t N>
+Eigen::Matrix<Scalar, M, N> RandomNormalMatrix(std::mt19937& gen) {
+  std::normal_distribution<Scalar> distribution{};
+  const Eigen::Matrix<Scalar, M, N> matrix =
+      Eigen::Matrix<Scalar, M, N>::NullaryExpr([&]() { return distribution(gen); });
+  return matrix;
+}
+
 template <typename Scalar, size_t V>
 Eigen::Matrix<Scalar, V, 1> RandomNormalVector(std::mt19937& gen) {
-  std::normal_distribution<Scalar> distribution{};
-  const Eigen::Matrix<Scalar, V, 1> translation =
-      Eigen::Matrix<Scalar, V, 1>::NullaryExpr([&]() { return distribution(gen); });
-  return translation;
+  return RandomNormalMatrix<Scalar, V, 1>(gen);
 }
 
 template <typename T>

@@ -27,6 +27,16 @@ struct TangentDimHelper<Eigen::Matrix<Scalar, Rows, Cols>> {
 
 }  // namespace internal
 
+template <typename T>
+static constexpr T Square(T v) {
+  return v * v;
+}
+
+template <typename T, typename Tl>
+static constexpr T Clamp(T x, Tl min, Tl max) {
+  return (x < min) ? min : ((x > max) ? max : x);
+}
+
 // ensure self-adjoint property of symmetric matrices (correction from numerical errors)
 template <typename Scalar>
 MatrixX<Scalar> Symmetrize(const MatrixX<Scalar>& mat) {

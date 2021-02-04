@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <sym/factors/between_factor_rot3.h>
 #include <sym/factors/prior_factor_rot3.h>
 
@@ -12,11 +14,10 @@
     throw std::runtime_error(o.str());                     \
   }
 
-levenberg_marquardt::lm_params_t DefaultLmParams() {
-  levenberg_marquardt::lm_params_t params{};
+sym::optimizer_params_t DefaultLmParams() {
+  sym::optimizer_params_t params{};
   params.iterations = 50;
   params.verbose = true;
-  params.solver = "sparse";
   params.initial_lambda = 1.0;
   params.lambda_up_factor = 4.0;
   params.lambda_down_factor = 1 / 4.0;
@@ -40,7 +41,7 @@ void TestNonlinear() {
   // Create factors
   std::vector<sym::Factord> factors;
   factors.push_back(sym::Factord::Jacobian(
-      [](double x, double y, Eigen::Vector1d* residual, Eigen::Matrix<double, 1, 2>* jacobian) {
+      [](double x, double y, sym::Vector1d* residual, Eigen::Matrix<double, 1, 2>* jacobian) {
         (*residual)[0] = 3.0 - 0.5 * std::sin((x - 2.) / 5.) + 1.0 * std::sin((y + 2.) / 10.);
 
         if (jacobian) {
@@ -57,8 +58,7 @@ void TestNonlinear() {
   std::cout << "Initial values: " << values << std::endl;
 
   // Set parameters
-  levenberg_marquardt::lm_params_t params = DefaultLmParams();
-  params.solver = "dense";
+  sym::optimizer_params_t params = DefaultLmParams();
   params.initial_lambda = 10.0;
   params.lambda_up_factor = 3.0;
   params.lambda_down_factor = 1.0 / 3.0;
@@ -147,7 +147,7 @@ void TestRotSmoothing() {
   std::cout << "Prior on R[-1]: " << prior_last << std::endl;
 
   // Optimize
-  levenberg_marquardt::lm_params_t params = DefaultLmParams();
+  sym::optimizer_params_t params = DefaultLmParams();
   params.iterations = 50;
   params.early_exit_min_reduction = 0.0001;
 
@@ -168,10 +168,10 @@ void TestRotSmoothing() {
   assertTrue(fabs(last_iter.new_error - 2.174) < 1e-3);
 
   // Check that H = J^T J
-  const sym::Linearizationd linearization(factors, values);
+  const sym::Linearizationd linearization = sym::Linearize<double>(factors, values);
   const Eigen::SparseMatrix<double> jtj =
-      linearization.JacobianSparse().transpose() * linearization.JacobianSparse();
-  assertTrue(linearization.HessianLowerSparse().triangularView<Eigen::Lower>().isApprox(
+      linearization.jacobian.transpose() * linearization.jacobian;
+  assertTrue(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
       jtj.triangularView<Eigen::Lower>(), 1e-6));
 }
 
@@ -228,7 +228,7 @@ void TestNontrivialKeys() {
   std::cout << "Initial values: " << values << std::endl;
 
   // Optimize
-  levenberg_marquardt::lm_params_t params = DefaultLmParams();
+  sym::optimizer_params_t params = DefaultLmParams();
   params.iterations = 50;
   params.early_exit_min_reduction = 0.0001;
 
@@ -254,10 +254,10 @@ void TestNontrivialKeys() {
   assertTrue(last_iter.new_error < 1e-15);
 
   // Check that H = J^T J
-  const sym::Linearizationd linearization(factors, values, optimized_keys);
+  const sym::Linearizationd linearization = sym::Linearize<double>(factors, values, optimized_keys);
   const Eigen::SparseMatrix<double> jtj =
-      linearization.JacobianSparse().transpose() * linearization.JacobianSparse();
-  assertTrue(linearization.HessianLowerSparse().triangularView<Eigen::Lower>().isApprox(
+      linearization.jacobian.transpose() * linearization.jacobian;
+  assertTrue(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
       jtj.triangularView<Eigen::Lower>(), 1e-6));
 }
 
