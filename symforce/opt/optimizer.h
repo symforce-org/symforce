@@ -85,22 +85,15 @@ class Optimizer {
   Optimizer(const Optimizer&) = delete;
   Optimizer& operator=(const Optimizer&) = delete;
 
+  virtual ~Optimizer() = default;
+
   /**
    * Optimize the given values in-place
    *
    * If num_iterations < 0 (the default), uses the number of iterations specified by the params at
    * construction
    */
-  bool Optimize(Values<Scalar>* values, int num_iterations = -1);
-
-  /**
-   * Continue optimizing, starting from the given values but not clearing the other optimizer state
-   * (i.e. the iterations and lambda)
-   *
-   * If num_iterations < 0 (the default), uses the number of iterations specified by the params at
-   * construction
-   */
-  bool OptimizeContinue(Values<Scalar>* const values, int num_iterations = -1);
+  virtual bool Optimize(Values<Scalar>* values, int num_iterations = -1);
 
   /**
    * Linearize the problem around the given values
@@ -131,7 +124,7 @@ class Optimizer {
    */
   void UpdateParams(const optimizer_params_t& params);
 
- private:
+ protected:
   /**
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations
    * or converged

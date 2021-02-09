@@ -162,3 +162,14 @@ struct optimizer_iteration_t {
   // The problem jacobian, as CSC format sparse data
   eigen_lcm.VectorXf jacobian_values;
 }
+
+struct optimizer_gnc_params_t {
+  // The convexity param is stepped each time we early-exit with this threshold.
+  float gnc_update_min_reduction;
+  // Initial mu value.
+  float mu_initial;
+  // Amount to change mu each step.
+  float mu_step;
+  // Maximum mu value.
+  float mu_max;
+}

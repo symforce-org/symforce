@@ -64,21 +64,6 @@ bool Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-bool Optimizer<ScalarType, NonlinearSolverType>::OptimizeContinue(Values<Scalar>* const values,
-                                                                  int num_iterations) {
-  if (num_iterations < 0) {
-    num_iterations = nonlinear_solver_.Params().iterations;
-  }
-
-  SYM_ASSERT(IsInitialized());
-
-  // Reset values, but do not clear other state
-  nonlinear_solver_.ResetState(*values);
-
-  return IterateToConvergence(values, num_iterations);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 Linearization<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Linearize(
     const Values<Scalar>& values) {
   Initialize(values);
@@ -112,7 +97,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_pa
 }
 
 // ----------------------------------------------------------------------------
-// Private methods
+// Protected methods
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
