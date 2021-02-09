@@ -2,11 +2,8 @@
 
 BUILD_DIR=build
 
-PYTHON2=***REMOVED***/bin/mc_python
-PYTHON3=***REMOVED***/bin/***REMOVED***
-PYTHON=$(PYTHON3)
-
-PYTHON_VERSION=$(shell $(PYTHON) -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
+PYTHON=***REMOVED***/bin/***REMOVED***
+JUPYTER=***REMOVED***/bin/mc_jupyter3
 
 CPP_FORMAT=clang-format-8
 
@@ -52,7 +49,7 @@ check_format:
 # See https://github.com/python/mypy/issues/8548
 # We don't need to run find on `symforce` because we know the whole thing is a package
 # TODO(aaron): also lint generated python
-MYPY_COMMAND=$(PYTHON) -m mypy --python-version $(PYTHON_VERSION) --disallow-untyped-defs
+MYPY_COMMAND=$(PYTHON) -m mypy
 check_types:
 	$(MYPY_COMMAND) symforce $(shell find . \
 		-path ./symforce -prune -false \
@@ -149,9 +146,12 @@ docs_open: docs
 # -----------------------------------------------------------------------------
 # Notebook
 # -----------------------------------------------------------------------------
+JUPYTER_CMD=PYTHONPATH=.:../.. $(JUPYTER) notebook --notebook-dir=notebooks --ip=localhost --port=8777
 
 notebook:
-	PYTHONPATH=..:../.. $(PYTHON2) -m jupyter notebook --notebook-dir=notebooks --ip=0.0.0.0 --port=8777 --no-browser
+	$(JUPYTER_CMD) --no-browser
 
 notebook_open:
-	PYTHONPATH=..:../.. $(PYTHON) -m jupyter notebook --notebook-dir=notebooks --ip=localhost --port=8777
+	$(JUPYTER_CMD)
+
+.PHONY: notebook notebook_open
