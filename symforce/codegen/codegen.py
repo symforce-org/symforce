@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+import inspect
 import os
 import tempfile
 import textwrap
@@ -135,13 +136,29 @@ class Codegen:
             mode=self.mode,
         )
 
+    @staticmethod
+    def _deduce_input_types(func: T.Callable) -> T.Sequence[ElementOrType]:
+        try:
+            signature = inspect.signature(func)
+        except ValueError:
+            raise ValueError(
+                f"Unable to deduce argument types for {func}."
+                + "  Please either provide input_types or add type information to func"
+            )
+
+        input_types = []
+        for parameter_name, parameter in signature.parameters.items():
+            input_types.append(parameter.annotation)
+
+        return input_types
+
     @classmethod
     def function(
         cls,
         name: str,
         func: T.Callable,
-        input_types: T.Sequence[ElementOrType],
         mode: codegen_util.CodegenMode,
+        input_types: T.Sequence[ElementOrType] = None,
         output_names: T.Sequence[str] = None,
         return_key: str = None,
         docstring: str = None,
@@ -152,7 +169,11 @@ class Codegen:
         Args:
             name: Name of the function to be generated
             func: Python function
-            input_types: List of types of the inputs to the given function
+            input_types: List of types of the inputs to the given function.  This is optional; if
+                `func` has type annotations, `input_types` can be deduced from those.  Note that
+                if the type annotation doesn't match what you want the arguments to be, you need
+                to specify manually, for instance a function add(x: T.Any, y: T.Any) -> T.Any that
+                you want to use to generate add(x: geo.Matrix33, y: geo.Matrix33) -> geo.Matrix33
             mode: Programming language in which the function is to be generated
             output_names: Optional if only one object is returned by the function.
                 If multiple objects are returned, they must be named.
@@ -160,6 +181,9 @@ class Codegen:
                 the object with this name (must be in output_names)
         """
         arg_spec = codegen_util.get_function_argspec(func)
+
+        if input_types is None:
+            input_types = Codegen._deduce_input_types(func)
 
         # Formulate symbolic arguments to function
         assert len(arg_spec.args) == len(input_types)

@@ -25,7 +25,7 @@ TEST_DATA_DIR = os.path.join(
 
 # Test function
 def az_el_from_point(
-    nav_T_cam: geo.Pose3, nav_t_point: geo.Matrix, epsilon: T.Scalar = 0
+    nav_T_cam: geo.Pose3, nav_t_point: geo.Matrix31, epsilon: T.Scalar = 0
 ) -> geo.Matrix:
     """
     Transform a nav point into azimuth / elevation angles in the
@@ -203,10 +203,7 @@ class SymforceCodegenTest(TestCase):
 
         # Create the specification
         az_el_codegen = Codegen.function(
-            name="az_el_from_point",
-            func=az_el_from_point,
-            input_types=[geo.Pose3, geo.V3, sm.Symbol],
-            mode=CodegenMode.PYTHON2,
+            name="az_el_from_point", func=az_el_from_point, mode=CodegenMode.PYTHON2,
         )
         az_el_codegen_data = az_el_codegen.generate_function()
 
@@ -280,10 +277,7 @@ class SymforceCodegenTest(TestCase):
 
         # Create the specification
         az_el_codegen = Codegen.function(
-            name="AzElFromPoint",
-            func=az_el_from_point,
-            input_types=[geo.Pose3, geo.V3, sm.Symbol],
-            mode=CodegenMode.CPP,
+            name="AzElFromPoint", func=az_el_from_point, mode=CodegenMode.CPP,
         )
         az_el_codegen_data = az_el_codegen.generate_function()
 

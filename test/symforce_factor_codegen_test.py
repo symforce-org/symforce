@@ -164,7 +164,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     """
 
     def between_factor_pose3_rotation(
-        a: geo.Pose3, b: geo.Pose3, a_R_b: geo.Rot3, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+        a: geo.Pose3, b: geo.Pose3, a_R_b: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         tangent_error = ops.LieGroupOps.local_coordinates(
             a_R_b, ops.LieGroupOps.between(a, b).R, epsilon=epsilon
@@ -175,7 +175,11 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return residual, jacobian
 
     def between_factor_pose3_position(
-        a: geo.Pose3, b: geo.Pose3, a_t_b: geo.Matrix, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+        a: geo.Pose3,
+        b: geo.Pose3,
+        a_t_b: geo.Matrix31,
+        sqrt_info: geo.Matrix33,
+        epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         tangent_error = ops.LieGroupOps.local_coordinates(
             a_t_b, ops.LieGroupOps.between(a, b).t, epsilon=epsilon
@@ -186,7 +190,11 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return residual, jacobian
 
     def between_factor_pose3_product(
-        a: geo.Pose3, b: geo.Pose3, a_T_b: geo.Pose3, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+        a: geo.Pose3,
+        b: geo.Pose3,
+        a_T_b: geo.Pose3,
+        sqrt_info: geo.Matrix66,
+        epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         a_T_b_est = ops.LieGroupOps.between(a, b)
 
@@ -207,7 +215,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return residual, jacobian
 
     def prior_factor_pose3_rotation(
-        value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+        value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         tangent_error = ops.LieGroupOps.local_coordinates(prior, value.R, epsilon=epsilon)
         residual = sqrt_info * geo.M(tangent_error)
@@ -215,7 +223,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return residual, jacobian
 
     def prior_factor_pose3_position(
-        value: geo.Pose3, prior: geo.Matrix, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+        value: geo.Pose3, prior: geo.Matrix31, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         tangent_error = ops.LieGroupOps.local_coordinates(prior, value.t, epsilon=epsilon)
         residual = sqrt_info * geo.M(tangent_error)
@@ -223,7 +231,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return residual, jacobian
 
     def prior_factor_pose3_product(
-        value: geo.Pose3, prior: geo.Pose3, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+        value: geo.Pose3, prior: geo.Pose3, sqrt_info: geo.Matrix66, epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         product_value = Values()
         product_value["R"] = value.R
@@ -243,13 +251,6 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     between_rotation_codegen = Codegen.function(
         name=f"BetweenFactor{geo.Pose3.__name__}Rotation",
         func=between_factor_pose3_rotation,
-        input_types=[
-            geo.Pose3,
-            geo.Pose3,
-            geo.Rot3,
-            geo.M(geo.Rot3.tangent_dim(), geo.Rot3.tangent_dim()),
-            sm.Symbol,
-        ],
         output_names=["res", "jac"],
         mode=CodegenMode.CPP,
         docstring=get_between_factor_docstring("a_R_b"),
@@ -258,13 +259,6 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     between_position_codegen = Codegen.function(
         name=f"BetweenFactor{geo.Pose3.__name__}Position",
         func=between_factor_pose3_position,
-        input_types=[
-            geo.Pose3,
-            geo.Pose3,
-            geo.V3,
-            geo.M(geo.V3.tangent_dim(), geo.V3.tangent_dim()),
-            sm.Symbol,
-        ],
         output_names=["res", "jac"],
         mode=CodegenMode.CPP,
         docstring=get_between_factor_docstring("a_t_b"),
@@ -273,13 +267,6 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     between_pose_codegen = Codegen.function(
         name=f"BetweenFactor{geo.Pose3.__name__}Product",
         func=between_factor_pose3_product,
-        input_types=[
-            geo.Pose3,
-            geo.Pose3,
-            geo.Pose3,
-            geo.M(geo.Pose3.tangent_dim(), geo.Pose3.tangent_dim()),
-            sm.Symbol,
-        ],
         output_names=["res", "jac"],
         mode=CodegenMode.CPP,
         docstring=get_between_factor_docstring("a_T_b"),
@@ -288,12 +275,6 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     prior_rotation_codegen = Codegen.function(
         name=f"PriorFactor{geo.Pose3.__name__}Rotation",
         func=prior_factor_pose3_rotation,
-        input_types=[
-            geo.Pose3,
-            geo.Rot3,
-            geo.M(geo.Rot3.tangent_dim(), geo.Rot3.tangent_dim()),
-            sm.Symbol,
-        ],
         output_names=["res", "jac"],
         mode=CodegenMode.CPP,
         docstring=get_prior_docstring(),
@@ -302,12 +283,6 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     prior_position_codegen = Codegen.function(
         name=f"PriorFactor{geo.Pose3.__name__}Position",
         func=prior_factor_pose3_position,
-        input_types=[
-            geo.Pose3,
-            geo.V3,
-            geo.M(geo.V3.tangent_dim(), geo.V3.tangent_dim()),
-            sm.Symbol,
-        ],
         output_names=["res", "jac"],
         mode=CodegenMode.CPP,
         docstring=get_prior_docstring(),
@@ -316,12 +291,6 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     prior_pose_codegen = Codegen.function(
         name=f"PriorFactor{geo.Pose3.__name__}Product",
         func=prior_factor_pose3_product,
-        input_types=[
-            geo.Pose3,
-            geo.Pose3,
-            geo.M(geo.Pose3.tangent_dim(), geo.Pose3.tangent_dim()),
-            sm.Symbol,
-        ],
         output_names=["res", "jac"],
         mode=CodegenMode.CPP,
         docstring=get_prior_docstring(),

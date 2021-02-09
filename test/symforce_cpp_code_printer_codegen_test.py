@@ -40,9 +40,7 @@ class SymforceCppCodePrinterTest(TestCase):
         def f(x: sm.Symbol) -> sm.Symbol:
             return sm.functions.special.delta_functions.Heaviside(x)
 
-        heaviside_codegen = Codegen.function(
-            name="Heaviside", func=f, input_types=[sm.Symbol], mode=CodegenMode.CPP
-        )
+        heaviside_codegen = Codegen.function(name="Heaviside", func=f, mode=CodegenMode.CPP)
         heaviside_codegen_data = heaviside_codegen.generate_function(
             namespace="cpp_code_printer_test"
         )

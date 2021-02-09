@@ -46,10 +46,7 @@ class SymforceCamCodegenTest(TestCase):
         # Create the specification
         namespace = "cam_function_codegen_test"
         my_func = Codegen.function(
-            name="PixelToRayAndBack",
-            func=pixel_to_ray_and_back,
-            input_types=[geo.V2, cam.LinearCameraCal, sm.Symbol],
-            mode=CodegenMode.CPP,
+            name="PixelToRayAndBack", func=pixel_to_ray_and_back, mode=CodegenMode.CPP,
         )
         cpp_data = my_func.generate_function(output_dir=output_dir, namespace=namespace)
 
