@@ -8,6 +8,7 @@ import sympy as sympy_py
 
 sympy_py.init_printing()
 
+import symforce
 from symforce import types as T
 
 
@@ -15,8 +16,12 @@ def display(*args: T.List) -> None:
     """
     Display the given expressions in latex, or print if not an expression.
     """
+    if symforce.get_backend() == "sympy":
+        IPython.display.display(*args)
+        return
+
     try:
-        IPython.display.display(sympy_py.S(*args))
+        IPython.display.display(sympy_py.S(*args, strict=True))
     except (sympy_py.SympifyError, AttributeError, TypeError):
         IPython.display.display(*args)
 

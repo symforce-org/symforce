@@ -9,18 +9,18 @@ from symforce.test_util import TestCase, slow_on_sympy
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__)) or "."
 
 
-class SymforceLinterTest(TestCase):
+class SymforceDocsTest(TestCase):
     """
-    Make sure linting passes, as a merge guard.
+    Make sure docs can build, as a merge guard.
     """
 
     @slow_on_sympy
-    def test_linter(self) -> None:
+    def test_make_docs(self) -> None:
         try:
-            python_util.execute_subprocess(["make", "lint"], cwd=SYMFORCE_DIR)
+            python_util.execute_subprocess(["make", "docs"], cwd=SYMFORCE_DIR)
         except subprocess.CalledProcessError as exc:
             logger.error(exc)
-            self.assertTrue(False, "Linter Failed.")
+            self.assertTrue(False, "Docs generation failed")
 
 
 if __name__ == "__main__":

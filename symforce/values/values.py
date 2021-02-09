@@ -449,7 +449,7 @@ class Values:
             if isinstance(value, Values):
                 value_str = value.format(indent=indent + 2)
             else:
-                value_str = str(value)
+                value_str = str(value).strip()
 
             lines.append(f"  {key}: {value_str},")
         lines.append(")")
