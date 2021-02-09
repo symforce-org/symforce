@@ -58,10 +58,10 @@ class Codegen:
 
     def __init__(
         self,
-        name: str,
         inputs: Values,
         outputs: Values,
         mode: codegen_util.CodegenMode,
+        name: T.Optional[str] = None,
         return_key: T.Optional[str] = None,
         sparse_matrices: T.List[str] = None,
         scalar_type: str = "double",
@@ -71,11 +71,12 @@ class Codegen:
         Creates the Codegen specification.
 
         Args:
-            name: Name of the function to be generated
             inputs: Values object specifying names and symbolic inputs to the function
             outputs: Values object specifying names and output expressions (written in terms
                 of the symbolic inputs) of the function
             mode: Programming language in which the function is to be generated
+            name: Name of the function to be generated; must be set before the function is
+                generated, but need not be set here if it's going to be set by create_with_derivatives
             return_key: If specified, the output with this key is returned rather than filled
                 in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
@@ -160,9 +161,9 @@ class Codegen:
     @classmethod
     def function(
         cls,
-        name: str,
         func: T.Callable,
         mode: codegen_util.CodegenMode,
+        name: T.Optional[str] = None,
         input_types: T.Sequence[ElementOrType] = None,
         output_names: T.Sequence[str] = None,
         return_key: str = None,
@@ -172,7 +173,6 @@ class Codegen:
         Creates a Codegen object from a symbolic python function.
 
         Args:
-            name: Name of the function to be generated
             func: Python function
             input_types: List of types of the inputs to the given function.  This is optional; if
                 `func` has type annotations, `input_types` can be deduced from those.  Note that
@@ -180,6 +180,8 @@ class Codegen:
                 to specify manually, for instance a function add(x: T.Any, y: T.Any) -> T.Any that
                 you want to use to generate add(x: geo.Matrix33, y: geo.Matrix33) -> geo.Matrix33
             mode: Programming language in which the function is to be generated
+            name: Name of the function to be generated; must be set before the function is
+                generated, but need not be set here if it's going to be set by create_with_derivatives
             output_names: Optional if only one object is returned by the function.
                 If multiple objects are returned, they must be named.
             return_key: If multiple objects are returned, the generated function will return
@@ -293,6 +295,10 @@ class Codegen:
             namespace: Namespace for the generated function and any generated types.
             generated_file_name: Stem for the filename into which the function is generated, with no file extension
         """
+        assert (
+            self.name is not None
+        ), "Name should be set either at construction or by create_with_derivatives"
+
         if output_dir is None:
             output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp")
             logger.debug(f"Creating temp directory: {output_dir}")
@@ -449,7 +455,8 @@ class Codegen:
             self: Existing codegen object that return a single value
             which_args: Indices of args for which to compute jacobians. If not given, uses all.
             include_result: Whether this codegen object computes the value in addition to jacobians
-            name: Generated function name. If not given, picks a reasonable name.
+            name: Generated function name. If not given, picks a reasonable name based on the one
+                                           given at construction.
             use_product_manifold_for_pose3: If True, treat Pose3 as SO3xR3. If False, treat as SE3.
                                             If we fully convert Pose3 to always SO3xR3, remove this.
             derivative_generation_mode: Whether to generate separate jacobians
@@ -557,6 +564,10 @@ class Codegen:
 
         # Cutely pick a function name if not given
         if not name:
+            assert (
+                self.name is not None
+            ), "Codegen name must have been provided already to automatically generate a name for create_with_derivatives"
+
             name = self.name + "_"
             if derivative_generation_mode == DerivativeMode.FULL_LINEARIZATION:
                 name += "Linearization"

@@ -104,6 +104,7 @@ def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
     data = codegen.generate_function()
 
     # Read
+    assert codegen.name is not None
     filename = "{}.h".format(python_util.camelcase_to_snakecase(codegen.name))
     with open(os.path.join(data["cpp_function_dir"], filename)) as f:
         func_code = f.read()
@@ -119,6 +120,7 @@ def get_filename(codegen: Codegen) -> str:
     """
     Helper to get appropriate filename
     """
+    assert codegen.name is not None
     return python_util.camelcase_to_snakecase(codegen.name) + ".h"
 
 

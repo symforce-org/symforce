@@ -125,7 +125,11 @@ class SymforceCodegenTest(TestCase):
 
         for scalar_type in ("double", "float"):
             python_func = Codegen(
-                "python_function", inputs, outputs, CodegenMode.PYTHON2, scalar_type=scalar_type
+                inputs=inputs,
+                outputs=outputs,
+                mode=CodegenMode.PYTHON2,
+                name="python_function",
+                scalar_type=scalar_type,
             )
             shared_types = {
                 "values_vec": "values_vec_t",
@@ -231,7 +235,7 @@ class SymforceCodegenTest(TestCase):
 
         for scalar_type in ("double", "float"):
             cpp_func = Codegen(
-                "CodegenCppTest", inputs, outputs, CodegenMode.CPP, scalar_type=scalar_type
+                inputs, outputs, CodegenMode.CPP, "CodegenCppTest", scalar_type=scalar_type
             )
             shared_types = {
                 "values_vec": "values_vec_t",
