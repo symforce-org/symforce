@@ -140,7 +140,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
             pixel=pixel_inf_1, inverse_range=0, target_cam=posed_cam_2,
         )
         self.assertEqual(is_valid_inf, 1)
-        self.assertEqual(pixel_inf_2_exact, pixel_inf_2_rot_only)
+        self.assertNear(pixel_inf_2_exact, pixel_inf_2_rot_only, places=9)
 
 
 if __name__ == "__main__":

@@ -87,18 +87,32 @@ class PosedCamera(Camera):
             pixel: Pixel in the target camera
             is_valid: 1 if given point is valid in source camera and target camera
         """
-        if inverse_range == 0:
-            # Point is at infinity, use rotations to avoid NaNs.
-            camera_ray_self, is_valid_ray = self.camera_ray_from_pixel(pixel, epsilon)
-            # camera_ray_target is a ray in the target cam that is parallel to camera_ray_self,
-            # and is written in target cam coordinates (two parallel rays intersect at infinity)
-            camera_ray_target = target_cam.pose.R.inverse() * (self.pose.R * camera_ray_self)
-            pixel, is_valid_projection = target_cam.pixel_from_camera_point(camera_ray_target)
-            return pixel, is_valid_ray * is_valid_projection
+        # NOTE(ryan): let me explain the math here since we're not doing the most
+        # obvious implementation. The math can be simplified by taking advantage of
+        # the fact that we're projecting into camera 1, and so the point in camera 1's
+        # frame can be scaled arbitrarily and it will still project into the same pixel.
+        # The idea is as follows. Let p be the unit ray in camera 0's frame, [R, t] be the
+        # transform between the two camera frames. The point in camera 1's frame is found by
+        # projecting out at the given range and transforming: R*[p/inv_range] + t.
+        # We can now scale this arbitrarily and it will project to the same pixel in camera 1;
+        # let's multiply it by inv_range to get: R*p + t*inv_range. This is the point that
+        # we project into camera1. Note that this avoids dividing by inv_range, so inv_range
+        # can be == 0 without a special case.
 
-        global_point, is_valid_point = self.global_point_from_pixel(
-            pixel, sm.S.One / (inverse_range + epsilon), epsilon
+        # Project out to a unit ray.
+        camera_ray, is_valid_point = self.camera_ray_from_pixel(pixel, epsilon)
+        camera_point = camera_ray / camera_ray.norm()
+
+        # Transform into the other camera at this inverse range.
+        # NOTE(ryan): expand out the math here, since grouping (R0*R1)*p is more operations
+        # than R0*(R1*p).
+        transformed_point = target_cam.pose.R.inverse() * (self.pose.R * camera_point) + (
+            target_cam.pose.R.inverse() * (self.pose.t - target_cam.pose.t) * inverse_range
         )
-        pixel, is_valid_projection = target_cam.pixel_from_global_point(global_point, epsilon)
+
+        # Project into the target camera.
+        pixel, is_valid_projection = target_cam.pixel_from_camera_point(
+            transformed_point, epsilon=epsilon
+        )
 
         return pixel, is_valid_point * is_valid_projection
