@@ -28,6 +28,8 @@ void PriorFactorRot3(const geo::Rot3<Scalar>& value, const geo::Rot3<Scalar>& pr
                      const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                      Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                      Eigen::Matrix<Scalar, 3, 3>* const jac = nullptr) {
+  // Total ops: 463
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _value = value.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _prior = prior.Data();

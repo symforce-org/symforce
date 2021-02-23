@@ -30,6 +30,8 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
                            const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                            Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                            Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
+  // Total ops: 36
+
   // Input arrays
 
   // Intermediate terms (3)

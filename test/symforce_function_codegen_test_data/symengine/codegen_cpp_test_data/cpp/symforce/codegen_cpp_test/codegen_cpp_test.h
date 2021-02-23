@@ -32,6 +32,8 @@ void CodegenCppTest(
     std::array<codegen_cpp_test::values_vec_t, 3>* const values_vec_out = nullptr,
     std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>* const values_vec_2D_out =
         nullptr) {
+  // Total ops: 813
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _rot = rot.Data();
 

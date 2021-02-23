@@ -29,6 +29,8 @@ void BetweenFactorRot2(const geo::Rot2<Scalar>& a, const geo::Rot2<Scalar>& b,
                        const geo::Rot2<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 1, 1>& sqrt_info,
                        const Scalar epsilon, Eigen::Matrix<Scalar, 1, 1>* const res = nullptr,
                        Eigen::Matrix<Scalar, 1, 2>* const jac = nullptr) {
+  // Total ops: 117
+
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 2, 1>& _b = b.Data();

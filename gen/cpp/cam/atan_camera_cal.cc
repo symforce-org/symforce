@@ -13,6 +13,8 @@ namespace cam {
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::FocalLength() const {
+  // Total ops: 0
+
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _self = Data();
 
@@ -29,6 +31,8 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::FocalLength() const {
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PrincipalPoint() const {
+  // Total ops: 0
+
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _self = Data();
 
@@ -46,6 +50,8 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PrincipalPoint() const {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PixelFromCameraPoint(
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
+  // Total ops: 29
+
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _self = Data();
 
@@ -74,6 +80,8 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PixelFromCameraPoint(
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixel(
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
+  // Total ops: 34
+
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _self = Data();
 

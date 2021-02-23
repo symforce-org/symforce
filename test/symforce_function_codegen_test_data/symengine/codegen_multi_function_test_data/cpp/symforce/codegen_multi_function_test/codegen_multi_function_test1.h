@@ -21,6 +21,8 @@ template <typename Scalar>
 void CodegenMultiFunctionTest1(
     const codegen_multi_function_test::inputs_t& inputs,
     codegen_multi_function_test::outputs_1_t* const outputs_1 = nullptr) {
+  // Total ops: 813
+
   // Input arrays
 
   // Intermediate terms (66)

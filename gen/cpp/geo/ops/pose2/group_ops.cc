@@ -18,6 +18,8 @@ namespace pose2 {
  */
 template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::Identity() {
+  // Total ops: 0
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -46,6 +48,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Identity() {
  */
 template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose2<Scalar>& a) {
+  // Total ops: 16
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -80,6 +84,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose2<Scalar>& a) {
 template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::Compose(const geo::Pose2<Scalar>& a,
                                              const geo::Pose2<Scalar>& b) {
+  // Total ops: 16
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
@@ -114,6 +120,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Compose(const geo::Pose2<Scalar>& a,
 template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::Between(const geo::Pose2<Scalar>& a,
                                              const geo::Pose2<Scalar>& b) {
+  // Total ops: 33
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
@@ -150,6 +158,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Between(const geo::Pose2<Scalar>& a,
 template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
     const geo::Pose2<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
+  // Total ops: 97
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -224,6 +234,8 @@ template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
     const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+  // Total ops: 65
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
@@ -302,6 +314,8 @@ template <typename Scalar>
 geo::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
     const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+  // Total ops: 173
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();

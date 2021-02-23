@@ -76,6 +76,17 @@ void TestRot3() {
   assertTrue(
       geo::Rot3f(Eigen::Vector4f::Zero()).IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
   assertTrue(!geo::Rot3f().IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
+
+  // Check that the log returns vectors with norm less than pi, and is the inverse of exp
+  for (int i = 0; i < 1000; i++) {
+    const geo::Rot3d rot = geo::Rot3d::Random(gen);
+    const Eigen::Vector3d log = rot.ToTangent();
+    assertTrue(log.norm() <= M_PI);
+    const geo::Rot3d exp_log_rot = geo::Rot3d::FromTangent(log);
+
+    // The quaternion might not be equal, it might be negated, but the matrix should be equal
+    assertTrue(rot.Matrix().isApprox(exp_log_rot.Matrix(), 1e-9));
+  }
 }
 
 void TestRot2Pose2() {

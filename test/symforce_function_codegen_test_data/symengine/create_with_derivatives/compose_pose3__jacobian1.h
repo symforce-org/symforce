@@ -21,6 +21,8 @@ namespace sym {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const geo::Pose3<Scalar>& a,
                                                    const geo::Pose3<Scalar>& b) {
+  // Total ops: 334
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();

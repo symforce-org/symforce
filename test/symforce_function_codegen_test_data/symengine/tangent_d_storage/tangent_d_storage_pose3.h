@@ -15,6 +15,8 @@ namespace sym {
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 7> Tangent_D_Storage(const geo::Pose3<Scalar>& a, const Scalar epsilon) {
+  // Total ops: 33
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 

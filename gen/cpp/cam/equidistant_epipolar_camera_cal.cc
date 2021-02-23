@@ -13,6 +13,8 @@ namespace cam {
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::FocalLength() const {
+  // Total ops: 0
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
@@ -29,6 +31,8 @@ Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::FocalLength() 
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PrincipalPoint() const {
+  // Total ops: 0
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
@@ -46,6 +50,8 @@ Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PrincipalPoint
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PixelFromCameraPoint(
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
+  // Total ops: 14
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
@@ -72,6 +78,8 @@ Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PixelFromCamer
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromPixel(
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
+  // Total ops: 26
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 

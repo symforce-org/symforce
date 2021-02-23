@@ -30,6 +30,8 @@ void BetweenFactorPose2(const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b
                         const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                         Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                         Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
+  // Total ops: 523
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();

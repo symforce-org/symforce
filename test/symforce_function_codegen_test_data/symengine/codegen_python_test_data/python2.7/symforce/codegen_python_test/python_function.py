@@ -13,10 +13,12 @@ def python_function(
     Return type(s): Add, Add, list, list, list
 
     """
+    # Total ops: 813
+
     # Input arrays
     _rot = rot.data
 
-    # Intermediate terms
+    # Intermediate terms (66)
     _tmp0 = x ** 2
     _tmp1 = 2 * values_vec[0].rot[3]
     _tmp2 = 2 * values_vec[0].rot_vec[0][3]

@@ -9,9 +9,11 @@ class GroupOps(object):
     @staticmethod
     def identity():
 
+        # Total ops: 0
+
         # Input arrays
 
-        # Intermediate terms
+        # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 7
@@ -27,10 +29,12 @@ class GroupOps(object):
     @staticmethod
     def inverse(a):
 
+        # Total ops: 50
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (11)
         _tmp0 = 2 * _a[1] * _a[3]
         _tmp1 = 2 * _a[0]
         _tmp2 = _a[2] * _tmp1
@@ -57,11 +61,13 @@ class GroupOps(object):
     @staticmethod
     def compose(a, b):
 
+        # Total ops: 79
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (11)
         _tmp0 = 2 * _a[3]
         _tmp1 = _a[1] * _tmp0
         _tmp2 = 2 * _a[2]
@@ -94,11 +100,13 @@ class GroupOps(object):
     @staticmethod
     def between(a, b):
 
+        # Total ops: 103
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (20)
         _tmp0 = 2 * _a[1] * _a[3]
         _tmp1 = 2 * _a[0]
         _tmp2 = _a[2] * _tmp1
@@ -155,10 +163,12 @@ class GroupOps(object):
     @staticmethod
     def inverse_with_jacobian(a):
 
+        # Total ops: 404
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (86)
         _tmp0 = 2 * _a[3]
         _tmp1 = _a[1] * _tmp0
         _tmp2 = -_tmp1
@@ -301,11 +311,13 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(a, b):
 
+        # Total ops: 689
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (190)
         _tmp0 = _a[0] * _b[3] + _a[1] * _b[2] - _a[2] * _b[1] + _a[3] * _b[0]
         _tmp1 = -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1]
         _tmp2 = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2]
@@ -603,11 +615,13 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(a, b):
 
+        # Total ops: 883
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (227)
         _tmp0 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
         _tmp1 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
         _tmp2 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]

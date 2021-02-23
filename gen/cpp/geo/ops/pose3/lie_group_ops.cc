@@ -15,6 +15,8 @@ namespace pose3 {
 template <typename Scalar>
 geo::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec,
                                                     const Scalar epsilon) {
+  // Total ops: 70
+
   // Input arrays
 
   // Intermediate terms (19)
@@ -58,6 +60,8 @@ geo::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose3<Scalar>& a,
                                                            const Scalar epsilon) {
+  // Total ops: 93
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
@@ -109,6 +113,8 @@ template <typename Scalar>
 geo::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose3<Scalar>& a,
                                                 const Eigen::Matrix<Scalar, 6, 1>& vec,
                                                 const Scalar epsilon) {
+  // Total ops: 150
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
@@ -177,6 +183,8 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pose3<Scalar>& a,
                                                                   const geo::Pose3<Scalar>& b,
                                                                   const Scalar epsilon) {
+  // Total ops: 196
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();

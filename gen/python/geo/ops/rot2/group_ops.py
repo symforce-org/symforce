@@ -9,9 +9,11 @@ class GroupOps(object):
     @staticmethod
     def identity():
 
+        # Total ops: 0
+
         # Input arrays
 
-        # Intermediate terms
+        # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 2
@@ -22,10 +24,12 @@ class GroupOps(object):
     @staticmethod
     def inverse(a):
 
+        # Total ops: 7
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (1)
         _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
 
         # Output terms
@@ -37,11 +41,13 @@ class GroupOps(object):
     @staticmethod
     def compose(a, b):
 
+        # Total ops: 7
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 2
@@ -52,11 +58,13 @@ class GroupOps(object):
     @staticmethod
     def between(a, b):
 
+        # Total ops: 13
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (3)
         _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
         _tmp1 = _a[1] * _tmp0
         _tmp2 = _a[0] * _tmp0
@@ -70,10 +78,12 @@ class GroupOps(object):
     @staticmethod
     def inverse_with_jacobian(a):
 
+        # Total ops: 30
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (8)
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
@@ -96,11 +106,13 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(a, b):
 
+        # Total ops: 29
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (2)
         _tmp0 = _a[0] * _b[0] - _a[1] * _b[1]
         _tmp1 = _a[0] * _b[1] + _a[1] * _b[0]
 
@@ -121,11 +133,13 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(a, b):
 
+        # Total ops: 66
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (16)
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1

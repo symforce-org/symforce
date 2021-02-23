@@ -15,6 +15,8 @@ namespace rot3 {
 template <typename Scalar>
 geo::Rot3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3, 1>& vec,
                                                    const Scalar epsilon) {
+  // Total ops: 16
+
   // Input arrays
 
   // Intermediate terms (3)
@@ -37,6 +39,8 @@ geo::Rot3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Rot3<Scalar>& a,
                                                            const Scalar epsilon) {
+  // Total ops: 19
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -59,6 +63,8 @@ template <typename Scalar>
 geo::Rot3<Scalar> LieGroupOps<Scalar>::Retract(const geo::Rot3<Scalar>& a,
                                                const Eigen::Matrix<Scalar, 3, 1>& vec,
                                                const Scalar epsilon) {
+  // Total ops: 49
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -88,6 +94,8 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Rot3<Scalar>& a,
                                                                   const geo::Rot3<Scalar>& b,
                                                                   const Scalar epsilon) {
+  // Total ops: 57
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();

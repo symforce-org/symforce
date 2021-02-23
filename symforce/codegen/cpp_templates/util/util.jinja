@@ -315,6 +315,8 @@ _{{ lhs }} = {{ rhs }};
  #     spec (Codegen):
  #}
 {% macro expr_code(spec) -%}
+    // Total ops: {{ spec.total_ops }}
+
     // Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = python_util.get_type(type) %}

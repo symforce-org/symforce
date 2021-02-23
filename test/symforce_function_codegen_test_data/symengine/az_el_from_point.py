@@ -15,10 +15,12 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
         geo.Matrix: (azimuth, elevation)
 
     """
+    # Total ops: 83
+
     # Input arrays
     _nav_T_cam = nav_T_cam.data
 
-    # Intermediate terms
+    # Intermediate terms (23)
     _tmp0 = 2 * _nav_T_cam[0]
     _tmp1 = _nav_T_cam[3] * _tmp0
     _tmp2 = 2 * _nav_T_cam[1]

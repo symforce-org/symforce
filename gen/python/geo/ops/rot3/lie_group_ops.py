@@ -9,9 +9,11 @@ class LieGroupOps(object):
     @staticmethod
     def from_tangent(vec, epsilon):
 
+        # Total ops: 16
+
         # Input arrays
 
-        # Intermediate terms
+        # Intermediate terms (3)
         _tmp0 = numpy.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
         _tmp2 = numpy.sin(_tmp1) / _tmp0
@@ -27,10 +29,12 @@ class LieGroupOps(object):
     @staticmethod
     def to_tangent(a, epsilon):
 
+        # Total ops: 19
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (2)
         _tmp0 = numpy.amin((abs(_a[3]), 1 - epsilon), axis=0)
         _tmp1 = (
             2
@@ -49,10 +53,12 @@ class LieGroupOps(object):
     @staticmethod
     def retract(a, vec, epsilon):
 
+        # Total ops: 49
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (8)
         _tmp0 = numpy.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
         _tmp2 = numpy.sin(_tmp1) / _tmp0
@@ -73,11 +79,13 @@ class LieGroupOps(object):
     @staticmethod
     def local_coordinates(a, b, epsilon):
 
+        # Total ops: 57
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (3)
         _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
         _tmp1 = numpy.amin((abs(_tmp0), 1 - epsilon), axis=0)
         _tmp2 = (

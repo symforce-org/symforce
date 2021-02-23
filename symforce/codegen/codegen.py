@@ -129,7 +129,12 @@ class Codegen:
         self.docstring = docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
 
         # TODO(nathan): Consider moving into a different function so that we can generate code separately
-        self.intermediate_terms, self.output_terms, self.sparse_terms = codegen_util.print_code(
+        (
+            self.intermediate_terms,
+            self.output_terms,
+            self.sparse_terms,
+            self.total_ops,
+        ) = codegen_util.print_code(
             inputs=self.inputs,
             outputs=self.outputs,
             sparse_mat_data=self.sparse_mat_data,

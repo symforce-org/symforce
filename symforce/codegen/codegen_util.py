@@ -2,7 +2,6 @@
 Shared helper code between codegen of all languages.
 """
 
-import collections
 from enum import Enum
 import imp
 import itertools
@@ -26,11 +25,29 @@ SKYMARSHAL_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/skymarshal")
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
-T_terms = T.Sequence[T.Tuple[T.Scalar, T.Scalar]]
+T_terms = T.Sequence[T.Tuple[sm.Symbol, sm.Expr]]
 T_nested_terms = T.Sequence[T_terms]
+T_terms_printed = T.Sequence[T.Tuple[str, str]]
 
-DenseAndSparseOutputTerms = collections.namedtuple("DenseAndSparseOutputTerms", ["dense", "sparse"])
-OutputWithTerms = collections.namedtuple("OutputWithTerms", ["name", "type", "terms"])
+Element = T.Any
+
+
+class DenseAndSparseOutputTerms(T.NamedTuple):
+    dense: T.List[T.List[sm.Expr]]
+    sparse: T.List[T.List[sm.Expr]]
+
+
+class OutputWithTerms(T.NamedTuple):
+    name: str
+    type: Element
+    terms: T_terms_printed
+
+
+class PrintCodeResult(T.NamedTuple):
+    temps_code: T_terms_printed
+    outputs_code: T.List[OutputWithTerms]
+    sparse_outputs_code: T.List[OutputWithTerms]
+    total_ops: int
 
 
 class CodegenMode(Enum):
@@ -53,7 +70,7 @@ def print_code(
     mode: CodegenMode,
     cse: bool = True,
     substitute_inputs: bool = False,
-) -> T.Tuple[T.List[T.Tuple[str, str]], T.List[OutputWithTerms], T.List[OutputWithTerms]]:
+) -> PrintCodeResult:
     """
     Return executable code lines from the given input/output values.
 
@@ -69,8 +86,10 @@ def print_code(
         substitute_inputs: If True, replace all input symbols with a uniform array.
 
     Returns:
-        T.Sequence[T.Tuple[str, str]]: Line of code per temporary variable
-        T.Sequence[str]: Line of code per output variable
+        T.List[T.Tuple[str, str]]: Line of code per temporary variable
+        T.List[OutputWithTerms]: Collection of lines of code per dense output variable
+        T.List[OutputWithTerms]: Collection of lines of code per sparse output variable
+        int: Total number of ops
     """
     # Split outputs into dense and sparse outputs, since we treate them differently when doing codegen
     dense_outputs = Values()
@@ -97,6 +116,12 @@ def print_code(
     else:
         temps = []
         simplified_outputs = output_exprs
+
+    total_ops = (
+        sm.count_ops(temps)
+        + sm.count_ops(simplified_outputs.dense)
+        + sm.count_ops(simplified_outputs.sparse)
+    )
 
     # Replace default symbols with vector notation (e.g. "R_re" -> "_R[0]")
     temps_formatted, simplified_outputs_formatted, sparse_terms_formatted = format_symbols(
@@ -134,7 +159,12 @@ def print_code(
         )
     ]
 
-    return temps_code, outputs_code, sparse_outputs_code
+    return PrintCodeResult(
+        temps_code=temps_code,
+        outputs_code=outputs_code,
+        sparse_outputs_code=sparse_outputs_code,
+        total_ops=total_ops,
+    )
 
 
 def perform_cse(

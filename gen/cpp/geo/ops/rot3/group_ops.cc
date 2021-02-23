@@ -18,6 +18,8 @@ namespace rot3 {
  */
 template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::Identity() {
+  // Total ops: 0
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -46,6 +48,8 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Identity() {
  */
 template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::Inverse(const geo::Rot3<Scalar>& a) {
+  // Total ops: 3
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -77,6 +81,8 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Inverse(const geo::Rot3<Scalar>& a) {
 template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::Compose(const geo::Rot3<Scalar>& a,
                                             const geo::Rot3<Scalar>& b) {
+  // Total ops: 32
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
@@ -111,6 +117,8 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Compose(const geo::Rot3<Scalar>& a,
 template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::Between(const geo::Rot3<Scalar>& a,
                                             const geo::Rot3<Scalar>& b) {
+  // Total ops: 38
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
@@ -142,6 +150,8 @@ geo::Rot3<Scalar> GroupOps<Scalar>::Between(const geo::Rot3<Scalar>& a,
 template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
     const geo::Rot3<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
+  // Total ops: 39
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -202,6 +212,8 @@ template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
     const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+  // Total ops: 300
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
@@ -345,6 +357,8 @@ template <typename Scalar>
 geo::Rot3<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
     const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+  // Total ops: 315
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();

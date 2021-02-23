@@ -30,6 +30,8 @@ void BetweenFactorPose3Product(const geo::Pose3<Scalar>& a, const geo::Pose3<Sca
                                const Eigen::Matrix<Scalar, 6, 6>& sqrt_info, const Scalar epsilon,
                                Eigen::Matrix<Scalar, 6, 1>* const res = nullptr,
                                Eigen::Matrix<Scalar, 6, 12>* const jac = nullptr) {
+  // Total ops: 2433
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();

@@ -23,6 +23,8 @@ template <typename Scalar>
 void ComposePose3_Jacobians(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b,
                             Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr,
                             Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
+  // Total ops: 679
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();

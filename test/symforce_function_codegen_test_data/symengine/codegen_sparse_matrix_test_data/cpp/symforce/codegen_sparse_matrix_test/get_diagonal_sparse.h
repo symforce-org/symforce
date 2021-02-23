@@ -17,6 +17,8 @@ namespace codegen_sparse_matrix_test {
  */
 template <typename Scalar>
 Eigen::SparseMatrix<Scalar> GetDiagonalSparse(const Eigen::Matrix<Scalar, 100, 100>& matrix_in) {
+  // Total ops: 0
+
   // Input arrays
 
   // Intermediate terms (0)

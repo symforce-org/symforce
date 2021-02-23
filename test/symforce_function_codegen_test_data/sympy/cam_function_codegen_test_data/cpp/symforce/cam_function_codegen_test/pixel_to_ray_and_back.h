@@ -16,6 +16,8 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>& pixel,
                                               const cam::LinearCameraCal<Scalar>& cam,
                                               const Scalar epsilon) {
+  // Total ops: 8
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _cam = cam.Data();
 

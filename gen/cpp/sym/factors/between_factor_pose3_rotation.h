@@ -31,6 +31,8 @@ void BetweenFactorPose3Rotation(const geo::Pose3<Scalar>& a, const geo::Pose3<Sc
                                 const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                                 Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                                 Eigen::Matrix<Scalar, 3, 12>* const jac = nullptr) {
+  // Total ops: 982
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();

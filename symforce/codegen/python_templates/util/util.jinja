@@ -38,6 +38,8 @@ def {{ camelcase_to_snakecase(spec.name) }}(
  #     spec (Codegen):
  #}
 {% macro expr_code(spec) %}
+    # Total ops: {{ spec.total_ops }}
+
     # Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = python_util.get_type(type) %}
@@ -46,7 +48,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
         {% endif %}
     {% endfor %}
 
-    # Intermediate terms
+    # Intermediate terms ({{ spec.intermediate_terms | length }})
     {% for lhs, rhs in spec.intermediate_terms %}
     {{ lhs }} = {{ rhs }}
     {% endfor %}

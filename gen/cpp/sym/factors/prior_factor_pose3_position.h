@@ -29,6 +29,8 @@ void PriorFactorPose3Position(const geo::Pose3<Scalar>& value,
                               const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                               Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                               Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
+  // Total ops: 95
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _value = value.Data();
 

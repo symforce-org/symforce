@@ -18,6 +18,8 @@ namespace codegen_sparse_matrix_test {
 template <typename Scalar>
 void UpdateSparseMat(const Eigen::Matrix<Scalar, 100, 100>& matrix_in,
                      Eigen::SparseMatrix<Scalar>* const updated_mat = nullptr) {
+  // Total ops: 100
+
   // Input arrays
 
   // Intermediate terms (0)

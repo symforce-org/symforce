@@ -21,6 +21,8 @@ Eigen::Matrix<Scalar, 3, 3> GetMultipleDenseAndSparse(
     Eigen::SparseMatrix<Scalar>* const sparse_first = nullptr,
     Eigen::Matrix<Scalar, 4, 4>* const dense = nullptr,
     Eigen::SparseMatrix<Scalar>* const sparse_second = nullptr) {
+  // Total ops: 200
+
   // Input arrays
 
   // Intermediate terms (0)

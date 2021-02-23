@@ -24,6 +24,8 @@ void BarronResidual(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Sc
                     Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
                     Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
                     Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
+  // Total ops: 123
+
   // Input arrays
 
   // Intermediate terms (45)

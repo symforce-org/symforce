@@ -9,9 +9,11 @@ class GroupOps(object):
     @staticmethod
     def identity():
 
+        # Total ops: 0
+
         # Input arrays
 
-        # Intermediate terms
+        # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 4
@@ -24,10 +26,12 @@ class GroupOps(object):
     @staticmethod
     def inverse(a):
 
+        # Total ops: 16
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (3)
         _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
         _tmp1 = _a[0] * _tmp0
         _tmp2 = _a[1] * _tmp0
@@ -43,11 +47,13 @@ class GroupOps(object):
     @staticmethod
     def compose(a, b):
 
+        # Total ops: 16
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 4
@@ -60,11 +66,13 @@ class GroupOps(object):
     @staticmethod
     def between(a, b):
 
+        # Total ops: 33
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (5)
         _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
         _tmp1 = _a[1] * _tmp0
         _tmp2 = _a[0] * _tmp0
@@ -82,10 +90,12 @@ class GroupOps(object):
     @staticmethod
     def inverse_with_jacobian(a):
 
+        # Total ops: 97
+
         # Input arrays
         _a = a.data
 
-        # Intermediate terms
+        # Intermediate terms (24)
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
@@ -138,11 +148,13 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(a, b):
 
+        # Total ops: 65
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (13)
         _tmp0 = _a[0] * _b[0] - _a[1] * _b[1]
         _tmp1 = _a[0] * _b[1] + _a[1] * _b[0]
         _tmp2 = _a[0] * _tmp0 + _a[1] * _tmp1
@@ -190,11 +202,13 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(a, b):
 
+        # Total ops: 173
+
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms
+        # Intermediate terms (41)
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
