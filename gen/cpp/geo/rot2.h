@@ -96,7 +96,7 @@ class Rot2 {
 
   // Compose shorthand
   template <typename Other>
-  Other operator*(const Other& b) const {
+  auto operator*(const Other& b) const -> decltype(Compose(b)) {
     return Compose(b);
   }
 

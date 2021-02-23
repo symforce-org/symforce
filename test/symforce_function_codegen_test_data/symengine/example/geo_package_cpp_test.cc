@@ -55,6 +55,9 @@ void TestRot3() {
   assertTrue((quat * point).isApprox(mat * point, 1e-6));
   assertTrue((quat * point).isApprox(rot * point, 1e-6));
 
+  // Rotate a point as an initializer expression
+  assertTrue((quat * Eigen::Vector3f::UnitX()).isApprox(rot * Eigen::Vector3f::UnitX(), 1e-6));
+
   // Construct back from Eigen rotation representations
   assertTrue(geo::Rot3f(quat).IsApprox(rot, 1e-6));
   assertTrue(geo::Rot3f(aa).IsApprox(rot, 1e-6));
@@ -71,6 +74,10 @@ void TestRot3() {
 
   // Transform a point with a pose
   assertTrue((pose_inv * point).norm() < 1e-6);
+
+  // Transform a point as an initializer expression
+  assertTrue(
+      (pose * Eigen::Vector3f::UnitX().eval()).isApprox(pose * Eigen::Vector3f::UnitX(), 1e-6));
 
   // Check zero comparison
   assertTrue(

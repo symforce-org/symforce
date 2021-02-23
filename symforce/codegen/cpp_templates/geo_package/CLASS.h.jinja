@@ -109,10 +109,9 @@ class {{ cls.__name__ }} {
     return GroupOps<Self>::BetweenWithJacobians(*this, b, res_D_a, res_D_b);
   }
 
-
   // Compose shorthand
   template <typename Other>
-  Other operator*(const Other& b) const {
+  auto operator*(const Other& b) const -> decltype(Compose(b)) {
     return Compose(b);
   }
 

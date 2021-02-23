@@ -101,7 +101,7 @@ class Pose3 {
 
   // Compose shorthand
   template <typename Other>
-  Other operator*(const Other& b) const {
+  auto operator*(const Other& b) const -> decltype(Compose(b)) {
     return Compose(b);
   }
 
@@ -175,10 +175,6 @@ class Pose3 {
   // TODO(hayk): Could codegen this.
   Vector3 Compose(const Vector3& point) const {
     return Rotation() * point + Position();
-  }
-
-  Vector3 operator*(const Vector3& point) {
-    return Compose(point);
   }
 
  protected:
