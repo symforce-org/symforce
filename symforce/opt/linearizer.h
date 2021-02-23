@@ -88,11 +88,14 @@ class Linearizer {
                                             const linearization_factor_helper_t& factor_helper,
                                             Linearization<Scalar>* const linearization) const;
   /**
-   * Update the dense combined problem linearization from a single factor.
+   * Update the combined residual and rhs, along with triplet lists for the sparse matrices, from a
+   * single factor
    */
-  void UpdateFromLinearizedFactorIntoDense(const LinearizedFactor& linearized_factor,
-                                           const linearization_factor_helper_t& factor_helper,
-                                           Linearization<Scalar>* const linearization);
+  void UpdateFromLinearizedFactorIntoTripletLists(
+      const LinearizedFactor& linearized_factor, const linearization_factor_helper_t& factor_helper,
+      sym::VectorX<Scalar>* const residual, sym::VectorX<Scalar>* const rhs,
+      std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
+      std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const;
 
   /**
    * Check if a Linearization has the correct sizes, and if not, initialize it
@@ -107,13 +110,12 @@ class Linearizer {
                                   Linearization<Scalar>* const linearization) const;
 
   /**
-   * Update the combined sparse problem linearization from linearized factors by first
-   * updating a combined dense linearization, then taking a sparse view.
-   * NOTE(hayk): This should be less efficient and can lead to the sparsity pattern changing
-   * if the combined jacobian/hessian happen to have zero entries in symbolically nonzero fields.
+   * Create the combined problem linearization from linearized_factors which should have all ones in
+   * potentially nonzero locations.  This is done by creating the sparse matrices from triplet
+   * lists.
    */
-  void BuildCombinedProblemDenseThenSparseView(
-      const std::vector<LinearizedFactor>& linearized_factors,
+  void BuildCombinedProblemFromOnesFactors(
+      const std::vector<LinearizedFactor>& all_ones_linearized_factors,
       Linearization<Scalar>* const linearization);
 
   bool initialized_{false};
@@ -132,12 +134,6 @@ class Linearizer {
 
   // Helpers for updating the combined problem from linearized factors
   std::vector<linearization_factor_helper_t> factor_update_helpers_;
-
-  // Dense problem jacobian/hessian
-  // Currently only used to compute initial sparsity pattern.
-  // TODO(hayk): Kill these, for very large problems don't want to allocate.
-  MatrixX<Scalar> jacobian_;
-  MatrixX<Scalar> hessian_lower_;
 
   Linearization<Scalar> linearization_ones_;
 };

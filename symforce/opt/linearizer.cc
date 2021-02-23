@@ -123,13 +123,13 @@ void Linearizer<ScalarType>::InitializeStorageAndIndices() {
   // Allocate storage of combined linearization
   linearization_ones_.residual.resize(M);
   linearization_ones_.rhs.resize(N);
-  jacobian_.resize(M, N);
-  hessian_lower_.resize(N, N);
+  linearization_ones_.jacobian.resize(M, N);
+  linearization_ones_.hessian_lower.resize(N, N);
 
   // Update combined dense jacobian/hessian from indices, then create a sparseView. This will
   // yield an accurate symbolic sparsity pattern because we're using all ones so there will not
   // happen to be any numerical zeros.
-  BuildCombinedProblemDenseThenSparseView(one_value_linearized_factors, &linearization_ones_);
+  BuildCombinedProblemFromOnesFactors(one_value_linearized_factors, &linearization_ones_);
 
   // Create a hash map from the sparse nonzero indices of the jacobian/hessian to their storage
   // offset within the sparse array.
@@ -261,52 +261,69 @@ void Linearizer<ScalarType>::UpdateFromLinearizedFactorIntoSparse(
 }
 
 template <typename ScalarType>
-void Linearizer<ScalarType>::UpdateFromLinearizedFactorIntoDense(
+void Linearizer<ScalarType>::UpdateFromLinearizedFactorIntoTripletLists(
     const LinearizedFactor& linearized_factor, const linearization_factor_helper_t& factor_helper,
-    Linearization<Scalar>* const linearization) {
+    sym::VectorX<Scalar>* const residual, sym::VectorX<Scalar>* const rhs,
+    std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
+    std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const {
+  // NOTE(aaron):  This function could be simplified if we assume the linearized_factor
+  // linearization is all ones and dense.  However, in the future we may want to allow for sparse
+  // linearizations for individual factors, and the implementation for that is much closer to what's
+  // here now; so, I'm leaving it this way
+
   // Fill in the combined residual slice
-  linearization->residual.segment(factor_helper.combined_residual_offset,
-                                  factor_helper.residual_dim) = linearized_factor.residual;
+  residual->segment(factor_helper.combined_residual_offset, factor_helper.residual_dim) =
+      linearized_factor.residual;
+
+  const auto update_triplets_from_blocks =
+      [](const int rhs_row_start, const int rhs_col_start, const int rows, const int cols,
+         const int lhs_row_start, const int lhs_col_start, const sym::MatrixX<Scalar>& rhs,
+         const bool lower_triangle_only, std::vector<Eigen::Triplet<Scalar>>* const triplets) {
+        const auto rhs_block = rhs.block(rhs_row_start, rhs_col_start, rows, cols);
+        for (int block_row = 0; block_row < rows; block_row++) {
+          for (int block_col = 0; block_col < (lower_triangle_only ? block_row + 1 : cols);
+               block_col++) {
+            triplets->emplace_back(lhs_row_start + block_row, lhs_col_start + block_col,
+                                   rhs_block(block_row, block_col));
+          }
+        }
+      };
 
   // For each key
   for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
     const linearization_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     // Fill in jacobian block
-    jacobian_.block(factor_helper.combined_residual_offset, key_helper.combined_offset,
-                    factor_helper.residual_dim, key_helper.tangent_dim) =
-        linearized_factor.jacobian.block(0, key_helper.factor_offset, factor_helper.residual_dim,
-                                         key_helper.tangent_dim);
+    update_triplets_from_blocks(0, key_helper.factor_offset, factor_helper.residual_dim,
+                                key_helper.tangent_dim, factor_helper.combined_residual_offset,
+                                key_helper.combined_offset, linearized_factor.jacobian, false,
+                                jacobian_triplets);
 
     // Add contribution from right-hand-side
-    linearization->rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
+    rhs->segment(key_helper.combined_offset, key_helper.tangent_dim) +=
         linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
 
     // Add contribution from diagonal hessian block
-    hessian_lower_
-        .block(key_helper.combined_offset, key_helper.combined_offset, key_helper.tangent_dim,
-               key_helper.tangent_dim)
-        .template triangularView<Eigen::Lower>() +=
-        linearized_factor.hessian.block(key_helper.factor_offset, key_helper.factor_offset,
-                                        key_helper.tangent_dim, key_helper.tangent_dim);
+    update_triplets_from_blocks(key_helper.factor_offset, key_helper.factor_offset,
+                                key_helper.tangent_dim, key_helper.tangent_dim,
+                                key_helper.combined_offset, key_helper.combined_offset,
+                                linearized_factor.hessian, true, hessian_lower_triplets);
 
     // Add contributions from off-diagonal hessian blocks
     for (int key_j = 0; key_j < key_i; ++key_j) {
       const linearization_key_helper_t& key_helper_j = factor_helper.key_helpers[key_j];
       if (key_helper.combined_offset > key_helper_j.combined_offset) {
-        hessian_lower_.block(key_helper.combined_offset, key_helper_j.combined_offset,
-                             key_helper.tangent_dim, key_helper_j.tangent_dim) +=
-            linearized_factor.hessian.block(key_helper.factor_offset, key_helper_j.factor_offset,
-                                            key_helper.tangent_dim, key_helper_j.tangent_dim);
+        update_triplets_from_blocks(key_helper.factor_offset, key_helper_j.factor_offset,
+                                    key_helper.tangent_dim, key_helper_j.tangent_dim,
+                                    key_helper.combined_offset, key_helper_j.combined_offset,
+                                    linearized_factor.hessian, false, hessian_lower_triplets);
       } else {
         // If key_j is actually after key_i in the full problem, swap indices to put it in the lower
         // triangle
-        hessian_lower_.block(key_helper_j.combined_offset, key_helper.combined_offset,
-                             key_helper_j.tangent_dim, key_helper.tangent_dim) +=
-            linearized_factor.hessian
-                .block(key_helper.factor_offset, key_helper_j.factor_offset, key_helper.tangent_dim,
-                       key_helper_j.tangent_dim)
-                .transpose();
+        update_triplets_from_blocks(
+            key_helper_j.factor_offset, key_helper.factor_offset, key_helper_j.tangent_dim,
+            key_helper.tangent_dim, key_helper_j.combined_offset, key_helper.combined_offset,
+            linearized_factor.hessian.transpose(), false, hessian_lower_triplets);
       }
     }
   }
@@ -362,26 +379,27 @@ void Linearizer<ScalarType>::BuildCombinedProblemSparse(
 }
 
 template <typename ScalarType>
-void Linearizer<ScalarType>::BuildCombinedProblemDenseThenSparseView(
-    const std::vector<LinearizedFactor>& linearized_factors,
+void Linearizer<ScalarType>::BuildCombinedProblemFromOnesFactors(
+    const std::vector<LinearizedFactor>& all_ones_linearized_factors,
     Linearization<Scalar>* const linearization) {
-  // Zero out everything that's either dense or built additively
+  // Zero out the rhs, since it's built additively
   linearization->rhs.setZero();
-  jacobian_.setZero();
-  hessian_lower_.template triangularView<Eigen::Lower>().setZero();
+
+  std::vector<Eigen::Triplet<Scalar>> jacobian_triplets;
+  std::vector<Eigen::Triplet<Scalar>> hessian_lower_triplets;
 
   // Update each factor using precomputed index helpers
-  for (int i = 0; i < linearized_factors.size(); ++i) {
-    UpdateFromLinearizedFactorIntoDense(linearized_factors[i], factor_update_helpers_[i],
-                                        linearization);
+  for (int i = 0; i < all_ones_linearized_factors.size(); ++i) {
+    UpdateFromLinearizedFactorIntoTripletLists(
+        all_ones_linearized_factors[i], factor_update_helpers_[i], &linearization->residual,
+        &linearization->rhs, &jacobian_triplets, &hessian_lower_triplets);
   }
 
-  // Convert to sparse matrices, to interface with the solver
-  // NOTE(hayk): This will NOT yield the expected sparsity pattern if there are numerical
-  // (but not symbolic) zeros in these matrices.
+  // Create the sparse matrices
   {
-    linearization->jacobian = jacobian_.sparseView();
-    linearization->hessian_lower = hessian_lower_.sparseView();
+    linearization->jacobian.setFromTriplets(jacobian_triplets.begin(), jacobian_triplets.end());
+    linearization->hessian_lower.setFromTriplets(hessian_lower_triplets.begin(),
+                                                 hessian_lower_triplets.end());
     SYM_ASSERT(linearization->jacobian.isCompressed());
     SYM_ASSERT(linearization->hessian_lower.isCompressed());
   }
