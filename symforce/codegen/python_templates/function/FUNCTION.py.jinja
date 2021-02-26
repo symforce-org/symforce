@@ -1,5 +1,9 @@
 {%- import "../util/util.jinja" as util with context -%}
 import numpy
+import typing as T
+
+import geo  # pylint: disable=unused-import
+
 
 {% for namespace in spec.unique_namespaces %}
 import {{ namespace }}

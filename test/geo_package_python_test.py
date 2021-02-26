@@ -14,7 +14,7 @@ import unittest
 # Add the generated package to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import geo  # type: ignore
+import geo
 
 
 class GeoPackageTest(unittest.TestCase):

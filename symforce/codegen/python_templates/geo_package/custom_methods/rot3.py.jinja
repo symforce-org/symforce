@@ -4,6 +4,7 @@
     # --------------------------------------------------------------------------
 
     def __init__(self, q=None):
+        # type: (T.Sequence[float]) -> None
         if q is None:
             self.data = ops.GroupOps.identity()
         else:

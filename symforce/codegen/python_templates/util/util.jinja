@@ -2,7 +2,84 @@
 {# Utilities for Python code generation templates.                           #}
 {# ------------------------------------------------------------------------- #}
 
- {# Format function docstring
+{# Matrix type of a given dimension
+ #
+ # Args:
+ #     rows (int):
+ #     cols (int):
+ #     is_input (bool): Is this an input argument or return value?
+ #}
+{%- macro matrix_type(rows, cols, is_input) -%}
+    {%- if cols == 1 -%}
+        T.{%- if is_input -%}Sequence{%- else -%}List{%- endif -%}[float]
+    {%- else -%}
+        numpy.ndarray
+    {%- endif -%}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Convert a class to the emitted string
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     name (str): Name in case type is a generated struct
+ #     is_input (bool): Is this an input argument or return value?
+ #}
+{%- macro format_typename(T_or_value, name, is_input) %}
+    {%- set T = python_util.get_type(T_or_value) -%}
+    {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
+        float
+    {%- elif T.__name__ == 'NoneType' -%}
+        None
+    {%- elif issubclass(T, Matrix) -%}
+        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1], is_input) }}
+    {%- elif issubclass(T, Values) -%}
+        {#- TODO(aaron): We don't currently know where to import lcmtypes from or what they should be
+         # called, at some point we should fix this and do something like
+         # {{ spec.namespaces_dict[name] }}.{{ spec.typenames_dict[name] }}
+        -#}
+        T.Any
+    {%- elif is_input and is_sequence(T_or_value) -%}
+        T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
+    {%- else -%}
+        {%- if is_input -%}
+            {%- if "geo" in T.__module__ -%}
+                geo.
+            {%- elif "cam" in T.__module__ -%}
+                cam.
+            {%- endif -%}
+            {{- T.__name__ -}}
+        {%- else -%}
+            T.List[float]
+        {%- endif -%}
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Get the type of the object in the ouput Values with key given by spec.return_key
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro get_return_type(spec) %}
+    {%- if spec.outputs.keys() | length == 1 -%}
+        {%- set name, type = spec.outputs.items()[0] -%}
+        {{ format_typename(type, name, is_input=False) }}
+    {%- elif spec.outputs -%}
+        T.Tuple[
+        {%- for name, type in spec.outputs.items() -%}
+        {{ format_typename(type, name, is_input=False) }}{% if not loop.last %}, {% endif %}
+        {%- endfor -%}]
+    {%- else -%}
+        None
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function docstring
  #
  # Args:
  #     docstring (str):
@@ -27,8 +104,11 @@ def {{ camelcase_to_snakecase(spec.name) }}(
     {%- for name in spec.inputs.keys() -%}
     {{ name }}{% if not loop.last %}, {% endif %}
     {%- endfor -%}):
-    {# TODO: mypy types? #}
-{%- endmacro -%}
+    # type: (
+    {%- for name, type in spec.inputs.items() -%}
+    {{ format_typename(type, name, is_input=True) }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}) -> {{ get_return_type(spec) }}
+{% endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
 

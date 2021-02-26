@@ -48,14 +48,18 @@ check_format:
 # NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
 # See https://github.com/python/mypy/issues/8548
 # We don't need to run find on `symforce` because we know the whole thing is a package
-# TODO(aaron): also lint generated python
 MYPY_COMMAND=$(PYTHON) -m mypy
 check_types:
 	$(MYPY_COMMAND) symforce $(shell find . \
 		-path ./symforce -prune -false \
 		-o -path "./test/*/lcmtypes/*" -prune -false \
 		-o -path "./test/symforce_function_codegen_test_data" -prune -false \
-		-o -path ./gen -prune -false \
+		-o -name "*.py")
+	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/sympy \
+		-path "*/lcmtypes/*" -prune -false \
+		-o -name "*.py")
+	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/symengine \
+		-path "*/lcmtypes/*" -prune -false \
 		-o -name "*.py")
 
 # Lint check for formatting and type hints

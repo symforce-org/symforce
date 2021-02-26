@@ -1,4 +1,7 @@
 import numpy
+import typing as T
+
+import geo  # pylint: disable=unused-import
 
 
 class LieGroupOps(object):
@@ -8,6 +11,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
+        # type: (T.Sequence[float], float) -> T.List[float]
 
         # Total ops: 26
 
@@ -30,6 +34,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def to_tangent(a, epsilon):
+        # type: (geo.Pose2, float) -> T.List[float]
 
         # Total ops: 24
 
@@ -54,6 +59,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
+        # type: (geo.Pose2, T.Sequence[float], float) -> T.List[float]
 
         # Total ops: 42
 
@@ -79,6 +85,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def local_coordinates(a, b, epsilon):
+        # type: (geo.Pose2, geo.Pose2, float) -> T.List[float]
 
         # Total ops: 55
 

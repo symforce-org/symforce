@@ -1,4 +1,7 @@
 import numpy
+import typing as T
+
+import geo  # pylint: disable=unused-import
 
 
 class GroupOps(object):
@@ -8,6 +11,7 @@ class GroupOps(object):
 
     @staticmethod
     def identity():
+        # type: () -> T.List[float]
 
         # Total ops: 0
 
@@ -28,6 +32,7 @@ class GroupOps(object):
 
     @staticmethod
     def inverse(a):
+        # type: (geo.Pose3) -> T.List[float]
 
         # Total ops: 50
 
@@ -60,6 +65,7 @@ class GroupOps(object):
 
     @staticmethod
     def compose(a, b):
+        # type: (geo.Pose3, geo.Pose3) -> T.List[float]
 
         # Total ops: 79
 
@@ -99,6 +105,7 @@ class GroupOps(object):
 
     @staticmethod
     def between(a, b):
+        # type: (geo.Pose3, geo.Pose3) -> T.List[float]
 
         # Total ops: 103
 
@@ -162,6 +169,7 @@ class GroupOps(object):
 
     @staticmethod
     def inverse_with_jacobian(a):
+        # type: (geo.Pose3) -> T.Tuple[T.List[float], numpy.ndarray]
 
         # Total ops: 404
 
@@ -310,6 +318,7 @@ class GroupOps(object):
 
     @staticmethod
     def compose_with_jacobians(a, b):
+        # type: (geo.Pose3, geo.Pose3) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
 
         # Total ops: 689
 
@@ -614,6 +623,7 @@ class GroupOps(object):
 
     @staticmethod
     def between_with_jacobians(a, b):
+        # type: (geo.Pose3, geo.Pose3) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
 
         # Total ops: 883
 
