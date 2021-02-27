@@ -113,6 +113,8 @@ class Rot3(object):
         # type: (Rot3) -> Rot3
         if isinstance(other, Rot3):
             return self.compose(other)
+        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
+            return self._apply_to_vector(other)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))
 
@@ -130,4 +132,21 @@ class Rot3(object):
             assert len(q) == self.storage_dim()
             self.data = list(q)
 
-    # TODO rotation helpers
+    def to_rotation_matrix(self):
+        # type: () -> np.ndarray
+        x, y, z, w = self.data
+
+        return np.array(
+            [
+                [1 - 2 * y ** 2 - 2 * z ** 2, 2 * x * y - 2 * z * w, 2 * x * z + 2 * y * w,],
+                [2 * x * y + 2 * z * w, 1 - 2 * x ** 2 - 2 * z ** 2, 2 * y * z - 2 * x * w,],
+                [2 * x * z - 2 * y * w, 2 * y * z + 2 * x * w, 1 - 2 * x ** 2 - 2 * y ** 2,],
+            ]
+        )
+
+    def _apply_to_vector(self, v):
+        # type: (np.ndarray) -> np.ndarray
+        v_reshaped = np.reshape(v, (3, 1))
+        return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
+
+    # TODO more rotation helpers

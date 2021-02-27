@@ -118,6 +118,8 @@ class Pose2(object):
         # type: (Pose2) -> Pose2
         if isinstance(other, Pose2):
             return self.compose(other)
+        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
+            return self._apply_to_vector(other)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))
 
@@ -142,3 +144,10 @@ class Pose2(object):
     def position(self):
         # type: () -> np.ndarray
         return np.array(self.data[2:4])
+
+    def _apply_to_vector(self, v):
+        # type: (np.ndarray) -> np.ndarray
+        v_reshaped = np.reshape(v, (2,))
+        return np.reshape(
+            np.dot(self.rotation().to_rotation_matrix(), v_reshaped) + self.position(), v.shape
+        )

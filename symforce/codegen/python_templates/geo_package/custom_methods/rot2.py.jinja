@@ -11,4 +11,16 @@
             assert len(z) == self.storage_dim()
             self.data = list(z)
 
+    def to_rotation_matrix(self):
+        # type: () -> np.ndarray
+        {# TODO(aaron): codegen this #}
+        real, imag = self.data
+
+        return np.array([[real, -imag], [imag, real]])
+
+    def _apply_to_vector(self, v):
+        # type: (np.ndarray) -> np.ndarray
+        v_reshaped = np.reshape(v, (2, 1))
+        return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
+
     # TODO rotation helpers

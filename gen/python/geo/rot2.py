@@ -113,6 +113,8 @@ class Rot2(object):
         # type: (Rot2) -> Rot2
         if isinstance(other, Rot2):
             return self.compose(other)
+        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
+            return self._apply_to_vector(other)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))
 
@@ -129,5 +131,16 @@ class Rot2(object):
         else:
             assert len(z) == self.storage_dim()
             self.data = list(z)
+
+    def to_rotation_matrix(self):
+        # type: () -> np.ndarray
+        real, imag = self.data
+
+        return np.array([[real, -imag], [imag, real]])
+
+    def _apply_to_vector(self, v):
+        # type: (np.ndarray) -> np.ndarray
+        v_reshaped = np.reshape(v, (2, 1))
+        return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
 
     # TODO rotation helpers

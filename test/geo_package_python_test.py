@@ -103,6 +103,22 @@ class GeoPackageTest(unittest.TestCase):
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
+    def test_custom_methods_Rot2(self):
+        # type: () -> None
+        """
+        Tests:
+            geo.Rot2 custom methods
+        """
+        geo_class = geo.Rot2
+        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+
+        tangent_dim = geo_class.tangent_dim()
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+
+        vector = np.random.normal(size=2)
+        matrix = element.to_rotation_matrix()
+        np.testing.assert_almost_equal(matrix @ vector, element * vector)
+
     def test_storage_ops_Pose2(self):
         # type: () -> None
         """
@@ -176,6 +192,22 @@ class GeoPackageTest(unittest.TestCase):
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+
+    def test_custom_methods_Pose2(self):
+        # type: () -> None
+        """
+        Tests:
+            geo.Pose2 custom methods
+        """
+        geo_class = geo.Pose2
+        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+
+        tangent_dim = geo_class.tangent_dim()
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+
+        vector = np.random.normal(size=2)
+        vector_as_element = geo_class(t=vector)
+        np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
     def test_storage_ops_Rot3(self):
         # type: () -> None
@@ -251,6 +283,22 @@ class GeoPackageTest(unittest.TestCase):
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
+    def test_custom_methods_Rot3(self):
+        # type: () -> None
+        """
+        Tests:
+            geo.Rot3 custom methods
+        """
+        geo_class = geo.Rot3
+        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+
+        tangent_dim = geo_class.tangent_dim()
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+
+        vector = np.random.normal(size=3)
+        matrix = element.to_rotation_matrix()
+        np.testing.assert_almost_equal(matrix @ vector, element * vector)
+
     def test_storage_ops_Pose3(self):
         # type: () -> None
         """
@@ -324,6 +372,22 @@ class GeoPackageTest(unittest.TestCase):
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+
+    def test_custom_methods_Pose3(self):
+        # type: () -> None
+        """
+        Tests:
+            geo.Pose3 custom methods
+        """
+        geo_class = geo.Pose3
+        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+
+        tangent_dim = geo_class.tangent_dim()
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+
+        vector = np.random.normal(size=3)
+        vector_as_element = geo_class(t=vector)
+        np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
 
 if __name__ == "__main__":

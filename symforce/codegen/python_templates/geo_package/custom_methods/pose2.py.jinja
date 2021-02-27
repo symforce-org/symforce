@@ -18,3 +18,10 @@
     def position(self):
         # type: () -> np.ndarray
         return np.array(self.data[2:4])
+
+    def _apply_to_vector(self, v):
+        # type: (np.ndarray) -> np.ndarray
+        v_reshaped = np.reshape(v, (2,))
+        return np.reshape(
+            np.dot(self.rotation().to_rotation_matrix(), v_reshaped) + self.position(), v.shape
+        )

@@ -104,6 +104,28 @@ class GeoPackageTest(unittest.TestCase):
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
+    def test_custom_methods_{{ cls.__name__ }}(self):
+        # type: () -> None
+        """
+        Tests:
+            geo.{{ cls.__name__ }} custom methods
+        """
+        geo_class = geo.{{ cls.__name__ }}
+        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+
+        tangent_dim = geo_class.tangent_dim()
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+
+        {% set dim = cls.__name__[-1] %}
+        vector = np.random.normal(size={{ dim }})
+        {% if "Rot" in cls.__name__ %}
+        matrix = element.to_rotation_matrix()
+        np.testing.assert_almost_equal(matrix @ vector, element * vector)
+        {% else %}
+        vector_as_element = geo_class(t=vector)
+        np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
+        {% endif %}
+
     {% endfor %}
 
 if __name__ == "__main__":

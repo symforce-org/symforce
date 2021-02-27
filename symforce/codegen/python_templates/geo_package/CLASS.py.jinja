@@ -122,6 +122,8 @@ class {{ cls.__name__ }}(object):
         # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
         if isinstance(other, {{ cls.__name__ }}):
             return self.compose(other)
+        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
+            return self._apply_to_vector(other)
         else:
             raise NotImplementedError('Cannot compose {} with {}.'.format(type(self), type(other)))
 
