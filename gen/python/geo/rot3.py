@@ -149,4 +149,45 @@ class Rot3(object):
         v_reshaped = np.reshape(v, (3, 1))
         return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
 
+    @classmethod
+    def from_rotation_matrix(cls, R, epsilon=0.0):
+        # type: (np.ndarray, float) -> Rot3
+        assert R.shape == (3, 3)
+        w = np.sqrt(max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
+        x = np.sqrt(max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
+        y = np.sqrt(max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
+        z = np.sqrt(max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
+
+        x = abs(x)
+        if (R[2, 1] - R[1, 2]) < 0:
+            x = -x
+
+        y = abs(y)
+        if (R[0, 2] - R[2, 0]) < 0:
+            y = -y
+
+        z = abs(z)
+        if (R[1, 0] - R[0, 1]) < 0:
+            z = -z
+
+        return Rot3.from_storage([x, y, z, w])
+
+    @classmethod
+    def from_euler_ypr(cls, yaw, pitch, roll):
+        # type: (float, float, float) -> Rot3
+
+        return (
+            Rot3.from_tangent([0, 0, yaw])
+            * Rot3.from_tangent([0, pitch, 0])
+            * Rot3.from_tangent([roll, 0, 0])
+        )
+
+    def to_euler_ypr(self):
+        # type: () -> T.Tuple[float, float, float]
+        x, y, z, w = self.data
+        yaw = np.arctan2(2 * x * y + 2 * w * z, x * x + w * w - z * z - y * y)
+        pitch = -np.arcsin(2 * x * z - 2 * w * y)
+        roll = np.arctan2(2 * y * z + 2 * w * x, z * z - y * y - x * x + w * w)
+        return yaw, pitch, roll
+
     # TODO more rotation helpers
