@@ -184,11 +184,11 @@ class Rot3 {
 
   // Rotation matrix
 
-  Eigen::Matrix<Scalar, 3, 3> Matrix() const {
+  Eigen::Matrix<Scalar, 3, 3> ToRotationMatrix() const {
     return Quaternion().toRotationMatrix();
   }
 
-  static Rot3 FromMatrix(const Eigen::Matrix<Scalar, 3, 3>& mat) {
+  static Rot3 FromRotationMatrix(const Eigen::Matrix<Scalar, 3, 3>& mat) {
     return Rot3(Eigen::Quaternion<Scalar>(mat));
   }
 
@@ -196,7 +196,7 @@ class Rot3 {
   // TODO(hayk): Could codegen this.
 
   Vector3 YawPitchRoll() const {
-    return Matrix().eulerAngles(2, 1, 0);
+    return ToRotationMatrix().eulerAngles(2, 1, 0);
   }
 
   static Rot3 FromYawPitchRoll(const Scalar yaw, const Scalar pitch, const Scalar roll) {

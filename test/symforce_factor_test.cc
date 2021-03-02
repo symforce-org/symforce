@@ -163,7 +163,7 @@ void TestJacobianConstructors() {
       [](const geo::Rot3d& a, const geo::Rot3d& b, Eigen::Matrix<double, 3, 1>* res,
          Eigen::Matrix<double, 3, 6>* jac) {
         (*res) << a.LocalCoordinates(b);
-        (*jac) << a.Matrix(), b.Matrix();  // fake
+        (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
       },
       {{'R', 1}, {'R', 2}});
   std::cout << binary_rot3.Linearize(values) << std::endl;
@@ -192,7 +192,7 @@ void TestJacobianConstructors() {
          Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 6>* jac) {
         assertTrue(epsilon == 1e-9);
         (*res) << a.LocalCoordinates(b, epsilon);
-        (*jac) << a.Matrix(), b.Matrix();  // fake
+        (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
       },
       keys_to_func, keys_to_optimize);
   std::cout << binary_rot3_with_epsilon.Linearize(values) << std::endl;
@@ -427,7 +427,7 @@ void TestHessianConstructors() {
          Eigen::Matrix<double, 3, 6>* jac, Eigen::Matrix<double, 6, 6>* hessian,
          Eigen::Matrix<double, 6, 1>* rhs) {
         (*res) << a.LocalCoordinates(b);
-        (*jac) << a.Matrix(), b.Matrix();  // fake
+        (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
 
         hessian->resize(jac->cols(), jac->cols());
         hessian->triangularView<Eigen::Lower>() =
@@ -468,7 +468,7 @@ void TestHessianConstructors() {
          Eigen::Matrix<double, 6, 6>* hessian, Eigen::Matrix<double, 6, 1>* rhs) {
         assertTrue(epsilon == 1e-9);
         (*res) << a.LocalCoordinates(b, epsilon);
-        (*jac) << a.Matrix(), b.Matrix();  // fake
+        (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
 
         hessian->resize(jac->cols(), jac->cols());
         hessian->triangularView<Eigen::Lower>() =

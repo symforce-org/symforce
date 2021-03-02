@@ -46,7 +46,7 @@ void TestRot3() {
   // Convert to Eigen rotation representations
   const Eigen::Quaternionf quat = rot.Quaternion();
   const Eigen::AngleAxisf aa = rot.AngleAxis();
-  const Eigen::Matrix<float, 3, 3> mat = rot.Matrix();
+  const Eigen::Matrix<float, 3, 3> mat = rot.ToRotationMatrix();
   const Eigen::Matrix<float, 3, 1> ypr = rot.YawPitchRoll();
 
   // Rotate a point
@@ -61,7 +61,7 @@ void TestRot3() {
   // Construct back from Eigen rotation representations
   assertTrue(geo::Rot3f(quat).IsApprox(rot, 1e-6));
   assertTrue(geo::Rot3f(aa).IsApprox(rot, 1e-6));
-  assertTrue(geo::Rot3f::FromMatrix(mat).IsApprox(rot, 1e-6));
+  assertTrue(geo::Rot3f::FromRotationMatrix(mat).IsApprox(rot, 1e-6));
   assertTrue(geo::Rot3f::FromYawPitchRoll(ypr).ToPositiveReal().IsApprox(rot, 1e-6));
 
   // Make a pose
@@ -92,7 +92,7 @@ void TestRot3() {
     const geo::Rot3d exp_log_rot = geo::Rot3d::FromTangent(log);
 
     // The quaternion might not be equal, it might be negated, but the matrix should be equal
-    assertTrue(rot.Matrix().isApprox(exp_log_rot.Matrix(), 1e-9));
+    assertTrue(rot.ToRotationMatrix().isApprox(exp_log_rot.ToRotationMatrix(), 1e-9));
   }
 }
 
