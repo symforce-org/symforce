@@ -2,8 +2,6 @@
   // Handwritten methods for Pose3
   // --------------------------------------------------------------------------
 
-  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
-
   Pose3(const Rot3<Scalar>& rotation, const Vector3& position) {
     data_.template head<4>() = rotation.Data();
     data_.template tail<3>() = position;

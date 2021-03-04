@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import enum
-import inspect
 import os
 import tempfile
 import textwrap
@@ -15,6 +14,7 @@ from symforce import types as T
 from symforce.values import Values
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
+from symforce.codegen import type_helper
 from symforce.codegen import types_package_codegen
 
 Element = T.Any
@@ -142,22 +142,6 @@ class Codegen:
             mode=self.mode,
         )
 
-    @staticmethod
-    def _deduce_input_types(func: T.Callable) -> T.Sequence[ElementOrType]:
-        try:
-            signature = inspect.signature(func)
-        except ValueError:
-            raise ValueError(
-                f"Unable to deduce argument types for {func}."
-                + "  Please either provide input_types or add type information to func"
-            )
-
-        input_types = []
-        for parameter_name, parameter in signature.parameters.items():
-            input_types.append(parameter.annotation)
-
-        return input_types
-
     @classmethod
     def function(
         cls,
@@ -180,8 +164,8 @@ class Codegen:
                 to specify manually, for instance a function add(x: T.Any, y: T.Any) -> T.Any that
                 you want to use to generate add(x: geo.Matrix33, y: geo.Matrix33) -> geo.Matrix33
             mode: Programming language in which the function is to be generated
-            name: Name of the function to be generated; must be set before the function is
-                generated, but need not be set here if it's going to be set by create_with_derivatives
+            name: Name of the function to be generated; if not provided, will be deduced from the
+                function name.  Must be provided if `func` is a lambda
             output_names: Optional if only one object is returned by the function.
                 If multiple objects are returned, they must be named.
             return_key: If multiple objects are returned, the generated function will return
@@ -190,7 +174,13 @@ class Codegen:
         arg_spec = codegen_util.get_function_argspec(func)
 
         if input_types is None:
-            input_types = Codegen._deduce_input_types(func)
+            input_types = type_helper.deduce_input_types(func)
+
+        if name is None:
+            assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
+            name = func.__name__
+            if mode == codegen_util.CodegenMode.CPP:
+                name = python_util.snakecase_to_camelcase(name)
 
         # Formulate symbolic arguments to function
         assert len(arg_spec.args) == len(input_types)

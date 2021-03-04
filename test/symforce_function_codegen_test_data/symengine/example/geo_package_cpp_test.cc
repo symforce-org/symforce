@@ -96,9 +96,20 @@ void TestRot3() {
   }
 }
 
+void TestPose3() {
+  // Make a random pose
+  std::mt19937 gen(42);
+  const geo::Pose3d pose = sym::Random<geo::Pose3d>(gen);
+
+  // Test InverseCompose
+  const Eigen::Vector3d point = sym::RandomNormalVector<double, 3>(gen);
+  assertTrue(pose.InverseCompose(point).isApprox(pose.Inverse() * point, 1e-9));
+}
+
 void TestRot2Pose2() {
-  const geo::Rot2f rot = geo::Rot2f::FromTangent(geo::Rot2f::TangentVec::Random());
-  const Eigen::Vector2f pos = Eigen::Vector2f::Random();
+  std::mt19937 gen(42);
+  const geo::Rot2f rot = sym::Random<geo::Rot2f>(gen);
+  const Eigen::Vector2f pos = sym::RandomNormalVector<float, 2>(gen);
 
   // Cast
   const geo::Rot2d rotd = rot.Cast<double>();
@@ -112,6 +123,10 @@ void TestRot2Pose2() {
 
   const geo::Pose2f pose_inv = pose.Inverse();
   assertTrue(pose_inv.Rotation().IsApprox(rot.Inverse(), 1e-9));
+
+  // Test InverseCompose
+  const Eigen::Vector2f point = sym::RandomNormalVector<float, 2>(gen);
+  assertTrue(pose.InverseCompose(point).isApprox(pose.Inverse() * point, 1e-6));
 }
 
 template <typename T>
@@ -461,5 +476,6 @@ int main(int argc, char** argv) {
   TestMatrixGroupOps<Eigen::Matrix<float, 9, 1>>();
   TestMatrixLieGroupOps<Eigen::Matrix<float, 9, 1>>();
   TestRot3();
+  TestPose3();
   TestRot2Pose2();
 }

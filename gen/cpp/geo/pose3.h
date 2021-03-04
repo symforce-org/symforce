@@ -152,12 +152,13 @@ class Pose3 {
     return data_ == rhs.Data();
   }
 
+  // Matrix type aliases
+  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
+
   // Included from "custom_methods/pose3.h.jinja":
   // --------------------------------------------------------------------------
   // Handwritten methods for Pose3
   // --------------------------------------------------------------------------
-
-  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
 
   Pose3(const Rot3<Scalar>& rotation, const Vector3& position) {
     data_.template head<4>() = rotation.Data();
@@ -176,6 +177,12 @@ class Pose3 {
   Vector3 Compose(const Vector3& point) const {
     return Rotation() * point + Position();
   }
+
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  Vector3 InverseCompose(const Vector3& point) const;
 
  protected:
   DataVec data_;

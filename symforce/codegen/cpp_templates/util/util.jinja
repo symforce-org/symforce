@@ -31,7 +31,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     T_or_value (type or Element):
  #     name (str): Optional name in case type is a generated struct
  #}
-{%- macro format_typename(T_or_value, name="") %}
+{%- macro format_typename(T_or_value, name) %}
     {%- set T = python_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
         Scalar

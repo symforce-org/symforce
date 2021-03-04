@@ -542,6 +542,33 @@ class SymforceCodegenTest(TestCase):
         outputs = Values(x=x)
         self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
 
+    def test_name_deduction(self) -> None:
+        """
+        Tests:
+            Codegen.function must create the right name for Python and C++
+            Codegen.function should assert on trying to deduce the name from a lambda
+        """
+
+        def my_function(x: T.Scalar) -> T.Scalar:
+            return x
+
+        self.assertEqual(
+            Codegen.function(func=my_function, mode=CodegenMode.PYTHON2).name, "my_function"
+        )
+
+        self.assertEqual(
+            Codegen.function(func=my_function, mode=CodegenMode.CPP).name, "MyFunction"
+        )
+
+        # Can't automagically deduce name for lambda
+        self.assertRaises(
+            AssertionError,
+            Codegen.function,
+            func=lambda x: x,
+            input_types=[T.Scalar],
+            mode=CodegenMode.CPP,
+        )
+
     def test_create_with_derivatives(self) -> None:
         """
         Tests:

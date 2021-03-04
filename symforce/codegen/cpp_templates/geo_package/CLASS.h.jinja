@@ -164,10 +164,27 @@ class {{ cls.__name__ }} {
     return data_ == rhs.Data();
   }
 
+  {% if matrix_type_aliases %}
+  // Matrix type aliases
+  {% endif %}
+  {% for alias in matrix_type_aliases.items() %}
+  using {{ alias[1] }} = {{ alias[0] }};
+  {% endfor %}
+
   {% set custom_template_name = "custom_methods/{}.h.jinja".format(cls.__name__.lower()) %}
   // Included from "{{ custom_template_name }}":
   {% include custom_template_name %}
 
+  {% if custom_generated_methods %}
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  {% endif %}
+  {% for spec in custom_generated_methods %}
+  {{ python_util.str_replace_all(util.function_declaration(spec, is_declaration=True), matrix_type_aliases) }} const;
+
+  {% endfor %}
  protected:
   DataVec data_;
 };

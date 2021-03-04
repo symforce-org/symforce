@@ -82,6 +82,22 @@ def camelcase_to_snakecase(s: str) -> str:
     return re.sub(r"(?<!^)(?=[A-Z][a-z])", "_", s).lower()
 
 
+def snakecase_to_camelcase(s: str) -> str:
+    """
+    Convert snake_case -> CamelCase
+    """
+    return s.replace("_", " ").title().replace(" ", "")
+
+
+def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:
+    """
+    Call str.replace(old, new) for every pair (old, new) in replacements
+    """
+    for old, new in replacements.items():
+        s = s.replace(old, new)
+    return s
+
+
 def files_in_dir(dirname: str, relative: bool = False) -> T.Iterator[str]:
     """
     Return a list of files in the given directory.

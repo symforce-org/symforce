@@ -40,7 +40,7 @@ class PosedCamera : public Camera<CameraCalType> {
   Eigen::Matrix<Scalar, 2, 1> PixelFromGlobalPoint(const Eigen::Matrix<Scalar, 3, 1>& point,
                                                    const Scalar epsilon,
                                                    Scalar* const is_valid) const {
-    const Eigen::Matrix<Scalar, 3, 1> camera_point = pose_.Inverse() * point;
+    const Eigen::Matrix<Scalar, 3, 1> camera_point = pose_.InverseCompose(point);
     const Eigen::Matrix<Scalar, 2, 1> pixel =
         Camera<CameraCalType>::PixelFromCameraPoint(camera_point, epsilon, is_valid);
     return pixel;

@@ -150,12 +150,15 @@ class Pose2 {
     return data_ == rhs.Data();
   }
 
+  // Matrix type aliases
+  using Vector2 = Eigen::Matrix<Scalar, 2, 1>;
+
   // Included from "custom_methods/pose2.h.jinja":
   // --------------------------------------------------------------------------
   // Handwritten methods for Pose2
   // --------------------------------------------------------------------------
 
-  Pose2(const Rot2<Scalar>& rotation, const Eigen::Matrix<Scalar, 2, 1>& position) {
+  Pose2(const Rot2<Scalar>& rotation, const Vector2& position) {
     data_.template head<2>() = rotation.Data();
     data_.template tail<2>() = position;
   }
@@ -164,9 +167,20 @@ class Pose2 {
     return Rot2<Scalar>(data_.template head<2>());
   }
 
-  Eigen::Matrix<Scalar, 2, 1> Position() const {
+  Vector2 Position() const {
     return data_.template tail<2>();
   }
+
+  // TODO(hayk): Could codegen this.
+  Vector2 Compose(const Vector2& point) const {
+    return Rotation() * point + Position();
+  }
+
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  Vector2 InverseCompose(const Vector2& point) const;
 
  protected:
   DataVec data_;

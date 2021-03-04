@@ -146,6 +146,29 @@ def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
     data["doc"] = textwrap.dedent(cls.__doc__).strip() if cls.__doc__ else ""
     data["is_lie_group"] = hasattr(cls, "from_tangent")
 
+    matrix_type_aliases = {
+        geo.Rot2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
+        geo.Rot3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
+        geo.Pose2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
+        geo.Pose3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
+    }
+
+    def pose2_inverse_compose(self: geo.Pose2, point: geo.Matrix21) -> geo.Matrix21:
+        return self.inverse() * point
+
+    def pose3_inverse_compose(self: geo.Pose3, point: geo.Matrix31) -> geo.Matrix31:
+        return self.inverse() * point
+
+    custom_generated_methods = {
+        geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, mode=mode)],
+        geo.Rot3: [Codegen.function(func=geo.Rot3.to_rotation_matrix, mode=mode)],
+        geo.Pose2: [Codegen.function(func=pose2_inverse_compose, name="InverseCompose", mode=mode)],
+        geo.Pose3: [Codegen.function(func=pose3_inverse_compose, name="InverseCompose", mode=mode)],
+    }
+
+    data["matrix_type_aliases"] = matrix_type_aliases[cls]
+    data["custom_generated_methods"] = custom_generated_methods[cls]
+
     return data
 
 

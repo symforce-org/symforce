@@ -19,3 +19,27 @@ std::ostream& operator<<(std::ostream& os, const geo::Rot2f& a) {
   os << "<Rot2f " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+// --------------------------------------------------------------------------
+// Custom generated methods
+// --------------------------------------------------------------------------
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 2, 2> geo::Rot2<Scalar>::ToRotationMatrix() const {
+  // Total ops: 1
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 2, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 2, 2> _res;
+
+  _res(0, 0) = _self[0];
+  _res(0, 1) = -_self[1];
+  _res(1, 0) = _self[1];
+  _res(1, 1) = _self[0];
+
+  return _res;
+}
