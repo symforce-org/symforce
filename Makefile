@@ -111,7 +111,7 @@ coverage_clean:
 	rm -rf $(COVERAGE_DIR)
 
 coverage_run:
-	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce,gen --omit=symforce/codegen/python/templates/* $(TEST_CMD)
+	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce,gen $(TEST_CMD)
 
 coverage_html:
 	$(PYTHON) -m coverage html -d $(COVERAGE_DIR) && echo "Coverage report at $(COVERAGE_DIR)/index.html"
@@ -132,10 +132,17 @@ docs_reqs:
 	${PYTHON} -m pip install -r test/requirements.txt
 
 docs_clean:
-	rm -rf $(DOCS_DIR); rm -rf docs/api
+	rm -rf $(DOCS_DIR) docs/api docs/api-cpp docs/api-gen-cpp docs/api-gen-py \
+		$(BUILD_DIR)/doxygen-cpp $(BUILD_DIR)/doxygen-gen-cpp
 
 docs_apidoc:
+	mkdir -p $(BUILD_DIR)
 	sphinx-apidoc --separate --module-first -o docs/api ./symforce
+	sphinx-apidoc --separate --module-first -o docs/api-gen-py ./gen/python
+	doxygen docs/Doxyfile-cpp
+	doxygen docs/Doxyfile-gen-cpp
+	$(PYTHON) -m breathe.apidoc -o docs/api-cpp --project api-cpp $(BUILD_DIR)/doxygen-cpp/xml
+	$(PYTHON) -m breathe.apidoc -o docs/api-gen-cpp --project api-gen-cpp $(BUILD_DIR)/doxygen-gen-cpp/xml
 
 docs_html:
 	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j4

@@ -1,49 +1,49 @@
 Development
 ===========
-Guide for how to build, configure, and develop symforce.
+Guide for how to build, configure, and develop SymForce.
 
 .. contents:: :local:
 
 *************************************************
 Organization
 *************************************************
-Symforce aims to follow Python `standards <https://docs.python-guide.org/writing/structure/>`_. The core symforce package lives in the equivalently named subdirectory at the top level. Tests, documentation, etc live at the top level outside of the core package.
-To import symforce add the top level to the Python path.
+SymForce aims to follow Python `standards <https://docs.python-guide.org/writing/structure/>`_. The core ``symforce`` package lives in the equivalently named subdirectory at the top level. Tests, documentation, etc live at the top level outside of the core package.
+To import ``symforce`` add the top level to the Python path.
 
 See the :ref:`module reference <api-reference>` for the core package structure.
 
 *************************************************
 Build
 *************************************************
-Symforce is primarily written in Python, aimed to be 2.7+ compatible. It has a top level Makefile to execute high level commands:
+SymForce is primarily written in Python, aimed to be 3.8+ compatible. It has a top level Makefile to execute high level commands:
 
-+---------------------------------------+-------------------------+
-| Install requirements                  | ``make all_reqs``       |
-+---------------------------------------+-------------------------+
-| Run tests                             | ``make test``           |
-+---------------------------------------+-------------------------+
-| Run tests which update generated code | ``make test_update``    |
-+---------------------------------------+-------------------------+
-| Run tests and open coverage report    | ``make coverage_open``  |
-+---------------------------------------+-------------------------+
-| Build docs                            | ``make docs``           |
-+---------------------------------------+-------------------------+
-| Build docs + open in browser          | ``make docs_open``      |
-+---------------------------------------+-------------------------+
-| Launch Jupyter server                 | ``make notebook``       |
-+---------------------------------------+-------------------------+
-| Launch Jupyter server + browser       | ``make notebook_open``  |
-+---------------------------------------+-------------------------+
-| Run the code formatter (black)        | ``make format``         |
-+---------------------------------------+-------------------------+
-| Check types with mypy                 | ``make check_types``    |
-+---------------------------------------+-------------------------+
-| Check formatting and types            | ``make lint``           |
-+---------------------------------------+-------------------------+
-| Clean all build products              | ``make clean``          |
-+---------------------------------------+-------------------------+
-
-Note, docs may require a manual `pandoc <https://pandoc.org/>`_ install - ``sudo apt-get pandoc`` or ``brew install pandoc``.
++----------------------------------------------+--------------------------+
+| Install requirements                         | ``make all_reqs``        |
++----------------------------------------------+--------------------------+
+| Run tests                                    | ``make test``            |
++----------------------------------------------+--------------------------+
+| Run tests which update (most) generated code | ``make test_update``     |
++----------------------------------------------+--------------------------+
+| Run tests which update all generated code    | ``make test_update_all`` |
++----------------------------------------------+--------------------------+
+| Run tests and open coverage report           | ``make coverage_open``   |
++----------------------------------------------+--------------------------+
+| Build docs                                   | ``make docs``            |
++----------------------------------------------+--------------------------+
+| Build docs + open in browser                 | ``make docs_open``       |
++----------------------------------------------+--------------------------+
+| Launch Jupyter server                        | ``make notebook``        |
++----------------------------------------------+--------------------------+
+| Launch Jupyter server + browser              | ``make notebook_open``   |
++----------------------------------------------+--------------------------+
+| Run the code formatter (black, clang-format) | ``make format``          |
++----------------------------------------------+--------------------------+
+| Check types with mypy                        | ``make check_types``     |
++----------------------------------------------+--------------------------+
+| Check formatting and types                   | ``make lint``            |
++----------------------------------------------+--------------------------+
+| Clean all build products                     | ``make clean``           |
++----------------------------------------------+--------------------------+
 
 *************************************************
 Documentation
@@ -55,7 +55,7 @@ There are sample `Jupyter <https://jupyter.org/>`_ notebooks in ``notebooks``, s
 *************************************************
 Logging
 *************************************************
-Symforce uses the `logging <https://docs.python.org/2/library/logging.html>`_ module. You can import and use the logger like this:
+SymForce uses the `logging <https://docs.python.org/2/library/logging.html>`_ module. You can import and use the logger like this:
 
 >>> from symforce import logger
 >>> logger.warning('houston, we have a problem')
@@ -66,7 +66,7 @@ You can configure the log level using :func:`symforce.set_log_level()` or by set
 *************************************************
 Testing and Coverage
 *************************************************
-Symforce is heavily tested, targeting close to 100% code coverage.
+SymForce is heavily tested, targeting close to 100% code coverage.
 Tests live in ``test`` and use `unittest <https://docs.python.org/2/library/unittest.html>`_. Additionally, `coverage.py <https://coverage.readthedocs.io/en/coverage-5.0.4/>`_ is used to run tests while measuring code coverage. The generated coverage report also provides a great view into what methods need to be tested and what code is potentially unused.
 
 | Run all tests: ``make test``
@@ -88,13 +88,13 @@ Running ``make format`` will format the entire codebase. It's recommended to dev
 *************************************************
 Templates
 *************************************************
-Much of the core functionality of symforce is in generating code using the `Jinja <https://jinja.palletsprojects.com/en/2.11.x/>`_ template language. It's relatively simple and easy to use - you pass it a template file in any language and a python dictionary of data, and it spits out the rendered code.
+Much of the core functionality of SymForce is in generating code using the `Jinja <https://jinja.palletsprojects.com/en/2.11.x/>`_ template language. It's relatively simple and easy to use - you pass it a template file in any language and a python dictionary of data, and it spits out the rendered code.
 
 For example template files, see ``symforce/codegen/cpp_templates``.
 
 *************************************************
 Symbolic Backends
 *************************************************
-Symforce uses the `Sympy <https://www.sympy.org/en/index.html>`_ API, but supports two backend implementations of it. The Sympy backend is pure Python, whereas the `SymEngine <https://github.com/symengine/symengine>`_ backend is wrapped C++. It can be 100-200 times faster for many operations, but is less fully featured and requires a C++ build.
+SymForce uses the `SymPy <https://www.sympy.org/en/index.html>`_ API, but supports two backend implementations of it. The SymPy backend is pure Python, whereas the `SymEngine <https://github.com/symengine/symengine>`_ backend is wrapped C++. It can be 100-200 times faster for many operations, but is less fully featured and requires a C++ build.
 
-To set the backend, you can either use :func:`symforce.set_backend()` before any other imports, or use the ``SYMFORCE_BACKEND`` environment variable with the options ``sympy`` or ``symengine``. By default symengine will be used if found, otherwise sympy.
+To set the backend, you can either use :func:`symforce.set_backend()` before any other imports, or use the ``SYMFORCE_BACKEND`` environment variable with the options ``sympy`` or ``symengine``. By default SymEngine will be used if found, otherwise SymPy.

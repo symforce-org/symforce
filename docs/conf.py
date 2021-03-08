@@ -49,6 +49,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "nbsphinx",
+    "breathe",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -135,7 +136,7 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["static"]
 
-# html_favicon = 'favicon.png'
+html_favicon = "static/favicon.png"
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -223,3 +224,12 @@ epub_exclude_files = ["search.html"]
 
 
 # -- Extension configuration -------------------------------------------------
+
+# -- Breathe configuration ---------------------------------------------------
+
+breathe_projects = {
+    "api-cpp": "../build/doxygen-cpp/xml",
+    "api-gen-cpp": "../build/doxygen-gen-cpp/xml",
+}
+breathe_default_project = "api-cpp"
+breathe_default_members = ("members", "undoc-members")

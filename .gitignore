@@ -72,6 +72,9 @@ instance/
 # TODO(hayk): Would be nice if this were in build but still picked up by sphinx-build.
 # A symlink could do this but also adds complexity.
 docs/api
+docs/api-gen-py
+docs/api-gen-cpp
+docs/api-cpp
 
 # PyBuilder
 target/

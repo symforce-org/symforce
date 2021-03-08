@@ -21,10 +21,10 @@ Guides
    notebooks/optimization_tutorial
 
 :doc:`development`
-    How to build, configure, and develop.
+    How to build, configure, and develop
 
 :doc:`notebooks/sympy_tutorial`
-    Basic introduction to sympy
+    Basic introduction to SymPy
 
 :doc:`notebooks/geometry_tutorial`
     Introductory guide to doing math and geometry
@@ -48,6 +48,34 @@ Guides
 .. toctree::
     :maxdepth: -1
     :titlesonly:
-    :caption: Module Reference
+    :caption: symforce Reference
 
     api/symforce
+
+.. _genpy-api-reference:
+.. toctree::
+    :maxdepth: -1
+    :titlesonly:
+    :caption: sym Python Reference
+
+    api-gen-py/sym
+
+.. _gencpp-api-reference:
+.. toctree::
+    :maxdepth: -1
+    :titlesonly:
+    :caption: sym C++ Reference
+
+    api-gen-cpp/classlist
+
+    api-gen-cpp/filelist
+
+.. _cpp-api-reference:
+.. toctree::
+    :maxdepth: -1
+    :titlesonly:
+    :caption: opt C++ Reference
+
+    api-cpp/classlist
+
+    api-cpp/filelist
