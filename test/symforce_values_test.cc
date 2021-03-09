@@ -29,7 +29,7 @@ void TestValues() {
 
   // Add a key
   sym::Key R1_key('R', 1);
-  geo::Rot3<Scalar> R1 = geo::Rot3<Scalar>::FromYawPitchRoll(0.5, -0.2, 0.1);
+  sym::Rot3<Scalar> R1 = sym::Rot3<Scalar>::FromYawPitchRoll(0.5, -0.2, 0.1);
   const bool is_new = v.Set(R1_key, R1);
   assertTrue(is_new);
   assertTrue(v.NumEntries() == 1);
@@ -37,7 +37,7 @@ void TestValues() {
   assertTrue(v.Items().size() == 1);
   assertTrue(v.Data().size() == R1.StorageDim());
   assertTrue(v.Has(R1_key));
-  geo::Rot3<Scalar> R1_fetch = v.template At<geo::Rot3<Scalar>>(R1_key);
+  sym::Rot3<Scalar> R1_fetch = v.template At<sym::Rot3<Scalar>>(R1_key);
   assertTrue(R1 == R1_fetch);
 
   // Add a second
@@ -51,12 +51,12 @@ void TestValues() {
   assertTrue(s == v.template At<Scalar>(z1_key));
 
   // Modify a key
-  const geo::Rot3<Scalar> R1_new = geo::Rot3<Scalar>::FromTangent({1.2, 0.2, 0.0});
+  const sym::Rot3<Scalar> R1_new = sym::Rot3<Scalar>::FromTangent({1.2, 0.2, 0.0});
   const bool is_new2 = v.Set(R1_key, R1_new);
   assertTrue(!is_new2);
   assertTrue(v.NumEntries() == 2);
   assertTrue(v.Data().size() == R1.StorageDim() + 1);
-  assertTrue(R1_new == v.template At<geo::Rot3<Scalar>>(R1_key));
+  assertTrue(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
 
   // Remove nothing
   bool remove_nothing = v.Remove(sym::Key('f'));
@@ -89,7 +89,7 @@ void TestValues() {
   assertTrue(v.NumEntries() == 7);
   assertTrue(v.Data().size() == index_1.storage_dim);
   const sym::index_t index_2 = v.CreateIndex(v.Keys());
-  assertTrue(R1_new == v.template At<geo::Rot3<Scalar>>(R1_key));
+  assertTrue(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
   assertTrue(Scalar(4.2) == v.template At<Scalar>({'f', 1}));
   assertTrue(index_2.storage_dim == index_1.storage_dim);
   assertTrue(index_2.tangent_dim == index_1.tangent_dim);
@@ -127,9 +127,9 @@ void TestImplicitConstruction() {
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
   values.Set<double>('z', -3.0);
-  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
-  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
-  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
+  values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
+  values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
   std::cout << values << std::endl;
 }
 
@@ -142,7 +142,7 @@ void TestInitializerListConstruction() {
   v1.Set<double>('z', -3.0);
 
   sym::Valuesd v2;
-  v2.Set<geo::Rot3d>('R', geo::Rot3d::Identity());
+  v2.Set<sym::Rot3d>('R', sym::Rot3d::Identity());
 
   // construct v3 by merging v1 and v2
   sym::Valuesd v3({v1, v2});
@@ -151,7 +151,7 @@ void TestInitializerListConstruction() {
   assertTrue(v3.At<double>('x') == 1.0);
   assertTrue(v3.At<double>('y') == 2.0);
   assertTrue(v3.At<double>('z') == -3.0);
-  assertTrue(v3.At<geo::Rot3d>('R') == geo::Rot3d::Identity());
+  assertTrue(v3.At<sym::Rot3d>('R') == sym::Rot3d::Identity());
 
   // test preserving key ordering
   const auto v3_keys = v3.Keys();
@@ -169,9 +169,9 @@ void TestIndexedUpdate() {
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
   values.Set<double>('z', -3.0);
-  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
-  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
-  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
+  values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
+  values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
 
   // Create an index for a subset of keys
   const sym::index_t index = values.CreateIndex({'x', 'y', {'R', 1}});
@@ -181,7 +181,7 @@ void TestIndexedUpdate() {
 
   // Modify some keys in the original
   values.Set<double>('x', 7.7);
-  values.Set<geo::Rot3d>({'R', 1}, values.At<geo::Rot3d>({'R', 2}));
+  values.Set<sym::Rot3d>({'R', 1}, values.At<sym::Rot3d>({'R', 2}));
 
   assertTrue(values.At<double>('x') == 7.7);
   assertTrue(values2.At<double>('x') == 1.0);
@@ -200,9 +200,9 @@ void TestKeyUpdate() {
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
   values.Set<double>('z', -3.0);
-  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
-  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
-  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
+  values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
+  values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
 
   // Create an index for a subset of keys (random order should be supported)
   const std::vector<sym::Key> keys = {{'R', 1}, 'x', 'y'};
@@ -218,7 +218,7 @@ void TestKeyUpdate() {
   // Test for update
   assertTrue(values2.At<double>('x') == 1.0);
   assertTrue(values2.At<double>('y') == 2.0);
-  assertTrue(values2.At<geo::Rot3d>({'R', 1}) == geo::Rot3d::Identity());
+  assertTrue(values2.At<sym::Rot3d>({'R', 1}) == sym::Rot3d::Identity());
 
   // Test for not clobbering other field
   assertTrue(values2.At<double>('z') == 10.0);
@@ -239,7 +239,7 @@ void TestLieGroupOps() {
 
   // Create a values object that stores an identity rotation, and an index for it
   sym::Values<Scalar> v1;
-  const geo::Rot3<Scalar> rot = geo::Rot3<Scalar>::Identity();
+  const sym::Rot3<Scalar> rot = sym::Rot3<Scalar>::Identity();
   v1.Set('R', rot);
   const sym::index_t index = v1.CreateIndex({'R'});
 
@@ -249,13 +249,13 @@ void TestLieGroupOps() {
     v1.Set('R', rot);
     const sym::Values<Scalar> v2 = v1;
 
-    const geo::Rot3<Scalar> random_rot = geo::Rot3<Scalar>::Random(gen);
+    const sym::Rot3<Scalar> random_rot = sym::Rot3<Scalar>::Random(gen);
     const Eigen::Matrix<Scalar, 3, 1> tangent_vec =
-        geo::LieGroupOps<geo::Rot3<Scalar>>::ToTangent(random_rot, epsilon);
+        sym::LieGroupOps<sym::Rot3<Scalar>>::ToTangent(random_rot, epsilon);
 
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
-    const geo::Rot3<Scalar> retracted_rot = v1.template At<geo::Rot3<Scalar>>('R');
+    const sym::Rot3<Scalar> retracted_rot = v1.template At<sym::Rot3<Scalar>>('R');
     assertTrue(random_rot.IsApprox(retracted_rot, 1e-6));
 
     // test local coordinates
@@ -269,7 +269,7 @@ void TestMoveOperator() {
   sym::Valuesf values;
   values.Set<float>('x', 1.0f);
   values.Set<float>('y', 2.0f);
-  values.Set<geo::Rot3f>({'R', 1}, geo::Rot3f::Identity());
+  values.Set<sym::Rot3f>({'R', 1}, sym::Rot3f::Identity());
   sym::Valuesf values2 = std::move(values);
   assertTrue(values2.At<float>('x') == 1.0f);
 }

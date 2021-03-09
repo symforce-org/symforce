@@ -4,5 +4,5 @@
 #include "./storage_ops.h"
 
 // Explicit instantiation
-template struct geo::scalar::StorageOps<double>;
-template struct geo::scalar::StorageOps<float>;
+template struct sym::scalar::StorageOps<double>;
+template struct sym::scalar::StorageOps<float>;

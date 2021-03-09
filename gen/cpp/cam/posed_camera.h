@@ -7,7 +7,7 @@
 #include <cam/camera.h>
 #include <geo/pose3.h>
 
-namespace cam {
+namespace sym {
 
 /**
  * Camera with a given pose, camera calibration, and an optionally specified image size.
@@ -19,7 +19,7 @@ class PosedCamera : public Camera<CameraCalType> {
  public:
   using Scalar = typename CameraCalType::Scalar;
 
-  PosedCamera(const geo::Pose3<Scalar>& pose, const CameraCalType& calibration,
+  PosedCamera(const sym::Pose3<Scalar>& pose, const CameraCalType& calibration,
               const Eigen::Vector2i& image_size = Eigen::Vector2i(-1, -1))
       : Camera<CameraCalType>(calibration, image_size), pose_(pose) {}
 
@@ -92,7 +92,7 @@ class PosedCamera : public Camera<CameraCalType> {
         Camera<CameraCalType>::CameraRayFromPixel(pixel, epsilon, &is_valid_ray);
     const Eigen::Matrix<Scalar, 3, 1> camera_point = camera_ray.normalized();
 
-    const geo::Pose3<Scalar>& target_T_self = target_cam.Pose().Inverse() * Pose();
+    const sym::Pose3<Scalar>& target_T_self = target_cam.Pose().Inverse() * Pose();
     const Eigen::Matrix<Scalar, 3, 1> transformed_point =
         target_T_self.Rotation() * camera_point + (target_T_self.Position() * inverse_range);
 
@@ -104,12 +104,12 @@ class PosedCamera : public Camera<CameraCalType> {
     return target_pixel;
   }
 
-  const geo::Pose3<Scalar>& Pose() const {
+  const sym::Pose3<Scalar>& Pose() const {
     return pose_;
   }
 
  private:
-  geo::Pose3<Scalar> pose_;
+  sym::Pose3<Scalar> pose_;
 };
 
-}  // namespace cam
+}  // namespace sym

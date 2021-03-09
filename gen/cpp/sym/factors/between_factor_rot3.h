@@ -25,8 +25,8 @@ namespace sym {
  *
  */
 template <typename Scalar>
-void BetweenFactorRot3(const geo::Rot3<Scalar>& a, const geo::Rot3<Scalar>& b,
-                       const geo::Rot3<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info,
+void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
+                       const sym::Rot3<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info,
                        const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                        Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
   // Total ops: 987

@@ -8,7 +8,7 @@
 
 #include "../lie_group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace scalar {
 
 /**
@@ -44,4 +44,4 @@ struct LieGroupOps<double> : public scalar::LieGroupOps<double> {};
 template <>
 struct LieGroupOps<float> : public scalar::LieGroupOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

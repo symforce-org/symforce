@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-namespace cam {
+namespace sym {
 
 /**
  * Camera with a given camera calibration and an optionally specified image size.
@@ -102,4 +102,4 @@ class Camera {
   Eigen::Matrix<int, 2, 1> image_size_;
 };
 
-}  // namespace cam
+}  // namespace sym

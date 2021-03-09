@@ -4,7 +4,7 @@
 
 #include "./group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace pose2 {
 
 /**
@@ -17,7 +17,7 @@ namespace pose2 {
  *
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::Identity() {
+sym::Pose2<Scalar> GroupOps<Scalar>::Identity() {
   // Total ops: 0
 
   // Input arrays
@@ -32,7 +32,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Identity() {
   _res[2] = 0;
   _res[3] = 0;
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 /**
@@ -47,7 +47,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Identity() {
  *
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose2<Scalar>& a) {
+sym::Pose2<Scalar> GroupOps<Scalar>::Inverse(const sym::Pose2<Scalar>& a) {
   // Total ops: 16
 
   // Input arrays
@@ -66,7 +66,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose2<Scalar>& a) {
   _res[2] = -_a[2] * _tmp1 - _a[3] * _tmp2;
   _res[3] = _a[2] * _tmp2 - _a[3] * _tmp1;
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 /**
@@ -82,8 +82,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Inverse(const geo::Pose2<Scalar>& a) {
  *
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::Compose(const geo::Pose2<Scalar>& a,
-                                             const geo::Pose2<Scalar>& b) {
+sym::Pose2<Scalar> GroupOps<Scalar>::Compose(const sym::Pose2<Scalar>& a,
+                                             const sym::Pose2<Scalar>& b) {
   // Total ops: 16
 
   // Input arrays
@@ -100,7 +100,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Compose(const geo::Pose2<Scalar>& a,
   _res[2] = _a[0] * _b[2] - _a[1] * _b[3] + _a[2];
   _res[3] = _a[0] * _b[3] + _a[1] * _b[2] + _a[3];
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 /**
@@ -118,8 +118,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Compose(const geo::Pose2<Scalar>& a,
  *
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::Between(const geo::Pose2<Scalar>& a,
-                                             const geo::Pose2<Scalar>& b) {
+sym::Pose2<Scalar> GroupOps<Scalar>::Between(const sym::Pose2<Scalar>& a,
+                                             const sym::Pose2<Scalar>& b) {
   // Total ops: 33
 
   // Input arrays
@@ -141,7 +141,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Between(const geo::Pose2<Scalar>& a,
   _res[2] = -_a[0] * _tmp4 - _a[1] * _tmp3 + _b[2] * _tmp2 + _b[3] * _tmp1;
   _res[3] = -_a[0] * _tmp3 + _a[1] * _tmp4 - _b[2] * _tmp1 + _b[3] * _tmp2;
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 /**
@@ -156,8 +156,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::Between(const geo::Pose2<Scalar>& a,
  *     geo.Matrix: Jacobian for arg 0 (a)
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
-    const geo::Pose2<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
+sym::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
+    const sym::Pose2<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
   // Total ops: 97
 
   // Input arrays
@@ -214,7 +214,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
                      _a[1] * (_a[1] * _tmp1 * _tmp23 + _tmp5 * (-_tmp20 + _tmp3));
   }
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 /**
@@ -231,8 +231,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
  *     geo.Matrix: Jacobian for arg 1 (b)
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
-    const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b,
+sym::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
+    const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
   // Total ops: 65
 
@@ -292,7 +292,7 @@ geo::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
     _res_D_b(2, 2) = _tmp12;
   }
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 /**
@@ -311,8 +311,8 @@ geo::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
  *     geo.Matrix: Jacobian for arg 1 (b)
  */
 template <typename Scalar>
-geo::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
-    const geo::Pose2<Scalar>& a, const geo::Pose2<Scalar>& b,
+sym::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
+    const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
   // Total ops: 173
 
@@ -404,12 +404,12 @@ geo::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
     _res_D_b(2, 2) = _tmp40;
   }
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 }  // namespace pose2
-}  // namespace geo
+}  // namespace sym
 
 // Explicit instantiation
-template struct geo::pose2::GroupOps<double>;
-template struct geo::pose2::GroupOps<float>;
+template struct sym::pose2::GroupOps<double>;
+template struct sym::pose2::GroupOps<float>;

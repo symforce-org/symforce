@@ -8,7 +8,7 @@
 
 #include <cam/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 
-namespace cam {
+namespace sym {
 namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 /**
@@ -20,19 +20,19 @@ struct StorageOps {
     return {{ ops.StorageOps.storage_dim(cls) }};
   }
 
-  static void ToStorage(const cam::{{ cls.__name__ }}<Scalar>& a, Scalar* const vec);
-  static cam::{{ cls.__name__ }}<Scalar> FromStorage(const Scalar* const vec);
+  static void ToStorage(const sym::{{ cls.__name__ }}<Scalar>& a, Scalar* const vec);
+  static sym::{{ cls.__name__ }}<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
-}  // namespace cam
+}  // namespace sym
 
 // Wrapper to specialize the public concept
-namespace geo {
+namespace sym {
 
 {% for Scalar in scalar_types %}
 template <>
-struct StorageOps<cam::{{ cls.__name__ }}<{{ Scalar }}>> : public cam::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}> {};
+struct StorageOps<sym::{{ cls.__name__ }}<{{ Scalar }}>> : public sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}> {};
 {% endfor %}
 
-}  // namespace geo
+}  // namespace sym

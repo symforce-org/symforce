@@ -4,24 +4,24 @@
 
 #include "./storage_ops.h"
 
-namespace geo {
+namespace sym {
 namespace rot2 {
 
 template <typename ScalarType>
-void StorageOps<ScalarType>::ToStorage(const geo::Rot2<ScalarType>& a, ScalarType* out) {
+void StorageOps<ScalarType>::ToStorage(const sym::Rot2<ScalarType>& a, ScalarType* out) {
   assert(out != nullptr);
   std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
 template <typename ScalarType>
-geo::Rot2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+sym::Rot2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return geo::Rot2<ScalarType>(Eigen::Map<const typename geo::Rot2<ScalarType>::DataVec>(data));
+  return sym::Rot2<ScalarType>(Eigen::Map<const typename sym::Rot2<ScalarType>::DataVec>(data));
 }
 
 }  // namespace rot2
-}  // namespace geo
+}  // namespace sym
 
 // Explicit instantiation
-template struct geo::rot2::StorageOps<double>;
-template struct geo::rot2::StorageOps<float>;
+template struct sym::rot2::StorageOps<double>;
+template struct sym::rot2::StorageOps<float>;

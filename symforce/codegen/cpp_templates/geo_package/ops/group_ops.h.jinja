@@ -5,7 +5,7 @@
 
 #include "./lie_group_ops.h"
 
-namespace geo {
+namespace sym {
 
 /**
  * C++ GroupOps concept, specialized per type.
@@ -18,7 +18,7 @@ struct GroupOps {
   static T Compose(const T& a, const T& b);
   static T Between(const T& a, const T& b);
 
-  using SelfJacobian = typename geo::LieGroupOps<T>::SelfJacobian;
+  using SelfJacobian = typename sym::LieGroupOps<T>::SelfJacobian;
 
   static T InverseWithJacobian(const T& a, SelfJacobian* const res_D_a);
 
@@ -29,7 +29,7 @@ struct GroupOps {
                                 SelfJacobian* const res_D_b);
 };
 
-}  // namespace geo
+}  // namespace sym
 
 #include "./scalar/group_ops.h"
 #include "./matrix/group_ops.h"

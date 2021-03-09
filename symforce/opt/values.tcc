@@ -17,7 +17,7 @@ T Values<Scalar>::At(const index_entry_t& entry) const {
 
   // Construct the object
 #if 1
-  return geo::StorageOps<T>::FromStorage(data_.data() + entry.offset);
+  return sym::StorageOps<T>::FromStorage(data_.data() + entry.offset);
 #else
   // NOTE(hayk): It could be more efficient to reinterpret_cast here, and we could provide
   // mutable references if desired. But also technically undefined?
@@ -34,7 +34,7 @@ T Values<Scalar>::At(const Key& key) const {
 template <typename Scalar>
 template <typename T>
 bool Values<Scalar>::Set(const Key& key, const T& value) {
-  static_assert(std::is_same<Scalar, typename geo::StorageOps<T>::Scalar>::value,
+  static_assert(std::is_same<Scalar, typename sym::StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
   const type_t type = GetType<Scalar, T>();
   bool is_new = false;
@@ -51,8 +51,8 @@ bool Values<Scalar>::Set(const Key& key, const T& value) {
     entry.key = key.GetLcmType();
     entry.type = type;
     entry.offset = static_cast<int32_t>(data_.size());
-    entry.storage_dim = geo::StorageOps<T>::StorageDim();
-    entry.tangent_dim = geo::LieGroupOps<T>::TangentDim();
+    entry.storage_dim = sym::StorageOps<T>::StorageDim();
+    entry.tangent_dim = sym::LieGroupOps<T>::TangentDim();
 
     // Extend end of data
     data_.insert(data_.end(), entry.storage_dim, 0);
@@ -64,18 +64,18 @@ bool Values<Scalar>::Set(const Key& key, const T& value) {
   }
 
   // Save the value
-  geo::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
+  sym::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
   return is_new;
 }
 
 template <typename Scalar>
 template <typename T>
 void Values<Scalar>::Set(const index_entry_t& entry, const T& value) {
-  static_assert(std::is_same<Scalar, typename geo::StorageOps<T>::Scalar>::value,
+  static_assert(std::is_same<Scalar, typename sym::StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
   SYM_ASSERT((entry.type == GetType<Scalar, T>()));
   SYM_ASSERT((entry.offset + entry.storage_dim < data_.size()));
-  geo::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
+  sym::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }
 
 // ----------------------------------------------------------------------------

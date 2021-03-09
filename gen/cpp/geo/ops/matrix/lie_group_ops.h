@@ -7,7 +7,7 @@
 
 #include "../lie_group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace matrix {
 
 /**
@@ -91,4 +91,4 @@ template <int Rows, int Cols>
 struct LieGroupOps<Eigen::Matrix<float, Rows, Cols>>
     : public matrix::LieGroupOps<float, Rows, Cols> {};
 
-}  // namespace geo
+}  // namespace sym

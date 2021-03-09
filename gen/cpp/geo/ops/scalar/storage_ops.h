@@ -8,7 +8,7 @@
 
 #include "../storage_ops.h"
 
-namespace geo {
+namespace sym {
 namespace scalar {
 
 /**
@@ -41,4 +41,4 @@ struct StorageOps<double> : public scalar::StorageOps<double> {};
 template <>
 struct StorageOps<float> : public scalar::StorageOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

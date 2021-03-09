@@ -178,12 +178,12 @@ void Values<Scalar>::Update(const index_t& index_this, const index_t& index_othe
 /**
  * Polymorphic helper to apply a retraction.
  */
-template <typename T, typename Scalar = typename geo::StorageOps<T>::Scalar>
+template <typename T, typename Scalar = typename sym::StorageOps<T>::Scalar>
 void RetractHelper(const Scalar* tangent_data, const Scalar epsilon, Scalar* t_ptr) {
-  const T t_in = geo::StorageOps<T>::FromStorage(t_ptr);
-  const typename geo::LieGroupOps<T>::TangentVec tangent_vec(tangent_data);
-  const T t_out = geo::LieGroupOps<T>::Retract(t_in, tangent_vec, epsilon);
-  geo::StorageOps<T>::ToStorage(t_out, t_ptr);
+  const T t_in = sym::StorageOps<T>::FromStorage(t_ptr);
+  const typename sym::LieGroupOps<T>::TangentVec tangent_vec(tangent_data);
+  const T t_out = sym::LieGroupOps<T>::Retract(t_in, tangent_vec, epsilon);
+  sym::StorageOps<T>::ToStorage(t_out, t_ptr);
 }
 BY_TYPE_HELPER(RetractByType, RetractHelper);
 
@@ -200,15 +200,15 @@ void Values<Scalar>::Retract(const index_t& index, const Scalar* delta, const Sc
 /**
  * Polymorphic helper to compute local coordinates
  */
-template <typename T, typename Scalar = typename geo::StorageOps<T>::Scalar>
+template <typename T, typename Scalar = typename sym::StorageOps<T>::Scalar>
 void LocalCoordinatesHelper(const Scalar* storage_this, const Scalar* storage_others,
                             Scalar* tangent_out, const Scalar epsilon) {
-  const T t1 = geo::StorageOps<T>::FromStorage(storage_this);
-  const T t2 = geo::StorageOps<T>::FromStorage(storage_others);
-  const typename geo::LieGroupOps<T>::TangentVec tangent_vec =
-      geo::LieGroupOps<T>::LocalCoordinates(t2, t1, epsilon);
+  const T t1 = sym::StorageOps<T>::FromStorage(storage_this);
+  const T t2 = sym::StorageOps<T>::FromStorage(storage_others);
+  const typename sym::LieGroupOps<T>::TangentVec tangent_vec =
+      sym::LieGroupOps<T>::LocalCoordinates(t2, t1, epsilon);
   // TODO(alvin): can we avoid this copy?
-  std::copy_n(tangent_vec.data(), geo::LieGroupOps<T>::TangentDim(), tangent_out);
+  std::copy_n(tangent_vec.data(), sym::LieGroupOps<T>::TangentDim(), tangent_out);
 }
 BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper);
 
@@ -229,8 +229,8 @@ VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, c
 }
 
 template <typename T>
-void PrintHelper(std::ostream& os, const typename geo::StorageOps<T>::Scalar* data_ptr) {
-  os << geo::StorageOps<T>::FromStorage(data_ptr);
+void PrintHelper(std::ostream& os, const typename sym::StorageOps<T>::Scalar* data_ptr) {
+  os << sym::StorageOps<T>::FromStorage(data_ptr);
 }
 BY_TYPE_HELPER(PrintByType, PrintHelper);
 

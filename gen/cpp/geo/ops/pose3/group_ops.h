@@ -6,7 +6,7 @@
 #include <Eigen/Dense>
 #include <geo/pose3.h>
 
-namespace geo {
+namespace sym {
 namespace pose3 {
 
 /**
@@ -14,21 +14,21 @@ namespace pose3 {
  */
 template <typename Scalar>
 struct GroupOps {
-  using SelfJacobian = Eigen::Matrix<Scalar, geo::LieGroupOps<Pose3<Scalar>>::TangentDim(),
-                                     geo::LieGroupOps<Pose3<Scalar>>::TangentDim()>;
+  using SelfJacobian = Eigen::Matrix<Scalar, sym::LieGroupOps<Pose3<Scalar>>::TangentDim(),
+                                     sym::LieGroupOps<Pose3<Scalar>>::TangentDim()>;
 
-  static geo::Pose3<Scalar> Identity();
-  static geo::Pose3<Scalar> Inverse(const geo::Pose3<Scalar>& a);
-  static geo::Pose3<Scalar> Compose(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b);
-  static geo::Pose3<Scalar> Between(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b);
-  static geo::Pose3<Scalar> InverseWithJacobian(
-      const geo::Pose3<Scalar>& a, Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr);
-  static geo::Pose3<Scalar> ComposeWithJacobians(
-      const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b,
+  static sym::Pose3<Scalar> Identity();
+  static sym::Pose3<Scalar> Inverse(const sym::Pose3<Scalar>& a);
+  static sym::Pose3<Scalar> Compose(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b);
+  static sym::Pose3<Scalar> Between(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b);
+  static sym::Pose3<Scalar> InverseWithJacobian(
+      const sym::Pose3<Scalar>& a, Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr);
+  static sym::Pose3<Scalar> ComposeWithJacobians(
+      const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
       Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr,
       Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr);
-  static geo::Pose3<Scalar> BetweenWithJacobians(
-      const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b,
+  static sym::Pose3<Scalar> BetweenWithJacobians(
+      const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
       Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr,
       Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr);
 };
@@ -41,4 +41,4 @@ struct GroupOps<Pose3<double>> : public pose3::GroupOps<double> {};
 template <>
 struct GroupOps<Pose3<float>> : public pose3::GroupOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

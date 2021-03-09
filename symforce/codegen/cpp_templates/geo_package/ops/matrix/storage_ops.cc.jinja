@@ -6,6 +6,6 @@
 // Explicit instantiation
 {% for scalar in scalar_types %}
 {% for i in range(1, 10) %}
-template struct geo::matrix::StorageOps<{{ scalar }}, {{ i }}, 1>;
+template struct sym::matrix::StorageOps<{{ scalar }}, {{ i }}, 1>;
 {% endfor %}
 {% endfor %}

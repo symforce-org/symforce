@@ -18,9 +18,9 @@ void TestJacobianConstructors() {
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
   values.Set<double>('z', -3.0);
-  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
-  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.3, 0.5));
-  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
+  values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.3, 0.5));
+  values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
   values.Set<double>('e', 1e-9);
 
   // Unary / v1 output with fixed size
@@ -150,7 +150,7 @@ void TestJacobianConstructors() {
 
   // Unary with Rot3
   const sym::Factord unary_rot3 = sym::Factord::Jacobian(
-      [](const geo::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res,
+      [](const sym::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res,
          Eigen::Matrix<double, 2, 3>* jac) {
         (*res) << rot.YawPitchRoll().tail<2>();
         (*jac) << 2.0 * rot.ToTangent().transpose(), -1.0 * rot.ToTangent().transpose();  // fake
@@ -160,7 +160,7 @@ void TestJacobianConstructors() {
 
   // Binary with Rot3
   const sym::Factord binary_rot3 = sym::Factord::Jacobian(
-      [](const geo::Rot3d& a, const geo::Rot3d& b, Eigen::Matrix<double, 3, 1>* res,
+      [](const sym::Rot3d& a, const sym::Rot3d& b, Eigen::Matrix<double, 3, 1>* res,
          Eigen::Matrix<double, 3, 6>* jac) {
         (*res) << a.LocalCoordinates(b);
         (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
@@ -170,7 +170,7 @@ void TestJacobianConstructors() {
 
   // Huge one
   const sym::Factord big_factor = sym::Factord::Jacobian(
-      [](double x, const geo::Rot3d& R1, double y, const geo::Rot3d& R2, const geo::Pose3d& P,
+      [](double x, const sym::Rot3d& R1, double y, const sym::Rot3d& R2, const sym::Pose3d& P,
          double z, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 15>* jac) {
         (*res)[0] = x + 2 * y + 3 * z;
         (*res)[1] = R1.Between(R2).Between(P.Rotation()).YawPitchRoll()[0];
@@ -188,7 +188,7 @@ void TestJacobianConstructors() {
   std::vector<sym::Key> keys_to_func = keys_to_optimize;
   keys_to_func.push_back('e');
   const sym::Factord binary_rot3_with_epsilon = sym::Factord::Jacobian(
-      [](const geo::Rot3d& a, const geo::Rot3d& b, const double epsilon,
+      [](const sym::Rot3d& a, const sym::Rot3d& b, const double epsilon,
          Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 6>* jac) {
         assertTrue(epsilon == 1e-9);
         (*res) << a.LocalCoordinates(b, epsilon);
@@ -204,9 +204,9 @@ void TestHessianConstructors() {
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
   values.Set<double>('z', -3.0);
-  values.Set<geo::Rot3d>({'R', 1}, geo::Rot3d::Identity());
-  values.Set<geo::Rot3d>({'R', 2}, geo::Rot3d::FromYawPitchRoll(1.0, 0.3, 0.5));
-  values.Set<geo::Pose3d>('P', geo::Pose3d::Identity());
+  values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
+  values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.3, 0.5));
+  values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
   values.Set<double>('e', 1e-9);
 
   // Unary / v1 output with fixed size
@@ -408,7 +408,7 @@ void TestHessianConstructors() {
 
   // Unary with Rot3
   const sym::Factord unary_rot3 = sym::Factord::Hessian(
-      [](const geo::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 3>* jac,
+      [](const sym::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 3>* jac,
          Eigen::Matrix<double, 3, 3>* hessian, Eigen::Matrix<double, 3, 1>* rhs) {
         (*res) << rot.YawPitchRoll().tail<2>();
         (*jac) << 2.0 * rot.ToTangent().transpose(), -1.0 * rot.ToTangent().transpose();  // fake
@@ -423,7 +423,7 @@ void TestHessianConstructors() {
 
   // Binary with Rot3
   const sym::Factord binary_rot3 = sym::Factord::Hessian(
-      [](const geo::Rot3d& a, const geo::Rot3d& b, Eigen::Matrix<double, 3, 1>* res,
+      [](const sym::Rot3d& a, const sym::Rot3d& b, Eigen::Matrix<double, 3, 1>* res,
          Eigen::Matrix<double, 3, 6>* jac, Eigen::Matrix<double, 6, 6>* hessian,
          Eigen::Matrix<double, 6, 1>* rhs) {
         (*res) << a.LocalCoordinates(b);
@@ -439,7 +439,7 @@ void TestHessianConstructors() {
 
   // Huge one
   const sym::Factord big_factor = sym::Factord::Hessian(
-      [](double x, const geo::Rot3d& R1, double y, const geo::Rot3d& R2, const geo::Pose3d& P,
+      [](double x, const sym::Rot3d& R1, double y, const sym::Rot3d& R2, const sym::Pose3d& P,
          double z, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 15>* jac,
          Eigen::Matrix<double, 15, 15>* hessian, Eigen::Matrix<double, 15, 1>* rhs) {
         (*res)[0] = x + 2 * y + 3 * z;
@@ -463,7 +463,7 @@ void TestHessianConstructors() {
   std::vector<sym::Key> keys_to_func = keys_to_optimize;
   keys_to_func.push_back('e');
   const sym::Factord binary_rot3_with_epsilon = sym::Factord::Hessian(
-      [](const geo::Rot3d& a, const geo::Rot3d& b, const double epsilon,
+      [](const sym::Rot3d& a, const sym::Rot3d& b, const double epsilon,
          Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 6>* jac,
          Eigen::Matrix<double, 6, 6>* hessian, Eigen::Matrix<double, 6, 1>* rhs) {
         assertTrue(epsilon == 1e-9);

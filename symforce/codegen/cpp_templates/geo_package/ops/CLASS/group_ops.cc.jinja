@@ -6,7 +6,7 @@
 
 #include "./group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 {% for spec in specs['GroupOps'] %}
@@ -25,9 +25,9 @@ template <typename Scalar>
 {% endfor %}
 
 }  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
-}  // namespace geo
+}  // namespace sym
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct geo::{{ camelcase_to_snakecase(cls.__name__) }}::GroupOps<{{ Scalar }}>;
+template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::GroupOps<{{ Scalar }}>;
 {% endfor %}

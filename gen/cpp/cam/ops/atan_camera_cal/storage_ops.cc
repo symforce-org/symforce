@@ -4,7 +4,7 @@
 
 #include "./storage_ops.h"
 
-namespace cam {
+namespace sym {
 namespace atan_camera_cal {
 
 template <typename Scalar>
@@ -20,8 +20,8 @@ ATANCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const Scalar* const vec) {
 }
 
 }  // namespace atan_camera_cal
-}  // namespace cam
+}  // namespace sym
 
 // Explicit instantiation
-template struct cam::atan_camera_cal::StorageOps<double>;
-template struct cam::atan_camera_cal::StorageOps<float>;
+template struct sym::atan_camera_cal::StorageOps<double>;
+template struct sym::atan_camera_cal::StorageOps<float>;

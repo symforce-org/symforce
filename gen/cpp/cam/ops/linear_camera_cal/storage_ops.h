@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 #include <cam/linear_camera_cal.h>
 
-namespace cam {
+namespace sym {
 namespace linear_camera_cal {
 
 /**
@@ -20,21 +20,21 @@ struct StorageOps {
     return 4;
   }
 
-  static void ToStorage(const cam::LinearCameraCal<Scalar>& a, Scalar* const vec);
-  static cam::LinearCameraCal<Scalar> FromStorage(const Scalar* const vec);
+  static void ToStorage(const sym::LinearCameraCal<Scalar>& a, Scalar* const vec);
+  static sym::LinearCameraCal<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace linear_camera_cal
-}  // namespace cam
+}  // namespace sym
 
 // Wrapper to specialize the public concept
-namespace geo {
+namespace sym {
 
 template <>
-struct StorageOps<cam::LinearCameraCal<double>>
-    : public cam::linear_camera_cal::StorageOps<double> {};
+struct StorageOps<sym::LinearCameraCal<double>>
+    : public sym::linear_camera_cal::StorageOps<double> {};
 template <>
-struct StorageOps<cam::LinearCameraCal<float>> : public cam::linear_camera_cal::StorageOps<float> {
+struct StorageOps<sym::LinearCameraCal<float>> : public sym::linear_camera_cal::StorageOps<float> {
 };
 
-}  // namespace geo
+}  // namespace sym

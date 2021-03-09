@@ -5,11 +5,11 @@
 #include "./linear_camera_cal.h"
 
 // Explicit instantiation
-template class cam::LinearCameraCal<double>;
-template class cam::LinearCameraCal<float>;
+template class sym::LinearCameraCal<double>;
+template class sym::LinearCameraCal<float>;
 
 // Camera operation implementations
-namespace cam {
+namespace sym {
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::FocalLength() const {
@@ -99,15 +99,15 @@ Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixel(
   return _camera_ray;
 }
 
-}  // namespace cam
+}  // namespace sym
 
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const cam::LinearCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<LinearCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const cam::LinearCameraCalf& a) {
+std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<LinearCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;

@@ -21,9 +21,9 @@ void TestZeroResidualBetweenFactor() {
   const double epsilon = 1e-9;
 
   std::mt19937 gen(42);
-  const geo::Rot3d a = geo::Rot3d::Random(gen);
-  const geo::Rot3d b = geo::Rot3d::Random(gen);
-  const geo::Rot3d a_T_b = a.Between(b);
+  const sym::Rot3d a = sym::Rot3d::Random(gen);
+  const sym::Rot3d b = sym::Rot3d::Random(gen);
+  const sym::Rot3d a_T_b = a.Between(b);
 
   Eigen::Matrix<double, 3, 1> residual;
   Eigen::Matrix<double, 3, 6> jacobian;
@@ -43,22 +43,22 @@ void TestBetweenFactorJacobian() {
 
   std::mt19937 gen(42);
   for (int i = 0; i < 10000; i++) {
-    const geo::Rot3d a = geo::Rot3d::Random(gen);
-    const geo::Rot3d b = geo::Rot3d::Random(gen);
-    const geo::Rot3d a_T_b = geo::Rot3d::Random(gen);
+    const sym::Rot3d a = sym::Rot3d::Random(gen);
+    const sym::Rot3d b = sym::Rot3d::Random(gen);
+    const sym::Rot3d a_T_b = sym::Rot3d::Random(gen);
 
     Eigen::Matrix<double, 3, 1> residual;
     Eigen::Matrix<double, 3, 6> jacobian;
     sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, &residual, &jacobian);
 
-    const auto wrapped_residual_a = [&b, &a_T_b, &sqrt_info, epsilon](const geo::Rot3d& a) {
+    const auto wrapped_residual_a = [&b, &a_T_b, &sqrt_info, epsilon](const sym::Rot3d& a) {
       Eigen::Matrix<double, 3, 1> residual;
       Eigen::Matrix<double, 3, 6> jacobian;
       sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, &residual, &jacobian);
       return residual;
     };
 
-    const auto wrapped_residual_b = [&a, &a_T_b, &sqrt_info, epsilon](const geo::Rot3d& b) {
+    const auto wrapped_residual_b = [&a, &a_T_b, &sqrt_info, epsilon](const sym::Rot3d& b) {
       Eigen::Matrix<double, 3, 1> residual;
       Eigen::Matrix<double, 3, 6> jacobian;
       sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, &residual, &jacobian);

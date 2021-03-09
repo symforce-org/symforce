@@ -12,7 +12,7 @@
 
 #include <geo/ops/storage_ops.h>
 
-namespace cam {
+namespace sym {
 
 {% if doc %}
 /**
@@ -44,15 +44,15 @@ class {{ cls.__name__ }} {
   // --------------------------------------------------------------------------
 
   static constexpr int32_t StorageDim() {
-    return geo::StorageOps<Self>::StorageDim();
+    return sym::StorageOps<Self>::StorageDim();
   }
 
   void ToStorage(Scalar* const vec) const {
-    return geo::StorageOps<Self>::ToStorage(*this, vec);
+    return sym::StorageOps<Self>::ToStorage(*this, vec);
   }
 
   static {{ cls.__name__ }} FromStorage(const Scalar* const vec) {
-    return geo::StorageOps<Self>::FromStorage(vec);
+    return sym::StorageOps<Self>::FromStorage(vec);
   }
 
   // --------------------------------------------------------------------------
@@ -99,16 +99,16 @@ class {{ cls.__name__ }} {
 using {{ cls.__name__ }}{{ scalar[0] }} = {{ cls.__name__ }}<{{ scalar }}>;
 {% endfor %}
 
-}  // namespace cam
+}  // namespace sym
 
 // Externs to reduce duplicate instantiation
 {% for scalar in scalar_types %}
-extern template class cam::{{ cls.__name__ }}<{{ scalar }}>;
+extern template class sym::{{ cls.__name__ }}<{{ scalar }}>;
 {% endfor %}
 
 // Print definitions
 {% for scalar in scalar_types %}
-std::ostream& operator<<(std::ostream& os, const cam::{{ cls.__name__ }}<{{ scalar }}>& a);
+std::ostream& operator<<(std::ostream& os, const sym::{{ cls.__name__ }}<{{ scalar }}>& a);
 {% endfor %}
 
 // Concept implementations for this class

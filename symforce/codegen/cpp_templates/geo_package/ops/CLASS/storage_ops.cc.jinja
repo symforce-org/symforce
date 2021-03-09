@@ -6,27 +6,27 @@
 
 #include "./storage_ops.h"
 
-namespace geo {
+namespace sym {
 namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 template <typename ScalarType>
-void StorageOps<ScalarType>::ToStorage(const geo::{{ cls.__name__ }}<ScalarType>& a, ScalarType* out) {
+void StorageOps<ScalarType>::ToStorage(const sym::{{ cls.__name__ }}<ScalarType>& a, ScalarType* out) {
   assert(out != nullptr);
   std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
 template <typename ScalarType>
-geo::{{ cls.__name__ }}<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+sym::{{ cls.__name__ }}<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return geo::{{ cls.__name__ }}<ScalarType>(
-    Eigen::Map<const typename geo::{{ cls.__name__ }}<ScalarType>::DataVec>(data));
+  return sym::{{ cls.__name__ }}<ScalarType>(
+    Eigen::Map<const typename sym::{{ cls.__name__ }}<ScalarType>::DataVec>(data));
 }
 
 }  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
-}  // namespace geo
+}  // namespace sym
 
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct geo::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
+template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
 {% endfor %}

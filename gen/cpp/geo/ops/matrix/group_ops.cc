@@ -4,21 +4,21 @@
 #include "./group_ops.h"
 
 // Explicit instantiation
-template struct geo::matrix::GroupOps<double, 1, 1>;
-template struct geo::matrix::GroupOps<double, 2, 1>;
-template struct geo::matrix::GroupOps<double, 3, 1>;
-template struct geo::matrix::GroupOps<double, 4, 1>;
-template struct geo::matrix::GroupOps<double, 5, 1>;
-template struct geo::matrix::GroupOps<double, 6, 1>;
-template struct geo::matrix::GroupOps<double, 7, 1>;
-template struct geo::matrix::GroupOps<double, 8, 1>;
-template struct geo::matrix::GroupOps<double, 9, 1>;
-template struct geo::matrix::GroupOps<float, 1, 1>;
-template struct geo::matrix::GroupOps<float, 2, 1>;
-template struct geo::matrix::GroupOps<float, 3, 1>;
-template struct geo::matrix::GroupOps<float, 4, 1>;
-template struct geo::matrix::GroupOps<float, 5, 1>;
-template struct geo::matrix::GroupOps<float, 6, 1>;
-template struct geo::matrix::GroupOps<float, 7, 1>;
-template struct geo::matrix::GroupOps<float, 8, 1>;
-template struct geo::matrix::GroupOps<float, 9, 1>;
+template struct sym::matrix::GroupOps<double, 1, 1>;
+template struct sym::matrix::GroupOps<double, 2, 1>;
+template struct sym::matrix::GroupOps<double, 3, 1>;
+template struct sym::matrix::GroupOps<double, 4, 1>;
+template struct sym::matrix::GroupOps<double, 5, 1>;
+template struct sym::matrix::GroupOps<double, 6, 1>;
+template struct sym::matrix::GroupOps<double, 7, 1>;
+template struct sym::matrix::GroupOps<double, 8, 1>;
+template struct sym::matrix::GroupOps<double, 9, 1>;
+template struct sym::matrix::GroupOps<float, 1, 1>;
+template struct sym::matrix::GroupOps<float, 2, 1>;
+template struct sym::matrix::GroupOps<float, 3, 1>;
+template struct sym::matrix::GroupOps<float, 4, 1>;
+template struct sym::matrix::GroupOps<float, 5, 1>;
+template struct sym::matrix::GroupOps<float, 6, 1>;
+template struct sym::matrix::GroupOps<float, 7, 1>;
+template struct sym::matrix::GroupOps<float, 8, 1>;
+template struct sym::matrix::GroupOps<float, 9, 1>;

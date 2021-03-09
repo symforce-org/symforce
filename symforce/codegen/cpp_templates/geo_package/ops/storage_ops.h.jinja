@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
-namespace geo {
+namespace sym {
 
 /**
  * C++ StorageOps concept, specialized per type.
@@ -17,7 +17,7 @@ struct StorageOps {
   static T FromStorage(const Scalar* data);
 };
 
-}  // namespace geo
+}  // namespace sym
 
 #include "./scalar/storage_ops.h"
 #include "./matrix/storage_ops.h"

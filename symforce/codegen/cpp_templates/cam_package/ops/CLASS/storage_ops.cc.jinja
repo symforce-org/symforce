@@ -6,7 +6,7 @@
 
 #include "./storage_ops.h"
 
-namespace cam {
+namespace sym {
 namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 template <typename Scalar>
@@ -23,10 +23,10 @@ template <typename Scalar>
 }
 
 }  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
-}  // namespace cam
+}  // namespace sym
 
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct cam::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
+template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
 {% endfor %}

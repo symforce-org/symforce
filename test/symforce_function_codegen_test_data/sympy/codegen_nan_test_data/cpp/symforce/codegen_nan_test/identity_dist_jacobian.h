@@ -16,7 +16,7 @@ namespace codegen_nan_test {
  *
  */
 template <typename Scalar>
-Scalar IdentityDistJacobian(const geo::Rot3<Scalar>& R1, const Scalar e) {
+Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
   // Total ops: 40
 
   // Input arrays

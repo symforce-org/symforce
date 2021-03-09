@@ -36,10 +36,10 @@
 void TestRot3() {
   // Make a random rotation
   std::mt19937 gen(42);
-  const geo::Rot3f rot = geo::Rot3f::Random(gen);
+  const sym::Rot3f rot = sym::Rot3f::Random(gen);
 
   // Cast
-  const geo::Rot3d rotd = rot.Cast<double>();
+  const sym::Rot3d rotd = rot.Cast<double>();
   assertTrue(rotd.IsApprox(rot.Cast<double>(), 1e-6));
   assertTrue(rotd.Cast<float>().IsApprox(rot, 1e-6));
 
@@ -56,17 +56,17 @@ void TestRot3() {
   assertTrue((quat * point).isApprox(rot * point, 1e-6));
 
   // Construct back from Eigen rotation representations
-  assertTrue(geo::Rot3f(quat).IsApprox(rot, 1e-6));
-  assertTrue(geo::Rot3f(aa).IsApprox(rot, 1e-6));
-  assertTrue(geo::Rot3f::FromRotationMatrix(mat).IsApprox(rot, 1e-6));
-  assertTrue(geo::Rot3f::FromYawPitchRoll(ypr).ToPositiveReal().IsApprox(rot, 1e-6));
+  assertTrue(sym::Rot3f(quat).IsApprox(rot, 1e-6));
+  assertTrue(sym::Rot3f(aa).IsApprox(rot, 1e-6));
+  assertTrue(sym::Rot3f::FromRotationMatrix(mat).IsApprox(rot, 1e-6));
+  assertTrue(sym::Rot3f::FromYawPitchRoll(ypr).ToPositiveReal().IsApprox(rot, 1e-6));
 
   // Make a pose
-  geo::Pose3f pose(geo::Rot3f(aa), point);
+  sym::Pose3f pose(sym::Rot3f(aa), point);
   assertTrue(pose.Rotation().IsApprox(rot, 1e-6));
   assertTrue(pose.Position() == point);
 
-  const geo::Pose3f pose_inv = pose.Inverse();
+  const sym::Pose3f pose_inv = pose.Inverse();
   assertTrue(pose_inv.Rotation().IsApprox(rot.Inverse(), 1e-6));
 
   // Transform a point with a pose
@@ -74,15 +74,15 @@ void TestRot3() {
 
   // Check zero comparison
   assertTrue(
-      geo::Rot3f(Eigen::Vector4f::Zero()).IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
-  assertTrue(!geo::Rot3f().IsApprox(geo::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
+      sym::Rot3f(Eigen::Vector4f::Zero()).IsApprox(sym::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
+  assertTrue(!sym::Rot3f().IsApprox(sym::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
 
   // Check that the log returns vectors with norm less than pi, and is the inverse of exp
   for (int i = 0; i < 1000; i++) {
-    const geo::Rot3d rot = geo::Rot3d::Random(gen);
+    const sym::Rot3d rot = sym::Rot3d::Random(gen);
     const Eigen::Vector3d log = rot.ToTangent();
     assertTrue(log.norm() <= M_PI);
-    const geo::Rot3d exp_log_rot = geo::Rot3d::FromTangent(log);
+    const sym::Rot3d exp_log_rot = sym::Rot3d::FromTangent(log);
 
     // The quaternion might not be equal, it might be negated, but the matrix should be equal
     assertTrue(rot.ToRotationMatrix().isApprox(exp_log_rot.ToRotationMatrix(), 1e-9));
@@ -90,96 +90,96 @@ void TestRot3() {
 }
 
 void TestRot2Pose2() {
-  const geo::Rot2f rot = geo::Rot2f::FromTangent(geo::Rot2f::TangentVec::Random());
+  const sym::Rot2f rot = sym::Rot2f::FromTangent(sym::Rot2f::TangentVec::Random());
   const Eigen::Vector2f pos = Eigen::Vector2f::Random();
 
   // Cast
-  const geo::Rot2d rotd = rot.Cast<double>();
+  const sym::Rot2d rotd = rot.Cast<double>();
   assertTrue(rotd.IsApprox(rot.Cast<double>(), 1e-6));
   assertTrue(rotd.Cast<float>().IsApprox(rot, 1e-6));
 
   // Make a pose
-  const geo::Pose2f pose(rot, pos);
+  const sym::Pose2f pose(rot, pos);
   assertTrue(pose.Rotation().IsApprox(rot, 1e-6));
   assertTrue(pose.Position() == pos);
 
-  const geo::Pose2f pose_inv = pose.Inverse();
+  const sym::Pose2f pose_inv = pose.Inverse();
   assertTrue(pose_inv.Rotation().IsApprox(rot.Inverse(), 1e-9));
 }
 
 template <typename T>
 void TestStorageOps() {
-  using Scalar = typename geo::StorageOps<T>::Scalar;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
   std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
 
-  constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   assertTrue(value.Data().rows() == storage_dim);
   assertTrue(value.Data().cols() == 1);
 
   std::vector<Scalar> vec;
   vec.resize(storage_dim);
-  geo::StorageOps<T>::ToStorage(value, vec.data());
+  sym::StorageOps<T>::ToStorage(value, vec.data());
   assertTrue(vec.size() > 0);
   assertTrue(vec.size() == storage_dim);
   for (int i = 0; i < vec.size(); ++i) {
     assertTrue(vec[i] == value.Data()[i]);
   }
 
-  const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
+  const T value2 = sym::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value.Data() == value2.Data());
   vec[0] = 2.1;
   vec[vec.size() - 1] = 1.2;
-  const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
+  const T value3 = sym::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value.Data() != value3.Data());
 }
 
 template <typename T>
 void TestScalarStorageOps() {
-  using Scalar = typename geo::StorageOps<T>::Scalar;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
   std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
 
-  constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   assertTrue(storage_dim == 1);
 
   std::vector<Scalar> vec;
   vec.resize(storage_dim);
-  geo::StorageOps<T>::ToStorage(value, vec.data());
+  sym::StorageOps<T>::ToStorage(value, vec.data());
   assertTrue(vec.size() == storage_dim);
   assertTrue(vec[0] == value);
 
-  const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
+  const T value2 = sym::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value == value2);
   vec[0] = 2.1;
-  const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
+  const T value3 = sym::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value != value3);
 }
 
 template <typename T>
 void TestMatrixStorageOps() {
-  using Scalar = typename geo::StorageOps<T>::Scalar;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value = T::Zero();
   std::cout << "*** Testing Matrix StorageOps: " << value.transpose() << " ***" << std::endl;
 
-  constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   assertTrue(storage_dim == T::RowsAtCompileTime);
 
   std::vector<Scalar> vec;
   vec.resize(storage_dim);
-  geo::StorageOps<T>::ToStorage(value, vec.data());
+  sym::StorageOps<T>::ToStorage(value, vec.data());
   assertTrue(vec.size() == storage_dim);
   for (int i = 0; i < vec.size(); ++i) {
     assertTrue(vec[i] == value[i]);
   }
 
-  const T value2 = geo::StorageOps<T>::FromStorage(vec.data());
+  const T value2 = sym::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value == value2);
   vec[0] = 2.1;
-  const T value3 = geo::StorageOps<T>::FromStorage(vec.data());
+  const T value3 = sym::StorageOps<T>::FromStorage(vec.data());
   assertTrue(value != value3);
 }
 
@@ -188,12 +188,12 @@ void TestGroupOps() {
   const T identity{};
   std::cout << "*** Testing GroupOps: " << identity << " ***" << std::endl;
 
-  // TODO(hayk): Make geo::StorageOps<T>::IsApprox that uses ToStorage to compare, then
+  // TODO(hayk): Make sym::StorageOps<T>::IsApprox that uses ToStorage to compare, then
   // get rid of the custom scalar version below.
-  assertTrue(identity.IsApprox(geo::GroupOps<T>::Identity(), 1e-9));
-  assertTrue(identity.IsApprox(geo::GroupOps<T>::Compose(identity, identity), 1e-9));
-  assertTrue(identity.IsApprox(geo::GroupOps<T>::Inverse(identity), 1e-9));
-  assertTrue(identity.IsApprox(geo::GroupOps<T>::Between(identity, identity), 1e-9));
+  assertTrue(identity.IsApprox(sym::GroupOps<T>::Identity(), 1e-9));
+  assertTrue(identity.IsApprox(sym::GroupOps<T>::Compose(identity, identity), 1e-9));
+  assertTrue(identity.IsApprox(sym::GroupOps<T>::Inverse(identity), 1e-9));
+  assertTrue(identity.IsApprox(sym::GroupOps<T>::Between(identity, identity), 1e-9));
 }
 
 template <typename T>
@@ -201,10 +201,10 @@ void TestScalarGroupOps() {
   const T identity{};
   std::cout << "*** Testing GroupOps: " << identity << " ***" << std::endl;
 
-  assertTrue(identity == geo::GroupOps<T>::Identity());
-  assertTrue(identity == geo::GroupOps<T>::Compose(identity, identity));
-  assertTrue(identity == geo::GroupOps<T>::Inverse(identity));
-  assertTrue(identity == geo::GroupOps<T>::Between(identity, identity));
+  assertTrue(identity == sym::GroupOps<T>::Identity());
+  assertTrue(identity == sym::GroupOps<T>::Compose(identity, identity));
+  assertTrue(identity == sym::GroupOps<T>::Inverse(identity));
+  assertTrue(identity == sym::GroupOps<T>::Between(identity, identity));
 }
 
 template <typename T>
@@ -212,43 +212,43 @@ void TestMatrixGroupOps() {
   const T identity = T::Zero();
   std::cout << "*** Testing Matrix GroupOps: " << identity.transpose() << " ***" << std::endl;
 
-  assertTrue(identity == geo::GroupOps<T>::Identity());
-  assertTrue(identity == geo::GroupOps<T>::Compose(identity, identity));
-  assertTrue(identity == geo::GroupOps<T>::Inverse(identity));
-  assertTrue(identity == geo::GroupOps<T>::Between(identity, identity));
+  assertTrue(identity == sym::GroupOps<T>::Identity());
+  assertTrue(identity == sym::GroupOps<T>::Compose(identity, identity));
+  assertTrue(identity == sym::GroupOps<T>::Inverse(identity));
+  assertTrue(identity == sym::GroupOps<T>::Between(identity, identity));
 }
 
 template <typename T>
 void TestLieGroupOps() {
-  using Scalar = typename geo::StorageOps<T>::Scalar;
-  using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
-  constexpr const int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+  using TangentVec = Eigen::Matrix<Scalar, sym::LieGroupOps<T>::TangentDim(), 1>;
+  constexpr const int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   using StorageVec = Eigen::Matrix<Scalar, storage_dim, 1>;
-  using SelfJacobian = typename geo::GroupOps<T>::SelfJacobian;
+  using SelfJacobian = typename sym::GroupOps<T>::SelfJacobian;
   const Scalar epsilon = 1e-7;
 
-  const T identity = geo::GroupOps<T>::Identity();
+  const T identity = sym::GroupOps<T>::Identity();
   std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
 
-  constexpr int32_t tangent_dim = geo::LieGroupOps<T>::TangentDim();
+  constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   assertTrue(tangent_dim > 0);
-  assertTrue(tangent_dim <= geo::StorageOps<T>::StorageDim());
+  assertTrue(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
   const TangentVec pertubation = TangentVec::Random();
-  const T value = geo::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+  const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
-  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+  const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
-  const T recovered_identity = geo::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
+  const T recovered_identity = sym::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
   assertTrue(recovered_identity.IsApprox(identity, std::sqrt(epsilon)));
 
   const TangentVec pertubation_zero =
-      geo::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
+      sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 
   SelfJacobian inverse_jacobian;
-  geo::GroupOps<T>::InverseWithJacobian(identity, &inverse_jacobian);
+  sym::GroupOps<T>::InverseWithJacobian(identity, &inverse_jacobian);
   assertTrue(inverse_jacobian.isApprox(-SelfJacobian::Identity(), epsilon));
 
   // Test perturbing one axis at a time by sqrt(epsilon)
@@ -256,10 +256,10 @@ void TestLieGroupOps() {
   // due to epsilon doesn't extend too far away from 0
   {
     TangentVec small_perturbation = TangentVec::Zero();
-    for (size_t i = 0; i < geo::LieGroupOps<T>::TangentDim(); i++) {
+    for (size_t i = 0; i < sym::LieGroupOps<T>::TangentDim(); i++) {
       small_perturbation(i) = std::sqrt(epsilon);
-      const T value = geo::LieGroupOps<T>::FromTangent(small_perturbation, epsilon);
-      const TangentVec recovered_perturbation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+      const T value = sym::LieGroupOps<T>::FromTangent(small_perturbation, epsilon);
+      const TangentVec recovered_perturbation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
       assertTrue(small_perturbation.isApprox(recovered_perturbation, 10 * epsilon));
       small_perturbation(i) = 0;
     }
@@ -272,12 +272,12 @@ void TestLieGroupOps() {
     const T a = sym::Random<T>(gen);
 
     StorageVec storage;
-    geo::StorageOps<T>::ToStorage(a, storage.data());
+    sym::StorageOps<T>::ToStorage(a, storage.data());
     const Eigen::Matrix<Scalar, tangent_dim, storage_dim> numerical_tangent_D_storage =
         sym::NumericalDerivative(
             [epsilon, &a](const StorageVec& storage_perturbed) {
-              return geo::LieGroupOps<T>::LocalCoordinates(
-                  a, geo::StorageOps<T>::FromStorage(storage_perturbed.data()), epsilon);
+              return sym::LieGroupOps<T>::LocalCoordinates(
+                  a, sym::StorageOps<T>::FromStorage(storage_perturbed.data()), epsilon);
             },
             storage, epsilon, std::sqrt(epsilon));
 
@@ -294,11 +294,11 @@ void TestLieGroupOps() {
     const T b = sym::Random<T>(gen);
 
     const SelfJacobian numerical_jacobian =
-        sym::NumericalDerivative(std::bind(&geo::GroupOps<T>::Compose, std::placeholders::_1, b), a,
+        sym::NumericalDerivative(std::bind(&sym::GroupOps<T>::Compose, std::placeholders::_1, b), a,
                                  epsilon, std::sqrt(epsilon));
 
     SelfJacobian symforce_jacobian;
-    geo::GroupOps<T>::ComposeWithJacobians(a, b, &symforce_jacobian, nullptr);
+    sym::GroupOps<T>::ComposeWithJacobians(a, b, &symforce_jacobian, nullptr);
 
     assertTrue(numerical_jacobian.isApprox(symforce_jacobian, 10 * std::sqrt(epsilon)));
   }
@@ -306,72 +306,72 @@ void TestLieGroupOps() {
 
 template <typename T>
 void TestScalarLieGroupOps() {
-  using Scalar = typename geo::StorageOps<T>::Scalar;
-  using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+  using TangentVec = Eigen::Matrix<Scalar, sym::LieGroupOps<T>::TangentDim(), 1>;
   const Scalar epsilon = 1e-7;
 
-  const T identity = geo::GroupOps<T>::Identity();
+  const T identity = sym::GroupOps<T>::Identity();
   std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
 
-  constexpr int32_t tangent_dim = geo::LieGroupOps<T>::TangentDim();
+  constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   assertTrue(tangent_dim > 0);
-  assertTrue(tangent_dim <= geo::StorageOps<T>::StorageDim());
+  assertTrue(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
   const TangentVec pertubation = TangentVec::Random();
-  const T value = geo::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+  const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
-  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+  const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
-  const T recovered_identity = geo::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
+  const T recovered_identity = sym::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
   assertTrue(fabs(recovered_identity - identity) < std::sqrt(epsilon));
 
   const TangentVec pertubation_zero =
-      geo::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
+      sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 }
 
 template <typename T>
 void TestMatrixLieGroupOps() {
-  using Scalar = typename geo::StorageOps<T>::Scalar;
-  using TangentVec = Eigen::Matrix<Scalar, geo::LieGroupOps<T>::TangentDim(), 1>;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+  using TangentVec = Eigen::Matrix<Scalar, sym::LieGroupOps<T>::TangentDim(), 1>;
   const Scalar epsilon = 1e-7;
 
-  const T identity = geo::GroupOps<T>::Identity();
+  const T identity = sym::GroupOps<T>::Identity();
   std::cout << "*** Testing Matrix LieGroupOps: " << identity.transpose() << " ***" << std::endl;
 
-  constexpr int32_t tangent_dim = geo::LieGroupOps<T>::TangentDim();
+  constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   assertTrue(tangent_dim > 0);
-  assertTrue(tangent_dim <= geo::StorageOps<T>::StorageDim());
+  assertTrue(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
   const TangentVec pertubation = TangentVec::Random();
-  const T value = geo::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+  const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
-  const TangentVec recovered_pertubation = geo::LieGroupOps<T>::ToTangent(value, epsilon);
+  const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
   assertTrue(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
-  const T recovered_identity = geo::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
+  const T recovered_identity = sym::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
   assertTrue(recovered_identity.isApprox(identity, std::sqrt(epsilon)));
 
   const TangentVec pertubation_zero =
-      geo::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
+      sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   assertTrue(pertubation_zero.norm() < std::sqrt(epsilon));
 }
 
 int main(int argc, char** argv) {
   // Test geo types
-  TestStorageOps<geo::Rot2<double>>();
-  TestGroupOps<geo::Rot2<double>>();
-  TestLieGroupOps<geo::Rot2<double>>();
-  TestStorageOps<geo::Pose2<double>>();
-  TestGroupOps<geo::Pose2<double>>();
-  TestLieGroupOps<geo::Pose2<double>>();
-  TestStorageOps<geo::Rot3<double>>();
-  TestGroupOps<geo::Rot3<double>>();
-  TestLieGroupOps<geo::Rot3<double>>();
-  TestStorageOps<geo::Pose3<double>>();
-  TestGroupOps<geo::Pose3<double>>();
-  TestLieGroupOps<geo::Pose3<double>>();
+  TestStorageOps<sym::Rot2<double>>();
+  TestGroupOps<sym::Rot2<double>>();
+  TestLieGroupOps<sym::Rot2<double>>();
+  TestStorageOps<sym::Pose2<double>>();
+  TestGroupOps<sym::Pose2<double>>();
+  TestLieGroupOps<sym::Pose2<double>>();
+  TestStorageOps<sym::Rot3<double>>();
+  TestGroupOps<sym::Rot3<double>>();
+  TestLieGroupOps<sym::Rot3<double>>();
+  TestStorageOps<sym::Pose3<double>>();
+  TestGroupOps<sym::Pose3<double>>();
+  TestLieGroupOps<sym::Pose3<double>>();
 
   // Test scalar types
   TestScalarStorageOps<double>();
@@ -407,18 +407,18 @@ int main(int argc, char** argv) {
   TestMatrixGroupOps<Eigen::Matrix<double, 9, 1>>();
   TestMatrixLieGroupOps<Eigen::Matrix<double, 9, 1>>();
   // Test geo types
-  TestStorageOps<geo::Rot2<float>>();
-  TestGroupOps<geo::Rot2<float>>();
-  TestLieGroupOps<geo::Rot2<float>>();
-  TestStorageOps<geo::Pose2<float>>();
-  TestGroupOps<geo::Pose2<float>>();
-  TestLieGroupOps<geo::Pose2<float>>();
-  TestStorageOps<geo::Rot3<float>>();
-  TestGroupOps<geo::Rot3<float>>();
-  TestLieGroupOps<geo::Rot3<float>>();
-  TestStorageOps<geo::Pose3<float>>();
-  TestGroupOps<geo::Pose3<float>>();
-  TestLieGroupOps<geo::Pose3<float>>();
+  TestStorageOps<sym::Rot2<float>>();
+  TestGroupOps<sym::Rot2<float>>();
+  TestLieGroupOps<sym::Rot2<float>>();
+  TestStorageOps<sym::Pose2<float>>();
+  TestGroupOps<sym::Pose2<float>>();
+  TestLieGroupOps<sym::Pose2<float>>();
+  TestStorageOps<sym::Rot3<float>>();
+  TestGroupOps<sym::Rot3<float>>();
+  TestLieGroupOps<sym::Rot3<float>>();
+  TestStorageOps<sym::Pose3<float>>();
+  TestGroupOps<sym::Pose3<float>>();
+  TestLieGroupOps<sym::Pose3<float>>();
 
   // Test scalar types
   TestScalarStorageOps<float>();

@@ -18,30 +18,30 @@ namespace sym {
  *   sym::Key key0{'R', 0};
  *   sym::Key key1{'R', 1};
  *   sym::Valuesd values;
- *   values.Set(key0, geo::Rot3d::Identity());
- *   values.Set(key1, geo::Rot3d::Identity());
+ *   values.Set(key0, sym::Rot3d::Identity());
+ *   values.Set(key1, sym::Rot3d::Identity());
  *
  *   // Create some factors
  *   std::vector<sym::Factord> factors;
  *   factors.push_back(sym::Factord::Jacobian(
- *       [epsilon](const geo::Rot3d& rot, Eigen::Vector3d* const res, Eigen::Matrix3d* const jac) {
- *         const geo::Rot3d prior = geo::Rot3d::Random();
+ *       [epsilon](const sym::Rot3d& rot, Eigen::Vector3d* const res, Eigen::Matrix3d* const jac) {
+ *         const sym::Rot3d prior = sym::Rot3d::Random();
  *         const Eigen::Matrix3d sqrt_info = Eigen::Vector3d::Ones().asDiagonal();
  *         sym::PriorFactorRot3<double>(rot, prior, sqrt_info, epsilon, res, jac);
  *       },
  *       {key0}));
  *   factors.push_back(sym::Factord::Jacobian(
- *       [epsilon](const geo::Rot3d& rot, Eigen::Vector3d* const res, Eigen::Matrix3d* const jac) {
- *         const geo::Rot3d prior = geo::Rot3d::Random();
+ *       [epsilon](const sym::Rot3d& rot, Eigen::Vector3d* const res, Eigen::Matrix3d* const jac) {
+ *         const sym::Rot3d prior = sym::Rot3d::Random();
  *         const Eigen::Matrix3d sqrt_info = Eigen::Vector3d::Ones().asDiagonal();
  *         sym::PriorFactorRot3<double>(rot, prior, sqrt_info, epsilon, res, jac);
  *       },
  *       {key1}));
  *   factors.push_back(sym::Factord::Jacobian(
- *       [epsilon](const geo::Rot3d& a, const geo::Rot3d& b, Eigen::Vector3d* const res,
+ *       [epsilon](const sym::Rot3d& a, const sym::Rot3d& b, Eigen::Vector3d* const res,
  *                 Eigen::Matrix<double, 3, 6>* const jac) {
  *         const Eigen::Matrix3d sqrt_info = Eigen::Vector3d::Ones().asDiagonal();
- *         const geo::Rot3d a_T_b = geo::Rot3d::Random();
+ *         const sym::Rot3d a_T_b = sym::Rot3d::Random();
  *         sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
  *       },
  *       {key0, key1}));

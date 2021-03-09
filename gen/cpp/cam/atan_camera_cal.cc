@@ -5,11 +5,11 @@
 #include "./atan_camera_cal.h"
 
 // Explicit instantiation
-template class cam::ATANCameraCal<double>;
-template class cam::ATANCameraCal<float>;
+template class sym::ATANCameraCal<double>;
+template class sym::ATANCameraCal<float>;
 
 // Camera operation implementations
-namespace cam {
+namespace sym {
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::FocalLength() const {
@@ -110,15 +110,15 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixel(
   return _camera_ray;
 }
 
-}  // namespace cam
+}  // namespace sym
 
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const cam::ATANCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<ATANCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const cam::ATANCameraCalf& a) {
+std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<ATANCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;

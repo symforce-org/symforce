@@ -24,7 +24,7 @@ namespace sym {
  *
  */
 template <typename Scalar>
-void PriorFactorPose3Product(const geo::Pose3<Scalar>& value, const geo::Pose3<Scalar>& prior,
+void PriorFactorPose3Product(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>& prior,
                              const Eigen::Matrix<Scalar, 6, 6>& sqrt_info, const Scalar epsilon,
                              Eigen::Matrix<Scalar, 6, 1>* const res = nullptr,
                              Eigen::Matrix<Scalar, 6, 6>* const jac = nullptr) {

@@ -14,7 +14,7 @@ namespace internal {
 template <typename T>
 struct TangentDimHelper {
   static int32_t TangentDim(const T& x) {
-    return geo::LieGroupOps<T>::TangentDim();
+    return sym::LieGroupOps<T>::TangentDim();
   }
 };
 
@@ -50,13 +50,13 @@ MatrixX<Scalar> Symmetrize(const MatrixX<Scalar>& mat) {
 template <typename T>
 class Interpolator {
  public:
-  using Scalar = typename geo::StorageOps<T>::Scalar;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
 
   explicit Interpolator(const Scalar epsilon = 1e-8f) : epsilon_(epsilon) {}
 
   T operator()(const T& a, const T& b, const Scalar t) {
-    return geo::LieGroupOps<T>::Retract(
-        a, t * geo::LieGroupOps<T>::LocalCoordinates(a, b, epsilon_), epsilon_);
+    return sym::LieGroupOps<T>::Retract(
+        a, t * sym::LieGroupOps<T>::LocalCoordinates(a, b, epsilon_), epsilon_);
   }
 
  private:
@@ -77,28 +77,28 @@ class Interpolator {
  */
 template <typename F, typename X>
 auto NumericalDerivative(const F f, const X& x,
-                         const typename geo::StorageOps<X>::Scalar epsilon = 1e-8f,
-                         const typename geo::StorageOps<X>::Scalar delta = 1e-2f) {
-  using Scalar = typename geo::StorageOps<X>::Scalar;
+                         const typename sym::StorageOps<X>::Scalar epsilon = 1e-8f,
+                         const typename sym::StorageOps<X>::Scalar delta = 1e-2f) {
+  using Scalar = typename sym::StorageOps<X>::Scalar;
   using Y = typename std::result_of<F(X)>::type;
   using JacobianMat =
-      Eigen::Matrix<Scalar, geo::LieGroupOps<Y>::TangentDim(), geo::LieGroupOps<X>::TangentDim()>;
-  static_assert(std::is_same<typename geo::StorageOps<Y>::Scalar, Scalar>::value,
+      Eigen::Matrix<Scalar, sym::LieGroupOps<Y>::TangentDim(), sym::LieGroupOps<X>::TangentDim()>;
+  static_assert(std::is_same<typename sym::StorageOps<Y>::Scalar, Scalar>::value,
                 "X and Y must have same scalar type");
 
   const Y f0 = f(x);
-  typename geo::LieGroupOps<X>::TangentVec dx =
-      geo::LieGroupOps<X>::TangentVec::Zero(internal::TangentDimHelper<X>::TangentDim(x));
+  typename sym::LieGroupOps<X>::TangentVec dx =
+      sym::LieGroupOps<X>::TangentVec::Zero(internal::TangentDimHelper<X>::TangentDim(x));
 
   JacobianMat J = JacobianMat::Zero(internal::TangentDimHelper<Y>::TangentDim(f0),
                                     internal::TangentDimHelper<X>::TangentDim(x));
   for (size_t i = 0; i < internal::TangentDimHelper<X>::TangentDim(x); i++) {
     dx(i) = delta;
-    const typename geo::LieGroupOps<Y>::TangentVec y_plus = geo::LieGroupOps<Y>::LocalCoordinates(
-        f0, f(geo::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);
+    const typename sym::LieGroupOps<Y>::TangentVec y_plus = sym::LieGroupOps<Y>::LocalCoordinates(
+        f0, f(sym::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);
     dx(i) = -delta;
-    const typename geo::LieGroupOps<Y>::TangentVec y_minus = geo::LieGroupOps<Y>::LocalCoordinates(
-        f0, f(geo::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);
+    const typename sym::LieGroupOps<Y>::TangentVec y_minus = sym::LieGroupOps<Y>::LocalCoordinates(
+        f0, f(sym::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);
     dx(i) = 0.0f;
     J.col(i) = (y_plus - y_minus) / (2.0f * delta);
   }

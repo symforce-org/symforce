@@ -19,8 +19,8 @@ namespace sym {
  *     geo.Matrix: Jacobian for arg 1 (b)
  */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const geo::Pose3<Scalar>& a,
-                                                   const geo::Pose3<Scalar>& b) {
+Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const sym::Pose3<Scalar>& a,
+                                                   const sym::Pose3<Scalar>& b) {
   // Total ops: 334
 
   // Input arrays

@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-namespace geo {
+namespace sym {
 
 /**
  * C++ LieGroupOps concept, specialized per type.
@@ -25,7 +25,7 @@ struct LieGroupOps {
   static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
 };
 
-}  // namespace geo
+}  // namespace sym
 
 #include "./scalar/lie_group_ops.h"
 #include "./matrix/lie_group_ops.h"

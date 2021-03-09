@@ -5,7 +5,7 @@
 
 #include <geo/rot3.h>
 
-namespace geo {
+namespace sym {
 namespace rot3 {
 
 /**
@@ -13,14 +13,14 @@ namespace rot3 {
  */
 template <typename ScalarType>
 struct StorageOps {
-  using Scalar = typename geo::Rot3<ScalarType>::Scalar;
+  using Scalar = typename sym::Rot3<ScalarType>::Scalar;
 
   static constexpr int32_t StorageDim() {
     return 4;
   }
 
-  static void ToStorage(const geo::Rot3<ScalarType>& a, ScalarType* out);
-  static geo::Rot3<ScalarType> FromStorage(const ScalarType* data);
+  static void ToStorage(const sym::Rot3<ScalarType>& a, ScalarType* out);
+  static sym::Rot3<ScalarType> FromStorage(const ScalarType* data);
 };
 
 }  // namespace rot3
@@ -31,4 +31,4 @@ struct StorageOps<Rot3<double>> : public rot3::StorageOps<double> {};
 template <>
 struct StorageOps<Rot3<float>> : public rot3::StorageOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

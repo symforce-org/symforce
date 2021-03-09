@@ -5,16 +5,16 @@
 #include "./pose2.h"
 
 // Explicit instantiation
-template class geo::Pose2<double>;
-template class geo::Pose2<float>;
+template class sym::Pose2<double>;
+template class sym::Pose2<float>;
 
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const geo::Pose2d& a) {
+std::ostream& operator<<(std::ostream& os, const sym::Pose2d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Pose2d " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const geo::Pose2f& a) {
+std::ostream& operator<<(std::ostream& os, const sym::Pose2f& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Pose2f " << a.Data().transpose().format(fmt) << ">";
   return os;
@@ -25,7 +25,7 @@ std::ostream& operator<<(std::ostream& os, const geo::Pose2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> geo::Pose2<Scalar>::InverseCompose(
+Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::InverseCompose(
     const Eigen::Matrix<Scalar, 2, 1>& point) const {
   // Total ops: 26
 

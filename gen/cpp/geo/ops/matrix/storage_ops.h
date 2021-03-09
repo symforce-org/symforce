@@ -7,7 +7,7 @@
 
 #include "../storage_ops.h"
 
-namespace geo {
+namespace sym {
 namespace matrix {
 
 /**
@@ -79,4 +79,4 @@ template <int Rows, int Cols>
 struct StorageOps<Eigen::Matrix<float, Rows, Cols>> : public matrix::StorageOps<float, Rows, Cols> {
 };
 
-}  // namespace geo
+}  // namespace sym

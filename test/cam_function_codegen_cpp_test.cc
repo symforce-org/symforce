@@ -33,10 +33,10 @@ void TestGeneratedFunction() {
   Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
   Scalar tolerance = 10.0 * epsilon;  // For assessing approximate equality
 
-  Eigen::Matrix<Scalar, geo::StorageOps<T>::StorageDim(), 1> data;
+  Eigen::Matrix<Scalar, sym::StorageOps<T>::StorageDim(), 1> data;
   std::mt19937 gen(42);
   std::uniform_real_distribution<Scalar> cam_dist(100.0, 500.0);
-  for (int i = 0; i < geo::StorageOps<T>::StorageDim(); i++) {
+  for (int i = 0; i < sym::StorageOps<T>::StorageDim(); i++) {
     data[i] = cam_dist(gen);
   }
   T cam(data);
@@ -52,6 +52,6 @@ void TestGeneratedFunction() {
 }
 
 int main(int argc, char** argv) {
-  TestGeneratedFunction<cam::LinearCameraCal<double>>();
-  TestGeneratedFunction<cam::LinearCameraCal<float>>();
+  TestGeneratedFunction<sym::LinearCameraCal<double>>();
+  TestGeneratedFunction<sym::LinearCameraCal<float>>();
 }

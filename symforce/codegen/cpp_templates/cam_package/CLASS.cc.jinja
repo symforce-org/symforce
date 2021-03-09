@@ -7,11 +7,11 @@
 
 // Explicit instantiation
 {% for scalar in scalar_types %}
-template class cam::{{ cls.__name__ }}<{{ scalar }}>;
+template class sym::{{ cls.__name__ }}<{{ scalar }}>;
 {% endfor %}
 
 // Camera operation implementations
-namespace cam {
+namespace sym {
 
 {% for spec in specs['CameraOps'] %}
 template <typename Scalar>
@@ -21,11 +21,11 @@ template <typename Scalar>
 
 {% endfor %}
 
-}  // namespace cam
+}  // namespace sym
 
 // Print implementations
 {% for scalar in scalar_types %}
-std::ostream& operator<<(std::ostream& os, const cam::{{ cls.__name__ }}{{ scalar[0] }}& a) {
+std::ostream& operator<<(std::ostream& os, const sym::{{ cls.__name__ }}{{ scalar[0] }}& a) {
     const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
     os << "<{{ cls.__name__ }}{{ scalar[0] }} " << a.Data().transpose().format(fmt) << ">";
     return os;
@@ -33,10 +33,10 @@ std::ostream& operator<<(std::ostream& os, const cam::{{ cls.__name__ }}{{ scala
 {% endfor %}
 
 {# {% for scalar in scalar_types %}
-extern template struct cam::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ scalar }}>;
-extern template struct cam::{{ camelcase_to_snakecase(cls.__name__) }}::GroupOps<{{ scalar }}>;
-extern template struct cam::{{ camelcase_to_snakecase(cls.__name__) }}::LieGroupOps<{{ scalar }}>;
-extern template struct geo::StorageOps<{{ scalar }}>;
+extern template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ scalar }}>;
+extern template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::GroupOps<{{ scalar }}>;
+extern template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::LieGroupOps<{{ scalar }}>;
+extern template struct sym::StorageOps<{{ scalar }}>;
 {% endfor %} #}
 
 // Concept implementations for this class

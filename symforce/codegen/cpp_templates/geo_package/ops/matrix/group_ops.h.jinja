@@ -7,7 +7,7 @@
 
 #include "../group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace matrix {
 
 /**
@@ -47,4 +47,4 @@ template<int Rows, int Cols>
 struct GroupOps<Eigen::Matrix<{{ scalar }}, Rows, Cols>> : public matrix::GroupOps<{{ scalar }}, Rows, Cols> {};
 {% endfor %}
 
-}  // namespace geo
+}  // namespace sym

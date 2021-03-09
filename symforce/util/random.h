@@ -27,53 +27,53 @@ T Random(std::mt19937& gen);
 // Specializations for doubles
 
 template <>
-geo::Rot2d Random<geo::Rot2d>(std::mt19937& gen) {
-  return geo::Rot2d::Random(gen);
+sym::Rot2d Random<sym::Rot2d>(std::mt19937& gen) {
+  return sym::Rot2d::Random(gen);
 }
 
 template <>
-geo::Rot3d Random<geo::Rot3d>(std::mt19937& gen) {
-  return geo::Rot3d::Random(gen);
+sym::Rot3d Random<sym::Rot3d>(std::mt19937& gen) {
+  return sym::Rot3d::Random(gen);
 }
 
 template <>
-geo::Pose2d Random<geo::Pose2d>(std::mt19937& gen) {
-  const geo::Rot2d rotation = Random<geo::Rot2d>(gen);
+sym::Pose2d Random<sym::Pose2d>(std::mt19937& gen) {
+  const sym::Rot2d rotation = Random<sym::Rot2d>(gen);
   const Eigen::Matrix<double, 2, 1> translation = RandomNormalVector<double, 2>(gen);
-  return geo::Pose2d(rotation, translation);
+  return sym::Pose2d(rotation, translation);
 }
 
 template <>
-geo::Pose3d Random<geo::Pose3d>(std::mt19937& gen) {
-  const geo::Rot3d rotation = Random<geo::Rot3d>(gen);
+sym::Pose3d Random<sym::Pose3d>(std::mt19937& gen) {
+  const sym::Rot3d rotation = Random<sym::Rot3d>(gen);
   const Eigen::Matrix<double, 3, 1> translation = RandomNormalVector<double, 3>(gen);
-  return geo::Pose3d(rotation, translation);
+  return sym::Pose3d(rotation, translation);
 }
 
 // Specializations for floats
 
 template <>
-geo::Rot2f Random<geo::Rot2f>(std::mt19937& gen) {
-  return geo::Rot2f::Random(gen);
+sym::Rot2f Random<sym::Rot2f>(std::mt19937& gen) {
+  return sym::Rot2f::Random(gen);
 }
 
 template <>
-geo::Rot3f Random<geo::Rot3f>(std::mt19937& gen) {
-  return geo::Rot3f::Random(gen);
+sym::Rot3f Random<sym::Rot3f>(std::mt19937& gen) {
+  return sym::Rot3f::Random(gen);
 }
 
 template <>
-geo::Pose2f Random<geo::Pose2f>(std::mt19937& gen) {
-  const geo::Rot2f rotation = Random<geo::Rot2f>(gen);
+sym::Pose2f Random<sym::Pose2f>(std::mt19937& gen) {
+  const sym::Rot2f rotation = Random<sym::Rot2f>(gen);
   const Eigen::Matrix<float, 2, 1> translation = RandomNormalVector<float, 2>(gen);
-  return geo::Pose2f(rotation, translation);
+  return sym::Pose2f(rotation, translation);
 }
 
 template <>
-geo::Pose3f Random<geo::Pose3f>(std::mt19937& gen) {
-  const geo::Rot3f rotation = Random<geo::Rot3f>(gen);
+sym::Pose3f Random<sym::Pose3f>(std::mt19937& gen) {
+  const sym::Rot3f rotation = Random<sym::Rot3f>(gen);
   const Eigen::Matrix<float, 3, 1> translation = RandomNormalVector<float, 3>(gen);
-  return geo::Pose3f(rotation, translation);
+  return sym::Pose3f(rotation, translation);
 }
 
 }  // namespace sym

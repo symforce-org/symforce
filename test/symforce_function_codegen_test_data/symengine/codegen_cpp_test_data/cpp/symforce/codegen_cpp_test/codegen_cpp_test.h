@@ -21,9 +21,9 @@ namespace codegen_cpp_test {
  */
 template <typename Scalar>
 void CodegenCppTest(
-    const Scalar x, const Scalar y, const geo::Rot3<Scalar>& rot,
-    const std::array<geo::Rot3<Scalar>, 3>& rot_vec, const std::array<Scalar, 3>& scalar_vec,
-    const std::array<std::array<geo::Rot3<Scalar>, 3>, 3>& list_of_lists,
+    const Scalar x, const Scalar y, const sym::Rot3<Scalar>& rot,
+    const std::array<sym::Rot3<Scalar>, 3>& rot_vec, const std::array<Scalar, 3>& scalar_vec,
+    const std::array<std::array<sym::Rot3<Scalar>, 3>, 3>& list_of_lists,
     const std::array<codegen_cpp_test::values_vec_t, 3>& values_vec,
     const std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>& values_vec_2D,
     const codegen_cpp_test::constants_t& constants, const codegen_cpp_test::states_t& states,

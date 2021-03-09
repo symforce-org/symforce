@@ -22,7 +22,7 @@ namespace sym {
  *
  */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const geo::Pose3<Scalar>& nav_T_cam,
+Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
                                           const Eigen::Matrix<Scalar, 3, 1>& nav_t_point,
                                           const Scalar epsilon) {
   // Total ops: 78

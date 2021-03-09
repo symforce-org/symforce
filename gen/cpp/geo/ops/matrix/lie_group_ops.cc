@@ -4,21 +4,21 @@
 #include "./lie_group_ops.h"
 
 // Explicit instantiation
-template struct geo::matrix::LieGroupOps<double, 1, 1>;
-template struct geo::matrix::LieGroupOps<double, 2, 1>;
-template struct geo::matrix::LieGroupOps<double, 3, 1>;
-template struct geo::matrix::LieGroupOps<double, 4, 1>;
-template struct geo::matrix::LieGroupOps<double, 5, 1>;
-template struct geo::matrix::LieGroupOps<double, 6, 1>;
-template struct geo::matrix::LieGroupOps<double, 7, 1>;
-template struct geo::matrix::LieGroupOps<double, 8, 1>;
-template struct geo::matrix::LieGroupOps<double, 9, 1>;
-template struct geo::matrix::LieGroupOps<float, 1, 1>;
-template struct geo::matrix::LieGroupOps<float, 2, 1>;
-template struct geo::matrix::LieGroupOps<float, 3, 1>;
-template struct geo::matrix::LieGroupOps<float, 4, 1>;
-template struct geo::matrix::LieGroupOps<float, 5, 1>;
-template struct geo::matrix::LieGroupOps<float, 6, 1>;
-template struct geo::matrix::LieGroupOps<float, 7, 1>;
-template struct geo::matrix::LieGroupOps<float, 8, 1>;
-template struct geo::matrix::LieGroupOps<float, 9, 1>;
+template struct sym::matrix::LieGroupOps<double, 1, 1>;
+template struct sym::matrix::LieGroupOps<double, 2, 1>;
+template struct sym::matrix::LieGroupOps<double, 3, 1>;
+template struct sym::matrix::LieGroupOps<double, 4, 1>;
+template struct sym::matrix::LieGroupOps<double, 5, 1>;
+template struct sym::matrix::LieGroupOps<double, 6, 1>;
+template struct sym::matrix::LieGroupOps<double, 7, 1>;
+template struct sym::matrix::LieGroupOps<double, 8, 1>;
+template struct sym::matrix::LieGroupOps<double, 9, 1>;
+template struct sym::matrix::LieGroupOps<float, 1, 1>;
+template struct sym::matrix::LieGroupOps<float, 2, 1>;
+template struct sym::matrix::LieGroupOps<float, 3, 1>;
+template struct sym::matrix::LieGroupOps<float, 4, 1>;
+template struct sym::matrix::LieGroupOps<float, 5, 1>;
+template struct sym::matrix::LieGroupOps<float, 6, 1>;
+template struct sym::matrix::LieGroupOps<float, 7, 1>;
+template struct sym::matrix::LieGroupOps<float, 8, 1>;
+template struct sym::matrix::LieGroupOps<float, 9, 1>;

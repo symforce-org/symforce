@@ -4,7 +4,7 @@
 
 #include "./storage_ops.h"
 
-namespace cam {
+namespace sym {
 namespace equidistant_epipolar_camera_cal {
 
 template <typename Scalar>
@@ -22,8 +22,8 @@ EquidistantEpipolarCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const Scala
 }
 
 }  // namespace equidistant_epipolar_camera_cal
-}  // namespace cam
+}  // namespace sym
 
 // Explicit instantiation
-template struct cam::equidistant_epipolar_camera_cal::StorageOps<double>;
-template struct cam::equidistant_epipolar_camera_cal::StorageOps<float>;
+template struct sym::equidistant_epipolar_camera_cal::StorageOps<double>;
+template struct sym::equidistant_epipolar_camera_cal::StorageOps<float>;

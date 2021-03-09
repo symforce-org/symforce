@@ -26,8 +26,8 @@ namespace sym {
  *
  */
 template <typename Scalar>
-void BetweenFactorPose3Rotation(const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b,
-                                const geo::Rot3<Scalar>& a_R_b,
+void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
+                                const sym::Rot3<Scalar>& a_R_b,
                                 const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                                 Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                                 Eigen::Matrix<Scalar, 3, 12>* const jac = nullptr) {

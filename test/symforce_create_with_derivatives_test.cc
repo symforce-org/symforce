@@ -21,16 +21,16 @@ void TestComposeNumericalDerivative() {
   using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
   std::mt19937 gen(24365);
   for (size_t i = 0; i < 10000; i++) {
-    const geo::Pose3<Scalar> a =
-        geo::Pose3<Scalar>(geo::Rot3<Scalar>::Random(gen), Vector3::Random());
-    const geo::Pose3<Scalar> b =
-        geo::Pose3<Scalar>(geo::Rot3<Scalar>::Random(gen), Vector3::Random());
+    const sym::Pose3<Scalar> a =
+        sym::Pose3<Scalar>(sym::Rot3<Scalar>::Random(gen), Vector3::Random());
+    const sym::Pose3<Scalar> b =
+        sym::Pose3<Scalar>(sym::Rot3<Scalar>::Random(gen), Vector3::Random());
     const Eigen::Matrix<Scalar, 6, 6> numerical_jacobian = sym::NumericalDerivative(
-        std::bind(&geo::GroupOps<geo::Pose3<Scalar>>::Compose, std::placeholders::_1, b), a,
+        std::bind(&sym::GroupOps<sym::Pose3<Scalar>>::Compose, std::placeholders::_1, b), a,
         epsilon, std::sqrt(epsilon));
 
     Eigen::Matrix<Scalar, 6, 6> symforce_jacobian;
-    const geo::Pose3<Scalar> symforce_result =
+    const sym::Pose3<Scalar> symforce_result =
         sym::ComposePose3_ValueAndJacobian0(a, b, &symforce_jacobian);
     (void)symforce_result;
 

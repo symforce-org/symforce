@@ -4,5 +4,5 @@
 #include "./group_ops.h"
 
 // Explicit instantiation
-template struct geo::scalar::GroupOps<double>;
-template struct geo::scalar::GroupOps<float>;
+template struct sym::scalar::GroupOps<double>;
+template struct sym::scalar::GroupOps<float>;

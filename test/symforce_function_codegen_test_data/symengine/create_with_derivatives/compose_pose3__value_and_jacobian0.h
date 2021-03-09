@@ -20,8 +20,8 @@ namespace sym {
  *     geo.Matrix: Jacobian for arg 0 (a)
  */
 template <typename Scalar>
-geo::Pose3<Scalar> ComposePose3_ValueAndJacobian0(
-    const geo::Pose3<Scalar>& a, const geo::Pose3<Scalar>& b,
+sym::Pose3<Scalar> ComposePose3_ValueAndJacobian0(
+    const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
     Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr) {
   // Total ops: 495
 
@@ -215,7 +215,7 @@ geo::Pose3<Scalar> ComposePose3_ValueAndJacobian0(
     _res_D_a(5, 5) = _tmp123 * _tmp22 + _tmp124 * _tmp18 + _tmp125 * _tmp8;
   }
 
-  return geo::Pose3<Scalar>(_res);
+  return sym::Pose3<Scalar>(_res);
 }  // NOLINT(readability/fn_size)
 
 // NOLINTNEXTLINE(readability/fn_size)

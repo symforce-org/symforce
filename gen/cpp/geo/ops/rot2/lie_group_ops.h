@@ -8,12 +8,12 @@
 #include "../lie_group_ops.h"
 
 // Forward declare class, without including header
-namespace geo {
+namespace sym {
 template <typename ScalarType>
 class Rot2;
-}  // namespace geo
+}  // namespace sym
 
-namespace geo {
+namespace sym {
 namespace rot2 {
 
 /**
@@ -27,13 +27,13 @@ struct LieGroupOps {
 
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
-  static geo::Rot2<Scalar> FromTangent(const Eigen::Matrix<Scalar, 1, 1>& vec,
+  static sym::Rot2<Scalar> FromTangent(const Eigen::Matrix<Scalar, 1, 1>& vec,
                                        const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 1, 1> ToTangent(const geo::Rot2<Scalar>& a, const Scalar epsilon);
-  static geo::Rot2<Scalar> Retract(const geo::Rot2<Scalar>& a,
+  static Eigen::Matrix<Scalar, 1, 1> ToTangent(const sym::Rot2<Scalar>& a, const Scalar epsilon);
+  static sym::Rot2<Scalar> Retract(const sym::Rot2<Scalar>& a,
                                    const Eigen::Matrix<Scalar, 1, 1>& vec, const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 1, 1> LocalCoordinates(const geo::Rot2<Scalar>& a,
-                                                      const geo::Rot2<Scalar>& b,
+  static Eigen::Matrix<Scalar, 1, 1> LocalCoordinates(const sym::Rot2<Scalar>& a,
+                                                      const sym::Rot2<Scalar>& b,
                                                       const Scalar epsilon);
 };
 
@@ -45,4 +45,4 @@ struct LieGroupOps<Rot2<double>> : public rot2::LieGroupOps<double> {};
 template <>
 struct LieGroupOps<Rot2<float>> : public rot2::LieGroupOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

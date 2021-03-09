@@ -19,7 +19,7 @@
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"
 
-namespace geo {
+namespace sym {
 
 {% if doc %}
 /**
@@ -194,16 +194,16 @@ class {{ cls.__name__ }} {
 using {{ cls.__name__ }}{{ scalar[0] }} = {{ cls.__name__ }}<{{ scalar }}>;
 {% endfor %}
 
-}  // namespace geo
+}  // namespace sym
 
 // Externs to reduce duplicate instantiation
 {% for scalar in scalar_types %}
-extern template class geo::{{ cls.__name__ }}<{{ scalar }}>;
+extern template class sym::{{ cls.__name__ }}<{{ scalar }}>;
 {% endfor %}
 
 // Print definitions
 {% for scalar in scalar_types %}
-std::ostream& operator<<(std::ostream& os, const geo::{{ cls.__name__ }}<{{ scalar }}>& a);
+std::ostream& operator<<(std::ostream& os, const sym::{{ cls.__name__ }}<{{ scalar }}>& a);
 {% endfor %}
 
 // Concept implementations for this class (include order matters here)

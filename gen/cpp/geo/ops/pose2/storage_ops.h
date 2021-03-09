@@ -5,7 +5,7 @@
 
 #include <geo/pose2.h>
 
-namespace geo {
+namespace sym {
 namespace pose2 {
 
 /**
@@ -13,14 +13,14 @@ namespace pose2 {
  */
 template <typename ScalarType>
 struct StorageOps {
-  using Scalar = typename geo::Pose2<ScalarType>::Scalar;
+  using Scalar = typename sym::Pose2<ScalarType>::Scalar;
 
   static constexpr int32_t StorageDim() {
     return 4;
   }
 
-  static void ToStorage(const geo::Pose2<ScalarType>& a, ScalarType* out);
-  static geo::Pose2<ScalarType> FromStorage(const ScalarType* data);
+  static void ToStorage(const sym::Pose2<ScalarType>& a, ScalarType* out);
+  static sym::Pose2<ScalarType> FromStorage(const ScalarType* data);
 };
 
 }  // namespace pose2
@@ -31,4 +31,4 @@ struct StorageOps<Pose2<double>> : public pose2::StorageOps<double> {};
 template <>
 struct StorageOps<Pose2<float>> : public pose2::StorageOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

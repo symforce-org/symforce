@@ -4,7 +4,7 @@
 
 #include "./storage_ops.h"
 
-namespace cam {
+namespace sym {
 namespace linear_camera_cal {
 
 template <typename Scalar>
@@ -20,8 +20,8 @@ LinearCameraCal<Scalar> StorageOps<Scalar>::FromStorage(const Scalar* const vec)
 }
 
 }  // namespace linear_camera_cal
-}  // namespace cam
+}  // namespace sym
 
 // Explicit instantiation
-template struct cam::linear_camera_cal::StorageOps<double>;
-template struct cam::linear_camera_cal::StorageOps<float>;
+template struct sym::linear_camera_cal::StorageOps<double>;
+template struct sym::linear_camera_cal::StorageOps<float>;

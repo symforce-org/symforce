@@ -24,7 +24,7 @@ namespace sym {
  *
  */
 template <typename Scalar>
-void PriorFactorRot3(const geo::Rot3<Scalar>& value, const geo::Rot3<Scalar>& prior,
+void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& prior,
                      const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                      Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
                      Eigen::Matrix<Scalar, 3, 3>* const jac = nullptr) {

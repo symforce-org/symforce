@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 #include <cam/equidistant_epipolar_camera_cal.h>
 
-namespace cam {
+namespace sym {
 namespace equidistant_epipolar_camera_cal {
 
 /**
@@ -21,21 +21,21 @@ struct StorageOps {
     return 4;
   }
 
-  static void ToStorage(const cam::EquidistantEpipolarCameraCal<Scalar>& a, Scalar* const vec);
-  static cam::EquidistantEpipolarCameraCal<Scalar> FromStorage(const Scalar* const vec);
+  static void ToStorage(const sym::EquidistantEpipolarCameraCal<Scalar>& a, Scalar* const vec);
+  static sym::EquidistantEpipolarCameraCal<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace equidistant_epipolar_camera_cal
-}  // namespace cam
+}  // namespace sym
 
 // Wrapper to specialize the public concept
-namespace geo {
+namespace sym {
 
 template <>
-struct StorageOps<cam::EquidistantEpipolarCameraCal<double>>
-    : public cam::equidistant_epipolar_camera_cal::StorageOps<double> {};
+struct StorageOps<sym::EquidistantEpipolarCameraCal<double>>
+    : public sym::equidistant_epipolar_camera_cal::StorageOps<double> {};
 template <>
-struct StorageOps<cam::EquidistantEpipolarCameraCal<float>>
-    : public cam::equidistant_epipolar_camera_cal::StorageOps<float> {};
+struct StorageOps<sym::EquidistantEpipolarCameraCal<float>>
+    : public sym::equidistant_epipolar_camera_cal::StorageOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

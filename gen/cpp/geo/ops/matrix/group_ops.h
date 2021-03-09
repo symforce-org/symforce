@@ -7,7 +7,7 @@
 
 #include "../group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace matrix {
 
 /**
@@ -79,4 +79,4 @@ struct GroupOps<Eigen::Matrix<float, 9, 1>> : public matrix::GroupOps<float, 9, 
 template <int Rows, int Cols>
 struct GroupOps<Eigen::Matrix<float, Rows, Cols>> : public matrix::GroupOps<float, Rows, Cols> {};
 
-}  // namespace geo
+}  // namespace sym

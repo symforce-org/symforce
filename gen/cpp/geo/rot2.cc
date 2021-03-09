@@ -5,16 +5,16 @@
 #include "./rot2.h"
 
 // Explicit instantiation
-template class geo::Rot2<double>;
-template class geo::Rot2<float>;
+template class sym::Rot2<double>;
+template class sym::Rot2<float>;
 
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const geo::Rot2d& a) {
+std::ostream& operator<<(std::ostream& os, const sym::Rot2d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Rot2d " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const geo::Rot2f& a) {
+std::ostream& operator<<(std::ostream& os, const sym::Rot2f& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Rot2f " << a.Data().transpose().format(fmt) << ">";
   return os;
@@ -25,7 +25,7 @@ std::ostream& operator<<(std::ostream& os, const geo::Rot2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 2> geo::Rot2<Scalar>::ToRotationMatrix() const {
+Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
   // Total ops: 1
 
   // Input arrays

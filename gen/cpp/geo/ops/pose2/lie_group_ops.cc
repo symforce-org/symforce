@@ -9,11 +9,11 @@
 
 #include <geo/pose2.h>
 
-namespace geo {
+namespace sym {
 namespace pose2 {
 
 template <typename Scalar>
-geo::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3, 1>& vec,
+sym::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3, 1>& vec,
                                                     const Scalar epsilon) {
   // Total ops: 26
 
@@ -37,11 +37,11 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
   _res[2] = -_tmp3 * vec(1, 0) + _tmp4 * vec(0, 0);
   _res[3] = _tmp3 * vec(0, 0) + _tmp4 * vec(1, 0);
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose2<Scalar>& a,
+Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const sym::Pose2<Scalar>& a,
                                                            const Scalar epsilon) {
   // Total ops: 24
 
@@ -69,7 +69,7 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const geo::Pose2<Scal
 }
 
 template <typename Scalar>
-geo::Pose2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose2<Scalar>& a,
+sym::Pose2<Scalar> LieGroupOps<Scalar>::Retract(const sym::Pose2<Scalar>& a,
                                                 const Eigen::Matrix<Scalar, 3, 1>& vec,
                                                 const Scalar epsilon) {
   // Total ops: 42
@@ -97,12 +97,12 @@ geo::Pose2<Scalar> LieGroupOps<Scalar>::Retract(const geo::Pose2<Scalar>& a,
   _res[2] = _a[0] * _tmp6 - _a[1] * _tmp5 + _a[2];
   _res[3] = _a[0] * _tmp5 + _a[1] * _tmp6 + _a[3];
 
-  return geo::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res);
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pose2<Scalar>& a,
-                                                                  const geo::Pose2<Scalar>& b,
+Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Pose2<Scalar>& a,
+                                                                  const sym::Pose2<Scalar>& b,
                                                                   const Scalar epsilon) {
   // Total ops: 55
 
@@ -136,8 +136,8 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const geo::Pos
 }
 
 }  // namespace pose2
-}  // namespace geo
+}  // namespace sym
 
 // Explicit instantiation
-template struct geo::pose2::LieGroupOps<double>;
-template struct geo::pose2::LieGroupOps<float>;
+template struct sym::pose2::LieGroupOps<double>;
+template struct sym::pose2::LieGroupOps<float>;

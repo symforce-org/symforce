@@ -20,18 +20,18 @@ using type_t = symforce::type_t;
  * Get the enum type value corresponding to the templated type. This function
  * is statically evaluated and becomes the appropriate enum constant.
  */
-// TOOD(hayk): We should generate geo::StorageOps<T>::TypeEnum() instead.
+// TOOD(hayk): We should generate sym::StorageOps<T>::TypeEnum() instead.
 template <typename Scalar, typename T>
 type_t GetType() {
   if (std::is_same<T, Scalar>::value) {
     return type_t::SCALAR;
-  } else if (std::is_same<T, geo::Rot2<Scalar>>::value) {
+  } else if (std::is_same<T, sym::Rot2<Scalar>>::value) {
     return type_t::ROT2;
-  } else if (std::is_same<T, geo::Rot3<Scalar>>::value) {
+  } else if (std::is_same<T, sym::Rot3<Scalar>>::value) {
     return type_t::ROT3;
-  } else if (std::is_same<T, geo::Pose2<Scalar>>::value) {
+  } else if (std::is_same<T, sym::Pose2<Scalar>>::value) {
     return type_t::POSE2;
-  } else if (std::is_same<T, geo::Pose3<Scalar>>::value) {
+  } else if (std::is_same<T, sym::Pose3<Scalar>>::value) {
     return type_t::POSE3;
   } else if (std::is_same<T, Eigen::Matrix<Scalar, 1, 1>>::value) {
     return type_t::VECTOR1;
@@ -69,16 +69,16 @@ type_t GetType() {
   void name(const type_t type, Args&&... args) {    \
     switch (type.value) {                           \
       case type_t::ROT2:                            \
-        func<geo::Rot2<Scalar>>(args...);           \
+        func<sym::Rot2<Scalar>>(args...);           \
         break;                                      \
       case type_t::ROT3:                            \
-        func<geo::Rot3<Scalar>>(args...);           \
+        func<sym::Rot3<Scalar>>(args...);           \
         break;                                      \
       case type_t::POSE2:                           \
-        func<geo::Pose2<Scalar>>(args...);          \
+        func<sym::Pose2<Scalar>>(args...);          \
         break;                                      \
       case type_t::POSE3:                           \
-        func<geo::Pose3<Scalar>>(args...);          \
+        func<sym::Pose3<Scalar>>(args...);          \
         break;                                      \
       case type_t::SCALAR:                          \
         func<Scalar>(args...);                      \

@@ -99,15 +99,15 @@ void TestRotSmoothing() {
   const double between_sigma = 0.5;      // [rad]
 
   // Set points (doing 180 rotation to keep it hard)
-  const geo::Rot3d prior_start = geo::Rot3d::FromYawPitchRoll(0.0, 0.0, 0.0);
-  const geo::Rot3d prior_last = geo::Rot3d::FromYawPitchRoll(M_PI, 0.0, 0.0);
+  const sym::Rot3d prior_start = sym::Rot3d::FromYawPitchRoll(0.0, 0.0, 0.0);
+  const sym::Rot3d prior_last = sym::Rot3d::FromYawPitchRoll(M_PI, 0.0, 0.0);
 
   // Simple wrapper to add a prior
   // TODO(hayk): Make a template specialization mechanism to generalize this to any geo type.
-  const auto create_prior_factor = [&epsilon](const sym::Key& key, const geo::Rot3d& prior,
+  const auto create_prior_factor = [&epsilon](const sym::Key& key, const sym::Rot3d& prior,
                                               const double sigma) {
     return sym::Factord::Jacobian(
-        [&prior, sigma, &epsilon](const geo::Rot3d& rot, Eigen::Vector3d* const res,
+        [&prior, sigma, &epsilon](const sym::Rot3d& rot, Eigen::Vector3d* const res,
                                   Eigen::Matrix3d* const jac) {
           const Eigen::Matrix3d sqrt_info = Eigen::Vector3d::Constant(1 / sigma).asDiagonal();
           sym::PriorFactorRot3<double>(rot, prior, sqrt_info, epsilon, res, jac);
@@ -123,12 +123,12 @@ void TestRotSmoothing() {
   // Add between factors in a chain
   for (int i = 0; i < num_keys - 1; ++i) {
     factors.push_back(sym::Factord::Jacobian(
-        [&between_sigma, &epsilon](const geo::Rot3d& a, const geo::Rot3d& b,
+        [&between_sigma, &epsilon](const sym::Rot3d& a, const sym::Rot3d& b,
                                    Eigen::Vector3d* const res,
                                    Eigen::Matrix<double, 3, 6>* const jac) {
           const Eigen::Matrix3d sqrt_info =
               Eigen::Vector3d::Constant(1 / between_sigma).asDiagonal();
-          const geo::Rot3d a_T_b = geo::Rot3d::Identity();
+          const sym::Rot3d a_T_b = sym::Rot3d::Identity();
           sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
         },
         /* keys */ {{'R', i}, {'R', i + 1}}));
@@ -138,8 +138,8 @@ void TestRotSmoothing() {
   sym::Valuesd values;
   std::srand(0);
   for (int i = 0; i < num_keys; ++i) {
-    const geo::Rot3d value = prior_start.Retract(0.4 * Eigen::Vector3d::Random());
-    values.Set<geo::Rot3d>({'R', i}, value);
+    const sym::Rot3d value = prior_start.Retract(0.4 * Eigen::Vector3d::Random());
+    values.Set<sym::Rot3d>({'R', i}, value);
   }
 
   std::cout << "Initial values: " << values << std::endl;
@@ -203,12 +203,12 @@ void TestNontrivialKeys() {
       }
 
       factors.push_back(sym::Factord::Jacobian(
-          [&between_sigma, &epsilon](const geo::Rot3d& a, const geo::Rot3d& b,
+          [&between_sigma, &epsilon](const sym::Rot3d& a, const sym::Rot3d& b,
                                      Eigen::Vector3d* const res,
                                      Eigen::Matrix<double, 3, 6>* const jac) {
             const Eigen::Matrix3d sqrt_info =
                 Eigen::Vector3d::Constant(1 / between_sigma).asDiagonal();
-            const geo::Rot3d a_T_b = geo::Rot3d::Identity();
+            const sym::Rot3d a_T_b = sym::Rot3d::Identity();
             sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
           },
           /* keys */ {{'R', i}, {'R', j}}));
@@ -221,8 +221,8 @@ void TestNontrivialKeys() {
   std::mt19937 gen(42);
 
   for (int i = 0; i < num_keys; ++i) {
-    const geo::Rot3d value = geo::Rot3d::FromTangent(0.4 * sym::RandomNormalVector<double, 3>(gen));
-    values.Set<geo::Rot3d>({'R', i}, value);
+    const sym::Rot3d value = sym::Rot3d::FromTangent(0.4 * sym::RandomNormalVector<double, 3>(gen));
+    values.Set<sym::Rot3d>({'R', i}, value);
   }
 
   std::cout << "Initial values: " << values << std::endl;

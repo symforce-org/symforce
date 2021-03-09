@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   codegen_multi_function_test::inputs_t inputs;
   inputs.x = 2.0;
   inputs.y = -5.0;
-  geo::Rot3<double> rot;
+  sym::Rot3<double> rot;
   std::copy_n(rot.Data().data(), 4, &inputs.rot[0]);
   inputs.states.p[0] = 1.0;
   inputs.states.p[1] = 2.0;

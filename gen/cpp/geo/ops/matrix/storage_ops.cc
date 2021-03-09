@@ -4,21 +4,21 @@
 #include "./storage_ops.h"
 
 // Explicit instantiation
-template struct geo::matrix::StorageOps<double, 1, 1>;
-template struct geo::matrix::StorageOps<double, 2, 1>;
-template struct geo::matrix::StorageOps<double, 3, 1>;
-template struct geo::matrix::StorageOps<double, 4, 1>;
-template struct geo::matrix::StorageOps<double, 5, 1>;
-template struct geo::matrix::StorageOps<double, 6, 1>;
-template struct geo::matrix::StorageOps<double, 7, 1>;
-template struct geo::matrix::StorageOps<double, 8, 1>;
-template struct geo::matrix::StorageOps<double, 9, 1>;
-template struct geo::matrix::StorageOps<float, 1, 1>;
-template struct geo::matrix::StorageOps<float, 2, 1>;
-template struct geo::matrix::StorageOps<float, 3, 1>;
-template struct geo::matrix::StorageOps<float, 4, 1>;
-template struct geo::matrix::StorageOps<float, 5, 1>;
-template struct geo::matrix::StorageOps<float, 6, 1>;
-template struct geo::matrix::StorageOps<float, 7, 1>;
-template struct geo::matrix::StorageOps<float, 8, 1>;
-template struct geo::matrix::StorageOps<float, 9, 1>;
+template struct sym::matrix::StorageOps<double, 1, 1>;
+template struct sym::matrix::StorageOps<double, 2, 1>;
+template struct sym::matrix::StorageOps<double, 3, 1>;
+template struct sym::matrix::StorageOps<double, 4, 1>;
+template struct sym::matrix::StorageOps<double, 5, 1>;
+template struct sym::matrix::StorageOps<double, 6, 1>;
+template struct sym::matrix::StorageOps<double, 7, 1>;
+template struct sym::matrix::StorageOps<double, 8, 1>;
+template struct sym::matrix::StorageOps<double, 9, 1>;
+template struct sym::matrix::StorageOps<float, 1, 1>;
+template struct sym::matrix::StorageOps<float, 2, 1>;
+template struct sym::matrix::StorageOps<float, 3, 1>;
+template struct sym::matrix::StorageOps<float, 4, 1>;
+template struct sym::matrix::StorageOps<float, 5, 1>;
+template struct sym::matrix::StorageOps<float, 6, 1>;
+template struct sym::matrix::StorageOps<float, 7, 1>;
+template struct sym::matrix::StorageOps<float, 8, 1>;
+template struct sym::matrix::StorageOps<float, 9, 1>;

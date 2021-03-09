@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 #include <cam/atan_camera_cal.h>
 
-namespace cam {
+namespace sym {
 namespace atan_camera_cal {
 
 /**
@@ -20,19 +20,19 @@ struct StorageOps {
     return 5;
   }
 
-  static void ToStorage(const cam::ATANCameraCal<Scalar>& a, Scalar* const vec);
-  static cam::ATANCameraCal<Scalar> FromStorage(const Scalar* const vec);
+  static void ToStorage(const sym::ATANCameraCal<Scalar>& a, Scalar* const vec);
+  static sym::ATANCameraCal<Scalar> FromStorage(const Scalar* const vec);
 };
 
 }  // namespace atan_camera_cal
-}  // namespace cam
+}  // namespace sym
 
 // Wrapper to specialize the public concept
-namespace geo {
+namespace sym {
 
 template <>
-struct StorageOps<cam::ATANCameraCal<double>> : public cam::atan_camera_cal::StorageOps<double> {};
+struct StorageOps<sym::ATANCameraCal<double>> : public sym::atan_camera_cal::StorageOps<double> {};
 template <>
-struct StorageOps<cam::ATANCameraCal<float>> : public cam::atan_camera_cal::StorageOps<float> {};
+struct StorageOps<sym::ATANCameraCal<float>> : public sym::atan_camera_cal::StorageOps<float> {};
 
-}  // namespace geo
+}  // namespace sym

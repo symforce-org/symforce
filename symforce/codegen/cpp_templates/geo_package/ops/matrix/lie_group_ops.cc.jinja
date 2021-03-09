@@ -6,6 +6,6 @@
 // Explicit instantiation
 {% for scalar in scalar_types %}
 {% for i in range(1, 10) %}
-template struct geo::matrix::LieGroupOps<{{ scalar }}, {{ i }}, 1>;
+template struct sym::matrix::LieGroupOps<{{ scalar }}, {{ i }}, 1>;
 {% endfor %}
 {% endfor %}

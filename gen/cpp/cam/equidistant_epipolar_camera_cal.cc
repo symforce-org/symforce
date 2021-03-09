@@ -5,11 +5,11 @@
 #include "./equidistant_epipolar_camera_cal.h"
 
 // Explicit instantiation
-template class cam::EquidistantEpipolarCameraCal<double>;
-template class cam::EquidistantEpipolarCameraCal<float>;
+template class sym::EquidistantEpipolarCameraCal<double>;
+template class sym::EquidistantEpipolarCameraCal<float>;
 
 // Camera operation implementations
-namespace cam {
+namespace sym {
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::FocalLength() const {
@@ -107,15 +107,15 @@ Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromP
   return _camera_ray;
 }
 
-}  // namespace cam
+}  // namespace sym
 
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const cam::EquidistantEpipolarCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<EquidistantEpipolarCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const cam::EquidistantEpipolarCameraCalf& a) {
+std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<EquidistantEpipolarCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;

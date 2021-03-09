@@ -4,24 +4,24 @@
 
 #include "./storage_ops.h"
 
-namespace geo {
+namespace sym {
 namespace pose2 {
 
 template <typename ScalarType>
-void StorageOps<ScalarType>::ToStorage(const geo::Pose2<ScalarType>& a, ScalarType* out) {
+void StorageOps<ScalarType>::ToStorage(const sym::Pose2<ScalarType>& a, ScalarType* out) {
   assert(out != nullptr);
   std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
 template <typename ScalarType>
-geo::Pose2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+sym::Pose2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return geo::Pose2<ScalarType>(Eigen::Map<const typename geo::Pose2<ScalarType>::DataVec>(data));
+  return sym::Pose2<ScalarType>(Eigen::Map<const typename sym::Pose2<ScalarType>::DataVec>(data));
 }
 
 }  // namespace pose2
-}  // namespace geo
+}  // namespace sym
 
 // Explicit instantiation
-template struct geo::pose2::StorageOps<double>;
-template struct geo::pose2::StorageOps<float>;
+template struct sym::pose2::StorageOps<double>;
+template struct sym::pose2::StorageOps<float>;

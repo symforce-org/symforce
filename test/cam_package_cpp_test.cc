@@ -33,58 +33,58 @@
   }
 
 template <typename Scalar>
-std::vector<cam::LinearCameraCal<Scalar>> GetCamCalsLinearCameraCal() {
-  std::vector<cam::LinearCameraCal<Scalar>> cam_cals;
+std::vector<sym::LinearCameraCal<Scalar>> GetCamCalsLinearCameraCal() {
+  std::vector<sym::LinearCameraCal<Scalar>> cam_cals;
 
   Eigen::Matrix<Scalar, 4, 1> data1;
   data1 << 90, 90, 60, 80;
-  cam_cals.push_back(cam::LinearCameraCal<Scalar>(data1));
+  cam_cals.push_back(sym::LinearCameraCal<Scalar>(data1));
 
   Eigen::Matrix<Scalar, 4, 1> data2;
   data2 << 380, 380, 320, 240;
-  cam_cals.push_back(cam::LinearCameraCal<Scalar>(data2));
+  cam_cals.push_back(sym::LinearCameraCal<Scalar>(data2));
 
   Eigen::Matrix<Scalar, 4, 1> data3;
   data3 << 500, 500, 1000, 800;
-  cam_cals.push_back(cam::LinearCameraCal<Scalar>(data3));
+  cam_cals.push_back(sym::LinearCameraCal<Scalar>(data3));
 
   return cam_cals;
 }
 
 template <typename Scalar>
-std::vector<cam::EquidistantEpipolarCameraCal<Scalar>> GetCamCalsEquidistantEpipolarCameraCal() {
-  std::vector<cam::EquidistantEpipolarCameraCal<Scalar>> cam_cals;
+std::vector<sym::EquidistantEpipolarCameraCal<Scalar>> GetCamCalsEquidistantEpipolarCameraCal() {
+  std::vector<sym::EquidistantEpipolarCameraCal<Scalar>> cam_cals;
 
   Eigen::Matrix<Scalar, 4, 1> data1;
   data1 << 90, 90, 60, 80;
-  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data1));
+  cam_cals.push_back(sym::EquidistantEpipolarCameraCal<Scalar>(data1));
 
   Eigen::Matrix<Scalar, 4, 1> data2;
   data2 << 380, 380, 320, 240;
-  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data2));
+  cam_cals.push_back(sym::EquidistantEpipolarCameraCal<Scalar>(data2));
 
   Eigen::Matrix<Scalar, 4, 1> data3;
   data3 << 500, 500, 1000, 800;
-  cam_cals.push_back(cam::EquidistantEpipolarCameraCal<Scalar>(data3));
+  cam_cals.push_back(sym::EquidistantEpipolarCameraCal<Scalar>(data3));
 
   return cam_cals;
 }
 
 template <typename Scalar>
-std::vector<cam::ATANCameraCal<Scalar>> GetCamCalsATANCameraCal() {
-  std::vector<cam::ATANCameraCal<Scalar>> cam_cals;
+std::vector<sym::ATANCameraCal<Scalar>> GetCamCalsATANCameraCal() {
+  std::vector<sym::ATANCameraCal<Scalar>> cam_cals;
 
   Eigen::Matrix<Scalar, 5, 1> data1;
   data1 << 90, 90, 60, 80, 0.68;
-  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data1));
+  cam_cals.push_back(sym::ATANCameraCal<Scalar>(data1));
 
   Eigen::Matrix<Scalar, 5, 1> data2;
   data2 << 380, 380, 320, 240, 0.35;
-  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data2));
+  cam_cals.push_back(sym::ATANCameraCal<Scalar>(data2));
 
   Eigen::Matrix<Scalar, 5, 1> data3;
   data3 << 500, 500, 1000, 800, 0.21;
-  cam_cals.push_back(cam::ATANCameraCal<Scalar>(data3));
+  cam_cals.push_back(sym::ATANCameraCal<Scalar>(data3));
 
   return cam_cals;
 }
@@ -95,7 +95,7 @@ void TestStorageOps(const T& cam_cal) {
 
   std::cout << "*** Testing StorageOps: " << cam_cal << " ***" << std::endl;
 
-  constexpr int32_t storage_dim = geo::StorageOps<T>::StorageDim();
+  constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   assertTrue(cam_cal.Data().rows() == storage_dim);
   assertTrue(cam_cal.Data().cols() == 1);
 
@@ -105,10 +105,10 @@ void TestStorageOps(const T& cam_cal) {
     assertTrue(arr[i] == cam_cal.Data()[i]);
   }
 
-  const T cam_cal2 = geo::StorageOps<T>::FromStorage(arr.data());
+  const T cam_cal2 = sym::StorageOps<T>::FromStorage(arr.data());
   assertTrue(cam_cal.Data() == cam_cal2.Data());
   arr[0] = 2.1;
-  const T cam_cal3 = geo::StorageOps<T>::FromStorage(arr.data());
+  const T cam_cal3 = sym::StorageOps<T>::FromStorage(arr.data());
   assertTrue(cam_cal.Data() != cam_cal3.Data());
 }
 
@@ -152,7 +152,7 @@ void TestCamera(const T& cam_cal) {
   Eigen::Matrix<int, 2, 1> image_size;
   image_size << int(2.0 * cam_cal.Data()[2]), int(2.0 * cam_cal.Data()[3]);
 
-  const cam::Camera<T> cam(cam_cal, image_size);
+  const sym::Camera<T> cam(cam_cal, image_size);
   Scalar is_valid;
 
   assertTrue(cam.Calibration() == cam_cal);
@@ -171,7 +171,7 @@ void TestCamera(const T& cam_cal) {
   cam.CameraRayFromPixel(invalid_pixel, epsilon, &is_valid);
   assertTrue(is_valid == 0);
   assertTrue(cam.MaybeCheckInView(invalid_pixel) == 0);
-  assertTrue(cam::Camera<T>::InView(invalid_pixel, image_size) == 0);
+  assertTrue(sym::Camera<T>::InView(invalid_pixel, image_size) == 0);
 
   // Check a point that's at the center of the image
   Eigen::Matrix<Scalar, 2, 1> valid_pixel;
@@ -180,7 +180,7 @@ void TestCamera(const T& cam_cal) {
       cam.CameraRayFromPixel(valid_pixel, epsilon, &is_valid);
   assertTrue(is_valid == 1);
   assertTrue(cam.MaybeCheckInView(valid_pixel) == 1);
-  assertTrue(cam::Camera<T>::InView(valid_pixel, image_size) == 1);
+  assertTrue(sym::Camera<T>::InView(valid_pixel, image_size) == 1);
 
   // Project a point into the camera and check validity
   cam.PixelFromCameraPoint(valid_camera_point, epsilon, &is_valid);
@@ -201,8 +201,8 @@ void TestPosedCamera(const T& cam_cal) {
   std::uniform_real_distribution<Scalar> pixel_y_dist(0.0, 2.0 * cam_cal.Data()[3]);
   std::uniform_real_distribution<Scalar> range_dist(1.0, 5.0);
   for (int i = 0; i < 10; i++) {
-    const geo::Pose3<Scalar> pose = sym::Random<geo::Pose3<Scalar>>(gen);
-    const cam::PosedCamera<T> cam(pose, cam_cal);
+    const sym::Pose3<Scalar> pose = sym::Random<sym::Pose3<Scalar>>(gen);
+    const sym::PosedCamera<T> cam(pose, cam_cal);
 
     assertTrue(cam.Pose() == pose);
 
@@ -220,8 +220,8 @@ void TestPosedCamera(const T& cam_cal) {
       assertTrue(pixel.isApprox(pixel_reprojected, tolerance));
     }
 
-    const geo::Pose3<Scalar> pose2 = sym::Random<geo::Pose3<Scalar>>(gen);
-    const cam::PosedCamera<T> cam2(pose2, cam_cal);
+    const sym::Pose3<Scalar> pose2 = sym::Random<sym::Pose3<Scalar>>(gen);
+    const sym::PosedCamera<T> cam2(pose2, cam_cal);
     Scalar is_valid_warped_pixel;
     const Scalar inverse_range = 1 / (range_to_point + epsilon);
     const Eigen::Matrix<Scalar, 2, 1> warped_pixel =
@@ -238,58 +238,58 @@ void TestPosedCamera(const T& cam_cal) {
 }
 
 int main(int argc, char** argv) {
-  std::vector<cam::LinearCameraCal<double>> cam_cals_LinearCameraCal_double =
+  std::vector<sym::LinearCameraCal<double>> cam_cals_LinearCameraCal_double =
       GetCamCalsLinearCameraCal<double>();
   for (auto cam_cal : cam_cals_LinearCameraCal_double) {
-    TestStorageOps<cam::LinearCameraCal<double>>(cam_cal);
-    TestProjectDeproject<cam::LinearCameraCal<double>>(cam_cal);
-    TestCamera<cam::LinearCameraCal<double>>(cam_cal);
-    TestPosedCamera<cam::LinearCameraCal<double>>(cam_cal);
+    TestStorageOps<sym::LinearCameraCal<double>>(cam_cal);
+    TestProjectDeproject<sym::LinearCameraCal<double>>(cam_cal);
+    TestCamera<sym::LinearCameraCal<double>>(cam_cal);
+    TestPosedCamera<sym::LinearCameraCal<double>>(cam_cal);
   }
 
-  std::vector<cam::EquidistantEpipolarCameraCal<double>>
+  std::vector<sym::EquidistantEpipolarCameraCal<double>>
       cam_cals_EquidistantEpipolarCameraCal_double =
           GetCamCalsEquidistantEpipolarCameraCal<double>();
   for (auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_double) {
-    TestStorageOps<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
-    TestProjectDeproject<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
-    TestCamera<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
-    TestPosedCamera<cam::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestStorageOps<sym::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestProjectDeproject<sym::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestCamera<sym::EquidistantEpipolarCameraCal<double>>(cam_cal);
+    TestPosedCamera<sym::EquidistantEpipolarCameraCal<double>>(cam_cal);
   }
 
-  std::vector<cam::ATANCameraCal<double>> cam_cals_ATANCameraCal_double =
+  std::vector<sym::ATANCameraCal<double>> cam_cals_ATANCameraCal_double =
       GetCamCalsATANCameraCal<double>();
   for (auto cam_cal : cam_cals_ATANCameraCal_double) {
-    TestStorageOps<cam::ATANCameraCal<double>>(cam_cal);
-    TestProjectDeproject<cam::ATANCameraCal<double>>(cam_cal);
-    TestCamera<cam::ATANCameraCal<double>>(cam_cal);
-    TestPosedCamera<cam::ATANCameraCal<double>>(cam_cal);
+    TestStorageOps<sym::ATANCameraCal<double>>(cam_cal);
+    TestProjectDeproject<sym::ATANCameraCal<double>>(cam_cal);
+    TestCamera<sym::ATANCameraCal<double>>(cam_cal);
+    TestPosedCamera<sym::ATANCameraCal<double>>(cam_cal);
   }
 
-  std::vector<cam::LinearCameraCal<float>> cam_cals_LinearCameraCal_float =
+  std::vector<sym::LinearCameraCal<float>> cam_cals_LinearCameraCal_float =
       GetCamCalsLinearCameraCal<float>();
   for (auto cam_cal : cam_cals_LinearCameraCal_float) {
-    TestStorageOps<cam::LinearCameraCal<float>>(cam_cal);
-    TestProjectDeproject<cam::LinearCameraCal<float>>(cam_cal);
-    TestCamera<cam::LinearCameraCal<float>>(cam_cal);
-    TestPosedCamera<cam::LinearCameraCal<float>>(cam_cal);
+    TestStorageOps<sym::LinearCameraCal<float>>(cam_cal);
+    TestProjectDeproject<sym::LinearCameraCal<float>>(cam_cal);
+    TestCamera<sym::LinearCameraCal<float>>(cam_cal);
+    TestPosedCamera<sym::LinearCameraCal<float>>(cam_cal);
   }
 
-  std::vector<cam::EquidistantEpipolarCameraCal<float>>
+  std::vector<sym::EquidistantEpipolarCameraCal<float>>
       cam_cals_EquidistantEpipolarCameraCal_float = GetCamCalsEquidistantEpipolarCameraCal<float>();
   for (auto cam_cal : cam_cals_EquidistantEpipolarCameraCal_float) {
-    TestStorageOps<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
-    TestProjectDeproject<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
-    TestCamera<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
-    TestPosedCamera<cam::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestStorageOps<sym::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestProjectDeproject<sym::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestCamera<sym::EquidistantEpipolarCameraCal<float>>(cam_cal);
+    TestPosedCamera<sym::EquidistantEpipolarCameraCal<float>>(cam_cal);
   }
 
-  std::vector<cam::ATANCameraCal<float>> cam_cals_ATANCameraCal_float =
+  std::vector<sym::ATANCameraCal<float>> cam_cals_ATANCameraCal_float =
       GetCamCalsATANCameraCal<float>();
   for (auto cam_cal : cam_cals_ATANCameraCal_float) {
-    TestStorageOps<cam::ATANCameraCal<float>>(cam_cal);
-    TestProjectDeproject<cam::ATANCameraCal<float>>(cam_cal);
-    TestCamera<cam::ATANCameraCal<float>>(cam_cal);
-    TestPosedCamera<cam::ATANCameraCal<float>>(cam_cal);
+    TestStorageOps<sym::ATANCameraCal<float>>(cam_cal);
+    TestProjectDeproject<sym::ATANCameraCal<float>>(cam_cal);
+    TestCamera<sym::ATANCameraCal<float>>(cam_cal);
+    TestPosedCamera<sym::ATANCameraCal<float>>(cam_cal);
   }
 }

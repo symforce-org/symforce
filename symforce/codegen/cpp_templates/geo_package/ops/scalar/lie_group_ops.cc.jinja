@@ -5,5 +5,5 @@
 
 // Explicit instantiation
 {% for scalar in scalar_types %}
-template struct geo::scalar::LieGroupOps<{{ scalar }}>;
+template struct sym::scalar::LieGroupOps<{{ scalar }}>;
 {% endfor %}

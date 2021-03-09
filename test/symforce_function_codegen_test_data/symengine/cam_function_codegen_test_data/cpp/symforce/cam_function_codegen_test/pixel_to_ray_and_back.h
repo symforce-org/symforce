@@ -14,7 +14,7 @@ namespace cam_function_codegen_test {
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>& pixel,
-                                              const cam::LinearCameraCal<Scalar>& cam,
+                                              const sym::LinearCameraCal<Scalar>& cam,
                                               const Scalar epsilon) {
   // Total ops: 10
 

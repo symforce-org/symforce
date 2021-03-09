@@ -8,7 +8,7 @@
 
 #include "../group_ops.h"
 
-namespace geo {
+namespace sym {
 namespace scalar {
 
 /**
@@ -43,4 +43,4 @@ template<>
 struct GroupOps<{{ scalar }}> : public scalar::GroupOps<{{ scalar }}> {};
 {% endfor %}
 
-}  // namespace geo
+}  // namespace sym
