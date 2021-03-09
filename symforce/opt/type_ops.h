@@ -1,13 +1,13 @@
 #pragma once
 
 // Import all the known types.
-#include <cam/linear_camera_cal.h>
-#include <geo/ops/lie_group_ops.h>
-#include <geo/ops/storage_ops.h>
-#include <geo/pose2.h>
-#include <geo/pose3.h>
-#include <geo/rot2.h>
-#include <geo/rot3.h>
+#include <sym/linear_camera_cal.h>
+#include <sym/ops/lie_group_ops.h>
+#include <sym/ops/storage_ops.h>
+#include <sym/pose2.h>
+#include <sym/pose3.h>
+#include <sym/rot2.h>
+#include <sym/rot3.h>
 #include <sym/util/typedefs.h>
 
 #include <lcmtypes/symforce/type_t.hpp>

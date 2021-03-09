@@ -152,7 +152,7 @@ class SymforceCodegenTest(TestCase):
             )
 
             geo_pkg = codegen_util.load_generated_package(
-                os.path.join(codegen_data["output_dir"], "geo")
+                os.path.join(codegen_data["output_dir"], "sym")
             )
             types_module = codegen_util.load_generated_package(
                 os.path.join(codegen_data["python_types_dir"], namespace)

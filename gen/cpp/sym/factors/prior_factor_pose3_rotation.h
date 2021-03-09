@@ -4,8 +4,8 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <geo/pose3.h>
-#include <geo/rot3.h>
+#include <sym/pose3.h>
+#include <sym/rot3.h>
 
 namespace sym {
 

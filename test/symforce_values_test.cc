@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <sys/time.h>
 
-#include <geo/rot3.h>
+#include <sym/rot3.h>
 
 #include "../symforce/opt/values.h"
 

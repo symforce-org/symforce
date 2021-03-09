@@ -1,7 +1,7 @@
 #include <iostream>
 #include <math.h>
 
-#include <geo/rot3.h>
+#include <sym/rot3.h>
 #include <symforce/codegen_nan_test/identity_dist_jacobian.h>
 
 // TODO(hayk): Use the catch unit testing framework (single header).

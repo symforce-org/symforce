@@ -1,7 +1,7 @@
 #pragma once
 
-#include <geo/ops/lie_group_ops.h>
-#include <geo/ops/storage_ops.h>
+#include <sym/ops/lie_group_ops.h>
+#include <sym/ops/storage_ops.h>
 #include <sym/util/typedefs.h>
 
 namespace sym {

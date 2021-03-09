@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <geo/pose2.h>
-#include <geo/pose3.h>
-#include <geo/rot2.h>
-#include <geo/rot3.h>
+#include <sym/pose2.h>
+#include <sym/pose3.h>
+#include <sym/rot2.h>
+#include <sym/rot3.h>
 
 namespace sym {
 

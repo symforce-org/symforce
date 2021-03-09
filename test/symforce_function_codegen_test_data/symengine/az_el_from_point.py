@@ -1,11 +1,11 @@
 import numpy
 import typing as T
 
-import geo  # pylint: disable=unused-import
+import sym  # pylint: disable=unused-import
 
 
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
-    # type: (geo.Pose3, T.Sequence[float], float) -> T.List[float]
+    # type: (sym.Pose3, T.Sequence[float], float) -> T.List[float]
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.

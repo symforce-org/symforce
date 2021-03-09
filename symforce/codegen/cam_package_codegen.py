@@ -133,7 +133,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
         logger.debug(f"Creating temp directory: {output_dir}")
 
     # Subdirectory for everything we'll generate
-    cam_package_dir = os.path.join(output_dir, "cam")
+    cam_package_dir = os.path.join(output_dir, "sym")
     templates = template_util.TemplateList()
 
     if mode == CodegenMode.CPP:
@@ -143,7 +143,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
 
-        geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir, gen_example=False)
+        geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
         # Build up templates for each type
         for cls in DEFAULT_CAM_TYPES:
@@ -180,7 +180,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
             "Makefile",
         ):
             templates.add(
-                os.path.join(template_dir, "example", name) + ".jinja",
+                os.path.join(template_dir, "..", "example", name) + ".jinja",
                 os.path.join(output_dir, "example", name),
                 dict(
                     Codegen.common_data(),

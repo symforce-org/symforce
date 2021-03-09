@@ -44,10 +44,8 @@
         T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
     {%- else -%}
         {%- if is_input -%}
-            {%- if "geo" in T.__module__ -%}
-                geo.
-            {%- elif "cam" in T.__module__ -%}
-                cam.
+            {%- if "geo" in T.__module__ or "cam" in T.__module__ -%}
+                sym.
             {%- endif -%}
             {{- T.__name__ -}}
         {%- else -%}

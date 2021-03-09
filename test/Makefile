@@ -9,7 +9,7 @@ INCLUDES = -I../gen/cpp -I./ -I***REMOVED***/include/eigen3
 CXXFLAGS = -std=c++17 -L./ `pkg-config --cflags lcm`
 LDFLAGS = -shared -fpic
 
-CC_FILES =../gen/cpp/geo/*.cc ../gen/cpp/geo/ops/**/*.cc
+CC_FILES =../gen/cpp/sym/*.cc ../gen/cpp/sym/ops/**/*.cc
 
 CC_FILES_VALUES =../symforce/opt/*.cc
 

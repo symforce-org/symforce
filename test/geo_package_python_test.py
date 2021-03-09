@@ -14,7 +14,7 @@ import unittest
 # Add the generated package to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import geo
+import sym
 
 
 class GeoPackageTest(unittest.TestCase):
@@ -33,10 +33,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot2 StorageOps
+            sym.Rot2 StorageOps
         """
 
-        geo_class = geo.Rot2
+        geo_class = sym.Rot2
         print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
@@ -58,10 +58,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot2 GroupOps
+            sym.Rot2 GroupOps
         """
-        geo_class = geo.Rot2
-        group_ops = geo.ops.rot2.GroupOps
+        geo_class = sym.Rot2
+        group_ops = sym.ops.rot2.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -81,10 +81,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot2 LieGroupOps
+            sym.Rot2 LieGroupOps
         """
 
-        geo_class = geo.Rot2
+        geo_class = sym.Rot2
         print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -107,9 +107,9 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot2 custom methods
+            sym.Rot2 custom methods
         """
-        geo_class = geo.Rot2
+        geo_class = sym.Rot2
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -123,10 +123,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose2 StorageOps
+            sym.Pose2 StorageOps
         """
 
-        geo_class = geo.Pose2
+        geo_class = sym.Pose2
         print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
@@ -148,10 +148,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose2 GroupOps
+            sym.Pose2 GroupOps
         """
-        geo_class = geo.Pose2
-        group_ops = geo.ops.pose2.GroupOps
+        geo_class = sym.Pose2
+        group_ops = sym.ops.pose2.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -171,10 +171,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose2 LieGroupOps
+            sym.Pose2 LieGroupOps
         """
 
-        geo_class = geo.Pose2
+        geo_class = sym.Pose2
         print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -197,9 +197,9 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose2 custom methods
+            sym.Pose2 custom methods
         """
-        geo_class = geo.Pose2
+        geo_class = sym.Pose2
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -213,10 +213,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot3 StorageOps
+            sym.Rot3 StorageOps
         """
 
-        geo_class = geo.Rot3
+        geo_class = sym.Rot3
         print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
@@ -238,10 +238,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot3 GroupOps
+            sym.Rot3 GroupOps
         """
-        geo_class = geo.Rot3
-        group_ops = geo.ops.rot3.GroupOps
+        geo_class = sym.Rot3
+        group_ops = sym.ops.rot3.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -261,10 +261,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot3 LieGroupOps
+            sym.Rot3 LieGroupOps
         """
 
-        geo_class = geo.Rot3
+        geo_class = sym.Rot3
         print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -287,9 +287,9 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Rot3 custom methods
+            sym.Rot3 custom methods
         """
-        geo_class = geo.Rot3
+        geo_class = sym.Rot3
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -303,10 +303,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose3 StorageOps
+            sym.Pose3 StorageOps
         """
 
-        geo_class = geo.Pose3
+        geo_class = sym.Pose3
         print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
@@ -328,10 +328,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose3 GroupOps
+            sym.Pose3 GroupOps
         """
-        geo_class = geo.Pose3
-        group_ops = geo.ops.pose3.GroupOps
+        geo_class = sym.Pose3
+        group_ops = sym.ops.pose3.GroupOps
         print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
@@ -351,10 +351,10 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose3 LieGroupOps
+            sym.Pose3 LieGroupOps
         """
 
-        geo_class = geo.Pose3
+        geo_class = sym.Pose3
         print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
@@ -377,9 +377,9 @@ class GeoPackageTest(unittest.TestCase):
         # type: () -> None
         """
         Tests:
-            geo.Pose3 custom methods
+            sym.Pose3 custom methods
         """
-        geo_class = geo.Pose3
+        geo_class = sym.Pose3
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()

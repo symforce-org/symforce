@@ -4,7 +4,7 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <geo/rot3.h>
+#include <sym/rot3.h>
 
 #include <lcmtypes/codegen_cpp_test/constants_t.hpp>
 #include <lcmtypes/codegen_cpp_test/states_t.hpp>

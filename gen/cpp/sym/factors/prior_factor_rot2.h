@@ -4,7 +4,7 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <geo/rot2.h>
+#include <sym/rot2.h>
 
 namespace sym {
 

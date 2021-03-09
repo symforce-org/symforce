@@ -172,7 +172,7 @@ def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
     return data
 
 
-def generate(mode: CodegenMode, output_dir: str = None, gen_example: bool = True) -> str:
+def generate(mode: CodegenMode, output_dir: str = None) -> str:
     """
     Generate the geo package for the given language.
 
@@ -183,13 +183,8 @@ def generate(mode: CodegenMode, output_dir: str = None, gen_example: bool = True
         output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{mode.name}_", dir="/tmp")
         logger.debug(f"Creating temp directory: {output_dir}")
     # Subdirectory for everything we'll generate
-    package_dir = os.path.join(output_dir, "geo")
+    package_dir = os.path.join(output_dir, "sym")
     templates = template_util.TemplateList()
-
-    # First generate the sym/util package as it's a dependency of the geo package
-    from symforce.codegen import sym_util_package_codegen
-
-    sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
 
     if mode == CodegenMode.PYTHON2:
         logger.info(f'Creating Python package at: "{package_dir}"')
@@ -218,15 +213,19 @@ def generate(mode: CodegenMode, output_dir: str = None, gen_example: bool = True
         )
 
         # Test example
-        if gen_example:
-            for name in ("geo_package_python_test.py",):
-                templates.add(
-                    os.path.join(template_dir, "example", name) + ".jinja",
-                    os.path.join(output_dir, "example", name),
-                    dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES,),
-                )
+        for name in ("geo_package_python_test.py",):
+            templates.add(
+                os.path.join(template_dir, "example", name) + ".jinja",
+                os.path.join(output_dir, "example", name),
+                dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
+            )
 
     elif mode == CodegenMode.CPP:
+        # First generate the sym/util package as it's a dependency of the geo package
+        from symforce.codegen import sym_util_package_codegen
+
+        sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
+
         logger.info(f'Creating C++ package at: "{package_dir}"')
         template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "geo_package")
 
@@ -265,24 +264,23 @@ def generate(mode: CodegenMode, output_dir: str = None, gen_example: bool = True
             )
 
         # Test example
-        if gen_example:
-            for name in ("geo_package_cpp_test.cc", "Makefile"):
-                templates.add(
-                    os.path.join(template_dir, "example", name) + ".jinja",
-                    os.path.join(output_dir, "example", name),
-                    dict(
-                        Codegen.common_data(),
-                        all_types=DEFAULT_GEO_TYPES,
-                        include_dir=output_dir,
-                        symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
-                        eigen_include_dir=os.path.realpath(
-                            os.path.join(
-                                CURRENT_DIR, "***REMOVED***/include/eigen3/"
-                            )
-                        ),
-                        lib_dir=os.path.join(output_dir, "example"),
+        for name in ("geo_package_cpp_test.cc", "Makefile"):
+            templates.add(
+                os.path.join(template_dir, "..", "example", name) + ".jinja",
+                os.path.join(output_dir, "example", name),
+                dict(
+                    Codegen.common_data(),
+                    all_types=DEFAULT_GEO_TYPES,
+                    include_dir=output_dir,
+                    symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
+                    eigen_include_dir=os.path.realpath(
+                        os.path.join(
+                            CURRENT_DIR, "***REMOVED***/include/eigen3/"
+                        )
                     ),
-                )
+                    lib_dir=os.path.join(output_dir, "example"),
+                ),
+            )
 
     else:
         raise NotImplementedError(f'Unknown mode: "{mode}"')

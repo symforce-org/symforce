@@ -4,7 +4,7 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <geo/pose2.h>
+#include <sym/pose2.h>
 
 namespace sym {
 

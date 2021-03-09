@@ -1,4 +1,4 @@
-#include <geo/rot3.h>
+#include <sym/rot3.h>
 #include <symforce/codegen_cpp_test/codegen_cpp_test.h>
 
 #include <lcmtypes/codegen_cpp_test/constants_t.hpp>

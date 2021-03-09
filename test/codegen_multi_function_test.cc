@@ -1,4 +1,4 @@
-#include <geo/rot3.h>
+#include <sym/rot3.h>
 #include <symforce/codegen_multi_function_test/codegen_multi_function_test1.h>
 #include <symforce/codegen_multi_function_test/codegen_multi_function_test2.h>
 

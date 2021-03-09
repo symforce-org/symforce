@@ -12,7 +12,7 @@
 
 {% for typename in ('Rot3', 'Rot2', 'Pose3', 'Pose2') %}
 {% if typename in spec.types_included %}
-#include <geo/{{ python_util.camelcase_to_snakecase(typename) }}.h>
+#include <sym/{{ python_util.camelcase_to_snakecase(typename) }}.h>
 {% endif %}
 {% endfor %}
 
