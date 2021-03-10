@@ -7,6 +7,7 @@ from symforce import types as T
 from symforce import sympy as sm
 from symforce.codegen import CodegenMode
 from symforce.codegen import Codegen
+from symforce.codegen import DerivativeMode
 from symforce.values import Values
 
 TYPES = (geo.Rot2, geo.Rot3, geo.V3, geo.Pose2, geo.Pose3)
@@ -51,7 +52,7 @@ def get_prior_docstring() -> str:
 
 def between_factor(
     a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
-) -> T.Tuple[geo.Matrix, geo.Matrix]:
+) -> geo.Matrix:
     assert type(a) == type(b) == type(a_T_b)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
 
@@ -63,15 +64,12 @@ def between_factor(
     # Apply noise model
     residual = sqrt_info * geo.M(tangent_error)
 
-    # Compute derivative
-    jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
-
-    return residual, jacobian
+    return residual
 
 
 def prior_factor(
     value: T.Element, prior: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
-) -> T.Tuple[geo.Matrix, geo.Matrix]:
+) -> geo.Matrix:
     assert type(value) == type(prior)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
 
@@ -81,10 +79,7 @@ def prior_factor(
     # Apply noise model
     residual = sqrt_info * geo.M(tangent_error)
 
-    # Compute derivative
-    jacobian = residual.jacobian(value)
-
-    return residual, jacobian
+    return residual
 
 
 def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
@@ -123,22 +118,28 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
     for cls in types:
         tangent_dim = ops.LieGroupOps.tangent_dim(cls)
         between_codegen = Codegen.function(
-            name=f"BetweenFactor{cls.__name__}",
             func=between_factor,
             input_types=[cls, cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
-            output_names=["res", "jac"],
+            output_names=["res"],
             mode=CodegenMode.CPP,
             docstring=get_between_factor_docstring("a_T_b"),
+        ).create_with_derivatives(
+            name=f"BetweenFactor{cls.__name__}",
+            which_args=[0, 1],
+            derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
         )
         files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
 
         prior_codegen = Codegen.function(
-            name=f"PriorFactor{cls.__name__}",
             func=prior_factor,
             input_types=[cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
-            output_names=["res", "jac"],
+            output_names=["res"],
             mode=CodegenMode.CPP,
             docstring=get_prior_docstring(),
+        ).create_with_derivatives(
+            name=f"PriorFactor{cls.__name__}",
+            which_args=[0],
+            derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
         )
         files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
 
@@ -149,23 +150,21 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     """
     Generates factors specific to Poses which penalize individual components
 
-    This includes factors for only the position or rotation components of a Pose, or for both, but
-    with the residual and sqrt information on the product manifold.  This can't be done by
-    wrapping the other generated functions because we need jacobians with respect to the full pose,
-    and for the product manifold version we want to specify the full covariance with correlations
-    between rotation and position.
+    This includes factors for only the position or rotation components of a Pose.  This can't be done by
+    wrapping the other generated functions because we need jacobians with respect to the full pose.
     """
 
     def between_factor_pose3_rotation(
         a: geo.Pose3, b: geo.Pose3, a_R_b: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix, geo.Matrix]:
+    ) -> geo.Matrix:
+        # NOTE(aaron): This should be equivalent to between_factor(a.R, b.R, a_R_b), but we write it
+        # this way for explicitness and symmetry with between_factor_pose3_position, where the two
+        # are not equivalent
         tangent_error = ops.LieGroupOps.local_coordinates(
             a_R_b, ops.LieGroupOps.between(a, b).R, epsilon=epsilon
         )
 
-        residual = sqrt_info * geo.M(tangent_error)
-        jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
-        return residual, jacobian
+        return sqrt_info * geo.M(tangent_error)
 
     def between_factor_pose3_position(
         a: geo.Pose3,
@@ -173,128 +172,75 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         a_t_b: geo.Vector3,
         sqrt_info: geo.Matrix33,
         epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix, geo.Matrix]:
+    ) -> geo.Matrix:
+        # NOTE(aaron): This is NOT the same as between_factor(a.t, b.t, a_t_b, sqrt_info, epsilon)
+        # between_factor(a.t, b.t, a_t_b) would be penalizing the difference in the global frame
+        # (and expecting a_t_b to be in the global frame), we want to penalize the position
+        # component of between_factor(a, b, a_T_b), which is in the `a` frame
         tangent_error = ops.LieGroupOps.local_coordinates(
             a_t_b, ops.LieGroupOps.between(a, b).t, epsilon=epsilon
         )
 
-        residual = sqrt_info * geo.M(tangent_error)
-        jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
-        return residual, jacobian
-
-    def between_factor_pose3_product(
-        a: geo.Pose3,
-        b: geo.Pose3,
-        a_T_b: geo.Pose3,
-        sqrt_info: geo.Matrix66,
-        epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix, geo.Matrix]:
-        a_T_b_est = ops.LieGroupOps.between(a, b)
-
-        product_a_T_b = Values()
-        product_a_T_b["R"] = a_T_b.R
-        product_a_T_b["t"] = a_T_b.t
-
-        product_a_T_b_est = Values()
-        product_a_T_b_est["R"] = a_T_b_est.R
-        product_a_T_b_est["t"] = a_T_b_est.t
-
-        tangent_error = ops.LieGroupOps.local_coordinates(
-            product_a_T_b, product_a_T_b_est, epsilon=epsilon
-        )
-
-        residual = sqrt_info * geo.M(tangent_error)
-        jacobian = residual.jacobian(a).row_join(residual.jacobian(b))
-        return residual, jacobian
+        return sqrt_info * geo.M(tangent_error)
 
     def prior_factor_pose3_rotation(
         value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix, geo.Matrix]:
-        tangent_error = ops.LieGroupOps.local_coordinates(prior, value.R, epsilon=epsilon)
-        residual = sqrt_info * geo.M(tangent_error)
-        jacobian = residual.jacobian(value)
-        return residual, jacobian
+    ) -> geo.Matrix:
+        return prior_factor(value.R, prior, sqrt_info, epsilon)
 
     def prior_factor_pose3_position(
         value: geo.Pose3, prior: geo.Vector3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix, geo.Matrix]:
-        tangent_error = ops.LieGroupOps.local_coordinates(prior, value.t, epsilon=epsilon)
-        residual = sqrt_info * geo.M(tangent_error)
-        jacobian = residual.jacobian(value)
-        return residual, jacobian
-
-    def prior_factor_pose3_product(
-        value: geo.Pose3, prior: geo.Pose3, sqrt_info: geo.Matrix66, epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix, geo.Matrix]:
-        product_value = Values()
-        product_value["R"] = value.R
-        product_value["t"] = value.t
-
-        product_prior = Values()
-        product_prior["R"] = prior.R
-        product_prior["t"] = prior.t
-
-        tangent_error = ops.LieGroupOps.local_coordinates(
-            product_prior, product_value, epsilon=epsilon
-        )
-        residual = sqrt_info * geo.M(tangent_error)
-        jacobian = residual.jacobian(value)
-        return residual, jacobian
+    ) -> geo.Matrix:
+        return prior_factor(value.t, prior, sqrt_info, epsilon)
 
     between_rotation_codegen = Codegen.function(
-        name=f"BetweenFactor{geo.Pose3.__name__}Rotation",
         func=between_factor_pose3_rotation,
-        output_names=["res", "jac"],
+        output_names=["res"],
         mode=CodegenMode.CPP,
         docstring=get_between_factor_docstring("a_R_b"),
+    ).create_with_derivatives(
+        name=f"BetweenFactor{geo.Pose3.__name__}Rotation",
+        which_args=[0, 1],
+        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
     )
 
     between_position_codegen = Codegen.function(
-        name=f"BetweenFactor{geo.Pose3.__name__}Position",
         func=between_factor_pose3_position,
-        output_names=["res", "jac"],
+        output_names=["res"],
         mode=CodegenMode.CPP,
         docstring=get_between_factor_docstring("a_t_b"),
-    )
-
-    between_pose_codegen = Codegen.function(
-        name=f"BetweenFactor{geo.Pose3.__name__}Product",
-        func=between_factor_pose3_product,
-        output_names=["res", "jac"],
-        mode=CodegenMode.CPP,
-        docstring=get_between_factor_docstring("a_T_b"),
+    ).create_with_derivatives(
+        name=f"BetweenFactor{geo.Pose3.__name__}Position",
+        which_args=[0, 1],
+        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
     )
 
     prior_rotation_codegen = Codegen.function(
-        name=f"PriorFactor{geo.Pose3.__name__}Rotation",
         func=prior_factor_pose3_rotation,
-        output_names=["res", "jac"],
+        output_names=["res"],
         mode=CodegenMode.CPP,
         docstring=get_prior_docstring(),
+    ).create_with_derivatives(
+        name=f"PriorFactor{geo.Pose3.__name__}Rotation",
+        which_args=[0],
+        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
     )
 
     prior_position_codegen = Codegen.function(
-        name=f"PriorFactor{geo.Pose3.__name__}Position",
         func=prior_factor_pose3_position,
-        output_names=["res", "jac"],
+        output_names=["res"],
         mode=CodegenMode.CPP,
         docstring=get_prior_docstring(),
-    )
-
-    prior_pose_codegen = Codegen.function(
-        name=f"PriorFactor{geo.Pose3.__name__}Product",
-        func=prior_factor_pose3_product,
-        output_names=["res", "jac"],
-        mode=CodegenMode.CPP,
-        docstring=get_prior_docstring(),
+    ).create_with_derivatives(
+        name=f"PriorFactor{geo.Pose3.__name__}Position",
+        which_args=[0],
+        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
     )
 
     files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
     files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)
-    files_dict[get_filename(between_pose_codegen)] = get_function_code(between_pose_codegen)
     files_dict[get_filename(prior_rotation_codegen)] = get_function_code(prior_rotation_codegen)
     files_dict[get_filename(prior_position_codegen)] = get_function_code(prior_position_codegen)
-    files_dict[get_filename(prior_pose_codegen)] = get_function_code(prior_pose_codegen)
 
 
 def generate(output_dir: str) -> None:

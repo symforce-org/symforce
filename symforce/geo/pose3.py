@@ -1,28 +1,37 @@
 from __future__ import annotations
 
 from symforce.ops.interfaces import LieGroup
-from symforce import sympy as sm
 from symforce import types as T
 
 from .matrix import Matrix
-from .matrix import Matrix14
 from .matrix import Matrix31
-from .matrix import Matrix44
+from .matrix import Matrix33
 from .matrix import Vector3
 from .rot3 import Rot3
 
 
 class Pose3(LieGroup):
     """
-    Group of three-dimensional rigid body transformations - SE(3).
+    Group of three-dimensional rigid body transformations - SO(3) x R3.
 
     The storage is a quaternion (x, y, z, w) for rotation followed by position (x, y, z).
 
-    The tangent space is 3 elements for rotation followed by 3 elements for translation in
-    the rotated frame, meaning we interpolate the translation in the tangent of the rotating
-    frame for lie operations. This can be useful but is more expensive than SO3 x R3 for often
-    no benefit.
+    The tangent space is 3 elements for rotation followed by 3 elements for translation in the
+    non-rotated frame.
+
+    For Lie group enthusiasts: This class is on the PRODUCT manifold, if you really really want
+    SE(3) you should use Pose3_SE3.  On this class, the group operations (e.g. compose and between)
+    operate as you'd expect for a Pose or SE(3), but the manifold operations (e.g. retract and
+    local_coordinates) operate on the product manifold SO(3) x R3.  This means that:
+
+      - retract(a, vec) != compose(a, from_tangent(vec))
+
+      - local_coordinates(a, b) != to_tangent(between(a, b))
+
+      - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
     """
+
+    Pose3T = T.TypeVar("Pose3T", bound="Pose3")
 
     def __init__(self, R: Rot3 = None, t: Vector3 = None) -> None:
         """
@@ -44,8 +53,8 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     def __repr__(self) -> str:
-        return "<Pose3 R={}, t=({}, {}, {})>".format(
-            repr(self.R), repr(self.t[0]), repr(self.t[1]), repr(self.t[2])
+        return "<{} R={}, t=({}, {}, {})>".format(
+            self.__class__.__name__, repr(self.R), repr(self.t[0]), repr(self.t[1]), repr(self.t[2])
         )
 
     @classmethod
@@ -93,52 +102,18 @@ class Pose3(LieGroup):
         t_tangent_vector = Vector3(v[3], v[4], v[5])
 
         R = Rot3.from_tangent(R_tangent, epsilon=epsilon)
-        R_hat = Rot3.hat(R_tangent)
-        R_hat_sq = R_hat * R_hat
-        R_tangent_vector = Vector3(R_tangent)
-        theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon ** 2)
-
-        V = (
-            Matrix.eye(3)
-            + (1 - sm.cos(theta)) / (theta ** 2) * R_hat
-            + (theta - sm.sin(theta)) / (theta ** 3) * R_hat_sq
-        )
-
-        return cls(R, V * t_tangent_vector)
+        return cls(R, t_tangent_vector)
 
     def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
-        R_tangent = self.R.to_tangent(epsilon=epsilon)
-        R_tangent_vector = Vector3(R_tangent)
-        theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon)
-        R_hat = Rot3.hat(R_tangent)
-
-        half_theta = 0.5 * theta
-
-        V_inv = (
-            Matrix.eye(3)
-            - 0.5 * R_hat
-            + (1 - theta * sm.cos(half_theta) / (2 * sm.sin(half_theta)))
-            / (theta * theta)
-            * (R_hat * R_hat)
-        )
-        t_tangent = V_inv * self.t
-        return R_tangent_vector.col_join(t_tangent).to_flat_list()
-
-    @classmethod
-    def hat(cls, vec: T.List) -> Matrix44:
-        R_tangent = [vec[0], vec[1], vec[2]]
-        t_tangent = [vec[3], vec[4], vec[5]]
-        top_left = Rot3.hat(R_tangent)
-        top_right = Matrix31(t_tangent)
-        bottom = Matrix14.zero()
-        return T.cast(Matrix44, top_left.row_join(top_right).col_join(bottom))
+        R_tangent = Vector3(self.R.to_tangent(epsilon=epsilon))
+        return R_tangent.col_join(self.t).to_flat_list()
 
     def storage_D_tangent(self) -> Matrix:
         """
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
         storage_D_tangent_R = self.R.storage_D_tangent()
-        storage_D_tangent_t = self.R.to_rotation_matrix()
+        storage_D_tangent_t = Matrix33.matrix_identity()
         return Matrix.block_matrix(
             [[storage_D_tangent_R, Matrix.zeros(4, 3)], [Matrix.zeros(3, 3), storage_D_tangent_t],]
         )
@@ -148,9 +123,23 @@ class Pose3(LieGroup):
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
         tangent_D_storage_R = self.R.tangent_D_storage()
-        tangent_D_storage_t = self.R.to_rotation_matrix().T
+        tangent_D_storage_t = Matrix33.matrix_identity()
         return Matrix.block_matrix(
             [[tangent_D_storage_R, Matrix.zeros(3, 3)], [Matrix.zeros(3, 4), tangent_D_storage_t],]
+        )
+
+    # NOTE(hayk, aaron): Override retract + local_coordinates, because we're treating
+    # the Lie group as the product manifold of SO3 x R3 while leaving compose as normal
+    # Pose3 composition.
+
+    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3:
+        return Pose3(
+            R=self.R.retract(vec[:3], epsilon=epsilon), t=self.t.retract(vec[3:], epsilon=epsilon)
+        )
+
+    def local_coordinates(self: Pose3T, b: Pose3T, epsilon: T.Scalar = 0,) -> T.List[T.Scalar]:
+        return self.R.local_coordinates(b.R, epsilon=epsilon) + self.t.local_coordinates(
+            b.t, epsilon=epsilon
         )
 
     # -------------------------------------------------------------------------

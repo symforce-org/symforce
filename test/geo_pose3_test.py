@@ -1,3 +1,4 @@
+import unittest
 import numpy as np
 
 from symforce import geo
@@ -14,35 +15,11 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
     Note the mixin that tests all storage, group and lie group ops.
     """
 
+    MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS = False
+
     @classmethod
     def element(cls) -> geo.Pose3:
         return geo.Pose3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
-
-    def test_lie_exponential(self) -> None:
-        """
-        Tests:
-            Pose3.hat
-            Pose3.to_tangent
-            Pose3.to_homogenous_matrix
-        """
-        element = self.element()
-        dim = LieGroupOps.tangent_dim(element)
-        pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
-
-        # Compute the hat matrix
-        hat = element.hat(pertubation)
-
-        # Take the matrix exponential (only supported with sympy)
-        import sympy
-
-        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
-
-        # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Pose3.from_tangent(pertubation, epsilon=self.EPSILON)
-        matrix_expected = expmap.to_homogenous_matrix()
-
-        # They should match!
-        self.assertNear(hat_exp, matrix_expected, places=5)
 
     def pose3_operations(self, a: geo.Pose3, b: geo.Pose3) -> None:
         """
@@ -74,6 +51,16 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
         a = geo.Pose3.symbolic("a")
         b = geo.Pose3.symbolic("b")
         self.pose3_operations(a, b)
+
+    def test_translation_rotation_independence(self) -> None:
+        """
+        Tests that the rotation component of the tangent does not change translation
+        """
+        element = self.element()
+        tangent_vec = [1.0] * 6
+
+        value = LieGroupOps.from_tangent(element, tangent_vec, epsilon=self.EPSILON)
+        self.assertNear(value.t, tangent_vec[3:], places=7)
 
 
 if __name__ == "__main__":

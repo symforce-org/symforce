@@ -22,13 +22,13 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *
+ *     geo.Matrix: Jacobian for args 0 (a), 1 (b)
  */
 template <typename Scalar>
 void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
                        const sym::Rot2<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 1, 1>& sqrt_info,
                        const Scalar epsilon, Eigen::Matrix<Scalar, 1, 1>* const res = nullptr,
-                       Eigen::Matrix<Scalar, 1, 2>* const jac = nullptr) {
+                       Eigen::Matrix<Scalar, 1, 2>* const jacobian = nullptr) {
   // Total ops: 117
 
   // Input arrays
@@ -77,17 +77,17 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
     _res(0, 0) = sqrt_info(0, 0) * std::atan2(_tmp11, _tmp12);
   }
 
-  if (jac != nullptr) {
-    Eigen::Matrix<Scalar, 1, 2>& _jac = (*jac);
+  if (jacobian != nullptr) {
+    Eigen::Matrix<Scalar, 1, 2>& _jacobian = (*jacobian);
 
-    _jac(0, 0) = _a[0] * _tmp23 *
-                     (-_tmp21 * (_tmp10 * _tmp19 + _tmp17 * _tmp8) +
-                      _tmp22 * (-_tmp10 * _tmp17 + _tmp19 * _tmp8)) -
-                 _a[1] * _tmp23 *
-                     (-_tmp21 * (_tmp10 * _tmp26 + _tmp25 * _tmp8) +
-                      _tmp22 * (-_tmp10 * _tmp25 + _tmp26 * _tmp8));
-    _jac(0, 1) = _b[0] * _tmp23 * (-_tmp21 * (_tmp28 + _tmp30) + _tmp22 * _tmp31) -
-                 _b[1] * _tmp23 * (-_tmp21 * _tmp31 + _tmp22 * (-_tmp28 - _tmp30));
+    _jacobian(0, 0) = _a[0] * _tmp23 *
+                          (-_tmp21 * (_tmp10 * _tmp19 + _tmp17 * _tmp8) +
+                           _tmp22 * (-_tmp10 * _tmp17 + _tmp19 * _tmp8)) -
+                      _a[1] * _tmp23 *
+                          (-_tmp21 * (_tmp10 * _tmp26 + _tmp25 * _tmp8) +
+                           _tmp22 * (-_tmp10 * _tmp25 + _tmp26 * _tmp8));
+    _jacobian(0, 1) = _b[0] * _tmp23 * (-_tmp21 * (_tmp28 + _tmp30) + _tmp22 * _tmp31) -
+                      _b[1] * _tmp23 * (-_tmp21 * _tmp31 + _tmp22 * (-_tmp28 - _tmp30));
   }
 }  // NOLINT(readability/fn_size)
 

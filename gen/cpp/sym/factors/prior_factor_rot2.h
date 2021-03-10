@@ -21,13 +21,13 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *
+ *     geo.Matrix: Jacobian for args 0 (value)
  */
 template <typename Scalar>
 void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& prior,
                      const Eigen::Matrix<Scalar, 1, 1>& sqrt_info, const Scalar epsilon,
                      Eigen::Matrix<Scalar, 1, 1>* const res = nullptr,
-                     Eigen::Matrix<Scalar, 1, 1>* const jac = nullptr) {
+                     Eigen::Matrix<Scalar, 1, 1>* const jacobian = nullptr) {
   // Total ops: 39
 
   // Input arrays
@@ -52,11 +52,11 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
     _res(0, 0) = sqrt_info(0, 0) * std::atan2(_tmp3, _tmp4);
   }
 
-  if (jac != nullptr) {
-    Eigen::Matrix<Scalar, 1, 1>& _jac = (*jac);
+  if (jacobian != nullptr) {
+    Eigen::Matrix<Scalar, 1, 1>& _jacobian = (*jacobian);
 
-    _jac(0, 0) = _tmp8 * _value[0] * (_tmp1 * _tmp7 - _tmp2 * _tmp6) -
-                 _tmp8 * _value[1] * (-_tmp1 * _tmp6 - _tmp2 * _tmp7);
+    _jacobian(0, 0) = _tmp8 * _value[0] * (_tmp1 * _tmp7 - _tmp2 * _tmp6) -
+                      _tmp8 * _value[1] * (-_tmp1 * _tmp6 - _tmp2 * _tmp7);
   }
 }  // NOLINT(readability/fn_size)
 

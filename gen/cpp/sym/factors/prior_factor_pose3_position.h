@@ -21,43 +21,23 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *
+ *     geo.Matrix: Jacobian for args 0 (value)
  */
 template <typename Scalar>
 void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
                               const Eigen::Matrix<Scalar, 3, 1>& prior,
                               const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                               Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
-                              Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
-  // Total ops: 95
+                              Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr) {
+  // Total ops: 21
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _value = value.Data();
 
-  // Intermediate terms (23)
+  // Intermediate terms (3)
   const Scalar _tmp0 = _value[6] - prior(2, 0);
   const Scalar _tmp1 = _value[5] - prior(1, 0);
   const Scalar _tmp2 = _value[4] - prior(0, 0);
-  const Scalar _tmp3 = 2 * _value[1];
-  const Scalar _tmp4 = _tmp3 * _value[3];
-  const Scalar _tmp5 = 2 * _value[0];
-  const Scalar _tmp6 = _tmp5 * _value[2];
-  const Scalar _tmp7 = -_tmp4 + _tmp6;
-  const Scalar _tmp8 = 2 * _value[2] * _value[3];
-  const Scalar _tmp9 = _tmp3 * _value[0];
-  const Scalar _tmp10 = _tmp8 + _tmp9;
-  const Scalar _tmp11 = -2 * (_value[2] * _value[2]);
-  const Scalar _tmp12 = 1 - 2 * (_value[1] * _value[1]);
-  const Scalar _tmp13 = _tmp11 + _tmp12;
-  const Scalar _tmp14 = _tmp5 * _value[3];
-  const Scalar _tmp15 = _tmp3 * _value[2];
-  const Scalar _tmp16 = _tmp14 + _tmp15;
-  const Scalar _tmp17 = -2 * (_value[0] * _value[0]);
-  const Scalar _tmp18 = _tmp11 + _tmp17 + 1;
-  const Scalar _tmp19 = -_tmp8 + _tmp9;
-  const Scalar _tmp20 = -_tmp14 + _tmp15;
-  const Scalar _tmp21 = _tmp12 + _tmp17;
-  const Scalar _tmp22 = _tmp4 + _tmp6;
 
   // Output terms (2)
   if (res != nullptr) {
@@ -68,27 +48,27 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
     _res(2, 0) = _tmp0 * sqrt_info(2, 2) + _tmp1 * sqrt_info(2, 1) + _tmp2 * sqrt_info(2, 0);
   }
 
-  if (jac != nullptr) {
-    Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+  if (jacobian != nullptr) {
+    Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
-    _jac(0, 0) = 0;
-    _jac(0, 1) = 0;
-    _jac(0, 2) = 0;
-    _jac(0, 3) = _tmp10 * sqrt_info(0, 1) + _tmp13 * sqrt_info(0, 0) + _tmp7 * sqrt_info(0, 2);
-    _jac(0, 4) = _tmp16 * sqrt_info(0, 2) + _tmp18 * sqrt_info(0, 1) + _tmp19 * sqrt_info(0, 0);
-    _jac(0, 5) = _tmp20 * sqrt_info(0, 1) + _tmp21 * sqrt_info(0, 2) + _tmp22 * sqrt_info(0, 0);
-    _jac(1, 0) = 0;
-    _jac(1, 1) = 0;
-    _jac(1, 2) = 0;
-    _jac(1, 3) = _tmp10 * sqrt_info(1, 1) + _tmp13 * sqrt_info(1, 0) + _tmp7 * sqrt_info(1, 2);
-    _jac(1, 4) = _tmp16 * sqrt_info(1, 2) + _tmp18 * sqrt_info(1, 1) + _tmp19 * sqrt_info(1, 0);
-    _jac(1, 5) = _tmp20 * sqrt_info(1, 1) + _tmp21 * sqrt_info(1, 2) + _tmp22 * sqrt_info(1, 0);
-    _jac(2, 0) = 0;
-    _jac(2, 1) = 0;
-    _jac(2, 2) = 0;
-    _jac(2, 3) = _tmp10 * sqrt_info(2, 1) + _tmp13 * sqrt_info(2, 0) + _tmp7 * sqrt_info(2, 2);
-    _jac(2, 4) = _tmp16 * sqrt_info(2, 2) + _tmp18 * sqrt_info(2, 1) + _tmp19 * sqrt_info(2, 0);
-    _jac(2, 5) = _tmp20 * sqrt_info(2, 1) + _tmp21 * sqrt_info(2, 2) + _tmp22 * sqrt_info(2, 0);
+    _jacobian(0, 0) = 0;
+    _jacobian(0, 1) = 0;
+    _jacobian(0, 2) = 0;
+    _jacobian(0, 3) = sqrt_info(0, 0);
+    _jacobian(0, 4) = sqrt_info(0, 1);
+    _jacobian(0, 5) = sqrt_info(0, 2);
+    _jacobian(1, 0) = 0;
+    _jacobian(1, 1) = 0;
+    _jacobian(1, 2) = 0;
+    _jacobian(1, 3) = sqrt_info(1, 0);
+    _jacobian(1, 4) = sqrt_info(1, 1);
+    _jacobian(1, 5) = sqrt_info(1, 2);
+    _jacobian(2, 0) = 0;
+    _jacobian(2, 1) = 0;
+    _jacobian(2, 2) = 0;
+    _jacobian(2, 3) = sqrt_info(2, 0);
+    _jacobian(2, 4) = sqrt_info(2, 1);
+    _jacobian(2, 5) = sqrt_info(2, 2);
   }
 }  // NOLINT(readability/fn_size)
 

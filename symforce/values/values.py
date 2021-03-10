@@ -389,6 +389,36 @@ class Values:
             vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
         return vec
 
+    def retract(self, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Values:
+        """
+        Apply a pertubation vec in the concatenated tangent spaces of each element. Often used in
+        optimization to update nonlinear values from an update step in the tangent space.
+
+        NOTE(aaron): We have to override the default LieGroup implementation of retract because not
+        all values we can store here obey retract(a, vec) = compose(a, from_tangent(vec))
+        """
+        retracted_values = Values()
+        inx = 0
+        for k, v in self.items():
+            dim = ops.LieGroupOps.tangent_dim(v)
+            retracted_values[k] = ops.LieGroupOps.retract(v, vec[inx : inx + dim], epsilon)
+            inx += dim
+        return retracted_values
+
+    def local_coordinates(self, b: Values, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+        """
+        Computes a pertubation in the combined tangent space around self to produce b. Often used
+        in optimization to minimize the distance between two group elements.
+
+        NOTE(aaron): We have to override the default LieGroup implementation of local_coordinates
+        because not all values we can store here obey
+        local_coordinates(a, b) = to_tangent(between(a, b))
+        """
+        vec = []
+        for va, vb in zip(self.values(), b.values()):
+            vec.extend(ops.LieGroupOps.local_coordinates(va, vb, epsilon))
+        return vec
+
     def storage_D_tangent(self) -> geo.Matrix:
         """
         Returns a matrix with dimensions (storage_dim x tangent_dim) which represents

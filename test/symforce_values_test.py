@@ -13,6 +13,9 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     Test symforce.values.Values.
     """
 
+    # Our test Values contains a Pose3 for which this is not true
+    MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS = False
+
     @classmethod
     def element(cls) -> Values:
         v = Values()

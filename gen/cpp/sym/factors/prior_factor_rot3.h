@@ -21,13 +21,13 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *
+ *     geo.Matrix: Jacobian for args 0 (value)
  */
 template <typename Scalar>
 void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& prior,
                      const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                      Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
-                     Eigen::Matrix<Scalar, 3, 3>* const jac = nullptr) {
+                     Eigen::Matrix<Scalar, 3, 3>* const jacobian = nullptr) {
   // Total ops: 463
 
   // Input arrays
@@ -147,18 +147,24 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
     _res(2, 0) = _tmp11 * sqrt_info(2, 2) + _tmp14 * _tmp18 + _tmp16 * sqrt_info(2, 1);
   }
 
-  if (jac != nullptr) {
-    Eigen::Matrix<Scalar, 3, 3>& _jac = (*jac);
+  if (jacobian != nullptr) {
+    Eigen::Matrix<Scalar, 3, 3>& _jacobian = (*jacobian);
 
-    _jac(0, 0) = -_tmp30 * _value[0] - _tmp36 * _value[1] + _tmp41 * _value[2] + _tmp45 * _value[3];
-    _jac(0, 1) = -_tmp30 * _value[1] + _tmp35 * _tmp46 + _tmp41 * _value[3] - _tmp44 * _tmp47;
-    _jac(0, 2) = -_tmp30 * _value[2] + _tmp36 * _value[3] - _tmp40 * _tmp46 + _tmp45 * _value[1];
-    _jac(1, 0) = -_tmp51 * _value[0] - _tmp53 * _value[1] + _tmp55 * _value[2] + _tmp57 * _value[3];
-    _jac(1, 1) = _tmp46 * _tmp52 - _tmp47 * _tmp56 - _tmp51 * _value[1] + _tmp55 * _value[3];
-    _jac(1, 2) = -_tmp46 * _tmp54 - _tmp51 * _value[2] + _tmp53 * _value[3] + _tmp57 * _value[1];
-    _jac(2, 0) = -_tmp46 * _tmp61 - _tmp63 * _value[1] + _tmp64 * _value[2] + _tmp66 * _value[3];
-    _jac(2, 1) = _tmp46 * _tmp62 - _tmp47 * _tmp65 + _tmp64 * _value[3] - _tmp67 * _value[1];
-    _jac(2, 2) = _tmp63 * _value[3] - _tmp64 * _value[0] + _tmp66 * _value[1] - _tmp67 * _value[2];
+    _jacobian(0, 0) =
+        -_tmp30 * _value[0] - _tmp36 * _value[1] + _tmp41 * _value[2] + _tmp45 * _value[3];
+    _jacobian(0, 1) = -_tmp30 * _value[1] + _tmp35 * _tmp46 + _tmp41 * _value[3] - _tmp44 * _tmp47;
+    _jacobian(0, 2) =
+        -_tmp30 * _value[2] + _tmp36 * _value[3] - _tmp40 * _tmp46 + _tmp45 * _value[1];
+    _jacobian(1, 0) =
+        -_tmp51 * _value[0] - _tmp53 * _value[1] + _tmp55 * _value[2] + _tmp57 * _value[3];
+    _jacobian(1, 1) = _tmp46 * _tmp52 - _tmp47 * _tmp56 - _tmp51 * _value[1] + _tmp55 * _value[3];
+    _jacobian(1, 2) =
+        -_tmp46 * _tmp54 - _tmp51 * _value[2] + _tmp53 * _value[3] + _tmp57 * _value[1];
+    _jacobian(2, 0) =
+        -_tmp46 * _tmp61 - _tmp63 * _value[1] + _tmp64 * _value[2] + _tmp66 * _value[3];
+    _jacobian(2, 1) = _tmp46 * _tmp62 - _tmp47 * _tmp65 + _tmp64 * _value[3] - _tmp67 * _value[1];
+    _jacobian(2, 2) =
+        _tmp63 * _value[3] - _tmp64 * _value[0] + _tmp66 * _value[1] - _tmp67 * _value[2];
   }
 }  // NOLINT(readability/fn_size)
 

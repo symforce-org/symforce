@@ -95,7 +95,7 @@ class LieGroupOps(GroupOps):
         Returns:
             Element: Group element that conceptually represents "a + vec"
         """
-        return LieGroupOps.compose(a, LieGroupOps.from_tangent(a, vec, epsilon=epsilon))
+        return Ops.implementation(get_type(a)).retract(a, vec, epsilon)
 
     @staticmethod
     def local_coordinates(a: T.Element, b: T.Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
@@ -113,7 +113,7 @@ class LieGroupOps(GroupOps):
         Returns:
             list: Tangent space pertubation that conceptually represents "b - a"
         """
-        return LieGroupOps.to_tangent(LieGroupOps.between(a, b), epsilon=epsilon)
+        return Ops.implementation(get_type(a)).local_coordinates(a, b, epsilon)
 
     @staticmethod
     def storage_D_tangent(a: T.Element) -> "geo.Matrix":

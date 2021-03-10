@@ -1,6 +1,8 @@
 #include <iostream>
 
+#include <sym/factors/between_factor_pose3.h>
 #include <sym/factors/between_factor_rot3.h>
+#include <sym/factors/prior_factor_pose3.h>
 #include <sym/factors/prior_factor_rot3.h>
 
 #include "../symforce/opt/optimizer.h"
@@ -74,6 +76,100 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   const Eigen::Vector2d expected_gt = {9.854, -17.708};
   const Eigen::Vector2d actual = {values.At<double>('x'), values.At<double>('y')};
   CHECK((expected_gt - actual).norm() < 1e-3);
+}
+
+/**
+ * Test manifold optimization of Pose3 in a simple chain where we have priors at the start and end
+ * and between factors in the middle. When the priors are strong it should act as on-manifold
+ * interpolation, and when the between factors are strong it should act as a mean.
+ */
+TEST_CASE("Test pose smoothing", "[optimizer]") {
+  // Constants
+  const double epsilon = 1e-10;
+  const int num_keys = 10;
+
+  // Costs
+  const double prior_start_sigma = 0.1;  // [rad]
+  const double prior_last_sigma = 0.1;   // [rad]
+  const double between_sigma = 0.5;      // [rad]
+
+  // Set points (doing 180 rotation and 5m translation to keep it hard)
+  const sym::Pose3d prior_start =
+      sym::Pose3d(sym::Rot3d::FromYawPitchRoll(0.0, 0.0, 0.0), Eigen::Vector3d::Zero());
+  const sym::Pose3d prior_last =
+      sym::Pose3d(sym::Rot3d::FromYawPitchRoll(M_PI, 0.0, 0.0), Eigen::Vector3d(5, 0, 0));
+
+  // Simple wrapper to add a prior
+  // TODO(hayk): Make a template specialization mechanism to generalize this to any geo type.
+  const auto create_prior_factor = [&epsilon](const sym::Key& key, const sym::Pose3d& prior,
+                                              const double sigma) {
+    return sym::Factord::Jacobian(
+        [&prior, sigma, &epsilon](const sym::Pose3d& pose, sym::Vector6d* const res,
+                                  sym::Matrix6d* const jac) {
+          const sym::Matrix6d sqrt_info = sym::Vector6d::Constant(1 / sigma).asDiagonal();
+          sym::PriorFactorPose3<double>(pose, prior, sqrt_info, epsilon, res, jac);
+        },
+        {key});
+  };
+
+  // Add priors
+  std::vector<sym::Factord> factors;
+  factors.push_back(create_prior_factor({'P', 0}, prior_start, prior_start_sigma));
+  factors.push_back(create_prior_factor({'P', num_keys - 1}, prior_last, prior_last_sigma));
+
+  // Add between factors in a chain
+  for (int i = 0; i < num_keys - 1; ++i) {
+    factors.push_back(sym::Factord::Jacobian(
+        [&between_sigma, &epsilon](const sym::Pose3d& a, const sym::Pose3d& b,
+                                   sym::Vector6d* const res,
+                                   Eigen::Matrix<double, 6, 12>* const jac) {
+          const sym::Matrix6d sqrt_info = sym::Vector6d::Constant(1 / between_sigma).asDiagonal();
+          const sym::Pose3d a_T_b = sym::Pose3d::Identity();
+          sym::BetweenFactorPose3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
+        },
+        /* keys */ {{'P', i}, {'P', i + 1}}));
+  }
+
+  // Create initial values as random pertubations from the first prior
+  sym::Valuesd values;
+  std::mt19937 gen(42);
+  for (int i = 0; i < num_keys; ++i) {
+    const sym::Pose3d value = prior_start.Retract(0.4 * sym::RandomNormalVector<double, 6>(gen));
+    values.Set<sym::Pose3d>({'P', i}, value);
+  }
+
+  std::cout << "Initial values: " << values << std::endl;
+  std::cout << "Prior on P0: " << prior_start << std::endl;
+  std::cout << "Prior on P[-1]: " << prior_last << std::endl;
+
+  // Optimize
+  sym::optimizer_params_t params = DefaultLmParams();
+  params.iterations = 50;
+  params.early_exit_min_reduction = 0.0001;
+
+  sym::Optimizer<double> optimizer(params, factors, epsilon, {}, "sym::Optimize",
+                                   /* debug_stats */ false, /* check_derivatives */ true);
+  optimizer.Optimize(&values);
+
+  std::cout << "Optimized values: " << values << std::endl;
+
+  const auto& iteration_stats = optimizer.IterationStats();
+  const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
+  std::cout << "Iterations: " << last_iter.iteration << std::endl;
+  std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
+  std::cout << "Final error: " << last_iter.new_error << std::endl;
+
+  // Check successful convergence
+  CHECK(last_iter.iteration == 12);
+  CHECK(last_iter.current_lambda == Catch::Approx(0.0039).epsilon(1e-1));
+  CHECK(last_iter.new_error == Catch::Approx(7.801).epsilon(1e-3));
+
+  // Check that H = J^T J
+  const sym::Linearizationd linearization = sym::Linearize<double>(factors, values);
+  const Eigen::SparseMatrix<double> jtj =
+      linearization.jacobian.transpose() * linearization.jacobian;
+  CHECK(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
+      jtj.triangularView<Eigen::Lower>(), 1e-6));
 }
 
 /**

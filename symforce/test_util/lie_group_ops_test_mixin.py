@@ -1,4 +1,5 @@
 import numpy as np
+import unittest
 
 from symforce import sympy as sm
 from symforce import geo
@@ -16,6 +17,9 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
 
     # Small number to avoid singularities
     EPSILON = 1e-8
+
+    # Are retract and local_coordinates defined in terms of the group ops?
+    MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS = True
 
     def test_lie_group_ops(self) -> None:
         """
@@ -38,17 +42,17 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         # Manifold dimension must be less than or equal to storage dim
         self.assertLessEqual(dim, LieGroupOps.storage_dim(identity))
 
-        # Construct from a tangent space pertubation around identity
-        pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
-        value = LieGroupOps.from_tangent(element, pertubation, epsilon=self.EPSILON)
+        # Construct from a tangent space perturbation around identity
+        perturbation = list(np.random.normal(scale=0.1, size=(dim,)))
+        value = LieGroupOps.from_tangent(element, perturbation, epsilon=self.EPSILON)
         self.assertEqual(type(value), self.element_type())
 
         # Map back to the tangent space
-        recovered_pertubation = LieGroupOps.to_tangent(value, epsilon=self.EPSILON)
-        self.assertEqual(type(recovered_pertubation), list)
+        recovered_perturbation = LieGroupOps.to_tangent(value, epsilon=self.EPSILON)
+        self.assertEqual(type(recovered_perturbation), list)
 
         # Assert we are close (near epsilon) to the original
-        self.assertNear(pertubation, recovered_pertubation, places=6)
+        self.assertNear(perturbation, recovered_perturbation, places=6)
 
         # Element from zero tangent vector is identity
         identity_actual = LieGroupOps.from_tangent(element, [0] * dim, epsilon=self.EPSILON)
@@ -59,15 +63,47 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         tangent_zero_actual = LieGroupOps.to_tangent(identity, epsilon=self.EPSILON)
         self.assertNear(tangent_zero_actual, geo.M.zeros(dim, 1), places=7)
 
-        # Test retraction behaves as expected (compose and from_tangent)
-        retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
-        self.assertNear(retracted_element, LieGroupOps.compose(element, value), places=7)
-
         # Test zero retraction
         element_actual = LieGroupOps.retract(element, [0] * dim, epsilon=self.EPSILON)
         self.assertNear(element_actual, element, places=7)
 
+        # Test that it recovers the original perturbation
+        retracted_element = LieGroupOps.retract(element, perturbation, epsilon=self.EPSILON)
+        perturbation_recovered = LieGroupOps.local_coordinates(
+            element, retracted_element, epsilon=self.EPSILON
+        )
+        self.assertNear(perturbation, perturbation_recovered, places=6)
+
+        # Test an identity local coordinates
+        self.assertNear(
+            LieGroupOps.local_coordinates(element, element, epsilon=self.EPSILON),
+            geo.M.zeros(dim, 1),
+            places=7,
+        )
+
+    def test_manifold_ops_match_group_ops_definitions(self) -> None:
+        """
+        Tests:
+            retract(a, vec) = compose(a, from_tangent(vec))
+            local_coordinates(a, b) = to_tangent(between(a, b))
+        """
+        if not self.MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS:
+            raise unittest.SkipTest(
+                "This object does not satisfy the constraints this test is evaluating"
+            )
+
+        # Create a non-identity element and a perturbation
+        element = self.element()
+        dim = LieGroupOps.tangent_dim(element)
+        pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
+        value = LieGroupOps.from_tangent(element, pertubation, epsilon=self.EPSILON)
+
+        # Test retraction behaves as expected (compose and from_tangent)
+        retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
+        self.assertNear(retracted_element, LieGroupOps.compose(element, value), places=7)
+
         # Test local_coordinates behaves as expected (between and to_tangent)
+        retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
         pertubation_recovered = LieGroupOps.local_coordinates(
             element, retracted_element, epsilon=self.EPSILON
         )
@@ -75,16 +111,6 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         self.assertNear(
             LieGroupOps.to_tangent(diff_element, epsilon=self.EPSILON),
             pertubation_recovered,
-            places=7,
-        )
-
-        # Test that it recovers the original pertubation
-        self.assertNear(pertubation, pertubation_recovered, places=6)
-
-        # Test an identity local coordinates
-        self.assertNear(
-            LieGroupOps.local_coordinates(element, element, epsilon=self.EPSILON),
-            geo.M.zeros(dim, 1),
             places=7,
         )
 

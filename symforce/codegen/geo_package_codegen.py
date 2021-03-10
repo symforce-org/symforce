@@ -75,15 +75,9 @@ def make_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[
         inverse,
         compose,
         between,
-        inverse.create_with_derivatives(
-            name="InverseWithJacobian", use_product_manifold_for_pose3=False
-        ),
-        compose.create_with_derivatives(
-            name="ComposeWithJacobians", use_product_manifold_for_pose3=False
-        ),
-        between.create_with_derivatives(
-            name="BetweenWithJacobians", use_product_manifold_for_pose3=False
-        ),
+        inverse.create_with_derivatives(name="InverseWithJacobian"),
+        compose.create_with_derivatives(name="ComposeWithJacobians"),
+        between.create_with_derivatives(name="BetweenWithJacobians"),
     ]
 
 

@@ -429,7 +429,6 @@ class Codegen:
         which_args: T.Sequence[int] = None,
         include_result: bool = True,
         name: str = None,
-        use_product_manifold_for_pose3: bool = True,
         derivative_generation_mode: DerivativeMode = DerivativeMode.SEPARATE_JACOBIANS,
     ) -> Codegen:
         """
@@ -444,8 +443,6 @@ class Codegen:
             include_result: Whether this codegen object computes the value in addition to jacobians
             name: Generated function name. If not given, picks a reasonable name based on the one
                                            given at construction.
-            use_product_manifold_for_pose3: If True, treat Pose3 as SO3xR3. If False, treat as SE3.
-                                            If we fully convert Pose3 to always SO3xR3, remove this.
             derivative_generation_mode: Whether to generate separate jacobians
                                         (SEPARATE_JACOBIANS), combine them into a single jacobian
                                         matrix (STACKED_JACOBIANS), or generate a full
@@ -461,17 +458,6 @@ class Codegen:
 
         # Get docstring
         docstring_lines = self.docstring.split("\n")[:-1]
-
-        # Helpers to handle use_product_manifold_for_pose3
-        def storage_D_tangent(v: T.Any) -> geo.Matrix:
-            if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
-                v = Values(R=v.R, t=v.t)
-            return ops.LieGroupOps.storage_D_tangent(v)
-
-        def tangent_D_storage(v: T.Any) -> geo.Matrix:
-            if isinstance(v, geo.Pose3) and use_product_manifold_for_pose3:
-                v = Values(R=v.R, t=v.t)
-            return ops.LieGroupOps.tangent_D_storage(v)
 
         # Ensure the previous codegen has one output
         assert len(list(self.outputs.keys())) == 1
@@ -496,12 +482,14 @@ class Codegen:
 
         input_args = list(self.inputs.items())
         result_storage = geo.M(ops.StorageOps.to_storage(result))
-        result_tangent_D_storage = tangent_D_storage(result)
+        result_tangent_D_storage = ops.LieGroupOps.tangent_D_storage(result)
         for arg_index in which_args:
             arg_name, arg = input_args[arg_index]
             result_storage_D_arg_storage = result_storage.jacobian(ops.StorageOps.to_storage(arg))
             arg_jacobian = (
-                result_tangent_D_storage * result_storage_D_arg_storage * storage_D_tangent(arg)
+                result_tangent_D_storage
+                * result_storage_D_arg_storage
+                * ops.LieGroupOps.storage_D_tangent(arg)
             )
 
             if derivative_generation_mode in (
@@ -515,9 +503,7 @@ class Codegen:
 
                 docstring_args.append(f"{arg_index} ({arg_name})")
             elif derivative_generation_mode == DerivativeMode.SEPARATE_JACOBIANS:
-                outputs[f"{result_name}_D_{arg_name}"] = (
-                    result_tangent_D_storage * result_storage_D_arg_storage * storage_D_tangent(arg)
-                )
+                outputs[f"{result_name}_D_{arg_name}"] = arg_jacobian
                 docstring_lines.append(f"    geo.Matrix: Jacobian for arg {arg_index} ({arg_name})")
 
         if derivative_generation_mode in (

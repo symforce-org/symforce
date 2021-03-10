@@ -590,34 +590,22 @@ class SymforceCodegenTest(TestCase):
         codegens = collections.OrderedDict()
 
         # By default should return the value and have jacobians for each input arg
-        codegens["value_and_all_jacs"] = codegen.create_with_derivatives(
-            use_product_manifold_for_pose3=False
-        )
+        codegens["value_and_all_jacs"] = codegen.create_with_derivatives()
 
         # All jacobians, no value - should return jacobians as output args
-        codegens["all_jacs"] = codegen.create_with_derivatives(
-            include_result=False, use_product_manifold_for_pose3=False
-        )
+        codegens["all_jacs"] = codegen.create_with_derivatives(include_result=False)
 
         # First jacobian, no value - should return the jacobian
-        codegens["jac_0"] = codegen.create_with_derivatives(
-            [0], include_result=False, use_product_manifold_for_pose3=False
-        )
+        codegens["jac_0"] = codegen.create_with_derivatives([0], include_result=False)
 
         # Second jacobian, no value - should return the jacobian
-        codegens["jac_1"] = codegen.create_with_derivatives(
-            [1], include_result=False, use_product_manifold_for_pose3=False
-        )
+        codegens["jac_1"] = codegen.create_with_derivatives([1], include_result=False)
 
         # Value and first jacobian - should return the value
-        codegens["value_and_jac_0"] = codegen.create_with_derivatives(
-            [0], include_result=True, use_product_manifold_for_pose3=False
-        )
+        codegens["value_and_jac_0"] = codegen.create_with_derivatives([0], include_result=True)
 
         # Value and second jacobian - should return the value
-        codegens["value_and_jac_1"] = codegen.create_with_derivatives(
-            [1], include_result=True, use_product_manifold_for_pose3=False
-        )
+        codegens["value_and_jac_1"] = codegen.create_with_derivatives([1], include_result=True)
 
         # Generate all
         for codegen in codegens.values():

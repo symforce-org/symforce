@@ -15,44 +15,26 @@ namespace pose3 {
 template <typename Scalar>
 sym::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec,
                                                     const Scalar epsilon) {
-  // Total ops: 70
+  // Total ops: 16
 
   // Input arrays
 
-  // Intermediate terms (19)
-  const Scalar _tmp0 = (vec(2, 0) * vec(2, 0));
-  const Scalar _tmp1 = (vec(1, 0) * vec(1, 0));
-  const Scalar _tmp2 = (vec(0, 0) * vec(0, 0));
-  const Scalar _tmp3 = _tmp0 + _tmp1 + _tmp2 + (epsilon * epsilon);
-  const Scalar _tmp4 = std::sqrt(_tmp3);
-  const Scalar _tmp5 = (1.0 / 2.0) * _tmp4;
-  const Scalar _tmp6 = std::sin(_tmp5) / _tmp4;
-  const Scalar _tmp7 = (_tmp4 - std::sin(_tmp4)) / (_tmp3 * std::sqrt(_tmp3));
-  const Scalar _tmp8 = _tmp7 * vec(0, 0);
-  const Scalar _tmp9 = _tmp8 * vec(2, 0);
-  const Scalar _tmp10 = (1 - std::cos(_tmp4)) / _tmp3;
-  const Scalar _tmp11 = _tmp10 * vec(1, 0);
-  const Scalar _tmp12 = _tmp8 * vec(1, 0);
-  const Scalar _tmp13 = _tmp10 * vec(2, 0);
-  const Scalar _tmp14 = -_tmp1;
-  const Scalar _tmp15 = -_tmp0;
-  const Scalar _tmp16 = _tmp7 * vec(1, 0) * vec(2, 0);
-  const Scalar _tmp17 = _tmp10 * vec(0, 0);
-  const Scalar _tmp18 = -_tmp2;
+  // Intermediate terms (3)
+  const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec(0, 0) * vec(0, 0)) +
+                                 (vec(1, 0) * vec(1, 0)) + (vec(2, 0) * vec(2, 0)));
+  const Scalar _tmp1 = (1.0 / 2.0) * _tmp0;
+  const Scalar _tmp2 = std::sin(_tmp1) / _tmp0;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 7, 1> _res;
 
-  _res[0] = _tmp6 * vec(0, 0);
-  _res[1] = _tmp6 * vec(1, 0);
-  _res[2] = _tmp6 * vec(2, 0);
-  _res[3] = std::cos(_tmp5);
-  _res[4] = vec(3, 0) * (_tmp7 * (_tmp14 + _tmp15) + 1) + vec(4, 0) * (_tmp12 - _tmp13) +
-            vec(5, 0) * (_tmp11 + _tmp9);
-  _res[5] = vec(3, 0) * (_tmp12 + _tmp13) + vec(4, 0) * (_tmp7 * (_tmp15 + _tmp18) + 1) +
-            vec(5, 0) * (_tmp16 - _tmp17);
-  _res[6] = vec(3, 0) * (-_tmp11 + _tmp9) + vec(4, 0) * (_tmp16 + _tmp17) +
-            vec(5, 0) * (_tmp7 * (_tmp14 + _tmp18) + 1);
+  _res[0] = _tmp2 * vec(0, 0);
+  _res[1] = _tmp2 * vec(1, 0);
+  _res[2] = _tmp2 * vec(2, 0);
+  _res[3] = std::cos(_tmp1);
+  _res[4] = vec(3, 0);
+  _res[5] = vec(4, 0);
+  _res[6] = vec(5, 0);
 
   return sym::Pose3<Scalar>(_res);
 }
@@ -60,51 +42,25 @@ sym::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const sym::Pose3<Scalar>& a,
                                                            const Scalar epsilon) {
-  // Total ops: 93
+  // Total ops: 19
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
-  // Intermediate terms (26)
-  const Scalar _tmp0 = 2 * std::min<Scalar>(0, (((_a[3]) > 0) - ((_a[3]) < 0))) + 1;
-  const Scalar _tmp1 = std::min<Scalar>(std::fabs(_a[3]), 1 - epsilon);
-  const Scalar _tmp2 = std::acos(_tmp1);
-  const Scalar _tmp3 = 1 - (_tmp1 * _tmp1);
-  const Scalar _tmp4 = _tmp0 * _tmp2 / std::sqrt(_tmp3);
-  const Scalar _tmp5 = 2 * _tmp4;
-  const Scalar _tmp6 = _a[2] * _tmp4;
-  const Scalar _tmp7 = 4 * (_tmp0 * _tmp0) * (_tmp2 * _tmp2) / _tmp3;
-  const Scalar _tmp8 = (_a[2] * _a[2]) * _tmp7;
-  const Scalar _tmp9 = (_a[1] * _a[1]) * _tmp7;
-  const Scalar _tmp10 = (_a[0] * _a[0]) * _tmp7;
-  const Scalar _tmp11 = _tmp10 + _tmp8 + _tmp9 + epsilon;
-  const Scalar _tmp12 = std::sqrt(_tmp11);
-  const Scalar _tmp13 = 0.5 * _tmp12;
-  const Scalar _tmp14 = (-1.0 / 2.0 * _tmp12 * std::cos(_tmp13) / std::sin(_tmp13) + 1) / _tmp11;
-  const Scalar _tmp15 = _a[0] * _tmp14 * _tmp7;
-  const Scalar _tmp16 = _a[2] * _tmp15;
-  const Scalar _tmp17 = 1.0 * _tmp4;
-  const Scalar _tmp18 = _a[1] * _tmp17;
-  const Scalar _tmp19 = _a[1] * _tmp15;
-  const Scalar _tmp20 = 1.0 * _tmp6;
-  const Scalar _tmp21 = -_tmp9;
-  const Scalar _tmp22 = -_tmp8;
-  const Scalar _tmp23 = _a[1] * _a[2] * _tmp14 * _tmp7;
-  const Scalar _tmp24 = _a[0] * _tmp17;
-  const Scalar _tmp25 = -_tmp10;
+  // Intermediate terms (2)
+  const Scalar _tmp0 = std::min<Scalar>(std::fabs(_a[3]), 1 - epsilon);
+  const Scalar _tmp1 = 2 * (2 * std::min<Scalar>(0, (((_a[3]) > 0) - ((_a[3]) < 0))) + 1) *
+                       std::acos(_tmp0) / std::sqrt(1 - (_tmp0 * _tmp0));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 6, 1> _res;
 
-  _res(0, 0) = _a[0] * _tmp5;
-  _res(1, 0) = _a[1] * _tmp5;
-  _res(2, 0) = 2 * _tmp6;
-  _res(3, 0) = _a[4] * (_tmp14 * (_tmp21 + _tmp22) + 1.0) + _a[5] * (_tmp19 + _tmp20) +
-               _a[6] * (_tmp16 - _tmp18);
-  _res(4, 0) = _a[4] * (_tmp19 - _tmp20) + _a[5] * (_tmp14 * (_tmp22 + _tmp25) + 1.0) +
-               _a[6] * (_tmp23 + _tmp24);
-  _res(5, 0) = _a[4] * (_tmp16 + _tmp18) + _a[5] * (_tmp23 - _tmp24) +
-               _a[6] * (_tmp14 * (_tmp21 + _tmp25) + 1.0);
+  _res(0, 0) = _a[0] * _tmp1;
+  _res(1, 0) = _a[1] * _tmp1;
+  _res(2, 0) = _a[2] * _tmp1;
+  _res(3, 0) = _a[4];
+  _res(4, 0) = _a[5];
+  _res(5, 0) = _a[6];
 
   return _res;
 }
@@ -113,68 +69,32 @@ template <typename Scalar>
 sym::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Pose3<Scalar>& a,
                                                 const Eigen::Matrix<Scalar, 6, 1>& vec,
                                                 const Scalar epsilon) {
-  // Total ops: 150
+  // Total ops: 52
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
-  // Intermediate terms (38)
-  const Scalar _tmp0 = (vec(2, 0) * vec(2, 0));
-  const Scalar _tmp1 = (vec(1, 0) * vec(1, 0));
-  const Scalar _tmp2 = (vec(0, 0) * vec(0, 0));
-  const Scalar _tmp3 = _tmp0 + _tmp1 + _tmp2 + (epsilon * epsilon);
-  const Scalar _tmp4 = std::sqrt(_tmp3);
-  const Scalar _tmp5 = (1.0 / 2.0) * _tmp4;
-  const Scalar _tmp6 = std::sin(_tmp5) / _tmp4;
-  const Scalar _tmp7 = _tmp6 * vec(2, 0);
-  const Scalar _tmp8 = _tmp6 * vec(1, 0);
-  const Scalar _tmp9 = std::cos(_tmp5);
-  const Scalar _tmp10 = _a[3] * _tmp6;
-  const Scalar _tmp11 = _tmp6 * vec(0, 0);
-  const Scalar _tmp12 = 2 * _a[1];
-  const Scalar _tmp13 = _a[3] * _tmp12;
-  const Scalar _tmp14 = 2 * _a[0];
-  const Scalar _tmp15 = _a[2] * _tmp14;
-  const Scalar _tmp16 = -_tmp2;
-  const Scalar _tmp17 = -_tmp1;
-  const Scalar _tmp18 = (_tmp4 - std::sin(_tmp4)) / (_tmp3 * std::sqrt(_tmp3));
-  const Scalar _tmp19 = _tmp18 * vec(1, 0) * vec(2, 0);
-  const Scalar _tmp20 = (1 - std::cos(_tmp4)) / _tmp3;
-  const Scalar _tmp21 = _tmp20 * vec(0, 0);
-  const Scalar _tmp22 = _tmp18 * vec(0, 0);
-  const Scalar _tmp23 = _tmp22 * vec(2, 0);
-  const Scalar _tmp24 = _tmp20 * vec(1, 0);
-  const Scalar _tmp25 = vec(3, 0) * (_tmp23 - _tmp24) + vec(4, 0) * (_tmp19 + _tmp21) +
-                        vec(5, 0) * (_tmp18 * (_tmp16 + _tmp17) + 1);
-  const Scalar _tmp26 = 2 * _a[2] * _a[3];
-  const Scalar _tmp27 = _a[0] * _tmp12;
-  const Scalar _tmp28 = -_tmp0;
-  const Scalar _tmp29 = _tmp22 * vec(1, 0);
-  const Scalar _tmp30 = _tmp20 * vec(2, 0);
-  const Scalar _tmp31 = vec(3, 0) * (_tmp29 + _tmp30) +
-                        vec(4, 0) * (_tmp18 * (_tmp16 + _tmp28) + 1) +
-                        vec(5, 0) * (_tmp19 - _tmp21);
-  const Scalar _tmp32 = -2 * (_a[2] * _a[2]);
-  const Scalar _tmp33 = 1 - 2 * (_a[1] * _a[1]);
-  const Scalar _tmp34 = vec(3, 0) * (_tmp18 * (_tmp17 + _tmp28) + 1) +
-                        vec(4, 0) * (_tmp29 - _tmp30) + vec(5, 0) * (_tmp23 + _tmp24);
-  const Scalar _tmp35 = _a[3] * _tmp14;
-  const Scalar _tmp36 = _a[2] * _tmp12;
-  const Scalar _tmp37 = -2 * (_a[0] * _a[0]);
+  // Intermediate terms (8)
+  const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec(0, 0) * vec(0, 0)) +
+                                 (vec(1, 0) * vec(1, 0)) + (vec(2, 0) * vec(2, 0)));
+  const Scalar _tmp1 = (1.0 / 2.0) * _tmp0;
+  const Scalar _tmp2 = std::sin(_tmp1) / _tmp0;
+  const Scalar _tmp3 = _a[1] * _tmp2;
+  const Scalar _tmp4 = _a[2] * _tmp2;
+  const Scalar _tmp5 = std::cos(_tmp1);
+  const Scalar _tmp6 = _a[3] * _tmp2;
+  const Scalar _tmp7 = _a[0] * _tmp2;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 7, 1> _res;
 
-  _res[0] = _a[0] * _tmp9 + _a[1] * _tmp7 - _a[2] * _tmp8 + _tmp10 * vec(0, 0);
-  _res[1] = -_a[0] * _tmp7 + _a[1] * _tmp9 + _a[2] * _tmp11 + _a[3] * _tmp8;
-  _res[2] = _a[0] * _tmp8 - _a[1] * _tmp11 + _a[2] * _tmp9 + _tmp10 * vec(2, 0);
-  _res[3] = -_a[0] * _tmp11 - _a[1] * _tmp8 - _a[2] * _tmp7 + _a[3] * _tmp9;
-  _res[4] =
-      _a[4] + _tmp25 * (_tmp13 + _tmp15) + _tmp31 * (-_tmp26 + _tmp27) + _tmp34 * (_tmp32 + _tmp33);
-  _res[5] = _a[5] + _tmp25 * (-_tmp35 + _tmp36) + _tmp31 * (_tmp32 + _tmp37 + 1) +
-            _tmp34 * (_tmp26 + _tmp27);
-  _res[6] =
-      _a[6] + _tmp25 * (_tmp33 + _tmp37) + _tmp31 * (_tmp35 + _tmp36) + _tmp34 * (-_tmp13 + _tmp15);
+  _res[0] = _a[0] * _tmp5 + _tmp3 * vec(2, 0) - _tmp4 * vec(1, 0) + _tmp6 * vec(0, 0);
+  _res[1] = _a[1] * _tmp5 + _tmp4 * vec(0, 0) + _tmp6 * vec(1, 0) - _tmp7 * vec(2, 0);
+  _res[2] = _a[2] * _tmp5 - _tmp3 * vec(0, 0) + _tmp6 * vec(2, 0) + _tmp7 * vec(1, 0);
+  _res[3] = _a[3] * _tmp5 - _tmp3 * vec(1, 0) - _tmp4 * vec(2, 0) - _tmp7 * vec(0, 0);
+  _res[4] = _a[4] + vec(3, 0);
+  _res[5] = _a[5] + vec(4, 0);
+  _res[6] = _a[6] + vec(5, 0);
 
   return sym::Pose3<Scalar>(_res);
 }
@@ -183,82 +103,27 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Pose3<Scalar>& a,
                                                                   const sym::Pose3<Scalar>& b,
                                                                   const Scalar epsilon) {
-  // Total ops: 196
+  // Total ops: 63
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
-  // Intermediate terms (53)
-  const Scalar _tmp0 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0];
-  const Scalar _tmp1 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3];
-  const Scalar _tmp2 = std::min<Scalar>(std::fabs(_tmp1), 1 - epsilon);
-  const Scalar _tmp3 = 1 - (_tmp2 * _tmp2);
-  const Scalar _tmp4 = 2 * std::min<Scalar>(0, (((_tmp1) > 0) - ((_tmp1) < 0))) + 1;
-  const Scalar _tmp5 = std::acos(_tmp2);
-  const Scalar _tmp6 = _tmp4 * _tmp5 / std::sqrt(_tmp3);
-  const Scalar _tmp7 = 2 * _tmp6;
-  const Scalar _tmp8 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1];
-  const Scalar _tmp9 = _tmp6 * _tmp8;
-  const Scalar _tmp10 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2];
-  const Scalar _tmp11 = -2 * (_a[0] * _a[0]);
-  const Scalar _tmp12 = 1 - 2 * (_a[1] * _a[1]);
-  const Scalar _tmp13 = _tmp11 + _tmp12;
-  const Scalar _tmp14 = 2 * _a[0];
-  const Scalar _tmp15 = _a[3] * _tmp14;
-  const Scalar _tmp16 = 2 * _a[1];
-  const Scalar _tmp17 = _a[2] * _tmp16;
-  const Scalar _tmp18 = -_tmp15 + _tmp17;
-  const Scalar _tmp19 = _a[3] * _tmp16;
-  const Scalar _tmp20 = _a[2] * _tmp14;
-  const Scalar _tmp21 = _tmp19 + _tmp20;
-  const Scalar _tmp22 = -_a[4] * _tmp21 - _a[5] * _tmp18 - _a[6] * _tmp13 + _b[4] * _tmp21 +
-                        _b[5] * _tmp18 + _b[6] * _tmp13;
-  const Scalar _tmp23 = 4 * (_tmp4 * _tmp4) * (_tmp5 * _tmp5) / _tmp3;
-  const Scalar _tmp24 = _tmp23 * (_tmp8 * _tmp8);
-  const Scalar _tmp25 = (_tmp10 * _tmp10) * _tmp23;
-  const Scalar _tmp26 = (_tmp0 * _tmp0) * _tmp23;
-  const Scalar _tmp27 = _tmp24 + _tmp25 + _tmp26 + epsilon;
-  const Scalar _tmp28 = std::sqrt(_tmp27);
-  const Scalar _tmp29 = 0.5 * _tmp28;
-  const Scalar _tmp30 = (-1.0 / 2.0 * _tmp28 * std::cos(_tmp29) / std::sin(_tmp29) + 1) / _tmp27;
-  const Scalar _tmp31 = _tmp0 * _tmp23 * _tmp30;
-  const Scalar _tmp32 = _tmp10 * _tmp31;
-  const Scalar _tmp33 = 1.0 * _tmp9;
-  const Scalar _tmp34 = _tmp15 + _tmp17;
-  const Scalar _tmp35 = -2 * (_a[2] * _a[2]);
-  const Scalar _tmp36 = _tmp11 + _tmp35 + 1;
-  const Scalar _tmp37 = 2 * _a[2] * _a[3];
-  const Scalar _tmp38 = _a[1] * _tmp14;
-  const Scalar _tmp39 = -_tmp37 + _tmp38;
-  const Scalar _tmp40 = -_a[4] * _tmp39 - _a[5] * _tmp36 - _a[6] * _tmp34 + _b[4] * _tmp39 +
-                        _b[5] * _tmp36 + _b[6] * _tmp34;
-  const Scalar _tmp41 = _tmp31 * _tmp8;
-  const Scalar _tmp42 = 1.0 * _tmp6;
-  const Scalar _tmp43 = _tmp10 * _tmp42;
-  const Scalar _tmp44 = -_tmp19 + _tmp20;
-  const Scalar _tmp45 = _tmp37 + _tmp38;
-  const Scalar _tmp46 = _tmp12 + _tmp35;
-  const Scalar _tmp47 = -_a[4] * _tmp46 - _a[5] * _tmp45 - _a[6] * _tmp44 + _b[4] * _tmp46 +
-                        _b[5] * _tmp45 + _b[6] * _tmp44;
-  const Scalar _tmp48 = -_tmp24;
-  const Scalar _tmp49 = -_tmp25;
-  const Scalar _tmp50 = _tmp10 * _tmp23 * _tmp30 * _tmp8;
-  const Scalar _tmp51 = _tmp0 * _tmp42;
-  const Scalar _tmp52 = -_tmp26;
+  // Intermediate terms (3)
+  const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3];
+  const Scalar _tmp1 = std::min<Scalar>(std::fabs(_tmp0), 1 - epsilon);
+  const Scalar _tmp2 = 2 * (2 * std::min<Scalar>(0, (((_tmp0) > 0) - ((_tmp0) < 0))) + 1) *
+                       std::acos(_tmp1) / std::sqrt(1 - (_tmp1 * _tmp1));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 6, 1> _res;
 
-  _res(0, 0) = _tmp0 * _tmp7;
-  _res(1, 0) = 2 * _tmp9;
-  _res(2, 0) = _tmp10 * _tmp7;
-  _res(3, 0) = _tmp22 * (_tmp32 - _tmp33) + _tmp40 * (_tmp41 + _tmp43) +
-               _tmp47 * (_tmp30 * (_tmp48 + _tmp49) + 1.0);
-  _res(4, 0) = _tmp22 * (_tmp50 + _tmp51) + _tmp40 * (_tmp30 * (_tmp49 + _tmp52) + 1.0) +
-               _tmp47 * (_tmp41 - _tmp43);
-  _res(5, 0) = _tmp22 * (_tmp30 * (_tmp48 + _tmp52) + 1.0) + _tmp40 * (_tmp50 - _tmp51) +
-               _tmp47 * (_tmp32 + _tmp33);
+  _res(0, 0) = _tmp2 * (-_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]);
+  _res(1, 0) = _tmp2 * (_a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]);
+  _res(2, 0) = _tmp2 * (-_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]);
+  _res(3, 0) = -_a[4] + _b[4];
+  _res(4, 0) = -_a[5] + _b[5];
+  _res(5, 0) = -_a[6] + _b[6];
 
   return _res;
 }

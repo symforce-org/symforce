@@ -19,10 +19,18 @@ class ClassLieGroupOps(ClassGroupOps):
     def to_tangent(a: T.Element, epsilon: T.Scalar) -> T.List[T.Scalar]:
         return a.to_tangent(epsilon)
 
-    @staticmethod  # type: ignore
+    @staticmethod
     def storage_D_tangent(a: T.Element) -> "geo.Matrix":
         return a.storage_D_tangent()
 
-    @staticmethod  # type: ignore
+    @staticmethod
     def tangent_D_storage(a: T.Element) -> "geo.Matrix":
         return a.tangent_D_storage()
+
+    @staticmethod
+    def retract(a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar) -> T.Element:
+        return a.retract(vec, epsilon)
+
+    @staticmethod
+    def local_coordinates(a: T.Element, b: T.Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+        return a.local_coordinates(b, epsilon)

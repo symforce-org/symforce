@@ -37,3 +37,15 @@ class ScalarLieGroupOps(ScalarGroupOps):
         from symforce import geo
 
         return geo.Matrix([1])
+
+    @staticmethod
+    def retract(a: T.ScalarElement, vec: T.List[T.Scalar], epsilon: T.Scalar) -> T.ScalarElement:
+        return ScalarGroupOps.compose(a, ScalarLieGroupOps.from_tangent(a, vec, epsilon))
+
+    @staticmethod
+    def local_coordinates(
+        a: T.ScalarElement, b: T.ScalarElement, epsilon: T.Scalar = 0
+    ) -> T.List[T.Scalar]:
+        return ScalarLieGroupOps.to_tangent(
+            ScalarGroupOps.compose(ScalarGroupOps.inverse(a), b), epsilon
+        )

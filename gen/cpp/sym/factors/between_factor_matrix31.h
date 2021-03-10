@@ -21,7 +21,7 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *
+ *     geo.Matrix: Jacobian for args 0 (a), 1 (b)
  */
 template <typename Scalar>
 void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
@@ -29,7 +29,7 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
                            const Eigen::Matrix<Scalar, 3, 1>& a_T_b,
                            const Eigen::Matrix<Scalar, 3, 3>& sqrt_info, const Scalar epsilon,
                            Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
-                           Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
+                           Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr) {
   // Total ops: 36
 
   // Input arrays
@@ -48,27 +48,27 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
     _res(2, 0) = _tmp0 * sqrt_info(2, 2) + _tmp1 * sqrt_info(2, 1) + _tmp2 * sqrt_info(2, 0);
   }
 
-  if (jac != nullptr) {
-    Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+  if (jacobian != nullptr) {
+    Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
-    _jac(0, 0) = -sqrt_info(0, 0);
-    _jac(0, 1) = -sqrt_info(0, 1);
-    _jac(0, 2) = -sqrt_info(0, 2);
-    _jac(0, 3) = sqrt_info(0, 0);
-    _jac(0, 4) = sqrt_info(0, 1);
-    _jac(0, 5) = sqrt_info(0, 2);
-    _jac(1, 0) = -sqrt_info(1, 0);
-    _jac(1, 1) = -sqrt_info(1, 1);
-    _jac(1, 2) = -sqrt_info(1, 2);
-    _jac(1, 3) = sqrt_info(1, 0);
-    _jac(1, 4) = sqrt_info(1, 1);
-    _jac(1, 5) = sqrt_info(1, 2);
-    _jac(2, 0) = -sqrt_info(2, 0);
-    _jac(2, 1) = -sqrt_info(2, 1);
-    _jac(2, 2) = -sqrt_info(2, 2);
-    _jac(2, 3) = sqrt_info(2, 0);
-    _jac(2, 4) = sqrt_info(2, 1);
-    _jac(2, 5) = sqrt_info(2, 2);
+    _jacobian(0, 0) = -sqrt_info(0, 0);
+    _jacobian(0, 1) = -sqrt_info(0, 1);
+    _jacobian(0, 2) = -sqrt_info(0, 2);
+    _jacobian(0, 3) = sqrt_info(0, 0);
+    _jacobian(0, 4) = sqrt_info(0, 1);
+    _jacobian(0, 5) = sqrt_info(0, 2);
+    _jacobian(1, 0) = -sqrt_info(1, 0);
+    _jacobian(1, 1) = -sqrt_info(1, 1);
+    _jacobian(1, 2) = -sqrt_info(1, 2);
+    _jacobian(1, 3) = sqrt_info(1, 0);
+    _jacobian(1, 4) = sqrt_info(1, 1);
+    _jacobian(1, 5) = sqrt_info(1, 2);
+    _jacobian(2, 0) = -sqrt_info(2, 0);
+    _jacobian(2, 1) = -sqrt_info(2, 1);
+    _jacobian(2, 2) = -sqrt_info(2, 2);
+    _jacobian(2, 3) = sqrt_info(2, 0);
+    _jacobian(2, 4) = sqrt_info(2, 1);
+    _jacobian(2, 5) = sqrt_info(2, 2);
   }
 }  // NOLINT(readability/fn_size)
 

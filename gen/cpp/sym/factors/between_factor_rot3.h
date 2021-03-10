@@ -22,13 +22,13 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *
+ *     geo.Matrix: Jacobian for args 0 (a), 1 (b)
  */
 template <typename Scalar>
 void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
                        const sym::Rot3<Scalar>& a_T_b, const Eigen::Matrix<Scalar, 3, 3>& sqrt_info,
                        const Scalar epsilon, Eigen::Matrix<Scalar, 3, 1>* const res = nullptr,
-                       Eigen::Matrix<Scalar, 3, 6>* const jac = nullptr) {
+                       Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr) {
   // Total ops: 987
 
   // Input arrays
@@ -320,27 +320,28 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     _res(2, 0) = _tmp18 * sqrt_info(2, 2) + _tmp19 * _tmp23 + _tmp21 * sqrt_info(2, 1);
   }
 
-  if (jac != nullptr) {
-    Eigen::Matrix<Scalar, 3, 6>& _jac = (*jac);
+  if (jacobian != nullptr) {
+    Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
-    _jac(0, 0) = -_a[0] * _tmp69 - _a[1] * _tmp83 + _a[2] * _tmp97 + _tmp107 * _tmp108;
-    _jac(0, 1) = _a[0] * _tmp83 - _a[1] * _tmp69 - _a[2] * _tmp109 + _tmp108 * _tmp96;
-    _jac(0, 2) = -_a[0] * _tmp97 + _a[1] * _tmp109 - _a[2] * _tmp69 + _tmp108 * _tmp82;
-    _jac(0, 3) = -_tmp131 * _tmp132 - _tmp140 * _tmp141 + _tmp148 * _tmp149 + _tmp155 * _tmp156;
-    _jac(0, 4) = -_b[2] * _tmp157 - _tmp131 * _tmp141 + _tmp132 * _tmp140 + _tmp148 * _tmp156;
-    _jac(0, 5) = _b[1] * _tmp157 - _tmp131 * _tmp149 - _tmp132 * _tmp148 + _tmp140 * _tmp156;
-    _jac(1, 0) = -_a[0] * _tmp165 - _a[1] * _tmp169 + _a[2] * _tmp172 + _tmp108 * _tmp175;
-    _jac(1, 1) = _a[0] * _tmp169 - _a[1] * _tmp165 - _a[2] * _tmp176 + _tmp108 * _tmp171;
-    _jac(1, 2) = -_a[0] * _tmp172 + _a[1] * _tmp176 - _a[2] * _tmp165 + _tmp108 * _tmp168;
-    _jac(1, 3) = _b[2] * _tmp184 - _tmp132 * _tmp178 - _tmp141 * _tmp181 + _tmp156 * _tmp187;
-    _jac(1, 4) = -_b[2] * _tmp188 + _tmp132 * _tmp181 - _tmp141 * _tmp178 + _tmp156 * _tmp183;
-    _jac(1, 5) = -_b[0] * _tmp184 + _b[1] * _tmp188 - _tmp149 * _tmp178 + _tmp156 * _tmp181;
-    _jac(2, 0) = -_a[0] * _tmp196 - _a[1] * _tmp193 + _a[2] * _tmp198 + _tmp108 * _tmp199;
-    _jac(2, 1) = _a[0] * _tmp193 - _a[1] * _tmp196 - _a[2] * _tmp200 + _tmp108 * _tmp197;
-    _jac(2, 2) = -_a[0] * _tmp198 + _a[1] * _tmp200 - _a[2] * _tmp196 + _tmp108 * _tmp192;
-    _jac(2, 3) = _b[2] * _tmp204 - _tmp132 * _tmp202 - _tmp141 * _tmp201 + _tmp156 * _tmp205;
-    _jac(2, 4) = -_b[2] * _tmp206 + _tmp132 * _tmp201 - _tmp141 * _tmp202 + _tmp156 * _tmp203;
-    _jac(2, 5) = -_b[0] * _tmp204 + _b[1] * _tmp206 - _tmp149 * _tmp202 + _tmp156 * _tmp201;
+    _jacobian(0, 0) = -_a[0] * _tmp69 - _a[1] * _tmp83 + _a[2] * _tmp97 + _tmp107 * _tmp108;
+    _jacobian(0, 1) = _a[0] * _tmp83 - _a[1] * _tmp69 - _a[2] * _tmp109 + _tmp108 * _tmp96;
+    _jacobian(0, 2) = -_a[0] * _tmp97 + _a[1] * _tmp109 - _a[2] * _tmp69 + _tmp108 * _tmp82;
+    _jacobian(0, 3) =
+        -_tmp131 * _tmp132 - _tmp140 * _tmp141 + _tmp148 * _tmp149 + _tmp155 * _tmp156;
+    _jacobian(0, 4) = -_b[2] * _tmp157 - _tmp131 * _tmp141 + _tmp132 * _tmp140 + _tmp148 * _tmp156;
+    _jacobian(0, 5) = _b[1] * _tmp157 - _tmp131 * _tmp149 - _tmp132 * _tmp148 + _tmp140 * _tmp156;
+    _jacobian(1, 0) = -_a[0] * _tmp165 - _a[1] * _tmp169 + _a[2] * _tmp172 + _tmp108 * _tmp175;
+    _jacobian(1, 1) = _a[0] * _tmp169 - _a[1] * _tmp165 - _a[2] * _tmp176 + _tmp108 * _tmp171;
+    _jacobian(1, 2) = -_a[0] * _tmp172 + _a[1] * _tmp176 - _a[2] * _tmp165 + _tmp108 * _tmp168;
+    _jacobian(1, 3) = _b[2] * _tmp184 - _tmp132 * _tmp178 - _tmp141 * _tmp181 + _tmp156 * _tmp187;
+    _jacobian(1, 4) = -_b[2] * _tmp188 + _tmp132 * _tmp181 - _tmp141 * _tmp178 + _tmp156 * _tmp183;
+    _jacobian(1, 5) = -_b[0] * _tmp184 + _b[1] * _tmp188 - _tmp149 * _tmp178 + _tmp156 * _tmp181;
+    _jacobian(2, 0) = -_a[0] * _tmp196 - _a[1] * _tmp193 + _a[2] * _tmp198 + _tmp108 * _tmp199;
+    _jacobian(2, 1) = _a[0] * _tmp193 - _a[1] * _tmp196 - _a[2] * _tmp200 + _tmp108 * _tmp197;
+    _jacobian(2, 2) = -_a[0] * _tmp198 + _a[1] * _tmp200 - _a[2] * _tmp196 + _tmp108 * _tmp192;
+    _jacobian(2, 3) = _b[2] * _tmp204 - _tmp132 * _tmp202 - _tmp141 * _tmp201 + _tmp156 * _tmp205;
+    _jacobian(2, 4) = -_b[2] * _tmp206 + _tmp132 * _tmp201 - _tmp141 * _tmp202 + _tmp156 * _tmp203;
+    _jacobian(2, 5) = -_b[0] * _tmp204 + _b[1] * _tmp206 - _tmp149 * _tmp202 + _tmp156 * _tmp201;
   }
 }  // NOLINT(readability/fn_size)
 

@@ -31,7 +31,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
     def to_tangent(a: T.SequenceElement, epsilon: T.Scalar) -> T.List[T.SequenceElement]:
         return get_type(a)([x for v in a for x in LieGroupOps.to_tangent(v, epsilon)])
 
-    @staticmethod  # type: ignore
+    @staticmethod
     def storage_D_tangent(a: T.SequenceElement) -> "geo.Matrix":
         from symforce import geo
 
@@ -46,7 +46,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
             t_inx += t_dim
         return mat
 
-    @staticmethod  # type: ignore
+    @staticmethod
     def tangent_D_storage(a: T.SequenceElement) -> "geo.Matrix":
         from symforce import geo
 
@@ -60,3 +60,24 @@ class SequenceLieGroupOps(SequenceGroupOps):
             t_inx += t_dim
             s_inx += s_dim
         return mat
+
+    @staticmethod
+    def retract(
+        a: T.SequenceElement, vec: T.List[T.Scalar], epsilon: T.Scalar
+    ) -> T.SequenceElement:
+        assert len(vec) == SequenceLieGroupOps.tangent_dim(a)
+        new_a = get_type(a)()
+        inx = 0
+        for v in a:
+            dim = LieGroupOps.tangent_dim(v)
+            new_a.append(LieGroupOps.retract(v, vec[inx : inx + dim], epsilon))
+            inx += dim
+        return new_a
+
+    @staticmethod
+    def local_coordinates(
+        a: T.SequenceElement, b: T.SequenceElement, epsilon: T.Scalar = 0
+    ) -> T.List[T.Scalar]:
+        return get_type(a)(
+            [x for va, vb in zip(a, b) for x in LieGroupOps.local_coordinates(va, vb, epsilon)]
+        )
