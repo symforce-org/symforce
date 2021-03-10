@@ -2,19 +2,16 @@ from symforce import types as T
 
 from .class_storage_ops import ClassStorageOps
 
-Element = T.Any
-ElementOrType = T.Union[Element, T.Type]
-
 
 class ClassGroupOps(ClassStorageOps):
     @staticmethod
-    def identity(a: ElementOrType) -> Element:
+    def identity(a: T.ElementOrType) -> T.Element:
         return a.identity()
 
     @staticmethod
-    def compose(a: Element, b: Element) -> Element:
+    def compose(a: T.Element, b: T.Element) -> T.Element:
         return a.compose(b)
 
     @staticmethod
-    def inverse(a: Element) -> Element:
+    def inverse(a: T.Element) -> T.Element:
         return a.inverse()

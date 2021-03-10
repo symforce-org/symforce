@@ -42,9 +42,6 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Identity() {
  *
  * Inverse of the element a.
  *
- * Args:
- *     a (Element):
- *
  * Returns:
  *     Element: b such that a @ b = identity
  *
@@ -86,10 +83,6 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Inverse(const sym::Pose3<Scalar>& a) {
 /**
  *
  * Composition of two elements in the group.
- *
- * Args:
- *     a (Element):
- *     b (Element):
  *
  * Returns:
  *     Element: a @ b
@@ -137,10 +130,6 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Compose(const sym::Pose3<Scalar>& a,
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
  * Implementation is simply `compose(inverse(a), b)`.
- *
- * Args:
- *     a (Element):
- *     b (Element):
  *
  * Returns:
  *     Element: c such that a @ c = b
@@ -197,9 +186,6 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Between(const sym::Pose3<Scalar>& a,
 /**
  *
  * Inverse of the element a.
- *
- * Args:
- *     a (Element):
  *
  * Returns:
  *     Element: b such that a @ b = identity
@@ -361,10 +347,6 @@ sym::Pose3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
 /**
  *
  * Composition of two elements in the group.
- *
- * Args:
- *     a (Element):
- *     b (Element):
  *
  * Returns:
  *     Element: a @ b
@@ -678,10 +660,6 @@ sym::Pose3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
  * Implementation is simply `compose(inverse(a), b)`.
- *
- * Args:
- *     a (Element):
- *     b (Element):
  *
  * Returns:
  *     Element: c such that a @ c = b

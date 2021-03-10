@@ -29,8 +29,6 @@ T_terms = T.Sequence[T.Tuple[sm.Symbol, sm.Expr]]
 T_nested_terms = T.Sequence[T_terms]
 T_terms_printed = T.Sequence[T.Tuple[str, str]]
 
-Element = T.Any
-
 
 class DenseAndSparseOutputTerms(T.NamedTuple):
     dense: T.List[T.List[sm.Expr]]
@@ -39,7 +37,7 @@ class DenseAndSparseOutputTerms(T.NamedTuple):
 
 class OutputWithTerms(T.NamedTuple):
     name: str
-    type: Element
+    type: T.Element
     terms: T_terms_printed
 
 

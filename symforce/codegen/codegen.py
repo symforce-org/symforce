@@ -17,9 +17,6 @@ from symforce.codegen import codegen_util
 from symforce.codegen import type_helper
 from symforce.codegen import types_package_codegen
 
-Element = T.Any
-ElementOrType = T.Union[Element, T.Type]
-
 CURRENT_DIR = os.path.dirname(__file__)
 
 
@@ -148,7 +145,7 @@ class Codegen:
         func: T.Callable,
         mode: codegen_util.CodegenMode,
         name: T.Optional[str] = None,
-        input_types: T.Sequence[ElementOrType] = None,
+        input_types: T.Sequence[T.ElementOrType] = None,
         output_names: T.Sequence[str] = None,
         return_key: str = None,
         docstring: str = None,

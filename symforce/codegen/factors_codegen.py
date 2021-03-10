@@ -11,8 +11,6 @@ from symforce.values import Values
 
 TYPES = (geo.Rot2, geo.Rot3, geo.V3, geo.Pose2, geo.Pose3)
 
-Element = T.Any
-
 
 def get_between_factor_docstring(between_argument_name: str) -> str:
     return """
@@ -52,7 +50,7 @@ def get_prior_docstring() -> str:
 
 
 def between_factor(
-    a: Element, b: Element, a_T_b: Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
 ) -> T.Tuple[geo.Matrix, geo.Matrix]:
     assert type(a) == type(b) == type(a_T_b)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
@@ -72,7 +70,7 @@ def between_factor(
 
 
 def prior_factor(
-    value: Element, prior: Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+    value: T.Element, prior: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
 ) -> T.Tuple[geo.Matrix, geo.Matrix]:
     assert type(value) == type(prior)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)

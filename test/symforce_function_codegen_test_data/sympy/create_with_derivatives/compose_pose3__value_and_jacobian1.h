@@ -11,10 +11,6 @@ namespace sym {
 /**
  * Composition of two elements in the group.
  *
- * Args:
- *     a (Element):
- *     b (Element):
- *
  * Returns:
  *     Element: a @ b
  *     geo.Matrix: Jacobian for arg 1 (b)

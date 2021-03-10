@@ -5,13 +5,10 @@ from symforce import cam
 from symforce import geo
 from symforce import types as T
 
-Element = T.Any
-ElementOrType = T.Union[Element, T.Type]
-
 
 def deduce_input_type(
-    parameter: inspect.Parameter, parameter_name: str, func: T.Callable, is_first_parameter: bool
-) -> ElementOrType:
+    parameter: inspect.Parameter, func: T.Callable, is_first_parameter: bool
+) -> T.ElementOrType:
     """
     Attempt to deduce the type of an input parameter to a function
 
@@ -27,8 +24,14 @@ def deduce_input_type(
             supported (use geo.Vector3 if possible)
     """
     annotation = parameter.annotation
+
+    # 1)
+    if annotation is not parameter.empty and not isinstance(annotation, str):
+        return annotation
+
+    # 2)
     if annotation is parameter.empty:
-        if is_first_parameter and parameter_name == "self":
+        if is_first_parameter and parameter.name == "self":
             # self is unannotated, so try setting the annotation to the class name
             # __qualname__ should be of the form Class.func_name
             annotation = func.__qualname__.rsplit(".", maxsplit=1)[0]
@@ -44,61 +47,67 @@ def deduce_input_type(
                 ) from ex
         else:
             raise ValueError(
-                f'Type for argument "{parameter_name}" to {func} could not be deduced.'
+                f'Type for argument "{parameter.name}" to {func} could not be deduced.'
                 + "  Please either provide input_types or add a type annotation"
             )
-    elif isinstance(annotation, str):
-        annotation_parts = annotation.split(".")
 
-        error_msg = (
-            f'Type annotation for argument "{parameter_name}" to {func} is the string '
-            + f'"{annotation}", and could not be resolved to the actual type'
+        assert False, "All paths through this block should return or raise"
+
+    # 3)
+    assert isinstance(annotation, str), "If we reach this point annotation should be a str"
+    annotation_parts = annotation.split(".")
+
+    error_msg = (
+        f'Type annotation for argument "{parameter.name}" to {func} is the string '
+        + f'"{annotation}", and could not be resolved to the actual type'
+    )
+
+    extra_modules_to_try = [T, geo, cam]
+
+    if len(annotation_parts) == 1:
+        # 3a)
+        all_modules_to_try = [builtins] + extra_modules_to_try
+        for module in all_modules_to_try:
+            try:
+                annotation = getattr(module, annotation)
+            except (AttributeError, KeyError) as ex:
+                pass
+            else:
+                return annotation
+
+        all_modules_str = ", ".join([str(m.__name__) for m in all_modules_to_try])
+        raise ValueError(
+            f"{error_msg}; tried looking in {all_modules_str}.  Please provide input_types"
+        )
+    elif len(annotation_parts) == 2:
+        # 3b)
+
+        # Include "T" as well, because it's resolved as types
+        extra_modules_strs = ["T"] + [str(m.__name__.split(".")[-1]) for m in extra_modules_to_try]
+
+        if annotation_parts[0] not in extra_modules_strs:
+            raise ValueError(
+                f"{error_msg} because it is a multi-part name and the first part is"
+                + f" {annotation_parts[0]}, not {', '.join(extra_modules_strs)}"
+            )
+
+        try:
+            return getattr(globals()[annotation_parts[0]], annotation_parts[1])
+        except AttributeError as ex:
+            raise ValueError(
+                f"{error_msg} because that type does not exist in {annotation_parts[0]}"
+            ) from ex
+    else:
+        # 3c)
+        raise ValueError(
+            f"{error_msg} because it has {len(annotation_parts)} nested names"
+            + " (can only have 1 or 2)"
         )
 
-        extra_modules_to_try = [T, geo, cam]
-
-        if len(annotation_parts) == 1:
-            all_modules_to_try = [builtins] + extra_modules_to_try
-            for module in all_modules_to_try:
-                try:
-                    annotation = getattr(module, annotation)
-                except (AttributeError, KeyError) as ex:
-                    pass
-                else:
-                    return annotation
-
-            all_modules_str = ", ".join([str(m.__name__) for m in all_modules_to_try])
-            raise ValueError(
-                f"{error_msg}; tried looking in {all_modules_str}.  Please provide input_types"
-            )
-        elif len(annotation_parts) == 2:
-            # Include "T" as well, because it's resolved as types
-            extra_modules_strs = ["T"] + [
-                str(m.__name__.split(".")[-1]) for m in extra_modules_to_try
-            ]
-
-            if annotation_parts[0] not in extra_modules_strs:
-                raise ValueError(
-                    f"{error_msg} because it is a multi-part name and the first part is"
-                    + f" {annotation_parts[0]}, not {', '.join(extra_modules_strs)}"
-                )
-
-            try:
-                return getattr(globals()[annotation_parts[0]], annotation_parts[1])
-            except AttributeError as ex:
-                raise ValueError(
-                    f"{error_msg} because that type does not exist in {annotation_parts[0]}"
-                ) from ex
-        else:
-            raise ValueError(
-                f"{error_msg} because it has {len(annotation_parts)} nested names"
-                + " (can only have 1 or 2)"
-            )
-    else:
-        return annotation
+    assert False, "All paths should return or raise before this point"
 
 
-def deduce_input_types(func: T.Callable) -> T.Sequence[ElementOrType]:
+def deduce_input_types(func: T.Callable) -> T.Sequence[T.ElementOrType]:
     """
     Attempt to deduce input types from the type annotations on func, to be used by Codegen.function.
 
@@ -108,6 +117,6 @@ def deduce_input_types(func: T.Callable) -> T.Sequence[ElementOrType]:
 
     input_types = []
     for i, (parameter_name, parameter) in enumerate(signature.parameters.items()):
-        input_types.append(deduce_input_type(parameter, parameter_name, func, i == 0))
+        input_types.append(deduce_input_type(parameter, func, i == 0))
 
     return input_types

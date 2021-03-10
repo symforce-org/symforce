@@ -4,9 +4,6 @@ from symforce.python_util import get_type
 from .ops import Ops
 from .storage_ops import StorageOps
 
-Element = T.Any
-ElementOrType = T.Union[Element, T.Type]
-
 
 class GroupOps(StorageOps):
     """
@@ -22,14 +19,11 @@ class GroupOps(StorageOps):
     """
 
     @staticmethod
-    def identity(a: ElementOrType) -> Element:
+    def identity(a: T.ElementOrType) -> T.Element:
         """
         Identity element of the given type's group.
 
         This method does not rely on the value of a, only the type.
-
-        Args:
-            a (ElementOrType):
 
         Returns:
             Element: b such that a @ b = a
@@ -37,13 +31,9 @@ class GroupOps(StorageOps):
         return Ops.implementation(get_type(a)).identity(a)
 
     @staticmethod
-    def compose(a: Element, b: Element) -> Element:
+    def compose(a: T.Element, b: T.Element) -> T.Element:
         """
         Composition of two elements in the group.
-
-        Args:
-            a (Element):
-            b (Element):
 
         Returns:
             Element: a @ b
@@ -51,12 +41,9 @@ class GroupOps(StorageOps):
         return Ops.implementation(get_type(a)).compose(a, b)
 
     @staticmethod
-    def inverse(a: Element) -> Element:
+    def inverse(a: T.Element) -> T.Element:
         """
         Inverse of the element a.
-
-        Args:
-            a (Element):
 
         Returns:
             Element: b such that a @ b = identity
@@ -64,15 +51,11 @@ class GroupOps(StorageOps):
         return Ops.implementation(get_type(a)).inverse(a)
 
     @staticmethod
-    def between(a: Element, b: Element) -> Element:
+    def between(a: T.Element, b: T.Element) -> T.Element:
         """
         Returns the element that when composed with a produces b. For vector spaces it is b - a.
 
         Implementation is simply `compose(inverse(a), b)`.
-
-        Args:
-            a (Element):
-            b (Element):
 
         Returns:
             Element: c such that a @ c = b
