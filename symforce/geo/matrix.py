@@ -459,7 +459,7 @@ class Matrix(LieGroup):
             ret = self.__class__([[ret]])
         return ret
 
-    def cross(self, other: Matrix31) -> Matrix31:
+    def cross(self, other: Vector3) -> Vector3:
         """
         Cross product.
         """
@@ -470,7 +470,7 @@ class Matrix(LieGroup):
                 )
             )
 
-        return Matrix31(self.mat.cross(other.mat))
+        return Vector3(self.mat.cross(other.mat))
 
     def squared_norm(self) -> _T.Scalar:
         """
@@ -664,11 +664,18 @@ class Matrix(LieGroup):
     __truediv__ = __div__
 
     @staticmethod
-    def are_parallel(a: Matrix31, b: Matrix31, epsilon: _T.Scalar) -> _T.Scalar:
+    def are_parallel(a: Vector3, b: Vector3, epsilon: _T.Scalar) -> _T.Scalar:
         """
         Returns 1 if a and b are parallel within epsilon, and 0 otherwise.
         """
         return (1 - sm.sign(a.cross(b).norm() - epsilon)) / 2
+
+    @staticmethod
+    def skew_symmetric(a: Vector3) -> Matrix33:
+        """
+        Compute a skew-symmetric matrix of given a 3-vector.
+        """
+        return Matrix33([[0, -a[2], a[1]], [a[2], 0, -a[0]], [-a[1], a[0], 0]])
 
     def evalf(self) -> Matrix:
         """
@@ -997,16 +1004,35 @@ def fixed_type_from_shape(shape: _T.Tuple[int, int]) -> type:
 # Shorthand
 M = Matrix
 
-Vector1 = V1 = M11 = Matrix11
-Vector2 = V2 = M21 = Matrix21
-Vector3 = V3 = M31 = Matrix31
-Vector4 = V4 = M41 = Matrix41
-Vector5 = V5 = M51 = Matrix51
-Vector6 = V6 = M61 = Matrix61
-Vector7 = V7 = M71 = Matrix71
-Vector8 = V8 = M81 = Matrix81
-Vector9 = V9 = M91 = Matrix91
+Vector1 = Matrix11
+Vector2 = Matrix21
+Vector3 = Matrix31
+Vector4 = Matrix41
+Vector5 = Matrix51
+Vector6 = Matrix61
+Vector7 = Matrix71
+Vector8 = Matrix81
+Vector9 = Matrix91
 
+V1 = Vector1
+V2 = Vector2
+V3 = Vector3
+V4 = Vector4
+V5 = Vector5
+V6 = Vector6
+V7 = Vector7
+V8 = Vector8
+V9 = Vector9
+
+M11 = Matrix11
+M21 = Matrix21
+M31 = Matrix31
+M41 = Matrix41
+M51 = Matrix51
+M61 = Matrix61
+M71 = Matrix71
+M81 = Matrix81
+M91 = Matrix91
 M12 = Matrix12
 M22 = Matrix22
 M32 = Matrix32

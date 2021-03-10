@@ -11,6 +11,7 @@ from .matrix import Matrix
 from .matrix import Matrix12
 from .matrix import Matrix22
 from .matrix import Matrix21
+from .matrix import Vector2
 
 
 class Rot2(LieGroup):
@@ -105,24 +106,19 @@ class Rot2(LieGroup):
     # -------------------------------------------------------------------------
 
     @T.overload
-    def __mul__(self, right: Matrix21) -> Matrix21:  # pragma: no cover
+    def __mul__(self, right: Vector2) -> Vector2:  # pragma: no cover
         pass
 
     @T.overload
     def __mul__(self, right: Rot2) -> Rot2:  # pragma: no cover
         pass
 
-    @T.overload
-    def __mul__(self, right: sm.Matrix) -> sm.Matrix:  # pragma: no cover
-        pass
-
-    def __mul__(self, right: T.Union[Rot2, Matrix21]) -> T.Union[Rot2, Matrix21]:
+    def __mul__(self, right: T.Union[Rot2, Vector2]) -> T.Union[Rot2, Vector2]:
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
-        if isinstance(right, (sm.Matrix, Matrix)):
-            assert right.shape == (2, 1), right.shape
-            return T.cast(Matrix21, self.to_rotation_matrix() * right)
+        if isinstance(right, Vector2):
+            return T.cast(Vector2, self.to_rotation_matrix() * right)
         elif isinstance(right, Rot2):
             return self.compose(right)
         else:

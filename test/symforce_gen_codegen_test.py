@@ -32,8 +32,8 @@ class SymforceGenCodegenTest(TestCase):
 
     def generate_cam_example_function(self, output_dir: str) -> None:
         def pixel_to_ray_and_back(
-            pixel: geo.Matrix21, cam: cam.LinearCameraCal, epsilon: T.Scalar = 0
-        ) -> geo.Matrix21:
+            pixel: geo.Vector2, cam: cam.LinearCameraCal, epsilon: T.Scalar = 0
+        ) -> geo.Vector2:
             """
             Transform a given pixel into a ray and project the ray back to
             pixel coordinates. Input and output should match.

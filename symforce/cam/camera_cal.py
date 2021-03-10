@@ -75,8 +75,8 @@ class CameraCal(Storage):
     # -------------------------------------------------------------------------
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = 0
-    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
+        self, point: geo.V3, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.V2, T.Scalar]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -87,8 +87,8 @@ class CameraCal(Storage):
         raise NotImplementedError()
 
     def camera_ray_from_pixel(
-        self, pixel: geo.Matrix21, epsilon: T.Scalar = 0
-    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
+        self, pixel: geo.V2, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.V3, T.Scalar]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 

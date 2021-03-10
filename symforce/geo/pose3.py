@@ -24,7 +24,7 @@ class Pose3(LieGroup):
     no benefit.
     """
 
-    def __init__(self, R: Rot3 = None, t: Matrix31 = None) -> None:
+    def __init__(self, R: Rot3 = None, t: Vector3 = None) -> None:
         """
         Construct from elements in SO3 and R3.
 
@@ -157,12 +157,19 @@ class Pose3(LieGroup):
     # Helper methods
     # -------------------------------------------------------------------------
 
-    def __mul__(self, right: T.Union[Pose3, Matrix]) -> T.Any:
+    @T.overload
+    def __mul__(self, right: Pose3) -> Pose3:  # pragma: no cover
+        pass
+
+    @T.overload
+    def __mul__(self, right: Vector3) -> Vector3:  # pragma: no cover
+        pass
+
+    def __mul__(self, right: T.Union[Pose3, Vector3]) -> T.Union[Pose3, Vector3]:
         """
         Left-multiply with a compatible quantity.
         """
-        if isinstance(right, Matrix):
-            assert right.shape == (3, 1), right.shape
+        if isinstance(right, Vector3):
             return self.R * right + self.t
         elif isinstance(right, Pose3):
             return self.compose(right)

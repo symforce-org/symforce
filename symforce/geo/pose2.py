@@ -8,7 +8,6 @@ from .matrix import Matrix
 from .matrix import Matrix13
 from .matrix import Matrix21
 from .matrix import Matrix33
-from .matrix import Vector1
 from .matrix import Vector2
 from .matrix import Vector3
 from .rot2 import Rot2
@@ -24,7 +23,7 @@ class Pose2(LieGroup):
     TODO(hayk): Flip this to match Pose3 with rotation first.
     """
 
-    def __init__(self, R: Rot2 = None, t: Matrix21 = None) -> None:
+    def __init__(self, R: Rot2 = None, t: Vector2 = None) -> None:
         """
         Construct from elements in SO2 and R2.
         """
@@ -148,10 +147,10 @@ class Pose2(LieGroup):
         pass
 
     @T.overload
-    def __mul__(self, right: Matrix21) -> Matrix21:  # pragma: no cover
+    def __mul__(self, right: Vector2) -> Vector2:  # pragma: no cover
         pass
 
-    def __mul__(self, right: T.Union[Pose2, Matrix21]) -> T.Union[Pose2, Matrix21]:
+    def __mul__(self, right: T.Union[Pose2, Vector2]) -> T.Union[Pose2, Vector2]:
         """
         Left-multiply with a compatible quantity.
 
@@ -161,7 +160,7 @@ class Pose2(LieGroup):
         Returns:
             (Pose2 | R2)
         """
-        if isinstance(right, Matrix21):
+        if isinstance(right, Vector2):
             assert right.shape == (2, 1), right.shape
             return self.R * right + self.t
         elif isinstance(right, Pose2):

@@ -25,7 +25,7 @@ TEST_DATA_DIR = os.path.join(
 
 # Test function
 def az_el_from_point(
-    nav_T_cam: geo.Pose3, nav_t_point: geo.Matrix31, epsilon: T.Scalar = 0
+    nav_T_cam: geo.Pose3, nav_t_point: geo.Vector3, epsilon: T.Scalar = 0
 ) -> geo.Matrix:
     """
     Transform a nav point into azimuth / elevation angles in the
@@ -40,7 +40,7 @@ def az_el_from_point(
         geo.Matrix: (azimuth, elevation)
     """
     cam_t_point = nav_T_cam.inverse() * nav_t_point
-    x, y, z = cam_t_point
+    x, y, z = cam_t_point.to_flat_list()
     theta = sm.atan2_safe(y, x, epsilon=epsilon)
     phi = sm.pi / 2 - sm.acos(z / (cam_t_point.norm() + epsilon))
     return geo.V2(theta, phi)

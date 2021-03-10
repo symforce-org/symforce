@@ -153,10 +153,10 @@ def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
         geo.Pose3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
     }
 
-    def pose2_inverse_compose(self: geo.Pose2, point: geo.Matrix21) -> geo.Matrix21:
+    def pose2_inverse_compose(self: geo.Pose2, point: geo.Vector2) -> geo.Vector2:
         return self.inverse() * point
 
-    def pose3_inverse_compose(self: geo.Pose3, point: geo.Matrix31) -> geo.Matrix31:
+    def pose3_inverse_compose(self: geo.Pose3, point: geo.Vector3) -> geo.Vector3:
         return self.inverse() * point
 
     custom_generated_methods = {

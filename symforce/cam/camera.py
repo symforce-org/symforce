@@ -22,11 +22,11 @@ class Camera:
             self.image_size = None  # type: ignore
 
     @property
-    def focal_length(self) -> geo.Matrix21:
+    def focal_length(self) -> geo.V2:
         return self.calibration.focal_length
 
     @property
-    def principal_point(self) -> geo.Matrix21:
+    def principal_point(self) -> geo.V2:
         return self.calibration.principal_point
 
     @property
@@ -43,8 +43,8 @@ class Camera:
         )
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = 0
-    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
+        self, point: geo.V3, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.V2, T.Scalar]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -57,8 +57,8 @@ class Camera:
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.Matrix21, epsilon: T.Scalar = 0
-    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
+        self, pixel: geo.V2, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.V3, T.Scalar]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -73,14 +73,14 @@ class Camera:
         is_valid *= self.maybe_check_in_view(pixel)
         return camera_ray, is_valid
 
-    def maybe_check_in_view(self, pixel: geo.Matrix21) -> int:
+    def maybe_check_in_view(self, pixel: geo.V2) -> int:
         if not self.image_size:
             return sm.S.One
 
         return self.in_view(pixel, self.image_size)
 
     @staticmethod
-    def in_view(pixel: geo.Matrix21, image_size: geo.Matrix21) -> int:
+    def in_view(pixel: geo.V2, image_size: geo.V2) -> int:
         """
         Returns 1.0 if the pixel coords are in bounds of the image, 0.0 otherwise.
         """

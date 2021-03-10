@@ -23,8 +23,8 @@ def deduce_input_type(
         3a) If it's one piece (i.e. no dot), look for that type in builtins, T, geo, and cam
         3b) If it's two pieces, the first has to be T, geo, or cam, we look for the second piece
             in those modules
-        3c) We don't support more than 2 pieces, i.e. names like geo.matrix.Matrix31 aren't
-            supported (use geo.Matrix31 if possible)
+        3c) We don't support more than 2 pieces, i.e. names like geo.matrix.Vector3 aren't
+            supported (use geo.Vector3 if possible)
     """
     annotation = parameter.annotation
     if annotation is parameter.empty:

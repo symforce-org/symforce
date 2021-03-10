@@ -172,7 +172,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     def between_factor_pose3_position(
         a: geo.Pose3,
         b: geo.Pose3,
-        a_t_b: geo.Matrix31,
+        a_t_b: geo.Vector3,
         sqrt_info: geo.Matrix33,
         epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
@@ -218,7 +218,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return residual, jacobian
 
     def prior_factor_pose3_position(
-        value: geo.Pose3, prior: geo.Matrix31, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
+        value: geo.Pose3, prior: geo.Vector3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
     ) -> T.Tuple[geo.Matrix, geo.Matrix]:
         tangent_error = ops.LieGroupOps.local_coordinates(prior, value.t, epsilon=epsilon)
         residual = sqrt_info * geo.M(tangent_error)

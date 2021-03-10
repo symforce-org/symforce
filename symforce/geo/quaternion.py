@@ -8,7 +8,6 @@ from symforce import sympy as sm
 from symforce import types as T
 
 from .matrix import Matrix
-from .matrix import Matrix31
 from .matrix import Vector3
 
 
@@ -26,13 +25,9 @@ class Quaternion(Group):
         https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
     """
 
-    def __init__(self, xyz: Matrix31, w: T.Scalar) -> None:
+    def __init__(self, xyz: Vector3, w: T.Scalar) -> None:
         """
         Construct from a real scalar and an imaginary unit vector.
-
-        Args:
-            xyz (Matrix): 3x1 vector
-            w (Scalar):
         """
         assert len(xyz) == 3
         self.xyz = xyz

@@ -7,11 +7,11 @@ from symforce import sympy as sm
 from symforce import types as T
 
 from .matrix import Matrix
-from .matrix import Matrix31
 from .matrix import Matrix33
 from .matrix import Matrix34
 from .matrix import Matrix43
 from .matrix import V3
+from .matrix import Vector3
 from .quaternion import Quaternion
 
 
@@ -138,19 +138,19 @@ class Rot3(LieGroup):
     # -------------------------------------------------------------------------
 
     @T.overload
-    def __mul__(self, right: Matrix31) -> Matrix31:  # pragma: no cover
+    def __mul__(self, right: Vector3) -> Vector3:  # pragma: no cover
         pass
 
     @T.overload
     def __mul__(self, right: Rot3) -> Rot3:  # pragma: no cover
         pass
 
-    def __mul__(self, right: T.Union[Matrix31, Rot3]) -> T.Union[Matrix31, Rot3]:
+    def __mul__(self, right: T.Union[Vector3, Rot3]) -> T.Union[Vector3, Rot3]:
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
-        if isinstance(right, V3):
-            return T.cast(Matrix31, self.to_rotation_matrix() * right)
+        if isinstance(right, Vector3):
+            return T.cast(Vector3, self.to_rotation_matrix() * right)
         elif isinstance(right, Rot3):
             return self.compose(right)
         else:
@@ -231,14 +231,14 @@ class Rot3(LieGroup):
         )
 
     @classmethod
-    def from_axis_angle(cls, axis: Matrix31, angle: T.Scalar) -> Rot3:
+    def from_axis_angle(cls, axis: Vector3, angle: T.Scalar) -> Rot3:
         """
         Construct from a (normalized) axis as a 3-vector and an angle in radians.
         """
         return cls(Quaternion(xyz=axis * sm.sin(angle / 2), w=sm.cos(angle / 2)))
 
     @classmethod
-    def from_two_unit_vectors(cls, a: Matrix31, b: Matrix31, epsilon: T.Scalar = 0) -> Rot3:
+    def from_two_unit_vectors(cls, a: Vector3, b: Vector3, epsilon: T.Scalar = 0) -> Rot3:
         """
         Return a rotation that transforms a to b. Both inputs are three-vectors that
         are expected to be normalized.

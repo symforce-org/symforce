@@ -2,7 +2,7 @@ import inspect
 from symforce import cam
 from symforce.cam import LinearCameraCal
 from symforce import geo
-from symforce.geo import Pose3, Matrix31
+from symforce.geo import Pose3, Vector3
 from symforce import types as T
 from symforce.types import Scalar
 from symforce.codegen.type_helper import deduce_input_types
@@ -43,11 +43,11 @@ class SymforceCodegenTypeHelperTest(TestCase):
             a: "float",
             b: "Scalar",
             c: "Pose3",
-            d: "Matrix31",
+            d: "Vector3",
             e: "LinearCameraCal",
             f: "T.Scalar",
             g: "geo.Pose3",
-            h: "geo.Matrix31",
+            h: "geo.Vector3",
             i: "cam.LinearCameraCal",
         ) -> None:
             pass
@@ -56,11 +56,11 @@ class SymforceCodegenTypeHelperTest(TestCase):
             float,
             float,
             geo.Pose3,
-            geo.Matrix31,
+            geo.Vector3,
             cam.LinearCameraCal,
             float,
             geo.Pose3,
-            geo.Matrix31,
+            geo.Vector3,
             cam.LinearCameraCal,
         ]
 
@@ -97,7 +97,7 @@ class SymforceCodegenTypeHelperTest(TestCase):
         )
 
         # Fails for a string with more than 2 parts
-        def my_function_with_a_multipart_string_annotation(a: "geo.matrix.Matrix31") -> None:
+        def my_function_with_a_multipart_string_annotation(a: "geo.matrix.Vector3") -> None:
             pass
 
         self.assertRaises(

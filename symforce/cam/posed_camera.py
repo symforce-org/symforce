@@ -27,8 +27,8 @@ class PosedCamera(Camera):
         )
 
     def pixel_from_global_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = 0
-    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
+        self, point: geo.Vector3, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Vector2, T.Scalar]:
         """
         Transforms the given point into the camera frame using the given camera pose and then
         uses the given camera calibration to compute the resulted pixel coordinates of the
@@ -47,8 +47,8 @@ class PosedCamera(Camera):
         return pixel, is_valid
 
     def global_point_from_pixel(
-        self, pixel: geo.Matrix21, range_to_point: T.Scalar, epsilon: T.Scalar = 0
-    ) -> T.Tuple[geo.Matrix31, T.Scalar]:
+        self, pixel: geo.Vector2, range_to_point: T.Scalar, epsilon: T.Scalar = 0
+    ) -> T.Tuple[geo.Vector3, T.Scalar]:
         """
         Computes a point written in the global frame along the ray passing through the center
         of the given pixel. The point is positioned at a given range along the ray.
@@ -70,11 +70,11 @@ class PosedCamera(Camera):
 
     def warp_pixel(
         self,
-        pixel: geo.Matrix21,
+        pixel: geo.Vector2,
         inverse_range: T.Scalar,
         target_cam: PosedCamera,
         epsilon: T.Scalar = 0,
-    ) -> T.Tuple[geo.Matrix21, T.Scalar]:
+    ) -> T.Tuple[geo.Vector2, T.Scalar]:
         """
         Project a pixel in this camera into another camera.
 
