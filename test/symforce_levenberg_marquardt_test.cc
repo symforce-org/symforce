@@ -2,14 +2,7 @@
 
 #include "../symforce/opt/levenberg_marquardt_solver.h"
 #include "../symforce/util/random.h"
-
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
 /**
  * Test that Gauss Newton converges to the exact result for a linear residual where the solution is
@@ -17,8 +10,10 @@
  *
  * We generate a random matrix J, and then set the residual to r = J * x
  */
-template <typename Scalar>
-void TestOneIterationGaussNewton() {
+TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenberg_marquardt]",
+                   double, float) {
+  using Scalar = TestType;
+
   constexpr const int M = 9;
   constexpr const int N = 5;
 
@@ -81,14 +76,9 @@ void TestOneIterationGaussNewton() {
   std::cerr << "error_final: " << error_final << std::endl;
 
   // Check initial error was high and final is zero
-  assertTrue(error_init > 10000.);
-  assertTrue(error_final < 1e-8);
+  CHECK(error_init > 10000.);
+  CHECK(error_final < 1e-8);
 
   // Check solution is zero
-  assertTrue(solver.GetBestValues().template At<StateVector>('v').norm() < 1e-4);
-}
-
-int main() {
-  TestOneIterationGaussNewton<double>();
-  TestOneIterationGaussNewton<float>();
+  CHECK(solver.GetBestValues().template At<StateVector>('v').norm() < 1e-4);
 }

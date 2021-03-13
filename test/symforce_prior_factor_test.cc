@@ -3,18 +3,9 @@
 #include <sym/factors/prior_factor_rot3.h>
 #include <symforce/opt/util.h>
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
-/**
- * Test zero residual for a noiseless prior factor.
- */
-void TestZeroResidualPriorFactor() {
+TEST_CASE("Test zero residual for a noiseless prior factor", "[prior_factors]") {
   const double sigma = 1.0;
   const Eigen::Vector3d sigmas = Eigen::Vector3d::Constant(sigma);
   const Eigen::Matrix3d sqrt_info = sigmas.cwiseInverse().asDiagonal();
@@ -28,13 +19,10 @@ void TestZeroResidualPriorFactor() {
   Eigen::Matrix<double, 3, 3> jacobian;
   sym::PriorFactorRot3<double>(a, b, sqrt_info, epsilon, &residual, &jacobian);
 
-  assertTrue(residual.isZero(epsilon));
+  CHECK(residual.isZero(epsilon));
 }
 
-/**
- * Test jacobian for noisy prior factors
- */
-void TestPriorFactorJacobian() {
+TEST_CASE("Test jacobian for noisy prior factors", "[prior_factors]") {
   const double sigma = 1.0;
   const Eigen::Vector3d sigmas = Eigen::Vector3d::Constant(sigma);
   const Eigen::Matrix3d sqrt_info = sigmas.cwiseInverse().asDiagonal();
@@ -59,11 +47,6 @@ void TestPriorFactorJacobian() {
     const Eigen::Matrix<double, 3, 3> numerical_jacobian =
         sym::NumericalDerivative(wrapped_residual, a, epsilon, std::sqrt(epsilon));
 
-    assertTrue(numerical_jacobian.isApprox(jacobian, std::sqrt(epsilon)));
+    CHECK(numerical_jacobian.isApprox(jacobian, std::sqrt(epsilon)));
   }
-}
-
-int main(int argc, char** argv) {
-  TestZeroResidualPriorFactor();
-  TestPriorFactorJacobian();
 }

@@ -5,15 +5,9 @@
 #include <lcmtypes/codegen_cpp_test/states_t.hpp>
 #include <lcmtypes/codegen_cpp_test/values_vec_t.hpp>
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
-int main(int argc, char** argv) {
+TEST_CASE("Generated C++ compiles", "[codegen_cpp_test]") {
   double x = 2.0;
   double y = -5.0;
   sym::Rot3<double> rot;
@@ -37,7 +31,7 @@ int main(int argc, char** argv) {
   codegen_cpp_test::CodegenCppTest<double>(x, y, rot, rot_vec, scalar_vec, list_of_lists,
                                            values_vec, values_vec_2D, constants, states, &foo, &bar,
                                            &scalar_vec_out, &values_vec_out, &values_vec_2D_out);
-  assertTrue(std::abs(foo - (std::pow(x, 2) + rot.Data()[3])) < 1e-8);
-  assertTrue(std::abs(bar - (constants.epsilon + std::sin(y) + std::pow(x, 2))) < 1e-8);
+  CHECK(foo == Catch::Approx(std::pow(x, 2) + rot.Data()[3]).epsilon(1e-8));
+  CHECK(bar == Catch::Approx(constants.epsilon + std::sin(y) + std::pow(x, 2)).epsilon(1e-8));
   // TODO(nathan): Check other outputs (just checking that things compile for now)
 }

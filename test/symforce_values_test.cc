@@ -5,69 +5,63 @@
 #include <sym/rot3.h>
 
 #include "../symforce/opt/values.h"
+#include "catch.hpp"
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
+  using Scalar = TestType;
 
-template <typename Scalar>
-void TestValues() {
   std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> ***" << std::endl;
   const Scalar epsilon = 1e-9;
 
   sym::Values<Scalar> v;
-  assertTrue(v.Keys().size() == 0);
-  assertTrue(v.NumEntries() == 0);
-  assertTrue(v.Items().size() == 0);
-  assertTrue(v.Data().size() == 0);
-  assertTrue(!v.Has(sym::Key()));
-  assertTrue(!v.Has(sym::Key('F', -1, 3)));
+  CHECK(v.Keys().size() == 0);
+  CHECK(v.NumEntries() == 0);
+  CHECK(v.Items().size() == 0);
+  CHECK(v.Data().size() == 0);
+  CHECK(!v.Has(sym::Key()));
+  CHECK(!v.Has(sym::Key('F', -1, 3)));
 
   // Add a key
   sym::Key R1_key('R', 1);
   sym::Rot3<Scalar> R1 = sym::Rot3<Scalar>::FromYawPitchRoll(0.5, -0.2, 0.1);
   const bool is_new = v.Set(R1_key, R1);
-  assertTrue(is_new);
-  assertTrue(v.NumEntries() == 1);
-  assertTrue(v.Keys().size() == 1);
-  assertTrue(v.Items().size() == 1);
-  assertTrue(v.Data().size() == R1.StorageDim());
-  assertTrue(v.Has(R1_key));
+  CHECK(is_new);
+  CHECK(v.NumEntries() == 1);
+  CHECK(v.Keys().size() == 1);
+  CHECK(v.Items().size() == 1);
+  CHECK(v.Data().size() == R1.StorageDim());
+  CHECK(v.Has(R1_key));
   sym::Rot3<Scalar> R1_fetch = v.template At<sym::Rot3<Scalar>>(R1_key);
-  assertTrue(R1 == R1_fetch);
+  CHECK(R1 == R1_fetch);
 
   // Add a second
   sym::Key z1_key = sym::Key('z', 1);
   Scalar s = 2.0;
   v.Set(z1_key, s);
-  assertTrue(v.NumEntries() == 2);
-  assertTrue(v.Data().size() == R1.StorageDim() + 1);
-  assertTrue(v.Has(z1_key));
-  assertTrue(v.Has(R1_key));
-  assertTrue(s == v.template At<Scalar>(z1_key));
+  CHECK(v.NumEntries() == 2);
+  CHECK(v.Data().size() == R1.StorageDim() + 1);
+  CHECK(v.Has(z1_key));
+  CHECK(v.Has(R1_key));
+  CHECK(s == v.template At<Scalar>(z1_key));
 
   // Modify a key
   const sym::Rot3<Scalar> R1_new = sym::Rot3<Scalar>::FromTangent({1.2, 0.2, 0.0});
   const bool is_new2 = v.Set(R1_key, R1_new);
-  assertTrue(!is_new2);
-  assertTrue(v.NumEntries() == 2);
-  assertTrue(v.Data().size() == R1.StorageDim() + 1);
-  assertTrue(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
+  CHECK_FALSE(is_new2);
+  CHECK(v.NumEntries() == 2);
+  CHECK(v.Data().size() == R1.StorageDim() + 1);
+  CHECK(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
 
   // Remove nothing
   bool remove_nothing = v.Remove(sym::Key('f'));
-  assertTrue(!remove_nothing);
+  CHECK_FALSE(remove_nothing);
 
   // Remove z1
   bool remove_z1 = v.Remove(z1_key);
-  assertTrue(remove_z1);
-  assertTrue(v.NumEntries() == 1);
-  assertTrue(v.Data().size() == R1.StorageDim() + 1);
-  assertTrue(!v.Has(z1_key));
+  CHECK(remove_z1);
+  CHECK(v.NumEntries() == 1);
+  CHECK(v.Data().size() == R1.StorageDim() + 1);
+  CHECK_FALSE(v.Has(z1_key));
 
   // Add some more
   v.Set(sym::Key('f', 1), Scalar(4.2));
@@ -79,36 +73,36 @@ void TestValues() {
                                               Eigen::Matrix<Scalar, 9, 1>::Constant(1.2));
 
   // Right now since we removed a scalar the data array is one longer than the actual storage dim
-  assertTrue(v.NumEntries() == 7);
+  CHECK(v.NumEntries() == 7);
   const sym::index_t index_1 = v.CreateIndex(v.Keys());
-  assertTrue(v.Data().size() == index_1.storage_dim + 1);
-  assertTrue(index_1.tangent_dim == index_1.storage_dim - 1);
+  CHECK(v.Data().size() == index_1.storage_dim + 1);
+  CHECK(index_1.tangent_dim == index_1.storage_dim - 1);
 
   // Cleanup to get rid of the empty space from the scalar
   size_t num_cleaned = v.Cleanup();
-  assertTrue(v.NumEntries() == 7);
-  assertTrue(v.Data().size() == index_1.storage_dim);
+  CHECK(v.NumEntries() == 7);
+  CHECK(v.Data().size() == index_1.storage_dim);
   const sym::index_t index_2 = v.CreateIndex(v.Keys());
-  assertTrue(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
-  assertTrue(Scalar(4.2) == v.template At<Scalar>({'f', 1}));
-  assertTrue(index_2.storage_dim == index_1.storage_dim);
-  assertTrue(index_2.tangent_dim == index_1.tangent_dim);
+  CHECK(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
+  CHECK(Scalar(4.2) == v.template At<Scalar>({'f', 1}));
+  CHECK(index_2.storage_dim == index_1.storage_dim);
+  CHECK(index_2.tangent_dim == index_1.tangent_dim);
 
   // Test lookups
   const sym::index_entry_t& f2_entry = index_1.entries[1];
-  assertTrue(v.template At<Scalar>(f2_entry) == v.template At<Scalar>(sym::Key('f', 2)));
+  CHECK(v.template At<Scalar>(f2_entry) == v.template At<Scalar>(sym::Key('f', 2)));
   v.Set(f2_entry, Scalar(15.6));
-  assertTrue(v.template At<Scalar>(sym::Key('f', 2)) == Scalar(15.6));
+  CHECK(v.template At<Scalar>(sym::Key('f', 2)) == Scalar(15.6));
 
   // Pack to LCM
   const typename sym::Values<Scalar>::LcmType msg = v.GetLcmType();
-  assertTrue(msg.index == index_2);
-  assertTrue(msg.data.size() == v.Data().size());
+  CHECK(msg.index == index_2);
+  CHECK(msg.data.size() == v.Data().size());
 
   // Recreate another
   sym::Values<Scalar> v2(msg);
-  assertTrue(v2.NumEntries() == v.NumEntries());
-  assertTrue(v2.Data() == v.Data());
+  CHECK(v2.NumEntries() == v.NumEntries());
+  CHECK(v2.Data() == v.Data());
   assert(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
 
   // Print
@@ -116,11 +110,11 @@ void TestValues() {
 
   // Clear
   v.RemoveAll();
-  assertTrue(v.NumEntries() == 0);
-  assertTrue(v.Data().size() == 0);
+  CHECK(v.NumEntries() == 0);
+  CHECK(v.Data().size() == 0);
 }
 
-void TestImplicitConstruction() {
+TEST_CASE("Test implicit construction", "[values]") {
   std::cout << "*** Testing Values Implicit Construction ***" << std::endl;
 
   sym::Valuesd values;
@@ -133,7 +127,7 @@ void TestImplicitConstruction() {
   std::cout << values << std::endl;
 }
 
-void TestInitializerListConstruction() {
+TEST_CASE("Test initializer list construction", "[values]") {
   std::cout << "*** Testing Values Initializer List Construction ***" << std::endl;
 
   sym::Valuesd v1;
@@ -148,20 +142,20 @@ void TestInitializerListConstruction() {
   sym::Valuesd v3({v1, v2});
 
   // test data
-  assertTrue(v3.At<double>('x') == 1.0);
-  assertTrue(v3.At<double>('y') == 2.0);
-  assertTrue(v3.At<double>('z') == -3.0);
-  assertTrue(v3.At<sym::Rot3d>('R') == sym::Rot3d::Identity());
+  CHECK(v3.At<double>('x') == 1.0);
+  CHECK(v3.At<double>('y') == 2.0);
+  CHECK(v3.At<double>('z') == -3.0);
+  CHECK(v3.At<sym::Rot3d>('R') == sym::Rot3d::Identity());
 
   // test preserving key ordering
   const auto v3_keys = v3.Keys();
-  assertTrue(v3_keys[0] == 'x');
-  assertTrue(v3_keys[1] == 'y');
-  assertTrue(v3_keys[2] == 'z');
-  assertTrue(v3_keys[3] == 'R');
+  CHECK(v3_keys[0] == 'x');
+  CHECK(v3_keys[1] == 'y');
+  CHECK(v3_keys[2] == 'z');
+  CHECK(v3_keys[3] == 'R');
 }
 
-void TestIndexedUpdate() {
+TEST_CASE("Test indexed update", "[values]") {
   std::cout << "*** Testing Values Indexed Update ***" << std::endl;
 
   // Create some data
@@ -183,16 +177,16 @@ void TestIndexedUpdate() {
   values.Set<double>('x', 7.7);
   values.Set<sym::Rot3d>({'R', 1}, values.At<sym::Rot3d>({'R', 2}));
 
-  assertTrue(values.At<double>('x') == 7.7);
-  assertTrue(values2.At<double>('x') == 1.0);
+  CHECK(values.At<double>('x') == 7.7);
+  CHECK(values2.At<double>('x') == 1.0);
 
   // Efficiently update keys into the new values
   values2.Update(index, values);
 
-  assertTrue(values2.At<double>('x') == 7.7);
+  CHECK(values2.At<double>('x') == 7.7);
 }
 
-void TestKeyUpdate() {
+TEST_CASE("Test key update", "[values]") {
   std::cout << "*** Testing Values Key Update ***" << std::endl;
 
   // Create some data
@@ -216,24 +210,25 @@ void TestKeyUpdate() {
   values2.UpdateOrSet(index, values);
 
   // Test for update
-  assertTrue(values2.At<double>('x') == 1.0);
-  assertTrue(values2.At<double>('y') == 2.0);
-  assertTrue(values2.At<sym::Rot3d>({'R', 1}) == sym::Rot3d::Identity());
+  CHECK(values2.At<double>('x') == 1.0);
+  CHECK(values2.At<double>('y') == 2.0);
+  CHECK(values2.At<sym::Rot3d>({'R', 1}) == sym::Rot3d::Identity());
 
   // Test for not clobbering other field
-  assertTrue(values2.At<double>('z') == 10.0);
+  CHECK(values2.At<double>('z') == 10.0);
 
   // Test efficient update with cached index
   const sym::index_t index2 = values2.CreateIndex(keys);
   values.Set<double>('x', -10.0);
   values.Set<double>('y', 20.0);
   values2.Update(index2, index, values);
-  assertTrue(values2.At<double>('x') == -10.0);
-  assertTrue(values2.At<double>('y') == 20.0);
+  CHECK(values2.At<double>('x') == -10.0);
+  CHECK(values2.At<double>('y') == 20.0);
 }
 
-template <typename Scalar>
-void TestLieGroupOps() {
+TEMPLATE_TEST_CASE("Test lie group ops", "[values]", double, float) {
+  using Scalar = TestType;
+
   std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> LieGroupOps ***" << std::endl;
   const Scalar epsilon = 1e-9;
 
@@ -256,35 +251,20 @@ void TestLieGroupOps() {
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
     const sym::Rot3<Scalar> retracted_rot = v1.template At<sym::Rot3<Scalar>>('R');
-    assertTrue(random_rot.IsApprox(retracted_rot, 1e-6));
+    CHECK(random_rot.IsApprox(retracted_rot, 1e-6));
 
     // test local coordinates
     const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
-    assertTrue(local_coords.isApprox(tangent_vec));
+    CHECK(local_coords.isApprox(tangent_vec));
   }
 }
 
-void TestMoveOperator() {
+TEST_CASE("Test move operator", "[values]") {
   static_assert(std::is_move_assignable<sym::Values<float>>::value, "");
   sym::Valuesf values;
   values.Set<float>('x', 1.0f);
   values.Set<float>('y', 2.0f);
   values.Set<sym::Rot3f>({'R', 1}, sym::Rot3f::Identity());
   sym::Valuesf values2 = std::move(values);
-  assertTrue(values2.At<float>('x') == 1.0f);
-}
-
-int main(int argc, char** argv) {
-  TestValues<float>();
-  TestValues<double>();
-
-  TestImplicitConstruction();
-  TestInitializerListConstruction();
-
-  TestLieGroupOps<float>();
-  TestLieGroupOps<double>();
-
-  TestIndexedUpdate();
-  TestKeyUpdate();
-  TestMoveOperator();
+  CHECK(values2.At<float>('x') == 1.0f);
 }

@@ -3,14 +3,7 @@
 #include "../symforce/opt/gnc.h"
 #include "../symforce/util/random.h"
 #include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_residual.h"
-
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {
   sym::optimizer_params_t params{};
@@ -39,7 +32,7 @@ sym::optimizer_gnc_params_t DefaultGncParams() {
   return params;
 }
 
-void TestGnc() {
+TEST_CASE("Test GNC", "[gnc]") {
   static constexpr const double kEpsilon = 1e-10;
   const int n_residuals = 20;
   const int n_outliers = 3;
@@ -82,13 +75,9 @@ void TestGnc() {
   std::cout << "Final x without GNC: "
             << regular_optimized_values.At<sym::Vector5d>('x').transpose() << std::endl;
 
-  assertTrue(gnc_optimizer.IterationStats().size() == 8);
+  CHECK(gnc_optimizer.IterationStats().size() == 8);
   const sym::Vector5d gnc_optimized_x = gnc_optimized_values.At<sym::Vector5d>('x');
   const sym::Vector5d regular_optimized_x = regular_optimized_values.At<sym::Vector5d>('x');
-  assertTrue(gnc_optimized_x.norm() < 0.1);
-  assertTrue(gnc_optimized_x.norm() * 5 < regular_optimized_x.norm());
-}
-
-int main(int argc, char** argv) {
-  TestGnc();
+  CHECK(gnc_optimized_x.norm() < 0.1);
+  CHECK(gnc_optimized_x.norm() * 5 < regular_optimized_x.norm());
 }

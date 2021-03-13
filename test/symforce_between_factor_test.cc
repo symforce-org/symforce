@@ -3,18 +3,9 @@
 #include <sym/factors/between_factor_rot3.h>
 #include <symforce/opt/util.h>
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
-/**
- * Test zero residual for a noiseless between factor.
- */
-void TestZeroResidualBetweenFactor() {
+TEST_CASE("Test zero residual for a noiseless between factor", "[between_factors]") {
   const double sigma = 1.0;
   const Eigen::Vector3d sigmas = Eigen::Vector3d::Constant(sigma);
   const Eigen::Matrix3d sqrt_info = sigmas.cwiseInverse().asDiagonal();
@@ -29,13 +20,10 @@ void TestZeroResidualBetweenFactor() {
   Eigen::Matrix<double, 3, 6> jacobian;
   sym::BetweenFactorRot3<double>(a, b, a_T_b, sqrt_info, epsilon, &residual, &jacobian);
 
-  assertTrue(residual.isZero(epsilon));
+  CHECK(residual.isZero(epsilon));
 }
 
-/**
- * Test jacobian for noisy between factors
- */
-void TestBetweenFactorJacobian() {
+TEST_CASE("Test jacobian for noisy between factors", "[between_factors]") {
   const double sigma = 1.0;
   const Eigen::Vector3d sigmas = Eigen::Vector3d::Constant(sigma);
   const Eigen::Matrix3d sqrt_info = sigmas.cwiseInverse().asDiagonal();
@@ -71,11 +59,6 @@ void TestBetweenFactorJacobian() {
     numerical_jacobian.rightCols<3>() =
         sym::NumericalDerivative(wrapped_residual_b, b, epsilon, std::sqrt(epsilon));
 
-    assertTrue(numerical_jacobian.isApprox(jacobian, std::sqrt(epsilon)));
+    CHECK(numerical_jacobian.isApprox(jacobian, std::sqrt(epsilon)));
   }
-}
-
-int main(int argc, char** argv) {
-  TestZeroResidualBetweenFactor();
-  TestBetweenFactorJacobian();
 }

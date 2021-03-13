@@ -185,6 +185,11 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                 dict(
                     Codegen.common_data(),
                     all_types=DEFAULT_CAM_TYPES,
+                    cpp_cam_types=[
+                        f"sym::{cls.__name__}<{scalar}>"
+                        for cls in DEFAULT_CAM_TYPES
+                        for scalar in data["scalar_types"]
+                    ],
                     include_dir=output_dir,
                     eigen_include_dir=os.path.realpath(
                         os.path.join(
@@ -193,6 +198,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                     ),
                     symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
                     lib_dir=os.path.join(output_dir, "example"),
+                    catch2_dir=os.path.join(CURRENT_DIR, "..", "..", "third_party", "catch2"),
                 ),
             )
     else:

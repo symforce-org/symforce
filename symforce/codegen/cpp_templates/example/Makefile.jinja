@@ -1,6 +1,6 @@
 # Basic tests for the cam and geo libraries
 
-INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }} -I{{ symforce_include_dir }}
+INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }} -I{{ symforce_include_dir }} -I{{ catch2_dir }}/include
 CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
 LDFLAGS = -shared -fpic
 
@@ -11,14 +11,17 @@ all: libsymforce_gen.so geo_example cam_example cam_example_function_gen
 libsymforce_gen.so: $(CC_FILES)
 	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_gen.so $(CC_FILES) $(INCLUDES)
 
-geo_example: geo_package_cpp_test.cc libsymforce_gen.so
-	c++ $(CXXFLAGS) -o geo_package_cpp_test geo_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen $(INCLUDES)
+libcatch2.so: {{ catch2_dir }}/src/catch_amalgamated.cpp
+	c++ $(CXXFLAGS) $(LDFLAGS) -o libcatch2.so $< $(INCLUDES)
 
-cam_example: cam_package_cpp_test.cc libsymforce_gen.so
-	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen $(INCLUDES)
+geo_example: geo_package_cpp_test.cc libsymforce_gen.so libcatch2.so
+	c++ $(CXXFLAGS) -o geo_package_cpp_test geo_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES)
 
-cam_example_function_gen: cam_function_codegen_cpp_test.cc libsymforce_gen.so
-	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen $(INCLUDES) -I../cpp
+cam_example: cam_package_cpp_test.cc libsymforce_gen.so libcatch2.so
+	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES)
+
+cam_example_function_gen: cam_function_codegen_cpp_test.cc libsymforce_gen.so libcatch2.so
+	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES) -I../cpp
 
 clean:
 	rm -f libsymforce_gen.so; rm -f cam_package_cpp_test cam_function_codegen_cpp_test geo_package_cpp_test

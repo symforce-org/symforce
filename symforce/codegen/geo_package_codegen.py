@@ -209,7 +209,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
         templates.add(
             os.path.join(template_dir, "__init__.py.jinja"),
             os.path.join(package_dir, "__init__.py"),
-            dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES,),
+            dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
         )
 
         # Test example
@@ -270,6 +270,16 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                 os.path.join(output_dir, "example", name),
                 dict(
                     Codegen.common_data(),
+                    cpp_geo_types=[
+                        f"sym::{cls.__name__}<{scalar}>"
+                        for cls in DEFAULT_GEO_TYPES
+                        for scalar in data["scalar_types"]
+                    ],
+                    cpp_matrix_types=[
+                        f"sym::Vector{i}<{scalar}>"
+                        for i in range(1, 10)
+                        for scalar in data["scalar_types"]
+                    ],
                     all_types=DEFAULT_GEO_TYPES,
                     include_dir=output_dir,
                     symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
@@ -279,6 +289,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                         )
                     ),
                     lib_dir=os.path.join(output_dir, "example"),
+                    catch2_dir=os.path.join(CURRENT_DIR, "..", "..", "third_party", "catch2"),
                 ),
             )
 

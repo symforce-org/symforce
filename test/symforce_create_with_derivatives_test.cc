@@ -2,20 +2,13 @@
 
 #include <symforce/opt/util.h>
 
+#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/create_with_derivatives/compose_pose3__value_and_jacobian0.h"
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+TEMPLATE_TEST_CASE("Test compose numerical derivative", "[create_with_derivatives]", double,
+                   float) {
+  using Scalar = TestType;
 
-namespace sym {
-
-template <class Scalar>
-void TestComposeNumericalDerivative() {
   constexpr const Scalar epsilon = 1e-7f;
 
   using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
@@ -34,13 +27,6 @@ void TestComposeNumericalDerivative() {
         sym::ComposePose3_ValueAndJacobian0(a, b, &symforce_jacobian);
     (void)symforce_result;
 
-    assertTrue(numerical_jacobian.isApprox(symforce_jacobian, 10 * std::sqrt(epsilon)));
+    CHECK(numerical_jacobian.isApprox(symforce_jacobian, 10 * std::sqrt(epsilon)));
   }
-}
-
-}  // namespace sym
-
-int main(int argc, char** argv) {
-  sym::TestComposeNumericalDerivative<double>();
-  sym::TestComposeNumericalDerivative<float>();
 }

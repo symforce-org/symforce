@@ -19,16 +19,11 @@
 #include <sym/linear_camera_cal.h>
 #include <symforce/cam_function_codegen_test/pixel_to_ray_and_back.h>
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
-template <typename T>
-void TestGeneratedFunction() {
+TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>) {
+  using T = TestType;
   using Scalar = typename T::Scalar;
   Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
   Scalar tolerance = 10.0 * epsilon;  // For assessing approximate equality
@@ -48,10 +43,5 @@ void TestGeneratedFunction() {
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);
   Eigen::Matrix<Scalar, 2, 1> pixel_reprojected =
       cam_function_codegen_test::PixelToRayAndBack<Scalar>(pixel, cam, epsilon);
-  assertTrue(pixel.isApprox(pixel_reprojected, epsilon));
-}
-
-int main(int argc, char** argv) {
-  TestGeneratedFunction<sym::LinearCameraCal<double>>();
-  TestGeneratedFunction<sym::LinearCameraCal<float>>();
+  CHECK(pixel.isApprox(pixel_reprojected, epsilon));
 }

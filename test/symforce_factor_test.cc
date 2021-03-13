@@ -3,16 +3,9 @@
 #include <Eigen/Dense>
 
 #include "../symforce/opt/factor.h"
+#include "catch.hpp"
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
-
-void TestJacobianConstructors() {
+TEST_CASE("Test jacobian constructors", "[factors]") {
   std::cout << "*** TestJacobianConstructors() ***" << std::endl;
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -190,7 +183,7 @@ void TestJacobianConstructors() {
   const sym::Factord binary_rot3_with_epsilon = sym::Factord::Jacobian(
       [](const sym::Rot3d& a, const sym::Rot3d& b, const double epsilon,
          Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 6>* jac) {
-        assertTrue(epsilon == 1e-9);
+        CHECK(epsilon == 1e-9);
         (*res) << a.LocalCoordinates(b, epsilon);
         (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
       },
@@ -198,7 +191,7 @@ void TestJacobianConstructors() {
   std::cout << binary_rot3_with_epsilon.Linearize(values) << std::endl;
 }
 
-void TestHessianConstructors() {
+TEST_CASE("Test hessian constructors", "[factors]") {
   std::cout << "*** TestHessianConstructors() ***" << std::endl;
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -466,7 +459,7 @@ void TestHessianConstructors() {
       [](const sym::Rot3d& a, const sym::Rot3d& b, const double epsilon,
          Eigen::Matrix<double, 3, 1>* res, Eigen::Matrix<double, 3, 6>* jac,
          Eigen::Matrix<double, 6, 6>* hessian, Eigen::Matrix<double, 6, 1>* rhs) {
-        assertTrue(epsilon == 1e-9);
+        CHECK(epsilon == 1e-9);
         (*res) << a.LocalCoordinates(b, epsilon);
         (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
 
@@ -479,8 +472,9 @@ void TestHessianConstructors() {
   std::cout << binary_rot3_with_epsilon.Linearize(values) << std::endl;
 }
 
-template <typename Scalar>
-void TestLinearizedValues() {
+TEMPLATE_TEST_CASE("Test linearized values", "[factors]", double, float) {
+  using Scalar = TestType;
+
   sym::Key x('x');
   sym::Key y('y');
   sym::Key z('z');
@@ -503,34 +497,26 @@ void TestLinearizedValues() {
   const sym::Factor<Scalar> factor1 = sym::Factor<Scalar>::Jacobian(func, {x, y});
   const auto linearized1 = factor1.Linearize(values);
   std::cout << linearized1 << std::endl;
-  assertTrue(fabs(linearized1.residual[0] - 3) < 1e-3);
-  assertTrue(fabs(linearized1.jacobian(0, 0) - 2) < 1e-3);
-  assertTrue(fabs(linearized1.jacobian(0, 1) - 1) < 1e-3);
+  CHECK(linearized1.residual[0] == Catch::Approx(3).epsilon(0).margin(1e-3));
+  CHECK(linearized1.jacobian(0, 0) == Catch::Approx(2).epsilon(0).margin(1e-3));
+  CHECK(linearized1.jacobian(0, 1) == Catch::Approx(1).epsilon(0).margin(1e-3));
 
   // Check another combination of keys, now a = -3, b = 1
   const sym::Factor<Scalar> factor2 = sym::Factor<Scalar>::Jacobian(func, {z, x});
   const auto linearized2 = factor2.Linearize(values);
   std::cout << linearized2 << std::endl;
-  assertTrue(fabs(linearized2.residual[0] - 10) < 1e-3);
-  assertTrue(fabs(linearized2.jacobian(0, 0) - (-6)) < 1e-3);
-  assertTrue(fabs(linearized2.jacobian(0, 1) - 1) < 1e-3);
+  CHECK(linearized2.residual[0] == Catch::Approx(10).epsilon(0).margin(1e-3));
+  CHECK(linearized2.jacobian(0, 0) == Catch::Approx(-6).epsilon(0).margin(1e-3));
+  CHECK(linearized2.jacobian(0, 1) == Catch::Approx(1).epsilon(0).margin(1e-3));
 
   // Check Linearize with residual
   sym::VectorX<Scalar> residual;
   factor2.Linearize(values, &residual);
-  assertTrue(residual.isApprox(linearized2.residual));
+  CHECK(residual.isApprox(linearized2.residual));
 
   // Check Linearize with residual and jacobian
   sym::MatrixX<Scalar> jacobian;
   factor2.Linearize(values, &residual, &jacobian);
-  assertTrue(residual.isApprox(linearized2.residual));
-  assertTrue(jacobian.isApprox(linearized2.jacobian));
-}
-
-int main(int argc, char** argv) {
-  TestLinearizedValues<double>();
-  TestLinearizedValues<float>();
-
-  TestJacobianConstructors();
-  TestHessianConstructors();
+  CHECK(residual.isApprox(linearized2.residual));
+  CHECK(jacobian.isApprox(linearized2.jacobian));
 }

@@ -5,14 +5,7 @@
 
 #include "../symforce/opt/optimizer.h"
 #include "../symforce/util/random.h"
-
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {
   sym::optimizer_params_t params{};
@@ -37,7 +30,7 @@ sym::optimizer_params_t DefaultLmParams() {
  *
  *   z = 3.0 - 0.5 * sin((x - 2) / 5) + 1.0 * sin((y + 2) / 10.)
  */
-void TestNonlinear() {
+TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   // Create factors
   std::vector<sym::Factord> factors;
   factors.push_back(sym::Factord::Jacobian(
@@ -80,7 +73,7 @@ void TestNonlinear() {
   // https://www.wolframalpha.com/input/?i=z+%3D+3+-+0.5+*+sin((x+-+2)+%2F+5)+%2B+1.0+*+sin((y+%2B+2)+%2F+10.)
   const Eigen::Vector2d expected_gt = {9.854, -17.708};
   const Eigen::Vector2d actual = {values.At<double>('x'), values.At<double>('y')};
-  assertTrue((expected_gt - actual).norm() < 1e-3);
+  CHECK((expected_gt - actual).norm() < 1e-3);
 }
 
 /**
@@ -88,7 +81,7 @@ void TestNonlinear() {
  * and between factors in the middle. When the priors are strong it should act as on-manifold
  * interpolation, and when the between factors are strong it should act as a mean.
  */
-void TestRotSmoothing() {
+TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   // Constants
   const double epsilon = 1e-15;
   const int num_keys = 10;
@@ -163,15 +156,15 @@ void TestRotSmoothing() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  assertTrue(last_iter.iteration == 7);
-  assertTrue(fabs(last_iter.current_lambda - 6.1e-5) < 1e-6);
-  assertTrue(fabs(last_iter.new_error - 2.174) < 1e-3);
+  CHECK(last_iter.iteration == 7);
+  CHECK(last_iter.current_lambda == Catch::Approx(6.1e-5).epsilon(1e-1));
+  CHECK(last_iter.new_error == Catch::Approx(2.174).epsilon(1e-3));
 
   // Check that H = J^T J
   const sym::Linearizationd linearization = sym::Linearize<double>(factors, values);
   const Eigen::SparseMatrix<double> jtj =
       linearization.jacobian.transpose() * linearization.jacobian;
-  assertTrue(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
+  CHECK(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
       jtj.triangularView<Eigen::Lower>(), 1e-6));
 }
 
@@ -185,7 +178,7 @@ void TestRotSmoothing() {
  *
  * Tests that frozen variables and factors with out-of-order keys work
  */
-void TestNontrivialKeys() {
+TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   // Constants
   const double epsilon = 1e-15;
   const int num_keys = 3;
@@ -249,22 +242,14 @@ void TestNontrivialKeys() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  assertTrue(last_iter.iteration == 5);
-  assertTrue(last_iter.current_lambda < 1e-3);
-  assertTrue(last_iter.new_error < 1e-15);
+  CHECK(last_iter.iteration == 5);
+  CHECK(last_iter.current_lambda < 1e-3);
+  CHECK(last_iter.new_error < 1e-15);
 
   // Check that H = J^T J
   const sym::Linearizationd linearization = sym::Linearize<double>(factors, values, optimized_keys);
   const Eigen::SparseMatrix<double> jtj =
       linearization.jacobian.transpose() * linearization.jacobian;
-  assertTrue(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
+  CHECK(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
       jtj.triangularView<Eigen::Lower>(), 1e-6));
-}
-
-int main(int argc, char** argv) {
-  TestNonlinear();
-
-  TestRotSmoothing();
-
-  TestNontrivialKeys();
 }

@@ -8,15 +8,9 @@
 #include <lcmtypes/codegen_multi_function_test/outputs_1_t.hpp>
 #include <lcmtypes/codegen_multi_function_test/outputs_2_t.hpp>
 
-// TODO(hayk): Use the catch unit testing framework (single header).
-#define assertTrue(a)                                      \
-  if (!(a)) {                                              \
-    std::ostringstream o;                                  \
-    o << __FILE__ << ":" << __LINE__ << ": Test failure."; \
-    throw std::runtime_error(o.str());                     \
-  }
+#include "catch.hpp"
 
-int main(int argc, char** argv) {
+TEST_CASE("Multi-function codegen compiles", "[codegen_multi_function]") {
   codegen_multi_function_test::inputs_t inputs;
   inputs.x = 2.0;
   inputs.y = -5.0;
@@ -28,11 +22,12 @@ int main(int argc, char** argv) {
 
   codegen_multi_function_test::outputs_1_t outputs_1;
   codegen_multi_function_test::CodegenMultiFunctionTest1<double>(inputs, &outputs_1);
-  assertTrue(std::abs(outputs_1.foo - (std::pow(inputs.x, 2) + inputs.rot[3])) < 1e-8);
-  assertTrue(std::abs(outputs_1.bar - (inputs.constants.epsilon + std::sin(inputs.y) +
-                                       std::pow(inputs.x, 2))) < 1e-8);
+  CHECK(outputs_1.foo == Catch::Approx(std::pow(inputs.x, 2) + inputs.rot[3]).epsilon(1e-8));
+  CHECK(outputs_1.bar ==
+        Catch::Approx(inputs.constants.epsilon + std::sin(inputs.y) + std::pow(inputs.x, 2))
+            .epsilon(1e-8));
 
   codegen_multi_function_test::outputs_2_t outputs_2;
   codegen_multi_function_test::CodegenMultiFunctionTest2<double>(inputs, &outputs_2);
-  assertTrue(std::abs(outputs_2.foo - (std::pow(inputs.y, 3) + inputs.x)) < 1e-8);
+  CHECK(outputs_2.foo == Catch::Approx(std::pow(inputs.y, 3) + inputs.x).epsilon(1e-8));
 }
