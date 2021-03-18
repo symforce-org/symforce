@@ -17,7 +17,7 @@ from symforce.codegen import codegen_util
 from symforce.codegen import factors_codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import sym_util_package_codegen
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase, slow_on_sympy, disable_on_bionic
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
@@ -79,6 +79,7 @@ class SymforceGenCodegenTest(TestCase):
             ),
         )
 
+    @disable_on_bionic
     def test_gen_package_codegen_python(self) -> None:
         """
         Test Python code generation
@@ -120,6 +121,7 @@ class SymforceGenCodegenTest(TestCase):
                 python_util.remove_if_exists(output_dir)
 
     @slow_on_sympy
+    @disable_on_bionic
     def test_gen_package_codegen_cpp(self) -> None:
         """
         Test C++ code generation
