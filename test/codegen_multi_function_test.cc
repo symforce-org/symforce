@@ -10,15 +10,55 @@
 
 #include "catch.hpp"
 
+template <typename T>
+void FillChunkOfValues(T& values) {
+  sym::Rot3<double> rot;
+
+  values.x = 2.0;
+  values.y = -5.0;
+
+  const auto fill_rot = [&rot](double rot_to_fill[]) {
+    std::copy_n(rot.Data().data(), 4, &rot_to_fill[0]);
+  };
+
+  fill_rot(values.rot);
+
+  for (int i = 0; i < 3; i++) {
+    fill_rot(values.rot_vec[i]);
+  }
+
+  for (int i = 0; i < 3; i++) {
+    values.scalar_vec[i] = i;
+  }
+
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      for (int k = 0; k < 4; k++) {
+        values.list_of_lists[i][j][k] = i + j + k;
+      }
+    }
+  }
+}
+
 TEST_CASE("Multi-function codegen compiles", "[codegen_multi_function]") {
   codegen_multi_function_test::inputs_t inputs;
-  inputs.x = 2.0;
-  inputs.y = -5.0;
-  sym::Rot3<double> rot;
-  std::copy_n(rot.Data().data(), 4, &inputs.rot[0]);
+
+  FillChunkOfValues(inputs);
+
+  for (int i = 0; i < 3; i++) {
+    FillChunkOfValues(inputs.values_vec[i]);
+  }
+
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 1; j++) {
+      FillChunkOfValues(inputs.values_vec_2D[i][j]);
+    }
+  }
+
+  inputs.constants.epsilon = 1e-8;
+
   inputs.states.p[0] = 1.0;
   inputs.states.p[1] = 2.0;
-  inputs.constants.epsilon = 1e-8;
 
   codegen_multi_function_test::outputs_1_t outputs_1;
   codegen_multi_function_test::CodegenMultiFunctionTest1<double>(inputs, &outputs_1);
