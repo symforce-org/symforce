@@ -1,3 +1,4 @@
+import math
 import numpy
 import typing as T
 
@@ -93,7 +94,7 @@ def python_function(
 
     # Output terms
     _foo = _rot[3] + _tmp0
-    _bar = _tmp0 + constants.epsilon + numpy.sin(y)
+    _bar = _tmp0 + constants.epsilon + math.sin(y)
     _scalar_vec_out = [0.0] * 3
     _scalar_vec_out[0] = 2 * scalar_vec[0]
     _scalar_vec_out[1] = 2 * scalar_vec[1]

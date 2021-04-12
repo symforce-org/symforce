@@ -1,3 +1,4 @@
+import math
 import numpy
 import typing as T
 
@@ -72,9 +73,11 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
 
     # Output terms
     _res = [0.0] * 2
-    _res[0] = numpy.arctan2(_tmp11, _tmp18 + epsilon * (numpy.sign(_tmp18) + 0.5))
+    _res[0] = math.atan2(
+        _tmp11, _tmp18 + epsilon * ((0.0 if _tmp18 == 0 else math.copysign(1, _tmp18)) + 0.5)
+    )
     _res[1] = (
-        -numpy.arccos(_tmp22 / (epsilon + numpy.sqrt(_tmp11 ** 2 + _tmp18 ** 2 + _tmp22 ** 2)))
-        + (1.0 / 2.0) * numpy.pi
+        -math.acos(_tmp22 / (epsilon + math.sqrt(_tmp11 ** 2 + _tmp18 ** 2 + _tmp22 ** 2)))
+        + (1.0 / 2.0) * math.pi
     )
     return _res

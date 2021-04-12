@@ -1,3 +1,4 @@
+import math
 import numpy
 import typing as T
 
@@ -6,7 +7,7 @@ import sym  # pylint: disable=unused-import
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementatino for <class 'symforce.geo.pose3.Pose3'>.
+    Python LieGroupOps implementation for <class 'symforce.geo.pose3.Pose3'>.
     """
 
     @staticmethod
@@ -18,16 +19,16 @@ class LieGroupOps(object):
         # Input arrays
 
         # Intermediate terms (3)
-        _tmp0 = numpy.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
+        _tmp0 = math.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
-        _tmp2 = numpy.sin(_tmp1) / _tmp0
+        _tmp2 = math.sin(_tmp1) / _tmp0
 
         # Output terms
         _res = [0.0] * 7
         _res[0] = _tmp2 * vec[0]
         _res[1] = _tmp2 * vec[1]
         _res[2] = _tmp2 * vec[2]
-        _res[3] = numpy.cos(_tmp1)
+        _res[3] = math.cos(_tmp1)
         _res[4] = vec[3]
         _res[5] = vec[4]
         _res[6] = vec[5]
@@ -43,12 +44,12 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms (2)
-        _tmp0 = numpy.amin((abs(_a[3]), 1 - epsilon), axis=0)
+        _tmp0 = min(abs(_a[3]), 1 - epsilon)
         _tmp1 = (
             2
-            * (2 * numpy.amin((0, numpy.sign(_a[3])), axis=0) + 1)
-            * numpy.arccos(_tmp0)
-            / numpy.sqrt(1 - _tmp0 ** 2)
+            * (2 * min(0, (0.0 if _a[3] == 0 else math.copysign(1, _a[3]))) + 1)
+            * math.acos(_tmp0)
+            / math.sqrt(1 - _tmp0 ** 2)
         )
 
         # Output terms
@@ -71,12 +72,12 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms (8)
-        _tmp0 = numpy.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
+        _tmp0 = math.sqrt(epsilon ** 2 + vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
-        _tmp2 = numpy.sin(_tmp1) / _tmp0
+        _tmp2 = math.sin(_tmp1) / _tmp0
         _tmp3 = _a[1] * _tmp2
         _tmp4 = _a[2] * _tmp2
-        _tmp5 = numpy.cos(_tmp1)
+        _tmp5 = math.cos(_tmp1)
         _tmp6 = _a[3] * _tmp2
         _tmp7 = _a[0] * _tmp2
 
@@ -103,12 +104,12 @@ class LieGroupOps(object):
 
         # Intermediate terms (3)
         _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _tmp1 = numpy.amin((abs(_tmp0), 1 - epsilon), axis=0)
+        _tmp1 = min(abs(_tmp0), 1 - epsilon)
         _tmp2 = (
             2
-            * (2 * numpy.amin((0, numpy.sign(_tmp0)), axis=0) + 1)
-            * numpy.arccos(_tmp1)
-            / numpy.sqrt(1 - _tmp1 ** 2)
+            * (2 * min(0, (0.0 if _tmp0 == 0 else math.copysign(1, _tmp0))) + 1)
+            * math.acos(_tmp1)
+            / math.sqrt(1 - _tmp1 ** 2)
         )
 
         # Output terms

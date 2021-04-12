@@ -1,5 +1,6 @@
 {%- import "../../../util/util.jinja" as util with context -%}
 
+import math
 import numpy
 import typing as T
 
@@ -8,7 +9,7 @@ import sym  # pylint: disable=unused-import
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementatino for {{ cls }}.
+    Python LieGroupOps implementation for {{ cls }}.
     """
 
     {% for spec in specs['LieGroupOps'] %}

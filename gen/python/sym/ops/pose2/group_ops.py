@@ -1,3 +1,4 @@
+import math
 import numpy
 import typing as T
 
@@ -37,7 +38,7 @@ class GroupOps(object):
         _a = a.data
 
         # Intermediate terms (3)
-        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
+        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1)
         _tmp1 = _a[0] * _tmp0
         _tmp2 = _a[1] * _tmp0
 
@@ -80,7 +81,7 @@ class GroupOps(object):
         _b = b.data
 
         # Intermediate terms (5)
-        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
+        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1)
         _tmp1 = _a[1] * _tmp0
         _tmp2 = _a[0] * _tmp0
         _tmp3 = _a[3] * _tmp0
@@ -107,7 +108,7 @@ class GroupOps(object):
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
-        _tmp3 = _tmp2 ** (-1.0)
+        _tmp3 = _tmp2 ** (-1)
         _tmp4 = _a[0] * _tmp3
         _tmp5 = _a[1] * _tmp3
         _tmp6 = -_tmp5
@@ -209,7 +210,7 @@ class GroupOps(object):
         _tmp0 = _a[1] ** 2
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
-        _tmp3 = _tmp2 ** (-1.0)
+        _tmp3 = _tmp2 ** (-1)
         _tmp4 = _a[1] * _tmp3
         _tmp5 = _a[0] * _tmp3
         _tmp6 = _b[0] * _tmp5 + _b[1] * _tmp4

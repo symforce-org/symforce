@@ -1,3 +1,4 @@
+import math
 import numpy
 import typing as T
 
@@ -6,7 +7,7 @@ import sym  # pylint: disable=unused-import
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementatino for <class 'symforce.geo.pose2.Pose2'>.
+    Python LieGroupOps implementation for <class 'symforce.geo.pose2.Pose2'>.
     """
 
     @staticmethod
@@ -21,8 +22,8 @@ class LieGroupOps(object):
 
         # Output terms
         _res = [0.0] * 4
-        _res[0] = numpy.cos(vec[2])
-        _res[1] = numpy.sin(vec[2])
+        _res[0] = math.cos(vec[2])
+        _res[1] = math.sin(vec[2])
         _res[2] = vec[0]
         _res[3] = vec[1]
         return _res
@@ -42,7 +43,7 @@ class LieGroupOps(object):
         _res = [0.0] * 3
         _res[0] = _a[2]
         _res[1] = _a[3]
-        _res[2] = numpy.arctan2(_a[1], _a[0])
+        _res[2] = math.atan2(_a[1], _a[0])
         return _res
 
     @staticmethod
@@ -55,8 +56,8 @@ class LieGroupOps(object):
         _a = a.data
 
         # Intermediate terms (2)
-        _tmp0 = numpy.sin(vec[2])
-        _tmp1 = numpy.cos(vec[2])
+        _tmp0 = math.sin(vec[2])
+        _tmp1 = math.cos(vec[2])
 
         # Output terms
         _res = [0.0] * 4
@@ -77,7 +78,7 @@ class LieGroupOps(object):
         _b = b.data
 
         # Intermediate terms (3)
-        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1.0)
+        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1)
         _tmp1 = _a[0] * _tmp0
         _tmp2 = _a[1] * _tmp0
 
@@ -85,5 +86,5 @@ class LieGroupOps(object):
         _res = [0.0] * 3
         _res[0] = -_a[2] + _b[2]
         _res[1] = -_a[3] + _b[3]
-        _res[2] = numpy.arctan2(-_b[0] * _tmp2 + _b[1] * _tmp1, _b[0] * _tmp1 + _b[1] * _tmp2)
+        _res[2] = math.atan2(-_b[0] * _tmp2 + _b[1] * _tmp1, _b[0] * _tmp1 + _b[1] * _tmp2)
         return _res
