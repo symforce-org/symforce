@@ -118,8 +118,18 @@ class {{ cls.__name__ }}(object):
         else:
             raise NotImplementedError('Cannot compare {} to {}'.format(type(self), type(other)))
 
-    def __mul__(self, other):
+    @T.overload
+    def __mul__(self, other):  # pragma: no cover
         # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
+        pass
+
+    @T.overload
+    def __mul__(self, other):  # pragma: no cover
+        # type: (np.ndarray) -> np.ndarray
+        pass
+
+    def __mul__(self, other):
+        # type: (T.Union[{{ cls.__name__ }}, np.ndarray]) -> T.Union[{{ cls.__name__ }}, np.ndarray]
         if isinstance(other, {{ cls.__name__ }}):
             return self.compose(other)
         elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):

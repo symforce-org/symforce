@@ -127,8 +127,18 @@ class Pose2(object):
         else:
             raise NotImplementedError("Cannot compare {} to {}".format(type(self), type(other)))
 
-    def __mul__(self, other):
+    @T.overload
+    def __mul__(self, other):  # pragma: no cover
         # type: (Pose2) -> Pose2
+        pass
+
+    @T.overload
+    def __mul__(self, other):  # pragma: no cover
+        # type: (np.ndarray) -> np.ndarray
+        pass
+
+    def __mul__(self, other):
+        # type: (T.Union[Pose2, np.ndarray]) -> T.Union[Pose2, np.ndarray]
         if isinstance(other, Pose2):
             return self.compose(other)
         elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
