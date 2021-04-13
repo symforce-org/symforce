@@ -21,7 +21,7 @@ all_reqs: reqs test_reqs docs_reqs
 reqs:
 	${PYTHON} -m pip install -r requirements.txt
 
-CPP_FILES=$(shell find . -not -path "*/lcmtypes/*" \( \
+CPP_FILES_TO_FORMAT=$(shell find . -not -path "*/lcmtypes/*" -and -not -path "./third_party/*" \( \
 	-name "*.c" \
 	-o -name "*.cpp" \
 	-o -name "*.cxx" \
@@ -37,12 +37,12 @@ CPP_FILES=$(shell find . -not -path "*/lcmtypes/*" \( \
 # Format using black and clang-format
 format:
 	$(PYTHON) -m black --line-length 100 .
-	$(CPP_FORMAT) -i $(CPP_FILES)
+	$(CPP_FORMAT) -i $(CPP_FILES_TO_FORMAT)
 
 # Check formatting using black and clang-format - print diff, do not modify files
 check_format:
 	$(PYTHON) -m black --line-length 100 . --check --diff
-	$(foreach file, $(CPP_FILES), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
+	$(foreach file, $(CPP_FILES_TO_FORMAT), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
 
 # Check type hints using mypy
 # NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
