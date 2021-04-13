@@ -1,8 +1,11 @@
 import collections
+import importlib
 import logging
+import numpy as np
 import tempfile
 import sys
 import os
+import unittest
 
 import symforce
 from symforce import geo
@@ -15,6 +18,7 @@ from symforce.codegen import CodegenMode
 from symforce.codegen import Codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
+from symforce.codegen.codegen_language_args import PythonLanguageArgs
 from symforce.test_util import TestCase, slow_on_sympy, disable_on_bionic
 from symforce.values import Values
 
@@ -222,6 +226,39 @@ class SymforceCodegenTest(TestCase):
         # Clean up
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(az_el_codegen_data["output_dir"])
+
+    @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
+    def test_function_codegen_python_numba(self) -> None:
+        # Create the specification
+        def numba_test_func(x: geo.V3) -> geo.V2:
+            return geo.V2(x[0, 0], x[1, 0])
+
+        numba_test_func_codegen = Codegen.function(
+            name="numba_test_func", func=numba_test_func, mode=CodegenMode.PYTHON2
+        )
+        numba_test_func_codegen_data = numba_test_func_codegen.generate_function(
+            language_args=PythonLanguageArgs(use_numba=True)
+        )
+
+        # Compare to expected
+        expected_code_file = os.path.join(TEST_DATA_DIR, "numba_test_func.py")
+        output_function = os.path.join(
+            numba_test_func_codegen_data["python_function_dir"], "numba_test_func.py"
+        )
+        self.compare_or_update_file(expected_code_file, output_function)
+
+        gen_module = codegen_util.load_generated_package(
+            numba_test_func_codegen_data["python_function_dir"]
+        )
+
+        x = np.array([1, 2, 3])
+        y = gen_module.numba_test_func(x)
+        self.assertTrue((y == np.array([1, 2])).all())
+        self.assertTrue(hasattr(gen_module.numba_test_func, "__numba__"))
+
+        # Clean up
+        if logger.level != logging.DEBUG:
+            python_util.remove_if_exists(numba_test_func_codegen_data["output_dir"])
 
     # -------------------------------------------------------------------------
     # C++

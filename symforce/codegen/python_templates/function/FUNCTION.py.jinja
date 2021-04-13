@@ -1,5 +1,9 @@
 {%- import "../util/util.jinja" as util with context -%}
+
 import math
+{% if language_args.use_numba %}
+import numba
+{% endif %}
 import numpy
 import typing as T
 
@@ -10,6 +14,10 @@ import sym  # pylint: disable=unused-import
 import {{ namespace }}
 {% endfor %}
 
+
+{% if language_args.use_numba %}
+@numba.njit
+{% endif %}
 {{ util.function_declaration(spec) }}
     {%- if spec.docstring %}
     {{ util.print_docstring(spec.docstring) | indent(4) -}}

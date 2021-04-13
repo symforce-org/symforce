@@ -14,6 +14,7 @@ from symforce import types as T
 from symforce.values import Values
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
+from symforce.codegen import codegen_language_args
 from symforce.codegen import type_helper
 from symforce.codegen import types_package_codegen
 
@@ -259,6 +260,7 @@ class Codegen:
         shared_types: T.Mapping[str, str] = None,
         namespace: str = "sym",
         generated_file_name: str = None,
+        language_args: codegen_language_args.LanguageArgs = None,
     ) -> T.Dict[str, T.Any]:
         """
         Generates a function that computes the given outputs from the given inputs.
@@ -280,7 +282,10 @@ class Codegen:
             shared_types: Mapping between types defined as part of this codegen object (e.g. keys in
                 self.inputs that map to Values objects) and previously generated external types.
             namespace: Namespace for the generated function and any generated types.
-            generated_file_name: Stem for the filename into which the function is generated, with no file extension
+            generated_file_name: Stem for the filename into which the function is generated, with
+                                 no file extension
+            language_args: Language-specific arguments to pass through to the templates; see
+                           codegen_language_args.py for documentation on these arguments
         """
         assert (
             self.name is not None
@@ -295,6 +300,9 @@ class Codegen:
 
         if generated_file_name is None:
             generated_file_name = self.name
+
+        if language_args is None:
+            language_args = codegen_language_args.for_codegen_mode(self.mode)()
 
         # List of (template_path, output_path, data)
         templates = template_util.TemplateList()
@@ -342,6 +350,8 @@ class Codegen:
             "lcm_type_dir": types_codegen_data["lcm_type_dir"],
         }
 
+        template_data = dict(self.common_data(), spec=self, language_args=language_args)
+
         # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
             python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
@@ -350,12 +360,12 @@ class Codegen:
             templates.add(
                 os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "FUNCTION.py.jinja"),
                 os.path.join(python_function_dir, generated_file_name + ".py"),
-                dict(self.common_data(), spec=self),
+                template_data,
             )
             templates.add(
                 os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "__init__.py.jinja"),
                 os.path.join(python_function_dir, "__init__.py"),
-                dict(self.common_data(), spec=self),
+                template_data,
             )
 
             output_data["python_function_dir"] = python_function_dir
@@ -368,7 +378,7 @@ class Codegen:
                 os.path.join(
                     cpp_function_dir, python_util.camelcase_to_snakecase(generated_file_name) + ".h"
                 ),
-                dict(self.common_data(), spec=self),
+                template_data,
             )
 
             output_data["cpp_function_dir"] = cpp_function_dir
