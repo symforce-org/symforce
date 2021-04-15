@@ -2,7 +2,14 @@
 Helpers for interactive use in a Jupyter notebook with an IPython kernel.
 """
 import IPython
+import matplotlib
 import pygments
+import warnings
+
+# NOTE(aaron): This is currently nice-to-have, otherwise every time we display something LaTeX we
+# get this warning.  It's fixed in IPython master (https://github.com/ipython/ipython/pull/12889),
+# so once that fix is in a release this can be removed
+warnings.filterwarnings("ignore", category=matplotlib.MatplotlibDeprecationWarning)
 
 import sympy as sympy_py
 
