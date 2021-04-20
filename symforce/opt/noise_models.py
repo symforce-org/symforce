@@ -99,6 +99,23 @@ class BarronNoiseModel(NoiseModel):
         self.weight = weight
         self.alpha_epsilon = x_epsilon if alpha_epsilon is None else alpha_epsilon
 
+    @staticmethod
+    def compute_alpha_from_mu(mu: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+        """
+        Transform mu, which ranges from 0->1, to alpha by alpha=2-1/(1-mu). This transformation
+        means alpha will range from 1 to -inf, so that the noise model starts as a pseudo-huber and
+        goes to a robust Welsch cost.
+
+        Args:
+            mu (Scalar): ranges from 0->1
+            epsilon (Scalar): small value to avoid numerical instability
+
+        Returns:
+            T.Scalar: alpha for use in the BarronNoiseModel construction
+        """
+        alpha = 2 - 1 / (1 - mu + epsilon)
+        return alpha
+
     def barron_error(self, x: T.Scalar) -> T.Scalar:
         """
         Return the barron cost function error for the argument x.
