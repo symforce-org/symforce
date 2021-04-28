@@ -10,6 +10,9 @@
 
 namespace sym {
 
+template <typename _S>
+struct ValuesLcmTypeHelper;
+
 /**
  * Efficient polymorphic data structure to store named types with a dict-like interface and
  * support efficient repeated operations using a key index. Supports on-manifold optimization.
@@ -24,9 +27,7 @@ class Values {
   using ArrayType = std::vector<Scalar>;
 
   // Expose the correct LCM type (values_t or valuesf_t)
-  template <typename _S, bool _D = true>
-  struct LcmTypeHelper {};
-  using LcmType = typename LcmTypeHelper<Scalar>::Type;
+  using LcmType = typename ValuesLcmTypeHelper<Scalar>::Type;
 
   /**
    * Default construct as empty.

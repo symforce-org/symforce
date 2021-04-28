@@ -415,15 +415,13 @@ struct HessianDispatcher<false /* is_dynamic */, Scalar> {
 // LCM type aliases
 // ----------------------------------------------------------------------------
 
-template <typename Scalar>
-template <bool _D>
-struct Factor<Scalar>::LinearizedFactorTypeHelper<double, _D> {
+template <>
+struct LinearizedFactorTypeHelper<double> {
   using Type = linearized_factor_t;
 };
 
-template <typename Scalar>
-template <bool _D>
-struct Factor<Scalar>::LinearizedFactorTypeHelper<float, _D> {
+template <>
+struct LinearizedFactorTypeHelper<float> {
   using Type = linearized_factorf_t;
 };
 

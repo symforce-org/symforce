@@ -82,15 +82,13 @@ void Values<Scalar>::Set(const index_entry_t& entry, const T& value) {
 // LCM type alias
 // ----------------------------------------------------------------------------
 
-template <typename Scalar>
-template <bool _D>
-struct Values<Scalar>::LcmTypeHelper<double, _D> {
+template <>
+struct ValuesLcmTypeHelper<double> {
   using Type = values_t;
 };
 
-template <typename Scalar>
-template <bool _D>
-struct Values<Scalar>::LcmTypeHelper<float, _D> {
+template <>
+struct ValuesLcmTypeHelper<float> {
   using Type = valuesf_t;
 };
 

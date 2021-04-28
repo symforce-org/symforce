@@ -10,6 +10,9 @@
 
 namespace sym {
 
+template <typename _S>
+struct LinearizedFactorTypeHelper;
+
 /**
  * A residual term for optimization.
  *
@@ -23,8 +26,6 @@ class Factor {
   using Scalar = ScalarType;
 
   // Helper to expose the correct LCM type for the scalar type
-  template <typename _S, bool _D = true>
-  struct LinearizedFactorTypeHelper {};
   using LinearizedFactor = typename LinearizedFactorTypeHelper<Scalar>::Type;
 
   // ----------------------------------------------------------------------------------------------
