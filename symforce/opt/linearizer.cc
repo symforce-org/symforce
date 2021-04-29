@@ -44,23 +44,33 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
 }
 
 template <typename ScalarType>
-void Linearizer<ScalarType>::SplitCovariancesByKey(
-    const sym::MatrixX<Scalar>& covariance,
-    std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) const {
-  SYM_ASSERT(IsInitialized());
+bool Linearizer<ScalarType>::CheckKeysAreContiguousAtStart(const std::vector<Key>& keys,
+                                                           size_t* const block_dim) const {
+  SYM_ASSERT(!keys.empty());
 
-  // Fill out the covariance blocks
-  for (const auto& key_and_entry : state_index_) {
-    const auto& key = key_and_entry.first;
-    const auto& entry = key_and_entry.second;
-    (*covariances_by_key)[key] =
-        covariance.block(entry.offset, entry.offset, entry.tangent_dim, entry.tangent_dim);
+  auto full_problem_keys_iter = keys_.begin();
+  auto keys_iter = keys.begin();
+  for (; keys_iter != keys.end(); ++full_problem_keys_iter, ++keys_iter) {
+    if (full_problem_keys_iter == keys_.end()) {
+      throw std::runtime_error("Keys has extra entries that are not in the full problem");
+    }
+
+    if (full_problem_keys_iter->GetLcmType() != keys_iter->GetLcmType()) {
+      if (state_index_.find(keys_iter->GetLcmType()) == state_index_.end()) {
+        throw std::runtime_error("Tried to check key which is not in the full problem");
+      } else {
+        // The next key is in the problem, it's just out of order; so we return false
+        return false;
+      }
+    }
   }
 
-  // Make sure we have the expected number of keys
-  // If this fails, it might mean that you passed a covariances_by_key that contained keys from a
-  // different Linearizer or Optimizer
-  SYM_ASSERT(covariances_by_key->size() == state_index_.size());
+  if (block_dim != nullptr) {
+    const auto& index_entry = state_index_.at(keys.back().GetLcmType());
+    *block_dim = index_entry.offset + index_entry.tangent_dim;
+  }
+
+  return true;
 }
 
 template <typename ScalarType>

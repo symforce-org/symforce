@@ -90,10 +90,14 @@ class Optimizer {
   /**
    * Optimize the given values in-place
    *
-   * If num_iterations < 0 (the default), uses the number of iterations specified by the params at
-   * construction
+   * Args:
+   *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
+   *                     at construction
+   *     best_linearization: If not null, will be filled out with the linearization at the best
+   *                         values
    */
-  virtual bool Optimize(Values<Scalar>* values, int num_iterations = -1);
+  virtual bool Optimize(Values<Scalar>* values, int num_iterations = -1,
+                        Linearization<Scalar>* best_linearization = nullptr);
 
   /**
    * Linearize the problem around the given values
@@ -101,13 +105,32 @@ class Optimizer {
   Linearization<Scalar> Linearize(const Values<Scalar>& values);
 
   /**
-   * Get covariances for each optimized key at the current best values (requires that Optimize has
-   * been called previously)
+   * Get covariances for each optimized key at the given linearization
    *
-   * Will reuse entries in covariances_by_key, clearing or allocating new entries so that the result
-   * contains exactly the set of keys optimized by this Optimizer
+   * Will reuse entries in covariances_by_key, allocating new entries so that the result contains
+   * exactly the set of keys optimized by this Optimizer.  `covariances_by_key` must not contain any
+   * keys that are not optimized by this Optimizer.
    */
-  void ComputeCovariancesAtBest(std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key);
+  void ComputeAllCovariances(const Linearization<Scalar>& linearization,
+                             std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
+
+  /**
+   * Get covariances for the given subset of keys at the given linearization.  This version is
+   * potentially much more efficient than computing the covariances for all keys in the problem.
+   *
+   * Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
+   * for the full problem, and in the same order.  It uses the Schur complement trick, so will be
+   * most efficient if the hessian is of the following form, with C block diagonal:
+   *
+   *     A = ( B    E )
+   *         ( E^T  C )
+   *
+   * Will reuse entries in covariances_by_key, allocating new entries so that the result contains
+   * exactly the set of keys requested.  `covariances_by_key` must not contain any keys that are not
+   * in `keys`.
+   */
+  void ComputeCovariances(const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+                          std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
    * Get the optimized keys
@@ -129,7 +152,8 @@ class Optimizer {
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations
    * or converged
    */
-  bool IterateToConvergence(Values<Scalar>* const values, const size_t num_iterations);
+  bool IterateToConvergence(Values<Scalar>* const values, const size_t num_iterations,
+                            Linearization<Scalar>* best_linearization);
 
   /**
    * Build the linearize_func functor for the underlying nonlinear solver
@@ -161,8 +185,15 @@ class Optimizer {
 
   sym::Linearizer<Scalar> linearizer_;
 
-  // Covariance matrix, only used by ComputeCovariancesAtBest but cached here to save reallocations
-  sym::MatrixX<Scalar> covariance_;
+  // Covariance matrix and damped Hessian, only used by ComputeCovariances but cached here to save
+  // reallocations. This may be the full problem covariance, or a subblock; it's always the full
+  // problem Hessian
+  struct ComputeCovariancesStorage {
+    sym::MatrixX<Scalar> covariance;
+    Eigen::SparseMatrix<Scalar> H_damped;
+  };
+
+  mutable ComputeCovariancesStorage compute_covariances_storage_;
 
   // Functor for interfacing with the optimizer
   typename NonlinearSolver::LinearizeFunc linearize_func_;

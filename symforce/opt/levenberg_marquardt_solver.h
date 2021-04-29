@@ -159,7 +159,13 @@ class LevenbergMarquardtSolver {
     return state_.Best().values;
   }
 
-  void ComputeCovarianceAtBest(sym::MatrixX<Scalar>* const covariance);
+  const Linearization<Scalar>& GetBestLinearization() const {
+    SYM_ASSERT(state_.BestIsValid() && state_.Best().GetLinearization().IsInitialized());
+    return state_.Best().GetLinearization();
+  }
+
+  void ComputeCovariance(const Eigen::SparseMatrix<Scalar>& hessian_lower,
+                         MatrixX<Scalar>* covariance);
 
  private:
   Eigen::SparseMatrix<Scalar> DampHessian(const Eigen::SparseMatrix<Scalar>& hessian_lower,

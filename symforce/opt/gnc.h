@@ -56,7 +56,8 @@ class GncOptimizer : public BaseOptimizerType {
    * construction.  Note that this is the total number of iterations, the counter does not reset
    * each time the convexity changes.
    */
-  virtual bool Optimize(Values<Scalar>* const values, int num_iterations = -1) override {
+  virtual bool Optimize(Values<Scalar>* const values, int num_iterations = -1,
+                        Linearization<Scalar>* const best_linearization = nullptr) override {
     if (num_iterations < 0) {
       num_iterations = this->nonlinear_solver_.Params().iterations;
     }
@@ -72,8 +73,8 @@ class GncOptimizer : public BaseOptimizerType {
     this->UpdateParams(optimizer_params);
 
     // Iterate.
-    bool early_exit = BaseOptimizer::Optimize(values, num_iterations);
-    while (this->Stats().iterations.size() < optimizer_params.iterations) {
+    bool early_exit = BaseOptimizer::Optimize(values, num_iterations, best_linearization);
+    while (this->Stats().iterations.size() < num_iterations) {
       if (early_exit) {
         if (updating_gnc) {
           // Update the GNC parameter.
@@ -96,24 +97,23 @@ class GncOptimizer : public BaseOptimizerType {
         }
       }
 
-      early_exit = OptimizeContinue(values, num_iterations - this->Stats().iterations.size());
+      early_exit = OptimizeContinue(values, num_iterations - this->Stats().iterations.size(),
+                                    best_linearization);
     }
 
     return false;
   }
 
  private:
-  bool OptimizeContinue(Values<Scalar>* const values, int num_iterations) {
-    if (num_iterations < 0) {
-      num_iterations = this->nonlinear_solver_.Params().iterations;
-    }
-
+  bool OptimizeContinue(Values<Scalar>* const values, const int num_iterations,
+                        Linearization<Scalar>* const best_linearization) {
+    SYM_ASSERT(num_iterations >= 0);
     SYM_ASSERT(this->IsInitialized());
 
     // Reset values, but do not clear other state
     this->nonlinear_solver_.ResetState(*values);
 
-    return this->IterateToConvergence(values, num_iterations);
+    return this->IterateToConvergence(values, num_iterations, best_linearization);
   }
 
   optimizer_gnc_params_t gnc_params_;

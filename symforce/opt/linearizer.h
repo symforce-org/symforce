@@ -48,13 +48,25 @@ class Linearizer {
   void Relinearize(const Values<Scalar>& values, Linearization<Scalar>* const linearization);
 
   /**
-   * Extract covariances for all optimized variables individually from the full problem
-   * covariance.  For each variable, the returned matrix is the corresponding block from the
-   * diagonal of the full covariance matrix.  Requires that the Linearizer has already been
-   * initialized
+   * Check whether the keys in `keys` correspond 1-1 (and in the same order) with the start of the
+   * key ordering in the problem linearization
+   *
+   * If block_dim is provided, it will be filled out with the (tangent) dimension of the problem
+   * hessian and rhs which is occupied by the given keys
+   *
+   * TODO(aaron): Maybe kill this once we have general marginalization
    */
+  bool CheckKeysAreContiguousAtStart(const std::vector<Key>& keys,
+                                     size_t* block_dim = nullptr) const;
+
+  /**
+   * Extract covariances for optimized variables individually from the full problem covariance.  For
+   * each variable in `keys`, the returned matrix is the corresponding block from the diagonal of
+   * the full covariance matrix.  Requires that the Linearizer has already been initialized
+   */
+  template <typename MatrixType>
   void SplitCovariancesByKey(
-      const sym::MatrixX<Scalar>& covariance,
+      const MatrixType& covariance_block, const std::vector<Key>& keys,
       std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) const;
 
   /**
@@ -175,3 +187,5 @@ std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factor
 }
 
 }  // namespace sym
+
+#include "./linearizer.tcc"

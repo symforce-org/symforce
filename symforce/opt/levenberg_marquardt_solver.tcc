@@ -259,16 +259,14 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 }
 
 template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovarianceAtBest(
-    sym::MatrixX<Scalar>* const covariance) {
-  SYM_ASSERT(state_.BestIsValid() && state_.Best().GetLinearization().IsInitialized());
-  TIC_TOC_SCOPE("LM<{}>: ComputeCovarianceAtBest()", id_);
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
+    const Eigen::SparseMatrix<Scalar>& hessian_lower, MatrixX<Scalar>* const covariance) {
+  TIC_TOC_SCOPE("LM<{}>: ComputeCovariance()", id_);
 
-  H_damped_ = state_.Best().GetLinearization().hessian_lower;
+  H_damped_ = hessian_lower;
   H_damped_.diagonal().array() += epsilon_;
 
-  // NOTE(hayk, aaron): This solver assumes a dense RHS. Fix this or just profile a full dense
-  // inversion for small problems
+  // TODO(hayk, aaron): This solver assumes a dense RHS, should add support for a sparse RHS
   linear_solver_.Factorize(H_damped_);
   *covariance = MatrixX<Scalar>::Identity(H_damped_.rows(), H_damped_.rows());
   linear_solver_.SolveInPlace(covariance);

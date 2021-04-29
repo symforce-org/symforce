@@ -1,3 +1,4 @@
+#include "./internal/covariance_utils.h"
 #include "./internal/derivative_checker.h"
 #include "./optimizer.h"
 
@@ -48,8 +49,8 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
-bool Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
-                                                          int num_iterations) {
+bool Optimizer<ScalarType, NonlinearSolverType>::Optimize(
+    Values<Scalar>* values, int num_iterations, Linearization<Scalar>* const best_linearization) {
   if (num_iterations < 0) {
     num_iterations = nonlinear_solver_.Params().iterations;
   }
@@ -60,7 +61,7 @@ bool Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values
   nonlinear_solver_.Reset(*values);
   stats_.iterations.clear();
 
-  return IterateToConvergence(values, num_iterations);
+  return IterateToConvergence(values, num_iterations, best_linearization);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -74,10 +75,31 @@ Linearization<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Linearize(
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariancesAtBest(
+void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
+    const Linearization<Scalar>& linearization,
     std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) {
-  nonlinear_solver_.ComputeCovarianceAtBest(&covariance_);
-  linearizer_.SplitCovariancesByKey(covariance_, covariances_by_key);
+  nonlinear_solver_.ComputeCovariance(linearization.hessian_lower,
+                                      &compute_covariances_storage_.covariance);
+  linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys_,
+                                    covariances_by_key);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
+    const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+    std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) {
+  size_t block_dim{};
+  const bool contiguous = linearizer_.CheckKeysAreContiguousAtStart(keys, &block_dim);
+  SYM_ASSERT(contiguous);
+
+  // Copy into modifiable storage
+  compute_covariances_storage_.H_damped = linearization.hessian_lower;
+
+  internal::ComputeCovarianceBlockWithSchurComplement(&compute_covariances_storage_.H_damped,
+                                                      block_dim, epsilon_,
+                                                      &compute_covariances_storage_.covariance);
+  linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys,
+                                    covariances_by_key);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -100,22 +122,32 @@ void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_pa
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
-bool Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(Values<Scalar>* const values,
-                                                                      const size_t num_iterations) {
-  bool converged = false;
+bool Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
+    Values<Scalar>* const values, const size_t num_iterations,
+    Linearization<Scalar>* const best_linearization) {
+  bool optimization_early_exited = false;
 
   // Iterate
   for (int i = 0; i < num_iterations; i++) {
-    const bool early_exit = nonlinear_solver_.Iterate(linearize_func_, &stats_, debug_stats_);
-    if (early_exit) {
-      converged = true;
+    const bool should_early_exit =
+        nonlinear_solver_.Iterate(linearize_func_, &stats_, debug_stats_);
+    if (should_early_exit) {
+      optimization_early_exited = true;
       break;
     }
   }
 
   // Save best results
   (*values) = nonlinear_solver_.GetBestValues();
-  return converged;
+
+  if (best_linearization != nullptr) {
+    // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead take a
+    // Linearization**, but then we'd have the issue of defining when the returned pointer becomes
+    // invalid
+    *best_linearization = nonlinear_solver_.GetBestLinearization();
+  }
+
+  return optimization_early_exited;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
