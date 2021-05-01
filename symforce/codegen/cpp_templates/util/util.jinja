@@ -33,7 +33,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #}
 {%- macro format_typename(T_or_value, name) %}
     {%- set T = python_util.get_type(T_or_value) -%}
-    {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
+    {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) or T.__name__ == 'float' -%}
         Scalar
     {%- elif T.__name__ == 'NoneType' -%}
         void
@@ -349,3 +349,18 @@ _{{ lhs }} = {{ rhs }};
         {% endif %}
     {% endfor %}
 {%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate an initializer expression for a sym::Key
+ #
+ # Args:
+ #     generated_key (namedtuple(letter, sub))
+ #}
+{%- macro format_sym_key(generated_key) %}
+    {%- if generated_key.sub is none -%}
+        '{{ generated_key.letter }}'
+    {%- else -%}
+        {'{{ generated_key.letter }}', {{ generated_key.sub }}}
+    {%- endif -%}
+{% endmacro -%}

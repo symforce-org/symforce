@@ -6,6 +6,8 @@
 
 #include <lcmtypes/sym/key_t.hpp>
 
+#include "./assert.h"
+
 namespace sym {
 
 /**
@@ -49,6 +51,15 @@ class Key {
     key.subscript = sub_;
     key.superscript = super_;
     return key;
+  }
+
+  /**
+   * Create a new Key from an existing Key and a superscript.  The superscript on the existing Key
+   * must be empty
+   */
+  static Key WithSuper(const Key& key, const superscript_t super) {
+    SYM_ASSERT(key.Super() == kInvalidSuper);
+    return Key(key.Letter(), key.Sub(), super);
   }
 
   bool operator==(const Key& other) const {
