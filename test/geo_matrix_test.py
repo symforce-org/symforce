@@ -276,6 +276,16 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.M12() * geo.M21(), geo.M11())
         self.assertEqual(geo.M21() * geo.M12(), geo.M22())
 
+    def test_row_col(self) -> None:
+        """
+        Tests:
+            Matrix.row
+            Matrix.col
+        """
+        m22 = geo.M22([1, 2, 3, 4])
+        self.assertEqual(m22.row(0), geo.M12([1, 2]))
+        self.assertEqual(m22.col(0), geo.M21([1, 3]))
+
 
 if __name__ == "__main__":
     TestCase.main()

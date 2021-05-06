@@ -514,6 +514,18 @@ class Matrix(LieGroup):
             ret = self.__class__(ret)
         return ret
 
+    def row(self, r: int) -> Matrix:
+        """
+        Extract a row of the matrix
+        """
+        return Matrix(self.mat.row(r))
+
+    def col(self, c: int) -> Matrix:
+        """
+        Extract a column of the matrix
+        """
+        return Matrix(self.mat.col(c))
+
     def __neg__(self: MatrixT) -> MatrixT:
         """
         Negate matrix.
