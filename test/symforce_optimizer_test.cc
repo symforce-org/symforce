@@ -153,7 +153,7 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
 
   std::cout << "Optimized values: " << values << std::endl;
 
-  const auto& iteration_stats = optimizer.IterationStats();
+  const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
   std::cout << "Iterations: " << last_iter.iteration << std::endl;
   std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
@@ -245,7 +245,7 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
 
   std::cout << "Optimized values: " << values << std::endl;
 
-  const auto& iteration_stats = optimizer.IterationStats();
+  const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
   std::cout << "Iterations: " << last_iter.iteration << std::endl;
   std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
@@ -331,7 +331,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
 
   std::cout << "Optimized values: " << values << std::endl;
 
-  const auto& iteration_stats = optimizer.IterationStats();
+  const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
   std::cout << "Iterations: " << last_iter.iteration << std::endl;
   std::cout << "Lambda: " << last_iter.current_lambda << std::endl;

@@ -91,6 +91,19 @@ const typename Values<Scalar>::ArrayType& Values<Scalar>::Data() const {
 }
 
 template <typename Scalar>
+template <typename NewScalar>
+Values<NewScalar> Values<Scalar>::Cast() const {
+  Values<NewScalar> new_values{};
+  new_values.map_ = map_;
+
+  // This shouldn't really be less efficient in the Scalar == NewScalar case
+  new_values.data_.reserve(data_.size());
+  std::copy(data_.begin(), data_.end(), new_values.data_.begin());
+
+  return new_values;
+}
+
+template <typename Scalar>
 bool Values<Scalar>::Remove(const Key& key) {
   size_t num_removed = map_.erase(key);
   return static_cast<bool>(num_removed);
@@ -239,6 +252,11 @@ BY_TYPE_HELPER(PrintByType, PrintHelper);
 // Explicit instantiation
 template class sym::Values<double>;
 template class sym::Values<float>;
+
+template sym::Values<double> sym::Values<double>::Cast<double>() const;
+template sym::Values<float> sym::Values<double>::Cast<float>() const;
+template sym::Values<double> sym::Values<float>::Cast<double>() const;
+template sym::Values<float> sym::Values<float>::Cast<float>() const;
 
 // ----------------------------------------------------------------------------
 // Printing

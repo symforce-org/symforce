@@ -22,7 +22,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {
-  iterations_.reserve(params.iterations);
+  stats_.iterations.reserve(params.iterations);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -40,7 +40,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {
-  iterations_.reserve(params.iterations);
+  stats_.iterations.reserve(params.iterations);
 }
 
 // ----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ bool Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values
 
   // Clear state for this run
   nonlinear_solver_.Reset(*values);
-  iterations_.clear();
+  stats_.iterations.clear();
 
   return IterateToConvergence(values, num_iterations);
 }
@@ -86,9 +86,8 @@ const std::vector<Key>& Optimizer<ScalarType, NonlinearSolverType>::Keys() const
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-const std::vector<optimizer_iteration_t>&
-Optimizer<ScalarType, NonlinearSolverType>::IterationStats() const {
-  return iterations_;
+const optimization_stats_t& Optimizer<ScalarType, NonlinearSolverType>::Stats() const {
+  return stats_;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -107,7 +106,7 @@ bool Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(Values<Sca
 
   // Iterate
   for (int i = 0; i < num_iterations; i++) {
-    const bool early_exit = nonlinear_solver_.Iterate(linearize_func_, &iterations_, debug_stats_);
+    const bool early_exit = nonlinear_solver_.Iterate(linearize_func_, &stats_, debug_stats_);
     if (early_exit) {
       converged = true;
       break;

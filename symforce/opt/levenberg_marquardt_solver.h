@@ -5,7 +5,7 @@
 #include <ac_sparse_math/sparse_cholesky_solver.h>
 #include <symforce/opt/values.h>
 
-#include <lcmtypes/sym/optimizer_iteration_t.hpp>
+#include <lcmtypes/sym/optimization_stats_t.hpp>
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 
 #include "./internal/levenberg_marquardt_state.h"
@@ -50,10 +50,10 @@ namespace sym {
  *   solver.Reset(values_init);
  *
  *   // Iterate to convergence
- *   std::vector<sym::optimizer_iteration_t> iterations;
+ *   sym::optimization_stats_t stats;
  *   bool should_early_exit = false;
  *   while (!should_early_exit) {
- *     should_early_exit = solver.Iterate(residual_func, &iterations);
+ *     should_early_exit = solver.Iterate(residual_func, &stats);
  *   }
  *
  *   // Get the best values
@@ -151,7 +151,7 @@ class LevenbergMarquardtSolver {
   void UpdateParams(const optimizer_params_t& p);
 
   // Run one iteration of the optimization. Returns true if the optimization should early exit.
-  bool Iterate(const LinearizeFunc& func, std::vector<optimizer_iteration_t>* const iterations,
+  bool Iterate(const LinearizeFunc& func, optimization_stats_t* const stats,
                const bool debug_stats = false);
 
   const Values<Scalar>& GetBestValues() const {
@@ -166,9 +166,9 @@ class LevenbergMarquardtSolver {
                                           boost::optional<VectorX<Scalar>>* const max_diagonal,
                                           const Scalar lambda) const;
 
-  void PopulateIterationStats(optimizer_iteration_t* const iteration_stats, const StateType& state,
-                              const Scalar new_error, const Scalar relative_reduction,
-                              const bool debug_stats) const;
+  void PopulateIterationStats(optimization_iteration_t* const iteration_stats,
+                              const StateType& state, const Scalar new_error,
+                              const Scalar relative_reduction, const bool debug_stats) const;
 
   void Update(const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
               Values<Scalar>* const updated_values) const;

@@ -115,9 +115,9 @@ class Optimizer {
   const std::vector<Key>& Keys() const;
 
   /**
-   * Get the nonlinear solver iterations
+   * Get the nonlinear solver stats
    */
-  const std::vector<optimizer_iteration_t>& IterationStats() const;
+  const optimization_stats_t& Stats() const;
 
   /**
    * Update the optimizer params
@@ -150,8 +150,8 @@ class Optimizer {
   // Underlying nonlinear solver class.
   NonlinearSolver nonlinear_solver_;
 
-  // Iteration stats
-  std::vector<optimizer_iteration_t> iterations_;
+  // Stats
+  optimization_stats_t stats_;
 
   Scalar epsilon_;
   bool debug_stats_;

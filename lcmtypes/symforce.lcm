@@ -133,8 +133,20 @@ struct optimizer_params_t {
   boolean enable_bold_updates;
 }
 
-// Debug stats for a single iteration of the Levenberg Marquardt optimizer
-struct optimizer_iteration_t {
+// Additional parameters for the GNCOptimizer
+struct optimizer_gnc_params_t {
+  // The convexity param is stepped each time we early-exit with this threshold.
+  float gnc_update_min_reduction;
+  // Initial mu value.
+  float mu_initial;
+  // Amount to change mu each step.
+  float mu_step;
+  // Maximum mu value.
+  float mu_max;
+}
+
+// Debug stats for a single iteration of a Levenberg Marquardt optimization
+struct optimization_iteration_t {
   // Zero-indexed iteration number (Information before the first iteration is
   // included at index -1)
   int16_t iteration;
@@ -154,8 +166,11 @@ struct optimizer_iteration_t {
   // Angle between previous update and current update
   float update_angle_change;
 
-  // The residual and jacobian are only populated in when debug_stats is true,
+  // The values, residual, and jacobian are only populated when debug_stats is true,
   // otherwise they are size 0
+
+  // The Values at this step
+  values_t values;
 
   // The problem residual
   eigen_lcm.VectorXf residual;
@@ -163,13 +178,10 @@ struct optimizer_iteration_t {
   eigen_lcm.VectorXf jacobian_values;
 }
 
-struct optimizer_gnc_params_t {
-  // The convexity param is stepped each time we early-exit with this threshold.
-  float gnc_update_min_reduction;
-  // Initial mu value.
-  float mu_initial;
-  // Amount to change mu each step.
-  float mu_step;
-  // Maximum mu value.
-  float mu_max;
+// Debug stats for a full optimization run
+struct optimization_stats_t {
+  optimization_iteration_t iterations[];
+
+  // Index into iterations of the best iteration (containing the optimal Values)
+  int32_t best_index;
 }

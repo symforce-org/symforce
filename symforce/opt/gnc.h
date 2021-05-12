@@ -72,7 +72,7 @@ class GncOptimizer : public BaseOptimizerType {
 
     // Iterate.
     bool early_exit = BaseOptimizer::Optimize(values, num_iterations);
-    while (this->IterationStats().size() < optimizer_params.iterations) {
+    while (this->Stats().iterations.size() < optimizer_params.iterations) {
       if (early_exit) {
         if (updating_gnc) {
           // Update the GNC parameter.
@@ -95,7 +95,7 @@ class GncOptimizer : public BaseOptimizerType {
         }
       }
 
-      early_exit = OptimizeContinue(values, num_iterations - this->IterationStats().size());
+      early_exit = OptimizeContinue(values, num_iterations - this->Stats().iterations.size());
     }
 
     return false;

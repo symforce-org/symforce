@@ -47,8 +47,8 @@ Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolve
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
-    optimizer_iteration_t* const iteration_stats, const StateType& state_, const Scalar new_error,
-    const Scalar relative_reduction, const bool debug_stats) const {
+    optimization_iteration_t* const iteration_stats, const StateType& state_,
+    const Scalar new_error, const Scalar relative_reduction, const bool debug_stats) const {
   TIC_TOC_SCOPE("LM<{}>: IterationStats", id_);
 
   iteration_stats->iteration = iteration_;
@@ -73,6 +73,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
   }
 
   if (debug_stats) {
+    iteration_stats->values = state_.New().values.template Cast<double>().GetLcmType();
     const VectorX<Scalar> residual_vec = state_.New().GetLinearization().residual;
     iteration_stats->residual = residual_vec.template cast<float>();
     const VectorX<Scalar> jacobian_vec = state_.New().GetLinearization().JacobianValuesMap();
@@ -111,9 +112,9 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 
 template <typename ScalarType, typename LinearSolverType>
 bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
-    const LinearizeFunc& func, std::vector<optimizer_iteration_t>* const iterations,
-    const bool debug_stats) {
+    const LinearizeFunc& func, optimization_stats_t* const stats, const bool debug_stats) {
   TIC_TOC_SCOPE("LM<{}>::Iterate()", id_);
+  SYM_ASSERT(stats != nullptr);
 
   // new -> init
   {
@@ -131,13 +132,14 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   // save the initial error state_ before optimizing
   if (iteration_ == 0) {
     TIC_TOC_SCOPE("LM<{}>: FirstIterationStats", id_);
-    iterations->emplace_back();
-    optimizer_iteration_t& iteration_stats = iterations->back();
+    stats->iterations.emplace_back();
+    optimization_iteration_t& iteration_stats = stats->iterations.back();
     iteration_stats.iteration = -1;
     iteration_stats.new_error = state_.Init().Error();
     iteration_stats.current_lambda = current_lambda_;
 
     if (debug_stats) {
+      iteration_stats.values = state_.Init().values.template Cast<double>().GetLcmType();
       const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
       iteration_stats.residual = residual_vec.template cast<float>();
       const VectorX<Scalar> jacobian_vec = state_.Init().GetLinearization().JacobianValuesMap();
@@ -183,8 +185,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   const Scalar relative_reduction =
       (state_.Init().Error() - new_error) / (state_.Init().Error() + epsilon_);
 
-  iterations->emplace_back();
-  optimizer_iteration_t& iteration_stats = iterations->back();
+  stats->iterations.emplace_back();
+  optimization_iteration_t& iteration_stats = stats->iterations.back();
   PopulateIterationStats(&iteration_stats, state_, new_error, relative_reduction, debug_stats);
 
   if (!std::isfinite(new_error)) {
@@ -220,6 +222,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
       last_update_ = update_;
       if (state_.New().Error() <= state_.Best().Error()) {
         state_.SetBestToNew();
+        stats->best_index = stats->iterations.size() - 1;
       }
       // Ensure that we are not going to modify the Best state_ block in the next iteration
       state_.SetInitToNotBest();

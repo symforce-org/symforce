@@ -107,6 +107,12 @@ class Values {
   const ArrayType& Data() const;
 
   /**
+   * Cast to another Scalar type (returns a copy)
+   */
+  template <typename NewScalar>
+  Values<NewScalar> Cast() const;
+
+  /**
    * Remove the given key. Only removes the index entry, does not change the data array.
    * Returns true if removed, false if already not present.
    *
@@ -200,6 +206,9 @@ class Values {
  protected:
   MapType map_;
   ArrayType data_;
+
+  template <typename OtherScalar>
+  friend class Values;
 };
 
 // Shorthand instantiations

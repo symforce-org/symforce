@@ -66,10 +66,11 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   const bool debug_stats = true;
 
   // Do a single gauss-newton iteration
-  std::vector<sym::optimizer_iteration_t> iterations;
-  solver.Iterate(residual_func, &iterations, debug_stats);
+  sym::optimization_stats_t stats;
+  solver.Iterate(residual_func, &stats, debug_stats);
 
-  const sym::VectorX<Scalar> residual_final = iterations.back().residual.template cast<Scalar>();
+  const sym::VectorX<Scalar> residual_final =
+      stats.iterations.back().residual.template cast<Scalar>();
   const Scalar error_final = 0.5 * residual_final.squaredNorm();
   std::cerr << "values_final: " << solver.GetBestValues() << std::endl;
   std::cerr << "residual_final: " << residual_final.transpose() << std::endl;
