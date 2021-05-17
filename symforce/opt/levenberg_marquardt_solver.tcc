@@ -37,12 +37,29 @@ Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolve
     H_damped.diagonal().array() += lambda;
   }
 
-  const auto zero_diagonal = H_damped.diagonal().array().abs() < epsilon_;
-  if (zero_diagonal.any()) {
-    REPORT_WARNING_NOW("<{}> Zero on diagonal at indices: {}", id_, VECTOR_DUMP_STR(zero_diagonal));
-  }
-
   return H_damped;
+}
+
+template <typename ScalarType, typename LinearSolverType>
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagonal(
+    const Eigen::SparseMatrix<Scalar>& hessian_lower_damped) {
+  zero_diagonal_ = hessian_lower_damped.diagonal().array().abs() < epsilon_;
+
+  // NOTE(aaron): We call this outside the condition so it's guaranteed to do the allocation on the
+  // first iteration
+  zero_diagonal_indices_.reserve(zero_diagonal_.rows());
+
+  if (zero_diagonal_.any()) {
+    zero_diagonal_indices_.clear();
+
+    for (int i = 0; i < zero_diagonal_.rows(); i++) {
+      if (zero_diagonal_(i)) {
+        zero_diagonal_indices_.push_back(i);
+      }
+    }
+
+    REPORT_WARNING_NOW("LM<{}> Zero on diagonal at indices: {}", id_, zero_diagonal_indices_);
+  }
 }
 
 template <typename ScalarType, typename LinearSolverType>
@@ -160,6 +177,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   // TODO(aaron): Get rid of this copy
   H_damped_ =
       DampHessian(state_.Init().GetLinearization().hessian_lower, &max_diagonal_, current_lambda_);
+
+  CheckHessianDiagonal(H_damped_);
 
   {
     TIC_TOC_SCOPE("LM<{}>: SparseFactorize", id_);

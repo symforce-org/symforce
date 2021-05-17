@@ -166,6 +166,8 @@ class LevenbergMarquardtSolver {
                                           boost::optional<VectorX<Scalar>>* const max_diagonal,
                                           const Scalar lambda) const;
 
+  void CheckHessianDiagonal(const Eigen::SparseMatrix<Scalar>& hessian_lower_damped);
+
   void PopulateIterationStats(optimization_iteration_t* const iteration_stats,
                               const StateType& state, const Scalar new_error,
                               const Scalar relative_reduction, const bool debug_stats) const;
@@ -198,6 +200,8 @@ class LevenbergMarquardtSolver {
   // Working storage to avoid reallocation
   VectorX<Scalar> update_;
   Eigen::SparseMatrix<Scalar> H_damped_;
+  Eigen::Array<bool, Eigen::Dynamic, 1> zero_diagonal_;
+  std::vector<int> zero_diagonal_indices_;
 
   // Index for the associated values, used for values.Update or Retract
   index_t index_{};
