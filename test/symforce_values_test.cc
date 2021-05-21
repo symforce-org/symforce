@@ -268,3 +268,25 @@ TEST_CASE("Test move operator", "[values]") {
   sym::Valuesf values2 = std::move(values);
   CHECK(values2.At<float>('x') == 1.0f);
 }
+
+TEST_CASE("Test Set with Eigen expressions", "[values]") {
+  sym::Valuesd values;
+  values.Set('a', Eigen::Vector3d::Zero());
+  values.Set('b', Eigen::Vector3f::Zero().cast<double>());
+  values.Set('c', Eigen::Vector3d() + 2 * Eigen::Vector3d::Ones());
+  values.Set('d', Eigen::Vector3d(Eigen::Vector3d::Zero()));
+  CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Vector3d>('b') == Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Vector3d>('c') == Eigen::Vector3d::Constant(2));
+  CHECK(values.At<Eigen::Vector3d>('d') == Eigen::Vector3d::Zero());
+
+  sym::index_t index = values.CreateIndex({'a', 'b', 'c', 'd'});
+  values.Set(index.entries[3], Eigen::Vector3d::Zero());
+  values.Set(index.entries[2], Eigen::Vector3f::Zero().cast<double>());
+  values.Set(index.entries[1], Eigen::Vector3d() + 2 * Eigen::Vector3d::Ones());
+  values.Set(index.entries[0], Eigen::Vector3d(Eigen::Vector3d::Zero()));
+  CHECK(values.At<Eigen::Vector3d>('d') == Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Vector3d>('c') == Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Vector3d>('b') == Eigen::Vector3d::Constant(2));
+  CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
+}

@@ -5,6 +5,10 @@
  */
 namespace sym {
 
+// ----------------------------------------------------------------------------
+// Public Methods
+// ----------------------------------------------------------------------------
+
 template <typename Scalar>
 template <typename T>
 T Values<Scalar>::At(const index_entry_t& entry) const {
@@ -33,8 +37,38 @@ T Values<Scalar>::At(const Key& key) const {
 
 template <typename Scalar>
 template <typename T>
-bool Values<Scalar>::Set(const Key& key, const T& value) {
-  static_assert(std::is_same<Scalar, typename sym::StorageOps<T>::Scalar>::value,
+std::enable_if_t<!kIsEigenType<T>, bool> Values<Scalar>::Set(const Key& key, const T& value) {
+  return SetInternal<T>(key, value);
+}
+
+template <typename Scalar>
+template <typename Derived>
+std::enable_if_t<kIsEigenType<Derived>, bool> Values<Scalar>::Set(const Key& key,
+                                                                  const Derived& value) {
+  return SetInternal<typename Derived::PlainMatrix>(key, value);
+}
+
+template <typename Scalar>
+template <typename T>
+std::enable_if_t<!kIsEigenType<T>> Values<Scalar>::Set(const index_entry_t& entry, const T& value) {
+  SetInternal<T>(entry, value);
+}
+
+template <typename Scalar>
+template <typename Derived>
+std::enable_if_t<kIsEigenType<Derived>> Values<Scalar>::Set(const index_entry_t& entry,
+                                                            const Derived& value) {
+  SetInternal<typename Derived::PlainMatrix>(entry, value);
+}
+
+// ----------------------------------------------------------------------------
+// Private Methods
+// ----------------------------------------------------------------------------
+
+template <typename Scalar>
+template <typename T>
+bool Values<Scalar>::SetInternal(const Key& key, const T& value) {
+  static_assert(std::is_same<Scalar, typename StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
   const type_t type = GetType<Scalar, T>();
   bool is_new = false;
@@ -70,12 +104,12 @@ bool Values<Scalar>::Set(const Key& key, const T& value) {
 
 template <typename Scalar>
 template <typename T>
-void Values<Scalar>::Set(const index_entry_t& entry, const T& value) {
-  static_assert(std::is_same<Scalar, typename sym::StorageOps<T>::Scalar>::value,
+void Values<Scalar>::SetInternal(const index_entry_t& entry, const T& value) {
+  static_assert(std::is_same<Scalar, typename StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
   SYM_ASSERT((entry.type == GetType<Scalar, T>()));
-  SYM_ASSERT((entry.offset + entry.storage_dim < data_.size()));
-  sym::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
+  SYM_ASSERT((entry.offset + entry.storage_dim <= data_.size()));
+  StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }
 
 // ----------------------------------------------------------------------------

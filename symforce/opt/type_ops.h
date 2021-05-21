@@ -14,6 +14,9 @@
 
 namespace sym {
 
+template <typename T>
+static constexpr const bool kIsEigenType = std::is_base_of<Eigen::MatrixBase<T>, T>::value;
+
 using type_t = symforce::type_t;
 
 /**

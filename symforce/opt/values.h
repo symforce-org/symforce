@@ -60,9 +60,19 @@ class Values {
 
   /**
    * Add or update a value by key. Returns true if added, false if updated.
+   *
+   * Overload for non-Eigen types
    */
   template <typename T>
-  bool Set(const Key& key, const T& value);
+  std::enable_if_t<!kIsEigenType<T>, bool> Set(const Key& key, const T& value);
+
+  /**
+   * Add or update a value by key. Returns true if added, false if updated.
+   *
+   * Overload for Eigen types
+   */
+  template <typename Derived>
+  std::enable_if_t<kIsEigenType<Derived>, bool> Set(const Key& key, const Derived& value);
 
   /**
    * Update or add keys to this Values base on other Values of different structure.
@@ -159,9 +169,20 @@ class Values {
   /**
    * Update a value by index entry with no map lookup (compared to Set(key)).
    * This does NOT add new values and assumes the key exists already.
+   *
+   * Overload for non-Eigen types
    */
   template <typename T>
-  void Set(const index_entry_t& key, const T& value);
+  std::enable_if_t<!kIsEigenType<T>> Set(const index_entry_t& key, const T& value);
+
+  /**
+   * Update a value by index entry with no map lookup (compared to Set(key)).
+   * This does NOT add new values and assumes the key exists already.
+   *
+   * Overload for Eigen types
+   */
+  template <typename Derived>
+  std::enable_if_t<kIsEigenType<Derived>> Set(const index_entry_t& key, const Derived& value);
 
   /**
    * Efficiently update the keys given by this index from other into this. This purely copies
@@ -206,6 +227,12 @@ class Values {
  protected:
   MapType map_;
   ArrayType data_;
+
+  template <typename T>
+  bool SetInternal(const sym::Key& key, const T& value);
+
+  template <typename T>
+  void SetInternal(const index_entry_t& entry, const T& value);
 
   template <typename OtherScalar>
   friend class Values;
