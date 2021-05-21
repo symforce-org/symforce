@@ -12,7 +12,7 @@ def define_view(index: int) -> Values:
     Creates a symbolic pose + calibration representing a single image
     """
     values = Values()
-    values["calibration"] = cam.LinearCameraCal.symbolic(f"cal{index}")
+    values["calibration"] = geo.M(cam.LinearCameraCal.symbolic(f"cal{index}").to_storage())
     values["pose"] = geo.Pose3.symbolic(f"pose{index}")
     return values
 

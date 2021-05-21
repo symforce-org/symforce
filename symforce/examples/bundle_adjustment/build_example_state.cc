@@ -128,6 +128,10 @@ sym::Valuesd BuildValues(std::mt19937& gen, const int num_landmarks) {
 
   sym::Valuesd values;
 
+  values.Set({Var::EPSILON}, kEpsilon);
+  values.Set({Var::GNC_SCALE}, kReprojectionErrorGncScale);
+  values.Set(Var::GNC_MU, 0.0);
+
   // Build two views, with similar but not identical poses looking into the same general area and
   // identical calibrations
   const sym::Pose3d view0 = Random<sym::Pose3d>(gen);

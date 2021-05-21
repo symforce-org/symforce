@@ -92,9 +92,6 @@ void RunDynamicBundleAdjustment() {
   std::mt19937 gen(42);
 
   Valuesd values = BuildValues(gen, kNumLandmarks);
-  values.Set({Var::EPSILON}, kEpsilon);
-  values.Set({Var::GNC_SCALE}, kReprojectionErrorGncScale);
-  values.Set(Var::GNC_MU, 0.0);
 
   std::cout << "Initial State:" << std::endl;
   for (int i = 0; i < kNumViews; i++) {
