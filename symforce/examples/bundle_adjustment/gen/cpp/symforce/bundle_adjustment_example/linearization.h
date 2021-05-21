@@ -20,9 +20,9 @@ namespace bundle_adjustment_example {
  *
  * Output args:
  *     b (Eigen::Matrix*): The residual vector
- *     J (Eigen::SparseMatrix*): The Jacobian of the residual
+ *     J (Eigen::Matrix*): The Jacobian of the residual
+ *     H (Eigen::Matrix*): The Hessian approximation J.T * J
  *     Jtb (Eigen::Matrix*): J.T * b
- *     H (Eigen::SparseMatrix*): The Hessian approximation J.T * J
  *
  */
 template <typename Scalar>
