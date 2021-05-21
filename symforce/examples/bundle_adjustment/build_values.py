@@ -1,5 +1,5 @@
 """
-This file builds a Values with all symbols needed for the example.
+This file builds a Values with all symbols needed for the fixed-size example.
 """
 from symforce import cam
 from symforce import geo
