@@ -2,8 +2,6 @@
 #include <symforce/opt/factor.h>
 #include <symforce/opt/optimizer.h>
 
-#include <lcmtypes/bundle_adjustment_example/state_t.hpp>
-
 #include "./build_example_state.h"
 #include "symforce/bundle_adjustment_example/landmark_prior_factor.h"
 #include "symforce/bundle_adjustment_example/relative_pose_prior_factor.h"
@@ -92,21 +90,19 @@ std::vector<Key> ComputeKeysToOptimizeWithoutView0(const std::vector<Factord>& f
 void RunDynamicBundleAdjustment() {
   // Create initial state
   std::mt19937 gen(42);
-  const auto initial_state = BuildState(gen, kNumLandmarks);
 
-  Valuesd values;
-  FillValuesFromState(initial_state, &values, kNumViews);
+  Valuesd values = BuildValues(gen, kNumLandmarks);
   values.Set({Var::EPSILON}, kEpsilon);
   values.Set({Var::GNC_SCALE}, kReprojectionErrorGncScale);
   values.Set(Var::GNC_MU, 0.0);
 
   std::cout << "Initial State:" << std::endl;
   for (int i = 0; i < kNumViews; i++) {
-    std::cout << "Pose " << i << ": " << sym::Pose3d(initial_state.views[i].pose) << std::endl;
+    std::cout << "Pose " << i << ": " << values.At<sym::Pose3d>({Var::VIEW, 0}) << std::endl;
   }
   std::cout << "Landmarks: ";
   for (int i = 0; i < kNumLandmarks; i++) {
-    std::cout << initial_state.landmarks[i] << " ";
+    std::cout << values.At<double>({Var::LANDMARK, i}) << " ";
   }
   std::cout << std::endl;
 
@@ -132,7 +128,7 @@ void RunDynamicBundleAdjustment() {
   }
   std::cout << std::endl;
 
-  const auto& iteration_stats = optimizer.IterationStats();
+  const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& first_iter = iteration_stats[0];
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
   std::cout << "Iterations: " << last_iter.iteration << std::endl;

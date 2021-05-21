@@ -117,15 +117,16 @@ std::vector<Scalar> SampleInverseRanges(const size_t num, std::mt19937* const ge
 
 }  // namespace
 
-bundle_adjustment_example::state_t BuildState(std::mt19937& gen, const int num_landmarks) {
+sym::Valuesd BuildValues(std::mt19937& gen, const int num_landmarks) {
   static constexpr const double kEpsilon = 1e-10;
   static constexpr const double kNoisePx = 5;
   static constexpr const double kNumOutliers = 0;
   static constexpr const double kLandmarkRelativeRangeNoise = 0.2;
   static constexpr const double kPoseDifferenceStd = 2;
   static constexpr const double kPoseNoise = 0.1;
+  static constexpr const int kNumViews = 2;
 
-  bundle_adjustment_example::state_t state{};
+  sym::Valuesd values;
 
   // Build two views, with similar but not identical poses looking into the same general area and
   // identical calibrations
@@ -140,27 +141,35 @@ bundle_adjustment_example::state_t BuildState(std::mt19937& gen, const int num_l
   const sym::PosedCamera<sym::LinearCameraCald> cam0(view0, camera_cal, image_shape);
   const sym::PosedCamera<sym::LinearCameraCald> cam1(view1, camera_cal, image_shape);
 
-  cam0.Calibration().ToStorage(state.views[0].calibration.data());
-  cam0.Pose().ToStorage(state.views[0].pose.data());
+  values.Set({Var::VIEW, 0}, cam0.Pose());
+  values.Set({Var::CALIBRATION, 0}, cam0.Calibration().Data());
 
-  cam1.Calibration().ToStorage(state.views[1].calibration.data());
-  cam1.Pose()
-      .Retract(kPoseNoise * RandomNormalVector<double, 6>(gen))
-      .ToStorage(state.views[1].pose.data());
+  values.Set({Var::VIEW, 1}, cam1.Pose().Retract(kPoseNoise * RandomNormalVector<double, 6>(gen)));
+  values.Set({Var::CALIBRATION, 1}, cam1.Calibration().Data());
 
+  // Pose priors
+  // First, create the 0-weight priors:
+  for (int i = 0; i < kNumViews; i++) {
+    for (int j = 0; j < kNumViews; j++) {
+      values.Set({Var::POSE_PRIOR_R, i, j}, sym::Rot3d());
+      values.Set({Var::POSE_PRIOR_T, i, j}, Vector3d());
+      values.Set({Var::POSE_PRIOR_WEIGHT, i, j}, 0.0);
+      values.Set({Var::POSE_PRIOR_SIGMAS, i, j}, Vector6d::Zero());
+    }
+  }
+
+  // Now, the actual prior between 0 and 1
   static constexpr const double kPosePriorNoise = 0.3;
-  auto& pose_prior = state.priors[0][1];
-  sym::StorageOps<Vector3d>::ToStorage(
-      sym::LieGroupOps<Vector3d>::Retract(
-          sym::GroupOps<Vector3d>::Between(view1.Position(), view0.Position()),
-          kPosePriorNoise * RandomNormalVector<double, 3>(gen), kEpsilon),
-      pose_prior.target_t_src.data());
-  view1.Rotation()
-      .Between(view0.Rotation())
-      .Retract(kPosePriorNoise * RandomNormalVector<double, 3>(gen))
-      .ToStorage(pose_prior.target_R_src.data());
-  pose_prior.weight = 1;
-  pose_prior.sigmas = kPosePriorNoise * Vector6d::Ones();
+  values.Set({Var::POSE_PRIOR_T, 0, 1},
+             sym::LieGroupOps<Vector3d>::Retract(
+                 sym::GroupOps<Vector3d>::Between(view1.Position(), view0.Position()),
+                 kPosePriorNoise * RandomNormalVector<double, 3>(gen), kEpsilon));
+  values.Set({Var::POSE_PRIOR_R, 0, 1},
+             view1.Rotation()
+                 .Between(view0.Rotation())
+                 .Retract(kPosePriorNoise * RandomNormalVector<double, 3>(gen)));
+  values.Set({Var::POSE_PRIOR_WEIGHT, 0, 1}, 1.0);
+  values.Set({Var::POSE_PRIOR_SIGMAS, 0, 1}, kPosePriorNoise * Vector6d::Ones());
 
   // Sample random correspondences
   const std::vector<Eigen::Vector2d> source_coords =
@@ -182,69 +191,21 @@ bundle_adjustment_example::state_t BuildState(std::mt19937& gen, const int num_l
 
   // Fill matches and landmarks for each correspondence
   std::normal_distribution<double> range_normal_dist(0, kLandmarkRelativeRangeNoise);
-  for (size_t i = 0; i < num_landmarks; i++) {
+  for (int i = 0; i < num_landmarks; i++) {
     const double source_range = 1 / source_inverse_ranges[i];
     const double range_perturbation = clamp(1 + range_normal_dist(gen), 0.5, 2.0);
-    state.landmarks[i] = 1 / (source_range * range_perturbation);
+    values.Set({Var::LANDMARK, i}, 1 / (source_range * range_perturbation));
 
     const auto& correspondence = correspondences[i];
 
-    auto& match = state.matches[0][i];
-    match.source_coords = correspondence.source_uv;
-    match.target_coords = correspondence.target_uv;
-    match.weight = correspondence.is_valid;
-    match.inverse_range_prior = source_inverse_ranges[i];
-    match.inverse_range_prior_sigma = 100;
+    values.Set({Var::MATCH_SOURCE_COORDS, 1, i}, correspondence.source_uv);
+    values.Set({Var::MATCH_TARGET_COORDS, 1, i}, correspondence.target_uv);
+    values.Set({Var::MATCH_WEIGHT, 1, i}, correspondence.is_valid);
+    values.Set({Var::LANDMARK_PRIOR, 1, i}, source_inverse_ranges[i]);
+    values.Set({Var::LANDMARK_PRIOR_SIGMA, 1, i}, 100.0);
   }
 
-  return state;
-}
-
-void FillValuesFromState(const bundle_adjustment_example::state_t& inputs, Valuesd* const values,
-                         const int num_views) {
-  // Views
-  for (int i = 0; i < num_views; i++) {
-    values->Set({Var::VIEW, i}, sym::Pose3d(inputs.views[i].pose));
-    values->Set({Var::CALIBRATION, i}, Vector4d(inputs.views[i].calibration));
-  }
-
-  // Pose priors
-  for (int i = 0; i < num_views; i++) {
-    for (int j = 0; j < num_views; j++) {
-      const auto& prior = inputs.priors[i][j];
-      values->Set({Var::POSE_PRIOR_R, i, j}, sym::Rot3d(prior.target_R_src));
-      values->Set({Var::POSE_PRIOR_T, i, j}, Vector3d(prior.target_t_src));
-      values->Set({Var::POSE_PRIOR_WEIGHT, i, j}, prior.weight);
-      values->Set({Var::POSE_PRIOR_SIGMAS, i, j}, Vector6d(prior.sigmas));
-    }
-  }
-
-  // Landmarks
-  for (int landmark_idx = 0; landmark_idx < kNumLandmarks; landmark_idx++) {
-    values->Set({Var::LANDMARK, landmark_idx}, inputs.landmarks[landmark_idx]);
-  }
-
-  // Landmark priors
-  for (int view_idx = 1; view_idx < num_views; view_idx++) {
-    for (int landmark_idx = 0; landmark_idx < kNumLandmarks; landmark_idx++) {
-      const auto& match = inputs.matches[view_idx - 1][landmark_idx];
-      values->Set({Var::LANDMARK_PRIOR, view_idx, landmark_idx}, match.inverse_range_prior);
-      values->Set({Var::LANDMARK_PRIOR_SIGMA, view_idx, landmark_idx},
-                  match.inverse_range_prior_sigma);
-    }
-  }
-
-  // Matches
-  for (int view_idx = 1; view_idx < num_views; view_idx++) {
-    for (int landmark_idx = 0; landmark_idx < kNumLandmarks; landmark_idx++) {
-      const auto& match = inputs.matches[view_idx - 1][landmark_idx];
-      values->Set({Var::MATCH_SOURCE_COORDS, view_idx, landmark_idx},
-                  Eigen::Vector2d(match.source_coords));
-      values->Set({Var::MATCH_TARGET_COORDS, view_idx, landmark_idx},
-                  Eigen::Vector2d(match.target_coords));
-      values->Set({Var::MATCH_WEIGHT, view_idx, landmark_idx}, match.weight);
-    }
-  }
+  return values;
 }
 
 optimizer_params_t OptimizerParams() {

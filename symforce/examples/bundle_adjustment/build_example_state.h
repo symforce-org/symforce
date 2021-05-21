@@ -2,7 +2,6 @@
 
 #include <symforce/opt/values.h>
 
-#include <lcmtypes/bundle_adjustment_example/state_t.hpp>
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 
 namespace sym {
@@ -30,10 +29,7 @@ enum Var : char {
   EPSILON = 'e',               // Scalar
 };
 
-bundle_adjustment_example::state_t BuildState(std::mt19937& gen, const int num_landmarks);
-
-void FillValuesFromState(const bundle_adjustment_example::state_t& inputs, Valuesd* const values,
-                         const int num_views);
+sym::Valuesd BuildValues(std::mt19937& gen, const int num_landmarks);
 
 optimizer_params_t OptimizerParams();
 

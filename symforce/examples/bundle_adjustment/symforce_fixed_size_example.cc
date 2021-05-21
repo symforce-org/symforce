@@ -4,11 +4,8 @@
 #include <symforce/opt/assert.h>
 #include <symforce/opt/levenberg_marquardt_solver.h>
 
-#include <lcmtypes/bundle_adjustment_example/state_t.hpp>
-
 #include "./build_example_state.h"
 #include "symforce/bundle_adjustment_example/linearization.h"
-#include "symforce/bundle_adjustment_example/update.h"
 
 namespace sym {
 
