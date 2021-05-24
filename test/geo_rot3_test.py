@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import unittest
 
 from symforce import geo
 from symforce import logger
@@ -92,6 +93,26 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         for rot in self.get_rotations_to_test():
             rot_transformed = geo.Rot3.from_rotation_matrix(rot.to_rotation_matrix())
             self.assertLieGroupNear(rot_transformed, rot)
+
+    @unittest.expectedFailure
+    def test_from_rotation_matrix_theta_equals_180(self) -> None:
+        """
+        TODO(brad): make this pass
+        Tests:
+            Rot3.from_rotation_matrix
+
+        Tests that Rot3.from_rotation_matrix creates the correct Rot3 from a
+        rotation matrix representing a 180 degree rotation about an axis
+        whose components have different signs.
+        """
+
+        # 180 degree rotation about axis = [1, -1, 0]
+        rot_180_axis = geo.Rot3.from_axis_angle(geo.V3(1, -1, 0).normalized(), sm.pi)
+        rot_180_axis_transformed = geo.Rot3.from_rotation_matrix(rot_180_axis.to_rotation_matrix())
+        self.assertEqual(
+            rot_180_axis.to_rotation_matrix(),
+            rot_180_axis_transformed.to_rotation_matrix().simplify(),
+        )
 
     def test_to_from_euler_ypr(self) -> None:
         """
