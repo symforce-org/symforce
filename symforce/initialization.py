@@ -196,29 +196,33 @@ def add_custom_methods(sympy_module: T.Type) -> None:
     Add safe helper methods to the symbolic API.
     """
 
+    def register(func: T.Callable) -> T.Callable:
+        setattr(sympy_module, func.__name__, func)
+        return func
+
+    @register
     def atan2_safe(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
         return sympy_module.atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
 
-    setattr(sympy_module, "atan2_safe", atan2_safe)
-
+    @register
     def asin_safe(x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
         x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
         return sympy_module.asin(x_safe)
 
-    setattr(sympy_module, "asin_safe", asin_safe)
-
+    @register
     def sign_no_zero(x: T.Scalar) -> T.Scalar:
         """
         Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.
         """
         return 2 * sympy_module.Min(sympy_module.sign(x), 0) + 1
 
-    setattr(sympy_module, "sign_no_zero", sign_no_zero)
-
+    @register
     def copysign_no_zero(x: T.Scalar, y: T.Scalar) -> T.Scalar:
         """
         Returns a value with the magnitude of x and sign of y. If y is zero, returns positive x.
         """
         return sympy_module.Abs(x) * sign_no_zero(y)
 
-    setattr(sympy_module, "copysign_no_zero", copysign_no_zero)
+    from symforce import logic
+
+    logic.add_logic_methods(sympy_module)
