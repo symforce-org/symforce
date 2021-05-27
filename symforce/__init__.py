@@ -109,7 +109,7 @@ def set_backend(backend: str) -> None:
         raise NotImplementedError(f'Unknown backend: "{backend}"')
 
 
-# Set default to symforce if available, else sympy
+# Set default to symengine if available, else sympy
 if "SYMFORCE_BACKEND" in os.environ:
     set_backend(os.environ["SYMFORCE_BACKEND"])
 else:
