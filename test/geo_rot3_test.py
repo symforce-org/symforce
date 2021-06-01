@@ -94,10 +94,13 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             rot_transformed = geo.Rot3.from_rotation_matrix(rot.to_rotation_matrix())
             self.assertLieGroupNear(rot_transformed, rot)
 
-    @unittest.expectedFailure
+        # Edge case where all components of quaternion are equal
+        *xyz, w = [sm.Rational(1, 2)] * 4
+        rot_equal = geo.Rot3(geo.Quaternion(xyz=geo.V3(*xyz), w=w)).to_rotation_matrix()
+        self.assertNear(rot_equal, geo.Rot3.from_rotation_matrix(rot_equal).to_rotation_matrix())
+
     def test_from_rotation_matrix_theta_equals_180(self) -> None:
         """
-        TODO(brad): make this pass
         Tests:
             Rot3.from_rotation_matrix
 
@@ -113,6 +116,35 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             rot_180_axis.to_rotation_matrix(),
             rot_180_axis_transformed.to_rotation_matrix().simplify(),
         )
+
+    def test_from_rotation_matrix_theta_near_180(self) -> None:
+        """
+        Tests:
+            Rot3.from_rotation_matrix
+
+        Tests that Rot3.from_rotation_matrix returns a rotation near the
+        input when the input is almost a 180 degree rotation.
+        """
+
+        axes = [
+            a.normalized()
+            for a in [
+                geo.V3(1.0, 1.0, 1.0),
+                geo.V3(2.0, 1.0, 1.0),
+                geo.V3(1.0, 2.0, 1.0),
+                geo.V3(1.0, 1.0, 2.0),
+                geo.V3(2.0, 2.0, 1.0),
+                geo.V3(1.0, 2.0, 2.0),
+                geo.V3(2.0, 1.0, 2.0),
+            ]
+        ]
+        for axis in axes:
+            for i in range(4, 12):
+                # Generating R: what should be a 180 degree rotation about
+                # axis, but, due to numerical errors, is not exactly.
+                R_i = geo.Rot3.from_axis_angle(axis, np.pi / i).to_rotation_matrix()
+                R = geo.M33(np.linalg.matrix_power(R_i.to_numpy(), i))
+                self.assertNear(R, geo.Rot3.from_rotation_matrix(R).to_rotation_matrix())
 
     def test_to_from_euler_ypr(self) -> None:
         """

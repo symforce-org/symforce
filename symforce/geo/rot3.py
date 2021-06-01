@@ -12,6 +12,7 @@ from .matrix import Matrix34
 from .matrix import Matrix43
 from .matrix import V3
 from .matrix import Vector3
+from .matrix import Vector4
 from .quaternion import Quaternion
 
 
@@ -184,18 +185,105 @@ class Rot3(LieGroup):
     def from_rotation_matrix(cls, R: Matrix33, epsilon: T.Scalar = 0) -> Rot3:
         """
         Construct from a rotation matrix.
-
-        Source:
-            http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm
         """
-        w = sm.sqrt(sm.Max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
-        x = sm.sqrt(sm.Max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
-        y = sm.sqrt(sm.Max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
-        z = sm.sqrt(sm.Max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
-        x = sm.copysign_no_zero(x, R[2, 1] - R[1, 2])
-        y = sm.copysign_no_zero(y, R[0, 2] - R[2, 0])
-        z = sm.copysign_no_zero(z, R[1, 0] - R[0, 1])
-        return cls(Quaternion(xyz=V3(x, y, z), w=w))
+
+        # This implementation is based off of that found in Eigen's Quaternion.h, found at
+        # https://gitlab.com/libeigen/eigen/-/blob/4091f6b2/Eigen/src/Geometry/Quaternion.h#L814
+        # which gets the algorithm from
+        # "Quaternion Calculus and Fast Animation",
+        # Ken Shoemake, 1987 SIGGRAPH course notes
+        #
+        # For a helpful discussion of the problem, see the paper
+        # http://www.iri.upc.edu/files/scidoc/2068-Accurate-Computation-of-Quaternions-from-Rotation-Matrices.pdf
+        #
+        # Since there is no simple expression we can use to calculate the corresponding
+        # quaternion q from R which is numerically stable everywhere, we arm ourselves with
+        # four different expressions so that we always have one which is stable for any given R.
+        #
+        # Each expression corresponds to one component of q (q_0, q_1, q_2, w) that is appropriate
+        # to use when that component is not close to zero.
+        #
+        # We choose the expression whose corresponding component has the largest magnitude as that
+        # expression is guaranteed to not divide by zero (or a similarly small number).
+        #
+        # We select our desired expression by evaluating all of them (modifying the ones we're
+        # not using to avoid dividing by zero), multiplying the one we want to use by 1 and
+        # the ones we don't want by 0, and adding them together.
+        #
+        # The expressions corresponding to the spatial components of q are sufficiently similar
+        # that we can express them with a single function, from_rotation_matrix_qi_not_0. The
+        # w component's expression is returned by from_rotation_matrix_w_not_0
+
+        # Useful identities for understanding the expressions:
+        # trace(R) = 1 + 2cos(theta) = 4w^2 - 1
+        # If q_0 = x, q_1 = y, q_2 = z, and
+        # i,j,k is an even permutation of 0,1,2, then
+        #   R[j, i] - R[i, j] = 4 * w * q_k
+        #   R[j, i] + R[i, j] = 4 * q_i * q_j
+        # R[i, i] = 2(w^2 + q_i^2)
+
+        def from_rotation_matrix_w_not_0(R: Matrix33, valid_input: T.Scalar) -> Quaternion:
+            """
+            If valid_input is 0, returns the zero quaternion.
+            If valid_input is 1, returns a quaternion q such that qv(q^-1) = Rv for all vectors v
+            Numerical performance is best when |w| is not close to 0
+            Preconditions:
+                valid_input must be either exactly 0 or exactly 1
+                If trace(R) = -1 (i.e., w = 0), then valid_input must be 0
+            """
+            # abs_2w is |2w| = |2cos(theta/2)|.
+            # We add not(valid_input) to ensure abs_2w is non-zero to avoid dividing by zero
+            # in the case where we wish to return the zero quaternion
+            abs_2w = sm.sqrt(sm.Max(1 + R[0, 0] + R[1, 1] + R[2, 2], 0)) + sm.logical_not(
+                valid_input, unsafe=True
+            )
+            w = abs_2w / 2
+            inv_abs_4w = 1 / (2 * abs_2w)
+            x = (R[2, 1] - R[1, 2]) * inv_abs_4w
+            y = (R[0, 2] - R[2, 0]) * inv_abs_4w
+            z = (R[1, 0] - R[0, 1]) * inv_abs_4w
+            *xyz, w = valid_input * Vector4(x, y, z, w)
+            return Quaternion(xyz=V3(*xyz), w=w)
+
+        def from_rotation_matrix_qi_not_0(R: Matrix33, i: int, valid_input: T.Scalar) -> Quaternion:
+            """
+            If valid_input is 0, returns the zero quaternion.
+            If valid_input is 1, returns a quaternion q such that qv(q^-1) = Rv for all vectors v
+            Numerical performance is best when |q_i| is not close to 0
+            Preconditions:
+                valid_input must be either exactly 0 or exactly 1
+                If 2*R[i, i] - trace(R) = -1 (i.e., q_i = 0), then valid_input must be 0
+            """
+            j = (i + 1) % 3
+            k = (i + 2) % 3
+            components = [0] * 3
+            # abs_2q_i = |2q_i| = |2sin(theta/2)a_i| where a is the axis of rotation
+            # We add not(valid_input) to ensure abs_2q_i is non-zero to avoid dividing by zero
+            # in the case where we wish to return the zero quaternion
+            abs_2q_i = sm.sqrt(sm.Max(1 + R[i, i] - R[j, j] - R[k, k], 0)) + sm.logical_not(
+                valid_input, unsafe=True
+            )
+            components[i] = abs_2q_i / 2
+            inv_abs_4q_i = 1 / (2 * abs_2q_i)
+            w = (R[k, j] - R[j, k]) * inv_abs_4q_i
+            components[j] = (R[j, i] + R[i, j]) * inv_abs_4q_i
+            components[k] = (R[k, i] + R[i, k]) * inv_abs_4q_i
+            *xyz, w = valid_input * Vector4(*components, w)
+            return Quaternion(xyz=V3(*xyz), w=w)
+
+        # Relevant math needed to justify the next line:
+        #             R00 = 2(w^2 + x^2) - 1
+        #             R11 = 2(w^2 + y^2) - 1
+        #             R22 = 2(w^2 + z^2) - 1
+        # R00 + R11 + R22 = 4w^2 - 1
+        # So max(R00, R11, R22, R00 + R11 + R22) = max(x^2, y^2, z^2, w^2)
+        # x^2 + y^2 + z^2 + w^2 = 1  =>  max(x^2, y^2, z^2, w^2) >= 1/4
+        # This is all to say that if use_branch[i] = 1, then it's safe to use q_i's expression
+        use_branch = sm.argmax_onehot([R[0, 0], R[1, 1], R[2, 2], R[0, 0] + R[1, 1] + R[2, 2]])
+        q = from_rotation_matrix_w_not_0(R, use_branch[3])
+        for i in range(0, 3):
+            q += from_rotation_matrix_qi_not_0(R, i, use_branch[i])
+        return cls(q)
 
     def to_euler_ypr(self, epsilon: T.Scalar = 0) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
         """

@@ -223,6 +223,40 @@ def add_custom_methods(sympy_module: T.Type) -> None:
         """
         return sympy_module.Abs(x) * sign_no_zero(y)
 
+    @register
+    def argmax_onehot(vals: T.Sequence[T.Scalar]) -> T.List[T.Scalar]:
+        """
+        Returns a list l such that l[i] = 1.0 if i is the smallest index such that
+        vals[i] equals Max(*vals). l[i] = 0.0 otherwise.
+
+        Precondition:
+            vals has at least one element
+        """
+        m = sympy_module.Max(*vals)
+        results = []
+        have_max_already = 0
+        for val in vals:
+            results.append(
+                sympy_module.logical_and(
+                    sympy_module.is_nonnegative(val - m),
+                    sympy_module.logical_not(have_max_already, unsafe=True),
+                    unsafe=True,
+                )
+            )
+            have_max_already = sympy_module.logical_or(have_max_already, results[-1], unsafe=True)
+        return results
+
+    @register
+    def argmax(vals: T.Sequence[T.Scalar]) -> T.Scalar:
+        """
+        Returns i (as a T.Scalar) such that i is the smallest index such that
+        vals[i] equals Max(*vals).
+
+        Precondition:
+            vals has at least one element
+        """
+        return sum([i * val for i, val in enumerate(argmax_onehot(vals))])
+
     from symforce import logic
 
     logic.add_logic_methods(sympy_module)
