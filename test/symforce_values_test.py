@@ -1,4 +1,5 @@
 import numpy as np
+import unittest
 
 from symforce import logger
 from symforce import geo
@@ -210,6 +211,19 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         # Make sure from_tangent and from_storage run and we get correct values back
         self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_tangent(entries).items()))
         self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_storage(entries).items()))
+
+    @unittest.expectedFailure
+    def test_items_recursive(self) -> None:
+        """
+        TODO(Bradley) Get this passing
+        Tests:
+            items_recursive
+        Ensure that the key item pairs returned by items_recursive are valid key item pairs.
+        """
+
+        v = self.element()
+        for key, value in v.items_recursive():
+            self.assertEqual(v[key], value)
 
     @slow_on_sympy
     def test_tangent_D_storage(self) -> None:
