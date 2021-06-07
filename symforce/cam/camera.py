@@ -7,19 +7,22 @@ from symforce import types as T
 
 class Camera:
     """
-    Camera with a given camera calibration and an optionally specified image size.
+    Camera with a given camera calibration and an optionally specified image size (width, height).
     If the image size is specified, we use it to check whether pixels (either given or computed by
     projection of 3D points into the image frame) are in the image frame and thus valid/invalid.
     """
 
-    def __init__(self, calibration: CameraCal, image_size: T.Sequence[int] = None) -> None:
+    # Type that represents this or any subclasses
+    CameraT = T.TypeVar("CameraT", bound="Camera")
+
+    def __init__(self, calibration: CameraCal, image_size: T.Sequence[T.Scalar] = None) -> None:
         self.calibration = calibration
 
         if image_size is not None:
             assert len(image_size) == 2
-            self.image_size = geo.V2(image_size)
+            self.image_size: T.Optional[geo.V2] = geo.V2(image_size)
         else:
-            self.image_size = None  # type: ignore
+            self.image_size = None
 
     @property
     def focal_length(self) -> geo.V2:
@@ -57,7 +60,7 @@ class Camera:
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = 0
+        self, pixel: geo.V2, epsilon: T.Scalar = 0, normalize: bool = False
     ) -> T.Tuple[geo.V3, T.Scalar]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
@@ -65,16 +68,23 @@ class Camera:
         NOTE: If image_size is specified and the given pixel is out of
         bounds, is_valid will be set to zero.
 
+        Args:
+            normalize: Whether camera_ray will be normalized (False by default)
+
         Return:
-            camera_ray: The ray in the camera frame (NOT normalized)
+            camera_ray: The ray in the camera frame
             is_valid: 1 if the operation is within bounds else 0
         """
         camera_ray, is_valid = self.calibration.camera_ray_from_pixel(pixel, epsilon)
+
+        if normalize:
+            camera_ray = camera_ray.normalized(epsilon=epsilon)
+
         is_valid *= self.maybe_check_in_view(pixel)
         return camera_ray, is_valid
 
     def maybe_check_in_view(self, pixel: geo.V2) -> int:
-        if not self.image_size:
+        if self.image_size is None:
             return sm.S.One
 
         return self.in_view(pixel, self.image_size)
@@ -89,4 +99,15 @@ class Camera:
                 sm.Max(0, sm.sign(bound - value - sm.S.One) * sm.sign(value))
                 for bound, value in zip(image_size.to_flat_list(), pixel.to_flat_list())
             ]
+        )
+
+    def subs(self: CameraT, *args: T.Any, **kwargs: T.Any) -> CameraT:
+        """
+        Substitute given values of each scalar element into a new instance.
+        """
+        return self.__class__(
+            calibration=self.calibration.subs(*args, **kwargs),
+            image_size=None
+            if self.image_size is None
+            else self.image_size.subs(*args, **kwargs).to_flat_list(),
         )

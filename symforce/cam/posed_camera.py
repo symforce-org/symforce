@@ -15,8 +15,11 @@ class PosedCamera(Camera):
     projection of 3D points into the image frame) are in the image frame and thus valid/invalid.
     """
 
+    # Type that represents this or any subclasses
+    PosedCameraT = T.TypeVar("PosedCameraT", bound="PosedCamera")
+
     def __init__(
-        self, pose: geo.Pose3, calibration: CameraCal, image_size: T.Sequence[int] = None
+        self, pose: geo.Pose3, calibration: CameraCal, image_size: T.Sequence[T.Scalar] = None
     ) -> None:
         super().__init__(calibration=calibration, image_size=image_size)
         self.pose = pose  # global_T_cam
@@ -116,3 +119,15 @@ class PosedCamera(Camera):
         )
 
         return pixel, is_valid_point * is_valid_projection
+
+    def subs(self: PosedCameraT, *args: T.Any, **kwargs: T.Any) -> PosedCameraT:
+        """
+        Substitute given values of each scalar element into a new instance.
+        """
+        return self.__class__(
+            pose=self.pose.subs(*args, **kwargs),
+            calibration=self.calibration.subs(*args, **kwargs),
+            image_size=None
+            if self.image_size is None
+            else self.image_size.subs(*args, **kwargs).to_flat_list(),
+        )

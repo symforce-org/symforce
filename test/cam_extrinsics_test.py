@@ -27,6 +27,7 @@ class CameraTest(CamTestMixin, TestCase):
             Camera.camera_ray_from_pixel
         """
         camera = self.element()
+        assert camera.image_size is not None
 
         # Check that is_valid is set to 0 when point is outside FOV
         point_in_FOV = geo.V3(0, 0, 1)

@@ -126,6 +126,8 @@ class DoubleSphereCameraCal {
   /**
    * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
    *
+   * TODO(hayk): Add a normalize boolean argument? Like in `cam.Camera`
+   *
    * Return:
    *     camera_ray: The ray in the camera frame (NOT normalized)
    *     is_valid: 1 if the operation is within bounds else 0

@@ -215,6 +215,11 @@ def add_custom_methods(sympy_module: T.Type) -> None:
         return sympy_module.asin(x_safe)
 
     @register
+    def acos_safe(x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
+        x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
+        return sympy_module.acos(x_safe)
+
+    @register
     def sign_no_zero(x: T.Scalar) -> T.Scalar:
         """
         Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.

@@ -8,7 +8,7 @@
 namespace sym {
 
 /**
- * Camera with a given camera calibration and an optionally specified image size.
+ * Camera with a given camera calibration and an optionally specified image size (width, height).
  * If the image size is specified, we use it to check whether pixels (either given or computed by
  * projection of 3D points into the image frame) are in the image frame and thus valid/invalid.
  */
@@ -54,8 +54,11 @@ class Camera {
    * NOTE: If image_size is specified and the given pixel is out of
    * bounds, is_valid will be set to zero.
    *
+   * Args:
+   *     normalize: Whether camera_ray will be normalized (False by default)
+   *
    * Return:
-   *     camera_ray: The ray in the camera frame (NOT normalized)
+   *     camera_ray: The ray in the camera frame
    *     is_valid: 1 if the operation is within bounds else 0
    *
    */
