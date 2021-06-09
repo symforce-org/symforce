@@ -160,17 +160,6 @@ class Values:
         return index_dict
 
     @staticmethod
-    def _shape_implies_a_vector(shape: T.Tuple[int, int]) -> bool:
-        """
-        Return True if the given shape is row or column vector-like.
-        """
-        return (
-            len(shape) == 1
-            or (len(shape) == 2 and shape[1] == 1)
-            or (len(shape) == 2 and shape[0] == 1)
-        )
-
-    @staticmethod
     def _items_recursive(v: T.Union[T.Sequence, Values]) -> T.List[T.Tuple[str, T.Any]]:
         """
         Helper for items_recursive that handles sequences
