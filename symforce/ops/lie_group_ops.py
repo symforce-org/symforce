@@ -45,7 +45,7 @@ class LieGroupOps(GroupOps):
         example SO3 could be a tangent_dim of 3 with a storage_dim of 4 if storing quaternions,
         or 9 if storing rotation matrices. For vector spaces they are equal.
         """
-        return Ops.implementation(get_type(a)).tangent_dim(a)
+        return LieGroupOps.implementation(get_type(a)).tangent_dim(a)
 
     @staticmethod
     def from_tangent(a: T.ElementOrType, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
@@ -63,7 +63,7 @@ class LieGroupOps(GroupOps):
         Returns:
             Element: Valid group element that approximates vec around identity.
         """
-        return Ops.implementation(get_type(a)).from_tangent(a, vec, epsilon)
+        return LieGroupOps.implementation(get_type(a)).from_tangent(a, vec, epsilon)
 
     @staticmethod
     def to_tangent(a: T.Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
@@ -77,7 +77,7 @@ class LieGroupOps(GroupOps):
         Returns:
             list: Tangent space pertubation around identity that approximates a.
         """
-        return Ops.implementation(get_type(a)).to_tangent(a, epsilon)
+        return LieGroupOps.implementation(get_type(a)).to_tangent(a, epsilon)
 
     @staticmethod
     def retract(a: T.Element, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
@@ -95,7 +95,7 @@ class LieGroupOps(GroupOps):
         Returns:
             Element: Group element that conceptually represents "a + vec"
         """
-        return Ops.implementation(get_type(a)).retract(a, vec, epsilon)
+        return LieGroupOps.implementation(get_type(a)).retract(a, vec, epsilon)
 
     @staticmethod
     def local_coordinates(a: T.Element, b: T.Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
@@ -113,7 +113,7 @@ class LieGroupOps(GroupOps):
         Returns:
             list: Tangent space pertubation that conceptually represents "b - a"
         """
-        return Ops.implementation(get_type(a)).local_coordinates(a, b, epsilon)
+        return LieGroupOps.implementation(get_type(a)).local_coordinates(a, b, epsilon)
 
     @staticmethod
     def storage_D_tangent(a: T.Element) -> "geo.Matrix":
@@ -122,7 +122,7 @@ class LieGroupOps(GroupOps):
         that element.
         """
         try:
-            return Ops.implementation(get_type(a)).storage_D_tangent(a)
+            return LieGroupOps.implementation(get_type(a)).storage_D_tangent(a)
         except NotImplementedError:
             logger.error(
                 "storage_D_tangent not implemented for {}; use storage_D_tangent.ipynb to compute".format(
@@ -138,7 +138,7 @@ class LieGroupOps(GroupOps):
         that element.
         """
         try:
-            return Ops.implementation(get_type(a)).tangent_D_storage(a)
+            return LieGroupOps.implementation(get_type(a)).tangent_D_storage(a)
         except NotImplementedError:
             logger.error(
                 "tangent_D_storage not implemented for {}; use tangent_D_storage.ipynb to compute".format(

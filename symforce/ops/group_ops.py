@@ -28,7 +28,7 @@ class GroupOps(StorageOps):
         Returns:
             Element: b such that a @ b = a
         """
-        return Ops.implementation(get_type(a)).identity(a)
+        return GroupOps.implementation(get_type(a)).identity(a)
 
     @staticmethod
     def compose(a: T.Element, b: T.Element) -> T.Element:
@@ -38,7 +38,7 @@ class GroupOps(StorageOps):
         Returns:
             Element: a @ b
         """
-        return Ops.implementation(get_type(a)).compose(a, b)
+        return GroupOps.implementation(get_type(a)).compose(a, b)
 
     @staticmethod
     def inverse(a: T.Element) -> T.Element:
@@ -48,7 +48,7 @@ class GroupOps(StorageOps):
         Returns:
             Element: b such that a @ b = identity
         """
-        return Ops.implementation(get_type(a)).inverse(a)
+        return GroupOps.implementation(get_type(a)).inverse(a)
 
     @staticmethod
     def between(a: T.Element, b: T.Element) -> T.Element:

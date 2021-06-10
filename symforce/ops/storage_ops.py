@@ -17,7 +17,7 @@ class StorageOps(Ops):
         """
         Size of the element's storage, aka the number of scalar values it contains.
         """
-        return Ops.implementation(get_type(a)).storage_dim(a)
+        return StorageOps.implementation(get_type(a)).storage_dim(a)
 
     @staticmethod
     def to_storage(a: T.Element) -> T.List:
@@ -29,14 +29,14 @@ class StorageOps(Ops):
         Returns:
             list: Length equal to `storage_dim(a)`
         """
-        return Ops.implementation(get_type(a)).to_storage(a)
+        return StorageOps.implementation(get_type(a)).to_storage(a)
 
     @staticmethod
     def from_storage(a: T.ElementOrType, elements: T.Sequence[T.Scalar]) -> T.Element:
         """
         Construct from a flat list representation. Opposite of `.to_storage()`.
         """
-        return Ops.implementation(get_type(a)).from_storage(a, elements)
+        return StorageOps.implementation(get_type(a)).from_storage(a, elements)
 
     @staticmethod
     def symbolic(a: T.ElementOrType, name: str, **kwargs: T.Dict) -> T.Element:
@@ -51,14 +51,14 @@ class StorageOps(Ops):
         Returns:
             Storage:
         """
-        return Ops.implementation(get_type(a)).symbolic(a, name, **kwargs)
+        return StorageOps.implementation(get_type(a)).symbolic(a, name, **kwargs)
 
     @staticmethod
     def evalf(a: T.Element) -> T.Element:
         """
         Evaluate to a numerical quantity (rationals, trig functions, etc).
         """
-        return Ops.implementation(get_type(a)).evalf(a)
+        return StorageOps.implementation(get_type(a)).evalf(a)
 
     @staticmethod
     def subs(a: T.Element, *args: T.Any, **kwargs: T.Any) -> T.Element:

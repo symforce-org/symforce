@@ -20,7 +20,14 @@ class Ops:
     of the ops for that class. This is similar to template specialization in C++.
     """
 
-    IMPLEMENTATIONS: T.Dict[T.Type, T.Type] = {}
+    # An item of IMPLEMENTATIONS is of the form (DataType, (OpsClass, Implementation)),
+    # where OpsClass is the subclass of Ops we are registering with, DataType is the
+    # type we are registering with OpsClass, and Implementation is the class whose
+    # methods know how to perform OpsClass operations on DataType.
+    #
+    # For example, the item that is added by StorageOps.register(float, ScalarStorageOps)
+    # is (float, (StorageOps, ScalarStorageOps)).
+    IMPLEMENTATIONS: T.Dict[T.Type, T.Tuple[T.Type, T.Type]] = {}
 
     @classmethod
     def register(cls, impl_type: T.Type, impl_ops: T.Type) -> None:
@@ -38,16 +45,40 @@ class Ops:
             impl_ops: Class defining how each operation is implemented for the given type
         """
         assert impl_type not in cls.IMPLEMENTATIONS
-        cls.IMPLEMENTATIONS[impl_type] = impl_ops
+        cls.IMPLEMENTATIONS[impl_type] = (cls, impl_ops)
 
     @classmethod
     def implementation(cls, impl_type: T.Type) -> T.Type:
         """
         Returns the class defining the operations for the given type or one of
-        its parent classes.
+        its parent classes. If multiple parent classes are registered with the calling class,
+        the implementation of the first such parent class in method resolution order is returned.
+
+        Raises:
+            NotImplementedError: If impl_type or one of its parent classes is not registered
+            with the calling class or one of its subclasses.
         """
+        registered_and_base: T.List[T.Tuple[T.Type, T.Type]] = []
         for base_class in inspect.getmro(impl_type):
-            impl = cls.IMPLEMENTATIONS.get(base_class, None)
-            if impl is not None:
-                return impl
-        raise NotImplementedError(f"Unsupported type: {impl_type}")
+            reg_class_and_impl = cls.IMPLEMENTATIONS.get(base_class, None)
+            if reg_class_and_impl is not None:
+                registration_class, impl = reg_class_and_impl
+                if issubclass(registration_class, cls):
+                    return impl
+
+                registered_and_base.append((registration_class, base_class))
+
+        if len(registered_and_base) != 0:
+            raise NotImplementedError(
+                f"While {impl_type} is registered under {{reg_info}}, {{none_do}} subclass {cls.__name__}.".format(
+                    reg_info=", ".join(
+                        [
+                            f"{reg.__name__} (via base class {base})"
+                            for reg, base in registered_and_base
+                        ]
+                    ),
+                    none_do="that does not" if len(registered_and_base) == 1 else "none of those",
+                )
+            )
+
+        raise NotImplementedError(f"{impl_type} is not registered under {cls.__name__}")

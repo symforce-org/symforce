@@ -610,4 +610,4 @@ class Values:
 
 from symforce.ops.impl.class_lie_group_ops import ClassLieGroupOps
 
-ops.StorageOps.register(Values, ClassLieGroupOps)
+ops.LieGroupOps.register(Values, ClassLieGroupOps)
