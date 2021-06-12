@@ -271,7 +271,7 @@ class Values:
                 values[name] = cls.from_storage_index(vec, item_index)
             elif datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
                 values[name] = getattr(geo, datatype).from_storage(vec)
-            elif datatype in {"LinearCameraCal", "EquidistantEpipolarCameraCal", "ATANCameraCal"}:
+            elif datatype in {c.__name__ for c in cam.CameraCal.__subclasses__()}:
                 values[name] = getattr(cam, datatype).from_storage(vec)
             elif datatype == "np.ndarray":
                 values[name] = np.array(vec).reshape(*shape)

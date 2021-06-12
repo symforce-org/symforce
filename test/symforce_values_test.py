@@ -231,10 +231,8 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         for key, value in v.items_recursive():
             self.assertEqual(v[key], value)
 
-    @unittest.expectedFailure
     def test_from_storage_index_with_camera_cal(self) -> None:
         """
-        TODO(Bradley) Get this passing
         Tests:
             Values.from_storage_index
         Ensure that from_storage_index works with all the camera cals
@@ -248,10 +246,9 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 v[c.__name__] = c(
                     focal_length=(f_x, f_y),
                     principal_point=(c_x, c_y),
-                    distortion_coeffs=[
-                        np.random.uniform(low=1.0, high=10.0)
-                        for __ in range(c.NUM_DISTORTION_COEFFS)
-                    ],
+                    distortion_coeffs=np.random.uniform(
+                        low=1.0, high=10.0, size=c.NUM_DISTORTION_COEFFS
+                    ).tolist(),
                 )
 
         self.assertEqual(v, Values.from_storage_index(v.to_storage(), v.index()))
