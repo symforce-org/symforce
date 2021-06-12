@@ -3,6 +3,7 @@ import unittest
 
 from symforce import logger
 from symforce import geo
+from symforce import cam
 from symforce import sympy as sm
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -222,13 +223,38 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         """
         TODO(Bradley) Get this passing
         Tests:
-            items_recursive
+            Values.items_recursive
         Ensure that the key item pairs returned by items_recursive are valid key item pairs.
         """
 
         v = self.element()
         for key, value in v.items_recursive():
             self.assertEqual(v[key], value)
+
+    @unittest.expectedFailure
+    def test_from_storage_index_with_camera_cal(self) -> None:
+        """
+        TODO(Bradley) Get this passing
+        Tests:
+            Values.from_storage_index
+        Ensure that from_storage_index works with all the camera cals
+        """
+        v = self.element()
+        # The particular arguments being used to construct the CameraCals are arbitrary. Just want
+        # something their constructors will be happy with
+        with v.scope("CameraCals"):
+            [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
+            for c in cam.CameraCal.__subclasses__():
+                v[c.__name__] = c(
+                    focal_length=(f_x, f_y),
+                    principal_point=(c_x, c_y),
+                    distortion_coeffs=[
+                        np.random.uniform(low=1.0, high=10.0)
+                        for __ in range(c.NUM_DISTORTION_COEFFS)
+                    ],
+                )
+
+        self.assertEqual(v, Values.from_storage_index(v.to_storage(), v.index()))
 
     @slow_on_sympy
     def test_tangent_D_storage(self) -> None:
