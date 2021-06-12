@@ -92,6 +92,11 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v = Values()
         self.assertEqual(len(v.keys()), 0)
 
+        # items/keys/values_recursive work well even on empty Values
+        self.assertEqual([], v.items_recursive())
+        self.assertEqual([], v.keys_recursive())
+        self.assertEqual([], v.values_recursive())
+
         v["foo"] = sm.Symbol("foo")
         v.add(sm.Symbol("bar"))
         self.assertEqual("foo", v["foo"].name)
