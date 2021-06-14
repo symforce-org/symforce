@@ -29,6 +29,18 @@ class Values:
         attr: Access with dot notation, such as `v.attr.states.x0` instead of `v['states.x0']`.
     """
 
+    # The names of geo types which can be elements of a Values v and properly reconstructed in
+    # Values.from_storage_index(v.to_storage(), v.index())
+    ACCEPTED_GEO_TYPE_NAMES = {
+        "Rot2",
+        "Rot3",
+        "Pose2",
+        "Pose3",
+        "Complex",
+        "Quaternion",
+        "DualQuaternion",
+    }
+
     def __init__(self, **kwargs: T.Any) -> None:
         """
         Create like a Python dict.
@@ -262,22 +274,18 @@ class Values:
 
             if entry.datatype == "Scalar":
                 values[name] = vec[0]
-            elif entry.datatype == "Matrix":
-                assert entry.shape is not None
-                values[name] = geo.Matrix(vec).reshape(*entry.shape)
-            elif entry.datatype == "Values":
-                assert entry.item_index is not None
-                values[name] = cls.from_storage_index(vec, entry.item_index)
-            elif entry.datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
-                values[name] = getattr(geo, entry.datatype).from_storage(vec)
-            elif entry.datatype in {c.__name__ for c in cam.CameraCal.__subclasses__()}:
-                values[name] = getattr(cam, entry.datatype).from_storage(vec)
-            elif entry.datatype == "np.ndarray":
-                assert entry.shape is not None
-                values[name] = np.array(vec).reshape(*entry.shape)
-            elif entry.datatype == "List":
-                assert entry.item_index is not None
-                values[name] = [v for v in cls.from_storage_index(vec, entry.item_index).values()]
+            elif datatype == "Matrix":
+                values[name] = geo.Matrix(vec).reshape(*shape)
+            elif datatype == "Values":
+                values[name] = cls.from_storage_index(vec, item_index)
+            elif datatype in Values.ACCEPTED_GEO_TYPE_NAMES:
+                values[name] = getattr(geo, datatype).from_storage(vec)
+            elif datatype in {"LinearCameraCal", "EquidistantEpipolarCameraCal", "ATANCameraCal"}:
+                values[name] = getattr(cam, datatype).from_storage(vec)
+            elif datatype == "np.ndarray":
+                values[name] = np.array(vec).reshape(*shape)
+            elif datatype == "List":
+                values[name] = [v for v in cls.from_storage_index(vec, item_index).values()]
             else:
                 raise NotImplementedError(f'Unknown datatype: "{entry.datatype}"')
 

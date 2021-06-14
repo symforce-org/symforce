@@ -241,19 +241,26 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         for key, value in v.items_recursive():
             self.assertEqual(v[key], value)
 
-    def test_from_storage_index_with_camera_cal(self) -> None:
+    def test_from_storage_index(self) -> None:
         """
         Tests:
             Values.from_storage_index
-        Ensure that from_storage_index works with all the camera cals
+        Ensure that from_storage_index works with various value types
         """
-        v = self.element()
+        # To test a complex structure
+        v_structure = self.element()
+        self.assertEqual(
+            v_structure, Values.from_storage_index(v_structure.to_storage(), v_structure.index())
+        )
+
+        # To check handling of CameraCal subclasses
+        v_cam = Values()
         # The particular arguments being used to construct the CameraCals are arbitrary. Just want
         # something their constructors will be happy with
-        with v.scope("CameraCals"):
+        with v_cam.scope("CameraCals"):
             [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
             for c in cam.CameraCal.__subclasses__():
-                v[c.__name__] = c(
+                v_cam[c.__name__] = c(
                     focal_length=(f_x, f_y),
                     principal_point=(c_x, c_y),
                     distortion_coeffs=np.random.uniform(
@@ -261,7 +268,15 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                     ).tolist(),
                 )
 
-        self.assertEqual(v, Values.from_storage_index(v.to_storage(), v.index()))
+        self.assertEqual(v_cam, Values.from_storage_index(v_cam.to_storage(), v_cam.index()))
+
+        # To check handling of normal geo types
+        v_geo = Values()
+        with v_geo.scope("geo_types"):
+            for type_name in Values.ACCEPTED_GEO_TYPE_NAMES:
+                v_geo[type_name] = getattr(geo, type_name).identity()
+
+        self.assertEqual(v_geo, Values.from_storage_index(v_geo.to_storage(), v_geo.index()))
 
     @slow_on_sympy
     def test_tangent_D_storage(self) -> None:
