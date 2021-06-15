@@ -10,7 +10,7 @@ import inspect
 
 from symforce import ops
 from symforce import geo
-from symforce.values import Values
+from symforce.values import Values, IndexEntry
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import printers, format_util
@@ -320,9 +320,13 @@ def get_formatted_list(
                 [symbol for symbol in symbols if symbols.count(symbol) > 1]
             )
         elif issubclass(arg_cls, (list, tuple)):
-            # Term is a list, so we loop over the index of the list, i.e. "values.index()[key][3]".
+            # Term is a list, so we loop over the index of the list, i.e.
+            # "values.index()[key].item_index".
             symbols = []
-            for i, sub_index_val in enumerate(values.index()[key][3].values()):
+
+            sub_index = values.index()[key].item_index
+            assert sub_index is not None
+            for i, sub_index_val in enumerate(sub_index.values()):
                 # Elements of a list are accessed with the "[]" operator.
                 symbols.extend(
                     _get_scalar_keys_recursive(
@@ -349,7 +353,7 @@ def get_formatted_list(
 
 
 def _get_scalar_keys_recursive(
-    index_value: T.Any, prefix: str, mode: CodegenMode, use_data: bool
+    index_value: IndexEntry, prefix: str, mode: CodegenMode, use_data: bool
 ) -> T.List[str]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
@@ -363,41 +367,38 @@ def _get_scalar_keys_recursive(
             accessed with ".data" or ".Data()". Otherwise, assume geo/cam objects are represented
             by a vector of scalars (e.g. as they are in lcm types).
     """
-    # First pull out useful terms from the index entry
-    _, datatype, shape, item_index = index_value
-
     vec = []
-    if len(shape) == 0:
+    if index_value.datatype == "Scalar":
         # Element is a scalar, no need to access subvalues
         vec.append(sm.Symbol(prefix))
-    elif datatype == "Values":
+    elif index_value.datatype == "Values":
+        assert index_value.item_index is not None
         # Recursively add subitems using "." to access subvalues
-        for name, sub_index_val in item_index.items():
+        for name, sub_index_val in index_value.item_index.items():
             vec.extend(
                 _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}.{name}", mode=mode, use_data=False
                 )
             )
-    elif datatype == "List":
+    elif index_value.datatype == "List":
+        assert index_value.item_index is not None
         # Assume all elements of list are same type as first element
         # Recursively add subitems using "[]" to access subvalues
-        for i, sub_index_val in enumerate(item_index.values()):
+        for i, sub_index_val in enumerate(index_value.item_index.values()):
             vec.extend(
                 _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}[{i}]", mode=mode, use_data=use_data
                 )
             )
-    elif datatype == "Matrix" or not use_data:
+    elif index_value.datatype == "Matrix" or not use_data:
         # TODO(nathan): I don't think this deals with 2D matrices correctly
-        vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(Values.shape_to_dims(shape)))
+        vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
         if mode == CodegenMode.PYTHON2:
-            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(Values.shape_to_dims(shape)))
+            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
         elif mode == CodegenMode.CPP:
-            vec.extend(
-                sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(Values.shape_to_dims(shape))
-            )
+            vec.extend(sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(index_value.storage_dim))
         else:
             raise NotImplementedError()
 

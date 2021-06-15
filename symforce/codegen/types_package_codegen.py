@@ -5,7 +5,7 @@ import tempfile
 from symforce import logger
 from symforce import types as T
 from symforce import python_util
-from symforce.values import Values
+from symforce.values import Values, IndexEntry
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
 
@@ -13,7 +13,7 @@ from symforce.codegen import codegen_util
 def generate_types(
     package_name: str,
     file_name: str,
-    values_indices: T.Mapping[str, T.Dict[str, T.Any]],
+    values_indices: T.Mapping[str, T.Dict[str, IndexEntry]],
     shared_types: T.Mapping[str, str] = None,
     scalar_type: str = "double",
     output_dir: T.Optional[str] = None,
@@ -155,8 +155,8 @@ def generate_types(
 
 def build_types_dict(
     package_name: str,
-    values_indices: T.Mapping[str, T.Dict[str, T.Any]],
-    shared_types: T.Mapping[str, str] = None,
+    values_indices: T.Mapping[str, T.Dict[str, IndexEntry]],
+    shared_types: T.Optional[T.Mapping[str, str]] = None,
 ) -> T.Dict[str, T.Dict[str, T.Any]]:
     """
     Compute the structure of the types we need to generate for the given Values.
@@ -185,24 +185,26 @@ def typename_from_key(key: str, shared_types: T.Mapping[str, str]) -> str:
     return shared_types.get(key, key.replace(".", "_") + "_t")
 
 
-def get_subvalues_from_list_index(list_index: T.Dict[str, T.Any]) -> T.Optional[T.Dict[str, T.Any]]:
+def get_subvalues_from_list_index(
+    list_index: T.Dict[str, IndexEntry]
+) -> T.Optional[T.Dict[str, IndexEntry]]:
     """
     Returns index of Values object if base element of list is a Values object,
     otherwise returns None
     """
     index_element = list(list_index.values())[0]
-    element_type = index_element[1]
-    element_index = index_element[3]
-    if element_type == "Values":
-        return element_index
-    elif element_type == "List":
-        return get_subvalues_from_list_index(element_index)
+    if index_element.datatype == "Values":
+        assert index_element.item_index is not None
+        return index_element.item_index
+    elif index_element.datatype == "List":
+        assert index_element.item_index is not None
+        return get_subvalues_from_list_index(index_element.item_index)
     return None
 
 
 def _fill_types_dict_recursive(
     key: str,
-    index: T.Dict,
+    index: T.Dict[str, IndexEntry],
     package_name: str,
     shared_types: T.Mapping[str, str],
     types_dict: T.Dict[str, T.Dict[str, T.Any]],
@@ -220,23 +222,25 @@ def _fill_types_dict_recursive(
     data["full_typename"] = typename if "." in typename else ".".join([package_name, typename])
 
     data["index"] = index
-    data["storage_dims"] = {key: np.prod(info[2]) for key, info in index.items()}
+    data["storage_dims"] = {key: info.storage_dim for key, info in index.items()}
 
     # Process child types
     data["subtypes"] = {}
-    for subkey, (_, datatype, _, item_index) in index.items():
+    for subkey, entry in index.items():
         if key in shared_types and "." in shared_types[key]:
             # This is a shared type. Don't generate any subtypes.
             continue
-        if datatype == "Values":
-            element_index = item_index
-        elif datatype == "List" and (
-            list(item_index.values())[0][1] == "Values" or list(item_index.values())[0][1] == "List"
-        ):
-            # Assumes all elements in list are the same type as the first
-            element_index = get_subvalues_from_list_index(item_index)
-            if element_index is None:
-                # Not a list of Values
+        if entry.datatype == "Values":
+            element_index = entry.item_index
+        elif entry.datatype == "List":
+            assert entry.item_index is not None
+            if list(entry.item_index.values())[0].datatype in ["Values", "List"]:
+                # Assumes all elements in list are the same type as the first
+                element_index = get_subvalues_from_list_index(entry.item_index)
+                if element_index is None:
+                    # Not a list of Values
+                    continue
+            else:
                 continue
         else:
             continue
@@ -244,6 +248,7 @@ def _fill_types_dict_recursive(
         full_subkey = f"{key}.{subkey}"
         data["subtypes"][subkey] = typename_from_key(full_subkey, shared_types)
 
+        assert element_index is not None
         _fill_types_dict_recursive(
             key=full_subkey,
             index=element_index,

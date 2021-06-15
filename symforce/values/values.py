@@ -14,6 +14,7 @@ from symforce import ops
 from symforce.ops.interfaces import Storage
 
 from .attr_accessor import AttrAccessor
+from .index_entry import IndexEntry
 
 
 class Values:
@@ -102,7 +103,7 @@ class Values:
     # Serialization
     # -------------------------------------------------------------------------
 
-    def index(self) -> T.Dict[str, T.List[T.Any]]:
+    def index(self) -> T.Dict[str, IndexEntry]:
         """
         Returns the index with structural information to reconstruct this values
         in :func:`from_storage()`.
@@ -110,52 +111,48 @@ class Values:
         return Values.get_index_from_items(self.items())
 
     @staticmethod
-    def get_index_from_items(items: T.Iterable[T.Tuple[str, T.Any]]) -> T.Dict[str, T.List[T.Any]]:
+    def get_index_from_items(items: T.Iterable[T.Tuple[str, T.Any]]) -> T.Dict[str, IndexEntry]:
         """
         Builds an index from a list of key/value pairs of objects. This function
         can be called recursively either for the items of a Values object or for the
         items of a list (using e.g. zip(my_keys, my_list), where my_keys are some
         arbitrary names for each element in my_list)
         """
-        inx = 0
+        offset = 0
         index_dict = collections.OrderedDict()
-        shape: T.Tuple = tuple()
         for name, value in items:
-            vec = ops.StorageOps.to_storage(value)
+
+            index_entry_helper = lambda datatype, shape=None, item_index=None: IndexEntry(
+                offset=offset,
+                storage_dim=ops.StorageOps.storage_dim(value),
+                datatype=datatype,
+                shape=shape,
+                item_index=item_index,
+            )
+
             if isinstance(value, Values):
-                datatype = "Values"
-                shape = (len(vec),)
-                item_index = value.index()
+                entry = index_entry_helper("Values", item_index=value.index())
             elif isinstance(value, np.ndarray):
-                datatype = "np.ndarray"
-                shape = value.shape
-                item_index = {}
+                entry = index_entry_helper("np.ndarray", shape=value.shape)
             elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
-                datatype = "Scalar"
-                shape = tuple()
-                item_index = {}
-            elif hasattr(value, "shape"):
-                datatype = "Matrix"
-                shape = value.shape
-                assert len(shape) > 0
-                item_index = {}
+                entry = index_entry_helper("Scalar")
+            elif isinstance(value, geo.Matrix):
+                assert len(value.shape) > 0
+                entry = index_entry_helper("Matrix", shape=value.shape)
             elif isinstance(value, Storage):
-                datatype = value.__class__.__name__
-                shape = (len(vec),)
-                item_index = {}
+                entry = index_entry_helper(value.__class__.__name__)
             elif isinstance(value, (list, tuple)):
                 assert all([type(v) == type(value[0]) for v in value])
-                datatype = "List"
-                shape = (len(vec),)
                 name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
+                entry = index_entry_helper("List", item_index=item_index)
             else:
                 raise NotImplementedError(
                     'Unknown type: "{}" for key "{}"'.format(type(value), name)
                 )
 
-            index_dict[name] = [inx, datatype, shape, item_index]
-            inx += Values.shape_to_dims(shape)
+            index_dict[name] = entry
+            offset += entry.storage_dim
 
         return index_dict
 
@@ -249,7 +246,7 @@ class Values:
 
     @classmethod
     def from_storage_index(
-        cls, vector_values: T.List[T.Scalar], indices: T.Mapping[str, T.List[T.Any]]
+        cls, vector_values: T.List[T.Scalar], indices: T.Mapping[str, IndexEntry]
     ) -> Values:
         """
         Takes a vectorized values and corresponding indices and reconstructs the original form.
@@ -260,30 +257,34 @@ class Values:
             indices (dict(str, list)): Dict of key to the source (index, datatype, shape, item_index)
         """
         values = cls()
-        for name, (inx, datatype, shape, item_index) in indices.items():
-            vec = vector_values[inx : inx + cls.shape_to_dims(shape)]
+        for name, entry in indices.items():
+            vec = vector_values[entry.offset : entry.offset + entry.storage_dim]
 
-            if datatype == "Scalar":
+            if entry.datatype == "Scalar":
                 values[name] = vec[0]
-            elif datatype == "Matrix":
-                values[name] = geo.Matrix(vec).reshape(*shape)
-            elif datatype == "Values":
-                values[name] = cls.from_storage_index(vec, item_index)
-            elif datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
-                values[name] = getattr(geo, datatype).from_storage(vec)
-            elif datatype in {c.__name__ for c in cam.CameraCal.__subclasses__()}:
-                values[name] = getattr(cam, datatype).from_storage(vec)
-            elif datatype == "np.ndarray":
-                values[name] = np.array(vec).reshape(*shape)
-            elif datatype == "List":
-                values[name] = [v for v in cls.from_storage_index(vec, item_index).values()]
+            elif entry.datatype == "Matrix":
+                assert entry.shape is not None
+                values[name] = geo.Matrix(vec).reshape(*entry.shape)
+            elif entry.datatype == "Values":
+                assert entry.item_index is not None
+                values[name] = cls.from_storage_index(vec, entry.item_index)
+            elif entry.datatype in {"Rot2", "Rot3", "Pose2", "Pose3", "Complex", "Quaternion"}:
+                values[name] = getattr(geo, entry.datatype).from_storage(vec)
+            elif entry.datatype in {c.__name__ for c in cam.CameraCal.__subclasses__()}:
+                values[name] = getattr(cam, entry.datatype).from_storage(vec)
+            elif entry.datatype == "np.ndarray":
+                assert entry.shape is not None
+                values[name] = np.array(vec).reshape(*entry.shape)
+            elif entry.datatype == "List":
+                assert entry.item_index is not None
+                values[name] = [v for v in cls.from_storage_index(vec, entry.item_index).values()]
             else:
-                raise NotImplementedError(f'Unknown datatype: "{datatype}"')
+                raise NotImplementedError(f'Unknown datatype: "{entry.datatype}"')
 
         return values
 
     def from_storage(
-        self, elements: T.List[T.Scalar], index: T.Dict[str, T.List[T.Any]] = None
+        self, elements: T.List[T.Scalar], index: T.Dict[str, IndexEntry] = None
     ) -> Values:
         """
         Create a Values object with the same structure as self but constructed
@@ -580,13 +581,6 @@ class Values:
             self[self._remove_scope(symbol.name)] = symbol
         else:
             raise NameError("Expr of type {} has no .name".format(type(value)))
-
-    @staticmethod
-    def shape_to_dims(shape: T.Sequence[int]) -> int:
-        """
-        Compute the number of entries in an object of this shape.
-        """
-        return max(1, T.cast(int, np.prod(shape)))
 
     # -------------------------------------------------------------------------
     # Miscellaneous helpers

@@ -7,16 +7,16 @@ package {{ name }};
 
 struct {{ typename }} {
   {% set info = types_dict[typename] -%}
-  {% for key, (inx, datatype, shape, item_index) in info['index'].items() %}
-    {% if datatype == 'Values' %}
+  {% for key, entry in info['index'].items() %}
+    {% if entry.datatype == 'Values' %}
   {{ info['subtypes'][key] }} {{ key }};
-    {% elif datatype == 'Scalar' %}
+    {% elif entry.datatype == 'Scalar' %}
   {{ scalar_type }} {{ key }};
-    {% elif datatype == 'List' %}
+    {% elif entry.datatype == 'List' %}
       {% if key in info['subtypes'].keys() %}
-  {{ info['subtypes'][key] }} {{ key }}{{ util.get_list_dims(item_index) }};
+  {{ info['subtypes'][key] }} {{ key }}{{ util.get_list_dims(entry.item_index) }};
       {% else %}
-  {{ util.get_list_type(scalar_type, item_index) }} {{ key }}{{ util.get_list_dims(item_index) }};
+  {{ util.get_list_type(scalar_type, entry.item_index) }} {{ key }}{{ util.get_list_dims(entry.item_index) }};
       {% endif %}
     {% else %}
       {% if not use_eigen_types %}
