@@ -34,21 +34,21 @@ Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
   // Intermediate terms (11)
   const Scalar _tmp0 = -2 * (_self[1] * _self[1]);
   const Scalar _tmp1 = 1 - 2 * (_self[2] * _self[2]);
-  const Scalar _tmp2 = 2 * _self[2];
-  const Scalar _tmp3 = _self[3] * _tmp2;
-  const Scalar _tmp4 = 2 * _self[0];
-  const Scalar _tmp5 = _self[1] * _tmp4;
+  const Scalar _tmp2 = 2 * _self[0];
+  const Scalar _tmp3 = _self[1] * _tmp2;
+  const Scalar _tmp4 = 2 * _self[2];
+  const Scalar _tmp5 = _self[3] * _tmp4;
   const Scalar _tmp6 = 2 * _self[1] * _self[3];
-  const Scalar _tmp7 = _self[2] * _tmp4;
+  const Scalar _tmp7 = _self[2] * _tmp2;
   const Scalar _tmp8 = -2 * (_self[0] * _self[0]);
-  const Scalar _tmp9 = _self[3] * _tmp4;
-  const Scalar _tmp10 = _self[1] * _tmp2;
+  const Scalar _tmp9 = _self[3] * _tmp2;
+  const Scalar _tmp10 = _self[1] * _tmp4;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 3> _res;
 
   _res(0, 0) = _tmp0 + _tmp1;
-  _res(0, 1) = -_tmp3 + _tmp5;
+  _res(0, 1) = _tmp3 - _tmp5;
   _res(0, 2) = _tmp6 + _tmp7;
   _res(1, 0) = _tmp3 + _tmp5;
   _res(1, 1) = _tmp1 + _tmp8;

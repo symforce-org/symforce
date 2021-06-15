@@ -78,20 +78,20 @@ sym::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Pose3<Scalar>& a,
   const Scalar _tmp0 = std::sqrt((epsilon * epsilon) + (vec(0, 0) * vec(0, 0)) +
                                  (vec(1, 0) * vec(1, 0)) + (vec(2, 0) * vec(2, 0)));
   const Scalar _tmp1 = (1.0 / 2.0) * _tmp0;
-  const Scalar _tmp2 = std::sin(_tmp1) / _tmp0;
-  const Scalar _tmp3 = _a[1] * _tmp2;
-  const Scalar _tmp4 = _a[2] * _tmp2;
-  const Scalar _tmp5 = std::cos(_tmp1);
-  const Scalar _tmp6 = _a[3] * _tmp2;
-  const Scalar _tmp7 = _a[0] * _tmp2;
+  const Scalar _tmp2 = std::cos(_tmp1);
+  const Scalar _tmp3 = std::sin(_tmp1) / _tmp0;
+  const Scalar _tmp4 = _a[2] * _tmp3;
+  const Scalar _tmp5 = _a[1] * _tmp3;
+  const Scalar _tmp6 = _a[3] * _tmp3;
+  const Scalar _tmp7 = _a[0] * _tmp3;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 7, 1> _res;
 
-  _res[0] = _a[0] * _tmp5 + _tmp3 * vec(2, 0) - _tmp4 * vec(1, 0) + _tmp6 * vec(0, 0);
-  _res[1] = _a[1] * _tmp5 + _tmp4 * vec(0, 0) + _tmp6 * vec(1, 0) - _tmp7 * vec(2, 0);
-  _res[2] = _a[2] * _tmp5 - _tmp3 * vec(0, 0) + _tmp6 * vec(2, 0) + _tmp7 * vec(1, 0);
-  _res[3] = _a[3] * _tmp5 - _tmp3 * vec(1, 0) - _tmp4 * vec(2, 0) - _tmp7 * vec(0, 0);
+  _res[0] = _a[0] * _tmp2 - _tmp4 * vec(1, 0) + _tmp5 * vec(2, 0) + _tmp6 * vec(0, 0);
+  _res[1] = _a[1] * _tmp2 + _tmp4 * vec(0, 0) + _tmp6 * vec(1, 0) - _tmp7 * vec(2, 0);
+  _res[2] = _a[2] * _tmp2 - _tmp5 * vec(0, 0) + _tmp6 * vec(2, 0) + _tmp7 * vec(1, 0);
+  _res[3] = _a[3] * _tmp2 - _tmp4 * vec(2, 0) - _tmp5 * vec(1, 0) - _tmp7 * vec(0, 0);
   _res[4] = _a[4] + vec(3, 0);
   _res[5] = _a[5] + vec(4, 0);
   _res[6] = _a[6] + vec(5, 0);

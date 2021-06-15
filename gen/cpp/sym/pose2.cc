@@ -34,16 +34,16 @@ Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::InverseCompose(
 
   // Intermediate terms (5)
   const Scalar _tmp0 = 1.0 / ((_self[0] * _self[0]) + (_self[1] * _self[1]));
-  const Scalar _tmp1 = _self[3] * _tmp0;
-  const Scalar _tmp2 = _self[2] * _tmp0;
-  const Scalar _tmp3 = _tmp0 * point(1, 0);
-  const Scalar _tmp4 = _tmp0 * point(0, 0);
+  const Scalar _tmp1 = _self[2] * _tmp0;
+  const Scalar _tmp2 = _self[3] * _tmp0;
+  const Scalar _tmp3 = _tmp0 * point(0, 0);
+  const Scalar _tmp4 = _tmp0 * point(1, 0);
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;
 
-  _res(0, 0) = -_self[0] * _tmp2 + _self[0] * _tmp4 - _self[1] * _tmp1 + _self[1] * _tmp3;
-  _res(1, 0) = -_self[0] * _tmp1 + _self[0] * _tmp3 + _self[1] * _tmp2 - _self[1] * _tmp4;
+  _res(0, 0) = -_self[0] * _tmp1 + _self[0] * _tmp3 - _self[1] * _tmp2 + _self[1] * _tmp4;
+  _res(1, 0) = -_self[0] * _tmp2 + _self[0] * _tmp4 + _self[1] * _tmp1 - _self[1] * _tmp3;
 
   return _res;
 }

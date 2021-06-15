@@ -19,7 +19,7 @@ from symforce.codegen import Codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
 from symforce.codegen.codegen_language_args import PythonLanguageArgs
-from symforce.test_util import TestCase, slow_on_sympy, disable_on_bionic
+from symforce.test_util import TestCase, slow_on_sympy
 from symforce.values import Values
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -207,7 +207,6 @@ class SymforceCodegenTest(TestCase):
             if logger.level != logging.DEBUG:
                 python_util.remove_if_exists(codegen_data["output_dir"])
 
-    @disable_on_bionic
     def test_function_codegen_python(self) -> None:
 
         # Create the specification
@@ -315,7 +314,6 @@ class SymforceCodegenTest(TestCase):
             if logger.level != logging.DEBUG:
                 python_util.remove_if_exists(codegen_data["output_dir"])
 
-    @disable_on_bionic
     def test_function_codegen_cpp(self) -> None:
 
         # Create the specification
@@ -333,7 +331,6 @@ class SymforceCodegenTest(TestCase):
         if logger.level != logging.DEBUG:
             python_util.remove_if_exists(az_el_codegen_data["output_dir"])
 
-    @disable_on_bionic
     def test_cpp_nan(self) -> None:
         inputs = Values()
         inputs["R1"] = geo.Rot3.symbolic("R1")
@@ -609,7 +606,6 @@ class SymforceCodegenTest(TestCase):
             mode=CodegenMode.CPP,
         )
 
-    @disable_on_bionic
     def test_create_with_derivatives(self) -> None:
         """
         Tests:

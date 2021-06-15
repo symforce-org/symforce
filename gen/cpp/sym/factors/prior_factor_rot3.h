@@ -35,136 +35,136 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
   const Eigen::Matrix<Scalar, 4, 1>& _prior = prior.Data();
 
   // Intermediate terms (68)
-  const Scalar _tmp0 = -_prior[0] * _value[1] + _prior[1] * _value[0] - _prior[2] * _value[3] +
-                       _prior[3] * _value[2];
-  const Scalar _tmp1 =
+  const Scalar _tmp0 =
       _prior[0] * _value[0] + _prior[1] * _value[1] + _prior[2] * _value[2] + _prior[3] * _value[3];
-  const Scalar _tmp2 = (((_tmp1) > 0) - ((_tmp1) < 0));
-  const Scalar _tmp3 = 2 * std::min<Scalar>(0, _tmp2) + 1;
-  const Scalar _tmp4 = std::fabs(_tmp1);
-  const Scalar _tmp5 = 1 - epsilon;
-  const Scalar _tmp6 = std::min<Scalar>(_tmp4, _tmp5);
-  const Scalar _tmp7 = std::acos(_tmp6);
-  const Scalar _tmp8 = 1 - (_tmp6 * _tmp6);
-  const Scalar _tmp9 = 2 * _tmp7 / std::sqrt(_tmp8);
-  const Scalar _tmp10 = _tmp3 * _tmp9;
-  const Scalar _tmp11 = _tmp0 * _tmp10;
-  const Scalar _tmp12 = _tmp3 * (_prior[0] * _value[2] - _prior[1] * _value[3] -
-                                 _prior[2] * _value[0] + _prior[3] * _value[1]);
-  const Scalar _tmp13 = _tmp12 * sqrt_info(0, 1);
-  const Scalar _tmp14 = -_prior[0] * _value[3] - _prior[1] * _value[2] + _prior[2] * _value[1] +
+  const Scalar _tmp1 = (((_tmp0) > 0) - ((_tmp0) < 0));
+  const Scalar _tmp2 = 2 * std::min<Scalar>(0, _tmp1) + 1;
+  const Scalar _tmp3 = _tmp2 * (_prior[0] * _value[2] - _prior[1] * _value[3] -
+                                _prior[2] * _value[0] + _prior[3] * _value[1]);
+  const Scalar _tmp4 = _tmp3 * sqrt_info(0, 1);
+  const Scalar _tmp5 = std::fabs(_tmp0);
+  const Scalar _tmp6 = 1 - epsilon;
+  const Scalar _tmp7 = std::min<Scalar>(_tmp5, _tmp6);
+  const Scalar _tmp8 = std::acos(_tmp7);
+  const Scalar _tmp9 = 1 - (_tmp7 * _tmp7);
+  const Scalar _tmp10 = 2 * _tmp8 / std::sqrt(_tmp9);
+  const Scalar _tmp11 = -_prior[0] * _value[3] - _prior[1] * _value[2] + _prior[2] * _value[1] +
                         _prior[3] * _value[0];
-  const Scalar _tmp15 = _tmp10 * sqrt_info(0, 0);
-  const Scalar _tmp16 = _tmp12 * _tmp9;
-  const Scalar _tmp17 = _tmp10 * sqrt_info(1, 0);
-  const Scalar _tmp18 = _tmp10 * sqrt_info(2, 0);
-  const Scalar _tmp19 = _prior[1] * _tmp10;
-  const Scalar _tmp20 = _tmp14 * _tmp3;
-  const Scalar _tmp21 = _tmp20 * sqrt_info(0, 0);
-  const Scalar _tmp22 = _tmp2 * ((((-_tmp4 + _tmp5) > 0) - ((-_tmp4 + _tmp5) < 0)) + 1);
-  const Scalar _tmp23 = _tmp22 * _tmp6 * _tmp7 / (_tmp8 * std::sqrt(_tmp8));
-  const Scalar _tmp24 = _prior[3] * _tmp23;
-  const Scalar _tmp25 = _tmp22 / _tmp8;
-  const Scalar _tmp26 = _prior[3] * _tmp25;
-  const Scalar _tmp27 = _tmp0 * _tmp3;
-  const Scalar _tmp28 = _tmp27 * sqrt_info(0, 2);
-  const Scalar _tmp29 = _prior[2] * _tmp10;
-  const Scalar _tmp30 = -1.0 / 2.0 * _prior[0] * _tmp15 + (1.0 / 2.0) * _tmp13 * _tmp24 -
-                        1.0 / 2.0 * _tmp13 * _tmp26 - 1.0 / 2.0 * _tmp19 * sqrt_info(0, 1) +
-                        (1.0 / 2.0) * _tmp21 * _tmp24 - 1.0 / 2.0 * _tmp21 * _tmp26 +
-                        (1.0 / 2.0) * _tmp24 * _tmp28 - 1.0 / 2.0 * _tmp26 * _tmp28 -
-                        1.0 / 2.0 * _tmp29 * sqrt_info(0, 2);
-  const Scalar _tmp31 = _prior[2] * _tmp25;
-  const Scalar _tmp32 = _prior[2] * _tmp23;
-  const Scalar _tmp33 = _prior[0] * _tmp10;
-  const Scalar _tmp34 = _prior[3] * _tmp10;
-  const Scalar _tmp35 = -_tmp13 * _tmp31 + _tmp13 * _tmp32 - _tmp19 * sqrt_info(0, 0) -
-                        _tmp21 * _tmp31 + _tmp21 * _tmp32 - _tmp28 * _tmp31 + _tmp28 * _tmp32 +
-                        _tmp33 * sqrt_info(0, 1) + _tmp34 * sqrt_info(0, 2);
-  const Scalar _tmp36 = (1.0 / 2.0) * _tmp35;
-  const Scalar _tmp37 = _prior[1] * _tmp23;
-  const Scalar _tmp38 = _prior[1] * _tmp25;
-  const Scalar _tmp39 = _tmp25 * _tmp28;
-  const Scalar _tmp40 = -_prior[1] * _tmp39 + _tmp13 * _tmp37 - _tmp13 * _tmp38 + _tmp21 * _tmp37 -
-                        _tmp21 * _tmp38 + _tmp28 * _tmp37 + _tmp29 * sqrt_info(0, 0) -
-                        _tmp33 * sqrt_info(0, 2) + _tmp34 * sqrt_info(0, 1);
+  const Scalar _tmp12 = _tmp10 * _tmp2;
+  const Scalar _tmp13 = _tmp12 * sqrt_info(0, 0);
+  const Scalar _tmp14 = -_prior[0] * _value[1] + _prior[1] * _value[0] - _prior[2] * _value[3] +
+                        _prior[3] * _value[2];
+  const Scalar _tmp15 = _tmp12 * _tmp14;
+  const Scalar _tmp16 = _tmp10 * _tmp3;
+  const Scalar _tmp17 = _tmp12 * sqrt_info(1, 0);
+  const Scalar _tmp18 = _tmp12 * sqrt_info(2, 0);
+  const Scalar _tmp19 = _tmp11 * _tmp2;
+  const Scalar _tmp20 = _tmp19 * sqrt_info(0, 0);
+  const Scalar _tmp21 = _tmp1 * ((((-_tmp5 + _tmp6) > 0) - ((-_tmp5 + _tmp6) < 0)) + 1);
+  const Scalar _tmp22 = _tmp21 * _tmp7 * _tmp8 / (_tmp9 * std::sqrt(_tmp9));
+  const Scalar _tmp23 = _prior[3] * _tmp22;
+  const Scalar _tmp24 = _tmp21 / _tmp9;
+  const Scalar _tmp25 = _prior[3] * _tmp24;
+  const Scalar _tmp26 = _tmp14 * _tmp2;
+  const Scalar _tmp27 = _tmp26 * sqrt_info(0, 2);
+  const Scalar _tmp28 = _prior[2] * _tmp12;
+  const Scalar _tmp29 = _prior[1] * _tmp12;
+  const Scalar _tmp30 = -1.0 / 2.0 * _prior[0] * _tmp13 + (1.0 / 2.0) * _tmp20 * _tmp23 -
+                        1.0 / 2.0 * _tmp20 * _tmp25 + (1.0 / 2.0) * _tmp23 * _tmp27 +
+                        (1.0 / 2.0) * _tmp23 * _tmp4 - 1.0 / 2.0 * _tmp25 * _tmp27 -
+                        1.0 / 2.0 * _tmp25 * _tmp4 - 1.0 / 2.0 * _tmp28 * sqrt_info(0, 2) -
+                        1.0 / 2.0 * _tmp29 * sqrt_info(0, 1);
+  const Scalar _tmp31 = _prior[1] * _tmp22;
+  const Scalar _tmp32 = _tmp24 * _tmp27;
+  const Scalar _tmp33 = _prior[1] * _tmp24;
+  const Scalar _tmp34 = _prior[3] * _tmp12;
+  const Scalar _tmp35 = _prior[0] * _tmp12;
+  const Scalar _tmp36 = -_prior[1] * _tmp32 + _tmp20 * _tmp31 - _tmp20 * _tmp33 + _tmp27 * _tmp31 +
+                        _tmp28 * sqrt_info(0, 0) + _tmp31 * _tmp4 - _tmp33 * _tmp4 +
+                        _tmp34 * sqrt_info(0, 1) - _tmp35 * sqrt_info(0, 2);
+  const Scalar _tmp37 = (1.0 / 2.0) * _tmp36;
+  const Scalar _tmp38 = _prior[2] * _tmp22;
+  const Scalar _tmp39 = _prior[2] * _tmp24;
+  const Scalar _tmp40 = _tmp20 * _tmp38 - _tmp20 * _tmp39 + _tmp27 * _tmp38 - _tmp27 * _tmp39 -
+                        _tmp29 * sqrt_info(0, 0) + _tmp34 * sqrt_info(0, 2) +
+                        _tmp35 * sqrt_info(0, 1) + _tmp38 * _tmp4 - _tmp39 * _tmp4;
   const Scalar _tmp41 = (1.0 / 2.0) * _tmp40;
-  const Scalar _tmp42 = _prior[0] * _tmp25;
-  const Scalar _tmp43 = _prior[0] * _tmp23;
-  const Scalar _tmp44 = -_prior[0] * _tmp39 - _tmp13 * _tmp42 + _tmp13 * _tmp43 +
-                        _tmp19 * sqrt_info(0, 2) - _tmp21 * _tmp42 + _tmp21 * _tmp43 +
-                        _tmp28 * _tmp43 - _tmp29 * sqrt_info(0, 1) + _tmp34 * sqrt_info(0, 0);
+  const Scalar _tmp42 = _prior[0] * _tmp22;
+  const Scalar _tmp43 = _prior[0] * _tmp24;
+  const Scalar _tmp44 = -_prior[0] * _tmp32 + _tmp20 * _tmp42 - _tmp20 * _tmp43 + _tmp27 * _tmp42 -
+                        _tmp28 * sqrt_info(0, 1) + _tmp29 * sqrt_info(0, 2) +
+                        _tmp34 * sqrt_info(0, 0) + _tmp4 * _tmp42 - _tmp4 * _tmp43;
   const Scalar _tmp45 = (1.0 / 2.0) * _tmp44;
   const Scalar _tmp46 = (1.0 / 2.0) * _value[0];
   const Scalar _tmp47 = (1.0 / 2.0) * _value[2];
-  const Scalar _tmp48 = _tmp20 * sqrt_info(1, 0);
-  const Scalar _tmp49 = _tmp12 * sqrt_info(1, 1);
-  const Scalar _tmp50 = _tmp27 * sqrt_info(1, 2);
-  const Scalar _tmp51 = -1.0 / 2.0 * _prior[0] * _tmp17 - 1.0 / 2.0 * _tmp19 * sqrt_info(1, 1) +
-                        (1.0 / 2.0) * _tmp24 * _tmp48 + (1.0 / 2.0) * _tmp24 * _tmp49 +
-                        (1.0 / 2.0) * _tmp24 * _tmp50 - 1.0 / 2.0 * _tmp26 * _tmp48 -
-                        1.0 / 2.0 * _tmp26 * _tmp49 - 1.0 / 2.0 * _tmp26 * _tmp50 -
-                        1.0 / 2.0 * _tmp29 * sqrt_info(1, 2);
-  const Scalar _tmp52 = -_tmp19 * sqrt_info(1, 0) - _tmp31 * _tmp48 - _tmp31 * _tmp49 -
-                        _tmp31 * _tmp50 + _tmp32 * _tmp48 + _tmp32 * _tmp49 + _tmp32 * _tmp50 +
-                        _tmp33 * sqrt_info(1, 1) + _tmp34 * sqrt_info(1, 2);
+  const Scalar _tmp48 = _tmp19 * sqrt_info(1, 0);
+  const Scalar _tmp49 = _tmp26 * sqrt_info(1, 2);
+  const Scalar _tmp50 = _tmp3 * sqrt_info(1, 1);
+  const Scalar _tmp51 = -1.0 / 2.0 * _prior[0] * _tmp17 + (1.0 / 2.0) * _tmp23 * _tmp48 +
+                        (1.0 / 2.0) * _tmp23 * _tmp49 + (1.0 / 2.0) * _tmp23 * _tmp50 -
+                        1.0 / 2.0 * _tmp25 * _tmp48 - 1.0 / 2.0 * _tmp25 * _tmp49 -
+                        1.0 / 2.0 * _tmp25 * _tmp50 - 1.0 / 2.0 * _tmp28 * sqrt_info(1, 2) -
+                        1.0 / 2.0 * _tmp29 * sqrt_info(1, 1);
+  const Scalar _tmp52 = _tmp28 * sqrt_info(1, 0) + _tmp31 * _tmp48 + _tmp31 * _tmp49 +
+                        _tmp31 * _tmp50 - _tmp33 * _tmp48 - _tmp33 * _tmp49 - _tmp33 * _tmp50 +
+                        _tmp34 * sqrt_info(1, 1) - _tmp35 * sqrt_info(1, 2);
   const Scalar _tmp53 = (1.0 / 2.0) * _tmp52;
-  const Scalar _tmp54 = _tmp29 * sqrt_info(1, 0) - _tmp33 * sqrt_info(1, 2) +
-                        _tmp34 * sqrt_info(1, 1) + _tmp37 * _tmp48 + _tmp37 * _tmp49 +
-                        _tmp37 * _tmp50 - _tmp38 * _tmp48 - _tmp38 * _tmp49 - _tmp38 * _tmp50;
+  const Scalar _tmp54 = -_tmp28 * sqrt_info(1, 1) + _tmp29 * sqrt_info(1, 2) +
+                        _tmp34 * sqrt_info(1, 0) + _tmp42 * _tmp48 + _tmp42 * _tmp49 +
+                        _tmp42 * _tmp50 - _tmp43 * _tmp48 - _tmp43 * _tmp49 - _tmp43 * _tmp50;
   const Scalar _tmp55 = (1.0 / 2.0) * _tmp54;
-  const Scalar _tmp56 = _tmp19 * sqrt_info(1, 2) - _tmp29 * sqrt_info(1, 1) +
-                        _tmp34 * sqrt_info(1, 0) - _tmp42 * _tmp48 - _tmp42 * _tmp49 -
-                        _tmp42 * _tmp50 + _tmp43 * _tmp48 + _tmp43 * _tmp49 + _tmp43 * _tmp50;
+  const Scalar _tmp56 = -_tmp29 * sqrt_info(1, 0) + _tmp34 * sqrt_info(1, 2) +
+                        _tmp35 * sqrt_info(1, 1) + _tmp38 * _tmp48 + _tmp38 * _tmp49 +
+                        _tmp38 * _tmp50 - _tmp39 * _tmp48 - _tmp39 * _tmp49 - _tmp39 * _tmp50;
   const Scalar _tmp57 = (1.0 / 2.0) * _tmp56;
-  const Scalar _tmp58 = _tmp12 * sqrt_info(2, 1);
-  const Scalar _tmp59 = _tmp20 * sqrt_info(2, 0);
-  const Scalar _tmp60 = _tmp27 * sqrt_info(2, 2);
-  const Scalar _tmp61 = -_prior[0] * _tmp18 - _tmp19 * sqrt_info(2, 1) + _tmp24 * _tmp58 +
-                        _tmp24 * _tmp59 + _tmp24 * _tmp60 - _tmp26 * _tmp58 - _tmp26 * _tmp59 -
-                        _tmp26 * _tmp60 - _tmp29 * sqrt_info(2, 2);
-  const Scalar _tmp62 = -_tmp19 * sqrt_info(2, 0) - _tmp31 * _tmp58 - _tmp31 * _tmp59 -
-                        _tmp31 * _tmp60 + _tmp32 * _tmp58 + _tmp32 * _tmp59 + _tmp32 * _tmp60 +
-                        _tmp33 * sqrt_info(2, 1) + _tmp34 * sqrt_info(2, 2);
-  const Scalar _tmp63 = (1.0 / 2.0) * _tmp62;
-  const Scalar _tmp64 = (1.0 / 2.0) * _prior[2] * _tmp18 - 1.0 / 2.0 * _tmp33 * sqrt_info(2, 2) +
-                        (1.0 / 2.0) * _tmp34 * sqrt_info(2, 1) + (1.0 / 2.0) * _tmp37 * _tmp58 +
-                        (1.0 / 2.0) * _tmp37 * _tmp59 + (1.0 / 2.0) * _tmp37 * _tmp60 -
-                        1.0 / 2.0 * _tmp38 * _tmp58 - 1.0 / 2.0 * _tmp38 * _tmp59 -
-                        1.0 / 2.0 * _tmp38 * _tmp60;
-  const Scalar _tmp65 = _tmp19 * sqrt_info(2, 2) - _tmp29 * sqrt_info(2, 1) +
-                        _tmp34 * sqrt_info(2, 0) - _tmp42 * _tmp58 - _tmp42 * _tmp59 -
-                        _tmp42 * _tmp60 + _tmp43 * _tmp58 + _tmp43 * _tmp59 + _tmp43 * _tmp60;
-  const Scalar _tmp66 = (1.0 / 2.0) * _tmp65;
-  const Scalar _tmp67 = (1.0 / 2.0) * _tmp61;
+  const Scalar _tmp58 = _tmp19 * sqrt_info(2, 0);
+  const Scalar _tmp59 = _tmp26 * sqrt_info(2, 2);
+  const Scalar _tmp60 = _tmp3 * sqrt_info(2, 1);
+  const Scalar _tmp61 = -_tmp28 * sqrt_info(2, 1) + _tmp29 * sqrt_info(2, 2) +
+                        _tmp34 * sqrt_info(2, 0) + _tmp42 * _tmp58 + _tmp42 * _tmp59 +
+                        _tmp42 * _tmp60 - _tmp43 * _tmp58 - _tmp43 * _tmp59 - _tmp43 * _tmp60;
+  const Scalar _tmp62 = (1.0 / 2.0) * _tmp61;
+  const Scalar _tmp63 = -_tmp29 * sqrt_info(2, 0) + _tmp34 * sqrt_info(2, 2) +
+                        _tmp35 * sqrt_info(2, 1) + _tmp38 * _tmp58 + _tmp38 * _tmp59 +
+                        _tmp38 * _tmp60 - _tmp39 * _tmp58 - _tmp39 * _tmp59 - _tmp39 * _tmp60;
+  const Scalar _tmp64 = (1.0 / 2.0) * _tmp63;
+  const Scalar _tmp65 = (1.0 / 2.0) * _prior[2] * _tmp18 + (1.0 / 2.0) * _tmp31 * _tmp58 +
+                        (1.0 / 2.0) * _tmp31 * _tmp59 + (1.0 / 2.0) * _tmp31 * _tmp60 -
+                        1.0 / 2.0 * _tmp33 * _tmp58 - 1.0 / 2.0 * _tmp33 * _tmp59 -
+                        1.0 / 2.0 * _tmp33 * _tmp60 + (1.0 / 2.0) * _tmp34 * sqrt_info(2, 1) -
+                        1.0 / 2.0 * _tmp35 * sqrt_info(2, 2);
+  const Scalar _tmp66 = -_prior[0] * _tmp18 + _tmp23 * _tmp58 + _tmp23 * _tmp59 + _tmp23 * _tmp60 -
+                        _tmp25 * _tmp58 - _tmp25 * _tmp59 - _tmp25 * _tmp60 -
+                        _tmp28 * sqrt_info(2, 2) - _tmp29 * sqrt_info(2, 1);
+  const Scalar _tmp67 = (1.0 / 2.0) * _tmp66;
 
   // Output terms (2)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp11 * sqrt_info(0, 2) + _tmp13 * _tmp9 + _tmp14 * _tmp15;
-    _res(1, 0) = _tmp11 * sqrt_info(1, 2) + _tmp14 * _tmp17 + _tmp16 * sqrt_info(1, 1);
-    _res(2, 0) = _tmp11 * sqrt_info(2, 2) + _tmp14 * _tmp18 + _tmp16 * sqrt_info(2, 1);
+    _res(0, 0) = _tmp10 * _tmp4 + _tmp11 * _tmp13 + _tmp15 * sqrt_info(0, 2);
+    _res(1, 0) = _tmp11 * _tmp17 + _tmp15 * sqrt_info(1, 2) + _tmp16 * sqrt_info(1, 1);
+    _res(2, 0) = _tmp11 * _tmp18 + _tmp15 * sqrt_info(2, 2) + _tmp16 * sqrt_info(2, 1);
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _jacobian = (*jacobian);
 
     _jacobian(0, 0) =
-        -_tmp30 * _value[0] - _tmp36 * _value[1] + _tmp41 * _value[2] + _tmp45 * _value[3];
-    _jacobian(0, 1) = -_tmp30 * _value[1] + _tmp35 * _tmp46 + _tmp41 * _value[3] - _tmp44 * _tmp47;
+        -_tmp30 * _value[0] + _tmp37 * _value[2] - _tmp41 * _value[1] + _tmp45 * _value[3];
+    _jacobian(0, 1) = -_tmp30 * _value[1] + _tmp37 * _value[3] + _tmp40 * _tmp46 - _tmp44 * _tmp47;
     _jacobian(0, 2) =
-        -_tmp30 * _value[2] + _tmp36 * _value[3] - _tmp40 * _tmp46 + _tmp45 * _value[1];
+        -_tmp30 * _value[2] - _tmp36 * _tmp46 + _tmp41 * _value[3] + _tmp45 * _value[1];
     _jacobian(1, 0) =
-        -_tmp51 * _value[0] - _tmp53 * _value[1] + _tmp55 * _value[2] + _tmp57 * _value[3];
-    _jacobian(1, 1) = _tmp46 * _tmp52 - _tmp47 * _tmp56 - _tmp51 * _value[1] + _tmp55 * _value[3];
+        -_tmp51 * _value[0] + _tmp53 * _value[2] + _tmp55 * _value[3] - _tmp57 * _value[1];
+    _jacobian(1, 1) = _tmp46 * _tmp56 - _tmp47 * _tmp54 - _tmp51 * _value[1] + _tmp53 * _value[3];
     _jacobian(1, 2) =
-        -_tmp46 * _tmp54 - _tmp51 * _value[2] + _tmp53 * _value[3] + _tmp57 * _value[1];
+        -_tmp46 * _tmp52 - _tmp51 * _value[2] + _tmp55 * _value[1] + _tmp57 * _value[3];
     _jacobian(2, 0) =
-        -_tmp46 * _tmp61 - _tmp63 * _value[1] + _tmp64 * _value[2] + _tmp66 * _value[3];
-    _jacobian(2, 1) = _tmp46 * _tmp62 - _tmp47 * _tmp65 + _tmp64 * _value[3] - _tmp67 * _value[1];
+        -_tmp46 * _tmp66 + _tmp62 * _value[3] - _tmp64 * _value[1] + _tmp65 * _value[2];
+    _jacobian(2, 1) = _tmp46 * _tmp63 - _tmp47 * _tmp61 + _tmp65 * _value[3] - _tmp67 * _value[1];
     _jacobian(2, 2) =
-        _tmp63 * _value[3] - _tmp64 * _value[0] + _tmp66 * _value[1] - _tmp67 * _value[2];
+        _tmp62 * _value[1] + _tmp64 * _value[3] - _tmp65 * _value[0] - _tmp67 * _value[2];
   }
 }  // NOLINT(readability/fn_size)
 

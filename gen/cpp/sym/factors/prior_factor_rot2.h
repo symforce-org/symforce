@@ -40,10 +40,10 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
   const Scalar _tmp2 = _prior[1] * _tmp0;
   const Scalar _tmp3 = _tmp1 * _value[1] - _tmp2 * _value[0];
   const Scalar _tmp4 = _tmp1 * _value[0] + _tmp2 * _value[1];
-  const Scalar _tmp5 = (_tmp4 * _tmp4);
-  const Scalar _tmp6 = _tmp3 / _tmp5;
-  const Scalar _tmp7 = 1.0 / (_tmp4);
-  const Scalar _tmp8 = _tmp5 * sqrt_info(0, 0) / ((_tmp3 * _tmp3) + _tmp5);
+  const Scalar _tmp5 = 1.0 / (_tmp4);
+  const Scalar _tmp6 = (_tmp4 * _tmp4);
+  const Scalar _tmp7 = _tmp3 / _tmp6;
+  const Scalar _tmp8 = _tmp6 * sqrt_info(0, 0) / ((_tmp3 * _tmp3) + _tmp6);
 
   // Output terms (2)
   if (res != nullptr) {
@@ -55,8 +55,8 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp8 * _value[0] * (_tmp1 * _tmp7 - _tmp2 * _tmp6) -
-                      _tmp8 * _value[1] * (-_tmp1 * _tmp6 - _tmp2 * _tmp7);
+    _jacobian(0, 0) = _tmp8 * _value[0] * (_tmp1 * _tmp5 - _tmp2 * _tmp7) -
+                      _tmp8 * _value[1] * (-_tmp1 * _tmp7 - _tmp2 * _tmp5);
   }
 }  // NOLINT(readability/fn_size)
 

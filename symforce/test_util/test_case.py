@@ -143,23 +143,3 @@ def slow_on_sympy(func: T.Callable) -> T.Callable:
         return unittest.skip("This test is too slow on the SymPy backend")(func)
     else:
         return func
-
-
-def disable_on_bionic(func: T.Callable) -> T.Callable:
-    """
-    Decorator to disable a test on bionic (only on symengine)
-
-    TODO(aaron): Update values and remove this once we're on bionic
-    """
-    backend = symforce.get_backend()
-    if backend == "sympy":
-        return func
-
-    lsb_release_result = python_util.execute_subprocess(["lsb_release", "--codename"])
-    match = re.match(r"Codename:\s+(bionic|xenial)", lsb_release_result)
-    assert match is not None
-    if match.group(1) == "bionic":
-        return unittest.skip("Temporarily disabled on bionic")
-    else:
-        assert match.group(1) == "xenial"
-        return func

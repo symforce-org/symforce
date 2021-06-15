@@ -105,22 +105,22 @@ class GroupOps(object):
         _a = a.data
 
         # Intermediate terms (17)
-        _tmp0 = _a[1] ** 2
-        _tmp1 = _a[0] ** 2
+        _tmp0 = _a[0] ** 2
+        _tmp1 = _a[1] ** 2
         _tmp2 = _tmp0 + _tmp1
         _tmp3 = _tmp2 ** (-1)
         _tmp4 = _a[0] * _tmp3
         _tmp5 = _a[1] * _tmp3
         _tmp6 = -_tmp5
         _tmp7 = -_tmp4
-        _tmp8 = 2 / _tmp2 ** 2
-        _tmp9 = _a[0] * _a[1] * _tmp8
-        _tmp10 = _a[2] * _tmp9
-        _tmp11 = _tmp0 * _tmp8
-        _tmp12 = _a[3] * _tmp3
-        _tmp13 = _tmp1 * _tmp8
-        _tmp14 = _a[2] * _tmp3
-        _tmp15 = -_a[3] * _tmp9
+        _tmp8 = _a[3] * _tmp3
+        _tmp9 = 2 / _tmp2 ** 2
+        _tmp10 = _a[0] * _a[1] * _tmp9
+        _tmp11 = _a[2] * _tmp10
+        _tmp12 = _tmp1 * _tmp9
+        _tmp13 = _a[2] * _tmp3
+        _tmp14 = -_a[3] * _tmp10
+        _tmp15 = _tmp0 * _tmp9
         _tmp16 = 2 / _tmp2 ** 3
 
         # Output terms
@@ -132,18 +132,18 @@ class GroupOps(object):
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp7
         _res_D_a[0, 1] = _tmp6
-        _res_D_a[0, 2] = -_a[0] * (-_a[3] * _tmp11 - _tmp10 + _tmp12) + _a[1] * (
-            -_a[2] * _tmp13 + _tmp14 + _tmp15
+        _res_D_a[0, 2] = -_a[0] * (-_a[3] * _tmp12 - _tmp11 + _tmp8) + _a[1] * (
+            -_a[2] * _tmp15 + _tmp13 + _tmp14
         )
         _res_D_a[1, 0] = _tmp5
         _res_D_a[1, 1] = _tmp7
-        _res_D_a[1, 2] = -_a[0] * (_a[2] * _tmp11 - _tmp14 + _tmp15) + _a[1] * (
-            -_a[3] * _tmp13 + _tmp10 + _tmp12
+        _res_D_a[1, 2] = -_a[0] * (_a[2] * _tmp12 - _tmp13 + _tmp14) + _a[1] * (
+            -_a[3] * _tmp15 + _tmp11 + _tmp8
         )
         _res_D_a[2, 0] = 0
         _res_D_a[2, 1] = 0
-        _res_D_a[2, 2] = _a[0] * (-_a[0] * _tmp0 * _tmp16 + _tmp4 * (_tmp11 - _tmp3)) - _a[1] * (
-            _a[1] * _tmp1 * _tmp16 + _tmp5 * (-_tmp13 + _tmp3)
+        _res_D_a[2, 2] = _a[0] * (-_a[0] * _tmp1 * _tmp16 + _tmp4 * (_tmp12 - _tmp3)) - _a[1] * (
+            _a[1] * _tmp0 * _tmp16 + _tmp5 * (-_tmp15 + _tmp3)
         )
         return _res, _res_D_a
 
@@ -161,8 +161,8 @@ class GroupOps(object):
         _tmp0 = _a[0] * _b[0] - _a[1] * _b[1]
         _tmp1 = _a[0] * _b[1] + _a[1] * _b[0]
         _tmp2 = _a[0] * _b[2] - _a[1] * _b[3]
-        _tmp3 = _a[0] * _b[3]
-        _tmp4 = _a[1] * _b[2]
+        _tmp3 = _a[1] * _b[2]
+        _tmp4 = _a[0] * _b[3]
 
         # Output terms
         _res = [0.0] * 4
@@ -207,8 +207,8 @@ class GroupOps(object):
         _b = b.data
 
         # Intermediate terms (24)
-        _tmp0 = _a[1] ** 2
-        _tmp1 = _a[0] ** 2
+        _tmp0 = _a[0] ** 2
+        _tmp1 = _a[1] ** 2
         _tmp2 = _tmp0 + _tmp1
         _tmp3 = _tmp2 ** (-1)
         _tmp4 = _a[1] * _tmp3
@@ -218,19 +218,19 @@ class GroupOps(object):
         _tmp8 = -_tmp5
         _tmp9 = -_tmp4
         _tmp10 = 2 / _tmp2 ** 2
-        _tmp11 = _tmp0 * _tmp10
-        _tmp12 = _a[0] * _a[1] * _tmp10
-        _tmp13 = _a[2] * _tmp12
-        _tmp14 = _b[2] * _tmp12
+        _tmp11 = _a[0] * _a[1] * _tmp10
+        _tmp12 = _b[2] * _tmp11
+        _tmp13 = _a[2] * _tmp11
+        _tmp14 = _tmp1 * _tmp10
         _tmp15 = -_a[3] * _tmp3 + _b[3] * _tmp3
-        _tmp16 = _tmp1 * _tmp10
+        _tmp16 = _a[2] * _tmp3
         _tmp17 = _b[2] * _tmp3
-        _tmp18 = _a[2] * _tmp3
-        _tmp19 = _a[3] * _tmp12 - _b[3] * _tmp12
-        _tmp20 = _b[0] * _tmp3
-        _tmp21 = -_b[1] * _tmp12
-        _tmp22 = _b[0] * _tmp12
-        _tmp23 = _b[1] * _tmp3
+        _tmp18 = _tmp0 * _tmp10
+        _tmp19 = _a[3] * _tmp11 - _b[3] * _tmp11
+        _tmp20 = _b[1] * _tmp3
+        _tmp21 = _b[0] * _tmp11
+        _tmp22 = _b[0] * _tmp3
+        _tmp23 = -_b[1] * _tmp11
 
         # Output terms
         _res = [0.0] * 4
@@ -241,21 +241,21 @@ class GroupOps(object):
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp8
         _res_D_a[0, 1] = _tmp9
-        _res_D_a[0, 2] = _a[0] * (_a[3] * _tmp11 - _b[3] * _tmp11 + _tmp13 - _tmp14 + _tmp15) - _a[
+        _res_D_a[0, 2] = _a[0] * (_a[3] * _tmp14 - _b[3] * _tmp14 - _tmp12 + _tmp13 + _tmp15) - _a[
             1
-        ] * (_a[2] * _tmp16 - _b[2] * _tmp16 + _tmp17 - _tmp18 + _tmp19)
+        ] * (_a[2] * _tmp18 - _b[2] * _tmp18 - _tmp16 + _tmp17 + _tmp19)
         _res_D_a[1, 0] = _tmp4
         _res_D_a[1, 1] = _tmp8
-        _res_D_a[1, 2] = _a[0] * (-_a[2] * _tmp11 + _b[2] * _tmp11 - _tmp17 + _tmp18 + _tmp19) - _a[
+        _res_D_a[1, 2] = _a[0] * (-_a[2] * _tmp14 + _b[2] * _tmp14 + _tmp16 - _tmp17 + _tmp19) - _a[
             1
-        ] * (_a[3] * _tmp16 - _b[3] * _tmp16 - _tmp13 + _tmp14 + _tmp15)
+        ] * (_a[3] * _tmp18 - _b[3] * _tmp18 + _tmp12 - _tmp13 + _tmp15)
         _res_D_a[2, 0] = 0
         _res_D_a[2, 1] = 0
         _res_D_a[2, 2] = _a[0] * (
-            _tmp6 * (_b[0] * _tmp11 - _tmp20 + _tmp21) - _tmp7 * (-_b[1] * _tmp11 - _tmp22 + _tmp23)
+            _tmp6 * (_b[0] * _tmp14 - _tmp22 + _tmp23) - _tmp7 * (-_b[1] * _tmp14 + _tmp20 - _tmp21)
         ) - _a[1] * (
-            _tmp6 * (-_b[1] * _tmp16 + _tmp22 + _tmp23)
-            - _tmp7 * (-_b[0] * _tmp16 + _tmp20 + _tmp21)
+            _tmp6 * (-_b[1] * _tmp18 + _tmp20 + _tmp21)
+            - _tmp7 * (-_b[0] * _tmp18 + _tmp22 + _tmp23)
         )
         _res_D_b = numpy.zeros((3, 3))
         _res_D_b[0, 0] = _tmp5

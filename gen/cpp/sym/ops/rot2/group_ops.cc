@@ -109,14 +109,14 @@ sym::Rot2<Scalar> GroupOps<Scalar>::Between(const sym::Rot2<Scalar>& a,
 
   // Intermediate terms (3)
   const Scalar _tmp0 = 1.0 / ((_a[0] * _a[0]) + (_a[1] * _a[1]));
-  const Scalar _tmp1 = _a[1] * _tmp0;
-  const Scalar _tmp2 = _a[0] * _tmp0;
+  const Scalar _tmp1 = _a[0] * _tmp0;
+  const Scalar _tmp2 = _a[1] * _tmp0;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;
 
-  _res[0] = _b[0] * _tmp2 + _b[1] * _tmp1;
-  _res[1] = -_b[0] * _tmp1 + _b[1] * _tmp2;
+  _res[0] = _b[0] * _tmp1 + _b[1] * _tmp2;
+  _res[1] = -_b[0] * _tmp2 + _b[1] * _tmp1;
 
   return sym::Rot2<Scalar>(_res);
 }
@@ -144,8 +144,8 @@ sym::Rot2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   const Scalar _tmp3 = 1.0 / (_tmp2);
   const Scalar _tmp4 = _a[0] * _tmp3;
   const Scalar _tmp5 = _a[1] * _tmp3;
-  const Scalar _tmp6 = 2 / (_tmp2 * _tmp2);
-  const Scalar _tmp7 = 2 / (_tmp2 * _tmp2 * _tmp2);
+  const Scalar _tmp6 = 2 / (_tmp2 * _tmp2 * _tmp2);
+  const Scalar _tmp7 = 2 / (_tmp2 * _tmp2);
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 2, 1> _res;
@@ -156,8 +156,8 @@ sym::Rot2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _a[0] * (-_a[0] * _tmp0 * _tmp7 + _tmp4 * (_tmp0 * _tmp6 - _tmp3)) -
-                     _a[1] * (_a[1] * _tmp1 * _tmp7 + _tmp5 * (-_tmp1 * _tmp6 + _tmp3));
+    _res_D_a(0, 0) = _a[0] * (-_a[0] * _tmp0 * _tmp6 + _tmp4 * (_tmp0 * _tmp7 - _tmp3)) -
+                     _a[1] * (_a[1] * _tmp1 * _tmp6 + _tmp5 * (-_tmp1 * _tmp7 + _tmp3));
   }
 
   return sym::Rot2<Scalar>(_res);
@@ -235,10 +235,10 @@ sym::Rot2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   const Scalar _tmp1 = (_a[0] * _a[0]);
   const Scalar _tmp2 = _tmp0 + _tmp1;
   const Scalar _tmp3 = 1.0 / (_tmp2);
-  const Scalar _tmp4 = _b[1] * _tmp3;
-  const Scalar _tmp5 = _b[0] * _tmp3;
-  const Scalar _tmp6 = _a[0] * _tmp5 + _a[1] * _tmp4;
-  const Scalar _tmp7 = _a[0] * _tmp4 - _a[1] * _tmp5;
+  const Scalar _tmp4 = _b[0] * _tmp3;
+  const Scalar _tmp5 = _b[1] * _tmp3;
+  const Scalar _tmp6 = _a[0] * _tmp4 + _a[1] * _tmp5;
+  const Scalar _tmp7 = _a[0] * _tmp5 - _a[1] * _tmp4;
   const Scalar _tmp8 = 2 / (_tmp2 * _tmp2);
   const Scalar _tmp9 = _tmp0 * _tmp8;
   const Scalar _tmp10 = _a[0] * _a[1] * _tmp8;
@@ -257,10 +257,10 @@ sym::Rot2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _a[0] * (_tmp6 * (_b[0] * _tmp9 + _tmp11 - _tmp5) -
-                              _tmp7 * (-_b[1] * _tmp9 - _tmp12 + _tmp4)) -
-                     _a[1] * (_tmp6 * (-_b[1] * _tmp13 + _tmp12 + _tmp4) -
-                              _tmp7 * (-_b[0] * _tmp13 + _tmp11 + _tmp5));
+    _res_D_a(0, 0) = _a[0] * (_tmp6 * (_b[0] * _tmp9 + _tmp11 - _tmp4) -
+                              _tmp7 * (-_b[1] * _tmp9 - _tmp12 + _tmp5)) -
+                     _a[1] * (_tmp6 * (-_b[1] * _tmp13 + _tmp12 + _tmp5) -
+                              _tmp7 * (-_b[0] * _tmp13 + _tmp11 + _tmp4));
   }
 
   if (res_D_b != nullptr) {

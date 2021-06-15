@@ -35,17 +35,17 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
   // Input arrays
 
   // Intermediate terms (3)
-  const Scalar _tmp0 = -a(2, 0) - a_T_b(2, 0) + b(2, 0);
-  const Scalar _tmp1 = -a(1, 0) - a_T_b(1, 0) + b(1, 0);
+  const Scalar _tmp0 = -a(1, 0) - a_T_b(1, 0) + b(1, 0);
+  const Scalar _tmp1 = -a(2, 0) - a_T_b(2, 0) + b(2, 0);
   const Scalar _tmp2 = -a(0, 0) - a_T_b(0, 0) + b(0, 0);
 
   // Output terms (2)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp0 * sqrt_info(0, 2) + _tmp1 * sqrt_info(0, 1) + _tmp2 * sqrt_info(0, 0);
-    _res(1, 0) = _tmp0 * sqrt_info(1, 2) + _tmp1 * sqrt_info(1, 1) + _tmp2 * sqrt_info(1, 0);
-    _res(2, 0) = _tmp0 * sqrt_info(2, 2) + _tmp1 * sqrt_info(2, 1) + _tmp2 * sqrt_info(2, 0);
+    _res(0, 0) = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0);
+    _res(1, 0) = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0);
+    _res(2, 0) = _tmp0 * sqrt_info(2, 1) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 0);
   }
 
   if (jacobian != nullptr) {

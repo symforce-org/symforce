@@ -150,22 +150,22 @@ sym::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
   // Intermediate terms (17)
-  const Scalar _tmp0 = (_a[1] * _a[1]);
-  const Scalar _tmp1 = (_a[0] * _a[0]);
+  const Scalar _tmp0 = (_a[0] * _a[0]);
+  const Scalar _tmp1 = (_a[1] * _a[1]);
   const Scalar _tmp2 = _tmp0 + _tmp1;
   const Scalar _tmp3 = 1.0 / (_tmp2);
   const Scalar _tmp4 = _a[0] * _tmp3;
   const Scalar _tmp5 = _a[1] * _tmp3;
   const Scalar _tmp6 = -_tmp5;
   const Scalar _tmp7 = -_tmp4;
-  const Scalar _tmp8 = 2 / (_tmp2 * _tmp2);
-  const Scalar _tmp9 = _a[0] * _a[1] * _tmp8;
-  const Scalar _tmp10 = _a[2] * _tmp9;
-  const Scalar _tmp11 = _tmp0 * _tmp8;
-  const Scalar _tmp12 = _a[3] * _tmp3;
-  const Scalar _tmp13 = _tmp1 * _tmp8;
-  const Scalar _tmp14 = _a[2] * _tmp3;
-  const Scalar _tmp15 = -_a[3] * _tmp9;
+  const Scalar _tmp8 = _a[3] * _tmp3;
+  const Scalar _tmp9 = 2 / (_tmp2 * _tmp2);
+  const Scalar _tmp10 = _a[0] * _a[1] * _tmp9;
+  const Scalar _tmp11 = _a[2] * _tmp10;
+  const Scalar _tmp12 = _tmp1 * _tmp9;
+  const Scalar _tmp13 = _a[2] * _tmp3;
+  const Scalar _tmp14 = -_a[3] * _tmp10;
+  const Scalar _tmp15 = _tmp0 * _tmp9;
   const Scalar _tmp16 = 2 / (_tmp2 * _tmp2 * _tmp2);
 
   // Output terms (2)
@@ -182,15 +182,15 @@ sym::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
     _res_D_a(0, 0) = _tmp7;
     _res_D_a(0, 1) = _tmp6;
     _res_D_a(0, 2) =
-        -_a[0] * (-_a[3] * _tmp11 - _tmp10 + _tmp12) + _a[1] * (-_a[2] * _tmp13 + _tmp14 + _tmp15);
+        -_a[0] * (-_a[3] * _tmp12 - _tmp11 + _tmp8) + _a[1] * (-_a[2] * _tmp15 + _tmp13 + _tmp14);
     _res_D_a(1, 0) = _tmp5;
     _res_D_a(1, 1) = _tmp7;
     _res_D_a(1, 2) =
-        -_a[0] * (_a[2] * _tmp11 - _tmp14 + _tmp15) + _a[1] * (-_a[3] * _tmp13 + _tmp10 + _tmp12);
+        -_a[0] * (_a[2] * _tmp12 - _tmp13 + _tmp14) + _a[1] * (-_a[3] * _tmp15 + _tmp11 + _tmp8);
     _res_D_a(2, 0) = 0;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = _a[0] * (-_a[0] * _tmp0 * _tmp16 + _tmp4 * (_tmp11 - _tmp3)) -
-                     _a[1] * (_a[1] * _tmp1 * _tmp16 + _tmp5 * (-_tmp13 + _tmp3));
+    _res_D_a(2, 2) = _a[0] * (-_a[0] * _tmp1 * _tmp16 + _tmp4 * (_tmp12 - _tmp3)) -
+                     _a[1] * (_a[1] * _tmp0 * _tmp16 + _tmp5 * (-_tmp15 + _tmp3));
   }
 
   return sym::Pose2<Scalar>(_res);
@@ -219,8 +219,8 @@ sym::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
   const Scalar _tmp0 = _a[0] * _b[0] - _a[1] * _b[1];
   const Scalar _tmp1 = _a[0] * _b[1] + _a[1] * _b[0];
   const Scalar _tmp2 = _a[0] * _b[2] - _a[1] * _b[3];
-  const Scalar _tmp3 = _a[0] * _b[3];
-  const Scalar _tmp4 = _a[1] * _b[2];
+  const Scalar _tmp3 = _a[1] * _b[2];
+  const Scalar _tmp4 = _a[0] * _b[3];
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 4, 1> _res;
@@ -285,8 +285,8 @@ sym::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
   // Intermediate terms (24)
-  const Scalar _tmp0 = (_a[1] * _a[1]);
-  const Scalar _tmp1 = (_a[0] * _a[0]);
+  const Scalar _tmp0 = (_a[0] * _a[0]);
+  const Scalar _tmp1 = (_a[1] * _a[1]);
   const Scalar _tmp2 = _tmp0 + _tmp1;
   const Scalar _tmp3 = 1.0 / (_tmp2);
   const Scalar _tmp4 = _a[1] * _tmp3;
@@ -296,19 +296,19 @@ sym::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   const Scalar _tmp8 = -_tmp5;
   const Scalar _tmp9 = -_tmp4;
   const Scalar _tmp10 = 2 / (_tmp2 * _tmp2);
-  const Scalar _tmp11 = _tmp0 * _tmp10;
-  const Scalar _tmp12 = _a[0] * _a[1] * _tmp10;
-  const Scalar _tmp13 = _a[2] * _tmp12;
-  const Scalar _tmp14 = _b[2] * _tmp12;
+  const Scalar _tmp11 = _a[0] * _a[1] * _tmp10;
+  const Scalar _tmp12 = _b[2] * _tmp11;
+  const Scalar _tmp13 = _a[2] * _tmp11;
+  const Scalar _tmp14 = _tmp1 * _tmp10;
   const Scalar _tmp15 = -_a[3] * _tmp3 + _b[3] * _tmp3;
-  const Scalar _tmp16 = _tmp1 * _tmp10;
+  const Scalar _tmp16 = _a[2] * _tmp3;
   const Scalar _tmp17 = _b[2] * _tmp3;
-  const Scalar _tmp18 = _a[2] * _tmp3;
-  const Scalar _tmp19 = _a[3] * _tmp12 - _b[3] * _tmp12;
-  const Scalar _tmp20 = _b[0] * _tmp3;
-  const Scalar _tmp21 = -_b[1] * _tmp12;
-  const Scalar _tmp22 = _b[0] * _tmp12;
-  const Scalar _tmp23 = _b[1] * _tmp3;
+  const Scalar _tmp18 = _tmp0 * _tmp10;
+  const Scalar _tmp19 = _a[3] * _tmp11 - _b[3] * _tmp11;
+  const Scalar _tmp20 = _b[1] * _tmp3;
+  const Scalar _tmp21 = _b[0] * _tmp11;
+  const Scalar _tmp22 = _b[0] * _tmp3;
+  const Scalar _tmp23 = -_b[1] * _tmp11;
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 4, 1> _res;
@@ -323,18 +323,18 @@ sym::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
 
     _res_D_a(0, 0) = _tmp8;
     _res_D_a(0, 1) = _tmp9;
-    _res_D_a(0, 2) = _a[0] * (_a[3] * _tmp11 - _b[3] * _tmp11 + _tmp13 - _tmp14 + _tmp15) -
-                     _a[1] * (_a[2] * _tmp16 - _b[2] * _tmp16 + _tmp17 - _tmp18 + _tmp19);
+    _res_D_a(0, 2) = _a[0] * (_a[3] * _tmp14 - _b[3] * _tmp14 - _tmp12 + _tmp13 + _tmp15) -
+                     _a[1] * (_a[2] * _tmp18 - _b[2] * _tmp18 - _tmp16 + _tmp17 + _tmp19);
     _res_D_a(1, 0) = _tmp4;
     _res_D_a(1, 1) = _tmp8;
-    _res_D_a(1, 2) = _a[0] * (-_a[2] * _tmp11 + _b[2] * _tmp11 - _tmp17 + _tmp18 + _tmp19) -
-                     _a[1] * (_a[3] * _tmp16 - _b[3] * _tmp16 - _tmp13 + _tmp14 + _tmp15);
+    _res_D_a(1, 2) = _a[0] * (-_a[2] * _tmp14 + _b[2] * _tmp14 + _tmp16 - _tmp17 + _tmp19) -
+                     _a[1] * (_a[3] * _tmp18 - _b[3] * _tmp18 + _tmp12 - _tmp13 + _tmp15);
     _res_D_a(2, 0) = 0;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = _a[0] * (_tmp6 * (_b[0] * _tmp11 - _tmp20 + _tmp21) -
-                              _tmp7 * (-_b[1] * _tmp11 - _tmp22 + _tmp23)) -
-                     _a[1] * (_tmp6 * (-_b[1] * _tmp16 + _tmp22 + _tmp23) -
-                              _tmp7 * (-_b[0] * _tmp16 + _tmp20 + _tmp21));
+    _res_D_a(2, 2) = _a[0] * (_tmp6 * (_b[0] * _tmp14 - _tmp22 + _tmp23) -
+                              _tmp7 * (-_b[1] * _tmp14 + _tmp20 - _tmp21)) -
+                     _a[1] * (_tmp6 * (-_b[1] * _tmp18 + _tmp20 + _tmp21) -
+                              _tmp7 * (-_b[0] * _tmp18 + _tmp22 + _tmp23));
   }
 
   if (res_D_b != nullptr) {

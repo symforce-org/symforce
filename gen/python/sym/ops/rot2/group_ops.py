@@ -74,13 +74,13 @@ class GroupOps(object):
 
         # Intermediate terms (3)
         _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1)
-        _tmp1 = _a[1] * _tmp0
-        _tmp2 = _a[0] * _tmp0
+        _tmp1 = _a[0] * _tmp0
+        _tmp2 = _a[1] * _tmp0
 
         # Output terms
         _res = [0.0] * 2
-        _res[0] = _b[0] * _tmp2 + _b[1] * _tmp1
-        _res[1] = -_b[0] * _tmp1 + _b[1] * _tmp2
+        _res[0] = _b[0] * _tmp1 + _b[1] * _tmp2
+        _res[1] = -_b[0] * _tmp2 + _b[1] * _tmp1
         return _res
 
     @staticmethod
@@ -99,16 +99,16 @@ class GroupOps(object):
         _tmp3 = _tmp2 ** (-1)
         _tmp4 = _a[0] * _tmp3
         _tmp5 = _a[1] * _tmp3
-        _tmp6 = 2 / _tmp2 ** 2
-        _tmp7 = 2 / _tmp2 ** 3
+        _tmp6 = 2 / _tmp2 ** 3
+        _tmp7 = 2 / _tmp2 ** 2
 
         # Output terms
         _res = [0.0] * 2
         _res[0] = _tmp4
         _res[1] = -_tmp5
         _res_D_a = [0.0] * 1
-        _res_D_a[0] = _a[0] * (-_a[0] * _tmp0 * _tmp7 + _tmp4 * (_tmp0 * _tmp6 - _tmp3)) - _a[1] * (
-            _a[1] * _tmp1 * _tmp7 + _tmp5 * (-_tmp1 * _tmp6 + _tmp3)
+        _res_D_a[0] = _a[0] * (-_a[0] * _tmp0 * _tmp6 + _tmp4 * (_tmp0 * _tmp7 - _tmp3)) - _a[1] * (
+            _a[1] * _tmp1 * _tmp6 + _tmp5 * (-_tmp1 * _tmp7 + _tmp3)
         )
         return _res, _res_D_a
 
@@ -155,10 +155,10 @@ class GroupOps(object):
         _tmp1 = _a[0] ** 2
         _tmp2 = _tmp0 + _tmp1
         _tmp3 = _tmp2 ** (-1)
-        _tmp4 = _b[1] * _tmp3
-        _tmp5 = _b[0] * _tmp3
-        _tmp6 = _a[0] * _tmp5 + _a[1] * _tmp4
-        _tmp7 = _a[0] * _tmp4 - _a[1] * _tmp5
+        _tmp4 = _b[0] * _tmp3
+        _tmp5 = _b[1] * _tmp3
+        _tmp6 = _a[0] * _tmp4 + _a[1] * _tmp5
+        _tmp7 = _a[0] * _tmp5 - _a[1] * _tmp4
         _tmp8 = 2 / _tmp2 ** 2
         _tmp9 = _tmp0 * _tmp8
         _tmp10 = _a[0] * _a[1] * _tmp8
@@ -174,9 +174,9 @@ class GroupOps(object):
         _res[1] = _tmp7
         _res_D_a = [0.0] * 1
         _res_D_a[0] = _a[0] * (
-            _tmp6 * (_b[0] * _tmp9 + _tmp11 - _tmp5) - _tmp7 * (-_b[1] * _tmp9 - _tmp12 + _tmp4)
+            _tmp6 * (_b[0] * _tmp9 + _tmp11 - _tmp4) - _tmp7 * (-_b[1] * _tmp9 - _tmp12 + _tmp5)
         ) - _a[1] * (
-            _tmp6 * (-_b[1] * _tmp13 + _tmp12 + _tmp4) - _tmp7 * (-_b[0] * _tmp13 + _tmp11 + _tmp5)
+            _tmp6 * (-_b[1] * _tmp13 + _tmp12 + _tmp5) - _tmp7 * (-_b[0] * _tmp13 + _tmp11 + _tmp4)
         )
         _res_D_b = [0.0] * 1
         _res_D_b[0] = _b[0] * (_a[0] * _tmp14 - _a[1] * _tmp15) - _b[1] * (

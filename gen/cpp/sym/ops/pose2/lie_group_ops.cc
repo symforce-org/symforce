@@ -88,15 +88,15 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Pos
 
   // Intermediate terms (3)
   const Scalar _tmp0 = 1.0 / ((_a[0] * _a[0]) + (_a[1] * _a[1]));
-  const Scalar _tmp1 = _a[0] * _tmp0;
-  const Scalar _tmp2 = _a[1] * _tmp0;
+  const Scalar _tmp1 = _a[1] * _tmp0;
+  const Scalar _tmp2 = _a[0] * _tmp0;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
   _res(0, 0) = -_a[2] + _b[2];
   _res(1, 0) = -_a[3] + _b[3];
-  _res(2, 0) = std::atan2(-_b[0] * _tmp2 + _b[1] * _tmp1, _b[0] * _tmp1 + _b[1] * _tmp2);
+  _res(2, 0) = std::atan2(-_b[0] * _tmp1 + _b[1] * _tmp2, _b[0] * _tmp2 + _b[1] * _tmp1);
 
   return _res;
 }
