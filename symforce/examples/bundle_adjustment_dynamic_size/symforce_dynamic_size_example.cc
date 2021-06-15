@@ -8,6 +8,7 @@
 #include "symforce/bundle_adjustment_example/reprojection_error_factor.h"
 
 namespace sym {
+namespace bundle_adjustment_dynamic_size {
 
 std::vector<Factord> BuildFactors(const int num_views) {
   std::vector<Factord> factors;
@@ -138,4 +139,5 @@ void RunDynamicBundleAdjustment() {
   SYM_ASSERT(last_iter.new_error < 3);
 }
 
+}  // namespace bundle_adjustment_dynamic_size
 }  // namespace sym

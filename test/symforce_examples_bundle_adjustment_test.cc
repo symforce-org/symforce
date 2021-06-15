@@ -3,6 +3,6 @@
 
 int main(int argc, char** argv) {
   // These SYM_ASSERT on failure instead of assertTrue, since they aren't tests
-  sym::RunFixedBundleAdjustment();
-  sym::RunDynamicBundleAdjustment();
+  sym::bundle_adjustment_fixed_size::RunFixedBundleAdjustment();
+  sym::bundle_adjustment_dynamic_size::RunDynamicBundleAdjustment();
 }

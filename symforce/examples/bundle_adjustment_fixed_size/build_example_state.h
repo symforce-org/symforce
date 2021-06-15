@@ -5,6 +5,7 @@
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 
 namespace sym {
+namespace bundle_adjustment_fixed_size {
 
 static constexpr double kEpsilon = 1e-10;
 static constexpr double kReprojectionErrorGncScale = 10;
@@ -33,4 +34,5 @@ sym::Valuesd BuildValues(std::mt19937& gen, const int num_landmarks);
 
 optimizer_params_t OptimizerParams();
 
+}  // namespace bundle_adjustment_fixed_size
 }  // namespace sym

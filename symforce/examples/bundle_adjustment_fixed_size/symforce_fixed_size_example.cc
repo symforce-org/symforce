@@ -8,6 +8,7 @@
 #include "symforce/bundle_adjustment_example/linearization.h"
 
 namespace sym {
+namespace bundle_adjustment_fixed_size {
 
 static constexpr int kPoseDim = 6;
 static constexpr int kVariablesDim = kNumLandmarks + (kNumViews - 1) * kPoseDim;
@@ -221,4 +222,5 @@ void RunFixedBundleAdjustment() {
   SYM_ASSERT(last_iter.new_error < 3);
 }
 
+}  // namespace bundle_adjustment_fixed_size
 }  // namespace sym

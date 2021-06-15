@@ -7,6 +7,7 @@
 #include <symforce/util/random.h>
 
 namespace sym {
+namespace bundle_adjustment_fixed_size {
 
 namespace {
 
@@ -230,4 +231,5 @@ optimizer_params_t OptimizerParams() {
   return params;
 }
 
+}  // namespace bundle_adjustment_fixed_size
 }  // namespace sym
