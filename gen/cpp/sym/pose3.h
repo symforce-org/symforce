@@ -169,7 +169,10 @@ class Pose3 {
   // Handwritten methods for Pose3
   // --------------------------------------------------------------------------
 
-  Pose3(const Rot3<Scalar>& rotation, const Vector3& position) {
+  template <typename Derived>
+  Pose3(const Rot3<Scalar>& rotation, const Eigen::MatrixBase<Derived>& position) {
+    static_assert(Derived::RowsAtCompileTime == 3, "Position must be a 3x1 vector");
+    static_assert(Derived::ColsAtCompileTime == 1, "Position must be a 3x1 vector");
     data_.template head<4>() = rotation.Data();
     data_.template tail<3>() = position;
   }
