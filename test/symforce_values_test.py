@@ -89,6 +89,16 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual("hey.you", v.name)
         self.assertEqual("hey.there.what", w.name)
 
+        with self.subTest(msg="Scopes are cleaned up correctly"):
+            try:
+                with sm.scope("hey"):
+                    raise Exception
+            except:
+                pass
+            x = sm.Symbol("who")
+            self.assertEqual("who", x.name)
+        sm.__scopes__ = []
+
     def test_values(self) -> None:
         v = Values()
         self.assertEqual(len(v.keys()), 0)

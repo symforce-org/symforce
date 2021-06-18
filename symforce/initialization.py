@@ -121,8 +121,13 @@ def create_named_scope(scopes_list: T.List[str]) -> T.Callable:
     @contextlib.contextmanager
     def named_scope(scope: str) -> T.Iterator[None]:
         scopes_list.append(scope)
-        yield None
-        scopes_list.pop()
+
+        # The body of the with block is executed inside the yield, this ensures we release the
+        # scope if something in the block throws
+        try:
+            yield None
+        finally:
+            scopes_list.pop()
 
     return named_scope
 
