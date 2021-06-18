@@ -55,6 +55,30 @@ struct CamCals<sym::LinearCameraCal<Scalar>> {
 };
 
 template <typename Scalar>
+struct CamCals<sym::DoubleSphereCameraCal<Scalar>> {
+  using T = sym::DoubleSphereCameraCal<Scalar>;
+  static std::vector<T> Get() {
+    return {
+        CalFromData<T>({233, 233, 388, 388, 1.0, 0.0}),
+        CalFromData<T>({833, 834, 388, 388, 2.559, -1.328}),
+        CalFromData<T>({313, 313, 638, 514, -0.18, 0.59}),
+    };
+  }
+};
+
+template <typename Scalar>
+struct CamCals<sym::SphericalCameraCal<Scalar>> {
+  using T = sym::SphericalCameraCal<Scalar>;
+  static std::vector<T> Get() {
+    return {
+        CalFromData<T>({234, 234, 388, 391, M_PI, 0, 0, 0, 0}),
+        CalFromData<T>({234, 234, 388, 391, M_PI, 0.035, -0.025, 0.0070, -0.0015}),
+        CalFromData<T>({250, 250, 700, 500, M_PI, -0.01, -0.016, 0.0020, 0.0030}),
+    };
+  }
+};
+
+template <typename Scalar>
 struct CamCals<sym::EquidistantEpipolarCameraCal<Scalar>> {
   using T = sym::EquidistantEpipolarCameraCal<Scalar>;
   static std::vector<T> Get() {
@@ -103,7 +127,7 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", {{ ", ".join(cpp_cam_typ
   CHECK(cam_cal.Data() != cam_cal3.Data());
 }
 
-TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", {{ ", ".join(cpp_cam_types) }}) {
+TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", {{ ", ".join(fully_implemented_cpp_cam_types) }}) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -133,7 +157,7 @@ TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", {{ ", ".join(c
   }
 }
 
-TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", {{ ", ".join(cpp_cam_types) }}) {
+TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", {{ ", ".join(fully_implemented_cpp_cam_types) }}) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -182,7 +206,7 @@ TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", {{ ", ".join(cpp_cam_ty
   CHECK(is_valid == 1);
 }
 
-TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", {{ ", ".join(cpp_cam_types) }}) {
+TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", {{ ", ".join(fully_implemented_cpp_cam_types) }}) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 

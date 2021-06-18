@@ -17,18 +17,30 @@ from symforce.codegen import template_util
 from .geo_package_codegen import make_storage_ops_funcs
 
 CURRENT_DIR = os.path.dirname(__file__)
+
 # Default cam types to generate
-DEFAULT_CAM_TYPES = (
-    cam.LinearCameraCal,
-    cam.EquidistantEpipolarCameraCal,
-    cam.ATANCameraCal,
-)
+DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
 
 
 def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
     """
     Create func spec arguments for common camera operations for the given class.
     """
+    camera_ray_from_pixel = None
+    try:
+        camera_ray_from_pixel = Codegen.function(
+            name="CameraRayFromPixel",
+            func=cls.camera_ray_from_pixel,
+            input_types=[cls, geo.V2, sm.Symbol],
+            mode=mode,
+            output_names=["camera_ray", "is_valid"],
+            return_key="camera_ray",
+            docstring=cam.CameraCal.camera_ray_from_pixel.__doc__,
+        )
+    except NotImplementedError:
+        # Not all cameras implement backprojection
+        pass
+
     return [
         Codegen.function(
             name="FocalLength",
@@ -57,16 +69,7 @@ def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Cod
             return_key="pixel",
             docstring=cam.CameraCal.pixel_from_camera_point.__doc__,
         ),
-        Codegen.function(
-            name="CameraRayFromPixel",
-            func=cls.camera_ray_from_pixel,
-            input_types=[cls, geo.V2, sm.Symbol],
-            mode=mode,
-            output_names=["camera_ray", "is_valid"],
-            return_key="camera_ray",
-            docstring=cam.CameraCal.camera_ray_from_pixel.__doc__,
-        ),
-    ]
+    ] + ([camera_ray_from_pixel] if camera_ray_from_pixel is not None else [])
 
 
 def cam_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
@@ -179,6 +182,15 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
             "cam_function_codegen_cpp_test.cc",
             "Makefile",
         ):
+
+            def supports_camera_ray_from_pixel(cls: T.Type) -> bool:
+                try:
+                    cls.symbolic("C").camera_ray_from_pixel(geo.V2())
+                except NotImplementedError:
+                    return False
+                else:
+                    return True
+
             templates.add(
                 os.path.join(template_dir, "..", "example", name) + ".jinja",
                 os.path.join(output_dir, "example", name),
@@ -189,6 +201,12 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                         f"sym::{cls.__name__}<{scalar}>"
                         for cls in DEFAULT_CAM_TYPES
                         for scalar in data["scalar_types"]
+                    ],
+                    fully_implemented_cpp_cam_types=[
+                        f"sym::{cls.__name__}<{scalar}>"
+                        for cls in DEFAULT_CAM_TYPES
+                        for scalar in data["scalar_types"]
+                        if supports_camera_ray_from_pixel(cls)
                     ],
                     include_dir=output_dir,
                     eigen_include_dir=os.path.realpath(
