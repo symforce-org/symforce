@@ -64,6 +64,19 @@ class Interpolator {
 };
 
 /**
+ * Interpolation between Lie group elements a and b.  Result is a linear interpolation by
+ * coefficient t (in [0, 1]) in the tangent space around a
+ *
+ * This function version will not always be usable for passing into things that expect a functor
+ * callable with three arguments; for those applications, use sym::Interpolator<T>{}
+ */
+template <typename T>
+T Interpolate(const T& a, const T& b, const typename StorageOps<T>::Scalar t,
+              const typename StorageOps<T>::Scalar epsilon = 1e-8f) {
+  return Interpolator<T>(epsilon)(a, b, t);
+}
+
+/**
  * Compute the numerical derivative of a function using a central difference approximation
  *
  * Args:
