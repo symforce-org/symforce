@@ -1,0 +1,13 @@
+  // --------------------------------------------------------------------------
+  // Handwritten methods for DoubleSphereCameraCal
+  // --------------------------------------------------------------------------
+
+  // Construct from FocalLength, PrincipalPoint, and distortion coefficients
+  explicit DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                                 const Eigen::Matrix<Scalar, 2, 1>& principal_point,
+                                 const Scalar xi, const Scalar alpha)
+      : DoubleSphereCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<DoubleSphereCameraCal>::StorageDim(), 1>()
+                 << focal_length,
+             principal_point, xi, alpha)
+                .finished()) {}

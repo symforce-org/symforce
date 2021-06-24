@@ -27,12 +27,20 @@ class SphericalCameraCal(CameraCal):
     fix this issue, we peg the first coefficient at 1. So while the distortion dimension is '4',
     the actual total number of coeffs is 5.
 
+    Additionally, the storage for this class includes the critical theta, the maximum angle from the
+    optical axis where projection is invertible; although the critical theta is a function of the
+    other parameters, this function requires polynomial root finding, so it should be computed
+    externally at runtime and set to the computed value.
+
     Paper:
     A generic camera model and calibration method for conventional, wide-angle, and fish-eye lenses
     Kannala, Juho; Brandt, Sami S.
     PAMI 2006
 
     This is the simpler "P9" model without any non-radially-symmetric distortion params.
+
+    The storage for this class is:
+    [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
     """
 
     NUM_DISTORTION_COEFFS = 4

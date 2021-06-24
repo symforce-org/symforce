@@ -24,6 +24,9 @@ namespace sym {
  * packages with double sphere models; see notebooks/double_sphere_derivation.ipynb for more
  * information.
  *
+ * The storage for this class is:
+ * [ fx fy cx cy xi alpha ]
+ *
  * TODO(aaron): Create double_sphere_derivation.ipynb
  *
  * TODO(aaron): Probably want to check that values and derivatives are correct (or at least sane)
@@ -126,6 +129,19 @@ class DoubleSphereCameraCal {
   }
 
   // Included from "custom_methods/double_sphere_camera_cal.h.jinja":
+  // --------------------------------------------------------------------------
+  // Handwritten methods for DoubleSphereCameraCal
+  // --------------------------------------------------------------------------
+
+  // Construct from FocalLength, PrincipalPoint, and distortion coefficients
+  explicit DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                                 const Eigen::Matrix<Scalar, 2, 1>& principal_point,
+                                 const Scalar xi, const Scalar alpha)
+      : DoubleSphereCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<DoubleSphereCameraCal>::StorageDim(), 1>()
+                 << focal_length,
+             principal_point, xi, alpha)
+                .finished()) {}
 
  protected:
   DataVec data_;

@@ -16,6 +16,9 @@ class DoubleSphereCameraCal(CameraCal):
     packages with double sphere models; see notebooks/double_sphere_derivation.ipynb for more
     information.
 
+    The storage for this class is:
+    [ fx fy cx cy xi alpha ]
+
     TODO(aaron): Create double_sphere_derivation.ipynb
 
     TODO(aaron): Probably want to check that values and derivatives are correct (or at least sane)
