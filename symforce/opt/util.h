@@ -2,6 +2,7 @@
 
 #include <sym/ops/lie_group_ops.h>
 #include <sym/ops/storage_ops.h>
+#include <sym/util/type_ops.h>
 #include <sym/util/typedefs.h>
 
 namespace sym {
@@ -117,6 +118,18 @@ auto NumericalDerivative(const F f, const X& x,
   }
 
   return J;
+}
+
+template <typename T>
+std::enable_if_t<kIsEigenType<T>, bool> IsApprox(const T& a, const T& b,
+                                                 const typename StorageOps<T>::Scalar epsilon) {
+  return a.isApprox(b, epsilon);
+}
+
+template <typename T>
+std::enable_if_t<!kIsEigenType<T>, bool> IsApprox(const T& a, const T& b,
+                                                  const typename StorageOps<T>::Scalar epsilon) {
+  return a.IsApprox(b, epsilon);
 }
 
 }  // namespace sym

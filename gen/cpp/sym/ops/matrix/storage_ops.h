@@ -230,6 +230,22 @@ template <>
 struct StorageOps<Eigen::Matrix<double, 8, 1>> : public matrix::StorageOps<double, 8, 1> {};
 template <>
 struct StorageOps<Eigen::Matrix<double, 9, 1>> : public matrix::StorageOps<double, 9, 1> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 2, 2>> : public matrix::StorageOps<double, 2, 2> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 3, 3>> : public matrix::StorageOps<double, 3, 3> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 4, 4>> : public matrix::StorageOps<double, 4, 4> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 5, 5>> : public matrix::StorageOps<double, 5, 5> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 6, 6>> : public matrix::StorageOps<double, 6, 6> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 7, 7>> : public matrix::StorageOps<double, 7, 7> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 8, 8>> : public matrix::StorageOps<double, 8, 8> {};
+template <>
+struct StorageOps<Eigen::Matrix<double, 9, 9>> : public matrix::StorageOps<double, 9, 9> {};
 template <int Rows, int Cols>
 struct StorageOps<Eigen::Matrix<double, Rows, Cols>>
     : public matrix::StorageOps<double, Rows, Cols> {};
@@ -251,6 +267,22 @@ template <>
 struct StorageOps<Eigen::Matrix<float, 8, 1>> : public matrix::StorageOps<float, 8, 1> {};
 template <>
 struct StorageOps<Eigen::Matrix<float, 9, 1>> : public matrix::StorageOps<float, 9, 1> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 2, 2>> : public matrix::StorageOps<float, 2, 2> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 3, 3>> : public matrix::StorageOps<float, 3, 3> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 4, 4>> : public matrix::StorageOps<float, 4, 4> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 5, 5>> : public matrix::StorageOps<float, 5, 5> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 6, 6>> : public matrix::StorageOps<float, 6, 6> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 7, 7>> : public matrix::StorageOps<float, 7, 7> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 8, 8>> : public matrix::StorageOps<float, 8, 8> {};
+template <>
+struct StorageOps<Eigen::Matrix<float, 9, 9>> : public matrix::StorageOps<float, 9, 9> {};
 template <int Rows, int Cols>
 struct StorageOps<Eigen::Matrix<float, Rows, Cols>> : public matrix::StorageOps<float, Rows, Cols> {
 };

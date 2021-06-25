@@ -4,6 +4,7 @@
 
 #include <sym/rot3.h>
 
+#include "../symforce/opt/util.h"
 #include "../symforce/opt/values.h"
 #include "catch.hpp"
 
@@ -226,32 +227,41 @@ TEST_CASE("Test key update", "[values]") {
   CHECK(values2.At<double>('y') == 20.0);
 }
 
-TEMPLATE_TEST_CASE("Test lie group ops", "[values]", double, float) {
-  using Scalar = TestType;
+// Helper typedef for a non-square matrix
+template <typename Scalar>
+using Matrix34 = Eigen::Matrix<Scalar, 3, 4>;
 
-  std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> LieGroupOps ***" << std::endl;
+TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
+                           (sym::Rot2, sym::Pose2, sym::Rot3, sym::Pose3, sym::Vector1,
+                            sym::Vector3, sym::Vector9, sym::Matrix1, sym::Matrix3, sym::Matrix9,
+                            Matrix34),
+                           (double, float)) {
+  using T = TestType;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+
+  std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> LieGroupOps with "
+            << typeid(T).name() << " ***" << std::endl;
   const Scalar epsilon = 1e-9;
 
-  // Create a values object that stores an identity rotation, and an index for it
+  // Create a values object that stores an identity element, and an index for it
   sym::Values<Scalar> v1;
-  const sym::Rot3<Scalar> rot = sym::Rot3<Scalar>::Identity();
-  v1.Set('R', rot);
-  const sym::index_t index = v1.CreateIndex({'R'});
+  const T element = sym::GroupOps<T>::Identity();
+  v1.Set('x', element);
+  const sym::index_t index = v1.CreateIndex({'x'});
 
   // Test a bunch of retractions and local coordinates
   std::mt19937 gen(42);
   for (int i = 0; i < 100; ++i) {
-    v1.Set('R', rot);
+    v1.Set('x', element);
     const sym::Values<Scalar> v2 = v1;
 
-    const sym::Rot3<Scalar> random_rot = sym::Rot3<Scalar>::Random(gen);
-    const Eigen::Matrix<Scalar, 3, 1> tangent_vec =
-        sym::LieGroupOps<sym::Rot3<Scalar>>::ToTangent(random_rot, epsilon);
+    const T random_element = sym::StorageOps<T>::Random(gen);
+    const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(random_element, epsilon);
 
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
-    const sym::Rot3<Scalar> retracted_rot = v1.template At<sym::Rot3<Scalar>>('R');
-    CHECK(random_rot.IsApprox(retracted_rot, 1e-6));
+    const T retracted_element = v1.template At<T>('x');
+    CHECK(sym::IsApprox(random_element, retracted_element, 1e-6));
 
     // test local coordinates
     const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
