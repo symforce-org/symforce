@@ -261,6 +261,7 @@ class Codegen:
         shared_types: T.Mapping[str, str] = None,
         namespace: str = "sym",
         generated_file_name: str = None,
+        skip_directory_nesting: bool = False,
         language_args: codegen_language_args.LanguageArgs = None,
     ) -> T.Dict[str, T.Any]:
         """
@@ -285,6 +286,8 @@ class Codegen:
             namespace: Namespace for the generated function and any generated types.
             generated_file_name: Stem for the filename into which the function is generated, with
                                  no file extension
+            skip_directory_nesting: Generate the output file directly into output_dir instead of
+                                    adding the usual directory structure inside output_dir
             language_args: Language-specific arguments to pass through to the templates; see
                            codegen_language_args.py for documentation on these arguments
         """
@@ -355,7 +358,11 @@ class Codegen:
 
         # Generate the function
         if self.mode == codegen_util.CodegenMode.PYTHON2:
-            python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
+            if skip_directory_nesting:
+                python_function_dir = output_dir
+            else:
+                python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
+
             logger.info(f'Creating python function "{self.name}" at "{python_function_dir}"')
 
             templates.add(
@@ -371,7 +378,11 @@ class Codegen:
 
             output_data["python_function_dir"] = python_function_dir
         elif self.mode == codegen_util.CodegenMode.CPP:
-            cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
+            if skip_directory_nesting:
+                cpp_function_dir = output_dir
+            else:
+                cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
+
             logger.info(f'Creating C++ function "{self.name}" at "{cpp_function_dir}"')
 
             templates.add(

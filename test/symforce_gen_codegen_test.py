@@ -14,8 +14,9 @@ from symforce import types as T
 from symforce.codegen import Codegen, CodegenMode
 from symforce.codegen import cam_package_codegen
 from symforce.codegen import codegen_util
-from symforce.codegen import factors_codegen
+from symforce.codegen import geo_factors_codegen
 from symforce.codegen import geo_package_codegen
+from symforce.codegen import slam_factors_codegen
 from symforce.codegen import sym_util_package_codegen
 from symforce.test_util import TestCase, slow_on_sympy
 
@@ -128,8 +129,9 @@ class SymforceGenCodegenTest(TestCase):
         logger.debug(f"Creating temp directory: {output_dir}")
 
         try:
-            # Prior factors and between factors for C++.
-            factors_codegen.generate(os.path.join(output_dir, "sym"))
+            # Prior factors, between factors, and SLAM factors for C++.
+            geo_factors_codegen.generate(os.path.join(output_dir, "sym"))
+            slam_factors_codegen.generate(os.path.join(output_dir, "sym"))
 
             # Generate typedefs.h
             sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
