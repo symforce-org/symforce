@@ -45,6 +45,12 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
   using JacobianMat = typename std::remove_pointer<
       typename Traits::template arg<Traits::num_arguments - 1>::type>::type;
 
+  // Check that they're Eigen matrices (nice for error messages)
+  static_assert(kIsEigenType<ResidualVec>,
+                "ResidualVec (2nd from last argument) should be an Eigen::Matrix");
+  static_assert(kIsEigenType<JacobianMat>,
+                "JacobianMat (last argument) should be an Eigen::Matrix");
+
   // Get dimensions
   constexpr int M = JacobianMat::RowsAtCompileTime;
   constexpr int N = JacobianMat::ColsAtCompileTime;
@@ -263,6 +269,15 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
       typename Traits::template arg<Traits::num_arguments - 2>::type>::type;
   using RhsVec = typename std::remove_pointer<
       typename Traits::template arg<Traits::num_arguments - 1>::type>::type;
+
+  // Check that they're Eigen matrices (nice for error messages)
+  static_assert(kIsEigenType<ResidualVec>,
+                "ResidualVec (4th from last argument) should be an Eigen::Matrix");
+  static_assert(kIsEigenType<JacobianMat>,
+                "JacobianMat (3rd from last argument) should be an Eigen::Matrix");
+  static_assert(kIsEigenType<HessianMat>,
+                "HessianMat (2nd from last argument) should be an Eigen::Matrix");
+  static_assert(kIsEigenType<RhsVec>, "RhsVec (last argument) should be an Eigen::Matrix");
 
   // Get dimensions
   constexpr int M = JacobianMat::RowsAtCompileTime;
