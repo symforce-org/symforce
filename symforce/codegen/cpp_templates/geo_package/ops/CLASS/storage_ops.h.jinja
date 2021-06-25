@@ -4,6 +4,7 @@
 #pragma once
 
 #include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
+#include {{ lcm_type_t_include_dir }}
 
 namespace sym {
 namespace {{ camelcase_to_snakecase(cls.__name__) }} {
@@ -21,6 +22,10 @@ struct StorageOps {
 
   static void ToStorage(const sym::{{ cls.__name__ }}<ScalarType>& a, ScalarType* out);
   static sym::{{ cls.__name__ }}<ScalarType> FromStorage(const ScalarType* data);
+
+  static symforce::type_t TypeEnum() {
+    return symforce::type_t::{{ cls.__name__.upper() }};
+  }
 };
 
 }  // namespace {{ camelcase_to_snakecase(cls.__name__) }}

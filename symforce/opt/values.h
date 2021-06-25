@@ -2,11 +2,12 @@
 
 #include <unordered_map>
 
+#include <sym/util/type_ops.h>
+
 #include <lcmtypes/sym/values_t.hpp>
 #include <lcmtypes/sym/valuesf_t.hpp>
 
 #include "./key.h"
-#include "./type_ops.h"
 
 namespace sym {
 

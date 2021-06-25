@@ -214,6 +214,9 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                             CURRENT_DIR, "***REMOVED***/include/eigen3/"
                         )
                     ),
+                    lcm_include_dir=os.path.realpath(
+                        os.path.join(CURRENT_DIR, "***REMOVED***/include/")
+                    ),
                     symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
                     lib_dir=os.path.join(output_dir, "example"),
                     catch2_dir=os.path.join(CURRENT_DIR, "..", "..", "third_party", "catch2"),

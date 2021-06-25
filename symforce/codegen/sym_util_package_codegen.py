@@ -25,6 +25,12 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
             output_path=os.path.join(package_dir, "typedefs.h"),
             data={},
         )
+
+        templates.add(
+            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "type_ops.h.jinja"),
+            output_path=os.path.join(package_dir, "type_ops.h"),
+            data={},
+        )
     else:
         # sym/util is currently C++ only
         pass

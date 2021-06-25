@@ -5,6 +5,8 @@
 
 #include <sym/rot3.h>
 
+#include <lcmtypes/symforce/type_t.hpp>
+
 namespace sym {
 namespace rot3 {
 
@@ -21,6 +23,10 @@ struct StorageOps {
 
   static void ToStorage(const sym::Rot3<ScalarType>& a, ScalarType* out);
   static sym::Rot3<ScalarType> FromStorage(const ScalarType* data);
+
+  static symforce::type_t TypeEnum() {
+    return symforce::type_t::ROT3;
+  }
 };
 
 }  // namespace rot3

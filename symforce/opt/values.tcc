@@ -14,7 +14,7 @@ template <typename T>
 T Values<Scalar>::At(const index_entry_t& entry) const {
   // Check the type
   // TODO(hayk): Depend on fmtlib?
-  const type_t type = GetType<Scalar, T>();
+  const type_t type = StorageOps<T>::TypeEnum();
   if (entry.type != type) {
     throw std::runtime_error("Mismatched types.");
   }
@@ -70,7 +70,7 @@ template <typename T>
 bool Values<Scalar>::SetInternal(const Key& key, const T& value) {
   static_assert(std::is_same<Scalar, typename StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
-  const type_t type = GetType<Scalar, T>();
+  const type_t type = StorageOps<T>::TypeEnum();
   bool is_new = false;
 
   // Create the entry if not present.
@@ -107,7 +107,7 @@ template <typename T>
 void Values<Scalar>::SetInternal(const index_entry_t& entry, const T& value) {
   static_assert(std::is_same<Scalar, typename StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
-  SYM_ASSERT((entry.type == GetType<Scalar, T>()));
+  SYM_ASSERT((entry.type == StorageOps<T>::TypeEnum()));
   SYM_ASSERT((entry.offset + entry.storage_dim <= data_.size()));
   StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }

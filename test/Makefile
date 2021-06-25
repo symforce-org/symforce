@@ -5,7 +5,7 @@
 ***REMOVED***=***REMOVED***
 export PKG_CONFIG_PATH=***REMOVED***/lib/pkgconfig/
 
-INCLUDES = -I../gen/cpp -I./ -I***REMOVED***/include/eigen3 -I../third_party/catch2/include
+INCLUDES = -I../gen/cpp -I./ -I***REMOVED***/include/eigen3 -I../third_party/catch2/include -I***REMOVED***/gen/lcmtypes/cpp
 CXXFLAGS = -std=c++17 -L./ `pkg-config --cflags lcm`
 LDFLAGS = -shared -fpic
 

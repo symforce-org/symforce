@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <lcmtypes/symforce/type_t.hpp>
+
 #include "../storage_ops.h"
 
 namespace sym {
@@ -31,6 +33,10 @@ struct StorageOps {
   static ScalarType FromStorage(const ScalarType* data) {
     assert(data != nullptr);
     return data[0];
+  }
+
+  static symforce::type_t TypeEnum() {
+    return symforce::type_t::SCALAR;
   }
 };
 

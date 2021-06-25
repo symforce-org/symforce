@@ -282,6 +282,9 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                             CURRENT_DIR, "***REMOVED***/include/eigen3/"
                         )
                     ),
+                    lcm_include_dir=os.path.realpath(
+                        os.path.join(CURRENT_DIR, "***REMOVED***/include/")
+                    ),
                     lib_dir=os.path.join(output_dir, "example"),
                     catch2_dir=os.path.join(CURRENT_DIR, "..", "..", "third_party", "catch2"),
                 ),
@@ -290,6 +293,26 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
     else:
         raise NotImplementedError(f'Unknown mode: "{mode}"')
 
+    # LCM type_t
+    templates.add(
+        os.path.join(template_util.LCM_TEMPLATE_DIR, "symforce_types.lcm.jinja"),
+        os.path.join(package_dir, "..", "lcmtypes", "lcmtypes", "symforce_types.lcm"),
+        {},
+    )
+
     templates.render()
+
+    # Codegen for LCM type_t
+
+    # NOTE(aaron): The lcm-gen syntax for enums is different from skymarshal, so we use skymarshal
+    # because this LCM type is also used in ***REMOVED***
+    prev_use_skymarshal = codegen_util.USE_SKYMARSHAL
+    try:
+        codegen_util.USE_SKYMARSHAL = True
+        codegen_util.generate_lcm_types(
+            os.path.join(package_dir, "..", "lcmtypes", "lcmtypes"), ["symforce_types.lcm"]
+        )
+    finally:
+        codegen_util.USE_SKYMARSHAL = prev_use_skymarshal
 
     return output_dir

@@ -1,6 +1,11 @@
 # Basic tests for the cam and geo libraries
 
-INCLUDES = -I{{ include_dir }} -I{{ eigen_include_dir }} -I{{ symforce_include_dir }} -I{{ catch2_dir }}/include
+INCLUDES = -I{{ include_dir }} \
+	-I{{ eigen_include_dir }} \
+	-I{{ lcm_include_dir }} \
+	-I{{ symforce_include_dir }} \
+	-I{{ catch2_dir }}/include \
+	-I../lcmtypes/cpp
 CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
 LDFLAGS = -shared -fpic
 

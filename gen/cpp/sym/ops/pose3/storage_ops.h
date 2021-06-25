@@ -5,6 +5,8 @@
 
 #include <sym/pose3.h>
 
+#include <lcmtypes/symforce/type_t.hpp>
+
 namespace sym {
 namespace pose3 {
 
@@ -21,6 +23,10 @@ struct StorageOps {
 
   static void ToStorage(const sym::Pose3<ScalarType>& a, ScalarType* out);
   static sym::Pose3<ScalarType> FromStorage(const ScalarType* data);
+
+  static symforce::type_t TypeEnum() {
+    return symforce::type_t::POSE3;
+  }
 };
 
 }  // namespace pose3

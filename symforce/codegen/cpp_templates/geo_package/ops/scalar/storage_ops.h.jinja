@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "../storage_ops.h"
+#include {{ lcm_type_t_include_dir }}
 
 namespace sym {
 namespace scalar {
@@ -31,6 +32,10 @@ struct StorageOps {
   static ScalarType FromStorage(const ScalarType* data) {
     assert(data != nullptr);
     return data[0];
+  }
+
+  static symforce::type_t TypeEnum() {
+    return symforce::type_t::SCALAR;
   }
 };
 

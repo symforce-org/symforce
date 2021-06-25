@@ -535,8 +535,8 @@ def generate_lcm_types(
     if lcm_output_dir is None:
         lcm_output_dir = os.path.join(lcm_type_dir, "..")
 
-    python_types_dir = os.path.join(lcm_output_dir, "python2.7")
-    cpp_types_dir = os.path.join(lcm_output_dir, "cpp")
+    python_types_dir = os.path.join(lcm_output_dir, "python2.7", "lcmtypes")
+    cpp_types_dir = os.path.join(lcm_output_dir, "cpp", "lcmtypes")
     lcm_include_dir = os.path.join("lcmtypes")
 
     for lcm_file in lcm_files:
@@ -564,8 +564,6 @@ def generate_lcm_types(
                 ]
             )
         else:
-            python_types_dir = os.path.join(python_types_dir, "lcmtypes")
-            cpp_types_dir = os.path.join(cpp_types_dir, "lcmtypes")
             python_util.execute_subprocess(
                 [LCM_GEN_CMD, lcm_file_path, "--python", "--ppath", python_types_dir]
             )

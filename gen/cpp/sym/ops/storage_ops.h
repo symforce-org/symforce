@@ -3,6 +3,8 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <lcmtypes/symforce/type_t.hpp>
+
 namespace sym {
 
 /**
@@ -15,6 +17,7 @@ struct StorageOps {
   static constexpr int32_t StorageDim();
   static void ToStorage(const T& a, Scalar* out);
   static T FromStorage(const Scalar* data);
+  static constexpr symforce::type_t TypeEnum();
 };
 
 }  // namespace sym

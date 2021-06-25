@@ -275,16 +275,23 @@ TEST_CASE("Test Set with Eigen expressions", "[values]") {
   values.Set('b', Eigen::Vector3f::Zero().cast<double>());
   values.Set('c', Eigen::Vector3d() + 2 * Eigen::Vector3d::Ones());
   values.Set('d', Eigen::Vector3d(Eigen::Vector3d::Zero()));
+  values.Set('e', sym::Rot3d::FromAngleAxis(1, Eigen::Vector3d::Ones()).ToRotationMatrix());
   CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
   CHECK(values.At<Eigen::Vector3d>('b') == Eigen::Vector3d::Zero());
   CHECK(values.At<Eigen::Vector3d>('c') == Eigen::Vector3d::Constant(2));
   CHECK(values.At<Eigen::Vector3d>('d') == Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Matrix3d>('e') ==
+        sym::Rot3d::FromAngleAxis(1, Eigen::Vector3d::Ones()).ToRotationMatrix());
 
-  sym::index_t index = values.CreateIndex({'a', 'b', 'c', 'd'});
+  sym::index_t index = values.CreateIndex({'a', 'b', 'c', 'd', 'e'});
+  values.Set(index.entries[4],
+             sym::Rot3d::FromAngleAxis(0.3, Eigen::Vector3d::Ones()).ToRotationMatrix());
   values.Set(index.entries[3], Eigen::Vector3d::Zero());
   values.Set(index.entries[2], Eigen::Vector3f::Zero().cast<double>());
-  values.Set(index.entries[1], Eigen::Vector3d() + 2 * Eigen::Vector3d::Ones());
+  values.Set(index.entries[1], Eigen::Vector3d::Zero() + 2 * Eigen::Vector3d::Ones());
   values.Set(index.entries[0], Eigen::Vector3d(Eigen::Vector3d::Zero()));
+  CHECK(values.At<Eigen::Matrix3d>('e') ==
+        sym::Rot3d::FromAngleAxis(0.3, Eigen::Vector3d::Ones()).ToRotationMatrix());
   CHECK(values.At<Eigen::Vector3d>('d') == Eigen::Vector3d::Zero());
   CHECK(values.At<Eigen::Vector3d>('c') == Eigen::Vector3d::Zero());
   CHECK(values.At<Eigen::Vector3d>('b') == Eigen::Vector3d::Constant(2));
