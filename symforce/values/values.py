@@ -198,38 +198,43 @@ class Values:
 
     def items_recursive(self) -> T.List[T.Tuple[str, T.Any]]:
         """
-        Returns a flat list of key/value pairs for every element in this object.
+        Returns a flat list of key/value pairs for every element in this object in insertion order
+        of highest level dot seperated key.
         """
         return [(key[len(".") :], value) for key, value in Values._items_recursive(self)]
 
     def keys_recursive(self) -> T.List[str]:
         """
-        Returns a flat list of unique keys for every element in this object.
+        Returns a flat list of unique keys for every element in this object in insertion order
+        of highest level dot seperated key.
         """
         items = self.items_recursive()
         if len(items) == 0:
             return []
-        return list(zip(*items))[0]
+        return [key for key, _ in items]
 
     def values_recursive(self) -> T.List[T.Any]:
         """
-        Returns a flat list of elements stored in this Values object.
+        Returns a flat list of elements stored in this Values object in insertion order
+        of highest level dot seperated key.
         """
         items = self.items_recursive()
         if len(items) == 0:
             return []
-        return list(zip(*items))[1]
+        return [value for _, value in items]
 
     def subkeys_recursive(self) -> T.List[str]:
         """
-        Returns a flat list of subkeys for every element in this object. Unlike keys_recursive,
-        subkeys_recursive does not return dot-separated keys.
+        Returns a flat list of subkeys for every element in this object in insertion order
+        of highest level dot seperated key. Unlike keys_recursive, subkeys_recursive does not
+        return dot-separated keys.
         """
         return [k.split(".")[-1] for k in self.keys_recursive()]
 
     def scalar_keys_recursive(self) -> T.List[str]:
         """
-        Returns a flat list of keys to each scalar in this object
+        Returns a flat list of keys to each scalar in this object in insertion order
+        of highest level dot seperated key.
         """
         flat_scalar_keys: T.List[str] = []
         for key, value in self.items_recursive():
@@ -607,7 +612,9 @@ class Values:
         """
         Substitute given values of each scalar element into a new instance.
         """
-        return self.from_storage([sm.S(s).subs(*args, **kwargs) for s in self.to_storage()])
+        return self.from_storage(
+            [s.subs(*args, **kwargs) if hasattr(s, "subs") else s for s in self.to_storage()]
+        )
 
     def simplify(self) -> Values:
         """

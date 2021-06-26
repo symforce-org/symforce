@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 import unittest
 
 from symforce import logger
@@ -241,6 +242,71 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         for key, value in v.items_recursive():
             self.assertEqual(v[key], value)
 
+    def test_values_and_keys_recursive_return_lists(self) -> None:
+        """
+        Tests:
+            Values.values_recursive
+            Values.keys_recursive
+        Ensure the return types of values_recusive and keys_recursive are both lists
+        """
+        v = Values(entry=1)
+        self.assertIsInstance(v.values_recursive(), list)
+        self.assertIsInstance(v.keys_recursive(), list)
+
+    def test_subkeys_recursive(self) -> None:
+        """
+        Tests:
+            Values.subkeys_recursive
+        """
+        v = Values(
+            level1=1, base1a=Values(level2a=2, base2a=Values(level3=3), base1b=Values(level2b=4))
+        )
+        with self.subTest(msg="Returns the correct values"):
+            expected_subkeys = ["level1", "level2a", "level3", "level2b"]
+            self.assertEqual(expected_subkeys, v.subkeys_recursive())
+
+        with self.subTest(msg="key order is insertion order of highest level dot seperated key"):
+            v = Values()
+            v["first_top_level"] = Values()
+            v["second_top_level"] = Values(first_inner=2)
+            v["first_top_level"]["second_inner"] = 1
+            self.assertEqual(["second_inner", "first_inner"], v.subkeys_recursive())
+
+    def test_scalar_keys_recursive(self) -> None:
+        """
+        Tests:
+            Values.scalar_keys_recursive
+        """
+        with self.subTest(msg="Handles nested scalars"):
+            v = Values(base1=Values(base2=Values(val=sm.S(1))))
+            self.assertEqual(["base1.base2.val"], v.scalar_keys_recursive())
+
+        with self.subTest(msg="Gets keys for scalar components of non-scalar types"):
+            keys = Values(rot=geo.Rot3.identity()).scalar_keys_recursive()
+            self.assertEqual(["rot[0]", "rot[1]", "rot[2]", "rot[3]"], keys)
+
+        with self.subTest(msg="Gets keys for scalar components of an ndarray"):
+            keys = Values(array=np.array([1, 2])).scalar_keys_recursive()
+            self.assertEqual(["array[0]", "array[1]"], keys)
+
+        with self.subTest(msg="Gets keys for scalar components of non-scalar types in lists"):
+            keys = Values(
+                rot_list=[geo.Rot3.identity(), geo.Rot3.identity()]
+            ).scalar_keys_recursive()
+            self.assertEqual(
+                [f"rot_list[{i}][{j}]" for i, j in itertools.product(range(2), range(4))], keys
+            )
+
+        with self.subTest(msg="key order is insertion order of highest level dot seperated key"):
+            v = Values()
+            v["first_top_level"] = Values()
+            v["second_top_level"] = Values(first_inner=2)
+            v["first_top_level"]["second_inner"] = 1
+            self.assertEqual(
+                ["first_top_level.second_inner", "second_top_level.first_inner"],
+                v.scalar_keys_recursive(),
+            )
+
     def test_from_storage_index(self) -> None:
         """
         Tests:
@@ -281,6 +347,20 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     @slow_on_sympy
     def test_tangent_D_storage(self) -> None:
         super().test_tangent_D_storage()
+
+    def test_subs(self) -> None:
+        """
+        Tests:
+            Values.subs
+        """
+        with self.subTest(msg="Non-subbed entries should not be modified"):
+            v = Values(num=4, sym=sm.S("x"))
+            self.assertEqual(int, type(v.subs({"x": 3})["num"]))
+
+        with self.subTest(msg="Subbing works, even with nested Values"):
+            v = Values(inner_v=Values(sym=sm.S("x")))
+            v_goal = Values(inner_v=Values(sym=3))
+            self.assertEqual(v_goal, v.subs({"x": 3}))
 
 
 if __name__ == "__main__":
