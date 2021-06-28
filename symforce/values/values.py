@@ -169,7 +169,7 @@ class Values:
         return index_dict
 
     @staticmethod
-    def _items_recursive(v: T.Union[T.Sequence, Values]) -> T.List[T.Tuple[str, T.Any]]:
+    def _items_recursive(v: T.Union[T.Sequence, Values, np.ndarray]) -> T.List[T.Tuple[str, T.Any]]:
         """
         Helper for items_recursive that handles sequences
         """
@@ -186,7 +186,7 @@ class Values:
             else:
                 formatted_sub_key = f"[{sub_key}]"
 
-            if isinstance(sub_value, (Values, list, tuple)):
+            if isinstance(sub_value, (Values, list, tuple, np.ndarray)):
                 flat_items.extend(
                     (f"{formatted_sub_key}{sub_sub_key}", sub_sub_value)
                     for sub_sub_key, sub_sub_value in Values._items_recursive(sub_value)

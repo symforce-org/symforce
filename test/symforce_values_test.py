@@ -242,6 +242,15 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         for key, value in v.items_recursive():
             self.assertEqual(v[key], value)
 
+    def test_items_recursive_with_ndarray(self) -> None:
+        """
+        Tests:
+            Values.items_recursive
+        Ensure that the keys of ndarrays contain indices for each element
+        """
+        keys = [key for key, _ in Values(array=np.array([1, 2])).items_recursive()]
+        self.assertEqual(["array[0]", "array[1]"], keys)
+
     def test_values_and_keys_recursive_return_lists(self) -> None:
         """
         Tests:
@@ -289,9 +298,21 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             keys = Values(array=np.array([1, 2])).scalar_keys_recursive()
             self.assertEqual(["array[0]", "array[1]"], keys)
 
+        with self.subTest(msg="Gets keys for scalar components of a 1d ndarray"):
+            keys = Values(array=np.array([1])).scalar_keys_recursive()
+            self.assertEqual(["array[0]"], keys)
+
         with self.subTest(msg="Gets keys for scalar components of non-scalar types in lists"):
             keys = Values(
                 rot_list=[geo.Rot3.identity(), geo.Rot3.identity()]
+            ).scalar_keys_recursive()
+            self.assertEqual(
+                [f"rot_list[{i}][{j}]" for i, j in itertools.product(range(2), range(4))], keys
+            )
+
+        with self.subTest(msg="Gets keys for the scalar components of non-scalar types in ndrrays"):
+            keys = Values(
+                rot_list=np.array([geo.Rot3.identity(), geo.Rot3.identity()])
             ).scalar_keys_recursive()
             self.assertEqual(
                 [f"rot_list[{i}][{j}]" for i, j in itertools.product(range(2), range(4))], keys
