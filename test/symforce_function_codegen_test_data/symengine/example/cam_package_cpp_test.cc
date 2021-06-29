@@ -24,7 +24,6 @@
 #include <sym/posed_camera.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
-#include <symforce/util/random.h>
 
 #include "catch.hpp"
 

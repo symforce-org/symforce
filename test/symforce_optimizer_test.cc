@@ -6,7 +6,6 @@
 #include <sym/factors/prior_factor_rot3.h>
 
 #include "../symforce/opt/optimizer.h"
-#include "../symforce/util/random.h"
 #include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {
@@ -134,7 +133,7 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   sym::Valuesd values;
   std::mt19937 gen(42);
   for (int i = 0; i < num_keys; ++i) {
-    const sym::Pose3d value = prior_start.Retract(0.4 * sym::RandomNormalVector<double, 6>(gen));
+    const sym::Pose3d value = prior_start.Retract(0.4 * sym::Random<sym::Vector6d>(gen));
     values.Set<sym::Pose3d>({'P', i}, value);
   }
 
@@ -310,7 +309,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   std::mt19937 gen(42);
 
   for (int i = 0; i < num_keys; ++i) {
-    const sym::Rot3d value = sym::Rot3d::FromTangent(0.4 * sym::RandomNormalVector<double, 3>(gen));
+    const sym::Rot3d value = sym::Rot3d::FromTangent(0.4 * sym::Random<Eigen::Vector3d>(gen));
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 

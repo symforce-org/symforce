@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "../symforce/opt/gnc.h"
-#include "../symforce/util/random.h"
 #include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_residual.h"
 #include "catch.hpp"
 
@@ -47,9 +46,9 @@ TEST_CASE("Test GNC", "[gnc]") {
   for (int i = 0; i < n_residuals; i++) {
     if (i < n_outliers) {
       initial_values.Set<sym::Vector5d>(
-          {'y', i}, sym::Vector5d::Constant(10) + 0.1 * sym::RandomNormalVector<double, 5>(gen));
+          {'y', i}, sym::Vector5d::Constant(10) + 0.1 * sym::Random<sym::Vector5d>(gen));
     } else {
-      initial_values.Set<sym::Vector5d>({'y', i}, 0.1 * sym::RandomNormalVector<double, 5>(gen));
+      initial_values.Set<sym::Vector5d>({'y', i}, 0.1 * sym::Random<sym::Vector5d>(gen));
     }
   }
 

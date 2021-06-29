@@ -18,7 +18,6 @@
 #include <sym/rot2.h>
 #include <sym/rot3.h>
 #include <symforce/opt/util.h>
-#include <symforce/util/random.h>
 
 #include "../cpp/symforce/sym/tangent_d_storage_pose2.h"
 #include "../cpp/symforce/sym/tangent_d_storage_pose3.h"
@@ -43,7 +42,7 @@ TEST_CASE("Test Rot3", "[geo_package]") {
   const Eigen::Matrix<float, 3, 1> ypr = rot.YawPitchRoll();
 
   // Rotate a point
-  const Eigen::Vector3f point = Eigen::Vector3f::Random();
+  const Eigen::Vector3f point = sym::Random<Eigen::Vector3f>(gen);
   CHECK((quat * point).isApprox(aa * point, 1e-6));
   CHECK((quat * point).isApprox(mat * point, 1e-6));
   CHECK((quat * point).isApprox(rot * point, 1e-6));
@@ -93,14 +92,14 @@ TEST_CASE("Test Pose3", "[geo_package]") {
   const sym::Pose3d pose = sym::Random<sym::Pose3d>(gen);
 
   // Test InverseCompose
-  const Eigen::Vector3d point = sym::RandomNormalVector<double, 3>(gen);
+  const Eigen::Vector3d point = sym::Random<Eigen::Vector3d>(gen);
   CHECK(pose.InverseCompose(point).isApprox(pose.Inverse() * point, 1e-9));
 }
 
 TEST_CASE("Test Rot2 and Pose2", "[geo_package]") {
   std::mt19937 gen(42);
   const sym::Rot2f rot = sym::Random<sym::Rot2f>(gen);
-  const Eigen::Vector2f pos = sym::RandomNormalVector<float, 2>(gen);
+  const Eigen::Vector2f pos = sym::Random<Eigen::Vector2f>(gen);
 
   // Cast
   const sym::Rot2d rotd = rot.Cast<double>();
@@ -116,7 +115,7 @@ TEST_CASE("Test Rot2 and Pose2", "[geo_package]") {
   CHECK(pose_inv.Rotation().IsApprox(rot.Inverse(), 1e-9));
 
   // Test InverseCompose
-  const Eigen::Vector2f point = sym::RandomNormalVector<float, 2>(gen);
+  const Eigen::Vector2f point = sym::Random<Eigen::Vector2f>(gen);
   CHECK(pose.InverseCompose(point).isApprox(pose.Inverse() * point, 1e-6));
 }
 
@@ -272,7 +271,8 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
   CHECK(tangent_dim > 0);
   CHECK(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
-  const TangentVec pertubation = TangentVec::Random();
+  std::mt19937 gen(24362);
+  const TangentVec pertubation = sym::Random<TangentVec>(gen);
   const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
   const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
@@ -305,7 +305,6 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
 
   // Test tangent_D_storage generated from the symbolic version in SymForce against numerical
   // derivatives
-  std::mt19937 gen(24362);
   for (size_t i = 0; i < 10000; i++) {
     const T a = sym::Random<T>(gen);
 
@@ -356,7 +355,8 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", double, float) 
   CHECK(tangent_dim > 0);
   CHECK(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
-  const TangentVec pertubation = TangentVec::Random();
+  std::mt19937 gen(42);
+  const TangentVec pertubation = sym::Random<TangentVec>(gen);
   const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
   const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
@@ -390,7 +390,8 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<do
   CHECK(tangent_dim > 0);
   CHECK(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
-  const TangentVec pertubation = TangentVec::Random();
+  std::mt19937 gen(42);
+  const TangentVec pertubation = sym::Random<TangentVec>(gen);
   const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
   const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);

@@ -18,7 +18,15 @@ struct StorageOps {
   static void ToStorage(const T& a, Scalar* out);
   static T FromStorage(const Scalar* data);
   static constexpr symforce::type_t TypeEnum();
+
+  template <typename Generator>
+  static T Random(Generator& gen);
 };
+
+template <typename T, typename Generator>
+T Random(Generator& gen) {
+  return StorageOps<T>::Random(gen);
+}
 
 }  // namespace sym
 

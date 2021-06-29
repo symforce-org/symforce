@@ -37,6 +37,11 @@ struct StorageOps {
   static symforce::type_t TypeEnum() {
     return symforce::type_t::SCALAR;
   }
+
+  template <typename Generator>
+  static Scalar Random(Generator& gen) {
+    return std::normal_distribution<Scalar>{}(gen);
+  }
 };
 
 }  // namespace scalar

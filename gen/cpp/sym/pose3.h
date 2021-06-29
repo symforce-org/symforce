@@ -190,6 +190,12 @@ class Pose3 {
     return Rotation() * point + Position();
   }
 
+  // Generate a random element, with normally distributed position
+  template <typename Generator>
+  static Pose3 Random(Generator& gen) {
+    return Pose3(Rot3<Scalar>::Random(gen), sym::StorageOps<Vector3>::Random(gen));
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------

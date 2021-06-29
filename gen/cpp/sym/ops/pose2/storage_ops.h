@@ -27,6 +27,11 @@ struct StorageOps {
   static symforce::type_t TypeEnum() {
     return symforce::type_t::POSE2;
   }
+
+  template <typename Generator>
+  static sym::Pose2<Scalar> Random(Generator& gen) {
+    return sym::Pose2<ScalarType>::Random(gen);
+  }
 };
 
 }  // namespace pose2

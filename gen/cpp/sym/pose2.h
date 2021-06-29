@@ -189,6 +189,12 @@ class Pose2 {
     return Rotation() * point + Position();
   }
 
+  // Generate a random element, with normally distributed position
+  template <typename Generator>
+  static Pose2 Random(Generator& gen) {
+    return Pose2(Rot2<Scalar>::Random(gen), sym::StorageOps<Vector2>::Random(gen));
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------

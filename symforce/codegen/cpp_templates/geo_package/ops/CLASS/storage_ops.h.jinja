@@ -26,6 +26,11 @@ struct StorageOps {
   static symforce::type_t TypeEnum() {
     return symforce::type_t::{{ cls.__name__.upper() }};
   }
+
+  template <typename Generator>
+  static sym::{{ cls.__name__ }}<Scalar> Random(Generator& gen) {
+    return sym::{{ cls.__name__ }}<ScalarType>::Random(gen);
+  }
 };
 
 }  // namespace {{ camelcase_to_snakecase(cls.__name__) }}

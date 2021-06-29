@@ -1,16 +1,16 @@
 #include <Eigen/Dense>
+#include <sym/rot3.h>
 #include <symforce/opt/util.h>
-#include <symforce/util/random.h>
 
 #include "catch.hpp"
 
 TEST_CASE("Test interpolation", "[opt_util][interpolate]") {
   std::mt19937 gen(42);
 
-  const Eigen::Vector3d axis = sym::Random<sym::Rot3d>(gen) * Eigen::Vector3d::UnitX();
+  const Eigen::Vector3d axis = sym::Rot3d::Random(gen) * Eigen::Vector3d::UnitX();
   const double angle = M_PI / 3;
 
-  const sym::Rot3d a = sym::Random<sym::Rot3d>(gen);
+  const sym::Rot3d a = sym::Rot3d::Random(gen);
   const sym::Rot3d b = sym::Rot3d::FromAngleAxis(angle, axis) * a;
 
   const double alpha = 0.67;

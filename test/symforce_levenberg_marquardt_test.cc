@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "../symforce/opt/levenberg_marquardt_solver.h"
-#include "../symforce/util/random.h"
 #include "catch.hpp"
 
 /**
@@ -18,7 +17,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   constexpr const int N = 5;
 
   std::mt19937 gen(12345);
-  const sym::MatrixX<Scalar> J_MN = sym::RandomNormalMatrix<Scalar, M, N>(gen);
+  const sym::MatrixX<Scalar> J_MN = sym::Random<Eigen::Matrix<Scalar, M, N>>(gen);
 
   std::cout << "J_MN:\n" << J_MN << std::endl;
   std::cout << "J_MN^T * J_MN:\n" << (J_MN.transpose() * J_MN).eval() << std::endl;

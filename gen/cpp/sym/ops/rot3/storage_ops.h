@@ -27,6 +27,11 @@ struct StorageOps {
   static symforce::type_t TypeEnum() {
     return symforce::type_t::ROT3;
   }
+
+  template <typename Generator>
+  static sym::Rot3<Scalar> Random(Generator& gen) {
+    return sym::Rot3<ScalarType>::Random(gen);
+  }
 };
 
 }  // namespace rot3

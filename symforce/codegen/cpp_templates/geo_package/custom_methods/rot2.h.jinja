@@ -14,7 +14,8 @@
   }
 
   // Generate a random element in SO2
-  static Rot2 Random(std::mt19937& gen) {
+  template <typename Generator>
+  static Rot2 Random(Generator& gen) {
     std::uniform_real_distribution<Scalar> dist(0.0, 1.0);
     return RandomFromUniformSamples(dist(gen));
   }

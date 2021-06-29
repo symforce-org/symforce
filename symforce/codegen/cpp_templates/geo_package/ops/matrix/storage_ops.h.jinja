@@ -49,6 +49,12 @@ struct StorageOps {
       return symforce::type_t::INVALID;
     }
   }
+
+  template <typename Generator>
+  static T Random(Generator& gen) {
+    std::normal_distribution<Scalar> distribution{};
+    return T::NullaryExpr([&]() { return distribution(gen); });
+  }
 };
 
 }  // namespace matrix
