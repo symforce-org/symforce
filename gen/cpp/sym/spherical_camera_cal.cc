@@ -57,12 +57,18 @@ Eigen::Matrix<Scalar, 2, 1> SphericalCameraCal<Scalar>::PixelFromCameraPoint(
 
   // Intermediate terms (4)
   const Scalar _tmp0 =
-      std::sqrt(epsilon + (point(0, 0) * point(0, 0)) + (point(1, 0) * point(1, 0)));
+      std::sqrt(epsilon + std::pow<Scalar>(point(0, 0), 2) + std::pow<Scalar>(point(1, 0), 2));
   const Scalar _tmp1 = std::atan2(_tmp0, point(2, 0));
   const Scalar _tmp2 = std::min<Scalar>(_tmp1, _self[4] - epsilon);
-  const Scalar _tmp3 = (_self[5] * (_tmp2 * _tmp2 * _tmp2) + _self[6] * std::pow(_tmp2, 5) +
-                        _self[7] * std::pow(_tmp2, 7) + _self[8] * std::pow(_tmp2, 9) + _tmp2) /
-                       _tmp0;
+  const Scalar _tmp3 =
+      (_self[5] *
+           [&]() {
+             const Scalar base = _tmp2;
+             return base * base * base;
+           }() +
+       _self[6] * std::pow<Scalar>(_tmp2, 5) + _self[7] * std::pow<Scalar>(_tmp2, 7) +
+       _self[8] * std::pow<Scalar>(_tmp2, 9) + _tmp2) /
+      _tmp0;
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 2, 1> _pixel;

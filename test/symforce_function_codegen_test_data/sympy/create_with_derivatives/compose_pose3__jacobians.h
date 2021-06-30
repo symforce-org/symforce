@@ -149,13 +149,13 @@ void ComposePose3_Jacobians(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar
   const Scalar _tmp116 = _a[1] * _tmp52 + _tmp101 + _tmp102 + _tmp111;
   const Scalar _tmp117 = -_a[2] * _tmp52 - _tmp109 + _tmp89;
   const Scalar _tmp118 = _a[3] * _tmp52 - _tmp107 + _tmp92 - _tmp93;
-  const Scalar _tmp119 = -2 * (_a[1] * _a[1]);
-  const Scalar _tmp120 = 1 - 2 * (_a[2] * _a[2]);
+  const Scalar _tmp119 = -2 * std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp120 = 1 - 2 * std::pow<Scalar>(_a[2], 2);
   const Scalar _tmp121 = 2 * _a[0] * _a[1];
   const Scalar _tmp122 = _a[3] * _tmp2;
   const Scalar _tmp123 = _a[0] * _tmp2;
   const Scalar _tmp124 = _a[1] * _tmp3;
-  const Scalar _tmp125 = -2 * (_a[0] * _a[0]);
+  const Scalar _tmp125 = -2 * std::pow<Scalar>(_a[0], 2);
   const Scalar _tmp126 = _a[0] * _tmp3;
   const Scalar _tmp127 = _a[1] * _tmp2;
 

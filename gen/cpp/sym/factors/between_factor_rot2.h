@@ -37,20 +37,20 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
   const Eigen::Matrix<Scalar, 2, 1>& _a_T_b = a_T_b.Data();
 
   // Intermediate terms (32)
-  const Scalar _tmp0 = (_a[1] * _a[1]);
-  const Scalar _tmp1 = (_a[0] * _a[0]);
+  const Scalar _tmp0 = std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp1 = std::pow<Scalar>(_a[0], 2);
   const Scalar _tmp2 = _tmp0 + _tmp1;
   const Scalar _tmp3 = 1.0 / (_tmp2);
   const Scalar _tmp4 = _b[0] * _tmp3;
   const Scalar _tmp5 = _b[1] * _tmp3;
   const Scalar _tmp6 = _a[0] * _tmp4 + _a[1] * _tmp5;
-  const Scalar _tmp7 = 1.0 / ((_a_T_b[0] * _a_T_b[0]) + (_a_T_b[1] * _a_T_b[1]));
+  const Scalar _tmp7 = 1.0 / (std::pow<Scalar>(_a_T_b[0], 2) + std::pow<Scalar>(_a_T_b[1], 2));
   const Scalar _tmp8 = _a_T_b[1] * _tmp7;
   const Scalar _tmp9 = _a[0] * _tmp5 - _a[1] * _tmp4;
   const Scalar _tmp10 = _a_T_b[0] * _tmp7;
   const Scalar _tmp11 = _tmp10 * _tmp9 - _tmp6 * _tmp8;
   const Scalar _tmp12 = _tmp10 * _tmp6 + _tmp8 * _tmp9;
-  const Scalar _tmp13 = 2 / (_tmp2 * _tmp2);
+  const Scalar _tmp13 = 2 / std::pow<Scalar>(_tmp2, 2);
   const Scalar _tmp14 = _tmp1 * _tmp13;
   const Scalar _tmp15 = _a[0] * _a[1] * _tmp13;
   const Scalar _tmp16 = _b[0] * _tmp15;
@@ -58,9 +58,9 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
   const Scalar _tmp18 = -_b[1] * _tmp15;
   const Scalar _tmp19 = -_b[0] * _tmp14 + _tmp18 + _tmp4;
   const Scalar _tmp20 = 1.0 / (_tmp12);
-  const Scalar _tmp21 = (_tmp12 * _tmp12);
+  const Scalar _tmp21 = std::pow<Scalar>(_tmp12, 2);
   const Scalar _tmp22 = _tmp11 / _tmp21;
-  const Scalar _tmp23 = _tmp21 * sqrt_info(0, 0) / ((_tmp11 * _tmp11) + _tmp21);
+  const Scalar _tmp23 = _tmp21 * sqrt_info(0, 0) / (std::pow<Scalar>(_tmp11, 2) + _tmp21);
   const Scalar _tmp24 = _tmp0 * _tmp13;
   const Scalar _tmp25 = -_b[1] * _tmp24 - _tmp16 + _tmp5;
   const Scalar _tmp26 = _b[0] * _tmp24 + _tmp18 - _tmp4;

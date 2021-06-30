@@ -81,7 +81,7 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Rot
   const Eigen::Matrix<Scalar, 2, 1>& _b = b.Data();
 
   // Intermediate terms (3)
-  const Scalar _tmp0 = 1.0 / ((_a[0] * _a[0]) + (_a[1] * _a[1]));
+  const Scalar _tmp0 = 1.0 / (std::pow<Scalar>(_a[0], 2) + std::pow<Scalar>(_a[1], 2));
   const Scalar _tmp1 = _a[0] * _tmp0;
   const Scalar _tmp2 = _a[1] * _tmp0;
 

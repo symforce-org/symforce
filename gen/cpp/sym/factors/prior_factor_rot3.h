@@ -46,7 +46,7 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
   const Scalar _tmp6 = 1 - epsilon;
   const Scalar _tmp7 = std::min<Scalar>(_tmp5, _tmp6);
   const Scalar _tmp8 = std::acos(_tmp7);
-  const Scalar _tmp9 = 1 - (_tmp7 * _tmp7);
+  const Scalar _tmp9 = 1 - std::pow<Scalar>(_tmp7, 2);
   const Scalar _tmp10 = 2 * _tmp8 / std::sqrt(_tmp9);
   const Scalar _tmp11 = -_prior[0] * _value[3] - _prior[1] * _value[2] + _prior[2] * _value[1] +
                         _prior[3] * _value[0];

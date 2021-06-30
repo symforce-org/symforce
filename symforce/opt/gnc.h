@@ -27,7 +27,8 @@ class GncOptimizer : public BaseOptimizerType {
                const Scalar epsilon = 1e-9, const std::vector<Key>& keys = {},
                const std::string& name = "sym::Optimize", bool debug_stats = false,
                bool check_derivatives = false)
-      : BaseOptimizer(optimizer_params, factors, epsilon, keys, name, debug_stats),
+      : BaseOptimizer(optimizer_params, factors, epsilon, keys, name, debug_stats,
+                      check_derivatives),
         gnc_params_(gnc_params),
         gnc_mu_key_(gnc_mu_key) {}
 
@@ -40,7 +41,7 @@ class GncOptimizer : public BaseOptimizerType {
                const std::string& name = "sym::Optimize", bool debug_stats = false,
                bool check_derivatives = false)
       : BaseOptimizer(optimizer_params, std::move(factors), epsilon, std::move(keys), name,
-                      debug_stats),
+                      debug_stats, check_derivatives),
         gnc_params_(gnc_params),
         gnc_mu_key_(gnc_mu_key) {}
 

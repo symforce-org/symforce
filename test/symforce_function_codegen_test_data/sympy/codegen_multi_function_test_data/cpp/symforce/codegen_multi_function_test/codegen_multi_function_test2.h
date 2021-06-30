@@ -31,7 +31,10 @@ void CodegenMultiFunctionTest2(
   if (outputs_2 != nullptr) {
     codegen_multi_function_test::outputs_2_t& _outputs_2 = (*outputs_2);
 
-    _outputs_2.foo = inputs.x + (inputs.y * inputs.y * inputs.y);
+    _outputs_2.foo = inputs.x + [&]() {
+      const Scalar base = inputs.y;
+      return base * base * base;
+    }();
   }
 }  // NOLINT(readability/fn_size)
 

@@ -16,18 +16,18 @@ class CppCodePrinter(CXX11CodePrinter):
         """
         base_str = self._print(expr.base)
 
+        # We don't special-case 2, because std::pow(x, 2) compiles to x * x under all circumstances
+        # we tested (floats or doubles, fast-math or not)
         if expr.exp == -1:
             return f"1.0 / ({base_str})"
-        elif expr.exp == 2:
-            return f"({base_str} * {base_str})"
         elif expr.exp == 3:
-            return f"({base_str} * {base_str} * {base_str})"
+            return f"[&]() {{ const Scalar base = {base_str}; return base * base * base; }}()"
         elif expr.exp == sm.S.One / 2:
             return f"{self._ns}sqrt({base_str})"
         elif expr.exp == sm.S(3) / 2:
             return f"({base_str} * {self._ns}sqrt({base_str}))"
         else:
-            return "{}pow({}, {})".format(self._ns, base_str, self._print(expr.exp))
+            return "{}pow<Scalar>({}, {})".format(self._ns, base_str, self._print(expr.exp))
 
     def _print_Max(self, expr: sm.Max) -> str:
         """

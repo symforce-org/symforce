@@ -37,9 +37,9 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
   // Intermediate terms (98)
-  const Scalar _tmp0 = 2 * (_a[1] * _a[1]);
+  const Scalar _tmp0 = 2 * std::pow<Scalar>(_a[1], 2);
   const Scalar _tmp1 = -_tmp0;
-  const Scalar _tmp2 = 2 * (_a[2] * _a[2]);
+  const Scalar _tmp2 = 2 * std::pow<Scalar>(_a[2], 2);
   const Scalar _tmp3 = 1 - _tmp2;
   const Scalar _tmp4 = _tmp1 + _tmp3;
   const Scalar _tmp5 = 2 * _a[1];
@@ -53,7 +53,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp13 = _tmp11 + _tmp12;
   const Scalar _tmp14 = -_a[4] * _tmp4 - _a[5] * _tmp9 - _a[6] * _tmp13 + _b[4] * _tmp4 +
                         _b[5] * _tmp9 + _b[6] * _tmp13 - a_t_b(0, 0);
-  const Scalar _tmp15 = 2 * (_a[0] * _a[0]);
+  const Scalar _tmp15 = 2 * std::pow<Scalar>(_a[0], 2);
   const Scalar _tmp16 = -_tmp15;
   const Scalar _tmp17 = _tmp16 + _tmp3;
   const Scalar _tmp18 = -_tmp8;

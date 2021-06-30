@@ -37,17 +37,17 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
   // Intermediate terms (17)
   const Scalar _tmp0 = -_prior[2] + _value[2];
   const Scalar _tmp1 = -_prior[3] + _value[3];
-  const Scalar _tmp2 = 1.0 / ((_prior[0] * _prior[0]) + (_prior[1] * _prior[1]));
+  const Scalar _tmp2 = 1.0 / (std::pow<Scalar>(_prior[0], 2) + std::pow<Scalar>(_prior[1], 2));
   const Scalar _tmp3 = _prior[0] * _tmp2;
   const Scalar _tmp4 = _prior[1] * _tmp2;
   const Scalar _tmp5 = _tmp3 * _value[1] - _tmp4 * _value[0];
   const Scalar _tmp6 = _tmp3 * _value[0] + _tmp4 * _value[1];
   const Scalar _tmp7 = std::atan2(_tmp5, _tmp6);
-  const Scalar _tmp8 = (_tmp6 * _tmp6);
+  const Scalar _tmp8 = std::pow<Scalar>(_tmp6, 2);
   const Scalar _tmp9 = _tmp5 / _tmp8;
   const Scalar _tmp10 = _tmp2 / _tmp6;
   const Scalar _tmp11 = _value[0] * (_prior[0] * _tmp10 - _tmp4 * _tmp9);
-  const Scalar _tmp12 = _tmp8 / ((_tmp5 * _tmp5) + _tmp8);
+  const Scalar _tmp12 = _tmp8 / (std::pow<Scalar>(_tmp5, 2) + _tmp8);
   const Scalar _tmp13 = _tmp12 * sqrt_info(0, 2);
   const Scalar _tmp14 = _value[1] * (-_prior[1] * _tmp10 - _tmp3 * _tmp9);
   const Scalar _tmp15 = _tmp12 * sqrt_info(1, 2);

@@ -45,7 +45,7 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
   const Scalar _tmp5 = 1 - epsilon;
   const Scalar _tmp6 = std::min<Scalar>(_tmp4, _tmp5);
   const Scalar _tmp7 = std::acos(_tmp6);
-  const Scalar _tmp8 = 1 - (_tmp6 * _tmp6);
+  const Scalar _tmp8 = 1 - std::pow<Scalar>(_tmp6, 2);
   const Scalar _tmp9 = 2 * _tmp7 / std::sqrt(_tmp8);
   const Scalar _tmp10 = _tmp3 * _tmp9;
   const Scalar _tmp11 = _tmp0 * _tmp10;

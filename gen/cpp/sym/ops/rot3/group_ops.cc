@@ -142,10 +142,10 @@ sym::Rot3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
   // Intermediate terms (13)
-  const Scalar _tmp0 = (_a[2] * _a[2]);
-  const Scalar _tmp1 = (_a[0] * _a[0]);
-  const Scalar _tmp2 = -(_a[3] * _a[3]);
-  const Scalar _tmp3 = (_a[1] * _a[1]);
+  const Scalar _tmp0 = std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp1 = std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp2 = -std::pow<Scalar>(_a[3], 2);
+  const Scalar _tmp3 = std::pow<Scalar>(_a[1], 2);
   const Scalar _tmp4 = _tmp2 + _tmp3;
   const Scalar _tmp5 = 2 * _a[2];
   const Scalar _tmp6 = _a[3] * _tmp5;

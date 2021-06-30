@@ -56,21 +56,22 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPoint(
   const Eigen::Matrix<Scalar, 6, 1>& _self = Data();
 
   // Intermediate terms (13)
-  const Scalar _tmp0 =
-      (epsilon * epsilon) + (point(0, 0) * point(0, 0)) + (point(1, 0) * point(1, 0));
-  const Scalar _tmp1 = std::sqrt(_tmp0 + (point(2, 0) * point(2, 0)));
+  const Scalar _tmp0 = std::pow<Scalar>(epsilon, 2) + std::pow<Scalar>(point(0, 0), 2) +
+                       std::pow<Scalar>(point(1, 0), 2);
+  const Scalar _tmp1 = std::sqrt(_tmp0 + std::pow<Scalar>(point(2, 0), 2));
   const Scalar _tmp2 = _self[4] * _tmp1 + point(2, 0);
   const Scalar _tmp3 = std::min<Scalar>(0, (((_self[5] - 0.5) > 0) - ((_self[5] - 0.5) < 0)));
   const Scalar _tmp4 = 2 * _tmp3;
   const Scalar _tmp5 = _self[5] - epsilon * (_tmp4 + 1);
   const Scalar _tmp6 = -_tmp5;
   const Scalar _tmp7 =
-      1.0 / (std::max<Scalar>(epsilon, std::fabs(_tmp2 * (_tmp6 + 1) +
-                                                 _tmp5 * std::sqrt(_tmp0 + (_tmp2 * _tmp2)))));
+      1.0 /
+      (std::max<Scalar>(epsilon, std::fabs(_tmp2 * (_tmp6 + 1) +
+                                           _tmp5 * std::sqrt(_tmp0 + std::pow<Scalar>(_tmp2, 2)))));
   const Scalar _tmp8 = (1.0 / 2.0) * _tmp4 + _tmp6 + 1;
   const Scalar _tmp9 = _tmp3 + _tmp5;
-  const Scalar _tmp10 = (_tmp8 * _tmp8) / (_tmp9 * _tmp9);
-  const Scalar _tmp11 = (_self[4] * _self[4]);
+  const Scalar _tmp10 = std::pow<Scalar>(_tmp8, 2) / std::pow<Scalar>(_tmp9, 2);
+  const Scalar _tmp11 = std::pow<Scalar>(_self[4], 2);
   const Scalar _tmp12 = _tmp10 * _tmp11 - _tmp11 + 1;
 
   // Output terms (2)
@@ -118,16 +119,16 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixel(
   // Intermediate terms (12)
   const Scalar _tmp0 = -_self[2] + pixel(0, 0);
   const Scalar _tmp1 = -_self[3] + pixel(1, 0);
-  const Scalar _tmp2 =
-      (_tmp1 * _tmp1) / (_self[1] * _self[1]) + (_tmp0 * _tmp0) / (_self[0] * _self[0]);
+  const Scalar _tmp2 = std::pow<Scalar>(_tmp1, 2) / std::pow<Scalar>(_self[1], 2) +
+                       std::pow<Scalar>(_tmp0, 2) / std::pow<Scalar>(_self[0], 2);
   const Scalar _tmp3 = -_tmp2 * (2 * _self[5] - 1) + 1;
   const Scalar _tmp4 = _self[5] * std::sqrt(std::max<Scalar>(_tmp3, epsilon)) - _self[5] + 1;
   const Scalar _tmp5 =
       _tmp4 + epsilon * (2 * std::min<Scalar>(0, (((_tmp4) > 0) - ((_tmp4) < 0))) + 1);
-  const Scalar _tmp6 = -(_self[5] * _self[5]) * _tmp2 + 1;
+  const Scalar _tmp6 = -std::pow<Scalar>(_self[5], 2) * _tmp2 + 1;
   const Scalar _tmp7 = _tmp6 / _tmp5;
-  const Scalar _tmp8 = (_tmp6 * _tmp6) / (_tmp5 * _tmp5);
-  const Scalar _tmp9 = _tmp2 * (1 - (_self[4] * _self[4])) + _tmp8;
+  const Scalar _tmp8 = std::pow<Scalar>(_tmp6, 2) / std::pow<Scalar>(_tmp5, 2);
+  const Scalar _tmp9 = _tmp2 * (1 - std::pow<Scalar>(_self[4], 2)) + _tmp8;
   const Scalar _tmp10 = _tmp2 + _tmp8;
   const Scalar _tmp11 =
       (_self[4] * _tmp7 + std::sqrt(std::max<Scalar>(_tmp9, epsilon))) /

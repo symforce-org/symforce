@@ -49,7 +49,7 @@ void BetweenFactorPose3(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b
   const Scalar _tmp6 = std::fabs(_tmp5);
   const Scalar _tmp7 = 1 - epsilon;
   const Scalar _tmp8 = std::min<Scalar>(_tmp6, _tmp7);
-  const Scalar _tmp9 = 1 - (_tmp8 * _tmp8);
+  const Scalar _tmp9 = 1 - std::pow<Scalar>(_tmp8, 2);
   const Scalar _tmp10 = 2 / std::sqrt(_tmp9);
   const Scalar _tmp11 = std::acos(_tmp8);
   const Scalar _tmp12 = (((_tmp5) > 0) - ((_tmp5) < 0));
@@ -63,9 +63,9 @@ void BetweenFactorPose3(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b
   const Scalar _tmp19 =
       -_a_T_b[0] * _tmp1 + _a_T_b[1] * _tmp2 - _a_T_b[2] * _tmp0 + _a_T_b[3] * _tmp3;
   const Scalar _tmp20 = _tmp15 * _tmp19;
-  const Scalar _tmp21 = 2 * (_a[0] * _a[0]);
+  const Scalar _tmp21 = 2 * std::pow<Scalar>(_a[0], 2);
   const Scalar _tmp22 = -_tmp21;
-  const Scalar _tmp23 = 2 * (_a[2] * _a[2]);
+  const Scalar _tmp23 = 2 * std::pow<Scalar>(_a[2], 2);
   const Scalar _tmp24 = -_tmp23;
   const Scalar _tmp25 = _tmp22 + _tmp24 + 1;
   const Scalar _tmp26 = 2 * _a[0];
@@ -80,7 +80,7 @@ void BetweenFactorPose3(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b
   const Scalar _tmp35 = _tmp32 + _tmp34;
   const Scalar _tmp36 = -_a[4] * _tmp31 - _a[5] * _tmp25 - _a[6] * _tmp35 - _a_T_b[5] +
                         _b[4] * _tmp31 + _b[5] * _tmp25 + _b[6] * _tmp35;
-  const Scalar _tmp37 = 2 * (_a[1] * _a[1]);
+  const Scalar _tmp37 = 2 * std::pow<Scalar>(_a[1], 2);
   const Scalar _tmp38 = 1 - _tmp37;
   const Scalar _tmp39 = _tmp24 + _tmp38;
   const Scalar _tmp40 = _tmp27 + _tmp29;

@@ -36,8 +36,8 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
   const Scalar _tmp2 = 2 * _nav_T_cam[0];
   const Scalar _tmp3 = _nav_T_cam[3] * _tmp2;
   const Scalar _tmp4 = _tmp1 + _tmp3;
-  const Scalar _tmp5 = -2 * (_nav_T_cam[0] * _nav_T_cam[0]);
-  const Scalar _tmp6 = 1 - 2 * (_nav_T_cam[2] * _nav_T_cam[2]);
+  const Scalar _tmp5 = -2 * std::pow<Scalar>(_nav_T_cam[0], 2);
+  const Scalar _tmp6 = 1 - 2 * std::pow<Scalar>(_nav_T_cam[2], 2);
   const Scalar _tmp7 = _tmp5 + _tmp6;
   const Scalar _tmp8 = 2 * _nav_T_cam[2] * _nav_T_cam[3];
   const Scalar _tmp9 = _nav_T_cam[1] * _tmp2;
@@ -48,7 +48,7 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
   const Scalar _tmp12 = _nav_T_cam[2] * _tmp2;
   const Scalar _tmp13 = _nav_T_cam[3] * _tmp0;
   const Scalar _tmp14 = _tmp12 - _tmp13;
-  const Scalar _tmp15 = -2 * (_nav_T_cam[1] * _nav_T_cam[1]);
+  const Scalar _tmp15 = -2 * std::pow<Scalar>(_nav_T_cam[1], 2);
   const Scalar _tmp16 = _tmp15 + _tmp6;
   const Scalar _tmp17 = _tmp8 + _tmp9;
   const Scalar _tmp18 = -_nav_T_cam[4] * _tmp16 - _nav_T_cam[5] * _tmp17 - _nav_T_cam[6] * _tmp14 +
@@ -65,10 +65,10 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
   Eigen::Matrix<Scalar, 2, 1> _res;
 
   _res(0, 0) = std::atan2(_tmp11, _tmp18 + epsilon * ((((_tmp18) > 0) - ((_tmp18) < 0)) + 0.5));
-  _res(1, 0) =
-      -std::acos(_tmp22 /
-                 (epsilon + std::sqrt((_tmp11 * _tmp11) + (_tmp18 * _tmp18) + (_tmp22 * _tmp22)))) +
-      M_PI_2;
+  _res(1, 0) = -std::acos(_tmp22 / (epsilon + std::sqrt(std::pow<Scalar>(_tmp11, 2) +
+                                                        std::pow<Scalar>(_tmp18, 2) +
+                                                        std::pow<Scalar>(_tmp22, 2)))) +
+               M_PI_2;
 
   return _res;
 }  // NOLINT(readability/fn_size)

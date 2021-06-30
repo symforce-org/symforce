@@ -38,8 +38,8 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Eigen::Matrix<Scalar, 4, 1>& _a_T_b = a_T_b.Data();
 
   // Intermediate terms (66)
-  const Scalar _tmp0 = (_a[0] * _a[0]);
-  const Scalar _tmp1 = (_a[1] * _a[1]);
+  const Scalar _tmp0 = std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp1 = std::pow<Scalar>(_a[1], 2);
   const Scalar _tmp2 = _tmp0 + _tmp1;
   const Scalar _tmp3 = 1.0 / (_tmp2);
   const Scalar _tmp4 = _a[3] * _tmp3;
@@ -48,7 +48,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp7 = _b[2] * _tmp3;
   const Scalar _tmp8 = -_a[0] * _tmp5 + _a[0] * _tmp7 - _a[1] * _tmp4 + _a[1] * _tmp6 - _a_T_b[2];
   const Scalar _tmp9 = -_a[0] * _tmp4 + _a[0] * _tmp6 + _a[1] * _tmp5 - _a[1] * _tmp7 - _a_T_b[3];
-  const Scalar _tmp10 = 1.0 / ((_a_T_b[0] * _a_T_b[0]) + (_a_T_b[1] * _a_T_b[1]));
+  const Scalar _tmp10 = 1.0 / (std::pow<Scalar>(_a_T_b[0], 2) + std::pow<Scalar>(_a_T_b[1], 2));
   const Scalar _tmp11 = _b[0] * _tmp3;
   const Scalar _tmp12 = _b[1] * _tmp3;
   const Scalar _tmp13 = _tmp10 * (_a[0] * _tmp12 - _a[1] * _tmp11);
@@ -62,7 +62,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp21 = _tmp20 * sqrt_info(0, 0);
   const Scalar _tmp22 = _tmp18 * sqrt_info(0, 0);
   const Scalar _tmp23 = _tmp20 * sqrt_info(0, 1);
-  const Scalar _tmp24 = 2 / (_tmp2 * _tmp2);
+  const Scalar _tmp24 = 2 / std::pow<Scalar>(_tmp2, 2);
   const Scalar _tmp25 = _a[0] * _a[1] * _tmp24;
   const Scalar _tmp26 = _b[0] * _tmp25;
   const Scalar _tmp27 = _tmp0 * _tmp24;
@@ -72,9 +72,9 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp31 = -_b[0] * _tmp27 + _tmp11 + _tmp30;
   const Scalar _tmp32 = _a_T_b[1] * _tmp10;
   const Scalar _tmp33 = 1.0 / (_tmp16);
-  const Scalar _tmp34 = (_tmp16 * _tmp16);
+  const Scalar _tmp34 = std::pow<Scalar>(_tmp16, 2);
   const Scalar _tmp35 = _tmp15 / _tmp34;
-  const Scalar _tmp36 = _tmp34 / ((_tmp15 * _tmp15) + _tmp34);
+  const Scalar _tmp36 = _tmp34 / (std::pow<Scalar>(_tmp15, 2) + _tmp34);
   const Scalar _tmp37 = _tmp36 * (_tmp33 * (_tmp28 * _tmp29 - _tmp31 * _tmp32) -
                                   _tmp35 * (_tmp28 * _tmp32 + _tmp29 * _tmp31));
   const Scalar _tmp38 = _b[2] * _tmp25;

@@ -82,13 +82,13 @@ Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const sym::Pose3<Scalar>& a,
   const Scalar _tmp54 = _a[1] * _tmp52 + _tmp36 + _tmp37 + _tmp48;
   const Scalar _tmp55 = -_a[2] * _tmp52 + _tmp24 - _tmp46;
   const Scalar _tmp56 = _a[3] * _tmp52 + _tmp27 - _tmp28 - _tmp43;
-  const Scalar _tmp57 = -2 * (_a[1] * _a[1]);
-  const Scalar _tmp58 = 1 - 2 * (_a[2] * _a[2]);
+  const Scalar _tmp57 = -2 * std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp58 = 1 - 2 * std::pow<Scalar>(_a[2], 2);
   const Scalar _tmp59 = _a[0] * _tmp2;
   const Scalar _tmp60 = _a[3] * _tmp4;
   const Scalar _tmp61 = _a[0] * _tmp4;
   const Scalar _tmp62 = _a[3] * _tmp2;
-  const Scalar _tmp63 = -2 * (_a[0] * _a[0]);
+  const Scalar _tmp63 = -2 * std::pow<Scalar>(_a[0], 2);
   const Scalar _tmp64 = _a[3] * _tmp15;
   const Scalar _tmp65 = _a[2] * _tmp2;
 

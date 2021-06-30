@@ -35,15 +35,15 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
   const Eigen::Matrix<Scalar, 2, 1>& _prior = prior.Data();
 
   // Intermediate terms (9)
-  const Scalar _tmp0 = 1.0 / ((_prior[0] * _prior[0]) + (_prior[1] * _prior[1]));
+  const Scalar _tmp0 = 1.0 / (std::pow<Scalar>(_prior[0], 2) + std::pow<Scalar>(_prior[1], 2));
   const Scalar _tmp1 = _prior[0] * _tmp0;
   const Scalar _tmp2 = _prior[1] * _tmp0;
   const Scalar _tmp3 = _tmp1 * _value[1] - _tmp2 * _value[0];
   const Scalar _tmp4 = _tmp1 * _value[0] + _tmp2 * _value[1];
   const Scalar _tmp5 = 1.0 / (_tmp4);
-  const Scalar _tmp6 = (_tmp4 * _tmp4);
+  const Scalar _tmp6 = std::pow<Scalar>(_tmp4, 2);
   const Scalar _tmp7 = _tmp3 / _tmp6;
-  const Scalar _tmp8 = _tmp6 * sqrt_info(0, 0) / ((_tmp3 * _tmp3) + _tmp6);
+  const Scalar _tmp8 = _tmp6 * sqrt_info(0, 0) / (std::pow<Scalar>(_tmp3, 2) + _tmp6);
 
   // Output terms (2)
   if (res != nullptr) {

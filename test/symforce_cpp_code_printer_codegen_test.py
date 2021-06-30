@@ -30,10 +30,16 @@ class SymforceCppCodePrinterTest(TestCase):
         b = sm.Symbol("b")
 
         expr = sm.Max(a ** 2, b ** 2)
-        self.assertEqual(printer.doprint(expr), "std::max<Scalar>((a * a), (b * b))")
+        self.assertEqual(
+            printer.doprint(expr),
+            "std::max<Scalar>(std::pow<Scalar>(a, 2), std::pow<Scalar>(b, 2))",
+        )
 
         expr = sm.Min(a ** 2, b ** 2)
-        self.assertEqual(printer.doprint(expr), "std::min<Scalar>((a * a), (b * b))")
+        self.assertEqual(
+            printer.doprint(expr),
+            "std::min<Scalar>(std::pow<Scalar>(a, 2), std::pow<Scalar>(b, 2))",
+        )
 
     @requires_sympy
     def test_heaviside(self) -> None:

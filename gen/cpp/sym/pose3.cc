@@ -41,14 +41,14 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
   const Scalar _tmp5 = 2 * _self[0] * _self[2];
   const Scalar _tmp6 = _self[1] * _tmp2;
   const Scalar _tmp7 = _tmp5 - _tmp6;
-  const Scalar _tmp8 = -2 * (_self[2] * _self[2]);
-  const Scalar _tmp9 = 1 - 2 * (_self[1] * _self[1]);
+  const Scalar _tmp8 = -2 * std::pow<Scalar>(_self[2], 2);
+  const Scalar _tmp9 = 1 - 2 * std::pow<Scalar>(_self[1], 2);
   const Scalar _tmp10 = _tmp8 + _tmp9;
   const Scalar _tmp11 = _tmp1 - _tmp3;
   const Scalar _tmp12 = _self[2] * _tmp0;
   const Scalar _tmp13 = _self[0] * _tmp2;
   const Scalar _tmp14 = _tmp12 + _tmp13;
-  const Scalar _tmp15 = -2 * (_self[0] * _self[0]);
+  const Scalar _tmp15 = -2 * std::pow<Scalar>(_self[0], 2);
   const Scalar _tmp16 = _tmp15 + _tmp8 + 1;
   const Scalar _tmp17 = _tmp5 + _tmp6;
   const Scalar _tmp18 = _tmp12 - _tmp13;

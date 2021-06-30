@@ -42,7 +42,7 @@ TEST_CASE("Test GNC", "[gnc]") {
   initial_values.Set('e', kEpsilon);
 
   // Pick random normal samples, with some outliers
-  std::mt19937 gen(42);
+  std::mt19937 gen(12345);
   for (int i = 0; i < n_residuals; i++) {
     if (i < n_outliers) {
       initial_values.Set<sym::Vector5d>(
@@ -59,7 +59,9 @@ TEST_CASE("Test GNC", "[gnc]") {
   }
 
   sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(DefaultLmParams(), DefaultGncParams(), 'u',
-                                                   factors, kEpsilon);
+                                                   factors, kEpsilon, /* keys */ {},
+                                                   "sym::Optimize", /* debug_stats */ false,
+                                                   /* check_derivatives */ true);
 
   std::cout << "Initial x: " << initial_values.At<sym::Vector5d>('x').transpose() << std::endl;
 

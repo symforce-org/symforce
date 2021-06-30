@@ -26,18 +26,17 @@ Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
   const Scalar _tmp0 = (((_R1[3]) > 0) - ((_R1[3]) < 0));
   const Scalar _tmp1 = std::fabs(_R1[3]);
   const Scalar _tmp2 = 1 - e;
-  const Scalar _tmp3 = 8 * _tmp0 *
-                       (2 * std::min<Scalar>(0, _tmp0) + 1 * 2 * std::min<Scalar>(0, _tmp0) + 1) *
-                       0.5 * ((((-_tmp1 + _tmp2) >= 0) - ((-_tmp1 + _tmp2) < 0)) + 1);
-  const Scalar _tmp4 = (_R1[0] * _R1[0]) * _tmp3;
+  const Scalar _tmp3 = 8 * _tmp0 * std::pow<Scalar>(2 * std::min<Scalar>(0, _tmp0) + 1, 2) * 0.5 *
+                       ((((-_tmp1 + _tmp2) >= 0) - ((-_tmp1 + _tmp2) < 0)) + 1);
+  const Scalar _tmp4 = std::pow<Scalar>(_R1[0], 2) * _tmp3;
   const Scalar _tmp5 = std::min<Scalar>(_tmp1, _tmp2);
-  const Scalar _tmp6 = 1 - (_tmp5 * _tmp5);
+  const Scalar _tmp6 = 1 - std::pow<Scalar>(_tmp5, 2);
   const Scalar _tmp7 = std::acos(_tmp5);
   const Scalar _tmp8 = _tmp7 / (_tmp6 * std::sqrt(_tmp6));
-  const Scalar _tmp9 = (_R1[1] * _R1[1]);
+  const Scalar _tmp9 = std::pow<Scalar>(_R1[1], 2);
   const Scalar _tmp10 = _tmp3 * _tmp8;
-  const Scalar _tmp11 = (_R1[2] * _R1[2]);
-  const Scalar _tmp12 = _tmp5 * (_tmp7 * _tmp7) / (_tmp6 * _tmp6);
+  const Scalar _tmp11 = std::pow<Scalar>(_R1[2], 2);
+  const Scalar _tmp12 = _tmp5 * std::pow<Scalar>(_tmp7, 2) / std::pow<Scalar>(_tmp6, 2);
   const Scalar _tmp13 = _tmp12 * _tmp3;
 
   // Output terms (1)

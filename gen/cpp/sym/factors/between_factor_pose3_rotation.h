@@ -55,7 +55,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp11 = 2 * std::min<Scalar>(0, _tmp10) + 1;
   const Scalar _tmp12 = _tmp11 * sqrt_info(0, 1);
   const Scalar _tmp13 = _tmp12 * _tmp9;
-  const Scalar _tmp14 = 1 - (_tmp8 * _tmp8);
+  const Scalar _tmp14 = 1 - std::pow<Scalar>(_tmp8, 2);
   const Scalar _tmp15 = 2 / std::sqrt(_tmp14);
   const Scalar _tmp16 = _tmp13 * _tmp15;
   const Scalar _tmp17 =
