@@ -22,14 +22,14 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     def element(cls) -> Values:
         v = Values()
         v["float"] = 3.0
-        v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)))
-        v["pose3"] = geo.Pose3.from_tangent(np.random.normal(size=(6,)))
+        v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist())
+        v["pose3"] = geo.Pose3.from_tangent(np.random.normal(size=(6,)).tolist())
         other_values = v.copy()
         v["values"] = other_values
         v["vec_values"] = [other_values, other_values]
         v["vec_rot3"] = [
-            geo.Rot3.from_tangent(np.random.normal(size=(3,))),
-            geo.Rot3.from_tangent(np.random.normal(size=(3,))),
+            geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist()),
+            geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist()),
         ]
         return v
 

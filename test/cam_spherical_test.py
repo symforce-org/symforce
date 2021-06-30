@@ -18,7 +18,7 @@ class CamSphericalTest(StorageOpsTestMixin, TestCase):
     @classmethod
     def element(cls) -> cam.SphericalCameraCal:
         [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
-        radial_coeffs = np.random.normal(scale=[0.1, 0.01, 0.001, 0.0001])
+        radial_coeffs = np.random.normal(scale=[0.1, 0.01, 0.001, 0.0001]).tolist()
         return cam.SphericalCameraCal(
             focal_length=(f_x, f_y), principal_point=(c_x, c_y), distortion_coeffs=radial_coeffs
         )

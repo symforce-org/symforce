@@ -91,7 +91,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim)
+        perturbation = np.random.rand(tangent_dim).tolist()
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -113,7 +113,7 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
 
         vector = np.random.normal(size=2)
         matrix = element.to_rotation_matrix()
@@ -181,7 +181,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim)
+        perturbation = np.random.rand(tangent_dim).tolist()
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -203,10 +203,10 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
 
         vector = np.random.normal(size=2)
-        vector_as_element = geo_class(t=vector)
+        vector_as_element = geo_class(t=vector.tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
     def test_storage_ops_Rot3(self):
@@ -271,7 +271,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim)
+        perturbation = np.random.rand(tangent_dim).tolist()
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -293,7 +293,7 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
 
         vector = np.random.normal(size=3)
         matrix = element.to_rotation_matrix()
@@ -361,7 +361,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim)
+        perturbation = np.random.rand(tangent_dim).tolist()
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -383,10 +383,10 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
 
         vector = np.random.normal(size=3)
-        vector_as_element = geo_class(t=vector)
+        vector_as_element = geo_class(t=vector.tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
 
