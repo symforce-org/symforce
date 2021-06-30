@@ -1,6 +1,9 @@
+from __future__ import annotations
 import dataclasses
+import sys
 
 from symforce import types as T
+from symforce import python_util
 
 
 @dataclasses.dataclass
@@ -18,29 +21,48 @@ class IndexEntry:
             `StorageOps.to_storage(v[key])` begins
         storage_dim:
             The length of `StorageOps.to_storage(v[key])`
-        datatype:
-            "Values" if `v[key]` is an instance of `Values`, else
-            "np.ndarray" if `v[key]` is an instance of `numpy.ndarray`, else
-            "Scalar" if `v[key]` is an instance of `symforce.sympy.Expr`,
-                `symforce.sympy.Symbol`, `int`, or `float`, else
-            "Matrix" if `v[key]` is an instance of `geo.Matrix`, else
-            `v[key].__class__.__name__` if `v[key]` is an instance of `Storage`, else
-            "List" if `v[key]` is an instance of `list` or `tuple
         shape:
-            If datatype is "Matrix" or "np.ndarray", it's the shape of `v[key]` in
-            the traditional sense.
+            If datatype() is np.ndarray or geo.Matrix, it's the shape of `v[key]`.
             Otherwise, it's None
         item_index:
-            `v[key].index()` if datatype is "Values",
-            if datatype is "List" is dict `d` where `d[f"{key}_{i}"]` equals the `IndexEntry`
-            of `v[key][i]`, and
+            `v[key].index()` if datatype() is Values,
+            if datatype() is list or tuple, is dict `d` where `d[f"{key}_{i}"]`
+            equals the `IndexEntry` of `v[key][i]`, and
             otherwise is None
     """
 
     offset: int
     storage_dim: int
-    datatype: str
+    # We do not store the datatype as an ordinary field because types are not serializable. Still,
+    # we set the stored_datatype to be an InitVar so that we can translate it into a serializable
+    # format.
+    stored_datatype: dataclasses.InitVar[T.Type]
+    # _module and _qualname are private because they need to be of a very particular format for
+    # the method datatype to work. To support this, we mark them as not being init fields and
+    # instead generate them in __post_init__ from stored_datatype. Together, they represent the
+    # stored_datatype in a serializeable format.
+    _module: str = dataclasses.field(init=False)
+    _qualname: str = dataclasses.field(init=False)
     shape: T.Optional[T.Tuple[int, ...]] = None
-    # Actually a T.Dict[str, IndexEntry], but mypy does not yet support
+    # T.Any should actually be T.Dict[str, IndexEntry], but mypy does not yet support
     # recursive types: https://github.com/python/mypy/issues/731
     item_index: T.Optional[T.Dict[str, T.Any]] = None
+
+    def __post_init__(self, stored_datatype: T.Type) -> None:
+        self._module = stored_datatype.__module__
+        self._qualname = stored_datatype.__qualname__
+
+    def datatype(self) -> T.Type:
+        """
+        Returns the type indexed by self
+
+        Example:
+            IndexEntry(offset, storage_dim, stored_datatype).datatype() returns stored_datatype
+
+        Precondition:
+            The datatype stored must have had its module loaded (i.e., if the stored datatype is
+            geo.rot3, symforce.geo must have been imported).
+            The datatype must also be accesible from the module (dynamically created types do not
+            do this. For example, the geo.Matrix types with more than 10 rows or columns)
+        """
+        return python_util.getattr_recursive(sys.modules[self._module], self._qualname.split("."))

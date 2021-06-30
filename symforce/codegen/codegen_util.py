@@ -369,10 +369,11 @@ def _get_scalar_keys_recursive(
             by a vector of scalars (e.g. as they are in lcm types).
     """
     vec = []
-    if index_value.datatype == "Scalar":
+    datatype = index_value.datatype()
+    if issubclass(datatype, T.Scalar):
         # Element is a scalar, no need to access subvalues
         vec.append(sm.Symbol(prefix))
-    elif index_value.datatype == "Values":
+    elif issubclass(datatype, Values):
         assert index_value.item_index is not None
         # Recursively add subitems using "." to access subvalues
         for name, sub_index_val in index_value.item_index.items():
@@ -381,7 +382,7 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}.{name}", mode=mode, use_data=False
                 )
             )
-    elif index_value.datatype == "List":
+    elif issubclass(datatype, (list, tuple)):
         assert index_value.item_index is not None
         # Assume all elements of list are same type as first element
         # Recursively add subitems using "[]" to access subvalues
@@ -391,7 +392,7 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}[{i}]", mode=mode, use_data=use_data
                 )
             )
-    elif index_value.datatype == "Matrix" or not use_data:
+    elif issubclass(datatype, geo.Matrix) or not use_data:
         # TODO(nathan): I don't think this deals with 2D matrices correctly
         vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:

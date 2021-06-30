@@ -29,18 +29,6 @@ class Values:
         attr: Access with dot notation, such as `v.attr.states.x0` instead of `v['states.x0']`.
     """
 
-    # The names of geo types which can be elements of a Values v and properly reconstructed in
-    # Values.from_storage_index(v.to_storage(), v.index())
-    ACCEPTED_GEO_TYPE_NAMES = {
-        "Rot2",
-        "Rot3",
-        "Pose2",
-        "Pose3",
-        "Complex",
-        "Quaternion",
-        "DualQuaternion",
-    }
-
     def __init__(self, **kwargs: T.Any) -> None:
         """
         Create like a Python dict.
@@ -134,34 +122,29 @@ class Values:
         index_dict = collections.OrderedDict()
         for name, value in items:
 
-            index_entry_helper = lambda datatype, shape=None, item_index=None: IndexEntry(
+            entry_helper = lambda datatype=type(value), shape=None, item_index=None: IndexEntry(
                 offset=offset,
                 storage_dim=ops.StorageOps.storage_dim(value),
-                datatype=datatype,
+                stored_datatype=datatype,
                 shape=shape,
                 item_index=item_index,
             )
 
             if isinstance(value, Values):
-                entry = index_entry_helper("Values", item_index=value.index())
+                entry = entry_helper(item_index=value.index())
             elif isinstance(value, np.ndarray):
-                entry = index_entry_helper("np.ndarray", shape=value.shape)
-            elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
-                entry = index_entry_helper("Scalar")
+                entry = entry_helper(shape=value.shape)
             elif isinstance(value, geo.Matrix):
-                assert len(value.shape) > 0
-                entry = index_entry_helper("Matrix", shape=value.shape)
-            elif isinstance(value, Storage):
-                entry = index_entry_helper(value.__class__.__name__)
+                entry = entry_helper(shape=value.shape, datatype=geo.Matrix)
+            elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
+                entry = entry_helper(datatype=T.Scalar)
             elif isinstance(value, (list, tuple)):
                 assert all([type(v) == type(value[0]) for v in value])
                 name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
-                entry = index_entry_helper("List", item_index=item_index)
+                entry = entry_helper(item_index=item_index)
             else:
-                raise NotImplementedError(
-                    'Unknown type: "{}" for key "{}"'.format(type(value), name)
-                )
+                entry = entry_helper()
 
             index_dict[name] = entry
             offset += entry.storage_dim
@@ -277,22 +260,23 @@ class Values:
         for name, entry in indices.items():
             vec = vector_values[entry.offset : entry.offset + entry.storage_dim]
 
-            if entry.datatype == "Scalar":
+            datatype = entry.datatype()
+            if issubclass(datatype, T.Scalar):
                 values[name] = vec[0]
-            elif datatype == "Matrix":
-                values[name] = geo.Matrix(vec).reshape(*shape)
-            elif datatype == "Values":
-                values[name] = cls.from_storage_index(vec, item_index)
-            elif datatype in Values.ACCEPTED_GEO_TYPE_NAMES:
-                values[name] = getattr(geo, datatype).from_storage(vec)
-            elif datatype in {"LinearCameraCal", "EquidistantEpipolarCameraCal", "ATANCameraCal"}:
-                values[name] = getattr(cam, datatype).from_storage(vec)
-            elif datatype == "np.ndarray":
-                values[name] = np.array(vec).reshape(*shape)
-            elif datatype == "List":
-                values[name] = [v for v in cls.from_storage_index(vec, item_index).values()]
+            elif issubclass(datatype, Values):
+                assert entry.item_index is not None
+                values[name] = cls.from_storage_index(vec, entry.item_index)
+            elif issubclass(datatype, np.ndarray):
+                assert entry.shape is not None
+                values[name] = np.array(vec).reshape(*entry.shape)
+            elif issubclass(datatype, geo.Matrix):
+                assert entry.shape is not None
+                values[name] = datatype(vec).reshape(*entry.shape)
+            elif issubclass(datatype, (list, tuple)):
+                assert entry.item_index is not None
+                values[name] = datatype(cls.from_storage_index(vec, entry.item_index).values())
             else:
-                raise NotImplementedError(f'Unknown datatype: "{entry.datatype}"')
+                values[name] = ops.StorageOps.from_storage(datatype, vec)
 
         return values
 
@@ -600,7 +584,7 @@ class Values:
         Exact equality check.
         """
         if isinstance(other, Values):
-            return self.to_storage() == other.to_storage()
+            return self.to_storage() == other.to_storage() and self.index() == other.index()
         else:
             return False
 

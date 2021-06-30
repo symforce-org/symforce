@@ -143,6 +143,18 @@ def scalar_like(a: T.Any) -> bool:
     return is_expr and not is_matrix
 
 
+def getattr_recursive(obj: object, attrs: T.Sequence[str]) -> T.Any:
+    """
+    Recursively calls getattr on obj with the attributes in attrs and returns the output.
+    If attr is empty, returns obj.
+
+    Example:
+        get_attr_recursive(obj, ["A", "B", "C"]) returns the same thing as
+        obj.A.B.C
+    """
+    return getattr_recursive(getattr(obj, attrs[0]), attrs[1:]) if len(attrs) else obj
+
+
 def plural(singular: str, count: int, plural: str = None) -> str:
     """
     Return the singular or plural form of a word based on count

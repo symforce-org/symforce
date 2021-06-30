@@ -28,11 +28,11 @@ eigen_lcm.Vector{{ dim }}d
  #}
 {% macro get_list_type(scalar_type, index) -%}
 {% set index_element = (index.values() | list)[0] -%}
-{% set type = index_element.datatype -%}
-{% if type == 'List' -%}
+{% set datatype = index_element.datatype() -%}
+{% if issubclass(datatype, (list, tuple)) -%}
     {% set sub_index = index_element.item_index -%}
 {{ get_list_type(scalar_type, sub_index) -}}
-{% elif type == 'Scalar' -%}
+{% elif issubclass(datatype, T.Scalar) -%}
 {{ scalar_type -}}
 {% else -%}
     {% if use_eigen_types -%}
@@ -53,11 +53,11 @@ eigen_lcm.Vector{{ dim }}d
 {%- macro get_list_dims(index) -%}
 [{{- index | length -}}]
     {%- set index_element = (index.values() | list)[0] -%}
-    {%- set type = index_element.datatype -%}
-{%- if type == 'List' -%}
+    {%- set datatype = index_element.datatype() -%}
+{%- if issubclass(datatype, (list, tuple)) -%}
     {%- set sub_index = index_element.item_index -%}
 {{- get_list_dims(sub_index) -}}
-{%- elif type != 'Values' and type != 'Scalar' and not use_eigen_types -%}
+{%- elif not issubclass(datatype, (Values, T.Scalar)) and not use_eigen_types -%}
     {# if using eigen types, the dimension of the base element is given by the eigen vector dim,
      # so we should return nothing #}
 [{{- index_element.storage_dim -}}]

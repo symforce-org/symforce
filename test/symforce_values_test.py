@@ -5,6 +5,7 @@ import unittest
 from symforce import logger
 from symforce import geo
 from symforce import cam
+from symforce import ops
 from symforce import sympy as sm
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -328,6 +329,18 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 v.scalar_keys_recursive(),
             )
 
+    def test_to_from_storage_with_tuples(self) -> None:
+        """
+        Tests:
+            Values.to_storage
+            Values.from_storage_index
+        Check that tuples are returned from storage properly (as opposed to, say, as lists)
+        """
+        v_tuple = Values(pair=(1, 2))
+        v_after = Values.from_storage_index(v_tuple.to_storage(), v_tuple.index())
+
+        self.assertEqual(v_tuple["pair"], v_after["pair"])
+
     def test_from_storage_index(self) -> None:
         """
         Tests:
@@ -360,14 +373,45 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         # To check handling of normal geo types
         v_geo = Values()
         with v_geo.scope("geo_types"):
-            for type_name in Values.ACCEPTED_GEO_TYPE_NAMES:
-                v_geo[type_name] = getattr(geo, type_name).identity()
+            for geo_type in [
+                geo.Rot2,
+                geo.Rot3,
+                geo.Pose2,
+                geo.Pose3,
+                geo.Complex,
+                geo.Quaternion,
+                geo.DualQuaternion,
+            ]:
+                v_geo[geo_type.__name__] = ops.GroupOps.identity(geo_type)
 
         self.assertEqual(v_geo, Values.from_storage_index(v_geo.to_storage(), v_geo.index()))
+
+        with self.subTest(msg="Values can handle dynamic matrix types"):
+            v = Values(dynamic_mat=geo.Matrix.ones(14, 14))
+            self.assertEqual(v, Values.from_storage_index(v.to_storage(), v.index()))
 
     @slow_on_sympy
     def test_tangent_D_storage(self) -> None:
         super().test_tangent_D_storage()
+
+    def test_eq(self) -> None:
+        """
+        Tests:
+            Values.__eq__
+        """
+        values45 = Values(i=4, j=5)
+        vector45 = geo.V2(4, 5)
+        with self.subTest(msg="Should not equal when different type despite same storage"):
+            self.assertNotEqual(values45, vector45)
+
+        nested_values45 = Values(root=values45)
+        with self.subTest(msg="Should not equal when different structure despite same storage"):
+            self.assertNotEqual(values45, nested_values45)
+
+        val_tuple45 = Values(i=(4, 5))
+        val_list45 = Values(i=[4, 5])
+        with self.subTest(msg="Should distinguish between tuples and lists"):
+            self.assertNotEqual(val_tuple45, val_list45)
 
     def test_subs(self) -> None:
         """

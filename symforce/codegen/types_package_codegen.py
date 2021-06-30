@@ -64,6 +64,11 @@ def generate_types(
 
     # Default data for templates
     data = {
+        "T": T,
+        "Values": Values,
+        "list": list,
+        "tuple": tuple,
+        "issubclass": issubclass,
         "name": package_name,
         "scalar_type": scalar_type,
         "types_dict": types_dict,
@@ -193,10 +198,11 @@ def get_subvalues_from_list_index(
     otherwise returns None
     """
     index_element = list(list_index.values())[0]
-    if index_element.datatype == "Values":
+    datatype = index_element.datatype()
+    if issubclass(datatype, Values):
         assert index_element.item_index is not None
         return index_element.item_index
-    elif index_element.datatype == "List":
+    elif issubclass(datatype, (list, tuple)):
         assert index_element.item_index is not None
         return get_subvalues_from_list_index(index_element.item_index)
     return None
@@ -227,12 +233,13 @@ def _fill_types_dict_recursive(
     # Process child types
     data["subtypes"] = {}
     for subkey, entry in index.items():
+        datatype = entry.datatype()
         if key in shared_types and "." in shared_types[key]:
             # This is a shared type. Don't generate any subtypes.
             continue
-        if entry.datatype == "Values":
+        if issubclass(datatype, Values):
             element_index = entry.item_index
-        elif entry.datatype == "List":
+        elif issubclass(datatype, (list, tuple)):
             assert entry.item_index is not None
             # Assumes all elements in list are the same type as the first
             element_index = get_subvalues_from_list_index(entry.item_index)
