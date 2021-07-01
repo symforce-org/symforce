@@ -3,6 +3,8 @@
 // -----------------------------------------------------------------------------
 #pragma once
 
+#include <random>
+
 #include <Eigen/Dense>
 
 #include <lcmtypes/symforce/type_t.hpp>

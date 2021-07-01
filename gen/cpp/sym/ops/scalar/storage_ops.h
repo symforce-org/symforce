@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include <random>
 #include <type_traits>
 
 #include <lcmtypes/symforce/type_t.hpp>
