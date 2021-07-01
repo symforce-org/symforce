@@ -234,13 +234,10 @@ def _fill_types_dict_recursive(
             element_index = entry.item_index
         elif entry.datatype == "List":
             assert entry.item_index is not None
-            if list(entry.item_index.values())[0].datatype in ["Values", "List"]:
-                # Assumes all elements in list are the same type as the first
-                element_index = get_subvalues_from_list_index(entry.item_index)
-                if element_index is None:
-                    # Not a list of Values
-                    continue
-            else:
+            # Assumes all elements in list are the same type as the first
+            element_index = get_subvalues_from_list_index(entry.item_index)
+            if element_index is None:
+                # Not a list of Values
                 continue
         else:
             continue
