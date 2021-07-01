@@ -227,14 +227,10 @@ TEST_CASE("Test key update", "[values]") {
   CHECK(values2.At<double>('y') == 20.0);
 }
 
-// Helper typedef for a non-square matrix
-template <typename Scalar>
-using Matrix34 = Eigen::Matrix<Scalar, 3, 4>;
-
 TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
                            (sym::Rot2, sym::Pose2, sym::Rot3, sym::Pose3, sym::Vector1,
-                            sym::Vector3, sym::Vector9, sym::Matrix1, sym::Matrix3, sym::Matrix9,
-                            Matrix34),
+                            sym::Vector3, sym::Vector9, sym::Matrix11, sym::Matrix33, sym::Matrix99,
+                            sym::Matrix34),
                            (double, float)) {
   using T = TestType;
   using Scalar = typename sym::StorageOps<T>::Scalar;

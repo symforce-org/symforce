@@ -20,8 +20,10 @@ using Vector{{i}} = Eigen::Matrix<Scalar, {{i}}, 1>;
 {% endfor %}
 
 {% for i in range(1, 10) %}
+{% for j in range(1, 10) %}
 template <typename Scalar>
-using Matrix{{i}} = Eigen::Matrix<Scalar, {{i}}, {{i}}>;
+using Matrix{{i}}{{j}} = Eigen::Matrix<Scalar, {{i}}, {{j}}>;
+{% endfor %}
 {% endfor %}
 
 {% for i in range(1, 10) %}
@@ -30,8 +32,10 @@ using Vector{{i}}f = Vector{{i}}<float>;
 {% endfor %}
 
 {% for i in range(1, 10) %}
-using Matrix{{i}}d = Matrix{{i}}<double>;
-using Matrix{{i}}f = Matrix{{i}}<float>;
+{% for j in range(1, 10) %}
+using Matrix{{i}}{{j}}d = Matrix{{i}}{{j}}<double>;
+using Matrix{{i}}{{j}}f = Matrix{{i}}{{j}}<float>;
+{% endfor %}
 {% endfor %}
 
 }  // namespace sym

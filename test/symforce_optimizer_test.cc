@@ -104,8 +104,8 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
                                               const double sigma) {
     return sym::Factord::Jacobian(
         [&prior, sigma, &epsilon](const sym::Pose3d& pose, sym::Vector6d* const res,
-                                  sym::Matrix6d* const jac) {
-          const sym::Matrix6d sqrt_info = sym::Vector6d::Constant(1 / sigma).asDiagonal();
+                                  sym::Matrix66d* const jac) {
+          const sym::Matrix66d sqrt_info = sym::Vector6d::Constant(1 / sigma).asDiagonal();
           sym::PriorFactorPose3<double>(pose, prior, sqrt_info, epsilon, res, jac);
         },
         {key});
@@ -122,7 +122,7 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
         [&between_sigma, &epsilon](const sym::Pose3d& a, const sym::Pose3d& b,
                                    sym::Vector6d* const res,
                                    Eigen::Matrix<double, 6, 12>* const jac) {
-          const sym::Matrix6d sqrt_info = sym::Vector6d::Constant(1 / between_sigma).asDiagonal();
+          const sym::Matrix66d sqrt_info = sym::Vector6d::Constant(1 / between_sigma).asDiagonal();
           const sym::Pose3d a_T_b = sym::Pose3d::Identity();
           sym::BetweenFactorPose3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
         },

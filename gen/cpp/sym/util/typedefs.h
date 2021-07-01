@@ -34,23 +34,167 @@ template <typename Scalar>
 using Vector9 = Eigen::Matrix<Scalar, 9, 1>;
 
 template <typename Scalar>
-using Matrix1 = Eigen::Matrix<Scalar, 1, 1>;
+using Matrix11 = Eigen::Matrix<Scalar, 1, 1>;
 template <typename Scalar>
-using Matrix2 = Eigen::Matrix<Scalar, 2, 2>;
+using Matrix12 = Eigen::Matrix<Scalar, 1, 2>;
 template <typename Scalar>
-using Matrix3 = Eigen::Matrix<Scalar, 3, 3>;
+using Matrix13 = Eigen::Matrix<Scalar, 1, 3>;
 template <typename Scalar>
-using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
+using Matrix14 = Eigen::Matrix<Scalar, 1, 4>;
 template <typename Scalar>
-using Matrix5 = Eigen::Matrix<Scalar, 5, 5>;
+using Matrix15 = Eigen::Matrix<Scalar, 1, 5>;
 template <typename Scalar>
-using Matrix6 = Eigen::Matrix<Scalar, 6, 6>;
+using Matrix16 = Eigen::Matrix<Scalar, 1, 6>;
 template <typename Scalar>
-using Matrix7 = Eigen::Matrix<Scalar, 7, 7>;
+using Matrix17 = Eigen::Matrix<Scalar, 1, 7>;
 template <typename Scalar>
-using Matrix8 = Eigen::Matrix<Scalar, 8, 8>;
+using Matrix18 = Eigen::Matrix<Scalar, 1, 8>;
 template <typename Scalar>
-using Matrix9 = Eigen::Matrix<Scalar, 9, 9>;
+using Matrix19 = Eigen::Matrix<Scalar, 1, 9>;
+template <typename Scalar>
+using Matrix21 = Eigen::Matrix<Scalar, 2, 1>;
+template <typename Scalar>
+using Matrix22 = Eigen::Matrix<Scalar, 2, 2>;
+template <typename Scalar>
+using Matrix23 = Eigen::Matrix<Scalar, 2, 3>;
+template <typename Scalar>
+using Matrix24 = Eigen::Matrix<Scalar, 2, 4>;
+template <typename Scalar>
+using Matrix25 = Eigen::Matrix<Scalar, 2, 5>;
+template <typename Scalar>
+using Matrix26 = Eigen::Matrix<Scalar, 2, 6>;
+template <typename Scalar>
+using Matrix27 = Eigen::Matrix<Scalar, 2, 7>;
+template <typename Scalar>
+using Matrix28 = Eigen::Matrix<Scalar, 2, 8>;
+template <typename Scalar>
+using Matrix29 = Eigen::Matrix<Scalar, 2, 9>;
+template <typename Scalar>
+using Matrix31 = Eigen::Matrix<Scalar, 3, 1>;
+template <typename Scalar>
+using Matrix32 = Eigen::Matrix<Scalar, 3, 2>;
+template <typename Scalar>
+using Matrix33 = Eigen::Matrix<Scalar, 3, 3>;
+template <typename Scalar>
+using Matrix34 = Eigen::Matrix<Scalar, 3, 4>;
+template <typename Scalar>
+using Matrix35 = Eigen::Matrix<Scalar, 3, 5>;
+template <typename Scalar>
+using Matrix36 = Eigen::Matrix<Scalar, 3, 6>;
+template <typename Scalar>
+using Matrix37 = Eigen::Matrix<Scalar, 3, 7>;
+template <typename Scalar>
+using Matrix38 = Eigen::Matrix<Scalar, 3, 8>;
+template <typename Scalar>
+using Matrix39 = Eigen::Matrix<Scalar, 3, 9>;
+template <typename Scalar>
+using Matrix41 = Eigen::Matrix<Scalar, 4, 1>;
+template <typename Scalar>
+using Matrix42 = Eigen::Matrix<Scalar, 4, 2>;
+template <typename Scalar>
+using Matrix43 = Eigen::Matrix<Scalar, 4, 3>;
+template <typename Scalar>
+using Matrix44 = Eigen::Matrix<Scalar, 4, 4>;
+template <typename Scalar>
+using Matrix45 = Eigen::Matrix<Scalar, 4, 5>;
+template <typename Scalar>
+using Matrix46 = Eigen::Matrix<Scalar, 4, 6>;
+template <typename Scalar>
+using Matrix47 = Eigen::Matrix<Scalar, 4, 7>;
+template <typename Scalar>
+using Matrix48 = Eigen::Matrix<Scalar, 4, 8>;
+template <typename Scalar>
+using Matrix49 = Eigen::Matrix<Scalar, 4, 9>;
+template <typename Scalar>
+using Matrix51 = Eigen::Matrix<Scalar, 5, 1>;
+template <typename Scalar>
+using Matrix52 = Eigen::Matrix<Scalar, 5, 2>;
+template <typename Scalar>
+using Matrix53 = Eigen::Matrix<Scalar, 5, 3>;
+template <typename Scalar>
+using Matrix54 = Eigen::Matrix<Scalar, 5, 4>;
+template <typename Scalar>
+using Matrix55 = Eigen::Matrix<Scalar, 5, 5>;
+template <typename Scalar>
+using Matrix56 = Eigen::Matrix<Scalar, 5, 6>;
+template <typename Scalar>
+using Matrix57 = Eigen::Matrix<Scalar, 5, 7>;
+template <typename Scalar>
+using Matrix58 = Eigen::Matrix<Scalar, 5, 8>;
+template <typename Scalar>
+using Matrix59 = Eigen::Matrix<Scalar, 5, 9>;
+template <typename Scalar>
+using Matrix61 = Eigen::Matrix<Scalar, 6, 1>;
+template <typename Scalar>
+using Matrix62 = Eigen::Matrix<Scalar, 6, 2>;
+template <typename Scalar>
+using Matrix63 = Eigen::Matrix<Scalar, 6, 3>;
+template <typename Scalar>
+using Matrix64 = Eigen::Matrix<Scalar, 6, 4>;
+template <typename Scalar>
+using Matrix65 = Eigen::Matrix<Scalar, 6, 5>;
+template <typename Scalar>
+using Matrix66 = Eigen::Matrix<Scalar, 6, 6>;
+template <typename Scalar>
+using Matrix67 = Eigen::Matrix<Scalar, 6, 7>;
+template <typename Scalar>
+using Matrix68 = Eigen::Matrix<Scalar, 6, 8>;
+template <typename Scalar>
+using Matrix69 = Eigen::Matrix<Scalar, 6, 9>;
+template <typename Scalar>
+using Matrix71 = Eigen::Matrix<Scalar, 7, 1>;
+template <typename Scalar>
+using Matrix72 = Eigen::Matrix<Scalar, 7, 2>;
+template <typename Scalar>
+using Matrix73 = Eigen::Matrix<Scalar, 7, 3>;
+template <typename Scalar>
+using Matrix74 = Eigen::Matrix<Scalar, 7, 4>;
+template <typename Scalar>
+using Matrix75 = Eigen::Matrix<Scalar, 7, 5>;
+template <typename Scalar>
+using Matrix76 = Eigen::Matrix<Scalar, 7, 6>;
+template <typename Scalar>
+using Matrix77 = Eigen::Matrix<Scalar, 7, 7>;
+template <typename Scalar>
+using Matrix78 = Eigen::Matrix<Scalar, 7, 8>;
+template <typename Scalar>
+using Matrix79 = Eigen::Matrix<Scalar, 7, 9>;
+template <typename Scalar>
+using Matrix81 = Eigen::Matrix<Scalar, 8, 1>;
+template <typename Scalar>
+using Matrix82 = Eigen::Matrix<Scalar, 8, 2>;
+template <typename Scalar>
+using Matrix83 = Eigen::Matrix<Scalar, 8, 3>;
+template <typename Scalar>
+using Matrix84 = Eigen::Matrix<Scalar, 8, 4>;
+template <typename Scalar>
+using Matrix85 = Eigen::Matrix<Scalar, 8, 5>;
+template <typename Scalar>
+using Matrix86 = Eigen::Matrix<Scalar, 8, 6>;
+template <typename Scalar>
+using Matrix87 = Eigen::Matrix<Scalar, 8, 7>;
+template <typename Scalar>
+using Matrix88 = Eigen::Matrix<Scalar, 8, 8>;
+template <typename Scalar>
+using Matrix89 = Eigen::Matrix<Scalar, 8, 9>;
+template <typename Scalar>
+using Matrix91 = Eigen::Matrix<Scalar, 9, 1>;
+template <typename Scalar>
+using Matrix92 = Eigen::Matrix<Scalar, 9, 2>;
+template <typename Scalar>
+using Matrix93 = Eigen::Matrix<Scalar, 9, 3>;
+template <typename Scalar>
+using Matrix94 = Eigen::Matrix<Scalar, 9, 4>;
+template <typename Scalar>
+using Matrix95 = Eigen::Matrix<Scalar, 9, 5>;
+template <typename Scalar>
+using Matrix96 = Eigen::Matrix<Scalar, 9, 6>;
+template <typename Scalar>
+using Matrix97 = Eigen::Matrix<Scalar, 9, 7>;
+template <typename Scalar>
+using Matrix98 = Eigen::Matrix<Scalar, 9, 8>;
+template <typename Scalar>
+using Matrix99 = Eigen::Matrix<Scalar, 9, 9>;
 
 using Vector1d = Vector1<double>;
 using Vector1f = Vector1<float>;
@@ -71,23 +215,167 @@ using Vector8f = Vector8<float>;
 using Vector9d = Vector9<double>;
 using Vector9f = Vector9<float>;
 
-using Matrix1d = Matrix1<double>;
-using Matrix1f = Matrix1<float>;
-using Matrix2d = Matrix2<double>;
-using Matrix2f = Matrix2<float>;
-using Matrix3d = Matrix3<double>;
-using Matrix3f = Matrix3<float>;
-using Matrix4d = Matrix4<double>;
-using Matrix4f = Matrix4<float>;
-using Matrix5d = Matrix5<double>;
-using Matrix5f = Matrix5<float>;
-using Matrix6d = Matrix6<double>;
-using Matrix6f = Matrix6<float>;
-using Matrix7d = Matrix7<double>;
-using Matrix7f = Matrix7<float>;
-using Matrix8d = Matrix8<double>;
-using Matrix8f = Matrix8<float>;
-using Matrix9d = Matrix9<double>;
-using Matrix9f = Matrix9<float>;
+using Matrix11d = Matrix11<double>;
+using Matrix11f = Matrix11<float>;
+using Matrix12d = Matrix12<double>;
+using Matrix12f = Matrix12<float>;
+using Matrix13d = Matrix13<double>;
+using Matrix13f = Matrix13<float>;
+using Matrix14d = Matrix14<double>;
+using Matrix14f = Matrix14<float>;
+using Matrix15d = Matrix15<double>;
+using Matrix15f = Matrix15<float>;
+using Matrix16d = Matrix16<double>;
+using Matrix16f = Matrix16<float>;
+using Matrix17d = Matrix17<double>;
+using Matrix17f = Matrix17<float>;
+using Matrix18d = Matrix18<double>;
+using Matrix18f = Matrix18<float>;
+using Matrix19d = Matrix19<double>;
+using Matrix19f = Matrix19<float>;
+using Matrix21d = Matrix21<double>;
+using Matrix21f = Matrix21<float>;
+using Matrix22d = Matrix22<double>;
+using Matrix22f = Matrix22<float>;
+using Matrix23d = Matrix23<double>;
+using Matrix23f = Matrix23<float>;
+using Matrix24d = Matrix24<double>;
+using Matrix24f = Matrix24<float>;
+using Matrix25d = Matrix25<double>;
+using Matrix25f = Matrix25<float>;
+using Matrix26d = Matrix26<double>;
+using Matrix26f = Matrix26<float>;
+using Matrix27d = Matrix27<double>;
+using Matrix27f = Matrix27<float>;
+using Matrix28d = Matrix28<double>;
+using Matrix28f = Matrix28<float>;
+using Matrix29d = Matrix29<double>;
+using Matrix29f = Matrix29<float>;
+using Matrix31d = Matrix31<double>;
+using Matrix31f = Matrix31<float>;
+using Matrix32d = Matrix32<double>;
+using Matrix32f = Matrix32<float>;
+using Matrix33d = Matrix33<double>;
+using Matrix33f = Matrix33<float>;
+using Matrix34d = Matrix34<double>;
+using Matrix34f = Matrix34<float>;
+using Matrix35d = Matrix35<double>;
+using Matrix35f = Matrix35<float>;
+using Matrix36d = Matrix36<double>;
+using Matrix36f = Matrix36<float>;
+using Matrix37d = Matrix37<double>;
+using Matrix37f = Matrix37<float>;
+using Matrix38d = Matrix38<double>;
+using Matrix38f = Matrix38<float>;
+using Matrix39d = Matrix39<double>;
+using Matrix39f = Matrix39<float>;
+using Matrix41d = Matrix41<double>;
+using Matrix41f = Matrix41<float>;
+using Matrix42d = Matrix42<double>;
+using Matrix42f = Matrix42<float>;
+using Matrix43d = Matrix43<double>;
+using Matrix43f = Matrix43<float>;
+using Matrix44d = Matrix44<double>;
+using Matrix44f = Matrix44<float>;
+using Matrix45d = Matrix45<double>;
+using Matrix45f = Matrix45<float>;
+using Matrix46d = Matrix46<double>;
+using Matrix46f = Matrix46<float>;
+using Matrix47d = Matrix47<double>;
+using Matrix47f = Matrix47<float>;
+using Matrix48d = Matrix48<double>;
+using Matrix48f = Matrix48<float>;
+using Matrix49d = Matrix49<double>;
+using Matrix49f = Matrix49<float>;
+using Matrix51d = Matrix51<double>;
+using Matrix51f = Matrix51<float>;
+using Matrix52d = Matrix52<double>;
+using Matrix52f = Matrix52<float>;
+using Matrix53d = Matrix53<double>;
+using Matrix53f = Matrix53<float>;
+using Matrix54d = Matrix54<double>;
+using Matrix54f = Matrix54<float>;
+using Matrix55d = Matrix55<double>;
+using Matrix55f = Matrix55<float>;
+using Matrix56d = Matrix56<double>;
+using Matrix56f = Matrix56<float>;
+using Matrix57d = Matrix57<double>;
+using Matrix57f = Matrix57<float>;
+using Matrix58d = Matrix58<double>;
+using Matrix58f = Matrix58<float>;
+using Matrix59d = Matrix59<double>;
+using Matrix59f = Matrix59<float>;
+using Matrix61d = Matrix61<double>;
+using Matrix61f = Matrix61<float>;
+using Matrix62d = Matrix62<double>;
+using Matrix62f = Matrix62<float>;
+using Matrix63d = Matrix63<double>;
+using Matrix63f = Matrix63<float>;
+using Matrix64d = Matrix64<double>;
+using Matrix64f = Matrix64<float>;
+using Matrix65d = Matrix65<double>;
+using Matrix65f = Matrix65<float>;
+using Matrix66d = Matrix66<double>;
+using Matrix66f = Matrix66<float>;
+using Matrix67d = Matrix67<double>;
+using Matrix67f = Matrix67<float>;
+using Matrix68d = Matrix68<double>;
+using Matrix68f = Matrix68<float>;
+using Matrix69d = Matrix69<double>;
+using Matrix69f = Matrix69<float>;
+using Matrix71d = Matrix71<double>;
+using Matrix71f = Matrix71<float>;
+using Matrix72d = Matrix72<double>;
+using Matrix72f = Matrix72<float>;
+using Matrix73d = Matrix73<double>;
+using Matrix73f = Matrix73<float>;
+using Matrix74d = Matrix74<double>;
+using Matrix74f = Matrix74<float>;
+using Matrix75d = Matrix75<double>;
+using Matrix75f = Matrix75<float>;
+using Matrix76d = Matrix76<double>;
+using Matrix76f = Matrix76<float>;
+using Matrix77d = Matrix77<double>;
+using Matrix77f = Matrix77<float>;
+using Matrix78d = Matrix78<double>;
+using Matrix78f = Matrix78<float>;
+using Matrix79d = Matrix79<double>;
+using Matrix79f = Matrix79<float>;
+using Matrix81d = Matrix81<double>;
+using Matrix81f = Matrix81<float>;
+using Matrix82d = Matrix82<double>;
+using Matrix82f = Matrix82<float>;
+using Matrix83d = Matrix83<double>;
+using Matrix83f = Matrix83<float>;
+using Matrix84d = Matrix84<double>;
+using Matrix84f = Matrix84<float>;
+using Matrix85d = Matrix85<double>;
+using Matrix85f = Matrix85<float>;
+using Matrix86d = Matrix86<double>;
+using Matrix86f = Matrix86<float>;
+using Matrix87d = Matrix87<double>;
+using Matrix87f = Matrix87<float>;
+using Matrix88d = Matrix88<double>;
+using Matrix88f = Matrix88<float>;
+using Matrix89d = Matrix89<double>;
+using Matrix89f = Matrix89<float>;
+using Matrix91d = Matrix91<double>;
+using Matrix91f = Matrix91<float>;
+using Matrix92d = Matrix92<double>;
+using Matrix92f = Matrix92<float>;
+using Matrix93d = Matrix93<double>;
+using Matrix93f = Matrix93<float>;
+using Matrix94d = Matrix94<double>;
+using Matrix94f = Matrix94<float>;
+using Matrix95d = Matrix95<double>;
+using Matrix95f = Matrix95<float>;
+using Matrix96d = Matrix96<double>;
+using Matrix96f = Matrix96<float>;
+using Matrix97d = Matrix97<double>;
+using Matrix97f = Matrix97<float>;
+using Matrix98d = Matrix98<double>;
+using Matrix98f = Matrix98<float>;
+using Matrix99d = Matrix99<double>;
+using Matrix99f = Matrix99<float>;
 
 }  // namespace sym
