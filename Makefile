@@ -35,13 +35,14 @@ CPP_FILES_TO_FORMAT=$(shell find . -not -path "*/lcmtypes/*" -and -not -path "./
 	\) )
 
 # Format using black and clang-format
+BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "./third_party/*"
 format:
-	$(PYTHON) -m black --line-length 100 .
+	$(BLACK_CMD)
 	$(CPP_FORMAT) -i $(CPP_FILES_TO_FORMAT)
 
 # Check formatting using black and clang-format - print diff, do not modify files
 check_format:
-	$(PYTHON) -m black --line-length 100 . --check --diff
+	$(BLACK_CMD) --check --diff
 	$(foreach file, $(CPP_FILES_TO_FORMAT), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
 
 # Check type hints using mypy
@@ -52,6 +53,7 @@ MYPY_COMMAND=$(PYTHON) -m mypy
 check_types:
 	$(MYPY_COMMAND) symforce $(shell find . \
 		-path ./symforce -prune -false \
+		-o -path "./third_party/*" -prune -false \
 		-o -path "./test/*/lcmtypes/*" -prune -false \
 		-o -path "./test/symforce_function_codegen_test_data" -prune -false \
 		-o -name "*.py")
