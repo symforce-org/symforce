@@ -37,9 +37,12 @@ namespace sym {
  *
  * Outputs:
  *     res: 2dof residual of the reprojection
- *     geo.Matrix: Jacobian for args 0 (source_pose), 2 (target_pose), 4 (source_inverse_range)
- *     geo.Matrix: Hessian for args 0 (source_pose), 2 (target_pose), 4 (source_inverse_range)
- *     geo.Matrix: rhs for args 0 (source_pose), 2 (target_pose), 4 (source_inverse_range)
+ *     jacobian: (2x13) jacobian of res wrt args source_pose (6), target_pose (6),
+ *               source_inverse_range (1)
+ *     hessian: (13x13) Gauss-Newton hessian for args source_pose (6), target_pose (6),
+ *              source_inverse_range (1)
+ *     rhs: (13x1) Gauss-Newton rhs for args source_pose (6), target_pose (6), source_inverse_range
+ *          (1)
  */
 template <typename Scalar>
 void InverseRangeLandmarkReprojectionErrorFactor(

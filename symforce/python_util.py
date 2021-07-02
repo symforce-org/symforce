@@ -149,3 +149,15 @@ def is_valid_variable_name(name: str) -> bool:
     and does not start with a number.
     """
     return re.match(r".*\s.*|.*\W.*|^\d", name) is None
+
+
+def plural(singular: str, count: int, plural: str = None) -> str:
+    """
+    Return the singular or plural form of a word based on count
+
+    Adds an s to singular by default for the plural form, or uses `plural` if provided
+    """
+    if count == 1:
+        return singular
+    else:
+        return plural or (singular + "s")

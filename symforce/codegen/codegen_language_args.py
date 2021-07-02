@@ -1,28 +1,45 @@
-from symforce import types as T
+from dataclasses import dataclass
+
 from symforce.codegen import codegen_util
 
 
+@dataclass
 class LanguageArgs:
     """
-    Base class for language-specific arguments for code generation, passed directly to the templates
-    """
-
-    pass
-
-
-class CppLanguageArgs(LanguageArgs):
-    """
-    C++-specific arguments for code generation, passed directly to the templates
-    """
-
-    pass
-
-
-class PythonLanguageArgs(LanguageArgs):
-    """
-    Python-specific arguments for code generation, passed directly to the templates
+    Base class for language-specific arguments for code generation
 
     Args:
+        doc_comment_line_prefix: Prefix applied to each line in a docstring, e.g. " * " for C++
+                                 block-style docstrings
+        line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
+    """
+
+    doc_comment_line_prefix: str
+    line_length: int
+
+
+@dataclass
+class CppLanguageArgs(LanguageArgs):
+    """
+    C++-specific arguments for code generation
+
+    Args:
+        doc_comment_line_prefix: Prefix applied to each line in a docstring
+        line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
+    """
+
+    doc_comment_line_prefix: str = " * "
+    line_length: int = 100
+
+
+@dataclass
+class PythonLanguageArgs(LanguageArgs):
+    """
+    Python-specific arguments for code generation
+
+    Args:
+        doc_comment_line_prefix: Prefix applied to each line in a docstring
+        line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly
                    speed up functions by compiling them to machine code, but has large overhead
                    on the first call and some overhead on subsequent calls, so it should not be
@@ -30,8 +47,9 @@ class PythonLanguageArgs(LanguageArgs):
                    times.
     """
 
-    def __init__(self, use_numba: bool = False) -> None:
-        self.use_numba = use_numba
+    doc_comment_line_prefix: str = ""
+    line_length: int = 100
+    use_numba: bool = False
 
 
 _registry = {
@@ -41,8 +59,8 @@ _registry = {
 }
 
 
-def for_codegen_mode(mode: codegen_util.CodegenMode) -> T.Type[LanguageArgs]:
+def for_codegen_mode(mode: codegen_util.CodegenMode) -> LanguageArgs:
     """
     Gets the LanguageArgs subclass for the given CodegenMode
     """
-    return _registry[mode]
+    return _registry[mode]()

@@ -13,7 +13,7 @@ namespace sym {
  *
  * Returns:
  *     Element: a @ b
- *     geo.Matrix: Jacobian for arg 0 (a)
+ *     res_D_a: (6x6) jacobian of res (6) wrt arg a (6)
  */
 template <typename Scalar>
 sym::Pose3<Scalar> ComposePose3_ValueAndJacobian0(

@@ -23,7 +23,7 @@ namespace sym {
  *     sqrt_info: Square root information matrix to whiten residual. This can be computed from
  *                a covariance matrix as the cholesky decomposition of the inverse. In the case
  *                of a diagonal it will contain 1/sigma values. Must match the tangent dim.
- *     geo.Matrix: Jacobian for args 0 (a), 1 (b)
+ *     jacobian: (3x12) jacobian of res wrt args a (6), b (6)
  */
 template <typename Scalar>
 void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,

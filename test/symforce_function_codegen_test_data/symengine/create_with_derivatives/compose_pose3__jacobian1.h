@@ -12,7 +12,7 @@ namespace sym {
  * Composition of two elements in the group.
  *
  * Returns:
- *     geo.Matrix: Jacobian for arg 1 (b)
+ *     res_D_b: (6x6) jacobian of res (6) wrt arg b (6)
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const sym::Pose3<Scalar>& a,

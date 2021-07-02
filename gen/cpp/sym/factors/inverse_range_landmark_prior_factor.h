@@ -19,9 +19,9 @@ namespace sym {
  *
  * Outputs:
  *     res: 1dof residual of the prior
- *     geo.Matrix: Jacobian for args 0 (landmark_inverse_range)
- *     geo.Matrix: Hessian for args 0 (landmark_inverse_range)
- *     geo.Matrix: rhs for args 0 (landmark_inverse_range)
+ *     jacobian: (1x1) jacobian of res wrt arg landmark_inverse_range (1)
+ *     hessian: (1x1) Gauss-Newton hessian for arg landmark_inverse_range (1)
+ *     rhs: (1x1) Gauss-Newton rhs for arg landmark_inverse_range (1)
  */
 template <typename Scalar>
 void InverseRangeLandmarkPriorFactor(const Scalar landmark_inverse_range,

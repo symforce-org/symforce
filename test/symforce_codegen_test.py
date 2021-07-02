@@ -233,11 +233,12 @@ class SymforceCodegenTest(TestCase):
             return geo.V2(x[0, 0], x[1, 0])
 
         numba_test_func_codegen = Codegen.function(
-            name="numba_test_func", func=numba_test_func, mode=CodegenMode.PYTHON2
+            name="numba_test_func",
+            func=numba_test_func,
+            mode=CodegenMode.PYTHON2,
+            language_args=PythonLanguageArgs(use_numba=True),
         )
-        numba_test_func_codegen_data = numba_test_func_codegen.generate_function(
-            language_args=PythonLanguageArgs(use_numba=True)
-        )
+        numba_test_func_codegen_data = numba_test_func_codegen.generate_function()
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "numba_test_func.py")

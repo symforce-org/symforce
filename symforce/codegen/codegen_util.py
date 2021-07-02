@@ -4,9 +4,10 @@ Shared helper code between codegen of all languages.
 
 from enum import Enum
 import imp
+import inspect
 import itertools
 import os
-import inspect
+import textwrap
 
 from symforce import ops
 from symforce import geo
