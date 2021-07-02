@@ -1,0 +1,22 @@
+language: cpp
+sudo: false
+
+env: BUILD_TYPE="Debug" WITH_SYMENGINE_RCP="yes" WITH_BFD="no" WITH_SANITIZE="memory" INTEGER_CLASS="boostmp"
+compiler: clang
+os: linux
+dist: trusty
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-trusty-7
+    packages:
+    - clang-7
+    - llvm-7-dev
+
+install:
+  - source bin/install_travis.sh
+script:
+  - bin/test_travis.sh
+notifications:
+  email: false

@@ -1,0 +1,7 @@
+coverage:
+  ignore:
+  - symengine/tests/.*
+  - symengine/utilities/.*
+  - benchmarks/.*
+
+comment: off

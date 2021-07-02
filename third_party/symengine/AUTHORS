@@ -1,0 +1,79 @@
+All people who contributed to SymEngine by sending at least a patch or more (in
+the order of the date of their first contribution). You can generate this file
+by: bin/update_authors.sh
+
+
+Ondřej Čertík <ondrej@certik.us>
+Dale Lukas Peterson <hazelnusse@gmail.com>
+Thilina Bandara Rathnayake <thilinarmtb@gmail.com>
+Christopher Dembia <cld72@cornell.edu>
+Julien Rioux <julien.rioux@gmail.com>
+Sushant Hiray <hiraysushant@gmail.com>
+Thomas Hisch <t.hisch@gmail.com>
+Vinzent Steinberg <Vinzent.Steinberg@gmail.com>
+Isuru Fernando <isuruf@gmail.com>
+Peter Brady <petertbrady@gmail.com>
+Shivam Vats <shivamvats.iitkgp@gmail.com>
+Sumith Kulal <sumith1896@gmail.com>
+Sanka Rasnayaka <nuwan.ras@gmail.com>
+Abinash Meher <abinashdakshana999@gmail.com>
+Govind Sahai <gsiitbhu@gmail.com>
+AMiT Kumar <dtu.amit@gmail.com>
+Francesco Biscani <bluescarni@gmail.com>
+Connor Behan <connor.behan@gmail.com>
+Björn Dahlgren <bjodah@gmail.com>
+Ralf Stephan <ralf@ark.in-berlin.de>
+Indrek Mandre <indrek@mare.ee>
+Abhinav Agarwal <abhinavagarwal1996@gmail.com>
+Akash Trehan <akash.trehan123@gmail.com>
+Srajan Garg <srajan.garg@gmail.com>
+Abhimanyu Siwach <siwachabhi@gmail.com>
+Pradyot Prakash <pp2105@gmail.com>
+malayaleecoder <malayaleecoder@gmail.com>
+Nishant Nikhil <nishantiam@gmail.com>
+Zhang Yuning <codeworm96@outlook.com>
+Charles Chen <charlesyychen@gmail.com>
+Matthew Luszczak <myluszczak@ucdavis.edu>
+Iris Lui <irislui66@gmail.com>
+Rajith Vidanaarachchi <rajith.vidanaarachchi@gmail.com>
+Kunal Singh <kunalsingh.iitkgp@gmail.com>
+Vic Luo <vicluo96@gmail.com>
+James Stojic <jbrankos@yahoo.com>
+Arihant Parsoya <parsoyaarihant@gmail.com>
+Ritesh Kumar <babarwal.ritesh@gmail.com>
+Shikhar Jaiswal <jaiswalshikhar87@gmail.com>
+Vishu Sidana <vishusidana95@gmail.com>
+Siddharth Bhat <siddu.druid@gmail.com>
+Tao He <sighingnow@gmail.com>
+Chad Mills <chad.mills@gmail.com>
+Jean-Paul Pelteret <jppelteret@gmail.com>
+Ranjith Kumar <ranjith.dakshana2015@gmail.com>
+Kv Manohar <kvmanohar22@gmail.com>
+Kanchana Ruwanpathirana <kanchana.ruwanpathirana@gmail.com>
+Melanka Saroad <saroadmelanka@yahoo.com>
+Dirk Reusch <lists@kybdr.de>
+Gerrit Ansmann <wrzlrpmft@users.noreply.github.com>
+Jialin Ma <marlin-@gmx.cn>
+Nilay Pochhi <pochhi.nilay@gmail.com>
+Eeshan Gupta <eeshan9815@gmail.com>
+Ziyi Yan <cxfyzy@gmail.com>
+Andreas Humenberger <ahumenberger@gmail.com>
+Clouds Flowing <clouds.flowing@gmail.com>
+Sylvain Corlay <sylvain.corlay@gmail.com>
+Kieran Kaempen <kaempen2@illinois.edu>
+Alan Hu <alanlh2@illinois.edu>
+Rajiv Ranjan Singh <rajivperfect007@gmail.com>
+Francesco Bonazzi <franz.bonazzi@gmail.com>
+Simon Stelter <simon.stelter@gmail.com>
+Brandon Bocklund <brandonbocklund@gmail.com>
+Marcello Mansueto <mvm@mydatamodels.com>
+Steven Lee <stevenlee123@protonmail.com>
+Roger Luo <hiroger@qq.com>
+Jogi Miglani <jmig5776@gmail.com>
+Liam Keegan <liam@keegan.ch>
+Anubhav Gupta <anubhav.gupta.cse19@itbhu.ac.in>
+Rikard Nordgren <rikard.nordgren@farmaci.uu.se>
+Will Simmons <will.simmons@cambridgequantum.com>
+myd7349 <myd7349@gmail.com>
+Fabian Köhler <fabian.koehler@protonmail.ch>
+Rohit Goswami <rgoswami@ieee.org>

@@ -1,0 +1,13 @@
+name: doxygendoc
+channels:
+  - conda-forge
+dependencies:
+  - llvmdev=5
+  - gmp
+  - mpfr
+  - mpc
+  - cmake
+  - arb
+  - libflint
+  - doxygen
+  - graphviz # For dot

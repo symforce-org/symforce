@@ -1,0 +1,97 @@
+#ifndef SYMENGINE_CONFIG_HPP
+#define SYMENGINE_CONFIG_HPP
+
+#define SYMENGINE_MAJOR_VERSION ${SYMENGINE_MAJOR_VERSION}
+#define SYMENGINE_MINOR_VERSION ${SYMENGINE_MINOR_VERSION}
+#define SYMENGINE_PATCH_VERSION ${SYMENGINE_PATCH_VERSION}
+#define SYMENGINE_VERSION "${SYMENGINE_VERSION}"
+
+/* Define if you want to enable ASSERT testing in SymEngine */
+#cmakedefine WITH_SYMENGINE_ASSERT
+
+/* Define if you want to enable GMP support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_GMP
+
+/* Define if you want to enable SYMENGINE_RCP support in SymEngine */
+#cmakedefine WITH_SYMENGINE_RCP
+
+/* Define if you want to enable TEUCHOS support in SymEngine */
+#cmakedefine WITH_SYMENGINE_TEUCHOS
+
+/* Define if you want to enable SYMENGINE_THREAD_SAFE support in SymEngine */
+#cmakedefine WITH_SYMENGINE_THREAD_SAFE
+
+/* Define if you want to enable ECM support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_ECM
+
+/* Define if you want to enable PRIMESIEVE support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_PRIMESIEVE
+
+/* Define if you want to use virtual TypeIDs in SymEngine */
+#cmakedefine WITH_SYMENGINE_VIRTUAL_TYPEID
+
+/* Define if you want to enable Flint support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_FLINT
+
+/* Define if you want to enable ARB support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_ARB
+
+/* Define if you want to enable MPFR support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_MPFR
+
+/* Define if you want to enable Piranha support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_PIRANHA
+
+/* Define if you want to enable BOOST support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_BOOST
+
+/* Define if you want to enable PTHREAD support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_PTHREAD
+
+/* Define if you want to enable MPC support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_MPC
+
+/* Define if you want to enable LLVM support in SymEngine */
+#cmakedefine HAVE_SYMENGINE_LLVM
+
+/* Define if the C compiler supports __FUNCTION__ but not __func__ */
+#cmakedefine HAVE_C_FUNCTION_NOT_FUNC
+
+/* Define if the C++ compiler supports default constructors */
+#cmakedefine HAVE_DEFAULT_CONSTRUCTORS
+
+/* Define if the C++ compiler supports noexcept specifier */
+#cmakedefine HAVE_SYMENGINE_NOEXCEPT
+
+/* Define if the C++ compiler supports std::is_constructible */
+#cmakedefine HAVE_SYMENGINE_IS_CONSTRUCTIBLE
+
+/* Define if the C++ compiler supports std::unordered_map<>::reserve() */
+#cmakedefine HAVE_SYMENGINE_RESERVE
+
+/* Define if the C++ compiler has std::to_string */
+#cmakedefine HAVE_SYMENGINE_STD_TO_STRING
+
+#define SYMENGINE_GMPXX 0
+#define SYMENGINE_PIRANHA 1
+#define SYMENGINE_FLINT 2
+#define SYMENGINE_GMP 3
+#define SYMENGINE_BOOSTMP 4
+
+#define SYMENGINE_INTEGER_CLASS SYMENGINE_${SYMENGINE_INTEGER_CLASS}
+
+#define SYMENGINE_SIZEOF_LONG_DOUBLE ${SYMENGINE_SIZEOF_LONG_DOUBLE}
+
+#ifdef HAVE_SYMENGINE_NOEXCEPT
+#  define SYMENGINE_NOEXCEPT noexcept
+#else
+#  define SYMENGINE_NOEXCEPT
+#endif
+
+#include <symengine/symengine_export.h>
+
+#ifdef __CLING__
+#include "symengine/symengine_config_cling.h"
+#endif
+
+#endif

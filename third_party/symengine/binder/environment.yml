@@ -1,0 +1,15 @@
+name: symengine
+channels:
+  - conda-forge
+dependencies:
+  - xeus-cling
+  - llvmdev=5
+  - gmp
+  - mpfr
+  - mpc
+  - cmake
+  - arb
+  - libflint
+  - jupytext
+  - papermill
+  - symengine

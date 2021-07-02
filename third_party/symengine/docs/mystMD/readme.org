@@ -1,0 +1,12 @@
+* About
+- These files are *not* used in any of the HTML generated from this repository.
+- They are here to ensure the tutorials do not break
+  - These are run by the CI with [[https://papermill.readthedocs.io/en/latest/reference/papermill-cli.html][papermill]]
+** Adding
+- Always use the environment of the [[https://github.com/symengine/symengine.github.io][tutorial repository]]
+- We use ~papermill~ to determine which version is required to run the code blocks
+- We also *do not* store any ~.ipynb~ files and each executable tutorial has the ~.myst.md~ extension
+- Update the *.md* files to point to the new tutorial otherwise it will not be built
+  - It will still be tested
+** Visualizing
+For details on how to display these go to the [[https://github.com/symengine/symengine.github.io][tutorial repository]].

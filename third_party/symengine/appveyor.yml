@@ -1,0 +1,118 @@
+version: '{build}'
+
+# Uncomment this to enable the fast build environment if your account does not
+# support it automatically:
+#os: Visual Studio 2015 RC
+
+environment:
+  global:
+    PLATFORMTOOLSET: "v140"
+
+  matrix:
+    - BUILD_TYPE: Release
+      COMPILER: MSVC15
+      PLATFORM: x64
+      LIB_TYPE: dll
+      CONDA_INSTALL_LOCN: C:\\Miniconda37-x64
+      WITH_MPFR: yes
+      WITH_MPC: yes
+      WITH_LLVM: yes
+    - BUILD_TYPE: Release
+      COMPILER: MinGW-w64
+      PLATFORM: x64
+    - BUILD_TYPE: Release
+      COMPILER: MSVC15
+      PLATFORM: Win32
+      CONDA_INSTALL_LOCN: C:\\Miniconda37
+      LIB_TYPE: dll
+      WITH_MPFR: yes
+      WITH_MPC: yes
+    - BUILD_TYPE: Release
+      COMPILER: MinGW
+      PLATFORM: Win32
+      WITH_MPFR: yes
+    - BUILD_TYPE: Debug
+      COMPILER: MSVC15
+      PLATFORM: Win32
+      CONDA_INSTALL_LOCN: C:\\Miniconda37
+      LIB_TYPE: lib
+    - BUILD_TYPE: Debug
+      COMPILER: MinGW
+      PLATFORM: Win32
+      WITH_MPFR: yes
+      WITH_MPC: yes
+    - BUILD_TYPE: Debug
+      COMPILER: MSVC15
+      PLATFORM: x64
+      LIB_TYPE: lib
+      CONDA_INSTALL_LOCN: C:\\Miniconda37-x64
+    - BUILD_TYPE: Debug
+      COMPILER: MinGW-w64
+      PLATFORM: x64
+
+install:
+- if [%COMPILER%]==[MSVC15] call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
+- if [%COMPILER%]==[MSVC15] conda update --yes --quiet conda
+- if [%COMPILER%]==[MSVC15] conda config --add channels conda-forge
+- if [%COMPILER%]==[MSVC15] if [%BUILD_TYPE%]==[Debug] conda config --add channels symengine/label/debug
+- if [%COMPILER%]==[MSVC15] set "conda_pkgs=conda-forge::mpir=3.0.0"
+- if [%COMPILER%]==[MSVC15] if [%BUILD_TYPE%]==[Debug] conda config --add channels symengine/label/debug
+- if [%COMPILER%]==[MSVC15] if [%BUILD_TYPE%]==[Debug] set "conda_pkgs=symengine/label/debug::mpir=3.0.0"
+- if [%COMPILER%]==[MSVC15] if [%WITH_MPFR%]==[yes] set "conda_pkgs=%conda_pkgs% conda-forge::mpfr=3.1.5"
+- if [%COMPILER%]==[MSVC15] if [%WITH_MPC%]==[yes] set "conda_pkgs=%conda_pkgs% conda-forge::mpc=1.0.3"
+- if [%COMPILER%]==[MSVC15] if [%WITH_LLVM%]==[yes] set "conda_pkgs=%conda_pkgs% conda-forge::llvmdev=3.9"
+- if [%COMPILER%]==[MSVC15] conda create --yes -n myenv %conda_pkgs%
+- if [%COMPILER%]==[MSVC15] call activate myenv
+- if [%COMPILER%]==[MSVC15] if [%LIB_TYPE%]==[lib] rm %CONDA_PREFIX%\Library\lib\gmp.lib
+- if [%COMPILER%]==[MSVC15] if [%LIB_TYPE%]==[lib] move %CONDA_PREFIX%\Library\lib\gmp_static.lib %CONDA_PREFIX%\Library\lib\gmp.lib
+
+- if [%COMPILER%]==[MinGW] set PATH=C:\MinGW\bin;%PATH%
+- if [%COMPILER%]==[MinGW] mingw-get update
+- if [%COMPILER%]==[MinGW] mingw-get install mingw32-gmp
+- if [%COMPILER%]==[MinGW] if [%WITH_MPFR%]==[yes] mingw-get install mingw32-mpfr
+- if [%COMPILER%]==[MinGW] if [%WITH_MPC%]==[yes] mingw-get install mingw32-mpc
+
+# Rename sh.exe as sh.exe in PATH interferes with MinGW
+- rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
+
+# Download MinGW-w64 toolchain
+- if [%COMPILER%]==[MinGW-w64] call bin\appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/57834d6007065cdd71964c96b397505b2b4ce78a/x86_64-4.8.5-release-win32-seh-rt_v4-rev0.7z" -FileName mw64.7z
+- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
+- if [%COMPILER%]==[MinGW-w64] set PATH=C:\mingw64\bin;%PATH%
+# Download pre-compiled gmp binaries
+- if [%COMPILER%]==[MinGW-w64] call bin\appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/57834d6007065cdd71964c96b397505b2b4ce78a/gmp-6.0.0-x86_64-w64-mingw32.7z" -FileName gmp.7z
+- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\mingw64 gmp.7z > NUL
+
+build_script:
+- mkdir build
+- cd build
+
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015" -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%\Library ..
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64] cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%\Library ..
+- if [%COMPILER%]==[MinGW] cmake -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:\MinGW -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+- if [%COMPILER%]==[MinGW-w64] cmake -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:\mingw64 -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+
+- if [%LIB_TYPE%]==[dll] cmake -DINTEGER_CLASS=gmp ..
+- if not [%LIB_TYPE%]==[lib] cmake -DBUILD_SHARED_LIBS=yes ..
+
+- if [%WITH_MPFR%]==[yes] cmake -DWITH_MPFR=yes ..
+- if [%WITH_MPC%]==[yes] cmake -DWITH_MPC=yes ..
+- if [%WITH_LLVM%]==[yes] cmake -DWITH_LLVM=yes -DMSVC_USE_MT=no ..
+
+- cmake -DCMAKE_INSTALL_PREFIX=C:\symengine ..
+- cmake --build . --config %BUILD_TYPE% --target install
+
+test_script:
+- set PATH=C:\symengine\bin\;%PATH%
+- ctest --output-on-failure
+
+on_success:
+- cd C:\
+- if [%BUILD_TYPE%]==[Release] 7z a symengine_%COMPILER%_%PLATFORM%.zip .\symengine\*
+- if [%BUILD_TYPE%]==[Release] appveyor PushArtifact symengine_%COMPILER%_%PLATFORM%.zip
+
+# Enable this to be able to login to the build worker. You can use the
+# `remmina` program in Ubuntu, use the login information that the line below
+# prints into the log.
+#on_finish:
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

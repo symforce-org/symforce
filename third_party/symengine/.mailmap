@@ -1,0 +1,53 @@
+# Prevent git from showing duplicate names with commands like "git shortlog"
+# See the manpage of git-shortlog for details.
+# The syntax is:
+# Name that should be used <email that should be used> Bad name <bad email>
+#
+# You can skip Bad name if it is the same as the one that should be used, and is unique.
+#
+# This file is up-to-date if the command git log --format="%aN <%aE>" | sort -u
+# gives no duplicates.
+Ondřej Čertík <ondrej@certik.us> <ondrej.certik@gmail.com>
+Sushant Hiray <hiraysushant@gmail.com>
+Thilina Bandara Rathnayake <thilinarmtb@gmail.com>
+Peter Brady <petertbrady@gmail.com> <ptb@lanl.gov>
+Isuru Fernando <isuruf@gmail.com> <isuru.11@cse.mrt.ac.lk>
+Isuru Fernando <isuruf@gmail.com> <idf2@illinois.edu>
+Shivam Vats <shivamvats.iitkgp@gmail.com> <shivamvats@users.noreply.github.com>
+Shivam Vats <shivamvats.iitkgp@gmail.com> <shivamhzb@gmail.com>
+Sanka Rasnayaka <nuwan.ras@gmail.com>
+AMiT Kumar <dtu.amit@gmail.com>
+Abhinav Agarwal <abhinavagarwal1996@gmail.com>
+Abhinav Agarwal <abhinavagarwal1996@gmail.com> <abhinavagarwal07@users.noreply.github.com>
+Abhimanyu Siwach <siwachabhi@gmail.com>
+Zhang Yuning <codeworm96@outlook.com>
+Kunal Singh <kunalsingh.iitkgp@gmail.com>
+Sumith Kulal <sumith1896@gmail.com>
+Iris Lui <irislui66@gmail.com> <iwlui@ucdavis.edu>
+Charles Chen <charlesyychen@gmail.com> <cyuchen@ucdavis.edu>
+Nishant Nikhil <nishantiam@gmail.com>
+Arihant Parsoya <parsoyaarihant@gmail.com>
+Shikhar Jaiswal <jaiswalshikhar87@gmail.com>
+Vishu Sidana <vishusidana95@gmail.com>
+Ritesh Kumar <babarwal.ritesh@gmail.com>
+Siddharth Bhat <siddu.druid@gmail.com>
+Tao He <sighingnow@gmail.com>
+Ranjith Kumar <ranjith.dakshana2015@gmail.com>
+Kv Manohar <kvmanohar22@gmail.com>
+Kanchana Ruwanpathirana <kanchana.ruwanpathirana@gmail.com>
+Dirk Reusch <lists@kybdr.de> rdbyk <rdbyk@users.noreply.github.com>
+Nilay Pochhi <pochhi.nilay@gmail.com>
+Jialin Ma <marlin-@gmx.cn>
+Jialin Ma <marlin-@gmx.cn> <marlin@inventati.org>
+Jialin Ma <marlin-@gmx.cn> <jma@broadinstitute.org>
+Gerrit Ansmann <wrzlrpmft@users.noreply.github.com> <bla@example.com> Gerrit Ansmann
+Simon Stelter <simon.stelter@gmail.com> <stelter@tzi.de>
+Rajiv Ranjan Singh <rajivperfect007@gmail.com> Rajiv Ranjan Singh <42106787+iamrajiv@users.noreply.github.com>
+Brandon Bocklund <brandonbocklund@gmail.com>
+Simon Stelter <simon.stelter@gmail.com> <stelter@uni-bremen.de>
+Björn Dahlgren <bjodah@gmail.com>
+Roger Luo <hiroger@qq.com>
+Jogi Miglani <jmig5776@gmail.com>
+Anubhav Gupta <anubhav.gupta.cse19@itbhu.ac.in>
+Rikard Nordgren <rikard.nordgren@farmaci.uu.se> <rikard.nordgren@farmbio.uu.se>
+Fabian Köhler <fabian.koehler@protonmail.ch> <fkoehler@physnet.uni-hamburg.de>

@@ -1,0 +1,7 @@
+#ifndef SYMENGINE_CONFIG_CLING_HPP
+#define SYMENGINE_CONFIG_CLING_HPP
+
+#pragma cling add_library_path(@SYMENGINE_CLING_LIBRARY_DIR@)
+#pragma cling load("@CMAKE_SHARED_LIBRARY_PREFIX@symengine")
+
+#endif

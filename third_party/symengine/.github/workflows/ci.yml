@@ -1,0 +1,234 @@
+name: Build and test symengine
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.OS }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Debug build (with BFD)
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Debug build (with BFD and SYMENGINE_THREAD_SAFE)
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_SYMENGINE_THREAD_SAFE: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Debug build (with BFD, ECM, PRIMESIEVE and MPC)
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_ECM: yes
+            WITH_PRIMESIEVE: yes
+            WITH_MPC: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Debug build (with BFD, Flint and Arb and INTEGER_CLASS from flint)
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_ARB: yes
+            INTEGER_CLASS: flint
+            WITH_MPC: yes
+            TEST_IN_TREE: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Debug build (with BFD, MPFR and INTEGER_CLASS from gmpxx)
+          - BUILD_TYPE: Debug
+            WITH_SYMENGINE_RCP: yes
+            WITH_MPFR: yes
+            INTEGER_CLASS: gmpxx
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Debug build (with BFD and INTEGER_CLASS from boostmp)
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            INTEGER_CLASS: boostmp
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Debug build shared lib (with BFD)
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            BUILD_SHARED_LIBS: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Release build (with BFD)
+          - WITH_BFD: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          # Release shared build (with BFD)
+          - WITH_BFD: yes
+            BUILD_SHARED_LIBS: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          ## In-tree builds (we just check a few configurations to make sure they work):
+          # Debug build
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            TEST_IN_TREE: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_LATEST_GCC: yes
+            WITH_COVERAGE: yes
+            WITH_MPC: yes
+            WITH_LLVM: 8.0
+            USE_GLIBCXX_DEBUG: yes
+            OS: ubuntu-16.04
+            CC: gcc
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+            EXTRA_APT_PACKAGES: "clang-8 llvm-8-dev binutils-dev g++-8"
+
+          - TEST_CLANG_FORMAT: yes
+            OS: ubuntu-16.04
+            CC: gcc
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.8 main'
+            EXTRA_APT_PACKAGES: clang-format-3.8
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_PIRANHA: yes
+            MAKEFLAGS: -j2
+            BUILD_SHARED_LIBS: yes
+            CC: gcc
+            OS: ubuntu-16.04
+            EXTRA_APT_PACKAGES: "binutils-dev g++-4.8"
+            # This is not used, but was in travis config
+            # WITH_GCC_6: yes
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_COVERAGE: yes
+            TEST_IN_TREE: yes
+            WITH_FLINT: yes
+            WITH_FLINT_DEV: yes
+            WITH_MPC: yes
+            BUILD_BENCHMARKS: no
+            MAKEFLAGS: -j2
+            CC: gcc
+            OS: ubuntu-16.04
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_PIRANHA: yes
+            INTEGER_CLASS: piranha
+            MAKEFLAGS: -j2
+            CC: gcc
+            OS: ubuntu-16.04
+            EXTRA_APT_PACKAGES: "g++-4.8"
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            WITH_LLVM: 6.0
+            WITH_BENCHMARKS_NONIUS: yes
+            CC: clang
+            OS: ubuntu-16.04
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main'
+            EXTRA_APT_PACKAGES: "clang-6.0 libstdc++-4.8-dev libgmp-dev llvm-6.0-dev"
+
+          - BUILD_TYPE: Release
+            CC: clang
+            OS: ubuntu-16.04
+            EXTRA_APT_PACKAGES: "clang libstdc++-4.8-dev libgmp-dev"
+
+          - BUILD_TYPE: Debug
+            WITH_LLVM: 3.8
+            OS: macos-latest
+            CC: clang
+
+          - BUILD_TYPE: Release
+            WITH_LLVM: 5.0
+            OS: macos-latest
+            CC: clang
+
+          - BUILD_TYPE: Debug
+            OS: macos-latest
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            OS: macos-latest
+            CC: gcc
+
+          - BUILD_TYPE: Debug
+            WITH_SANITIZE: address
+            WITH_LLVM: 7.0
+            CC: clang
+            OS: ubuntu-16.04
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
+            EXTRA_APT_PACKAGES: "clang-7 llvm-7-dev"
+    
+          - BUILD_TYPE: Debug
+            WITH_SANITIZE: undefined
+            WITH_LLVM: 7.0
+            CC: clang
+            OS: ubuntu-16.04
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
+            EXTRA_APT_PACKAGES: "clang-7 llvm-7-dev"
+
+          #- BUILD_TYPE: Debug
+          #  WITH_SYMENGINE_RCP: yes
+          #  WITH_BFD: no
+          #  WITH_SANITIZE: memory
+          #  INTEGER_CLASS: boostmp
+          #  CC: clang
+          #  OS: ubuntu-18.04
+          #  EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main'
+          #  EXTRA_APT_PACKAGES: "clang-7 llvm-7-dev"
+
+          - CONDA_ENV_FILE: symengine/utilities/matchpycpp/environment.yml
+            CC: gcc
+            OS: ubuntu-16.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and test symengine
+      shell: bash
+      run: |
+        source bin/test_symengine_unix.sh
+      env:
+        USE_GLIBCXX_DEBUG: ${{ matrix.USE_GLIBCXX_DEBUG }}
+        WITH_MPFR: ${{ matrix.WITH_MPFR }}
+        BUILD_BENCHMARKS: ${{ matrix.BUILD_BENCHMARKS }}
+        WITH_LLVM: ${{ matrix.WITH_LLVM }}
+        WITH_BENCHMARKS_NONIUS: ${{ matrix.WITH_BENCHMARKS_NONIUS }}
+        WITH_SYMENGINE_RCP: ${{ matrix.WITH_SYMENGINE_RCP }}
+        TEST_IN_TREE: ${{ matrix.TEST_IN_TREE }}
+        WITH_SYMENGINE_THREAD_SAFE: ${{ matrix.WITH_SYMENGINE_THREAD_SAFE }}
+        WITH_PRIMESIEVE: ${{ matrix.WITH_PRIMESIEVE }}
+        INTEGER_CLASS: ${{ matrix.INTEGER_CLASS }}
+        WITH_ARB: ${{ matrix.WITH_ARB }}
+        WITH_PIRANHA: ${{ matrix.WITH_PIRANHA }}
+        WITH_GCC_6: ${{ matrix.WITH_GCC_6 }}
+        CONDA_ENV_FILE: ${{ matrix.CONDA_ENV_FILE }}
+        WITH_BFD: ${{ matrix.WITH_BFD }}
+        WITH_FLINT: ${{ matrix.WITH_FLINT }}
+        EXTRA_APT_REPOSITORY: ${{ matrix.EXTRA_APT_REPOSITORY }}
+        EXTRA_APT_PACKAGES: ${{ matrix.EXTRA_APT_PACKAGES }}
+        TEST_CLANG_FORMAT: ${{ matrix.TEST_CLANG_FORMAT }}
+        WITH_ECM: ${{ matrix.WITH_ECM }}
+        WITH_LATEST_GCC: ${{ matrix.WITH_LATEST_GCC }}
+        OS: ${{ matrix.OS }}
+        WITH_FLINT_DEV: ${{ matrix.WITH_FLINT_DEV }}
+        CC: ${{ matrix.CC }}
+        WITH_COVERAGE: ${{ matrix.WITH_COVERAGE }}
+        BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
+        WITH_SANITIZE: ${{ matrix.WITH_SANITIZE }}
+        WITH_MPC: ${{ matrix.WITH_MPC }}
+        MAKEFLAGS: ${{ matrix.MAKEFLAGS }}
+        BUILD_SHARED_LIBS: ${{ matrix.BUILD_SHARED_LIBS }}

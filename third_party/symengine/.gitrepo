@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/symengine/symengine
+	branch = v0.7.0
+	commit = 17de51fb1769c573e600226dab8938533bd04390
+	parent = fc1d50b9c3894dd6aabca1723902b36347a168a6
+	method = merge
+	cmdver = 0.4.3

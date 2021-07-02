@@ -1,0 +1,54 @@
+name: Build Doxygen API Docs
+
+on: [push, pull_request]
+
+jobs:
+  build_doxygen:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+          fetch-depth: 0
+      - name: Cache conda
+        uses: actions/cache@v1
+        env:
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('doxygendoc.yml') }}
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('doxygendoc.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: doxygendoc
+          environment-file: ./binder/doxygendoc.yml
+          python-version: 3.9
+          auto-activate-base: false
+      - name: Get external tags and Build
+        run: |
+          cd ./docs/Doxygen
+          mkdir -p tags
+          cd tags
+          curl https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml -o cppreference-doxygen-web.tag.xml
+          cd ../
+          doxygen Doxyfile-prj.cfg
+          cd ../../
+      - name: Deploy Docs
+        if: ${{ github.ref == 'refs/heads/master' && github.repository == 'Symengine/symengine' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./docs/Doxygen/gen_docs/html

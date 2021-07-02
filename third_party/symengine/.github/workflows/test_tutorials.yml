@@ -1,0 +1,24 @@
+name: Test myST tutorials
+
+on: [push, pull_request]
+
+jobs:
+  test_tutorials:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tutorials
+        run: |
+          export NB_PYTHON_PREFIX=$CONDA_PREFIX
+          source bin/install_travis.sh
+          ./binder/postBuild
+          python bin/test_tutorials.py
+        env:
+          WITH_MPC: yes
+          WITH_MPFR: yes
+          WITH_FLINT: yes
+          WITH_SCIPY: yes
+          BUILD_TUTORIALS: yes
+          CONDA_ENV_FILE: "binder/environment.yml"
+          MAKEFLAGS: -j4
+          our_install_dir: $HOME/our_usr/

@@ -1,0 +1,9 @@
+name: matchpycpp
+channels:
+  - conda-forge
+dependencies:
+  - python 3.6.*
+  - pip:
+      - git+git://github.com/sympy/sympy.git@a22a512c#egg=sympy
+      - git+git://github.com/HPAC/matchpy.git@419c103#egg=matchpy
+

@@ -1,0 +1,10 @@
+set -e
+mkdir build
+cd build
+export LDFLAGS="-Wl,-rpath,${NB_PYTHON_PREFIX}/lib -L${NB_PYTHON_PREFIX}/lib"
+cmake -DWITH_COTIRE=no -DBUILD_SHARED_LIBS=yes -DWITH_MPC=yes -DWITH_ARB=yes -DINTEGER_CLASS=flint -DWITH_LLVM=yes -DCMAKE_PREFIX_PATH=${NB_PYTHON_PREFIX} -DCMAKE_INSTALL_PREFIX=${NB_PYTHON_PREFIX} -DBUILD_TESTS=off -DBUILD_BENCHMARKS=off -DCMAKE_INSTALL_LIBDIR=lib ..
+make -j4
+make install
+sudo make install
+cd ..
+rm -rf build
