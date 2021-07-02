@@ -13,9 +13,9 @@ namespace bundle_adjustment_example {
  * Symbolic function: landmark_prior_residual
  * Arg type(s): Symbol, Symbol, Symbol, Symbol, Symbol
  * Return type(s): Matrix11
- *     geo.Matrix: Jacobian for args 0 (landmark)
- *     geo.Matrix: Hessian for args 0 (landmark)
- *     geo.Matrix: rhs for args 0 (landmark)
+ *     jacobian: Jacobian for arg 0 (landmark)
+ *     hessian: Hessian for arg 0 (landmark)
+ *     rhs: rhs for arg 0 (landmark)
  */
 template <typename Scalar>
 void LandmarkPriorFactor(const Scalar landmark, const Scalar inverse_range_prior,
@@ -32,7 +32,7 @@ void LandmarkPriorFactor(const Scalar landmark, const Scalar inverse_range_prior
   const Scalar _tmp0 = -inverse_range_prior + landmark;
   const Scalar _tmp1 = epsilon + sigma;
   const Scalar _tmp2 = weight / _tmp1;
-  const Scalar _tmp3 = (weight * weight) / (_tmp1 * _tmp1);
+  const Scalar _tmp3 = std::pow<Scalar>(weight, 2) / std::pow<Scalar>(_tmp1, 2);
 
   // Output terms (4)
   if (res != nullptr) {
