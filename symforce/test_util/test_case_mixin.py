@@ -30,7 +30,7 @@ class SymforceTestCaseMixin:
 
         unittest.main()
 
-    def compare_or_update(self, path: str, data: str) -> None:
+    def compare_or_update(self, path: T.Openable, data: str) -> None:
         """
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
@@ -55,12 +55,12 @@ class SymforceTestCaseMixin:
                 "Data did not match, use --update to check diff and commit if desired.",
             )
 
-    def compare_or_update_file(self, path: str, new_file: str) -> None:
+    def compare_or_update_file(self, path: T.Openable, new_file: T.Openable) -> None:
         with open(new_file) as f:
             code = f.read()
         self.compare_or_update(path, code)
 
-    def compare_or_update_directory(self, actual_dir: str, expected_dir: str) -> None:
+    def compare_or_update_directory(self, actual_dir: T.Openable, expected_dir: T.Openable) -> None:
         """
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.

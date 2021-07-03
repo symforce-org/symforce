@@ -14,7 +14,7 @@ from symforce import sympy as sm
 from symforce import types as T
 
 
-def remove_if_exists(path: str) -> None:
+def remove_if_exists(path: T.Openable) -> None:
     """
     Delete a file or directory if it exists.
     """
@@ -98,7 +98,7 @@ def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:
     return s
 
 
-def files_in_dir(dirname: str, relative: bool = False) -> T.Iterator[str]:
+def files_in_dir(dirname: T.Openable, relative: bool = False) -> T.Iterator[str]:
     """
     Return a list of files in the given directory.
     """
