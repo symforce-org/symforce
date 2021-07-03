@@ -11,6 +11,7 @@ from symforce import geo
 from symforce import cam
 from symforce import initialization
 from symforce import ops
+from symforce import python_util
 from symforce.ops.interfaces import Storage
 
 from .attr_accessor import AttrAccessor
@@ -479,17 +480,20 @@ class Values:
     # Dict magic methods
     # -------------------------------------------------------------------------
 
-    def _get_subvalues_and_key(self, key: str, create: bool = False) -> T.Tuple[Values, str]:
+    def _get_subvalues_key_and_indices(
+        self, key: str, create: bool = False
+    ) -> T.Tuple[Values, str, T.List[int]]:
         """
         Given a key, compute the full key name by applying name scopes and
-        the innermost values that contains that key. Return the innermost values
-        and the child key within that.
+        the innermost values that contains that key. Return the innermost values,
+        the child key within that, and the attached indices.
 
         Example:
-            >>> v = Values(a=1, b=Values(c=3, d=Values(e=4, f=5)))
-            >>> subvalues, key = v._get_subvalues_and_key('b.d.f')
+            >>> v = Values(a=1, b=Values(c=3, d=Values(e=4, f=[[5, 6], [7, 5]])))
+            >>> subvalues, key, indices = v._get_subvalues_and_key('b.d.f[1][0]')
             >>> assert subvalues == v['b.d']
             >>> assert key == 'f'
+            >>> assert indices == [1, 0]
 
         Args:
             key (str):
@@ -498,6 +502,7 @@ class Values:
         Returns:
             Values: Innermost sub-values containing key
             str: Key name within the values
+            T.List[int]: The indices used to index into the key's value
         """
         # Prepend the key scopes if not the latest symbol scopes already
         key_scope_is_subset = sm.__scopes__[-len(self.__scopes__) :] == self.__scopes__
@@ -507,37 +512,70 @@ class Values:
             full_key = ".".join(self.__scopes__ + [key])
 
         split_key = full_key.split(".")
-        key_path, key_name = split_key[:-1], split_key[-1]
+        *key_path, key_name = split_key
 
         values = self
         for i, part in enumerate(key_path):
-            if part not in values.dict:
+            base, indices = python_util.base_and_indices(part)
+            if base not in values.dict:
                 if not create:
-                    return Values(), key_name
-                values.dict[part] = Values()
+                    return Values(), key_name, []
+                assert indices == []
+                values.dict[base] = Values()
 
-            values = values.dict[part]
+            sub_values_or_sequence = values.dict[base]
+            for i in indices:
+                sub_values_or_sequence = sub_values_or_sequence[i]
+            values = sub_values_or_sequence
             assert isinstance(values, Values), 'Cannot set "{}", "{}" not a Values!'.format(
                 full_key, ".".join(split_key[: i + 1])
             )
 
-        return values, key_name
+        key_name_base, key_name_indices = python_util.base_and_indices(key_name)
+        return values, key_name_base, key_name_indices
 
     def __getitem__(self, key: str) -> T.Any:
-        values, key_name = self._get_subvalues_and_key(key)
-        return values.dict[key_name]
+        values, key_name, indices = self._get_subvalues_key_and_indices(key)
+        item = values.dict[key_name]
+        for i in indices:
+            item = item[i]
+        return item
 
     def __setitem__(self, key: str, value: T.Any) -> None:
-        values, key_name = self._get_subvalues_and_key(key, create=True)
-        values.dict[key_name] = value
+        values, key_name, indices = self._get_subvalues_key_and_indices(key, create=True)
+        if not indices:
+            values.dict[key_name] = value
+        else:
+            item = values.dict[key_name]
+            for i in indices[:-1]:
+                item = item[i]
+            item[indices[-1]] = value
 
     def __delitem__(self, key: str) -> None:
-        values, key_name = self._get_subvalues_and_key(key)
-        del values.dict[key_name]
+        values, key_name, indices = self._get_subvalues_key_and_indices(key)
+        if not indices:
+            del values.dict[key_name]
+        else:
+            item = values.dict[key_name]
+            for i in indices[:-1]:
+                item = item[i]
+            del item[indices[-1]]
 
     def __contains__(self, key: str) -> bool:
-        values, key_name = self._get_subvalues_and_key(key)
-        return values.dict.__contains__(key_name)
+        values, key_name, indices = self._get_subvalues_key_and_indices(key)
+        if not indices:
+            return values.dict.__contains__(key_name)
+        else:
+            try:
+                item = values.dict[key_name]
+            except KeyError:
+                return False
+            try:
+                for i in indices:
+                    item = item[i]
+            except IndexError:
+                return False
+            return True
 
     # -------------------------------------------------------------------------
     # Name scope management

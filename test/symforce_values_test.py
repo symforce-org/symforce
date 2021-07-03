@@ -191,6 +191,96 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(v["a"].evalf(), v_evalf["a"])
         self.assertNear(v_evalf["a"], 0.3333333, places=6)
 
+    def test_getitem(self) -> None:
+        """
+        Tests:
+            Values.__getitem__
+        """
+        with self.subTest(msg="Can get values inside nested lists"):
+            v = Values(lst=[[1, 2, 3], [4, 5, 6]])
+            self.assertEqual(4, v["lst[1][0]"])
+
+        with self.subTest(msg="Can get values insides listed Values"):
+            v = Values(lst=[Values(a=1), Values(b=2), Values(c=3)])
+            self.assertEqual(2, v["lst[1].b"])
+
+    def test_setitem(self) -> None:
+        """
+        Tests:
+            Values.__setitem__
+        """
+        with self.subTest(msg="Can set an item within a list"):
+            v = Values(lst=[1, 2, 3])
+            v["lst[1]"] = 0
+            v_expected = Values(lst=[1, 0, 3])
+            self.assertEqual(v, v_expected)
+
+        with self.subTest(msg="Can set an item within a nested list"):
+            v = Values(lst=[[1, 2, 3], [4, 5, 6]])
+            v["lst[1][0]"] = 0
+            v_expected = Values(lst=[[1, 2, 3], [0, 5, 6]])
+            self.assertEqual(v, v_expected)
+
+        with self.subTest(msg="Can set a new item"):
+            v = Values()
+            v["lst"] = [1, 2, 3]
+            v_expected = Values(lst=[1, 2, 3])
+            self.assertEqual(v, v_expected)
+
+    def test_delitem(self) -> None:
+        """
+        Tests:
+            Values.__delitem__
+        """
+        with self.subTest(msg="Can delete an element from a list"):
+            v = Values(lst=[1, 2, 3])
+            del v["lst[1]"]
+            v_expected = Values(lst=[1, 3])
+            self.assertEqual(v, v_expected)
+
+        with self.subTest(msg="Can delete an element form a nested list"):
+            v = Values(lst=[[1, 2, 3], [4, 5, 6]])
+            del v["lst[0][2]"]
+            v_expected = Values(lst=[[1, 2], [4, 5, 6]])
+            self.assertEqual(v, v_expected)
+
+        with self.subTest(msg="Can delete a nested Values"):
+            v = Values(nested_v=Values())
+            del v["nested_v"]
+            v_expected = Values()
+            self.assertEqual(v, v_expected)
+
+    def test_contains(self) -> None:
+        """
+        Tests:
+            Values.__contains__
+        """
+        with self.subTest(msg="Values contains both list keys and their elements"):
+            v = Values(lst=[1, 2, 3])
+            self.assertTrue("lst" in v)
+            self.assertTrue("lst[2]" in v)
+
+        with self.subTest(msg="Values does not contain too large indices"):
+            v = Values(lst=[1, 2, 3])
+            self.assertFalse("lst[3]" in v)
+
+        with self.subTest(msg="Values contains nested lists"):
+            v = Values(nested_lists=[[1, 2, 3], [4, 5, 6]])
+            self.assertTrue("nested_lists[1]" in v)
+            self.assertTrue("nested_lists[1][2]" in v)
+
+        with self.subTest(msg="Values contains nested Values"):
+            v = Values(v_nested=Values(a=1))
+            self.assertTrue("v_nested.a" in v)
+
+        with self.subTest(msg="Values contains nested Values in lists"):
+            v = Values(v_list=[Values(a=1)])
+            self.assertTrue("v_list[0].a" in v)
+
+        with self.subTest(msg="Values does not contain what it does not contain"):
+            v = Values(a=1)
+            self.assertFalse("b" in v)
+
     def test_mixing_scopes(self) -> None:
         v1 = Values()
         v1.add("x")
@@ -230,10 +320,8 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_tangent(entries).items()))
         self.assertSequenceEqual(list(zip(keys, entries)), list(v.from_storage(entries).items()))
 
-    @unittest.expectedFailure
     def test_items_recursive(self) -> None:
         """
-        TODO(Bradley) Get this passing
         Tests:
             Values.items_recursive
         Ensure that the key item pairs returned by items_recursive are valid key item pairs.
