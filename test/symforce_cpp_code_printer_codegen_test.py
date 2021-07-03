@@ -6,7 +6,7 @@ import symforce
 from symforce import logger
 from symforce import python_util
 from symforce import types as T
-from symforce.test_util import TestCase, requires_sympy
+from symforce.test_util import TestCase, sympy_only
 from symforce.values import Values
 
 from symforce.codegen import codegen_util, Codegen, CodegenMode
@@ -41,7 +41,7 @@ class SymforceCppCodePrinterTest(TestCase):
             "std::min<Scalar>(std::pow<Scalar>(a, 2), std::pow<Scalar>(b, 2))",
         )
 
-    @requires_sympy
+    @sympy_only
     def test_heaviside(self) -> None:
         def f(x: sm.Symbol) -> sm.Symbol:
             return sm.functions.special.delta_functions.Heaviside(x)

@@ -122,13 +122,24 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
                 python_util.execute_subprocess(os.path.join(package_dir, name))
 
 
-def requires_sympy(func: T.Callable) -> T.Callable:
+def sympy_only(func: T.Callable) -> T.Callable:
     """
     Decorator to mark a test to only run on the SymPy backend, and skip otherwise
     """
     backend = symforce.get_backend()
     if backend != "sympy":
         return unittest.skip("This test only runs on the SymPy backend")(func)
+    else:
+        return func
+
+
+def symengine_only(func: T.Callable) -> T.Callable:
+    """
+    Decorator to mark a test to only run on the SymEngine backend, and skip otherwise
+    """
+    backend = symforce.get_backend()
+    if backend != "symengine":
+        return unittest.skip("This test only runs on the SymEngine backend")(func)
     else:
         return func
 

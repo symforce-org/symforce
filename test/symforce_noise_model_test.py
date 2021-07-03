@@ -2,7 +2,7 @@ from symforce import geo
 import symforce.opt.noise_models as nm
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.test_util import TestCase, requires_sympy, epsilon_handling
+from symforce.test_util import TestCase, sympy_only, epsilon_handling
 
 
 class NoiseModelTest(TestCase):
@@ -57,7 +57,7 @@ class NoiseModelTest(TestCase):
         test4 = jac.subs({alpha: 1.0, scale: 2.0, weight: 0.0, epsilon: 1e-10, x: 0.0}).evalf()
         self.assertNear(test4, 0.0)
 
-    @requires_sympy
+    @sympy_only
     def test_barron_noise_model_epsilon_handling(self) -> None:
         """
         Epsilon handling for BarronNoiseModel.whiten_norm should be correct (i.e. value and
