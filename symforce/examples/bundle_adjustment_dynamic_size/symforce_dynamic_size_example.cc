@@ -1,11 +1,12 @@
+#include <sym/factors/between_factor_pose3.h>
+#include <sym/factors/inverse_range_landmark_prior_factor.h>
+#include <sym/factors/inverse_range_landmark_reprojection_error_factor.h>
 #include <symforce/opt/assert.h>
 #include <symforce/opt/factor.h>
 #include <symforce/opt/optimizer.h>
 
+#include "../example_utils/example_state_helpers.h"
 #include "./build_example_state.h"
-#include "symforce/bundle_adjustment_example/landmark_prior_factor.h"
-#include "symforce/bundle_adjustment_example/relative_pose_prior_factor.h"
-#include "symforce/bundle_adjustment_example/reprojection_error_factor.h"
 
 namespace sym {
 namespace bundle_adjustment_dynamic_size {
@@ -20,25 +21,23 @@ std::vector<Factord> BuildFactors(const int num_views) {
         continue;
       }
 
-      factors.push_back(Factord::Hessian(bundle_adjustment_example::RelativePosePriorFactor<double>,
-                                         {{Var::VIEW, i},
-                                          {Var::VIEW, j},
-                                          {Var::POSE_PRIOR_R, i, j},
-                                          {Var::POSE_PRIOR_T, i, j},
-                                          {Var::POSE_PRIOR_WEIGHT, i, j},
-                                          {Var::POSE_PRIOR_SIGMAS, i, j},
-                                          Var::EPSILON},
-                                         {
-                                             {Var::VIEW, i},
-                                             {Var::VIEW, j},
-                                         }));
+      factors.push_back(Factord::Jacobian(sym::BetweenFactorPose3<double>,
+                                          {{Var::VIEW, i},
+                                           {Var::VIEW, j},
+                                           {Var::POSE_PRIOR_T, i, j},
+                                           {Var::POSE_PRIOR_SQRT_INFO, i, j},
+                                           Var::EPSILON},
+                                          {
+                                              {Var::VIEW, i},
+                                              {Var::VIEW, j},
+                                          }));
     }
   }
 
   // Inverse range priors
   for (int i = 1; i < num_views; i++) {
     for (int landmark_idx = 0; landmark_idx < kNumLandmarks; landmark_idx++) {
-      factors.push_back(Factord::Hessian(bundle_adjustment_example::LandmarkPriorFactor<double>,
+      factors.push_back(Factord::Hessian(sym::InverseRangeLandmarkPriorFactor<double>,
                                          {{Var::LANDMARK, landmark_idx},
                                           {Var::LANDMARK_PRIOR, i, landmark_idx},
                                           {Var::MATCH_WEIGHT, i, landmark_idx},
@@ -51,7 +50,7 @@ std::vector<Factord> BuildFactors(const int num_views) {
   // Reprojection errors
   for (int i = 1; i < num_views; i++) {
     for (int landmark_idx = 0; landmark_idx < kNumLandmarks; landmark_idx++) {
-      factors.push_back(Factord::Hessian(bundle_adjustment_example::ReprojectionErrorFactor<double>,
+      factors.push_back(Factord::Hessian(sym::InverseRangeLandmarkReprojectionErrorFactor<double>,
                                          {{Var::VIEW, 0},
                                           {Var::CALIBRATION, 0},
                                           {Var::VIEW, i},
@@ -60,9 +59,9 @@ std::vector<Factord> BuildFactors(const int num_views) {
                                           {Var::MATCH_SOURCE_COORDS, i, landmark_idx},
                                           {Var::MATCH_TARGET_COORDS, i, landmark_idx},
                                           {Var::MATCH_WEIGHT, i, landmark_idx},
-                                          Var::EPSILON,
                                           Var::GNC_MU,
-                                          Var::GNC_SCALE},
+                                          Var::GNC_SCALE,
+                                          Var::EPSILON},
                                          {
                                              {Var::VIEW, 0},
                                              {Var::VIEW, i},
@@ -108,7 +107,7 @@ void RunDynamicBundleAdjustment() {
   const std::vector<Factord> factors = BuildFactors(kNumViews);
   const std::vector<Key> optimized_keys = ComputeKeysToOptimizeWithoutView0(factors);
 
-  const optimizer_params_t optimizer_params = OptimizerParams();
+  const optimizer_params_t optimizer_params = example_utils::OptimizerParams();
 
   Optimizerd optimizer(optimizer_params, factors, kEpsilon, optimized_keys);
 
@@ -135,8 +134,8 @@ void RunDynamicBundleAdjustment() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  SYM_ASSERT(last_iter.iteration == 5);
-  SYM_ASSERT(last_iter.new_error < 3);
+  SYM_ASSERT(last_iter.iteration == 35);
+  SYM_ASSERT(last_iter.new_error < 10);
 }
 
 }  // namespace bundle_adjustment_dynamic_size

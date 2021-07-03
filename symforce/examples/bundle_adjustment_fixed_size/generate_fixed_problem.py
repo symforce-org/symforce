@@ -7,10 +7,10 @@ from symforce import logger
 from symforce.values import Values
 
 from .build_values import build_values
-from .factor_residuals import (
-    relative_pose_prior_residual,
-    landmark_prior_residual,
-    reprojection_residual,
+from symforce.codegen import geo_factors_codegen
+from symforce.codegen.slam_factors_codegen import (
+    inverse_range_landmark_prior_residual,
+    inverse_range_landmark_reprojection_residual,
 )
 
 
@@ -143,13 +143,11 @@ class FixedBundleAdjustmentProblem:
                 if src_cam_index == target_cam_index:
                     continue
                 pose_priors.append(
-                    relative_pose_prior_residual(
+                    geo_factors_codegen.between_factor(
                         self.values["views"][src_cam_index]["pose"],
                         self.values["views"][target_cam_index]["pose"],
-                        self.values["priors"][src_cam_index][target_cam_index]["target_R_src"],
-                        self.values["priors"][src_cam_index][target_cam_index]["target_t_src"],
-                        self.values["priors"][src_cam_index][target_cam_index]["weight"],
-                        self.values["priors"][src_cam_index][target_cam_index]["sigmas"],
+                        self.values["priors"][src_cam_index][target_cam_index]["target_T_src"],
+                        self.values["priors"][src_cam_index][target_cam_index]["sqrt_info"],
                         self.values["epsilon"],
                     )
                 )
@@ -163,7 +161,7 @@ class FixedBundleAdjustmentProblem:
 
                 # Feature match reprojection error (huberized)
                 reprojections.append(
-                    reprojection_residual(
+                    inverse_range_landmark_reprojection_residual(
                         self.values["views"][0]["pose"],
                         self.values["views"][0]["calibration"],
                         self.values["views"][v_i]["pose"],
@@ -172,15 +170,15 @@ class FixedBundleAdjustmentProblem:
                         match["source_coords"],
                         match["target_coords"],
                         match["weight"],
-                        self.values["epsilon"],
                         self.values["costs"]["reprojection_error_gnc_mu"],
                         self.values["costs"]["reprojection_error_gnc_scale"],
+                        self.values["epsilon"],
                     )
                 )
 
                 # Landmark inverse range prior
                 inv_range_priors.append(
-                    landmark_prior_residual(
+                    inverse_range_landmark_prior_residual(
                         self.values["landmarks"][l_i],
                         match["inverse_range_prior"],
                         match["weight"],

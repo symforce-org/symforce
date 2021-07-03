@@ -4,40 +4,26 @@
 #include <symforce/opt/assert.h>
 #include <symforce/opt/optimizer.h>
 
+#include "../example_utils/example_state_helpers.h"
 #include "./build_example_state.h"
 #include "symforce/bundle_adjustment_example/linearization.h"
 
 namespace sym {
 namespace bundle_adjustment_fixed_size {
 
-static constexpr int kPoseDim = 6;
-static constexpr int kVariablesDim = kNumLandmarks + (kNumViews - 1) * kPoseDim;
-static constexpr int kNumReprojectionErrors = kNumLandmarks * (kNumViews - 1);
-static constexpr int kResidualDim = 2 * kNumReprojectionErrors                // Reprojection error
-                                    + kNumViews * (kNumViews - 1) * kPoseDim  // Pose prior
-                                    + kNumLandmarks;                          // Inverse range prior
-
 sym::Factord BuildFactor() {
   const std::vector<sym::Key> factor_keys = {{Var::CALIBRATION, 0},
                                              {Var::VIEW, 0},
                                              {Var::CALIBRATION, 1},
                                              {Var::VIEW, 1},
-                                             {Var::POSE_PRIOR_R, 0, 0},
                                              {Var::POSE_PRIOR_T, 0, 0},
-                                             {Var::POSE_PRIOR_WEIGHT, 0, 0},
-                                             {Var::POSE_PRIOR_SIGMAS, 0, 0},
-                                             {Var::POSE_PRIOR_R, 0, 1},
+                                             {Var::POSE_PRIOR_SQRT_INFO, 0, 0},
                                              {Var::POSE_PRIOR_T, 0, 1},
-                                             {Var::POSE_PRIOR_WEIGHT, 0, 1},
-                                             {Var::POSE_PRIOR_SIGMAS, 0, 1},
-                                             {Var::POSE_PRIOR_R, 1, 0},
+                                             {Var::POSE_PRIOR_SQRT_INFO, 0, 1},
                                              {Var::POSE_PRIOR_T, 1, 0},
-                                             {Var::POSE_PRIOR_WEIGHT, 1, 0},
-                                             {Var::POSE_PRIOR_SIGMAS, 1, 0},
-                                             {Var::POSE_PRIOR_R, 1, 1},
+                                             {Var::POSE_PRIOR_SQRT_INFO, 1, 0},
                                              {Var::POSE_PRIOR_T, 1, 1},
-                                             {Var::POSE_PRIOR_WEIGHT, 1, 1},
-                                             {Var::POSE_PRIOR_SIGMAS, 1, 1},
+                                             {Var::POSE_PRIOR_SQRT_INFO, 1, 1},
                                              {Var::MATCH_SOURCE_COORDS, 1, 0},
                                              {Var::MATCH_TARGET_COORDS, 1, 0},
                                              {Var::MATCH_WEIGHT, 1, 0},
@@ -158,9 +144,9 @@ sym::Factord BuildFactor() {
                                              {Var::LANDMARK, 17},
                                              {Var::LANDMARK, 18},
                                              {Var::LANDMARK, 19},
-                                             {Var::EPSILON},
                                              {Var::GNC_SCALE},
-                                             {Var::GNC_MU}};
+                                             {Var::GNC_MU},
+                                             {Var::EPSILON}};
 
   const std::vector<sym::Key> optimized_keys = {
       {Var::VIEW, 1},      {Var::LANDMARK, 0},  {Var::LANDMARK, 1},  {Var::LANDMARK, 2},
@@ -191,7 +177,7 @@ void RunFixedBundleAdjustment() {
   std::cout << std::endl;
 
   // Create and set up Optimizer
-  const optimizer_params_t optimizer_params = OptimizerParams();
+  const optimizer_params_t optimizer_params = example_utils::OptimizerParams();
 
   Optimizerd optimizer(optimizer_params, {BuildFactor()}, kEpsilon, {}, "sym::Optimizer");
 
@@ -218,8 +204,8 @@ void RunFixedBundleAdjustment() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  SYM_ASSERT(last_iter.iteration == 5);
-  SYM_ASSERT(last_iter.new_error < 3);
+  SYM_ASSERT(last_iter.iteration == 35);
+  SYM_ASSERT(last_iter.new_error < 10);
 }
 
 }  // namespace bundle_adjustment_fixed_size

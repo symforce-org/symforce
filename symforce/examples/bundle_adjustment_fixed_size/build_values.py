@@ -49,21 +49,16 @@ def define_feature_match(index: int, match_num: int) -> Values:
 
 def define_pose_prior(source_cam_index: int, target_cam_index: int) -> Values:
     """
-    Create symbols for a pose prior and diagonal uncertainty.
+    Create symbols for a pose prior and uncertainty.
     """
     values = Values()
 
-    values["target_R_src"] = geo.Rot3.symbolic(
-        f"target_R_src_{source_cam_index}_{target_cam_index}"
+    values["target_T_src"] = geo.Pose3.symbolic(
+        f"target_T_src_{source_cam_index}_{target_cam_index}"
     )
 
-    values["target_t_src"] = geo.V3.symbolic(f"target_t_src_{source_cam_index}_{target_cam_index}")
-
-    # Relative pose constraint weight (scale factor) from 0 to 1
-    values["weight"] = sm.Symbol(f"pose_prior_weight_{source_cam_index}_{target_cam_index}")
-
-    # Standard deviation of pose estimate [rad, rad, rad, m, m, m]
-    values["sigmas"] = geo.V6.symbolic(f"pose_sigmas_{source_cam_index}_{target_cam_index}")
+    # Square root information matrix of pose estimate [rad, rad, rad, m, m, m]
+    values["sqrt_info"] = geo.M66.symbolic(f"pose_sqrt_info_{source_cam_index}_{target_cam_index}")
 
     return values
 
@@ -122,8 +117,8 @@ def build_values(num_views: int, num_landmarks: int) -> Values:
             matches.append(define_feature_match(index=v_i, match_num=l_i))
         values["matches"].append(matches)
 
-    values["epsilon"] = sm.Symbol("epsilon")
-
     values["costs"] = define_objective_costs()
+
+    values["epsilon"] = sm.Symbol("epsilon")
 
     return values

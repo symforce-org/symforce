@@ -7,18 +7,15 @@
 namespace sym {
 namespace bundle_adjustment_fixed_size {
 
-static constexpr double kEpsilon = 1e-10;
-static constexpr double kReprojectionErrorGncScale = 10;
-static constexpr int kNumViews = 2;
-static constexpr int kNumLandmarks = 20;
+static constexpr const double kEpsilon = 1e-10;
+static constexpr const int kNumViews = 2;
+static constexpr const int kNumLandmarks = 20;
 
 enum Var : char {
   VIEW = 'v',                  // Pose3d
   CALIBRATION = 'c',           // Vector4d
-  POSE_PRIOR_R = 'R',          // Rot3d
-  POSE_PRIOR_T = 't',          // Vector3d
-  POSE_PRIOR_WEIGHT = 'w',     // Scalar
-  POSE_PRIOR_SIGMAS = 's',     // Vector6d
+  POSE_PRIOR_T = 'T',          // Pose3d
+  POSE_PRIOR_SQRT_INFO = 's',  // Matrix6d
   LANDMARK = 'l',              // Scalar
   LANDMARK_PRIOR = 'P',        // Scalar
   LANDMARK_PRIOR_SIGMA = 'S',  // Scalar
@@ -31,8 +28,6 @@ enum Var : char {
 };
 
 sym::Valuesd BuildValues(std::mt19937& gen, const int num_landmarks);
-
-optimizer_params_t OptimizerParams();
 
 }  // namespace bundle_adjustment_fixed_size
 }  // namespace sym
