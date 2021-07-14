@@ -550,45 +550,6 @@ class SymforceCodegenTest(TestCase):
             AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
         )
 
-        # Inputs or outputs have keys that aren't valid variable names
-        invalid_name_values = Values()
-        invalid_name_values["1"] = x
-        valid_name_values = Values(x=x)
-        self.assertRaises(
-            AssertionError,
-            codegen.Codegen,
-            "test",
-            invalid_name_values,
-            valid_name_values,
-            codegen.CppConfig(),
-        )
-        self.assertRaises(
-            AssertionError,
-            codegen.Codegen,
-            "test",
-            valid_name_values,
-            invalid_name_values,
-            codegen.CppConfig(),
-        )
-        name_with_spaces = Values()
-        name_with_spaces[" spa ces "] = x
-        self.assertRaises(
-            AssertionError,
-            codegen.Codegen,
-            "test",
-            name_with_spaces,
-            valid_name_values,
-            codegen.CppConfig(),
-        )
-        self.assertRaises(
-            AssertionError,
-            codegen.Codegen,
-            "test",
-            valid_name_values,
-            name_with_spaces,
-            codegen.CppConfig(),
-        )
-
         # Inputs have non-unique symbols
         inputs = Values(in_x=x, in_y=x)
         outputs = Values(out_x=x)

@@ -155,6 +155,14 @@ def getattr_recursive(obj: object, attrs: T.Sequence[str]) -> T.Any:
     return getattr_recursive(getattr(obj, attrs[0]), attrs[1:]) if len(attrs) else obj
 
 
+class InvalidKeyError(ValueError):
+    pass
+
+
+class InvalidPythonIdentifierError(InvalidKeyError):
+    pass
+
+
 def base_and_indices(indexed_array: str) -> T.Tuple[str, T.List[int]]:
     """
     Decomposes indexed_array into (base, indices) in the sense that,
@@ -165,7 +173,7 @@ def base_and_indices(indexed_array: str) -> T.Tuple[str, T.List[int]]:
     indices will be the empty list if indexed_array has no indices.
 
     Raises:
-        ValueError if indexed_array is not matched by the regular expression
+        InvalidKeyError if indexed_array is not matched by the regular expression
         r"[\[\]]*(\[[0-9]+\])*", i.e., is not a string with no square brackets,
         followed by 0 or more integers wrapped in square brackets.
 
@@ -183,7 +191,7 @@ def base_and_indices(indexed_array: str) -> T.Tuple[str, T.List[int]]:
     """
     base_indices_match = re.fullmatch(r"([^\[\]]*)((?:\[[0-9]+\])*)", indexed_array)
     if base_indices_match is None:
-        raise ValueError(f"{indexed_array} is not a base and its indices")
+        raise InvalidKeyError(f"{indexed_array} is not a base and its indices")
     base, indices_str = base_indices_match.groups()
     indices = [int(match.group()) for match in re.finditer(r"[0-9]+", indices_str)]
     return base, indices

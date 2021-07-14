@@ -536,6 +536,8 @@ class Values:
 
     def __getitem__(self, key: str) -> T.Any:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
+        if not key_name.isidentifier():
+            raise python_util.InvalidPythonIdentifierError(key_name)
         item = values.dict[key_name]
         for i in indices:
             item = item[i]
@@ -543,6 +545,8 @@ class Values:
 
     def __setitem__(self, key: str, value: T.Any) -> None:
         values, key_name, indices = self._get_subvalues_key_and_indices(key, create=True)
+        if not key_name.isidentifier():
+            raise python_util.InvalidPythonIdentifierError(key_name)
         if not indices:
             values.dict[key_name] = value
         else:
@@ -553,6 +557,8 @@ class Values:
 
     def __delitem__(self, key: str) -> None:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
+        if not key_name.isidentifier():
+            raise python_util.InvalidPythonIdentifierError(key_name)
         if not indices:
             del values.dict[key_name]
         else:
@@ -563,6 +569,8 @@ class Values:
 
     def __contains__(self, key: str) -> bool:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
+        if not key_name.isidentifier():
+            raise python_util.InvalidPythonIdentifierError(key_name)
         if not indices:
             return values.dict.__contains__(key_name)
         else:

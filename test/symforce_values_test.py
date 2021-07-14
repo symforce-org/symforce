@@ -7,6 +7,7 @@ from symforce import geo
 from symforce import cam
 from symforce import ops
 from symforce import sympy as sm
+from symforce.python_util import InvalidKeyError
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.values import Values
@@ -67,8 +68,6 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertFalse("orange" in v)
         self.assertFalse("orange.sky" in v)
         self.assertFalse("orange.sky.beneath" in v)
-        self.assertFalse("." in v)
-        self.assertFalse(".foo" in v)
 
         v["apple"] = 42
         self.assertEqual(v["apple"], 42)
@@ -204,6 +203,12 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v = Values(lst=[Values(a=1), Values(b=2), Values(c=3)])
             self.assertEqual(2, v["lst[1].b"])
 
+        with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
+            v = Values()
+            for invalid_key in ["", "+", "0", "no[1]dot"]:
+                with self.assertRaises(InvalidKeyError):
+                    v[invalid_key]
+
     def test_setitem(self) -> None:
         """
         Tests:
@@ -227,6 +232,12 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v_expected = Values(lst=[1, 2, 3])
             self.assertEqual(v, v_expected)
 
+        with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
+            v = Values()
+            for invalid_key in ["", "+", "0", "no[1]dot"]:
+                with self.assertRaises(InvalidKeyError):
+                    v[invalid_key] = 0
+
     def test_delitem(self) -> None:
         """
         Tests:
@@ -249,6 +260,12 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             del v["nested_v"]
             v_expected = Values()
             self.assertEqual(v, v_expected)
+
+        with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
+            v = Values()
+            for invalid_key in ["", "+", "0", "no[1]dot"]:
+                with self.assertRaises(InvalidKeyError):
+                    del v[invalid_key]
 
     def test_contains(self) -> None:
         """
@@ -280,6 +297,12 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         with self.subTest(msg="Values does not contain what it does not contain"):
             v = Values(a=1)
             self.assertFalse("b" in v)
+
+        with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
+            v = Values()
+            for invalid_key in ["", "+", "0", "no[1]dot"]:
+                with self.assertRaises(InvalidKeyError):
+                    invalid_key in v
 
     def test_mixing_scopes(self) -> None:
         v1 = Values()

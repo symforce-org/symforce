@@ -48,25 +48,22 @@ class SymforceUtilTest(TestCase):
         with self.subTest("A string with no base (only indices) is accepted"):
             self.assertEqual(("", [1, 2, 3]), python_util.base_and_indices("[1][2][3]"))
 
-        with self.subTest("Raises ValueError if non-index characters exist between/after indices"):
-            with self.assertRaises(ValueError):
+        with self.subTest(
+            "Raises InvalidKeyError if non-index characters exist between/after indices"
+        ):
+            with self.assertRaises(python_util.InvalidKeyError):
                 python_util.base_and_indices("arr[1].bad[2]")
-            with self.assertRaises(ValueError):
+            with self.assertRaises(python_util.InvalidKeyError):
                 python_util.base_and_indices("arr[1].bad")
 
-        with self.subTest("Raises ValueError if floating point index"):
-            with self.assertRaises(ValueError):
+        with self.subTest("Raises InvalidKeyError if floating point index"):
+            with self.assertRaises(python_util.InvalidKeyError):
                 python_util.base_and_indices("arr[2.0]")
 
-        with self.subTest("Raises ValueError on indices missing/extra brackets"):
-            with self.assertRaises(ValueError):
-                python_util.base_and_indices("arr[11")
-            with self.assertRaises(ValueError):
-                python_util.base_and_indices("arr11]")
-            with self.assertRaises(ValueError):
-                python_util.base_and_indices("arr[[1]")
-            with self.assertRaises(ValueError):
-                python_util.base_and_indices("arr[1]]")
+        with self.subTest("Raises InvalidKeyError on indices missing/extra brackets"):
+            for malformed_index in ["arr[11", "arr11]", "arr[[1]", "arr[1]]"]:
+                with self.assertRaises(python_util.InvalidKeyError):
+                    python_util.base_and_indices(malformed_index)
 
 
 if __name__ == "__main__":
