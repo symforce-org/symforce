@@ -296,17 +296,13 @@ class Values:
 
         return values
 
-    def from_storage(
-        self, elements: T.List[T.Scalar], index: T.Dict[str, IndexEntry] = None
-    ) -> Values:
+    def from_storage(self, elements: T.List[T.Scalar]) -> Values:
         """
         Create a Values object with the same structure as self but constructed
         from a flat list representation. Opposite of `.to_storage()`.
         """
-        if index is None:
-            assert len(elements) == self.storage_dim()
-            return Values.from_storage_index(elements, self.index())
-        return Values.from_storage_index(elements, index)
+        assert len(elements) == self.storage_dim()
+        return Values.from_storage_index(elements, self.index())
 
     def symbolic(self, name: str, **kwargs: T.Dict) -> Values:
         """
