@@ -97,8 +97,8 @@ class Codegen:
 
         # Names given by keys in inputs/outputs must be valid variable names
         # TODO(aaron): Also check recursively
-        assert all([python_util.is_valid_variable_name(k) for k in inputs.keys()])
-        assert all([python_util.is_valid_variable_name(k) for k in outputs.keys()])
+        assert all([k.isidentifier() for k in inputs.keys()])
+        assert all([k.isidentifier() for k in outputs.keys()])
 
         # Symbols in inputs must be unique
         assert len(set(inputs.to_storage())) == len(

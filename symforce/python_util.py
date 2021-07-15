@@ -143,14 +143,6 @@ def scalar_like(a: T.Any) -> bool:
     return is_expr and not is_matrix
 
 
-def is_valid_variable_name(name: str) -> bool:
-    """
-    Returns true if name does not contain whitespace, has only alphanumeric characters,
-    and does not start with a number.
-    """
-    return re.match(r".*\s.*|.*\W.*|^\d", name) is None
-
-
 def plural(singular: str, count: int, plural: str = None) -> str:
     """
     Return the singular or plural form of a word based on count
