@@ -5,7 +5,7 @@
 
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 
-namespace bundle_adjustment_fixed_size {
+namespace bundle_adjustment {
 
 struct BundleAdjustmentProblemParams {
   double epsilon = 1e-10;
@@ -45,4 +45,4 @@ enum Var : char {
  */
 sym::Valuesd BuildValues(std::mt19937& gen, const BundleAdjustmentProblemParams& params);
 
-}  // namespace bundle_adjustment_fixed_size
+}  // namespace bundle_adjustment

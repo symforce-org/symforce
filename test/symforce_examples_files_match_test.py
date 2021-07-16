@@ -24,14 +24,14 @@ class ExampleFilesMatchTest(TestCase):
         Test that copies of the same file in different examples are identical
         """
         fixed_size_example_dir = EXAMPLES_DIR.joinpath("bundle_adjustment_fixed_size")
-        dynamic_size_example_dir = EXAMPLES_DIR.joinpath("bundle_adjustment_dynamic_size")
+        dynamic_size_example_dir = EXAMPLES_DIR.joinpath("bundle_adjustment")
 
         replacer = lambda text: text.replace("bundle_adjustment_fixed_size", "bundle_adjustment")
         self.check_path(
-            fixed_size_example_dir, dynamic_size_example_dir, "build_example_state.cc", replacer
+            dynamic_size_example_dir, fixed_size_example_dir, "build_example_state.cc", replacer
         )
         self.check_path(
-            fixed_size_example_dir, dynamic_size_example_dir, "build_example_state.h", replacer
+            dynamic_size_example_dir, fixed_size_example_dir, "build_example_state.h", replacer
         )
 
 

@@ -54,7 +54,7 @@ class FixedBundleAdjustmentProblem:
 
         linearization_func = self._build_codegen_object()
 
-        namespace = "bundle_adjustment_example"
+        namespace = "bundle_adjustment_fixed_size"
         linearization_func.generate_function(
             output_dir=output_dir, namespace=namespace,
         )
@@ -98,8 +98,7 @@ class FixedBundleAdjustmentProblem:
                 Computes the linearization of the residual around the given state,
                 and returns the relevant information about the resulting linear system.
 
-                Input args:
-                    state (Values): The state to linearize around
+                Input args: The state to linearize around
 
                 Output args:
                     b (Eigen::Matrix*): The residual vector
@@ -120,9 +119,13 @@ class FixedBundleAdjustmentProblem:
          * Landmark inverse range for each feature match.
         """
         values = Values()
+
+        # We fix the pose of view 0 so that the whole problem is constrained; alternatively, we
+        # could add a prior on the pose of view 0 and leave it optimized
         values["poses"] = [
             self.values["views"][cam_index]["pose"] for cam_index in range(1, self.num_views)
         ]
+
         values["landmarks"] = self.values["landmarks"]
         return values
 

@@ -1,14 +1,13 @@
 #include <iostream>
 
 #include <sym/pose3.h>
+#include <symforce/examples/example_utils/bundle_adjustment_util.h>
 #include <symforce/opt/assert.h>
 #include <symforce/opt/optimizer.h>
 
-#include "../example_utils/example_state_helpers.h"
 #include "./build_example_state.h"
-#include "symforce/bundle_adjustment_example/linearization.h"
+#include "symforce/bundle_adjustment_fixed_size/linearization.h"
 
-namespace sym {
 namespace bundle_adjustment_fixed_size {
 
 sym::Factord BuildFactor() {
@@ -156,41 +155,44 @@ sym::Factord BuildFactor() {
       {Var::LANDMARK, 15}, {Var::LANDMARK, 16}, {Var::LANDMARK, 17}, {Var::LANDMARK, 18},
       {Var::LANDMARK, 19}};
 
-  return sym::Factord::Hessian(bundle_adjustment_example::Linearization<double>, factor_keys,
+  return sym::Factord::Hessian(bundle_adjustment_fixed_size::Linearization<double>, factor_keys,
                                optimized_keys);
 }
 
-void RunFixedBundleAdjustment() {
+void RunBundleAdjustment() {
   // Create initial state
   std::mt19937 gen(42);
-  Valuesd values = BuildValues(gen, kNumLandmarks);
+  const auto params = BundleAdjustmentProblemParams();
+  sym::Valuesd values = BuildValues(gen, params);
 
   std::cout << "Initial State:" << std::endl;
-  for (int i = 0; i < kNumViews; i++) {
+  for (int i = 0; i < params.num_views; i++) {
     std::cout << "Pose " << i << ": " << sym::Pose3d(values.At<sym::Pose3d>({Var::VIEW, i}))
               << std::endl;
   }
   std::cout << "Landmarks: ";
-  for (int i = 0; i < kNumLandmarks; i++) {
+  for (int i = 0; i < params.num_landmarks; i++) {
     std::cout << values.At<double>({Var::LANDMARK, i}) << " ";
   }
   std::cout << std::endl;
 
   // Create and set up Optimizer
-  const optimizer_params_t optimizer_params = example_utils::OptimizerParams();
+  const sym::optimizer_params_t optimizer_params = sym::example_utils::OptimizerParams();
 
-  Optimizerd optimizer(optimizer_params, {BuildFactor()}, kEpsilon, {}, "sym::Optimizer");
+  sym::Optimizerd optimizer(optimizer_params, {BuildFactor()}, params.epsilon, {},
+                            "BundleAdjustmentOptimizer", params.debug_stats,
+                            params.check_derivatives);
 
   optimizer.Optimize(&values);
 
   // Print out results
   std::cout << "Optimized State:" << std::endl;
-  for (int i = 0; i < kNumViews; i++) {
+  for (int i = 0; i < params.num_views; i++) {
     std::cout << "Pose " << i << ": " << sym::Pose3d(values.At<sym::Pose3d>({Var::VIEW, i}))
               << std::endl;
   }
   std::cout << "Landmarks: ";
-  for (int i = 0; i < kNumLandmarks; i++) {
+  for (int i = 0; i < params.num_landmarks; i++) {
     std::cout << values.At<double>({Var::LANDMARK, i}) << " ";
   }
   std::cout << std::endl;
@@ -209,4 +211,3 @@ void RunFixedBundleAdjustment() {
 }
 
 }  // namespace bundle_adjustment_fixed_size
-}  // namespace sym

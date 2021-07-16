@@ -7,7 +7,7 @@
 #include <symforce/opt/assert.h>
 #include <symforce/opt/util.h>
 
-namespace bundle_adjustment_fixed_size {
+namespace bundle_adjustment {
 
 namespace {
 
@@ -134,4 +134,4 @@ sym::Valuesd BuildValues(std::mt19937& gen, const BundleAdjustmentProblemParams&
   return values;
 }
 
-}  // namespace bundle_adjustment_fixed_size
+}  // namespace bundle_adjustment

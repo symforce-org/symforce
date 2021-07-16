@@ -59,7 +59,7 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
         ss << "Symbolic and numerical jacobians don't match" << std::endl;
         ss << "Symbolic Jacobian: \n" << linearization.jacobian << std::endl;
         ss << "Numerical Jacobian: \n" << numerical_jacobian << std::endl;
-        ss << "Difference: \n" << linearization.jacobian - numerical_jacobian;
+        ss << "Additive Difference: \n" << linearization.jacobian - numerical_jacobian;
         std::cout << ss.str() << std::endl;
       }
 
@@ -82,7 +82,7 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
         ss << "Hessian does not match J^T J" << std::endl;
         ss << "Symbolic (sym::Linearizer) Hessian:\n" << full_hessian << std::endl;
         ss << "Numerical (J^T * J) Hessian:\n" << numerical_hessian << std::endl;
-        ss << "Difference: \n" << full_hessian - numerical_hessian;
+        ss << "Additive Difference: \n" << full_hessian - numerical_hessian;
         std::cout << ss.str() << std::endl;
       }
 
@@ -101,7 +101,8 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
         ss << "Generated Jtb does not match J^T * b" << std::endl;
         ss << "Symbolic (sym::Linearization) Jtb:\n" << linearization.rhs.transpose() << std::endl;
         ss << "Numerical (J^T * b) Jtb:\n" << numerical_rhs.transpose() << std::endl;
-        ss << "Difference: \n" << linearization.rhs.transpose() - numerical_rhs.transpose();
+        ss << "Additive Difference: \n"
+           << linearization.rhs.transpose() - numerical_rhs.transpose();
         std::cout << ss.str() << std::endl;
       }
 
