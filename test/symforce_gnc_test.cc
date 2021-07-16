@@ -32,7 +32,7 @@ sym::optimizer_gnc_params_t DefaultGncParams() {
 }
 
 TEST_CASE("Test GNC", "[gnc]") {
-  static constexpr const double kEpsilon = 1e-10;
+  static constexpr const double kEpsilon = 1e-12;
   const int n_residuals = 20;
   const int n_outliers = 3;
 
@@ -42,7 +42,7 @@ TEST_CASE("Test GNC", "[gnc]") {
   initial_values.Set('e', kEpsilon);
 
   // Pick random normal samples, with some outliers
-  std::mt19937 gen(12345);
+  std::mt19937 gen(42);
   for (int i = 0; i < n_residuals; i++) {
     if (i < n_outliers) {
       initial_values.Set<sym::Vector5d>(
