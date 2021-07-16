@@ -549,7 +549,7 @@ def generate_lcm_types(
                     lcm_file_path,
                     "--python",
                     "--python-path",
-                    os.path.join(python_types_dir, "lcmtypes"),
+                    python_types_dir,
                     "--python-empty-init",
                 ]
             )
@@ -559,7 +559,7 @@ def generate_lcm_types(
                     lcm_file_path,
                     "--cpp",
                     "--cpp-hpath",
-                    os.path.join(cpp_types_dir, "lcmtypes"),
+                    cpp_types_dir,
                     "--cpp-include",
                     lcm_include_dir,
                 ]
