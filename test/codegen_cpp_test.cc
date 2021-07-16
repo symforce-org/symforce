@@ -10,16 +10,16 @@
 TEST_CASE("Generated C++ compiles", "[codegen_cpp_test]") {
   double x = 2.0;
   double y = -5.0;
-  sym::Rot3<double> rot;
-  std::array<sym::Rot3<double>, 3> rot_vec;
-  std::array<double, 3> scalar_vec;
-  std::array<std::array<sym::Rot3<double>, 3>, 3> list_of_lists;
-  std::array<codegen_cpp_test::values_vec_t, 3> values_vec;
-  std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2> values_vec_2D;
-  codegen_cpp_test::states_t states;
+  sym::Rot3<double> rot{};
+  std::array<sym::Rot3<double>, 3> rot_vec{};
+  std::array<double, 3> scalar_vec{};
+  std::array<std::array<sym::Rot3<double>, 3>, 3> list_of_lists{};
+  std::array<codegen_cpp_test::values_vec_t, 3> values_vec{};
+  std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2> values_vec_2D{};
+  codegen_cpp_test::states_t states{};
   states.p[0] = 1.0;
   states.p[1] = 2.0;
-  codegen_cpp_test::constants_t constants;
+  codegen_cpp_test::constants_t constants{};
   constants.epsilon = 1e-8;
 
   double foo;
