@@ -60,6 +60,46 @@ class Pose2 {
     return data_;
   }
 
+  // Matrix type aliases
+  using Vector2 = Eigen::Matrix<Scalar, 2, 1>;
+
+  // --------------------------------------------------------------------------
+  // Handwritten methods included from "custom_methods/pose2.h.jinja"
+  // --------------------------------------------------------------------------
+
+  template <typename Derived>
+  Pose2(const Rot2<Scalar>& rotation, const Eigen::MatrixBase<Derived>& position) {
+    static_assert(Derived::RowsAtCompileTime == 2, "Position must be a 2x1 vector");
+    static_assert(Derived::ColsAtCompileTime == 1, "Position must be a 2x1 vector");
+    data_.template head<2>() = rotation.Data();
+    data_.template tail<2>() = position;
+  }
+
+  Rot2<Scalar> Rotation() const {
+    return Rot2<Scalar>(data_.template head<2>());
+  }
+
+  Vector2 Position() const {
+    return data_.template tail<2>();
+  }
+
+  // TODO(hayk): Could codegen this.
+  Vector2 Compose(const Vector2& point) const {
+    return Rotation() * point + Position();
+  }
+
+  // Generate a random element, with normally distributed position
+  template <typename Generator>
+  static Pose2 Random(Generator& gen) {
+    return Pose2(Rot2<Scalar>::Random(gen), sym::StorageOps<Vector2>::Random(gen));
+  }
+
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  Vector2 InverseCompose(const Vector2& point) const;
+
   // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------
@@ -162,44 +202,6 @@ class Pose2 {
   bool operator==(const Pose2& rhs) const {
     return data_ == rhs.Data();
   }
-
-  // Matrix type aliases
-  using Vector2 = Eigen::Matrix<Scalar, 2, 1>;
-
-  // Included from "custom_methods/pose2.h.jinja":
-  // --------------------------------------------------------------------------
-  // Handwritten methods for Pose2
-  // --------------------------------------------------------------------------
-
-  Pose2(const Rot2<Scalar>& rotation, const Vector2& position) {
-    data_.template head<2>() = rotation.Data();
-    data_.template tail<2>() = position;
-  }
-
-  Rot2<Scalar> Rotation() const {
-    return Rot2<Scalar>(data_.template head<2>());
-  }
-
-  Vector2 Position() const {
-    return data_.template tail<2>();
-  }
-
-  // TODO(hayk): Could codegen this.
-  Vector2 Compose(const Vector2& point) const {
-    return Rotation() * point + Position();
-  }
-
-  // Generate a random element, with normally distributed position
-  template <typename Generator>
-  static Pose2 Random(Generator& gen) {
-    return Pose2(Rot2<Scalar>::Random(gen), sym::StorageOps<Vector2>::Random(gen));
-  }
-
-  // --------------------------------------------------------------------------
-  // Custom generated methods
-  // --------------------------------------------------------------------------
-
-  Vector2 InverseCompose(const Vector2& point) const;
 
  protected:
   DataVec data_;

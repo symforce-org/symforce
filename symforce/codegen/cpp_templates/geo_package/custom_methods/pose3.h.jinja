@@ -1,7 +1,4 @@
-  // --------------------------------------------------------------------------
-  // Handwritten methods for Pose3
-  // --------------------------------------------------------------------------
-
+  {# Handwritten methods for Pose3 #}
   template <typename Derived>
   Pose3(const Rot3<Scalar>& rotation, const Eigen::MatrixBase<Derived>& position) {
     static_assert(Derived::RowsAtCompileTime == 3, "Position must be a 3x1 vector");

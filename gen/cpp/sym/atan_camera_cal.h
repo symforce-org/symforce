@@ -115,8 +115,6 @@ class ATANCameraCal {
     return data_ == rhs.Data();
   }
 
-  // Included from "custom_methods/atan_camera_cal.h.jinja":
-
  protected:
   DataVec data_;
 };

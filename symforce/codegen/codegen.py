@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import enum
 import os
+import pathlib
 import tempfile
 import textwrap
 
@@ -249,6 +250,8 @@ class Codegen:
         data["Symbol"] = sm.Symbol
         data["Matrix"] = geo.Matrix
         data["Values"] = Values
+        data["pathlib"] = pathlib
+        data["path_to_codegen"] = CURRENT_DIR
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util

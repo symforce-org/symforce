@@ -44,6 +44,37 @@ class Rot2 {
     return data_;
   }
 
+  // Matrix type aliases
+  using Vector2 = Eigen::Matrix<Scalar, 2, 1>;
+
+  // --------------------------------------------------------------------------
+  // Handwritten methods included from "custom_methods/rot2.h.jinja"
+  // --------------------------------------------------------------------------
+
+  // TODO(hayk): Could codegen this.
+  Vector2 Compose(const Vector2& point) const {
+    return ToRotationMatrix() * point;
+  }
+
+  // Generate a random element of SO2 from a number u1 in [0, 1]
+  static Rot2 RandomFromUniformSamples(const Scalar u1) {
+    const Scalar theta = 2 * M_PI * u1;
+    return Rot2(Eigen::Matrix<Scalar, 2, 1>(std::cos(theta), std::sin(theta)));
+  }
+
+  // Generate a random element in SO2
+  template <typename Generator>
+  static Rot2 Random(Generator& gen) {
+    std::uniform_real_distribution<Scalar> dist(0.0, 1.0);
+    return RandomFromUniformSamples(dist(gen));
+  }
+
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
+
   // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------
@@ -146,38 +177,6 @@ class Rot2 {
   bool operator==(const Rot2& rhs) const {
     return data_ == rhs.Data();
   }
-
-  // Matrix type aliases
-  using Vector2 = Eigen::Matrix<Scalar, 2, 1>;
-
-  // Included from "custom_methods/rot2.h.jinja":
-  // --------------------------------------------------------------------------
-  // Handwritten methods for Rot2
-  // --------------------------------------------------------------------------
-
-  // TODO(hayk): Could codegen this.
-  Vector2 Compose(const Vector2& point) const {
-    return ToRotationMatrix() * point;
-  }
-
-  // Generate a random element of SO2 from a number u1 in [0, 1]
-  static Rot2 RandomFromUniformSamples(const Scalar u1) {
-    const Scalar theta = 2 * M_PI * u1;
-    return Rot2(Eigen::Matrix<Scalar, 2, 1>(std::cos(theta), std::sin(theta)));
-  }
-
-  // Generate a random element in SO2
-  template <typename Generator>
-  static Rot2 Random(Generator& gen) {
-    std::uniform_real_distribution<Scalar> dist(0.0, 1.0);
-    return RandomFromUniformSamples(dist(gen));
-  }
-
-  // --------------------------------------------------------------------------
-  // Custom generated methods
-  // --------------------------------------------------------------------------
-
-  Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
 
  protected:
   DataVec data_;

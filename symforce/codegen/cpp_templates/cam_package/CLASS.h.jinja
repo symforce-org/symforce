@@ -39,6 +39,15 @@ class {{ cls.__name__ }} {
       return data_;
   }
 
+  {% set custom_template_name = "custom_methods/{}.h.jinja".format(python_util.camelcase_to_snakecase(cls.__name__)) %}
+  {% if pathlib.Path(path_to_codegen).joinpath("cpp_templates", "cam_package", custom_template_name).exists() %}
+  // --------------------------------------------------------------------------
+  // Handwritten methods included from "{{ custom_template_name }}"
+  // --------------------------------------------------------------------------
+
+  {% include custom_template_name %}
+  {% endif %}
+
   // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------
@@ -85,10 +94,6 @@ class {{ cls.__name__ }} {
   bool operator==(const {{ cls.__name__ }}& rhs) const {
     return data_ == rhs.Data();
   }
-
-  {% set custom_template_name = "custom_methods/{}.h.jinja".format(python_util.camelcase_to_snakecase(cls.__name__)) %}
-  // Included from "{{ custom_template_name }}":
-  {% include custom_template_name ignore missing %}
 
  protected:
   DataVec data_;

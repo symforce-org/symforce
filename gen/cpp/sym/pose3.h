@@ -58,6 +58,46 @@ class Pose3 {
     return data_;
   }
 
+  // Matrix type aliases
+  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
+
+  // --------------------------------------------------------------------------
+  // Handwritten methods included from "custom_methods/pose3.h.jinja"
+  // --------------------------------------------------------------------------
+
+  template <typename Derived>
+  Pose3(const Rot3<Scalar>& rotation, const Eigen::MatrixBase<Derived>& position) {
+    static_assert(Derived::RowsAtCompileTime == 3, "Position must be a 3x1 vector");
+    static_assert(Derived::ColsAtCompileTime == 1, "Position must be a 3x1 vector");
+    data_.template head<4>() = rotation.Data();
+    data_.template tail<3>() = position;
+  }
+
+  Rot3<Scalar> Rotation() const {
+    return Rot3<Scalar>(data_.template head<4>());
+  }
+
+  Vector3 Position() const {
+    return data_.template tail<3>();
+  }
+
+  // TODO(hayk): Could codegen this.
+  Vector3 Compose(const Vector3& point) const {
+    return Rotation() * point + Position();
+  }
+
+  // Generate a random element, with normally distributed position
+  template <typename Generator>
+  static Pose3 Random(Generator& gen) {
+    return Pose3(Rot3<Scalar>::Random(gen), sym::StorageOps<Vector3>::Random(gen));
+  }
+
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  Vector3 InverseCompose(const Vector3& point) const;
+
   // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------
@@ -160,47 +200,6 @@ class Pose3 {
   bool operator==(const Pose3& rhs) const {
     return data_ == rhs.Data();
   }
-
-  // Matrix type aliases
-  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
-
-  // Included from "custom_methods/pose3.h.jinja":
-  // --------------------------------------------------------------------------
-  // Handwritten methods for Pose3
-  // --------------------------------------------------------------------------
-
-  template <typename Derived>
-  Pose3(const Rot3<Scalar>& rotation, const Eigen::MatrixBase<Derived>& position) {
-    static_assert(Derived::RowsAtCompileTime == 3, "Position must be a 3x1 vector");
-    static_assert(Derived::ColsAtCompileTime == 1, "Position must be a 3x1 vector");
-    data_.template head<4>() = rotation.Data();
-    data_.template tail<3>() = position;
-  }
-
-  Rot3<Scalar> Rotation() const {
-    return Rot3<Scalar>(data_.template head<4>());
-  }
-
-  Vector3 Position() const {
-    return data_.template tail<3>();
-  }
-
-  // TODO(hayk): Could codegen this.
-  Vector3 Compose(const Vector3& point) const {
-    return Rotation() * point + Position();
-  }
-
-  // Generate a random element, with normally distributed position
-  template <typename Generator>
-  static Pose3 Random(Generator& gen) {
-    return Pose3(Rot3<Scalar>::Random(gen), sym::StorageOps<Vector3>::Random(gen));
-  }
-
-  // --------------------------------------------------------------------------
-  // Custom generated methods
-  // --------------------------------------------------------------------------
-
-  Vector3 InverseCompose(const Vector3& point) const;
 
  protected:
   DataVec data_;

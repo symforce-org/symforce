@@ -52,6 +52,20 @@ class DoubleSphereCameraCal {
   }
 
   // --------------------------------------------------------------------------
+  // Handwritten methods included from "custom_methods/double_sphere_camera_cal.h.jinja"
+  // --------------------------------------------------------------------------
+
+  // Construct from FocalLength, PrincipalPoint, and distortion coefficients
+  explicit DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                                 const Eigen::Matrix<Scalar, 2, 1>& principal_point,
+                                 const Scalar xi, const Scalar alpha)
+      : DoubleSphereCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<DoubleSphereCameraCal>::StorageDim(), 1>()
+                 << focal_length,
+             principal_point, xi, alpha)
+                .finished()) {}
+
+  // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------
 
@@ -127,21 +141,6 @@ class DoubleSphereCameraCal {
   bool operator==(const DoubleSphereCameraCal& rhs) const {
     return data_ == rhs.Data();
   }
-
-  // Included from "custom_methods/double_sphere_camera_cal.h.jinja":
-  // --------------------------------------------------------------------------
-  // Handwritten methods for DoubleSphereCameraCal
-  // --------------------------------------------------------------------------
-
-  // Construct from FocalLength, PrincipalPoint, and distortion coefficients
-  explicit DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
-                                 const Eigen::Matrix<Scalar, 2, 1>& principal_point,
-                                 const Scalar xi, const Scalar alpha)
-      : DoubleSphereCameraCal(
-            (Eigen::Matrix<Scalar, sym::StorageOps<DoubleSphereCameraCal>::StorageDim(), 1>()
-                 << focal_length,
-             principal_point, xi, alpha)
-                .finished()) {}
 
  protected:
   DataVec data_;

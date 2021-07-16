@@ -1,8 +1,8 @@
-  // --------------------------------------------------------------------------
-  // Handwritten methods for Pose2
-  // --------------------------------------------------------------------------
-
-  Pose2(const Rot2<Scalar>& rotation, const Vector2& position) {
+  {# Handwritten methods for Pose2 #}
+  template <typename Derived>
+  Pose2(const Rot2<Scalar>& rotation, const Eigen::MatrixBase<Derived>& position) {
+    static_assert(Derived::RowsAtCompileTime == 2, "Position must be a 2x1 vector");
+    static_assert(Derived::ColsAtCompileTime == 1, "Position must be a 2x1 vector");
     data_.template head<2>() = rotation.Data();
     data_.template tail<2>() = position;
   }

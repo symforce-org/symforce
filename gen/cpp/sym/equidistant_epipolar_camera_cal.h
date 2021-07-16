@@ -115,8 +115,6 @@ class EquidistantEpipolarCameraCal {
     return data_ == rhs.Data();
   }
 
-  // Included from "custom_methods/equidistant_epipolar_camera_cal.h.jinja":
-
  protected:
   DataVec data_;
 };

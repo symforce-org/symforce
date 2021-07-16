@@ -29,6 +29,13 @@ class {{ cls.__name__ }}(object):
         # type: () -> str
         return '<{} {}>'.format(self.__class__.__name__, self.data)
 
+    {% set custom_template_name = "custom_methods/{}.py.jinja".format(cls.__name__.lower()) %}
+    # --------------------------------------------------------------------------
+    # Handwritten methods included from "{{ custom_template_name }}"
+    # --------------------------------------------------------------------------
+    
+    {% include custom_template_name %}
+
     # --------------------------------------------------------------------------
     # StorageOps concept
     # --------------------------------------------------------------------------
@@ -136,7 +143,3 @@ class {{ cls.__name__ }}(object):
             return self._apply_to_vector(other)
         else:
             raise NotImplementedError('Cannot compose {} with {}.'.format(type(self), type(other)))
-
-    {% set custom_template_name = "custom_methods/{}.py.jinja".format(cls.__name__.lower()) %}
-    # Included from "{{ custom_template_name }}":
-    {% include custom_template_name %}
