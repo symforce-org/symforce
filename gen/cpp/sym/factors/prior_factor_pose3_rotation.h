@@ -82,7 +82,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
   const Scalar _tmp39 = _tmp19 * _tmp23 + _tmp19 * _tmp27 - _tmp19 * _tmp32 + _tmp24 * _tmp25 -
                         _tmp24 * _tmp38 - _tmp30 * sqrt_info(0, 0) + _tmp33 * sqrt_info(0, 1) +
                         _tmp35 * sqrt_info(0, 0) - _tmp37 * sqrt_info(0, 2);
-  const Scalar _tmp40 = (1.0 / 2.0) * _value[2];
+  const Scalar _tmp40 = (Scalar(1) / Scalar(2)) * _value[2];
   const Scalar _tmp41 = _tmp25 * _tmp36;
   const Scalar _tmp42 = _tmp29 * _tmp36;
   const Scalar _tmp43 = _prior[1] * _tmp10;
@@ -91,7 +91,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
                         _tmp33 * sqrt_info(0, 0) - _tmp35 * sqrt_info(0, 1) +
                         _tmp41 * sqrt_info(0, 2) - _tmp42 * sqrt_info(0, 0) +
                         _tmp43 * sqrt_info(0, 2) - _tmp44 * sqrt_info(0, 2);
-  const Scalar _tmp46 = (1.0 / 2.0) * _value[3];
+  const Scalar _tmp46 = (Scalar(1) / Scalar(2)) * _value[3];
   const Scalar _tmp47 = _prior[3] * _tmp3;
   const Scalar _tmp48 = _tmp25 * _tmp47;
   const Scalar _tmp49 = _tmp29 * _tmp47;
@@ -101,12 +101,12 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
                         _tmp37 * sqrt_info(0, 0) - _tmp43 * sqrt_info(0, 1) +
                         _tmp48 * sqrt_info(0, 2) - _tmp49 * sqrt_info(0, 0) - _tmp50 * _tmp9 -
                         _tmp51 * sqrt_info(0, 2);
-  const Scalar _tmp53 = (1.0 / 2.0) * _value[0];
+  const Scalar _tmp53 = (Scalar(1) / Scalar(2)) * _value[0];
   const Scalar _tmp54 = _tmp29 * _tmp34;
   const Scalar _tmp55 = _tmp23 * _tmp34 + _tmp25 * _tmp50 + _tmp27 * _tmp34 - _tmp32 * _tmp34 +
                         _tmp33 * sqrt_info(0, 2) + _tmp37 * sqrt_info(0, 1) - _tmp38 * _tmp50 -
                         _tmp43 * sqrt_info(0, 0) - _tmp54 * sqrt_info(0, 0);
-  const Scalar _tmp56 = (1.0 / 2.0) * _value[1];
+  const Scalar _tmp56 = (Scalar(1) / Scalar(2)) * _value[1];
   const Scalar _tmp57 = _tmp22 * sqrt_info(1, 1);
   const Scalar _tmp58 = _tmp19 * _tmp25;
   const Scalar _tmp59 = _tmp26 * sqrt_info(1, 0);
@@ -146,7 +146,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
                         _tmp47 * _tmp67 + _tmp47 * _tmp68 - _tmp47 * _tmp69 +
                         _tmp48 * sqrt_info(2, 2) - _tmp49 * sqrt_info(2, 0) -
                         _tmp51 * sqrt_info(2, 2);
-  const Scalar _tmp75 = (1.0 / 2.0) * _tmp71;
+  const Scalar _tmp75 = (Scalar(1) / Scalar(2)) * _tmp71;
 
   // Output terms (2)
   if (res != nullptr) {

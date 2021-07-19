@@ -84,14 +84,12 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp18 = _source_pose[0] * _tmp17;
   const Scalar _tmp19 = -source_calibration_storage(3, 0) + source_pixel(1, 0);
   const Scalar _tmp20 = -source_calibration_storage(2, 0) + source_pixel(0, 0);
-  const Scalar _tmp21 = std::pow(
-      (_tmp19 * _tmp19) / (source_calibration_storage(1, 0) * source_calibration_storage(1, 0)) +
-          (_tmp20 * _tmp20) /
-              (source_calibration_storage(0, 0) * source_calibration_storage(0, 0)) +
-          1,
-      -1.0 / 2.0);
-  const Scalar _tmp22 = -2 * (_source_pose[1] * _source_pose[1]);
-  const Scalar _tmp23 = 1 - 2 * (_source_pose[2] * _source_pose[2]);
+  const Scalar _tmp21 = std::pow<Scalar>(
+      std::pow<Scalar>(_tmp19, 2) / std::pow<Scalar>(source_calibration_storage(1, 0), 2) +
+          std::pow<Scalar>(_tmp20, 2) / std::pow<Scalar>(source_calibration_storage(0, 0), 2) + 1,
+      Scalar(-1) / Scalar(2));
+  const Scalar _tmp22 = -2 * std::pow<Scalar>(_source_pose[1], 2);
+  const Scalar _tmp23 = 1 - 2 * std::pow<Scalar>(_source_pose[2], 2);
   const Scalar _tmp24 = _tmp20 / source_calibration_storage(0, 0);
   const Scalar _tmp25 = _tmp21 * _tmp24;
   const Scalar _tmp26 = _source_pose[0] * _tmp15;
@@ -131,8 +129,8 @@ void InverseRangeLandmarkReprojectionErrorFactor(
       _tmp30 * _tmp51 + _tmp34 * _tmp52 + _tmp35 * _tmp50 + _tmp53 * source_inverse_range;
   const Scalar _tmp55 = _tmp47 * target_calibration_storage(1, 0);
   const Scalar _tmp56 = _tmp54 * _tmp55 + target_calibration_storage(3, 0) - target_pixel(1, 0);
-  const Scalar _tmp57 = (_tmp49 * _tmp49) + (_tmp56 * _tmp56) + epsilon;
-  const Scalar _tmp58 = std::pow(_tmp57, -1.0 / 2.0);
+  const Scalar _tmp57 = std::pow<Scalar>(_tmp49, 2) + std::pow<Scalar>(_tmp56, 2) + epsilon;
+  const Scalar _tmp58 = std::pow<Scalar>(_tmp57, Scalar(-1) / Scalar(2));
   const Scalar _tmp59 = (((_tmp44) > 0) - ((_tmp44) < 0));
   const Scalar _tmp60 = std::sqrt(weight) * std::sqrt(std::max<Scalar>(0, _tmp59));
   const Scalar _tmp61 = 1.0 / (epsilon - gnc_mu + 1);
@@ -142,8 +140,9 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp65 = 2 - _tmp61;
   const Scalar _tmp66 =
       _tmp65 + epsilon * (2 * std::min<Scalar>(0, (((_tmp65) > 0) - ((_tmp65) < 0))) + 1);
-  const Scalar _tmp67 = (1.0 / 2.0) * _tmp66;
-  const Scalar _tmp68 = std::sqrt(2) * std::sqrt(_tmp62 * (std::pow(_tmp64, _tmp67) - 1) / _tmp66);
+  const Scalar _tmp67 = (Scalar(1) / Scalar(2)) * _tmp66;
+  const Scalar _tmp68 =
+      std::sqrt(2) * std::sqrt(_tmp62 * (std::pow<Scalar>(_tmp64, _tmp67) - 1) / _tmp66);
   const Scalar _tmp69 = _tmp60 * _tmp68;
   const Scalar _tmp70 = _tmp58 * _tmp69;
   const Scalar _tmp71 = _tmp49 * _tmp70;
@@ -160,7 +159,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp82 = _tmp28 * _tmp79;
   const Scalar _tmp83 = _tmp73 - _tmp82;
   const Scalar _tmp84 = _tmp54 * target_calibration_storage(1, 0);
-  const Scalar _tmp85 = (1.0 / 2.0) * _tmp59 *
+  const Scalar _tmp85 = (Scalar(1) / Scalar(2)) * _tmp59 *
                         ((((_tmp45 - epsilon) > 0) - ((_tmp45 - epsilon) < 0)) + 1) /
                         (_tmp46 * _tmp46);
   const Scalar _tmp86 = _tmp85 * (_tmp37 * _tmp83 + _tmp40 * _tmp81 + _tmp42 * _tmp78);
@@ -171,12 +170,13 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp90 =
       _tmp48 * (_tmp12 * _tmp83 + _tmp3 * _tmp78 + _tmp8 * _tmp81) - _tmp86 * _tmp89;
   const Scalar _tmp91 = 2 * _tmp49;
-  const Scalar _tmp92 = (1.0 / 2.0) * _tmp87 * _tmp88 + (1.0 / 2.0) * _tmp90 * _tmp91;
+  const Scalar _tmp92 =
+      (Scalar(1) / Scalar(2)) * _tmp87 * _tmp88 + (Scalar(1) / Scalar(2)) * _tmp90 * _tmp91;
   const Scalar _tmp93 = _tmp49 * _tmp92;
   const Scalar _tmp94 = _tmp58 * _tmp60 * _tmp63 * std::pow(_tmp64, _tmp67 - 1) / _tmp68;
   const Scalar _tmp95 = _tmp69 / (_tmp57 * std::sqrt(_tmp57));
   const Scalar _tmp96 = _tmp70 * _tmp90 + _tmp93 * _tmp94 - _tmp93 * _tmp95;
-  const Scalar _tmp97 = (1.0 / 2.0) * _tmp96;
+  const Scalar _tmp97 = (Scalar(1) / Scalar(2)) * _tmp96;
   const Scalar _tmp98 = _tmp28 * _tmp73;
   const Scalar _tmp99 = _tmp79 + _tmp98;
   const Scalar _tmp100 = _source_pose[3] * _tmp75;
@@ -193,12 +193,12 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp110 =
       -_tmp106 * _tmp109 + _tmp55 * (_tmp104 * _tmp50 + _tmp105 * _tmp52 + _tmp51 * _tmp99);
   const Scalar _tmp111 = _tmp108 * _tmp91 + _tmp110 * _tmp88;
-  const Scalar _tmp112 = (1.0 / 2.0) * _tmp95;
+  const Scalar _tmp112 = (Scalar(1) / Scalar(2)) * _tmp95;
   const Scalar _tmp113 = _tmp112 * _tmp49;
-  const Scalar _tmp114 = (1.0 / 2.0) * _tmp94;
+  const Scalar _tmp114 = (Scalar(1) / Scalar(2)) * _tmp94;
   const Scalar _tmp115 = _tmp114 * _tmp49;
   const Scalar _tmp116 = _tmp108 * _tmp70 - _tmp111 * _tmp113 + _tmp111 * _tmp115;
-  const Scalar _tmp117 = (1.0 / 2.0) * _tmp116;
+  const Scalar _tmp117 = (Scalar(1) / Scalar(2)) * _tmp116;
   const Scalar _tmp118 = _tmp24 * _tmp76;
   const Scalar _tmp119 = _tmp118 + _tmp79;
   const Scalar _tmp120 = _tmp100 * _tmp24;
@@ -211,8 +211,9 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp126 =
       -_tmp109 * _tmp124 + _tmp55 * (_tmp119 * _tmp52 + _tmp122 * _tmp50 + _tmp123 * _tmp51);
   const Scalar _tmp127 = _tmp125 * _tmp91 + _tmp126 * _tmp88;
-  const Scalar _tmp128 = -1.0 / 2.0 * _tmp113 * _tmp127 + (1.0 / 2.0) * _tmp115 * _tmp127 +
-                         (1.0 / 2.0) * _tmp125 * _tmp70;
+  const Scalar _tmp128 = -Scalar(1) / Scalar(2) * _tmp113 * _tmp127 +
+                         (Scalar(1) / Scalar(2)) * _tmp115 * _tmp127 +
+                         (Scalar(1) / Scalar(2)) * _tmp125 * _tmp70;
   const Scalar _tmp129 = _tmp118 + _tmp98;
   const Scalar _tmp130 = _source_pose[2] * _tmp102;
   const Scalar _tmp131 = -_tmp101 - _tmp130 * _tmp24 + _tmp76;
@@ -224,10 +225,10 @@ void InverseRangeLandmarkReprojectionErrorFactor(
       -_tmp109 * _tmp133 + _tmp55 * (_tmp129 * _tmp50 + _tmp131 * _tmp51 + _tmp132 * _tmp52);
   const Scalar _tmp136 = _tmp134 * _tmp91 + _tmp135 * _tmp88;
   const Scalar _tmp137 = -_tmp113 * _tmp136 + _tmp115 * _tmp136 + _tmp134 * _tmp70;
-  const Scalar _tmp138 = (1.0 / 2.0) * _source_pose[1];
+  const Scalar _tmp138 = (Scalar(1) / Scalar(2)) * _source_pose[1];
   const Scalar _tmp139 = -_source_pose[0] * _tmp97 + _source_pose[2] * _tmp128 +
                          _source_pose[3] * _tmp117 - _tmp137 * _tmp138;
-  const Scalar _tmp140 = (1.0 / 2.0) * _tmp137;
+  const Scalar _tmp140 = (Scalar(1) / Scalar(2)) * _tmp137;
   const Scalar _tmp141 = _source_pose[0] * _tmp140 - _source_pose[2] * _tmp117 +
                          _source_pose[3] * _tmp128 - _tmp138 * _tmp96;
   const Scalar _tmp142 = -_source_pose[0] * _tmp128 - _source_pose[2] * _tmp97 +
@@ -288,8 +289,9 @@ void InverseRangeLandmarkReprojectionErrorFactor(
       -_tmp109 * _tmp180 + _tmp55 * (-_tmp182 * _tmp34 - _tmp191 + _tmp192 +
                                      source_inverse_range * (-_tmp182 * _tmp9 - _tmp189 + _tmp190));
   const Scalar _tmp194 = _tmp188 * _tmp91 + _tmp193 * _tmp88;
-  const Scalar _tmp195 = -1.0 / 2.0 * _tmp113 * _tmp194 + (1.0 / 2.0) * _tmp115 * _tmp194 +
-                         (1.0 / 2.0) * _tmp188 * _tmp70;
+  const Scalar _tmp195 = -Scalar(1) / Scalar(2) * _tmp113 * _tmp194 +
+                         (Scalar(1) / Scalar(2)) * _tmp115 * _tmp194 +
+                         (Scalar(1) / Scalar(2)) * _tmp188 * _tmp70;
   const Scalar _tmp196 = _target_pose[2] * _tmp174;
   const Scalar _tmp197 = 4 * _target_pose[1];
   const Scalar _tmp198 = _target_pose[2] * _tmp178;
@@ -308,7 +310,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
       -_tmp199 * _tmp84 + _tmp55 * (_tmp177 + _tmp206 + source_inverse_range * (_tmp173 + _tmp205));
   const Scalar _tmp208 = _tmp204 * _tmp91 + _tmp207 * _tmp88;
   const Scalar _tmp209 = -_tmp113 * _tmp208 + _tmp115 * _tmp208 + _tmp204 * _tmp70;
-  const Scalar _tmp210 = (1.0 / 2.0) * _target_pose[2];
+  const Scalar _tmp210 = (Scalar(1) / Scalar(2)) * _target_pose[2];
   const Scalar _tmp211 = _target_pose[1] * _tmp172;
   const Scalar _tmp212 = _tmp1 * _tmp30;
   const Scalar _tmp213 = -_tmp202 + _tmp212 + source_inverse_range * (-_tmp201 + _tmp211);
@@ -321,7 +323,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
                          _tmp55 * (_tmp187 - _tmp216 + source_inverse_range * (_tmp184 - _tmp215));
   const Scalar _tmp218 = _tmp214 * _tmp91 + _tmp217 * _tmp88;
   const Scalar _tmp219 = -_tmp113 * _tmp218 + _tmp115 * _tmp218 + _tmp214 * _tmp70;
-  const Scalar _tmp220 = (1.0 / 2.0) * _tmp219;
+  const Scalar _tmp220 = (Scalar(1) / Scalar(2)) * _tmp219;
   const Scalar _tmp221 = 4 * _target_pose[0];
   const Scalar _tmp222 = -_tmp185 + _tmp216 - _tmp221 * _tmp35 +
                          source_inverse_range * (-_tmp181 + _tmp215 - _tmp221 * _tmp4);
@@ -332,10 +334,10 @@ void InverseRangeLandmarkReprojectionErrorFactor(
                                      source_inverse_range * (_tmp200 + _tmp211 - _tmp221 * _tmp9));
   const Scalar _tmp225 = _tmp223 * _tmp91 + _tmp224 * _tmp88;
   const Scalar _tmp226 = -_tmp113 * _tmp225 + _tmp115 * _tmp225 + _tmp223 * _tmp70;
-  const Scalar _tmp227 = (1.0 / 2.0) * _tmp226;
+  const Scalar _tmp227 = (Scalar(1) / Scalar(2)) * _tmp226;
   const Scalar _tmp228 = -_target_pose[0] * _tmp220 - _target_pose[1] * _tmp195 +
                          _target_pose[3] * _tmp227 + _tmp209 * _tmp210;
-  const Scalar _tmp229 = (1.0 / 2.0) * _tmp209;
+  const Scalar _tmp229 = (Scalar(1) / Scalar(2)) * _tmp209;
   const Scalar _tmp230 = _target_pose[0] * _tmp195 - _target_pose[1] * _tmp220 +
                          _target_pose[3] * _tmp229 - _tmp210 * _tmp226;
   const Scalar _tmp231 = -_target_pose[0] * _tmp229 + _target_pose[1] * _tmp227 +
@@ -358,17 +360,18 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp247 = -_tmp113 * _tmp246 + _tmp115 * _tmp246 + _tmp245 * _tmp70;
   const Scalar _tmp248 = _tmp56 * _tmp92;
   const Scalar _tmp249 = _tmp248 * _tmp94 - _tmp248 * _tmp95 + _tmp70 * _tmp87;
-  const Scalar _tmp250 = (1.0 / 2.0) * _tmp249;
+  const Scalar _tmp250 = (Scalar(1) / Scalar(2)) * _tmp249;
   const Scalar _tmp251 = _tmp114 * _tmp56;
   const Scalar _tmp252 = _tmp112 * _tmp56;
-  const Scalar _tmp253 = (1.0 / 2.0) * _tmp126 * _tmp70 + (1.0 / 2.0) * _tmp127 * _tmp251 -
-                         1.0 / 2.0 * _tmp127 * _tmp252;
+  const Scalar _tmp253 = (Scalar(1) / Scalar(2)) * _tmp126 * _tmp70 +
+                         (Scalar(1) / Scalar(2)) * _tmp127 * _tmp251 -
+                         Scalar(1) / Scalar(2) * _tmp127 * _tmp252;
   const Scalar _tmp254 = _tmp135 * _tmp70 + _tmp136 * _tmp251 - _tmp136 * _tmp252;
   const Scalar _tmp255 = _tmp110 * _tmp70 + _tmp111 * _tmp251 - _tmp111 * _tmp252;
-  const Scalar _tmp256 = (1.0 / 2.0) * _tmp255;
+  const Scalar _tmp256 = (Scalar(1) / Scalar(2)) * _tmp255;
   const Scalar _tmp257 = -_source_pose[0] * _tmp250 + _source_pose[2] * _tmp253 +
                          _source_pose[3] * _tmp256 - _tmp138 * _tmp254;
-  const Scalar _tmp258 = (1.0 / 2.0) * _tmp254;
+  const Scalar _tmp258 = (Scalar(1) / Scalar(2)) * _tmp254;
   const Scalar _tmp259 = _source_pose[0] * _tmp258 - _source_pose[2] * _tmp256 +
                          _source_pose[3] * _tmp253 - _tmp138 * _tmp249;
   const Scalar _tmp260 = -_source_pose[0] * _tmp253 - _source_pose[2] * _tmp250 +
@@ -376,14 +379,17 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp261 = _tmp152 * _tmp70 + _tmp153 * _tmp251 - _tmp153 * _tmp252;
   const Scalar _tmp262 = _tmp160 * _tmp70 + _tmp161 * _tmp251 - _tmp162 * _tmp56;
   const Scalar _tmp263 = _tmp169 * _tmp70 + _tmp170 * _tmp251 - _tmp170 * _tmp252;
-  const Scalar _tmp264 = (1.0 / 2.0) * _tmp217 * _tmp70 + (1.0 / 2.0) * _tmp218 * _tmp251 -
-                         1.0 / 2.0 * _tmp218 * _tmp252;
-  const Scalar _tmp265 = (1.0 / 2.0) * _tmp193 * _tmp70 + (1.0 / 2.0) * _tmp194 * _tmp251 -
-                         1.0 / 2.0 * _tmp194 * _tmp252;
+  const Scalar _tmp264 = (Scalar(1) / Scalar(2)) * _tmp217 * _tmp70 +
+                         (Scalar(1) / Scalar(2)) * _tmp218 * _tmp251 -
+                         Scalar(1) / Scalar(2) * _tmp218 * _tmp252;
+  const Scalar _tmp265 = (Scalar(1) / Scalar(2)) * _tmp193 * _tmp70 +
+                         (Scalar(1) / Scalar(2)) * _tmp194 * _tmp251 -
+                         Scalar(1) / Scalar(2) * _tmp194 * _tmp252;
   const Scalar _tmp266 = _tmp224 * _tmp70 + _tmp225 * _tmp251 - _tmp225 * _tmp252;
-  const Scalar _tmp267 = (1.0 / 2.0) * _tmp266;
-  const Scalar _tmp268 = (1.0 / 2.0) * _tmp207 * _tmp70 + (1.0 / 2.0) * _tmp208 * _tmp251 -
-                         1.0 / 2.0 * _tmp208 * _tmp252;
+  const Scalar _tmp267 = (Scalar(1) / Scalar(2)) * _tmp266;
+  const Scalar _tmp268 = (Scalar(1) / Scalar(2)) * _tmp207 * _tmp70 +
+                         (Scalar(1) / Scalar(2)) * _tmp208 * _tmp251 -
+                         Scalar(1) / Scalar(2) * _tmp208 * _tmp252;
   const Scalar _tmp269 = -_target_pose[0] * _tmp264 - _target_pose[1] * _tmp265 +
                          _target_pose[2] * _tmp268 + _target_pose[3] * _tmp267;
   const Scalar _tmp270 = _target_pose[0] * _tmp265 - _target_pose[1] * _tmp264 +

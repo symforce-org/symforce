@@ -79,7 +79,7 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
   const Scalar _tmp37 = -_prior[1] * _tmp36 - _tmp21 * _tmp25 - _tmp22 * _tmp23 + _tmp23 * _tmp31 -
                         _tmp27 * sqrt_info(0, 2) + _tmp28 * sqrt_info(0, 0) +
                         _tmp29 * sqrt_info(0, 1) + _tmp31 * _tmp32 + _tmp33 * sqrt_info(0, 0);
-  const Scalar _tmp38 = (1.0 / 2.0) * _value[2];
+  const Scalar _tmp38 = (Scalar(1) / Scalar(2)) * _value[2];
   const Scalar _tmp39 = _prior[2] * _tmp3;
   const Scalar _tmp40 = _tmp20 * _tmp39;
   const Scalar _tmp41 = _tmp0 * _tmp40;
@@ -92,30 +92,35 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
                         _tmp29 * sqrt_info(0, 2) - _tmp41 * sqrt_info(0, 1) -
                         _tmp42 * sqrt_info(0, 0) + _tmp43 * _tmp45 + _tmp44 * sqrt_info(0, 2) -
                         _tmp46 * sqrt_info(0, 0);
-  const Scalar _tmp48 = (1.0 / 2.0) * _value[1];
+  const Scalar _tmp48 = (Scalar(1) / Scalar(2)) * _value[1];
   const Scalar _tmp49 = _prior[3] * _tmp3;
   const Scalar _tmp50 = _tmp20 * _tmp49;
   const Scalar _tmp51 = _tmp30 * _tmp49;
   const Scalar _tmp52 = _tmp17 * _tmp51;
   const Scalar _tmp53 = _tmp15 * _tmp51;
   const Scalar _tmp54 =
-      -1.0 / 2.0 * _prior[3] * _tmp36 - 1.0 / 2.0 * _tmp23 * _tmp50 +
-      (1.0 / 2.0) * _tmp23 * _tmp51 - 1.0 / 2.0 * _tmp25 * _tmp49 -
-      1.0 / 2.0 * _tmp27 * sqrt_info(0, 0) - 1.0 / 2.0 * _tmp28 * sqrt_info(0, 2) -
-      1.0 / 2.0 * _tmp42 * sqrt_info(0, 1) + (1.0 / 2.0) * _tmp52 * sqrt_info(0, 2) +
-      (1.0 / 2.0) * _tmp53 * sqrt_info(0, 0);
+      -Scalar(1) / Scalar(2) * _prior[3] * _tmp36 - Scalar(1) / Scalar(2) * _tmp23 * _tmp50 +
+      (Scalar(1) / Scalar(2)) * _tmp23 * _tmp51 - Scalar(1) / Scalar(2) * _tmp25 * _tmp49 -
+      Scalar(1) / Scalar(2) * _tmp27 * sqrt_info(0, 0) -
+      Scalar(1) / Scalar(2) * _tmp28 * sqrt_info(0, 2) -
+      Scalar(1) / Scalar(2) * _tmp42 * sqrt_info(0, 1) +
+      (Scalar(1) / Scalar(2)) * _tmp52 * sqrt_info(0, 2) +
+      (Scalar(1) / Scalar(2)) * _tmp53 * sqrt_info(0, 0);
   const Scalar _tmp55 = _tmp20 * _tmp26;
   const Scalar _tmp56 = _tmp0 * _tmp55;
   const Scalar _tmp57 = _tmp17 * _tmp55;
   const Scalar _tmp58 = _tmp26 * _tmp30;
   const Scalar _tmp59 = _tmp26 * _tmp34;
-  const Scalar _tmp60 = (1.0 / 2.0) * _tmp23 * _tmp58 - 1.0 / 2.0 * _tmp28 * sqrt_info(0, 1) +
-                        (1.0 / 2.0) * _tmp29 * sqrt_info(0, 0) + (1.0 / 2.0) * _tmp32 * _tmp58 +
-                        (1.0 / 2.0) * _tmp42 * sqrt_info(0, 2) + (1.0 / 2.0) * _tmp45 * _tmp58 -
-                        1.0 / 2.0 * _tmp56 * sqrt_info(0, 1) -
-                        1.0 / 2.0 * _tmp57 * sqrt_info(0, 2) - 1.0 / 2.0 * _tmp59 * sqrt_info(0, 0);
-  const Scalar _tmp61 = (1.0 / 2.0) * _value[3];
-  const Scalar _tmp62 = (1.0 / 2.0) * _value[0];
+  const Scalar _tmp60 =
+      (Scalar(1) / Scalar(2)) * _tmp23 * _tmp58 - Scalar(1) / Scalar(2) * _tmp28 * sqrt_info(0, 1) +
+      (Scalar(1) / Scalar(2)) * _tmp29 * sqrt_info(0, 0) +
+      (Scalar(1) / Scalar(2)) * _tmp32 * _tmp58 +
+      (Scalar(1) / Scalar(2)) * _tmp42 * sqrt_info(0, 2) +
+      (Scalar(1) / Scalar(2)) * _tmp45 * _tmp58 - Scalar(1) / Scalar(2) * _tmp56 * sqrt_info(0, 1) -
+      Scalar(1) / Scalar(2) * _tmp57 * sqrt_info(0, 2) -
+      Scalar(1) / Scalar(2) * _tmp59 * sqrt_info(0, 0);
+  const Scalar _tmp61 = (Scalar(1) / Scalar(2)) * _value[3];
+  const Scalar _tmp62 = (Scalar(1) / Scalar(2)) * _value[0];
   const Scalar _tmp63 = _tmp17 * sqrt_info(1, 2);
   const Scalar _tmp64 = _tmp15 * sqrt_info(1, 0);
   const Scalar _tmp65 = _tmp0 * sqrt_info(1, 1);
@@ -149,15 +154,17 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
   const Scalar _tmp78 = _tmp26 * sqrt_info(2, 1);
   const Scalar _tmp79 = _tmp0 * _tmp78;
   const Scalar _tmp80 = _tmp15 * sqrt_info(2, 0);
-  const Scalar _tmp81 = -1.0 / 2.0 * _tmp20 * _tmp79 - 1.0 / 2.0 * _tmp28 * sqrt_info(2, 1) +
-                        (1.0 / 2.0) * _tmp29 * sqrt_info(2, 0) + (1.0 / 2.0) * _tmp30 * _tmp79 +
-                        (1.0 / 2.0) * _tmp42 * sqrt_info(2, 2) -
-                        1.0 / 2.0 * _tmp57 * sqrt_info(2, 2) + (1.0 / 2.0) * _tmp58 * _tmp75 +
-                        (1.0 / 2.0) * _tmp58 * _tmp80 - 1.0 / 2.0 * _tmp59 * sqrt_info(2, 0);
+  const Scalar _tmp81 =
+      -Scalar(1) / Scalar(2) * _tmp20 * _tmp79 - Scalar(1) / Scalar(2) * _tmp28 * sqrt_info(2, 1) +
+      (Scalar(1) / Scalar(2)) * _tmp29 * sqrt_info(2, 0) +
+      (Scalar(1) / Scalar(2)) * _tmp30 * _tmp79 +
+      (Scalar(1) / Scalar(2)) * _tmp42 * sqrt_info(2, 2) -
+      Scalar(1) / Scalar(2) * _tmp57 * sqrt_info(2, 2) + (Scalar(1) / Scalar(2)) * _tmp58 * _tmp75 +
+      (Scalar(1) / Scalar(2)) * _tmp58 * _tmp80 - Scalar(1) / Scalar(2) * _tmp59 * sqrt_info(2, 0);
   const Scalar _tmp82 = _tmp29 * sqrt_info(2, 2) - _tmp39 * _tmp74 - _tmp41 * sqrt_info(2, 1) -
                         _tmp42 * sqrt_info(2, 0) + _tmp43 * _tmp73 + _tmp43 * _tmp80 +
                         _tmp44 * sqrt_info(2, 2) - _tmp46 * sqrt_info(2, 0) + _tmp78 * _tmp9;
-  const Scalar _tmp83 = (1.0 / 2.0) * _tmp77;
+  const Scalar _tmp83 = (Scalar(1) / Scalar(2)) * _tmp77;
   const Scalar _tmp84 = _tmp24 * sqrt_info(3, 2);
   const Scalar _tmp85 = _tmp15 * sqrt_info(3, 0);
   const Scalar _tmp86 = _tmp0 * sqrt_info(3, 1);

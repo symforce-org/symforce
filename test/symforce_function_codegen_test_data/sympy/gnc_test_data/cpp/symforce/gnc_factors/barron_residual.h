@@ -41,7 +41,7 @@ void BarronResidual(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Sc
   const Scalar _tmp5 = 1.0 / (_tmp1);
   const Scalar _tmp6 = 2 - _tmp5;
   const Scalar _tmp7 = eps * (2 * std::min<Scalar>(0, (((_tmp6) > 0) - ((_tmp6) < 0))) + 1);
-  const Scalar _tmp8 = -1.0 / 2.0 * _tmp5 + (1.0 / 2.0) * _tmp7 + 1;
+  const Scalar _tmp8 = -Scalar(1) / Scalar(2) * _tmp5 + (Scalar(1) / Scalar(2)) * _tmp7 + 1;
   const Scalar _tmp9 = std::pow<Scalar>(_tmp4, _tmp8);
   const Scalar _tmp10 = _tmp6 + _tmp7;
   const Scalar _tmp11 = 1.0 / (_tmp10);

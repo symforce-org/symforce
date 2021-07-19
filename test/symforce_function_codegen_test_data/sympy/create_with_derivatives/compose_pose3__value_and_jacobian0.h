@@ -74,24 +74,25 @@ sym::Pose3<Scalar> ComposePose3_ValueAndJacobian0(
   const Scalar _tmp45 = -_tmp41 - _tmp42 + _tmp43 - _tmp44;
   const Scalar _tmp46 = _b[3] * _tmp45;
   const Scalar _tmp47 = _b[1] * _tmp34 + _tmp29 + _tmp40 + _tmp46;
-  const Scalar _tmp48 = (1.0 / 2.0) * _a[0];
+  const Scalar _tmp48 = (Scalar(1) / Scalar(2)) * _a[0];
   const Scalar _tmp49 = _b[3] * _tmp39;
   const Scalar _tmp50 = _b[1] * _tmp28;
   const Scalar _tmp51 = -_b[2] * _tmp45;
   const Scalar _tmp52 = _b[0] * _tmp34 + _tmp49 - _tmp50 + _tmp51;
-  const Scalar _tmp53 = (1.0 / 2.0) * _a[1];
+  const Scalar _tmp53 = (Scalar(1) / Scalar(2)) * _a[1];
   const Scalar _tmp54 = _b[2] * _tmp28;
   const Scalar _tmp55 = -_b[0] * _tmp39;
   const Scalar _tmp56 = _b[1] * _tmp45;
-  const Scalar _tmp57 = (1.0 / 2.0) * _b[3] * _tmp34 + (1.0 / 2.0) * _tmp54 + (1.0 / 2.0) * _tmp55 -
-                        1.0 / 2.0 * _tmp56;
+  const Scalar _tmp57 = (Scalar(1) / Scalar(2)) * _b[3] * _tmp34 +
+                        (Scalar(1) / Scalar(2)) * _tmp54 + (Scalar(1) / Scalar(2)) * _tmp55 -
+                        Scalar(1) / Scalar(2) * _tmp56;
   const Scalar _tmp58 = _b[1] * _tmp39;
   const Scalar _tmp59 = _b[3] * _tmp28;
   const Scalar _tmp60 = _b[0] * _tmp45;
-  const Scalar _tmp61 = -1.0 / 2.0 * _b[2] * _tmp34 + (1.0 / 2.0) * _tmp58 + (1.0 / 2.0) * _tmp59 -
-                        1.0 / 2.0 * _tmp60;
-  const Scalar _tmp62 = (1.0 / 2.0) * _a[2];
-  const Scalar _tmp63 = (1.0 / 2.0) * _a[3];
+  const Scalar _tmp61 = -Scalar(1) / Scalar(2) * _b[2] * _tmp34 + (Scalar(1) / Scalar(2)) * _tmp58 +
+                        (Scalar(1) / Scalar(2)) * _tmp59 - Scalar(1) / Scalar(2) * _tmp60;
+  const Scalar _tmp62 = (Scalar(1) / Scalar(2)) * _a[2];
+  const Scalar _tmp63 = (Scalar(1) / Scalar(2)) * _a[3];
   const Scalar _tmp64 = -_tmp30 + _tmp31 - _tmp32 - _tmp33;
   const Scalar _tmp65 = _b[0] * _tmp64;
   const Scalar _tmp66 = _tmp41 + _tmp42 - _tmp43 + _tmp44;

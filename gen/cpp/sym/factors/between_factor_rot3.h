@@ -115,7 +115,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp71 = _tmp18 * _tmp47 + _tmp20 * _tmp54 - _tmp31 * _tmp39 + _tmp31 * _tmp56 -
                         _tmp32 * _tmp67 + _tmp36 * sqrt_info(0, 0) + _tmp65 * sqrt_info(0, 2) -
                         _tmp69 * sqrt_info(0, 0) + _tmp70 * sqrt_info(0, 2);
-  const Scalar _tmp72 = (1.0 / 2.0) * _a[3];
+  const Scalar _tmp72 = (Scalar(1) / Scalar(2)) * _a[3];
   const Scalar _tmp73 = -_tmp26;
   const Scalar _tmp74 = _tmp25 + _tmp73;
   const Scalar _tmp75 = _tmp14 * (_tmp27 + _tmp28 + _tmp74);
@@ -131,11 +131,13 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp85 = -_tmp40;
   const Scalar _tmp86 = _tmp41 + _tmp85;
   const Scalar _tmp87 = _tmp14 * (_tmp42 + _tmp45 + _tmp86);
-  const Scalar _tmp88 = (1.0 / 2.0) * _tmp18 * _tmp84 - 1.0 / 2.0 * _tmp39 * _tmp77 +
-                        (1.0 / 2.0) * _tmp56 * _tmp77 - 1.0 / 2.0 * _tmp67 * _tmp78 +
-                        (1.0 / 2.0) * _tmp75 * sqrt_info(0, 0) - 1.0 / 2.0 * _tmp78 * _tmp81 +
-                        (1.0 / 2.0) * _tmp79 * _tmp82 + (1.0 / 2.0) * _tmp80 * sqrt_info(0, 0) +
-                        (1.0 / 2.0) * _tmp87 * sqrt_info(0, 2);
+  const Scalar _tmp88 =
+      (Scalar(1) / Scalar(2)) * _tmp18 * _tmp84 - Scalar(1) / Scalar(2) * _tmp39 * _tmp77 +
+      (Scalar(1) / Scalar(2)) * _tmp56 * _tmp77 - Scalar(1) / Scalar(2) * _tmp67 * _tmp78 +
+      (Scalar(1) / Scalar(2)) * _tmp75 * sqrt_info(0, 0) - Scalar(1) / Scalar(2) * _tmp78 * _tmp81 +
+      (Scalar(1) / Scalar(2)) * _tmp79 * _tmp82 +
+      (Scalar(1) / Scalar(2)) * _tmp80 * sqrt_info(0, 0) +
+      (Scalar(1) / Scalar(2)) * _tmp87 * sqrt_info(0, 2);
   const Scalar _tmp89 = _tmp57 + _tmp59 + _tmp64;
   const Scalar _tmp90 = _tmp7 * _tmp89;
   const Scalar _tmp91 = -_tmp41 + _tmp46 + _tmp85;
@@ -147,7 +149,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp97 = _tmp18 * _tmp94 + _tmp20 * _tmp91 - _tmp39 * _tmp89 + _tmp56 * _tmp89 -
                         _tmp67 * _tmp90 + _tmp82 * _tmp92 + _tmp93 * sqrt_info(0, 0) +
                         _tmp95 * sqrt_info(0, 2) - _tmp96 * sqrt_info(0, 0);
-  const Scalar _tmp98 = (1.0 / 2.0) * _tmp97;
+  const Scalar _tmp98 = (Scalar(1) / Scalar(2)) * _tmp97;
   const Scalar _tmp99 = _tmp43 + _tmp44 + _tmp86;
   const Scalar _tmp100 = _tmp7 * _tmp99;
   const Scalar _tmp101 = _tmp100 * _tmp34;
@@ -159,8 +161,8 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp107 = -_tmp100 * _tmp67 - _tmp100 * _tmp81 + _tmp102 * sqrt_info(0, 0) +
                          _tmp103 * sqrt_info(0, 2) + _tmp104 * _tmp18 + _tmp105 * sqrt_info(0, 2) +
                          _tmp106 * sqrt_info(0, 0) - _tmp39 * _tmp99 + _tmp56 * _tmp99;
-  const Scalar _tmp108 = (1.0 / 2.0) * _tmp107;
-  const Scalar _tmp109 = (1.0 / 2.0) * _tmp71;
+  const Scalar _tmp108 = (Scalar(1) / Scalar(2)) * _tmp107;
+  const Scalar _tmp109 = (Scalar(1) / Scalar(2)) * _tmp71;
   const Scalar _tmp110 = _a[0] * _a_T_b[1];
   const Scalar _tmp111 = _a[1] * _a_T_b[0];
   const Scalar _tmp112 = _a[3] * _a_T_b[2];
@@ -186,7 +188,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp131 = -_tmp114 * _tmp39 + _tmp114 * _tmp56 - _tmp115 * _tmp67 +
                          _tmp120 * _tmp20 + _tmp121 * _tmp82 + _tmp122 * sqrt_info(0, 0) +
                          _tmp124 * sqrt_info(0, 2) + _tmp129 * _tmp18 - _tmp130 * sqrt_info(0, 0);
-  const Scalar _tmp132 = (1.0 / 2.0) * _b[1];
+  const Scalar _tmp132 = (Scalar(1) / Scalar(2)) * _b[1];
   const Scalar _tmp133 = -_tmp116 + _tmp117 + _tmp118 + _tmp119;
   const Scalar _tmp134 = _tmp133 * _tmp7;
   const Scalar _tmp135 = _tmp123 * _tmp17;
@@ -198,7 +200,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp141 = _tmp114 * _tmp20 + _tmp13 * _tmp135 - _tmp133 * _tmp39 + _tmp133 * _tmp56 -
                          _tmp134 * _tmp67 - _tmp134 * _tmp81 + _tmp137 * sqrt_info(0, 0) +
                          _tmp139 * sqrt_info(0, 2) + _tmp140 * sqrt_info(0, 2);
-  const Scalar _tmp142 = (1.0 / 2.0) * _b[2];
+  const Scalar _tmp142 = (Scalar(1) / Scalar(2)) * _b[2];
   const Scalar _tmp143 = _tmp129 * _tmp7;
   const Scalar _tmp144 = _tmp133 * _tmp14;
   const Scalar _tmp145 = _tmp143 * _tmp34;
@@ -208,7 +210,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp149 = _tmp124 * sqrt_info(0, 0) + _tmp129 * _tmp56 - _tmp143 * _tmp67 -
                          _tmp143 * _tmp81 + _tmp144 * sqrt_info(0, 2) + _tmp145 * _tmp82 -
                          _tmp146 * _tmp17 + _tmp147 * sqrt_info(0, 0) + _tmp148 * _tmp18;
-  const Scalar _tmp150 = (1.0 / 2.0) * _b[3];
+  const Scalar _tmp150 = (Scalar(1) / Scalar(2)) * _b[3];
   const Scalar _tmp151 = _tmp123 * _tmp7;
   const Scalar _tmp152 = _tmp151 * _tmp34;
   const Scalar _tmp153 = _tmp14 * _tmp148;
@@ -216,8 +218,8 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp155 = _tmp120 * _tmp18 - _tmp135 * _tmp38 + _tmp135 * _tmp55 + _tmp138 * _tmp20 -
                          _tmp151 * _tmp67 - _tmp151 * _tmp81 + _tmp152 * _tmp82 +
                          _tmp153 * sqrt_info(0, 2) + _tmp154 * sqrt_info(0, 0);
-  const Scalar _tmp156 = (1.0 / 2.0) * _b[0];
-  const Scalar _tmp157 = (1.0 / 2.0) * _tmp149;
+  const Scalar _tmp156 = (Scalar(1) / Scalar(2)) * _b[0];
+  const Scalar _tmp157 = (Scalar(1) / Scalar(2)) * _tmp149;
   const Scalar _tmp158 = _tmp19 * sqrt_info(1, 0);
   const Scalar _tmp159 = _tmp38 * sqrt_info(1, 1);
   const Scalar _tmp160 = _tmp14 * _tmp47;
@@ -231,23 +233,25 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp166 = _tmp14 * sqrt_info(1, 1);
   const Scalar _tmp167 = _tmp55 * _tmp78;
   const Scalar _tmp168 =
-      (1.0 / 2.0) * _tmp158 * _tmp79 - 1.0 / 2.0 * _tmp159 * _tmp78 - 1.0 / 2.0 * _tmp162 * _tmp78 -
-      1.0 / 2.0 * _tmp163 * _tmp78 + (1.0 / 2.0) * _tmp164 * _tmp79 +
-      (1.0 / 2.0) * _tmp166 * _tmp84 + (1.0 / 2.0) * _tmp167 * sqrt_info(1, 1) +
-      (1.0 / 2.0) * _tmp75 * sqrt_info(1, 0) + (1.0 / 2.0) * _tmp87 * sqrt_info(1, 2);
+      (Scalar(1) / Scalar(2)) * _tmp158 * _tmp79 - Scalar(1) / Scalar(2) * _tmp159 * _tmp78 -
+      Scalar(1) / Scalar(2) * _tmp162 * _tmp78 - Scalar(1) / Scalar(2) * _tmp163 * _tmp78 +
+      (Scalar(1) / Scalar(2)) * _tmp164 * _tmp79 + (Scalar(1) / Scalar(2)) * _tmp166 * _tmp84 +
+      (Scalar(1) / Scalar(2)) * _tmp167 * sqrt_info(1, 1) +
+      (Scalar(1) / Scalar(2)) * _tmp75 * sqrt_info(1, 0) +
+      (Scalar(1) / Scalar(2)) * _tmp87 * sqrt_info(1, 2);
   const Scalar _tmp169 = _tmp55 * _tmp90;
   const Scalar _tmp170 = _tmp158 * _tmp92 - _tmp159 * _tmp90 - _tmp162 * _tmp90 - _tmp163 * _tmp90 +
                          _tmp164 * _tmp92 + _tmp166 * _tmp94 + _tmp169 * sqrt_info(1, 1) +
                          _tmp22 * _tmp91 + _tmp95 * sqrt_info(1, 2);
-  const Scalar _tmp171 = (1.0 / 2.0) * _tmp170;
+  const Scalar _tmp171 = (Scalar(1) / Scalar(2)) * _tmp170;
   const Scalar _tmp172 = _tmp104 * _tmp14;
   const Scalar _tmp173 = _tmp100 * _tmp55;
   const Scalar _tmp174 = -_tmp100 * _tmp159 - _tmp100 * _tmp162 - _tmp100 * _tmp163 +
                          _tmp101 * _tmp158 + _tmp101 * _tmp164 + _tmp105 * sqrt_info(1, 2) +
                          _tmp106 * sqrt_info(1, 0) + _tmp172 * sqrt_info(1, 1) +
                          _tmp173 * sqrt_info(1, 1);
-  const Scalar _tmp175 = (1.0 / 2.0) * _tmp174;
-  const Scalar _tmp176 = (1.0 / 2.0) * _tmp165;
+  const Scalar _tmp175 = (Scalar(1) / Scalar(2)) * _tmp174;
+  const Scalar _tmp176 = (Scalar(1) / Scalar(2)) * _tmp165;
   const Scalar _tmp177 = _tmp115 * _tmp55;
   const Scalar _tmp178 = _tmp115 * _tmp38;
   const Scalar _tmp179 = -_tmp115 * _tmp162 - _tmp115 * _tmp163 + _tmp120 * _tmp22 +
@@ -257,7 +261,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp181 = _tmp114 * _tmp22 + _tmp124 * sqrt_info(1, 1) - _tmp134 * _tmp159 -
                          _tmp134 * _tmp162 - _tmp134 * _tmp163 + _tmp136 * _tmp158 +
                          _tmp136 * _tmp164 + _tmp139 * sqrt_info(1, 2) + _tmp180 * sqrt_info(1, 1);
-  const Scalar _tmp182 = (1.0 / 2.0) * _tmp181;
+  const Scalar _tmp182 = (Scalar(1) / Scalar(2)) * _tmp181;
   const Scalar _tmp183 = _tmp143 * _tmp55;
   const Scalar _tmp184 = _tmp146 * _tmp7;
   const Scalar _tmp185 = _tmp124 * sqrt_info(1, 0) - _tmp143 * _tmp162 - _tmp143 * _tmp163 +
@@ -268,7 +272,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp187 = _tmp120 * _tmp166 + _tmp138 * _tmp22 - _tmp151 * _tmp159 -
                          _tmp151 * _tmp162 - _tmp151 * _tmp163 + _tmp152 * _tmp158 +
                          _tmp152 * _tmp164 + _tmp153 * sqrt_info(1, 2) + _tmp186 * sqrt_info(1, 1);
-  const Scalar _tmp188 = (1.0 / 2.0) * _tmp185;
+  const Scalar _tmp188 = (Scalar(1) / Scalar(2)) * _tmp185;
   const Scalar _tmp189 = _tmp38 * sqrt_info(2, 1);
   const Scalar _tmp190 = _tmp66 * sqrt_info(2, 2);
   const Scalar _tmp191 = _tmp160 * sqrt_info(2, 1) + _tmp161 * sqrt_info(2, 1) - _tmp189 * _tmp32 -
@@ -279,21 +283,24 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp193 = _tmp4 * sqrt_info(2, 2);
   const Scalar _tmp194 = _tmp14 * sqrt_info(2, 1);
   const Scalar _tmp195 =
-      (1.0 / 2.0) * _tmp167 * sqrt_info(2, 1) - 1.0 / 2.0 * _tmp189 * _tmp78 -
-      1.0 / 2.0 * _tmp190 * _tmp78 - 1.0 / 2.0 * _tmp192 * _tmp78 + (1.0 / 2.0) * _tmp193 * _tmp79 +
-      (1.0 / 2.0) * _tmp194 * _tmp84 + (1.0 / 2.0) * _tmp75 * sqrt_info(2, 0) +
-      (1.0 / 2.0) * _tmp80 * sqrt_info(2, 0) + (1.0 / 2.0) * _tmp87 * sqrt_info(2, 2);
+      (Scalar(1) / Scalar(2)) * _tmp167 * sqrt_info(2, 1) -
+      Scalar(1) / Scalar(2) * _tmp189 * _tmp78 - Scalar(1) / Scalar(2) * _tmp190 * _tmp78 -
+      Scalar(1) / Scalar(2) * _tmp192 * _tmp78 + (Scalar(1) / Scalar(2)) * _tmp193 * _tmp79 +
+      (Scalar(1) / Scalar(2)) * _tmp194 * _tmp84 +
+      (Scalar(1) / Scalar(2)) * _tmp75 * sqrt_info(2, 0) +
+      (Scalar(1) / Scalar(2)) * _tmp80 * sqrt_info(2, 0) +
+      (Scalar(1) / Scalar(2)) * _tmp87 * sqrt_info(2, 2);
   const Scalar _tmp196 = _tmp169 * sqrt_info(2, 1) - _tmp189 * _tmp90 - _tmp190 * _tmp90 +
                          _tmp193 * _tmp92 + _tmp194 * _tmp94 + _tmp23 * _tmp91 +
                          _tmp93 * sqrt_info(2, 0) + _tmp95 * sqrt_info(2, 2) -
                          _tmp96 * sqrt_info(2, 0);
-  const Scalar _tmp197 = (1.0 / 2.0) * _tmp196;
+  const Scalar _tmp197 = (Scalar(1) / Scalar(2)) * _tmp196;
   const Scalar _tmp198 = -_tmp100 * _tmp189 - _tmp100 * _tmp190 - _tmp100 * _tmp192 +
                          _tmp102 * sqrt_info(2, 0) + _tmp103 * sqrt_info(2, 2) +
                          _tmp105 * sqrt_info(2, 2) + _tmp106 * sqrt_info(2, 0) +
                          _tmp172 * sqrt_info(2, 1) + _tmp173 * sqrt_info(2, 1);
-  const Scalar _tmp199 = (1.0 / 2.0) * _tmp198;
-  const Scalar _tmp200 = (1.0 / 2.0) * _tmp191;
+  const Scalar _tmp199 = (Scalar(1) / Scalar(2)) * _tmp198;
+  const Scalar _tmp200 = (Scalar(1) / Scalar(2)) * _tmp191;
   const Scalar _tmp201 = -_tmp115 * _tmp190 + _tmp120 * _tmp23 + _tmp121 * _tmp193 +
                          _tmp122 * sqrt_info(2, 0) + _tmp124 * sqrt_info(2, 2) + _tmp129 * _tmp194 -
                          _tmp130 * sqrt_info(2, 0) + _tmp177 * sqrt_info(2, 1) -
@@ -302,7 +309,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
                          _tmp134 * _tmp190 - _tmp134 * _tmp192 + _tmp137 * sqrt_info(2, 0) +
                          _tmp139 * sqrt_info(2, 2) + _tmp140 * sqrt_info(2, 2) +
                          _tmp180 * sqrt_info(2, 1);
-  const Scalar _tmp203 = (1.0 / 2.0) * _tmp202;
+  const Scalar _tmp203 = (Scalar(1) / Scalar(2)) * _tmp202;
   const Scalar _tmp204 = _tmp124 * sqrt_info(2, 0) - _tmp143 * _tmp190 - _tmp143 * _tmp192 +
                          _tmp144 * sqrt_info(2, 2) + _tmp145 * _tmp193 + _tmp147 * sqrt_info(2, 0) +
                          _tmp148 * _tmp194 + _tmp183 * sqrt_info(2, 1) - _tmp184 * sqrt_info(2, 1);
@@ -310,7 +317,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
                          _tmp151 * _tmp190 - _tmp151 * _tmp192 + _tmp152 * _tmp193 +
                          _tmp153 * sqrt_info(2, 2) + _tmp154 * sqrt_info(2, 0) +
                          _tmp186 * sqrt_info(2, 1);
-  const Scalar _tmp206 = (1.0 / 2.0) * _tmp204;
+  const Scalar _tmp206 = (Scalar(1) / Scalar(2)) * _tmp204;
 
   // Output terms (2)
   if (res != nullptr) {

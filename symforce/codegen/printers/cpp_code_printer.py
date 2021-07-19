@@ -9,6 +9,20 @@ class CppCodePrinter(CXX11CodePrinter):
     behavior for codegen compatibility and efficiency.
     """
 
+    def _print_Rational(self, expr: sm.Rational) -> str:
+        """
+        Customizations:
+            * Cast all literals to Scalar at compile time instead of using a suffix at codegen time
+        """
+        return f"Scalar({expr.p})/Scalar({expr.q})"
+
+    def _print_Float(self, flt: sm.Float) -> str:
+        """
+        Customizations:
+            * Cast all literals to Scalar at compile time instead of using a suffix at codegen time
+        """
+        return f"Scalar({super()._print_Float(flt)})"
+
     def _print_Pow(self, expr: sm.Pow) -> str:
         """
         Customizations:

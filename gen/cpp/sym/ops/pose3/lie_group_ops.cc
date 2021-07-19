@@ -22,7 +22,7 @@ sym::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
   // Intermediate terms (3)
   const Scalar _tmp0 = std::sqrt(std::pow<Scalar>(epsilon, 2) + std::pow<Scalar>(vec(0, 0), 2) +
                                  std::pow<Scalar>(vec(1, 0), 2) + std::pow<Scalar>(vec(2, 0), 2));
-  const Scalar _tmp1 = (1.0 / 2.0) * _tmp0;
+  const Scalar _tmp1 = (Scalar(1) / Scalar(2)) * _tmp0;
   const Scalar _tmp2 = std::sin(_tmp1) / _tmp0;
 
   // Output terms (1)
@@ -77,7 +77,7 @@ sym::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Pose3<Scalar>& a,
   // Intermediate terms (8)
   const Scalar _tmp0 = std::sqrt(std::pow<Scalar>(epsilon, 2) + std::pow<Scalar>(vec(0, 0), 2) +
                                  std::pow<Scalar>(vec(1, 0), 2) + std::pow<Scalar>(vec(2, 0), 2));
-  const Scalar _tmp1 = (1.0 / 2.0) * _tmp0;
+  const Scalar _tmp1 = (Scalar(1) / Scalar(2)) * _tmp0;
   const Scalar _tmp2 = std::cos(_tmp1);
   const Scalar _tmp3 = std::sin(_tmp1) / _tmp0;
   const Scalar _tmp4 = _a[2] * _tmp3;

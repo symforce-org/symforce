@@ -121,7 +121,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp75 = _tmp13 * _tmp45 + _tmp16 * _tmp33 + _tmp41 * _tmp50 - _tmp41 * _tmp54 -
                         _tmp42 * _tmp73 + _tmp48 * sqrt_info(0, 2) - _tmp49 * _tmp74 +
                         _tmp63 * sqrt_info(0, 0) + _tmp72 * sqrt_info(0, 2);
-  const Scalar _tmp76 = (1.0 / 2.0) * _a[2];
+  const Scalar _tmp76 = (Scalar(1) / Scalar(2)) * _a[2];
   const Scalar _tmp77 = -_tmp35;
   const Scalar _tmp78 = _tmp34 + _tmp77;
   const Scalar _tmp79 = _tmp15 * (_tmp37 + _tmp38 + _tmp78);
@@ -142,7 +142,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp94 = _tmp13 * _tmp79 + _tmp13 * _tmp83 - _tmp49 * _tmp91 + _tmp50 * _tmp81 -
                         _tmp81 * _tmp93 + _tmp85 * sqrt_info(0, 2) + _tmp87 * sqrt_info(0, 2) +
                         _tmp90 * sqrt_info(0, 0) - _tmp92 * sqrt_info(0, 2);
-  const Scalar _tmp95 = (1.0 / 2.0) * _a[0];
+  const Scalar _tmp95 = (Scalar(1) / Scalar(2)) * _a[0];
   const Scalar _tmp96 = _tmp36 + _tmp39 + _tmp78;
   const Scalar _tmp97 = _tmp19 * _tmp96;
   const Scalar _tmp98 = _tmp19 * (-_tmp29 + _tmp31 + _tmp80);
@@ -154,7 +154,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp104 = -_tmp100 * _tmp49 + _tmp101 * _tmp16 + _tmp102 * _tmp99 +
                          _tmp103 * _tmp13 + _tmp50 * _tmp99 - _tmp54 * _tmp99 - _tmp93 * _tmp99 +
                          _tmp97 * sqrt_info(0, 0) + _tmp98 * sqrt_info(0, 2);
-  const Scalar _tmp105 = (1.0 / 2.0) * _a[1];
+  const Scalar _tmp105 = (Scalar(1) / Scalar(2)) * _a[1];
   const Scalar _tmp106 = _tmp66 + _tmp69 + _tmp89;
   const Scalar _tmp107 = _tmp106 * _tmp46;
   const Scalar _tmp108 = _tmp106 * _tmp82;
@@ -169,7 +169,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp117 = -_tmp106 * _tmp111 - _tmp106 * _tmp93 + _tmp107 * _tmp49 +
                          _tmp108 * _tmp13 + _tmp109 * sqrt_info(0, 2) + _tmp110 * sqrt_info(0, 2) +
                          _tmp113 * _tmp13 - _tmp114 * sqrt_info(0, 2) + _tmp116 * sqrt_info(0, 0);
-  const Scalar _tmp118 = (1.0 / 2.0) * _a[3];
+  const Scalar _tmp118 = (Scalar(1) / Scalar(2)) * _a[3];
   const Scalar _tmp119 = _a[3] * _a_R_b[0];
   const Scalar _tmp120 = _a[1] * _a_R_b[2];
   const Scalar _tmp121 = _a[0] * _a_R_b[3];
@@ -195,7 +195,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp140 = _tmp102 * _tmp131 + _tmp124 * sqrt_info(0, 0) + _tmp13 * _tmp132 +
                          _tmp130 * sqrt_info(0, 2) + _tmp131 * _tmp50 - _tmp131 * _tmp93 +
                          _tmp137 * _tmp16 - _tmp138 * _tmp49 - _tmp139 * sqrt_info(0, 2);
-  const Scalar _tmp141 = (1.0 / 2.0) * _b[0];
+  const Scalar _tmp141 = (Scalar(1) / Scalar(2)) * _b[0];
   const Scalar _tmp142 = _tmp119 + _tmp120 + _tmp121 - _tmp122;
   const Scalar _tmp143 = _tmp131 * _tmp19;
   const Scalar _tmp144 = _tmp125 - _tmp126 + _tmp127 + _tmp128;
@@ -204,16 +204,19 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp147 = _tmp102 * _tmp144 - _tmp111 * _tmp144 + _tmp13 * _tmp145 +
                          _tmp142 * _tmp16 + _tmp143 * sqrt_info(0, 2) + _tmp144 * _tmp50 -
                          _tmp144 * _tmp54 - _tmp144 * _tmp93 + _tmp146 * sqrt_info(0, 0);
-  const Scalar _tmp148 = (1.0 / 2.0) * _b[1];
+  const Scalar _tmp148 = (Scalar(1) / Scalar(2)) * _b[1];
   const Scalar _tmp149 = _tmp133 + _tmp134 - _tmp135 + _tmp136;
   const Scalar _tmp150 = _tmp149 * _tmp82;
   const Scalar _tmp151 = _tmp149 * _tmp84;
   const Scalar _tmp152 = _tmp144 * _tmp19;
-  const Scalar _tmp153 = -1.0 / 2.0 * _tmp111 * _tmp149 + (1.0 / 2.0) * _tmp124 * sqrt_info(0, 2) +
-                         (1.0 / 2.0) * _tmp13 * _tmp150 + (1.0 / 2.0) * _tmp131 * _tmp16 +
-                         (1.0 / 2.0) * _tmp149 * _tmp50 - 1.0 / 2.0 * _tmp149 * _tmp54 -
-                         1.0 / 2.0 * _tmp149 * _tmp93 + (1.0 / 2.0) * _tmp151 * sqrt_info(0, 2) +
-                         (1.0 / 2.0) * _tmp152 * sqrt_info(0, 0);
+  const Scalar _tmp153 =
+      -Scalar(1) / Scalar(2) * _tmp111 * _tmp149 +
+      (Scalar(1) / Scalar(2)) * _tmp124 * sqrt_info(0, 2) +
+      (Scalar(1) / Scalar(2)) * _tmp13 * _tmp150 + (Scalar(1) / Scalar(2)) * _tmp131 * _tmp16 +
+      (Scalar(1) / Scalar(2)) * _tmp149 * _tmp50 - Scalar(1) / Scalar(2) * _tmp149 * _tmp54 -
+      Scalar(1) / Scalar(2) * _tmp149 * _tmp93 +
+      (Scalar(1) / Scalar(2)) * _tmp151 * sqrt_info(0, 2) +
+      (Scalar(1) / Scalar(2)) * _tmp152 * sqrt_info(0, 0);
   const Scalar _tmp154 = _tmp142 * _tmp46;
   const Scalar _tmp155 = _tmp154 * _tmp21;
   const Scalar _tmp156 = _tmp142 * _tmp82;
@@ -222,8 +225,8 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
                          _tmp142 * _tmp50 - _tmp142 * _tmp54 - _tmp142 * _tmp93 +
                          _tmp143 * sqrt_info(0, 0) + _tmp155 * sqrt_info(0, 2) +
                          _tmp157 * sqrt_info(0, 2);
-  const Scalar _tmp159 = (1.0 / 2.0) * _b[3];
-  const Scalar _tmp160 = (1.0 / 2.0) * _b[2];
+  const Scalar _tmp159 = (Scalar(1) / Scalar(2)) * _b[3];
+  const Scalar _tmp160 = (Scalar(1) / Scalar(2)) * _b[2];
   const Scalar _tmp161 = _tmp18 * sqrt_info(1, 1);
   const Scalar _tmp162 = _tmp17 * sqrt_info(1, 0);
   const Scalar _tmp163 = _tmp162 * _tmp46;
@@ -261,11 +264,12 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
                          _tmp145 * _tmp161 + _tmp146 * sqrt_info(1, 0) - _tmp174 * _tmp182 +
                          _tmp180 * _tmp46 - _tmp180 * _tmp52 - _tmp181 * sqrt_info(1, 2);
   const Scalar _tmp184 = _tmp149 * _tmp52;
-  const Scalar _tmp185 = (1.0 / 2.0) * _tmp123 * _tmp24 + (1.0 / 2.0) * _tmp131 * _tmp23 +
-                         (1.0 / 2.0) * _tmp149 * _tmp163 - 1.0 / 2.0 * _tmp149 * _tmp164 -
-                         1.0 / 2.0 * _tmp149 * _tmp169 + (1.0 / 2.0) * _tmp150 * _tmp161 +
-                         (1.0 / 2.0) * _tmp151 * sqrt_info(1, 2) - 1.0 / 2.0 * _tmp174 * _tmp184 +
-                         (1.0 / 2.0) * _tmp179 * _tmp19;
+  const Scalar _tmp185 =
+      (Scalar(1) / Scalar(2)) * _tmp123 * _tmp24 + (Scalar(1) / Scalar(2)) * _tmp131 * _tmp23 +
+      (Scalar(1) / Scalar(2)) * _tmp149 * _tmp163 - Scalar(1) / Scalar(2) * _tmp149 * _tmp164 -
+      Scalar(1) / Scalar(2) * _tmp149 * _tmp169 + (Scalar(1) / Scalar(2)) * _tmp150 * _tmp161 +
+      (Scalar(1) / Scalar(2)) * _tmp151 * sqrt_info(1, 2) -
+      Scalar(1) / Scalar(2) * _tmp174 * _tmp184 + (Scalar(1) / Scalar(2)) * _tmp179 * _tmp19;
   const Scalar _tmp186 = _tmp142 * _tmp52;
   const Scalar _tmp187 = _tmp130 * sqrt_info(1, 1) + _tmp142 * _tmp163 - _tmp142 * _tmp164 -
                          _tmp142 * _tmp169 + _tmp143 * sqrt_info(1, 0) + _tmp149 * _tmp24 +
@@ -297,11 +301,13 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp200 = _tmp137 * _tmp195 + _tmp142 * _tmp26 + _tmp143 * sqrt_info(2, 2) +
                          _tmp144 * _tmp191 + _tmp144 * _tmp193 + _tmp145 * _tmp25 -
                          _tmp181 * sqrt_info(2, 2) - _tmp182 * _tmp188 - _tmp182 * _tmp197;
-  const Scalar _tmp201 = (1.0 / 2.0) * _tmp124 * sqrt_info(2, 2) + (1.0 / 2.0) * _tmp131 * _tmp26 -
-                         1.0 / 2.0 * _tmp149 * _tmp189 + (1.0 / 2.0) * _tmp149 * _tmp191 +
-                         (1.0 / 2.0) * _tmp149 * _tmp192 + (1.0 / 2.0) * _tmp149 * _tmp193 +
-                         (1.0 / 2.0) * _tmp152 * sqrt_info(2, 0) - 1.0 / 2.0 * _tmp184 * _tmp188 -
-                         1.0 / 2.0 * _tmp184 * _tmp197;
+  const Scalar _tmp201 =
+      (Scalar(1) / Scalar(2)) * _tmp124 * sqrt_info(2, 2) +
+      (Scalar(1) / Scalar(2)) * _tmp131 * _tmp26 - Scalar(1) / Scalar(2) * _tmp149 * _tmp189 +
+      (Scalar(1) / Scalar(2)) * _tmp149 * _tmp191 + (Scalar(1) / Scalar(2)) * _tmp149 * _tmp192 +
+      (Scalar(1) / Scalar(2)) * _tmp149 * _tmp193 +
+      (Scalar(1) / Scalar(2)) * _tmp152 * sqrt_info(2, 0) -
+      Scalar(1) / Scalar(2) * _tmp184 * _tmp188 - Scalar(1) / Scalar(2) * _tmp184 * _tmp197;
   const Scalar _tmp202 = _tmp129 * _tmp25 - _tmp142 * _tmp189 + _tmp142 * _tmp192 +
                          _tmp143 * sqrt_info(2, 0) + _tmp154 * _tmp188 + _tmp155 * sqrt_info(2, 2) +
                          _tmp157 * sqrt_info(2, 2) - _tmp186 * _tmp188 - _tmp186 * _tmp197;

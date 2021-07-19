@@ -69,11 +69,12 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
   const Scalar _tmp27 = _tmp26 * sqrt_info(0, 2);
   const Scalar _tmp28 = _prior[2] * _tmp12;
   const Scalar _tmp29 = _prior[1] * _tmp12;
-  const Scalar _tmp30 = -1.0 / 2.0 * _prior[0] * _tmp13 + (1.0 / 2.0) * _tmp20 * _tmp23 -
-                        1.0 / 2.0 * _tmp20 * _tmp25 + (1.0 / 2.0) * _tmp23 * _tmp27 +
-                        (1.0 / 2.0) * _tmp23 * _tmp4 - 1.0 / 2.0 * _tmp25 * _tmp27 -
-                        1.0 / 2.0 * _tmp25 * _tmp4 - 1.0 / 2.0 * _tmp28 * sqrt_info(0, 2) -
-                        1.0 / 2.0 * _tmp29 * sqrt_info(0, 1);
+  const Scalar _tmp30 =
+      -Scalar(1) / Scalar(2) * _prior[0] * _tmp13 + (Scalar(1) / Scalar(2)) * _tmp20 * _tmp23 -
+      Scalar(1) / Scalar(2) * _tmp20 * _tmp25 + (Scalar(1) / Scalar(2)) * _tmp23 * _tmp27 +
+      (Scalar(1) / Scalar(2)) * _tmp23 * _tmp4 - Scalar(1) / Scalar(2) * _tmp25 * _tmp27 -
+      Scalar(1) / Scalar(2) * _tmp25 * _tmp4 - Scalar(1) / Scalar(2) * _tmp28 * sqrt_info(0, 2) -
+      Scalar(1) / Scalar(2) * _tmp29 * sqrt_info(0, 1);
   const Scalar _tmp31 = _prior[1] * _tmp22;
   const Scalar _tmp32 = _tmp24 * _tmp27;
   const Scalar _tmp33 = _prior[1] * _tmp24;
@@ -82,61 +83,63 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
   const Scalar _tmp36 = -_prior[1] * _tmp32 + _tmp20 * _tmp31 - _tmp20 * _tmp33 + _tmp27 * _tmp31 +
                         _tmp28 * sqrt_info(0, 0) + _tmp31 * _tmp4 - _tmp33 * _tmp4 +
                         _tmp34 * sqrt_info(0, 1) - _tmp35 * sqrt_info(0, 2);
-  const Scalar _tmp37 = (1.0 / 2.0) * _tmp36;
+  const Scalar _tmp37 = (Scalar(1) / Scalar(2)) * _tmp36;
   const Scalar _tmp38 = _prior[2] * _tmp22;
   const Scalar _tmp39 = _prior[2] * _tmp24;
   const Scalar _tmp40 = _tmp20 * _tmp38 - _tmp20 * _tmp39 + _tmp27 * _tmp38 - _tmp27 * _tmp39 -
                         _tmp29 * sqrt_info(0, 0) + _tmp34 * sqrt_info(0, 2) +
                         _tmp35 * sqrt_info(0, 1) + _tmp38 * _tmp4 - _tmp39 * _tmp4;
-  const Scalar _tmp41 = (1.0 / 2.0) * _tmp40;
+  const Scalar _tmp41 = (Scalar(1) / Scalar(2)) * _tmp40;
   const Scalar _tmp42 = _prior[0] * _tmp22;
   const Scalar _tmp43 = _prior[0] * _tmp24;
   const Scalar _tmp44 = -_prior[0] * _tmp32 + _tmp20 * _tmp42 - _tmp20 * _tmp43 + _tmp27 * _tmp42 -
                         _tmp28 * sqrt_info(0, 1) + _tmp29 * sqrt_info(0, 2) +
                         _tmp34 * sqrt_info(0, 0) + _tmp4 * _tmp42 - _tmp4 * _tmp43;
-  const Scalar _tmp45 = (1.0 / 2.0) * _tmp44;
-  const Scalar _tmp46 = (1.0 / 2.0) * _value[0];
-  const Scalar _tmp47 = (1.0 / 2.0) * _value[2];
+  const Scalar _tmp45 = (Scalar(1) / Scalar(2)) * _tmp44;
+  const Scalar _tmp46 = (Scalar(1) / Scalar(2)) * _value[0];
+  const Scalar _tmp47 = (Scalar(1) / Scalar(2)) * _value[2];
   const Scalar _tmp48 = _tmp19 * sqrt_info(1, 0);
   const Scalar _tmp49 = _tmp26 * sqrt_info(1, 2);
   const Scalar _tmp50 = _tmp3 * sqrt_info(1, 1);
-  const Scalar _tmp51 = -1.0 / 2.0 * _prior[0] * _tmp17 + (1.0 / 2.0) * _tmp23 * _tmp48 +
-                        (1.0 / 2.0) * _tmp23 * _tmp49 + (1.0 / 2.0) * _tmp23 * _tmp50 -
-                        1.0 / 2.0 * _tmp25 * _tmp48 - 1.0 / 2.0 * _tmp25 * _tmp49 -
-                        1.0 / 2.0 * _tmp25 * _tmp50 - 1.0 / 2.0 * _tmp28 * sqrt_info(1, 2) -
-                        1.0 / 2.0 * _tmp29 * sqrt_info(1, 1);
+  const Scalar _tmp51 =
+      -Scalar(1) / Scalar(2) * _prior[0] * _tmp17 + (Scalar(1) / Scalar(2)) * _tmp23 * _tmp48 +
+      (Scalar(1) / Scalar(2)) * _tmp23 * _tmp49 + (Scalar(1) / Scalar(2)) * _tmp23 * _tmp50 -
+      Scalar(1) / Scalar(2) * _tmp25 * _tmp48 - Scalar(1) / Scalar(2) * _tmp25 * _tmp49 -
+      Scalar(1) / Scalar(2) * _tmp25 * _tmp50 - Scalar(1) / Scalar(2) * _tmp28 * sqrt_info(1, 2) -
+      Scalar(1) / Scalar(2) * _tmp29 * sqrt_info(1, 1);
   const Scalar _tmp52 = _tmp28 * sqrt_info(1, 0) + _tmp31 * _tmp48 + _tmp31 * _tmp49 +
                         _tmp31 * _tmp50 - _tmp33 * _tmp48 - _tmp33 * _tmp49 - _tmp33 * _tmp50 +
                         _tmp34 * sqrt_info(1, 1) - _tmp35 * sqrt_info(1, 2);
-  const Scalar _tmp53 = (1.0 / 2.0) * _tmp52;
+  const Scalar _tmp53 = (Scalar(1) / Scalar(2)) * _tmp52;
   const Scalar _tmp54 = -_tmp28 * sqrt_info(1, 1) + _tmp29 * sqrt_info(1, 2) +
                         _tmp34 * sqrt_info(1, 0) + _tmp42 * _tmp48 + _tmp42 * _tmp49 +
                         _tmp42 * _tmp50 - _tmp43 * _tmp48 - _tmp43 * _tmp49 - _tmp43 * _tmp50;
-  const Scalar _tmp55 = (1.0 / 2.0) * _tmp54;
+  const Scalar _tmp55 = (Scalar(1) / Scalar(2)) * _tmp54;
   const Scalar _tmp56 = -_tmp29 * sqrt_info(1, 0) + _tmp34 * sqrt_info(1, 2) +
                         _tmp35 * sqrt_info(1, 1) + _tmp38 * _tmp48 + _tmp38 * _tmp49 +
                         _tmp38 * _tmp50 - _tmp39 * _tmp48 - _tmp39 * _tmp49 - _tmp39 * _tmp50;
-  const Scalar _tmp57 = (1.0 / 2.0) * _tmp56;
+  const Scalar _tmp57 = (Scalar(1) / Scalar(2)) * _tmp56;
   const Scalar _tmp58 = _tmp19 * sqrt_info(2, 0);
   const Scalar _tmp59 = _tmp26 * sqrt_info(2, 2);
   const Scalar _tmp60 = _tmp3 * sqrt_info(2, 1);
   const Scalar _tmp61 = -_tmp28 * sqrt_info(2, 1) + _tmp29 * sqrt_info(2, 2) +
                         _tmp34 * sqrt_info(2, 0) + _tmp42 * _tmp58 + _tmp42 * _tmp59 +
                         _tmp42 * _tmp60 - _tmp43 * _tmp58 - _tmp43 * _tmp59 - _tmp43 * _tmp60;
-  const Scalar _tmp62 = (1.0 / 2.0) * _tmp61;
+  const Scalar _tmp62 = (Scalar(1) / Scalar(2)) * _tmp61;
   const Scalar _tmp63 = -_tmp29 * sqrt_info(2, 0) + _tmp34 * sqrt_info(2, 2) +
                         _tmp35 * sqrt_info(2, 1) + _tmp38 * _tmp58 + _tmp38 * _tmp59 +
                         _tmp38 * _tmp60 - _tmp39 * _tmp58 - _tmp39 * _tmp59 - _tmp39 * _tmp60;
-  const Scalar _tmp64 = (1.0 / 2.0) * _tmp63;
-  const Scalar _tmp65 = (1.0 / 2.0) * _prior[2] * _tmp18 + (1.0 / 2.0) * _tmp31 * _tmp58 +
-                        (1.0 / 2.0) * _tmp31 * _tmp59 + (1.0 / 2.0) * _tmp31 * _tmp60 -
-                        1.0 / 2.0 * _tmp33 * _tmp58 - 1.0 / 2.0 * _tmp33 * _tmp59 -
-                        1.0 / 2.0 * _tmp33 * _tmp60 + (1.0 / 2.0) * _tmp34 * sqrt_info(2, 1) -
-                        1.0 / 2.0 * _tmp35 * sqrt_info(2, 2);
+  const Scalar _tmp64 = (Scalar(1) / Scalar(2)) * _tmp63;
+  const Scalar _tmp65 =
+      (Scalar(1) / Scalar(2)) * _prior[2] * _tmp18 + (Scalar(1) / Scalar(2)) * _tmp31 * _tmp58 +
+      (Scalar(1) / Scalar(2)) * _tmp31 * _tmp59 + (Scalar(1) / Scalar(2)) * _tmp31 * _tmp60 -
+      Scalar(1) / Scalar(2) * _tmp33 * _tmp58 - Scalar(1) / Scalar(2) * _tmp33 * _tmp59 -
+      Scalar(1) / Scalar(2) * _tmp33 * _tmp60 + (Scalar(1) / Scalar(2)) * _tmp34 * sqrt_info(2, 1) -
+      Scalar(1) / Scalar(2) * _tmp35 * sqrt_info(2, 2);
   const Scalar _tmp66 = -_prior[0] * _tmp18 + _tmp23 * _tmp58 + _tmp23 * _tmp59 + _tmp23 * _tmp60 -
                         _tmp25 * _tmp58 - _tmp25 * _tmp59 - _tmp25 * _tmp60 -
                         _tmp28 * sqrt_info(2, 2) - _tmp29 * sqrt_info(2, 1);
-  const Scalar _tmp67 = (1.0 / 2.0) * _tmp66;
+  const Scalar _tmp67 = (Scalar(1) / Scalar(2)) * _tmp66;
 
   // Output terms (2)
   if (res != nullptr) {

@@ -50,23 +50,24 @@ Eigen::Matrix<Scalar, 6, 6> ComposePose3_Jacobian1(const sym::Pose3<Scalar>& a,
   const Scalar _tmp23 = -_tmp19 - _tmp20 + _tmp21 - _tmp22;
   const Scalar _tmp24 = _a[3] * _tmp23 + _tmp18;
   const Scalar _tmp25 = _a[1] * _tmp8 + _tmp14 + _tmp24;
-  const Scalar _tmp26 = (1.0 / 2.0) * _b[0];
+  const Scalar _tmp26 = (Scalar(1) / Scalar(2)) * _b[0];
   const Scalar _tmp27 = _a[2] * _tmp23;
   const Scalar _tmp28 = _a[1] * _tmp17;
   const Scalar _tmp29 = _a[3] * _tmp13 + _tmp28;
   const Scalar _tmp30 = -_a[0] * _tmp8 - _tmp27 + _tmp29;
-  const Scalar _tmp31 = (1.0 / 2.0) * _b[1];
+  const Scalar _tmp31 = (Scalar(1) / Scalar(2)) * _b[1];
   const Scalar _tmp32 = _a[0] * _tmp13;
   const Scalar _tmp33 = _a[1] * _tmp23;
   const Scalar _tmp34 = _a[2] * _tmp17;
-  const Scalar _tmp35 =
-      (1.0 / 2.0) * _a[3] * _tmp8 + (1.0 / 2.0) * _tmp32 - 1.0 / 2.0 * _tmp33 - 1.0 / 2.0 * _tmp34;
+  const Scalar _tmp35 = (Scalar(1) / Scalar(2)) * _a[3] * _tmp8 + (Scalar(1) / Scalar(2)) * _tmp32 -
+                        Scalar(1) / Scalar(2) * _tmp33 - Scalar(1) / Scalar(2) * _tmp34;
   const Scalar _tmp36 = -_a[0] * _tmp23;
   const Scalar _tmp37 = _a[3] * _tmp17;
   const Scalar _tmp38 = -_a[1] * _tmp13 + _tmp37;
-  const Scalar _tmp39 = (1.0 / 2.0) * _a[2] * _tmp8 + (1.0 / 2.0) * _tmp36 + (1.0 / 2.0) * _tmp38;
-  const Scalar _tmp40 = (1.0 / 2.0) * _b[2];
-  const Scalar _tmp41 = (1.0 / 2.0) * _b[3];
+  const Scalar _tmp39 = (Scalar(1) / Scalar(2)) * _a[2] * _tmp8 + (Scalar(1) / Scalar(2)) * _tmp36 +
+                        (Scalar(1) / Scalar(2)) * _tmp38;
+  const Scalar _tmp40 = (Scalar(1) / Scalar(2)) * _b[2];
+  const Scalar _tmp41 = (Scalar(1) / Scalar(2)) * _b[3];
   const Scalar _tmp42 = -_tmp1 + _tmp3 - _tmp5 - _tmp7;
   const Scalar _tmp43 = _a[0] * _tmp42;
   const Scalar _tmp44 = _tmp19 + _tmp20 - _tmp21 + _tmp22;
