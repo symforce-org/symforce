@@ -4,7 +4,7 @@
 // Instead modify:
 //     symforce/codegen/cpp_templates/example/geo_package_cpp_test.cc.jinja
 //
-// And then run `symforce_geo_codegen_test --update`.
+// And then run `symforce_gen_codegen_test --update`.
 // -----------------------------------------------------------------------------
 /**
  * Tests for C++ geometry types. Mostly checking all the templates compile since
@@ -117,6 +117,11 @@ TEST_CASE("Test Rot2 and Pose2", "[geo_package]") {
   // Test InverseCompose
   const Eigen::Vector2f point = sym::Random<Eigen::Vector2f>(gen);
   CHECK(pose.InverseCompose(point).isApprox(pose.Inverse() * point, 1e-6));
+
+  // Test FromAngle and angle constructor
+  const float angle = rot.ToTangent()(0);
+  CHECK(rot.IsApprox(sym::Rot2f(angle), 1e-6));
+  CHECK(rot.IsApprox(sym::Rot2f::FromAngle(angle), 1e-6));
 }
 
 TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,

@@ -69,6 +69,15 @@ class Rot2 {
     return RandomFromUniformSamples(dist(gen));
   }
 
+  // Construct Rot2 representing rotation by angle
+  explicit Rot2(const Scalar angle, const Scalar epsilon = 1e-8f)
+      : Rot2(FromTangent(Eigen::Matrix<Scalar, 1, 1>(angle), epsilon)) {}
+
+  // Construct Rot2 representing rotation by angle
+  static Self FromAngle(const Scalar angle, const Scalar epsilon = 1e-8f) {
+    return Rot2(angle, epsilon);
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
