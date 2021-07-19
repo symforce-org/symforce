@@ -126,7 +126,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
         ).create_with_derivatives(
             name=f"BetweenFactor{cls.__name__}",
             which_args=[0, 1],
-            derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
+            derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
         )
         files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
 
@@ -139,7 +139,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
         ).create_with_derivatives(
             name=f"PriorFactor{cls.__name__}",
             which_args=[0],
-            derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
+            derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
         )
         files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
 
@@ -150,8 +150,9 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     """
     Generates factors specific to Poses which penalize individual components
 
-    This includes factors for only the position or rotation components of a Pose.  This can't be done by
-    wrapping the other generated functions because we need jacobians with respect to the full pose.
+    This includes factors for only the position or rotation components of a Pose.  This can't be
+    done by wrapping the other generated functions because we need jacobians with respect to the
+    full pose.
     """
 
     def between_factor_pose3_rotation(
@@ -201,7 +202,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     ).create_with_derivatives(
         name=f"BetweenFactor{geo.Pose3.__name__}Rotation",
         which_args=[0, 1],
-        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
+        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
     )
 
     between_position_codegen = Codegen.function(
@@ -212,7 +213,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     ).create_with_derivatives(
         name=f"BetweenFactor{geo.Pose3.__name__}Position",
         which_args=[0, 1],
-        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
+        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
     )
 
     prior_rotation_codegen = Codegen.function(
@@ -223,7 +224,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     ).create_with_derivatives(
         name=f"PriorFactor{geo.Pose3.__name__}Rotation",
         which_args=[0],
-        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
+        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
     )
 
     prior_position_codegen = Codegen.function(
@@ -234,7 +235,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     ).create_with_derivatives(
         name=f"PriorFactor{geo.Pose3.__name__}Position",
         which_args=[0],
-        derivative_generation_mode=DerivativeMode.STACKED_JACOBIAN,
+        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
     )
 
     files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
