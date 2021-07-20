@@ -5,7 +5,7 @@ from symforce import ops
 from symforce import python_util
 from symforce import types as T
 from symforce import sympy as sm
-from symforce.codegen import CodegenMode
+from symforce.codegen import CppConfig
 from symforce.codegen import Codegen
 from symforce.codegen import DerivativeMode
 from symforce.values import Values
@@ -121,7 +121,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             func=between_factor,
             input_types=[cls, cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
             output_names=["res"],
-            mode=CodegenMode.CPP,
+            config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
         ).create_with_derivatives(
             name=f"BetweenFactor{cls.__name__}",
@@ -134,7 +134,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             func=prior_factor,
             input_types=[cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
             output_names=["res"],
-            mode=CodegenMode.CPP,
+            config=CppConfig(),
             docstring=get_prior_docstring(),
         ).create_with_derivatives(
             name=f"PriorFactor{cls.__name__}",
@@ -197,7 +197,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     between_rotation_codegen = Codegen.function(
         func=between_factor_pose3_rotation,
         output_names=["res"],
-        mode=CodegenMode.CPP,
+        config=CppConfig(),
         docstring=get_between_factor_docstring("a_R_b"),
     ).create_with_derivatives(
         name=f"BetweenFactor{geo.Pose3.__name__}Rotation",
@@ -208,7 +208,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     between_position_codegen = Codegen.function(
         func=between_factor_pose3_position,
         output_names=["res"],
-        mode=CodegenMode.CPP,
+        config=CppConfig(),
         docstring=get_between_factor_docstring("a_t_b"),
     ).create_with_derivatives(
         name=f"BetweenFactor{geo.Pose3.__name__}Position",
@@ -219,7 +219,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     prior_rotation_codegen = Codegen.function(
         func=prior_factor_pose3_rotation,
         output_names=["res"],
-        mode=CodegenMode.CPP,
+        config=CppConfig(),
         docstring=get_prior_docstring(),
     ).create_with_derivatives(
         name=f"PriorFactor{geo.Pose3.__name__}Rotation",
@@ -230,7 +230,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     prior_position_codegen = Codegen.function(
         func=prior_factor_pose3_position,
         output_names=["res"],
-        mode=CodegenMode.CPP,
+        config=CppConfig(),
         docstring=get_prior_docstring(),
     ).create_with_derivatives(
         name=f"PriorFactor{geo.Pose3.__name__}Position",

@@ -142,7 +142,7 @@ def generate(output_dir: str) -> None:
     factors_dir = os.path.join(output_dir, "factors")
 
     codegen.Codegen.function(
-        func=inverse_range_landmark_prior_residual, mode=codegen.CodegenMode.CPP
+        func=inverse_range_landmark_prior_residual, config=codegen.CppConfig()
     ).create_with_derivatives(
         which_args=[0],
         name="InverseRangeLandmarkPriorFactor",
@@ -152,7 +152,7 @@ def generate(output_dir: str) -> None:
     )
 
     codegen.Codegen.function(
-        func=inverse_range_landmark_reprojection_residual, mode=codegen.CodegenMode.CPP
+        func=inverse_range_landmark_reprojection_residual, config=codegen.CppConfig()
     ).create_with_derivatives(
         which_args=[0, 2, 4],
         name="InverseRangeLandmarkReprojectionErrorFactor",

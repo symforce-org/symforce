@@ -7,7 +7,6 @@ from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import types_package_codegen
-from symforce.codegen import CodegenMode
 from symforce.codegen import codegen_util
 from symforce.test_util import TestCase
 from symforce.values import Values

@@ -15,7 +15,7 @@ def generate(output_dir: str) -> None:
     namespace = "custom_factor_generation"
 
     codegen.Codegen.function(
-        func=custom_between_factor_residual, mode=codegen.CodegenMode.CPP
+        func=custom_between_factor_residual, config=codegen.CppConfig()
     ).create_with_derivatives(
         which_args=[0, 1],
         name="CustomBetweenFactor",

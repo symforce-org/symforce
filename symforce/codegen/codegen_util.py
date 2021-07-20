@@ -15,6 +15,7 @@ from symforce.values import Values, IndexEntry
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import printers, format_util
+from symforce.codegen import codegen_config
 from symforce import python_util
 
 # Command used to generate language-specific types from .lcm files
@@ -49,24 +50,11 @@ class PrintCodeResult(T.NamedTuple):
     total_ops: int
 
 
-class CodegenMode(Enum):
-    """
-    Code generation language / style.
-    """
-
-    # Python 2 with numpy
-    PYTHON2 = "python2"
-    # Python 3 with numpy
-    PYTHON3 = "python3"
-    # C++11 standard
-    CPP = "cpp"
-
-
 def print_code(
     inputs: Values,
     outputs: Values,
     sparse_mat_data: T.Dict[str, T.Dict[str, T.Any]],
-    mode: CodegenMode,
+    config: codegen_config.CodegenConfig,
     cse: bool = True,
     substitute_inputs: bool = False,
 ) -> PrintCodeResult:
@@ -77,10 +65,9 @@ def print_code(
         inputs: Values object specifying names and symbolic inputs
         outputs: Values object specifying names and output expressions (written in terms
             of the symbolic inputs)
-        sparse_mat_data: Data used to represent sparse matrices
-        mode: Programming language in which to generate the expressions
         sparse_mat_data: Data associated with sparse matrices. sparse_mat_data["keys"] stores
             a list of the keys in outputs which should be treated as sparse matrices
+        config: Programming language and configuration in which the expressions are to be generated
         cse: Perform common sub-expression elimination
         substitute_inputs: If True, replace all input symbols with a uniform array.
 
@@ -129,11 +116,11 @@ def print_code(
         sparse_outputs=sparse_outputs,
         intermediate_terms=temps,
         output_terms=simplified_outputs,
-        mode=mode,
+        config=config,
     )
 
     # Get printer
-    printer = get_code_printer(mode)
+    printer = get_code_printer(config)
 
     # Print code
     temps_code = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
@@ -239,30 +226,30 @@ def format_symbols(
     sparse_outputs: Values,
     intermediate_terms: T_terms,
     output_terms: DenseAndSparseOutputTerms,
-    mode: CodegenMode,
+    config: codegen_config.CodegenConfig,
 ) -> T.Tuple[T_terms, T_nested_terms, T_nested_terms]:
     """
-    Reformats symbolic variables used in intermediate and outputs terms to match structure of inputs/outputs.
-    For example if we have an input array "arr" with symbolic elements [arr0, arr1], we will remap symbol "arr0" to
-    "arr[0]" and symbol "arr1" to "arr[1]".
+    Reformats symbolic variables used in intermediate and outputs terms to match structure of
+    inputs/outputs. For example if we have an input array "arr" with symbolic elements [arr0, arr1],
+    we will remap symbol "arr0" to "arr[0]" and symbol "arr1" to "arr[1]".
     """
     # Rename the symbolic inputs so that they match the code we generate
 
     symbolic_args = list(
-        itertools.chain.from_iterable(get_formatted_list(inputs, mode, format_as_inputs=True))
+        itertools.chain.from_iterable(get_formatted_list(inputs, config, format_as_inputs=True))
     )
     input_subs = dict(zip(inputs.to_storage(), symbolic_args))
     intermediate_terms_formatted = [
         (lhs, ops.StorageOps.subs(rhs, input_subs)) for lhs, rhs in intermediate_terms
     ]
 
-    dense_output_lhs_formatted = get_formatted_list(dense_outputs, mode, format_as_inputs=False)
+    dense_output_lhs_formatted = get_formatted_list(dense_outputs, config, format_as_inputs=False)
     dense_output_terms_formatted = [
         list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
         for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
     ]
 
-    sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs, mode)
+    sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs, config)
     sparse_output_terms_formatted = [
         list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
         for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
@@ -272,7 +259,7 @@ def format_symbols(
 
 
 def get_formatted_list(
-    values: Values, mode: CodegenMode, format_as_inputs: bool
+    values: Values, config: codegen_config.CodegenConfig, format_as_inputs: bool
 ) -> T.List[T.List[T.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions.
@@ -280,8 +267,10 @@ def get_formatted_list(
     Args:
         values: Values object mapping keys to different objects. Here we only
                 use the object types, not their actual values.
-        mode: Target language to use when language-specific formatting is required.
-        format_as_inputs: True if values defines the input symbols, false if values defines output expressions.
+        config: Programming language and configuration for when language-specific formatting is
+                required
+        format_as_inputs: True if values defines the input symbols, false if values defines output
+                          expressions.
     """
     symbolic_args = []
     for key, value in values.items():
@@ -294,10 +283,10 @@ def get_formatted_list(
         if isinstance(value, (sm.Expr, sm.Symbol)):
             symbols = [sm.Symbol(key)]
         elif issubclass(arg_cls, geo.Matrix):
-            if mode == CodegenMode.PYTHON2:
+            if isinstance(config, codegen_config.PythonConfig):
                 # TODO(nathan): Not sure this works for 2D matrices
                 symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
-            elif mode == CodegenMode.CPP:
+            elif isinstance(config, codegen_config.CppConfig):
                 symbols = []
                 for i in range(value.shape[0]):
                     for j in range(value.shape[1]):
@@ -313,7 +302,7 @@ def get_formatted_list(
                 # Elements of a Values object are accessed with the "." operator
                 symbols.extend(
                     _get_scalar_keys_recursive(
-                        index_value, prefix=f"{key}.{name}", mode=mode, use_data=False
+                        index_value, prefix=f"{key}.{name}", config=config, use_data=False
                     )
                 )
 
@@ -331,7 +320,10 @@ def get_formatted_list(
                 # Elements of a list are accessed with the "[]" operator.
                 symbols.extend(
                     _get_scalar_keys_recursive(
-                        sub_index_val, prefix=f"{key}[{i}]", mode=mode, use_data=format_as_inputs,
+                        sub_index_val,
+                        prefix=f"{key}[{i}]",
+                        config=config,
+                        use_data=format_as_inputs,
                     )
                 )
 
@@ -354,7 +346,7 @@ def get_formatted_list(
 
 
 def _get_scalar_keys_recursive(
-    index_value: IndexEntry, prefix: str, mode: CodegenMode, use_data: bool
+    index_value: IndexEntry, prefix: str, config: codegen_config.CodegenConfig, use_data: bool
 ) -> T.List[str]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
@@ -363,7 +355,8 @@ def _get_scalar_keys_recursive(
         index_value: Entry in a given index consisting of (inx, datatype, shape, item_index)
             See Values.index() for details on how this entry is built.
         prefix: Symbol used to access parent object, e.g. "my_values.item" or "my_list[i]"
-        mode: Target language to use when language-specific formatting is required.
+        config: Programming language and configuration for when language-specific formatting is
+                required
         use_data: If true, we assume we can have a list of geo/cam objects whose data can be
             accessed with ".data" or ".Data()". Otherwise, assume geo/cam objects are represented
             by a vector of scalars (e.g. as they are in lcm types).
@@ -379,7 +372,7 @@ def _get_scalar_keys_recursive(
         for name, sub_index_val in index_value.item_index.items():
             vec.extend(
                 _get_scalar_keys_recursive(
-                    sub_index_val, prefix=f"{prefix}.{name}", mode=mode, use_data=False
+                    sub_index_val, prefix=f"{prefix}.{name}", config=config, use_data=False
                 )
             )
     elif issubclass(datatype, (list, tuple)):
@@ -389,7 +382,7 @@ def _get_scalar_keys_recursive(
         for i, sub_index_val in enumerate(index_value.item_index.values()):
             vec.extend(
                 _get_scalar_keys_recursive(
-                    sub_index_val, prefix=f"{prefix}[{i}]", mode=mode, use_data=use_data
+                    sub_index_val, prefix=f"{prefix}[{i}]", config=config, use_data=use_data
                 )
             )
     elif issubclass(datatype, geo.Matrix) or not use_data:
@@ -397,9 +390,9 @@ def _get_scalar_keys_recursive(
         vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
-        if mode == CodegenMode.PYTHON2:
+        if isinstance(config, codegen_config.PythonConfig):
             vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
-        elif mode == CodegenMode.CPP:
+        elif isinstance(config, codegen_config.CppConfig):
             vec.extend(sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(index_value.storage_dim))
         else:
             raise NotImplementedError()
@@ -443,7 +436,7 @@ def get_sparse_mat_data(sparse_matrix: geo.Matrix) -> T.Dict[str, T.Any]:
 
 
 def get_formatted_sparse_list(
-    sparse_outputs: Values, mode: CodegenMode
+    sparse_outputs: Values, config: codegen_config.CodegenConfig
 ) -> T.List[T.List[T.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions for sparse matrices.
@@ -458,24 +451,24 @@ def get_formatted_sparse_list(
     return symbolic_args
 
 
-def get_code_printer(mode: CodegenMode) -> "sm.CodePrinter":
+def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
     """
     Pick a code printer for the given mode.
     """
     # TODO(hayk): Consider symengine printer if this becomes slow.
 
-    if mode in (CodegenMode.PYTHON2, CodegenMode.PYTHON3):
+    if isinstance(config, codegen_config.PythonConfig):
         # Support specifying python2 for different versions of sympy in different ways
         settings = dict()
         if "standard" in printers.PythonCodePrinter._default_settings:
-            settings["standard"] = mode.value
+            settings["standard"] = config.standard.value
 
         printer = printers.PythonCodePrinter(settings=settings)
 
         if hasattr(printer, "standard"):
-            printer.standard = mode.value
+            printer.standard = config.standard.value
 
-    elif mode == CodegenMode.CPP:
+    elif isinstance(config, codegen_config.CppConfig):
         from sympy.codegen import ast
 
         printer = printers.CppCodePrinter(
@@ -485,7 +478,7 @@ def get_code_printer(mode: CodegenMode) -> "sm.CodePrinter":
             )
         )
     else:
-        raise NotImplementedError(f"Unknown codegen mode: {mode}")
+        raise NotImplementedError(f"Unknown config type: {config}")
 
     return printer
 

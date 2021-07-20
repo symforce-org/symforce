@@ -88,7 +88,7 @@ class FixedBundleAdjustmentProblem:
             name="Linearization",
             inputs=inputs,
             outputs=outputs,
-            mode=codegen.CodegenMode.CPP,
+            config=codegen.CppConfig(),
             # TODO(aaron): We're generating a single Factor, which currently requires dense matrices
             # sparse_matrices=["J", "H"],
             docstring=textwrap.dedent(

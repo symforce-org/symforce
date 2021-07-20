@@ -42,10 +42,7 @@ class SymGncCodegenTest(TestCase):
         try:
             # Compute code
             codegen.Codegen.function(
-                name="ThisNameIsUnused",
-                func=barron_factor,
-                input_types=[geo.Matrix51, geo.Matrix51, T.Scalar, T.Scalar],
-                mode=codegen.CodegenMode.CPP,
+                func=barron_factor, config=codegen.CppConfig()
             ).create_with_derivatives(
                 which_args=[0],
                 name="BarronResidual",

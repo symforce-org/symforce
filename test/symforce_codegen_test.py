@@ -14,11 +14,9 @@ from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.codegen import CodegenMode
-from symforce.codegen import Codegen
+from symforce import codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
-from symforce.codegen.codegen_language_args import PythonLanguageArgs
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.values import Values
 
@@ -128,10 +126,10 @@ class SymforceCodegenTest(TestCase):
         inputs, outputs = self.build_values()
 
         for scalar_type in ("double", "float"):
-            python_func = Codegen(
+            python_func = codegen.Codegen(
                 inputs=inputs,
                 outputs=outputs,
-                mode=CodegenMode.PYTHON2,
+                config=codegen.PythonConfig(),
                 name="python_function",
                 scalar_type=scalar_type,
             )
@@ -152,7 +150,7 @@ class SymforceCodegenTest(TestCase):
                 )
 
             geo_package_codegen.generate(
-                mode=CodegenMode.PYTHON2, output_dir=codegen_data["output_dir"]
+                config=codegen.PythonConfig(), output_dir=codegen_data["output_dir"]
             )
 
             geo_pkg = codegen_util.load_generated_package(
@@ -210,8 +208,8 @@ class SymforceCodegenTest(TestCase):
     def test_function_codegen_python(self) -> None:
 
         # Create the specification
-        az_el_codegen = Codegen.function(
-            name="az_el_from_point", func=az_el_from_point, mode=CodegenMode.PYTHON2,
+        az_el_codegen = codegen.Codegen.function(
+            name="az_el_from_point", func=az_el_from_point, config=codegen.PythonConfig(),
         )
         az_el_codegen_data = az_el_codegen.generate_function()
 
@@ -232,11 +230,10 @@ class SymforceCodegenTest(TestCase):
         def numba_test_func(x: geo.V3) -> geo.V2:
             return geo.V2(x[0, 0], x[1, 0])
 
-        numba_test_func_codegen = Codegen.function(
+        numba_test_func_codegen = codegen.Codegen.function(
             name="numba_test_func",
             func=numba_test_func,
-            mode=CodegenMode.PYTHON2,
-            language_args=PythonLanguageArgs(use_numba=True),
+            config=codegen.PythonConfig(use_numba=True),
         )
         numba_test_func_codegen_data = numba_test_func_codegen.generate_function()
 
@@ -272,8 +269,8 @@ class SymforceCodegenTest(TestCase):
         inputs, outputs = self.build_values()
 
         for scalar_type in ("double", "float"):
-            cpp_func = Codegen(
-                inputs, outputs, CodegenMode.CPP, "CodegenCppTest", scalar_type=scalar_type
+            cpp_func = codegen.Codegen(
+                inputs, outputs, codegen.CppConfig(), "CodegenCppTest", scalar_type=scalar_type
             )
             shared_types = {
                 "values_vec": "values_vec_t",
@@ -318,8 +315,8 @@ class SymforceCodegenTest(TestCase):
     def test_function_codegen_cpp(self) -> None:
 
         # Create the specification
-        az_el_codegen = Codegen.function(
-            name="AzElFromPoint", func=az_el_from_point, mode=CodegenMode.CPP,
+        az_el_codegen = codegen.Codegen.function(
+            name="AzElFromPoint", func=az_el_from_point, config=codegen.CppConfig(),
         )
         az_el_codegen_data = az_el_codegen.generate_function()
 
@@ -342,12 +339,12 @@ class SymforceCodegenTest(TestCase):
         dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
 
         namespace = "codegen_nan_test"
-        cpp_func = Codegen(
+        cpp_func = codegen.Codegen(
             name="IdentityDistJacobian",
             inputs=inputs,
             outputs=Values(dist_D_R1=dist_D_R1),
             return_key="dist_D_R1",
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
             scalar_type="double",
         )
         codegen_data = cpp_func.generate_function(namespace=namespace)
@@ -386,17 +383,17 @@ class SymforceCodegenTest(TestCase):
         outputs_2 = Values()
         outputs_2["foo"] = inputs["y"] ** 3 + inputs["x"]
 
-        cpp_func_1 = Codegen(
+        cpp_func_1 = codegen.Codegen(
             name="CodegenMultiFunctionTest1",
             inputs=Values(inputs=inputs),
             outputs=Values(outputs_1=outputs_1),
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
         )
-        cpp_func_2 = Codegen(
+        cpp_func_2 = codegen.Codegen(
             name="CodegenMultiFunctionTest2",
             inputs=Values(inputs=inputs),
             outputs=Values(outputs_2=outputs_2),
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
         )
 
         namespace = "codegen_multi_function_test"
@@ -467,12 +464,12 @@ class SymforceCodegenTest(TestCase):
         logger.debug(f"Creating temp directory: {output_dir}")
 
         # Function that creates a sparse matrix
-        get_sparse_func = Codegen(
+        get_sparse_func = codegen.Codegen(
             name="GetDiagonalSparse",
             inputs=inputs,
             outputs=outputs,
             return_key="matrix_out",
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
             scalar_type="double",
             sparse_matrices=["matrix_out"],
         )
@@ -487,12 +484,12 @@ class SymforceCodegenTest(TestCase):
         multiple_outputs["sparse_second"] = 4 * outputs["matrix_out"]
         multiple_outputs["result"] = geo.Matrix33().zero()
 
-        get_dense_and_sparse_func = Codegen(
+        get_dense_and_sparse_func = codegen.Codegen(
             name="GetMultipleDenseAndSparse",
             inputs=inputs,
             outputs=multiple_outputs,
             return_key="result",
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
             scalar_type="double",
             sparse_matrices=["sparse_first", "sparse_second"],
         )
@@ -501,11 +498,11 @@ class SymforceCodegenTest(TestCase):
         )
 
         # Function that updates sparse matrix without copying
-        update_spase_func = Codegen(
+        update_spase_func = codegen.Codegen(
             name="UpdateSparseMat",
             inputs=inputs,
             outputs=Values(updated_mat=2 * outputs["matrix_out"]),
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
             scalar_type="double",
             sparse_matrices=["updated_mat"],
         )
@@ -549,36 +546,62 @@ class SymforceCodegenTest(TestCase):
         y = sm.Symbol("y")
         inputs = Values(input=x)
         outputs = Values(output=x + y)
-        self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
+        self.assertRaises(
+            AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
+        )
 
         # Inputs or outputs have keys that aren't valid variable names
         invalid_name_values = Values()
         invalid_name_values["1"] = x
         valid_name_values = Values(x=x)
         self.assertRaises(
-            AssertionError, Codegen, "test", invalid_name_values, valid_name_values, CodegenMode.CPP
+            AssertionError,
+            codegen.Codegen,
+            "test",
+            invalid_name_values,
+            valid_name_values,
+            codegen.CppConfig(),
         )
         self.assertRaises(
-            AssertionError, Codegen, "test", valid_name_values, invalid_name_values, CodegenMode.CPP
+            AssertionError,
+            codegen.Codegen,
+            "test",
+            valid_name_values,
+            invalid_name_values,
+            codegen.CppConfig(),
         )
         name_with_spaces = Values()
         name_with_spaces[" spa ces "] = x
         self.assertRaises(
-            AssertionError, Codegen, "test", name_with_spaces, valid_name_values, CodegenMode.CPP
+            AssertionError,
+            codegen.Codegen,
+            "test",
+            name_with_spaces,
+            valid_name_values,
+            codegen.CppConfig(),
         )
         self.assertRaises(
-            AssertionError, Codegen, "test", valid_name_values, name_with_spaces, CodegenMode.CPP
+            AssertionError,
+            codegen.Codegen,
+            "test",
+            valid_name_values,
+            name_with_spaces,
+            codegen.CppConfig(),
         )
 
         # Inputs have non-unique symbols
         inputs = Values(in_x=x, in_y=x)
         outputs = Values(out_x=x)
-        self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
+        self.assertRaises(
+            AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
+        )
 
         # Inputs and outputs have non-unique keys
         inputs = Values(x=x)
         outputs = Values(x=x)
-        self.assertRaises(AssertionError, Codegen, "test", inputs, outputs, CodegenMode.CPP)
+        self.assertRaises(
+            AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
+        )
 
     def test_name_deduction(self) -> None:
         """
@@ -591,20 +614,22 @@ class SymforceCodegenTest(TestCase):
             return x
 
         self.assertEqual(
-            Codegen.function(func=my_function, mode=CodegenMode.PYTHON2).name, "my_function"
+            codegen.Codegen.function(func=my_function, config=codegen.PythonConfig()).name,
+            "my_function",
         )
 
         self.assertEqual(
-            Codegen.function(func=my_function, mode=CodegenMode.CPP).name, "MyFunction"
+            codegen.Codegen.function(func=my_function, config=codegen.CppConfig()).name,
+            "MyFunction",
         )
 
         # Can't automagically deduce name for lambda
         self.assertRaises(
             AssertionError,
-            Codegen.function,
+            codegen.Codegen.function,
             func=lambda x: x,
             input_types=[T.Scalar],
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
         )
 
     def test_create_with_derivatives(self) -> None:
@@ -618,36 +643,40 @@ class SymforceCodegenTest(TestCase):
 
         # Let's pick Pose3 compose
         cls = geo.Pose3
-        codegen = Codegen.function(
+        codegen_function = codegen.Codegen.function(
             name="Compose" + cls.__name__,
             func=ops.GroupOps.compose,
             input_types=[cls, cls],
-            mode=CodegenMode.CPP,
+            config=codegen.CppConfig(),
         )
 
         codegens = collections.OrderedDict()
 
         # By default should return the value and have jacobians for each input arg
-        codegens["value_and_all_jacs"] = codegen.create_with_derivatives()
+        codegens["value_and_all_jacs"] = codegen_function.create_with_derivatives()
 
         # All jacobians, no value - should return jacobians as output args
-        codegens["all_jacs"] = codegen.create_with_derivatives(include_result=False)
+        codegens["all_jacs"] = codegen_function.create_with_derivatives(include_result=False)
 
         # First jacobian, no value - should return the jacobian
-        codegens["jac_0"] = codegen.create_with_derivatives([0], include_result=False)
+        codegens["jac_0"] = codegen_function.create_with_derivatives([0], include_result=False)
 
         # Second jacobian, no value - should return the jacobian
-        codegens["jac_1"] = codegen.create_with_derivatives([1], include_result=False)
+        codegens["jac_1"] = codegen_function.create_with_derivatives([1], include_result=False)
 
         # Value and first jacobian - should return the value
-        codegens["value_and_jac_0"] = codegen.create_with_derivatives([0], include_result=True)
+        codegens["value_and_jac_0"] = codegen_function.create_with_derivatives(
+            [0], include_result=True
+        )
 
         # Value and second jacobian - should return the value
-        codegens["value_and_jac_1"] = codegen.create_with_derivatives([1], include_result=True)
+        codegens["value_and_jac_1"] = codegen_function.create_with_derivatives(
+            [1], include_result=True
+        )
 
         # Generate all
-        for codegen in codegens.values():
-            codegen.generate_function(output_dir=output_dir)
+        for codegen_function in codegens.values():
+            codegen_function.generate_function(output_dir=output_dir)
 
         self.compare_or_update_directory(
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),

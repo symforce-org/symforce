@@ -1,7 +1,7 @@
 {%- import "../util/util.jinja" as util with context -%}
 
 import math
-{% if language_args.use_numba %}
+{% if spec.config.use_numba %}
 import numba
 {% endif %}
 import numpy
@@ -15,7 +15,7 @@ import {{ namespace }}
 {% endfor %}
 
 
-{% if language_args.use_numba %}
+{% if spec.config.use_numba %}
 @numba.njit
 {% endif %}
 {{ util.function_declaration(spec) }}

@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-
-from symforce.codegen import codegen_util
+from enum import Enum
 
 
 @dataclass
-class LanguageArgs:
+class CodegenConfig:
     """
     Base class for language-specific arguments for code generation
 
@@ -19,9 +18,9 @@ class LanguageArgs:
 
 
 @dataclass
-class CppLanguageArgs(LanguageArgs):
+class CppConfig(CodegenConfig):
     """
-    C++-specific arguments for code generation
+    C++ Codegen configuration
 
     Args:
         doc_comment_line_prefix: Prefix applied to each line in a docstring
@@ -33,11 +32,12 @@ class CppLanguageArgs(LanguageArgs):
 
 
 @dataclass
-class PythonLanguageArgs(LanguageArgs):
+class PythonConfig(CodegenConfig):
     """
-    Python-specific arguments for code generation
+    Python Codegen configuration
 
     Args:
+        standard: Version of the Python language, either both 2 and 3 or just 3
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly
@@ -47,20 +47,11 @@ class PythonLanguageArgs(LanguageArgs):
                    times.
     """
 
+    class PythonVersion(Enum):
+        PYTHON2AND3 = "python2"
+        PYTHON3 = "python3"
+
+    standard: PythonVersion = PythonVersion.PYTHON2AND3
     doc_comment_line_prefix: str = ""
     line_length: int = 100
     use_numba: bool = False
-
-
-_registry = {
-    codegen_util.CodegenMode.CPP: CppLanguageArgs,
-    codegen_util.CodegenMode.PYTHON2: PythonLanguageArgs,
-    codegen_util.CodegenMode.PYTHON3: PythonLanguageArgs,
-}
-
-
-def for_codegen_mode(mode: codegen_util.CodegenMode) -> LanguageArgs:
-    """
-    Gets the LanguageArgs subclass for the given CodegenMode
-    """
-    return _registry[mode]()

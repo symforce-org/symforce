@@ -10,7 +10,9 @@ from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import Codegen
-from symforce.codegen import CodegenMode
+from symforce.codegen import CodegenConfig
+from symforce.codegen import CppConfig
+from symforce.codegen import PythonConfig
 from symforce.codegen import codegen_util
 from symforce.codegen import template_util
 
@@ -19,7 +21,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 DEFAULT_GEO_TYPES = (geo.Rot2, geo.Pose2, geo.Rot3, geo.Pose3)
 
 
-def make_storage_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
+def make_storage_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for storage_ops on the given class.
     """
@@ -29,32 +31,32 @@ def make_storage_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.Lis
             name="ToStorage",
             func=ops.StorageOps.to_storage,
             input_types=[cls],
-            mode=mode,
+            config=config,
             docstring=ops.StorageOps.to_storage.__doc__,
         ),
         Codegen.function(
             name="FromStorage",
             func=(lambda vec: ops.StorageOps.from_storage(cls, vec)),
             input_types=[storage_vec],
-            mode=mode,
+            config=config,
             docstring=ops.StorageOps.from_storage.__doc__,
         ),
     ]
 
 
-def make_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
+def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for group ops on the given class.
     """
     identity = Codegen.function(
-        name="Identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], mode=mode
+        name="Identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], config=config
     )
 
     inverse = Codegen.function(
         name="Inverse",
         func=ops.GroupOps.inverse,
         input_types=[cls],
-        mode=mode,
+        config=config,
         docstring=ops.GroupOps.inverse.__doc__,
     )
 
@@ -62,12 +64,12 @@ def make_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[
         name="Compose",
         func=ops.GroupOps.compose,
         input_types=[cls, cls],
-        mode=mode,
+        config=config,
         docstring=ops.GroupOps.compose.__doc__,
     )
 
     between = Codegen.function(
-        name="Between", func=ops.GroupOps.between, input_types=[cls, cls], mode=mode
+        name="Between", func=ops.GroupOps.between, input_types=[cls, cls], config=config
     )
 
     return [
@@ -81,7 +83,7 @@ def make_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[
     ]
 
 
-def make_lie_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
+def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for lie group ops on the given class.
     """
@@ -91,34 +93,34 @@ def make_lie_group_ops_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.L
             name="FromTangent",
             func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
             input_types=[tangent_vec, sm.Symbol],
-            mode=mode,
+            config=config,
             docstring=ops.LieGroupOps.from_tangent.__doc__,
         ),
         Codegen.function(
             name="ToTangent",
             func=ops.LieGroupOps.to_tangent,
             input_types=[cls, sm.Symbol],
-            mode=mode,
+            config=config,
             docstring=ops.LieGroupOps.to_tangent.__doc__,
         ),
         Codegen.function(
             name="Retract",
             func=ops.LieGroupOps.retract,
             input_types=[cls, tangent_vec, sm.Symbol],
-            mode=mode,
+            config=config,
             docstring=ops.LieGroupOps.retract.__doc__,
         ),
         Codegen.function(
             name="LocalCoordinates",
             func=ops.LieGroupOps.local_coordinates,
             input_types=[cls, cls, sm.Symbol],
-            mode=mode,
+            config=config,
             docstring=ops.LieGroupOps.local_coordinates.__doc__,
         ),
     ]
 
 
-def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
+def geo_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     """
     Data for template generation of this class. Contains all useful info for
     class-specific templates.
@@ -128,13 +130,13 @@ def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
 
     data["specs"] = collections.defaultdict(list)
 
-    for func in make_storage_ops_funcs(cls, mode):
+    for func in make_storage_ops_funcs(cls, config):
         data["specs"]["StorageOps"].append(func)
 
-    for func in make_group_ops_funcs(cls, mode):
+    for func in make_group_ops_funcs(cls, config):
         data["specs"]["GroupOps"].append(func)
 
-    for func in make_lie_group_ops_funcs(cls, mode):
+    for func in make_lie_group_ops_funcs(cls, config):
         data["specs"]["LieGroupOps"].append(func)
 
     data["doc"] = textwrap.dedent(cls.__doc__).strip() if cls.__doc__ else ""
@@ -154,10 +156,14 @@ def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
         return self.inverse() * point
 
     custom_generated_methods = {
-        geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, mode=mode)],
-        geo.Rot3: [Codegen.function(func=geo.Rot3.to_rotation_matrix, mode=mode)],
-        geo.Pose2: [Codegen.function(func=pose2_inverse_compose, name="InverseCompose", mode=mode)],
-        geo.Pose3: [Codegen.function(func=pose3_inverse_compose, name="InverseCompose", mode=mode)],
+        geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config)],
+        geo.Rot3: [Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config)],
+        geo.Pose2: [
+            Codegen.function(func=pose2_inverse_compose, name="InverseCompose", config=config)
+        ],
+        geo.Pose3: [
+            Codegen.function(func=pose3_inverse_compose, name="InverseCompose", config=config)
+        ],
     }
 
     data["matrix_type_aliases"] = matrix_type_aliases[cls]
@@ -166,7 +172,7 @@ def geo_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
     return data
 
 
-def generate(mode: CodegenMode, output_dir: str = None) -> str:
+def generate(config: CodegenConfig, output_dir: str = None) -> str:
     """
     Generate the geo package for the given language.
 
@@ -174,19 +180,21 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{mode.name}_", dir="/tmp")
+        output_dir = tempfile.mkdtemp(
+            prefix=f"sf_codegen_{type(config).__name__.lower()}_", dir="/tmp"
+        )
         logger.debug(f"Creating temp directory: {output_dir}")
     # Subdirectory for everything we'll generate
     package_dir = os.path.join(output_dir, "sym")
     templates = template_util.TemplateList()
 
-    if mode == CodegenMode.PYTHON2:
+    if isinstance(config, PythonConfig):
         logger.info(f'Creating Python package at: "{package_dir}"')
         template_dir = os.path.join(template_util.PYTHON_TEMPLATE_DIR, "geo_package")
 
         # Build up templates for each type
         for cls in DEFAULT_GEO_TYPES:
-            data = geo_class_data(cls, mode=CodegenMode.PYTHON2)
+            data = geo_class_data(cls, config)
 
             for path in (
                 "CLASS.py",
@@ -214,18 +222,18 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                 dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
             )
 
-    elif mode == CodegenMode.CPP:
+    elif isinstance(config, CppConfig):
         # First generate the sym/util package as it's a dependency of the geo package
         from symforce.codegen import sym_util_package_codegen
 
-        sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
+        sym_util_package_codegen.generate(config, output_dir=output_dir)
 
         logger.info(f'Creating C++ package at: "{package_dir}"')
         template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "geo_package")
 
         # Build up templates for each type
         for cls in DEFAULT_GEO_TYPES:
-            data = geo_class_data(cls, mode=CodegenMode.CPP)
+            data = geo_class_data(cls, config)
 
             for path in (
                 "CLASS.h",
@@ -291,7 +299,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
             )
 
     else:
-        raise NotImplementedError(f'Unknown mode: "{mode}"')
+        raise NotImplementedError(f'Unknown config type: "{config}"')
 
     # LCM type_t
     templates.add(

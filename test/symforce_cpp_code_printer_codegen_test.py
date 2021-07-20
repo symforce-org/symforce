@@ -9,7 +9,8 @@ from symforce import types as T
 from symforce.test_util import TestCase, sympy_only
 from symforce.values import Values
 
-from symforce.codegen import codegen_util, Codegen, CodegenMode
+from symforce import codegen
+from symforce.codegen import codegen_util
 from symforce import sympy as sm
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -24,7 +25,7 @@ class SymforceCppCodePrinterTest(TestCase):
     """
 
     def test_max_min(self) -> None:
-        printer = codegen_util.get_code_printer(CodegenMode.CPP)
+        printer = codegen_util.get_code_printer(codegen.CppConfig())
 
         a = sm.Symbol("a")
         b = sm.Symbol("b")
@@ -46,7 +47,9 @@ class SymforceCppCodePrinterTest(TestCase):
         def f(x: sm.Symbol) -> sm.Symbol:
             return sm.functions.special.delta_functions.Heaviside(x)
 
-        heaviside_codegen = Codegen.function(name="Heaviside", func=f, mode=CodegenMode.CPP)
+        heaviside_codegen = codegen.Codegen.function(
+            name="Heaviside", func=f, config=codegen.CppConfig()
+        )
         heaviside_codegen_data = heaviside_codegen.generate_function(
             namespace="cpp_code_printer_test"
         )

@@ -15,7 +15,7 @@ from symforce import types as T
 from symforce.values import Values
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
-from symforce.codegen import codegen_language_args
+from symforce.codegen import codegen_config
 from symforce.codegen import type_helper
 from symforce.codegen import types_package_codegen
 
@@ -59,12 +59,11 @@ class Codegen:
         self,
         inputs: Values,
         outputs: Values,
-        mode: codegen_util.CodegenMode,
+        config: codegen_config.CodegenConfig,
         name: T.Optional[str] = None,
         return_key: T.Optional[str] = None,
         sparse_matrices: T.List[str] = None,
         scalar_type: str = "double",
-        language_args: codegen_language_args.LanguageArgs = None,
         docstring: str = None,
     ) -> None:
         """
@@ -74,15 +73,13 @@ class Codegen:
             inputs: Values object specifying names and symbolic inputs to the function
             outputs: Values object specifying names and output expressions (written in terms
                 of the symbolic inputs) of the function
-            mode: Programming language in which the function is to be generated
+            config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; must be set before the function is
                 generated, but need not be set here if it's going to be set by create_with_derivatives
             return_key: If specified, the output with this key is returned rather than filled
                 in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
             scalar_type: Type used for generated scalar expressions
-            language_args: Language-specific arguments; see codegen_language_args.py for
-                           documentation on these arguments
             docstring: The docstring to be used with the generated function
         """
 
@@ -114,8 +111,7 @@ class Codegen:
         self.inputs = inputs
         self.outputs = outputs
 
-        self.mode = mode
-        self.language_args = language_args or codegen_language_args.for_codegen_mode(self.mode)
+        self.config = config
         self.scalar_type = scalar_type
 
         if return_key is not None:
@@ -142,19 +138,18 @@ class Codegen:
             inputs=self.inputs,
             outputs=self.outputs,
             sparse_mat_data=self.sparse_mat_data,
-            mode=self.mode,
+            config=self.config,
         )
 
     @classmethod
     def function(
         cls,
         func: T.Callable,
-        mode: codegen_util.CodegenMode,
+        config: codegen_config.CodegenConfig,
         name: T.Optional[str] = None,
         input_types: T.Sequence[T.ElementOrType] = None,
         output_names: T.Sequence[str] = None,
         return_key: str = None,
-        language_args: codegen_language_args.LanguageArgs = None,
         docstring: str = None,
     ) -> Codegen:
         """
@@ -167,15 +162,13 @@ class Codegen:
                 if the type annotation doesn't match what you want the arguments to be, you need
                 to specify manually, for instance a function add(x: T.Any, y: T.Any) -> T.Any that
                 you want to use to generate add(x: geo.Matrix33, y: geo.Matrix33) -> geo.Matrix33
-            mode: Programming language in which the function is to be generated
+            config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; if not provided, will be deduced from the
                 function name.  Must be provided if `func` is a lambda
             output_names: Optional if only one object is returned by the function.
                 If multiple objects are returned, they must be named.
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
-            language_args: Language-specific arguments; see codegen_language_args.py for
-                           documentation on these arguments
         """
         arg_spec = codegen_util.get_function_argspec(func)
 
@@ -185,7 +178,7 @@ class Codegen:
         if name is None:
             assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
             name = func.__name__
-            if mode == codegen_util.CodegenMode.CPP:
+            if isinstance(config, codegen_config.CppConfig):
                 name = python_util.snakecase_to_camelcase(name)
 
         # Formulate symbolic arguments to function
@@ -234,8 +227,7 @@ class Codegen:
             name=name,
             inputs=inputs,
             outputs=outputs,
-            mode=mode,
-            language_args=language_args,
+            config=config,
             return_key=return_key,
             docstring=textwrap.dedent(docstring),
         )
@@ -359,10 +351,10 @@ class Codegen:
             "lcm_type_dir": types_codegen_data["lcm_type_dir"],
         }
 
-        template_data = dict(self.common_data(), spec=self, language_args=self.language_args)
+        template_data = dict(self.common_data(), spec=self)
 
         # Generate the function
-        if self.mode == codegen_util.CodegenMode.PYTHON2:
+        if isinstance(self.config, codegen_config.PythonConfig):
             if skip_directory_nesting:
                 python_function_dir = output_dir
             else:
@@ -382,7 +374,7 @@ class Codegen:
             )
 
             output_data["python_function_dir"] = python_function_dir
-        elif self.mode == codegen_util.CodegenMode.CPP:
+        elif isinstance(self.config, codegen_config.CppConfig):
             if skip_directory_nesting:
                 cpp_function_dir = output_dir
             else:
@@ -400,7 +392,7 @@ class Codegen:
 
             output_data["cpp_function_dir"] = cpp_function_dir
         else:
-            raise NotImplementedError(f'Unknown mode: "{self.mode}"')
+            raise NotImplementedError(f'Unknown config type: "{self.config}"')
 
         templates.render()
         lcm_data = codegen_util.generate_lcm_types(
@@ -451,11 +443,11 @@ class Codegen:
 
     @staticmethod
     def wrap_docstring_arg_description(
-        preamble: str, description: str, language_args: codegen_language_args.LanguageArgs
+        preamble: str, description: str, config: codegen_config.CodegenConfig
     ) -> T.List[str]:
         return textwrap.wrap(
             description,
-            width=language_args.line_length - len(language_args.doc_comment_line_prefix),
+            width=config.line_length - len(config.doc_comment_line_prefix),
             initial_indent=preamble,
             subsequent_indent=" " * len(preamble),
         )
@@ -563,7 +555,7 @@ class Codegen:
                 self.wrap_docstring_arg_description(
                     "    jacobian: ",
                     f"({jacobian.shape[0]}x{jacobian.shape[1]}) jacobian of {result_name} wrt {formatted_arg_list}",
-                    self.language_args,
+                    self.config,
                 )
             )
 
@@ -576,7 +568,7 @@ class Codegen:
                     self.wrap_docstring_arg_description(
                         "    hessian: ",
                         f"({hessian.shape[0]}x{hessian.shape[1]}) Gauss-Newton hessian for {formatted_arg_list}",
-                        self.language_args,
+                        self.config,
                     )
                 )
 
@@ -586,7 +578,7 @@ class Codegen:
                     self.wrap_docstring_arg_description(
                         "    rhs: ",
                         f"({rhs.shape[0]}x{rhs.shape[1]}) Gauss-Newton rhs for {formatted_arg_list}",
-                        self.language_args,
+                        self.config,
                     )
                 )
 
@@ -619,7 +611,7 @@ class Codegen:
             name=name,
             inputs=self.inputs,
             outputs=outputs,
-            mode=self.mode,
+            config=self.config,
             return_key=return_key,
             scalar_type=self.scalar_type,
             docstring="\n".join(docstring_lines),

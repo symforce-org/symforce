@@ -10,7 +10,7 @@ from symforce import sympy as sm
 from symforce import types as T
 from symforce import python_util
 from symforce.codegen import Codegen
-from symforce.codegen import CodegenMode
+from symforce.codegen import CodegenConfig, CppConfig
 from symforce.codegen import codegen_util
 from symforce.codegen import template_util
 
@@ -22,7 +22,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
 
 
-def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Codegen]:
+def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for common camera operations for the given class.
     """
@@ -32,7 +32,7 @@ def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Cod
             name="CameraRayFromPixel",
             func=cls.camera_ray_from_pixel,
             input_types=[cls, geo.V2, sm.Symbol],
-            mode=mode,
+            config=config,
             output_names=["camera_ray", "is_valid"],
             return_key="camera_ray",
             docstring=cam.CameraCal.camera_ray_from_pixel.__doc__,
@@ -46,7 +46,7 @@ def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Cod
             name="FocalLength",
             func=lambda self: self.focal_length,
             input_types=[cls],
-            mode=mode,
+            config=config,
             output_names=["focal_length"],
             return_key="focal_length",
             docstring="\nReturn the focal length.",
@@ -55,7 +55,7 @@ def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Cod
             name="PrincipalPoint",
             func=lambda self: self.principal_point,
             input_types=[cls],
-            mode=mode,
+            config=config,
             output_names=["principal_point"],
             return_key="principal_point",
             docstring="\nReturn the principal point.",
@@ -63,7 +63,7 @@ def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Cod
         Codegen.function(
             name="PixelFromCameraPoint",
             func=cls.pixel_from_camera_point,
-            mode=mode,
+            config=config,
             input_types=[cls, geo.V3, sm.Symbol],
             output_names=["pixel", "is_valid"],
             return_key="pixel",
@@ -72,7 +72,7 @@ def make_camera_funcs(cls: T.Type, mode: codegen_util.CodegenMode) -> T.List[Cod
     ] + ([camera_ray_from_pixel] if camera_ray_from_pixel is not None else [])
 
 
-def cam_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
+def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     """
     Data for template generation of this class. Contains all useful info for
     class-specific templates.
@@ -82,10 +82,10 @@ def cam_class_data(cls: T.Type, mode: CodegenMode) -> T.Dict[str, T.Any]:
 
     data["specs"] = collections.defaultdict(list)
 
-    for func in make_storage_ops_funcs(cls, mode):
+    for func in make_storage_ops_funcs(cls, config):
         data["specs"]["StorageOps"].append(func)
 
-    for func in make_camera_funcs(cls, mode):
+    for func in make_camera_funcs(cls, config):
         data["specs"]["CameraOps"].append(func)
 
     data["doc"] = textwrap.dedent(cls.__doc__).strip() if cls.__doc__ else ""
@@ -126,31 +126,33 @@ def posed_camera_data() -> T.Dict[str, T.Any]:
     return class_template_data(cam.PosedCamera, functions_to_doc)
 
 
-def generate(mode: CodegenMode, output_dir: str = None) -> str:
+def generate(config: CodegenConfig, output_dir: str = None) -> str:
     """
     Generate the cam package for the given language.
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{mode.name}_", dir="/tmp")
+        output_dir = tempfile.mkdtemp(
+            prefix=f"sf_codegen_{type(config).__name__.lower()}_", dir="/tmp"
+        )
         logger.debug(f"Creating temp directory: {output_dir}")
 
     # Subdirectory for everything we'll generate
     cam_package_dir = os.path.join(output_dir, "sym")
     templates = template_util.TemplateList()
 
-    if mode == CodegenMode.CPP:
+    if isinstance(config, CppConfig):
         logger.info(f'Creating C++ cam package at: "{cam_package_dir}"')
         template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "cam_package")
 
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
 
-        geo_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
+        geo_package_codegen.generate(config=config, output_dir=output_dir)
 
         # Build up templates for each type
         for cls in DEFAULT_CAM_TYPES:
-            data = cam_class_data(cls, mode=CodegenMode.CPP)
+            data = cam_class_data(cls, config=config)
 
             for path in (
                 "CLASS.h",
@@ -223,7 +225,7 @@ def generate(mode: CodegenMode, output_dir: str = None) -> str:
                 ),
             )
     else:
-        raise NotImplementedError(f'Unknown mode: "{mode}"')
+        raise NotImplementedError(f'Unknown config type: "{config}"')
 
     templates.render()
 

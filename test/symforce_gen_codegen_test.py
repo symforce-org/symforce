@@ -11,7 +11,7 @@ from symforce import ops
 from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
-from symforce.codegen import Codegen, CodegenMode
+from symforce import codegen
 from symforce.codegen import cam_package_codegen
 from symforce.codegen import codegen_util
 from symforce.codegen import geo_factors_codegen
@@ -45,8 +45,8 @@ class SymforceGenCodegenTest(TestCase):
 
         # Create the specification
         namespace = "cam_function_codegen_test"
-        my_func = Codegen.function(
-            name="PixelToRayAndBack", func=pixel_to_ray_and_back, mode=CodegenMode.CPP,
+        my_func = codegen.Codegen.function(
+            name="PixelToRayAndBack", func=pixel_to_ray_and_back, config=codegen.CppConfig(),
         )
         cpp_data = my_func.generate_function(output_dir=output_dir, namespace=namespace)
 
@@ -60,11 +60,11 @@ class SymforceGenCodegenTest(TestCase):
 
     def generate_tangent_d_storage_functions(self, output_dir: str) -> None:
         for cls in geo_package_codegen.DEFAULT_GEO_TYPES:
-            tangent_D_storage_codegen = Codegen.function(
+            tangent_D_storage_codegen = codegen.Codegen.function(
                 name="Tangent_D_Storage",
                 func=ops.LieGroupOps.tangent_D_storage,
                 input_types=[cls, sm.Symbol],
-                mode=CodegenMode.CPP,
+                config=codegen.CppConfig(),
             )
             tangent_D_storage_codegen.generate_function(
                 # Underscore here because of how python_util.camelcase_to_snakecase works
@@ -88,7 +88,7 @@ class SymforceGenCodegenTest(TestCase):
         logger.debug(f"Creating temp directory: {output_dir}")
 
         try:
-            geo_package_codegen.generate(mode=CodegenMode.PYTHON2, output_dir=output_dir)
+            geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
 
             # Test against checked-in geo package (only on SymEngine)
             if symforce.get_backend() == "symengine":
@@ -134,11 +134,11 @@ class SymforceGenCodegenTest(TestCase):
             slam_factors_codegen.generate(os.path.join(output_dir, "sym"))
 
             # Generate typedefs.h
-            sym_util_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
+            sym_util_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
 
             # Generate cam package, geo package, and tests
             # This calls geo_package_codegen.generate internally
-            cam_package_codegen.generate(mode=CodegenMode.CPP, output_dir=output_dir)
+            cam_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
 
             # Check against existing generated package (only on SymEngine)
             if symforce.get_backend() == "symengine":
