@@ -135,20 +135,29 @@ def inverse_range_landmark_reprojection_error_residual(  # pylint: disable=too-m
     return whitened_residual
 
 
-def generate(output_dir: str) -> None:
+def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
     """
-    SLAM factors for C++.
+    Generate the SLAM package for the given language.
+
+    Args:
+        output_dir: Directory to generate outputs into
+        config: CodegenConfig, defaults to the default C++ config
     """
+    # Subdirectory for everything we'll generate
     factors_dir = os.path.join(output_dir, "factors")
 
+    # default config to CppConfig
+    if config is None:
+        config = codegen.CppConfig()
+
     codegen.Codegen.function(
-        func=inverse_range_landmark_prior_residual, config=codegen.CppConfig()
+        func=inverse_range_landmark_prior_residual, config=config
     ).create_with_linearization(which_args=[0]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
 
     codegen.Codegen.function(
-        func=inverse_range_landmark_reprojection_error_residual, config=codegen.CppConfig()
+        func=inverse_range_landmark_reprojection_error_residual, config=config
     ).create_with_linearization(which_args=[0, 2, 4]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
