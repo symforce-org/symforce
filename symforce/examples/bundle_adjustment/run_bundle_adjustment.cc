@@ -15,15 +15,15 @@ namespace bundle_adjustment {
  */
 sym::Factord CreateRelativePosePriorFactor(const int i, const int j) {
   return sym::Factord::Hessian(sym::BetweenFactorPose3<double>,
-                                {{Var::VIEW, i},
-                                 {Var::VIEW, j},
-                                 {Var::POSE_PRIOR_T, i, j},
-                                 {Var::POSE_PRIOR_SQRT_INFO, i, j},
-                                 Var::EPSILON},
-                                {
-                                    {Var::VIEW, i},
-                                    {Var::VIEW, j},
-                                });
+                               {{Var::VIEW, i},
+                                {Var::VIEW, j},
+                                {Var::POSE_PRIOR_T, i, j},
+                                {Var::POSE_PRIOR_SQRT_INFO, i, j},
+                                Var::EPSILON},
+                               {
+                                   {Var::VIEW, i},
+                                   {Var::VIEW, j},
+                               });
 }
 
 /**
