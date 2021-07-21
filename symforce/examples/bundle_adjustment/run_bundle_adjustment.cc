@@ -14,7 +14,7 @@ namespace bundle_adjustment {
  * Creates a factor for a prior on the relative pose between view i and view j
  */
 sym::Factord CreateRelativePosePriorFactor(const int i, const int j) {
-  return sym::Factord::Jacobian(sym::BetweenFactorPose3<double>,
+  return sym::Factord::Hessian(sym::BetweenFactorPose3<double>,
                                 {{Var::VIEW, i},
                                  {Var::VIEW, j},
                                  {Var::POSE_PRIOR_T, i, j},
