@@ -120,10 +120,10 @@ def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codeg
     ]
 
 
-def geo_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
+def geo_class_common_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     """
-    Data for template generation of this class. Contains all useful info for
-    class-specific templates.
+    Data for template generation of this class. Contains all useful info common
+    to all class-specific templates.
     """
     data = Codegen.common_data()
     data["cls"] = cls
@@ -142,12 +142,31 @@ def geo_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     data["doc"] = textwrap.dedent(cls.__doc__).strip() if cls.__doc__ else ""
     data["is_lie_group"] = hasattr(cls, "from_tangent")
 
-    matrix_type_aliases = {
+    return data
+
+
+def _matrix_type_aliases() -> T.Dict[T.Type, T.Dict[str, str]]:
+    """
+    Returns a dictionary d where d[datatype] is a mapping
+    between C++ types and their type aliases that are used in
+    the generated code of type datatype.
+    """
+    return {
         geo.Rot2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
         geo.Rot3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
         geo.Pose2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
         geo.Pose3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
     }
+
+
+def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Codegen]]:
+    """
+    Returns a dictionary d where d[datatype] is a list of codegened functions
+    we wish to be added to type datatype's generated code.
+
+    Args:
+        config (CodegenConfig): Specifies the target language of the codegened functions.
+    """
 
     def pose2_inverse_compose(self: geo.Pose2, point: geo.Vector2) -> geo.Vector2:
         return self.inverse() * point
@@ -155,7 +174,7 @@ def geo_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     def pose3_inverse_compose(self: geo.Pose3, point: geo.Vector3) -> geo.Vector3:
         return self.inverse() * point
 
-    custom_generated_methods = {
+    return {
         geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config)],
         geo.Rot3: [Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config)],
         geo.Pose2: [
@@ -165,11 +184,6 @@ def geo_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
             Codegen.function(func=pose3_inverse_compose, name="InverseCompose", config=config)
         ],
     }
-
-    data["matrix_type_aliases"] = matrix_type_aliases[cls]
-    data["custom_generated_methods"] = custom_generated_methods[cls]
-
-    return data
 
 
 def generate(config: CodegenConfig, output_dir: str = None) -> str:
@@ -188,13 +202,19 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
     package_dir = os.path.join(output_dir, "sym")
     templates = template_util.TemplateList()
 
+    matrix_type_aliases = _matrix_type_aliases()
+    custom_generated_methods = _custom_generated_methods(config)
+
     if isinstance(config, PythonConfig):
         logger.info(f'Creating Python package at: "{package_dir}"')
         template_dir = os.path.join(template_util.PYTHON_TEMPLATE_DIR, "geo_package")
 
         # Build up templates for each type
+
         for cls in DEFAULT_GEO_TYPES:
-            data = geo_class_data(cls, config)
+            data = geo_class_common_data(cls, config)
+            data["matrix_type_aliases"] = matrix_type_aliases[cls]
+            data["custom_generated_methods"] = custom_generated_methods[cls]
 
             for path in (
                 "CLASS.py",
@@ -233,7 +253,9 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
         # Build up templates for each type
         for cls in DEFAULT_GEO_TYPES:
-            data = geo_class_data(cls, config)
+            data = geo_class_common_data(cls, config)
+            data["matrix_type_aliases"] = matrix_type_aliases[cls]
+            data["custom_generated_methods"] = custom_generated_methods[cls]
 
             for path in (
                 "CLASS.h",
