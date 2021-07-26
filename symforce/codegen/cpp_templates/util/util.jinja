@@ -152,6 +152,29 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 
 {# ------------------------------------------------------------------------- #}
 
+{# Turn a function declaration into a method declaration by appending const if is_instance_method
+ # or prepending static if it's a declaration (as opposed to a definition).
+ #
+ # Args:
+ #     declaration_base (str): The function declaration we want to decorate with const or static
+ #         as appropriate.
+ #     is_instance_method (bool): Is this an instance method that we should append const to as
+ #         opposed to a static method?
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (only declarations
+ #         are marked as static)
+ #}
+{%- macro make_method_declaration(declaration_base, is_instance_method, is_declaration) -%}
+{% if is_instance_method -%}
+    {{ declaration_base }} const
+{% elif is_declaration -%}
+    static {{ declaration_base }}
+{% else %}
+    {{ declaration_base }}
+{% endif %}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
 {# Generate function declaration
  #
  # Args:
@@ -162,6 +185,28 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 {%- macro function_declaration(spec, is_declaration) -%}
 {% set name = python_util.snakecase_to_camelcase(spec.name) %}
 {{ get_return_type(spec) }} {{ name }}({{- input_args_declaration(spec, is_declaration) -}})
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate method declaration
+ #
+ # Args:
+ #     spec (Codegen):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
+ #
+ # Precondition:
+ #     "self" in spec.inputs iff spec specifies an instance method
+ #}
+{%- macro method_declaration(spec, is_declaration) -%}
+{{
+    make_method_declaration(
+        function_declaration(spec, is_declaration),
+        "self" in spec.inputs,
+        is_declaration
+    )
+}}
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -177,6 +222,29 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 {%- macro function_declaration_custom_namespace(spec, namespace, is_declaration) -%}
 {% set name = python_util.snakecase_to_camelcase(spec.name) %}
 {{ get_return_type(spec) }} {{ namespace }}::{{ name }}({{- input_args_declaration(spec, is_declaration) -}})
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate method declaration with custom namespace
+ #
+ # Args:
+ #     spec (Codegen):
+ #     namespace (str):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
+ #
+ # Precondition:
+ #     "self" in spec.inputs iff spec specifies an instance method
+ #}
+{%- macro method_declaration_custom_namespace(spec, namespace, is_declaration) -%}
+{{
+    make_method_declaration(
+        function_declaration_custom_namespace(spec, namespace, is_declaration),
+        "self" in spec.inputs,
+        is_declaration
+    )
+}}
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}

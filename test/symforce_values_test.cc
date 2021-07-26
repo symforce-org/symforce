@@ -3,6 +3,7 @@
 
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+#include <sym/ops/lie_group_ops.h>
 #include <sym/rot3.h>
 
 #include "../symforce/opt/util.h"
@@ -258,7 +259,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
     const T retracted_element = v1.template At<T>('x');
-    CHECK(sym::IsApprox(random_element, retracted_element, 1e-6));
+    CHECK(sym::IsClose(random_element, retracted_element, 1e-6));
 
     // test local coordinates
     const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);

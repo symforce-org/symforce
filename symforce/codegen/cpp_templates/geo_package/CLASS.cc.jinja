@@ -23,11 +23,11 @@ std::ostream& operator<<(std::ostream& os, const {{ cls.__name__ }}{{ scalar[0] 
 {% endif %}
 {% for spec in custom_generated_methods %}
 template <typename Scalar>
-{{ util.function_declaration_custom_namespace(spec, namespace="sym::{}<Scalar>".format(cls.__name__)) }} const {
+{{ util.method_declaration_custom_namespace(spec, namespace="sym::{}<Scalar>".format(cls.__name__), is_declaration=False) }} {
   {{ util.expr_code(spec) }}
 }
-{% endfor %}
 
+{% endfor %}
 
 {# {% for scalar in scalar_types %}
 extern template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ scalar }}>;

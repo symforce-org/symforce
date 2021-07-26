@@ -62,6 +62,31 @@ Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
   return _res;
 }
 
+template <typename Scalar>
+sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1, const Scalar u2,
+                                                              const Scalar u3) {
+  // Total ops: 15
+
+  // Input arrays
+
+  // Intermediate terms (5)
+  const Scalar _tmp0 = std::sqrt(1 - u1);
+  const Scalar _tmp1 = 2 * M_PI;
+  const Scalar _tmp2 = _tmp1 * u2;
+  const Scalar _tmp3 = std::sqrt(u1);
+  const Scalar _tmp4 = _tmp1 * u3;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = _tmp0 * std::sin(_tmp2);
+  _res[1] = _tmp0 * std::cos(_tmp2);
+  _res[2] = _tmp3 * std::sin(_tmp4);
+  _res[3] = _tmp3 * std::cos(_tmp4);
+
+  return sym::Rot3<Scalar>(_res);
+}
+
 // Explicit instantiation
 template class sym::Rot3<double>;
 template class sym::Rot3<float>;

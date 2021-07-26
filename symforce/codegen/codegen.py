@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+import inspect
 import os
 import pathlib
 import tempfile
@@ -153,7 +154,9 @@ class Codegen:
         Creates a Codegen object from a symbolic python function.
 
         Args:
-            func: Python function
+            func: Python function. Note, variable position and keyword arguments will be ignored.
+                Additionally, keyword only arguments will be set to their default values and not
+                included in the signature of the generated function.
             input_types: List of types of the inputs to the given function.  This is optional; if
                 `func` has type annotations, `input_types` can be deduced from those.  Note that
                 if the type annotation doesn't match what you want the arguments to be, you need
@@ -167,8 +170,6 @@ class Codegen:
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
         """
-        arg_spec = codegen_util.get_function_argspec(func)
-
         if input_types is None:
             input_types = type_helper.deduce_input_types(func)
 
@@ -176,13 +177,18 @@ class Codegen:
             assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
             name = func.__name__
 
+        parameters = inspect.signature(func).parameters
         # Formulate symbolic arguments to function
-        assert len(arg_spec.args) == len(input_types)
+        assert len(parameters) == len(input_types)
         symbolic_args = []
         inputs = Values()
-        for arg_name, arg_type in zip(arg_spec.args, input_types):
-            inputs[arg_name] = ops.StorageOps.symbolic(arg_type, arg_name)
-            symbolic_args.append(inputs[arg_name])
+        for arg_parameter, arg_type in zip(parameters.values(), input_types):
+            if arg_parameter.kind in (
+                inspect.Parameter.POSITIONAL_ONLY,
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            ):
+                inputs[arg_parameter.name] = ops.StorageOps.symbolic(arg_type, arg_parameter.name)
+                symbolic_args.append(inputs[arg_parameter.name])
 
         # Run the symbolic arguments through the function and get the symbolic output expression(s)
         res = func(*symbolic_args)

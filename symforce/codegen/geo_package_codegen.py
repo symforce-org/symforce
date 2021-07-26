@@ -2,6 +2,7 @@ import os
 import tempfile
 import textwrap
 import collections
+import functools
 
 from symforce import ops
 from symforce import geo
@@ -168,7 +169,14 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
 
     return {
         geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config)],
-        geo.Rot3: [Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config)],
+        geo.Rot3: [
+            Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config),
+            Codegen.function(
+                func=functools.partial(geo.Rot3.random_from_uniform_samples, pi=sm.pi),
+                name="random_from_uniform_samples",
+                config=config,
+            ),
+        ],
         geo.Pose2: [
             Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config)
         ],

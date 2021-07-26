@@ -77,7 +77,7 @@ class {{ cls.__name__ }} {
 
   {% endif %}
   {% for spec in custom_generated_methods %}
-  {{ python_util.str_replace_all(util.function_declaration(spec, is_declaration=True), matrix_type_aliases) }} const;
+  {{ python_util.str_replace_all(util.method_declaration(spec, is_declaration=True), matrix_type_aliases) }};
 
   {% endfor %}
   // --------------------------------------------------------------------------
