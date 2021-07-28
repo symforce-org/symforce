@@ -8,38 +8,29 @@
 #include <lcmtypes/symforce/type_t.hpp>
 
 namespace sym {
-namespace rot2 {
 
 /**
  * C++ StorageOps implementation for <class 'symforce.geo.rot2.Rot2'>.
  */
 template <typename ScalarType>
-struct StorageOps {
-  using Scalar = typename sym::Rot2<ScalarType>::Scalar;
+struct StorageOps<Rot2<ScalarType>> {
+  using Scalar = typename Rot2<ScalarType>::Scalar;
 
   static constexpr int32_t StorageDim() {
     return 2;
   }
 
-  static void ToStorage(const sym::Rot2<ScalarType>& a, ScalarType* out);
-  static sym::Rot2<ScalarType> FromStorage(const ScalarType* data);
+  static void ToStorage(const Rot2<ScalarType>& a, ScalarType* out);
+  static Rot2<ScalarType> FromStorage(const ScalarType* data);
 
   static symforce::type_t TypeEnum() {
     return symforce::type_t::ROT2;
   }
 
   template <typename Generator>
-  static sym::Rot2<Scalar> Random(Generator& gen) {
-    return sym::Rot2<ScalarType>::Random(gen);
+  static Rot2<Scalar> Random(Generator& gen) {
+    return Rot2<ScalarType>::Random(gen);
   }
 };
-
-}  // namespace rot2
-
-// Wrapper to specialize the public concept
-template <>
-struct StorageOps<Rot2<double>> : public rot2::StorageOps<double> {};
-template <>
-struct StorageOps<Rot2<float>> : public rot2::StorageOps<float> {};
 
 }  // namespace sym

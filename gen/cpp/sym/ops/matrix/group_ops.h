@@ -8,13 +8,12 @@
 #include "../group_ops.h"
 
 namespace sym {
-namespace matrix {
 
 /**
  * C++ GroupOps implementation for matrices.
  */
 template <typename ScalarType, int Rows, int Cols>
-struct GroupOps {
+struct GroupOps<Eigen::Matrix<ScalarType, Rows, Cols>> {
   using Scalar = ScalarType;
   using T = Eigen::Matrix<Scalar, Rows, Cols>;
   static_assert(std::is_floating_point<ScalarType>::value, "");
@@ -35,48 +34,5 @@ struct GroupOps {
     return b - a;
   }
 };
-
-}  // namespace matrix
-
-template <>
-struct GroupOps<Eigen::Matrix<double, 1, 1>> : public matrix::GroupOps<double, 1, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 2, 1>> : public matrix::GroupOps<double, 2, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 3, 1>> : public matrix::GroupOps<double, 3, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 4, 1>> : public matrix::GroupOps<double, 4, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 5, 1>> : public matrix::GroupOps<double, 5, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 6, 1>> : public matrix::GroupOps<double, 6, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 7, 1>> : public matrix::GroupOps<double, 7, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 8, 1>> : public matrix::GroupOps<double, 8, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<double, 9, 1>> : public matrix::GroupOps<double, 9, 1> {};
-template <int Rows, int Cols>
-struct GroupOps<Eigen::Matrix<double, Rows, Cols>> : public matrix::GroupOps<double, Rows, Cols> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 1, 1>> : public matrix::GroupOps<float, 1, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 2, 1>> : public matrix::GroupOps<float, 2, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 3, 1>> : public matrix::GroupOps<float, 3, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 4, 1>> : public matrix::GroupOps<float, 4, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 5, 1>> : public matrix::GroupOps<float, 5, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 6, 1>> : public matrix::GroupOps<float, 6, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 7, 1>> : public matrix::GroupOps<float, 7, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 8, 1>> : public matrix::GroupOps<float, 8, 1> {};
-template <>
-struct GroupOps<Eigen::Matrix<float, 9, 1>> : public matrix::GroupOps<float, 9, 1> {};
-template <int Rows, int Cols>
-struct GroupOps<Eigen::Matrix<float, Rows, Cols>> : public matrix::GroupOps<float, Rows, Cols> {};
 
 }  // namespace sym

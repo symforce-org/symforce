@@ -7,26 +7,23 @@
 #include "./storage_ops.h"
 
 namespace sym {
-namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 template <typename ScalarType>
-void StorageOps<ScalarType>::ToStorage(const sym::{{ cls.__name__ }}<ScalarType>& a, ScalarType* out) {
+void StorageOps<{{ cls.__name__ }}<ScalarType>>::ToStorage(const {{ cls.__name__ }}<ScalarType>& a, ScalarType* out) {
   assert(out != nullptr);
   std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
 template <typename ScalarType>
-sym::{{ cls.__name__ }}<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+{{ cls.__name__ }}<ScalarType> StorageOps<{{ cls.__name__ }}<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return sym::{{ cls.__name__ }}<ScalarType>(
-    Eigen::Map<const typename sym::{{ cls.__name__ }}<ScalarType>::DataVec>(data));
+  return {{ cls.__name__ }}<ScalarType>(
+    Eigen::Map<const typename {{ cls.__name__ }}<ScalarType>::DataVec>(data));
 }
 
-}  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
 }  // namespace sym
-
 
 // Explicit instantiation
 {% for Scalar in scalar_types %}
-template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
+template struct sym::StorageOps<sym::{{ cls.__name__ }}<{{ Scalar }}>>;
 {% endfor %}

@@ -8,13 +8,12 @@
 #include "../group_ops.h"
 
 namespace sym {
-namespace matrix {
 
 /**
  * C++ GroupOps implementation for matrices.
  */
 template <typename ScalarType, int Rows, int Cols>
-struct GroupOps {
+struct GroupOps<Eigen::Matrix<ScalarType, Rows, Cols>> {
   using Scalar = ScalarType;
   using T = Eigen::Matrix<Scalar, Rows, Cols>;
   static_assert(std::is_floating_point<ScalarType>::value, "");
@@ -35,16 +34,5 @@ struct GroupOps {
     return b - a;
   }
 };
-
-}  // namespace matrix
-
-{% for scalar in scalar_types %}
-{% for i in range(1, 10) %}
-template<>
-struct GroupOps<Eigen::Matrix<{{ scalar }}, {{ i }}, 1>> : public matrix::GroupOps<{{ scalar }}, {{ i }}, 1> {};
-{% endfor %}
-template<int Rows, int Cols>
-struct GroupOps<Eigen::Matrix<{{ scalar }}, Rows, Cols>> : public matrix::GroupOps<{{ scalar }}, Rows, Cols> {};
-{% endfor %}
 
 }  // namespace sym

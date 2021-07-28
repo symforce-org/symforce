@@ -15,13 +15,12 @@ template<typename ScalarType> class {{ cls.__name__ }};
 }  // namespace sym
 
 namespace sym {
-namespace {{ camelcase_to_snakecase(cls.__name__) }} {
 
 /**
  * C++ LieGroupOps implementation for {{ cls }}.
  */
-template <typename {{ util.format_typename(Symbol) }}>
-struct LieGroupOps {
+template <typename Scalar>
+struct LieGroupOps<{{ cls.__name__ }}<Scalar>> {
   static constexpr int32_t TangentDim() {
       return {{ ops.LieGroupOps.tangent_dim(cls) }};
   }
@@ -32,13 +31,5 @@ struct LieGroupOps {
   static {{ util.function_declaration(spec, is_declaration=True) -}};
   {% endfor %}
 };
-
-}  // namespace {{ camelcase_to_snakecase(cls.__name__) }}
-
-// Specialization into the top level concept
-{% for Scalar in scalar_types %}
-template <>
-struct LieGroupOps<{{ cls.__name__ }}<{{ Scalar }}>> : public {{ camelcase_to_snakecase(cls.__name__) }}::LieGroupOps<{{ Scalar }}> {};
-{% endfor %}
 
 }  // namespace sym

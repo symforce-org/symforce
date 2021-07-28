@@ -10,11 +10,10 @@
 #include <sym/rot3.h>
 
 namespace sym {
-namespace rot3 {
 
 template <typename Scalar>
-sym::Rot3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3, 1>& vec,
-                                                   const Scalar epsilon) {
+sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::FromTangent(const Eigen::Matrix<Scalar, 3, 1>& vec,
+                                                         const Scalar epsilon) {
   // Total ops: 16
 
   // Input arrays
@@ -37,8 +36,8 @@ sym::Rot3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 3
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const sym::Rot3<Scalar>& a,
-                                                           const Scalar epsilon) {
+Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Rot3<Scalar>>::ToTangent(const sym::Rot3<Scalar>& a,
+                                                                 const Scalar epsilon) {
   // Total ops: 19
 
   // Input arrays
@@ -60,9 +59,9 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::ToTangent(const sym::Rot3<Scala
 }
 
 template <typename Scalar>
-sym::Rot3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Rot3<Scalar>& a,
-                                               const Eigen::Matrix<Scalar, 3, 1>& vec,
-                                               const Scalar epsilon) {
+sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::Retract(const sym::Rot3<Scalar>& a,
+                                                     const Eigen::Matrix<Scalar, 3, 1>& vec,
+                                                     const Scalar epsilon) {
   // Total ops: 49
 
   // Input arrays
@@ -91,9 +90,9 @@ sym::Rot3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Rot3<Scalar>& a,
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Rot3<Scalar>& a,
-                                                                  const sym::Rot3<Scalar>& b,
-                                                                  const Scalar epsilon) {
+Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Rot3<Scalar>>::LocalCoordinates(const sym::Rot3<Scalar>& a,
+                                                                        const sym::Rot3<Scalar>& b,
+                                                                        const Scalar epsilon) {
   // Total ops: 57
 
   // Input arrays
@@ -116,9 +115,8 @@ Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Rot
   return _res;
 }
 
-}  // namespace rot3
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::rot3::LieGroupOps<double>;
-template struct sym::rot3::LieGroupOps<float>;
+template struct sym::LieGroupOps<sym::Rot3<double>>;
+template struct sym::LieGroupOps<sym::Rot3<float>>;

@@ -5,23 +5,21 @@
 #include "./storage_ops.h"
 
 namespace sym {
-namespace rot2 {
 
 template <typename ScalarType>
-void StorageOps<ScalarType>::ToStorage(const sym::Rot2<ScalarType>& a, ScalarType* out) {
+void StorageOps<Rot2<ScalarType>>::ToStorage(const Rot2<ScalarType>& a, ScalarType* out) {
   assert(out != nullptr);
   std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
 template <typename ScalarType>
-sym::Rot2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+Rot2<ScalarType> StorageOps<Rot2<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return sym::Rot2<ScalarType>(Eigen::Map<const typename sym::Rot2<ScalarType>::DataVec>(data));
+  return Rot2<ScalarType>(Eigen::Map<const typename Rot2<ScalarType>::DataVec>(data));
 }
 
-}  // namespace rot2
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::rot2::StorageOps<double>;
-template struct sym::rot2::StorageOps<float>;
+template struct sym::StorageOps<sym::Rot2<double>>;
+template struct sym::StorageOps<sym::Rot2<float>>;

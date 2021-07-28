@@ -14,13 +14,12 @@ class Rot3;
 }  // namespace sym
 
 namespace sym {
-namespace rot3 {
 
 /**
  * C++ LieGroupOps implementation for <class 'symforce.geo.rot3.Rot3'>.
  */
 template <typename Scalar>
-struct LieGroupOps {
+struct LieGroupOps<Rot3<Scalar>> {
   static constexpr int32_t TangentDim() {
     return 3;
   }
@@ -36,13 +35,5 @@ struct LieGroupOps {
                                                       const sym::Rot3<Scalar>& b,
                                                       const Scalar epsilon);
 };
-
-}  // namespace rot3
-
-// Specialization into the top level concept
-template <>
-struct LieGroupOps<Rot3<double>> : public rot3::LieGroupOps<double> {};
-template <>
-struct LieGroupOps<Rot3<float>> : public rot3::LieGroupOps<float> {};
 
 }  // namespace sym

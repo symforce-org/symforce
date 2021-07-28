@@ -4,5 +4,5 @@
 #include "./group_ops.h"
 
 // Explicit instantiation
-template struct sym::scalar::GroupOps<double>;
-template struct sym::scalar::GroupOps<float>;
+template struct sym::GroupOps<double>;
+template struct sym::GroupOps<float>;

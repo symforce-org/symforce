@@ -4,5 +4,5 @@
 #include "./lie_group_ops.h"
 
 // Explicit instantiation
-template struct sym::scalar::LieGroupOps<double>;
-template struct sym::scalar::LieGroupOps<float>;
+template struct sym::LieGroupOps<double>;
+template struct sym::LieGroupOps<float>;

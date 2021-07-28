@@ -10,11 +10,10 @@
 #include <sym/pose3.h>
 
 namespace sym {
-namespace pose3 {
 
 template <typename Scalar>
-sym::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec,
-                                                    const Scalar epsilon) {
+sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec,
+                                                           const Scalar epsilon) {
   // Total ops: 16
 
   // Input arrays
@@ -40,8 +39,8 @@ sym::Pose3<Scalar> LieGroupOps<Scalar>::FromTangent(const Eigen::Matrix<Scalar, 
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const sym::Pose3<Scalar>& a,
-                                                           const Scalar epsilon) {
+Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Pose3<Scalar>>::ToTangent(const sym::Pose3<Scalar>& a,
+                                                                  const Scalar epsilon) {
   // Total ops: 19
 
   // Input arrays
@@ -66,9 +65,9 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::ToTangent(const sym::Pose3<Scal
 }
 
 template <typename Scalar>
-sym::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Pose3<Scalar>& a,
-                                                const Eigen::Matrix<Scalar, 6, 1>& vec,
-                                                const Scalar epsilon) {
+sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::Retract(const sym::Pose3<Scalar>& a,
+                                                       const Eigen::Matrix<Scalar, 6, 1>& vec,
+                                                       const Scalar epsilon) {
   // Total ops: 52
 
   // Input arrays
@@ -100,9 +99,8 @@ sym::Pose3<Scalar> LieGroupOps<Scalar>::Retract(const sym::Pose3<Scalar>& a,
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Pose3<Scalar>& a,
-                                                                  const sym::Pose3<Scalar>& b,
-                                                                  const Scalar epsilon) {
+Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Pose3<Scalar>>::LocalCoordinates(
+    const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b, const Scalar epsilon) {
   // Total ops: 63
 
   // Input arrays
@@ -128,9 +126,8 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Scalar>::LocalCoordinates(const sym::Pos
   return _res;
 }
 
-}  // namespace pose3
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::pose3::LieGroupOps<double>;
-template struct sym::pose3::LieGroupOps<float>;
+template struct sym::LieGroupOps<sym::Pose3<double>>;
+template struct sym::LieGroupOps<sym::Pose3<float>>;

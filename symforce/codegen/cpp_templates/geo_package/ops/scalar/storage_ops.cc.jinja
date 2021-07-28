@@ -5,5 +5,5 @@
 
 // Explicit instantiation
 {% for scalar in scalar_types %}
-template struct sym::scalar::StorageOps<{{ scalar }}>;
+template struct sym::StorageOps<{{ scalar }}>;
 {% endfor %}

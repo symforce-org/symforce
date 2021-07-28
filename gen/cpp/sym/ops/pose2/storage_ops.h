@@ -8,38 +8,29 @@
 #include <lcmtypes/symforce/type_t.hpp>
 
 namespace sym {
-namespace pose2 {
 
 /**
  * C++ StorageOps implementation for <class 'symforce.geo.pose2.Pose2'>.
  */
 template <typename ScalarType>
-struct StorageOps {
-  using Scalar = typename sym::Pose2<ScalarType>::Scalar;
+struct StorageOps<Pose2<ScalarType>> {
+  using Scalar = typename Pose2<ScalarType>::Scalar;
 
   static constexpr int32_t StorageDim() {
     return 4;
   }
 
-  static void ToStorage(const sym::Pose2<ScalarType>& a, ScalarType* out);
-  static sym::Pose2<ScalarType> FromStorage(const ScalarType* data);
+  static void ToStorage(const Pose2<ScalarType>& a, ScalarType* out);
+  static Pose2<ScalarType> FromStorage(const ScalarType* data);
 
   static symforce::type_t TypeEnum() {
     return symforce::type_t::POSE2;
   }
 
   template <typename Generator>
-  static sym::Pose2<Scalar> Random(Generator& gen) {
-    return sym::Pose2<ScalarType>::Random(gen);
+  static Pose2<Scalar> Random(Generator& gen) {
+    return Pose2<ScalarType>::Random(gen);
   }
 };
-
-}  // namespace pose2
-
-// Wrapper to specialize the public concept
-template <>
-struct StorageOps<Pose2<double>> : public pose2::StorageOps<double> {};
-template <>
-struct StorageOps<Pose2<float>> : public pose2::StorageOps<float> {};
 
 }  // namespace sym

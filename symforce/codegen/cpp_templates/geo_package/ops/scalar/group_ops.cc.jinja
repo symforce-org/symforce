@@ -5,5 +5,5 @@
 
 // Explicit instantiation
 {% for scalar in scalar_types %}
-template struct sym::scalar::GroupOps<{{ scalar }}>;
+template struct sym::GroupOps<{{ scalar }}>;
 {% endfor %}

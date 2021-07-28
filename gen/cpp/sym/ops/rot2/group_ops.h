@@ -7,15 +7,14 @@
 #include <sym/rot2.h>
 
 namespace sym {
-namespace rot2 {
 
 /**
  * C++ GroupOps implementation for <class 'symforce.geo.rot2.Rot2'>.
  */
 template <typename Scalar>
-struct GroupOps {
-  using SelfJacobian = Eigen::Matrix<Scalar, sym::LieGroupOps<Rot2<Scalar>>::TangentDim(),
-                                     sym::LieGroupOps<Rot2<Scalar>>::TangentDim()>;
+struct GroupOps<Rot2<Scalar>> {
+  using SelfJacobian = Eigen::Matrix<Scalar, LieGroupOps<Rot2<Scalar>>::TangentDim(),
+                                     LieGroupOps<Rot2<Scalar>>::TangentDim()>;
 
   static sym::Rot2<Scalar> Identity();
   static sym::Rot2<Scalar> Inverse(const sym::Rot2<Scalar>& a);
@@ -32,13 +31,5 @@ struct GroupOps {
       Eigen::Matrix<Scalar, 1, 1>* const res_D_a = nullptr,
       Eigen::Matrix<Scalar, 1, 1>* const res_D_b = nullptr);
 };
-
-}  // namespace rot2
-
-// Wrapper to specialize the public concept
-template <>
-struct GroupOps<Rot2<double>> : public rot2::GroupOps<double> {};
-template <>
-struct GroupOps<Rot2<float>> : public rot2::GroupOps<float> {};
 
 }  // namespace sym

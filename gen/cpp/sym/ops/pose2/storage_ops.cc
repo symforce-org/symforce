@@ -5,23 +5,21 @@
 #include "./storage_ops.h"
 
 namespace sym {
-namespace pose2 {
 
 template <typename ScalarType>
-void StorageOps<ScalarType>::ToStorage(const sym::Pose2<ScalarType>& a, ScalarType* out) {
+void StorageOps<Pose2<ScalarType>>::ToStorage(const Pose2<ScalarType>& a, ScalarType* out) {
   assert(out != nullptr);
   std::copy_n(a.Data().data(), a.StorageDim(), out);
 }
 
 template <typename ScalarType>
-sym::Pose2<ScalarType> StorageOps<ScalarType>::FromStorage(const ScalarType* data) {
+Pose2<ScalarType> StorageOps<Pose2<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return sym::Pose2<ScalarType>(Eigen::Map<const typename sym::Pose2<ScalarType>::DataVec>(data));
+  return Pose2<ScalarType>(Eigen::Map<const typename Pose2<ScalarType>::DataVec>(data));
 }
 
-}  // namespace pose2
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::pose2::StorageOps<double>;
-template struct sym::pose2::StorageOps<float>;
+template struct sym::StorageOps<sym::Pose2<double>>;
+template struct sym::StorageOps<sym::Pose2<float>>;

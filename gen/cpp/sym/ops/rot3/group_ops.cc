@@ -5,7 +5,6 @@
 #include "./group_ops.h"
 
 namespace sym {
-namespace rot3 {
 
 /**
  *
@@ -20,7 +19,7 @@ namespace rot3 {
  *
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::Identity() {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Identity() {
   // Total ops: 0
 
   // Input arrays
@@ -47,7 +46,7 @@ sym::Rot3<Scalar> GroupOps<Scalar>::Identity() {
  *
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::Inverse(const sym::Rot3<Scalar>& a) {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Inverse(const sym::Rot3<Scalar>& a) {
   // Total ops: 3
 
   // Input arrays
@@ -75,8 +74,8 @@ sym::Rot3<Scalar> GroupOps<Scalar>::Inverse(const sym::Rot3<Scalar>& a) {
  *
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::Compose(const sym::Rot3<Scalar>& a,
-                                            const sym::Rot3<Scalar>& b) {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Compose(const sym::Rot3<Scalar>& a,
+                                                  const sym::Rot3<Scalar>& b) {
   // Total ops: 32
 
   // Input arrays
@@ -107,8 +106,8 @@ sym::Rot3<Scalar> GroupOps<Scalar>::Compose(const sym::Rot3<Scalar>& a,
  *
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::Between(const sym::Rot3<Scalar>& a,
-                                            const sym::Rot3<Scalar>& b) {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Between(const sym::Rot3<Scalar>& a,
+                                                  const sym::Rot3<Scalar>& b) {
   // Total ops: 38
 
   // Input arrays
@@ -137,7 +136,7 @@ sym::Rot3<Scalar> GroupOps<Scalar>::Between(const sym::Rot3<Scalar>& a,
  *     res_D_a: (3x3) jacobian of res (3) wrt arg a (3)
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(
     const sym::Rot3<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
   // Total ops: 39
 
@@ -194,7 +193,7 @@ sym::Rot3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
  *     res_D_b: (3x3) jacobian of res (3) wrt arg b (3)
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(
     const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
   // Total ops: 300
@@ -335,7 +334,7 @@ sym::Rot3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
  *     res_D_b: (3x3) jacobian of res (3) wrt arg b (3)
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(
     const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
   // Total ops: 315
@@ -468,9 +467,8 @@ sym::Rot3<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   return sym::Rot3<Scalar>(_res);
 }
 
-}  // namespace rot3
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::rot3::GroupOps<double>;
-template struct sym::rot3::GroupOps<float>;
+template struct sym::GroupOps<sym::Rot3<double>>;
+template struct sym::GroupOps<sym::Rot3<float>>;

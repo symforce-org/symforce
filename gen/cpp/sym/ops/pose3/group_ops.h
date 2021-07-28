@@ -7,15 +7,14 @@
 #include <sym/pose3.h>
 
 namespace sym {
-namespace pose3 {
 
 /**
  * C++ GroupOps implementation for <class 'symforce.geo.pose3.Pose3'>.
  */
 template <typename Scalar>
-struct GroupOps {
-  using SelfJacobian = Eigen::Matrix<Scalar, sym::LieGroupOps<Pose3<Scalar>>::TangentDim(),
-                                     sym::LieGroupOps<Pose3<Scalar>>::TangentDim()>;
+struct GroupOps<Pose3<Scalar>> {
+  using SelfJacobian = Eigen::Matrix<Scalar, LieGroupOps<Pose3<Scalar>>::TangentDim(),
+                                     LieGroupOps<Pose3<Scalar>>::TangentDim()>;
 
   static sym::Pose3<Scalar> Identity();
   static sym::Pose3<Scalar> Inverse(const sym::Pose3<Scalar>& a);
@@ -32,13 +31,5 @@ struct GroupOps {
       Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr,
       Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr);
 };
-
-}  // namespace pose3
-
-// Wrapper to specialize the public concept
-template <>
-struct GroupOps<Pose3<double>> : public pose3::GroupOps<double> {};
-template <>
-struct GroupOps<Pose3<float>> : public pose3::GroupOps<float> {};
 
 }  // namespace sym

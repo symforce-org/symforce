@@ -14,13 +14,12 @@ class Pose3;
 }  // namespace sym
 
 namespace sym {
-namespace pose3 {
 
 /**
  * C++ LieGroupOps implementation for <class 'symforce.geo.pose3.Pose3'>.
  */
 template <typename Scalar>
-struct LieGroupOps {
+struct LieGroupOps<Pose3<Scalar>> {
   static constexpr int32_t TangentDim() {
     return 6;
   }
@@ -36,13 +35,5 @@ struct LieGroupOps {
                                                       const sym::Pose3<Scalar>& b,
                                                       const Scalar epsilon);
 };
-
-}  // namespace pose3
-
-// Specialization into the top level concept
-template <>
-struct LieGroupOps<Pose3<double>> : public pose3::LieGroupOps<double> {};
-template <>
-struct LieGroupOps<Pose3<float>> : public pose3::LieGroupOps<float> {};
 
 }  // namespace sym

@@ -5,7 +5,6 @@
 #include "./group_ops.h"
 
 namespace sym {
-namespace pose2 {
 
 /**
  *
@@ -20,7 +19,7 @@ namespace pose2 {
  *
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::Identity() {
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Identity() {
   // Total ops: 0
 
   // Input arrays
@@ -47,7 +46,7 @@ sym::Pose2<Scalar> GroupOps<Scalar>::Identity() {
  *
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::Inverse(const sym::Pose2<Scalar>& a) {
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Inverse(const sym::Pose2<Scalar>& a) {
   // Total ops: 16
 
   // Input arrays
@@ -78,8 +77,8 @@ sym::Pose2<Scalar> GroupOps<Scalar>::Inverse(const sym::Pose2<Scalar>& a) {
  *
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::Compose(const sym::Pose2<Scalar>& a,
-                                             const sym::Pose2<Scalar>& b) {
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
+                                                    const sym::Pose2<Scalar>& b) {
   // Total ops: 16
 
   // Input arrays
@@ -110,8 +109,8 @@ sym::Pose2<Scalar> GroupOps<Scalar>::Compose(const sym::Pose2<Scalar>& a,
  *
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::Between(const sym::Pose2<Scalar>& a,
-                                             const sym::Pose2<Scalar>& b) {
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Between(const sym::Pose2<Scalar>& a,
+                                                    const sym::Pose2<Scalar>& b) {
   // Total ops: 33
 
   // Input arrays
@@ -145,7 +144,7 @@ sym::Pose2<Scalar> GroupOps<Scalar>::Between(const sym::Pose2<Scalar>& a,
  *     res_D_a: (3x3) jacobian of res (3) wrt arg a (3)
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::InverseWithJacobian(
     const sym::Pose2<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
   // Total ops: 72
 
@@ -212,7 +211,7 @@ sym::Pose2<Scalar> GroupOps<Scalar>::InverseWithJacobian(
  *     res_D_b: (3x3) jacobian of res (3) wrt arg b (3)
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::ComposeWithJacobians(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
   // Total ops: 42
@@ -281,7 +280,7 @@ sym::Pose2<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
  *     res_D_b: (3x3) jacobian of res (3) wrt arg b (3)
  */
 template <typename Scalar>
-sym::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
+sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
   // Total ops: 138
@@ -361,9 +360,8 @@ sym::Pose2<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   return sym::Pose2<Scalar>(_res);
 }
 
-}  // namespace pose2
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::pose2::GroupOps<double>;
-template struct sym::pose2::GroupOps<float>;
+template struct sym::GroupOps<sym::Pose2<double>>;
+template struct sym::GroupOps<sym::Pose2<float>>;
