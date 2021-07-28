@@ -37,3 +37,7 @@ struct LieGroupOps<Rot3<Scalar>> {
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::LieGroupOps<sym::Rot3<double>>;
+extern template struct sym::LieGroupOps<sym::Rot3<float>>;

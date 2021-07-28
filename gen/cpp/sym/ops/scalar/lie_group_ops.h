@@ -45,3 +45,7 @@ template <>
 struct LieGroupOps<float> : public scalar::LieGroupOps<float> {};
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::LieGroupOps<double>;
+extern template struct sym::LieGroupOps<float>;

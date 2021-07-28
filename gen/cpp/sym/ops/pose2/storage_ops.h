@@ -34,3 +34,7 @@ struct StorageOps<Pose2<ScalarType>> {
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::StorageOps<sym::Pose2<double>>;
+extern template struct sym::StorageOps<sym::Pose2<float>>;

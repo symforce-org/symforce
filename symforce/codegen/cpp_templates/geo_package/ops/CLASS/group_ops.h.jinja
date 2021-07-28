@@ -27,3 +27,8 @@ struct GroupOps<{{ cls.__name__ }}<Scalar>> {
 
 
 }  // namespace sym
+
+// Explicit instantiation
+{% for Scalar in scalar_types %}
+extern template struct sym::GroupOps<sym::{{ cls.__name__ }}<{{ Scalar }}>>;
+{% endfor %}

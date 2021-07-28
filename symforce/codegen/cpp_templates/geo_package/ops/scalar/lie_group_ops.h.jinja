@@ -45,3 +45,8 @@ struct LieGroupOps<{{ scalar }}> : public scalar::LieGroupOps<{{ scalar }}> {};
 {% endfor %}
 
 }  // namespace sym
+
+// Explicit instantiation
+{% for scalar in scalar_types %}
+extern template struct sym::LieGroupOps<{{ scalar }}>;
+{% endfor %}

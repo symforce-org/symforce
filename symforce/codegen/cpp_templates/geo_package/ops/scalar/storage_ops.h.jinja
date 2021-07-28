@@ -53,3 +53,8 @@ struct StorageOps<{{ scalar }}> : public scalar::StorageOps<{{ scalar }}> {};
 {% endfor %}
 
 }  // namespace sym
+
+// Explicit instantiation
+{% for scalar in scalar_types %}
+extern template struct sym::StorageOps<{{ scalar }}>;
+{% endfor %}

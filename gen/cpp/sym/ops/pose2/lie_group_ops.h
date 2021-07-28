@@ -37,3 +37,7 @@ struct LieGroupOps<Pose2<Scalar>> {
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::LieGroupOps<sym::Pose2<double>>;
+extern template struct sym::LieGroupOps<sym::Pose2<float>>;

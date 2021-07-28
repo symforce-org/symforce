@@ -34,3 +34,7 @@ struct StorageOps<Rot2<ScalarType>> {
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::StorageOps<sym::Rot2<double>>;
+extern template struct sym::StorageOps<sym::Rot2<float>>;

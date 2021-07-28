@@ -212,3 +212,39 @@ struct StorageOps<Eigen::Matrix<ScalarType, Rows, Cols>> {
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::StorageOps<Eigen::Matrix<double, 1, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 2, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 3, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 4, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 5, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 6, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 7, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 8, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 9, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 2, 2>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 3, 3>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 4, 4>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 5, 5>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 6, 6>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 7, 7>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 8, 8>>;
+extern template struct sym::StorageOps<Eigen::Matrix<double, 9, 9>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 1, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 2, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 3, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 4, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 5, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 6, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 7, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 8, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 9, 1>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 2, 2>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 3, 3>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 4, 4>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 5, 5>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 6, 6>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 7, 7>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 8, 8>>;
+extern template struct sym::StorageOps<Eigen::Matrix<float, 9, 9>>;

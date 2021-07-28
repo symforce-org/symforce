@@ -44,3 +44,7 @@ template <>
 struct GroupOps<float> : public scalar::GroupOps<float> {};
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::GroupOps<double>;
+extern template struct sym::GroupOps<float>;

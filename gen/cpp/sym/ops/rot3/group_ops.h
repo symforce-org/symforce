@@ -33,3 +33,7 @@ struct GroupOps<Rot3<Scalar>> {
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::GroupOps<sym::Rot3<double>>;
+extern template struct sym::GroupOps<sym::Rot3<float>>;

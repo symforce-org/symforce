@@ -54,3 +54,7 @@ template <>
 struct StorageOps<float> : public scalar::StorageOps<float> {};
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::StorageOps<double>;
+extern template struct sym::StorageOps<float>;
