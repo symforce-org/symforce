@@ -1,5 +1,5 @@
 import collections
-import importlib
+import importlib.util
 import logging
 import numpy as np
 import tempfile
