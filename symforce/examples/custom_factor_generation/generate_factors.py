@@ -16,10 +16,6 @@ def generate(output_dir: str) -> None:
 
     codegen.Codegen.function(
         func=custom_between_factor_residual, config=codegen.CppConfig()
-    ).create_with_derivatives(
-        which_args=[0, 1],
-        name="CustomBetweenFactor",
-        derivative_generation_mode=codegen.DerivativeMode.FULL_LINEARIZATION,
-    ).generate_function(
+    ).create_with_linearization(which_args=[0, 1], name="CustomBetweenFactor").generate_function(
         output_dir=output_dir, namespace=namespace
     )

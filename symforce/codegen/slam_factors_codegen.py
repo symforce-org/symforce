@@ -143,20 +143,16 @@ def generate(output_dir: str) -> None:
 
     codegen.Codegen.function(
         func=inverse_range_landmark_prior_residual, config=codegen.CppConfig()
-    ).create_with_derivatives(
-        which_args=[0],
-        name="InverseRangeLandmarkPriorFactor",
-        derivative_generation_mode=codegen.DerivativeMode.FULL_LINEARIZATION,
+    ).create_with_linearization(
+        which_args=[0], name="InverseRangeLandmarkPriorFactor"
     ).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
 
     codegen.Codegen.function(
         func=inverse_range_landmark_reprojection_residual, config=codegen.CppConfig()
-    ).create_with_derivatives(
-        which_args=[0, 2, 4],
-        name="InverseRangeLandmarkReprojectionErrorFactor",
-        derivative_generation_mode=codegen.DerivativeMode.FULL_LINEARIZATION,
+    ).create_with_linearization(
+        which_args=[0, 2, 4], name="InverseRangeLandmarkReprojectionErrorFactor"
     ).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )

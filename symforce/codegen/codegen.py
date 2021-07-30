@@ -8,6 +8,7 @@ import textwrap
 
 from symforce import sympy as sm
 from symforce import geo
+from symforce import jacobian_helpers
 from symforce import ops
 from symforce import logger
 from symforce import python_util
@@ -22,26 +23,18 @@ from symforce.codegen import types_package_codegen
 CURRENT_DIR = os.path.dirname(__file__)
 
 
-class DerivativeMode(enum.Enum):
+class LinearizationMode(enum.Enum):
     """
-    Mode for create_with_derivatives
+    Mode for create_with_linearization
     """
 
-    # Compute jacobians for input arguments as separate matrices.  In this mode, the first result
-    # will also be returned, not an output argument (this may be the original function result, or
-    # the jacobian if only computing derivatives w.r.t one input argument and not returning the
-    # original function result)
-    SEPARATE_JACOBIANS = "separate_jacobians"
-
-    # Compute jacobians for input arguments stacked into a single jacobian matrix.  In this mode,
-    # the generated function will never return anything, all outputs will be output arguments.
+    # Compute jacobians for input arguments stacked into a single jacobian matrix
     STACKED_JACOBIAN = "stacked_jacobian"
 
     # Compute a full linearization for the output with respect to the given input arguments.  This
     # includes the jacobian, hessian (computed as J^T J with only the lower triangle filled out),
     # and rhs (J^T b).  In this mode, the original function must return a vector (a geo.Matrix with
-    # one column) and the generated function will never return anything, all outputs will be output
-    # arguments.
+    # one column).
     FULL_LINEARIZATION = "full_linearization"
 
 
@@ -72,12 +65,13 @@ class Codegen:
         Args:
             inputs: Values object specifying names and symbolic inputs to the function
             outputs: Values object specifying names and output expressions (written in terms
-                of the symbolic inputs) of the function
+                     of the symbolic inputs) of the function
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; must be set before the function is
-                generated, but need not be set here if it's going to be set by create_with_derivatives
+                  generated, but need not be set here if it's going to be set by
+                  create_with_linearization or create_with_derivatives
             return_key: If specified, the output with this key is returned rather than filled
-                in as a named output argument.
+                        in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
             scalar_type: Type used for generated scalar expressions
             docstring: The docstring to be used with the generated function
@@ -452,48 +446,70 @@ class Codegen:
             subsequent_indent=" " * len(preamble),
         )
 
-    def create_with_derivatives(
+    def _pick_name_for_function_with_derivatives(
+        self,
+        which_args: T.Sequence[int],
+        include_result: bool,
+        linearization_mode: T.Optional[LinearizationMode],
+    ) -> str:
+        assert (
+            self.name is not None
+        ), "Codegen name must have been provided already to automatically generate a name with derivatives"
+
+        name = self.name + "_"
+        if linearization_mode == LinearizationMode.FULL_LINEARIZATION:
+            name += "Linearization"
+        else:
+            if include_result:
+                name += "ValueAnd"
+
+            if len(which_args) == 1:
+                name += "Jacobian{}".format(which_args[0])
+            elif len(which_args) == len(self.inputs):
+                name += "Jacobians"
+            else:
+                name += "Jacobians{}".format("".join(str(s) for s in which_args))
+
+        return name
+
+    def create_with_linearization(
         self,
         which_args: T.Sequence[int] = None,
         include_result: bool = True,
         name: str = None,
-        derivative_generation_mode: DerivativeMode = DerivativeMode.SEPARATE_JACOBIANS,
+        linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
-        create a codegen object that additionally computes jacobians with respect to
-        the given input arguments. Flexible to produce the value and all jacobians, just the
-        jacobians, or any combination of one or more jacobians.
+        create a codegen object that additionally computes the jacobian (or the full Gauss-Newton
+        linearization) with respect to the given input arguments.
+
+        The jacobians are in the tangent spaces of the inputs and outputs, see jacobian_helpers.py
+        for more information.
 
         Args:
-            self: Existing codegen object that return a single value
+            self: Existing codegen object that returns a single value
             which_args: Indices of args for which to compute jacobians. If not given, uses all.
-            include_result: Whether this codegen object computes the value in addition to jacobians
+            include_result: For the STACKED_JACOBIAN mode, whether we should still include the
+                            result or only return the jacobian.  For the FULL_LINEARIZATION mode, we
+                            always include the result (which is the residual).
             name: Generated function name. If not given, picks a reasonable name based on the one
-                                           given at construction.
-            derivative_generation_mode: Whether to generate separate jacobians
-                                        (SEPARATE_JACOBIANS), combine them into a single jacobian
-                                        matrix (STACKED_JACOBIANS), or generate a full
-                                        linearization with a hessian and rhs (FULL_LINEARIZATION).
-                                        Also changes whether the result will be returned from the
-                                        generated function or handled as an output argument - for
-                                        SEPARATE_JACOBIANS, the result will be returned (if
-                                        include_result == True), but for STACKED_JACOBIAN or
-                                        FULL_LINEARIZATION it will be an output argument.
+                  given at construction.
+            linearization_mode: Whether to generate a single jacobian matrix (STACKED_JACOBIANS), or
+                                generate a full linearization with a hessian and rhs
+                                (FULL_LINEARIZATION).
         """
-        if not which_args:
+        if which_args is None:
             which_args = list(range(len(list(self.inputs.keys()))))
 
-        # Get docstring
-        docstring_lines = self.docstring.split("\n")[:-1]
+        assert which_args, "Cannot compute a linearization with respect to 0 arguments"
 
         # Ensure the previous codegen has one output
         assert len(list(self.outputs.keys())) == 1
         result_name, result = list(self.outputs.items())[0]
 
-        if derivative_generation_mode == DerivativeMode.FULL_LINEARIZATION:
-            # Ensure the output is a vector (the residual)
-            assert isinstance(result, geo.Matrix) and result.cols == 1
+        # Get docstring
+        docstring_lines = self.docstring.split("\n")[:-1]
 
         # Make the new outputs
         outputs = Values()
@@ -503,109 +519,138 @@ class Codegen:
             # Remove return val line from docstring
             docstring_lines = docstring_lines[:-1]
 
-        # Compute jacobians in the space of the storage, then chain rule on the left and right sides
-        # to get jacobian wrt the tangent space of both the arg and the result
-        jacobian = None
-        docstring_args = []
+        all_input_args = list(self.inputs.items())
+        input_args = [all_input_args[arg_index] for arg_index in which_args]
+        jacobian = geo.Matrix.block_matrix(
+            [jacobian_helpers.tangent_jacobians(result, [arg for _, arg in input_args])]
+        )
 
-        input_args = list(self.inputs.items())
-        result_storage = geo.M(ops.StorageOps.to_storage(result))
-        result_tangent_D_storage = ops.LieGroupOps.tangent_D_storage(result)
-        for arg_index in which_args:
-            arg_name, arg = input_args[arg_index]
-            result_storage_D_arg_storage = result_storage.jacobian(ops.StorageOps.to_storage(arg))
-            arg_jacobian = (
-                result_tangent_D_storage
-                * result_storage_D_arg_storage
-                * ops.LieGroupOps.storage_D_tangent(arg)
+        docstring_args = [
+            f"{arg_name} ({ops.LieGroupOps.tangent_dim(arg)})" for arg_name, arg in input_args
+        ]
+
+        formatted_arg_list = "{} {}".format(
+            python_util.plural("arg", len(docstring_args)), ", ".join(docstring_args)
+        )
+
+        docstring_lines.extend(
+            self.wrap_docstring_arg_description(
+                "    jacobian: ",
+                f"({jacobian.shape[0]}x{jacobian.shape[1]}) jacobian of {result_name} wrt {formatted_arg_list}",
+                self.config,
             )
+        )
 
-            if derivative_generation_mode in (
-                DerivativeMode.STACKED_JACOBIAN,
-                DerivativeMode.FULL_LINEARIZATION,
-            ):
-                if jacobian is None:
-                    jacobian = arg_jacobian
-                else:
-                    jacobian = jacobian.row_join(arg_jacobian)
+        outputs["jacobian"] = jacobian
 
-                docstring_args.append(f"{arg_name} ({ops.LieGroupOps.tangent_dim(arg)})")
-            elif derivative_generation_mode == DerivativeMode.SEPARATE_JACOBIANS:
-                jacobian_name = f"{result_name}_D_{arg_name}"
-                outputs[jacobian_name] = arg_jacobian
+        if linearization_mode == LinearizationMode.FULL_LINEARIZATION:
+            assert (
+                isinstance(result, geo.Matrix) and result.cols == 1
+            ), f"The output must be a vector (the residual), got {result} instead"
 
-                result_dim = ops.LieGroupOps.tangent_dim(result)
-                arg_dim = ops.LieGroupOps.tangent_dim(arg)
-                docstring_lines.append(
-                    f"    {jacobian_name}: ({result_dim}x{arg_dim}) jacobian of {result_name} ({result_dim}) wrt arg {arg_name} ({arg_dim})"
-                )
-
-        if derivative_generation_mode in (
-            DerivativeMode.STACKED_JACOBIAN,
-            DerivativeMode.FULL_LINEARIZATION,
-        ):
-            # Ensure that we have at least one input in the jacobian
-            assert jacobian is not None
-
-            formatted_arg_list = "{} {}".format(
-                python_util.plural("arg", len(docstring_args)), ", ".join(docstring_args)
-            )
-
+            hessian = jacobian.compute_AtA(lower_only=True)
+            outputs["hessian"] = hessian
             docstring_lines.extend(
                 self.wrap_docstring_arg_description(
-                    "    jacobian: ",
-                    f"({jacobian.shape[0]}x{jacobian.shape[1]}) jacobian of {result_name} wrt {formatted_arg_list}",
+                    "    hessian: ",
+                    f"({hessian.shape[0]}x{hessian.shape[1]}) Gauss-Newton hessian for {formatted_arg_list}",
                     self.config,
                 )
             )
 
-            outputs["jacobian"] = jacobian
-
-            if derivative_generation_mode == DerivativeMode.FULL_LINEARIZATION:
-                hessian = jacobian.compute_AtA(lower_only=True)
-                outputs["hessian"] = hessian
-                docstring_lines.extend(
-                    self.wrap_docstring_arg_description(
-                        "    hessian: ",
-                        f"({hessian.shape[0]}x{hessian.shape[1]}) Gauss-Newton hessian for {formatted_arg_list}",
-                        self.config,
-                    )
+            rhs = jacobian.T * result
+            outputs["rhs"] = rhs
+            docstring_lines.extend(
+                self.wrap_docstring_arg_description(
+                    "    rhs: ",
+                    f"({rhs.shape[0]}x{rhs.shape[1]}) Gauss-Newton rhs for {formatted_arg_list}",
+                    self.config,
                 )
-
-                rhs = jacobian.T * result
-                outputs["rhs"] = rhs
-                docstring_lines.extend(
-                    self.wrap_docstring_arg_description(
-                        "    rhs: ",
-                        f"({rhs.shape[0]}x{rhs.shape[1]}) Gauss-Newton rhs for {formatted_arg_list}",
-                        self.config,
-                    )
-                )
+            )
 
         # If just computing a single jacobian, return it instead of output arg
-        return_key = None
-        return_result = derivative_generation_mode == DerivativeMode.SEPARATE_JACOBIANS
-        if len(list(outputs.keys())) == 1 or (include_result and return_result):
-            return_key = list(outputs.keys())[0]
+        return_key = list(outputs.keys())[0] if len(list(outputs.keys())) == 1 else None
 
         # Cutely pick a function name if not given
         if not name:
-            assert (
-                self.name is not None
-            ), "Codegen name must have been provided already to automatically generate a name for create_with_derivatives"
+            name = self._pick_name_for_function_with_derivatives(
+                which_args, include_result, linearization_mode
+            )
 
-            name = self.name + "_"
-            if derivative_generation_mode == DerivativeMode.FULL_LINEARIZATION:
-                name += "Linearization"
-            else:
-                if include_result:
-                    name += "ValueAnd"
-                if len(which_args) == 1:
-                    name += "Jacobian{}".format(which_args[0])
-                elif len(which_args) == len(input_args):
-                    name += "Jacobians"
-                else:
-                    name += "Jacobians{}".format("".join(str(s) for s in which_args))
+        return Codegen(
+            name=name,
+            inputs=self.inputs,
+            outputs=outputs,
+            config=self.config,
+            return_key=return_key,
+            scalar_type=self.scalar_type,
+            docstring="\n".join(docstring_lines),
+        )
+
+    def create_with_derivatives(
+        self, which_args: T.Sequence[int] = None, include_result: bool = True, name: str = None,
+    ) -> Codegen:
+        """
+        Given a codegen object that takes some number of inputs and computes a single result,
+        create a codegen object that additionally computes jacobians with respect to
+        the given input arguments. Flexible to produce the value and all jacobians, just the
+        jacobians, or any combination of one or more jacobians.
+
+        The jacobians are in the tangent spaces of the inputs and outputs, see jacobian_helpers.py
+        for more information.
+
+        Args:
+            self: Existing codegen object that return a single value
+            which_args: Indices of args for which to compute jacobians. If not given, uses all.
+            include_result: Whether we should still return the value in addition to the jacobian(s)
+            name: Generated function name. If not given, picks a reasonable name based on the one
+                  given at construction.
+        """
+        if which_args is None:
+            which_args = list(range(len(list(self.inputs.keys()))))
+
+        assert which_args, "Cannot compute a linearization with respect to 0 arguments"
+
+        # Ensure the previous codegen has one output
+        assert len(list(self.outputs.keys())) == 1
+        result_name, result = list(self.outputs.items())[0]
+
+        # Get docstring
+        docstring_lines = self.docstring.split("\n")[:-1]
+
+        # Make the new outputs
+        outputs = Values()
+        if include_result:
+            outputs[result_name] = result
+        else:
+            # Remove return val line from docstring
+            docstring_lines = docstring_lines[:-1]
+
+        all_input_args = list(self.inputs.items())
+        input_args = [all_input_args[arg_index] for arg_index in which_args]
+        arg_jacobians = jacobian_helpers.tangent_jacobians(result, [arg for _, arg in input_args])
+
+        for (arg_name, arg), arg_jacobian in zip(input_args, arg_jacobians):
+            jacobian_name = f"{result_name}_D_{arg_name}"
+            outputs[jacobian_name] = arg_jacobian
+
+            result_dim = ops.LieGroupOps.tangent_dim(result)
+            arg_dim = ops.LieGroupOps.tangent_dim(arg)
+            docstring_lines.append(
+                f"    {jacobian_name}: ({result_dim}x{arg_dim}) jacobian of {result_name} ({result_dim}) wrt arg {arg_name} ({arg_dim})"
+            )
+
+        # If just computing a single jacobian, return it instead of output arg
+        if len(list(outputs.keys())) == 1 or include_result:
+            return_key: T.Optional[str] = list(outputs.keys())[0]
+        else:
+            return_key = None
+
+        # Cutely pick a function name if not given
+        if not name:
+            name = self._pick_name_for_function_with_derivatives(
+                which_args, include_result, linearization_mode=None
+            )
 
         return Codegen(
             name=name,

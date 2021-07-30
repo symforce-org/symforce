@@ -100,6 +100,12 @@ class Values:
         """
         return self.from_storage(self.to_storage())
 
+    def __len__(self) -> int:
+        """
+        Return the number of elements in this Values
+        """
+        return len(self.dict)
+
     # -------------------------------------------------------------------------
     # Serialization
     # -------------------------------------------------------------------------

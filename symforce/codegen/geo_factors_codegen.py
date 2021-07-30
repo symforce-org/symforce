@@ -7,7 +7,6 @@ from symforce import types as T
 from symforce import sympy as sm
 from symforce.codegen import CppConfig
 from symforce.codegen import Codegen
-from symforce.codegen import DerivativeMode
 from symforce.values import Values
 
 TYPES = (geo.Rot2, geo.Rot3, geo.V3, geo.Pose2, geo.Pose3)
@@ -123,11 +122,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             output_names=["res"],
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
-        ).create_with_derivatives(
-            name=f"BetweenFactor{cls.__name__}",
-            which_args=[0, 1],
-            derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
-        )
+        ).create_with_linearization(name=f"BetweenFactor{cls.__name__}", which_args=[0, 1])
         files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
 
         prior_codegen = Codegen.function(
@@ -136,11 +131,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             output_names=["res"],
             config=CppConfig(),
             docstring=get_prior_docstring(),
-        ).create_with_derivatives(
-            name=f"PriorFactor{cls.__name__}",
-            which_args=[0],
-            derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
-        )
+        ).create_with_linearization(name=f"PriorFactor{cls.__name__}", which_args=[0])
         files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
 
     return files_dict
@@ -199,10 +190,8 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         output_names=["res"],
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_R_b"),
-    ).create_with_derivatives(
-        name=f"BetweenFactor{geo.Pose3.__name__}Rotation",
-        which_args=[0, 1],
-        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
+    ).create_with_linearization(
+        name=f"BetweenFactor{geo.Pose3.__name__}Rotation", which_args=[0, 1]
     )
 
     between_position_codegen = Codegen.function(
@@ -210,10 +199,8 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         output_names=["res"],
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_t_b"),
-    ).create_with_derivatives(
-        name=f"BetweenFactor{geo.Pose3.__name__}Position",
-        which_args=[0, 1],
-        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
+    ).create_with_linearization(
+        name=f"BetweenFactor{geo.Pose3.__name__}Position", which_args=[0, 1]
     )
 
     prior_rotation_codegen = Codegen.function(
@@ -221,22 +208,14 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         output_names=["res"],
         config=CppConfig(),
         docstring=get_prior_docstring(),
-    ).create_with_derivatives(
-        name=f"PriorFactor{geo.Pose3.__name__}Rotation",
-        which_args=[0],
-        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
-    )
+    ).create_with_linearization(name=f"PriorFactor{geo.Pose3.__name__}Rotation", which_args=[0])
 
     prior_position_codegen = Codegen.function(
         func=prior_factor_pose3_position,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_prior_docstring(),
-    ).create_with_derivatives(
-        name=f"PriorFactor{geo.Pose3.__name__}Position",
-        which_args=[0],
-        derivative_generation_mode=DerivativeMode.FULL_LINEARIZATION,
-    )
+    ).create_with_linearization(name=f"PriorFactor{geo.Pose3.__name__}Position", which_args=[0])
 
     files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
     files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)
