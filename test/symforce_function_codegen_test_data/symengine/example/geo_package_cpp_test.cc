@@ -324,7 +324,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
             storage, epsilon, std::sqrt(epsilon));
 
     const Eigen::Matrix<Scalar, tangent_dim, storage_dim> symforce_tangent_D_storage =
-        sym::Tangent_D_Storage(a, epsilon);
+        sym::TangentDStorage(a, epsilon);
 
     CHECK(
         numerical_tangent_D_storage.isApprox(symforce_tangent_D_storage, 10 * std::sqrt(epsilon)));

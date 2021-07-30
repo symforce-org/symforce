@@ -209,7 +209,7 @@ class SymforceCodegenTest(TestCase):
 
         # Create the specification
         az_el_codegen = codegen.Codegen.function(
-            name="az_el_from_point", func=az_el_from_point, config=codegen.PythonConfig(),
+            func=az_el_from_point, config=codegen.PythonConfig()
         )
         az_el_codegen_data = az_el_codegen.generate_function()
 
@@ -231,9 +231,7 @@ class SymforceCodegenTest(TestCase):
             return geo.V2(x[0, 0], x[1, 0])
 
         numba_test_func_codegen = codegen.Codegen.function(
-            name="numba_test_func",
-            func=numba_test_func,
-            config=codegen.PythonConfig(use_numba=True),
+            func=numba_test_func, config=codegen.PythonConfig(use_numba=True)
         )
         numba_test_func_codegen_data = numba_test_func_codegen.generate_function()
 
@@ -270,7 +268,7 @@ class SymforceCodegenTest(TestCase):
 
         for scalar_type in ("double", "float"):
             cpp_func = codegen.Codegen(
-                inputs, outputs, codegen.CppConfig(), "CodegenCppTest", scalar_type=scalar_type
+                inputs, outputs, codegen.CppConfig(), "codegen_cpp_test", scalar_type=scalar_type
             )
             shared_types = {
                 "values_vec": "values_vec_t",
@@ -315,9 +313,7 @@ class SymforceCodegenTest(TestCase):
     def test_function_codegen_cpp(self) -> None:
 
         # Create the specification
-        az_el_codegen = codegen.Codegen.function(
-            name="AzElFromPoint", func=az_el_from_point, config=codegen.CppConfig(),
-        )
+        az_el_codegen = codegen.Codegen.function(func=az_el_from_point, config=codegen.CppConfig())
         az_el_codegen_data = az_el_codegen.generate_function()
 
         # Compare to expected
@@ -340,7 +336,7 @@ class SymforceCodegenTest(TestCase):
 
         namespace = "codegen_nan_test"
         cpp_func = codegen.Codegen(
-            name="IdentityDistJacobian",
+            name="identity_dist_jacobian",
             inputs=inputs,
             outputs=Values(dist_D_R1=dist_D_R1),
             return_key="dist_D_R1",
@@ -384,13 +380,13 @@ class SymforceCodegenTest(TestCase):
         outputs_2["foo"] = inputs["y"] ** 3 + inputs["x"]
 
         cpp_func_1 = codegen.Codegen(
-            name="CodegenMultiFunctionTest1",
+            name="codegen_multi_function_test1",
             inputs=Values(inputs=inputs),
             outputs=Values(outputs_1=outputs_1),
             config=codegen.CppConfig(),
         )
         cpp_func_2 = codegen.Codegen(
-            name="CodegenMultiFunctionTest2",
+            name="codegen_multi_function_test2",
             inputs=Values(inputs=inputs),
             outputs=Values(outputs_2=outputs_2),
             config=codegen.CppConfig(),
@@ -465,7 +461,7 @@ class SymforceCodegenTest(TestCase):
 
         # Function that creates a sparse matrix
         get_sparse_func = codegen.Codegen(
-            name="GetDiagonalSparse",
+            name="get_diagonal_sparse",
             inputs=inputs,
             outputs=outputs,
             return_key="matrix_out",
@@ -485,7 +481,7 @@ class SymforceCodegenTest(TestCase):
         multiple_outputs["result"] = geo.Matrix33().zero()
 
         get_dense_and_sparse_func = codegen.Codegen(
-            name="GetMultipleDenseAndSparse",
+            name="get_multiple_dense_and_sparse",
             inputs=inputs,
             outputs=multiple_outputs,
             return_key="result",
@@ -499,7 +495,7 @@ class SymforceCodegenTest(TestCase):
 
         # Function that updates sparse matrix without copying
         update_spase_func = codegen.Codegen(
-            name="UpdateSparseMat",
+            name="update_sparse_mat",
             inputs=inputs,
             outputs=Values(updated_mat=2 * outputs["matrix_out"]),
             config=codegen.CppConfig(),
@@ -567,7 +563,8 @@ class SymforceCodegenTest(TestCase):
     def test_name_deduction(self) -> None:
         """
         Tests:
-            Codegen.function must create the right name for Python and C++
+            Codegen.function must create the right name, which should be snake_case regardless of
+                language
             Codegen.function should assert on trying to deduce the name from a lambda
         """
 
@@ -581,7 +578,7 @@ class SymforceCodegenTest(TestCase):
 
         self.assertEqual(
             codegen.Codegen.function(func=my_function, config=codegen.CppConfig()).name,
-            "MyFunction",
+            "my_function",
         )
 
         # Can't automagically deduce name for lambda
@@ -605,7 +602,7 @@ class SymforceCodegenTest(TestCase):
         # Let's pick Pose3 compose
         cls = geo.Pose3
         codegen_function = codegen.Codegen.function(
-            name="Compose" + cls.__name__,
+            name="compose_" + cls.__name__.lower(),
             func=ops.GroupOps.compose,
             input_types=[cls, cls],
             config=codegen.CppConfig(),

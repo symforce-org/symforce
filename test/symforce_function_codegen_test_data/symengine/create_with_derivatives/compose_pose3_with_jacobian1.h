@@ -16,9 +16,9 @@ namespace sym {
  *     res_D_b: (6x6) jacobian of res (6) wrt arg b (6)
  */
 template <typename Scalar>
-sym::Pose3<Scalar> ComposePose3_ValueAndJacobian1(
-    const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
-    Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
+sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
+                                             const sym::Pose3<Scalar>& b,
+                                             Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
   // Total ops: 204
 
   // Input arrays

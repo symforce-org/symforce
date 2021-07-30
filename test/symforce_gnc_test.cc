@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../symforce/opt/gnc.h"
-#include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_residual.h"
+#include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
 #include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {
@@ -54,8 +54,8 @@ TEST_CASE("Test GNC", "[gnc]") {
 
   std::vector<sym::Factord> factors;
   for (int i = 0; i < n_residuals; i++) {
-    factors.push_back(sym::Factord::Hessian(gnc_factors::BarronResidual<double>,
-                                            {'x', {'y', i}, 'u', 'e'}, {'x'}));
+    factors.push_back(
+        sym::Factord::Hessian(gnc_factors::BarronFactor<double>, {'x', {'y', i}, 'u', 'e'}, {'x'}));
   }
 
   sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(DefaultLmParams(), DefaultGncParams(), 'u',

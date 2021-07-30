@@ -10,7 +10,7 @@ from .build_values import build_values
 from symforce.codegen import geo_factors_codegen
 from symforce.codegen.slam_factors_codegen import (
     inverse_range_landmark_prior_residual,
-    inverse_range_landmark_reprojection_residual,
+    inverse_range_landmark_reprojection_error_residual,
 )
 
 
@@ -85,7 +85,7 @@ class FixedBundleAdjustmentProblem:
             }
         )
         linearization_func = codegen.Codegen(
-            name="Linearization",
+            name="linearization",
             inputs=inputs,
             outputs=outputs,
             config=codegen.CppConfig(),
@@ -164,7 +164,7 @@ class FixedBundleAdjustmentProblem:
 
                 # Feature match reprojection error (huberized)
                 reprojections.append(
-                    inverse_range_landmark_reprojection_residual(
+                    inverse_range_landmark_reprojection_error_residual(
                         self.values["views"][0]["pose"],
                         self.values["views"][0]["calibration"],
                         self.values["views"][v_i]["pose"],

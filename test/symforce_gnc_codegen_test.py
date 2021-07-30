@@ -43,7 +43,7 @@ class SymGncCodegenTest(TestCase):
             # Compute code
             codegen.Codegen.function(
                 func=barron_factor, config=codegen.CppConfig()
-            ).create_with_linearization(which_args=[0], name="BarronResidual").generate_function(
+            ).create_with_linearization(which_args=[0]).generate_function(
                 output_dir=output_dir, namespace=namespace
             )
 

@@ -66,7 +66,7 @@ def reprojection_delta(
     return reprojection_error, warp_is_valid
 
 
-def inverse_range_landmark_reprojection_residual(  # pylint: disable=too-many-arguments
+def inverse_range_landmark_reprojection_error_residual(  # pylint: disable=too-many-arguments
     source_pose: geo.Pose3,
     source_calibration_storage: geo.Matrix41,
     target_pose: geo.Pose3,
@@ -143,16 +143,12 @@ def generate(output_dir: str) -> None:
 
     codegen.Codegen.function(
         func=inverse_range_landmark_prior_residual, config=codegen.CppConfig()
-    ).create_with_linearization(
-        which_args=[0], name="InverseRangeLandmarkPriorFactor"
-    ).generate_function(
+    ).create_with_linearization(which_args=[0]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
 
     codegen.Codegen.function(
-        func=inverse_range_landmark_reprojection_residual, config=codegen.CppConfig()
-    ).create_with_linearization(
-        which_args=[0, 2, 4], name="InverseRangeLandmarkReprojectionErrorFactor"
-    ).generate_function(
+        func=inverse_range_landmark_reprojection_error_residual, config=codegen.CppConfig()
+    ).create_with_linearization(which_args=[0, 2, 4]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )

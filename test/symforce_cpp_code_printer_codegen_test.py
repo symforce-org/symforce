@@ -44,12 +44,10 @@ class SymforceCppCodePrinterTest(TestCase):
 
     @sympy_only
     def test_heaviside(self) -> None:
-        def f(x: sm.Symbol) -> sm.Symbol:
+        def heaviside(x: sm.Symbol) -> sm.Symbol:
             return sm.functions.special.delta_functions.Heaviside(x)
 
-        heaviside_codegen = codegen.Codegen.function(
-            name="Heaviside", func=f, config=codegen.CppConfig()
-        )
+        heaviside_codegen = codegen.Codegen.function(func=heaviside, config=codegen.CppConfig())
         heaviside_codegen_data = heaviside_codegen.generate_function(
             namespace="cpp_code_printer_test"
         )

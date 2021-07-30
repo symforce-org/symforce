@@ -3,7 +3,7 @@
 #include <symforce/opt/util.h>
 
 #include "catch.hpp"
-#include "symforce_function_codegen_test_data/symengine/create_with_derivatives/compose_pose3__value_and_jacobian0.h"
+#include "symforce_function_codegen_test_data/symengine/create_with_derivatives/compose_pose3_with_jacobian0.h"
 
 TEMPLATE_TEST_CASE("Test compose numerical derivative", "[create_with_derivatives]", double,
                    float) {
@@ -24,7 +24,7 @@ TEMPLATE_TEST_CASE("Test compose numerical derivative", "[create_with_derivative
 
     Eigen::Matrix<Scalar, 6, 6> symforce_jacobian;
     const sym::Pose3<Scalar> symforce_result =
-        sym::ComposePose3_ValueAndJacobian0(a, b, &symforce_jacobian);
+        sym::ComposePose3WithJacobian0(a, b, &symforce_jacobian);
     (void)symforce_result;
 
     CHECK(numerical_jacobian.isApprox(symforce_jacobian, 10 * std::sqrt(epsilon)));

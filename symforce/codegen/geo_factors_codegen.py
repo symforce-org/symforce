@@ -90,7 +90,7 @@ def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
 
     # Read
     assert codegen.name is not None
-    filename = "{}.h".format(python_util.camelcase_to_snakecase(codegen.name))
+    filename = "{}.h".format(codegen.name)
     with open(os.path.join(data["cpp_function_dir"], filename)) as f:
         func_code = f.read()
 
@@ -106,7 +106,7 @@ def get_filename(codegen: Codegen) -> str:
     Helper to get appropriate filename
     """
     assert codegen.name is not None
-    return python_util.camelcase_to_snakecase(codegen.name) + ".h"
+    return codegen.name + ".h"
 
 
 def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
@@ -122,7 +122,9 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             output_names=["res"],
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
-        ).create_with_linearization(name=f"BetweenFactor{cls.__name__}", which_args=[0, 1])
+        ).create_with_linearization(
+            name=f"between_factor_{cls.__name__.lower()}", which_args=[0, 1]
+        )
         files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
 
         prior_codegen = Codegen.function(
@@ -131,7 +133,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             output_names=["res"],
             config=CppConfig(),
             docstring=get_prior_docstring(),
-        ).create_with_linearization(name=f"PriorFactor{cls.__name__}", which_args=[0])
+        ).create_with_linearization(name=f"prior_factor_{cls.__name__.lower()}", which_args=[0])
         files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
 
     return files_dict
@@ -190,32 +192,28 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         output_names=["res"],
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_R_b"),
-    ).create_with_linearization(
-        name=f"BetweenFactor{geo.Pose3.__name__}Rotation", which_args=[0, 1]
-    )
+    ).create_with_linearization(name="between_factor_pose3_rotation", which_args=[0, 1])
 
     between_position_codegen = Codegen.function(
         func=between_factor_pose3_position,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_t_b"),
-    ).create_with_linearization(
-        name=f"BetweenFactor{geo.Pose3.__name__}Position", which_args=[0, 1]
-    )
+    ).create_with_linearization(name="between_factor_pose3_position", which_args=[0, 1])
 
     prior_rotation_codegen = Codegen.function(
         func=prior_factor_pose3_rotation,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_prior_docstring(),
-    ).create_with_linearization(name=f"PriorFactor{geo.Pose3.__name__}Rotation", which_args=[0])
+    ).create_with_linearization(name="prior_factor_pose3_rotation", which_args=[0])
 
     prior_position_codegen = Codegen.function(
         func=prior_factor_pose3_position,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_prior_docstring(),
-    ).create_with_linearization(name=f"PriorFactor{geo.Pose3.__name__}Position", which_args=[0])
+    ).create_with_linearization(name="prior_factor_pose3_position", which_args=[0])
 
     files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
     files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)

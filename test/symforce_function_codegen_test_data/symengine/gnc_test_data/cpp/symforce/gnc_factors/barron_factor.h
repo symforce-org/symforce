@@ -22,12 +22,12 @@ namespace gnc_factors {
  *     rhs: (5x1) Gauss-Newton rhs for arg x (5)
  */
 template <typename Scalar>
-void BarronResidual(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scalar, 5, 1>& y,
-                    const Scalar mu, const Scalar eps,
-                    Eigen::Matrix<Scalar, 5, 1>* const res = nullptr,
-                    Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
-                    Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
-                    Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
+void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scalar, 5, 1>& y,
+                  const Scalar mu, const Scalar eps,
+                  Eigen::Matrix<Scalar, 5, 1>* const res = nullptr,
+                  Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
+                  Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
+                  Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
   // Total ops: 123
 
   // Input arrays

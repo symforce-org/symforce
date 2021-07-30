@@ -28,14 +28,13 @@ def make_storage_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen
     storage_vec = geo.M(ops.StorageOps.storage_dim(cls), 1)
     return [
         Codegen.function(
-            name="ToStorage",
             func=ops.StorageOps.to_storage,
             input_types=[cls],
             config=config,
             docstring=ops.StorageOps.to_storage.__doc__,
         ),
         Codegen.function(
-            name="FromStorage",
+            name="from_storage",
             func=(lambda vec: ops.StorageOps.from_storage(cls, vec)),
             input_types=[storage_vec],
             config=config,
@@ -49,11 +48,10 @@ def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     Create func spec arguments for group ops on the given class.
     """
     identity = Codegen.function(
-        name="Identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], config=config
+        name="identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], config=config
     )
 
     inverse = Codegen.function(
-        name="Inverse",
         func=ops.GroupOps.inverse,
         input_types=[cls],
         config=config,
@@ -61,25 +59,22 @@ def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     )
 
     compose = Codegen.function(
-        name="Compose",
         func=ops.GroupOps.compose,
         input_types=[cls, cls],
         config=config,
         docstring=ops.GroupOps.compose.__doc__,
     )
 
-    between = Codegen.function(
-        name="Between", func=ops.GroupOps.between, input_types=[cls, cls], config=config
-    )
+    between = Codegen.function(func=ops.GroupOps.between, input_types=[cls, cls], config=config)
 
     return [
         identity,
         inverse,
         compose,
         between,
-        inverse.create_with_derivatives(name="InverseWithJacobian"),
-        compose.create_with_derivatives(name="ComposeWithJacobians"),
-        between.create_with_derivatives(name="BetweenWithJacobians"),
+        inverse.create_with_derivatives(),
+        compose.create_with_derivatives(),
+        between.create_with_derivatives(),
     ]
 
 
@@ -90,28 +85,25 @@ def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codeg
     tangent_vec = geo.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
     return [
         Codegen.function(
-            name="FromTangent",
+            name="from_tangent",
             func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
             input_types=[tangent_vec, sm.Symbol],
             config=config,
             docstring=ops.LieGroupOps.from_tangent.__doc__,
         ),
         Codegen.function(
-            name="ToTangent",
             func=ops.LieGroupOps.to_tangent,
             input_types=[cls, sm.Symbol],
             config=config,
             docstring=ops.LieGroupOps.to_tangent.__doc__,
         ),
         Codegen.function(
-            name="Retract",
             func=ops.LieGroupOps.retract,
             input_types=[cls, tangent_vec, sm.Symbol],
             config=config,
             docstring=ops.LieGroupOps.retract.__doc__,
         ),
         Codegen.function(
-            name="LocalCoordinates",
             func=ops.LieGroupOps.local_coordinates,
             input_types=[cls, cls, sm.Symbol],
             config=config,
@@ -178,10 +170,10 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config)],
         geo.Rot3: [Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config)],
         geo.Pose2: [
-            Codegen.function(func=pose2_inverse_compose, name="InverseCompose", config=config)
+            Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config)
         ],
         geo.Pose3: [
-            Codegen.function(func=pose3_inverse_compose, name="InverseCompose", config=config)
+            Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config)
         ],
     }
 

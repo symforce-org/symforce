@@ -45,9 +45,7 @@ class SymforceGenCodegenTest(TestCase):
 
         # Create the specification
         namespace = "cam_function_codegen_test"
-        my_func = codegen.Codegen.function(
-            name="PixelToRayAndBack", func=pixel_to_ray_and_back, config=codegen.CppConfig(),
-        )
+        my_func = codegen.Codegen.function(func=pixel_to_ray_and_back, config=codegen.CppConfig())
         cpp_data = my_func.generate_function(output_dir=output_dir, namespace=namespace)
 
         # Compare against the checked-in test data
@@ -61,15 +59,13 @@ class SymforceGenCodegenTest(TestCase):
     def generate_tangent_d_storage_functions(self, output_dir: str) -> None:
         for cls in geo_package_codegen.DEFAULT_GEO_TYPES:
             tangent_D_storage_codegen = codegen.Codegen.function(
-                name="Tangent_D_Storage",
                 func=ops.LieGroupOps.tangent_D_storage,
                 input_types=[cls, sm.Symbol],
                 config=codegen.CppConfig(),
             )
             tangent_D_storage_codegen.generate_function(
-                # Underscore here because of how python_util.camelcase_to_snakecase works
                 output_dir=output_dir,
-                generated_file_name="Tangent_DStorage" + cls.__name__,
+                generated_file_name="tangent_d_storage_" + cls.__name__.lower(),
             )
 
         # Compare against the checked-in test data

@@ -69,7 +69,8 @@ class Codegen:
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; must be set before the function is
                   generated, but need not be set here if it's going to be set by
-                  create_with_linearization or create_with_derivatives
+                  create_with_linearization or create_with_derivatives.  Should be snake_case, will
+                  be converted to the language-specific function name style at generation time
             return_key: If specified, the output with this key is returned rather than filled
                         in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
@@ -122,7 +123,9 @@ class Codegen:
 
         self.docstring = docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
 
-        # TODO(nathan): Consider moving into a different function so that we can generate code separately
+        # TODO(aaron): We should either do this in generate_function instead, or migrate
+        # create_with_* to function_with_* so that the typical flow of creating a function with
+        # derivatives doesn't do this twice
         (
             self.intermediate_terms,
             self.output_terms,
@@ -172,8 +175,6 @@ class Codegen:
         if name is None:
             assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
             name = func.__name__
-            if isinstance(config, codegen_config.CppConfig):
-                name = python_util.snakecase_to_camelcase(name)
 
         # Formulate symbolic arguments to function
         assert len(arg_spec.args) == len(input_types)
@@ -322,7 +323,7 @@ class Codegen:
         values_indices = {name: gen_type.index() for name, gen_type in types_to_generate}
         types_codegen_data = types_package_codegen.generate_types(
             package_name=namespace,
-            file_name=python_util.camelcase_to_snakecase(generated_file_name),
+            file_name=generated_file_name,
             values_indices=values_indices,
             shared_types=shared_types,
             scalar_type=self.scalar_type,
@@ -374,13 +375,13 @@ class Codegen:
             else:
                 cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
 
-            logger.info(f'Creating C++ function "{self.name}" at "{cpp_function_dir}"')
+            logger.info(
+                f'Creating C++ function "{python_util.snakecase_to_camelcase(self.name)}" at "{cpp_function_dir}"'
+            )
 
             templates.add(
                 os.path.join(template_util.CPP_TEMPLATE_DIR, "function", "FUNCTION.h.jinja"),
-                os.path.join(
-                    cpp_function_dir, python_util.camelcase_to_snakecase(generated_file_name) + ".h"
-                ),
+                os.path.join(cpp_function_dir, generated_file_name + ".h"),
                 template_data,
             )
 
@@ -456,19 +457,22 @@ class Codegen:
             self.name is not None
         ), "Codegen name must have been provided already to automatically generate a name with derivatives"
 
-        name = self.name + "_"
+        name = self.name
         if linearization_mode == LinearizationMode.FULL_LINEARIZATION:
-            name += "Linearization"
+            if name.endswith("_residual"):
+                name = name[: -len("_residual")]
+
+            if not name.endswith("_factor"):
+                name += "_factor"
         else:
             if include_result:
-                name += "ValueAnd"
+                name += "_with"
 
-            if len(which_args) == 1:
-                name += "Jacobian{}".format(which_args[0])
-            elif len(which_args) == len(self.inputs):
-                name += "Jacobians"
+            jacobians = python_util.plural("_jacobian", len(which_args))
+            if len(which_args) == len(self.inputs):
+                name += jacobians
             else:
-                name += "Jacobians{}".format("".join(str(s) for s in which_args))
+                name += jacobians + "".join(str(s) for s in which_args)
 
         return name
 

@@ -160,7 +160,8 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #         include default arguments)
  #}
 {%- macro function_declaration(spec, is_declaration) -%}
-{{ get_return_type(spec) }} {{ spec.name }}({{- input_args_declaration(spec, is_declaration) -}})
+{% set name = python_util.snakecase_to_camelcase(spec.name) %}
+{{ get_return_type(spec) }} {{ name }}({{- input_args_declaration(spec, is_declaration) -}})
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -174,7 +175,8 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #         include default arguments)
  #}
 {%- macro function_declaration_custom_namespace(spec, namespace, is_declaration) -%}
-{{ get_return_type(spec) }} {{ namespace }}::{{ spec.name }}({{- input_args_declaration(spec, is_declaration) -}})
+{% set name = python_util.snakecase_to_camelcase(spec.name) %}
+{{ get_return_type(spec) }} {{ namespace }}::{{ name }}({{- input_args_declaration(spec, is_declaration) -}})
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}

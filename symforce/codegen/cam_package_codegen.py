@@ -29,7 +29,6 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     camera_ray_from_pixel = None
     try:
         camera_ray_from_pixel = Codegen.function(
-            name="CameraRayFromPixel",
             func=cls.camera_ray_from_pixel,
             input_types=[cls, geo.V2, sm.Symbol],
             config=config,
@@ -43,7 +42,7 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
 
     return [
         Codegen.function(
-            name="FocalLength",
+            name="focal_length",
             func=lambda self: self.focal_length,
             input_types=[cls],
             config=config,
@@ -52,7 +51,7 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
             docstring="\nReturn the focal length.",
         ),
         Codegen.function(
-            name="PrincipalPoint",
+            name="principal_point",
             func=lambda self: self.principal_point,
             input_types=[cls],
             config=config,
@@ -61,7 +60,6 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
             docstring="\nReturn the principal point.",
         ),
         Codegen.function(
-            name="PixelFromCameraPoint",
             func=cls.pixel_from_camera_point,
             config=config,
             input_types=[cls, geo.V3, sm.Symbol],
