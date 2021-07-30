@@ -3,7 +3,7 @@ import os
 from symforce.examples.bundle_adjustment_fixed_size.generate_fixed_problem import (
     FixedBundleAdjustmentProblem,
 )
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase, symengine_only
 
 CURRENT_DIR = os.path.dirname(__file__)
 SYMFORCE_DIR = os.path.join(CURRENT_DIR, "..")
@@ -12,7 +12,8 @@ BASE_DIRNAME = "symforce_bundle_adjustment_example"
 
 
 class BundleAdjustmentExampleCodegenTest(TestCase):
-    @slow_on_sympy
+    # This one is so impossibly slow on SymPy that we just disable it
+    @symengine_only
     def test_generate_example_fixed(self) -> None:
         output_dir = self.make_output_dir(BASE_DIRNAME)
 
