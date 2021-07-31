@@ -69,7 +69,7 @@ class Codegen:
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; must be set before the function is
                   generated, but need not be set here if it's going to be set by
-                  create_with_linearization or create_with_derivatives.  Should be snake_case, will
+                  create_with_linearization or create_with_jacobians.  Should be snake_case, will
                   be converted to the language-specific function name style at generation time
             return_key: If specified, the output with this key is returned rather than filled
                         in as a named output argument.
@@ -288,7 +288,7 @@ class Codegen:
         """
         assert (
             self.name is not None
-        ), "Name should be set either at construction or by create_with_derivatives"
+        ), "Name should be set either at construction or by create_with_jacobians"
 
         if output_dir is None:
             output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp")
@@ -462,7 +462,7 @@ class Codegen:
     def _pick_name_for_function_with_derivatives(
         self,
         which_args: T.Sequence[int],
-        include_result: bool,
+        include_results: bool,
         linearization_mode: T.Optional[LinearizationMode],
     ) -> str:
         assert (
@@ -477,7 +477,7 @@ class Codegen:
             if not name.endswith("_factor"):
                 name += "_factor"
         else:
-            if include_result:
+            if include_results:
                 name += "_with"
 
             jacobians = python_util.plural("_jacobian", len(which_args))
@@ -603,13 +603,18 @@ class Codegen:
             docstring="\n".join(docstring_lines),
         )
 
-    def create_with_derivatives(
-        self, which_args: T.Sequence[int] = None, include_result: bool = True, name: str = None,
+    def create_with_jacobians(
+        self,
+        which_args: T.Sequence[int] = None,
+        which_results: T.Sequence[int] = (0,),
+        include_results: bool = True,
+        name: str = None,
     ) -> Codegen:
         """
-        Given a codegen object that takes some number of inputs and computes a single result,
-        create a codegen object that additionally computes jacobians with respect to
-        the given input arguments. Flexible to produce the value and all jacobians, just the
+        Given a codegen object that takes some number of inputs and computes some number of results,
+        create a codegen object that additionally computes jacobians of the given results with
+        respect to the given input arguments. By default, computes the jacobians of the first result
+        with respect to all arguments.  Flexible to produce the values and all jacobians, just the
         jacobians, or any combination of one or more jacobians.
 
         The jacobians are in the tangent spaces of the inputs and outputs, see jacobian_helpers.py
@@ -618,7 +623,11 @@ class Codegen:
         Args:
             self: Existing codegen object that return a single value
             which_args: Indices of args for which to compute jacobians. If not given, uses all.
-            include_result: Whether we should still return the value in addition to the jacobian(s)
+            which_results: Indices of results for which to compute jacobians.  If not given, uses
+                           the first result.
+            include_results: Whether we should still return the values in addition to the
+                             jacobian(s), for the results in which_results.  Values not in
+                             which_results are always still returned.
             name: Generated function name. If not given, picks a reasonable name based on the one
                   given at construction.
         """
@@ -627,45 +636,65 @@ class Codegen:
 
         assert which_args, "Cannot compute a linearization with respect to 0 arguments"
 
-        # Ensure the previous codegen has one output
-        assert len(list(self.outputs.keys())) == 1
-        result_name, result = list(self.outputs.items())[0]
+        assert list(sorted(which_results)) == list(which_results), "which_results must be sorted"
 
         # Get docstring
         docstring_lines = self.docstring.rstrip().split("\n")
 
         # Make the new outputs
-        outputs = Values()
-        if include_result:
-            outputs[result_name] = result
+        if include_results:
+            outputs = self.outputs.copy()
         else:
-            # Remove return val line from docstring
-            docstring_lines = docstring_lines[:-1]
+            outputs = Values()
 
+            # Copy in results we're not differentiating
+            self_outputs_keys = self.outputs.keys()
+            for i in range(len(self.outputs)):
+                if i not in which_results:
+                    outputs[self_outputs_keys[i]] = self.outputs[self_outputs_keys[i]]
+
+            # Remove return val lines from docstring
+            # TODO(aaron): Make this work when some return values have multi-line descriptions
+            for i in which_results:
+                index_from_back = -len(self.outputs) + i
+                del docstring_lines[index_from_back]
+
+        # Add all the jacobians
         all_input_args = list(self.inputs.items())
         input_args = [all_input_args[arg_index] for arg_index in which_args]
-        arg_jacobians = jacobian_helpers.tangent_jacobians(result, [arg for _, arg in input_args])
 
-        for (arg_name, arg), arg_jacobian in zip(input_args, arg_jacobians):
-            jacobian_name = f"{result_name}_D_{arg_name}"
-            outputs[jacobian_name] = arg_jacobian
+        all_outputs = list(self.outputs.items())
+        for i in which_results:
+            result_name, result = all_outputs[i]
 
-            result_dim = ops.LieGroupOps.tangent_dim(result)
-            arg_dim = ops.LieGroupOps.tangent_dim(arg)
-            docstring_lines.append(
-                f"    {jacobian_name}: ({result_dim}x{arg_dim}) jacobian of {result_name} ({result_dim}) wrt arg {arg_name} ({arg_dim})"
+            arg_jacobians = jacobian_helpers.tangent_jacobians(
+                result, [arg for _, arg in input_args]
             )
 
-        # If just computing a single jacobian, return it instead of output arg
-        if len(list(outputs.keys())) == 1 or include_result:
+            for (arg_name, arg), arg_jacobian in zip(input_args, arg_jacobians):
+                jacobian_name = f"{result_name}_D_{arg_name}"
+                outputs[jacobian_name] = arg_jacobian
+
+                result_dim = ops.LieGroupOps.tangent_dim(result)
+                arg_dim = ops.LieGroupOps.tangent_dim(arg)
+                docstring_lines.append(
+                    f"    {jacobian_name}: ({result_dim}x{arg_dim}) jacobian of "
+                    + f"{result_name} ({result_dim}) wrt arg {arg_name} ({arg_dim})"
+                )
+
+        if len(outputs) == 1:
+            # If just computing a single jacobian and nothing else, return it instead of output arg
             return_key: T.Optional[str] = list(outputs.keys())[0]
+        elif self.return_key is not None and self.return_key in outputs:
+            # If still computing the original return value, return that
+            return_key = self.return_key
         else:
             return_key = None
 
         # Cutely pick a function name if not given
         if not name:
             name = self._pick_name_for_function_with_derivatives(
-                which_args, include_result, linearization_mode=None
+                which_args, include_results, linearization_mode=None
             )
 
         return Codegen(

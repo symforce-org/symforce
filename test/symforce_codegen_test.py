@@ -1,4 +1,3 @@
-import collections
 import importlib.util
 import logging
 import numpy as np
@@ -8,6 +7,7 @@ import os
 import unittest
 
 import symforce
+from symforce import cam
 from symforce import geo
 from symforce import ops
 from symforce import logger
@@ -17,7 +17,7 @@ from symforce import types as T
 from symforce import codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase, slow_on_sympy, symengine_only
 from symforce.values import Values
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -590,14 +590,14 @@ class SymforceCodegenTest(TestCase):
             config=codegen.CppConfig(),
         )
 
-    def test_create_with_derivatives(self) -> None:
+    def test_create_with_jacobians(self) -> None:
         """
         Tests:
-            Codegen.create_with_derivatives
+            Codegen.create_with_jacobians
 
         TODO(aaron): Test STACKED_JACOBIAN and FULL_LINEARIZATION modes
         """
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_create_with_derivatives_", dir="/tmp")
+        output_dir = tempfile.mkdtemp(prefix="sf_codegen_create_with_jacobians_", dir="/tmp")
 
         # Let's pick Pose3 compose
         cls = geo.Pose3
@@ -608,37 +608,168 @@ class SymforceCodegenTest(TestCase):
             config=codegen.CppConfig(),
         )
 
-        codegens = collections.OrderedDict()
+        codegens = {}
 
         # By default should return the value and have jacobians for each input arg
-        codegens["value_and_all_jacs"] = codegen_function.create_with_derivatives()
+        codegens["value_and_all_jacs"] = codegen_function.create_with_jacobians()
 
         # All jacobians, no value - should return jacobians as output args
-        codegens["all_jacs"] = codegen_function.create_with_derivatives(include_result=False)
+        codegens["all_jacs"] = codegen_function.create_with_jacobians(include_results=False)
 
         # First jacobian, no value - should return the jacobian
-        codegens["jac_0"] = codegen_function.create_with_derivatives([0], include_result=False)
+        codegens["jac_0"] = codegen_function.create_with_jacobians([0], include_results=False)
 
         # Second jacobian, no value - should return the jacobian
-        codegens["jac_1"] = codegen_function.create_with_derivatives([1], include_result=False)
+        codegens["jac_1"] = codegen_function.create_with_jacobians([1], include_results=False)
 
         # Value and first jacobian - should return the value
-        codegens["value_and_jac_0"] = codegen_function.create_with_derivatives(
-            [0], include_result=True
+        codegens["value_and_jac_0"] = codegen_function.create_with_jacobians(
+            [0], include_results=True
         )
 
         # Value and second jacobian - should return the value
-        codegens["value_and_jac_1"] = codegen_function.create_with_derivatives(
-            [1], include_result=True
+        codegens["value_and_jac_1"] = codegen_function.create_with_jacobians(
+            [1], include_results=True
         )
 
         # Generate all
         for codegen_function in codegens.values():
             codegen_function.generate_function(output_dir=output_dir)
 
+        self.assertEqual(
+            len(os.listdir(os.path.join(output_dir, "cpp/symforce/sym"))), len(codegens)
+        )
+
         self.compare_or_update_directory(
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
-            expected_dir=os.path.join(TEST_DATA_DIR, "create_with_derivatives"),
+            expected_dir=os.path.join(TEST_DATA_DIR, "create_with_jacobians"),
+        )
+
+    # This test generates a lot of code, and it isn't really valuable to test on sympy as well
+    # because it's very unlikely to have differences there, so we only do it for symengine
+    @symengine_only
+    def test_create_with_jacobians_multiple_outputs(self) -> None:
+        """
+        Tests:
+            Codegen.create_with_jacobians
+
+        Test create_with_jacobians with multiple outputs
+        """
+        output_dir = tempfile.mkdtemp(
+            prefix="sf_codegen_create_with_jacobians_multiple_outputs_", dir="/tmp"
+        )
+
+        # Let's make a simple function with two outputs
+        def cross_and_distance(
+            a: geo.V3, b: geo.V3, epsilon: T.Scalar
+        ) -> T.Tuple[geo.V3, T.Scalar]:
+            return a.cross(b), (a - b).norm(epsilon=epsilon)
+
+        codegen_function = codegen.Codegen.function(
+            func=cross_and_distance,
+            config=codegen.CppConfig(),
+            output_names=["cross", "distance"],
+            return_key="cross",
+        )
+
+        # -------------------------------------------------------------------
+        # Jacobians w.r.t. first output
+        # -------------------------------------------------------------------
+        specs_first: T.List[T.Dict[str, T.Any]] = [
+            # By default should return the value and have jacobians for the first output (cross) wrt
+            # each input arg
+            dict(args=dict(), return_key="cross", outputs=5),
+            # All jacobians for first output, no value - should return distance and jacobians for
+            # cross as output args
+            dict(args=dict(include_results=False), return_key=None, outputs=4),
+            # First jacobian for first output, no value - should return distance and jacobian as
+            # output args
+            dict(args=dict(which_args=[0], include_results=False), return_key=None, outputs=2),
+            # Second jacobian for first output, no value - should return distance and jacobian as
+            # output args
+            dict(args=dict(which_args=[1], include_results=False), return_key=None, outputs=2),
+            # Value and first jacobian for first output - should return the value
+            dict(args=dict(which_args=[0], include_results=True), return_key="cross", outputs=3),
+            # Value and second jacobian for first output - should return the value
+            dict(args=dict(which_args=[1], include_results=True), return_key="cross", outputs=3),
+        ]
+
+        # -------------------------------------------------------------------
+        # Jacobians w.r.t. second output
+        # -------------------------------------------------------------------
+        specs_second: T.List[T.Dict[str, T.Any]] = [
+            # Should return the value and have jacobians for the second output (distance) wrt each
+            # input arg
+            dict(args=dict(), return_key="cross", outputs=5),
+            # All jacobians for second output, no value - should return cross, and jacobians for
+            # distance as output args
+            dict(args=dict(include_results=False), return_key="cross", outputs=4),
+            # First jacobian for second output, no value - should return cross, and jacobian as
+            # output arg
+            dict(args=dict(which_args=[0], include_results=False), return_key="cross", outputs=2),
+            # Second jacobian for second output, no value - should return cross, and jacobian as
+            # output arg
+            dict(args=dict(which_args=[1], include_results=False), return_key="cross", outputs=2),
+            # Value and first jacobian for second output - should return cross
+            dict(args=dict(which_args=[0], include_results=True), return_key="cross", outputs=3),
+            # Value and second jacobian for second output - should return cross
+            dict(args=dict(which_args=[1], include_results=True), return_key="cross", outputs=3),
+        ]
+
+        # -------------------------------------------------------------------
+        # Jacobians w.r.t. both outputs
+        # -------------------------------------------------------------------
+        specs_both: T.List[T.Dict[str, T.Any]] = [
+            # Should return the value and have jacobians for both outputs wrt each input arg
+            dict(args=dict(), return_key="cross", outputs=8),
+            # All jacobians for both outputs, no values - should return jacobians as output args
+            dict(args=dict(include_results=False), return_key=None, outputs=6),
+            # First jacobian for both outputs, no values - should return jacobians as output args
+            dict(args=dict(which_args=[0], include_results=False), return_key=None, outputs=2),
+            # Second jacobian for both outputs, no values - should return jacobians as output args
+            dict(args=dict(which_args=[1], include_results=False), return_key=None, outputs=2),
+            # Value and first jacobian for both outputs - should return cross
+            dict(args=dict(which_args=[0], include_results=True), return_key="cross", outputs=4),
+            # Value and second jacobian for both outputs - should return cross
+            dict(args=dict(which_args=[1], include_results=True), return_key="cross", outputs=4),
+        ]
+
+        specs = (
+            specs_first
+            + [
+                dict(
+                    raw_spec,
+                    base_name="cross_and_distance_second",
+                    args=dict(**raw_spec["args"], which_results=[1]),
+                )
+                for raw_spec in specs_second
+            ]
+            + [
+                dict(
+                    raw_spec,
+                    base_name="cross_and_distance_both",
+                    args=dict(**raw_spec["args"], which_results=[0, 1]),
+                )
+                for raw_spec in specs_both
+            ]
+        )
+
+        for spec in specs:
+            with self.subTest(spec=spec):
+                if "base_name" in spec:
+                    codegen_function.name = spec["base_name"]
+
+                curr_codegen = codegen_function.create_with_jacobians(**spec["args"])
+                self.assertEqual(curr_codegen.return_key, spec["return_key"])
+                self.assertEqual(len(curr_codegen.outputs), spec["outputs"])
+
+                curr_codegen.generate_function(output_dir=output_dir)
+
+        self.assertEqual(len(os.listdir(os.path.join(output_dir, "cpp/symforce/sym"))), len(specs))
+
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
+            expected_dir=os.path.join(TEST_DATA_DIR, "create_with_jacobians_multiple_outputs"),
         )
 
 
