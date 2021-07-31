@@ -15,8 +15,11 @@ namespace gnc_factors {
  * Args:
  *     x: Matrix51
  *     y: Matrix51
- *     mu: Symbol
- *     eps: Symbol
+ *     mu: Scalar
+ *     eps: Scalar
+ *
+ * Outputs:
+ *     res: Matrix51
  *     jacobian: (5x5) jacobian of res wrt arg x (5)
  *     hessian: (5x5) Gauss-Newton hessian for arg x (5)
  *     rhs: (5x1) Gauss-Newton rhs for arg x (5)

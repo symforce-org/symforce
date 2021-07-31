@@ -15,6 +15,9 @@ namespace rot3 {
  *
  * Args:
  *
+ * Outputs:
+ *     res: Rot3
+ *
  */
 template <typename Scalar>
 sym::Rot3<Scalar> GroupOps<Scalar>::Identity() {

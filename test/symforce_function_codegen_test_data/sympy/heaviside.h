@@ -13,7 +13,10 @@ namespace cpp_code_printer_test {
  * Symbolic function: heaviside
  *
  * Args:
- *     x: Symbol
+ *     x: Scalar
+ *
+ * Outputs:
+ *     res: Scalar
  *
  */
 template <typename Scalar>

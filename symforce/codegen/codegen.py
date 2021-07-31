@@ -410,13 +410,15 @@ class Codegen:
         """
         # If the function is an instance method, remove the type associated with the class
         input_names = [name for name, arg in inputs.items() if name != "self"]
-        input_types = [
-            python_util.get_type(arg).__name__ for name, arg in inputs.items() if name != "self"
-        ]
-        output_types = [python_util.get_type(arg).__name__ for arg in outputs.values()]
 
-        # TODO(nathan): This sometimes doesn't print the types in a nice way. For example,
-        # scalar types are not printed as "Scalar" but instead "Symbol", "One", "Max", etc.
+        def nice_typename(arg: T.Any) -> str:
+            if python_util.scalar_like(arg):
+                return "Scalar"
+            else:
+                return python_util.get_type(arg).__name__
+
+        input_types = [nice_typename(arg) for name, arg in inputs.items() if name != "self"]
+        output_types = [nice_typename(arg) for arg in outputs.values()]
 
         if original_function is not None:
             docstring = f"""
@@ -432,9 +434,19 @@ class Codegen:
 
             Args:
             """
-        return textwrap.dedent(docstring) + "".join(
+
+        arg_descriptions = "".join(
             [f"    {name}: {input_type}\n" for name, input_type in zip(input_names, input_types)]
         )
+
+        output_descriptions = "".join(
+            [
+                f"    {name}: {output_type}\n"
+                for name, output_type in zip(outputs.keys(), output_types)
+            ]
+        )
+
+        return textwrap.dedent(docstring) + arg_descriptions + "\nOutputs:\n" + output_descriptions
 
     @staticmethod
     def wrap_docstring_arg_description(
@@ -513,7 +525,7 @@ class Codegen:
         result_name, result = list(self.outputs.items())[0]
 
         # Get docstring
-        docstring_lines = self.docstring.split("\n")[:-1]
+        docstring_lines = self.docstring.rstrip().split("\n")
 
         # Make the new outputs
         outputs = Values()
@@ -620,7 +632,7 @@ class Codegen:
         result_name, result = list(self.outputs.items())[0]
 
         # Get docstring
-        docstring_lines = self.docstring.split("\n")[:-1]
+        docstring_lines = self.docstring.rstrip().split("\n")
 
         # Make the new outputs
         outputs = Values()

@@ -15,6 +15,9 @@ namespace pose2 {
  *
  * Args:
  *
+ * Outputs:
+ *     res: Pose2
+ *
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Scalar>::Identity() {

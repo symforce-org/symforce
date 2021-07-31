@@ -17,6 +17,9 @@ def numba_test_func(x):
     Args:
         x: Matrix31
 
+    Outputs:
+        res: Matrix21
+
     """
     # Total ops: 0
 

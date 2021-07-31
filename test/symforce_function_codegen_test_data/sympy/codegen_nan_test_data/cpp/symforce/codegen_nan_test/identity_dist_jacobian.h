@@ -13,7 +13,10 @@ namespace codegen_nan_test {
  *
  * Args:
  *     R1: Rot3
- *     e: Symbol
+ *     e: Scalar
+ *
+ * Outputs:
+ *     dist_D_R1: Scalar
  *
  */
 template <typename Scalar>
