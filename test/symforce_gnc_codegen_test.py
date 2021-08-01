@@ -1,13 +1,9 @@
-import logging
 import os
-import tempfile
 
 import symforce
 from symforce import codegen
 from symforce import geo
-from symforce import logger
 from symforce.opt.noise_models import BarronNoiseModel
-from symforce import python_util
 from symforce.test_util import TestCase
 from symforce import types as T
 
@@ -34,26 +30,20 @@ class SymGncCodegenTest(TestCase):
     """
 
     def test_factor_codegen(self) -> None:
-        output_dir = tempfile.mkdtemp(prefix="sf_gnc_codegen_test_", dir="/tmp")
-        logger.debug(f"Creating temp directory: {output_dir}")
+        output_dir = self.make_output_dir("sf_gnc_codegen_test_")
 
         namespace = "gnc_factors"
 
-        try:
-            # Compute code
-            codegen.Codegen.function(
-                func=barron_factor, config=codegen.CppConfig()
-            ).create_with_linearization(which_args=[0]).generate_function(
-                output_dir=output_dir, namespace=namespace
-            )
+        # Compute code
+        codegen.Codegen.function(
+            func=barron_factor, config=codegen.CppConfig()
+        ).create_with_linearization(which_args=[0]).generate_function(
+            output_dir=output_dir, namespace=namespace
+        )
 
-            self.compare_or_update_directory(
-                actual_dir=output_dir, expected_dir=os.path.join(TEST_DATA_DIR, "gnc_test_data")
-            )
-
-        finally:
-            if logger.level != logging.DEBUG:
-                python_util.remove_if_exists(output_dir)
+        self.compare_or_update_directory(
+            actual_dir=output_dir, expected_dir=os.path.join(TEST_DATA_DIR, "gnc_test_data")
+        )
 
 
 if __name__ == "__main__":

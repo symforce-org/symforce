@@ -1,7 +1,6 @@
 import importlib.util
 import logging
 import numpy as np
-import tempfile
 import sys
 import os
 import unittest
@@ -9,8 +8,8 @@ import unittest
 import symforce
 from symforce import cam
 from symforce import geo
-from symforce import ops
 from symforce import logger
+from symforce import ops
 from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
@@ -140,22 +139,21 @@ class SymforceCodegenTest(TestCase):
                 "values_vec_2D_out": "values_vec_t",
             }
             namespace = "codegen_python_test"
+
+            output_dir = self.make_output_dir("sf_codegen_python_test_")
+
             codegen_data = python_func.generate_function(
-                shared_types=shared_types, namespace=namespace
+                shared_types=shared_types, namespace=namespace, output_dir=output_dir
             )
             if scalar_type == "double":
                 self.compare_or_update_directory(
-                    actual_dir=codegen_data["output_dir"],
+                    actual_dir=output_dir,
                     expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
                 )
 
-            geo_package_codegen.generate(
-                config=codegen.PythonConfig(), output_dir=codegen_data["output_dir"]
-            )
+            geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
 
-            geo_pkg = codegen_util.load_generated_package(
-                os.path.join(codegen_data["output_dir"], "sym")
-            )
+            geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "sym"))
             types_module = codegen_util.load_generated_package(
                 os.path.join(codegen_data["python_types_dir"], namespace)
             )
@@ -201,17 +199,14 @@ class SymforceCodegenTest(TestCase):
             self.assertNear(foo, x ** 2 + rot.data[3])
             self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
 
-            # Clean up
-            if logger.level != logging.DEBUG:
-                python_util.remove_if_exists(codegen_data["output_dir"])
-
     def test_function_codegen_python(self) -> None:
+        output_dir = self.make_output_dir("sf_codegen_function_codegen_python_")
 
         # Create the specification
         az_el_codegen = codegen.Codegen.function(
             func=az_el_from_point, config=codegen.PythonConfig()
         )
-        az_el_codegen_data = az_el_codegen.generate_function()
+        az_el_codegen_data = az_el_codegen.generate_function(output_dir)
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.py")
@@ -220,12 +215,10 @@ class SymforceCodegenTest(TestCase):
         )
         self.compare_or_update_file(expected_code_file, output_function)
 
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(az_el_codegen_data["output_dir"])
-
     @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
     def test_function_codegen_python_numba(self) -> None:
+        output_dir = self.make_output_dir("sf_codegen_numba_")
+
         # Create the specification
         def numba_test_func(x: geo.V3) -> geo.V2:
             return geo.V2(x[0, 0], x[1, 0])
@@ -233,7 +226,7 @@ class SymforceCodegenTest(TestCase):
         numba_test_func_codegen = codegen.Codegen.function(
             func=numba_test_func, config=codegen.PythonConfig(use_numba=True)
         )
-        numba_test_func_codegen_data = numba_test_func_codegen.generate_function()
+        numba_test_func_codegen_data = numba_test_func_codegen.generate_function(output_dir)
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "numba_test_func.py")
@@ -250,10 +243,6 @@ class SymforceCodegenTest(TestCase):
         y = gen_module.numba_test_func(x)
         self.assertTrue((y == np.array([1, 2])).all())
         self.assertTrue(hasattr(gen_module.numba_test_func, "__numba__"))
-
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(numba_test_func_codegen_data["output_dir"])
 
     # -------------------------------------------------------------------------
     # C++
@@ -277,13 +266,14 @@ class SymforceCodegenTest(TestCase):
                 "values_vec_2D_out": "values_vec_t",
             }
             namespace = "codegen_cpp_test"
+            output_dir = self.make_output_dir(f"sf_codegen_cpp_{scalar_type}_")
             codegen_data = cpp_func.generate_function(
-                shared_types=shared_types, namespace=namespace
+                shared_types=shared_types, namespace=namespace, output_dir=output_dir
             )
 
             if scalar_type == "double":
                 self.compare_or_update_directory(
-                    actual_dir=os.path.join(codegen_data["output_dir"]),
+                    actual_dir=os.path.join(output_dir),
                     expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
                 )
 
@@ -306,24 +296,17 @@ class SymforceCodegenTest(TestCase):
                                 os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
                             )
 
-            # Clean up
-            if logger.level != logging.DEBUG:
-                python_util.remove_if_exists(codegen_data["output_dir"])
-
     def test_function_codegen_cpp(self) -> None:
+        output_dir = self.make_output_dir("sf_codegen_function_codegen_cpp_")
 
         # Create the specification
         az_el_codegen = codegen.Codegen.function(func=az_el_from_point, config=codegen.CppConfig())
-        az_el_codegen_data = az_el_codegen.generate_function()
+        az_el_codegen_data = az_el_codegen.generate_function(output_dir=output_dir)
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.h")
         output_function = os.path.join(az_el_codegen_data["cpp_function_dir"], "az_el_from_point.h")
         self.compare_or_update_file(expected_code_file, output_function)
-
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(az_el_codegen_data["output_dir"])
 
     def test_cpp_nan(self) -> None:
         inputs = Values()
@@ -335,6 +318,7 @@ class SymforceCodegenTest(TestCase):
         dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
 
         namespace = "codegen_nan_test"
+        output_dir = self.make_output_dir("sf_codegen_cpp_nan_")
         cpp_func = codegen.Codegen(
             name="identity_dist_jacobian",
             inputs=inputs,
@@ -343,7 +327,7 @@ class SymforceCodegenTest(TestCase):
             config=codegen.CppConfig(),
             scalar_type="double",
         )
-        codegen_data = cpp_func.generate_function(namespace=namespace)
+        codegen_data = cpp_func.generate_function(namespace=namespace, output_dir=output_dir)
 
         # Compare the function file
         self.compare_or_update_directory(
@@ -369,9 +353,6 @@ class SymforceCodegenTest(TestCase):
                     python_util.remove_if_exists(
                         os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
                     )
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
 
     @slow_on_sympy
     def test_multi_function_codegen_cpp(self) -> None:
@@ -393,8 +374,7 @@ class SymforceCodegenTest(TestCase):
         )
 
         namespace = "codegen_multi_function_test"
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
-        logger.debug(f"Creating temp directory: {output_dir}")
+        output_dir = self.make_output_dir("sf_codegen_multiple_functions_")
 
         shared_types = {
             "inputs.values_vec": "values_vec_t",
@@ -434,10 +414,6 @@ class SymforceCodegenTest(TestCase):
                         os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
                     )
 
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(output_dir)
-
     @slow_on_sympy
     def test_sparse_matrix_codegen(self) -> None:
         """
@@ -456,8 +432,7 @@ class SymforceCodegenTest(TestCase):
             outputs["matrix_out"][i, i] = inputs["matrix_in"][i, i]
 
         namespace = "codegen_sparse_matrix_test"
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_multiple_functions_", dir="/tmp")
-        logger.debug(f"Creating temp directory: {output_dir}")
+        output_dir = self.make_output_dir("sf_codegen_multiple_functions_")
 
         # Function that creates a sparse matrix
         get_sparse_func = codegen.Codegen(
@@ -526,10 +501,6 @@ class SymforceCodegenTest(TestCase):
                     python_util.remove_if_exists(
                         os.path.join(SYMFORCE_DIR, "test", "codegen_sparse_matrix_test")
                     )
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(get_sparse_func_data["output_dir"])
-            python_util.remove_if_exists(update_spase_func_data["output_dir"])
 
     def test_invalid_codegen_raises(self) -> None:
         """
@@ -597,7 +568,7 @@ class SymforceCodegenTest(TestCase):
 
         TODO(aaron): Test STACKED_JACOBIAN and FULL_LINEARIZATION modes
         """
-        output_dir = tempfile.mkdtemp(prefix="sf_codegen_create_with_jacobians_", dir="/tmp")
+        output_dir = self.make_output_dir("sf_codegen_create_with_jacobians_")
 
         # Let's pick Pose3 compose
         cls = geo.Pose3
@@ -655,9 +626,7 @@ class SymforceCodegenTest(TestCase):
 
         Test create_with_jacobians with multiple outputs
         """
-        output_dir = tempfile.mkdtemp(
-            prefix="sf_codegen_create_with_jacobians_multiple_outputs_", dir="/tmp"
-        )
+        output_dir = self.make_output_dir("sf_codegen_create_with_jacobians_multiple_outputs_")
 
         # Let's make a simple function with two outputs
         def cross_and_distance(

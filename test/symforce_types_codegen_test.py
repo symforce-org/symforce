@@ -1,9 +1,6 @@
-import logging
 import os
 
 from symforce import geo
-from symforce import logger
-from symforce import python_util
 from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import types_package_codegen
@@ -58,12 +55,14 @@ class SymforceTypesCodegenTest(TestCase):
         """
         inputs, outputs = self.build_values()
 
+        output_dir = self.make_output_dir("sf_types_codegen_")
         codegen_data = types_package_codegen.generate_types(
             package_name=name,
             file_name=name,
             values_indices=dict(input=inputs.index(), output=outputs.index()),
             shared_types=shared_types,
             scalar_type=scalar_type,
+            output_dir=output_dir,
         )
 
         types_dict = codegen_data["types_dict"]
@@ -120,10 +119,6 @@ class SymforceTypesCodegenTest(TestCase):
         self.assertEqual(inp.x, inp2.x)
         self.assertEqual(inp.constants.epsilon, inp2.constants.epsilon)
 
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
-
     def test_types_codegen_renames(self) -> None:
         """
         Give some fields specific names, still within the module.
@@ -161,10 +156,6 @@ class SymforceTypesCodegenTest(TestCase):
         self.assertEqual(inp.x, inp2.x)
         self.assertEqual(inp.constants.epsilon, inp2.constants.epsilon)
 
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
-
     def test_types_codegen_external(self) -> None:
         """
         Use external types for some fields, don't generate them.
@@ -189,10 +180,6 @@ class SymforceTypesCodegenTest(TestCase):
             expected_types=expected_types,
         )
 
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
-
     def test_types_codegen_reuse(self) -> None:
         """
         Use the same generated type multiple times within the input and output struct.
@@ -214,12 +201,14 @@ class SymforceTypesCodegenTest(TestCase):
 
         shared_types = {"input.one": "rot_t", "input.two": "rot_t", "output": "rot_t"}
 
+        output_dir = self.make_output_dir("sf_types_codegen_reuse_")
         codegen_data = types_package_codegen.generate_types(
             package_name="reuse",
             file_name="reuse",
             values_indices=dict(input=inputs.index(), output=outputs.index()),
             shared_types=shared_types,
             scalar_type="double",
+            output_dir=output_dir,
         )
 
         types_dict = codegen_data["types_dict"]
@@ -240,10 +229,6 @@ class SymforceTypesCodegenTest(TestCase):
 
         inp2 = package.input_t.decode(inp.encode())
         self.assertNear(rot.R, inp2.two.R, places=9)
-
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(codegen_data["output_dir"])
 
 
 if __name__ == "__main__":

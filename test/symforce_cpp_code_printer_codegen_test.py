@@ -1,10 +1,7 @@
-import logging
 import os
 
 import symforce
 
-from symforce import logger
-from symforce import python_util
 from symforce import types as T
 from symforce.test_util import TestCase, sympy_only
 from symforce.values import Values
@@ -44,22 +41,20 @@ class SymforceCppCodePrinterTest(TestCase):
 
     @sympy_only
     def test_heaviside(self) -> None:
+        output_dir = self.make_output_dir("sf_heaviside_test_")
+
         def heaviside(x: sm.Symbol) -> sm.Symbol:
             return sm.functions.special.delta_functions.Heaviside(x)
 
         heaviside_codegen = codegen.Codegen.function(func=heaviside, config=codegen.CppConfig())
         heaviside_codegen_data = heaviside_codegen.generate_function(
-            namespace="cpp_code_printer_test"
+            output_dir=output_dir, namespace="cpp_code_printer_test",
         )
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "heaviside.h")
         output_function = os.path.join(heaviside_codegen_data["cpp_function_dir"], "heaviside.h")
         self.compare_or_update_file(expected_code_file, output_function)
-
-        # Clean up
-        if logger.level != logging.DEBUG:
-            python_util.remove_if_exists(heaviside_codegen_data["output_dir"])
 
 
 if __name__ == "__main__":

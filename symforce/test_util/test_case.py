@@ -19,7 +19,7 @@ from symforce.ops import LieGroupOps
 from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
 
 
-class TestCase(unittest.TestCase, SymforceTestCaseMixin):
+class TestCase(SymforceTestCaseMixin):
     """
     Base class for symforce tests. Adds some useful helpers.
     """
@@ -49,6 +49,7 @@ class TestCase(unittest.TestCase, SymforceTestCaseMixin):
         SymforceTestCaseMixin.main()
 
     def setUp(self) -> None:
+        super().setUp()
         np.random.seed(42)
         random.seed(42)
         # Store verbosity flag so tests can use

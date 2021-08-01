@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import tempfile
 import unittest
 
 import symforce
@@ -9,7 +10,7 @@ from symforce import python_util
 from symforce import types as T
 
 
-class SymforceTestCaseMixin:
+class SymforceTestCaseMixin(unittest.TestCase):
     """
     Mixin for SymForce tests, adds useful helpers for code generation
     """
@@ -30,6 +31,40 @@ class SymforceTestCaseMixin:
 
         unittest.main()
 
+    def make_output_dir(self, prefix: str, dir: str = "/tmp") -> str:
+        """
+        Create a temporary output directory, which will be automatically removed (regardless of
+        exceptions) on shutdown, unless logger.level is DEBUG
+
+        Args:
+            prefix: The prefix for the directory name - a random unique identifier is added to this
+            dir: Location of the output directory. Defaults to "/tmp".
+
+        Returns:
+            str: The absolute path to the created output directory
+        """
+        output_dir = tempfile.mkdtemp(prefix=prefix, dir=dir)
+        logger.debug(f"Creating temp directory: {output_dir}")
+        self.output_dirs.append(output_dir)
+        return output_dir
+
+    def setUp(self) -> None:
+        """
+        Creates list of temporary directories that will be removed before shutdown (unless debug
+        mode is on)
+        """
+        super().setUp()
+        self.output_dirs: T.List[str] = []
+
+    def tearDown(self) -> None:
+        """
+        Removes temporary output directories (unless debug mode is on)
+        """
+        super().tearDown()
+        if logger.level != logging.DEBUG:
+            for output_dir in self.output_dirs:
+                python_util.remove_if_exists(output_dir)
+
     def compare_or_update(self, path: T.Openable, data: str) -> None:
         """
         Compare the given data to what is saved in path, OR update the saved data if
@@ -49,7 +84,7 @@ class SymforceTestCaseMixin:
             with open(path) as f:
                 expected_data = f.read()
 
-            T.cast(unittest.TestCase, self).assertMultiLineEqual(
+            self.assertMultiLineEqual(
                 data,
                 expected_data,
                 "Data did not match, use --update to check diff and commit if desired.",
@@ -71,7 +106,7 @@ class SymforceTestCaseMixin:
 
         if not SymforceTestCaseMixin.UPDATE:
             # If checking, make sure all file paths are the same
-            T.cast(unittest.TestCase, self).assertSequenceEqual(actual_paths, expected_paths)
+            self.assertSequenceEqual(actual_paths, expected_paths)
         else:
             # If updating, remove any expected files not in actual
             for only_in_expected in set(expected_paths).difference(set(actual_paths)):

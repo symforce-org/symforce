@@ -1,12 +1,9 @@
-import logging
 import math
 import os
-import tempfile
 
 import symforce
 from symforce import cam
 from symforce import geo
-from symforce import logger
 from symforce import ops
 from symforce import python_util
 from symforce import sympy as sm
@@ -80,101 +77,85 @@ class SymforceGenCodegenTest(TestCase):
         """
         Test Python code generation
         """
-        output_dir = tempfile.mkdtemp(prefix="sf_gen_codegen_test_", dir="/tmp")
-        logger.debug(f"Creating temp directory: {output_dir}")
+        output_dir = self.make_output_dir("sf_gen_codegen_test_")
 
-        try:
-            geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
+        geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
 
-            # Test against checked-in geo package (only on SymEngine)
-            if symforce.get_backend() == "symengine":
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(output_dir, "sym"),
-                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "sym"),
-                )
+        # Test against checked-in geo package (only on SymEngine)
+        if symforce.get_backend() == "symengine":
+            self.compare_or_update_directory(
+                actual_dir=os.path.join(output_dir, "sym"),
+                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "sym"),
+            )
 
-            # Compare against the checked-in test itself
-            expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_python_test.py")
-            generated_code_file = os.path.join(output_dir, "example", "geo_package_python_test.py")
-            self.compare_or_update_file(expected_code_file, generated_code_file)
+        # Compare against the checked-in test itself
+        expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_python_test.py")
+        generated_code_file = os.path.join(output_dir, "example", "geo_package_python_test.py")
+        self.compare_or_update_file(expected_code_file, generated_code_file)
 
-            # Run generated example / test from disk in a standalone process
-            python_util.execute_subprocess(["python", generated_code_file])
+        # Run generated example / test from disk in a standalone process
+        python_util.execute_subprocess(["python", generated_code_file])
 
-            # Also hot load package directly in to this process
-            geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "sym"))
+        # Also hot load package directly in to this process
+        geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "sym"))
 
-            # Test something basic from the hot loaded package
-            rot = geo_pkg.Rot3.from_tangent([math.pi / 2, 0, 0])
-            rot_inv = rot.inverse()
-            identity_expected = rot * rot_inv
-            identity_actual = geo_pkg.Rot3.identity()
-            for i in range(len(identity_expected.data)):
-                self.assertAlmostEqual(identity_expected.data[i], identity_actual.data[i], places=7)
-
-        finally:
-            if logger.level != logging.DEBUG:
-                python_util.remove_if_exists(output_dir)
+        # Test something basic from the hot loaded package
+        rot = geo_pkg.Rot3.from_tangent([math.pi / 2, 0, 0])
+        rot_inv = rot.inverse()
+        identity_expected = rot * rot_inv
+        identity_actual = geo_pkg.Rot3.identity()
+        for i in range(len(identity_expected.data)):
+            self.assertAlmostEqual(identity_expected.data[i], identity_actual.data[i], places=7)
 
     @slow_on_sympy
     def test_gen_package_codegen_cpp(self) -> None:
         """
         Test C++ code generation
         """
-        output_dir = tempfile.mkdtemp(prefix="sf_gen_codegen_test_", dir="/tmp")
-        logger.debug(f"Creating temp directory: {output_dir}")
+        output_dir = self.make_output_dir("sf_gen_codegen_test_")
 
-        try:
-            # Prior factors, between factors, and SLAM factors for C++.
-            geo_factors_codegen.generate(os.path.join(output_dir, "sym"))
-            slam_factors_codegen.generate(os.path.join(output_dir, "sym"))
+        # Prior factors, between factors, and SLAM factors for C++.
+        geo_factors_codegen.generate(os.path.join(output_dir, "sym"))
+        slam_factors_codegen.generate(os.path.join(output_dir, "sym"))
 
-            # Generate typedefs.h
-            sym_util_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
+        # Generate typedefs.h
+        sym_util_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
 
-            # Generate cam package, geo package, and tests
-            # This calls geo_package_codegen.generate internally
-            cam_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
+        # Generate cam package, geo package, and tests
+        # This calls geo_package_codegen.generate internally
+        cam_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
 
-            # Check against existing generated package (only on SymEngine)
-            if symforce.get_backend() == "symengine":
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(output_dir, "sym"),
-                    expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym"),
-                )
+        # Check against existing generated package (only on SymEngine)
+        if symforce.get_backend() == "symengine":
+            self.compare_or_update_directory(
+                actual_dir=os.path.join(output_dir, "sym"),
+                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym"),
+            )
 
-            # Generate functions for testing tangent_D_storage numerical derivatives
-            self.generate_tangent_d_storage_functions(output_dir)
+        # Generate functions for testing tangent_D_storage numerical derivatives
+        self.generate_tangent_d_storage_functions(output_dir)
 
-            # Generate function that uses camera object as argument
-            self.generate_cam_example_function(output_dir)
+        # Generate function that uses camera object as argument
+        self.generate_cam_example_function(output_dir)
 
-            # Compare against the checked-in tests
-            for test_name in (
-                "cam_package_cpp_test.cc",
-                "cam_function_codegen_cpp_test.cc",
-                "geo_package_cpp_test.cc",
-            ):
-                self.compare_or_update_file(
-                    path=os.path.join(TEST_DATA_DIR, "example", test_name),
-                    new_file=os.path.join(output_dir, "example", test_name),
-                )
+        # Compare against the checked-in tests
+        for test_name in (
+            "cam_package_cpp_test.cc",
+            "cam_function_codegen_cpp_test.cc",
+            "geo_package_cpp_test.cc",
+        ):
+            self.compare_or_update_file(
+                path=os.path.join(TEST_DATA_DIR, "example", test_name),
+                new_file=os.path.join(output_dir, "example", test_name),
+            )
 
-            # Compile and run the test
-            if not self.UPDATE:
-                example_dir = os.path.join(output_dir, "example")
-                TestCase.compile_and_run_cpp(
-                    example_dir,
-                    (
-                        "cam_package_cpp_test",
-                        "cam_function_codegen_cpp_test",
-                        "geo_package_cpp_test",
-                    ),
-                )
-
-        finally:
-            if logger.level != logging.DEBUG:
-                python_util.remove_if_exists(output_dir)
+        # Compile and run the test
+        if not self.UPDATE:
+            example_dir = os.path.join(output_dir, "example")
+            TestCase.compile_and_run_cpp(
+                example_dir,
+                ("cam_package_cpp_test", "cam_function_codegen_cpp_test", "geo_package_cpp_test",),
+            )
 
 
 if __name__ == "__main__":
