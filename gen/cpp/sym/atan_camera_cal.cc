@@ -4,10 +4,6 @@
 
 #include "./atan_camera_cal.h"
 
-// Explicit instantiation
-template class sym::ATANCameraCal<double>;
-template class sym::ATANCameraCal<float>;
-
 // Camera operation implementations
 namespace sym {
 
@@ -129,3 +125,7 @@ std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCalf& a) {
 
 // Concept implementations for this class
 #include "./ops/atan_camera_cal/storage_ops.cc"
+
+// Explicit instantiation
+template class sym::ATANCameraCal<double>;
+template class sym::ATANCameraCal<float>;

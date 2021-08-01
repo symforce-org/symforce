@@ -4,10 +4,6 @@
 
 #include "./double_sphere_camera_cal.h"
 
-// Explicit instantiation
-template class sym::DoubleSphereCameraCal<double>;
-template class sym::DoubleSphereCameraCal<float>;
-
 // Camera operation implementations
 namespace sym {
 
@@ -168,3 +164,7 @@ std::ostream& operator<<(std::ostream& os, const sym::DoubleSphereCameraCalf& a)
 
 // Concept implementations for this class
 #include "./ops/double_sphere_camera_cal/storage_ops.cc"
+
+// Explicit instantiation
+template class sym::DoubleSphereCameraCal<double>;
+template class sym::DoubleSphereCameraCal<float>;

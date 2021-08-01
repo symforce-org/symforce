@@ -6,11 +6,6 @@
 
 #include "./{{ camelcase_to_snakecase(cls.__name__) }}.h"
 
-// Explicit instantiation
-{% for scalar in scalar_types %}
-template class sym::{{ cls.__name__ }}<{{ scalar }}>;
-{% endfor %}
-
 // Print implementations
 {% for scalar in scalar_types %}
 std::ostream& operator<<(std::ostream& os, const sym::{{ cls.__name__ }}{{ scalar[0] }}& a) {
@@ -42,3 +37,8 @@ extern template struct sym::StorageOps<{{ scalar }}>;
 extern template struct sym::GroupOps<{{ scalar }}>;
 extern template struct sym::LieGroupOps<{{ scalar }}>;
 {% endfor %} #}
+
+// Explicit instantiation
+{% for scalar in scalar_types %}
+template class sym::{{ cls.__name__ }}<{{ scalar }}>;
+{% endfor %}

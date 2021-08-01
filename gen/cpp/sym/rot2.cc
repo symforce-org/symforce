@@ -4,10 +4,6 @@
 
 #include "./rot2.h"
 
-// Explicit instantiation
-template class sym::Rot2<double>;
-template class sym::Rot2<float>;
-
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const sym::Rot2d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
@@ -43,3 +39,7 @@ Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
 
   return _res;
 }
+
+// Explicit instantiation
+template class sym::Rot2<double>;
+template class sym::Rot2<float>;

@@ -5,11 +5,6 @@
 
 #include "./{{ camelcase_to_snakecase(cls.__name__) }}.h"
 
-// Explicit instantiation
-{% for scalar in scalar_types %}
-template class sym::{{ cls.__name__ }}<{{ scalar }}>;
-{% endfor %}
-
 // Camera operation implementations
 namespace sym {
 
@@ -41,3 +36,8 @@ extern template struct sym::StorageOps<{{ scalar }}>;
 
 // Concept implementations for this class
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.cc"
+
+// Explicit instantiation
+{% for scalar in scalar_types %}
+template class sym::{{ cls.__name__ }}<{{ scalar }}>;
+{% endfor %}

@@ -4,10 +4,6 @@
 
 #include "./pose2.h"
 
-// Explicit instantiation
-template class sym::Pose2<double>;
-template class sym::Pose2<float>;
-
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const sym::Pose2d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
@@ -47,3 +43,7 @@ Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::InverseCompose(
 
   return _res;
 }
+
+// Explicit instantiation
+template class sym::Pose2<double>;
+template class sym::Pose2<float>;

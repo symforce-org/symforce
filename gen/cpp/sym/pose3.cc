@@ -4,10 +4,6 @@
 
 #include "./pose3.h"
 
-// Explicit instantiation
-template class sym::Pose3<double>;
-template class sym::Pose3<float>;
-
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const sym::Pose3d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
@@ -66,3 +62,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
 
   return _res;
 }
+
+// Explicit instantiation
+template class sym::Pose3<double>;
+template class sym::Pose3<float>;

@@ -4,10 +4,6 @@
 
 #include "./spherical_camera_cal.h"
 
-// Explicit instantiation
-template class sym::SphericalCameraCal<double>;
-template class sym::SphericalCameraCal<float>;
-
 // Camera operation implementations
 namespace sym {
 
@@ -101,3 +97,7 @@ std::ostream& operator<<(std::ostream& os, const sym::SphericalCameraCalf& a) {
 
 // Concept implementations for this class
 #include "./ops/spherical_camera_cal/storage_ops.cc"
+
+// Explicit instantiation
+template class sym::SphericalCameraCal<double>;
+template class sym::SphericalCameraCal<float>;

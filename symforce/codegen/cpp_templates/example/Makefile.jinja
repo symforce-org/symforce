@@ -1,12 +1,14 @@
 # Basic tests for the cam and geo libraries
 
+CXX = c++
+
 INCLUDES = -I{{ include_dir }} \
 	-I{{ eigen_include_dir }} \
 	-I{{ lcm_include_dir }} \
 	-I{{ symforce_include_dir }} \
 	-I{{ catch2_dir }}/include \
 	-I../lcmtypes/cpp
-CXXFLAGS = -std=c++17 -L{{ lib_dir }}/ -O0
+CXXFLAGS = -std=c++14 -L{{ lib_dir }}/ -O0
 LDFLAGS = -shared -fpic
 
 CC_FILES = ../sym/*.cc ../sym/ops/**/*.cc
@@ -14,19 +16,19 @@ CC_FILES = ../sym/*.cc ../sym/ops/**/*.cc
 all: libsymforce_gen.so geo_example cam_example cam_example_function_gen
 
 libsymforce_gen.so: $(CC_FILES)
-	time c++ $(CXXFLAGS) $(LDFLAGS) -o libsymforce_gen.so $(CC_FILES) $(INCLUDES)
+	time $(CXX) $(CXXFLAGS) $(LDFLAGS) -o libsymforce_gen.so $(CC_FILES) $(INCLUDES)
 
 libcatch2.so: {{ catch2_dir }}/src/catch_amalgamated.cpp
-	c++ $(CXXFLAGS) $(LDFLAGS) -o libcatch2.so $< $(INCLUDES)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o libcatch2.so $< $(INCLUDES)
 
 geo_example: geo_package_cpp_test.cc libsymforce_gen.so libcatch2.so
-	c++ $(CXXFLAGS) -o geo_package_cpp_test geo_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES)
+	$(CXX) $(CXXFLAGS) -o geo_package_cpp_test geo_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES)
 
 cam_example: cam_package_cpp_test.cc libsymforce_gen.so libcatch2.so
-	c++ $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES)
+	$(CXX) $(CXXFLAGS) -o cam_package_cpp_test cam_package_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES)
 
 cam_example_function_gen: cam_function_codegen_cpp_test.cc libsymforce_gen.so libcatch2.so
-	c++ $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES) -I../cpp
+	$(CXX) $(CXXFLAGS) -o cam_function_codegen_cpp_test cam_function_codegen_cpp_test.cc -Wl,-rpath,{{ include_dir }}/example -lsymforce_gen -lcatch2 $(INCLUDES) -I../cpp
 
 clean:
 	rm -f libsymforce_gen.so; rm -f cam_package_cpp_test cam_function_codegen_cpp_test geo_package_cpp_test

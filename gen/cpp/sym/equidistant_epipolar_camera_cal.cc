@@ -4,10 +4,6 @@
 
 #include "./equidistant_epipolar_camera_cal.h"
 
-// Explicit instantiation
-template class sym::EquidistantEpipolarCameraCal<double>;
-template class sym::EquidistantEpipolarCameraCal<float>;
-
 // Camera operation implementations
 namespace sym {
 
@@ -123,3 +119,7 @@ std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraC
 
 // Concept implementations for this class
 #include "./ops/equidistant_epipolar_camera_cal/storage_ops.cc"
+
+// Explicit instantiation
+template class sym::EquidistantEpipolarCameraCal<double>;
+template class sym::EquidistantEpipolarCameraCal<float>;

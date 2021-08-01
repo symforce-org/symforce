@@ -4,10 +4,6 @@
 
 #include "./linear_camera_cal.h"
 
-// Explicit instantiation
-template class sym::LinearCameraCal<double>;
-template class sym::LinearCameraCal<float>;
-
 // Camera operation implementations
 namespace sym {
 
@@ -115,3 +111,7 @@ std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCalf& a) {
 
 // Concept implementations for this class
 #include "./ops/linear_camera_cal/storage_ops.cc"
+
+// Explicit instantiation
+template class sym::LinearCameraCal<double>;
+template class sym::LinearCameraCal<float>;

@@ -4,10 +4,6 @@
 
 #include "./rot3.h"
 
-// Explicit instantiation
-template class sym::Rot3<double>;
-template class sym::Rot3<float>;
-
 // Print implementations
 std::ostream& operator<<(std::ostream& os, const sym::Rot3d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
@@ -59,3 +55,7 @@ Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
 
   return _res;
 }
+
+// Explicit instantiation
+template class sym::Rot3<double>;
+template class sym::Rot3<float>;
