@@ -47,7 +47,7 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
   const Scalar _tmp4 = 1 - epsilon;
   const Scalar _tmp5 = std::min<Scalar>(_tmp3, _tmp4);
   const Scalar _tmp6 = std::acos(_tmp5);
-  const Scalar _tmp7 = 1 - std::pow<Scalar>(_tmp5, 2);
+  const Scalar _tmp7 = 1 - std::pow(_tmp5, Scalar(2));
   const Scalar _tmp8 = 2 * _tmp6 / std::sqrt(_tmp7);
   const Scalar _tmp9 = _tmp2 * _tmp8;
   const Scalar _tmp10 =
@@ -213,17 +213,17 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
     Eigen::Matrix<Scalar, 3, 3>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp51, 2) + std::pow<Scalar>(_tmp65, 2) + std::pow<Scalar>(_tmp76, 2);
+        std::pow(_tmp51, Scalar(2)) + std::pow(_tmp65, Scalar(2)) + std::pow(_tmp76, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(1, 0) = _tmp51 * _tmp52 + _tmp65 * _tmp66 + _tmp76 * _tmp78;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp52, 2) + std::pow<Scalar>(_tmp66, 2) + std::pow<Scalar>(_tmp78, 2);
+        std::pow(_tmp52, Scalar(2)) + std::pow(_tmp66, Scalar(2)) + std::pow(_tmp78, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(2, 0) = _tmp51 * _tmp54 + _tmp65 * _tmp67 + _tmp76 * _tmp79;
     _hessian(2, 1) = _tmp52 * _tmp54 + _tmp66 * _tmp67 + _tmp78 * _tmp79;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp54, 2) + std::pow<Scalar>(_tmp67, 2) + std::pow<Scalar>(_tmp79, 2);
+        std::pow(_tmp54, Scalar(2)) + std::pow(_tmp67, Scalar(2)) + std::pow(_tmp79, Scalar(2));
   }
 
   if (rhs != nullptr) {

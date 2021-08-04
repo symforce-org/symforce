@@ -33,13 +33,13 @@ class SymforceCppCodePrinterTest(TestCase):
         expr = sm.Max(a ** 2, b ** 2)
         self.assertEqual(
             printer.doprint(expr),
-            "std::max<Scalar>(std::pow<Scalar>(a, 2), std::pow<Scalar>(b, 2))",
+            "std::max<Scalar>(std::pow(a, Scalar(2)), std::pow(b, Scalar(2)))",
         )
 
         expr = sm.Min(a ** 2, b ** 2)
         self.assertEqual(
             printer.doprint(expr),
-            "std::min<Scalar>(std::pow<Scalar>(a, 2), std::pow<Scalar>(b, 2))",
+            "std::min<Scalar>(std::pow(a, Scalar(2)), std::pow(b, Scalar(2)))",
         )
 
     @sympy_only

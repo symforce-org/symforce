@@ -37,9 +37,9 @@ void CrossAndDistanceBothJacobian0(const Eigen::Matrix<Scalar, 3, 1>& a,
   const Scalar _tmp3 = _tmp2 + a(0, 0);
   const Scalar _tmp4 = _tmp0 + a(1, 0);
   const Scalar _tmp5 = _tmp1 + a(2, 0);
-  const Scalar _tmp6 = std::pow<Scalar>(std::pow<Scalar>(_tmp3, 2) + std::pow<Scalar>(_tmp4, 2) +
-                                            std::pow<Scalar>(_tmp5, 2) + epsilon,
-                                        Scalar(-1) / Scalar(2));
+  const Scalar _tmp6 = std::pow(Scalar(std::pow(_tmp3, Scalar(2)) + std::pow(_tmp4, Scalar(2)) +
+                                       std::pow(_tmp5, Scalar(2)) + epsilon),
+                                Scalar(Scalar(-1) / Scalar(2)));
 
   // Output terms (2)
   if (cross_D_a != nullptr) {

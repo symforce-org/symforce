@@ -41,9 +41,9 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
   // Intermediate terms (126)
-  const Scalar _tmp0 = 2 * std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp0 = 2 * std::pow(_a[1], Scalar(2));
   const Scalar _tmp1 = -_tmp0;
-  const Scalar _tmp2 = 2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp2 = 2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp3 = -_tmp2;
   const Scalar _tmp4 = _tmp1 + _tmp3 + 1;
   const Scalar _tmp5 = 2 * _a[1];
@@ -58,7 +58,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp14 = _tmp11 + _tmp13;
   const Scalar _tmp15 = -_a[4] * _tmp4 - _a[5] * _tmp9 - _a[6] * _tmp14 + _b[4] * _tmp4 +
                         _b[5] * _tmp9 + _b[6] * _tmp14 - a_t_b(0, 0);
-  const Scalar _tmp16 = 2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp16 = 2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp17 = 1 - _tmp16;
   const Scalar _tmp18 = _tmp17 + _tmp3;
   const Scalar _tmp19 = -_tmp8;
@@ -260,7 +260,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     Eigen::Matrix<Scalar, 12, 12>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp103, 2) + std::pow<Scalar>(_tmp116, 2) + std::pow<Scalar>(_tmp76, 2);
+        std::pow(_tmp103, Scalar(2)) + std::pow(_tmp116, Scalar(2)) + std::pow(_tmp76, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -274,7 +274,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(0, 11) = 0;
     _hessian(1, 0) = _tmp103 * _tmp104 + _tmp116 * _tmp118 + _tmp76 * _tmp78;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp104, 2) + std::pow<Scalar>(_tmp118, 2) + std::pow<Scalar>(_tmp78, 2);
+        std::pow(_tmp104, Scalar(2)) + std::pow(_tmp118, Scalar(2)) + std::pow(_tmp78, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -288,7 +288,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(2, 0) = _tmp103 * _tmp105 + _tmp116 * _tmp119 + _tmp76 * _tmp79;
     _hessian(2, 1) = _tmp104 * _tmp105 + _tmp118 * _tmp119 + _tmp78 * _tmp79;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp105, 2) + std::pow<Scalar>(_tmp119, 2) + std::pow<Scalar>(_tmp79, 2);
+        std::pow(_tmp105, Scalar(2)) + std::pow(_tmp119, Scalar(2)) + std::pow(_tmp79, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -302,7 +302,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(3, 1) = _tmp104 * _tmp106 + _tmp118 * _tmp120 + _tmp78 * _tmp86;
     _hessian(3, 2) = _tmp105 * _tmp106 + _tmp119 * _tmp120 + _tmp79 * _tmp86;
     _hessian(3, 3) =
-        std::pow<Scalar>(_tmp106, 2) + std::pow<Scalar>(_tmp120, 2) + std::pow<Scalar>(_tmp86, 2);
+        std::pow(_tmp106, Scalar(2)) + std::pow(_tmp120, Scalar(2)) + std::pow(_tmp86, Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(3, 6) = 0;
@@ -316,7 +316,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(4, 2) = _tmp105 * _tmp107 + _tmp119 * _tmp121 + _tmp79 * _tmp91;
     _hessian(4, 3) = _tmp106 * _tmp107 + _tmp120 * _tmp121 + _tmp86 * _tmp91;
     _hessian(4, 4) =
-        std::pow<Scalar>(_tmp107, 2) + std::pow<Scalar>(_tmp121, 2) + std::pow<Scalar>(_tmp91, 2);
+        std::pow(_tmp107, Scalar(2)) + std::pow(_tmp121, Scalar(2)) + std::pow(_tmp91, Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(4, 6) = 0;
     _hessian(4, 7) = 0;
@@ -330,7 +330,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(5, 3) = _tmp106 * _tmp108 + _tmp120 * _tmp122 + _tmp86 * _tmp95;
     _hessian(5, 4) = _tmp107 * _tmp108 + _tmp121 * _tmp122 + _tmp91 * _tmp95;
     _hessian(5, 5) =
-        std::pow<Scalar>(_tmp108, 2) + std::pow<Scalar>(_tmp122, 2) + std::pow<Scalar>(_tmp95, 2);
+        std::pow(_tmp108, Scalar(2)) + std::pow(_tmp122, Scalar(2)) + std::pow(_tmp95, Scalar(2));
     _hessian(5, 6) = 0;
     _hessian(5, 7) = 0;
     _hessian(5, 8) = 0;
@@ -383,7 +383,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(9, 7) = 0;
     _hessian(9, 8) = 0;
     _hessian(9, 9) =
-        std::pow<Scalar>(_tmp109, 2) + std::pow<Scalar>(_tmp123, 2) + std::pow<Scalar>(_tmp96, 2);
+        std::pow(_tmp109, Scalar(2)) + std::pow(_tmp123, Scalar(2)) + std::pow(_tmp96, Scalar(2));
     _hessian(9, 10) = 0;
     _hessian(9, 11) = 0;
     _hessian(10, 0) = _tmp103 * _tmp110 + _tmp116 * _tmp124 + _tmp76 * _tmp97;
@@ -397,7 +397,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(10, 8) = 0;
     _hessian(10, 9) = _tmp109 * _tmp110 + _tmp123 * _tmp124 + _tmp96 * _tmp97;
     _hessian(10, 10) =
-        std::pow<Scalar>(_tmp110, 2) + std::pow<Scalar>(_tmp124, 2) + std::pow<Scalar>(_tmp97, 2);
+        std::pow(_tmp110, Scalar(2)) + std::pow(_tmp124, Scalar(2)) + std::pow(_tmp97, Scalar(2));
     _hessian(10, 11) = 0;
     _hessian(11, 0) = _tmp103 * _tmp111 + _tmp116 * _tmp125 + _tmp76 * _tmp98;
     _hessian(11, 1) = _tmp104 * _tmp111 + _tmp118 * _tmp125 + _tmp78 * _tmp98;
@@ -411,7 +411,7 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(11, 9) = _tmp109 * _tmp111 + _tmp123 * _tmp125 + _tmp96 * _tmp98;
     _hessian(11, 10) = _tmp110 * _tmp111 + _tmp124 * _tmp125 + _tmp97 * _tmp98;
     _hessian(11, 11) =
-        std::pow<Scalar>(_tmp111, 2) + std::pow<Scalar>(_tmp125, 2) + std::pow<Scalar>(_tmp98, 2);
+        std::pow(_tmp111, Scalar(2)) + std::pow(_tmp125, Scalar(2)) + std::pow(_tmp98, Scalar(2));
   }
 
   if (rhs != nullptr) {

@@ -54,7 +54,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp8 = std::fabs(_tmp5);
   const Scalar _tmp9 = 1 - epsilon;
   const Scalar _tmp10 = std::min<Scalar>(_tmp8, _tmp9);
-  const Scalar _tmp11 = 1 - std::pow<Scalar>(_tmp10, 2);
+  const Scalar _tmp11 = 1 - std::pow(_tmp10, Scalar(2));
   const Scalar _tmp12 = std::acos(_tmp10);
   const Scalar _tmp13 = 2 * _tmp12 / std::sqrt(_tmp11);
   const Scalar _tmp14 = _tmp13 * _tmp7;
@@ -87,7 +87,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
   const Scalar _tmp39 = _tmp36 * _tmp38;
   const Scalar _tmp40 = _tmp10 * _tmp12 / (_tmp11 * std::sqrt(_tmp11));
   const Scalar _tmp41 = _tmp39 * _tmp40;
-  const Scalar _tmp42 = 1.0 / (_tmp11);
+  const Scalar _tmp42 = Scalar(1.0) / (_tmp11);
   const Scalar _tmp43 = _tmp39 * _tmp42;
   const Scalar _tmp44 = _tmp16 * sqrt_info(0, 1);
   const Scalar _tmp45 = _a_T_b[3] * _b[2];
@@ -366,7 +366,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp109, 2) + std::pow<Scalar>(_tmp171, 2) + std::pow<Scalar>(_tmp199, 2);
+        std::pow(_tmp109, Scalar(2)) + std::pow(_tmp171, Scalar(2)) + std::pow(_tmp199, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -374,7 +374,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     _hessian(0, 5) = 0;
     _hessian(1, 0) = _tmp109 * _tmp111 + _tmp171 * _tmp172 + _tmp199 * _tmp200;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp111, 2) + std::pow<Scalar>(_tmp172, 2) + std::pow<Scalar>(_tmp200, 2);
+        std::pow(_tmp111, Scalar(2)) + std::pow(_tmp172, Scalar(2)) + std::pow(_tmp200, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -382,7 +382,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     _hessian(2, 0) = _tmp109 * _tmp112 + _tmp171 * _tmp173 + _tmp199 * _tmp201;
     _hessian(2, 1) = _tmp111 * _tmp112 + _tmp172 * _tmp173 + _tmp200 * _tmp201;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp112, 2) + std::pow<Scalar>(_tmp173, 2) + std::pow<Scalar>(_tmp201, 2);
+        std::pow(_tmp112, Scalar(2)) + std::pow(_tmp173, Scalar(2)) + std::pow(_tmp201, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -390,7 +390,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     _hessian(3, 1) = _tmp111 * _tmp154 + _tmp172 * _tmp180 + _tmp200 * _tmp208;
     _hessian(3, 2) = _tmp112 * _tmp154 + _tmp173 * _tmp180 + _tmp201 * _tmp208;
     _hessian(3, 3) =
-        std::pow<Scalar>(_tmp154, 2) + std::pow<Scalar>(_tmp180, 2) + std::pow<Scalar>(_tmp208, 2);
+        std::pow(_tmp154, Scalar(2)) + std::pow(_tmp180, Scalar(2)) + std::pow(_tmp208, Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 0) = _tmp109 * _tmp156 + _tmp171 * _tmp181 + _tmp199 * _tmp209;
@@ -398,7 +398,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     _hessian(4, 2) = _tmp112 * _tmp156 + _tmp173 * _tmp181 + _tmp201 * _tmp209;
     _hessian(4, 3) = _tmp154 * _tmp156 + _tmp180 * _tmp181 + _tmp208 * _tmp209;
     _hessian(4, 4) =
-        std::pow<Scalar>(_tmp156, 2) + std::pow<Scalar>(_tmp181, 2) + std::pow<Scalar>(_tmp209, 2);
+        std::pow(_tmp156, Scalar(2)) + std::pow(_tmp181, Scalar(2)) + std::pow(_tmp209, Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(5, 0) = _tmp109 * _tmp157 + _tmp171 * _tmp182 + _tmp199 * _tmp210;
     _hessian(5, 1) = _tmp111 * _tmp157 + _tmp172 * _tmp182 + _tmp200 * _tmp210;
@@ -406,7 +406,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
     _hessian(5, 3) = _tmp154 * _tmp157 + _tmp180 * _tmp182 + _tmp208 * _tmp210;
     _hessian(5, 4) = _tmp156 * _tmp157 + _tmp181 * _tmp182 + _tmp209 * _tmp210;
     _hessian(5, 5) =
-        std::pow<Scalar>(_tmp157, 2) + std::pow<Scalar>(_tmp182, 2) + std::pow<Scalar>(_tmp210, 2);
+        std::pow(_tmp157, Scalar(2)) + std::pow(_tmp182, Scalar(2)) + std::pow(_tmp210, Scalar(2));
   }
 
   if (rhs != nullptr) {

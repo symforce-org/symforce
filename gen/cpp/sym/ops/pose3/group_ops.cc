@@ -57,15 +57,15 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Inverse(const sym::Pose3<Scalar>& a) {
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
   // Intermediate terms (11)
-  const Scalar _tmp0 = -2 * std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp1 = 1 - 2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp0 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp1 = 1 - 2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp2 = 2 * _a[0];
   const Scalar _tmp3 = _a[1] * _tmp2;
   const Scalar _tmp4 = 2 * _a[2];
   const Scalar _tmp5 = _a[3] * _tmp4;
   const Scalar _tmp6 = 2 * _a[1] * _a[3];
   const Scalar _tmp7 = _a[2] * _tmp2;
-  const Scalar _tmp8 = -2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp8 = -2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp9 = _a[3] * _tmp2;
   const Scalar _tmp10 = _a[1] * _tmp4;
 
@@ -101,15 +101,15 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Compose(const sym::Pose3<Scalar>& a,
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
   // Intermediate terms (11)
-  const Scalar _tmp0 = -2 * std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp1 = -2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp0 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp1 = -2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp2 = 2 * _a[0] * _a[1];
   const Scalar _tmp3 = 2 * _a[3];
   const Scalar _tmp4 = _a[2] * _tmp3;
   const Scalar _tmp5 = _a[1] * _tmp3;
   const Scalar _tmp6 = 2 * _a[2];
   const Scalar _tmp7 = _a[0] * _tmp6;
-  const Scalar _tmp8 = 1 - 2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp8 = 1 - 2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp9 = _a[0] * _tmp3;
   const Scalar _tmp10 = _a[1] * _tmp6;
 
@@ -147,8 +147,8 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Between(const sym::Pose3<Scalar>& a,
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
   // Intermediate terms (20)
-  const Scalar _tmp0 = -2 * std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp1 = -2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp0 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp1 = -2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp2 = _tmp0 + _tmp1 + 1;
   const Scalar _tmp3 = 2 * _a[0];
   const Scalar _tmp4 = _a[1] * _tmp3;
@@ -158,7 +158,7 @@ sym::Pose3<Scalar> GroupOps<Scalar>::Between(const sym::Pose3<Scalar>& a,
   const Scalar _tmp8 = 2 * _a[1] * _a[3];
   const Scalar _tmp9 = _a[2] * _tmp3;
   const Scalar _tmp10 = -_tmp8 + _tmp9;
-  const Scalar _tmp11 = 1 - 2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp11 = 1 - 2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp12 = _tmp1 + _tmp11;
   const Scalar _tmp13 = _tmp4 - _tmp6;
   const Scalar _tmp14 = _a[3] * _tmp3;
@@ -202,9 +202,9 @@ sym::Pose3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
   // Intermediate terms (67)
-  const Scalar _tmp0 = std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp0 = std::pow(_a[1], Scalar(2));
   const Scalar _tmp1 = -2 * _tmp0;
-  const Scalar _tmp2 = std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp2 = std::pow(_a[2], Scalar(2));
   const Scalar _tmp3 = -2 * _tmp2;
   const Scalar _tmp4 = _tmp1 + _tmp3 + 1;
   const Scalar _tmp5 = 2 * _a[0];
@@ -217,7 +217,7 @@ sym::Pose3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   const Scalar _tmp12 = -_tmp11;
   const Scalar _tmp13 = _a[0] * _tmp7;
   const Scalar _tmp14 = _tmp12 + _tmp13;
-  const Scalar _tmp15 = std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp15 = std::pow(_a[0], Scalar(2));
   const Scalar _tmp16 = 1 - 2 * _tmp15;
   const Scalar _tmp17 = _tmp16 + _tmp3;
   const Scalar _tmp18 = -_tmp8;
@@ -229,7 +229,7 @@ sym::Pose3<Scalar> GroupOps<Scalar>::InverseWithJacobian(
   const Scalar _tmp24 = -_tmp20;
   const Scalar _tmp25 = _tmp21 + _tmp24;
   const Scalar _tmp26 = _tmp11 + _tmp13;
-  const Scalar _tmp27 = -std::pow<Scalar>(_a[3], 2);
+  const Scalar _tmp27 = -std::pow(_a[3], Scalar(2));
   const Scalar _tmp28 = -_tmp6;
   const Scalar _tmp29 = -_tmp13;
   const Scalar _tmp30 = _tmp15 + _tmp27;
@@ -349,8 +349,8 @@ sym::Pose3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
   const Scalar _tmp1 = -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1];
   const Scalar _tmp2 = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2];
   const Scalar _tmp3 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3];
-  const Scalar _tmp4 = -2 * std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp5 = 1 - 2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp4 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp5 = 1 - 2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp6 = _tmp4 + _tmp5;
   const Scalar _tmp7 = 2 * _a[0];
   const Scalar _tmp8 = _a[1] * _tmp7;
@@ -361,7 +361,7 @@ sym::Pose3<Scalar> GroupOps<Scalar>::ComposeWithJacobians(
   const Scalar _tmp13 = 2 * _a[2];
   const Scalar _tmp14 = _a[0] * _tmp13;
   const Scalar _tmp15 = _tmp12 + _tmp14;
-  const Scalar _tmp16 = -2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp16 = -2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp17 = _tmp16 + _tmp5;
   const Scalar _tmp18 = _tmp10 + _tmp8;
   const Scalar _tmp19 = _a[0] * _tmp9;
@@ -603,9 +603,9 @@ sym::Pose3<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   const Scalar _tmp1 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1];
   const Scalar _tmp2 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2];
   const Scalar _tmp3 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3];
-  const Scalar _tmp4 = 2 * std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp4 = 2 * std::pow(_a[1], Scalar(2));
   const Scalar _tmp5 = -_tmp4;
-  const Scalar _tmp6 = 2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp6 = 2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp7 = 1 - _tmp6;
   const Scalar _tmp8 = _tmp5 + _tmp7;
   const Scalar _tmp9 = 2 * _a[0];
@@ -618,7 +618,7 @@ sym::Pose3<Scalar> GroupOps<Scalar>::BetweenWithJacobians(
   const Scalar _tmp16 = -_tmp15;
   const Scalar _tmp17 = _a[0] * _tmp11;
   const Scalar _tmp18 = _tmp16 + _tmp17;
-  const Scalar _tmp19 = 2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp19 = 2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp20 = -_tmp19;
   const Scalar _tmp21 = _tmp20 + _tmp7;
   const Scalar _tmp22 = -_tmp12;

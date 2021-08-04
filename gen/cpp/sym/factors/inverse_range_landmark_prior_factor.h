@@ -39,7 +39,7 @@ void InverseRangeLandmarkPriorFactor(const Scalar landmark_inverse_range,
   const Scalar _tmp0 = -inverse_range_prior + landmark_inverse_range;
   const Scalar _tmp1 = epsilon + sigma;
   const Scalar _tmp2 = weight / _tmp1;
-  const Scalar _tmp3 = (weight * weight) / (_tmp1 * _tmp1);
+  const Scalar _tmp3 = std::pow(weight, Scalar(2)) / std::pow(_tmp1, Scalar(2));
 
   // Output terms (4)
   if (res != nullptr) {

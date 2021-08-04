@@ -56,7 +56,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
   const Scalar _tmp8 = std::fabs(_tmp5);
   const Scalar _tmp9 = 1 - epsilon;
   const Scalar _tmp10 = std::min<Scalar>(_tmp8, _tmp9);
-  const Scalar _tmp11 = 1 - std::pow<Scalar>(_tmp10, 2);
+  const Scalar _tmp11 = 1 - std::pow(_tmp10, Scalar(2));
   const Scalar _tmp12 = std::acos(_tmp10);
   const Scalar _tmp13 = 2 * _tmp12 / std::sqrt(_tmp11);
   const Scalar _tmp14 = _tmp13 * _tmp7;
@@ -405,7 +405,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     Eigen::Matrix<Scalar, 12, 12>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp115, 2) + std::pow<Scalar>(_tmp180, 2) + std::pow<Scalar>(_tmp204, 2);
+        std::pow(_tmp115, Scalar(2)) + std::pow(_tmp180, Scalar(2)) + std::pow(_tmp204, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -419,7 +419,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(0, 11) = 0;
     _hessian(1, 0) = _tmp115 * _tmp117 + _tmp180 * _tmp181 + _tmp204 * _tmp205;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp117, 2) + std::pow<Scalar>(_tmp181, 2) + std::pow<Scalar>(_tmp205, 2);
+        std::pow(_tmp117, Scalar(2)) + std::pow(_tmp181, Scalar(2)) + std::pow(_tmp205, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -433,7 +433,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(2, 0) = _tmp115 * _tmp118 + _tmp180 * _tmp182 + _tmp204 * _tmp206;
     _hessian(2, 1) = _tmp117 * _tmp118 + _tmp181 * _tmp182 + _tmp205 * _tmp206;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp118, 2) + std::pow<Scalar>(_tmp182, 2) + std::pow<Scalar>(_tmp206, 2);
+        std::pow(_tmp118, Scalar(2)) + std::pow(_tmp182, Scalar(2)) + std::pow(_tmp206, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -486,7 +486,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(6, 4) = 0;
     _hessian(6, 5) = 0;
     _hessian(6, 6) =
-        std::pow<Scalar>(_tmp165, 2) + std::pow<Scalar>(_tmp187, 2) + std::pow<Scalar>(_tmp211, 2);
+        std::pow(_tmp165, Scalar(2)) + std::pow(_tmp187, Scalar(2)) + std::pow(_tmp211, Scalar(2));
     _hessian(6, 7) = 0;
     _hessian(6, 8) = 0;
     _hessian(6, 9) = 0;
@@ -500,7 +500,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(7, 5) = 0;
     _hessian(7, 6) = _tmp165 * _tmp166 + _tmp187 * _tmp188 + _tmp211 * _tmp212;
     _hessian(7, 7) =
-        std::pow<Scalar>(_tmp166, 2) + std::pow<Scalar>(_tmp188, 2) + std::pow<Scalar>(_tmp212, 2);
+        std::pow(_tmp166, Scalar(2)) + std::pow(_tmp188, Scalar(2)) + std::pow(_tmp212, Scalar(2));
     _hessian(7, 8) = 0;
     _hessian(7, 9) = 0;
     _hessian(7, 10) = 0;
@@ -514,7 +514,7 @@ void BetweenFactorPose3Rotation(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
     _hessian(8, 6) = _tmp165 * _tmp167 + _tmp187 * _tmp189 + _tmp211 * _tmp213;
     _hessian(8, 7) = _tmp166 * _tmp167 + _tmp188 * _tmp189 + _tmp212 * _tmp213;
     _hessian(8, 8) =
-        std::pow<Scalar>(_tmp167, 2) + std::pow<Scalar>(_tmp189, 2) + std::pow<Scalar>(_tmp213, 2);
+        std::pow(_tmp167, Scalar(2)) + std::pow(_tmp189, Scalar(2)) + std::pow(_tmp213, Scalar(2));
     _hessian(8, 9) = 0;
     _hessian(8, 10) = 0;
     _hessian(8, 11) = 0;

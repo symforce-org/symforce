@@ -42,17 +42,18 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Eigen::Matrix<Scalar, 4, 1>& _a_T_b = a_T_b.Data();
 
   // Intermediate terms (90)
-  const Scalar _tmp0 = std::pow<Scalar>(_a[0], 2);
-  const Scalar _tmp1 = std::pow<Scalar>(_a[1], 2);
+  const Scalar _tmp0 = std::pow(_a[0], Scalar(2));
+  const Scalar _tmp1 = std::pow(_a[1], Scalar(2));
   const Scalar _tmp2 = _tmp0 + _tmp1;
-  const Scalar _tmp3 = 1.0 / (_tmp2);
+  const Scalar _tmp3 = Scalar(1.0) / (_tmp2);
   const Scalar _tmp4 = _a[3] * _tmp3;
   const Scalar _tmp5 = _a[2] * _tmp3;
   const Scalar _tmp6 = _b[3] * _tmp3;
   const Scalar _tmp7 = _b[2] * _tmp3;
   const Scalar _tmp8 = -_a[0] * _tmp5 + _a[0] * _tmp7 - _a[1] * _tmp4 + _a[1] * _tmp6 - _a_T_b[2];
   const Scalar _tmp9 = -_a[0] * _tmp4 + _a[0] * _tmp6 + _a[1] * _tmp5 - _a[1] * _tmp7 - _a_T_b[3];
-  const Scalar _tmp10 = 1.0 / (std::pow<Scalar>(_a_T_b[0], 2) + std::pow<Scalar>(_a_T_b[1], 2));
+  const Scalar _tmp10 =
+      Scalar(1.0) / (std::pow(_a_T_b[0], Scalar(2)) + std::pow(_a_T_b[1], Scalar(2)));
   const Scalar _tmp11 = _b[0] * _tmp3;
   const Scalar _tmp12 = _b[1] * _tmp3;
   const Scalar _tmp13 = _tmp10 * (_a[0] * _tmp12 - _a[1] * _tmp11);
@@ -74,19 +75,19 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp26 = _tmp21 * sqrt_info(0, 0);
   const Scalar _tmp27 = _tmp23 * sqrt_info(0, 1);
   const Scalar _tmp28 = -_tmp26 - _tmp27;
-  const Scalar _tmp29 = 2 / std::pow<Scalar>(_tmp2, 2);
+  const Scalar _tmp29 = 2 / std::pow(_tmp2, Scalar(2));
   const Scalar _tmp30 = _a[0] * _a[1] * _tmp29;
   const Scalar _tmp31 = _b[0] * _tmp30;
   const Scalar _tmp32 = _tmp0 * _tmp29;
   const Scalar _tmp33 = _tmp10 * (-_b[1] * _tmp32 + _tmp12 + _tmp31);
   const Scalar _tmp34 = -_b[1] * _tmp30;
   const Scalar _tmp35 = _tmp10 * (-_b[0] * _tmp32 + _tmp11 + _tmp34);
-  const Scalar _tmp36 = 1.0 / (_tmp16);
-  const Scalar _tmp37 = std::pow<Scalar>(_tmp16, 2);
+  const Scalar _tmp36 = Scalar(1.0) / (_tmp16);
+  const Scalar _tmp37 = std::pow(_tmp16, Scalar(2));
   const Scalar _tmp38 = _tmp15 / _tmp37;
   const Scalar _tmp39 = _tmp36 * (_a_T_b[0] * _tmp33 - _a_T_b[1] * _tmp35) -
                         _tmp38 * (_a_T_b[0] * _tmp35 + _a_T_b[1] * _tmp33);
-  const Scalar _tmp40 = _tmp37 / (std::pow<Scalar>(_tmp15, 2) + _tmp37);
+  const Scalar _tmp40 = _tmp37 / (std::pow(_tmp15, Scalar(2)) + _tmp37);
   const Scalar _tmp41 = _tmp39 * _tmp40;
   const Scalar _tmp42 = _b[2] * _tmp30;
   const Scalar _tmp43 = _a[2] * _tmp30;
@@ -180,7 +181,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp25, 2) + std::pow<Scalar>(_tmp69, 2) + std::pow<Scalar>(_tmp81, 2);
+        std::pow(_tmp25, Scalar(2)) + std::pow(_tmp69, Scalar(2)) + std::pow(_tmp81, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -188,7 +189,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     _hessian(0, 5) = 0;
     _hessian(1, 0) = _tmp25 * _tmp28 + _tmp69 * _tmp72 + _tmp81 * _tmp84;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp28, 2) + std::pow<Scalar>(_tmp72, 2) + std::pow<Scalar>(_tmp84, 2);
+        std::pow(_tmp28, Scalar(2)) + std::pow(_tmp72, Scalar(2)) + std::pow(_tmp84, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -196,7 +197,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     _hessian(2, 0) = _tmp25 * _tmp57 + _tmp69 * _tmp73 + _tmp81 * _tmp86;
     _hessian(2, 1) = _tmp28 * _tmp57 + _tmp72 * _tmp73 + _tmp84 * _tmp86;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp57, 2) + std::pow<Scalar>(_tmp73, 2) + std::pow<Scalar>(_tmp86, 2);
+        std::pow(_tmp57, Scalar(2)) + std::pow(_tmp73, Scalar(2)) + std::pow(_tmp86, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -204,7 +205,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     _hessian(3, 1) = _tmp28 * _tmp58 + _tmp72 * _tmp74 + _tmp84 * _tmp87;
     _hessian(3, 2) = _tmp57 * _tmp58 + _tmp73 * _tmp74 + _tmp86 * _tmp87;
     _hessian(3, 3) =
-        std::pow<Scalar>(_tmp58, 2) + std::pow<Scalar>(_tmp74, 2) + std::pow<Scalar>(_tmp87, 2);
+        std::pow(_tmp58, Scalar(2)) + std::pow(_tmp74, Scalar(2)) + std::pow(_tmp87, Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 0) = _tmp25 * _tmp59 + _tmp69 * _tmp75 + _tmp81 * _tmp88;
@@ -212,7 +213,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     _hessian(4, 2) = _tmp57 * _tmp59 + _tmp73 * _tmp75 + _tmp86 * _tmp88;
     _hessian(4, 3) = _tmp58 * _tmp59 + _tmp74 * _tmp75 + _tmp87 * _tmp88;
     _hessian(4, 4) =
-        std::pow<Scalar>(_tmp59, 2) + std::pow<Scalar>(_tmp75, 2) + std::pow<Scalar>(_tmp88, 2);
+        std::pow(_tmp59, Scalar(2)) + std::pow(_tmp75, Scalar(2)) + std::pow(_tmp88, Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(5, 0) = _tmp25 * _tmp66 + _tmp69 * _tmp77 + _tmp81 * _tmp89;
     _hessian(5, 1) = _tmp28 * _tmp66 + _tmp72 * _tmp77 + _tmp84 * _tmp89;
@@ -220,7 +221,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     _hessian(5, 3) = _tmp58 * _tmp66 + _tmp74 * _tmp77 + _tmp87 * _tmp89;
     _hessian(5, 4) = _tmp59 * _tmp66 + _tmp75 * _tmp77 + _tmp88 * _tmp89;
     _hessian(5, 5) =
-        std::pow<Scalar>(_tmp66, 2) + std::pow<Scalar>(_tmp77, 2) + std::pow<Scalar>(_tmp89, 2);
+        std::pow(_tmp66, Scalar(2)) + std::pow(_tmp77, Scalar(2)) + std::pow(_tmp89, Scalar(2));
   }
 
   if (rhs != nullptr) {

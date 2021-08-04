@@ -3,6 +3,6 @@
 #include "catch.hpp"
 
 TEST_CASE("Generated heaviside function is correct", "[heaviside]") {
-  CHECK(cpp_code_printer_test::Heaviside(-1) == 0);
-  CHECK(cpp_code_printer_test::Heaviside(1) == 1);
+  CHECK(cpp_code_printer_test::Heaviside<double>(-1) == 0);
+  CHECK(cpp_code_printer_test::Heaviside<double>(1) == 1);
 }

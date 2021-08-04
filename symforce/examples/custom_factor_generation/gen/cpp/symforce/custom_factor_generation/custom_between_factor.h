@@ -62,7 +62,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
   const Scalar _tmp7 = 1 - epsilon;
   const Scalar _tmp8 = std::min<Scalar>(_tmp6, _tmp7);
   const Scalar _tmp9 = std::acos(_tmp8);
-  const Scalar _tmp10 = 1 - std::pow<Scalar>(_tmp8, 2);
+  const Scalar _tmp10 = 1 - std::pow(_tmp8, Scalar(2));
   const Scalar _tmp11 = 2 / std::sqrt(_tmp10);
   const Scalar _tmp12 = _tmp11 * _tmp9;
   const Scalar _tmp13 = std::sqrt(prior_weight);
@@ -82,9 +82,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
   const Scalar _tmp25 = _tmp15 / (epsilon + prior_sigmas(2, 0));
   const Scalar _tmp26 = _tmp12 * _tmp25;
   const Scalar _tmp27 = _tmp24 * _tmp26;
-  const Scalar _tmp28 = 2 * std::pow<Scalar>(_nav_T_target[2], 2);
+  const Scalar _tmp28 = 2 * std::pow(_nav_T_target[2], Scalar(2));
   const Scalar _tmp29 = -_tmp28;
-  const Scalar _tmp30 = 2 * std::pow<Scalar>(_nav_T_target[1], 2);
+  const Scalar _tmp30 = 2 * std::pow(_nav_T_target[1], Scalar(2));
   const Scalar _tmp31 = 1 - _tmp30;
   const Scalar _tmp32 = _tmp29 + _tmp31;
   const Scalar _tmp33 = 2 * _nav_T_target[3];
@@ -102,7 +102,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
   const Scalar _tmp43 = epsilon + prior_sigmas(3, 0);
   const Scalar _tmp44 = _tmp13 / _tmp43;
   const Scalar _tmp45 = _tmp42 * _tmp44;
-  const Scalar _tmp46 = 2 * std::pow<Scalar>(_nav_T_target[0], 2);
+  const Scalar _tmp46 = 2 * std::pow(_nav_T_target[0], Scalar(2));
   const Scalar _tmp47 = -_tmp46;
   const Scalar _tmp48 = _tmp29 + _tmp47 + 1;
   const Scalar _tmp49 = 2 * _nav_T_target[1];
@@ -404,9 +404,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
   const Scalar _tmp283 = _tmp282 * _tmp65;
   const Scalar _tmp284 = _tmp264 + _tmp30;
   const Scalar _tmp285 = _tmp284 * _tmp65;
-  const Scalar _tmp286 = prior_weight / std::pow<Scalar>(_tmp43, 2);
-  const Scalar _tmp287 = prior_weight / std::pow<Scalar>(_tmp64, 2);
-  const Scalar _tmp288 = prior_weight / std::pow<Scalar>(_tmp56, 2);
+  const Scalar _tmp286 = prior_weight / std::pow(_tmp43, Scalar(2));
+  const Scalar _tmp287 = prior_weight / std::pow(_tmp64, Scalar(2));
+  const Scalar _tmp288 = prior_weight / std::pow(_tmp56, Scalar(2));
   const Scalar _tmp289 = _tmp287 * _tmp62;
   const Scalar _tmp290 = _tmp286 * _tmp32;
   const Scalar _tmp291 = _tmp288 * _tmp54;
@@ -516,7 +516,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     Eigen::Matrix<Scalar, 12, 12>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp102, 2) + std::pow<Scalar>(_tmp165, 2) + std::pow<Scalar>(_tmp187, 2);
+        std::pow(_tmp102, Scalar(2)) + std::pow(_tmp165, Scalar(2)) + std::pow(_tmp187, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -530,7 +530,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(0, 11) = 0;
     _hessian(1, 0) = _tmp102 * _tmp105 + _tmp165 * _tmp166 + _tmp187 * _tmp188;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp105, 2) + std::pow<Scalar>(_tmp166, 2) + std::pow<Scalar>(_tmp188, 2);
+        std::pow(_tmp105, Scalar(2)) + std::pow(_tmp166, Scalar(2)) + std::pow(_tmp188, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -544,7 +544,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(2, 0) = _tmp102 * _tmp106 + _tmp165 * _tmp167 + _tmp187 * _tmp189;
     _hessian(2, 1) = _tmp105 * _tmp106 + _tmp166 * _tmp167 + _tmp188 * _tmp189;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp106, 2) + std::pow<Scalar>(_tmp167, 2) + std::pow<Scalar>(_tmp189, 2);
+        std::pow(_tmp106, Scalar(2)) + std::pow(_tmp167, Scalar(2)) + std::pow(_tmp189, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -557,8 +557,8 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(3, 0) = 0;
     _hessian(3, 1) = 0;
     _hessian(3, 2) = 0;
-    _hessian(3, 3) = _tmp286 * std::pow<Scalar>(_tmp32, 2) + _tmp287 * std::pow<Scalar>(_tmp62, 2) +
-                     _tmp288 * std::pow<Scalar>(_tmp54, 2);
+    _hessian(3, 3) = _tmp286 * std::pow(_tmp32, Scalar(2)) + _tmp287 * std::pow(_tmp62, Scalar(2)) +
+                     _tmp288 * std::pow(_tmp54, Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(3, 6) = 0;
@@ -571,8 +571,8 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(4, 1) = 0;
     _hessian(4, 2) = 0;
     _hessian(4, 3) = _tmp289 * _tmp61 + _tmp290 * _tmp37 + _tmp291 * _tmp48;
-    _hessian(4, 4) = _tmp286 * std::pow<Scalar>(_tmp37, 2) + _tmp287 * std::pow<Scalar>(_tmp61, 2) +
-                     _tmp288 * std::pow<Scalar>(_tmp48, 2);
+    _hessian(4, 4) = _tmp286 * std::pow(_tmp37, Scalar(2)) + _tmp287 * std::pow(_tmp61, Scalar(2)) +
+                     _tmp288 * std::pow(_tmp48, Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(4, 6) = 0;
     _hessian(4, 7) = 0;
@@ -585,8 +585,8 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(5, 2) = 0;
     _hessian(5, 3) = _tmp290 * _tmp41 + _tmp291 * _tmp52 + _tmp292 * _tmp62;
     _hessian(5, 4) = _tmp292 * _tmp61 + _tmp293 * _tmp52 + _tmp294 * _tmp37;
-    _hessian(5, 5) = _tmp286 * std::pow<Scalar>(_tmp41, 2) + _tmp287 * std::pow<Scalar>(_tmp59, 2) +
-                     _tmp288 * std::pow<Scalar>(_tmp52, 2);
+    _hessian(5, 5) = _tmp286 * std::pow(_tmp41, Scalar(2)) + _tmp287 * std::pow(_tmp59, Scalar(2)) +
+                     _tmp288 * std::pow(_tmp52, Scalar(2));
     _hessian(5, 6) = 0;
     _hessian(5, 7) = 0;
     _hessian(5, 8) = 0;
@@ -599,9 +599,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(6, 3) = _tmp200 * _tmp229 + _tmp241 * _tmp258 + _tmp270 * _tmp277;
     _hessian(6, 4) = _tmp201 * _tmp229 + _tmp242 * _tmp258 + _tmp271 * _tmp277;
     _hessian(6, 5) = _tmp202 * _tmp229 + _tmp243 * _tmp258 + _tmp272 * _tmp277;
-    _hessian(6, 6) = std::pow<Scalar>(_tmp152, 2) + std::pow<Scalar>(_tmp175, 2) +
-                     std::pow<Scalar>(_tmp196, 2) + std::pow<Scalar>(_tmp229, 2) +
-                     std::pow<Scalar>(_tmp258, 2) + std::pow<Scalar>(_tmp277, 2);
+    _hessian(6, 6) = std::pow(_tmp152, Scalar(2)) + std::pow(_tmp175, Scalar(2)) +
+                     std::pow(_tmp196, Scalar(2)) + std::pow(_tmp229, Scalar(2)) +
+                     std::pow(_tmp258, Scalar(2)) + std::pow(_tmp277, Scalar(2));
     _hessian(6, 7) = 0;
     _hessian(6, 8) = 0;
     _hessian(6, 9) = 0;
@@ -615,9 +615,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(7, 5) = _tmp202 * _tmp231 + _tmp243 * _tmp260 + _tmp272 * _tmp278;
     _hessian(7, 6) = _tmp152 * _tmp154 + _tmp175 * _tmp177 + _tmp196 * _tmp198 + _tmp229 * _tmp231 +
                      _tmp258 * _tmp260 + _tmp277 * _tmp278;
-    _hessian(7, 7) = std::pow<Scalar>(_tmp154, 2) + std::pow<Scalar>(_tmp177, 2) +
-                     std::pow<Scalar>(_tmp198, 2) + std::pow<Scalar>(_tmp231, 2) +
-                     std::pow<Scalar>(_tmp260, 2) + std::pow<Scalar>(_tmp278, 2);
+    _hessian(7, 7) = std::pow(_tmp154, Scalar(2)) + std::pow(_tmp177, Scalar(2)) +
+                     std::pow(_tmp198, Scalar(2)) + std::pow(_tmp231, Scalar(2)) +
+                     std::pow(_tmp260, Scalar(2)) + std::pow(_tmp278, Scalar(2));
     _hessian(7, 8) = 0;
     _hessian(7, 9) = 0;
     _hessian(7, 10) = 0;
@@ -632,9 +632,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
                      _tmp258 * _tmp261 + _tmp277 * _tmp279;
     _hessian(8, 7) = _tmp154 * _tmp155 + _tmp177 * _tmp178 + _tmp198 * _tmp199 + _tmp231 * _tmp232 +
                      _tmp260 * _tmp261 + _tmp278 * _tmp279;
-    _hessian(8, 8) = std::pow<Scalar>(_tmp155, 2) + std::pow<Scalar>(_tmp178, 2) +
-                     std::pow<Scalar>(_tmp199, 2) + std::pow<Scalar>(_tmp232, 2) +
-                     std::pow<Scalar>(_tmp261, 2) + std::pow<Scalar>(_tmp279, 2);
+    _hessian(8, 8) = std::pow(_tmp155, Scalar(2)) + std::pow(_tmp178, Scalar(2)) +
+                     std::pow(_tmp199, Scalar(2)) + std::pow(_tmp232, Scalar(2)) +
+                     std::pow(_tmp261, Scalar(2)) + std::pow(_tmp279, Scalar(2));
     _hessian(8, 9) = 0;
     _hessian(8, 10) = 0;
     _hessian(8, 11) = 0;
@@ -647,9 +647,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(9, 6) = _tmp229 * _tmp234 + _tmp258 * _tmp263 + _tmp277 * _tmp281;
     _hessian(9, 7) = _tmp231 * _tmp234 + _tmp260 * _tmp263 + _tmp278 * _tmp281;
     _hessian(9, 8) = _tmp232 * _tmp234 + _tmp261 * _tmp263 + _tmp279 * _tmp281;
-    _hessian(9, 9) = std::pow<Scalar>(_tmp233, 2) * _tmp286 +
-                     std::pow<Scalar>(_tmp262, 2) * _tmp288 +
-                     std::pow<Scalar>(_tmp280, 2) * _tmp287;
+    _hessian(9, 9) = std::pow(_tmp233, Scalar(2)) * _tmp286 +
+                     std::pow(_tmp262, Scalar(2)) * _tmp288 +
+                     std::pow(_tmp280, Scalar(2)) * _tmp287;
     _hessian(9, 10) = 0;
     _hessian(9, 11) = 0;
     _hessian(10, 0) = 0;
@@ -662,9 +662,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(10, 7) = _tmp231 * _tmp237 + _tmp260 * _tmp266 + _tmp278 * _tmp283;
     _hessian(10, 8) = _tmp232 * _tmp237 + _tmp261 * _tmp266 + _tmp279 * _tmp283;
     _hessian(10, 9) = _tmp236 * _tmp296 + _tmp265 * _tmp299 + _tmp282 * _tmp295;
-    _hessian(10, 10) = std::pow<Scalar>(_tmp236, 2) * _tmp286 +
-                       std::pow<Scalar>(_tmp265, 2) * _tmp288 +
-                       std::pow<Scalar>(_tmp282, 2) * _tmp287;
+    _hessian(10, 10) = std::pow(_tmp236, Scalar(2)) * _tmp286 +
+                       std::pow(_tmp265, Scalar(2)) * _tmp288 +
+                       std::pow(_tmp282, Scalar(2)) * _tmp287;
     _hessian(10, 11) = 0;
     _hessian(11, 0) = 0;
     _hessian(11, 1) = 0;
@@ -677,9 +677,9 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(11, 8) = _tmp232 * _tmp240 + _tmp261 * _tmp269 + _tmp279 * _tmp285;
     _hessian(11, 9) = _tmp239 * _tmp296 + _tmp268 * _tmp299 + _tmp280 * _tmp300;
     _hessian(11, 10) = _tmp239 * _tmp298 + _tmp265 * _tmp268 * _tmp288 + _tmp282 * _tmp300;
-    _hessian(11, 11) = std::pow<Scalar>(_tmp239, 2) * _tmp286 +
-                       std::pow<Scalar>(_tmp268, 2) * _tmp288 +
-                       std::pow<Scalar>(_tmp284, 2) * _tmp287;
+    _hessian(11, 11) = std::pow(_tmp239, Scalar(2)) * _tmp286 +
+                       std::pow(_tmp268, Scalar(2)) * _tmp288 +
+                       std::pow(_tmp284, Scalar(2)) * _tmp287;
   }
 
   if (rhs != nullptr) {

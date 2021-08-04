@@ -45,9 +45,9 @@ void CrossAndDistanceBothJacobians(
   const Scalar _tmp3 = _tmp2 + a(0, 0);
   const Scalar _tmp4 = _tmp0 + a(1, 0);
   const Scalar _tmp5 = _tmp1 + a(2, 0);
-  const Scalar _tmp6 = std::pow<Scalar>(std::pow<Scalar>(_tmp3, 2) + std::pow<Scalar>(_tmp4, 2) +
-                                            std::pow<Scalar>(_tmp5, 2) + epsilon,
-                                        Scalar(-1) / Scalar(2));
+  const Scalar _tmp6 = std::pow(Scalar(std::pow(_tmp3, Scalar(2)) + std::pow(_tmp4, Scalar(2)) +
+                                       std::pow(_tmp5, Scalar(2)) + epsilon),
+                                Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp7 = _tmp3 * _tmp6;
   const Scalar _tmp8 = _tmp4 * _tmp6;
   const Scalar _tmp9 = _tmp5 * _tmp6;

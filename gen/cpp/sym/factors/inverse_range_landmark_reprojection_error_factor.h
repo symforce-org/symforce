@@ -73,8 +73,8 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp7 = _target_pose[0] * _tmp1;
   const Scalar _tmp8 = _tmp6 + _tmp7;
   const Scalar _tmp9 = _source_pose[5] - _target_pose[5];
-  const Scalar _tmp10 = -2 * (_target_pose[2] * _target_pose[2]);
-  const Scalar _tmp11 = -2 * (_target_pose[1] * _target_pose[1]);
+  const Scalar _tmp10 = -2 * std::pow(_target_pose[2], Scalar(2));
+  const Scalar _tmp11 = -2 * std::pow(_target_pose[1], Scalar(2));
   const Scalar _tmp12 = _tmp10 + _tmp11 + 1;
   const Scalar _tmp13 = _source_pose[4] - _target_pose[4];
   const Scalar _tmp14 = _tmp12 * _tmp13 + _tmp3 * _tmp4 + _tmp8 * _tmp9;
@@ -84,12 +84,13 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp18 = _source_pose[0] * _tmp17;
   const Scalar _tmp19 = -source_calibration_storage(3, 0) + source_pixel(1, 0);
   const Scalar _tmp20 = -source_calibration_storage(2, 0) + source_pixel(0, 0);
-  const Scalar _tmp21 = std::pow<Scalar>(
-      std::pow<Scalar>(_tmp19, 2) / std::pow<Scalar>(source_calibration_storage(1, 0), 2) +
-          std::pow<Scalar>(_tmp20, 2) / std::pow<Scalar>(source_calibration_storage(0, 0), 2) + 1,
-      Scalar(-1) / Scalar(2));
-  const Scalar _tmp22 = -2 * std::pow<Scalar>(_source_pose[1], 2);
-  const Scalar _tmp23 = 1 - 2 * std::pow<Scalar>(_source_pose[2], 2);
+  const Scalar _tmp21 = std::pow(
+      Scalar(std::pow(_tmp19, Scalar(2)) / std::pow(source_calibration_storage(1, 0), Scalar(2)) +
+             std::pow(_tmp20, Scalar(2)) / std::pow(source_calibration_storage(0, 0), Scalar(2)) +
+             1),
+      Scalar(Scalar(-1) / Scalar(2)));
+  const Scalar _tmp22 = -2 * std::pow(_source_pose[1], Scalar(2));
+  const Scalar _tmp23 = 1 - 2 * std::pow(_source_pose[2], Scalar(2));
   const Scalar _tmp24 = _tmp20 / source_calibration_storage(0, 0);
   const Scalar _tmp25 = _tmp21 * _tmp24;
   const Scalar _tmp26 = _source_pose[0] * _tmp15;
@@ -100,7 +101,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
       _tmp21 * (_tmp16 + _tmp18) + _tmp25 * (_tmp22 + _tmp23) + _tmp29 * (_tmp26 - _tmp27);
   const Scalar _tmp31 = _source_pose[1] * _tmp17;
   const Scalar _tmp32 = 2 * _source_pose[0] * _source_pose[3];
-  const Scalar _tmp33 = -2 * (_source_pose[0] * _source_pose[0]);
+  const Scalar _tmp33 = -2 * std::pow(_source_pose[0], Scalar(2));
   const Scalar _tmp34 =
       _tmp21 * (_tmp31 - _tmp32) + _tmp25 * (_tmp26 + _tmp27) + _tmp29 * (_tmp23 + _tmp33);
   const Scalar _tmp35 =
@@ -111,14 +112,14 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp38 = _target_pose[2] * _tmp1;
   const Scalar _tmp39 = _target_pose[0] * _tmp5;
   const Scalar _tmp40 = _tmp38 - _tmp39;
-  const Scalar _tmp41 = 1 - 2 * (_target_pose[0] * _target_pose[0]);
+  const Scalar _tmp41 = 1 - 2 * std::pow(_target_pose[0], Scalar(2));
   const Scalar _tmp42 = _tmp11 + _tmp41;
   const Scalar _tmp43 = _tmp13 * _tmp37 + _tmp4 * _tmp42 + _tmp40 * _tmp9;
   const Scalar _tmp44 =
       _tmp30 * _tmp37 + _tmp34 * _tmp40 + _tmp35 * _tmp42 + _tmp43 * source_inverse_range;
   const Scalar _tmp45 = std::fabs(_tmp44);
   const Scalar _tmp46 = std::max<Scalar>(_tmp45, epsilon);
-  const Scalar _tmp47 = 1.0 / (_tmp46);
+  const Scalar _tmp47 = Scalar(1.0) / (_tmp46);
   const Scalar _tmp48 = _tmp47 * target_calibration_storage(0, 0);
   const Scalar _tmp49 = _tmp36 * _tmp48 + target_calibration_storage(2, 0) - target_pixel(0, 0);
   const Scalar _tmp50 = _tmp38 + _tmp39;
@@ -129,20 +130,19 @@ void InverseRangeLandmarkReprojectionErrorFactor(
       _tmp30 * _tmp51 + _tmp34 * _tmp52 + _tmp35 * _tmp50 + _tmp53 * source_inverse_range;
   const Scalar _tmp55 = _tmp47 * target_calibration_storage(1, 0);
   const Scalar _tmp56 = _tmp54 * _tmp55 + target_calibration_storage(3, 0) - target_pixel(1, 0);
-  const Scalar _tmp57 = std::pow<Scalar>(_tmp49, 2) + std::pow<Scalar>(_tmp56, 2) + epsilon;
-  const Scalar _tmp58 = std::pow<Scalar>(_tmp57, Scalar(-1) / Scalar(2));
+  const Scalar _tmp57 = std::pow(_tmp49, Scalar(2)) + std::pow(_tmp56, Scalar(2)) + epsilon;
+  const Scalar _tmp58 = std::pow(_tmp57, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp59 = (((_tmp44) > 0) - ((_tmp44) < 0));
   const Scalar _tmp60 = std::sqrt(weight) * std::sqrt(std::max<Scalar>(0, _tmp59));
-  const Scalar _tmp61 = 1.0 / (epsilon - gnc_mu + 1);
+  const Scalar _tmp61 = Scalar(1.0) / (epsilon - gnc_mu + 1);
   const Scalar _tmp62 = epsilon + std::fabs(_tmp61);
-  const Scalar _tmp63 = std::pow(gnc_scale, -2);
+  const Scalar _tmp63 = std::pow(gnc_scale, Scalar(-2));
   const Scalar _tmp64 = _tmp57 * _tmp63 / _tmp62 + 1;
   const Scalar _tmp65 = 2 - _tmp61;
   const Scalar _tmp66 =
       _tmp65 + epsilon * (2 * std::min<Scalar>(0, (((_tmp65) > 0) - ((_tmp65) < 0))) + 1);
   const Scalar _tmp67 = (Scalar(1) / Scalar(2)) * _tmp66;
-  const Scalar _tmp68 =
-      std::sqrt(2) * std::sqrt(_tmp62 * (std::pow<Scalar>(_tmp64, _tmp67) - 1) / _tmp66);
+  const Scalar _tmp68 = std::sqrt(2) * std::sqrt(_tmp62 * (std::pow(_tmp64, _tmp67) - 1) / _tmp66);
   const Scalar _tmp69 = _tmp60 * _tmp68;
   const Scalar _tmp70 = _tmp58 * _tmp69;
   const Scalar _tmp71 = _tmp49 * _tmp70;
@@ -161,7 +161,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp84 = _tmp54 * target_calibration_storage(1, 0);
   const Scalar _tmp85 = (Scalar(1) / Scalar(2)) * _tmp59 *
                         ((((_tmp45 - epsilon) > 0) - ((_tmp45 - epsilon) < 0)) + 1) /
-                        (_tmp46 * _tmp46);
+                        std::pow(_tmp46, Scalar(2));
   const Scalar _tmp86 = _tmp85 * (_tmp37 * _tmp83 + _tmp40 * _tmp81 + _tmp42 * _tmp78);
   const Scalar _tmp87 =
       _tmp55 * (_tmp50 * _tmp78 + _tmp51 * _tmp83 + _tmp52 * _tmp81) - _tmp84 * _tmp86;
@@ -173,7 +173,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   const Scalar _tmp92 =
       (Scalar(1) / Scalar(2)) * _tmp87 * _tmp88 + (Scalar(1) / Scalar(2)) * _tmp90 * _tmp91;
   const Scalar _tmp93 = _tmp49 * _tmp92;
-  const Scalar _tmp94 = _tmp58 * _tmp60 * _tmp63 * std::pow(_tmp64, _tmp67 - 1) / _tmp68;
+  const Scalar _tmp94 = _tmp58 * _tmp60 * _tmp63 * std::pow(_tmp64, Scalar(_tmp67 - 1)) / _tmp68;
   const Scalar _tmp95 = _tmp69 / (_tmp57 * std::sqrt(_tmp57));
   const Scalar _tmp96 = _tmp70 * _tmp90 + _tmp93 * _tmp94 - _tmp93 * _tmp95;
   const Scalar _tmp97 = (Scalar(1) / Scalar(2)) * _tmp96;
@@ -443,7 +443,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 13, 13>& _hessian = (*hessian);
 
-    _hessian(0, 0) = (_tmp139 * _tmp139) + (_tmp257 * _tmp257);
+    _hessian(0, 0) = std::pow(_tmp139, Scalar(2)) + std::pow(_tmp257, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -457,7 +457,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(0, 11) = 0;
     _hessian(0, 12) = 0;
     _hessian(1, 0) = _tmp139 * _tmp141 + _tmp257 * _tmp259;
-    _hessian(1, 1) = (_tmp141 * _tmp141) + (_tmp259 * _tmp259);
+    _hessian(1, 1) = std::pow(_tmp141, Scalar(2)) + std::pow(_tmp259, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -471,7 +471,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(1, 12) = 0;
     _hessian(2, 0) = _tmp139 * _tmp142 + _tmp257 * _tmp260;
     _hessian(2, 1) = _tmp141 * _tmp142 + _tmp259 * _tmp260;
-    _hessian(2, 2) = (_tmp142 * _tmp142) + (_tmp260 * _tmp260);
+    _hessian(2, 2) = std::pow(_tmp142, Scalar(2)) + std::pow(_tmp260, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -485,7 +485,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(3, 0) = _tmp139 * _tmp154 + _tmp257 * _tmp261;
     _hessian(3, 1) = _tmp141 * _tmp154 + _tmp259 * _tmp261;
     _hessian(3, 2) = _tmp142 * _tmp154 + _tmp260 * _tmp261;
-    _hessian(3, 3) = (_tmp154 * _tmp154) + (_tmp261 * _tmp261);
+    _hessian(3, 3) = std::pow(_tmp154, Scalar(2)) + std::pow(_tmp261, Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(3, 6) = 0;
@@ -499,7 +499,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(4, 1) = _tmp141 * _tmp163 + _tmp259 * _tmp262;
     _hessian(4, 2) = _tmp142 * _tmp163 + _tmp260 * _tmp262;
     _hessian(4, 3) = _tmp154 * _tmp163 + _tmp261 * _tmp262;
-    _hessian(4, 4) = (_tmp163 * _tmp163) + (_tmp262 * _tmp262);
+    _hessian(4, 4) = std::pow(_tmp163, Scalar(2)) + std::pow(_tmp262, Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(4, 6) = 0;
     _hessian(4, 7) = 0;
@@ -513,7 +513,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(5, 2) = _tmp142 * _tmp171 + _tmp260 * _tmp263;
     _hessian(5, 3) = _tmp154 * _tmp171 + _tmp261 * _tmp263;
     _hessian(5, 4) = _tmp163 * _tmp171 + _tmp262 * _tmp263;
-    _hessian(5, 5) = (_tmp171 * _tmp171) + (_tmp263 * _tmp263);
+    _hessian(5, 5) = std::pow(_tmp171, Scalar(2)) + std::pow(_tmp263, Scalar(2));
     _hessian(5, 6) = 0;
     _hessian(5, 7) = 0;
     _hessian(5, 8) = 0;
@@ -527,7 +527,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(6, 3) = _tmp154 * _tmp228 + _tmp261 * _tmp269;
     _hessian(6, 4) = _tmp163 * _tmp228 + _tmp262 * _tmp269;
     _hessian(6, 5) = _tmp171 * _tmp228 + _tmp263 * _tmp269;
-    _hessian(6, 6) = (_tmp228 * _tmp228) + (_tmp269 * _tmp269);
+    _hessian(6, 6) = std::pow(_tmp228, Scalar(2)) + std::pow(_tmp269, Scalar(2));
     _hessian(6, 7) = 0;
     _hessian(6, 8) = 0;
     _hessian(6, 9) = 0;
@@ -541,7 +541,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(7, 4) = _tmp163 * _tmp230 + _tmp262 * _tmp270;
     _hessian(7, 5) = _tmp171 * _tmp230 + _tmp263 * _tmp270;
     _hessian(7, 6) = _tmp228 * _tmp230 + _tmp269 * _tmp270;
-    _hessian(7, 7) = (_tmp230 * _tmp230) + (_tmp270 * _tmp270);
+    _hessian(7, 7) = std::pow(_tmp230, Scalar(2)) + std::pow(_tmp270, Scalar(2));
     _hessian(7, 8) = 0;
     _hessian(7, 9) = 0;
     _hessian(7, 10) = 0;
@@ -555,7 +555,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(8, 5) = _tmp171 * _tmp231 + _tmp263 * _tmp271;
     _hessian(8, 6) = _tmp228 * _tmp231 + _tmp269 * _tmp271;
     _hessian(8, 7) = _tmp230 * _tmp231 + _tmp270 * _tmp271;
-    _hessian(8, 8) = (_tmp231 * _tmp231) + (_tmp271 * _tmp271);
+    _hessian(8, 8) = std::pow(_tmp231, Scalar(2)) + std::pow(_tmp271, Scalar(2));
     _hessian(8, 9) = 0;
     _hessian(8, 10) = 0;
     _hessian(8, 11) = 0;
@@ -569,7 +569,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(9, 6) = _tmp228 * _tmp235 + _tmp269 * _tmp272;
     _hessian(9, 7) = _tmp230 * _tmp235 + _tmp270 * _tmp272;
     _hessian(9, 8) = _tmp231 * _tmp235 + _tmp271 * _tmp272;
-    _hessian(9, 9) = (_tmp235 * _tmp235) + (_tmp272 * _tmp272);
+    _hessian(9, 9) = std::pow(_tmp235, Scalar(2)) + std::pow(_tmp272, Scalar(2));
     _hessian(9, 10) = 0;
     _hessian(9, 11) = 0;
     _hessian(9, 12) = 0;
@@ -583,7 +583,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(10, 7) = _tmp230 * _tmp239 + _tmp270 * _tmp273;
     _hessian(10, 8) = _tmp231 * _tmp239 + _tmp271 * _tmp273;
     _hessian(10, 9) = _tmp235 * _tmp239 + _tmp272 * _tmp273;
-    _hessian(10, 10) = (_tmp239 * _tmp239) + (_tmp273 * _tmp273);
+    _hessian(10, 10) = std::pow(_tmp239, Scalar(2)) + std::pow(_tmp273, Scalar(2));
     _hessian(10, 11) = 0;
     _hessian(10, 12) = 0;
     _hessian(11, 0) = _tmp139 * _tmp243 + _tmp257 * _tmp274;
@@ -597,7 +597,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(11, 8) = _tmp231 * _tmp243 + _tmp271 * _tmp274;
     _hessian(11, 9) = _tmp235 * _tmp243 + _tmp272 * _tmp274;
     _hessian(11, 10) = _tmp239 * _tmp243 + _tmp273 * _tmp274;
-    _hessian(11, 11) = (_tmp243 * _tmp243) + (_tmp274 * _tmp274);
+    _hessian(11, 11) = std::pow(_tmp243, Scalar(2)) + std::pow(_tmp274, Scalar(2));
     _hessian(11, 12) = 0;
     _hessian(12, 0) = _tmp139 * _tmp247 + _tmp257 * _tmp275;
     _hessian(12, 1) = _tmp141 * _tmp247 + _tmp259 * _tmp275;
@@ -611,7 +611,7 @@ void InverseRangeLandmarkReprojectionErrorFactor(
     _hessian(12, 9) = _tmp235 * _tmp247 + _tmp272 * _tmp275;
     _hessian(12, 10) = _tmp239 * _tmp247 + _tmp273 * _tmp275;
     _hessian(12, 11) = _tmp243 * _tmp247 + _tmp274 * _tmp275;
-    _hessian(12, 12) = (_tmp247 * _tmp247) + (_tmp275 * _tmp275);
+    _hessian(12, 12) = std::pow(_tmp247, Scalar(2)) + std::pow(_tmp275, Scalar(2));
   }
 
   if (rhs != nullptr) {

@@ -22,7 +22,7 @@ Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>&
   const Eigen::Matrix<Scalar, 4, 1>& _cam = cam.Data();
 
   // Intermediate terms (1)
-  const Scalar _tmp0 = 1.0 / (std::max<Scalar>(1, epsilon));
+  const Scalar _tmp0 = Scalar(1.0) / (std::max<Scalar>(1, epsilon));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;

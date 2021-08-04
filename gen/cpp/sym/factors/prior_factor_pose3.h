@@ -49,7 +49,7 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
   const Scalar _tmp5 = 1 - epsilon;
   const Scalar _tmp6 = std::min<Scalar>(_tmp4, _tmp5);
   const Scalar _tmp7 = std::acos(_tmp6);
-  const Scalar _tmp8 = 1 - std::pow<Scalar>(_tmp6, 2);
+  const Scalar _tmp8 = 1 - std::pow(_tmp6, Scalar(2));
   const Scalar _tmp9 = 2 * _tmp7 / std::sqrt(_tmp8);
   const Scalar _tmp10 = _tmp3 * _tmp9;
   const Scalar _tmp11 = _tmp0 * _tmp10;
@@ -312,9 +312,9 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow<Scalar>(_tmp105, 2) + std::pow<Scalar>(_tmp118, 2) +
-                     std::pow<Scalar>(_tmp133, 2) + std::pow<Scalar>(_tmp64, 2) +
-                     std::pow<Scalar>(_tmp80, 2) + std::pow<Scalar>(_tmp92, 2);
+    _hessian(0, 0) = std::pow(_tmp105, Scalar(2)) + std::pow(_tmp118, Scalar(2)) +
+                     std::pow(_tmp133, Scalar(2)) + std::pow(_tmp64, Scalar(2)) +
+                     std::pow(_tmp80, Scalar(2)) + std::pow(_tmp92, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -322,9 +322,9 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
     _hessian(0, 5) = 0;
     _hessian(1, 0) = _tmp105 * _tmp106 + _tmp118 * _tmp119 + _tmp133 * _tmp134 + _tmp64 * _tmp66 +
                      _tmp80 * _tmp81 + _tmp92 * _tmp93;
-    _hessian(1, 1) = std::pow<Scalar>(_tmp106, 2) + std::pow<Scalar>(_tmp119, 2) +
-                     std::pow<Scalar>(_tmp134, 2) + std::pow<Scalar>(_tmp66, 2) +
-                     std::pow<Scalar>(_tmp81, 2) + std::pow<Scalar>(_tmp93, 2);
+    _hessian(1, 1) = std::pow(_tmp106, Scalar(2)) + std::pow(_tmp119, Scalar(2)) +
+                     std::pow(_tmp134, Scalar(2)) + std::pow(_tmp66, Scalar(2)) +
+                     std::pow(_tmp81, Scalar(2)) + std::pow(_tmp93, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -333,9 +333,9 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
                      _tmp80 * _tmp82 + _tmp92 * _tmp94;
     _hessian(2, 1) = _tmp106 * _tmp107 + _tmp119 * _tmp120 + _tmp134 * _tmp135 + _tmp66 * _tmp67 +
                      _tmp81 * _tmp82 + _tmp93 * _tmp94;
-    _hessian(2, 2) = std::pow<Scalar>(_tmp107, 2) + std::pow<Scalar>(_tmp120, 2) +
-                     std::pow<Scalar>(_tmp135, 2) + std::pow<Scalar>(_tmp67, 2) +
-                     std::pow<Scalar>(_tmp82, 2) + std::pow<Scalar>(_tmp94, 2);
+    _hessian(2, 2) = std::pow(_tmp107, Scalar(2)) + std::pow(_tmp120, Scalar(2)) +
+                     std::pow(_tmp135, Scalar(2)) + std::pow(_tmp67, Scalar(2)) +
+                     std::pow(_tmp82, Scalar(2)) + std::pow(_tmp94, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
@@ -348,9 +348,9 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
     _hessian(3, 2) = _tmp107 * sqrt_info(3, 3) + _tmp120 * sqrt_info(4, 3) +
                      _tmp135 * sqrt_info(5, 3) + _tmp67 * sqrt_info(0, 3) +
                      _tmp82 * sqrt_info(1, 3) + _tmp94 * sqrt_info(2, 3);
-    _hessian(3, 3) = std::pow<Scalar>(sqrt_info(0, 3), 2) + std::pow<Scalar>(sqrt_info(1, 3), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 3), 2) + std::pow<Scalar>(sqrt_info(3, 3), 2) +
-                     std::pow<Scalar>(sqrt_info(4, 3), 2) + std::pow<Scalar>(sqrt_info(5, 3), 2);
+    _hessian(3, 3) = std::pow(sqrt_info(0, 3), Scalar(2)) + std::pow(sqrt_info(1, 3), Scalar(2)) +
+                     std::pow(sqrt_info(2, 3), Scalar(2)) + std::pow(sqrt_info(3, 3), Scalar(2)) +
+                     std::pow(sqrt_info(4, 3), Scalar(2)) + std::pow(sqrt_info(5, 3), Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 0) = _tmp105 * sqrt_info(3, 4) + _tmp118 * sqrt_info(4, 4) +
@@ -365,9 +365,9 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
     _hessian(4, 3) = sqrt_info(0, 3) * sqrt_info(0, 4) + sqrt_info(1, 3) * sqrt_info(1, 4) +
                      sqrt_info(2, 3) * sqrt_info(2, 4) + sqrt_info(3, 3) * sqrt_info(3, 4) +
                      sqrt_info(4, 3) * sqrt_info(4, 4) + sqrt_info(5, 3) * sqrt_info(5, 4);
-    _hessian(4, 4) = std::pow<Scalar>(sqrt_info(0, 4), 2) + std::pow<Scalar>(sqrt_info(1, 4), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 4), 2) + std::pow<Scalar>(sqrt_info(3, 4), 2) +
-                     std::pow<Scalar>(sqrt_info(4, 4), 2) + std::pow<Scalar>(sqrt_info(5, 4), 2);
+    _hessian(4, 4) = std::pow(sqrt_info(0, 4), Scalar(2)) + std::pow(sqrt_info(1, 4), Scalar(2)) +
+                     std::pow(sqrt_info(2, 4), Scalar(2)) + std::pow(sqrt_info(3, 4), Scalar(2)) +
+                     std::pow(sqrt_info(4, 4), Scalar(2)) + std::pow(sqrt_info(5, 4), Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(5, 0) = _tmp105 * sqrt_info(3, 5) + _tmp118 * sqrt_info(4, 5) +
                      _tmp133 * sqrt_info(5, 5) + _tmp64 * sqrt_info(0, 5) +
@@ -384,9 +384,9 @@ void PriorFactorPose3(const sym::Pose3<Scalar>& value, const sym::Pose3<Scalar>&
     _hessian(5, 4) = sqrt_info(0, 4) * sqrt_info(0, 5) + sqrt_info(1, 4) * sqrt_info(1, 5) +
                      sqrt_info(2, 4) * sqrt_info(2, 5) + sqrt_info(3, 4) * sqrt_info(3, 5) +
                      sqrt_info(4, 4) * sqrt_info(4, 5) + sqrt_info(5, 4) * sqrt_info(5, 5);
-    _hessian(5, 5) = std::pow<Scalar>(sqrt_info(0, 5), 2) + std::pow<Scalar>(sqrt_info(1, 5), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 5), 2) + std::pow<Scalar>(sqrt_info(3, 5), 2) +
-                     std::pow<Scalar>(sqrt_info(4, 5), 2) + std::pow<Scalar>(sqrt_info(5, 5), 2);
+    _hessian(5, 5) = std::pow(sqrt_info(0, 5), Scalar(2)) + std::pow(sqrt_info(1, 5), Scalar(2)) +
+                     std::pow(sqrt_info(2, 5), Scalar(2)) + std::pow(sqrt_info(3, 5), Scalar(2)) +
+                     std::pow(sqrt_info(4, 5), Scalar(2)) + std::pow(sqrt_info(5, 5), Scalar(2));
   }
 
   if (rhs != nullptr) {

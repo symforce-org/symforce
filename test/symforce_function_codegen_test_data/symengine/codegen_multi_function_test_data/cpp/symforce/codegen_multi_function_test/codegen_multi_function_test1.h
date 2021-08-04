@@ -29,7 +29,7 @@ void CodegenMultiFunctionTest1(
   // Input arrays
 
   // Intermediate terms (66)
-  const Scalar _tmp0 = std::pow<Scalar>(inputs.x, 2);
+  const Scalar _tmp0 = std::pow(inputs.x, Scalar(2));
   const Scalar _tmp1 = 2 * inputs.values_vec[0].rot[3];
   const Scalar _tmp2 = 2 * inputs.values_vec[0].rot_vec[0][3];
   const Scalar _tmp3 = 2 * inputs.values_vec[0].rot_vec[1][3];
@@ -110,34 +110,34 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].rot[0] = _tmp1 * inputs.values_vec[0].rot[0];
     _outputs_1.values_vec_out[0].rot[1] = _tmp1 * inputs.values_vec[0].rot[1];
     _outputs_1.values_vec_out[0].rot[2] = _tmp1 * inputs.values_vec[0].rot[2];
-    _outputs_1.values_vec_out[0].rot[3] = -std::pow<Scalar>(inputs.values_vec[0].rot[0], 2) -
-                                          std::pow<Scalar>(inputs.values_vec[0].rot[1], 2) -
-                                          std::pow<Scalar>(inputs.values_vec[0].rot[2], 2) +
-                                          std::pow<Scalar>(inputs.values_vec[0].rot[3], 2);
+    _outputs_1.values_vec_out[0].rot[3] = -std::pow(inputs.values_vec[0].rot[0], Scalar(2)) -
+                                          std::pow(inputs.values_vec[0].rot[1], Scalar(2)) -
+                                          std::pow(inputs.values_vec[0].rot[2], Scalar(2)) +
+                                          std::pow(inputs.values_vec[0].rot[3], Scalar(2));
     _outputs_1.values_vec_out[0].rot_vec[0][0] = _tmp2 * inputs.values_vec[0].rot_vec[0][0];
     _outputs_1.values_vec_out[0].rot_vec[0][1] = _tmp2 * inputs.values_vec[0].rot_vec[0][1];
     _outputs_1.values_vec_out[0].rot_vec[0][2] = _tmp2 * inputs.values_vec[0].rot_vec[0][2];
     _outputs_1.values_vec_out[0].rot_vec[0][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].rot_vec[0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[0][3], 2);
+        -std::pow(inputs.values_vec[0].rot_vec[0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].rot_vec[0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].rot_vec[0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].rot_vec[0][3], Scalar(2));
     _outputs_1.values_vec_out[0].rot_vec[1][0] = _tmp3 * inputs.values_vec[0].rot_vec[1][0];
     _outputs_1.values_vec_out[0].rot_vec[1][1] = _tmp3 * inputs.values_vec[0].rot_vec[1][1];
     _outputs_1.values_vec_out[0].rot_vec[1][2] = _tmp3 * inputs.values_vec[0].rot_vec[1][2];
     _outputs_1.values_vec_out[0].rot_vec[1][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].rot_vec[1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[1][3], 2);
+        -std::pow(inputs.values_vec[0].rot_vec[1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].rot_vec[1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].rot_vec[1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].rot_vec[1][3], Scalar(2));
     _outputs_1.values_vec_out[0].rot_vec[2][0] = _tmp4 * inputs.values_vec[0].rot_vec[2][0];
     _outputs_1.values_vec_out[0].rot_vec[2][1] = _tmp4 * inputs.values_vec[0].rot_vec[2][1];
     _outputs_1.values_vec_out[0].rot_vec[2][2] = _tmp4 * inputs.values_vec[0].rot_vec[2][2];
     _outputs_1.values_vec_out[0].rot_vec[2][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].rot_vec[2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].rot_vec[2][3], 2);
+        -std::pow(inputs.values_vec[0].rot_vec[2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].rot_vec[2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].rot_vec[2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].rot_vec[2][3], Scalar(2));
     _outputs_1.values_vec_out[0].scalar_vec[0] = 2 * inputs.values_vec[0].scalar_vec[0];
     _outputs_1.values_vec_out[0].scalar_vec[1] = 2 * inputs.values_vec[0].scalar_vec[1];
     _outputs_1.values_vec_out[0].scalar_vec[2] = 2 * inputs.values_vec[0].scalar_vec[2];
@@ -148,10 +148,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[0][0][2] =
         _tmp5 * inputs.values_vec[0].list_of_lists[0][0][2];
     _outputs_1.values_vec_out[0].list_of_lists[0][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][0][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[0][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[0][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[0][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[0][0][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[0][1][0] =
         _tmp6 * inputs.values_vec[0].list_of_lists[0][1][0];
     _outputs_1.values_vec_out[0].list_of_lists[0][1][1] =
@@ -159,10 +159,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[0][1][2] =
         _tmp6 * inputs.values_vec[0].list_of_lists[0][1][2];
     _outputs_1.values_vec_out[0].list_of_lists[0][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][1][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[0][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[0][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[0][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[0][1][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[0][2][0] =
         _tmp7 * inputs.values_vec[0].list_of_lists[0][2][0];
     _outputs_1.values_vec_out[0].list_of_lists[0][2][1] =
@@ -170,10 +170,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[0][2][2] =
         _tmp7 * inputs.values_vec[0].list_of_lists[0][2][2];
     _outputs_1.values_vec_out[0].list_of_lists[0][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[0][2][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[0][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[0][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[0][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[0][2][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[1][0][0] =
         _tmp8 * inputs.values_vec[0].list_of_lists[1][0][0];
     _outputs_1.values_vec_out[0].list_of_lists[1][0][1] =
@@ -181,10 +181,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[1][0][2] =
         _tmp8 * inputs.values_vec[0].list_of_lists[1][0][2];
     _outputs_1.values_vec_out[0].list_of_lists[1][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][0][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[1][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[1][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[1][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[1][0][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[1][1][0] =
         _tmp9 * inputs.values_vec[0].list_of_lists[1][1][0];
     _outputs_1.values_vec_out[0].list_of_lists[1][1][1] =
@@ -192,10 +192,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[1][1][2] =
         _tmp9 * inputs.values_vec[0].list_of_lists[1][1][2];
     _outputs_1.values_vec_out[0].list_of_lists[1][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][1][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[1][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[1][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[1][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[1][1][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[1][2][0] =
         _tmp10 * inputs.values_vec[0].list_of_lists[1][2][0];
     _outputs_1.values_vec_out[0].list_of_lists[1][2][1] =
@@ -203,10 +203,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[1][2][2] =
         _tmp10 * inputs.values_vec[0].list_of_lists[1][2][2];
     _outputs_1.values_vec_out[0].list_of_lists[1][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[1][2][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[1][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[1][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[1][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[1][2][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[2][0][0] =
         _tmp11 * inputs.values_vec[0].list_of_lists[2][0][0];
     _outputs_1.values_vec_out[0].list_of_lists[2][0][1] =
@@ -214,10 +214,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[2][0][2] =
         _tmp11 * inputs.values_vec[0].list_of_lists[2][0][2];
     _outputs_1.values_vec_out[0].list_of_lists[2][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][0][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[2][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[2][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[2][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[2][0][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[2][1][0] =
         _tmp12 * inputs.values_vec[0].list_of_lists[2][1][0];
     _outputs_1.values_vec_out[0].list_of_lists[2][1][1] =
@@ -225,10 +225,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[2][1][2] =
         _tmp12 * inputs.values_vec[0].list_of_lists[2][1][2];
     _outputs_1.values_vec_out[0].list_of_lists[2][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][1][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[2][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[2][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[2][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[2][1][3], Scalar(2));
     _outputs_1.values_vec_out[0].list_of_lists[2][2][0] =
         _tmp13 * inputs.values_vec[0].list_of_lists[2][2][0];
     _outputs_1.values_vec_out[0].list_of_lists[2][2][1] =
@@ -236,43 +236,43 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[0].list_of_lists[2][2][2] =
         _tmp13 * inputs.values_vec[0].list_of_lists[2][2][2];
     _outputs_1.values_vec_out[0].list_of_lists[2][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[0].list_of_lists[2][2][3], 2);
+        -std::pow(inputs.values_vec[0].list_of_lists[2][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[2][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[0].list_of_lists[2][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[0].list_of_lists[2][2][3], Scalar(2));
     _outputs_1.values_vec_out[1].x = 2 * inputs.values_vec[1].x;
     _outputs_1.values_vec_out[1].y = 2 * inputs.values_vec[1].y;
     _outputs_1.values_vec_out[1].rot[0] = _tmp14 * inputs.values_vec[1].rot[0];
     _outputs_1.values_vec_out[1].rot[1] = _tmp14 * inputs.values_vec[1].rot[1];
     _outputs_1.values_vec_out[1].rot[2] = _tmp14 * inputs.values_vec[1].rot[2];
-    _outputs_1.values_vec_out[1].rot[3] = -std::pow<Scalar>(inputs.values_vec[1].rot[0], 2) -
-                                          std::pow<Scalar>(inputs.values_vec[1].rot[1], 2) -
-                                          std::pow<Scalar>(inputs.values_vec[1].rot[2], 2) +
-                                          std::pow<Scalar>(inputs.values_vec[1].rot[3], 2);
+    _outputs_1.values_vec_out[1].rot[3] = -std::pow(inputs.values_vec[1].rot[0], Scalar(2)) -
+                                          std::pow(inputs.values_vec[1].rot[1], Scalar(2)) -
+                                          std::pow(inputs.values_vec[1].rot[2], Scalar(2)) +
+                                          std::pow(inputs.values_vec[1].rot[3], Scalar(2));
     _outputs_1.values_vec_out[1].rot_vec[0][0] = _tmp15 * inputs.values_vec[1].rot_vec[0][0];
     _outputs_1.values_vec_out[1].rot_vec[0][1] = _tmp15 * inputs.values_vec[1].rot_vec[0][1];
     _outputs_1.values_vec_out[1].rot_vec[0][2] = _tmp15 * inputs.values_vec[1].rot_vec[0][2];
     _outputs_1.values_vec_out[1].rot_vec[0][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].rot_vec[0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[0][3], 2);
+        -std::pow(inputs.values_vec[1].rot_vec[0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].rot_vec[0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].rot_vec[0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].rot_vec[0][3], Scalar(2));
     _outputs_1.values_vec_out[1].rot_vec[1][0] = _tmp16 * inputs.values_vec[1].rot_vec[1][0];
     _outputs_1.values_vec_out[1].rot_vec[1][1] = _tmp16 * inputs.values_vec[1].rot_vec[1][1];
     _outputs_1.values_vec_out[1].rot_vec[1][2] = _tmp16 * inputs.values_vec[1].rot_vec[1][2];
     _outputs_1.values_vec_out[1].rot_vec[1][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].rot_vec[1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[1][3], 2);
+        -std::pow(inputs.values_vec[1].rot_vec[1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].rot_vec[1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].rot_vec[1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].rot_vec[1][3], Scalar(2));
     _outputs_1.values_vec_out[1].rot_vec[2][0] = _tmp17 * inputs.values_vec[1].rot_vec[2][0];
     _outputs_1.values_vec_out[1].rot_vec[2][1] = _tmp17 * inputs.values_vec[1].rot_vec[2][1];
     _outputs_1.values_vec_out[1].rot_vec[2][2] = _tmp17 * inputs.values_vec[1].rot_vec[2][2];
     _outputs_1.values_vec_out[1].rot_vec[2][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].rot_vec[2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].rot_vec[2][3], 2);
+        -std::pow(inputs.values_vec[1].rot_vec[2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].rot_vec[2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].rot_vec[2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].rot_vec[2][3], Scalar(2));
     _outputs_1.values_vec_out[1].scalar_vec[0] = 2 * inputs.values_vec[1].scalar_vec[0];
     _outputs_1.values_vec_out[1].scalar_vec[1] = 2 * inputs.values_vec[1].scalar_vec[1];
     _outputs_1.values_vec_out[1].scalar_vec[2] = 2 * inputs.values_vec[1].scalar_vec[2];
@@ -283,10 +283,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[0][0][2] =
         _tmp18 * inputs.values_vec[1].list_of_lists[0][0][2];
     _outputs_1.values_vec_out[1].list_of_lists[0][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][0][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[0][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[0][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[0][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[0][0][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[0][1][0] =
         _tmp19 * inputs.values_vec[1].list_of_lists[0][1][0];
     _outputs_1.values_vec_out[1].list_of_lists[0][1][1] =
@@ -294,10 +294,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[0][1][2] =
         _tmp19 * inputs.values_vec[1].list_of_lists[0][1][2];
     _outputs_1.values_vec_out[1].list_of_lists[0][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][1][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[0][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[0][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[0][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[0][1][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[0][2][0] =
         _tmp20 * inputs.values_vec[1].list_of_lists[0][2][0];
     _outputs_1.values_vec_out[1].list_of_lists[0][2][1] =
@@ -305,10 +305,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[0][2][2] =
         _tmp20 * inputs.values_vec[1].list_of_lists[0][2][2];
     _outputs_1.values_vec_out[1].list_of_lists[0][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[0][2][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[0][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[0][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[0][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[0][2][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[1][0][0] =
         _tmp21 * inputs.values_vec[1].list_of_lists[1][0][0];
     _outputs_1.values_vec_out[1].list_of_lists[1][0][1] =
@@ -316,10 +316,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[1][0][2] =
         _tmp21 * inputs.values_vec[1].list_of_lists[1][0][2];
     _outputs_1.values_vec_out[1].list_of_lists[1][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][0][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[1][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[1][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[1][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[1][0][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[1][1][0] =
         _tmp22 * inputs.values_vec[1].list_of_lists[1][1][0];
     _outputs_1.values_vec_out[1].list_of_lists[1][1][1] =
@@ -327,10 +327,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[1][1][2] =
         _tmp22 * inputs.values_vec[1].list_of_lists[1][1][2];
     _outputs_1.values_vec_out[1].list_of_lists[1][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][1][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[1][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[1][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[1][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[1][1][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[1][2][0] =
         _tmp23 * inputs.values_vec[1].list_of_lists[1][2][0];
     _outputs_1.values_vec_out[1].list_of_lists[1][2][1] =
@@ -338,10 +338,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[1][2][2] =
         _tmp23 * inputs.values_vec[1].list_of_lists[1][2][2];
     _outputs_1.values_vec_out[1].list_of_lists[1][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[1][2][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[1][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[1][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[1][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[1][2][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[2][0][0] =
         _tmp24 * inputs.values_vec[1].list_of_lists[2][0][0];
     _outputs_1.values_vec_out[1].list_of_lists[2][0][1] =
@@ -349,10 +349,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[2][0][2] =
         _tmp24 * inputs.values_vec[1].list_of_lists[2][0][2];
     _outputs_1.values_vec_out[1].list_of_lists[2][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][0][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[2][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[2][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[2][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[2][0][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[2][1][0] =
         _tmp25 * inputs.values_vec[1].list_of_lists[2][1][0];
     _outputs_1.values_vec_out[1].list_of_lists[2][1][1] =
@@ -360,10 +360,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[2][1][2] =
         _tmp25 * inputs.values_vec[1].list_of_lists[2][1][2];
     _outputs_1.values_vec_out[1].list_of_lists[2][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][1][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[2][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[2][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[2][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[2][1][3], Scalar(2));
     _outputs_1.values_vec_out[1].list_of_lists[2][2][0] =
         _tmp26 * inputs.values_vec[1].list_of_lists[2][2][0];
     _outputs_1.values_vec_out[1].list_of_lists[2][2][1] =
@@ -371,43 +371,43 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[1].list_of_lists[2][2][2] =
         _tmp26 * inputs.values_vec[1].list_of_lists[2][2][2];
     _outputs_1.values_vec_out[1].list_of_lists[2][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[1].list_of_lists[2][2][3], 2);
+        -std::pow(inputs.values_vec[1].list_of_lists[2][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[2][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[1].list_of_lists[2][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[1].list_of_lists[2][2][3], Scalar(2));
     _outputs_1.values_vec_out[2].x = 2 * inputs.values_vec[2].x;
     _outputs_1.values_vec_out[2].y = 2 * inputs.values_vec[2].y;
     _outputs_1.values_vec_out[2].rot[0] = _tmp27 * inputs.values_vec[2].rot[0];
     _outputs_1.values_vec_out[2].rot[1] = _tmp27 * inputs.values_vec[2].rot[1];
     _outputs_1.values_vec_out[2].rot[2] = _tmp27 * inputs.values_vec[2].rot[2];
-    _outputs_1.values_vec_out[2].rot[3] = -std::pow<Scalar>(inputs.values_vec[2].rot[0], 2) -
-                                          std::pow<Scalar>(inputs.values_vec[2].rot[1], 2) -
-                                          std::pow<Scalar>(inputs.values_vec[2].rot[2], 2) +
-                                          std::pow<Scalar>(inputs.values_vec[2].rot[3], 2);
+    _outputs_1.values_vec_out[2].rot[3] = -std::pow(inputs.values_vec[2].rot[0], Scalar(2)) -
+                                          std::pow(inputs.values_vec[2].rot[1], Scalar(2)) -
+                                          std::pow(inputs.values_vec[2].rot[2], Scalar(2)) +
+                                          std::pow(inputs.values_vec[2].rot[3], Scalar(2));
     _outputs_1.values_vec_out[2].rot_vec[0][0] = _tmp28 * inputs.values_vec[2].rot_vec[0][0];
     _outputs_1.values_vec_out[2].rot_vec[0][1] = _tmp28 * inputs.values_vec[2].rot_vec[0][1];
     _outputs_1.values_vec_out[2].rot_vec[0][2] = _tmp28 * inputs.values_vec[2].rot_vec[0][2];
     _outputs_1.values_vec_out[2].rot_vec[0][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].rot_vec[0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[0][3], 2);
+        -std::pow(inputs.values_vec[2].rot_vec[0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].rot_vec[0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].rot_vec[0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].rot_vec[0][3], Scalar(2));
     _outputs_1.values_vec_out[2].rot_vec[1][0] = _tmp29 * inputs.values_vec[2].rot_vec[1][0];
     _outputs_1.values_vec_out[2].rot_vec[1][1] = _tmp29 * inputs.values_vec[2].rot_vec[1][1];
     _outputs_1.values_vec_out[2].rot_vec[1][2] = _tmp29 * inputs.values_vec[2].rot_vec[1][2];
     _outputs_1.values_vec_out[2].rot_vec[1][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].rot_vec[1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[1][3], 2);
+        -std::pow(inputs.values_vec[2].rot_vec[1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].rot_vec[1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].rot_vec[1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].rot_vec[1][3], Scalar(2));
     _outputs_1.values_vec_out[2].rot_vec[2][0] = _tmp30 * inputs.values_vec[2].rot_vec[2][0];
     _outputs_1.values_vec_out[2].rot_vec[2][1] = _tmp30 * inputs.values_vec[2].rot_vec[2][1];
     _outputs_1.values_vec_out[2].rot_vec[2][2] = _tmp30 * inputs.values_vec[2].rot_vec[2][2];
     _outputs_1.values_vec_out[2].rot_vec[2][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].rot_vec[2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].rot_vec[2][3], 2);
+        -std::pow(inputs.values_vec[2].rot_vec[2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].rot_vec[2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].rot_vec[2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].rot_vec[2][3], Scalar(2));
     _outputs_1.values_vec_out[2].scalar_vec[0] = 2 * inputs.values_vec[2].scalar_vec[0];
     _outputs_1.values_vec_out[2].scalar_vec[1] = 2 * inputs.values_vec[2].scalar_vec[1];
     _outputs_1.values_vec_out[2].scalar_vec[2] = 2 * inputs.values_vec[2].scalar_vec[2];
@@ -418,10 +418,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[0][0][2] =
         _tmp31 * inputs.values_vec[2].list_of_lists[0][0][2];
     _outputs_1.values_vec_out[2].list_of_lists[0][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][0][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[0][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[0][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[0][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[0][0][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[0][1][0] =
         _tmp32 * inputs.values_vec[2].list_of_lists[0][1][0];
     _outputs_1.values_vec_out[2].list_of_lists[0][1][1] =
@@ -429,10 +429,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[0][1][2] =
         _tmp32 * inputs.values_vec[2].list_of_lists[0][1][2];
     _outputs_1.values_vec_out[2].list_of_lists[0][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][1][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[0][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[0][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[0][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[0][1][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[0][2][0] =
         _tmp33 * inputs.values_vec[2].list_of_lists[0][2][0];
     _outputs_1.values_vec_out[2].list_of_lists[0][2][1] =
@@ -440,10 +440,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[0][2][2] =
         _tmp33 * inputs.values_vec[2].list_of_lists[0][2][2];
     _outputs_1.values_vec_out[2].list_of_lists[0][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[0][2][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[0][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[0][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[0][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[0][2][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[1][0][0] =
         _tmp34 * inputs.values_vec[2].list_of_lists[1][0][0];
     _outputs_1.values_vec_out[2].list_of_lists[1][0][1] =
@@ -451,10 +451,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[1][0][2] =
         _tmp34 * inputs.values_vec[2].list_of_lists[1][0][2];
     _outputs_1.values_vec_out[2].list_of_lists[1][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][0][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[1][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[1][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[1][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[1][0][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[1][1][0] =
         _tmp35 * inputs.values_vec[2].list_of_lists[1][1][0];
     _outputs_1.values_vec_out[2].list_of_lists[1][1][1] =
@@ -462,10 +462,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[1][1][2] =
         _tmp35 * inputs.values_vec[2].list_of_lists[1][1][2];
     _outputs_1.values_vec_out[2].list_of_lists[1][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][1][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[1][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[1][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[1][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[1][1][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[1][2][0] =
         _tmp36 * inputs.values_vec[2].list_of_lists[1][2][0];
     _outputs_1.values_vec_out[2].list_of_lists[1][2][1] =
@@ -473,10 +473,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[1][2][2] =
         _tmp36 * inputs.values_vec[2].list_of_lists[1][2][2];
     _outputs_1.values_vec_out[2].list_of_lists[1][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[1][2][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[1][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[1][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[1][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[1][2][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[2][0][0] =
         _tmp37 * inputs.values_vec[2].list_of_lists[2][0][0];
     _outputs_1.values_vec_out[2].list_of_lists[2][0][1] =
@@ -484,10 +484,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[2][0][2] =
         _tmp37 * inputs.values_vec[2].list_of_lists[2][0][2];
     _outputs_1.values_vec_out[2].list_of_lists[2][0][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][0][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[2][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[2][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[2][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[2][0][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[2][1][0] =
         _tmp38 * inputs.values_vec[2].list_of_lists[2][1][0];
     _outputs_1.values_vec_out[2].list_of_lists[2][1][1] =
@@ -495,10 +495,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[2][1][2] =
         _tmp38 * inputs.values_vec[2].list_of_lists[2][1][2];
     _outputs_1.values_vec_out[2].list_of_lists[2][1][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][1][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[2][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[2][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[2][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[2][1][3], Scalar(2));
     _outputs_1.values_vec_out[2].list_of_lists[2][2][0] =
         _tmp39 * inputs.values_vec[2].list_of_lists[2][2][0];
     _outputs_1.values_vec_out[2].list_of_lists[2][2][1] =
@@ -506,20 +506,20 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_out[2].list_of_lists[2][2][2] =
         _tmp39 * inputs.values_vec[2].list_of_lists[2][2][2];
     _outputs_1.values_vec_out[2].list_of_lists[2][2][3] =
-        -std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec[2].list_of_lists[2][2][3], 2);
+        -std::pow(inputs.values_vec[2].list_of_lists[2][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[2][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec[2].list_of_lists[2][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec[2].list_of_lists[2][2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].x = 2 * inputs.values_vec_2D[0][0].x;
     _outputs_1.values_vec_2D_out[0][0].y = 2 * inputs.values_vec_2D[0][0].y;
     _outputs_1.values_vec_2D_out[0][0].rot[0] = _tmp40 * inputs.values_vec_2D[0][0].rot[0];
     _outputs_1.values_vec_2D_out[0][0].rot[1] = _tmp40 * inputs.values_vec_2D[0][0].rot[1];
     _outputs_1.values_vec_2D_out[0][0].rot[2] = _tmp40 * inputs.values_vec_2D[0][0].rot[2];
     _outputs_1.values_vec_2D_out[0][0].rot[3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].rot[0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot[1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot[2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot[3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].rot[0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot[1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot[2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].rot[3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].rot_vec[0][0] =
         _tmp41 * inputs.values_vec_2D[0][0].rot_vec[0][0];
     _outputs_1.values_vec_2D_out[0][0].rot_vec[0][1] =
@@ -527,10 +527,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].rot_vec[0][2] =
         _tmp41 * inputs.values_vec_2D[0][0].rot_vec[0][2];
     _outputs_1.values_vec_2D_out[0][0].rot_vec[0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[0][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].rot_vec[0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].rot_vec[1][0] =
         _tmp42 * inputs.values_vec_2D[0][0].rot_vec[1][0];
     _outputs_1.values_vec_2D_out[0][0].rot_vec[1][1] =
@@ -538,10 +538,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].rot_vec[1][2] =
         _tmp42 * inputs.values_vec_2D[0][0].rot_vec[1][2];
     _outputs_1.values_vec_2D_out[0][0].rot_vec[1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[1][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].rot_vec[1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].rot_vec[2][0] =
         _tmp43 * inputs.values_vec_2D[0][0].rot_vec[2][0];
     _outputs_1.values_vec_2D_out[0][0].rot_vec[2][1] =
@@ -549,10 +549,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].rot_vec[2][2] =
         _tmp43 * inputs.values_vec_2D[0][0].rot_vec[2][2];
     _outputs_1.values_vec_2D_out[0][0].rot_vec[2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].rot_vec[2][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].rot_vec[2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].rot_vec[2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].scalar_vec[0] = 2 * inputs.values_vec_2D[0][0].scalar_vec[0];
     _outputs_1.values_vec_2D_out[0][0].scalar_vec[1] = 2 * inputs.values_vec_2D[0][0].scalar_vec[1];
     _outputs_1.values_vec_2D_out[0][0].scalar_vec[2] = 2 * inputs.values_vec_2D[0][0].scalar_vec[2];
@@ -563,10 +563,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][0][2] =
         _tmp44 * inputs.values_vec_2D[0][0].list_of_lists[0][0][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][0][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][1][0] =
         _tmp45 * inputs.values_vec_2D[0][0].list_of_lists[0][1][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][1][1] =
@@ -574,10 +574,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][1][2] =
         _tmp45 * inputs.values_vec_2D[0][0].list_of_lists[0][1][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][1][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][2][0] =
         _tmp46 * inputs.values_vec_2D[0][0].list_of_lists[0][2][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][2][1] =
@@ -585,10 +585,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][2][2] =
         _tmp46 * inputs.values_vec_2D[0][0].list_of_lists[0][2][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[0][2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[0][2][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[0][2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][0][0] =
         _tmp47 * inputs.values_vec_2D[0][0].list_of_lists[1][0][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][0][1] =
@@ -596,10 +596,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][0][2] =
         _tmp47 * inputs.values_vec_2D[0][0].list_of_lists[1][0][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][0][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][1][0] =
         _tmp48 * inputs.values_vec_2D[0][0].list_of_lists[1][1][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][1][1] =
@@ -607,10 +607,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][1][2] =
         _tmp48 * inputs.values_vec_2D[0][0].list_of_lists[1][1][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][1][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][2][0] =
         _tmp49 * inputs.values_vec_2D[0][0].list_of_lists[1][2][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][2][1] =
@@ -618,10 +618,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][2][2] =
         _tmp49 * inputs.values_vec_2D[0][0].list_of_lists[1][2][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[1][2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[1][2][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[1][2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][0][0] =
         _tmp50 * inputs.values_vec_2D[0][0].list_of_lists[2][0][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][0][1] =
@@ -629,10 +629,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][0][2] =
         _tmp50 * inputs.values_vec_2D[0][0].list_of_lists[2][0][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][0][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][1][0] =
         _tmp51 * inputs.values_vec_2D[0][0].list_of_lists[2][1][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][1][1] =
@@ -640,10 +640,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][1][2] =
         _tmp51 * inputs.values_vec_2D[0][0].list_of_lists[2][1][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][1][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][2][0] =
         _tmp52 * inputs.values_vec_2D[0][0].list_of_lists[2][2][0];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][2][1] =
@@ -651,20 +651,20 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][2][2] =
         _tmp52 * inputs.values_vec_2D[0][0].list_of_lists[2][2][2];
     _outputs_1.values_vec_2D_out[0][0].list_of_lists[2][2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[0][0].list_of_lists[2][2][3], 2);
+        -std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[0][0].list_of_lists[2][2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].x = 2 * inputs.values_vec_2D[1][0].x;
     _outputs_1.values_vec_2D_out[1][0].y = 2 * inputs.values_vec_2D[1][0].y;
     _outputs_1.values_vec_2D_out[1][0].rot[0] = _tmp53 * inputs.values_vec_2D[1][0].rot[0];
     _outputs_1.values_vec_2D_out[1][0].rot[1] = _tmp53 * inputs.values_vec_2D[1][0].rot[1];
     _outputs_1.values_vec_2D_out[1][0].rot[2] = _tmp53 * inputs.values_vec_2D[1][0].rot[2];
     _outputs_1.values_vec_2D_out[1][0].rot[3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].rot[0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot[1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot[2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot[3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].rot[0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot[1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot[2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].rot[3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].rot_vec[0][0] =
         _tmp54 * inputs.values_vec_2D[1][0].rot_vec[0][0];
     _outputs_1.values_vec_2D_out[1][0].rot_vec[0][1] =
@@ -672,10 +672,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].rot_vec[0][2] =
         _tmp54 * inputs.values_vec_2D[1][0].rot_vec[0][2];
     _outputs_1.values_vec_2D_out[1][0].rot_vec[0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[0][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].rot_vec[0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].rot_vec[1][0] =
         _tmp55 * inputs.values_vec_2D[1][0].rot_vec[1][0];
     _outputs_1.values_vec_2D_out[1][0].rot_vec[1][1] =
@@ -683,10 +683,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].rot_vec[1][2] =
         _tmp55 * inputs.values_vec_2D[1][0].rot_vec[1][2];
     _outputs_1.values_vec_2D_out[1][0].rot_vec[1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[1][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].rot_vec[1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].rot_vec[2][0] =
         _tmp56 * inputs.values_vec_2D[1][0].rot_vec[2][0];
     _outputs_1.values_vec_2D_out[1][0].rot_vec[2][1] =
@@ -694,10 +694,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].rot_vec[2][2] =
         _tmp56 * inputs.values_vec_2D[1][0].rot_vec[2][2];
     _outputs_1.values_vec_2D_out[1][0].rot_vec[2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].rot_vec[2][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].rot_vec[2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].rot_vec[2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].scalar_vec[0] = 2 * inputs.values_vec_2D[1][0].scalar_vec[0];
     _outputs_1.values_vec_2D_out[1][0].scalar_vec[1] = 2 * inputs.values_vec_2D[1][0].scalar_vec[1];
     _outputs_1.values_vec_2D_out[1][0].scalar_vec[2] = 2 * inputs.values_vec_2D[1][0].scalar_vec[2];
@@ -708,10 +708,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][0][2] =
         _tmp57 * inputs.values_vec_2D[1][0].list_of_lists[0][0][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][0][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][1][0] =
         _tmp58 * inputs.values_vec_2D[1][0].list_of_lists[0][1][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][1][1] =
@@ -719,10 +719,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][1][2] =
         _tmp58 * inputs.values_vec_2D[1][0].list_of_lists[0][1][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][1][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][2][0] =
         _tmp59 * inputs.values_vec_2D[1][0].list_of_lists[0][2][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][2][1] =
@@ -730,10 +730,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][2][2] =
         _tmp59 * inputs.values_vec_2D[1][0].list_of_lists[0][2][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[0][2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[0][2][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[0][2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][0][0] =
         _tmp60 * inputs.values_vec_2D[1][0].list_of_lists[1][0][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][0][1] =
@@ -741,10 +741,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][0][2] =
         _tmp60 * inputs.values_vec_2D[1][0].list_of_lists[1][0][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][0][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][1][0] =
         _tmp61 * inputs.values_vec_2D[1][0].list_of_lists[1][1][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][1][1] =
@@ -752,10 +752,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][1][2] =
         _tmp61 * inputs.values_vec_2D[1][0].list_of_lists[1][1][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][1][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][2][0] =
         _tmp62 * inputs.values_vec_2D[1][0].list_of_lists[1][2][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][2][1] =
@@ -763,10 +763,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][2][2] =
         _tmp62 * inputs.values_vec_2D[1][0].list_of_lists[1][2][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[1][2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[1][2][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[1][2][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][0][0] =
         _tmp63 * inputs.values_vec_2D[1][0].list_of_lists[2][0][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][0][1] =
@@ -774,10 +774,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][0][2] =
         _tmp63 * inputs.values_vec_2D[1][0].list_of_lists[2][0][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][0][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][0][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][0][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][0][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][0][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][0][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][0][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][0][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][0][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][1][0] =
         _tmp64 * inputs.values_vec_2D[1][0].list_of_lists[2][1][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][1][1] =
@@ -785,10 +785,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][1][2] =
         _tmp64 * inputs.values_vec_2D[1][0].list_of_lists[2][1][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][1][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][1][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][1][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][1][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][1][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][1][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][1][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][1][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][1][3], Scalar(2));
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][2][0] =
         _tmp65 * inputs.values_vec_2D[1][0].list_of_lists[2][2][0];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][2][1] =
@@ -796,10 +796,10 @@ void CodegenMultiFunctionTest1(
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][2][2] =
         _tmp65 * inputs.values_vec_2D[1][0].list_of_lists[2][2][2];
     _outputs_1.values_vec_2D_out[1][0].list_of_lists[2][2][3] =
-        -std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][2][0], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][2][1], 2) -
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][2][2], 2) +
-        std::pow<Scalar>(inputs.values_vec_2D[1][0].list_of_lists[2][2][3], 2);
+        -std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2][0], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2][1], Scalar(2)) -
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2][2], Scalar(2)) +
+        std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2][3], Scalar(2));
   }
 }  // NOLINT(readability/fn_size)
 

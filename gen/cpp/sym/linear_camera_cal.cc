@@ -52,7 +52,7 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPoint(
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
   // Intermediate terms (1)
-  const Scalar _tmp0 = 1.0 / (std::max<Scalar>(epsilon, std::fabs(point(2, 0))));
+  const Scalar _tmp0 = Scalar(1.0) / (std::max<Scalar>(epsilon, std::fabs(point(2, 0))));
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 2, 1> _pixel;

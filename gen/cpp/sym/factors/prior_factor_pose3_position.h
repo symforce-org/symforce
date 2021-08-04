@@ -102,8 +102,8 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
     _hessian(3, 0) = 0;
     _hessian(3, 1) = 0;
     _hessian(3, 2) = 0;
-    _hessian(3, 3) = std::pow<Scalar>(sqrt_info(0, 0), 2) + std::pow<Scalar>(sqrt_info(1, 0), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 0), 2);
+    _hessian(3, 3) = std::pow(sqrt_info(0, 0), Scalar(2)) + std::pow(sqrt_info(1, 0), Scalar(2)) +
+                     std::pow(sqrt_info(2, 0), Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 0) = 0;
@@ -111,8 +111,8 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
     _hessian(4, 2) = 0;
     _hessian(4, 3) = sqrt_info(0, 0) * sqrt_info(0, 1) + sqrt_info(1, 0) * sqrt_info(1, 1) +
                      sqrt_info(2, 0) * sqrt_info(2, 1);
-    _hessian(4, 4) = std::pow<Scalar>(sqrt_info(0, 1), 2) + std::pow<Scalar>(sqrt_info(1, 1), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 1), 2);
+    _hessian(4, 4) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
+                     std::pow(sqrt_info(2, 1), Scalar(2));
     _hessian(4, 5) = 0;
     _hessian(5, 0) = 0;
     _hessian(5, 1) = 0;
@@ -121,8 +121,8 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
                      sqrt_info(2, 0) * sqrt_info(2, 2);
     _hessian(5, 4) = sqrt_info(0, 1) * sqrt_info(0, 2) + sqrt_info(1, 1) * sqrt_info(1, 2) +
                      sqrt_info(2, 1) * sqrt_info(2, 2);
-    _hessian(5, 5) = std::pow<Scalar>(sqrt_info(0, 2), 2) + std::pow<Scalar>(sqrt_info(1, 2), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 2), 2);
+    _hessian(5, 5) = std::pow(sqrt_info(0, 2), Scalar(2)) + std::pow(sqrt_info(1, 2), Scalar(2)) +
+                     std::pow(sqrt_info(2, 2), Scalar(2));
   }
 
   if (rhs != nullptr) {

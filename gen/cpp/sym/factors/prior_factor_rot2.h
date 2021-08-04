@@ -39,16 +39,17 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
   const Eigen::Matrix<Scalar, 2, 1>& _prior = prior.Data();
 
   // Intermediate terms (11)
-  const Scalar _tmp0 = 1.0 / (std::pow<Scalar>(_prior[0], 2) + std::pow<Scalar>(_prior[1], 2));
+  const Scalar _tmp0 =
+      Scalar(1.0) / (std::pow(_prior[0], Scalar(2)) + std::pow(_prior[1], Scalar(2)));
   const Scalar _tmp1 = _prior[0] * _tmp0;
   const Scalar _tmp2 = _prior[1] * _tmp0;
   const Scalar _tmp3 = _tmp1 * _value[1] - _tmp2 * _value[0];
   const Scalar _tmp4 = _tmp1 * _value[0] + _tmp2 * _value[1];
   const Scalar _tmp5 = sqrt_info(0, 0) * std::atan2(_tmp3, _tmp4);
-  const Scalar _tmp6 = 1.0 / (_tmp4);
-  const Scalar _tmp7 = std::pow<Scalar>(_tmp4, 2);
+  const Scalar _tmp6 = Scalar(1.0) / (_tmp4);
+  const Scalar _tmp7 = std::pow(_tmp4, Scalar(2));
   const Scalar _tmp8 = _tmp3 / _tmp7;
-  const Scalar _tmp9 = _tmp7 * sqrt_info(0, 0) / (std::pow<Scalar>(_tmp3, 2) + _tmp7);
+  const Scalar _tmp9 = _tmp7 * sqrt_info(0, 0) / (std::pow(_tmp3, Scalar(2)) + _tmp7);
   const Scalar _tmp10 = _tmp9 * _value[0] * (_tmp1 * _tmp6 - _tmp2 * _tmp8) -
                         _tmp9 * _value[1] * (-_tmp1 * _tmp8 - _tmp2 * _tmp6);
 
@@ -68,7 +69,7 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow<Scalar>(_tmp10, 2);
+    _hessian(0, 0) = std::pow(_tmp10, Scalar(2));
   }
 
   if (rhs != nullptr) {

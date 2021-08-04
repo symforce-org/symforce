@@ -50,14 +50,14 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
   const Scalar _tmp21 = _a[0] * _tmp18;
   const Scalar _tmp22 = _a[3] * _tmp16;
   const Scalar _tmp23 = _tmp21 + _tmp22;
-  const Scalar _tmp24 = -2 * std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp25 = 1 - 2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp24 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp25 = 1 - 2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp26 = _tmp24 + _tmp25;
   const Scalar _tmp27 = _tmp17 + _tmp19;
   const Scalar _tmp28 = 2 * _a[0] * _a[3];
   const Scalar _tmp29 = _a[1] * _tmp18;
   const Scalar _tmp30 = -_tmp28 + _tmp29;
-  const Scalar _tmp31 = -2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp31 = -2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp32 = _tmp25 + _tmp31;
   const Scalar _tmp33 = _tmp21 - _tmp22;
   const Scalar _tmp34 = _tmp28 + _tmp29;

@@ -48,7 +48,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
   const Scalar _tmp4 = 1 - epsilon;
   const Scalar _tmp5 = std::min<Scalar>(_tmp3, _tmp4);
   const Scalar _tmp6 = std::acos(_tmp5);
-  const Scalar _tmp7 = 1 - std::pow<Scalar>(_tmp5, 2);
+  const Scalar _tmp7 = 1 - std::pow(_tmp5, Scalar(2));
   const Scalar _tmp8 = 2 * _tmp6 / std::sqrt(_tmp7);
   const Scalar _tmp9 = _tmp2 * _tmp8;
   const Scalar _tmp10 = -_prior[0] * _value[3] - _prior[1] * _value[2] + _prior[2] * _value[1] +
@@ -206,7 +206,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow<Scalar>(_tmp56, 2) + std::pow<Scalar>(_tmp73, 2) + std::pow<Scalar>(_tmp85, 2);
+        std::pow(_tmp56, Scalar(2)) + std::pow(_tmp73, Scalar(2)) + std::pow(_tmp85, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
@@ -214,7 +214,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
     _hessian(0, 5) = 0;
     _hessian(1, 0) = _tmp56 * _tmp58 + _tmp73 * _tmp74 + _tmp85 * _tmp86;
     _hessian(1, 1) =
-        std::pow<Scalar>(_tmp58, 2) + std::pow<Scalar>(_tmp74, 2) + std::pow<Scalar>(_tmp86, 2);
+        std::pow(_tmp58, Scalar(2)) + std::pow(_tmp74, Scalar(2)) + std::pow(_tmp86, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
@@ -222,7 +222,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
     _hessian(2, 0) = _tmp56 * _tmp59 + _tmp73 * _tmp75 + _tmp85 * _tmp87;
     _hessian(2, 1) = _tmp58 * _tmp59 + _tmp74 * _tmp75 + _tmp86 * _tmp87;
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp59, 2) + std::pow<Scalar>(_tmp75, 2) + std::pow<Scalar>(_tmp87, 2);
+        std::pow(_tmp59, Scalar(2)) + std::pow(_tmp75, Scalar(2)) + std::pow(_tmp87, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;

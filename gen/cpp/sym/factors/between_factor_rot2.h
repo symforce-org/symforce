@@ -41,31 +41,32 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
   const Eigen::Matrix<Scalar, 2, 1>& _a_T_b = a_T_b.Data();
 
   // Intermediate terms (35)
-  const Scalar _tmp0 = std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp1 = std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp0 = std::pow(_a[1], Scalar(2));
+  const Scalar _tmp1 = std::pow(_a[0], Scalar(2));
   const Scalar _tmp2 = _tmp0 + _tmp1;
-  const Scalar _tmp3 = 1.0 / (_tmp2);
+  const Scalar _tmp3 = Scalar(1.0) / (_tmp2);
   const Scalar _tmp4 = _b[0] * _tmp3;
   const Scalar _tmp5 = _b[1] * _tmp3;
   const Scalar _tmp6 = _a[0] * _tmp4 + _a[1] * _tmp5;
-  const Scalar _tmp7 = 1.0 / (std::pow<Scalar>(_a_T_b[0], 2) + std::pow<Scalar>(_a_T_b[1], 2));
+  const Scalar _tmp7 =
+      Scalar(1.0) / (std::pow(_a_T_b[0], Scalar(2)) + std::pow(_a_T_b[1], Scalar(2)));
   const Scalar _tmp8 = _a_T_b[1] * _tmp7;
   const Scalar _tmp9 = _a[0] * _tmp5 - _a[1] * _tmp4;
   const Scalar _tmp10 = _a_T_b[0] * _tmp7;
   const Scalar _tmp11 = _tmp10 * _tmp9 - _tmp6 * _tmp8;
   const Scalar _tmp12 = _tmp10 * _tmp6 + _tmp8 * _tmp9;
   const Scalar _tmp13 = sqrt_info(0, 0) * std::atan2(_tmp11, _tmp12);
-  const Scalar _tmp14 = 2 / std::pow<Scalar>(_tmp2, 2);
+  const Scalar _tmp14 = 2 / std::pow(_tmp2, Scalar(2));
   const Scalar _tmp15 = _tmp1 * _tmp14;
   const Scalar _tmp16 = _a[0] * _a[1] * _tmp14;
   const Scalar _tmp17 = _b[0] * _tmp16;
   const Scalar _tmp18 = -_b[1] * _tmp15 + _tmp17 + _tmp5;
   const Scalar _tmp19 = -_b[1] * _tmp16;
   const Scalar _tmp20 = -_b[0] * _tmp15 + _tmp19 + _tmp4;
-  const Scalar _tmp21 = 1.0 / (_tmp12);
-  const Scalar _tmp22 = std::pow<Scalar>(_tmp12, 2);
+  const Scalar _tmp21 = Scalar(1.0) / (_tmp12);
+  const Scalar _tmp22 = std::pow(_tmp12, Scalar(2));
   const Scalar _tmp23 = _tmp11 / _tmp22;
-  const Scalar _tmp24 = _tmp22 * sqrt_info(0, 0) / (std::pow<Scalar>(_tmp11, 2) + _tmp22);
+  const Scalar _tmp24 = _tmp22 * sqrt_info(0, 0) / (std::pow(_tmp11, Scalar(2)) + _tmp22);
   const Scalar _tmp25 = _tmp0 * _tmp14;
   const Scalar _tmp26 = -_b[1] * _tmp25 - _tmp17 + _tmp5;
   const Scalar _tmp27 = _b[0] * _tmp25 + _tmp19 - _tmp4;
@@ -100,10 +101,10 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 2, 2>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow<Scalar>(_tmp28, 2);
+    _hessian(0, 0) = std::pow(_tmp28, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(1, 0) = _tmp28 * _tmp34;
-    _hessian(1, 1) = std::pow<Scalar>(_tmp34, 2);
+    _hessian(1, 1) = std::pow(_tmp34, Scalar(2));
   }
 
   if (rhs != nullptr) {

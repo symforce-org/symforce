@@ -41,7 +41,8 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
   // Intermediate terms (23)
   const Scalar _tmp0 = -_prior[2] + _value[2];
   const Scalar _tmp1 = -_prior[3] + _value[3];
-  const Scalar _tmp2 = 1.0 / (std::pow<Scalar>(_prior[0], 2) + std::pow<Scalar>(_prior[1], 2));
+  const Scalar _tmp2 =
+      Scalar(1.0) / (std::pow(_prior[0], Scalar(2)) + std::pow(_prior[1], Scalar(2)));
   const Scalar _tmp3 = _prior[0] * _tmp2;
   const Scalar _tmp4 = _prior[1] * _tmp2;
   const Scalar _tmp5 = _tmp3 * _value[1] - _tmp4 * _value[0];
@@ -50,8 +51,8 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
   const Scalar _tmp8 = _tmp0 * sqrt_info(0, 0) + _tmp1 * sqrt_info(0, 1) + _tmp7 * sqrt_info(0, 2);
   const Scalar _tmp9 = _tmp0 * sqrt_info(1, 0) + _tmp1 * sqrt_info(1, 1) + _tmp7 * sqrt_info(1, 2);
   const Scalar _tmp10 = _tmp0 * sqrt_info(2, 0) + _tmp1 * sqrt_info(2, 1) + _tmp7 * sqrt_info(2, 2);
-  const Scalar _tmp11 = std::pow<Scalar>(_tmp6, 2);
-  const Scalar _tmp12 = _tmp11 / (_tmp11 + std::pow<Scalar>(_tmp5, 2));
+  const Scalar _tmp11 = std::pow(_tmp6, Scalar(2));
+  const Scalar _tmp12 = _tmp11 / (_tmp11 + std::pow(_tmp5, Scalar(2)));
   const Scalar _tmp13 = _tmp5 / _tmp11;
   const Scalar _tmp14 = _tmp2 / _tmp6;
   const Scalar _tmp15 = _value[0] * (_prior[0] * _tmp14 - _tmp13 * _tmp4);
@@ -89,19 +90,19 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow<Scalar>(sqrt_info(0, 0), 2) + std::pow<Scalar>(sqrt_info(1, 0), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 0), 2);
+    _hessian(0, 0) = std::pow(sqrt_info(0, 0), Scalar(2)) + std::pow(sqrt_info(1, 0), Scalar(2)) +
+                     std::pow(sqrt_info(2, 0), Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(1, 0) = sqrt_info(0, 0) * sqrt_info(0, 1) + sqrt_info(1, 0) * sqrt_info(1, 1) +
                      sqrt_info(2, 0) * sqrt_info(2, 1);
-    _hessian(1, 1) = std::pow<Scalar>(sqrt_info(0, 1), 2) + std::pow<Scalar>(sqrt_info(1, 1), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 1), 2);
+    _hessian(1, 1) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
+                     std::pow(sqrt_info(2, 1), Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(2, 0) = _tmp19 * sqrt_info(0, 0) + _tmp21 * sqrt_info(1, 0) + _tmp22 * sqrt_info(2, 0);
     _hessian(2, 1) = _tmp19 * sqrt_info(0, 1) + _tmp21 * sqrt_info(1, 1) + _tmp22 * sqrt_info(2, 1);
     _hessian(2, 2) =
-        std::pow<Scalar>(_tmp19, 2) + std::pow<Scalar>(_tmp21, 2) + std::pow<Scalar>(_tmp22, 2);
+        std::pow(_tmp19, Scalar(2)) + std::pow(_tmp21, Scalar(2)) + std::pow(_tmp22, Scalar(2));
   }
 
   if (rhs != nullptr) {

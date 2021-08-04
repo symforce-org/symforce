@@ -53,9 +53,9 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PixelFromCameraPoint(
 
   // Intermediate terms (4)
   const Scalar _tmp0 = std::max<Scalar>(epsilon, std::fabs(point(2, 0)));
-  const Scalar _tmp1 = std::pow<Scalar>(_tmp0, -2);
-  const Scalar _tmp2 = std::sqrt(_tmp1 * std::pow<Scalar>(point(0, 0), 2) +
-                                 _tmp1 * std::pow<Scalar>(point(1, 0), 2) + epsilon);
+  const Scalar _tmp1 = std::pow(_tmp0, Scalar(-2));
+  const Scalar _tmp2 = std::sqrt(_tmp1 * std::pow(point(0, 0), Scalar(2)) +
+                                 _tmp1 * std::pow(point(1, 0), Scalar(2)) + epsilon);
   const Scalar _tmp3 =
       std::atan(2 * _tmp2 * std::tan(Scalar(0.5) * _self[4])) / (_self[4] * _tmp0 * _tmp2);
 
@@ -86,8 +86,8 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixel(
   const Scalar _tmp0 = -_self[2] + pixel(0, 0);
   const Scalar _tmp1 = -_self[3] + pixel(1, 0);
   const Scalar _tmp2 =
-      std::sqrt(epsilon + std::pow<Scalar>(_tmp1, 2) / std::pow<Scalar>(_self[1], 2) +
-                std::pow<Scalar>(_tmp0, 2) / std::pow<Scalar>(_self[0], 2));
+      std::sqrt(epsilon + std::pow(_tmp1, Scalar(2)) / std::pow(_self[1], Scalar(2)) +
+                std::pow(_tmp0, Scalar(2)) / std::pow(_self[0], Scalar(2)));
   const Scalar _tmp3 = _self[4] * _tmp2;
   const Scalar _tmp4 =
       (Scalar(1) / Scalar(2)) * std::tan(_tmp3) / (_tmp2 * std::tan(Scalar(0.5) * _self[4]));

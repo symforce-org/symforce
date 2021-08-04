@@ -48,9 +48,9 @@ Eigen::Matrix<Scalar, 3, 1> CrossAndDistanceBothWithJacobians(
   const Scalar _tmp3 = _tmp2 + a(1, 0);
   const Scalar _tmp4 = -b(2, 0);
   const Scalar _tmp5 = _tmp4 + a(2, 0);
-  const Scalar _tmp6 = std::sqrt(std::pow<Scalar>(_tmp1, 2) + std::pow<Scalar>(_tmp3, 2) +
-                                 std::pow<Scalar>(_tmp5, 2) + epsilon);
-  const Scalar _tmp7 = 1.0 / (_tmp6);
+  const Scalar _tmp6 = std::sqrt(std::pow(_tmp1, Scalar(2)) + std::pow(_tmp3, Scalar(2)) +
+                                 std::pow(_tmp5, Scalar(2)) + epsilon);
+  const Scalar _tmp7 = Scalar(1.0) / (_tmp6);
   const Scalar _tmp8 = _tmp1 * _tmp7;
   const Scalar _tmp9 = _tmp3 * _tmp7;
   const Scalar _tmp10 = _tmp5 * _tmp7;

@@ -30,7 +30,7 @@ Scalar Heaviside(const Scalar x) {
   // Output terms (1)
   Scalar _res;
 
-  _res = 0.5 * ((((x) >= 0) - ((x) < 0)) + 1);
+  _res = Scalar(0.5) * ((((x) >= 0) - ((x) < 0)) + 1);
 
   return _res;
 }  // NOLINT(readability/fn_size)

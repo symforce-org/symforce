@@ -70,21 +70,21 @@ void PriorFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& value,
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow<Scalar>(sqrt_info(0, 0), 2) + std::pow<Scalar>(sqrt_info(1, 0), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 0), 2);
+    _hessian(0, 0) = std::pow(sqrt_info(0, 0), Scalar(2)) + std::pow(sqrt_info(1, 0), Scalar(2)) +
+                     std::pow(sqrt_info(2, 0), Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(1, 0) = sqrt_info(0, 0) * sqrt_info(0, 1) + sqrt_info(1, 0) * sqrt_info(1, 1) +
                      sqrt_info(2, 0) * sqrt_info(2, 1);
-    _hessian(1, 1) = std::pow<Scalar>(sqrt_info(0, 1), 2) + std::pow<Scalar>(sqrt_info(1, 1), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 1), 2);
+    _hessian(1, 1) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
+                     std::pow(sqrt_info(2, 1), Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(2, 0) = sqrt_info(0, 0) * sqrt_info(0, 2) + sqrt_info(1, 0) * sqrt_info(1, 2) +
                      sqrt_info(2, 0) * sqrt_info(2, 2);
     _hessian(2, 1) = sqrt_info(0, 1) * sqrt_info(0, 2) + sqrt_info(1, 1) * sqrt_info(1, 2) +
                      sqrt_info(2, 1) * sqrt_info(2, 2);
-    _hessian(2, 2) = std::pow<Scalar>(sqrt_info(0, 2), 2) + std::pow<Scalar>(sqrt_info(1, 2), 2) +
-                     std::pow<Scalar>(sqrt_info(2, 2), 2);
+    _hessian(2, 2) = std::pow(sqrt_info(0, 2), Scalar(2)) + std::pow(sqrt_info(1, 2), Scalar(2)) +
+                     std::pow(sqrt_info(2, 2), Scalar(2));
   }
 
   if (rhs != nullptr) {

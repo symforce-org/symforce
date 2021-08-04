@@ -35,9 +35,9 @@ Eigen::Matrix<Scalar, 3, 1> CrossAndDistanceSecondWithJacobian0(
   const Scalar _tmp0 = a(0, 0) - b(0, 0);
   const Scalar _tmp1 = a(1, 0) - b(1, 0);
   const Scalar _tmp2 = a(2, 0) - b(2, 0);
-  const Scalar _tmp3 = std::sqrt(std::pow<Scalar>(_tmp0, 2) + std::pow<Scalar>(_tmp1, 2) +
-                                 std::pow<Scalar>(_tmp2, 2) + epsilon);
-  const Scalar _tmp4 = 1.0 / (_tmp3);
+  const Scalar _tmp3 = std::sqrt(std::pow(_tmp0, Scalar(2)) + std::pow(_tmp1, Scalar(2)) +
+                                 std::pow(_tmp2, Scalar(2)) + epsilon);
+  const Scalar _tmp4 = Scalar(1.0) / (_tmp3);
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 3, 1> _cross;

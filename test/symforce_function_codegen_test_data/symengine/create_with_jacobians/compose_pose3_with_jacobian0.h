@@ -30,8 +30,8 @@ sym::Pose3<Scalar> ComposePose3WithJacobian0(const sym::Pose3<Scalar>& a,
   const Scalar _tmp1 = -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1];
   const Scalar _tmp2 = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2];
   const Scalar _tmp3 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3];
-  const Scalar _tmp4 = -2 * std::pow<Scalar>(_a[1], 2);
-  const Scalar _tmp5 = 1 - 2 * std::pow<Scalar>(_a[2], 2);
+  const Scalar _tmp4 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp5 = 1 - 2 * std::pow(_a[2], Scalar(2));
   const Scalar _tmp6 = 2 * _a[1];
   const Scalar _tmp7 = _a[0] * _tmp6;
   const Scalar _tmp8 = 2 * _a[3];
@@ -39,7 +39,7 @@ sym::Pose3<Scalar> ComposePose3WithJacobian0(const sym::Pose3<Scalar>& a,
   const Scalar _tmp10 = _a[3] * _tmp6;
   const Scalar _tmp11 = 2 * _a[2];
   const Scalar _tmp12 = _a[0] * _tmp11;
-  const Scalar _tmp13 = -2 * std::pow<Scalar>(_a[0], 2);
+  const Scalar _tmp13 = -2 * std::pow(_a[0], Scalar(2));
   const Scalar _tmp14 = _a[0] * _tmp8;
   const Scalar _tmp15 = _a[2] * _tmp6;
   const Scalar _tmp16 = 2 * _tmp2;
