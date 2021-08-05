@@ -22,6 +22,43 @@ CURRENT_DIR = os.path.dirname(__file__)
 DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
 
 
+def pixel_from_camera_point_with_jacobians(
+    self: cam.CameraCal, point: geo.V3, epsilon: T.Scalar
+) -> T.Tuple[geo.V2, T.Scalar, geo.M, geo.M]:
+    """
+    Project a 3D point in the camera frame into 2D pixel coordinates.
+
+    Return:
+        pixel: (x, y) coordinate in pixels if valid
+        is_valid: 1 if the operation is within bounds else 0
+        pixel_D_cal: Derivative of pixel with respect to intrinsic calibration parameters
+        pixel_D_point: Derivative of pixel with respect to point
+
+    """
+    pixel, is_valid = self.pixel_from_camera_point(point, epsilon)
+    pixel_D_cal = pixel.jacobian(self.parameters())
+    pixel_D_point = pixel.jacobian(point)
+    return pixel, is_valid, pixel_D_cal, pixel_D_point
+
+
+def camera_ray_from_pixel_with_jacobians(
+    self: cam.CameraCal, pixel: geo.V2, epsilon: T.Scalar
+) -> T.Tuple[geo.V3, T.Scalar, geo.M, geo.M]:
+    """
+    Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
+
+    Return:
+        camera_ray: The ray in the camera frame (NOT normalized)
+        is_valid: 1 if the operation is within bounds else 0
+        point_D_cal: Derivative of point with respect to intrinsic calibration parameters
+        point_D_pixel: Derivation of point with respect to pixel
+    """
+    point, is_valid = self.camera_ray_from_pixel(pixel, epsilon)
+    point_D_cal = point.jacobian(self.parameters())
+    point_D_pixel = point.jacobian(pixel)
+    return point, is_valid, point_D_cal, point_D_pixel
+
+
 def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for common camera operations for the given class.
@@ -36,9 +73,37 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
             return_key="camera_ray",
             docstring=cam.CameraCal.camera_ray_from_pixel.__doc__,
         )
+
+        camera_ray_from_pixel_with_jacobians_codegen_func = Codegen.function(
+            func=camera_ray_from_pixel_with_jacobians,
+            input_types=[cls, geo.V2, sm.Symbol],
+            config=config,
+            output_names=["camera_ray", "is_valid", "point_D_cal", "point_D_pixel"],
+            return_key="camera_ray",
+            docstring=camera_ray_from_pixel_with_jacobians.__doc__,
+        )
+
     except NotImplementedError:
         # Not all cameras implement backprojection
         pass
+
+    pixel_from_camera_point = Codegen.function(
+        func=cls.pixel_from_camera_point,
+        config=config,
+        input_types=[cls, geo.V3, sm.Symbol],
+        output_names=["pixel", "is_valid"],
+        return_key="pixel",
+        docstring=cam.CameraCal.pixel_from_camera_point.__doc__,
+    )
+
+    pixel_from_camera_point_with_jacobians_codegen_func = Codegen.function(
+        func=pixel_from_camera_point_with_jacobians,
+        config=config,
+        input_types=[cls, geo.V3, sm.Symbol],
+        output_names=["pixel", "is_valid", "pixel_D_cal", "pixel_D_point"],
+        return_key="pixel",
+        docstring=pixel_from_camera_point_with_jacobians.__doc__,
+    )
 
     return [
         Codegen.function(
@@ -59,15 +124,13 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
             return_key="principal_point",
             docstring="\nReturn the principal point.",
         ),
-        Codegen.function(
-            func=cls.pixel_from_camera_point,
-            config=config,
-            input_types=[cls, geo.V3, sm.Symbol],
-            output_names=["pixel", "is_valid"],
-            return_key="pixel",
-            docstring=cam.CameraCal.pixel_from_camera_point.__doc__,
-        ),
-    ] + ([camera_ray_from_pixel] if camera_ray_from_pixel is not None else [])
+        pixel_from_camera_point,
+        pixel_from_camera_point_with_jacobians_codegen_func,
+    ] + (
+        [camera_ray_from_pixel, camera_ray_from_pixel_with_jacobians_codegen_func]
+        if camera_ray_from_pixel is not None
+        else []
+    )
 
 
 def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:

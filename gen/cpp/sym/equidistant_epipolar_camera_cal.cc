@@ -72,6 +72,66 @@ Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PixelFromCamer
 }
 
 template <typename Scalar>
+Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PixelFromCameraPointWithJacobians(
+    const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid,
+    Eigen::Matrix<Scalar, 2, 4>* const pixel_D_cal,
+    Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point) const {
+  // Total ops: 33
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+  // Intermediate terms (9)
+  const Scalar _tmp0 = std::pow(point(1, 0), Scalar(2));
+  const Scalar _tmp1 = _tmp0 + epsilon + std::pow(point(2, 0), Scalar(2));
+  const Scalar _tmp2 = std::sqrt(_tmp1);
+  const Scalar _tmp3 = std::atan2(point(0, 0), _tmp2);
+  const Scalar _tmp4 = epsilon + point(2, 0);
+  const Scalar _tmp5 = std::atan2(point(1, 0), _tmp4);
+  const Scalar _tmp6 = _self[0] / (_tmp1 + std::pow(point(0, 0), Scalar(2)));
+  const Scalar _tmp7 = _tmp6 * point(0, 0) / _tmp2;
+  const Scalar _tmp8 = _self[1] / (_tmp0 + std::pow(_tmp4, Scalar(2)));
+
+  // Output terms (4)
+  Eigen::Matrix<Scalar, 2, 1> _pixel;
+
+  _pixel(0, 0) = _self[0] * _tmp3 + _self[2];
+  _pixel(1, 0) = _self[1] * _tmp5 + _self[3];
+
+  if (is_valid != nullptr) {
+    Scalar& _is_valid = (*is_valid);
+
+    _is_valid = std::max<Scalar>(0, (((point(2, 0)) > 0) - ((point(2, 0)) < 0)));
+  }
+
+  if (pixel_D_cal != nullptr) {
+    Eigen::Matrix<Scalar, 2, 4>& _pixel_D_cal = (*pixel_D_cal);
+
+    _pixel_D_cal(0, 0) = _tmp3;
+    _pixel_D_cal(0, 1) = 0;
+    _pixel_D_cal(0, 2) = 1;
+    _pixel_D_cal(0, 3) = 0;
+    _pixel_D_cal(1, 0) = 0;
+    _pixel_D_cal(1, 1) = _tmp5;
+    _pixel_D_cal(1, 2) = 0;
+    _pixel_D_cal(1, 3) = 1;
+  }
+
+  if (pixel_D_point != nullptr) {
+    Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
+
+    _pixel_D_point(0, 0) = _tmp2 * _tmp6;
+    _pixel_D_point(0, 1) = -_tmp7 * point(1, 0);
+    _pixel_D_point(0, 2) = -_tmp7 * point(2, 0);
+    _pixel_D_point(1, 0) = 0;
+    _pixel_D_point(1, 1) = _tmp4 * _tmp8;
+    _pixel_D_point(1, 2) = -_tmp8 * point(1, 0);
+  }
+
+  return _pixel;
+}
+
+template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromPixel(
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
   // Total ops: 26
@@ -98,6 +158,87 @@ Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromP
     _is_valid =
         std::max<Scalar>(0, (((_tmp3 - std::fabs(_tmp0)) > 0) - ((_tmp3 - std::fabs(_tmp0)) < 0))) *
         std::max<Scalar>(0, (((_tmp3 - std::fabs(_tmp1)) > 0) - ((_tmp3 - std::fabs(_tmp1)) < 0)));
+  }
+
+  return _camera_ray;
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromPixelWithJacobians(
+    const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid,
+    Eigen::Matrix<Scalar, 3, 4>* const point_D_cal,
+    Eigen::Matrix<Scalar, 3, 2>* const point_D_pixel) const {
+  // Total ops: 49
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+  // Intermediate terms (22)
+  const Scalar _tmp0 = -_self[2] + pixel(0, 0);
+  const Scalar _tmp1 = Scalar(1.0) / (_self[0]);
+  const Scalar _tmp2 = _tmp0 * _tmp1;
+  const Scalar _tmp3 = std::sin(_tmp2);
+  const Scalar _tmp4 = -_self[3] + pixel(1, 0);
+  const Scalar _tmp5 = Scalar(1.0) / (_self[1]);
+  const Scalar _tmp6 = _tmp4 * _tmp5;
+  const Scalar _tmp7 = std::sin(_tmp6);
+  const Scalar _tmp8 = std::cos(_tmp2);
+  const Scalar _tmp9 = _tmp7 * _tmp8;
+  const Scalar _tmp10 = std::cos(_tmp6);
+  const Scalar _tmp11 = _tmp10 * _tmp8;
+  const Scalar _tmp12 = M_PI_2;
+  const Scalar _tmp13 = _tmp0 / std::pow(_self[0], Scalar(2));
+  const Scalar _tmp14 = _tmp1 * _tmp8;
+  const Scalar _tmp15 = _tmp13 * _tmp3;
+  const Scalar _tmp16 = _tmp4 / std::pow(_self[1], Scalar(2));
+  const Scalar _tmp17 = _tmp1 * _tmp3;
+  const Scalar _tmp18 = _tmp17 * _tmp7;
+  const Scalar _tmp19 = _tmp11 * _tmp5;
+  const Scalar _tmp20 = _tmp10 * _tmp17;
+  const Scalar _tmp21 = _tmp5 * _tmp9;
+
+  // Output terms (4)
+  Eigen::Matrix<Scalar, 3, 1> _camera_ray;
+
+  _camera_ray(0, 0) = _tmp3;
+  _camera_ray(1, 0) = _tmp9;
+  _camera_ray(2, 0) = _tmp11;
+
+  if (is_valid != nullptr) {
+    Scalar& _is_valid = (*is_valid);
+
+    _is_valid = std::max<Scalar>(
+                    0, (((_tmp12 - std::fabs(_tmp2)) > 0) - ((_tmp12 - std::fabs(_tmp2)) < 0))) *
+                std::max<Scalar>(
+                    0, (((_tmp12 - std::fabs(_tmp6)) > 0) - ((_tmp12 - std::fabs(_tmp6)) < 0)));
+  }
+
+  if (point_D_cal != nullptr) {
+    Eigen::Matrix<Scalar, 3, 4>& _point_D_cal = (*point_D_cal);
+
+    _point_D_cal(0, 0) = -_tmp13 * _tmp8;
+    _point_D_cal(0, 1) = 0;
+    _point_D_cal(0, 2) = -_tmp14;
+    _point_D_cal(0, 3) = 0;
+    _point_D_cal(1, 0) = _tmp15 * _tmp7;
+    _point_D_cal(1, 1) = -_tmp11 * _tmp16;
+    _point_D_cal(1, 2) = _tmp18;
+    _point_D_cal(1, 3) = -_tmp19;
+    _point_D_cal(2, 0) = _tmp10 * _tmp15;
+    _point_D_cal(2, 1) = _tmp16 * _tmp9;
+    _point_D_cal(2, 2) = _tmp20;
+    _point_D_cal(2, 3) = _tmp21;
+  }
+
+  if (point_D_pixel != nullptr) {
+    Eigen::Matrix<Scalar, 3, 2>& _point_D_pixel = (*point_D_pixel);
+
+    _point_D_pixel(0, 0) = _tmp14;
+    _point_D_pixel(0, 1) = 0;
+    _point_D_pixel(1, 0) = -_tmp18;
+    _point_D_pixel(1, 1) = _tmp19;
+    _point_D_pixel(2, 0) = -_tmp20;
+    _point_D_pixel(2, 1) = -_tmp21;
   }
 
   return _camera_ray;

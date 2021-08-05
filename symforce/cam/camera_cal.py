@@ -70,6 +70,13 @@ class CameraCal(Storage):
             self.distortion_coeffs.to_storage(),
         )
 
+    def parameters(self) -> T.List[T.Scalar]:
+        return (
+            self.focal_length.to_storage()
+            + self.principal_point.to_storage()
+            + self.distortion_coeffs.to_storage()
+        )
+
     # -------------------------------------------------------------------------
     # Required camera methods
     # -------------------------------------------------------------------------

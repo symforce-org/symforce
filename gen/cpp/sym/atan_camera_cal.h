@@ -81,6 +81,22 @@ class ATANCameraCal {
                                                    Scalar* const is_valid = nullptr) const;
 
   /**
+   * Project a 3D point in the camera frame into 2D pixel coordinates.
+   *
+   * Return:
+   *     pixel: (x, y) coordinate in pixels if valid
+   *     is_valid: 1 if the operation is within bounds else 0
+   *     pixel_D_cal: Derivative of pixel with respect to intrinsic calibration parameters
+   *     pixel_D_point: Derivative of pixel with respect to point
+   *
+   *
+   */
+  Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPointWithJacobians(
+      const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon,
+      Scalar* const is_valid = nullptr, Eigen::Matrix<Scalar, 2, 5>* const pixel_D_cal = nullptr,
+      Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point = nullptr) const;
+
+  /**
    * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
    *
    * Return:
@@ -91,6 +107,21 @@ class ATANCameraCal {
   Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel,
                                                  const Scalar epsilon,
                                                  Scalar* const is_valid = nullptr) const;
+
+  /**
+   * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
+   *
+   * Return:
+   *     camera_ray: The ray in the camera frame (NOT normalized)
+   *     is_valid: 1 if the operation is within bounds else 0
+   *     point_D_cal: Derivative of point with respect to intrinsic calibration parameters
+   *     point_D_pixel: Derivation of point with respect to pixel
+   *
+   */
+  Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixelWithJacobians(
+      const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon,
+      Scalar* const is_valid = nullptr, Eigen::Matrix<Scalar, 3, 5>* const point_D_cal = nullptr,
+      Eigen::Matrix<Scalar, 3, 2>* const point_D_pixel = nullptr) const;
 
   // --------------------------------------------------------------------------
   // General Helpers
