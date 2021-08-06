@@ -85,8 +85,14 @@ def camelcase_to_snakecase(s: str) -> str:
 def snakecase_to_camelcase(s: str) -> str:
     """
     Convert snake_case -> CamelCase
+
+    Double underscores are escaped, e.g. one__two becomes One_Two
     """
-    return s.replace("_", " ").title().replace(" ", "")
+    return (
+        re.sub("_+", lambda match: "_" * (len(match.group()) // 2) + " ", s)
+        .title()
+        .replace(" ", "")
+    )
 
 
 def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:

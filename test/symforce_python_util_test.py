@@ -10,6 +10,20 @@ class SymforceUtilTest(TestCase):
     Tests python_util.py
     """
 
+    def test_snakecase_to_camelcase(self) -> None:
+        """
+        Tests:
+            python_util.snakecase_to_camelcase
+        """
+        self.assertEqual(python_util.snakecase_to_camelcase("easy_peasy"), "EasyPeasy")
+        self.assertEqual(
+            python_util.snakecase_to_camelcase("a__little___harder"), "A_Little_Harder"
+        )
+        self.assertEqual(
+            python_util.snakecase_to_camelcase("__why____are_______you_doing__this___"),
+            "_Why__Are___YouDoing_This_",
+        )
+
     def test_getattr_recursive(self) -> None:
         """
         Tests:
