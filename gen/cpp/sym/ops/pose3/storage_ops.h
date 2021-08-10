@@ -14,22 +14,23 @@ namespace sym {
  */
 template <typename ScalarType>
 struct StorageOps<Pose3<ScalarType>> {
+  using T = Pose3<ScalarType>;
   using Scalar = typename Pose3<ScalarType>::Scalar;
 
   static constexpr int32_t StorageDim() {
     return 7;
   }
 
-  static void ToStorage(const Pose3<ScalarType>& a, ScalarType* out);
-  static Pose3<ScalarType> FromStorage(const ScalarType* data);
+  static void ToStorage(const T& a, ScalarType* out);
+  static T FromStorage(const ScalarType* data);
 
   static symforce::type_t TypeEnum() {
     return symforce::type_t::POSE3;
   }
 
   template <typename Generator>
-  static Pose3<Scalar> Random(Generator& gen) {
-    return Pose3<ScalarType>::Random(gen);
+  static T Random(Generator& gen) {
+    return T::Random(gen);
   }
 };
 

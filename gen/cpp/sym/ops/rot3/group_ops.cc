@@ -136,8 +136,8 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Between(const sym::Rot3<Scalar>& a,
  *     res_D_a: (3x3) jacobian of res (3) wrt arg a (3)
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(
-    const sym::Rot3<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(const sym::Rot3<Scalar>& a,
+                                                              SelfJacobian* const res_D_a) {
   // Total ops: 39
 
   // Input arrays
@@ -193,9 +193,10 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(
  *     res_D_b: (3x3) jacobian of res (3) wrt arg b (3)
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(
-    const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
-    Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(const sym::Rot3<Scalar>& a,
+                                                               const sym::Rot3<Scalar>& b,
+                                                               SelfJacobian* const res_D_a,
+                                                               SelfJacobian* const res_D_b) {
   // Total ops: 300
 
   // Input arrays
@@ -334,9 +335,10 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(
  *     res_D_b: (3x3) jacobian of res (3) wrt arg b (3)
  */
 template <typename Scalar>
-sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(
-    const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
-    Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
+sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(const sym::Rot3<Scalar>& a,
+                                                               const sym::Rot3<Scalar>& b,
+                                                               SelfJacobian* const res_D_a,
+                                                               SelfJacobian* const res_D_b) {
   // Total ops: 315
 
   // Input arrays

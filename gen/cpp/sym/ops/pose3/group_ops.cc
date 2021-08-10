@@ -193,8 +193,8 @@ sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::Between(const sym::Pose3<Scalar>& a,
  *     res_D_a: (6x6) jacobian of res (6) wrt arg a (6)
  */
 template <typename Scalar>
-sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::InverseWithJacobian(
-    const sym::Pose3<Scalar>& a, Eigen::Matrix<Scalar, 6, 6>* const res_D_a) {
+sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::InverseWithJacobian(const sym::Pose3<Scalar>& a,
+                                                                SelfJacobian* const res_D_a) {
   // Total ops: 222
 
   // Input arrays
@@ -334,9 +334,10 @@ sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::InverseWithJacobian(
  *     res_D_b: (6x6) jacobian of res (6) wrt arg b (6)
  */
 template <typename Scalar>
-sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::ComposeWithJacobians(
-    const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
-    Eigen::Matrix<Scalar, 6, 6>* const res_D_a, Eigen::Matrix<Scalar, 6, 6>* const res_D_b) {
+sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::ComposeWithJacobians(const sym::Pose3<Scalar>& a,
+                                                                 const sym::Pose3<Scalar>& b,
+                                                                 SelfJacobian* const res_D_a,
+                                                                 SelfJacobian* const res_D_b) {
   // Total ops: 484
 
   // Input arrays
@@ -588,9 +589,10 @@ sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::ComposeWithJacobians(
  *     res_D_b: (6x6) jacobian of res (6) wrt arg b (6)
  */
 template <typename Scalar>
-sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::BetweenWithJacobians(
-    const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
-    Eigen::Matrix<Scalar, 6, 6>* const res_D_a, Eigen::Matrix<Scalar, 6, 6>* const res_D_b) {
+sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::BetweenWithJacobians(const sym::Pose3<Scalar>& a,
+                                                                 const sym::Pose3<Scalar>& b,
+                                                                 SelfJacobian* const res_D_a,
+                                                                 SelfJacobian* const res_D_b) {
   // Total ops: 586
 
   // Input arrays

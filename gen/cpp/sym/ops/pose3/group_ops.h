@@ -13,23 +13,19 @@ namespace sym {
  */
 template <typename Scalar>
 struct GroupOps<Pose3<Scalar>> {
-  using SelfJacobian = Eigen::Matrix<Scalar, LieGroupOps<Pose3<Scalar>>::TangentDim(),
-                                     LieGroupOps<Pose3<Scalar>>::TangentDim()>;
+  using T = Pose3<Scalar>;
+  using SelfJacobian =
+      Eigen::Matrix<Scalar, LieGroupOps<T>::TangentDim(), LieGroupOps<T>::TangentDim()>;
 
-  static sym::Pose3<Scalar> Identity();
-  static sym::Pose3<Scalar> Inverse(const sym::Pose3<Scalar>& a);
-  static sym::Pose3<Scalar> Compose(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b);
-  static sym::Pose3<Scalar> Between(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b);
-  static sym::Pose3<Scalar> InverseWithJacobian(
-      const sym::Pose3<Scalar>& a, Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr);
-  static sym::Pose3<Scalar> ComposeWithJacobians(
-      const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
-      Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr,
-      Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr);
-  static sym::Pose3<Scalar> BetweenWithJacobians(
-      const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b,
-      Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr,
-      Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr);
+  static T Identity();
+  static T Inverse(const T& a);
+  static T Compose(const T& a, const T& b);
+  static T Between(const T& a, const T& b);
+  static T InverseWithJacobian(const T& a, SelfJacobian* const res_D_a = nullptr);
+  static T ComposeWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a = nullptr,
+                                SelfJacobian* const res_D_b = nullptr);
+  static T BetweenWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a = nullptr,
+                                SelfJacobian* const res_D_b = nullptr);
 };
 
 }  // namespace sym

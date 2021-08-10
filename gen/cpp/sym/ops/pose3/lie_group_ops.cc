@@ -12,7 +12,7 @@
 namespace sym {
 
 template <typename Scalar>
-sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::FromTangent(const Eigen::Matrix<Scalar, 6, 1>& vec,
+sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::FromTangent(const TangentVec& vec,
                                                            const Scalar epsilon) {
   // Total ops: 16
 
@@ -39,8 +39,8 @@ sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::FromTangent(const Eigen::Matrix<S
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Pose3<Scalar>>::ToTangent(const sym::Pose3<Scalar>& a,
-                                                                  const Scalar epsilon) {
+typename LieGroupOps<Pose3<Scalar>>::TangentVec LieGroupOps<Pose3<Scalar>>::ToTangent(
+    const sym::Pose3<Scalar>& a, const Scalar epsilon) {
   // Total ops: 19
 
   // Input arrays
@@ -66,7 +66,7 @@ Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Pose3<Scalar>>::ToTangent(const sym::Pos
 
 template <typename Scalar>
 sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::Retract(const sym::Pose3<Scalar>& a,
-                                                       const Eigen::Matrix<Scalar, 6, 1>& vec,
+                                                       const TangentVec& vec,
                                                        const Scalar epsilon) {
   // Total ops: 52
 
@@ -99,7 +99,7 @@ sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::Retract(const sym::Pose3<Scalar>&
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 1> LieGroupOps<Pose3<Scalar>>::LocalCoordinates(
+typename LieGroupOps<Pose3<Scalar>>::TangentVec LieGroupOps<Pose3<Scalar>>::LocalCoordinates(
     const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b, const Scalar epsilon) {
   // Total ops: 63
 

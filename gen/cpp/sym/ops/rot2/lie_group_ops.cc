@@ -12,7 +12,7 @@
 namespace sym {
 
 template <typename Scalar>
-sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::FromTangent(const Eigen::Matrix<Scalar, 1, 1>& vec,
+sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::FromTangent(const TangentVec& vec,
                                                          const Scalar epsilon) {
   // Total ops: 2
 
@@ -30,8 +30,8 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::FromTangent(const Eigen::Matrix<Sca
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Rot2<Scalar>>::ToTangent(const sym::Rot2<Scalar>& a,
-                                                                 const Scalar epsilon) {
+typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::ToTangent(
+    const sym::Rot2<Scalar>& a, const Scalar epsilon) {
   // Total ops: 1
 
   // Input arrays
@@ -49,8 +49,7 @@ Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Rot2<Scalar>>::ToTangent(const sym::Rot2
 
 template <typename Scalar>
 sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
-                                                     const Eigen::Matrix<Scalar, 1, 1>& vec,
-                                                     const Scalar epsilon) {
+                                                     const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 9
 
   // Input arrays
@@ -70,9 +69,8 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 1, 1> LieGroupOps<Rot2<Scalar>>::LocalCoordinates(const sym::Rot2<Scalar>& a,
-                                                                        const sym::Rot2<Scalar>& b,
-                                                                        const Scalar epsilon) {
+typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::LocalCoordinates(
+    const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b, const Scalar epsilon) {
   // Total ops: 8
 
   // Input arrays

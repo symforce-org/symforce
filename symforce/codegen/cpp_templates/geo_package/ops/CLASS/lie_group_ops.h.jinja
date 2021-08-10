@@ -21,6 +21,8 @@ namespace sym {
  */
 template <typename Scalar>
 struct LieGroupOps<{{ cls.__name__ }}<Scalar>> {
+  using T = {{ cls.__name__ }}<Scalar>;
+
   static constexpr int32_t TangentDim() {
       return {{ ops.LieGroupOps.tangent_dim(cls) }};
   }
@@ -28,7 +30,12 @@ struct LieGroupOps<{{ cls.__name__ }}<Scalar>> {
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
   {% for spec in specs['LieGroupOps'] %}
-  static {{ util.function_declaration(spec, is_declaration=True) -}};
+  static {{ python_util.str_replace_all(
+    util.function_declaration(spec, is_declaration=True),
+    {
+      "sym::" + cls.__name__ + "<Scalar>": "T",
+      "Eigen::Matrix<Scalar, {}, 1>".format(ops.LieGroupOps.tangent_dim(cls)): "TangentVec"
+    }) -}};
   {% endfor %}
 };
 

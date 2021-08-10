@@ -20,20 +20,18 @@ namespace sym {
  */
 template <typename Scalar>
 struct LieGroupOps<Rot2<Scalar>> {
+  using T = Rot2<Scalar>;
+
   static constexpr int32_t TangentDim() {
     return 1;
   }
 
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
-  static sym::Rot2<Scalar> FromTangent(const Eigen::Matrix<Scalar, 1, 1>& vec,
-                                       const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 1, 1> ToTangent(const sym::Rot2<Scalar>& a, const Scalar epsilon);
-  static sym::Rot2<Scalar> Retract(const sym::Rot2<Scalar>& a,
-                                   const Eigen::Matrix<Scalar, 1, 1>& vec, const Scalar epsilon);
-  static Eigen::Matrix<Scalar, 1, 1> LocalCoordinates(const sym::Rot2<Scalar>& a,
-                                                      const sym::Rot2<Scalar>& b,
-                                                      const Scalar epsilon);
+  static T FromTangent(const TangentVec& vec, const Scalar epsilon);
+  static TangentVec ToTangent(const T& a, const Scalar epsilon);
+  static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon);
+  static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
 };
 
 }  // namespace sym
