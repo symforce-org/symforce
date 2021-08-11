@@ -1,0 +1,42 @@
+# CMake
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+cython_test.cpp
+
+# Compiled Object Files, Static/Dynamic Libraries
+*.so
+*.a
+*.o
+*.out
+*.exe
+*.pyd
+*.sln
+*.vcxproj
+*.filters
+symengine/lib/symengine_wrapper.cpp
+
+# Config Files
+symengine/lib/config.pxi
+
+# Python build files
+build*
+*__pycache__*
+*.pyc
+MANIFEST
+*.egg-info
+dist/
+.*cache/
+symengine.egg-info/
+
+# Temp files
+*~
+.eggs/
+
+# Docs
+genDocs/
+docs/_build/
+docs/source/

@@ -1,0 +1,3 @@
+include CMakeLists.txt LICENSE README.md symengine_version.txt
+recursive-include symengine *.cpp *.h *.hpp CMakeLists.txt *.in *.cmake *.pyx *.pxd *.py *.pxi
+recursive-include cmake *.cpp *.in *.cmake *.pyx

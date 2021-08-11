@@ -1,0 +1,178 @@
+name: Build and test symengine
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.OS }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            PYTHON_VERSION: 3.6
+            TEST_SYMPY: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            PYTHON_VERSION: 3.9
+            TEST_SYMPY: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.7
+            BUILD_SHARED_LIBS: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.7
+            WITH_MPFR: yes
+            INTEGER_CLASS: gmpxx
+            WITH_NUMPY: no
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.8
+            WITH_MPC: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            WITH_MPFR: yes
+            PYTHON_VERSION: 3.8
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.9
+            WITH_MPC: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.6
+            WITH_MPC: yes
+            INTEGER_CLASS: flint
+            WITH_FLINT: yes
+            OS: ubuntu-16.04
+            CC: gcc
+
+          - BUILD_TYPE: Debug
+            PYTHON_VERSION: 3.7
+            WITH_BFD: yes
+            WITH_PIRANHA: yes
+            OS: ubuntu-16.04
+            CC: gcc
+            EXTRA_APT_PACKAGES: "g++-4.8"
+
+          - BUILD_TYPE: Debug
+            PYTHON_VERSION: 3.8
+            WITH_BFD: yes
+            BUILD_SHARED_LIBS: yes
+            OS: ubuntu-16.04
+            CC: clang
+    
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.7
+            WITH_NUMPY: yes
+            OS: ubuntu-16.04
+            CC: clang
+ 
+          - BUILD_TYPE: Debug
+            PYTHON_VERSION: 3.6
+            WITH_SYMPY: yes
+            WITH_LLVM: 8.0
+            WITH_SCIPY: yes
+            OS: ubuntu-16.04
+            CC: gcc-4.8
+            CXX: g++-4.8
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+            EXTRA_APT_PACKAGES: 'g++-4.8 libstdc++-4.8-dev binutils-dev llvm-8-dev'
+
+          - BUILD_TYPE: Debug
+            PYTHON_VERSION: 3.7
+            WITH_SCIPY: yes
+            WITH_LLVM: 5.0
+            OS: macos-latest
+            CC: clang
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.9
+            WITH_NUMPY: no
+            OS: macos-latest
+            CC: clang
+
+          - BUILD_TYPE: Debug
+            PYTHON_VERSION: 3.7
+            WITH_NUMPY: no
+            OS: macos-latest
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.6
+            OS: macos-latest
+            CC: gcc
+
+          - BUILD_TYPE: Release
+            PYTHON_VERSION: 3.6
+            OS: ubuntu-16.04
+            WITH_MPC: yes
+            WITH_MPFR: yes
+            WITH_FLINT: yes
+            WITH_SCIPY: yes
+            WITH_DOCS: yes
+            INTEGER_CLASS: flint
+            TEST_SYMPY: yes
+            CC: gcc
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and test symengine
+      shell: bash
+      run: |
+        source bin/test_symengine_unix.sh
+      env:
+        USE_GLIBCXX_DEBUG: ${{ matrix.USE_GLIBCXX_DEBUG }}
+        WITH_MPFR: ${{ matrix.WITH_MPFR }}
+        BUILD_BENCHMARKS: ${{ matrix.BUILD_BENCHMARKS }}
+        WITH_LLVM: ${{ matrix.WITH_LLVM }}
+        WITH_BENCHMARKS_NONIUS: ${{ matrix.WITH_BENCHMARKS_NONIUS }}
+        WITH_SYMENGINE_RCP: ${{ matrix.WITH_SYMENGINE_RCP }}
+        TEST_IN_TREE: ${{ matrix.TEST_IN_TREE }}
+        WITH_SYMENGINE_THREAD_SAFE: ${{ matrix.WITH_SYMENGINE_THREAD_SAFE }}
+        WITH_PRIMESIEVE: ${{ matrix.WITH_PRIMESIEVE }}
+        INTEGER_CLASS: ${{ matrix.INTEGER_CLASS }}
+        WITH_ARB: ${{ matrix.WITH_ARB }}
+        WITH_PIRANHA: ${{ matrix.WITH_PIRANHA }}
+        WITH_GCC_6: ${{ matrix.WITH_GCC_6 }}
+        CONDA_ENV_FILE: ${{ matrix.CONDA_ENV_FILE }}
+        WITH_BFD: ${{ matrix.WITH_BFD }}
+        WITH_FLINT: ${{ matrix.WITH_FLINT }}
+        EXTRA_APT_REPOSITORY: ${{ matrix.EXTRA_APT_REPOSITORY }}
+        EXTRA_APT_PACKAGES: ${{ matrix.EXTRA_APT_PACKAGES }}
+        TEST_CLANG_FORMAT: ${{ matrix.TEST_CLANG_FORMAT }}
+        WITH_ECM: ${{ matrix.WITH_ECM }}
+        WITH_LATEST_GCC: ${{ matrix.WITH_LATEST_GCC }}
+        OS: ${{ matrix.OS }}
+        WITH_FLINT_DEV: ${{ matrix.WITH_FLINT_DEV }}
+        CC: ${{ matrix.CC }}
+        WITH_COVERAGE: ${{ matrix.WITH_COVERAGE }}
+        BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
+        WITH_SANITIZE: ${{ matrix.WITH_SANITIZE }}
+        WITH_MPC: ${{ matrix.WITH_MPC }}
+        MAKEFLAGS: ${{ matrix.MAKEFLAGS }}
+        BUILD_SHARED_LIBS: ${{ matrix.BUILD_SHARED_LIBS }}
+
+    - name: Deploy Documentation
+      if: ${{ (github.ref == 'refs/heads/main' && github.repository == 'Symengine/symengine.py') || (github.ref == 'refs/heads/master' && github.repository == 'Symengine/symengine.py')}}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./genDocs

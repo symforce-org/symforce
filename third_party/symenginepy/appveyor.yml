@@ -1,0 +1,135 @@
+version: '{build}'
+
+# Uncomment this to enable the fast build environment if your account does not
+# support it automatically:
+#os: Visual Studio 2015 RC
+
+environment:
+  global:
+    PLATFORMTOOLSET: "v140"
+
+  matrix:
+    - BUILD_TYPE: "Release"
+      COMPILER: MSVC15
+      PLATFORM: "x64"
+      PYTHON_VERSION: 39-x64
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+      WITH_MPFR: yes
+      WITH_MPC: yes
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - BUILD_TYPE: "Release"
+      COMPILER: MSVC15
+      PLATFORM: "x64"
+      PYTHON_VERSION: 38-x64
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+    - BUILD_TYPE: "Debug"
+      COMPILER: MinGW-w64
+      PYTHON_VERSION: 37-x64
+      WITH_NUMPY: no
+    - BUILD_TYPE: "Release"
+      COMPILER: MinGW-w64
+      PYTHON_VERSION: 37-x64
+    - BUILD_TYPE: "Debug"
+      COMPILER: MinGW-w64
+      PYTHON_VERSION: 36-x64
+      WITH_SYMPY: no
+    - BUILD_TYPE: "Release"
+      COMPILER: MSVC15
+      PLATFORM: "Win32"
+      PYTHON_VERSION: 37
+      CONDA_INSTALL_LOCN: C:\\Miniconda36
+      WITH_MPFR: yes
+      WITH_MPC: yes
+    - BUILD_TYPE: "Release"
+      COMPILER: MSVC15
+      PLATFORM: "x64"
+      PYTHON_VERSION: 36-x64
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+      WITH_MPFR: yes
+      WITH_MPC: yes
+      WITH_LLVM: yes
+
+install:
+- set PYTHON_SOURCE_DIR=%CD%
+- git clone https://github.com/sympy/symengine symengine-cpp
+
+- if [%COMPILER%]==[MSVC15] call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
+- if [%COMPILER%]==[MSVC15] conda update --yes --quiet conda
+- if [%COMPILER%]==[MSVC15] conda config --add channels conda-forge
+- if [%COMPILER%]==[MSVC15] if [%BUILD_TYPE%]==[Debug] conda config --add channels symengine/label/debug
+- if [%COMPILER%]==[MSVC15] conda install --yes mpir=3.0.0 vc=14
+- if [%COMPILER%]==[MSVC15] echo %CONDA_PREFIX%
+- if [%COMPILER%]==[MSVC15] echo %PATH%
+- if [%COMPILER%]==[MSVC15] set "PATH=%PATH%;%CONDA_PREFIX%\\Library\\bin;%CONDA_PREFIX%"
+- if [%COMPILER%]==[MSVC15] echo %PATH%
+- if [%COMPILER%]==[MSVC15] if [%WITH_MPFR%]==[yes] conda install --yes mpfr=3.1.5
+- if [%COMPILER%]==[MSVC15] if [%WITH_MPC%]==[yes] conda install --yes mpc=1.0.3
+- if [%COMPILER%]==[MSVC15] if [%WITH_LLVM%]==[yes] conda install --yes llvmdev=3.9
+
+- if [%COMPILER%]==[MinGW] set "PATH=C:\MinGW\bin;%PATH%"
+- if [%COMPILER%]==[MinGW] mingw-get update
+# workaround for https://github.com/appveyor/ci/issues/996
+- if [%COMPILER%]==[MinGW] mingw-get upgrade mingw32-libstdc++
+- if [%COMPILER%]==[MinGW] mingw-get install mingw32-gmp
+
+- if [%COMPILER%]==[MinGW-w64] set "PATH=C:\mingw64\bin;%PATH%"
+
+- rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
+
+- if [%COMPILER%]==[MinGW-w64] call symengine-cpp\bin\appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
+- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
+- if [%COMPILER%]==[MinGW-w64] call symengine-cpp\bin\appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/gmp-6.0.0-x86_64-w64-mingw32.7z" -FileName gmp.7z
+- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\mingw64 gmp.7z > NUL
+
+- if NOT [%COMPILER%]==[MSVC15] call symengine-cpp\bin\appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/dcc10cce2133e2b57e61c5ced6120139bbcdfa20/python-libs-mingw32.7z" -FileName pylibs.7z
+- if NOT [%COMPILER%]==[MSVC15] 7z x -aoa -oC:\ pylibs.7z > NUL
+
+- set "PATH=C:\Python%PYTHON_VERSION%;C:\Python%PYTHON_VERSION%\Scripts;%PATH%"
+- echo %PATH%
+- pip install nose pytest
+- pip install --install-option="--no-cython-compile" cython
+- if NOT [%WITH_NUMPY%]==[no] pip install numpy
+- if NOT [%WITH_SYMPY%]==[no] pip install sympy
+
+- set /p commit=<symengine_version.txt
+- cd symengine-cpp
+- git checkout %commit%
+- mkdir build
+- cd build
+
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] set "CMAKE_GENERATOR=Visual Studio 14 2015"
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64] set "CMAKE_GENERATOR=Visual Studio 14 2015 Win64"
+- if [%COMPILER%]==[MinGW]  set "CMAKE_GENERATOR=MinGW Makefiles"
+- if [%COMPILER%]==[MinGW-w64] set "CMAKE_GENERATOR=MinGW Makefiles"
+
+- if [%COMPILER%]==[MSVC15] cmake -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%\Library ..
+- if [%COMPILER%]==[MinGW] cmake -DCMAKE_PREFIX_PATH=C:\MinGW -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+- if [%COMPILER%]==[MinGW-w64] cmake -DCMAKE_PREFIX_PATH=C:\mingw64 -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+
+- if [%WITH_MPFR%]==[yes] cmake -DWITH_MPFR=yes ..
+- if [%WITH_MPC%]==[yes] cmake -DWITH_MPC=yes ..
+- if [%WITH_LLVM%]==[yes] cmake -DWITH_LLVM=yes -DMSVC_USE_MT=no ..
+
+- cmake -DBUILD_SHARED_LIBS=yes -DBUILD_TESTS=no -DBUILD_BENCHMARKS=no -DCMAKE_INSTALL_PREFIX=C:\symengine ..
+
+- cmake --build . --config %BUILD_TYPE% --target install
+- cd ../../
+
+build_script:
+- set "PATH=C:\symengine\bin\;%PATH%"
+- set "SYMENGINE_PY_ADD_PATH_TO_SEARCH_DIRS=1"
+- echo %PATH%
+- if [%COMPILER%]==[MSVC15] python setup.py install build_ext --compiler=msvc --build-type=%BUILD_TYPE%
+- if [%COMPILER%]==[MinGW] python setup.py install build_ext --compiler=mingw --inplace
+- if [%COMPILER%]==[MinGW-w64] python setup.py install build_ext --compiler=mingw --inplace
+
+test_script:
+- if not [%COMPILER%]==[MSVC15] nosetests
+- mkdir empty && cd empty
+- python %PYTHON_SOURCE_DIR%\bin\test_python.py
+
+# Enable this to be able to login to the build worker. You can use the
+# `remmina` program in Ubuntu, use the login information that the line below
+# prints into the log.
+# #on_finish:
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
