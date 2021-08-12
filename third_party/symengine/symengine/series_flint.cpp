@@ -33,7 +33,7 @@ RCP<const Basic> URatPSeriesFlint::as_basic() const
 {
     RCP<const Symbol> x = symbol(var_);
     RCP<const Number> zcoef;
-    umap_basic_num dict_;
+    add_operands_map dict_;
     mpq_t gc;
     mpq_init(gc);
     for (unsigned n = 0; n < degree_; n++) {

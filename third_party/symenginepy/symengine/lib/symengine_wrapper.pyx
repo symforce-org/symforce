@@ -1,6 +1,7 @@
 from cython.operator cimport dereference as deref, preincrement as inc
 cimport symengine
-from symengine cimport (RCP, pair, map_basic_basic, umap_int_basic,
+from symengine cimport (RCP, pair, add_operands_map, add_operands_map_iterator,
+    map_basic_basic, umap_int_basic,
     umap_int_basic_iterator, umap_basic_num, umap_basic_num_iterator,
     rcp_const_basic, std_pair_short_rcp_const_basic,
     rcp_const_seriescoeffinterface, CRCPBasic)
@@ -2151,13 +2152,13 @@ class Add(AssocOp):
 
     def as_coefficients_dict(Basic self):
         cdef RCP[const symengine.Add] X = symengine.rcp_static_cast_Add(self.thisptr)
-        cdef umap_basic_num umap
-        cdef umap_basic_num_iterator iter, iterend
+        cdef add_operands_map map
+        cdef add_operands_map_iterator iter, iterend
         d = collections.defaultdict(int)
         d[Integer(1)] = c2py(<rcp_const_basic>(deref(X).get_coef()))
-        umap = deref(X).get_dict()
-        iter = umap.begin()
-        iterend = umap.end()
+        map = deref(X).get_dict()
+        iter = map.begin()
+        iterend = map.end()
         while iter != iterend:
             d[c2py(<rcp_const_basic>(deref(iter).first))] =\
                     c2py(<rcp_const_basic>(deref(iter).second))

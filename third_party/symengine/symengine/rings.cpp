@@ -11,7 +11,7 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms, umap_vec_mpz &P)
 {
     if (is_a<Add>(*p)) {
         auto n = syms.size();
-        const umap_basic_num &d = down_cast<const Add &>(*p).get_dict();
+        const add_operands_map &d = down_cast<const Add &>(*p).get_dict();
         vec_int exp;
         integer_class coef;
         for (const auto &p : d) {

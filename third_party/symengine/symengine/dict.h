@@ -65,6 +65,14 @@ typedef std::unordered_map<RCP<const Basic>, unsigned int, RCPBasicHash,
     umap_basic_uint;
 typedef std::vector<std::pair<RCP<const Basic>, RCP<const Basic>>> vec_pair;
 
+// With std::map, things are deterministic across implementations and aren't
+// measurably slower
+#if defined SYMENGINE_UNORDERED_ADD_OPERANDS
+typedef umap_basic_num add_operands_map;
+#else
+typedef map_basic_num add_operands_map;
+#endif
+
 template <typename T>
 struct vec_hash {
     hash_t operator()(const T &v) const;

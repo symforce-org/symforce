@@ -61,7 +61,7 @@ namespace SymEngine
  *  @details Constructs Add from a dictionary by copying the contents of
  *    the dictionary.
  */
-Add::Add(const RCP<const Number> &coef, umap_basic_num &&dict)
+Add::Add(const RCP<const Number> &coef, add_operands_map &&dict)
     : coef_{coef}, dict_{std::move(dict)}
 {
     SYMENGINE_ASSIGN_TYPEID()
@@ -140,7 +140,7 @@ int Add::compare(const Basic &o) const
  *   using the `Mul`.
  */
 RCP<const Basic> Add::from_dict(const RCP<const Number> &coef,
-                                umap_basic_num &&d)
+                                add_operands_map &&d)
 {
     if (d.size() == 0) {
         return coef;
@@ -236,7 +236,7 @@ RCP<const Basic> Add::from_dict(const RCP<const Number> &coef,
  *  @warning We assume that `t` has no numerical coefficients, and `coef` has
  *   only numerical coefficients.
  */
-void Add::dict_add_term(umap_basic_num &d, const RCP<const Number> &coef,
+void Add::dict_add_term(add_operands_map &d, const RCP<const Number> &coef,
                         const RCP<const Basic> &t)
 {
     auto it = d.find(t);
@@ -261,7 +261,7 @@ void Add::dict_add_term(umap_basic_num &d, const RCP<const Number> &coef,
  *      and `d`.
  */
 void Add::coef_dict_add_term(const Ptr<RCP<const Number>> &coef,
-                             umap_basic_num &d, const RCP<const Number> &c,
+                             add_operands_map &d, const RCP<const Number> &c,
                              const RCP<const Basic> &term)
 {
     if (is_a_Number(*term)) {
@@ -291,7 +291,7 @@ void Add::as_two_terms(const Ptr<RCP<const Basic>> &a,
 {
     auto p = dict_.begin();
     *a = mul(p->first, p->second);
-    umap_basic_num d = dict_;
+    add_operands_map d = dict_;
     d.erase(p->first);
     *b = Add::from_dict(coef_, std::move(d));
 }
@@ -348,7 +348,7 @@ void Add::as_coef_term(const RCP<const Basic> &self,
  *   - @f$ 3x \times 2 @f$ is actually just @f$6x@f$.
  */
 bool Add::is_canonical(const RCP<const Number> &coef,
-                       const umap_basic_num &dict) const
+                       const add_operands_map &dict) const
 {
     if (coef == null)
         return false;
@@ -426,7 +426,7 @@ vec_basic Add::get_args() const
  */
 RCP<const Basic> add(const RCP<const Basic> &a, const RCP<const Basic> &b)
 {
-    SymEngine::umap_basic_num d;
+    SymEngine::add_operands_map d;
     RCP<const Number> coef;
     RCP<const Basic> t;
     if (is_a<Add>(*a) and is_a<Add>(*b)) {
@@ -482,7 +482,7 @@ RCP<const Basic> add(const RCP<const Basic> &a, const RCP<const Basic> &b)
  */
 RCP<const Basic> add(const vec_basic &a)
 {
-    SymEngine::umap_basic_num d;
+    SymEngine::add_operands_map d;
     RCP<const Number> coef = zero;
     for (const auto &i : a) {
         Add::coef_dict_add_term(outArg(coef), d, one, i);

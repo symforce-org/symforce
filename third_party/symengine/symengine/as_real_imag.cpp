@@ -39,7 +39,7 @@ public:
     void bvisit(const Add &x)
     {
         RCP<const Basic> t;
-        umap_basic_num dr, dim;
+        add_operands_map dr, dim;
         RCP<const Number> coefr = zero, coefim = zero, coef;
 
         for (const auto &arg : x.get_args()) {

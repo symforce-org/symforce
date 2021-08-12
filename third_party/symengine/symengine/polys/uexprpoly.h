@@ -139,7 +139,7 @@ public:
     const RCP<const Basic> get_basic(std::string var) const
     {
         RCP<const Symbol> x = symbol(var);
-        umap_basic_num dict;
+        add_operands_map dict;
         RCP<const Number> coeff = zero;
         for (const auto &it : dict_) {
             if (it.first != 0) {

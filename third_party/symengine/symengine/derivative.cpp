@@ -424,7 +424,7 @@ void DiffVisitor::bvisit(const LambertW &self)
 
 void DiffVisitor::bvisit(const Add &self)
 {
-    SymEngine::umap_basic_num d;
+    SymEngine::add_operands_map d;
     RCP<const Number> coef = zero, coef2;
     RCP<const Basic> t;
     for (auto &p : self.get_dict()) {
@@ -452,7 +452,7 @@ void DiffVisitor::bvisit(const Add &self)
 void DiffVisitor::bvisit(const Mul &self)
 {
     RCP<const Number> overall_coef = zero;
-    umap_basic_num add_dict;
+    add_operands_map add_dict;
     for (auto &p : self.get_dict()) {
         RCP<const Number> coef = self.get_coef();
         apply(pow(p.first, p.second));

@@ -37,7 +37,7 @@ using SymEngine::outArg;
 using SymEngine::make_rcp;
 using SymEngine::rcp_dynamic_cast;
 ```
-    
+
 and then just use `RCP` or `Ptr`.
 
 In the `.h` header files use the full name like `SymEngine::RCP` or `SymEngine::Ptr`.
@@ -81,7 +81,7 @@ RCP<const Integer> gcd(const Integer &a, const Integer &b)
 If it *is* modified, use `A &a` (see the first argument):
 
 ```cpp
-void Add::dict_add_term(umap_basic_num &d, const RCP<Integer> &coef,
+void Add::dict_add_term(add_operands_map &d, const RCP<Integer> &coef,
         const RCP<Basic> &t)
 {
     if (d.find(t) == d.end()) {

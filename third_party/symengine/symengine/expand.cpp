@@ -22,7 +22,7 @@ inline void _imulnum(const Ptr<RCP<const Number>> &self,
 class ExpandVisitor : public BaseVisitor<ExpandVisitor>
 {
 private:
-    umap_basic_num d_;
+    add_operands_map d_;
     RCP<const Number> coeff = zero;
     RCP<const Number> multiply = one;
     bool deep;
@@ -87,7 +87,7 @@ public:
                             _mulnum(down_cast<const Add &>(*a).get_coef(),
                                     down_cast<const Add &>(*b).get_coef())));
 // Improves (x+1)**3*(x+2)**3*...(x+350)**3 expansion from 0.97s to 0.93s:
-#if defined(HAVE_SYMENGINE_RESERVE)
+#if defined(HAVE_SYMENGINE_RESERVE) && defined(SYMENGINE_UNORDERED_ADD_OPERANDS)
             d_.reserve(d_.size()
                        + (down_cast<const Add &>(*a)).get_dict().size()
                              * (down_cast<const Add &>(*b)).get_dict().size());
@@ -144,7 +144,7 @@ public:
             Add::as_coef_term(a, outArg(a_coef), outArg(a_term));
             _imulnum(outArg(a_coef), multiply);
 
-#if defined(HAVE_SYMENGINE_RESERVE)
+#if defined(HAVE_SYMENGINE_RESERVE) && defined(SYMENGINE_UNORDERED_ADD_OPERANDS)
             d_.reserve(d_.size()
                        + (down_cast<const Add &>(*b)).get_dict().size());
 #endif
@@ -188,10 +188,10 @@ public:
         _coef_dict_add_term(multiply, mul(a, b));
     }
 
-    void square_expand(umap_basic_num &base_dict)
+    void square_expand(add_operands_map &base_dict)
     {
         auto m = base_dict.size();
-#if defined(HAVE_SYMENGINE_RESERVE)
+#if defined(HAVE_SYMENGINE_RESERVE) && defined(SYMENGINE_UNORDERED_ADD_OPERANDS)
         d_.reserve(d_.size() + m * (m + 1) / 2);
 #endif
         RCP<const Basic> t;
@@ -212,14 +212,14 @@ public:
         }
     }
 
-    void pow_expand(umap_basic_num &base_dict, unsigned n)
+    void pow_expand(add_operands_map &base_dict, unsigned n)
     {
         map_vec_mpz r;
         unsigned m = numeric_cast<unsigned>(base_dict.size());
         multinomial_coefficients_mpz(m, n, r);
 // This speeds up overall expansion. For example for the benchmark
 // (y + x + z + w)**60 it improves the timing from 135ms to 124ms.
-#if defined(HAVE_SYMENGINE_RESERVE)
+#if defined(HAVE_SYMENGINE_RESERVE) && defined(SYMENGINE_UNORDERED_ADD_OPERANDS)
         d_.reserve(d_.size() + 2 * r.size());
 #endif
         for (auto &p : r) {
@@ -324,7 +324,7 @@ public:
             return _coef_dict_add_term(
                 multiply, div(one, expand_if_deep(pow(_base, integer(-n)))));
         RCP<const Add> base = rcp_static_cast<const Add>(_base);
-        umap_basic_num base_dict = base->get_dict();
+        add_operands_map base_dict = base->get_dict();
         if (!(base->get_coef()->is_zero())) {
             // Add the numerical coefficient into the dictionary. This
             // allows a little bit easier treatment below.

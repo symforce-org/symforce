@@ -184,11 +184,15 @@ cdef extern from "<symengine/basic.h>" namespace "SymEngine":
         vec_basic get_args() nogil
         int __cmp__(const Basic &o) nogil
     ctypedef RCP[const Number] rcp_const_number "SymEngine::RCP<const SymEngine::Number>"
+    ctypedef map[rcp_const_basic, rcp_const_number] map_basic_num "SymEngine::map_basic_num"
+    ctypedef map[rcp_const_basic, rcp_const_number].iterator map_basic_num_iterator "SymEngine::map_basic_num::iterator"
     ctypedef unordered_map[int, rcp_const_basic] umap_int_basic "SymEngine::umap_int_basic"
     ctypedef unordered_map[int, rcp_const_basic].iterator umap_int_basic_iterator "SymEngine::umap_int_basic::iterator"
     ctypedef unordered_map[rcp_const_basic, rcp_const_number] umap_basic_num "SymEngine::umap_basic_num"
     ctypedef unordered_map[rcp_const_basic, rcp_const_number].iterator umap_basic_num_iterator "SymEngine::umap_basic_num::iterator"
     ctypedef vector[pair[rcp_const_basic, rcp_const_basic]] vec_pair "SymEngine::vec_pair"
+    ctypedef unordered_map[rcp_const_basic, rcp_const_number] add_operands_map "SymEngine::add_operands_map"
+    ctypedef unordered_map[rcp_const_basic, rcp_const_number].iterator add_operands_map_iterator "SymEngine::add_operands_map::iterator"
 
     bool eq(const Basic &a, const Basic &b) nogil except +
     bool neq(const Basic &a, const Basic &b) nogil except +
@@ -441,7 +445,7 @@ cdef extern from "<symengine/add.h>" namespace "SymEngine":
     cdef cppclass Add(Basic):
         void as_two_terms(const Ptr[RCP[Basic]] &a, const Ptr[RCP[Basic]] &b)
         RCP[const Number] get_coef()
-        const umap_basic_num &get_dict()
+        const add_operands_map &get_dict()
 
 cdef extern from "<symengine/mul.h>" namespace "SymEngine":
     cdef rcp_const_basic mul(rcp_const_basic &a, rcp_const_basic &b) nogil except+

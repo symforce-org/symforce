@@ -17,6 +17,7 @@ using SymEngine::map_basic_num;
 using SymEngine::map_basic_basic;
 using SymEngine::umap_basic_basic;
 using SymEngine::map_uint_mpz;
+using SymEngine::add_operands_map;
 using SymEngine::unified_compare;
 using SymEngine::map_int_Expr;
 using SymEngine::multiset_basic;
@@ -225,7 +226,7 @@ TEST_CASE("Symbol dict: Basic", "[basic]")
 
 TEST_CASE("Add: basic", "[basic]")
 {
-    umap_basic_num m, m2;
+    add_operands_map m, m2;
     RCP<const Basic> x = symbol("x");
     RCP<const Basic> y = symbol("y");
     insert(m, x, integer(2));
@@ -253,7 +254,7 @@ TEST_CASE("Add: basic", "[basic]")
 
     RCP<const Add> ar = rcp_static_cast<const Add>(r);
     REQUIRE(eq(*ar->get_coef(), *zero));
-    const umap_basic_num &addmap = ar->get_dict();
+    const add_operands_map &addmap = ar->get_dict();
     auto search = addmap.find(x);
     REQUIRE(search != addmap.end());
     REQUIRE(eq(*search->second, *integer(2)));

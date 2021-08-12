@@ -47,7 +47,7 @@ public:
 
     void bvisit(const Add &x)
     {
-        SymEngine::umap_basic_num d;
+        SymEngine::add_operands_map d;
         RCP<const Number> coef;
 
         auto it = subs_dict_.find(x.get_coef());

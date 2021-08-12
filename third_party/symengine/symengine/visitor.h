@@ -143,7 +143,7 @@ public:
 
     void bvisit(const Add &x)
     {
-        umap_basic_num dict;
+        add_operands_map dict;
         RCP<const Number> coef = zero;
         for (auto &p : x.get_dict()) {
             p.first->accept(*this);

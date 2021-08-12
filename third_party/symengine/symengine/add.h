@@ -28,7 +28,7 @@ class Add : public Basic
 private:
     RCP<const Number> coef_; //!< The numeric coefficient of the expression
                              //!< (e.g. `2` in `2+x+y`).
-    umap_basic_num dict_;    //!< The expression without its coefficient as a
+    add_operands_map dict_;  //!< The expression without its coefficient as a
                              //!< dictionary (e.g. `x+y` in `2+x+y`).
 
 public:
@@ -40,7 +40,7 @@ public:
      *  @param coef numeric coefficient.
      *  @param dict dictionary of the expression without the coefficient.
      */
-    Add(const RCP<const Number> &coef, umap_basic_num &&dict);
+    Add(const RCP<const Number> &coef, add_operands_map &&dict);
 
     /**
      *  @brief Generates the hash representation.
@@ -81,7 +81,7 @@ public:
      *  @return `Add` if the size of the dictionary is greater than 1.
      */
     static RCP<const Basic> from_dict(const RCP<const Number> &coef,
-                                      umap_basic_num &&d);
+                                      add_operands_map &&d);
     /**
      *  @brief Adds a new term to the expression.
      *  @pre The coefficient of the new term is non-zero.
@@ -90,7 +90,7 @@ public:
      *  @param t new term.
      *  @return Void.
      */
-    static void dict_add_term(umap_basic_num &d, const RCP<const Number> &coef,
+    static void dict_add_term(add_operands_map &d, const RCP<const Number> &coef,
                               const RCP<const Basic> &t);
     /**
      *  @brief Updates the numerical coefficient and the dictionary.
@@ -101,7 +101,7 @@ public:
      *  @return Void.
      */
     static void coef_dict_add_term(const Ptr<RCP<const Number>> &coef,
-                                   umap_basic_num &d,
+                                   add_operands_map &d,
                                    const RCP<const Number> &c,
                                    const RCP<const Basic> &term);
 
@@ -130,7 +130,7 @@ public:
      *  @return `true` if canonical.
      */
     bool is_canonical(const RCP<const Number> &coef,
-                      const umap_basic_num &dict) const;
+                      const add_operands_map &dict) const;
 
     /**
      * @brief Returns the arguments of the Add.
@@ -145,7 +145,7 @@ public:
     }
 
     //!< @return const reference to the dictionary of the `Add`
-    inline const umap_basic_num &get_dict() const
+    inline const add_operands_map &get_dict() const
     {
         return dict_;
     }

@@ -73,7 +73,7 @@ RCP<const Basic> URatPSeriesPiranha::as_basic() const
 {
     RCP<const Symbol> x = symbol(var_);
     RCP<const Number> zcoef = integer(0);
-    umap_basic_num dict_;
+    add_operands_map dict_;
     for (const auto &it : p_) {
         if (it.first != 0) {
             rational_class cl_rat(it.first.get_mpq_view());
@@ -228,7 +228,7 @@ Expression UPSeriesPiranha::convert(const Basic &x)
 RCP<const Basic> UPSeriesPiranha::as_basic() const
 {
     RCP<const Symbol> x = symbol(var_);
-    umap_basic_num dict_;
+    add_operands_map dict_;
     for (const auto &it : p_) {
         if (it.first != 0) {
             auto term = SymEngine::mul(
