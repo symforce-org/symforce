@@ -23,24 +23,20 @@ std::ostream& operator<<(std::ostream& os, const sym::Pose2f& a) {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::InverseCompose(
     const Eigen::Matrix<Scalar, 2, 1>& point) const {
-  // Total ops: 26
+  // Total ops: 18
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
-  // Intermediate terms (5)
-  const Scalar _tmp0 =
-      Scalar(1.0) / (std::pow(_self[0], Scalar(2)) + std::pow(_self[1], Scalar(2)));
-  const Scalar _tmp1 = _self[2] * _tmp0;
-  const Scalar _tmp2 = _self[3] * _tmp0;
-  const Scalar _tmp3 = _tmp0 * point(0, 0);
-  const Scalar _tmp4 = _tmp0 * point(1, 0);
+  // Intermediate terms (0)
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;
 
-  _res(0, 0) = -_self[0] * _tmp1 + _self[0] * _tmp3 - _self[1] * _tmp2 + _self[1] * _tmp4;
-  _res(1, 0) = -_self[0] * _tmp2 + _self[0] * _tmp4 + _self[1] * _tmp1 - _self[1] * _tmp3;
+  _res(0, 0) =
+      -_self[0] * _self[2] + _self[0] * point(0, 0) - _self[1] * _self[3] + _self[1] * point(1, 0);
+  _res(1, 0) =
+      -_self[0] * _self[3] + _self[0] * point(1, 0) + _self[1] * _self[2] - _self[1] * point(0, 0);
 
   return _res;
 }

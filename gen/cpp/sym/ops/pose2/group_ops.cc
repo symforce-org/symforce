@@ -47,23 +47,20 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Identity() {
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Inverse(const sym::Pose2<Scalar>& a) {
-  // Total ops: 16
+  // Total ops: 10
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
-  // Intermediate terms (3)
-  const Scalar _tmp0 = Scalar(1.0) / (std::pow(_a[0], Scalar(2)) + std::pow(_a[1], Scalar(2)));
-  const Scalar _tmp1 = _a[0] * _tmp0;
-  const Scalar _tmp2 = _a[1] * _tmp0;
+  // Intermediate terms (0)
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _tmp1;
-  _res[1] = -_tmp2;
-  _res[2] = -_a[2] * _tmp1 - _a[3] * _tmp2;
-  _res[3] = _a[2] * _tmp2 - _a[3] * _tmp1;
+  _res[0] = _a[0];
+  _res[1] = -_a[1];
+  _res[2] = -_a[0] * _a[2] - _a[1] * _a[3];
+  _res[3] = -_a[0] * _a[3] + _a[1] * _a[2];
 
   return sym::Pose2<Scalar>(_res);
 }
@@ -111,26 +108,21 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Between(const sym::Pose2<Scalar>& a,
                                                     const sym::Pose2<Scalar>& b) {
-  // Total ops: 33
+  // Total ops: 25
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (5)
-  const Scalar _tmp0 = Scalar(1.0) / (std::pow(_a[0], Scalar(2)) + std::pow(_a[1], Scalar(2)));
-  const Scalar _tmp1 = _a[1] * _tmp0;
-  const Scalar _tmp2 = _a[0] * _tmp0;
-  const Scalar _tmp3 = _a[3] * _tmp0;
-  const Scalar _tmp4 = _a[2] * _tmp0;
+  // Intermediate terms (0)
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _b[0] * _tmp2 + _b[1] * _tmp1;
-  _res[1] = -_b[0] * _tmp1 + _b[1] * _tmp2;
-  _res[2] = -_a[0] * _tmp4 - _a[1] * _tmp3 + _b[2] * _tmp2 + _b[3] * _tmp1;
-  _res[3] = -_a[0] * _tmp3 + _a[1] * _tmp4 - _b[2] * _tmp1 + _b[3] * _tmp2;
+  _res[0] = _a[0] * _b[0] + _a[1] * _b[1];
+  _res[1] = _a[0] * _b[1] - _a[1] * _b[0];
+  _res[2] = -_a[0] * _a[2] + _a[0] * _b[2] - _a[1] * _a[3] + _a[1] * _b[3];
+  _res[3] = -_a[0] * _a[3] + _a[0] * _b[3] + _a[1] * _a[2] - _a[1] * _b[2];
 
   return sym::Pose2<Scalar>(_res);
 }
@@ -146,56 +138,38 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Between(const sym::Pose2<Scalar>& a,
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::InverseWithJacobian(
     const sym::Pose2<Scalar>& a, Eigen::Matrix<Scalar, 3, 3>* const res_D_a) {
-  // Total ops: 72
+  // Total ops: 18
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
-  // Intermediate terms (17)
-  const Scalar _tmp0 = std::pow(_a[0], Scalar(2));
-  const Scalar _tmp1 = std::pow(_a[1], Scalar(2));
-  const Scalar _tmp2 = _tmp0 + _tmp1;
-  const Scalar _tmp3 = Scalar(1.0) / (_tmp2);
-  const Scalar _tmp4 = _a[0] * _tmp3;
-  const Scalar _tmp5 = _a[1] * _tmp3;
-  const Scalar _tmp6 = -_tmp5;
-  const Scalar _tmp7 = -_tmp4;
-  const Scalar _tmp8 = _a[3] * _tmp3;
-  const Scalar _tmp9 = 2 / std::pow(_tmp2, Scalar(2));
-  const Scalar _tmp10 = _a[0] * _a[1] * _tmp9;
-  const Scalar _tmp11 = _a[2] * _tmp10;
-  const Scalar _tmp12 = _tmp1 * _tmp9;
-  const Scalar _tmp13 = _a[2] * _tmp3;
-  const Scalar _tmp14 = -_a[3] * _tmp10;
-  const Scalar _tmp15 = _tmp0 * _tmp9;
-  const Scalar _tmp16 = 2 / [&]() {
-    const Scalar base = _tmp2;
-    return base * base * base;
-  }();
+  // Intermediate terms (5)
+  const Scalar _tmp0 = -_a[1];
+  const Scalar _tmp1 = _a[0] * _a[2] + _a[1] * _a[3];
+  const Scalar _tmp2 = _a[0] * _a[3];
+  const Scalar _tmp3 = _a[1] * _a[2];
+  const Scalar _tmp4 = -_a[0];
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _tmp4;
-  _res[1] = _tmp6;
-  _res[2] = -_a[2] * _tmp4 - _a[3] * _tmp5;
-  _res[3] = _a[2] * _tmp5 - _a[3] * _tmp4;
+  _res[0] = _a[0];
+  _res[1] = _tmp0;
+  _res[2] = -_tmp1;
+  _res[3] = -_tmp2 + _tmp3;
 
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _tmp7;
-    _res_D_a(0, 1) = _tmp6;
-    _res_D_a(0, 2) =
-        -_a[0] * (-_a[3] * _tmp12 - _tmp11 + _tmp8) + _a[1] * (-_a[2] * _tmp15 + _tmp13 + _tmp14);
-    _res_D_a(1, 0) = _tmp5;
-    _res_D_a(1, 1) = _tmp7;
-    _res_D_a(1, 2) =
-        -_a[0] * (_a[2] * _tmp12 - _tmp13 + _tmp14) + _a[1] * (-_a[3] * _tmp15 + _tmp11 + _tmp8);
+    _res_D_a(0, 0) = _tmp4;
+    _res_D_a(0, 1) = _tmp0;
+    _res_D_a(0, 2) = -_tmp2 + _tmp3;
+    _res_D_a(1, 0) = _a[1];
+    _res_D_a(1, 1) = _tmp4;
+    _res_D_a(1, 2) = _tmp1;
     _res_D_a(2, 0) = 0;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = _a[0] * (-_a[0] * _tmp1 * _tmp16 + _tmp4 * (_tmp12 - _tmp3)) -
-                     _a[1] * (_a[1] * _tmp0 * _tmp16 + _tmp5 * (-_tmp15 + _tmp3));
+    _res_D_a(2, 2) = -std::pow(_a[0], Scalar(2)) - std::pow(_a[1], Scalar(2));
   }
 
   return sym::Pose2<Scalar>(_res);
@@ -283,78 +257,55 @@ template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b,
     Eigen::Matrix<Scalar, 3, 3>* const res_D_a, Eigen::Matrix<Scalar, 3, 3>* const res_D_b) {
-  // Total ops: 138
+  // Total ops: 67
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (24)
-  const Scalar _tmp0 = std::pow(_a[0], Scalar(2));
-  const Scalar _tmp1 = std::pow(_a[1], Scalar(2));
-  const Scalar _tmp2 = _tmp0 + _tmp1;
-  const Scalar _tmp3 = Scalar(1.0) / (_tmp2);
-  const Scalar _tmp4 = _a[1] * _tmp3;
-  const Scalar _tmp5 = _a[0] * _tmp3;
-  const Scalar _tmp6 = _b[0] * _tmp5 + _b[1] * _tmp4;
-  const Scalar _tmp7 = -_b[0] * _tmp4 + _b[1] * _tmp5;
-  const Scalar _tmp8 = -_tmp5;
-  const Scalar _tmp9 = -_tmp4;
-  const Scalar _tmp10 = 2 / std::pow(_tmp2, Scalar(2));
-  const Scalar _tmp11 = _a[0] * _a[1] * _tmp10;
-  const Scalar _tmp12 = _b[2] * _tmp11;
-  const Scalar _tmp13 = _a[2] * _tmp11;
-  const Scalar _tmp14 = _tmp1 * _tmp10;
-  const Scalar _tmp15 = -_a[3] * _tmp3 + _b[3] * _tmp3;
-  const Scalar _tmp16 = _a[2] * _tmp3;
-  const Scalar _tmp17 = _b[2] * _tmp3;
-  const Scalar _tmp18 = _tmp0 * _tmp10;
-  const Scalar _tmp19 = _a[3] * _tmp11 - _b[3] * _tmp11;
-  const Scalar _tmp20 = _b[1] * _tmp3;
-  const Scalar _tmp21 = _b[0] * _tmp11;
-  const Scalar _tmp22 = _b[0] * _tmp3;
-  const Scalar _tmp23 = -_b[1] * _tmp11;
+  // Intermediate terms (5)
+  const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
+  const Scalar _tmp1 = _a[0] * _b[1] - _a[1] * _b[0];
+  const Scalar _tmp2 = -_a[0];
+  const Scalar _tmp3 = -_a[1];
+  const Scalar _tmp4 = -_a[3] + _b[3];
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _tmp6;
-  _res[1] = _tmp7;
-  _res[2] = -_a[2] * _tmp5 - _a[3] * _tmp4 + _b[2] * _tmp5 + _b[3] * _tmp4;
-  _res[3] = _a[2] * _tmp4 - _a[3] * _tmp5 - _b[2] * _tmp4 + _b[3] * _tmp5;
+  _res[0] = _tmp0;
+  _res[1] = _tmp1;
+  _res[2] = -_a[0] * _a[2] + _a[0] * _b[2] - _a[1] * _a[3] + _a[1] * _b[3];
+  _res[3] = -_a[0] * _a[3] + _a[0] * _b[3] + _a[1] * _a[2] - _a[1] * _b[2];
 
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _tmp8;
-    _res_D_a(0, 1) = _tmp9;
-    _res_D_a(0, 2) = _a[0] * (_a[3] * _tmp14 - _b[3] * _tmp14 - _tmp12 + _tmp13 + _tmp15) -
-                     _a[1] * (_a[2] * _tmp18 - _b[2] * _tmp18 - _tmp16 + _tmp17 + _tmp19);
-    _res_D_a(1, 0) = _tmp4;
-    _res_D_a(1, 1) = _tmp8;
-    _res_D_a(1, 2) = _a[0] * (-_a[2] * _tmp14 + _b[2] * _tmp14 + _tmp16 - _tmp17 + _tmp19) -
-                     _a[1] * (_a[3] * _tmp18 - _b[3] * _tmp18 + _tmp12 - _tmp13 + _tmp15);
+    _res_D_a(0, 0) = _tmp2;
+    _res_D_a(0, 1) = _tmp3;
+    _res_D_a(0, 2) = _a[0] * _tmp4 - _a[1] * (-_a[2] + _b[2]);
+    _res_D_a(1, 0) = _a[1];
+    _res_D_a(1, 1) = _tmp2;
+    _res_D_a(1, 2) = _a[0] * (_a[2] - _b[2]) - _a[1] * _tmp4;
     _res_D_a(2, 0) = 0;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = _a[0] * (_tmp6 * (_b[0] * _tmp14 - _tmp22 + _tmp23) -
-                              _tmp7 * (-_b[1] * _tmp14 + _tmp20 - _tmp21)) -
-                     _a[1] * (_tmp6 * (-_b[1] * _tmp18 + _tmp20 + _tmp21) -
-                              _tmp7 * (-_b[0] * _tmp18 + _tmp22 + _tmp23));
+    _res_D_a(2, 2) =
+        _a[0] * (-_b[0] * _tmp0 - _b[1] * _tmp1) - _a[1] * (-_b[0] * _tmp1 + _b[1] * _tmp0);
   }
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
 
-    _res_D_b(0, 0) = _tmp5;
-    _res_D_b(0, 1) = _tmp4;
+    _res_D_b(0, 0) = _a[0];
+    _res_D_b(0, 1) = _a[1];
     _res_D_b(0, 2) = 0;
-    _res_D_b(1, 0) = _tmp9;
-    _res_D_b(1, 1) = _tmp5;
+    _res_D_b(1, 0) = _tmp3;
+    _res_D_b(1, 1) = _a[0];
     _res_D_b(1, 2) = 0;
     _res_D_b(2, 0) = 0;
     _res_D_b(2, 1) = 0;
     _res_D_b(2, 2) =
-        _b[0] * (-_tmp4 * _tmp7 + _tmp5 * _tmp6) - _b[1] * (-_tmp4 * _tmp6 - _tmp5 * _tmp7);
+        _b[0] * (_a[0] * _tmp0 - _a[1] * _tmp1) - _b[1] * (-_a[0] * _tmp1 - _a[1] * _tmp0);
   }
 
   return sym::Pose2<Scalar>(_res);

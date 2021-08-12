@@ -78,23 +78,20 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>&
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> LieGroupOps<Pose2<Scalar>>::LocalCoordinates(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 18
+  // Total ops: 12
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (3)
-  const Scalar _tmp0 = Scalar(1.0) / (std::pow(_a[0], Scalar(2)) + std::pow(_a[1], Scalar(2)));
-  const Scalar _tmp1 = _a[1] * _tmp0;
-  const Scalar _tmp2 = _a[0] * _tmp0;
+  // Intermediate terms (0)
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
   _res(0, 0) = -_a[2] + _b[2];
   _res(1, 0) = -_a[3] + _b[3];
-  _res(2, 0) = std::atan2(-_b[0] * _tmp1 + _b[1] * _tmp2, _b[0] * _tmp2 + _b[1] * _tmp1);
+  _res(2, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _a[0] * _b[0] + _a[1] * _b[1]);
 
   return _res;
 }

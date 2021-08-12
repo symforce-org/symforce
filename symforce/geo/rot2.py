@@ -64,7 +64,9 @@ class Rot2(LieGroup):
         return self.__class__(self.z * other.z)
 
     def inverse(self) -> Rot2:
-        return self.__class__(self.z.inverse())
+        # In general, the inverse of a complex number z is z.conj()/|z|^2. But since a Rot2
+        # is represented by a unit complex number with |z| = 1, the inverse is just z.conj()
+        return self.__class__(self.z.conj())
 
     # -------------------------------------------------------------------------
     # Lie group implementation

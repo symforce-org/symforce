@@ -71,20 +71,17 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Pose2, sym.Pose2, float) -> T.List[float]
 
-        # Total ops: 18
+        # Total ops: 12
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (3)
-        _tmp0 = (_a[0] ** 2 + _a[1] ** 2) ** (-1)
-        _tmp1 = _a[1] * _tmp0
-        _tmp2 = _a[0] * _tmp0
+        # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 3
         _res[0] = -_a[2] + _b[2]
         _res[1] = -_a[3] + _b[3]
-        _res[2] = math.atan2(-_b[0] * _tmp1 + _b[1] * _tmp2, _b[0] * _tmp2 + _b[1] * _tmp1)
+        _res[2] = math.atan2(_a[0] * _b[1] - _a[1] * _b[0], _a[0] * _b[0] + _a[1] * _b[1])
         return _res

@@ -32,45 +32,41 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
                       Eigen::Matrix<Scalar, 3, 3>* const jacobian = nullptr,
                       Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                       Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 113
+  // Total ops: 106
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _value = value.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _prior = prior.Data();
 
-  // Intermediate terms (23)
+  // Intermediate terms (20)
   const Scalar _tmp0 = -_prior[2] + _value[2];
   const Scalar _tmp1 = -_prior[3] + _value[3];
-  const Scalar _tmp2 =
-      Scalar(1.0) / (std::pow(_prior[0], Scalar(2)) + std::pow(_prior[1], Scalar(2)));
-  const Scalar _tmp3 = _prior[0] * _tmp2;
-  const Scalar _tmp4 = _prior[1] * _tmp2;
-  const Scalar _tmp5 = _tmp3 * _value[1] - _tmp4 * _value[0];
-  const Scalar _tmp6 = _tmp3 * _value[0] + _tmp4 * _value[1];
-  const Scalar _tmp7 = std::atan2(_tmp5, _tmp6);
-  const Scalar _tmp8 = _tmp0 * sqrt_info(0, 0) + _tmp1 * sqrt_info(0, 1) + _tmp7 * sqrt_info(0, 2);
-  const Scalar _tmp9 = _tmp0 * sqrt_info(1, 0) + _tmp1 * sqrt_info(1, 1) + _tmp7 * sqrt_info(1, 2);
-  const Scalar _tmp10 = _tmp0 * sqrt_info(2, 0) + _tmp1 * sqrt_info(2, 1) + _tmp7 * sqrt_info(2, 2);
-  const Scalar _tmp11 = std::pow(_tmp6, Scalar(2));
-  const Scalar _tmp12 = _tmp11 / (_tmp11 + std::pow(_tmp5, Scalar(2)));
-  const Scalar _tmp13 = _tmp5 / _tmp11;
-  const Scalar _tmp14 = _tmp2 / _tmp6;
-  const Scalar _tmp15 = _value[0] * (_prior[0] * _tmp14 - _tmp13 * _tmp4);
-  const Scalar _tmp16 = _tmp12 * _tmp15;
-  const Scalar _tmp17 = _value[1] * (-_prior[1] * _tmp14 - _tmp13 * _tmp3);
-  const Scalar _tmp18 = _tmp12 * _tmp17;
-  const Scalar _tmp19 = _tmp16 * sqrt_info(0, 2) - _tmp18 * sqrt_info(0, 2);
-  const Scalar _tmp20 = _tmp12 * sqrt_info(1, 2);
-  const Scalar _tmp21 = _tmp15 * _tmp20 - _tmp17 * _tmp20;
-  const Scalar _tmp22 = _tmp16 * sqrt_info(2, 2) - _tmp18 * sqrt_info(2, 2);
+  const Scalar _tmp2 = _prior[0] * _value[1] - _prior[1] * _value[0];
+  const Scalar _tmp3 = _prior[0] * _value[0] + _prior[1] * _value[1];
+  const Scalar _tmp4 = std::atan2(_tmp2, _tmp3);
+  const Scalar _tmp5 = _tmp0 * sqrt_info(0, 0) + _tmp1 * sqrt_info(0, 1) + _tmp4 * sqrt_info(0, 2);
+  const Scalar _tmp6 = _tmp0 * sqrt_info(1, 0) + _tmp1 * sqrt_info(1, 1) + _tmp4 * sqrt_info(1, 2);
+  const Scalar _tmp7 = _tmp0 * sqrt_info(2, 0) + _tmp1 * sqrt_info(2, 1) + _tmp4 * sqrt_info(2, 2);
+  const Scalar _tmp8 = std::pow(_tmp3, Scalar(2));
+  const Scalar _tmp9 = _tmp8 / (std::pow(_tmp2, Scalar(2)) + _tmp8);
+  const Scalar _tmp10 = _tmp2 / _tmp8;
+  const Scalar _tmp11 = Scalar(1.0) / (_tmp3);
+  const Scalar _tmp12 = _value[1] * (-_prior[0] * _tmp10 - _prior[1] * _tmp11);
+  const Scalar _tmp13 = _tmp12 * _tmp9;
+  const Scalar _tmp14 = _value[0] * (_prior[0] * _tmp11 - _prior[1] * _tmp10);
+  const Scalar _tmp15 = _tmp14 * _tmp9;
+  const Scalar _tmp16 = -_tmp13 * sqrt_info(0, 2) + _tmp15 * sqrt_info(0, 2);
+  const Scalar _tmp17 = -_tmp13 * sqrt_info(1, 2) + _tmp15 * sqrt_info(1, 2);
+  const Scalar _tmp18 = _tmp9 * sqrt_info(2, 2);
+  const Scalar _tmp19 = -_tmp12 * _tmp18 + _tmp14 * _tmp18;
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp8;
-    _res(1, 0) = _tmp9;
-    _res(2, 0) = _tmp10;
+    _res(0, 0) = _tmp5;
+    _res(1, 0) = _tmp6;
+    _res(2, 0) = _tmp7;
   }
 
   if (jacobian != nullptr) {
@@ -78,13 +74,13 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
 
     _jacobian(0, 0) = sqrt_info(0, 0);
     _jacobian(0, 1) = sqrt_info(0, 1);
-    _jacobian(0, 2) = _tmp19;
+    _jacobian(0, 2) = _tmp16;
     _jacobian(1, 0) = sqrt_info(1, 0);
     _jacobian(1, 1) = sqrt_info(1, 1);
-    _jacobian(1, 2) = _tmp21;
+    _jacobian(1, 2) = _tmp17;
     _jacobian(2, 0) = sqrt_info(2, 0);
     _jacobian(2, 1) = sqrt_info(2, 1);
-    _jacobian(2, 2) = _tmp22;
+    _jacobian(2, 2) = _tmp19;
   }
 
   if (hessian != nullptr) {
@@ -99,18 +95,18 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
     _hessian(1, 1) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
                      std::pow(sqrt_info(2, 1), Scalar(2));
     _hessian(1, 2) = 0;
-    _hessian(2, 0) = _tmp19 * sqrt_info(0, 0) + _tmp21 * sqrt_info(1, 0) + _tmp22 * sqrt_info(2, 0);
-    _hessian(2, 1) = _tmp19 * sqrt_info(0, 1) + _tmp21 * sqrt_info(1, 1) + _tmp22 * sqrt_info(2, 1);
+    _hessian(2, 0) = _tmp16 * sqrt_info(0, 0) + _tmp17 * sqrt_info(1, 0) + _tmp19 * sqrt_info(2, 0);
+    _hessian(2, 1) = _tmp16 * sqrt_info(0, 1) + _tmp17 * sqrt_info(1, 1) + _tmp19 * sqrt_info(2, 1);
     _hessian(2, 2) =
-        std::pow(_tmp19, Scalar(2)) + std::pow(_tmp21, Scalar(2)) + std::pow(_tmp22, Scalar(2));
+        std::pow(_tmp16, Scalar(2)) + std::pow(_tmp17, Scalar(2)) + std::pow(_tmp19, Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp10 * sqrt_info(2, 0) + _tmp8 * sqrt_info(0, 0) + _tmp9 * sqrt_info(1, 0);
-    _rhs(1, 0) = _tmp10 * sqrt_info(2, 1) + _tmp8 * sqrt_info(0, 1) + _tmp9 * sqrt_info(1, 1);
-    _rhs(2, 0) = _tmp10 * _tmp22 + _tmp19 * _tmp8 + _tmp21 * _tmp9;
+    _rhs(0, 0) = _tmp5 * sqrt_info(0, 0) + _tmp6 * sqrt_info(1, 0) + _tmp7 * sqrt_info(2, 0);
+    _rhs(1, 0) = _tmp5 * sqrt_info(0, 1) + _tmp6 * sqrt_info(1, 1) + _tmp7 * sqrt_info(2, 1);
+    _rhs(2, 0) = _tmp16 * _tmp5 + _tmp17 * _tmp6 + _tmp19 * _tmp7;
   }
 }  // NOLINT(readability/fn_size)
 
