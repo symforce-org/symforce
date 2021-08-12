@@ -8,6 +8,14 @@ namespace SymEngine
 
 extern RCP<const Basic> i2;
 
+// Heaviside step function helper
+// Heaviside(x) = (1 + sign(x)) / 2
+template <typename T>
+static T heaviside(const T &x)
+{
+    return div(add(sign(x), one), i2);
+}
+
 // Needs create(vec_basic) method to be used.
 template <typename T>
 static inline RCP<const Basic> fdiff(const T &self, RCP<const Symbol> x,
@@ -190,8 +198,6 @@ void DiffVisitor::bvisit(const Basic &self)
     }
 
 DIFF0(UnivariateSeries)
-DIFF0(Max)
-DIFF0(Min)
 #endif
 
 void DiffVisitor::bvisit(const Number &self)
@@ -225,7 +231,8 @@ void DiffVisitor::bvisit(const Abs &self)
     if (eq(*result_, *zero)) {
         result_ = zero;
     } else {
-        result_ = Derivative::create(self.rcp_from_this(), {x});
+        // NOTE(hayk, aaron): Only valid for real, not complex
+        result_ = mul(sign(self.get_arg()), result_);
     }
 }
 
@@ -695,6 +702,81 @@ void DiffVisitor::bvisit(const Set &self)
 void DiffVisitor::bvisit(const Boolean &self)
 {
     throw SymEngineException("Derivative doesn't exist.");
+}
+
+void DiffVisitor::bvisit(const Floor &self)
+{
+    result_ = zero;
+}
+
+void DiffVisitor::bvisit(const Ceiling &self)
+{
+    result_ = zero;
+}
+
+void DiffVisitor::bvisit(const Sign &self)
+{
+    result_ = zero;
+}
+
+void DiffVisitor::bvisit(const Max &self)
+{
+    const auto& args = self.get_args();
+    if (args.size() < 2) {
+        throw std::runtime_error("Non-canonical Max (<2 args).");
+    }
+
+    // The below implementation is derived from a notebook that shows the derivative
+    // of an N-way Max function. Each argument can be a function of x, so we need to
+    // chain rule each one. For each arg, the formula is:
+    //
+    //     heaviside(arg - max(all other args)) * arg.diff(x)
+    //
+    // And we sum that for each argument.
+
+    vec_basic summands;
+    for (size_t i = 0; i < args.size(); ++i) {
+        vec_basic others;
+        for (size_t j = 0; j < args.size(); ++j) {
+            if (j != i) {
+                others.push_back(args[j]);
+            }
+        }
+        apply(args[i]);
+        summands.push_back(mul(heaviside(sub(args[i], max(others))), result_));
+    }
+
+    result_ = add(summands);
+}
+
+void DiffVisitor::bvisit(const Min &self)
+{
+    const auto& args = self.get_args();
+    if (args.size() < 2) {
+        throw std::runtime_error("Non-canonical Min (<2 args).");
+    }
+
+    // The below implementation is derived from a notebook that shows the derivative
+    // of an N-way Min function. Each argument can be a function of x, so we need to
+    // chain rule each one. For each arg, the formula is:
+    //
+    //     heaviside(min(all other args) - arg) * arg.diff(x)
+    //
+    // And we sum that for each argument.
+
+    vec_basic summands;
+    for (size_t i = 0; i < args.size(); ++i) {
+        vec_basic others;
+        for (size_t j = 0; j < args.size(); ++j) {
+            if (j != i) {
+                others.push_back(args[j]);
+            }
+        }
+        apply(args[i]);
+        summands.push_back(mul(heaviside(sub(min(others), args[i])), result_));
+    }
+
+    result_ = add(summands);
 }
 
 void DiffVisitor::bvisit(const GaloisField &self)

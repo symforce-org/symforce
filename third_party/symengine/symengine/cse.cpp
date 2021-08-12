@@ -299,7 +299,7 @@ void match_common_args(const std::string &func_class, const vec_basic &funcs_,
                 changed.insert(k);
             }
         }
-        if (std::find(changed.begin(), changed.end(), i) != changed.end()) {
+        if (changed.find(i) != changed.end()) {
             opt_subs[funcs[i].first] = function_symbol(
                 func_class, arg_tracker.get_args_in_value_order(
                                 arg_tracker.func_to_argset[i]));

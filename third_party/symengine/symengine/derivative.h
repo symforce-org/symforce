@@ -44,8 +44,6 @@ public:
     // This is useful to check that we have implemented all methods that we
     // wanted.
     void bvisit(const UnivariateSeries &self);
-    void bvisit(const Max &self);
-    void bvisit(const Min &self);
 #endif
     void bvisit(const Number &self);
     void bvisit(const Constant &self);
@@ -112,6 +110,11 @@ public:
     void bvisit(const Beta &self);
     void bvisit(const Set &self);
     void bvisit(const Boolean &self);
+    void bvisit(const Floor &self);
+    void bvisit(const Ceiling &self);
+    void bvisit(const Sign &self);
+    void bvisit(const Max &self);
+    void bvisit(const Min &self);
     void bvisit(const GaloisField &self);
     void bvisit(const Piecewise &self);
     const RCP<const Basic> &apply(const Basic &b);

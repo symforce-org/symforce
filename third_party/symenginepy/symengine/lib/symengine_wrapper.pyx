@@ -417,6 +417,8 @@ def sympy2symengine(a, raise_error=False):
         return sign(a.args[0])
     elif isinstance(a, sympy.floor):
         return floor(a.args[0])
+    elif isinstance(a, sympy.Mod):
+        return Mod(*a.args)
     elif isinstance(a, sympy.ceiling):
         return ceiling(a.args[0])
     elif isinstance(a, sympy.conjugate):
@@ -792,7 +794,12 @@ def get_dict(*args):
     if isinstance(arg, DictBasic):
         return arg
     for k, v in arg.items():
-        D.add(k, v)
+        if not isinstance(k, str) and k.is_Matrix:
+            assert k.shape == v.shape
+            for k_i, v_i in zip(k, v):
+                D.add(k_i, v_i)
+        else:
+            D.add(k, v)
     return D
 
 
@@ -955,7 +962,7 @@ cdef class Basic(object):
         symengine.as_real_imag(self.thisptr, symengine.outArg(_real), symengine.outArg(_imag))
         return c2py(<rcp_const_basic>_real), c2py(<rcp_const_basic>_imag)
 
-    def n(self, unsigned long prec = 53, real=None):
+    def n(self, unsigned long prec = 53, real=True):
         return evalf(self, prec, real)
 
     evalf = n
@@ -2437,6 +2444,10 @@ class floor(OneArgFunction):
         cdef Basic X = sympify(x)
         return c2py(symengine.floor(X.thisptr))
 
+# TODO(hayk): Actually put into C++
+def Mod(number, divisor):
+    return number - (floor(number / divisor) * divisor)
+
 class ceiling(OneArgFunction):
     def __new__(cls, x):
         cdef Basic X = sympify(x)
@@ -2584,6 +2595,10 @@ class atan2(Function):
         cdef Basic X = sympify(x)
         cdef Basic Y = sympify(y)
         return c2py(symengine.atan2(X.thisptr, Y.thisptr))
+
+    def _sympy_(self):
+        import sympy
+        return sympy.atan2(*self.args)
 
 # For backwards compatibility
 

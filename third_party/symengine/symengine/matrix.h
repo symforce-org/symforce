@@ -7,8 +7,9 @@
 namespace SymEngine
 {
 
-// Base class for matrices
-class MatrixBase
+// TODO(hayk): It's pretty lame that this doesn't inherit from the Basic type
+// and skirts around all the visitor patterns
+class MatrixBase : public EnableRCPFromThis<MatrixBase>
 {
 public:
     virtual ~MatrixBase(){};
@@ -37,6 +38,9 @@ public:
     virtual unsigned rank() const = 0;
     virtual RCP<const Basic> det() const = 0;
     virtual void inv(MatrixBase &result) const = 0;
+
+    // Attempt at a hash from all elements
+    virtual hash_t hash() const;
 
     // Matrix addition
     virtual void add_matrix(const MatrixBase &other,

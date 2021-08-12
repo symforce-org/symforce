@@ -150,7 +150,7 @@ RCP<const Basic> pow(const RCP<const Basic> &a, const RCP<const Basic> &b)
                 // Evaluate E**0.2, but not E**2
                 return p->get_eval().exp(*p);
             }
-        } else if (is_a<Mul>(*a)) {
+        } else if (is_a<Mul>(*a) && is_a<Integer>(*b)) {
             // Expand (x*y)**b = x**b*y**b
             map_basic_basic d;
             RCP<const Number> coef = one;

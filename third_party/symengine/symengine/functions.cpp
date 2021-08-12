@@ -606,12 +606,14 @@ RCP<const Basic> floor(const RCP<const Basic> &arg)
         throw SymEngineException(
             "Boolean objects not allowed in this context.");
     }
+
+    // This block makes the simplification floor(int + val) = int + floor(val)
     if (is_a<Add>(*arg)) {
         RCP<const Number> s = down_cast<const Add &>(*arg).get_coef();
         add_operands_map d = down_cast<const Add &>(*arg).get_dict();
         if (is_a<Integer>(*s)) {
             return add(
-                s, make_rcp<const Floor>(Add::from_dict(zero, std::move(d))));
+                s, floor(Add::from_dict(zero, std::move(d))));
         }
     }
     return make_rcp<const Floor>(arg);
@@ -700,12 +702,14 @@ RCP<const Basic> ceiling(const RCP<const Basic> &arg)
         throw SymEngineException(
             "Boolean objects not allowed in this context.");
     }
+
+    // This block makes the simplification ceil(int + val) = int + ceil(val)
     if (is_a<Add>(*arg)) {
         RCP<const Number> s = down_cast<const Add &>(*arg).get_coef();
         add_operands_map d = down_cast<const Add &>(*arg).get_dict();
         if (is_a<Integer>(*s)) {
             return add(
-                s, make_rcp<const Ceiling>(Add::from_dict(zero, std::move(d))));
+                s, ceiling(Add::from_dict(zero, std::move(d))));
         }
     }
     return make_rcp<const Ceiling>(arg);

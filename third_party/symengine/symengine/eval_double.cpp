@@ -5,6 +5,13 @@
 namespace SymEngine
 {
 
+// https://stackoverflow.com/questions/1903954/is-there-a-standard-sign-function-signum-sgn-in-c-c
+template <typename T>
+int sgn(T val)
+{
+    return (T(0) < val) - (val < T(0));
+}
+
 template <typename T, typename C>
 class EvalDoubleVisitor : public BaseVisitor<C>
 {
@@ -289,6 +296,24 @@ public:
     using EvalDoubleVisitor<double, C>::bvisit;
     using EvalDoubleVisitor<double, C>::apply;
     using EvalDoubleVisitor<double, C>::result_;
+
+    void bvisit(const Floor &x)
+    {
+        double tmp = apply(*(x.get_arg()));
+        result_ = std::floor(tmp);
+    }
+
+    void bvisit(const Ceiling &x)
+    {
+        double tmp = apply(*(x.get_arg()));
+        result_ = std::ceil(tmp);
+    }
+
+    void bvisit(const Sign &x)
+    {
+        double tmp = apply(*(x.get_arg()));
+        result_ = sgn(tmp);
+    }
 
     void bvisit(const ATan2 &x)
     {
