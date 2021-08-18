@@ -32,26 +32,32 @@ def override_symbol_new(sympy_module: T.Type) -> None:
         sympy_module (module):
     """
     if sympy_module.__package__ == "symengine":
-        original_symbol_init = sympy_module.Symbol.__init__
+        original_symbol = sympy_module.Symbol
 
-        def init_symbol(
-            self: T.Any,
-            name: str,
-            commutative: bool = True,
-            real: bool = True,
-            positive: bool = None,
-        ) -> None:
-            scoped_name = ".".join(sympy_module.__scopes__ + [name])
-            original_symbol_init(
-                self, scoped_name, commutative=commutative, real=real, positive=positive
-            )
+        class Symbol(sympy_module.Symbol):  # type: ignore # mypy thinks sm.Symbol isn't defined
+            def __init__(
+                self, name: str, commutative: bool = True, real: bool = True, positive: bool = None
+            ) -> None:
+                scoped_name = ".".join(sympy_module.__scopes__ + [name])
+                super().__init__(scoped_name, commutative=commutative, real=real, positive=positive)
 
-            # TODO(hayk): This is not enabled, right now all symbols are commutative, real, but not positive.
-            # self.is_real = real
-            # self.is_positive = positive
-            # self.is_commutative = commutative
+                # TODO(hayk): This is not enabled, right now all symbols are commutative, real, but
+                # not positive.
+                # self.is_real = real
+                # self.is_positive = positive
+                # self.is_commutative = commutative
 
-        sympy_module.Symbol.__init__ = init_symbol
+        sympy_module.Symbol = Symbol
+
+        # Because we're creating a new subclass, we also need to override sm.symbols to use this one
+        original_symbols = sympy_module.symbols
+
+        def new_symbols(names: str, **args: T.Any) -> T.Union[T.Sequence[Symbol], Symbol]:
+            cls = args.pop("cls", Symbol)
+            return original_symbols(names, **dict(args, cls=cls))
+
+        sympy_module.symbols = new_symbols
+
     else:
         assert sympy_module.__package__ == "sympy"
 
@@ -184,10 +190,13 @@ def override_subs(sympy_module: T.Type) -> None:
     the substitution dict. This has to be done slightly differently in symengine and sympy.
     """
     if sympy_module.__name__ == "symengine":
-        original_get_dict = sympy_module.lib.symengine_wrapper.get_dict
-        sympy_module.lib.symengine_wrapper.get_dict = lambda *args: original_get_dict(
-            _get_subs_dict(*args)
-        )
+        # For some reason this doesn't exist unless we import the symengine_wrapper directly as a
+        # local variable, i.e. just `import symengine.lib.symengine_wrapper` does not let us access
+        # symengine.lib.symengine_wrapper
+        import symengine.lib.symengine_wrapper as wrapper
+
+        original_get_dict = wrapper.get_dict
+        wrapper.get_dict = lambda *args: original_get_dict(_get_subs_dict(*args))
     elif sympy_module.__name__ == "sympy":
         original_subs = sympy_module.Basic.subs
         sympy_module.Basic.subs = lambda self, *args, **kwargs: original_subs(
@@ -208,9 +217,11 @@ def override_solve(sympy_module: T.Type) -> None:
         # Unfortunately this already doesn't have a docstring or argument list in symengine
         def solve(*args: T.Any, **kwargs: T.Any) -> T.List[T.Scalar]:
             solution = original_solve(*args, **kwargs)
+            from symengine.lib.symengine_wrapper import EmptySet
+
             if isinstance(solution, sympy_module.FiniteSet):
                 return list(solution.args)
-            elif isinstance(solution, sympy_module.lib.symengine_wrapper.EmptySet):
+            elif isinstance(solution, EmptySet):
                 return []
             else:
                 raise NotImplementedError(

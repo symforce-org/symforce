@@ -619,13 +619,16 @@ class Values:
         Args:
             value (Symbol or str):
         """
-        if isinstance(value, sm.Symbol):
-            self[self._remove_scope(value.name)] = value
-        elif isinstance(value, str):
+        if isinstance(value, str):
             symbol = sm.Symbol(value, **kwargs)
             self[self._remove_scope(symbol.name)] = symbol
         else:
-            raise NameError("Expr of type {} has no .name".format(type(value)))
+            try:
+                name = value.name
+            except AttributeError:
+                raise NameError(f"Expr of type {type(value)} has no .name")
+            else:
+                self[self._remove_scope(name)] = value
 
     # -------------------------------------------------------------------------
     # Miscellaneous helpers
