@@ -23,5 +23,10 @@
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose3 Random(Generator& gen) {
-    return Pose3(Rot3<Scalar>::Random(gen), sym::StorageOps<Vector3>::Random(gen));
+    // This cannot be combined into Pose3(Rot3::Random(gen), sym::StorageOps::Random(gen)),
+    // because the standard does not guarantee evaluation order of arguments,
+    // meaning that we would get different results on different compilers.
+    const auto rot3 = Rot3<Scalar>::Random(gen);
+    const auto vec3 = sym::StorageOps<Vector3>::Random(gen);
+    return Pose3(rot3, vec3);
   }

@@ -27,11 +27,18 @@ TEST_CASE("Test jacobian for noisy prior factors", "[prior_factors]") {
   const Eigen::Vector3d sigmas = Eigen::Vector3d::Constant(sigma);
   const Eigen::Matrix3d sqrt_info = sigmas.cwiseInverse().asDiagonal();
   const double epsilon = 1e-9;
+  const double delta = std::sqrt(epsilon);
 
   std::mt19937 gen(42);
   for (int i = 0; i < 10000; i++) {
     const sym::Rot3d a = sym::Rot3d::Random(gen);
     const sym::Rot3d b = sym::Rot3d::Random(gen);
+
+    const double angle_between = a.Between(b).AngleAxis().angle();
+    if (std::abs(angle_between - M_PI) < 2 * delta) {
+      // skip this one if the angle between is too close to 180 deg
+      continue;
+    }
 
     Eigen::Matrix<double, 3, 1> residual;
     Eigen::Matrix<double, 3, 3> jacobian;
@@ -45,8 +52,8 @@ TEST_CASE("Test jacobian for noisy prior factors", "[prior_factors]") {
     };
 
     const Eigen::Matrix<double, 3, 3> numerical_jacobian =
-        sym::NumericalDerivative(wrapped_residual, a, epsilon, std::sqrt(epsilon));
+        sym::NumericalDerivative(wrapped_residual, a, epsilon, delta);
 
-    CHECK(numerical_jacobian.isApprox(jacobian, std::sqrt(epsilon)));
+    CHECK(numerical_jacobian.isApprox(jacobian, delta));
   }
 }

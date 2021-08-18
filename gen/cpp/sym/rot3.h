@@ -137,7 +137,13 @@ class Rot3 {
   template <typename Generator>
   static Rot3 Random(Generator& gen) {
     std::uniform_real_distribution<Scalar> dist(0.0, 1.0);
-    return RandomFromUniformSamples(dist(gen), dist(gen), dist(gen));
+    // This cannot be combined into RandomFromUniformSamples(dist(gen), dist(gen), dist(gen)),
+    // because the standard does not guarantee evaluation order of arguments,
+    // meaning that we would get different results on different compilers.
+    const auto dist0 = dist(gen);
+    const auto dist1 = dist(gen);
+    const auto dist2 = dist(gen);
+    return RandomFromUniformSamples(dist0, dist1, dist2);
   }
 
   // Flip the quaternion if needed to give a positive real part (w).

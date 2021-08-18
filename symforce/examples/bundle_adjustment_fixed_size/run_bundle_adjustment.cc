@@ -206,7 +206,7 @@ void RunBundleAdjustment() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  SYM_ASSERT(last_iter.iteration == 35);
+  SYM_ASSERT(last_iter.iteration == 15);
   SYM_ASSERT(last_iter.new_error < 10);
 }
 

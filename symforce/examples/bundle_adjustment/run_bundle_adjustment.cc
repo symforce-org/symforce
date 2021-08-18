@@ -128,7 +128,7 @@ void RunBundleAdjustment() {
 
   std::cout << "Initial State:" << std::endl;
   for (int i = 0; i < params.num_views; i++) {
-    std::cout << "Pose " << i << ": " << values.At<sym::Pose3d>({Var::VIEW, 0}) << std::endl;
+    std::cout << "Pose " << i << ": " << values.At<sym::Pose3d>({Var::VIEW, i}) << std::endl;
   }
   std::cout << "Landmarks: ";
   for (int i = 0; i < params.num_landmarks; i++) {
@@ -169,7 +169,7 @@ void RunBundleAdjustment() {
   std::cout << "Final error: " << last_iter.new_error << std::endl;
 
   // Check successful convergence
-  SYM_ASSERT(last_iter.iteration == 35);
+  SYM_ASSERT(last_iter.iteration == 15);
   SYM_ASSERT(last_iter.new_error < 10);
 }
 
