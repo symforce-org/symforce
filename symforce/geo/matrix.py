@@ -1008,7 +1008,7 @@ DIMS_TO_FIXED_TYPE: _T.Dict[_T.Tuple[int, int], type] = {
 }
 
 
-def fixed_type_from_shape(shape: _T.Tuple[int, int]) -> type:
+def fixed_type_from_shape(shape: _T.Tuple[int, int]) -> _T.Type[Matrix]:
     """
     Return a fixed size matrix type (like Matrix32) given a shape. Either use the statically
     defined ones or dynamically create a new one if not available.
