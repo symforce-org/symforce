@@ -117,6 +117,10 @@ class LevenbergMarquardtSolver {
   LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon)
       : p_(p), id_(id), epsilon_(epsilon) {}
 
+  LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon,
+                           const LinearSolver& linear_solver)
+      : p_(p), id_(id), epsilon_(epsilon), linear_solver_(linear_solver) {}
+
   void SetIndex(const index_t& index) {
     index_ = index;
   }

@@ -348,3 +348,20 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   CHECK(linearization.hessian_lower.triangularView<Eigen::Lower>().isApprox(
       jtj.triangularView<Eigen::Lower>(), 1e-6));
 }
+
+/**
+ * Test that sym::Optimizer can be constructed with different linear solver orderings
+ *
+ * Currently this is just a check that things compile
+ */
+TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
+  sym::Optimizerd optimizer1(
+      DefaultLmParams(), {}, 1e-10, "sym::Optimizer", {}, false, false,
+      math::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
+          Eigen::MetisOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
+
+  sym::Optimizerd optimizer2(
+      DefaultLmParams(), {}, 1e-10, "sym::Optimizer", {}, false, false,
+      math::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
+          Eigen::NaturalOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
+}

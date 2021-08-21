@@ -66,17 +66,20 @@ class Optimizer {
   /**
    * Constructor that copies in factors and keys
    */
+  template <typename... NonlinearSolverArgs>
   Optimizer(const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
             const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
             const std::vector<Key>& keys = {}, bool debug_stats = false,
-            bool check_derivatives = false);
+            bool check_derivatives = false, NonlinearSolverArgs&&... nonlinear_solver_args);
 
   /**
    * Constructor with move constructors for factors and keys.
    */
+  template <typename... NonlinearSolverArgs>
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>>&& factors,
             const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
-            std::vector<Key>&& keys = {}, bool debug_stats = false, bool check_derivatives = false);
+            std::vector<Key>&& keys = {}, bool debug_stats = false, bool check_derivatives = false,
+            NonlinearSolverArgs&&... nonlinear_solver_args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
   Optimizer(Optimizer&&) = delete;

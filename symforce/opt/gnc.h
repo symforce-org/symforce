@@ -22,26 +22,10 @@ class GncOptimizer : public BaseOptimizerType {
   /**
    * Constructor that copies in factors and keys
    */
+  template <typename... OptimizerArgs>
   GncOptimizer(const optimizer_params_t& optimizer_params, const optimizer_gnc_params_t& gnc_params,
-               const Key& gnc_mu_key, const std::vector<Factor<Scalar>>& factors,
-               const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
-               const std::vector<Key>& keys = {}, bool debug_stats = false,
-               bool check_derivatives = false)
-      : BaseOptimizer(optimizer_params, factors, epsilon, name, keys, debug_stats,
-                      check_derivatives),
-        gnc_params_(gnc_params),
-        gnc_mu_key_(gnc_mu_key) {}
-
-  /**
-   * Constructor with move constructors for factors and keys.
-   */
-  GncOptimizer(const optimizer_params_t& optimizer_params, const optimizer_gnc_params_t& gnc_params,
-               const Key& gnc_mu_key, std::vector<Factor<Scalar>>&& factors,
-               const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
-               std::vector<Key>&& keys = {}, bool debug_stats = false,
-               bool check_derivatives = false)
-      : BaseOptimizer(optimizer_params, std::move(factors), epsilon, name, std::move(keys),
-                      debug_stats, check_derivatives),
+               const Key& gnc_mu_key, OptimizerArgs&&... args)
+      : BaseOptimizer(optimizer_params, std::forward<OptimizerArgs>(args)...),
         gnc_params_(gnc_params),
         gnc_mu_key_(gnc_mu_key) {}
 

@@ -58,10 +58,10 @@ TEST_CASE("Test GNC", "[gnc]") {
         sym::Factord::Hessian(gnc_factors::BarronFactor<double>, {'x', {'y', i}, 'u', 'e'}, {'x'}));
   }
 
-  sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(DefaultLmParams(), DefaultGncParams(), 'u',
-                                                   factors, kEpsilon, "sym::Optimize",
-                                                   /* keys */ {}, /* debug_stats */ false,
-                                                   /* check_derivatives */ true);
+  sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(
+      DefaultLmParams(), DefaultGncParams(), 'u', factors, kEpsilon, "sym::Optimize",
+      /* keys */ std::vector<sym::Key>{}, /* debug_stats */ false,
+      /* check_derivatives */ true);
 
   std::cout << "Initial x: " << initial_values.At<sym::Vector5d>('x').transpose() << std::endl;
 
