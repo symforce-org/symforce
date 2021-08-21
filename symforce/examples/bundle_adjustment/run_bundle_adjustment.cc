@@ -142,9 +142,8 @@ void RunBundleAdjustment() {
 
   const sym::optimizer_params_t optimizer_params = sym::example_utils::OptimizerParams();
 
-  sym::Optimizerd optimizer(optimizer_params, factors, params.epsilon, optimized_keys,
-                            "BundleAdjustmentOptimizer", params.debug_stats,
-                            params.check_derivatives);
+  sym::Optimizerd optimizer(optimizer_params, factors, params.epsilon, "BundleAdjustmentOptimizer",
+                            optimized_keys, params.debug_stats, params.check_derivatives);
 
   // Optimize
   const bool early_exit = optimizer.Optimize(&values);

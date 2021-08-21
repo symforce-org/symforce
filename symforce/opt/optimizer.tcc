@@ -11,10 +11,9 @@ namespace sym {
 template <typename ScalarType, typename NonlinearSolverType>
 Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
                                                       const std::vector<Factor<Scalar>>& factors,
-                                                      const Scalar epsilon,
+                                                      const Scalar epsilon, const std::string& name,
                                                       const std::vector<Key>& keys,
-                                                      const std::string& name, bool debug_stats,
-                                                      bool check_derivatives)
+                                                      bool debug_stats, bool check_derivatives)
     : factors_(factors),
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
@@ -29,8 +28,8 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
 template <typename ScalarType, typename NonlinearSolverType>
 Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
                                                       std::vector<Factor<Scalar>>&& factors,
-                                                      const Scalar epsilon, std::vector<Key>&& keys,
-                                                      const std::string& name, bool debug_stats,
+                                                      const Scalar epsilon, const std::string& name,
+                                                      std::vector<Key>&& keys, bool debug_stats,
                                                       bool check_derivatives)
     : factors_(std::move(factors)),
       nonlinear_solver_(params, name, epsilon),

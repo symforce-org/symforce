@@ -146,7 +146,7 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   params.iterations = 50;
   params.early_exit_min_reduction = 0.0001;
 
-  sym::Optimizer<double> optimizer(params, factors, epsilon, {}, "sym::Optimize",
+  sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimize", {},
                                    /* debug_stats */ false, /* check_derivatives */ true);
   optimizer.Optimize(&values);
 
@@ -325,7 +325,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
     optimized_keys.emplace_back('R', i);
   }
 
-  sym::Optimizer<double> optimizer(params, factors, epsilon, optimized_keys);
+  sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimizer", optimized_keys);
   optimizer.Optimize(&values);
 
   std::cout << "Optimized values: " << values << std::endl;
