@@ -156,15 +156,15 @@ class ATANCameraCal {
 using ATANCameraCald = ATANCameraCal<double>;
 using ATANCameraCalf = ATANCameraCal<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const ATANCameraCal<double>& a);
+std::ostream& operator<<(std::ostream& os, const ATANCameraCal<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::ATANCameraCal<double>;
 extern template class sym::ATANCameraCal<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCal<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCal<float>& a);
 
 // Concept implementations for this class
 #include "./ops/atan_camera_cal/storage_ops.h"

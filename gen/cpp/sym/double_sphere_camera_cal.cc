@@ -457,19 +457,20 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixelWit
   return _camera_ray;
 }
 
-}  // namespace sym
-
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::DoubleSphereCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const DoubleSphereCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<DoubleSphereCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::DoubleSphereCameraCalf& a) {
+
+std::ostream& operator<<(std::ostream& os, const DoubleSphereCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<DoubleSphereCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // Concept implementations for this class
 #include "./ops/double_sphere_camera_cal/storage_ops.cc"

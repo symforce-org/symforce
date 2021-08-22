@@ -244,19 +244,20 @@ Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromP
   return _camera_ray;
 }
 
-}  // namespace sym
-
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const EquidistantEpipolarCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<EquidistantEpipolarCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraCalf& a) {
+
+std::ostream& operator<<(std::ostream& os, const EquidistantEpipolarCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<EquidistantEpipolarCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // Concept implementations for this class
 #include "./ops/equidistant_epipolar_camera_cal/storage_ops.cc"

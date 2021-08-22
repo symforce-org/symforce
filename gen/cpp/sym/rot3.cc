@@ -4,17 +4,21 @@
 
 #include "./rot3.h"
 
+namespace sym {
+
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::Rot3d& a) {
+std::ostream& operator<<(std::ostream& os, const Rot3d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Rot3d " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::Rot3f& a) {
+std::ostream& operator<<(std::ostream& os, const Rot3f& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Rot3f " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // --------------------------------------------------------------------------
 // Custom generated methods

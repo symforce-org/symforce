@@ -243,8 +243,6 @@ class Values {
 using Valuesd = Values<double>;
 using Valuesf = Values<float>;
 
-}  // namespace sym
-
 /**
  * Prints entries with their keys, data slices, and values, like:
  *
@@ -256,7 +254,9 @@ using Valuesf = Values<float>;
  *   >
  */
 template <typename Scalar>
-std::ostream& operator<<(std::ostream& os, const sym::Values<Scalar>& v);
+std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v);
+
+}  // namespace sym
 
 // Template method implementations
 #include "./values.tcc"

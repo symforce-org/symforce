@@ -86,8 +86,6 @@ class Key {
   superscript_t super_;
 };
 
-}  // namespace sym
-
 /**
  * Print implementation for Key.
  *
@@ -101,25 +99,6 @@ class Key {
 std::ostream& operator<<(std::ostream& os, const sym::Key& key);
 std::ostream& operator<<(std::ostream& os, const sym::key_t& key);
 
-namespace sym {
-namespace internal {
-
-/**
- * Implementation of tuple hashing.
- *
- * Reference:
- *     https://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
- */
-inline void hash_combine(std::size_t& seed) {}
-
-template <typename T, typename... Rest>
-inline void hash_combine(std::size_t& seed, const T& v, Rest... rest) {
-  std::hash<T> hasher;
-  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  hash_combine(seed, rest...);
-}
-
-}  // namespace internal
 }  // namespace sym
 
 /**
@@ -129,20 +108,12 @@ namespace std {
 
 template <>
 struct hash<sym::Key> {
-  std::size_t operator()(const sym::Key& key) const {
-    std::size_t ret = 0;
-    sym::internal::hash_combine(ret, key.Letter(), key.Sub(), key.Super());
-    return ret;
-  }
+  std::size_t operator()(const sym::Key& key) const;
 };
 
 template <>
 struct hash<sym::key_t> {
-  std::size_t operator()(const sym::key_t& key) const {
-    std::size_t ret = 0;
-    sym::internal::hash_combine(ret, key.letter, key.subscript, key.superscript);
-    return ret;
-  }
+  std::size_t operator()(const sym::key_t& key) const;
 };
 
 }  // namespace std

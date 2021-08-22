@@ -183,15 +183,15 @@ class DoubleSphereCameraCal {
 using DoubleSphereCameraCald = DoubleSphereCameraCal<double>;
 using DoubleSphereCameraCalf = DoubleSphereCameraCal<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const DoubleSphereCameraCal<double>& a);
+std::ostream& operator<<(std::ostream& os, const DoubleSphereCameraCal<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::DoubleSphereCameraCal<double>;
 extern template class sym::DoubleSphereCameraCal<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::DoubleSphereCameraCal<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::DoubleSphereCameraCal<float>& a);
 
 // Concept implementations for this class
 #include "./ops/double_sphere_camera_cal/storage_ops.h"

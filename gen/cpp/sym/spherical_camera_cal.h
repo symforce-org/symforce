@@ -164,15 +164,15 @@ class SphericalCameraCal {
 using SphericalCameraCald = SphericalCameraCal<double>;
 using SphericalCameraCalf = SphericalCameraCal<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const SphericalCameraCal<double>& a);
+std::ostream& operator<<(std::ostream& os, const SphericalCameraCal<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::SphericalCameraCal<double>;
 extern template class sym::SphericalCameraCal<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::SphericalCameraCal<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::SphericalCameraCal<float>& a);
 
 // Concept implementations for this class
 #include "./ops/spherical_camera_cal/storage_ops.h"

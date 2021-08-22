@@ -156,15 +156,15 @@ class EquidistantEpipolarCameraCal {
 using EquidistantEpipolarCameraCald = EquidistantEpipolarCameraCal<double>;
 using EquidistantEpipolarCameraCalf = EquidistantEpipolarCameraCal<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const EquidistantEpipolarCameraCal<double>& a);
+std::ostream& operator<<(std::ostream& os, const EquidistantEpipolarCameraCal<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::EquidistantEpipolarCameraCal<double>;
 extern template class sym::EquidistantEpipolarCameraCal<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraCal<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::EquidistantEpipolarCameraCal<float>& a);
 
 // Concept implementations for this class
 #include "./ops/equidistant_epipolar_camera_cal/storage_ops.h"

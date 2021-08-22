@@ -169,8 +169,6 @@ class Factor {
 using Factord = Factor<double>;
 using Factorf = Factor<float>;
 
-}  // namespace sym
-
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, const sym::Factor<Scalar>& factor);
 
@@ -180,6 +178,8 @@ std::ostream& operator<<(std::ostream& os, const sym::Factor<Scalar>& factor);
 //                          const typename sym::Factor<Scalar>::LinearizedFactor& factor);
 std::ostream& operator<<(std::ostream& os, const sym::linearized_factor_t& factor);
 std::ostream& operator<<(std::ostream& os, const sym::linearized_factorf_t& factor);
+
+}  // namespace sym
 
 // Template method implementations
 #include "./factor.tcc"

@@ -247,6 +247,35 @@ void PrintHelper(std::ostream& os, const typename sym::StorageOps<T>::Scalar* da
 }
 BY_TYPE_HELPER(PrintByType, PrintHelper);
 
+// ----------------------------------------------------------------------------
+// Printing
+// ----------------------------------------------------------------------------
+
+template <typename Scalar>
+std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v) {
+  // Make an index so we iterate through in offset order
+  const index_t index = v.CreateIndex(v.Keys(/* sort by offset */ true));
+
+  // Print header
+  os << "<Values" << typeid(Scalar).name() << " entries=" << index.entries.size()
+     << " array=" << v.Data().size() << " storage_dim=" << index.storage_dim
+     << " tangent_dim=" << index.tangent_dim << std::endl;
+
+  // Print each element
+  for (const index_entry_t& entry : index.entries) {
+    os << "  " << Key(entry.key) << " [" << entry.offset << ":" << entry.offset + entry.storage_dim
+       << "] --> ";
+    PrintByType<Scalar>(entry.type, os, v.Data().data() + entry.offset);
+    os << std::endl;
+  }
+
+  os << ">";
+  return os;
+}
+
+template std::ostream& operator<<<float>(std::ostream& os, const Values<float>& v);
+template std::ostream& operator<<<double>(std::ostream& os, const Values<double>& v);
+
 }  // namespace sym
 
 // Explicit instantiation
@@ -257,32 +286,3 @@ template sym::Values<double> sym::Values<double>::Cast<double>() const;
 template sym::Values<float> sym::Values<double>::Cast<float>() const;
 template sym::Values<double> sym::Values<float>::Cast<double>() const;
 template sym::Values<float> sym::Values<float>::Cast<float>() const;
-
-// ----------------------------------------------------------------------------
-// Printing
-// ----------------------------------------------------------------------------
-
-template <typename Scalar>
-std::ostream& operator<<(std::ostream& os, const sym::Values<Scalar>& v) {
-  // Make an index so we iterate through in offset order
-  const sym::index_t index = v.CreateIndex(v.Keys(/* sort by offset */ true));
-
-  // Print header
-  os << "<Values" << typeid(Scalar).name() << " entries=" << index.entries.size()
-     << " array=" << v.Data().size() << " storage_dim=" << index.storage_dim
-     << " tangent_dim=" << index.tangent_dim << std::endl;
-
-  // Print each element
-  for (const sym::index_entry_t& entry : index.entries) {
-    os << "  " << sym::Key(entry.key) << " [" << entry.offset << ":"
-       << entry.offset + entry.storage_dim << "] --> ";
-    sym::PrintByType<Scalar>(entry.type, os, v.Data().data() + entry.offset);
-    os << std::endl;
-  }
-
-  os << ">";
-  return os;
-}
-
-template std::ostream& operator<<<float>(std::ostream& os, const sym::Values<float>& v);
-template std::ostream& operator<<<double>(std::ostream& os, const sym::Values<double>& v);

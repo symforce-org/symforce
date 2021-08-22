@@ -3,6 +3,7 @@
 #include <lcmtypes/sym/linearization_factor_helper_t.hpp>
 
 #include "../factor.h"
+#include "./hash_combine.h"
 
 namespace sym {
 namespace internal {

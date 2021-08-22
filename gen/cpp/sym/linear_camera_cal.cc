@@ -215,19 +215,20 @@ Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixelWithJacob
   return _camera_ray;
 }
 
-}  // namespace sym
-
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const LinearCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<LinearCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCalf& a) {
+
+std::ostream& operator<<(std::ostream& os, const LinearCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<LinearCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // Concept implementations for this class
 #include "./ops/linear_camera_cal/storage_ops.cc"

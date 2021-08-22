@@ -77,12 +77,6 @@ const std::vector<Key>& Factor<Scalar>::Keys() const {
   return keys_;
 }
 
-}  // namespace sym
-
-// Explicit instantiation
-template class sym::Factor<double>;
-template class sym::Factor<float>;
-
 // ----------------------------------------------------------------------------
 // Printing
 // ----------------------------------------------------------------------------
@@ -132,3 +126,9 @@ std::ostream& operator<<(std::ostream& os, const sym::linearized_factor_t& facto
 std::ostream& operator<<(std::ostream& os, const sym::linearized_factorf_t& factor) {
   return PrintLinearizedFactor<float>(os, factor);
 }
+
+}  // namespace sym
+
+// Explicit instantiation
+template class sym::Factor<double>;
+template class sym::Factor<float>;

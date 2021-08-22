@@ -197,16 +197,16 @@ class {{ cls.__name__ }} {
 using {{ cls.__name__ }}{{ scalar[0] }} = {{ cls.__name__ }}<{{ scalar }}>;
 {% endfor %}
 
+// Print definitions
+{% for scalar in scalar_types %}
+std::ostream& operator<<(std::ostream& os, const {{ cls.__name__ }}<{{ scalar }}>& a);
+{% endfor %}
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 {% for scalar in scalar_types %}
 extern template class sym::{{ cls.__name__ }}<{{ scalar }}>;
-{% endfor %}
-
-// Print definitions
-{% for scalar in scalar_types %}
-std::ostream& operator<<(std::ostream& os, const sym::{{ cls.__name__ }}<{{ scalar }}>& a);
 {% endfor %}
 
 // Concept implementations for this class (include order matters here)

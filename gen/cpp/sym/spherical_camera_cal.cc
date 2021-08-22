@@ -188,19 +188,20 @@ Eigen::Matrix<Scalar, 2, 1> SphericalCameraCal<Scalar>::PixelFromCameraPointWith
   return _pixel;
 }
 
-}  // namespace sym
-
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::SphericalCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const SphericalCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<SphericalCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::SphericalCameraCalf& a) {
+
+std::ostream& operator<<(std::ostream& os, const SphericalCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<SphericalCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // Concept implementations for this class
 #include "./ops/spherical_camera_cal/storage_ops.cc"

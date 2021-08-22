@@ -195,15 +195,15 @@ class Rot2 {
 using Rot2d = Rot2<double>;
 using Rot2f = Rot2<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const Rot2<double>& a);
+std::ostream& operator<<(std::ostream& os, const Rot2<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::Rot2<double>;
 extern template class sym::Rot2<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::Rot2<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::Rot2<float>& a);
 
 // Concept implementations for this class (include order matters here)
 // clang-format off

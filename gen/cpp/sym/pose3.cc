@@ -4,17 +4,21 @@
 
 #include "./pose3.h"
 
+namespace sym {
+
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::Pose3d& a) {
+std::ostream& operator<<(std::ostream& os, const Pose3d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Pose3d " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::Pose3f& a) {
+std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Pose3f " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // --------------------------------------------------------------------------
 // Custom generated methods

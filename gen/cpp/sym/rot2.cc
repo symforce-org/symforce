@@ -4,17 +4,21 @@
 
 #include "./rot2.h"
 
+namespace sym {
+
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::Rot2d& a) {
+std::ostream& operator<<(std::ostream& os, const Rot2d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Rot2d " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::Rot2f& a) {
+std::ostream& operator<<(std::ostream& os, const Rot2f& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Rot2f " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // --------------------------------------------------------------------------
 // Custom generated methods

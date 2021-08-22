@@ -333,19 +333,20 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixelWithJacobia
   return _camera_ray;
 }
 
-}  // namespace sym
-
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCald& a) {
+std::ostream& operator<<(std::ostream& os, const ATANCameraCald& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<ATANCameraCald " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::ATANCameraCalf& a) {
+
+std::ostream& operator<<(std::ostream& os, const ATANCameraCalf& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<ATANCameraCalf " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // Concept implementations for this class
 #include "./ops/atan_camera_cal/storage_ops.cc"

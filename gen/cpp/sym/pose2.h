@@ -211,15 +211,15 @@ class Pose2 {
 using Pose2d = Pose2<double>;
 using Pose2f = Pose2<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const Pose2<double>& a);
+std::ostream& operator<<(std::ostream& os, const Pose2<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::Pose2<double>;
 extern template class sym::Pose2<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::Pose2<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::Pose2<float>& a);
 
 // Concept implementations for this class (include order matters here)
 // clang-format off

@@ -273,15 +273,15 @@ class Rot3 {
 using Rot3d = Rot3<double>;
 using Rot3f = Rot3<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const Rot3<double>& a);
+std::ostream& operator<<(std::ostream& os, const Rot3<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::Rot3<double>;
 extern template class sym::Rot3<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::Rot3<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::Rot3<float>& a);
 
 // Concept implementations for this class (include order matters here)
 // clang-format off

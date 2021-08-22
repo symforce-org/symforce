@@ -4,17 +4,21 @@
 
 #include "./pose2.h"
 
+namespace sym {
+
 // Print implementations
-std::ostream& operator<<(std::ostream& os, const sym::Pose2d& a) {
+std::ostream& operator<<(std::ostream& os, const Pose2d& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Pose2d " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
-std::ostream& operator<<(std::ostream& os, const sym::Pose2f& a) {
+std::ostream& operator<<(std::ostream& os, const Pose2f& a) {
   const Eigen::IOFormat fmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n", "[", "]");
   os << "<Pose2f " << a.Data().transpose().format(fmt) << ">";
   return os;
 }
+
+}  // namespace sym
 
 // --------------------------------------------------------------------------
 // Custom generated methods

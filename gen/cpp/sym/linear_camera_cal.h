@@ -163,15 +163,15 @@ class LinearCameraCal {
 using LinearCameraCald = LinearCameraCal<double>;
 using LinearCameraCalf = LinearCameraCal<float>;
 
+// Print definitions
+std::ostream& operator<<(std::ostream& os, const LinearCameraCal<double>& a);
+std::ostream& operator<<(std::ostream& os, const LinearCameraCal<float>& a);
+
 }  // namespace sym
 
 // Externs to reduce duplicate instantiation
 extern template class sym::LinearCameraCal<double>;
 extern template class sym::LinearCameraCal<float>;
-
-// Print definitions
-std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCal<double>& a);
-std::ostream& operator<<(std::ostream& os, const sym::LinearCameraCal<float>& a);
 
 // Concept implementations for this class
 #include "./ops/linear_camera_cal/storage_ops.h"
