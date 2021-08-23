@@ -99,6 +99,7 @@ class TestCase(SymforceTestCaseMixin):
         package_dir: str,
         executable_names: T.Union[str, T.Sequence[str]],
         make_args: T.Sequence[str] = tuple(),
+        env: T.Mapping[str, str] = None,
     ) -> None:
         """
         Compile package using makefile in package_dir, then execute the executable with
@@ -116,11 +117,11 @@ class TestCase(SymforceTestCaseMixin):
         # Run executable(s)
         if isinstance(executable_names, str):
             # We just have one executable
-            python_util.execute_subprocess(os.path.join(package_dir, executable_names))
+            python_util.execute_subprocess(os.path.join(package_dir, executable_names), env=env)
         else:
             # We have a list of executables
             for name in executable_names:
-                python_util.execute_subprocess(os.path.join(package_dir, name))
+                python_util.execute_subprocess(os.path.join(package_dir, name), env=env)
 
 
 def sympy_only(func: T.Callable) -> T.Callable:

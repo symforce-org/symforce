@@ -1,4 +1,4 @@
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "../linearization.h"
 #include "../linearizer.h"
@@ -55,12 +55,13 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
 
     if (!jacobian_matches) {
       if (verbose) {
-        std::ostringstream ss;
-        ss << "Symbolic and numerical jacobians don't match" << std::endl;
-        ss << "Symbolic Jacobian: \n" << linearization.jacobian << std::endl;
-        ss << "Numerical Jacobian: \n" << numerical_jacobian << std::endl;
-        ss << "Additive Difference: \n" << linearization.jacobian - numerical_jacobian;
-        std::cout << ss.str() << std::endl;
+        spdlog::error(
+            "Symbolic and numerical jacobians don't match\n"
+            "Symbolic Jacobian:\n{}\n"
+            "Numerical Jacobian:\n{}\n"
+            "Additive Difference:\n{}",
+            linearization.jacobian, numerical_jacobian,
+            linearization.jacobian - numerical_jacobian);
       }
 
       success = false;
@@ -78,12 +79,12 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
     const bool hessian_matches = full_hessian.isApprox(numerical_hessian, std::sqrt(epsilon));
     if (!hessian_matches) {
       if (verbose) {
-        std::ostringstream ss;
-        ss << "Hessian does not match J^T J" << std::endl;
-        ss << "Symbolic (sym::Linearizer) Hessian:\n" << full_hessian << std::endl;
-        ss << "Numerical (J^T * J) Hessian:\n" << numerical_hessian << std::endl;
-        ss << "Additive Difference: \n" << full_hessian - numerical_hessian;
-        std::cout << ss.str() << std::endl;
+        spdlog::error(
+            "Hessian does not match J^T J\n"
+            "Symbolic (sym::Linearizer) Hessian:\n{}\n"
+            "Numerical (J^T * J) Hessian:\n{}\n"
+            "Additive Difference:\n{}",
+            full_hessian, numerical_hessian, full_hessian - numerical_hessian);
       }
 
       success = false;
@@ -97,13 +98,13 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
     const bool Jtb_matches = linearization.rhs.isApprox(numerical_rhs, std::sqrt(epsilon));
     if (!Jtb_matches) {
       if (verbose) {
-        std::ostringstream ss;
-        ss << "Generated Jtb does not match J^T * b" << std::endl;
-        ss << "Symbolic (sym::Linearization) Jtb:\n" << linearization.rhs.transpose() << std::endl;
-        ss << "Numerical (J^T * b) Jtb:\n" << numerical_rhs.transpose() << std::endl;
-        ss << "Additive Difference: \n"
-           << linearization.rhs.transpose() - numerical_rhs.transpose();
-        std::cout << ss.str() << std::endl;
+        spdlog::error(
+            "Generated Jtb does not match J^T * b\n"
+            "Symbolic (sym::Linearization) Jtb:\n{}\n"
+            "Numerical (J^T * b) Jtb:\n{}\n"
+            "Additive Difference:\n{}",
+            linearization.rhs.transpose(), numerical_rhs.transpose(),
+            linearization.rhs.transpose() - numerical_rhs.transpose());
       }
 
       success = false;

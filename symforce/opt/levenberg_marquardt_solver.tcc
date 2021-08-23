@@ -1,9 +1,10 @@
+#include <fmt/ranges.h>
+#include <spdlog/spdlog.h>
+
 #include "./levenberg_marquardt_solver.h"
 #include "./util.h"
 
-// TODO(aaron): Don't depend on these
-#include "util/common/macros.h"
-#include "util/error_reporter/error_reporter.h"
+// TODO(aaron): Don't depend on this
 #include "util/tic_toc/tic_toc.h"
 
 namespace sym {
@@ -58,7 +59,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
       }
     }
 
-    REPORT_WARNING_NOW("LM<{}> Zero on diagonal at indices: {}", id_, zero_diagonal_indices_);
+    spdlog::warn("LM<{}> Zero on diagonal at indices: {}", id_, zero_diagonal_indices_);
   }
 }
 
@@ -81,7 +82,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
 
   if (p_.verbose) {
     TIC_TOC_SCOPE("LM<{}>: IterationStats - Print", id_);
-    REPORT_STATUS_NOW(
+    spdlog::info(
         "[iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3f}/{:.3f}/{:.3f}, "
         "rel reduction: {:.3f}",
         iteration_stats->iteration, iteration_stats->current_lambda, state_.Init().Error(),
@@ -123,7 +124,9 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Update(
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
     const optimizer_params_t& p) {
-  REPORT_WARNING_ONCE("UPDATING LM OPTIMIZER PARAMS");
+  if (p_.verbose) {
+    spdlog::info("LM<{}>: UPDATING OPTIMIZER PARAMS", id_);
+  }
   p_ = p;
 }
 
@@ -209,7 +212,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   PopulateIterationStats(&iteration_stats, state_, new_error, relative_reduction, debug_stats);
 
   if (!std::isfinite(new_error)) {
-    REPORT_WARNING_NOW("LM<{}> Encountered non-finite error: {}", id_, new_error);
+    spdlog::warn("LM<{}> Encountered non-finite error: {}", id_, new_error);
   }
 
   // Early exit if the reduction in error is too small.

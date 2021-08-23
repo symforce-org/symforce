@@ -1,5 +1,4 @@
-#include <iostream>
-
+#include <spdlog/spdlog.h>
 #include <sym/factors/between_factor_pose3.h>
 #include <sym/factors/between_factor_rot3.h>
 #include <sym/factors/prior_factor_pose3.h>
@@ -49,7 +48,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   sym::Valuesd values;
   values.Set<double>('x', 0.0);
   values.Set<double>('y', 0.0);
-  std::cout << "Initial values: " << values << std::endl;
+  spdlog::info("Initial values: {}", values);
 
   // Set parameters
   sym::optimizer_params_t params = DefaultLmParams();
@@ -67,7 +66,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   Optimize(params, factors, &values);
 
   // Check results
-  std::cout << "Optimized values: " << values << std::endl;
+  spdlog::info("Optimized values: {}", values);
 
   // Local minimum from Wolfram Alpha
   // pylint: disable=line-too-long
@@ -137,9 +136,9 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
     values.Set<sym::Pose3d>({'P', i}, value);
   }
 
-  std::cout << "Initial values: " << values << std::endl;
-  std::cout << "Prior on P0: " << prior_start << std::endl;
-  std::cout << "Prior on P[-1]: " << prior_last << std::endl;
+  spdlog::info("Initial values: {}", values);
+  spdlog::info("Prior on P0: {}", prior_start);
+  spdlog::info("Prior on P[-1]: {}", prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -150,13 +149,13 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
                                    /* debug_stats */ false, /* check_derivatives */ true);
   optimizer.Optimize(&values);
 
-  std::cout << "Optimized values: " << values << std::endl;
+  spdlog::info("Optimized values: {}", values);
 
   const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
-  std::cout << "Iterations: " << last_iter.iteration << std::endl;
-  std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
-  std::cout << "Final error: " << last_iter.new_error << std::endl;
+  spdlog::info("Iterations: {}", last_iter.iteration);
+  spdlog::info("Lambda: {}", last_iter.current_lambda);
+  spdlog::info("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 12);
@@ -230,9 +229,9 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
-  std::cout << "Initial values: " << values << std::endl;
-  std::cout << "Prior on R0: " << prior_start << std::endl;
-  std::cout << "Prior on R[-1]: " << prior_last << std::endl;
+  spdlog::info("Initial values: {}", values);
+  spdlog::info("Prior on R0: {}", prior_start);
+  spdlog::info("Prior on R[-1]: {}", prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -242,13 +241,13 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   sym::Optimizer<double> optimizer(params, factors, epsilon);
   optimizer.Optimize(&values);
 
-  std::cout << "Optimized values: " << values << std::endl;
+  spdlog::info("Optimized values: {}", values);
 
   const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
-  std::cout << "Iterations: " << last_iter.iteration << std::endl;
-  std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
-  std::cout << "Final error: " << last_iter.new_error << std::endl;
+  spdlog::info("Iterations: {}", last_iter.iteration);
+  spdlog::info("Lambda: {}", last_iter.current_lambda);
+  spdlog::info("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 7);
@@ -313,7 +312,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
-  std::cout << "Initial values: " << values << std::endl;
+  spdlog::info("Initial values: {}", values);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -328,13 +327,13 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimizer", optimized_keys);
   optimizer.Optimize(&values);
 
-  std::cout << "Optimized values: " << values << std::endl;
+  spdlog::info("Optimized values: {}", values);
 
   const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
-  std::cout << "Iterations: " << last_iter.iteration << std::endl;
-  std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
-  std::cout << "Final error: " << last_iter.new_error << std::endl;
+  spdlog::info("Iterations: {}", last_iter.iteration);
+  spdlog::info("Lambda: {}", last_iter.current_lambda);
+  spdlog::info("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 5);

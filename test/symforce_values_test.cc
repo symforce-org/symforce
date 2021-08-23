@@ -1,7 +1,8 @@
-#include <iostream>
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
 #include <sym/rot3.h>
 
 #include "../symforce/opt/util.h"
@@ -11,7 +12,7 @@
 TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   using Scalar = TestType;
 
-  std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> ***" << std::endl;
+  spdlog::info("*** Testing Values<{}> ***", typeid(Scalar).name());
   const Scalar epsilon = 1e-9;
 
   sym::Values<Scalar> v;
@@ -107,7 +108,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   assert(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
 
   // Print
-  std::cout << "v: " << v << std::endl;
+  spdlog::info("v: {}", v);
 
   // Clear
   v.RemoveAll();
@@ -116,7 +117,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
 }
 
 TEST_CASE("Test implicit construction", "[values]") {
-  std::cout << "*** Testing Values Implicit Construction ***" << std::endl;
+  spdlog::info("*** Testing Values Implicit Construction ***");
 
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -125,11 +126,11 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
-  std::cout << values << std::endl;
+  spdlog::info(values);
 }
 
 TEST_CASE("Test initializer list construction", "[values]") {
-  std::cout << "*** Testing Values Initializer List Construction ***" << std::endl;
+  spdlog::info("*** Testing Values Initializer List Construction ***");
 
   sym::Valuesd v1;
   v1.Set<double>('x', 1.0);
@@ -157,7 +158,7 @@ TEST_CASE("Test initializer list construction", "[values]") {
 }
 
 TEST_CASE("Test indexed update", "[values]") {
-  std::cout << "*** Testing Values Indexed Update ***" << std::endl;
+  spdlog::info("*** Testing Values Indexed Update ***");
 
   // Create some data
   sym::Valuesd values;
@@ -188,7 +189,7 @@ TEST_CASE("Test indexed update", "[values]") {
 }
 
 TEST_CASE("Test key update", "[values]") {
-  std::cout << "*** Testing Values Key Update ***" << std::endl;
+  spdlog::info("*** Testing Values Key Update ***");
 
   // Create some data
   sym::Valuesd values;
@@ -235,8 +236,8 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
   using T = TestType;
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
-  std::cout << "*** Testing Values<" << typeid(Scalar).name() << "> LieGroupOps with "
-            << typeid(T).name() << " ***" << std::endl;
+  spdlog::info("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
+               typeid(T).name());
   const Scalar epsilon = 1e-9;
 
   // Create a values object that stores an identity element, and an index for it

@@ -1,4 +1,4 @@
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "../symforce/opt/gnc.h"
 #include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
@@ -63,18 +63,18 @@ TEST_CASE("Test GNC", "[gnc]") {
       /* keys */ std::vector<sym::Key>{}, /* debug_stats */ false,
       /* check_derivatives */ true);
 
-  std::cout << "Initial x: " << initial_values.At<sym::Vector5d>('x').transpose() << std::endl;
+  spdlog::info("Initial x: {}", initial_values.At<sym::Vector5d>('x').transpose());
 
   sym::Valuesd gnc_optimized_values = initial_values;
   gnc_optimizer.Optimize(&gnc_optimized_values);
-  std::cout << "Final x: " << gnc_optimized_values.At<sym::Vector5d>('x').transpose() << std::endl;
+  spdlog::info("Final x: {}", gnc_optimized_values.At<sym::Vector5d>('x').transpose());
 
   sym::Valuesd regular_optimized_values = initial_values;
   regular_optimized_values.Set('u', 0.0);
   sym::Optimize(DefaultLmParams(), factors, &regular_optimized_values, kEpsilon);
 
-  std::cout << "Final x without GNC: "
-            << regular_optimized_values.At<sym::Vector5d>('x').transpose() << std::endl;
+  spdlog::info("Final x without GNC: {}",
+               regular_optimized_values.At<sym::Vector5d>('x').transpose());
 
   CHECK(gnc_optimizer.Stats().iterations.size() == 8);
   const sym::Vector5d gnc_optimized_x = gnc_optimized_values.At<sym::Vector5d>('x');

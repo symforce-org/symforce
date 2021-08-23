@@ -1,3 +1,4 @@
+#include <spdlog/spdlog.h>
 #include <sym/factors/between_factor_pose3.h>
 #include <sym/factors/inverse_range_landmark_prior_factor.h>
 #include <sym/factors/inverse_range_landmark_reprojection_error_factor.h>
@@ -123,18 +124,16 @@ void RunBundleAdjustment() {
   // Create initial state
   std::mt19937 gen(42);
   const auto params = BundleAdjustmentProblemParams();
-
   sym::Valuesd values = BuildValues(gen, params);
 
-  std::cout << "Initial State:" << std::endl;
+  spdlog::info("Initial State:");
   for (int i = 0; i < params.num_views; i++) {
-    std::cout << "Pose " << i << ": " << values.At<sym::Pose3d>({Var::VIEW, i}) << std::endl;
+    spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>({Var::VIEW, i}));
   }
-  std::cout << "Landmarks: ";
+  spdlog::info("Landmarks:");
   for (int i = 0; i < params.num_landmarks; i++) {
-    std::cout << values.At<double>({Var::LANDMARK, i}) << " ";
+    spdlog::info("{} ", values.At<double>({Var::LANDMARK, i}));
   }
-  std::cout << std::endl;
 
   // Create and set up Optimizer
   const std::vector<sym::Factord> factors = BuildFactors(params);
@@ -149,23 +148,22 @@ void RunBundleAdjustment() {
   const bool early_exit = optimizer.Optimize(&values);
 
   // Print out results
-  std::cout << "Optimized State:" << std::endl;
+  spdlog::info("Optimized State:");
   for (int i = 0; i < params.num_views; i++) {
-    std::cout << "Pose " << i << ": " << values.At<sym::Pose3d>({Var::VIEW, i}) << std::endl;
+    spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>({Var::VIEW, i}));
   }
-  std::cout << "Landmarks: ";
+  spdlog::info("Landmarks:");
   for (int i = 0; i < params.num_landmarks; i++) {
-    std::cout << values.At<double>({Var::LANDMARK, i}) << " ";
+    spdlog::info("{} ", values.At<double>({Var::LANDMARK, i}));
   }
-  std::cout << std::endl;
 
   const auto& iteration_stats = optimizer.Stats().iterations;
   const auto& first_iter = iteration_stats[0];
   const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
-  std::cout << "Iterations: " << last_iter.iteration << std::endl;
-  std::cout << "Lambda: " << last_iter.current_lambda << std::endl;
-  std::cout << "Initial error: " << first_iter.new_error << std::endl;
-  std::cout << "Final error: " << last_iter.new_error << std::endl;
+  spdlog::info("Iterations: {}", last_iter.iteration);
+  spdlog::info("Lambda: {}", last_iter.current_lambda);
+  spdlog::info("Initial error: {}", first_iter.new_error);
+  spdlog::info("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   SYM_ASSERT(last_iter.iteration == 15);

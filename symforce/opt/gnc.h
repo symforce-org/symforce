@@ -74,7 +74,7 @@ class GncOptimizer : public BaseOptimizerType {
           }
 
           if (optimizer_params.verbose) {
-            REPORT_STATUS_NOW("Set GNC param to: {}", values->template At<Scalar>(gnc_mu_key_));
+            spdlog::info("Set GNC param to: {}", values->template At<Scalar>(gnc_mu_key_));
           }
         } else {
           return true;

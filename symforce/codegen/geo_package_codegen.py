@@ -307,8 +307,19 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                     lcm_include_dir=os.path.realpath(
                         os.path.join(CURRENT_DIR, "***REMOVED***/include/")
                     ),
+                    spdlog_include_dir=os.path.realpath(
+                        os.path.join(
+                            CURRENT_DIR, "***REMOVED***/_deps/spdlog-src/include"
+                        )
+                    ),
                     lib_dir=os.path.join(output_dir, "example"),
                     catch2_dir=os.path.join(CURRENT_DIR, "..", "..", "third_party", "catch2"),
+                    fmt_library_dir=os.path.join(
+                        CURRENT_DIR, "***REMOVED***/lib"
+                    ),
+                    spdlog_library_dir=os.path.join(
+                        CURRENT_DIR, "***REMOVED***/lib"
+                    ),
                 ),
             )
 

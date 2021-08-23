@@ -9,8 +9,8 @@
  * the math is tested comprehensively in symbolic form.
  */
 
-#include <iostream>
-
+#include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
 #include <sym/pose2.h>
 #include <sym/pose3.h>
 #include <sym/rot2.h>
@@ -130,7 +130,7 @@ TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
-  std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
+  spdlog::info("*** Testing StorageOps: {} ***", value);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(value.Data().rows() == storage_dim);
@@ -159,7 +159,7 @@ TEMPLATE_TEST_CASE("Test Scalar storage ops", "[geo_package]", double, float) {
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
-  std::cout << "*** Testing StorageOps: " << value << " ***" << std::endl;
+  spdlog::info("*** Testing StorageOps: {} ***", value);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(storage_dim == 1);
@@ -189,7 +189,7 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", sym::Vector1<doub
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value = T::Zero();
-  std::cout << "*** Testing Matrix StorageOps: " << value.transpose() << " ***" << std::endl;
+  spdlog::info("*** Testing Matrix StorageOps: {} ***", value.transpose());
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(storage_dim == T::RowsAtCompileTime);
@@ -215,7 +215,7 @@ TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", sym::Rot2<double>, sym::Ro
   using T = TestType;
 
   const T identity{};
-  std::cout << "*** Testing GroupOps: " << identity << " ***" << std::endl;
+  spdlog::info("*** Testing GroupOps: {} ***", identity);
 
   // TODO(hayk): Make sym::StorageOps<T>::IsApprox that uses ToStorage to compare, then
   // get rid of the custom scalar version below.
@@ -229,7 +229,7 @@ TEMPLATE_TEST_CASE("Test Scalar group ops", "[geo_package]", double, float) {
   using T = TestType;
 
   const T identity{};
-  std::cout << "*** Testing GroupOps: " << identity << " ***" << std::endl;
+  spdlog::info("*** Testing GroupOps: {} ***", identity);
 
   CHECK(identity == sym::GroupOps<T>::Identity());
   CHECK(identity == sym::GroupOps<T>::Compose(identity, identity));
@@ -247,7 +247,7 @@ TEMPLATE_TEST_CASE("Test Matrix group ops", "[geo_package]", sym::Vector1<double
   using T = TestType;
 
   const T identity = T::Zero();
-  std::cout << "*** Testing Matrix GroupOps: " << identity.transpose() << " ***" << std::endl;
+  spdlog::info("*** Testing Matrix GroupOps: {} ***", identity.transpose());
 
   CHECK(identity == sym::GroupOps<T>::Identity());
   CHECK(identity == sym::GroupOps<T>::Compose(identity, identity));
@@ -268,7 +268,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
   const Scalar epsilon = 1e-7;
 
   const T identity = sym::GroupOps<T>::Identity();
-  std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
+  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -352,7 +352,7 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", double, float) 
   const Scalar epsilon = 1e-7;
 
   const T identity = sym::GroupOps<T>::Identity();
-  std::cout << "*** Testing LieGroupOps: " << identity << " ***" << std::endl;
+  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -387,7 +387,7 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<do
   const Scalar epsilon = 1e-7;
 
   const T identity = sym::GroupOps<T>::Identity();
-  std::cout << "*** Testing Matrix LieGroupOps: " << identity.transpose() << " ***" << std::endl;
+  spdlog::info("*** Testing Matrix LieGroupOps: {} ***", identity.transpose());
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);

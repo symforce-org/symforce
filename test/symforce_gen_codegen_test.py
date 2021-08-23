@@ -151,10 +151,13 @@ class SymforceGenCodegenTest(TestCase):
 
         # Compile and run the test
         if not self.UPDATE:
+            fmt_library_dir = os.path.join(SYMFORCE_DIR, "***REMOVED***/lib")
+            spdlog_library_dir = os.path.join(SYMFORCE_DIR, "***REMOVED***/lib")
             example_dir = os.path.join(output_dir, "example")
             TestCase.compile_and_run_cpp(
                 example_dir,
-                ("cam_package_cpp_test", "cam_function_codegen_cpp_test", "geo_package_cpp_test",),
+                ("cam_package_cpp_test", "cam_function_codegen_cpp_test", "geo_package_cpp_test"),
+                env=dict(os.environ, LD_LIBRARY_PATH=f"{fmt_library_dir}:{spdlog_library_dir}"),
             )
 
 

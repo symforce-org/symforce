@@ -1,4 +1,4 @@
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "../symforce/opt/levenberg_marquardt_solver.h"
 #include "catch.hpp"
@@ -19,8 +19,8 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   std::mt19937 gen(12345);
   const sym::MatrixX<Scalar> J_MN = sym::Random<Eigen::Matrix<Scalar, M, N>>(gen);
 
-  std::cout << "J_MN:\n" << J_MN << std::endl;
-  std::cout << "J_MN^T * J_MN:\n" << (J_MN.transpose() * J_MN).eval() << std::endl;
+  spdlog::info("J_MN:\n{}", J_MN);
+  spdlog::info("J_MN^T * J_MN:\n{}", (J_MN.transpose() * J_MN).eval());
 
   constexpr const Scalar kEpsilon = 1e-10;
 
