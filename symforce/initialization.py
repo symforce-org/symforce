@@ -21,6 +21,7 @@ def modify_symbolic_api(sympy_module: T.Type) -> None:
     override_subs(sympy_module)
     add_scoping(sympy_module)
     add_custom_methods(sympy_module)
+    override_solve(sympy_module)
 
 
 def override_symbol_new(sympy_module: T.Type) -> None:
@@ -192,6 +193,34 @@ def override_subs(sympy_module: T.Type) -> None:
         sympy_module.Basic.subs = lambda self, *args, **kwargs: original_subs(
             self, _get_subs_dict(*args), **kwargs
         )
+    else:
+        raise NotImplementedError(f"Unknown backend: '{sympy_module.__name__}'")
+
+
+def override_solve(sympy_module: T.Type) -> None:
+    """
+    Patch solve to make symengine's API consistent with SymPy's.  Currently this only supports
+    solutions expressed by symengine as an sm.FiniteSet or EmptySet
+    """
+    if sympy_module.__name__ == "symengine":
+        original_solve = sympy_module.solve
+
+        # Unfortunately this already doesn't have a docstring or argument list in symengine
+        def solve(*args: T.Any, **kwargs: T.Any) -> T.List[T.Scalar]:
+            solution = original_solve(*args, **kwargs)
+            if isinstance(solution, sympy_module.FiniteSet):
+                return list(solution.args)
+            elif isinstance(solution, sympy_module.lib.symengine_wrapper.EmptySet):
+                return []
+            else:
+                raise NotImplementedError(
+                    f"sm.solve currently only supports FiniteSet and EmptySet results on the SymEngine backend, got {type(solution)} instead"
+                )
+
+        sympy_module.solve = solve
+    elif sympy_module.__name__ == "sympy":
+        # This one is fine as is
+        return
     else:
         raise NotImplementedError(f"Unknown backend: '{sympy_module.__name__}'")
 
