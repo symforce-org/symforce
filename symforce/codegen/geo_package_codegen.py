@@ -167,21 +167,48 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     def pose3_inverse_compose(self: geo.Pose3, point: geo.Vector3) -> geo.Vector3:
         return self.inverse() * point
 
+    def codegen_mul(group: T.Type, multiplicand_type: T.Type) -> Codegen:
+        """
+        A helper to generate a Codegen object for groups with the method __mul__ taking
+        an instance of group and composing it with an instance of multiplicand_type
+        """
+        return Codegen.function(
+            func=group.__mul__,
+            name="compose",
+            input_types=[group, multiplicand_type],
+            config=config,
+        )
+
     return {
-        geo.Rot2: [Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config)],
+        geo.Rot2: [
+            codegen_mul(geo.Rot2, geo.Vector2),
+            Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config),
+        ],
         geo.Rot3: [
+            codegen_mul(geo.Rot3, geo.Vector3),
             Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config),
             Codegen.function(
                 func=functools.partial(geo.Rot3.random_from_uniform_samples, pi=sm.pi),
                 name="random_from_uniform_samples",
                 config=config,
             ),
+            Codegen.function(
+                func=geo.Rot3.from_euler_ypr, name="from_yaw_pitch_roll", config=config
+            ),
+            Codegen.function(
+                func=lambda ypr: geo.Rot3.from_euler_ypr(*ypr),
+                input_types=[geo.V3],
+                name="from_yaw_pitch_roll",
+                config=config,
+            ),
         ],
         geo.Pose2: [
-            Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config)
+            codegen_mul(geo.Pose2, geo.Vector2),
+            Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),
         ],
         geo.Pose3: [
-            Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config)
+            codegen_mul(geo.Pose3, geo.Vector3),
+            Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
         ],
     }
 

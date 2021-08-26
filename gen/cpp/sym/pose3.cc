@@ -27,6 +27,40 @@ std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Compose(
+    const Eigen::Matrix<Scalar, 3, 1>& right) const {
+  // Total ops: 47
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (11)
+  const Scalar _tmp0 = 2 * _self[1];
+  const Scalar _tmp1 = _self[0] * _tmp0;
+  const Scalar _tmp2 = 2 * _self[3];
+  const Scalar _tmp3 = _self[2] * _tmp2;
+  const Scalar _tmp4 = 2 * _self[0] * _self[2];
+  const Scalar _tmp5 = _self[1] * _tmp2;
+  const Scalar _tmp6 = -2 * std::pow(_self[2], Scalar(2));
+  const Scalar _tmp7 = 1 - 2 * std::pow(_self[1], Scalar(2));
+  const Scalar _tmp8 = _self[2] * _tmp0;
+  const Scalar _tmp9 = _self[0] * _tmp2;
+  const Scalar _tmp10 = -2 * std::pow(_self[0], Scalar(2));
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 3, 1> _res;
+
+  _res(0, 0) = _self[4] + right(0, 0) * (_tmp6 + _tmp7) + right(1, 0) * (_tmp1 - _tmp3) +
+               right(2, 0) * (_tmp4 + _tmp5);
+  _res(1, 0) = _self[5] + right(0, 0) * (_tmp1 + _tmp3) + right(1, 0) * (_tmp10 + _tmp6 + 1) +
+               right(2, 0) * (_tmp8 - _tmp9);
+  _res(2, 0) = _self[6] + right(0, 0) * (_tmp4 - _tmp5) + right(1, 0) * (_tmp8 + _tmp9) +
+               right(2, 0) * (_tmp10 + _tmp7);
+
+  return _res;
+}
+
+template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
     const Eigen::Matrix<Scalar, 3, 1>& point) const {
   // Total ops: 65

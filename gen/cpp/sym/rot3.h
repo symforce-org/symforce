@@ -97,21 +97,6 @@ class Rot3 {
     return ToRotationMatrix().eulerAngles(2, 1, 0);
   }
 
-  static Rot3 FromYawPitchRoll(const Scalar yaw, const Scalar pitch, const Scalar roll) {
-    return Rot3(Eigen::AngleAxis<Scalar>(yaw, Vector3::UnitZ()) *
-                Eigen::AngleAxis<Scalar>(pitch, Vector3::UnitY()) *
-                Eigen::AngleAxis<Scalar>(roll, Vector3::UnitX()));
-  }
-
-  static Rot3 FromYawPitchRoll(const Vector3& ypr) {
-    return FromYawPitchRoll(ypr[0], ypr[1], ypr[2]);
-  }
-
-  // TODO(hayk): Could codegen this.
-  Vector3 Compose(const Vector3& point) const {
-    return Quaternion() * point;
-  }
-
   // Generate a random element in SO3
   template <typename Generator>
   static Rot3 Random(Generator& gen) {
@@ -139,10 +124,17 @@ class Rot3 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
+  Vector3 Compose(const Vector3& right) const;
+
   Eigen::Matrix<Scalar, 3, 3> ToRotationMatrix() const;
 
   static sym::Rot3<Scalar> RandomFromUniformSamples(const Scalar u1, const Scalar u2,
                                                     const Scalar u3);
+
+  static sym::Rot3<Scalar> FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
+                                            const Scalar roll);
+
+  static sym::Rot3<Scalar> FromYawPitchRoll(const Vector3& ypr);
 
   // --------------------------------------------------------------------------
   // StorageOps concept

@@ -1,9 +1,4 @@
   {# Handwritten methods for Rot2 #}
-  // TODO(hayk): Could codegen this.
-  Vector2 Compose(const Vector2& point) const {
-      return ToRotationMatrix() * point;
-  }
-
   // Generate a random element of SO2 from a number u1 in [0, 1]
   static Rot2 RandomFromUniformSamples(const Scalar u1) {
     const Scalar theta = 2 * M_PI * u1;

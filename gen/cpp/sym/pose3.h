@@ -84,11 +84,6 @@ class Pose3 {
     return data_.template tail<3>();
   }
 
-  // TODO(hayk): Could codegen this.
-  Vector3 Compose(const Vector3& point) const {
-    return Rotation() * point + Position();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose3 Random(Generator& gen) {
@@ -103,6 +98,8 @@ class Pose3 {
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
+
+  Vector3 Compose(const Vector3& right) const;
 
   Vector3 InverseCompose(const Vector3& point) const;
 

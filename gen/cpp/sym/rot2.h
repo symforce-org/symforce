@@ -54,11 +54,6 @@ class Rot2 {
   // Handwritten methods included from "custom_methods/rot2.h.jinja"
   // --------------------------------------------------------------------------
 
-  // TODO(hayk): Could codegen this.
-  Vector2 Compose(const Vector2& point) const {
-    return ToRotationMatrix() * point;
-  }
-
   // Generate a random element of SO2 from a number u1 in [0, 1]
   static Rot2 RandomFromUniformSamples(const Scalar u1) {
     const Scalar theta = 2 * M_PI * u1;
@@ -84,6 +79,8 @@ class Rot2 {
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
+
+  Vector2 Compose(const Vector2& right) const;
 
   Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
 

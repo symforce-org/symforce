@@ -27,6 +27,25 @@ std::ostream& operator<<(std::ostream& os, const Rot2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
+Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::Compose(
+    const Eigen::Matrix<Scalar, 2, 1>& right) const {
+  // Total ops: 7
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 2, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 2, 1> _res;
+
+  _res(0, 0) = _self[0] * right(0, 0) - _self[1] * right(1, 0);
+  _res(1, 0) = _self[0] * right(1, 0) + _self[1] * right(0, 0);
+
+  return _res;
+}
+
+template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
   // Total ops: 1
 

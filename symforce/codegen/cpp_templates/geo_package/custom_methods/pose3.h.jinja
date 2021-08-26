@@ -15,11 +15,6 @@
       return data_.template tail<3>();
   }
 
-  // TODO(hayk): Could codegen this.
-  Vector3 Compose(const Vector3& point) const {
-      return Rotation() * point + Position();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose3 Random(Generator& gen) {
