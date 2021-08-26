@@ -495,16 +495,6 @@ def load_generated_package(package_dir: str) -> T.Any:
     return imp.load_module(os.path.basename(package_dir), *find_data)  # type: ignore
 
 
-def get_function_argspec(func: T.Callable) -> inspect.ArgSpec:
-    """
-    Python 2 and 3 compatible way to get the argspec of a function using the inspect package.
-    """
-    try:
-        return inspect.getfullargspec(func)  # type: ignore
-    except AttributeError:
-        return inspect.getargspec(func)
-
-
 def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
     """
     Returns an instance of the base element (e.g. Scalar, Values, Matrix, etc.) of an object.
