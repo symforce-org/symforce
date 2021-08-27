@@ -1,5 +1,8 @@
 #include "./values.h"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 #include "./assert.h"
 
 namespace sym {
@@ -241,11 +244,15 @@ VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, c
   return tangent_vec;
 }
 
+namespace {
+
 template <typename T>
-void PrintHelper(std::ostream& os, const typename sym::StorageOps<T>::Scalar* data_ptr) {
-  os << sym::StorageOps<T>::FromStorage(data_ptr);
+std::string FormatHelper(const typename StorageOps<T>::Scalar* data_ptr) {
+  return fmt::format("{}", StorageOps<T>::FromStorage(data_ptr));
 }
-BY_TYPE_HELPER(PrintByType, PrintHelper);
+BY_TYPE_HELPER(FormatByType, FormatHelper);
+
+}  // namespace
 
 // ----------------------------------------------------------------------------
 // Printing
@@ -257,16 +264,15 @@ std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v) {
   const index_t index = v.CreateIndex(v.Keys(/* sort by offset */ true));
 
   // Print header
-  os << "<Values" << typeid(Scalar).name() << " entries=" << index.entries.size()
-     << " array=" << v.Data().size() << " storage_dim=" << index.storage_dim
-     << " tangent_dim=" << index.tangent_dim << std::endl;
+  fmt::print(os, "<Values{} entries={} array={} storage_dim={} tangent_dim={}\n",
+             typeid(Scalar).name(), index.entries.size(), v.Data().size(), index.storage_dim,
+             index.tangent_dim);
 
   // Print each element
   for (const index_entry_t& entry : index.entries) {
-    os << "  " << Key(entry.key) << " [" << entry.offset << ":" << entry.offset + entry.storage_dim
-       << "] --> ";
-    PrintByType<Scalar>(entry.type, os, v.Data().data() + entry.offset);
-    os << std::endl;
+    fmt::print(os, " {} [{}:{}] --> {}\n", Key(entry.key), entry.offset,
+               entry.offset + entry.storage_dim,
+               FormatByType<Scalar>(entry.type, v.Data().data() + entry.offset));
   }
 
   os << ">";

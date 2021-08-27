@@ -1,5 +1,9 @@
 #include "./factor.h"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
 #include "./assert.h"
 
 namespace sym {
@@ -83,12 +87,7 @@ const std::vector<Key>& Factor<Scalar>::Keys() const {
 
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, const sym::Factor<Scalar>& factor) {
-  os << "<Factor keys: {";
-  const auto& keys = factor.Keys();
-  for (int i = 0; i < keys.size(); ++i) {
-    os << keys[i] << (i < keys.size() - 1 ? ", " : "");
-  }
-  os << "}>";
+  fmt::print(os, "<Factor keys: {{{}}}", factor.Keys());
   return os;
 }
 
@@ -99,18 +98,15 @@ template std::ostream& operator<<<double>(std::ostream& os, const sym::Factor<do
 template <typename Scalar>
 std::ostream& PrintLinearizedFactor(std::ostream& os,
                                     const typename sym::Factor<Scalar>::LinearizedFactor& factor) {
-  os << "<LinearizedFactor\n";
-  os << "  keys: {";
-  for (int i = 0; i < factor.index.entries.size(); ++i) {
-    os << factor.index.entries[i].key << (i < factor.index.entries.size() - 1 ? ", " : "");
-  }
-  os << "}\n";
-  os << "  storage_dim: " << factor.index.storage_dim << "\n";
-  os << "  tangent_dim: " << factor.index.tangent_dim << "\n";
-  os << "  residual: (" << factor.residual.transpose() << ")\n";
-  os << "  jacobian: (" << factor.jacobian << ")\n";
-  os << "  error: " << 0.5 * factor.residual.squaredNorm() << "\n";
-  os << ">\n";
+  std::vector<key_t> factor_keys;
+  std::transform(factor.index.entries.begin(), factor.index.entries.end(),
+                 std::back_inserter(factor_keys), [](const auto& entry) { return entry.key; });
+  fmt::print(os,
+             "<LinearizedFactor\n  keys: {{{}}}}\n  storage_dim: {}\n  tangent_dim: {}\n  "
+             "residual: ({})\n  jacobian: ({})\n  error: "
+             "{}\n>\n",
+             factor_keys, factor.index.storage_dim, factor.index.tangent_dim,
+             factor.residual.transpose(), factor.jacobian, 0.5 * factor.residual.squaredNorm());
   return os;
 }
 

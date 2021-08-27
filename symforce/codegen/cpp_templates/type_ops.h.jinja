@@ -22,43 +22,36 @@ static constexpr const bool kIsEigenType = std::is_base_of<Eigen::MatrixBase<T>,
  * to the templated method func. Used to perform type-aware operations.
  *
  * Args:
- *   name: Name of the output function (ex: PrintByType)
- *   func: Name of a function template (ex: PrintHelper)
+ *   name: Name of the output function (ex: FormatByType)
+ *   func: Name of a function template (ex: FormatHelper)
  */
-#define BY_TYPE_HELPER(name, func)                  \
-  template <typename Scalar, typename... Args>      \
-  void name(const type_t type, Args&&... args) {    \
-    switch (type.value) {                           \
-      case type_t::ROT2:                            \
-        func<sym::Rot2<Scalar>>(args...);           \
-        break;                                      \
-      case type_t::ROT3:                            \
-        func<sym::Rot3<Scalar>>(args...);           \
-        break;                                      \
-      case type_t::POSE2:                           \
-        func<sym::Pose2<Scalar>>(args...);          \
-        break;                                      \
-      case type_t::POSE3:                           \
-        func<sym::Pose3<Scalar>>(args...);          \
-        break;                                      \
-      case type_t::SCALAR:                          \
-        func<Scalar>(args...);                      \
-        break;                                      \
+#define BY_TYPE_HELPER(name, func)                                     \
+  template <typename Scalar, typename... Args>                         \
+  auto name(const type_t type, Args&&... args) {                       \
+    switch (type.value) {                                              \
+      case type_t::ROT2:                                               \
+        return func<sym::Rot2<Scalar>>(args...);                       \
+      case type_t::ROT3:                                               \
+        return func<sym::Rot3<Scalar>>(args...);                       \
+      case type_t::POSE2:                                              \
+        return func<sym::Pose2<Scalar>>(args...);                      \
+      case type_t::POSE3:                                              \
+        return func<sym::Pose3<Scalar>>(args...);                      \
+      case type_t::SCALAR:                                             \
+        return func<Scalar>(args...);                                  \
         {% for i in range(1, 10) %}
-      case type_t::VECTOR{{ i }}:                   \
-        func<Eigen::Matrix<Scalar, {{ i }}, 1>>(args...); \
-        break;                                      \
+      case type_t::VECTOR{{ i }}:                                      \
+        return func<Eigen::Matrix<Scalar, {{ i }}, 1>>(args...);       \
         {% endfor %}
         {% for i in range(1, 10) %}
         {% for j in range(2, 10) %}
-      case type_t::MATRIX{{ i }}{{ j }}:            \
-        func<Eigen::Matrix<Scalar, {{ i }}, {{ j }}>>(args...); \
-        break;                                      \
+      case type_t::MATRIX{{ i }}{{ j }}:                               \
+        return func<Eigen::Matrix<Scalar, {{ i }}, {{ j }}>>(args...); \
         {% endfor %}
         {% endfor %}
-      default:                                      \
-        break;                                      \
-    }                                               \
+      default:                                                         \
+        SYM_ASSERT(false);                                             \
+    }                                                                  \
   }
 
 }  // namespace sym
