@@ -14,7 +14,7 @@ class GeoSequenceTest(StorageOpsTestMixin, TestCase):
     def element(cls) -> T.List[geo.Rot3]:
         element = []
         element.append(geo.Rot3())
-        element.append(geo.Rot3.from_euler_ypr(1.0, 0, 0))
+        element.append(geo.Rot3.from_yaw_pitch_roll(1.0, 0, 0))
         return element
 
 

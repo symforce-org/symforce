@@ -180,7 +180,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     def test_evalf(self) -> None:
         v = Values()
         v["a"] = sm.S.One / 3
-        v["b"] = geo.Rot3.from_axis_angle(axis=geo.V3(1, 0, 0), angle=sm.pi / 2)
+        v["b"] = geo.Rot3.from_angle_axis(angle=sm.pi / 2, axis=geo.V3(1, 0, 0))
 
         v_evalf = v.evalf()
 

@@ -77,7 +77,7 @@ class Rot3(object):
         return Rot3.from_storage([x, y, z, w])
 
     @classmethod
-    def from_euler_ypr(cls, yaw, pitch, roll):
+    def from_yaw_pitch_roll(cls, yaw, pitch, roll):
         # type: (float, float, float) -> Rot3
 
         return (
@@ -86,7 +86,7 @@ class Rot3(object):
             * Rot3.from_tangent([roll, 0, 0])
         )
 
-    def to_euler_ypr(self):
+    def to_yaw_pitch_roll(self):
         # type: () -> T.Tuple[float, float, float]
         x, y, z, w = self.data
         yaw = np.arctan2(2 * x * y + 2 * w * z, x * x + w * w - z * z - y * y)

@@ -285,7 +285,7 @@ class Rot3(LieGroup):
             q += from_rotation_matrix_qi_not_0(R, i, use_branch[i])
         return cls(q)
 
-    def to_euler_ypr(self, epsilon: T.Scalar = 0) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
+    def to_yaw_pitch_roll(self, epsilon: T.Scalar = 0) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
         """
         Compute the yaw, pitch, and roll Euler angles in radians of this rotation
 
@@ -308,20 +308,20 @@ class Rot3(LieGroup):
         return y, p, r
 
     @classmethod
-    def from_euler_ypr(cls, yaw: T.Scalar, pitch: T.Scalar, roll: T.Scalar) -> Rot3:
+    def from_yaw_pitch_roll(cls, yaw: T.Scalar, pitch: T.Scalar, roll: T.Scalar) -> Rot3:
         """
         Construct from yaw, pitch, and roll Euler angles in radians
         """
         return (
-            Rot3.from_axis_angle(V3(0, 0, 1), yaw)
-            * Rot3.from_axis_angle(V3(0, 1, 0), pitch)
-            * Rot3.from_axis_angle(V3(1, 0, 0), roll)
+            Rot3.from_angle_axis(yaw, V3(0, 0, 1))
+            * Rot3.from_angle_axis(pitch, V3(0, 1, 0))
+            * Rot3.from_angle_axis(roll, V3(1, 0, 0))
         )
 
     @classmethod
-    def from_axis_angle(cls, axis: Vector3, angle: T.Scalar) -> Rot3:
+    def from_angle_axis(cls, angle: T.Scalar, axis: Vector3) -> Rot3:
         """
-        Construct from a (normalized) axis as a 3-vector and an angle in radians.
+        Construct from an angle in radians and a (normalized) axis as a 3-vector.
         """
         return cls(Quaternion(xyz=axis * sm.sin(angle / 2), w=sm.cos(angle / 2)))
 

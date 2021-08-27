@@ -51,7 +51,9 @@ class PosedCameraTest(CamTestMixin, TestCase):
     @classmethod
     def element(cls) -> cam.PosedCamera:
         return cam.PosedCamera(
-            pose=geo.Pose3(R=geo.Rot3.from_euler_ypr(0.0, np.pi / 2.0, 0.0), t=geo.V3(0, 0, 100)),
+            pose=geo.Pose3(
+                R=geo.Rot3.from_yaw_pitch_roll(0.0, np.pi / 2.0, 0.0), t=geo.V3(0, 0, 100)
+            ),
             calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
             image_size=(640, 480),
         )
@@ -92,13 +94,13 @@ class PosedCameraTest(CamTestMixin, TestCase):
         # Create two cameras whose optical axes intersect
         posed_cam_1 = cam.PosedCamera(
             pose=geo.Pose3(
-                R=geo.Rot3.from_euler_ypr(0.0, np.pi / 2.0, 0.0), t=geo.V3(0.0, 2.0, 0.0)
+                R=geo.Rot3.from_yaw_pitch_roll(0.0, np.pi / 2.0, 0.0), t=geo.V3(0.0, 2.0, 0.0)
             ),
             calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
         )
         posed_cam_2 = cam.PosedCamera(
             pose=geo.Pose3(
-                R=geo.Rot3.from_euler_ypr(0.0, 0.0, -np.pi / 2.0), t=geo.V3(2.0, 0.0, 0.0)
+                R=geo.Rot3.from_yaw_pitch_roll(0.0, 0.0, -np.pi / 2.0), t=geo.V3(2.0, 0.0, 0.0)
             ),
             calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
         )

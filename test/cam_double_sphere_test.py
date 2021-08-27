@@ -52,8 +52,8 @@ class DoubleSphereTest(StorageOpsTestMixin, CamTestMixin, TestCase):
             norm = np.random.uniform(0.1, 100)
 
             P = (
-                geo.Rot3.from_axis_angle(geo.V3(0, 0, 1), np.random.uniform(0, 2 * np.pi))
-                * geo.Rot3.from_axis_angle(axis=geo.V3(0, 1, 0), angle=angle)
+                geo.Rot3.from_angle_axis(np.random.uniform(0, 2 * np.pi), geo.V3(0, 0, 1))
+                * geo.Rot3.from_angle_axis(angle=angle, axis=geo.V3(0, 1, 0))
                 * geo.V3(0, 0, norm)
             )
 

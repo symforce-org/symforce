@@ -192,11 +192,9 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
                 name="random_from_uniform_samples",
                 config=config,
             ),
+            Codegen.function(func=geo.Rot3.from_yaw_pitch_roll, config=config),
             Codegen.function(
-                func=geo.Rot3.from_euler_ypr, name="from_yaw_pitch_roll", config=config
-            ),
-            Codegen.function(
-                func=lambda ypr: geo.Rot3.from_euler_ypr(*ypr),
+                func=lambda ypr: geo.Rot3.from_yaw_pitch_roll(*ypr),
                 input_types=[geo.V3],
                 name="from_yaw_pitch_roll",
                 config=config,

@@ -93,7 +93,7 @@ class Rot3 {
   // Euler angles
   // TODO(hayk): Could codegen this.
 
-  Vector3 YawPitchRoll() const {
+  Vector3 ToYawPitchRoll() const {
     return ToRotationMatrix().eulerAngles(2, 1, 0);
   }
 

@@ -19,7 +19,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> geo.Rot3:
-        return geo.Rot3.from_axis_angle(geo.V3(1, 0, 0), 1.2)
+        return geo.Rot3.from_angle_axis(1.2, geo.V3(1, 0, 0))
 
     def test_default_construct(self) -> None:
         """
@@ -48,8 +48,8 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             Rot3.angle_between
         """
         x_axis = geo.V3(1, 0, 0)
-        rot1 = geo.Rot3.from_axis_angle(x_axis, 0.3)
-        rot2 = geo.Rot3.from_axis_angle(x_axis, -1.1)
+        rot1 = geo.Rot3.from_angle_axis(0.3, x_axis)
+        rot2 = geo.Rot3.from_angle_axis(-1.1, x_axis)
         angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
         self.assertNear(angle, 1.4, places=7)
 
@@ -63,7 +63,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             for angle in [0.0, np.pi / 2.0, np.pi, 3.0 * np.pi / 2.0, 2.0 * np.pi]:
                 axis = geo.V3.zero()
                 axis[axis_index] = 1.0
-                rotations_to_test.append(geo.Rot3.from_axis_angle(axis, angle))
+                rotations_to_test.append(geo.Rot3.from_angle_axis(angle, axis))
 
         # Test some random rotations
         for _ in range(100):
@@ -110,7 +110,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
 
         # 180 degree rotation about axis = [1, -1, 0]
-        rot_180_axis = geo.Rot3.from_axis_angle(geo.V3(1, -1, 0).normalized(), sm.pi)
+        rot_180_axis = geo.Rot3.from_angle_axis(sm.pi, geo.V3(1, -1, 0).normalized())
         rot_180_axis_transformed = geo.Rot3.from_rotation_matrix(rot_180_axis.to_rotation_matrix())
         self.assertEqual(
             rot_180_axis.to_rotation_matrix(),
@@ -142,28 +142,28 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             for i in range(4, 12):
                 # Generating R: what should be a 180 degree rotation about
                 # axis, but, due to numerical errors, is not exactly.
-                R_i = geo.Rot3.from_axis_angle(axis, np.pi / i).to_rotation_matrix()
+                R_i = geo.Rot3.from_angle_axis(np.pi / i, axis).to_rotation_matrix()
                 R = geo.M33(np.linalg.matrix_power(R_i.to_numpy(), i))
                 self.assertNear(R, geo.Rot3.from_rotation_matrix(R).to_rotation_matrix())
 
-    def test_to_from_euler_ypr(self) -> None:
+    def test_to_from_yaw_pitch_roll(self) -> None:
         """
         Tests:
-            Rot3.from_euler_ypr
-            Rot3.to_euler_ypr
+            Rot3.from_yaw_pitch_roll
+            Rot3.to_yaw_pitch_roll
         """
 
         # Rotations about principal axes
-        R_90_yaw = geo.Rot3.from_euler_ypr(np.pi / 2.0, 0, 0)
-        self.assertLieGroupNear(R_90_yaw, geo.Rot3.from_axis_angle(geo.V3(0, 0, 1), np.pi / 2.0))
-        R_90_pitch = geo.Rot3.from_euler_ypr(0, np.pi / 2.0, 0)
-        self.assertLieGroupNear(R_90_pitch, geo.Rot3.from_axis_angle(geo.V3(0, 1, 0), np.pi / 2.0))
-        R_90_roll = geo.Rot3.from_euler_ypr(0, 0, np.pi / 2.0)
-        self.assertLieGroupNear(R_90_roll, geo.Rot3.from_axis_angle(geo.V3(1, 0, 0), np.pi / 2.0))
+        R_90_yaw = geo.Rot3.from_yaw_pitch_roll(np.pi / 2.0, 0, 0)
+        self.assertLieGroupNear(R_90_yaw, geo.Rot3.from_angle_axis(np.pi / 2.0, geo.V3(0, 0, 1)))
+        R_90_pitch = geo.Rot3.from_yaw_pitch_roll(0, np.pi / 2.0, 0)
+        self.assertLieGroupNear(R_90_pitch, geo.Rot3.from_angle_axis(np.pi / 2.0, geo.V3(0, 1, 0)))
+        R_90_roll = geo.Rot3.from_yaw_pitch_roll(0, 0, np.pi / 2.0)
+        self.assertLieGroupNear(R_90_roll, geo.Rot3.from_angle_axis(np.pi / 2.0, geo.V3(1, 0, 0)))
 
         # Check functions are inverses of each other
         for rot in self.get_rotations_to_test():
-            rot_transformed = geo.Rot3.from_euler_ypr(*rot.to_euler_ypr(epsilon=1e-14))
+            rot_transformed = geo.Rot3.from_yaw_pitch_roll(*rot.to_yaw_pitch_roll(epsilon=1e-14))
             self.assertLieGroupNear(rot_transformed, rot, places=6)
 
     def test_from_two_unit_vectors(self) -> None:

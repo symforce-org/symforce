@@ -41,7 +41,7 @@ TEST_CASE("Test Rot3", "[geo_package]") {
   const Eigen::Quaternionf quat = rot.Quaternion();
   const Eigen::AngleAxisf aa = rot.AngleAxis();
   const Eigen::Matrix<float, 3, 3> mat = rot.ToRotationMatrix();
-  const Eigen::Matrix<float, 3, 1> ypr = rot.YawPitchRoll();
+  const Eigen::Matrix<float, 3, 1> ypr = rot.ToYawPitchRoll();
 
   // Rotate a point
   const Eigen::Vector3f point = sym::Random<Eigen::Vector3f>(gen);

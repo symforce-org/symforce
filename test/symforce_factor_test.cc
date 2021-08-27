@@ -146,7 +146,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
   const sym::Factord unary_rot3 = sym::Factord::Jacobian(
       [](const sym::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res,
          Eigen::Matrix<double, 2, 3>* jac) {
-        (*res) << rot.YawPitchRoll().tail<2>();
+        (*res) << rot.ToYawPitchRoll().tail<2>();
         (*jac) << 2.0 * rot.ToTangent().transpose(), -1.0 * rot.ToTangent().transpose();  // fake
       },
       {{'R', 2}});
@@ -167,7 +167,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
       [](double x, const sym::Rot3d& R1, double y, const sym::Rot3d& R2, const sym::Pose3d& P,
          double z, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 15>* jac) {
         (*res)[0] = x + 2 * y + 3 * z;
-        (*res)[1] = R1.Between(R2).Between(P.Rotation()).YawPitchRoll()[0];
+        (*res)[1] = R1.Between(R2).Between(P.Rotation()).ToYawPitchRoll()[0];
 
         // FAKE
         (*jac).row(0) << 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3;
@@ -404,7 +404,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
   const sym::Factord unary_rot3 = sym::Factord::Hessian(
       [](const sym::Rot3d& rot, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 3>* jac,
          Eigen::Matrix<double, 3, 3>* hessian, Eigen::Matrix<double, 3, 1>* rhs) {
-        (*res) << rot.YawPitchRoll().tail<2>();
+        (*res) << rot.ToYawPitchRoll().tail<2>();
         (*jac) << 2.0 * rot.ToTangent().transpose(), -1.0 * rot.ToTangent().transpose();  // fake
 
         hessian->resize(jac->cols(), jac->cols());
@@ -437,7 +437,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
          double z, Eigen::Matrix<double, 2, 1>* res, Eigen::Matrix<double, 2, 15>* jac,
          Eigen::Matrix<double, 15, 15>* hessian, Eigen::Matrix<double, 15, 1>* rhs) {
         (*res)[0] = x + 2 * y + 3 * z;
-        (*res)[1] = R1.Between(R2).Between(P.Rotation()).YawPitchRoll()[0];
+        (*res)[1] = R1.Between(R2).Between(P.Rotation()).ToYawPitchRoll()[0];
 
         // FAKE
         (*jac).row(0) << 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3;
