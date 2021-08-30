@@ -2,10 +2,8 @@
 #include <spdlog/spdlog.h>
 
 #include "./levenberg_marquardt_solver.h"
+#include "./tic_toc.h"
 #include "./util.h"
-
-// TODO(aaron): Don't depend on this
-#include "util/tic_toc/tic_toc.h"
 
 namespace sym {
 
@@ -17,7 +15,7 @@ template <typename ScalarType, typename LinearSolverType>
 Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
     const Eigen::SparseMatrix<Scalar>& hessian_lower,
     boost::optional<VectorX<Scalar>>* const max_diagonal, const Scalar lambda) const {
-  TIC_TOC_SCOPE("LM<{}>: DampHessian", id_);
+  SYM_TIME_SCOPE("LM<{}>: DampHessian", id_);
   Eigen::SparseMatrix<Scalar> H_damped = hessian_lower;
 
   if (p_.use_diagonal_damping) {
@@ -67,7 +65,7 @@ template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
     optimization_iteration_t* const iteration_stats, const StateType& state_,
     const Scalar new_error, const Scalar relative_reduction, const bool debug_stats) const {
-  TIC_TOC_SCOPE("LM<{}>: IterationStats", id_);
+  SYM_TIME_SCOPE("LM<{}>: IterationStats", id_);
 
   iteration_stats->iteration = iteration_;
   iteration_stats->current_lambda = current_lambda_;
@@ -76,12 +74,12 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
   iteration_stats->relative_reduction = relative_reduction;
 
   {
-    TIC_TOC_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
+    SYM_TIME_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
     iteration_stats->new_error_linear = state_.Init().GetLinearization().LinearError(update_);
   }
 
   if (p_.verbose) {
-    TIC_TOC_SCOPE("LM<{}>: IterationStats - Print", id_);
+    SYM_TIME_SCOPE("LM<{}>: IterationStats - Print", id_);
     spdlog::info(
         "[iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3f}/{:.3f}/{:.3f}, "
         "rel reduction: {:.3f}",
@@ -133,25 +131,25 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 template <typename ScalarType, typename LinearSolverType>
 bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     const LinearizeFunc& func, optimization_stats_t* const stats, const bool debug_stats) {
-  TIC_TOC_SCOPE("LM<{}>::Iterate()", id_);
+  SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
   SYM_ASSERT(stats != nullptr);
 
   // new -> init
   {
-    TIC_TOC_SCOPE("LM<{}>: StateStep", id_);
+    SYM_TIME_SCOPE("LM<{}>: StateStep", id_);
     state_.Step();
     iteration_++;
   }
 
   if (!state_.Init().GetLinearization().IsInitialized()) {
-    TIC_TOC_SCOPE("LM<{}>: EvaluateFirst", id_);
+    SYM_TIME_SCOPE("LM<{}>: EvaluateFirst", id_);
     state_.Init().Relinearize(func);
     state_.SetBestToInit();
   }
 
   // save the initial error state_ before optimizing
   if (iteration_ == 0) {
-    TIC_TOC_SCOPE("LM<{}>: FirstIterationStats", id_);
+    SYM_TIME_SCOPE("LM<{}>: FirstIterationStats", id_);
     stats->iterations.emplace_back();
     optimization_iteration_t& iteration_stats = stats->iterations.back();
     iteration_stats.iteration = -1;
@@ -170,7 +168,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   // Analyze the sparsity pattern for efficient repeated factorization
   if (!solver_analyzed_) {
     // TODO(aaron): Do this with the ones linearization computed by the Linearizer
-    TIC_TOC_SCOPE("LM<{}>: AnalyzePattern", id_);
+    SYM_TIME_SCOPE("LM<{}>: AnalyzePattern", id_);
     Eigen::SparseMatrix<Scalar> H_analyze = state_.Init().GetLinearization().hessian_lower;
     H_analyze.diagonal().array() = 1.0;  // Make sure the diagonal is nonzero for analysis
     linear_solver_.ComputeSymbolicSparsity(H_analyze);
@@ -184,22 +182,22 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   CheckHessianDiagonal(H_damped_);
 
   {
-    TIC_TOC_SCOPE("LM<{}>: SparseFactorize", id_);
+    SYM_TIME_SCOPE("LM<{}>: SparseFactorize", id_);
     linear_solver_.Factorize(H_damped_);
   }
 
   {
-    TIC_TOC_SCOPE("LM<{}>: SparseSolve", id_);
+    SYM_TIME_SCOPE("LM<{}>: SparseSolve", id_);
     update_ = linear_solver_.Solve(state_.Init().GetLinearization().rhs);
   }
 
   {
-    TIC_TOC_SCOPE("LM<{}>: Update", id_);
+    SYM_TIME_SCOPE("LM<{}>: Update", id_);
     Update(state_.Init().values, index_, -update_, &state_.New().values);
   }
 
   {
-    TIC_TOC_SCOPE("LM<{}>: linearization_func", id_);
+    SYM_TIME_SCOPE("LM<{}>: linearization_func", id_);
     state_.New().Relinearize(func);
   }
 
@@ -220,7 +218,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
       (relative_reduction > 0) && (relative_reduction < p_.early_exit_min_reduction);
 
   {
-    TIC_TOC_SCOPE("LM<{}>: accept_update bookkeeping", id_);
+    SYM_TIME_SCOPE("LM<{}>: accept_update bookkeeping", id_);
     bool accept_update = relative_reduction > 0;
 
     // NOTE(jack): Reference https://arxiv.org/abs/1201.5885
@@ -264,7 +262,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
     const Eigen::SparseMatrix<Scalar>& hessian_lower, MatrixX<Scalar>* const covariance) {
-  TIC_TOC_SCOPE("LM<{}>: ComputeCovariance()", id_);
+  SYM_TIME_SCOPE("LM<{}>: ComputeCovariance()", id_);
 
   H_damped_ = hessian_lower;
   H_damped_.diagonal().array() += epsilon_;
