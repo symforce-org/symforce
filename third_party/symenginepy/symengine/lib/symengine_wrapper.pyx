@@ -3136,9 +3136,8 @@ cdef class MatrixBase:
     def _symbolic_(self, ring):
         return ring(self._sage_())
 
-    # TODO: fix this
     def __hash__(self):
-        return 0
+        return deref(self.thisptr).hash()
 
 
 class MatrixError(Exception):

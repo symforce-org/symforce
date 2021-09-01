@@ -789,6 +789,7 @@ cdef extern from "<symengine/matrix.h>" namespace "SymEngine":
         rcp_const_basic set(unsigned i, unsigned j, rcp_const_basic e) nogil
         string __str__() nogil except+
         bool eq(const MatrixBase &) nogil
+        unsigned int hash() nogil except +
         rcp_const_basic det() nogil
         void inv(MatrixBase &)
         bool is_square() nogil
