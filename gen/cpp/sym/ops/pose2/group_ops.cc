@@ -191,40 +191,42 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::ComposeWithJacobians(const sym::Pose
                                                                  const sym::Pose2<Scalar>& b,
                                                                  SelfJacobian* const res_D_a,
                                                                  SelfJacobian* const res_D_b) {
-  // Total ops: 42
+  // Total ops: 27
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (5)
+  // Intermediate terms (8)
   const Scalar _tmp0 = _a[0] * _b[0] - _a[1] * _b[1];
-  const Scalar _tmp1 = _a[0] * _b[1] + _a[1] * _b[0];
-  const Scalar _tmp2 = _a[0] * _b[2] - _a[1] * _b[3];
-  const Scalar _tmp3 = _a[1] * _b[2];
-  const Scalar _tmp4 = _a[0] * _b[3];
+  const Scalar _tmp1 = _a[1] * _b[0];
+  const Scalar _tmp2 = _a[0] * _b[1];
+  const Scalar _tmp3 = _tmp1 + _tmp2;
+  const Scalar _tmp4 = _a[0] * _b[2] - _a[1] * _b[3];
+  const Scalar _tmp5 = _a[1] * _b[2];
+  const Scalar _tmp6 = _a[0] * _b[3];
+  const Scalar _tmp7 = std::pow(_tmp0, Scalar(2)) - _tmp3 * (-_tmp1 - _tmp2);
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
   _res[0] = _tmp0;
-  _res[1] = _tmp1;
-  _res[2] = _a[2] + _tmp2;
-  _res[3] = _a[3] + _tmp3 + _tmp4;
+  _res[1] = _tmp3;
+  _res[2] = _a[2] + _tmp4;
+  _res[3] = _a[3] + _tmp5 + _tmp6;
 
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
     _res_D_a(0, 0) = 1;
     _res_D_a(0, 1) = 0;
-    _res_D_a(0, 2) = -_tmp3 - _tmp4;
+    _res_D_a(0, 2) = -_tmp5 - _tmp6;
     _res_D_a(1, 0) = 0;
     _res_D_a(1, 1) = 1;
-    _res_D_a(1, 2) = _tmp2;
+    _res_D_a(1, 2) = _tmp4;
     _res_D_a(2, 0) = 0;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) =
-        _a[0] * (_b[0] * _tmp0 + _b[1] * _tmp1) - _a[1] * (-_b[0] * _tmp1 + _b[1] * _tmp0);
+    _res_D_a(2, 2) = _tmp7;
   }
 
   if (res_D_b != nullptr) {
@@ -238,8 +240,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::ComposeWithJacobians(const sym::Pose
     _res_D_b(1, 2) = 0;
     _res_D_b(2, 0) = 0;
     _res_D_b(2, 1) = 0;
-    _res_D_b(2, 2) =
-        _b[0] * (_a[0] * _tmp0 + _a[1] * _tmp1) - _b[1] * (-_a[0] * _tmp1 + _a[1] * _tmp0);
+    _res_D_b(2, 2) = _tmp7;
   }
 
   return sym::Pose2<Scalar>(_res);
@@ -261,40 +262,48 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(const sym::Pose
                                                                  const sym::Pose2<Scalar>& b,
                                                                  SelfJacobian* const res_D_a,
                                                                  SelfJacobian* const res_D_b) {
-  // Total ops: 67
+  // Total ops: 47
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (5)
-  const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
-  const Scalar _tmp1 = _a[0] * _b[1] - _a[1] * _b[0];
-  const Scalar _tmp2 = -_a[0];
-  const Scalar _tmp3 = -_a[1];
-  const Scalar _tmp4 = -_a[3] + _b[3];
+  // Intermediate terms (14)
+  const Scalar _tmp0 = _a[1] * _b[1];
+  const Scalar _tmp1 = _a[0] * _b[0];
+  const Scalar _tmp2 = _tmp0 + _tmp1;
+  const Scalar _tmp3 = _a[1] * _b[0];
+  const Scalar _tmp4 = _a[0] * _b[1];
+  const Scalar _tmp5 = -_tmp3 + _tmp4;
+  const Scalar _tmp6 = _a[0] * _a[2] + _a[1] * _a[3];
+  const Scalar _tmp7 = _a[1] * _b[3];
+  const Scalar _tmp8 = _a[0] * _b[2];
+  const Scalar _tmp9 = _a[0] * _a[3];
+  const Scalar _tmp10 = _a[1] * _a[2];
+  const Scalar _tmp11 = _a[0] * _b[3] - _a[1] * _b[2];
+  const Scalar _tmp12 = -_a[0];
+  const Scalar _tmp13 = -_a[1];
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _tmp0;
-  _res[1] = _tmp1;
-  _res[2] = -_a[0] * _a[2] + _a[0] * _b[2] - _a[1] * _a[3] + _a[1] * _b[3];
-  _res[3] = -_a[0] * _a[3] + _a[0] * _b[3] + _a[1] * _a[2] - _a[1] * _b[2];
+  _res[0] = _tmp2;
+  _res[1] = _tmp5;
+  _res[2] = -_tmp6 + _tmp7 + _tmp8;
+  _res[3] = _tmp10 + _tmp11 - _tmp9;
 
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _tmp2;
-    _res_D_a(0, 1) = _tmp3;
-    _res_D_a(0, 2) = _a[0] * _tmp4 - _a[1] * (-_a[2] + _b[2]);
+    _res_D_a(0, 0) = _tmp12;
+    _res_D_a(0, 1) = _tmp13;
+    _res_D_a(0, 2) = _tmp10 + _tmp11 - _tmp9;
     _res_D_a(1, 0) = _a[1];
-    _res_D_a(1, 1) = _tmp2;
-    _res_D_a(1, 2) = _a[0] * (_a[2] - _b[2]) - _a[1] * _tmp4;
+    _res_D_a(1, 1) = _tmp12;
+    _res_D_a(1, 2) = _tmp6 - _tmp7 - _tmp8;
     _res_D_a(2, 0) = 0;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) =
-        _a[0] * (-_b[0] * _tmp0 - _b[1] * _tmp1) - _a[1] * (-_b[0] * _tmp1 + _b[1] * _tmp0);
+    _res_D_a(2, 2) = _tmp2 * (-_tmp0 - _tmp1) - std::pow(_tmp5, Scalar(2));
   }
 
   if (res_D_b != nullptr) {
@@ -303,13 +312,12 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(const sym::Pose
     _res_D_b(0, 0) = _a[0];
     _res_D_b(0, 1) = _a[1];
     _res_D_b(0, 2) = 0;
-    _res_D_b(1, 0) = _tmp3;
+    _res_D_b(1, 0) = _tmp13;
     _res_D_b(1, 1) = _a[0];
     _res_D_b(1, 2) = 0;
     _res_D_b(2, 0) = 0;
     _res_D_b(2, 1) = 0;
-    _res_D_b(2, 2) =
-        _b[0] * (_a[0] * _tmp0 - _a[1] * _tmp1) - _b[1] * (-_a[0] * _tmp1 - _a[1] * _tmp0);
+    _res_D_b(2, 2) = std::pow(_tmp2, Scalar(2)) - _tmp5 * (_tmp3 - _tmp4);
   }
 
   return sym::Pose2<Scalar>(_res);

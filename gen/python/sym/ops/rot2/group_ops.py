@@ -108,54 +108,53 @@ class GroupOps(object):
     def compose_with_jacobians(a, b):
         # type: (sym.Rot2, sym.Rot2) -> T.Tuple[T.List[float], T.List[float], T.List[float]]
 
-        # Total ops: 29
+        # Total ops: 14
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (2)
+        # Intermediate terms (5)
         _tmp0 = _a[0] * _b[0] - _a[1] * _b[1]
-        _tmp1 = _a[0] * _b[1] + _a[1] * _b[0]
+        _tmp1 = _a[0] * _b[1]
+        _tmp2 = _a[1] * _b[0]
+        _tmp3 = _tmp1 + _tmp2
+        _tmp4 = _tmp0 ** 2 - _tmp3 * (-_tmp1 - _tmp2)
 
         # Output terms
         _res = [0.0] * 2
         _res[0] = _tmp0
-        _res[1] = _tmp1
+        _res[1] = _tmp3
         _res_D_a = [0.0] * 1
-        _res_D_a[0] = _a[0] * (_b[0] * _tmp0 + _b[1] * _tmp1) - _a[1] * (
-            -_b[0] * _tmp1 + _b[1] * _tmp0
-        )
+        _res_D_a[0] = _tmp4
         _res_D_b = [0.0] * 1
-        _res_D_b[0] = _b[0] * (_a[0] * _tmp0 + _a[1] * _tmp1) - _b[1] * (
-            -_a[0] * _tmp1 + _a[1] * _tmp0
-        )
+        _res_D_b[0] = _tmp4
         return _res, _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(a, b):
         # type: (sym.Rot2, sym.Rot2) -> T.Tuple[T.List[float], T.List[float], T.List[float]]
 
-        # Total ops: 33
+        # Total ops: 20
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (2)
-        _tmp0 = _a[0] * _b[0] + _a[1] * _b[1]
-        _tmp1 = _a[0] * _b[1] - _a[1] * _b[0]
+        # Intermediate terms (6)
+        _tmp0 = _a[0] * _b[0]
+        _tmp1 = _a[1] * _b[1]
+        _tmp2 = _tmp0 + _tmp1
+        _tmp3 = _a[0] * _b[1]
+        _tmp4 = _a[1] * _b[0]
+        _tmp5 = _tmp3 - _tmp4
 
         # Output terms
         _res = [0.0] * 2
-        _res[0] = _tmp0
-        _res[1] = _tmp1
+        _res[0] = _tmp2
+        _res[1] = _tmp5
         _res_D_a = [0.0] * 1
-        _res_D_a[0] = _a[0] * (-_b[0] * _tmp0 - _b[1] * _tmp1) - _a[1] * (
-            -_b[0] * _tmp1 + _b[1] * _tmp0
-        )
+        _res_D_a[0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5 ** 2
         _res_D_b = [0.0] * 1
-        _res_D_b[0] = _b[0] * (_a[0] * _tmp0 - _a[1] * _tmp1) - _b[1] * (
-            -_a[0] * _tmp1 - _a[1] * _tmp0
-        )
+        _res_D_b[0] = _tmp2 ** 2 - _tmp5 * (-_tmp3 + _tmp4)
         return _res, _res_D_a, _res_D_b

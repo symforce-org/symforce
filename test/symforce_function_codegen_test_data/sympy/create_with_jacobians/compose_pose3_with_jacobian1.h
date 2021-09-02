@@ -22,13 +22,13 @@ template <typename Scalar>
 sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
                                              const sym::Pose3<Scalar>& b,
                                              Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
-  // Total ops: 247
+  // Total ops: 205
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
-  // Intermediate terms (87)
+  // Intermediate terms (78)
   const Scalar _tmp0 = _a[0] * _b[3];
   const Scalar _tmp1 = _a[1] * _b[2];
   const Scalar _tmp2 = _a[3] * _b[0];
@@ -65,60 +65,49 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
   const Scalar _tmp33 = _tmp21 - _tmp22;
   const Scalar _tmp34 = _tmp28 + _tmp29;
   const Scalar _tmp35 = _tmp24 + _tmp31 + 1;
-  const Scalar _tmp36 = 2 * _tmp8;
-  const Scalar _tmp37 = 2 * _tmp11;
-  const Scalar _tmp38 = 2 * _tmp9;
-  const Scalar _tmp39 = 2 * _tmp10;
+  const Scalar _tmp36 = (Scalar(1) / Scalar(2)) * _tmp8;
+  const Scalar _tmp37 = (Scalar(1) / Scalar(2)) * _tmp11;
+  const Scalar _tmp38 = (Scalar(1) / Scalar(2)) * _tmp9;
+  const Scalar _tmp39 = (Scalar(1) / Scalar(2)) * _tmp10;
   const Scalar _tmp40 = _tmp36 - _tmp37 + _tmp38 + _tmp39;
-  const Scalar _tmp41 = 2 * _tmp7;
-  const Scalar _tmp42 = 2 * _tmp4;
-  const Scalar _tmp43 = 2 * _tmp5;
-  const Scalar _tmp44 = 2 * _tmp6;
-  const Scalar _tmp45 = _tmp41 - _tmp42 - _tmp43 - _tmp44;
-  const Scalar _tmp46 = _a[2] * _tmp45;
-  const Scalar _tmp47 = 2 * _tmp12 - 2 * _tmp13 - 2 * _tmp14 - 2 * _tmp15;
-  const Scalar _tmp48 = _a[0] * _tmp47;
-  const Scalar _tmp49 = 2 * _tmp0;
-  const Scalar _tmp50 = 2 * _tmp1;
-  const Scalar _tmp51 = 2 * _tmp3;
-  const Scalar _tmp52 = 2 * _tmp2;
-  const Scalar _tmp53 = -_tmp49 - _tmp50 + _tmp51 - _tmp52;
-  const Scalar _tmp54 = _a[3] * _tmp53 + _tmp48;
-  const Scalar _tmp55 = _a[1] * _tmp40 + _tmp46 + _tmp54;
-  const Scalar _tmp56 = (Scalar(1) / Scalar(2)) * _b[0];
-  const Scalar _tmp57 = _a[2] * _tmp53;
-  const Scalar _tmp58 = _a[1] * _tmp47;
-  const Scalar _tmp59 = _a[3] * _tmp45 + _tmp58;
-  const Scalar _tmp60 = -_a[0] * _tmp40 - _tmp57 + _tmp59;
-  const Scalar _tmp61 = (Scalar(1) / Scalar(2)) * _b[1];
-  const Scalar _tmp62 = _a[0] * _tmp45;
-  const Scalar _tmp63 = _a[1] * _tmp53;
-  const Scalar _tmp64 = _a[2] * _tmp47;
-  const Scalar _tmp65 = (Scalar(1) / Scalar(2)) * _a[3] * _tmp40 +
-                        (Scalar(1) / Scalar(2)) * _tmp62 - Scalar(1) / Scalar(2) * _tmp63 -
-                        Scalar(1) / Scalar(2) * _tmp64;
-  const Scalar _tmp66 = -_a[0] * _tmp53;
-  const Scalar _tmp67 = _a[3] * _tmp47;
-  const Scalar _tmp68 = -_a[1] * _tmp45 + _tmp67;
-  const Scalar _tmp69 = (Scalar(1) / Scalar(2)) * _a[2] * _tmp40 +
-                        (Scalar(1) / Scalar(2)) * _tmp66 + (Scalar(1) / Scalar(2)) * _tmp68;
-  const Scalar _tmp70 = (Scalar(1) / Scalar(2)) * _b[2];
-  const Scalar _tmp71 = (Scalar(1) / Scalar(2)) * _b[3];
-  const Scalar _tmp72 = -_tmp36 + _tmp37 - _tmp38 - _tmp39;
-  const Scalar _tmp73 = _a[0] * _tmp72;
-  const Scalar _tmp74 = _tmp49 + _tmp50 - _tmp51 + _tmp52;
-  const Scalar _tmp75 = _a[2] * _tmp74 + _tmp59 + _tmp73;
-  const Scalar _tmp76 = _a[1] * _tmp72;
-  const Scalar _tmp77 = _a[3] * _tmp74 - _tmp46 - _tmp48 + _tmp76;
-  const Scalar _tmp78 = -_a[2] * _tmp72;
-  const Scalar _tmp79 = _a[0] * _tmp74 + _tmp68 + _tmp78;
-  const Scalar _tmp80 = _a[3] * _tmp72 + _tmp64;
-  const Scalar _tmp81 = -_a[1] * _tmp74 - _tmp62 + _tmp80;
-  const Scalar _tmp82 = -_tmp41 + _tmp42 + _tmp43 + _tmp44;
-  const Scalar _tmp83 = _a[0] * _tmp82 + _tmp63 + _tmp80;
-  const Scalar _tmp84 = _a[1] * _tmp82 + _tmp66 + _tmp67 + _tmp78;
-  const Scalar _tmp85 = -_a[2] * _tmp82 + _tmp54 - _tmp76;
-  const Scalar _tmp86 = _a[3] * _tmp82 + _tmp57 - _tmp58 - _tmp73;
+  const Scalar _tmp41 = 2 * _tmp8;
+  const Scalar _tmp42 = 2 * _tmp11;
+  const Scalar _tmp43 = 2 * _tmp9;
+  const Scalar _tmp44 = 2 * _tmp10;
+  const Scalar _tmp45 = _tmp41 - _tmp42 + _tmp43 + _tmp44;
+  const Scalar _tmp46 = 2 * _tmp0;
+  const Scalar _tmp47 = 2 * _tmp1;
+  const Scalar _tmp48 = 2 * _tmp3;
+  const Scalar _tmp49 = 2 * _tmp2;
+  const Scalar _tmp50 = -_tmp46 - _tmp47 + _tmp48 - _tmp49;
+  const Scalar _tmp51 = (Scalar(1) / Scalar(2)) * _tmp0;
+  const Scalar _tmp52 = (Scalar(1) / Scalar(2)) * _tmp1;
+  const Scalar _tmp53 = (Scalar(1) / Scalar(2)) * _tmp3;
+  const Scalar _tmp54 = (Scalar(1) / Scalar(2)) * _tmp2;
+  const Scalar _tmp55 = -_tmp51 - _tmp52 + _tmp53 - _tmp54;
+  const Scalar _tmp56 = _tmp50 * _tmp55;
+  const Scalar _tmp57 = (Scalar(1) / Scalar(2)) * _tmp7;
+  const Scalar _tmp58 = (Scalar(1) / Scalar(2)) * _tmp4;
+  const Scalar _tmp59 = (Scalar(1) / Scalar(2)) * _tmp5;
+  const Scalar _tmp60 = (Scalar(1) / Scalar(2)) * _tmp6;
+  const Scalar _tmp61 = _tmp57 - _tmp58 - _tmp59 - _tmp60;
+  const Scalar _tmp62 = 2 * _tmp7;
+  const Scalar _tmp63 = 2 * _tmp4;
+  const Scalar _tmp64 = 2 * _tmp5;
+  const Scalar _tmp65 = 2 * _tmp6;
+  const Scalar _tmp66 = _tmp62 - _tmp63 - _tmp64 - _tmp65;
+  const Scalar _tmp67 = 2 * _tmp12 - 2 * _tmp13 - 2 * _tmp14 - 2 * _tmp15;
+  const Scalar _tmp68 = (Scalar(1) / Scalar(2)) * _tmp12 - Scalar(1) / Scalar(2) * _tmp13 -
+                        Scalar(1) / Scalar(2) * _tmp14 - Scalar(1) / Scalar(2) * _tmp15;
+  const Scalar _tmp69 = _tmp67 * _tmp68;
+  const Scalar _tmp70 = _tmp61 * _tmp66 + _tmp69;
+  const Scalar _tmp71 = -_tmp36 + _tmp37 - _tmp38 - _tmp39;
+  const Scalar _tmp72 = _tmp51 + _tmp52 - _tmp53 + _tmp54;
+  const Scalar _tmp73 = -_tmp57 + _tmp58 + _tmp59 + _tmp60;
+  const Scalar _tmp74 = -_tmp41 + _tmp42 - _tmp43 - _tmp44;
+  const Scalar _tmp75 = _tmp46 + _tmp47 - _tmp48 + _tmp49;
+  const Scalar _tmp76 = _tmp71 * _tmp74;
+  const Scalar _tmp77 = -_tmp62 + _tmp63 + _tmp64 + _tmp65;
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 7, 1> _res;
@@ -134,21 +123,21 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
 
-    _res_D_b(0, 0) = _b[2] * _tmp65 + _b[3] * _tmp69 - _tmp55 * _tmp56 - _tmp60 * _tmp61;
-    _res_D_b(0, 1) = -_b[2] * _tmp69 + _b[3] * _tmp65 - _tmp55 * _tmp61 + _tmp56 * _tmp60;
-    _res_D_b(0, 2) = -_b[0] * _tmp65 + _b[1] * _tmp69 - _tmp55 * _tmp70 + _tmp60 * _tmp71;
+    _res_D_b(0, 0) = _tmp40 * _tmp45 + _tmp56 + _tmp70;
+    _res_D_b(0, 1) = _tmp45 * _tmp68 + _tmp50 * _tmp61 + _tmp66 * _tmp72 + _tmp67 * _tmp71;
+    _res_D_b(0, 2) = _tmp45 * _tmp55 + _tmp50 * _tmp71 + _tmp66 * _tmp68 + _tmp67 * _tmp73;
     _res_D_b(0, 3) = 0;
     _res_D_b(0, 4) = 0;
     _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = -_tmp56 * _tmp75 - _tmp61 * _tmp77 + _tmp70 * _tmp79 + _tmp71 * _tmp81;
-    _res_D_b(1, 1) = _tmp56 * _tmp77 - _tmp61 * _tmp75 - _tmp70 * _tmp81 + _tmp71 * _tmp79;
-    _res_D_b(1, 2) = -_tmp56 * _tmp79 + _tmp61 * _tmp81 - _tmp70 * _tmp75 + _tmp71 * _tmp77;
+    _res_D_b(1, 0) = _tmp40 * _tmp67 + _tmp55 * _tmp66 + _tmp61 * _tmp75 + _tmp68 * _tmp74;
+    _res_D_b(1, 1) = _tmp70 + _tmp72 * _tmp75 + _tmp76;
+    _res_D_b(1, 2) = _tmp55 * _tmp67 + _tmp66 * _tmp71 + _tmp68 * _tmp75 + _tmp73 * _tmp74;
     _res_D_b(1, 3) = 0;
     _res_D_b(1, 4) = 0;
     _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = -_tmp56 * _tmp83 - _tmp61 * _tmp84 + _tmp70 * _tmp85 + _tmp71 * _tmp86;
-    _res_D_b(2, 1) = _tmp56 * _tmp84 - _tmp61 * _tmp83 - _tmp70 * _tmp86 + _tmp71 * _tmp85;
-    _res_D_b(2, 2) = -_tmp56 * _tmp85 + _tmp61 * _tmp86 - _tmp70 * _tmp83 + _tmp71 * _tmp84;
+    _res_D_b(2, 0) = _tmp40 * _tmp50 + _tmp55 * _tmp74 + _tmp61 * _tmp67 + _tmp68 * _tmp77;
+    _res_D_b(2, 1) = _tmp50 * _tmp68 + _tmp61 * _tmp74 + _tmp67 * _tmp72 + _tmp71 * _tmp77;
+    _res_D_b(2, 2) = _tmp56 + _tmp69 + _tmp73 * _tmp77 + _tmp76;
     _res_D_b(2, 3) = 0;
     _res_D_b(2, 4) = 0;
     _res_D_b(2, 5) = 0;

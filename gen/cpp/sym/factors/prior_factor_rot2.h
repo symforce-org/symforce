@@ -35,46 +35,48 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
                      Eigen::Matrix<Scalar, 1, 1>* const jacobian = nullptr,
                      Eigen::Matrix<Scalar, 1, 1>* const hessian = nullptr,
                      Eigen::Matrix<Scalar, 1, 1>* const rhs = nullptr) {
-  // Total ops: 35
+  // Total ops: 32
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _value = value.Data();
   const Eigen::Matrix<Scalar, 2, 1>& _prior = prior.Data();
 
-  // Intermediate terms (8)
-  const Scalar _tmp0 = _prior[0] * _value[1] - _prior[1] * _value[0];
-  const Scalar _tmp1 = _prior[0] * _value[0] + _prior[1] * _value[1];
-  const Scalar _tmp2 = sqrt_info(0, 0) * std::atan2(_tmp0, _tmp1);
-  const Scalar _tmp3 = std::pow(_tmp1, Scalar(2));
-  const Scalar _tmp4 = _tmp0 / _tmp3;
-  const Scalar _tmp5 = Scalar(1.0) / (_tmp1);
-  const Scalar _tmp6 = _tmp3 * sqrt_info(0, 0) / (std::pow(_tmp0, Scalar(2)) + _tmp3);
-  const Scalar _tmp7 = _tmp6 * _value[0] * (_prior[0] * _tmp5 - _prior[1] * _tmp4) -
-                       _tmp6 * _value[1] * (-_prior[0] * _tmp4 - _prior[1] * _tmp5);
+  // Intermediate terms (10)
+  const Scalar _tmp0 = _prior[1] * _value[0];
+  const Scalar _tmp1 = _prior[0] * _value[1];
+  const Scalar _tmp2 = -_tmp0 + _tmp1;
+  const Scalar _tmp3 = _prior[0] * _value[0] + _prior[1] * _value[1];
+  const Scalar _tmp4 = std::atan2(_tmp2, _tmp3);
+  const Scalar _tmp5 = std::pow(_tmp3, Scalar(2));
+  const Scalar _tmp6 = std::pow(_tmp2, Scalar(2)) + _tmp5;
+  const Scalar _tmp7 = -_tmp2 * (_tmp0 - _tmp1) / _tmp5 + 1;
+  const Scalar _tmp8 = _tmp5 * _tmp7 / _tmp6;
+  const Scalar _tmp9 = std::pow(sqrt_info(0, 0), Scalar(2));
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp2;
+    _res(0, 0) = _tmp4 * sqrt_info(0, 0);
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp7;
+    _jacobian(0, 0) = _tmp8 * sqrt_info(0, 0);
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow(_tmp7, Scalar(2));
+    _hessian(0, 0) = std::pow(_tmp3, Scalar(4)) * std::pow(_tmp7, Scalar(2)) * _tmp9 /
+                     std::pow(_tmp6, Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp2 * _tmp7;
+    _rhs(0, 0) = _tmp4 * _tmp8 * _tmp9;
   }
 }  // NOLINT(readability/fn_size)
 
