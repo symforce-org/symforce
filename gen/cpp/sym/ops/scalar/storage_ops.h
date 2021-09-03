@@ -7,7 +7,7 @@
 #include <random>
 #include <type_traits>
 
-#include <lcmtypes/symforce/type_t.hpp>
+#include <lcmtypes/sym/type_t.hpp>
 
 #include "../storage_ops.h"
 
@@ -36,8 +36,8 @@ struct StorageOps {
     return data[0];
   }
 
-  static symforce::type_t TypeEnum() {
-    return symforce::type_t::SCALAR;
+  static type_t TypeEnum() {
+    return type_t::SCALAR;
   }
 
   template <typename Generator>

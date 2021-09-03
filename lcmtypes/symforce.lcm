@@ -9,7 +9,7 @@ struct key_t {
 
 struct index_entry_t {
   key_t key;
-  symforce.type_t type;
+  sym.type_t type;
 
   // Location within the data array
   int32_t offset;

@@ -5,7 +5,7 @@
 
 #include <sym/pose2.h>
 
-#include <lcmtypes/symforce/type_t.hpp>
+#include <lcmtypes/sym/type_t.hpp>
 
 namespace sym {
 
@@ -24,8 +24,8 @@ struct StorageOps<Pose2<ScalarType>> {
   static void ToStorage(const T& a, ScalarType* out);
   static T FromStorage(const ScalarType* data);
 
-  static symforce::type_t TypeEnum() {
-    return symforce::type_t::POSE2;
+  static type_t TypeEnum() {
+    return type_t::POSE2;
   }
 
   template <typename Generator>

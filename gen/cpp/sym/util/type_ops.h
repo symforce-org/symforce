@@ -14,14 +14,12 @@
 #include <sym/rot3.h>
 #include <sym/util/typedefs.h>
 
-#include <lcmtypes/symforce/type_t.hpp>
+#include <lcmtypes/sym/type_t.hpp>
 
 namespace sym {
 
 template <typename T>
 static constexpr const bool kIsEigenType = std::is_base_of<Eigen::MatrixBase<T>, T>::value;
-
-using type_t = symforce::type_t;
 
 /**
  * Helper to handle polymorphism by creating a switch from a runtime type enum to dispatch

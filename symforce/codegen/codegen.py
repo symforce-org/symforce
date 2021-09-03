@@ -242,7 +242,7 @@ class Codegen:
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util
-        data["lcm_type_t_include_dir"] = "<lcmtypes/symforce/type_t.hpp>"
+        data["lcm_type_t_include_dir"] = "<lcmtypes/sym/type_t.hpp>"
 
         def is_symbolic(T: T.Any) -> bool:
             return isinstance(T, (sm.Expr, sm.Symbol))

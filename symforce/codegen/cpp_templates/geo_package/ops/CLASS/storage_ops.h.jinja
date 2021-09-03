@@ -23,8 +23,8 @@ struct StorageOps<{{ cls.__name__ }}<ScalarType>> {
   static void ToStorage(const T& a, ScalarType* out);
   static T FromStorage(const ScalarType* data);
 
-  static symforce::type_t TypeEnum() {
-    return symforce::type_t::{{ cls.__name__.upper() }};
+  static type_t TypeEnum() {
+    return type_t::{{ cls.__name__.upper() }};
   }
 
   template <typename Generator>
