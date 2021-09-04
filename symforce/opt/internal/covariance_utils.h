@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Eigen/Sparse>
-#include <ac_sparse_math/sparse_schur_solver.h>
 #include <sym/util/typedefs.h>
+#include <symforce/opt/linear/sparse_schur_solver.h>
 
 namespace sym {
 namespace internal {
@@ -36,7 +36,7 @@ void ComputeCovarianceBlockWithSchurComplement(Eigen::SparseMatrix<Scalar>* cons
   // TODO(aaron): Cache the solver and the sparsity pattern for this. Similarly this doesn't handle
   // numerical vs symbolic nonzeros, which shouldn't be an issue if we aren't saving the sparsity
   // pattern
-  math::SparseSchurSolver<Eigen::SparseMatrix<double>> schur_solver{};
+  sym::SparseSchurSolver<Eigen::SparseMatrix<double>> schur_solver{};
   schur_solver.ComputeSymbolicSparsity(*hessian_lower, marginalized_dim);
   schur_solver.Factorize(*hessian_lower);
   *covariance_block = Eigen::MatrixXd::Identity(block_dim, block_dim);

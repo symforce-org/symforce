@@ -6,7 +6,7 @@
 
 #include "./sparse_cholesky_solver.h"
 
-namespace math {
+namespace sym {
 
 // A solver for factorizing and solving positive definite matrices with a large block-diagonal
 // component
@@ -124,6 +124,6 @@ class SparseSchurSolver {
   SMatrixSolverType S_solver_;
 };
 
-}  // namespace math
+}  // namespace sym
 
 #include "./sparse_schur_solver.tcc"

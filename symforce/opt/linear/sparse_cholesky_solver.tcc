@@ -1,16 +1,14 @@
 #pragma once
 
-#ifndef AC_SPARSE_CHOLESKY_SOLVER_H
+#ifndef SYM_SPARSE_CHOLESKY_SOLVER_H
 #error __FILE__ should only be included from sparse_cholesky_solver.h
-#endif  // AC_SPARSE_CHOLESKY_SOLVER_H
+#endif  // SYM_SPARSE_CHOLESKY_SOLVER_H
 
-namespace math {
-
-using namespace Eigen;
+namespace sym {
 
 template <typename MatrixType, int UpLo>
 void SparseCholeskySolver<MatrixType, UpLo>::ComputePermutationMatrix(const MatrixType& A) {
-  eigen_assert(A.rows() == A.cols());
+  SPARSE_MATH_ASSERT(A.rows() == A.cols());
 
   // Invoke the ordering object
   const MatrixType A_selfadjoint = A.template selfadjointView<UpLo>();
@@ -24,19 +22,19 @@ void SparseCholeskySolver<MatrixType, UpLo>::ComputePermutationMatrix(const Matr
 
 template <typename MatrixType, int UpLo>
 void SparseCholeskySolver<MatrixType, UpLo>::ComputeSymbolicSparsity(const MatrixType& A) {
-  eigen_assert(A.rows() == A.cols());
+  SPARSE_MATH_ASSERT(A.rows() == A.cols());
 
   // Update permutation matrix
   ComputePermutationMatrix(A);
 
   // Apply permutation matrix (twist A)
-  const Index N = A.cols();
+  const Eigen::Index N = A.cols();
   A_permuted_.resize(N, N);
   if (permutation_.size() > 0) {
-    A_permuted_.template selfadjointView<Upper>() =
+    A_permuted_.template selfadjointView<Eigen::Upper>() =
         A.template selfadjointView<UpLo>().twistedBy(permutation_);
   } else {
-    A_permuted_.template selfadjointView<Upper>() = A.template selfadjointView<UpLo>();
+    A_permuted_.template selfadjointView<Eigen::Upper>() = A.template selfadjointView<UpLo>();
   }
 
   // Everything not visited
@@ -106,18 +104,18 @@ void SparseCholeskySolver<MatrixType, UpLo>::ComputeSymbolicSparsity(const Matri
 
 template <typename MatrixType, int UpLo>
 void SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
-  const Index N = A.rows();
+  const Eigen::Index N = A.rows();
 
   // Check some invariants
-  eigen_assert(N == L_.rows());
-  eigen_assert(N == A.cols());
+  SPARSE_MATH_ASSERT(N == L_.rows());
+  SPARSE_MATH_ASSERT(N == A.cols());
 
   // Apply twist
   if (permutation_.size() > 0) {
     A_permuted_.template selfadjointView<Eigen::Upper>() =
         A.template selfadjointView<UpLo>().twistedBy(permutation_);
   } else {
-    A_permuted_.template selfadjointView<Upper>() = A.template selfadjointView<UpLo>();
+    A_permuted_.template selfadjointView<Eigen::Upper>() = A.template selfadjointView<UpLo>();
   }
 
   // Get the sparse storage arrays. For details see:
@@ -151,7 +149,7 @@ void SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
       // Sum A(i, k) into D_agg
       D_agg_[i] += it.value();
 
-      Index depth = 0;
+      Eigen::Index depth = 0;
       while (visited_[i] != k) {
         // L(k,i) is nonzero
         L_k_pattern_[depth] = i;
@@ -181,18 +179,18 @@ void SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
     // NOTE(hayk): This is a double loop in a loop and is ~O(N^3 / 6)
     for (; top_inx < N; ++top_inx) {
       // L_k_pattern_[top_inx:] is the pattern of L(:, k)
-      const Index i = L_k_pattern_[top_inx];
+      const Eigen::Index i = L_k_pattern_[top_inx];
 
       // Compute the nonzero L(k, i)
       const Scalar D_agg_i = D_agg_[i];
       const Scalar L_ki = D_agg_i / D_[i];
 
       // Get the range for i
-      const Index ptr_start = L_outer[i];
-      const Index ptr_end = ptr_start + nnz_per_col_[i];
+      const Eigen::Index ptr_start = L_outer[i];
+      const Eigen::Index ptr_end = ptr_start + nnz_per_col_[i];
 
       // Update D_agg
-      Index ptr;
+      Eigen::Index ptr;
       D_agg_[i] = 0.0;
       for (ptr = ptr_start; ptr < ptr_end; ++ptr) {
         D_agg_[L_inner[ptr]] -= L_value[ptr] * D_agg_i;
@@ -227,15 +225,15 @@ template <typename MatrixType, int UpLo>
 template <typename Rhs>
 void SparseCholeskySolver<MatrixType, UpLo>::SolveInPlace(Eigen::MatrixBase<Rhs>* const b) const {
   // Sanity checks
-  eigen_assert(is_initialized_);
-  eigen_assert(L_.rows() == b.rows());
-  eigen_assert(L_.nonZeros() > 0);
-  eigen_assert(D_.size() > 0);
+  SPARSE_MATH_ASSERT(is_initialized_);
+  SPARSE_MATH_ASSERT(b != nullptr);
+  SPARSE_MATH_ASSERT(L_.rows() == b->rows());
+  SPARSE_MATH_ASSERT(L_.nonZeros() > 0);
+  SPARSE_MATH_ASSERT(D_.size() > 0);
 
   // Pre-computed cholesky decomposition
   const Eigen::TriangularView<const CholMatrixType, Eigen::UnitLower> L(L_);
 
-  eigen_assert(b != nullptr);
   Eigen::MatrixBase<Rhs>& x = *b;
 
   // Twist
@@ -262,4 +260,4 @@ extern template class SparseCholeskySolver<Eigen::SparseMatrix<double>, Eigen::L
 extern template class SparseCholeskySolver<Eigen::SparseMatrix<float>, Eigen::Upper>;
 extern template class SparseCholeskySolver<Eigen::SparseMatrix<float>, Eigen::Lower>;
 
-}  // namespace math
+}  // namespace sym

@@ -3,7 +3,7 @@
 #include "./assert.h"
 #include "./sparse_schur_solver.h"
 
-namespace math {
+namespace sym {
 
 template <typename _MatrixType>
 void SparseSchurSolver<_MatrixType>::ComputeSymbolicSparsity(const MatrixType& A, const int C_dim) {
@@ -156,4 +156,4 @@ void SparseSchurSolver<_MatrixType>::SInvInPlace(
   S_solver_.SolveInPlace(x_and_rhs);
 }
 
-}  // namespace math
+}  // namespace sym

@@ -2,7 +2,8 @@
 
 #include <sstream>
 
-namespace math {
+namespace sym {
+namespace internal {
 
 std::string FormatFailure(const char* error, const char* func, const char* file, int line) {
   std::stringstream ss;
@@ -12,4 +13,5 @@ std::string FormatFailure(const char* error, const char* func, const char* file,
   return ss.str();
 }
 
-}  // namespace math
+}  // namespace internal
+}  // namespace sym

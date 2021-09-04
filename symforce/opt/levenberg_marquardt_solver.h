@@ -2,7 +2,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <ac_sparse_math/sparse_cholesky_solver.h>
+#include <symforce/opt/linear/sparse_cholesky_solver.h>
 #include <symforce/opt/values.h>
 
 #include <lcmtypes/sym/optimization_stats_t.hpp>
@@ -103,7 +103,7 @@ namespace sym {
  *     x_new = x0 + dx
  */
 template <typename ScalarType,
-          typename LinearSolverType = math::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>>
+          typename LinearSolverType = sym::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>>
 class LevenbergMarquardtSolver {
  public:
   using Scalar = ScalarType;

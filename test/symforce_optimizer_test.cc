@@ -356,11 +356,11 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
 TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
   sym::Optimizerd optimizer1(
       DefaultLmParams(), {}, 1e-10, "sym::Optimizer", {}, false, false,
-      math::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
+      sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::MetisOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 
   sym::Optimizerd optimizer2(
       DefaultLmParams(), {}, 1e-10, "sym::Optimizer", {}, false, false,
-      math::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
+      sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::NaturalOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 }

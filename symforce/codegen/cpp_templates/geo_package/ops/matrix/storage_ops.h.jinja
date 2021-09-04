@@ -50,6 +50,9 @@ struct StorageOps<Eigen::Matrix<ScalarType, Rows, Cols>> {
 
   template <typename Generator>
   static T Random(Generator& gen) {
+    static_assert(T::RowsAtCompileTime != Eigen::Dynamic, "Size must be known at compile time");
+    static_assert(T::ColsAtCompileTime != Eigen::Dynamic, "Size must be known at compile time");
+
     std::normal_distribution<Scalar> distribution{};
     return T::NullaryExpr([&]() { return distribution(gen); });
   }

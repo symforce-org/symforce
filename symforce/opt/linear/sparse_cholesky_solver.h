@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./assert.h"
+
 // Needed for Metis
 #include <iostream>
 
@@ -7,7 +9,7 @@
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
 
-namespace math {
+namespace sym {
 
 // Efficiently solves A * x = b, where A is a sparse matrix and b is a dense vector or matrix,
 // using the LDLT cholesky factorization A = L * D * L^T, where L is a unit triangular matrix
@@ -122,8 +124,8 @@ class SparseCholeskySolver {
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> D_agg_;
 };
 
-}  // end namespace math
+}  // namespace sym
 
 // Include implementation, yay templates.
-#define AC_SPARSE_CHOLESKY_SOLVER_H
-#include <ac_sparse_math/sparse_cholesky_solver_impl.h>
+#define SYM_SPARSE_CHOLESKY_SOLVER_H
+#include "./sparse_cholesky_solver.tcc"
