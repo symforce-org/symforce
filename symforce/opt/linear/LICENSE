@@ -1,0 +1,60 @@
+This module implements a cholesky sparse matrix factorization algorithm adapted from
+LDL/Suitesparse and its corresponding implementation in the SparseCholesky
+module of the Eigen library.
+
+-------------------------------------------------------------------------------
+LDL: https://github.com/jluttine/suitesparse/tree/master/LDL
+-------------------------------------------------------------------------------
+
+    LDL Copyright (c) 2005 by Timothy A. Davis.  All Rights Reserved.
+
+    Your use or distribution of LDL or any modified version of
+    LDL implies that you agree to this License.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+    USA
+
+    Permission is hereby granted to use or copy this program under the
+    terms of the GNU LGPL, provided that the Copyright, this License,
+    and the Availability of the original version is retained on all copies.
+    User documentation of any code that uses this code or any modified
+    version of this code must cite the Copyright, this License, the
+    Availability note, and "Used by permission." Permission to modify
+    the code and to distribute modified code is granted, provided the
+    Copyright, this License, and the Availability note are retained,
+    and a notice that the code was modified is included.
+
+-------------------------------------------------------------------------------
+Eigen: https://bitbucket.org/eigen/eigen
+-------------------------------------------------------------------------------
+
+    Eigen is primarily MPL2 licensed. See COPYING.MPL2 and these links:
+    http://www.mozilla.org/MPL/2.0/
+    http://www.mozilla.org/MPL/2.0/FAQ.html
+
+    Some files contain third-party code under BSD or LGPL licenses, whence the other
+    COPYING.* files here.
+
+    All the LGPL code is either LGPL 2.1-only, or LGPL 2.1-or-later.
+    For this reason, the COPYING.LGPL file contains the LGPL 2.1 text.
+
+    If you want to guarantee that the Eigen code that you are #including is licensed
+    under the MPL2 and possibly more permissive licenses (like BSD), #define this
+    preprocessor symbol:
+    EIGEN_MPL2_ONLY
+    For example, with most compilers, you could add this to your project CXXFLAGS:
+    -DEIGEN_MPL2_ONLY
+    This will cause a compilation error to be generated if you #include any code that is
+    LGPL licensed.
