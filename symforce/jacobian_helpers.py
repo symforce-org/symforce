@@ -111,8 +111,8 @@ def tangent_jacobians_chain_rule(
 
     for arg in args:
         expr_storage_D_arg_storage = expr_storage.jacobian(StorageOps.to_storage(arg))
-        arg_jacobian = (
-            expr_tangent_D_storage * expr_storage_D_arg_storage * LieGroupOps.storage_D_tangent(arg)
+        arg_jacobian = expr_tangent_D_storage * (
+            expr_storage_D_arg_storage * LieGroupOps.storage_D_tangent(arg)
         )
 
         jacobians.append(arg_jacobian)
