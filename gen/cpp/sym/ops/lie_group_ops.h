@@ -6,7 +6,11 @@
 
 #pragma once
 
+#include <limits>
+
 #include <Eigen/Dense>
+
+#include "./storage_ops.h"
 
 namespace sym {
 
@@ -26,7 +30,31 @@ struct LieGroupOps {
   static TangentVec ToTangent(const T& a, const Scalar epsilon);
   static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon);
   static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
+  static bool IsClose(const T& a, const T& b, const Scalar epsilon, const Scalar tol);
 };
+
+namespace internal {
+
+/**
+ * A helper struct containing default implementations of methods in LieGroupOps. Meant only to
+ * be inherited by template specializations of LieGroupOps.
+ */
+template <typename T, typename Scalar>
+struct LieGroupOpsBase {
+  static bool IsClose(const T& a, const T& b, const Scalar tol) {
+    return LieGroupOps<T>::LocalCoordinates(a, b, std::numeric_limits<Scalar>::epsilon()).norm() <
+           tol;
+  }
+};
+
+}  // namespace internal
+
+// Returns true if the distance from a to b in local coordinate space is less than tol. Returns
+// false otherwise. epsilon is present to avoid dividing by zero.
+template <typename T>
+bool IsClose(const T& a, const T& b, const typename StorageOps<T>::Scalar tol) {
+  return LieGroupOps<T>::IsClose(a, b, tol);
+}
 
 }  // namespace sym
 

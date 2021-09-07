@@ -18,7 +18,7 @@ namespace scalar {
  * C++ LieGroupOps implementation for scalars.
  */
 template <typename T>
-struct LieGroupOps {
+struct LieGroupOps : public internal::LieGroupOpsBase<T, T> {
   using Scalar = T;
   static_assert(std::is_floating_point<T>::value, "");
 

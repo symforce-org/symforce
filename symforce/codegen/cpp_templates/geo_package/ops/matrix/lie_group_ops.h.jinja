@@ -10,7 +10,7 @@ namespace sym {
  * C++ LieGroupOps implementation for matrices.
  */
 template <typename ScalarType, int Rows, int Cols>
-struct LieGroupOps<Eigen::Matrix<ScalarType, Rows, Cols>> {
+struct LieGroupOps<Eigen::Matrix<ScalarType, Rows, Cols>> : public internal::LieGroupOpsBase<Eigen::Matrix<ScalarType, Rows, Cols>, ScalarType> {
   using Scalar = ScalarType;
   using T = Eigen::Matrix<Scalar, Rows, Cols>;
   static_assert(std::is_floating_point<ScalarType>::value, "");

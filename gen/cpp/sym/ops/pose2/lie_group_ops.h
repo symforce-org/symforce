@@ -22,7 +22,7 @@ namespace sym {
  * C++ LieGroupOps implementation for <class 'symforce.geo.pose2.Pose2'>.
  */
 template <typename Scalar>
-struct LieGroupOps<Pose2<Scalar>> {
+struct LieGroupOps<Pose2<Scalar>> : public internal::LieGroupOpsBase<Pose2<Scalar>, Scalar> {
   using T = Pose2<Scalar>;
 
   static constexpr int32_t TangentDim() {

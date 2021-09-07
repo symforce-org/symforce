@@ -17,7 +17,7 @@ namespace sym {
  * C++ LieGroupOps implementation for {{ cls }}.
  */
 template <typename Scalar>
-struct LieGroupOps<{{ cls.__name__ }}<Scalar>> {
+struct LieGroupOps<{{ cls.__name__ }}<Scalar>> : public internal::LieGroupOpsBase<{{ cls.__name__ }}<Scalar>, Scalar> {
   using T = {{ cls.__name__ }}<Scalar>;
 
   static constexpr int32_t TangentDim() {

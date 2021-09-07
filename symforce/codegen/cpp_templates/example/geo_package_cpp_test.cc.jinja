@@ -3,6 +3,9 @@
  * the math is tested comprehensively in symbolic form.
  */
 
+#include <iostream>
+#include <limits>
+
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -22,11 +25,12 @@ TEST_CASE("Test Rot3", "[geo_package]") {
   // Make a random rotation
   std::mt19937 gen(42);
   const sym::Rot3f rot = sym::Rot3f::Random(gen);
+  const double tol = 1e-6;
 
   // Cast
   const sym::Rot3d rotd = rot.Cast<double>();
-  CHECK(rotd.IsApprox(rot.Cast<double>(), 1e-6));
-  CHECK(rotd.Cast<float>().IsApprox(rot, 1e-6));
+  CHECK(sym::IsClose(rotd, rot.Cast<double>(), tol));
+  CHECK(sym::IsClose(rotd.Cast<float>(), rot, tol));
 
   // Convert to Eigen rotation representations
   const Eigen::Quaternionf quat = rot.Quaternion();
@@ -44,28 +48,25 @@ TEST_CASE("Test Rot3", "[geo_package]") {
   CHECK((quat * Eigen::Vector3f::UnitX()).isApprox(rot * Eigen::Vector3f::UnitX(), 1e-6));
 
   // Construct back from Eigen rotation representations
-  CHECK(sym::Rot3f(quat).IsApprox(rot, 1e-6));
-  CHECK(sym::Rot3f(aa).IsApprox(rot, 1e-6));
-  CHECK(sym::Rot3f::FromRotationMatrix(mat).IsApprox(rot, 1e-6));
-  CHECK(sym::Rot3f::FromYawPitchRoll(ypr).ToPositiveReal().IsApprox(rot, 1e-6));
+  CHECK(sym::IsClose(sym::Rot3f(quat), rot, tol));
+  CHECK(sym::IsClose(sym::Rot3f(aa), rot, tol));
+  CHECK(sym::IsClose(sym::Rot3f::FromRotationMatrix(mat), rot, tol));
+  CHECK(sym::IsClose(sym::Rot3f::FromYawPitchRoll(ypr).ToPositiveReal(), rot, tol));
 
   // Make a pose
-  sym::Pose3f pose(sym::Rot3f(aa), point);
-  CHECK(pose.Rotation().IsApprox(rot, 1e-6));
+  const sym::Pose3f pose(sym::Rot3f(aa), point);
+  CHECK(sym::IsClose(pose.Rotation(), rot, tol));
   CHECK(pose.Position() == point);
 
   const sym::Pose3f pose_inv = pose.Inverse();
-  CHECK(pose_inv.Rotation().IsApprox(rot.Inverse(), 1e-6));
+  CHECK(sym::IsClose(pose_inv.Rotation(), rot.Inverse(), tol));
 
+  // TODO(bradley): Figure out why this fails if we iterate 1000 times and fix it
   // Transform a point with a pose
   CHECK((pose_inv * point).norm() < 1e-6);
 
   // Transform a point as an initializer expression
   CHECK((pose * Eigen::Vector3f::UnitX().eval()).isApprox(pose * Eigen::Vector3f::UnitX(), 1e-6));
-
-  // Check zero comparison
-  CHECK(sym::Rot3f(Eigen::Vector4f::Zero()).IsApprox(sym::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
-  CHECK(!sym::Rot3f().IsApprox(sym::Rot3f(Eigen::Vector4f::Zero()), 1e-9));
 
   // Check that the log returns vectors with norm less than pi, and is the inverse of exp
   for (int i = 0; i < 1000; i++) {
@@ -234,6 +235,112 @@ TEMPLATE_TEST_CASE("Test Matrix group ops", "[geo_package]", {{ ", ".join(cpp_ma
   CHECK(identity == sym::GroupOps<T>::Between(identity, identity));
 }
 
+// Returns a random lie group element e which is not near the identity, where
+// the statement that "e is not near the identity" means the length of e's
+// tangent vector is greater than tol.
+// epsilon is to avoid singularies when checking the tangent vector.
+// An example type for Generator is std::mt19937
+template <typename T, typename Generator, typename Scalar>
+T RandomNonIdentity(Generator& gen, Scalar tol) {
+  T element = sym::StorageOps<T>::Random(gen);
+  // Making sure that element is not near identity, and trying again if it is.
+  while (sym::LieGroupOps<T>::ToTangent(element, std::numeric_limits<Scalar>::epsilon()).norm() < 2 * tol) {
+    element = sym::StorageOps<T>::Random(gen);
+  }
+  return element;
+}
+
+// Tests that sym::LieGroupOps<T>::IsClose returns false when applied to group
+// elements that are not close. Meant to be a generic implementation called by
+// TestIsClose<T>::Test
+template <typename T, typename Generator, typename Scalar>
+void IsCloseCommonTest(Generator& gen, Scalar tol) {
+  // Repeat code 100 times to get a better sampling
+  for (int i = 0; i < 100; i++) {
+    const T element = sym::StorageOps<T>::Random(gen);
+    // Test that far elements are not close
+    const T different_element = sym::GroupOps<T>::Compose(element, RandomNonIdentity<T>(gen, tol));
+    CHECK(!sym::LieGroupOps<T>::IsClose(element, different_element, tol));
+
+    // Test that close elements are close
+    const T close_element = [&element, tol]{
+      using TangentVec = typename sym::LieGroupOps<T>::TangentVec;
+      TangentVec small_tangent = TangentVec::Random();
+      if (small_tangent(0) == 0.0) {
+        small_tangent(0) = 1.0;
+      }
+      // multiply by 0.8 so the perturbation has norm < tol
+      small_tangent = (0.8 * tol / small_tangent.norm()) * small_tangent;
+      return sym::LieGroupOps<T>::Retract(element, small_tangent, std::numeric_limits<Scalar>::epsilon());
+    }();
+    CHECK(sym::IsClose(element, close_element, tol));
+  }
+}
+
+template <typename T>
+struct TestIsClose {
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+
+  // Test sym::LieGroupOps<T>::IsClose(a, b, tol). Intended usage is to simply call
+  // TestIsClose<T>::Test(gen)
+  // An example type for Generator is std::mt19937
+  template <typename Generator>
+  static void Test(Generator& gen, Scalar tol=1e-6) {
+    IsCloseCommonTest<T>(gen, tol);
+  }
+};
+
+template <typename Scalar>
+struct TestIsClose<sym::Rot3<Scalar>> {
+  using Rot3 = sym::Rot3<Scalar>;
+
+  template <typename Generator>
+  static void Test(Generator& gen, const Scalar tol=1e-6) {
+    IsCloseCommonTest<sym::Rot3<Scalar>>(gen, tol);
+
+    for (int i = 0; i < 50; i++) {
+      // Test that that if one Rot3 is represented by quaternion q and another
+      // Rot3 by -q, then IsClose returns true when called on those Rot3s.
+      const Rot3 rot = Rot3::Random(gen);
+      const Rot3 rot_negated(-rot.Data());
+      CHECK(sym::LieGroupOps<Rot3>::IsClose(rot, rot_negated, tol));
+    }
+
+    // Test IsClose returns true when called on rotations with the same axis but
+    // whose angles of rotation are pi + epsilon and pi - epsilon respectively.
+    // (This test exists because many functions have a discontinuity at pi radians
+    // as the w component of the quaternion representation of the quaternion changes
+    // sign at that angle).
+    using DataVec = typename Rot3::DataVec;
+    const Eigen::Matrix<Scalar, 3, 1> xyz(1, -1, 2); // The direction of xyz is arbitrary
+    const Scalar w = 1e-7;
+    const Rot3 rot_pi_plus((DataVec() << xyz, w).finished());
+    const Rot3 rot_pi_minus((DataVec() << xyz, -w).finished());
+    CHECK(sym::LieGroupOps<Rot3>::IsClose(rot_pi_plus, rot_pi_minus, tol));
+  }
+};
+
+template <typename Scalar>
+struct TestIsClose<sym::Rot2<Scalar>> {
+  using Rot2 = sym::Rot2<Scalar>;
+
+  template <typename Generator>
+  static void Test(Generator& gen, Scalar tol=1e-6) {
+    IsCloseCommonTest<Rot2>(gen, tol);
+
+    // Checking that IsClose returns true for angles which are close but on opposite sides
+    // of potentially significant angles (ex: pi + epsilon and pi - epsilon), or when the angles
+    // are close to eachother mod 2 pi (ex: 2pi - epsilon and epsilon)
+    const Scalar epsilon = 1e-7;
+    for (Scalar angle = -2*M_PI; angle < 2*M_PI + 0.1; angle += M_PI_2) {
+      CHECK(sym::LieGroupOps<Rot2>::IsClose(Rot2(angle - epsilon), Rot2(angle + epsilon), tol));
+    }
+    for (Scalar angle: {-M_PI, 0.0}) {
+      CHECK(sym::LieGroupOps<Rot2>::IsClose(Rot2(angle + epsilon), Rot2(2*M_PI + angle - epsilon), tol));
+    }
+  }
+};
+
 TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", {{ ", ".join(cpp_geo_types) }}) {
   using T = TestType;
 
@@ -251,7 +358,15 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", {{ ", ".join(cpp_geo_t
   CHECK(tangent_dim > 0);
   CHECK(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
+  // Checking that std::numeric_limits<Scalar>::epsilon() is sufficiently large to
+  // avoid nan in ToTangent (used for IsClose). At the time of writing, only
+  // Rot3 and Pose3 encounter issues with nan, and that is when we have the identity rotation.
+  const TangentVec identity_tangent = identity.ToTangent(std::numeric_limits<Scalar>::epsilon());
+  CHECK(!identity_tangent.array().isNaN().any());
+
   std::mt19937 gen(24362);
+  TestIsClose<T>::Test(gen);
+
   const TangentVec pertubation = sym::Random<TangentVec>(gen);
   const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
@@ -340,6 +455,8 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", {{ ", ".join(sc
   const TangentVec pertubation = sym::Random<TangentVec>(gen);
   const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
 
+  TestIsClose<T>::Test(gen);
+
   const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
   CHECK(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
 
@@ -369,6 +486,8 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", {{ ", ".join(cp
   std::mt19937 gen(42);
   const TangentVec pertubation = sym::Random<TangentVec>(gen);
   const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+
+  TestIsClose<T>::Test(gen);
 
   const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
   CHECK(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
