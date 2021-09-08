@@ -33,3 +33,8 @@ struct StorageOps<sym::{{ cls.__name__ }}<{{ Scalar }}>> : public sym::{{ camelc
 {% endfor %}
 
 }  // namespace sym
+
+// Explicit instantiation
+{% for Scalar in scalar_types %}
+extern template struct sym::{{ camelcase_to_snakecase(cls.__name__) }}::StorageOps<{{ Scalar }}>;
+{% endfor %}

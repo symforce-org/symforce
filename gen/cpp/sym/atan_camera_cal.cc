@@ -351,7 +351,7 @@ std::ostream& operator<<(std::ostream& os, const ATANCameraCalf& a) {
 }  // namespace sym
 
 // Concept implementations for this class
-#include "./ops/atan_camera_cal/storage_ops.cc"
+#include "./ops/atan_camera_cal/storage_ops.h"
 
 // Explicit instantiation
 template class sym::ATANCameraCal<double>;

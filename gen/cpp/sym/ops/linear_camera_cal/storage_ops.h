@@ -41,3 +41,7 @@ struct StorageOps<sym::LinearCameraCal<float>> : public sym::linear_camera_cal::
 };
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::linear_camera_cal::StorageOps<double>;
+extern template struct sym::linear_camera_cal::StorageOps<float>;

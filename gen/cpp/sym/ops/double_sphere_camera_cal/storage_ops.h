@@ -42,3 +42,7 @@ struct StorageOps<sym::DoubleSphereCameraCal<float>>
     : public sym::double_sphere_camera_cal::StorageOps<float> {};
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::double_sphere_camera_cal::StorageOps<double>;
+extern template struct sym::double_sphere_camera_cal::StorageOps<float>;

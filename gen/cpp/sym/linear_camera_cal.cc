@@ -233,7 +233,7 @@ std::ostream& operator<<(std::ostream& os, const LinearCameraCalf& a) {
 }  // namespace sym
 
 // Concept implementations for this class
-#include "./ops/linear_camera_cal/storage_ops.cc"
+#include "./ops/linear_camera_cal/storage_ops.h"
 
 // Explicit instantiation
 template class sym::LinearCameraCal<double>;

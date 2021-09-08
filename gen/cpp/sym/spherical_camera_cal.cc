@@ -206,7 +206,7 @@ std::ostream& operator<<(std::ostream& os, const SphericalCameraCalf& a) {
 }  // namespace sym
 
 // Concept implementations for this class
-#include "./ops/spherical_camera_cal/storage_ops.cc"
+#include "./ops/spherical_camera_cal/storage_ops.h"
 
 // Explicit instantiation
 template class sym::SphericalCameraCal<double>;

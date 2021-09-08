@@ -39,3 +39,7 @@ template <>
 struct StorageOps<sym::ATANCameraCal<float>> : public sym::atan_camera_cal::StorageOps<float> {};
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::atan_camera_cal::StorageOps<double>;
+extern template struct sym::atan_camera_cal::StorageOps<float>;

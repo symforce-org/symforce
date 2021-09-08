@@ -262,7 +262,7 @@ std::ostream& operator<<(std::ostream& os, const EquidistantEpipolarCameraCalf& 
 }  // namespace sym
 
 // Concept implementations for this class
-#include "./ops/equidistant_epipolar_camera_cal/storage_ops.cc"
+#include "./ops/equidistant_epipolar_camera_cal/storage_ops.h"
 
 // Explicit instantiation
 template class sym::EquidistantEpipolarCameraCal<double>;

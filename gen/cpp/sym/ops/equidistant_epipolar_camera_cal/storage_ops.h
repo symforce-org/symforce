@@ -42,3 +42,7 @@ struct StorageOps<sym::EquidistantEpipolarCameraCal<float>>
     : public sym::equidistant_epipolar_camera_cal::StorageOps<float> {};
 
 }  // namespace sym
+
+// Explicit instantiation
+extern template struct sym::equidistant_epipolar_camera_cal::StorageOps<double>;
+extern template struct sym::equidistant_epipolar_camera_cal::StorageOps<float>;

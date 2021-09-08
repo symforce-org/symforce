@@ -33,7 +33,7 @@ extern template struct sym::StorageOps<{{ scalar }}>;
 {% endfor %} #}
 
 // Concept implementations for this class
-#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.cc"
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
 
 // Explicit instantiation
 {% for scalar in scalar_types %}
