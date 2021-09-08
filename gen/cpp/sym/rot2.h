@@ -15,6 +15,7 @@
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"
 #include "./ops/storage_ops.h"
+#include "./util/epsilon.h"
 
 namespace sym {
 
@@ -68,11 +69,11 @@ class Rot2 {
   }
 
   // Construct Rot2 representing rotation by angle
-  explicit Rot2(const Scalar angle, const Scalar epsilon = 1e-8f)
+  explicit Rot2(const Scalar angle, const Scalar epsilon = kDefaultEpsilon<Scalar>)
       : Rot2(FromTangent(Eigen::Matrix<Scalar, 1, 1>(angle), epsilon)) {}
 
   // Construct Rot2 representing rotation by angle
-  static Self FromAngle(const Scalar angle, const Scalar epsilon = 1e-8f) {
+  static Self FromAngle(const Scalar angle, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
     return Rot2(angle, epsilon);
   }
 
@@ -148,19 +149,19 @@ class Rot2 {
     return LieGroupOps<Self>::TangentDim();
   }
 
-  static Self FromTangent(const TangentVec& vec, const Scalar epsilon = 1e-8f) {
+  static Self FromTangent(const TangentVec& vec, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
     return LieGroupOps<Self>::FromTangent(vec, epsilon);
   }
 
-  TangentVec ToTangent(const Scalar epsilon = 1e-8f) const {
+  TangentVec ToTangent(const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::ToTangent(*this, epsilon);
   }
 
-  Self Retract(const TangentVec& vec, const Scalar epsilon = 1e-8f) const {
+  Self Retract(const TangentVec& vec, const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::Retract(*this, vec, epsilon);
   }
 
-  TangentVec LocalCoordinates(const Self& b, const Scalar epsilon = 1e-8f) const {
+  TangentVec LocalCoordinates(const Self& b, const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::LocalCoordinates(*this, b, epsilon);
   }
 

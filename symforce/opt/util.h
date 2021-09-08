@@ -2,6 +2,7 @@
 
 #include <sym/ops/lie_group_ops.h>
 #include <sym/ops/storage_ops.h>
+#include <sym/util/epsilon.h>
 #include <sym/util/type_ops.h>
 #include <sym/util/typedefs.h>
 
@@ -53,7 +54,7 @@ class Interpolator {
  public:
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
-  explicit Interpolator(const Scalar epsilon = 1e-8f) : epsilon_(epsilon) {}
+  explicit Interpolator(const Scalar epsilon = kDefaultEpsilon<Scalar>) : epsilon_(epsilon) {}
 
   T operator()(const T& a, const T& b, const Scalar t) {
     return sym::LieGroupOps<T>::Retract(
@@ -73,7 +74,8 @@ class Interpolator {
  */
 template <typename T>
 T Interpolate(const T& a, const T& b, const typename StorageOps<T>::Scalar t,
-              const typename StorageOps<T>::Scalar epsilon = 1e-8f) {
+              const typename StorageOps<T>::Scalar epsilon =
+                  kDefaultEpsilon<typename StorageOps<T>::Scalar>) {
   return Interpolator<T>(epsilon)(a, b, t);
 }
 
@@ -91,7 +93,8 @@ T Interpolate(const T& a, const T& b, const typename StorageOps<T>::Scalar t,
  */
 template <typename F, typename X>
 auto NumericalDerivative(const F f, const X& x,
-                         const typename sym::StorageOps<X>::Scalar epsilon = 1e-8f,
+                         const typename sym::StorageOps<X>::Scalar epsilon =
+                             kDefaultEpsilon<typename StorageOps<X>::Scalar>,
                          const typename sym::StorageOps<X>::Scalar delta = 1e-2f) {
   using Scalar = typename sym::StorageOps<X>::Scalar;
   using Y = typename std::result_of<F(X)>::type;

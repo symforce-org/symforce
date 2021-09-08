@@ -15,6 +15,7 @@
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"
 #include "./ops/storage_ops.h"
+#include "./util/epsilon.h"
 
 namespace sym {
 
@@ -200,19 +201,19 @@ class Rot3 {
     return LieGroupOps<Self>::TangentDim();
   }
 
-  static Self FromTangent(const TangentVec& vec, const Scalar epsilon = 1e-8f) {
+  static Self FromTangent(const TangentVec& vec, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
     return LieGroupOps<Self>::FromTangent(vec, epsilon);
   }
 
-  TangentVec ToTangent(const Scalar epsilon = 1e-8f) const {
+  TangentVec ToTangent(const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::ToTangent(*this, epsilon);
   }
 
-  Self Retract(const TangentVec& vec, const Scalar epsilon = 1e-8f) const {
+  Self Retract(const TangentVec& vec, const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::Retract(*this, vec, epsilon);
   }
 
-  TangentVec LocalCoordinates(const Self& b, const Scalar epsilon = 1e-8f) const {
+  TangentVec LocalCoordinates(const Self& b, const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::LocalCoordinates(*this, b, epsilon);
   }
 

@@ -33,6 +33,18 @@ def generate(config: codegen.CodegenConfig, output_dir: str = None) -> str:
             output_path=os.path.join(package_dir, "type_ops.h"),
             data={},
         )
+
+        templates.add(
+            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "epsilon.h.jinja"),
+            output_path=os.path.join(package_dir, "epsilon.h"),
+            data={},
+        )
+
+        templates.add(
+            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "epsilon.cc.jinja"),
+            output_path=os.path.join(package_dir, "epsilon.cc"),
+            data={},
+        )
     else:
         # sym/util is currently C++ only
         pass
