@@ -1,3 +1,6 @@
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 #include "./assert.h"
 
 /**
@@ -32,7 +35,11 @@ T Values<Scalar>::At(const index_entry_t& entry) const {
 template <typename Scalar>
 template <typename T>
 T Values<Scalar>::At(const Key& key) const {
-  return At<T>(map_.at(key));
+  const auto it = map_.find(key);
+  if (it == map_.end()) {
+    throw std::runtime_error(fmt::format("Key not found: {}", key));
+  }
+  return At<T>(it->second);
 }
 
 template <typename Scalar>

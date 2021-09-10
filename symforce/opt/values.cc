@@ -146,7 +146,13 @@ index_t Values<Scalar>::CreateIndex(const std::vector<Key>& keys) const {
   index_t index{};
   index.entries.reserve(keys.size());
   for (const Key& key : keys) {
-    const index_entry_t& entry = map_.at(key);
+    const auto it = map_.find(key);
+
+    if (it == map_.end()) {
+      throw std::runtime_error(fmt::format("Tried to create index for key {} not in values", key));
+    }
+
+    const auto& entry = it->second;
     index.entries.push_back(entry);
     index.storage_dim += entry.storage_dim;
     index.tangent_dim += entry.tangent_dim;
