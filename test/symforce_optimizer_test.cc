@@ -148,12 +148,11 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
 
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimize", {},
                                    /* debug_stats */ false, /* check_derivatives */ true);
-  optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(&values);
 
   spdlog::info("Optimized values: {}", values);
 
-  const auto& iteration_stats = optimizer.Stats().iterations;
-  const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
+  const auto& last_iter = stats.iterations.back();
   spdlog::info("Iterations: {}", last_iter.iteration);
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Final error: {}", last_iter.new_error);
@@ -240,12 +239,11 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   params.early_exit_min_reduction = 0.0001;
 
   sym::Optimizer<double> optimizer(params, factors, epsilon);
-  optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(&values);
 
   spdlog::info("Optimized values: {}", values);
 
-  const auto& iteration_stats = optimizer.Stats().iterations;
-  const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
+  const auto& last_iter = stats.iterations.back();
   spdlog::info("Iterations: {}", last_iter.iteration);
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Final error: {}", last_iter.new_error);
@@ -326,12 +324,11 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   }
 
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimizer", optimized_keys);
-  optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(&values);
 
   spdlog::info("Optimized values: {}", values);
 
-  const auto& iteration_stats = optimizer.Stats().iterations;
-  const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
+  const auto& last_iter = stats.iterations.back();
   spdlog::info("Iterations: {}", last_iter.iteration);
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Final error: {}", last_iter.new_error);

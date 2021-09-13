@@ -133,7 +133,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 
 template <typename ScalarType, typename LinearSolverType>
 bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
-    const LinearizeFunc& func, optimization_stats_t* const stats, const bool debug_stats) {
+    const LinearizeFunc& func, OptimizationStats<Scalar>* const stats, const bool debug_stats) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
   SYM_ASSERT(stats != nullptr);
 

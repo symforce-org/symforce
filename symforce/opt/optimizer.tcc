@@ -22,9 +22,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
       index_(),
       linearizer_(factors_, keys_),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)) {
-  stats_.iterations.reserve(params.iterations);
-}
+      linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
 
 template <typename ScalarType, typename NonlinearSolverType>
 template <typename... NonlinearSolverArgs>
@@ -41,28 +39,53 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
                          : std::move(keys)),
       index_(),
       linearizer_(factors_, keys_),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)) {
-  stats_.iterations.reserve(params.iterations);
-}
+      linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
 
 // ----------------------------------------------------------------------------
 // Public methods
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
-bool Optimizer<ScalarType, NonlinearSolverType>::Optimize(
-    Values<Scalar>* values, int num_iterations, Linearization<Scalar>* const best_linearization) {
+OptimizationStats<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Optimize(
+    Values<Scalar>* const values, int num_iterations, bool populate_best_linearization) {
+  OptimizationStats<Scalar> stats;
+  Optimize(values, num_iterations, populate_best_linearization, &stats);
+  return stats;
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* const values,
+                                                          int num_iterations,
+                                                          bool populate_best_linearization,
+                                                          OptimizationStats<Scalar>* const stats) {
+  SYM_ASSERT(values != nullptr);
+  SYM_ASSERT(stats != nullptr);
+
   if (num_iterations < 0) {
     num_iterations = nonlinear_solver_.Params().iterations;
   }
+
+  stats->iterations.reserve(num_iterations);
 
   Initialize(*values);
 
   // Clear state for this run
   nonlinear_solver_.Reset(*values);
-  stats_.iterations.clear();
+  stats->iterations.clear();
+  IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
+}
 
-  return IterateToConvergence(values, num_iterations, best_linearization);
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
+                                                          int num_iterations,
+                                                          OptimizationStats<Scalar>* stats) {
+  return Optimize(values, num_iterations, false, stats);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
+                                                          OptimizationStats<Scalar>* stats) {
+  return Optimize(values, -1, false, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -109,11 +132,6 @@ const std::vector<Key>& Optimizer<ScalarType, NonlinearSolverType>::Keys() const
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-const optimization_stats_t& Optimizer<ScalarType, NonlinearSolverType>::Stats() const {
-  return stats_;
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_params_t& params) {
   nonlinear_solver_.UpdateParams(params);
 }
@@ -123,15 +141,14 @@ void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_pa
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
-bool Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
+void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     Values<Scalar>* const values, const size_t num_iterations,
-    Linearization<Scalar>* const best_linearization) {
+    const bool populate_best_linearization, OptimizationStats<Scalar>* const stats) {
   bool optimization_early_exited = false;
 
   // Iterate
   for (int i = 0; i < num_iterations; i++) {
-    const bool should_early_exit =
-        nonlinear_solver_.Iterate(linearize_func_, &stats_, debug_stats_);
+    const bool should_early_exit = nonlinear_solver_.Iterate(linearize_func_, stats, debug_stats_);
     if (should_early_exit) {
       optimization_early_exited = true;
       break;
@@ -141,14 +158,14 @@ bool Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
   // Save best results
   (*values) = nonlinear_solver_.GetBestValues();
 
-  if (best_linearization != nullptr) {
-    // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead take a
-    // Linearization**, but then we'd have the issue of defining when the returned pointer becomes
-    // invalid
-    *best_linearization = nonlinear_solver_.GetBestLinearization();
+  if (populate_best_linearization) {
+    // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead put a
+    // Linearization** in the stats, but then we'd have the issue of defining when the pointer
+    // becomes invalid
+    stats->best_linearization = nonlinear_solver_.GetBestLinearization();
   }
 
-  return optimization_early_exited;
+  stats->early_exited = optimization_early_exited;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>

@@ -74,7 +74,8 @@ struct linearization_key_helper_t {
   int32_t combined_offset;
   // Tangent dimension of the key
   int32_t tangent_dim;
-  // For each column of this key's block in the factor jacobian, the sparse storage valuePtr array offsets
+  // For each column of this key's block in the factor jacobian, the sparse storage valuePtr array
+  // offsets
   int32_t jacobian_storage_col_starts[];
   // For each other key (from 0 to this key's index), the sparse storage valuePtr array offsets
   // NOTE(hayk): Currently num_other_cols is not constant in actual use - this type likely
@@ -184,4 +185,8 @@ struct optimization_stats_t {
 
   // Index into iterations of the best iteration (containing the optimal Values)
   int32_t best_index;
+
+  // Did the optimization early exit? (either because it converged, or because it could not find a
+  // good step)
+  boolean early_exited;
 }

@@ -2,6 +2,7 @@
 
 #include "./levenberg_marquardt_solver.h"
 #include "./linearizer.h"
+#include "./optimization_stats.h"
 
 namespace sym {
 
@@ -95,11 +96,63 @@ class Optimizer {
    * Args:
    *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
    *                     at construction
-   *     best_linearization: If not null, will be filled out with the linearization at the best
-   *                         values
+   *     populate_best_linearization: If true, the linearization at the best values will be filled
+   *                                  out in the stats
+   *
+   * Returns:
+   *     The optimization stats
    */
-  virtual bool Optimize(Values<Scalar>* values, int num_iterations = -1,
-                        Linearization<Scalar>* best_linearization = nullptr);
+  OptimizationStats<Scalar> Optimize(Values<Scalar>* values, int num_iterations = -1,
+                                     bool populate_best_linearization = false);
+
+  /**
+   * Optimize the given values in-place
+   *
+   * This overload takes the stats as an argument, and stores into there.  This allows users to
+   * avoid reallocating memory for any of the entries in the stats, for use cases where that's
+   * important.  If passed, stats must not be nullptr.
+   *
+   * Args:
+   *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
+   *                     at construction
+   *     populate_best_linearization: If true, the linearization at the best values will be filled
+   *                                  out in the stats
+   *     stats: An OptimizationStats to fill out with the result - if filling out dynamically
+   *            allocated fields here, will not reallocate if memory is already allocated in the
+   *            required shape (e.g. for repeated calls to Optimize)
+   */
+  virtual void Optimize(Values<Scalar>* values, int num_iterations,
+                        bool populate_best_linearization, OptimizationStats<Scalar>* stats);
+
+  /**
+   * Optimize the given values in-place
+   *
+   * This overload takes the stats as an argument, and stores into there.  This allows users to
+   * avoid reallocating memory for any of the entries in the stats, for use cases where that's
+   * important.  If passed, stats must not be nullptr.
+   *
+   * Args:
+   *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
+   *                     at construction
+   *     stats: An OptimizationStats to fill out with the result - if filling out dynamically
+   *            allocated fields here, will not reallocate if memory is already allocated in the
+   *            required shape (e.g. for repeated calls to Optimize)
+   */
+  void Optimize(Values<Scalar>* values, int num_iterations, OptimizationStats<Scalar>* stats);
+
+  /**
+   * Optimize the given values in-place
+   *
+   * This overload takes the stats as an argument, and stores into there.  This allows users to
+   * avoid reallocating memory for any of the entries in the stats, for use cases where that's
+   * important.  If passed, stats must not be nullptr.
+   *
+   * Args:
+   *     stats: An OptimizationStats to fill out with the result - if filling out dynamically
+   *            allocated fields here, will not reallocate if memory is already allocated in the
+   *            required shape (e.g. for repeated calls to Optimize)
+   */
+  void Optimize(Values<Scalar>* values, OptimizationStats<Scalar>* stats);
 
   /**
    * Linearize the problem around the given values
@@ -140,11 +193,6 @@ class Optimizer {
   const std::vector<Key>& Keys() const;
 
   /**
-   * Get the nonlinear solver stats
-   */
-  const optimization_stats_t& Stats() const;
-
-  /**
    * Update the optimizer params
    */
   void UpdateParams(const optimizer_params_t& params);
@@ -154,8 +202,8 @@ class Optimizer {
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations
    * or converged
    */
-  bool IterateToConvergence(Values<Scalar>* const values, const size_t num_iterations,
-                            Linearization<Scalar>* best_linearization);
+  void IterateToConvergence(Values<Scalar>* values, size_t num_iterations,
+                            bool populate_best_linearization, OptimizationStats<Scalar>* stats);
 
   /**
    * Build the linearize_func functor for the underlying nonlinear solver
@@ -175,9 +223,6 @@ class Optimizer {
 
   // Underlying nonlinear solver class.
   NonlinearSolver nonlinear_solver_;
-
-  // Stats
-  optimization_stats_t stats_;
 
   Scalar epsilon_;
   bool debug_stats_;
@@ -209,10 +254,11 @@ using Optimizerf = Optimizer<float>;
  * Simple wrapper to make it one function call.
  */
 template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
-void Optimize(const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
-              Values<Scalar>* values, const Scalar epsilon = 1e-9) {
+OptimizationStats<Scalar> Optimize(const optimizer_params_t& params,
+                                   const std::vector<Factor<Scalar>>& factors,
+                                   Values<Scalar>* values, const Scalar epsilon = 1e-9) {
   Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, epsilon);
-  optimizer.Optimize(values);
+  return optimizer.Optimize(values);
 }
 
 }  // namespace sym

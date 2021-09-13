@@ -65,7 +65,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   const bool debug_stats = true;
 
   // Do a single gauss-newton iteration
-  sym::optimization_stats_t stats;
+  sym::OptimizationStats<Scalar> stats;
   solver.Iterate(residual_func, &stats, debug_stats);
 
   const sym::VectorX<Scalar> residual_final =

@@ -10,6 +10,7 @@
 #include <symforce/opt/values.h>
 
 #include "./internal/levenberg_marquardt_state.h"
+#include "./optimization_stats.h"
 
 namespace sym {
 
@@ -163,7 +164,7 @@ class LevenbergMarquardtSolver {
   void UpdateParams(const optimizer_params_t& p);
 
   // Run one iteration of the optimization. Returns true if the optimization should early exit.
-  bool Iterate(const LinearizeFunc& func, optimization_stats_t* const stats,
+  bool Iterate(const LinearizeFunc& func, OptimizationStats<Scalar>* const stats,
                const bool debug_stats = false);
 
   const Values<Scalar>& GetBestValues() const {

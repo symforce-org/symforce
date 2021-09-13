@@ -147,6 +147,31 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   endif()
 
   # ------------------------------------------------------------------------------
+  # tl::optional
+
+  find_package(tl-optional QUIET)
+  if (NOT tl_optional_FOUND)
+    message(STATUS "tl::optional not found, adding with FetchContent")
+    function(add_tl_optional)
+      set(OPTIONAL_ENABLE_TESTS OFF CACHE INTERNAL "tl::optional shouldn't build tests")
+      FetchContent_Declare(
+        tl_optional
+        GIT_REPOSITORY https://github.com/TartanLlama/optional
+        GIT_TAG v1.0.0
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(tl_optional)
+
+      # tl::optional does this correctly for installs, but not direct includes with FetchContent
+      add_library(tl::optional ALIAS optional)
+    endfunction()
+
+    add_tl_optional()
+  else()
+    message(STATUS "tl::optional found")
+  endif()
+
+  # ------------------------------------------------------------------------------
   # METIS
 
   # Libs for metis - our version of metis does not bundle this
@@ -241,6 +266,7 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
     symforce_opt_linear
     fmt::fmt
     spdlog::spdlog
+    tl::optional
     Eigen3::Eigen
   )
 

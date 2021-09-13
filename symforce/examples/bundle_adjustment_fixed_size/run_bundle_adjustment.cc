@@ -182,7 +182,7 @@ void RunBundleAdjustment() {
                             params.check_derivatives);
 
   // Optimize
-  const bool early_exit = optimizer.Optimize(&values);
+  const sym::OptimizationStatsd stats = optimizer.Optimize(&values);
 
   // Print out results
   spdlog::info("Optimized State:");
@@ -194,7 +194,6 @@ void RunBundleAdjustment() {
     spdlog::info("{} ", values.At<double>({Var::LANDMARK, i}));
   }
 
-  const auto& stats = optimizer.Stats();
   const auto& iteration_stats = stats.iterations;
   const auto& first_iter = iteration_stats.front();
   const auto& last_iter = iteration_stats.back();
