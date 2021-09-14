@@ -9,6 +9,7 @@
 #include <limits>
 
 #include <Eigen/Dense>
+#include <sym/util/epsilon.h>
 
 #include "./storage_ops.h"
 
@@ -42,8 +43,7 @@ namespace internal {
 template <typename T, typename Scalar>
 struct LieGroupOpsBase {
   static bool IsClose(const T& a, const T& b, const Scalar tol) {
-    return LieGroupOps<T>::LocalCoordinates(a, b, std::numeric_limits<Scalar>::epsilon()).norm() <
-           tol;
+    return LieGroupOps<T>::LocalCoordinates(a, b, kDefaultEpsilon<Scalar>).norm() < tol;
   }
 };
 

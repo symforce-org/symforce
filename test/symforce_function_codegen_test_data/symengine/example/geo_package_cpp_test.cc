@@ -18,6 +18,7 @@
 #include <sym/pose3.h>
 #include <sym/rot2.h>
 #include <sym/rot3.h>
+#include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 
 #include "../cpp/symforce/sym/tangent_d_storage_pose2.h"
@@ -265,8 +266,7 @@ template <typename T, typename Generator, typename Scalar>
 T RandomNonIdentity(Generator& gen, Scalar tol) {
   T element = sym::StorageOps<T>::Random(gen);
   // Making sure that element is not near identity, and trying again if it is.
-  while (sym::LieGroupOps<T>::ToTangent(element, std::numeric_limits<Scalar>::epsilon()).norm() <
-         2 * tol) {
+  while (sym::LieGroupOps<T>::ToTangent(element, sym::kDefaultEpsilon<Scalar>).norm() < 2 * tol) {
     element = sym::StorageOps<T>::Random(gen);
   }
   return element;
@@ -293,8 +293,7 @@ void IsCloseCommonTest(Generator& gen, Scalar tol) {
       }
       // multiply by 0.8 so the perturbation has norm < tol
       small_tangent = (0.8 * tol / small_tangent.norm()) * small_tangent;
-      return sym::LieGroupOps<T>::Retract(element, small_tangent,
-                                          std::numeric_limits<Scalar>::epsilon());
+      return sym::LieGroupOps<T>::Retract(element, small_tangent, sym::kDefaultEpsilon<Scalar>);
     }();
     CHECK(sym::IsClose(element, close_element, tol));
   }
@@ -348,13 +347,13 @@ struct TestIsClose<sym::Rot2<Scalar>> {
   using Rot2 = sym::Rot2<Scalar>;
 
   template <typename Generator>
-  static void Test(Generator& gen, Scalar tol = 1e-6) {
+  static void Test(Generator& gen, Scalar tol = 10 * sym::kDefaultEpsilon<Scalar>) {
     IsCloseCommonTest<Rot2>(gen, tol);
 
     // Checking that IsClose returns true for angles which are close but on opposite sides
     // of potentially significant angles (ex: pi + epsilon and pi - epsilon), or when the angles
     // are close to eachother mod 2 pi (ex: 2pi - epsilon and epsilon)
-    const Scalar epsilon = 1e-7;
+    const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
     for (Scalar angle = -2 * M_PI; angle < 2 * M_PI + 0.1; angle += M_PI_2) {
       CHECK(sym::LieGroupOps<Rot2>::IsClose(Rot2(angle - epsilon), Rot2(angle + epsilon), tol));
     }
@@ -375,7 +374,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
   constexpr const int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   using StorageVec = Eigen::Matrix<Scalar, storage_dim, 1>;
   using SelfJacobian = typename sym::GroupOps<T>::SelfJacobian;
-  const Scalar epsilon = 1e-7;
+  const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
   spdlog::info("*** Testing LieGroupOps: {} ***", identity);
@@ -467,7 +466,7 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", double, float) 
 
   using Scalar = typename sym::StorageOps<T>::Scalar;
   using TangentVec = Eigen::Matrix<Scalar, sym::LieGroupOps<T>::TangentDim(), 1>;
-  const Scalar epsilon = 1e-7;
+  const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
   spdlog::info("*** Testing LieGroupOps: {} ***", identity);
@@ -504,7 +503,7 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<do
 
   using Scalar = typename sym::StorageOps<T>::Scalar;
   using TangentVec = Eigen::Matrix<Scalar, sym::LieGroupOps<T>::TangentDim(), 1>;
-  const Scalar epsilon = 1e-7;
+  const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
   spdlog::info("*** Testing Matrix LieGroupOps: {} ***", identity.transpose());
