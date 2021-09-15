@@ -14,7 +14,7 @@ struct BundleAdjustmentProblemParams {
   double reprojection_error_gnc_scale = 10;
   double noise_px = 5;
   double num_outliers = 0;
-  double landmark_relative_range_noise = 0.2;
+  double landmark_relative_range_noise = 0.5;
   double pose_difference_std = 2;
   double pose_noise = 0.1;
   double pose_prior_noise = 0.3;

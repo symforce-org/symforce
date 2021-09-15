@@ -157,17 +157,22 @@ void RunBundleAdjustment() {
     spdlog::info("{} ", values.At<double>({Var::LANDMARK, i}));
   }
 
-  const auto& iteration_stats = optimizer.Stats().iterations;
-  const auto& first_iter = iteration_stats[0];
-  const auto& last_iter = iteration_stats[iteration_stats.size() - 1];
+  const auto& stats = optimizer.Stats();
+  const auto& iteration_stats = stats.iterations;
+  const auto& first_iter = iteration_stats.front();
+  const auto& last_iter = iteration_stats.back();
+
+  // Note that the best iteration (with the best error, and representing the Values that gives that
+  // error) may not be the last iteration, if later steps did not successfully decrease the cost
+  const auto& best_iter = iteration_stats[stats.best_index];
+
   spdlog::info("Iterations: {}", last_iter.iteration);
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Initial error: {}", first_iter.new_error);
-  spdlog::info("Final error: {}", last_iter.new_error);
+  spdlog::info("Final error: {}", best_iter.new_error);
 
   // Check successful convergence
-  SYM_ASSERT(last_iter.iteration == 15);
-  SYM_ASSERT(last_iter.new_error < 10);
+  SYM_ASSERT(best_iter.new_error < 10);
 }
 
 }  // namespace bundle_adjustment

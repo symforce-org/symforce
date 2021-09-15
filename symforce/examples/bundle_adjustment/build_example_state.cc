@@ -60,7 +60,7 @@ void AddPosePriors(const std::vector<sym::PosedCamera<sym::LinearCameraCald>>& c
     const auto& first_view = cams[i].Pose();
     const auto& second_view = cams[i + 1].Pose();
     values->Set({Var::POSE_PRIOR_T, i, i + 1},
-                second_view.Between(first_view)
+                first_view.Between(second_view)
                     .Retract(params.pose_prior_noise * sym::Random<sym::Vector6d>(gen)));
     values->Set({Var::POSE_PRIOR_SQRT_INFO, i, i + 1},
                 sym::Matrix66d::Identity() / params.pose_prior_noise);
