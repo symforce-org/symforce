@@ -14,7 +14,7 @@ def inverse_range_landmark_prior_residual(
     weight: T.Scalar,
     sigma: T.Scalar,
     epsilon: T.Scalar,
-) -> geo.Matrix11:
+) -> geo.Vector1:
     """
     Factor representing a Gaussian prior on the inverse range of a landmark
 
@@ -38,11 +38,11 @@ def reprojection_delta(
     source_calibration: cam.LinearCameraCal,
     target_pose: geo.Pose3,
     target_calibration: cam.LinearCameraCal,
-    source_pixel: geo.Matrix21,
-    target_pixel: geo.Matrix21,
+    source_pixel: geo.Vector2,
+    target_pixel: geo.Vector2,
     source_inverse_range: T.Scalar,
     epsilon: T.Scalar,
-) -> T.Tuple[geo.Matrix21, T.Scalar]:
+) -> T.Tuple[geo.Vector2, T.Scalar]:
     """
     Reprojects the landmark into the target camera and returns the delta from the correspondence to
     the reprojection.
@@ -66,19 +66,19 @@ def reprojection_delta(
     return reprojection_error, warp_is_valid
 
 
-def inverse_range_landmark_reprojection_error_residual(  # pylint: disable=too-many-arguments
+def inverse_range_landmark_reprojection_error_residual(
     source_pose: geo.Pose3,
-    source_calibration_storage: geo.Matrix41,
+    source_calibration_storage: geo.Vector4,
     target_pose: geo.Pose3,
-    target_calibration_storage: geo.Matrix41,
+    target_calibration_storage: geo.Vector4,
     source_inverse_range: T.Scalar,
-    source_pixel: geo.Matrix21,
-    target_pixel: geo.Matrix21,
+    source_pixel: geo.Vector2,
+    target_pixel: geo.Vector2,
     weight: T.Scalar,
     gnc_mu: T.Scalar,
     gnc_scale: T.Scalar,
     epsilon: T.Scalar,
-) -> geo.Matrix21:
+) -> geo.Vector2:
     """
     Return the 2dof residual of reprojecting the landmark into the target camera and comparing
     against the correspondence in the target camera.
@@ -135,6 +135,79 @@ def inverse_range_landmark_reprojection_error_residual(  # pylint: disable=too-m
     return whitened_residual
 
 
+def inverse_range_landmark_spherical_camera_reprojection_error_residual(
+    source_pose: geo.Pose3,
+    target_pose: geo.Pose3,
+    target_calibration_storage: geo.Vector9,
+    source_inverse_range: T.Scalar,
+    p_camera_source: geo.Vector3,
+    target_pixel: geo.Vector2,
+    weight: T.Scalar,
+    gnc_mu: T.Scalar,
+    gnc_scale: T.Scalar,
+    epsilon: T.Scalar,
+) -> geo.Vector2:
+    """
+    Return the 2dof residual of reprojecting the landmark ray into the target spherical camera and comparing
+    it against the correspondence.
+
+    The landmark is specified as a camera point in the source camera with an inverse range; this means the
+    landmark is fixed in the source camera and always has residual 0 there (this 0 residual is not
+    returned, only the residual in the target camera is returned).
+
+    The norm of the residual is whitened using the Barron noise model.  Whitening each component of
+    the reprojection error separately would result in rejecting individual components as outliers.
+    Instead, we minimize the whitened norm of the full reprojection error for each point.  See the
+    docstring for `NoiseModel.whiten_norm` for more information on this, and the docstring of
+    `BarronNoiseModel` for more information on the noise model.
+
+    Args:
+        source_pose: The pose of the source camera
+        target_pose: The pose of the target camera
+        target_calibration_storage: The storage vector of the target spherical camera calibration
+        source_inverse_range: The inverse range of the landmark in the source camera
+        p_camera_source: The location of the landmark in the source camera coordinate, will be normalized
+        target_pixel: The location of the correspondence in the target camera
+        weight: The weight of the factor
+        gnc_mu: The mu convexity parameter for the Barron noise model
+        gnc_scale: The scale parameter for the Barron noise model
+        epsilon: Small positive value
+
+    Outputs:
+        res: 2dof whiten residual of the reprojection
+    """
+    nav_T_target_cam = target_pose
+    nav_T_source_cam = source_pose
+    target_cam_T_source_cam = nav_T_target_cam.inverse() * nav_T_source_cam
+
+    p_camera_source_unit_ray = p_camera_source / p_camera_source.norm(epsilon)
+
+    p_cam_target = (
+        target_cam_T_source_cam.R * p_camera_source_unit_ray
+        + source_inverse_range * target_cam_T_source_cam.t
+    )
+
+    target_cam = cam.SphericalCameraCal.from_storage(target_calibration_storage.to_flat_list())
+    target_pixel_reprojection, is_valid = target_cam.pixel_from_camera_point(
+        p_cam_target, epsilon=epsilon
+    )
+    reprojection_error = target_pixel_reprojection - target_pixel
+
+    # Compute whitened residual with a noise model.
+    alpha = BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon)
+    noise_model = BarronNoiseModel(
+        alpha=alpha,
+        scale=gnc_scale,
+        weight=weight * is_valid,
+        x_epsilon=epsilon,
+        alpha_epsilon=epsilon,
+    )
+
+    whitened_residual = noise_model.whiten_norm(reprojection_error)
+
+    return whitened_residual
+
+
 def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
     """
     Generate the SLAM package for the given language.
@@ -159,5 +232,11 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
     codegen.Codegen.function(
         func=inverse_range_landmark_reprojection_error_residual, config=config
     ).create_with_linearization(which_args=[0, 2, 4]).generate_function(
+        output_dir=factors_dir, skip_directory_nesting=True
+    )
+
+    codegen.Codegen.function(
+        func=inverse_range_landmark_spherical_camera_reprojection_error_residual, config=config
+    ).create_with_linearization(which_args=[0, 1, 3]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
