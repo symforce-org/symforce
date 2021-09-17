@@ -22,8 +22,8 @@ class FixedBundleAdjustmentProblem:
     We put a prior on the relative poses between successive views, and the inverse range of each
     landmark.
 
-    This is called from symforce/test/symforce_bundle_adjustment_example_codegen_test.py to
-    actually generate the problem
+    This is called from symforce/test/symforce_examples_bundle_adjustment_fixed_size_codegen_test.py
+    to actually generate the problem
     """
 
     def __init__(self, num_views: int, num_landmarks: int) -> None:
