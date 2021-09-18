@@ -100,7 +100,7 @@ Values<NewScalar> Values<Scalar>::Cast() const {
   new_values.map_ = map_;
 
   // This shouldn't really be less efficient in the Scalar == NewScalar case
-  new_values.data_.reserve(data_.size());
+  new_values.data_.resize(data_.size());
   std::copy(data_.begin(), data_.end(), new_values.data_.begin());
 
   return new_values;
