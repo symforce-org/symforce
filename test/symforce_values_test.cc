@@ -21,7 +21,6 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.NumEntries() == 0);
   CHECK(v.Items().size() == 0);
   CHECK(v.Data().size() == 0);
-  CHECK(!v.Has(sym::Key()));
   CHECK(!v.Has(sym::Key('F', -1, 3)));
 
   // Add a key
