@@ -16,6 +16,7 @@ from symforce.codegen import geo_package_codegen
 from symforce.codegen import slam_factors_codegen
 from symforce.codegen import sym_util_package_codegen
 from symforce.test_util import TestCase, slow_on_sympy
+from symforce import path_util
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
@@ -151,13 +152,14 @@ class SymforceGenCodegenTest(TestCase):
 
         # Compile and run the test
         if not self.UPDATE:
-            fmt_library_dir = os.path.join(SYMFORCE_DIR, "***REMOVED***/lib")
-            spdlog_library_dir = os.path.join(SYMFORCE_DIR, "***REMOVED***/lib")
             example_dir = os.path.join(output_dir, "example")
             TestCase.compile_and_run_cpp(
                 example_dir,
                 ("cam_package_cpp_test", "cam_function_codegen_cpp_test", "geo_package_cpp_test"),
-                env=dict(os.environ, LD_LIBRARY_PATH=f"{fmt_library_dir}:{spdlog_library_dir}"),
+                env=dict(
+                    os.environ,
+                    LD_LIBRARY_PATH=f"{path_util.fmt_library_dir()}:{path_util.spdlog_library_dir()}",
+                ),
             )
 
 

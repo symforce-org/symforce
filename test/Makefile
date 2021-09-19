@@ -5,10 +5,12 @@
 ***REMOVED***=***REMOVED***
 export PKG_CONFIG_PATH=***REMOVED***/lib/pkgconfig/
 
+SPDLOG_INCLUDE_DIR=***REMOVED***/_deps/spdlog-src/include
+
 INCLUDES = -I../gen/cpp \
 	-I***REMOVED***/include/eigen3 \
 	-I../third_party/catch2/include \
-	-I***REMOVED***/gen/lcmtypes/cpp
+	-I$(***REMOVED***)/gen/lcmtypes/cpp
 CXXFLAGS = -std=c++14 -L./ `pkg-config --cflags lcm`
 LDFLAGS = -shared -fpic
 
@@ -20,7 +22,7 @@ CC_FILES_VALUES =../symforce/opt/*.cc
 codegen_%_test: codegen_%_test.cc libsymforce_gen.so libcatch2.so
 	c++ $(CXXFLAGS) -o codegen_$*_test codegen_$*_test.cc \
 		-Wl,-rpath,'$$ORIGIN' -lsymforce_gen -lcatch2 $(INCLUDES) \
-		-I***REMOVED***/_deps/spdlog-src/include \
+		-I$(SPDLOG_INCLUDE_DIR) \
 		-I./symforce_function_codegen_test_data/$(SYMFORCE_TEST_BACKEND)/codegen_$*_test_data/cpp
 
 libsymforce_gen.so: $(CC_FILES)

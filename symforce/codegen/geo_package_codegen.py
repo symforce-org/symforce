@@ -16,6 +16,7 @@ from symforce.codegen import CppConfig
 from symforce.codegen import PythonConfig
 from symforce.codegen import codegen_util
 from symforce.codegen import template_util
+from symforce import path_util
 
 CURRENT_DIR = os.path.dirname(__file__)
 # Default geo types to generate
@@ -331,28 +332,14 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                     ],
                     all_types=DEFAULT_GEO_TYPES,
                     include_dir=output_dir,
-                    symforce_include_dir=os.path.join(CURRENT_DIR, "../../"),
-                    eigen_include_dir=os.path.realpath(
-                        os.path.join(
-                            CURRENT_DIR, "***REMOVED***/include/eigen3/"
-                        )
-                    ),
-                    lcm_include_dir=os.path.realpath(
-                        os.path.join(CURRENT_DIR, "***REMOVED***/include/")
-                    ),
-                    spdlog_include_dir=os.path.realpath(
-                        os.path.join(
-                            CURRENT_DIR, "***REMOVED***/_deps/spdlog-src/include"
-                        )
-                    ),
+                    symforce_include_dir=path_util.symforce_dir(),
+                    eigen_include_dir=path_util.eigen_include_dir(),
+                    lcm_include_dir=path_util.lcm_include_dir(),
+                    spdlog_include_dir=path_util.spdlog_include_dir(),
                     lib_dir=os.path.join(output_dir, "example"),
-                    catch2_dir=os.path.join(CURRENT_DIR, "..", "..", "third_party", "catch2"),
-                    fmt_library_dir=os.path.join(
-                        CURRENT_DIR, "***REMOVED***/lib"
-                    ),
-                    spdlog_library_dir=os.path.join(
-                        CURRENT_DIR, "***REMOVED***/lib"
-                    ),
+                    catch2_dir=path_util.catch2_include_dir(),
+                    fmt_library_dir=path_util.fmt_library_dir(),
+                    spdlog_library_dir=path_util.spdlog_library_dir(),
                 ),
             )
 

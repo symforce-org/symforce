@@ -16,14 +16,10 @@ from symforce import sympy as sm
 from symforce import types as T
 from symforce.codegen import printers, format_util
 from symforce.codegen import codegen_config
+from symforce import path_util
 from symforce import python_util
 
-# Command used to generate language-specific types from .lcm files
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-
 USE_SKYMARSHAL = False
-LCM_GEN_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/lcm-gen")
-SKYMARSHAL_CMD = os.path.join(SYMFORCE_DIR, "***REMOVED***/bin/skymarshal")
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
@@ -529,7 +525,7 @@ def generate_lcm_types(
         if USE_SKYMARSHAL:
             python_util.execute_subprocess(
                 [
-                    SKYMARSHAL_CMD,
+                    str(path_util.skymarshal_exe()),
                     lcm_file_path,
                     "--python",
                     "--python-path",
@@ -539,7 +535,7 @@ def generate_lcm_types(
             )
             python_util.execute_subprocess(
                 [
-                    SKYMARSHAL_CMD,
+                    str(path_util.skymarshal_exe()),
                     lcm_file_path,
                     "--cpp",
                     "--cpp-hpath",
@@ -550,11 +546,17 @@ def generate_lcm_types(
             )
         else:
             python_util.execute_subprocess(
-                [LCM_GEN_CMD, lcm_file_path, "--python", "--ppath", python_types_dir]
+                [
+                    str(path_util.lcm_gen_exe()),
+                    lcm_file_path,
+                    "--python",
+                    "--ppath",
+                    python_types_dir,
+                ]
             )
             python_util.execute_subprocess(
                 [
-                    LCM_GEN_CMD,
+                    str(path_util.lcm_gen_exe()),
                     lcm_file_path,
                     "--cpp",
                     "--cpp-hpath",

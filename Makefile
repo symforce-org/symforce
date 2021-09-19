@@ -177,7 +177,7 @@ docs_open: docs
 # -----------------------------------------------------------------------------
 # Notebook
 # -----------------------------------------------------------------------------
-JUPYTER_CMD=PYTHONPATH=.:../.. $(JUPYTER) notebook --notebook-dir=notebooks --ip=localhost --port=8777
+JUPYTER_CMD=$(JUPYTER) notebook --notebook-dir=notebooks --ip=localhost --port=8777
 
 notebook:
 	$(JUPYTER_CMD) --no-browser
