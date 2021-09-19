@@ -1,6 +1,6 @@
 from pathlib import Path
 
-***REMOVED*** = ***REMOVED***
+***REMOVED*** = ***REMOVED***.parent
 
 
 def eigen_include_dir() -> Path:

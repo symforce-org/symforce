@@ -2,7 +2,7 @@
 #
 # Expects SYMFORCE_TEST_BACKEND to be set to either 'symengine' or 'sympy'
 
-***REMOVED***=***REMOVED***
+***REMOVED***=../***REMOVED***
 export PKG_CONFIG_PATH=***REMOVED***/lib/pkgconfig/
 
 SPDLOG_INCLUDE_DIR=***REMOVED***/_deps/spdlog-src/include
