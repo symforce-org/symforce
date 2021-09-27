@@ -1,4 +1,11 @@
+black==19.10b0
+breathe
+ipykernel
 Jinja2
+matplotlib
 mypy
+nbsphinx
 numpy
+sphinx_autodoc_typehints
+sphinx_rtd_theme
 sympy
