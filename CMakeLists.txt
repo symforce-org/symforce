@@ -71,13 +71,23 @@ include(FetchContent)
 find_package(Eigen3 QUIET)
 if(NOT Eigen3_FOUND)
   message(STATUS "Eigen3 not found, adding with FetchContent")
-  FetchContent_Declare(
-    eigen3
-    GIT_REPOSITORY https://gitlab.com/libeigen/eigen
-    GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c  # release 3.4.0
-  )
-  FetchContent_MakeAvailable(eigen3)
+  function(add_eigen)
+    FetchContent_Declare(
+      eigen3
+      GIT_REPOSITORY https://gitlab.com/libeigen/eigen
+      GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c  # release 3.4.0
+      GIT_SHALLOW TRUE
+    )
+
+    set(EIGEN_BUILD_DOC OFF CACHE BOOL "Don't build Eigen docs")
+    set(BUILD_TESTING OFF CACHE BOOL "Don't build Eigen tests")
+    set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "Don't build Eigen pkg-config")
+    FetchContent_MakeAvailable(eigen3)
+  endfunction()
+
+  add_eigen()
 endif()
+
 
 # These dependencies are not needed for symforce_gen
 if(NOT SYMFORCE_BUILD_GEN_ONLY)
@@ -87,12 +97,18 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   find_package(fmt QUIET)
   if (NOT fmt_FOUND)
     message(STATUS "fmt not found, adding with FetchContent")
-    FetchContent_Declare(
-      fmtlib
-      GIT_REPOSITORY https://github.com/fmtlib/fmt
-      GIT_TAG d141cdbeb0fb422a3fb7173b285fd38e0d1772dc # release 8.0.1
-    )
-    FetchContent_MakeAvailable(fmtlib)
+    function(add_fmt)
+      FetchContent_Declare(
+        fmtlib
+        GIT_REPOSITORY https://github.com/fmtlib/fmt
+        GIT_TAG d141cdbeb0fb422a3fb7173b285fd38e0d1772dc # release 8.0.1
+        GIT_SHALLOW TRUE
+      )
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_MakeAvailable(fmtlib)
+    endfunction()
+
+    add_fmt()
   else()
     message(STATUS "fmt found")
   endif()
@@ -103,13 +119,19 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   find_package(spdlog QUIET)
   if (NOT spdlog_FOUND)
     message(STATUS "spdlog not found, adding with FetchContent")
-    set(SPDLOG_FMT_EXTERNAL ON CACHE INTERNAL "spdlog shouldn't use its bundled fmtlib")
-    FetchContent_Declare(
-      spdlog
-      GIT_REPOSITORY https://github.com/gabime/spdlog
-      GIT_TAG eb3220622e73a4889eee355ffa37972b3cac3df5 # release 1.9.2
-    )
-    FetchContent_MakeAvailable(spdlog)
+    function(add_spdlog)
+      set(SPDLOG_FMT_EXTERNAL ON CACHE INTERNAL "spdlog shouldn't use its bundled fmtlib")
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog
+        GIT_TAG eb3220622e73a4889eee355ffa37972b3cac3df5 # release 1.9.2
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(spdlog)
+    endfunction()
+
+    add_spdlog()
   else()
     message(STATUS "spdlog found")
   endif()
