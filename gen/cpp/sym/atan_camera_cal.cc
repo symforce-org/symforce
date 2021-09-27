@@ -206,8 +206,8 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixel(
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
 
-    _is_valid = std::max<Scalar>(
-        0, (((-std::fabs(_tmp3) + M_PI_2) > 0) - ((-std::fabs(_tmp3) + M_PI_2) < 0)));
+    _is_valid = std::max<Scalar>(0, (((-std::fabs(_tmp3) + Scalar(M_PI_2)) > 0) -
+                                     ((-std::fabs(_tmp3) + Scalar(M_PI_2)) < 0)));
   }
 
   return _camera_ray;
@@ -297,8 +297,8 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixelWithJacobia
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
 
-    _is_valid = std::max<Scalar>(
-        0, (((-std::fabs(_tmp8) + M_PI_2) > 0) - ((-std::fabs(_tmp8) + M_PI_2) < 0)));
+    _is_valid = std::max<Scalar>(0, (((-std::fabs(_tmp8) + Scalar(M_PI_2)) > 0) -
+                                     ((-std::fabs(_tmp8) + Scalar(M_PI_2)) < 0)));
   }
 
   if (point_D_cal != nullptr) {

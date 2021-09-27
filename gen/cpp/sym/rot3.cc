@@ -105,7 +105,7 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1, c
 
   // Intermediate terms (5)
   const Scalar _tmp0 = std::sqrt(1 - u1);
-  const Scalar _tmp1 = 2 * M_PI;
+  const Scalar _tmp1 = 2 * Scalar(M_PI);
   const Scalar _tmp2 = _tmp1 * u2;
   const Scalar _tmp3 = std::sqrt(u1);
   const Scalar _tmp4 = _tmp1 * u3;

@@ -1,4 +1,7 @@
+from sympy.printing.c import get_math_macros
 from sympy.printing.cxx import CXX11CodePrinter
+
+from symforce import types as T
 
 # Everything in this file is SymPy, not SymEngine (even when SymForce is on the SymEngine backend)
 import sympy
@@ -9,6 +12,13 @@ class CppCodePrinter(CXX11CodePrinter):
     Symforce customized code printer for C++. Modifies the Sympy printing
     behavior for codegen compatibility and efficiency.
     """
+
+    def __init__(self, settings: T.Dict[str, T.Any] = None) -> None:
+        settings = dict(
+            settings or {},
+            math_macros={key: f"Scalar({macro})" for key, macro in get_math_macros().items()},
+        )
+        super().__init__(settings)
 
     def _print_Rational(self, expr: sympy.Rational) -> str:
         """

@@ -145,7 +145,7 @@ Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromP
   const Scalar _tmp0 = (-_self[2] + pixel(0, 0)) / _self[0];
   const Scalar _tmp1 = (-_self[3] + pixel(1, 0)) / _self[1];
   const Scalar _tmp2 = std::cos(_tmp0);
-  const Scalar _tmp3 = M_PI_2;
+  const Scalar _tmp3 = Scalar(M_PI_2);
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 3, 1> _camera_ray;
@@ -188,7 +188,7 @@ Eigen::Matrix<Scalar, 3, 1> EquidistantEpipolarCameraCal<Scalar>::CameraRayFromP
   const Scalar _tmp9 = _tmp7 * _tmp8;
   const Scalar _tmp10 = std::cos(_tmp6);
   const Scalar _tmp11 = _tmp10 * _tmp8;
-  const Scalar _tmp12 = M_PI_2;
+  const Scalar _tmp12 = Scalar(M_PI_2);
   const Scalar _tmp13 = _tmp0 / std::pow(_self[0], Scalar(2));
   const Scalar _tmp14 = _tmp1 * _tmp8;
   const Scalar _tmp15 = _tmp13 * _tmp3;
