@@ -14,7 +14,7 @@
 {% endfor %}
 
 {% for cls in all_types %}
-#include "../cpp/symforce/sym/tangent_d_storage_{{ camelcase_to_snakecase(cls.__name__) }}.h"
+#include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_{{ camelcase_to_snakecase(cls.__name__) }}.h"
 {% endfor %}
 
 #include <sym/util/epsilon.h>

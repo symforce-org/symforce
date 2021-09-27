@@ -140,27 +140,16 @@ class SymforceGenCodegenTest(TestCase):
         self.generate_cam_example_function(output_dir)
 
         # Compare against the checked-in tests
-        for test_name in (
-            "cam_package_cpp_test.cc",
-            "cam_function_codegen_cpp_test.cc",
-            "geo_package_cpp_test.cc",
-        ):
-            self.compare_or_update_file(
-                path=os.path.join(TEST_DATA_DIR, "example", test_name),
-                new_file=os.path.join(output_dir, "example", test_name),
-            )
-
-        # Compile and run the test
-        if not self.UPDATE:
-            example_dir = os.path.join(output_dir, "example")
-            TestCase.compile_and_run_cpp(
-                example_dir,
-                ("cam_package_cpp_test", "cam_function_codegen_cpp_test", "geo_package_cpp_test"),
-                env=dict(
-                    os.environ,
-                    LD_LIBRARY_PATH=f"{path_util.fmt_library_dir()}:{path_util.spdlog_library_dir()}",
-                ),
-            )
+        if symforce.get_backend() == "symengine":
+            for test_name in (
+                "cam_package_cpp_test.cc",
+                "cam_function_codegen_cpp_test.cc",
+                "geo_package_cpp_test.cc",
+            ):
+                self.compare_or_update_file(
+                    path=os.path.join(SYMFORCE_DIR, "test", test_name),
+                    new_file=os.path.join(output_dir, "tests", test_name),
+                )
 
 
 if __name__ == "__main__":

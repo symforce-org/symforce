@@ -242,7 +242,6 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         for name in (
             "cam_package_cpp_test.cc",
             "cam_function_codegen_cpp_test.cc",
-            "Makefile",
         ):
 
             def supports_camera_ray_from_pixel(cls: T.Type) -> bool:
@@ -254,8 +253,8 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                     return True
 
             templates.add(
-                os.path.join(template_dir, "..", "example", name) + ".jinja",
-                os.path.join(output_dir, "example", name),
+                os.path.join(template_dir, "..", "tests", name) + ".jinja",
+                os.path.join(output_dir, "tests", name),
                 dict(
                     Codegen.common_data(),
                     all_types=DEFAULT_CAM_TYPES,
@@ -270,15 +269,6 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                         for scalar in data["scalar_types"]
                         if supports_camera_ray_from_pixel(cls)
                     ],
-                    include_dir=output_dir,
-                    eigen_include_dir=path_util.eigen_include_dir(),
-                    lcm_include_dir=path_util.lcm_include_dir(),
-                    spdlog_include_dir=path_util.spdlog_include_dir(),
-                    symforce_include_dir=path_util.symforce_dir(),
-                    lib_dir=os.path.join(output_dir, "example"),
-                    catch2_dir=path_util.catch2_include_dir(),
-                    fmt_library_dir=path_util.fmt_library_dir(),
-                    spdlog_library_dir=path_util.spdlog_library_dir(),
                 ),
             )
     else:

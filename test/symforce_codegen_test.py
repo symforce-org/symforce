@@ -277,25 +277,6 @@ class SymforceCodegenTest(TestCase):
                     expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
                 )
 
-                if not self.UPDATE:
-                    try:
-                        TestCase.compile_and_run_cpp(
-                            os.path.join(SYMFORCE_DIR, "test"),
-                            "codegen_cpp_test",
-                            make_args=(
-                                "codegen_cpp_test",
-                                f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
-                            ),
-                        )
-                    finally:
-                        if logger.level != logging.DEBUG:
-                            python_util.remove_if_exists(
-                                os.path.join(SYMFORCE_DIR, "test", "codegen_cpp_test")
-                            )
-                            python_util.remove_if_exists(
-                                os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
-                            )
-
     def test_function_codegen_cpp(self) -> None:
         output_dir = self.make_output_dir("sf_codegen_function_codegen_cpp_")
 
@@ -334,25 +315,6 @@ class SymforceCodegenTest(TestCase):
             actual_dir=os.path.join(codegen_data["output_dir"]),
             expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
         )
-
-        if not self.UPDATE:
-            try:
-                TestCase.compile_and_run_cpp(
-                    package_dir=os.path.join(SYMFORCE_DIR, "test"),
-                    executable_names="codegen_nan_test",
-                    make_args=(
-                        "codegen_nan_test",
-                        f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
-                    ),
-                )
-            finally:
-                if logger.level != logging.DEBUG:
-                    python_util.remove_if_exists(
-                        os.path.join(SYMFORCE_DIR, "test", "codegen_nan_test")
-                    )
-                    python_util.remove_if_exists(
-                        os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
-                    )
 
     @slow_on_sympy
     def test_multi_function_codegen_cpp(self) -> None:
@@ -394,25 +356,6 @@ class SymforceCodegenTest(TestCase):
         self.compare_or_update_directory(
             output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
         )
-
-        if not self.UPDATE:
-            try:
-                TestCase.compile_and_run_cpp(
-                    package_dir=os.path.join(SYMFORCE_DIR, "test"),
-                    executable_names="codegen_multi_function_test",
-                    make_args=(
-                        "codegen_multi_function_test",
-                        f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
-                    ),
-                )
-            finally:
-                if logger.level != logging.DEBUG:
-                    python_util.remove_if_exists(
-                        os.path.join(SYMFORCE_DIR, "test", "codegen_multi_function_test")
-                    )
-                    python_util.remove_if_exists(
-                        os.path.join(SYMFORCE_DIR, "test", "libsymforce_geo.so")
-                    )
 
     @slow_on_sympy
     def test_sparse_matrix_codegen(self) -> None:
@@ -485,22 +428,6 @@ class SymforceCodegenTest(TestCase):
         self.compare_or_update_directory(
             output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
         )
-
-        if not self.UPDATE:
-            try:
-                TestCase.compile_and_run_cpp(
-                    package_dir=os.path.join(SYMFORCE_DIR, "test"),
-                    executable_names="codegen_sparse_matrix_test",
-                    make_args=(
-                        "codegen_sparse_matrix_test",
-                        f"SYMFORCE_TEST_BACKEND={symforce.get_backend()}",
-                    ),
-                )
-            finally:
-                if logger.level != logging.DEBUG:
-                    python_util.remove_if_exists(
-                        os.path.join(SYMFORCE_DIR, "test", "codegen_sparse_matrix_test")
-                    )
 
     def test_invalid_codegen_raises(self) -> None:
         """
