@@ -1,6 +1,9 @@
 """
 Initialization configuration for symforce, as minimal as possible.
 """
+from __future__ import absolute_import
+
+from types import ModuleType
 import typing as T
 import os
 
@@ -45,7 +48,7 @@ sympy: T.Any = None
 from . import initialization
 
 
-def _set_backend(sympy_module: T.Type) -> None:
+def _set_backend(sympy_module: ModuleType) -> None:
     # Make symforce-specific modifications to the sympy API
     initialization.modify_symbolic_api(sympy_module)
 
@@ -54,9 +57,54 @@ def _set_backend(sympy_module: T.Type) -> None:
     sympy = sympy_module
 
 
+def _import_symengine_from_build() -> ModuleType:
+    """
+    Attempts to import symengine from its location in the symforce build directory
+
+    If symengine is already in sys.modules, will return that module.  If symengine cannot be
+    imported, raises ImportError.
+
+    Returns the imported symengine module
+    """
+    import sys
+
+    if "symengine" in sys.modules:
+        return sys.modules["symengine"]
+
+    import importlib
+    import importlib.abc
+    import importlib.util
+
+    from . import path_util
+
+    symengine_path_candidates = list(
+        path_util.symenginepy_install_dir().glob("lib/python3*/site-packages/symengine/__init__.py")
+    )
+    if len(symengine_path_candidates) != 1:
+        raise ImportError(
+            f"Should be exactly one symengine package, found candidates {symengine_path_candidates} in directory {path_util.symenginepy_install_dir()}"
+        )
+    symengine_path = symengine_path_candidates[0]
+
+    # Import symengine from the directory where we installed it.  See
+    # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+    spec = importlib.util.spec_from_file_location("symengine", symengine_path)
+    assert spec is not None
+    symengine = importlib.util.module_from_spec(spec)
+    sys.modules["symengine"] = symengine
+
+    # For mypy: https://github.com/python/typeshed/issues/2793
+    assert isinstance(spec.loader, importlib.abc.Loader)
+
+    spec.loader.exec_module(symengine)
+
+    return symengine
+
+
 def _use_symengine() -> None:
     try:
-        import symengine
+        symengine = _import_symengine_from_build()
+
     except ImportError:
         logger.critical("Commanded to use symengine, but failed to import.")
         raise
@@ -114,7 +162,7 @@ if "SYMFORCE_BACKEND" in os.environ:
     set_backend(os.environ["SYMFORCE_BACKEND"])
 else:
     try:
-        import symengine
+        symengine = _import_symengine_from_build()
 
         logger.debug("No SYMFORCE_BACKEND set, found and using symengine.")
         set_backend("symengine")

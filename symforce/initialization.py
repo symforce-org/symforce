@@ -8,7 +8,7 @@ from symforce import logger
 from symforce import types as T
 
 
-def modify_symbolic_api(sympy_module: T.Type) -> None:
+def modify_symbolic_api(sympy_module: T.Any) -> None:
     """
     Augment the sympy API for symforce use.
 
@@ -24,7 +24,7 @@ def modify_symbolic_api(sympy_module: T.Type) -> None:
     override_solve(sympy_module)
 
 
-def override_symbol_new(sympy_module: T.Type) -> None:
+def override_symbol_new(sympy_module: T.Any) -> None:
     """
     Override Symbol.__new__ to incorporate named scopes and default to reals instead of complex.
 
