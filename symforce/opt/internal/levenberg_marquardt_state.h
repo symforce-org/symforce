@@ -2,7 +2,6 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <boost/optional.hpp>
 #include <sym/util/typedefs.h>
 #include <symforce/opt/values.h>
 
@@ -33,10 +32,11 @@ class LevenbergMarquardtState {
   class StateBlock {
    public:
     double Error() const {
-      if (cached_error == boost::none) {
-        cached_error = linearization_.Error();
+      if (!have_cached_error_) {
+        cached_error_ = linearization_.Error();
+        have_cached_error_ = true;
       }
-      return *cached_error;
+      return cached_error_;
     }
 
     void ResetLinearization() {
@@ -47,7 +47,7 @@ class LevenbergMarquardtState {
     void Relinearize(const LinearizeFunc& func) {
       func(values, &linearization_);
       linearization_.SetInitialized(true);
-      cached_error = boost::none;
+      have_cached_error_ = false;
     }
 
     const Linearization<Scalar>& GetLinearization() const {
@@ -58,7 +58,8 @@ class LevenbergMarquardtState {
 
    private:
     Linearization<Scalar> linearization_{};
-    mutable boost::optional<double> cached_error = boost::none;
+    mutable bool have_cached_error_{false};
+    mutable double cached_error_{0};
   };
 
   // Reset the state

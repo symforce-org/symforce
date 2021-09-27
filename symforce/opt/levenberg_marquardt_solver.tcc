@@ -13,20 +13,23 @@ namespace sym {
 
 template <typename ScalarType, typename LinearSolverType>
 Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
-    const Eigen::SparseMatrix<Scalar>& hessian_lower,
-    boost::optional<VectorX<Scalar>>* const max_diagonal, const Scalar lambda) const {
+    const Eigen::SparseMatrix<Scalar>& hessian_lower, bool* const have_max_diagonal,
+    VectorX<Scalar>* const max_diagonal, const Scalar lambda) const {
   SYM_TIME_SCOPE("LM<{}>: DampHessian", id_);
   Eigen::SparseMatrix<Scalar> H_damped = hessian_lower;
 
   if (p_.use_diagonal_damping) {
     if (p_.keep_max_diagonal_damping) {
-      if (!*max_diagonal) {
+      if (!*have_max_diagonal) {
         *max_diagonal = H_damped.diagonal();
-        *max_diagonal = (*max_diagonal)->cwiseMax(p_.diagonal_damping_min);
+        *max_diagonal = max_diagonal->cwiseMax(p_.diagonal_damping_min);
       } else {
-        *max_diagonal = (*max_diagonal)->cwiseMax(H_damped.diagonal());
+        *max_diagonal = max_diagonal->cwiseMax(H_damped.diagonal());
       }
-      H_damped.diagonal().array() += (*max_diagonal)->array() * lambda;
+
+      *have_max_diagonal = true;
+
+      H_damped.diagonal().array() += max_diagonal->array() * lambda;
     } else {
       H_damped.diagonal().array() += H_damped.diagonal().array() * lambda;
     }
@@ -176,8 +179,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   }
 
   // TODO(aaron): Get rid of this copy
-  H_damped_ =
-      DampHessian(state_.Init().GetLinearization().hessian_lower, &max_diagonal_, current_lambda_);
+  H_damped_ = DampHessian(state_.Init().GetLinearization().hessian_lower, &have_max_diagonal_,
+                          &max_diagonal_, current_lambda_);
 
   CheckHessianDiagonal(H_damped_);
 
@@ -223,8 +226,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
     // NOTE(jack): Reference https://arxiv.org/abs/1201.5885
     Scalar update_angle_change = 0;
-    if (p_.enable_bold_updates && (last_update_ != boost::none) && !accept_update) {
-      update_angle_change = last_update_->normalized().dot(update_.stableNormalized());
+    if (p_.enable_bold_updates && have_last_update_ && !accept_update) {
+      update_angle_change = last_update_.normalized().dot(update_.stableNormalized());
 
       accept_update =
           (Square(1 - iteration_stats.update_angle_change) * new_error) <= state_.Best().Error();
@@ -239,6 +242,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
       state_.SwapNewAndInit();
     } else {
       current_lambda_ *= p_.lambda_down_factor;
+      have_last_update_ = true;
       last_update_ = update_;
       if (state_.New().Error() <= state_.Best().Error()) {
         state_.SetBestToNew();

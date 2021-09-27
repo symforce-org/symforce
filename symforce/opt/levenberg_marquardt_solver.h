@@ -149,8 +149,8 @@ class LevenbergMarquardtSolver {
     // Should have called SetIndex already
     SYM_ASSERT(!index_.entries.empty());
 
-    max_diagonal_ = boost::none;
-    last_update_ = boost::none;
+    have_max_diagonal_ = false;
+    have_last_update_ = false;
 
     state_.Reset(values);
   }
@@ -180,7 +180,8 @@ class LevenbergMarquardtSolver {
 
  private:
   Eigen::SparseMatrix<Scalar> DampHessian(const Eigen::SparseMatrix<Scalar>& hessian_lower,
-                                          boost::optional<VectorX<Scalar>>* const max_diagonal,
+                                          bool* const have_max_diagonal,
+                                          VectorX<Scalar>* const max_diagonal,
                                           const Scalar lambda) const;
 
   void CheckHessianDiagonal(const Eigen::SparseMatrix<Scalar>& hessian_lower_damped);
@@ -204,13 +205,15 @@ class LevenbergMarquardtSolver {
   bool solver_analyzed_{false};
 
   // Current elementwise max of the Hessian diagonal across all iterations, used for damping
-  boost::optional<VectorX<Scalar>> max_diagonal_;
+  bool have_max_diagonal_{false};
+  VectorX<Scalar> max_diagonal_;
 
   // Current value of the damping parameter lambda
   Scalar current_lambda_;
 
   // Previous update vector, used to decide if we should take an uphill "bold" step
-  boost::optional<VectorX<Scalar>> last_update_;
+  bool have_last_update_{false};
+  VectorX<Scalar> last_update_;
 
   int iteration_{-1};
 
