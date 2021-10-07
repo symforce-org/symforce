@@ -1,0 +1,13 @@
+from setuptools import setup, find_packages
+
+setup(
+    name='{{ package_name }}',
+    version='{{ version }}',
+    description='{{ description }} (installed by SymForce)',
+    long_description='{{ description }} (installed by SymForce)',
+    author='Skydio, Inc',
+    author_email='hayk@skydio.com',
+    license='None',
+    packages=find_packages(),
+    zip_safe=False,
+)

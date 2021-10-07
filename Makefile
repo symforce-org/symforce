@@ -51,11 +51,11 @@ check_format:
 MYPY_COMMAND=$(PYTHON) -m mypy
 check_types:
 	$(MYPY_COMMAND) symforce $(shell find . \
-		-path ./symforce -prune -false \
-		-o -path "./third_party/*" -prune -false \
-		-o -path "./test/*/lcmtypes/*" -prune -false \
-		-o -path "./test/symforce_function_codegen_test_data" -prune -false \
-		-o -name "*.py")
+		\( -path ./symforce \
+		-o -path ./third_party \
+		-o -path ./gen/python/setup.py \
+		-o -path ./test/symforce_function_codegen_test_data \
+		\) -prune -o -name "*.py" -print)
 	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/sympy \
 		-path "*/lcmtypes/*" -prune -false \
 		-o -name "*.py")
