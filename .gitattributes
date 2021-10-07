@@ -1,9 +1,5 @@
 *.ipynb filter=nbstripout
 *.ipynb diff=ipynb
 
-# catch marks this as binary, which means we have to store it with git-fat so we aren't storing a
-# large binary file
-third_party/symengine/symengine/utilities/catch/catch.hpp filter=fat
-
 # mark some files as generated for purposes of Github review
 gen/** linguist-generated=true
