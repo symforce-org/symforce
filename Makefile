@@ -2,8 +2,7 @@
 
 BUILD_DIR=build
 
-PYTHON=***REMOVED***/bin/***REMOVED***
-JUPYTER=***REMOVED***/bin/mc_jupyter3
+PYTHON ?= /usr/bin/env python3
 
 CPP_FORMAT=clang-format-8
 
@@ -173,16 +172,3 @@ docs_open: docs
 	xdg-open $(DOCS_DIR)/index.html
 
 .PHONY: docs_reqs docs_clean docs_apidoc docs_html docs docs_open
-
-# -----------------------------------------------------------------------------
-# Notebook
-# -----------------------------------------------------------------------------
-JUPYTER_CMD=$(JUPYTER) notebook --notebook-dir=notebooks --ip=localhost --port=8777
-
-notebook:
-	$(JUPYTER_CMD) --no-browser
-
-notebook_open:
-	$(JUPYTER_CMD)
-
-.PHONY: notebook notebook_open
