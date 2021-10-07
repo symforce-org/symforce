@@ -55,7 +55,7 @@ bool Linearizer<ScalarType>::CheckKeysAreContiguousAtStart(const std::vector<Key
       throw std::runtime_error("Keys has extra entries that are not in the full problem");
     }
 
-    if (full_problem_keys_iter->GetLcmType() != keys_iter->GetLcmType()) {
+    if (*full_problem_keys_iter != *keys_iter) {
       if (state_index_.find(keys_iter->GetLcmType()) == state_index_.end()) {
         throw std::runtime_error("Tried to check key which is not in the full problem");
       } else {

@@ -66,6 +66,10 @@ class Key {
     return (other.letter_ == letter_) && (other.sub_ == sub_) && (other.super_ == super_);
   }
 
+  bool operator!=(const Key& other) const {
+    return !(*this == other);
+  }
+
   /**
    * Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).
    */
