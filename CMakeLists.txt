@@ -17,6 +17,7 @@ option(SYMFORCE_BUILD_GEN_ONLY "Build only the symforce_gen target" OFF)
 option(SYMFORCE_BUILD_EXAMPLES "Build the examples" ON)
 option(SYMFORCE_BUILD_TESTS "Build the tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
+option(SYMFORCE_GENERATE_MANIFEST "Generate build manifest" ON)
 
 # ------------------------------------------------------------------------------
 # TicTocs
@@ -34,6 +35,11 @@ set(SYMFORCE_TIC_TOC_HEADER "" CACHE STRING
 set(SYMFORCE_TIC_TOC_MACRO "" CACHE STRING
   "If SYMFORCE_CUSTOM_TIC_TOCS is on, this should be the implementation of the SYM_TIME_SCOPE macro (typically another macro, or a function)"
 )
+
+# ------------------------------------------------------------------------------
+# LCM
+
+set(SYMFORCE_LCMGEN_PATH "" CACHE STRING "This should be the path to the lcm-gen executable")
 
 # ------------------------------------------------------------------------------
 # Misc
@@ -338,6 +344,35 @@ if(SYMFORCE_BUILD_TESTS)
   endif()
 
 endif(SYMFORCE_BUILD_TESTS)
+
+# ==============================================================================
+# Manifest
+# ==============================================================================
+
+# The manifest contains various paths which are known to CMake and used later by other parts of
+# SymForce, such as include paths of libraries we compile generated code against, and the paths to
+# the lcm-gen executable and symengine.
+
+if(SYMFORCE_GENERATE_MANIFEST)
+  function(generate_manifest)
+    get_target_property(eigen_include_dirs Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(spdlog_include_dirs spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(catch2_include_dirs symforce_catch2 INTERFACE_INCLUDE_DIRECTORIES)
+    execute_process(
+      COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_manifest.py
+                                --eigen_include_dirs "${eigen_include_dirs}"
+                                --lcm_include_dirs "${CMAKE_CURRENT_SOURCE_DIR}/third_party/lcm"
+                                --spdlog_include_dirs "${spdlog_include_dirs}"
+                                --catch2_include_dirs "${catch2_include_dirs}"
+                                --lcm_gen_exe "${SYMFORCE_LCMGEN_PATH}"
+                                --symenginepy_install_dir "${SYMFORCE_SYMENGINE_INSTALL_PREFIX}"
+                                # TODO(aaron): Put this somewhere smarter
+                                --manifest_path ${CMAKE_CURRENT_SOURCE_DIR}/build/manifest.json
+    )
+  endfunction()
+
+  generate_manifest()
+endif()
 
 # ==============================================================================
 # Third Party Dependencies (not needed for build)
