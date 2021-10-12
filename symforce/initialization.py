@@ -260,6 +260,26 @@ def add_custom_methods(sympy_module: T.Type) -> None:
         return sympy_module.acos(x_safe)
 
     @register
+    def wrap_angle(x: T.Scalar) -> T.Scalar:
+        """
+        Wrap an angle to the interval [-pi, pi).  Commonly used to compute the shortest signed
+        distance between two angles.
+
+        See also: `angle_diff`
+        """
+        return sympy_module.Mod(x + sympy_module.pi, 2 * sympy_module.pi) - sympy_module.pi
+
+    @register
+    def angle_diff(x: T.Scalar, y: T.Scalar) -> T.Scalar:
+        """
+        Return the difference x - y, but wrapped into [-pi, pi); i.e. the angle `diff` closest to 0
+        such that x = y + diff (mod 2pi).
+
+        See also: `wrap_angle`
+        """
+        return sympy_module.wrap_angle(x - y)
+
+    @register
     def sign_no_zero(x: T.Scalar) -> T.Scalar:
         """
         Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.

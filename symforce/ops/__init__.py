@@ -33,3 +33,9 @@ LieGroupOps.register(tuple, SequenceLieGroupOps)
 # because they can be 2D; the current SequenceOps won't work properly for them (except for
 # to_storage)
 LieGroupOps.register(np.ndarray, SequenceLieGroupOps)
+
+
+from symforce import typing as T
+from .impl.dataclass_storage_ops import DataclassStorageOps
+
+StorageOps.register(T.Dataclass, DataclassStorageOps)

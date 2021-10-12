@@ -48,7 +48,9 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).tangent_dim(a)
 
     @staticmethod
-    def from_tangent(a: T.ElementOrType, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
+    def from_tangent(
+        a: T.ElementOrType, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0
+    ) -> T.Element:
         """
         Mapping from the tangent space approximation at identity into a group element of type a.
         For most manifold types this is implemented as the exponential map.
@@ -80,7 +82,7 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).to_tangent(a, epsilon)
 
     @staticmethod
-    def retract(a: T.Element, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
+    def retract(a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
         """
         Apply a tangent space pertubation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.

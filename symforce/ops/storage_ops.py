@@ -1,6 +1,6 @@
 import numpy as np
 
-from symforce.python_util import get_type
+from symforce.python_util import get_type, scalar_like
 from symforce import sympy as sm
 from symforce import typing as T
 
@@ -58,7 +58,15 @@ class StorageOps(Ops):
         """
         Evaluate to a numerical quantity (rationals, trig functions, etc).
         """
-        return StorageOps.implementation(get_type(a)).evalf(a)
+
+        def evalf_scalar(s: T.Scalar) -> T.Scalar:
+            if hasattr(s, "evalf"):
+                return s.evalf()  # type: ignore
+            if scalar_like(s):
+                return s
+            raise TypeError
+
+        return StorageOps.from_storage(a, [evalf_scalar(s) for s in StorageOps.to_storage(a)])
 
     @staticmethod
     def subs(a: T.Element, *args: T.Any, **kwargs: T.Any) -> T.Element:

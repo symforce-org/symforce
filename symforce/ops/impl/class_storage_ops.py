@@ -17,7 +17,3 @@ class ClassStorageOps:
     @staticmethod
     def symbolic(a: T.ElementOrType, name: str, **kwargs: T.Dict) -> T.Element:
         return a.symbolic(name, **kwargs)
-
-    @staticmethod
-    def evalf(a: T.Element) -> T.Element:
-        return a.evalf()

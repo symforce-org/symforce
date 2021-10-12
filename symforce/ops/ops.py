@@ -68,6 +68,16 @@ class Ops:
 
                 registered_and_base.append((registration_class, base_class))
 
+        # Handle Protocols/Metaclasses that aren't in the MRO (method resolution order), by trying
+        # every class that's registered, and checking if impl_type is a subclass.
+        for base_class, (registration_class, impl) in cls.IMPLEMENTATIONS.items():
+            if issubclass(impl_type, base_class):
+                if issubclass(registration_class, cls):
+                    return impl
+
+                # TODO(aaron): This will double count things with the above loop
+                registered_and_base.append((registration_class, base_class))
+
         if len(registered_and_base) != 0:
             raise NotImplementedError(
                 f"While {impl_type} is registered under {{reg_info}}, {{none_do}} subclass {cls.__name__}.".format(

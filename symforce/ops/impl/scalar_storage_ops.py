@@ -20,11 +20,3 @@ class ScalarStorageOps:
     @staticmethod
     def symbolic(a: T.Any, name: str, **kwargs: T.Dict) -> T.ScalarElement:
         return sm.Symbol(name, **kwargs)
-
-    @staticmethod
-    def evalf(a: T.ScalarElement) -> T.ScalarElement:
-        if hasattr(a, "evalf"):
-            return a.evalf()  # type: ignore
-        if python_util.scalar_like(a):
-            return a
-        raise TypeError

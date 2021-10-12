@@ -106,6 +106,34 @@ def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:
     return s
 
 
+def str_removeprefix(s: str, prefix: str) -> str:
+    """
+    Backport of str.removeprefix, from Python3.9
+    https://docs.python.org/3/library/stdtypes.html#str.removeprefix
+
+    If the string starts with the prefix string and that prefix is not empty, return
+    string[len(prefix):]. Otherwise, return a copy of the original string.
+    """
+    if s.startswith(prefix):
+        return s[len(prefix) :]
+    else:
+        return s
+
+
+def str_removesuffix(s: str, suffix: str) -> str:
+    """
+    Backport of str.removesuffix, from Python3.9
+    https://docs.python.org/3/library/stdtypes.html#str.removesuffix
+
+    If the string ends with the suffix string and that suffix is not empty, return
+    string[:-len(suffix)]. Otherwise, return a copy of the original string.
+    """
+    if s.endswith(suffix):
+        return s[: -len(suffix)]
+    else:
+        return s
+
+
 def files_in_dir(dirname: T.Openable, relative: bool = False) -> T.Iterator[str]:
     """
     Return a list of files in the given directory.
@@ -249,4 +277,27 @@ def get_class_for_method(func: T.Callable) -> T.Type:
         )
         if isinstance(cls, type):
             return cls
-    return getattr(func, "__objclass__", None)  # handle special descriptor objects
+    return getattr(func, "__objclass__")  # handle special descriptor objects
+
+
+class AttrDict(dict):
+    """
+    A simple attr-dict, i.e. a dictinary whose keys are also accessible directly as fields
+
+    Based on http://stackoverflow.com/a/14620633/53997
+    """
+
+    def __init__(self, **kwargs: T.Any) -> None:
+        super().__init__(**kwargs)
+        self.__dict__ = self
+
+    if T.TYPE_CHECKING:
+        # The existence of these methods makes mypy happy with accessing members of this object,
+        # since it isn't quite able to figure out how __dict__ works.
+        # Note that this code has no effect at runtime because T.TYPE_CHECKING evaluates to False,
+        # so this code never runs and these methods are not defined.
+        def __getattr__(self, name: str) -> T.Any:
+            pass
+
+        def __setattr__(self, name: str, value: T.Any) -> None:
+            pass

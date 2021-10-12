@@ -1,0 +1,91 @@
+import dataclasses
+
+from symforce import ops
+from symforce.opt.sub_problem import SubProblem
+from symforce import typing as T
+
+
+class TimestepSubProblem(SubProblem):
+    """
+    A SubProblem intended for use when the Inputs block contains sequences tied to timesteps.
+
+    Provides a `self.timesteps` variable for the number of timesteps, and a `build_inputs` function
+    which works for Inputs blocks containing sequences as long as the number of timesteps.
+
+    Args:
+        timesteps: The number of timesteps
+        name: (optional) The name of the subproblem, derived from the class name by default
+    """
+
+    timesteps: int
+
+    def __init__(self, timesteps: int, name: str = None) -> None:
+        self.timesteps = timesteps
+        super().__init__(name=name)
+
+    def build_inputs(self) -> None:
+        """
+        Build the inputs block of the subproblem, and store in self.inputs.
+
+        The default implementation works for Dataclasses where all sequences are of length
+        self.timesteps; to customize this, override this function.  Each field in the subproblem
+        Inputs that's meant to be a sequence of length `self.timesteps` should be marked with
+        `"timestepped": True` in the field metadata, e.g.
+
+            @dataclass
+            class Inputs:
+                my_field: T.Sequence[T.Scalar] = field(metadata={"timestepped": True})
+
+        or
+
+            @dataclass
+            class Inputs:
+                my_field: T.Sequence[T.Scalar] = TimestepSubProblem.sequence_field()
+
+        Any remaining fields of unknown size will cause an exception.
+        """
+        constructed_fields = {}
+
+        type_hints_map = T.get_type_hints(self.Inputs)
+        for field in dataclasses.fields(self.Inputs):
+            field_type = type_hints_map[field.name]
+
+            if field.metadata.get("timestepped", False):
+                field_type = T.get_args(field_type)[0]
+                constructed_fields[field.name] = [
+                    ops.StorageOps.symbolic(field_type, f"{self.name}.{field.name}[{i}]")
+                    for i in range(self.timesteps)
+                ]
+            else:
+                try:
+                    constructed_fields[field.name] = ops.StorageOps.symbolic(
+                        field_type, f"{self.name}.{field.name}"
+                    )
+                except NotImplementedError as ex:
+                    raise TypeError(
+                        f"Could not create instance of type {field_type} for field "
+                        f"{self.name}.{field.name}; if this is a sequence, please either annotate "
+                        "with timestepped=True, or override build_inputs"
+                    ) from ex
+
+        self.inputs = self.Inputs(**constructed_fields)
+
+    @staticmethod
+    def sequence_field(*args: T.Any, **kwargs: T.Any) -> dataclasses.Field:
+        """
+        Replacement for dataclasses.field(metadata={"timestepped": True})
+
+        Seemed cleaner to me, but mypy doesn't recognize it and gets mad about creating defaults for
+        some fields and not others (it thinks this is creating a default, instead of a Field).  So
+        probably best to just delete, and have the user write out
+        my_field: MyType = field(metadata={"timestepped": True})
+
+        In py3.9, we could probably do T.Annotated[MyType, ...] instead of dataclasses.field, which
+        would be super nice.
+        """
+        if "metadata" in kwargs:
+            kwargs["metadata"]["timestepped"] = True
+        else:
+            kwargs["metadata"] = {"timestepped": True}
+
+        return dataclasses.field(*args, **kwargs)

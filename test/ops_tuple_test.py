@@ -31,7 +31,6 @@ class LieGroupTupleTest(LieGroupOpsTestMixin, TestCase):
     def test_storage_D_tangent(self) -> None:
         LieGroupOpsTestMixin.test_storage_D_tangent(self)
 
-    @unittest.expectedFailure
     def test_tangent_D_storage(self) -> None:
         LieGroupOpsTestMixin.test_tangent_D_storage(self)
 

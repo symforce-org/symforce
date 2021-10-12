@@ -190,6 +190,8 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(v["a"].evalf(), v_evalf["a"])
         self.assertNear(v_evalf["a"], 0.3333333, places=6)
 
+    INVALID_KEYS = ["", "+", "0", "no[1]dot"]
+
     def test_getitem(self) -> None:
         """
         Tests:
@@ -205,7 +207,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
             v = Values()
-            for invalid_key in ["", "+", "0", "no[1]dot"]:
+            for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
                     v[invalid_key]
 
@@ -232,9 +234,33 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v_expected = Values(lst=[1, 2, 3])
             self.assertEqual(v, v_expected)
 
+        with self.subTest(msg="Can set new items within nested lists"):
+            v = Values()
+            v["alpha.beta[0][0].gamma[0].delta"] = 5
+            v["alpha.beta[1][0].gamma[0].delta"] = 6
+            v["alpha.beta[0][1].gamma[0].delta"] = 7
+            v["alpha.beta[0][0].gamma[1].delta"] = 8
+            with self.assertRaises(IndexError):
+                v["alpha.beta[0][1].gamma[2].delta"] = 9
+            v["epsilon.zeta[0]"] = 10
+
+            v_expected = Values(
+                alpha=Values(
+                    beta=[
+                        [
+                            Values(gamma=[Values(delta=5), Values(delta=8)]),
+                            Values(gamma=[Values(delta=7)]),
+                        ],
+                        [Values(gamma=[Values(delta=6)])],
+                    ]
+                ),
+                epsilon=Values(zeta=[10]),
+            )
+            self.assertEqual(v, v_expected)
+
         with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
             v = Values()
-            for invalid_key in ["", "+", "0", "no[1]dot"]:
+            for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
                     v[invalid_key] = 0
 
@@ -263,7 +289,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
             v = Values()
-            for invalid_key in ["", "+", "0", "no[1]dot"]:
+            for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
                     del v[invalid_key]
 
@@ -300,7 +326,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         with self.subTest(msg="Strings which are not python identifiers are not valid keys either"):
             v = Values()
-            for invalid_key in ["", "+", "0", "no[1]dot"]:
+            for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
                     invalid_key in v
 

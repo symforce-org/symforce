@@ -253,7 +253,7 @@ class Values:
 
     @classmethod
     def from_storage_index(
-        cls, vector_values: T.List[T.Scalar], indices: T.Mapping[str, IndexEntry]
+        cls, vector_values: T.Sequence[T.Scalar], indices: T.Mapping[str, IndexEntry]
     ) -> Values:
         """
         Takes a vectorized values and corresponding indices and reconstructs the original form.
@@ -490,9 +490,11 @@ class Values:
         self, key: str, create: bool = False
     ) -> T.Tuple[Values, str, T.List[int]]:
         """
-        Given a key, compute the full key name by applying name scopes and
-        the innermost values that contains that key. Return the innermost values,
+        Given a key, compute the full key name by applying name scopes, and find
+        the innermost values that contains that full key. Return the innermost values,
         the child key within that, and the attached indices.
+
+        This may leave Values in a modified state, even if it fails.
 
         Example:
             >>> v = Values(a=1, b=Values(c=3, d=Values(e=4, f=[[5, 6], [7, 5]])))
@@ -523,48 +525,137 @@ class Values:
         values = self
         for i, part in enumerate(key_path):
             base, indices = python_util.base_and_indices(part)
+            if not base.isidentifier():
+                raise python_util.InvalidPythonIdentifierError(base)
             if base not in values.dict:
                 if not create:
+                    # Returning an empty Values causes methods that don't mutate (e.g. __getitem__)
+                    # to raise
                     return Values(), key_name, []
-                assert indices == []
-                values.dict[base] = Values()
 
-            sub_values_or_sequence = values.dict[base]
-            for i in indices:
-                sub_values_or_sequence = sub_values_or_sequence[i]
-            values = sub_values_or_sequence
+                if indices:
+                    values.dict[base] = []
+                else:
+                    values.dict[base] = Values()
+
+            item = values.dict[base]
+            if indices:
+                item = self._recurse_into_sequence(item, indices, create=create)
+
+            values = item
             assert isinstance(values, Values), 'Cannot set "{}", "{}" not a Values!'.format(
                 full_key, ".".join(split_key[: i + 1])
             )
 
         key_name_base, key_name_indices = python_util.base_and_indices(key_name)
+        if not key_name_base.isidentifier():
+            raise python_util.InvalidPythonIdentifierError(key_name_base)
         return values, key_name_base, key_name_indices
+
+    @staticmethod
+    def _recurse_into_sequence(
+        item: T.Sequence[T.Any],
+        indices: T.Sequence[int],
+        create: bool = False,
+        should_set: bool = False,
+        set_target: T.Any = None,
+    ) -> T.Any:
+        """
+        Recurse into a nested sequence, using multi-dimensional `indices`, and return the entry in
+        the innermost level.
+
+        Args:
+            item: A nested sequence to recurse into
+            indices: A sequence of indices into each level
+            create: If true, create sequences along the way if they don't exist, or a Values at the
+                    innermost level.  If false (the default), raise IndexError when this is
+                    encountered
+            should_set: If true, set the innermost entry to the value of `set_target`.  If this is
+                        true, the return value should also always be equal to `set_target`.
+            set_target: Required if should_set is true, see `should_set`
+        Returns: The entry in the innermost nested sequence
+        """
+        for i in indices[:-1]:
+            # For each index up to the innermost, set item to the next inner list; if the inner
+            # list does not exist yet, and it can be created (see the rules in the docstring),
+            # create it
+            if i < len(item):
+                item = item[i]
+            elif i == len(item):
+                if create and isinstance(item, list):
+                    item.append([])
+                    item = item[i]
+                elif create:
+                    raise TypeError(
+                        f"Index {i} is out of bounds for sequence of length {len(item)}. "
+                        f"Would append, but sequence is a tuple"
+                    )
+                else:
+                    raise IndexError(f"Index {i} is out of bounds for item of length {len(item)}")
+            else:
+                raise IndexError(
+                    f"Index {i} is more than 1 past the bound of item (length {len(item)})"
+                )
+
+        # For the innermost index, set the entry in `item` to the value, or append to `item` if
+        # we have one fewer entry than requested
+        i = indices[-1]
+        if i < len(item):
+            if should_set:
+                if not isinstance(item, list):
+                    raise TypeError("Can't set an item in a tuple")
+                item[i] = set_target
+            item = item[i]
+        elif i == len(item):
+            if should_set:
+                if not isinstance(item, list):
+                    raise TypeError("Can't append to a tuple")
+                item.append(set_target)
+            elif create:
+                if not isinstance(item, list):
+                    raise TypeError("Can't append to a tuple")
+                item.append(Values())
+            else:
+                raise IndexError(f"Index {i} is out of bounds for item of length {len(item)}")
+            item = item[-1]
+        else:
+            raise IndexError(
+                f"Index {i} is more than 1 past the bound of item (length {len(item)})"
+            )
+
+        return item
 
     def __getitem__(self, key: str) -> T.Any:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
-        if not key_name.isidentifier():
-            raise python_util.InvalidPythonIdentifierError(key_name)
-        item = values.dict[key_name]
+        try:
+            item = values.dict[key_name]
+        except KeyError as ex:
+            raise KeyError(key) from ex
         for i in indices:
             item = item[i]
         return item
 
     def __setitem__(self, key: str, value: T.Any) -> None:
+        """
+        Set an entry at a given path in the Values, creating the path if it doesn't exist
+
+        This means that intermediate Values objects along the path will be created.  Intermediate
+        sequences (lists) will be created or appended to only if the index requested is no more than
+        1 past the current length - e.g. `values['foo[0]'] = 5` will create the `foo` list with one
+        entry (5) if the `foo` list did not previously exist, and `values['foo[1]'] = 6` will append
+        6 to the `foo` list if it previosly had length 1.
+        """
         values, key_name, indices = self._get_subvalues_key_and_indices(key, create=True)
-        if not key_name.isidentifier():
-            raise python_util.InvalidPythonIdentifierError(key_name)
         if not indices:
             values.dict[key_name] = value
         else:
+            if key_name not in values.dict:
+                values.dict[key_name] = []
             item = values.dict[key_name]
-            for i in indices[:-1]:
-                item = item[i]
-            item[indices[-1]] = value
+            self._recurse_into_sequence(item, indices, should_set=True, set_target=value)
 
     def __delitem__(self, key: str) -> None:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
-        if not key_name.isidentifier():
-            raise python_util.InvalidPythonIdentifierError(key_name)
         if not indices:
             del values.dict[key_name]
         else:
@@ -575,8 +666,6 @@ class Values:
 
     def __contains__(self, key: str) -> bool:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
-        if not key_name.isidentifier():
-            raise python_util.InvalidPythonIdentifierError(key_name)
         if not indices:
             return values.dict.__contains__(key_name)
         else:
