@@ -32,8 +32,7 @@ REQUIRED_KEYS = (
 )
 
 
-def parse_cmake_path_list(key, cmake_path_list):
-    # type: (str, str) -> T.List[str]
+def parse_cmake_path_list(key: str, cmake_path_list: str) -> T.List[str]:
     """
     Take in a string representing a CMake list of paths, and parse a single path out of it.  If the
     list contains multiple paths, it's required that all but one are generator expressions not
@@ -74,8 +73,7 @@ def parse_cmake_path_list(key, cmake_path_list):
     return paths
 
 
-def main():
-    # type: () -> None
+def main() -> None:
     parser = argparse.ArgumentParser()
     for key, _ in REQUIRED_KEYS:
         parser.add_argument("--{}".format(key), required=True)
@@ -84,7 +82,7 @@ def main():
     )
     args = parser.parse_args()
 
-    manifest = {}  # type: T.Dict[str, T.Union[str, T.List[str]]]
+    manifest: T.Dict[str, T.Union[str, T.List[str]]] = {}
     for key, allowed_count in REQUIRED_KEYS:
         arg = getattr(args, key)
         path_list = parse_cmake_path_list(key, arg)

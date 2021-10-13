@@ -49,7 +49,9 @@ option(SYMFORCE_BUILD_STATIC_LIBRARIES
   OFF
 )
 
-set(SYMFORCE_PYTHON "python3" CACHE STRING "Python executable to use")
+find_program(SYMFORCE_DEFAULT_PYTHON python3 NO_CACHE)
+set(SYMFORCE_PYTHON "${SYMFORCE_DEFAULT_PYTHON}" CACHE STRING "Python executable to use")
+
 
 set(SYMFORCE_SYMENGINE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/symengine_install CACHE STRING
   "Directory to install symengine"

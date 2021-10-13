@@ -1,5 +1,6 @@
 import math
 import os
+import sys
 
 import symforce
 from symforce import cam
@@ -95,7 +96,8 @@ class SymforceGenCodegenTest(TestCase):
         self.compare_or_update_file(expected_code_file, generated_code_file)
 
         # Run generated example / test from disk in a standalone process
-        python_util.execute_subprocess(["python", generated_code_file])
+        current_python = sys.executable
+        python_util.execute_subprocess([current_python, generated_code_file])
 
         # Also hot load package directly in to this process
         geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "sym"))
