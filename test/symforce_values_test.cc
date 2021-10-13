@@ -281,7 +281,7 @@ TEST_CASE("Test Set with Eigen expressions", "[values]") {
   sym::Valuesd values;
   values.Set('a', Eigen::Vector3d::Zero());
   values.Set('b', Eigen::Vector3f::Zero().cast<double>());
-  values.Set('c', Eigen::Vector3d() + 2 * Eigen::Vector3d::Ones());
+  values.Set('c', Eigen::Vector3d::Zero() + 2 * Eigen::Vector3d::Ones());
   values.Set('d', Eigen::Vector3d(Eigen::Vector3d::Zero()));
   values.Set('e', sym::Rot3d::FromAngleAxis(1, Eigen::Vector3d::Ones()).ToRotationMatrix());
   CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());

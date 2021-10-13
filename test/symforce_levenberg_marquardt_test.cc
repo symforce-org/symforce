@@ -59,7 +59,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   std::cerr << "error_init: " << error_init << std::endl;
 
   solver.SetIndex(index);
-  solver.ResetState(values_init);
+  solver.Reset(values_init);
 
   // Collect debug stats so that we have the final residual
   const bool debug_stats = true;
