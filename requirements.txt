@@ -1,5 +1,6 @@
 black==19.10b0
 breathe
+clang-format
 ipykernel
 Jinja2
 matplotlib

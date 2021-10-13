@@ -115,7 +115,7 @@ class GeoPackageTest(unittest.TestCase):
 
         vector = np.random.normal(size=2)
         matrix = element.to_rotation_matrix()
-        np.testing.assert_almost_equal(matrix @ vector, element * vector)
+        np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
 
     def test_storage_ops_Pose2(self):
         # type: () -> None
@@ -295,7 +295,7 @@ class GeoPackageTest(unittest.TestCase):
 
         vector = np.random.normal(size=3)
         matrix = element.to_rotation_matrix()
-        np.testing.assert_almost_equal(matrix @ vector, element * vector)
+        np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
 
     def test_storage_ops_Pose3(self):
         # type: () -> None
