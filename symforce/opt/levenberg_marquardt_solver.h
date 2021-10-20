@@ -53,7 +53,7 @@ namespace sym {
  *   sym::optimization_stats_t stats;
  *   bool should_early_exit = false;
  *   while (!should_early_exit) {
- *     should_early_exit = solver.Iterate(residual_func, &stats);
+ *     should_early_exit = solver.Iterate(linearize_func, &stats);
  *   }
  *
  *   // Get the best values
@@ -101,6 +101,13 @@ namespace sym {
  *     J, b = linearize(f, x0)
  *     dx = -inv(J.T * J) * J.T * b
  *     x_new = x0 + dx
+ *
+ *   Technically what we've just described is the Gauss-Newton algorithm; the Levenberg-Marquardt
+ *   algorithm is based on Gauss-Newton, but adds a term to J.T * J before inverting to make sure
+ *   the matrix is invertible and make the optimization more stable.  This additional term typically
+ *   takes the form lambda * I, or lambda * diag(J.T * J), where lambda is another parameter updated
+ *   by the solver at each iteration.  Configuration of how this term is computed can be found
+ *   in the optimizer params.
  */
 template <typename ScalarType,
           typename LinearSolverType = sym::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>>
