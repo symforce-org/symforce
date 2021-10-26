@@ -16,6 +16,7 @@ import sympy as sympy_py
 sympy_py.init_printing()
 
 import symforce
+from symforce import sympy as sm
 from symforce import types as T
 
 
@@ -60,3 +61,14 @@ def display_code_file(path: str, language: str) -> None:
         code = f.read()
 
     display_code(code, language)
+
+
+def print_expression_tree(expr: sm.Expr) -> None:
+    """
+    Print a SymPy expression tree, ignoring node attributes
+    """
+    from sympy.printing.tree import tree
+
+    unfiltered_tree = tree(expr).split("\n")
+    filtered_tree = "\n".join(v for i, v in enumerate(unfiltered_tree) if "+-" in v or i == 0)
+    print(filtered_tree)
