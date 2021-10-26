@@ -46,14 +46,17 @@ class GncOptimizer : public BaseOptimizerType {
       num_iterations = this->nonlinear_solver_.Params().iterations;
     }
 
-    bool updating_gnc = true;
+    bool updating_gnc = (gnc_params_.mu_initial < gnc_params_.mu_max);
 
     // Initialize the value of mu
     values->template Set<Scalar>(gnc_mu_key_, gnc_params_.mu_initial);
 
-    // Set early-exit for GNC.
     optimizer_params_t optimizer_params = this->nonlinear_solver_.Params();
-    optimizer_params.early_exit_min_reduction = gnc_params_.gnc_update_min_reduction;
+    const double early_exit_min_reduction = optimizer_params.early_exit_min_reduction;
+    if (updating_gnc) {
+      // Set early-exit for GNC.
+      optimizer_params.early_exit_min_reduction = gnc_params_.gnc_update_min_reduction;
+    }
     this->UpdateParams(optimizer_params);
 
     // Iterate.
@@ -68,7 +71,7 @@ class GncOptimizer : public BaseOptimizerType {
           if (values->template At<Scalar>(gnc_mu_key_) >= gnc_params_.mu_max) {
             values->template Set<Scalar>(gnc_mu_key_, gnc_params_.mu_max);
             // Reset early exit threshold.
-            optimizer_params.early_exit_min_reduction = optimizer_params.early_exit_min_reduction;
+            optimizer_params.early_exit_min_reduction = early_exit_min_reduction;
             this->UpdateParams(optimizer_params);
             updating_gnc = false;
           }

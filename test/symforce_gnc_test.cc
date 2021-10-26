@@ -76,7 +76,7 @@ TEST_CASE("Test GNC", "[gnc]") {
   spdlog::info("Final x without GNC: {}",
                regular_optimized_values.At<sym::Vector5d>('x').transpose());
 
-  CHECK(gnc_optimizer.Stats().iterations.size() == 8);
+  CHECK(gnc_optimizer.Stats().iterations.size() == 9);
   const sym::Vector5d gnc_optimized_x = gnc_optimized_values.At<sym::Vector5d>('x');
   const sym::Vector5d regular_optimized_x = regular_optimized_values.At<sym::Vector5d>('x');
   CHECK(gnc_optimized_x.norm() < 0.1);
