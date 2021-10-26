@@ -135,6 +135,56 @@ def inverse_range_landmark_reprojection_error_residual(
     return whitened_residual
 
 
+def spherical_reprojection_delta(
+    source_pose: geo.Pose3,
+    target_pose: geo.Pose3,
+    target_calibration_storage: geo.Vector9,
+    source_inverse_range: T.Scalar,
+    p_camera_source: geo.Vector3,
+    target_pixel: geo.Vector2,
+    epsilon: T.Scalar,
+) -> T.Tuple[geo.Vector2, T.Scalar]:
+    """
+    Reprojects the landmark ray into the target spherical camera and returns the delta between the 
+    correspondence and the reprojection.
+
+    The landmark is specified as a 3D point or ray (will be normalized) in the source spherical 
+    camera; this means the landmark is fixed in the source camera and always has residual 0 there
+    (this 0 residual is not returned, only the residual in the target camera is returned).
+
+    Args:
+        source_pose: The pose of the source camera
+        target_pose: The pose of the target camera
+        target_calibration_storage: The storage vector of the target spherical camera calibration
+        source_inverse_range: The inverse range of the landmark in the source camera
+        p_camera_source: The location of the landmark in the source camera coordinate, will be normalized
+        target_pixel: The location of the correspondence in the target camera
+        epsilon: Small positive value
+
+    Outputs:
+        res: 2dof reprojection delta
+        valid: is valid projection or not
+    """
+    nav_T_target_cam = target_pose
+    nav_T_source_cam = source_pose
+    target_cam_T_source_cam = nav_T_target_cam.inverse() * nav_T_source_cam
+
+    p_camera_source_unit_ray = p_camera_source / p_camera_source.norm(epsilon)
+
+    p_cam_target = (
+        target_cam_T_source_cam.R * p_camera_source_unit_ray
+        + source_inverse_range * target_cam_T_source_cam.t
+    )
+
+    target_cam = cam.SphericalCameraCal.from_storage(target_calibration_storage.to_flat_list())
+    target_pixel_reprojection, is_valid = target_cam.pixel_from_camera_point(
+        p_cam_target, epsilon=epsilon
+    )
+    reprojection_error = target_pixel_reprojection - target_pixel
+
+    return reprojection_error, is_valid
+
+
 def inverse_range_landmark_spherical_camera_reprojection_error_residual(
     source_pose: geo.Pose3,
     target_pose: geo.Pose3,
@@ -176,22 +226,15 @@ def inverse_range_landmark_spherical_camera_reprojection_error_residual(
     Outputs:
         res: 2dof whiten residual of the reprojection
     """
-    nav_T_target_cam = target_pose
-    nav_T_source_cam = source_pose
-    target_cam_T_source_cam = nav_T_target_cam.inverse() * nav_T_source_cam
-
-    p_camera_source_unit_ray = p_camera_source / p_camera_source.norm(epsilon)
-
-    p_cam_target = (
-        target_cam_T_source_cam.R * p_camera_source_unit_ray
-        + source_inverse_range * target_cam_T_source_cam.t
+    reprojection_error, is_valid = spherical_reprojection_delta(
+        source_pose,
+        target_pose,
+        target_calibration_storage,
+        source_inverse_range,
+        p_camera_source,
+        target_pixel,
+        epsilon,
     )
-
-    target_cam = cam.SphericalCameraCal.from_storage(target_calibration_storage.to_flat_list())
-    target_pixel_reprojection, is_valid = target_cam.pixel_from_camera_point(
-        p_cam_target, epsilon=epsilon
-    )
-    reprojection_error = target_pixel_reprojection - target_pixel
 
     # Compute whitened residual with a noise model.
     alpha = BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon)
@@ -234,6 +277,12 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
     ).create_with_linearization(which_args=[0, 2, 4]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
+
+    codegen.Codegen.function(
+        func=spherical_reprojection_delta,
+        config=config,
+        output_names=["reprojection_delta", "is_valid"],
+    ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
 
     codegen.Codegen.function(
         func=inverse_range_landmark_spherical_camera_reprojection_error_residual, config=config
