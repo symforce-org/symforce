@@ -153,9 +153,8 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
     GIT_REPOSITORY https://github.com/KarypisLab/GKlib
     # GKlib does not have releases, this is picked to be around our METIS version
     GIT_TAG 3c4d4853957fd23d93e608c826acfbb3d6b8941e
-    # GKlib adds -march=native on gcc, which is incorrect if cross-compiling.  This cmake file is
-    # also included directly in METIS, so we can't just overwrite GKlib_COPTIONS, we have to patch
-    PATCH_COMMAND sed -i "${FETCHCONTENT_BASE_DIR}/gklib-src/GKlibSystem.cmake" -e "s/-march=native//"
+    # GKlib's build does various things that are both undesirable and unconfigurable, fix them
+    PATCH_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_gklib.sh" "${FETCHCONTENT_BASE_DIR}/gklib-src"
   )
   FetchContent_MakeAvailable(GKlib)
 
