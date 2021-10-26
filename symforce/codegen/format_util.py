@@ -26,7 +26,7 @@ def format_cpp(file_contents: str, filename: str) -> str:
     formatted_file_contents = T.cast(
         str,
         python_util.execute_subprocess(
-            ["clang-format-8", f"-assume-filename={filename}"],
+            ["clang-format", f"-assume-filename={filename}"],
             stdin_data=file_contents,
             log_stdout=False,
         ),

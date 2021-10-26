@@ -4,7 +4,7 @@ BUILD_DIR=build
 
 PYTHON ?= /usr/bin/env python3
 
-CPP_FORMAT=clang-format-8
+CPP_FORMAT=clang-format
 
 # -----------------------------------------------------------------------------
 # Main
