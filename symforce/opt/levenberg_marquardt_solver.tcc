@@ -85,7 +85,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
     SYM_TIME_SCOPE("LM<{}>: IterationStats - Print", id_);
     spdlog::info(
         "[iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3f}/{:.3f}/{:.3f}, "
-        "rel reduction: {:.3f}",
+        "rel reduction: {:.5f}",
         iteration_stats->iteration, iteration_stats->current_lambda, state_.Init().Error(),
         iteration_stats->new_error_linear, iteration_stats->new_error,
         iteration_stats->relative_reduction);
