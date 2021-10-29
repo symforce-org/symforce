@@ -163,10 +163,10 @@ docs_apidoc:
 	$(PYTHON) -m breathe.apidoc -o docs/api-cpp --project api-cpp $(BUILD_DIR)/doxygen-cpp/xml
 	$(PYTHON) -m breathe.apidoc -o docs/api-gen-cpp --project api-gen-cpp $(BUILD_DIR)/doxygen-gen-cpp/xml
 
-docs_html:
+docs_html: docs_apidoc
 	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j4
 
-docs: docs_clean docs_apidoc docs_html
+docs: docs_clean docs_html
 
 docs_open: docs
 	xdg-open $(DOCS_DIR)/index.html
