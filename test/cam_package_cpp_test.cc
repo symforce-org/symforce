@@ -19,6 +19,7 @@
 #include <sym/double_sphere_camera_cal.h>
 #include <sym/equidistant_epipolar_camera_cal.h>
 #include <sym/linear_camera_cal.h>
+#include <sym/polynomial_camera_cal.h>
 #include <sym/pose3.h>
 #include <sym/posed_camera.h>
 #include <sym/rot3.h>
@@ -79,6 +80,18 @@ struct CamCals<sym::SphericalCameraCal<Scalar>> {
 };
 
 template <typename Scalar>
+struct CamCals<sym::PolynomialCameraCal<Scalar>> {
+  using T = sym::PolynomialCameraCal<Scalar>;
+  static std::vector<T> Get() {
+    return {
+        CalFromData<T>({234, 234, 388, 391, M_PI / 3, 0, 0, 0}),
+        CalFromData<T>({234, 234, 388, 391, M_PI / 3, 0.035, -0.025, 0.0070}),
+        CalFromData<T>({250, 250, 700, 500, M_PI / 3, -0.01, -0.016, 0.0020}),
+    };
+  }
+};
+
+template <typename Scalar>
 struct CamCals<sym::EquidistantEpipolarCameraCal<Scalar>> {
   using T = sym::EquidistantEpipolarCameraCal<Scalar>;
   static std::vector<T> Get() {
@@ -103,11 +116,12 @@ struct CamCals<sym::ATANCameraCal<Scalar>> {
 };
 
 TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::DoubleSphereCameraCal<double>,
-                   sym::DoubleSphereCameraCal<float>, sym::SphericalCameraCal<double>,
-                   sym::SphericalCameraCal<float>, sym::EquidistantEpipolarCameraCal<double>,
-                   sym::EquidistantEpipolarCameraCal<float>, sym::ATANCameraCal<double>,
-                   sym::ATANCameraCal<float>) {
+                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+                   sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
+                   sym::DoubleSphereCameraCal<float>, sym::EquidistantEpipolarCameraCal<double>,
+                   sym::EquidistantEpipolarCameraCal<float>, sym::PolynomialCameraCal<double>,
+                   sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
+                   sym::SphericalCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -133,10 +147,10 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::LinearCameraCal<dou
 }
 
 TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::DoubleSphereCameraCal<double>,
+                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+                   sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquidistantEpipolarCameraCal<double>,
-                   sym::EquidistantEpipolarCameraCal<float>, sym::ATANCameraCal<double>,
-                   sym::ATANCameraCal<float>) {
+                   sym::EquidistantEpipolarCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -167,10 +181,10 @@ TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::LinearCam
 }
 
 TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::DoubleSphereCameraCal<double>,
+                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+                   sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquidistantEpipolarCameraCal<double>,
-                   sym::EquidistantEpipolarCameraCal<float>, sym::ATANCameraCal<double>,
-                   sym::ATANCameraCal<float>) {
+                   sym::EquidistantEpipolarCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -220,10 +234,10 @@ TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::LinearCameraCal<do
 }
 
 TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::DoubleSphereCameraCal<double>,
+                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+                   sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquidistantEpipolarCameraCal<double>,
-                   sym::EquidistantEpipolarCameraCal<float>, sym::ATANCameraCal<double>,
-                   sym::ATANCameraCal<float>) {
+                   sym::EquidistantEpipolarCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 

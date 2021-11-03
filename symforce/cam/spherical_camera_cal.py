@@ -5,6 +5,7 @@ import numpy as np
 
 from .camera_cal import CameraCal
 
+from symforce.cam.camera_util import compute_odd_polynomial_critical_point
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
 from symforce import logger
@@ -109,21 +110,14 @@ class SphericalCameraCal(CameraCal):
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> SphericalCameraCal:
         with sm.scope(name):
-            if cls.NUM_DISTORTION_COEFFS > 0:
-                return cls(
-                    focal_length=sm.symbols("f_x f_y"),
-                    principal_point=sm.symbols("c_x c_y"),
-                    critical_theta=sm.Symbol("theta_crit"),
-                    distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
-                    .symbolic("C", **kwargs)
-                    .to_flat_list(),
-                )
-            else:
-                return cls(
-                    focal_length=sm.symbols("f_x f_y"),
-                    principal_point=sm.symbols("c_x c_y"),
-                    critical_theta=sm.Symbol("theta_c"),
-                )
+            return cls(
+                focal_length=sm.symbols("f_x f_y"),
+                principal_point=sm.symbols("c_x c_y"),
+                critical_theta=sm.Symbol("theta_crit"),
+                distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
+                .symbolic("C", **kwargs)
+                .to_flat_list(),
+            )
 
     def __repr__(self) -> str:
         return "<{}\n  focal_length={},\n  principal_point={},\n  critical_theta={},\n  distortion_coeffs={}>".format(
@@ -140,30 +134,9 @@ class SphericalCameraCal(CameraCal):
         """
         # Build the coefficients for np.polynomial.  Even coefficients are 0, and the coefficient
         # on theta is 1
-        full_poly_coeffs = [0.0, 1.0]
-        for k in self.distortion_coeffs.to_flat_list():
-            full_poly_coeffs.extend([0.0, float(k)])
-        critical_points = np.polynomial.Polynomial(np.array(full_poly_coeffs)).deriv().roots()
-
-        # NOTE(aaron): This is a tolerance on the result of `np.roots` so it doesn't really have
-        # anything to do with epsilon or anything.  Could be worth investigating the actual error
-        # properties on that, but the docs don't say
-        ROOTS_REAL_TOLERANCE = 1e-10
-
-        real_critical_points = critical_points[
-            abs(critical_points.imag) < ROOTS_REAL_TOLERANCE
-        ].real
-
-        real_critical_points_in_interval = np.sort(
-            real_critical_points[
-                np.logical_and(real_critical_points > 0, real_critical_points < max_theta)
-            ]
+        return compute_odd_polynomial_critical_point(
+            self.distortion_coeffs.to_flat_list(), max_theta
         )
-
-        if real_critical_points_in_interval.size == 0:
-            return max_theta
-        else:
-            return real_critical_points_in_interval[0]
 
     def _radial_distortion(self, theta: sm.Symbol) -> sm.Symbol:
         """
