@@ -5,6 +5,8 @@
 
 #include <sym/util/typedefs.h>
 
+#include "./assert.h"
+
 namespace sym {
 
 /**

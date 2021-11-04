@@ -39,7 +39,7 @@ struct StorageOps<Eigen::Matrix<ScalarType, Rows, Cols>> {
     return Eigen::Map<const T>(data);
   }
 
-  static type_t TypeEnum() {
+  static constexpr type_t TypeEnum() {
     if (Rows == 1 && Cols == 1) {
       return type_t::VECTOR1;
     } else if (Rows == 2 && Cols == 1) {

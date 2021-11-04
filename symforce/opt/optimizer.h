@@ -263,6 +263,11 @@ OptimizationStats<Scalar> Optimize(const optimizer_params_t& params,
   return optimizer.Optimize(values);
 }
 
+/**
+ * Sensible default parameters for Optimizer
+ */
+optimizer_params_t DefaultOptimizerParams();
+
 }  // namespace sym
 
 #include "./optimizer.tcc"

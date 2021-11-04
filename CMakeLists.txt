@@ -124,6 +124,22 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   endif()
 
   # ------------------------------------------------------------------------------
+  # pybind11
+
+  find_package(pybind11 QUIET)
+  if (NOT pybind11_FOUND)
+    message(STATUS "pybind11 not found, adding with FetchContent")
+    FetchContent_Declare(
+      pybind11
+      GIT_REPOSITORY https://github.com/pybind/pybind11
+      GIT_TAG e7c9753f1d35061d137ac3ce561e94a7407e5583 # release 2.8.1
+    )
+    FetchContent_MakeAvailable(pybind11)
+  else()
+    message(STATUS "pybind11 found")
+  endif()
+
+  # ------------------------------------------------------------------------------
   # spdlog
 
   find_package(spdlog QUIET)
@@ -277,6 +293,12 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
       PUBLIC SYM_TIME_SCOPE=${SYMFORCE_TIC_TOC_MACRO}
     )
   endif(SYMFORCE_CUSTOM_TIC_TOCS)
+
+  # ------------------------------------------------------------------------------
+  # cc_sym
+
+  add_subdirectory(symforce/pybind)
+
 endif(NOT SYMFORCE_BUILD_GEN_ONLY)
 
 # ==============================================================================

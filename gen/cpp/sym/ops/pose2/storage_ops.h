@@ -27,7 +27,7 @@ struct StorageOps<Pose2<ScalarType>> {
   static void ToStorage(const T& a, ScalarType* out);
   static T FromStorage(const ScalarType* data);
 
-  static type_t TypeEnum() {
+  static constexpr type_t TypeEnum() {
     return type_t::POSE2;
   }
 
