@@ -1,13 +1,15 @@
 """
 General python utilities.
 """
+import functools
+import inspect
+import numpy as np
 import os
 import random
 import re
 import shutil
 import string
 import subprocess
-import numpy as np
 
 from symforce import logger
 from symforce import sympy as sm
@@ -213,3 +215,38 @@ def plural(singular: str, count: int, plural: str = None) -> str:
         return singular
     else:
         return plural or (singular + "s")
+
+
+def get_type_hints_of_maybe_bound_function(func: T.Callable) -> T.Dict[str, T.Type]:
+    """
+    Get type hints for a function, handling bound functions created by functools.partial
+    """
+    if isinstance(func, functools.partial):
+        return get_type_hints_of_maybe_bound_function(func.func)
+    else:
+        return T.get_type_hints(func)
+
+
+def get_class_for_method(func: T.Callable) -> T.Type:
+    """
+    Get the class from an instance method `func`
+
+    See https://stackoverflow.com/a/25959545
+    """
+    if isinstance(func, functools.partial):
+        return get_class_for_method(func.func)
+    if inspect.ismethod(func) or (
+        inspect.isbuiltin(func)
+        and getattr(func, "__self__", None) is not None
+        and getattr(getattr(func, "__self__"), "__class__", None) is not None
+    ):
+        return getattr(getattr(func, "__self__"), "__class__")
+    if inspect.isfunction(func):
+        cls = getattr(
+            inspect.getmodule(func),
+            func.__qualname__.split(".<locals>", 1)[0].rsplit(".", 1)[0],
+            None,
+        )
+        if isinstance(cls, type):
+            return cls
+    return getattr(func, "__objclass__", None)  # handle special descriptor objects
