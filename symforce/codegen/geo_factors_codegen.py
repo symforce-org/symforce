@@ -175,6 +175,23 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
 
         return sqrt_info * geo.M(tangent_error)
 
+    def between_factor_pose3_translation_norm(
+        a: geo.Pose3,
+        b: geo.Pose3,
+        translation_norm: T.Scalar,
+        sqrt_info: geo.Matrix11,
+        epsilon: T.Scalar = 0,
+    ) -> geo.Matrix:
+        """
+        Residual that penalizes the difference between translation_norm and (a.t - b.t).norm().
+
+        Args:
+            sqrt_info: Square root information matrix to whiten residual. In this one dimensional case
+                    this is just 1/sigma.
+        """
+        error = translation_norm - (a.t - b.t).norm(epsilon)
+        return sqrt_info * geo.M([error])
+
     def prior_factor_pose3_rotation(
         value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
     ) -> geo.Matrix:
@@ -199,6 +216,10 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         docstring=get_between_factor_docstring("a_t_b"),
     ).with_linearization(name="between_factor_pose3_position", which_args=[0, 1])
 
+    between_translation_norm_codegen = Codegen.function(
+        func=between_factor_pose3_translation_norm, output_names=["res"], config=CppConfig(),
+    ).with_linearization(name="between_factor_pose3_translation_norm", which_args=[0, 1])
+
     prior_rotation_codegen = Codegen.function(
         func=prior_factor_pose3_rotation,
         output_names=["res"],
@@ -215,6 +236,9 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
 
     files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
     files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)
+    files_dict[get_filename(between_translation_norm_codegen)] = get_function_code(
+        between_translation_norm_codegen
+    )
     files_dict[get_filename(prior_rotation_codegen)] = get_function_code(prior_rotation_codegen)
     files_dict[get_filename(prior_position_codegen)] = get_function_code(prior_position_codegen)
 
