@@ -24,7 +24,7 @@ namespace cpp_code_printer_test {
  */
 template <typename Scalar>
 Scalar Heaviside(const Scalar x) {
-  // Total ops: 1
+  // Total ops: 2
 
   // Input arrays
 
