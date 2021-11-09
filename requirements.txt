@@ -4,9 +4,10 @@ clang-format
 ipykernel
 Jinja2
 matplotlib
-mypy
+mypy>=0.910
 nbsphinx
 numpy
 sphinx_autodoc_typehints
 sphinx_rtd_theme
 sympy
+types-jinja2
