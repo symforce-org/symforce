@@ -193,7 +193,7 @@ class Values {
 
   /**
    * Efficiently update the keys from a different structured Values, given by
-   * this index and other index. This pureply copies slices of the data arrays.
+   * this index and other index. This purely copies slices of the data arrays.
    * index_this MUST be valid for this object; index_other MUST be valid for other object.
    */
   void Update(const index_t& index_this, const index_t& index_other, const Values<Scalar>& other);
