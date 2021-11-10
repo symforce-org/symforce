@@ -26,7 +26,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 
 class LinearizationMode(enum.Enum):
     """
-    Mode for create_with_linearization
+    Mode for with_linearization
     """
 
     # Compute jacobians for input arguments stacked into a single jacobian matrix
@@ -69,9 +69,9 @@ class Codegen:
                      of the symbolic inputs) of the function
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; must be set before the function is
-                  generated, but need not be set here if it's going to be set by
-                  create_with_linearization or create_with_jacobians.  Should be snake_case, will
-                  be converted to the language-specific function name style at generation time
+                  generated, but need not be set here if it's going to be set by with_linearization
+                  or with_jacobians.  Should be snake_case, will be converted to the
+                  language-specific function name style at generation time
             return_key: If specified, the output with this key is returned rather than filled
                         in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
@@ -294,7 +294,7 @@ class Codegen:
         """
         assert (
             self.name is not None
-        ), "Name should be set either at construction or by create_with_jacobians"
+        ), "Name should be set either at construction or by with_jacobians"
 
         if output_dir is None:
             output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp")
@@ -494,7 +494,7 @@ class Codegen:
 
         return name
 
-    def create_with_linearization(
+    def with_linearization(
         self,
         which_args: T.Sequence[int] = None,
         include_result: bool = True,
@@ -503,11 +503,14 @@ class Codegen:
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
-        create a codegen object that additionally computes the jacobian (or the full Gauss-Newton
-        linearization) with respect to the given input arguments.
+        create a new codegen object that additionally computes the jacobian (or the full
+        Gauss-Newton linearization) with respect to the given input arguments.
 
         The jacobians are in the tangent spaces of the inputs and outputs, see jacobian_helpers.py
         for more information.
+
+        The previous codegen object (the `self` argument to this function) is unmodified by this
+        function and still valid after this function returns.
 
         Args:
             self: Existing codegen object that returns a single value
@@ -609,7 +612,7 @@ class Codegen:
             docstring="\n".join(docstring_lines),
         )
 
-    def create_with_jacobians(
+    def with_jacobians(
         self,
         which_args: T.Sequence[int] = None,
         which_results: T.Sequence[int] = (0,),
@@ -618,13 +621,16 @@ class Codegen:
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes some number of results,
-        create a codegen object that additionally computes jacobians of the given results with
+        create a new codegen object that additionally computes jacobians of the given results with
         respect to the given input arguments. By default, computes the jacobians of the first result
         with respect to all arguments.  Flexible to produce the values and all jacobians, just the
         jacobians, or any combination of one or more jacobians.
 
         The jacobians are in the tangent spaces of the inputs and outputs, see jacobian_helpers.py
         for more information.
+
+        The previous codegen object (the `self` argument to this function) is unmodified by this
+        function and still valid after this function returns.
 
         Args:
             self: Existing codegen object that return a single value

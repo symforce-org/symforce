@@ -35,11 +35,9 @@ class SymGncCodegenTest(TestCase):
         namespace = "gnc_factors"
 
         # Compute code
-        codegen.Codegen.function(
-            func=barron_factor, config=codegen.CppConfig()
-        ).create_with_linearization(which_args=[0]).generate_function(
-            output_dir=output_dir, namespace=namespace
-        )
+        codegen.Codegen.function(func=barron_factor, config=codegen.CppConfig()).with_linearization(
+            which_args=[0]
+        ).generate_function(output_dir=output_dir, namespace=namespace)
 
         self.compare_or_update_directory(
             actual_dir=output_dir, expected_dir=os.path.join(TEST_DATA_DIR, "gnc_test_data")

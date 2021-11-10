@@ -74,9 +74,9 @@ def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
         inverse,
         compose,
         between,
-        inverse.create_with_jacobians(),
-        compose.create_with_jacobians(),
-        between.create_with_jacobians(),
+        inverse.with_jacobians(),
+        compose.with_jacobians(),
+        between.with_jacobians(),
     ]
 
 

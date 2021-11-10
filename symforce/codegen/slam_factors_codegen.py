@@ -268,13 +268,13 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
 
     codegen.Codegen.function(
         func=inverse_range_landmark_prior_residual, config=config
-    ).create_with_linearization(which_args=[0]).generate_function(
+    ).with_linearization(which_args=[0]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
 
     codegen.Codegen.function(
         func=inverse_range_landmark_reprojection_error_residual, config=config
-    ).create_with_linearization(which_args=[0, 2, 4]).generate_function(
+    ).with_linearization(which_args=[0, 2, 4]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )
 
@@ -286,6 +286,6 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
 
     codegen.Codegen.function(
         func=inverse_range_landmark_spherical_camera_reprojection_error_residual, config=config
-    ).create_with_linearization(which_args=[0, 1, 3]).generate_function(
+    ).with_linearization(which_args=[0, 1, 3]).generate_function(
         output_dir=factors_dir, skip_directory_nesting=True
     )

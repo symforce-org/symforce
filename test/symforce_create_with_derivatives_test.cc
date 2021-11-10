@@ -3,9 +3,9 @@
 #include <symforce/opt/util.h>
 
 #include "catch.hpp"
-#include "symforce_function_codegen_test_data/symengine/create_with_jacobians/compose_pose3_with_jacobian0.h"
+#include "symforce_function_codegen_test_data/symengine/with_jacobians/compose_pose3_with_jacobian0.h"
 
-TEMPLATE_TEST_CASE("Test compose numerical derivative", "[create_with_jacobians]", double, float) {
+TEMPLATE_TEST_CASE("Test compose numerical derivative", "[with_jacobians]", double, float) {
   using Scalar = TestType;
 
   constexpr const Scalar epsilon = 1e-7f;

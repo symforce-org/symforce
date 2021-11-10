@@ -488,14 +488,14 @@ class SymforceCodegenTest(TestCase):
             config=codegen.CppConfig(),
         )
 
-    def test_create_with_jacobians(self) -> None:
+    def test_with_jacobians(self) -> None:
         """
         Tests:
-            Codegen.create_with_jacobians
+            Codegen.with_jacobians
 
         TODO(aaron): Test STACKED_JACOBIAN and FULL_LINEARIZATION modes
         """
-        output_dir = self.make_output_dir("sf_codegen_create_with_jacobians_")
+        output_dir = self.make_output_dir("sf_codegen_with_jacobians_")
 
         # Let's pick Pose3 compose
         cls = geo.Pose3
@@ -509,26 +509,22 @@ class SymforceCodegenTest(TestCase):
         codegens = {}
 
         # By default should return the value and have jacobians for each input arg
-        codegens["value_and_all_jacs"] = codegen_function.create_with_jacobians()
+        codegens["value_and_all_jacs"] = codegen_function.with_jacobians()
 
         # All jacobians, no value - should return jacobians as output args
-        codegens["all_jacs"] = codegen_function.create_with_jacobians(include_results=False)
+        codegens["all_jacs"] = codegen_function.with_jacobians(include_results=False)
 
         # First jacobian, no value - should return the jacobian
-        codegens["jac_0"] = codegen_function.create_with_jacobians([0], include_results=False)
+        codegens["jac_0"] = codegen_function.with_jacobians([0], include_results=False)
 
         # Second jacobian, no value - should return the jacobian
-        codegens["jac_1"] = codegen_function.create_with_jacobians([1], include_results=False)
+        codegens["jac_1"] = codegen_function.with_jacobians([1], include_results=False)
 
         # Value and first jacobian - should return the value
-        codegens["value_and_jac_0"] = codegen_function.create_with_jacobians(
-            [0], include_results=True
-        )
+        codegens["value_and_jac_0"] = codegen_function.with_jacobians([0], include_results=True)
 
         # Value and second jacobian - should return the value
-        codegens["value_and_jac_1"] = codegen_function.create_with_jacobians(
-            [1], include_results=True
-        )
+        codegens["value_and_jac_1"] = codegen_function.with_jacobians([1], include_results=True)
 
         # Generate all
         for codegen_function in codegens.values():
@@ -540,20 +536,20 @@ class SymforceCodegenTest(TestCase):
 
         self.compare_or_update_directory(
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
-            expected_dir=os.path.join(TEST_DATA_DIR, "create_with_jacobians"),
+            expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians"),
         )
 
     # This test generates a lot of code, and it isn't really valuable to test on sympy as well
     # because it's very unlikely to have differences there, so we only do it for symengine
     @symengine_only
-    def test_create_with_jacobians_multiple_outputs(self) -> None:
+    def test_with_jacobians_multiple_outputs(self) -> None:
         """
         Tests:
-            Codegen.create_with_jacobians
+            Codegen.with_jacobians
 
-        Test create_with_jacobians with multiple outputs
+        Test with_jacobians with multiple outputs
         """
-        output_dir = self.make_output_dir("sf_codegen_create_with_jacobians_multiple_outputs_")
+        output_dir = self.make_output_dir("sf_codegen_with_jacobians_multiple_outputs_")
 
         # Let's make a simple function with two outputs
         def cross_and_distance(
@@ -655,7 +651,7 @@ class SymforceCodegenTest(TestCase):
                 if "base_name" in spec:
                     codegen_function.name = spec["base_name"]
 
-                curr_codegen = codegen_function.create_with_jacobians(**spec["args"])
+                curr_codegen = codegen_function.with_jacobians(**spec["args"])
                 self.assertEqual(curr_codegen.return_key, spec["return_key"])
                 self.assertEqual(len(curr_codegen.outputs), spec["outputs"])
 
@@ -665,7 +661,7 @@ class SymforceCodegenTest(TestCase):
 
         self.compare_or_update_directory(
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
-            expected_dir=os.path.join(TEST_DATA_DIR, "create_with_jacobians_multiple_outputs"),
+            expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians_multiple_outputs"),
         )
 
 
