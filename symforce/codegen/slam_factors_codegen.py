@@ -167,13 +167,11 @@ def spherical_reprojection_delta(
     """
     nav_T_target_cam = target_pose
     nav_T_source_cam = source_pose
-    target_cam_T_source_cam = nav_T_target_cam.inverse() * nav_T_source_cam
-
     p_camera_source_unit_ray = p_camera_source / p_camera_source.norm(epsilon)
 
-    p_cam_target = (
-        target_cam_T_source_cam.R * p_camera_source_unit_ray
-        + source_inverse_range * target_cam_T_source_cam.t
+    p_cam_target = nav_T_target_cam.R.inverse() * (
+        nav_T_source_cam.R * p_camera_source_unit_ray
+        + (nav_T_source_cam.t - nav_T_target_cam.t) * source_inverse_range
     )
 
     target_cam = cam.SphericalCameraCal.from_storage(target_calibration_storage.to_flat_list())
