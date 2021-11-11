@@ -109,8 +109,8 @@ class PosedCamera(Camera):
         # Transform into the other camera at this inverse range.
         # NOTE(ryan): expand out the math here, since grouping (R0*R1)*p is more operations
         # than R0*(R1*p).
-        transformed_point = target_cam.pose.R.inverse() * (self.pose.R * camera_point) + (
-            target_cam.pose.R.inverse() * (self.pose.t - target_cam.pose.t) * inverse_range
+        transformed_point = target_cam.pose.R.inverse() * (
+            self.pose.R * camera_point + (self.pose.t - target_cam.pose.t) * inverse_range
         )
 
         # Project into the target camera.
