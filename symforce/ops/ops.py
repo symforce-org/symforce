@@ -3,7 +3,7 @@ import inspect
 
 from symforce import python_util
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 class Ops:

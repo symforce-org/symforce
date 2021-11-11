@@ -13,7 +13,7 @@ from symforce import ops
 from symforce import geo
 from symforce.values import Values, IndexEntry
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.codegen import printers, format_util
 from symforce.codegen import codegen_config
 from symforce import path_util

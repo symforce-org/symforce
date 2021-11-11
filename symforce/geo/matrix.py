@@ -6,7 +6,7 @@ import symforce
 from symforce import ops
 from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
-from symforce import types as _T  # We already have a Matrix.T which collides
+from symforce import typing as _T  # We already have a Matrix.T which collides
 from symforce import python_util
 
 

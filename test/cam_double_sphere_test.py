@@ -4,7 +4,7 @@ import unittest
 from symforce import cam
 from symforce import geo
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin

@@ -1,7 +1,7 @@
 import numpy as np
 
 from symforce import python_util
-from symforce import types as T
+from symforce import typing as T
 from symforce import sympy as sm
 
 from .scalar_group_ops import ScalarGroupOps

@@ -3,7 +3,7 @@ Internal initialization code for logic methods.  Should not be called by users
 
 TODO(aaron): Make these methods show up in the API docs?
 """
-from symforce import types as T
+from symforce import typing as T
 
 
 def add_logic_methods(sympy_module: T.Type) -> None:

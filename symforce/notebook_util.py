@@ -17,7 +17,7 @@ sympy_py.init_printing()
 
 import symforce
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 def display(*args: T.List) -> None:

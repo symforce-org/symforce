@@ -2,7 +2,7 @@ import os
 
 from symforce import geo
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.codegen import types_package_codegen
 from symforce.codegen import codegen_util
 from symforce.test_util import TestCase

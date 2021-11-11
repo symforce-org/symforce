@@ -13,7 +13,7 @@ import subprocess
 
 from symforce import logger
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 def remove_if_exists(path: T.Openable) -> None:

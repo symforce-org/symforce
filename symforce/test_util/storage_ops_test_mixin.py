@@ -1,6 +1,6 @@
 import numpy as np
 
-from symforce import types as T
+from symforce import typing as T
 from symforce import sympy as sm
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase

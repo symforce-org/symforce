@@ -9,7 +9,7 @@ import pathlib
 import textwrap
 
 from symforce import logger
-from symforce import types as T
+from symforce import typing as T
 from symforce.codegen import format_util
 
 CURRENT_DIR = os.path.dirname(__file__)

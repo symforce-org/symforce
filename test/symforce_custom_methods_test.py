@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from symforce import geo
-from symforce import types as T
+from symforce import typing as T
 from symforce import sympy as sm
 from symforce.test_util import TestCase
 

@@ -1,6 +1,6 @@
 import symforce
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 try:
     # Attempt, works if we're in ipython

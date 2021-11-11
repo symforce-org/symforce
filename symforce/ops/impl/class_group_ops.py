@@ -1,4 +1,4 @@
-from symforce import types as T
+from symforce import typing as T
 
 from .class_storage_ops import ClassStorageOps
 

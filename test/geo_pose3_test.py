@@ -3,7 +3,7 @@ import numpy as np
 
 from symforce import geo
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin

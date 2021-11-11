@@ -4,7 +4,7 @@ from symforce import cam
 from symforce import codegen
 from symforce import geo
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
 
 
@@ -145,10 +145,10 @@ def spherical_reprojection_delta(
     epsilon: T.Scalar,
 ) -> T.Tuple[geo.Vector2, T.Scalar]:
     """
-    Reprojects the landmark ray into the target spherical camera and returns the delta between the 
+    Reprojects the landmark ray into the target spherical camera and returns the delta between the
     correspondence and the reprojection.
 
-    The landmark is specified as a 3D point or ray (will be normalized) in the source spherical 
+    The landmark is specified as a 3D point or ray (will be normalized) in the source spherical
     camera; this means the landmark is fixed in the source camera and always has residual 0 there
     (this 0 residual is not returned, only the residual in the target camera is returned).
 

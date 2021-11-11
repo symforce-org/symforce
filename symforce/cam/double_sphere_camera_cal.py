@@ -3,7 +3,7 @@ from .camera_cal import CameraCal
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 class DoubleSphereCameraCal(CameraCal):

@@ -7,7 +7,7 @@ import unittest
 import symforce
 from symforce import logger
 from symforce import python_util
-from symforce import types as T
+from symforce import typing as T
 
 
 class SymforceTestCaseMixin(unittest.TestCase):

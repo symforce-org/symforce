@@ -13,7 +13,7 @@ from symforce import jacobian_helpers
 from symforce import ops
 from symforce import logger
 from symforce import python_util
-from symforce import types as T
+from symforce import typing as T
 from symforce.values import Values
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util

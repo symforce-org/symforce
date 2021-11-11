@@ -35,7 +35,7 @@ For a more thorough example, see symforce_values_generated_key_selection_test.py
 import re
 import string
 
-from symforce import types as T
+from symforce import typing as T
 
 
 class GeneratedKey(T.NamedTuple):

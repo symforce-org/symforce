@@ -4,7 +4,7 @@ import numpy as np
 
 from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 from .matrix import Matrix
 from .matrix import Matrix33

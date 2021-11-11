@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from symforce import types as T
+from symforce import typing as T
 
 
 def compute_odd_polynomial_critical_point(

@@ -1,6 +1,6 @@
 import os
 
-from symforce import types as T
+from symforce import typing as T
 from symforce.codegen import Codegen, template_util
 from symforce.values import generated_key_selection
 from symforce.values.values import Values

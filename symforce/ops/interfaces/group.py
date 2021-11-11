@@ -1,6 +1,6 @@
 from symforce import ops
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 from .storage import Storage
 

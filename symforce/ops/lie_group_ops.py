@@ -1,4 +1,4 @@
-from symforce import types as T
+from symforce import typing as T
 from symforce import sympy as sm
 from symforce import logger
 from symforce.python_util import get_type

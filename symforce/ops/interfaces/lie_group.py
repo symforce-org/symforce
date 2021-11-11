@@ -1,5 +1,5 @@
 from symforce import ops
-from symforce import types as T
+from symforce import typing as T
 
 from .group import Group
 

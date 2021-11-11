@@ -9,7 +9,7 @@ from symforce import geo
 from symforce import logger
 from symforce import python_util
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
 from symforce.codegen import CppConfig

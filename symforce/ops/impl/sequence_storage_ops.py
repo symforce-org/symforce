@@ -2,7 +2,7 @@ import numpy as np
 
 from symforce.ops import StorageOps
 from symforce.python_util import get_type
-from symforce import types as T
+from symforce import typing as T
 from symforce import sympy as sm
 
 

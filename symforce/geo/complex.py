@@ -4,7 +4,7 @@ import numpy as np
 
 from symforce.ops.interfaces import Group
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 class Complex(Group):

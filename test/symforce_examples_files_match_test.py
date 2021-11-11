@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from symforce import types as T
+from symforce import typing as T
 from symforce.test_util import TestCase
 
 CURRENT_DIR = Path(__file__).parent

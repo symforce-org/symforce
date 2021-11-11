@@ -12,7 +12,7 @@ from symforce import geo
 from symforce.ops import interfaces
 from symforce import logger
 from symforce import python_util
-from symforce import types as T
+from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.ops import GroupOps
 from symforce.ops import LieGroupOps

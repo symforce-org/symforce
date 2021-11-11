@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from symforce.ops.interfaces.lie_group import LieGroup
-from symforce import types as T
+from symforce import typing as T
 
 from .matrix import Matrix
 from .matrix import Matrix21

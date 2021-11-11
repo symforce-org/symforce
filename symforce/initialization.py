@@ -5,7 +5,7 @@ Internal initialization code. Should not be called by users.
 import contextlib
 
 from symforce import logger
-from symforce import types as T
+from symforce import typing as T
 
 
 def modify_symbolic_api(sympy_module: T.Any) -> None:

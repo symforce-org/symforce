@@ -3,8 +3,8 @@ from symforce import cam
 from symforce.cam import LinearCameraCal
 from symforce import geo
 from symforce.geo import Pose3, Vector3
-from symforce import types as T
-from symforce.types import Scalar
+from symforce import typing as T
+from symforce.typing import Scalar
 from symforce.codegen.type_helper import deduce_input_types
 from symforce.test_util import TestCase
 

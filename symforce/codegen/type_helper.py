@@ -1,6 +1,6 @@
 import inspect
 
-from symforce import types as T
+from symforce import typing as T
 from symforce import python_util
 
 

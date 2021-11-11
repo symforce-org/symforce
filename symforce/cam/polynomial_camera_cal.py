@@ -8,7 +8,7 @@ from symforce.cam.camera_util import compute_odd_polynomial_critical_point
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 class PolynomialCameraCal(CameraCal):

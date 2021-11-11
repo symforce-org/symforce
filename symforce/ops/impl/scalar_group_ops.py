@@ -1,4 +1,4 @@
-from symforce import types as T
+from symforce import typing as T
 
 from .scalar_storage_ops import ScalarStorageOps
 

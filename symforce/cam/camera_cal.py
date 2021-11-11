@@ -2,7 +2,7 @@ from symforce import geo
 from symforce import ops
 from symforce.ops.interfaces import Storage
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 
 class CameraCal(Storage):

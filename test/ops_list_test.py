@@ -1,6 +1,6 @@
 import unittest
 
-from symforce import types as T
+from symforce import typing as T
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 

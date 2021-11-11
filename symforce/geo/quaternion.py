@@ -5,7 +5,7 @@ import numpy as np
 from symforce import ops
 from symforce.ops.interfaces import Group
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 from .matrix import Matrix
 from .matrix import Vector3

@@ -4,7 +4,7 @@ import numpy as np
 
 from symforce.ops.interfaces.lie_group import LieGroup
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 
 from .complex import Complex
 from .matrix import Matrix

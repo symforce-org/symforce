@@ -1,7 +1,7 @@
 from sympy.printing.c import get_math_macros
 from sympy.printing.cxx import CXX11CodePrinter
 
-from symforce import types as T
+from symforce import typing as T
 
 # Everything in this file is SymPy, not SymEngine (even when SymForce is on the SymEngine backend)
 import sympy

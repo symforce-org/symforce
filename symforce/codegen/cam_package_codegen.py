@@ -7,7 +7,7 @@ from symforce import logger
 from symforce import geo
 from symforce import cam
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce import path_util
 from symforce import python_util
 from symforce.codegen import Codegen

@@ -3,7 +3,7 @@ import numpy as np
 import tempfile
 
 from symforce import logger
-from symforce import types as T
+from symforce import typing as T
 from symforce import python_util
 from symforce.values import Values, IndexEntry
 from symforce.codegen import template_util

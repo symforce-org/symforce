@@ -1,5 +1,5 @@
 from symforce import geo
-from symforce import types as T
+from symforce import typing as T
 
 from symforce.test_util import TestCase
 from symforce.values import IndexEntry

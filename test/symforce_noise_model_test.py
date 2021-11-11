@@ -1,7 +1,7 @@
 from symforce import geo
 import symforce.opt.noise_models as nm
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce.test_util import TestCase, sympy_only, epsilon_handling
 
 

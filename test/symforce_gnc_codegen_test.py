@@ -5,7 +5,7 @@ from symforce import codegen
 from symforce import geo
 from symforce.opt.noise_models import BarronNoiseModel
 from symforce.test_util import TestCase
-from symforce import types as T
+from symforce import typing as T
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(

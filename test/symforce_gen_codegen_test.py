@@ -8,7 +8,7 @@ from symforce import geo
 from symforce import ops
 from symforce import python_util
 from symforce import sympy as sm
-from symforce import types as T
+from symforce import typing as T
 from symforce import codegen
 from symforce.codegen import cam_package_codegen
 from symforce.codegen import codegen_util

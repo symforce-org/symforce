@@ -1,6 +1,6 @@
 import unittest
 
-from symforce import types as T
+from symforce import typing as T
 from symforce.ops.ops import Ops
 from symforce.test_util import TestCase
 

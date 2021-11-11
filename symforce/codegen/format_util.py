@@ -3,7 +3,7 @@ import os
 import pathlib
 
 from symforce import python_util
-from symforce import types as T
+from symforce import typing as T
 
 # TODO(aaron): Put this in a pyproject.toml and fetch from there
 BLACK_FILE_MODE = black.FileMode(line_length=100)

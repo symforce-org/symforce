@@ -1,7 +1,7 @@
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
 from symforce.python_util import get_type
-from symforce import types as T
+from symforce import typing as T
 
 from .sequence_group_ops import SequenceGroupOps
 

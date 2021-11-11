@@ -1,4 +1,4 @@
-from symforce import types as T
+from symforce import typing as T
 from symforce.ops import GroupOps
 
 from .storage_ops_test_mixin import StorageOpsTestMixin
