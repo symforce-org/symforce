@@ -11,3 +11,5 @@ sphinx_autodoc_typehints
 sphinx_rtd_theme
 sympy
 types-jinja2
+types-pygments
+types-setuptools

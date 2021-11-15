@@ -42,7 +42,9 @@ def display_code(code: str, language: str) -> None:
         code (str): Source code
         language (str): {python, c++, anything supported by pygments}
     """
-    lexer = pygments.lexers.get_lexer_by_name(language)
+    # types-pygments doesn't have the type for this
+    lexer = T.cast(T.Any, pygments).lexers.get_lexer_by_name(language)
+
     formatter = pygments.formatters.HtmlFormatter(noclasses=True)
     html = pygments.highlight(code, lexer, formatter)
 

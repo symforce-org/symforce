@@ -1,4 +1,4 @@
-import black  # type: ignore
+import black
 import os
 import pathlib
 
