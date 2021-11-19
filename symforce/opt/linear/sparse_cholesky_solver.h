@@ -104,6 +104,9 @@ class SparseCholeskySolver {
   // The unit triangular cholesky decomposition L
   // and the diagonal coefficients D
   // These are computed from Factorize()
+  // This `L_` here only stores the lower triangular part,
+  // we later call `Eigen::UnitLower` to get the actual
+  // unit triangular matrix
   CholMatrixType L_;
   VectorType D_;
 

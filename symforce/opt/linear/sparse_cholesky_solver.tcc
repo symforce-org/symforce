@@ -228,7 +228,6 @@ void SparseCholeskySolver<MatrixType, UpLo>::SolveInPlace(Eigen::MatrixBase<Rhs>
   SPARSE_MATH_ASSERT(is_initialized_);
   SPARSE_MATH_ASSERT(b != nullptr);
   SPARSE_MATH_ASSERT(L_.rows() == b->rows());
-  SPARSE_MATH_ASSERT(L_.nonZeros() > 0);
   SPARSE_MATH_ASSERT(D_.size() > 0);
 
   // Pre-computed cholesky decomposition
