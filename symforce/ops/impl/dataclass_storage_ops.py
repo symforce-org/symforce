@@ -94,7 +94,7 @@ class DataclassStorageOps:
             constructed_fields = {}
 
             name_prefix = f"{name}." if name is not None else ""
-            type_hints_map = T.get_type_hints(a)
+            type_hints_map = T.get_type_hints(type(a))
             for field in dataclasses.fields(a):
                 field_instance = getattr(a, field.name)
 

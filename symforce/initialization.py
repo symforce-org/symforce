@@ -154,19 +154,23 @@ def add_scoping(sympy_module: T.Type) -> None:
     setattr(sympy_module, "scope", create_named_scope(sympy_module.__scopes__))
 
 
-def _flatten_storage_type_subs(subs_dict: T.MutableMapping) -> None:
+def _flatten_storage_type_subs(
+    subs_pairs: T.Sequence[T.Tuple[T.Any, T.Any]]
+) -> T.Dict[T.Any, T.Any]:
     """
     Replace storage types with their scalar counterparts
     """
-    keys = list(subs_dict.keys())
-    for key in keys:
+    new_subs_dict = {}
+    for key, value in subs_pairs:
         if hasattr(key, "to_storage"):
             new_keys = key.to_storage()
-            assert type(key) == type(subs_dict[key])
-            new_values = subs_dict[key].to_storage()
-            for i, new_key in enumerate(new_keys):
-                subs_dict[new_key] = new_values[i]
-            del subs_dict[key]
+            assert type(key) == type(value)
+            new_values = value.to_storage()
+            for new_key, new_value in zip(new_keys, new_values):
+                new_subs_dict[new_key] = new_value
+        else:
+            new_subs_dict[key] = value
+    return new_subs_dict
 
 
 def _get_subs_dict(*args: T.Any) -> T.Dict:
@@ -174,14 +178,15 @@ def _get_subs_dict(*args: T.Any) -> T.Dict:
     Handle args to subs being a single key-value pair or a dict.
     """
     if len(args) == 2:
-        subs_dict = {args[0]: args[1]}
+        subs_pairs = [(args[0], args[1])]
     elif len(args) == 1:
-        subs_dict = dict(args[0])
+        if isinstance(args[0], T.Mapping):
+            subs_pairs = list(args[0].items())
+        else:
+            subs_pairs = args[0]
 
-    assert isinstance(subs_dict, T.Mapping)
-    _flatten_storage_type_subs(subs_dict)
-
-    return subs_dict
+    assert isinstance(subs_pairs, T.Sequence)
+    return _flatten_storage_type_subs(subs_pairs)
 
 
 def override_subs(sympy_module: T.Type) -> None:
