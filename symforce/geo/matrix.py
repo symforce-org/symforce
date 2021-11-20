@@ -491,6 +491,28 @@ class Matrix(LieGroup):
         """
         return self / self.norm(epsilon=epsilon)
 
+    def clamp_norm(self: MatrixT, max_norm: _T.Scalar, epsilon: _T.Scalar = 0) -> MatrixT:
+        """
+        Clamp a vector to the given norm in a safe/differentiable way.
+
+        Is _NOT_ safe if max_norm can be negative, or if derivatives are needed w.r.t. max_norm and
+        max_norm can be 0 or small enough that `max_squared_norm / squared_norm` is truncated to 0
+        in the particular floating point type being used (e.g. all of these are true if max_norm is
+        optimized)
+
+        Currently only L2 norm is supported
+        """
+        if self.shape[1] != 1:
+            raise TypeError(
+                f"clamp_norm can only be called on vectors, this matrix is shape {self.shape}"
+            )
+
+        squared_norm = self.squared_norm() + epsilon
+        max_squared_norm = max_norm ** 2
+
+        # This sqrt can be near 0, if max_norm can be exactly 0
+        return self * sm.Min(1, sm.sqrt(max_squared_norm / squared_norm))
+
     def applyfunc(self: MatrixT, func: _T.Callable) -> MatrixT:
         """
         Apply a unary operation to every scalar.

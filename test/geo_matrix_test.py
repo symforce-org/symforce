@@ -1,8 +1,10 @@
 import numpy as np
 
+import symforce
 from symforce import geo
 from symforce import sympy as sm
-from symforce.test_util import TestCase
+from symforce import typing as T
+from symforce.test_util import TestCase, sympy_only, epsilon_handling
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
@@ -285,6 +287,35 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         m22 = geo.M22([1, 2, 3, 4])
         self.assertEqual(m22.row(0), geo.M12([1, 2]))
         self.assertEqual(m22.col(0), geo.M21([1, 3]))
+
+    def test_clamp_norm(self) -> None:
+        """
+        Tests:
+            Matrix.clamp_norm
+        """
+        v = geo.V3(1, 2, 3)
+
+        with self.subTest("max_norm = 2"):
+            v_clamped = v.clamp_norm(2)
+            self.assertNear(v_clamped, v.normalized() * 2)
+
+        with self.subTest("max_norm = 10"):
+            v_clamped = v.clamp_norm(10)
+            self.assertNear(v_clamped, v)
+
+        if symforce.get_backend() == "sympy":
+            with self.subTest("epsilon handling"):
+
+                def scalar_clamp_norm(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+                    return geo.V3(0, 0, x).clamp_norm(2, epsilon)[2, 0]
+
+                # TODO: Also test the derivative
+                # SymPy is currently incapable of evaluating the derivative here
+                self.assertTrue(
+                    epsilon_handling.is_value_with_epsilon_correct(
+                        scalar_clamp_norm, expected_value=0
+                    )
+                )
 
 
 if __name__ == "__main__":
