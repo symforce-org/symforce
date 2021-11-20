@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import contextlib
+import dataclasses
 import numpy as np
 
 from symforce import logger
@@ -176,7 +177,7 @@ class Values:
             else:
                 formatted_sub_key = f"[{sub_key}]"
 
-            if isinstance(sub_value, (Values, list, tuple, np.ndarray)):
+            if isinstance(sub_value, (Values, list, tuple)):
                 flat_items.extend(
                     (f"{formatted_sub_key}{sub_sub_key}", sub_sub_value)
                     for sub_sub_key, sub_sub_value in Values._items_recursive(sub_value)
@@ -229,10 +230,10 @@ class Values:
         flat_scalar_keys: T.List[str] = []
         for key, value in self.items_recursive():
             storage_dim = ops.StorageOps.storage_dim(value)
-            if storage_dim > 1:
-                flat_scalar_keys.extend(f"{key}[{i}]" for i in range(storage_dim))
-            else:
+            if python_util.scalar_like(value):
                 flat_scalar_keys.append(key)
+            else:
+                flat_scalar_keys.extend(f"{key}[{i}]" for i in range(storage_dim))
         return flat_scalar_keys
 
     # -------------------------------------------------------------------------
@@ -745,6 +746,28 @@ class Values:
         Simplify each scalar element into a new instance.
         """
         return self.from_storage(sm.simplify(sm.Matrix(self.to_storage())))
+
+    @staticmethod
+    def _dataclasses_to_values(value: T.Any) -> T.Any:
+        if isinstance(value, Values):
+            return Values(**{k: Values._dataclasses_to_values(v) for k, v in value.items()})
+        elif isinstance(value, (list, tuple)):
+            return type(value)([Values._dataclasses_to_values(v) for v in value])
+        elif isinstance(value, T.Dataclass):
+            return Values(
+                **{
+                    field.name: Values._dataclasses_to_values(getattr(value, field.name))
+                    for field in dataclasses.fields(value)
+                }
+            )
+        else:
+            return value
+
+    def dataclasses_to_values(self) -> Values:
+        """
+        Recursively convert dataclasses to Values
+        """
+        return Values._dataclasses_to_values(self)
 
 
 from symforce.ops.impl.class_lie_group_ops import ClassLieGroupOps

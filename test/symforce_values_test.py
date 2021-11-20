@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import numpy as np
 import itertools
 import unittest
@@ -7,6 +8,7 @@ from symforce import geo
 from symforce import cam
 from symforce import ops
 from symforce import sympy as sm
+from symforce import typing as T
 from symforce.python_util import InvalidKeyError
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -384,10 +386,10 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         """
         Tests:
             Values.items_recursive
-        Ensure that the keys of ndarrays contain indices for each element
+        Ensure that the keys of ndarrays do not contain indices for each element
         """
         keys = [key for key, _ in Values(array=np.array([1, 2])).items_recursive()]
-        self.assertEqual(["array[0]", "array[1]"], keys)
+        self.assertEqual(["array"], keys)
 
     def test_values_and_keys_recursive_return_lists(self) -> None:
         """
@@ -453,7 +455,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 rot_list=np.array([geo.Rot3.identity(), geo.Rot3.identity()])
             ).scalar_keys_recursive()
             self.assertEqual(
-                [f"rot_list[{i}][{j}]" for i, j in itertools.product(range(2), range(4))], keys
+                [f"rot_list[{i * 4 + j}]" for i, j in itertools.product(range(2), range(4))], keys
             )
 
         with self.subTest(msg="key order is insertion order of highest level dot seperated key"):
@@ -563,6 +565,51 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v = Values(inner_v=Values(sym=sm.S("x")))
             v_goal = Values(inner_v=Values(sym=3))
             self.assertEqual(v_goal, v.subs({"x": 3}))
+
+    def test_dataclasses(self) -> None:
+        """
+        Tests:
+            Values.dataclasses_to_values
+        """
+
+        @dataclass
+        class MySubDataclass:
+            a: T.Scalar
+            b: T.Sequence[T.Sequence[T.Scalar]]
+
+        @dataclass
+        class MyDataclass:
+            x: T.Scalar
+            v: geo.V3
+            r: geo.Rot3
+            sub: T.Sequence[MySubDataclass]
+
+        values = Values(
+            data=MyDataclass(
+                x=0,
+                v=geo.V3.symbolic("v"),
+                r=geo.Rot3.symbolic("r"),
+                sub=[
+                    MySubDataclass(a=1, b=[[i * j for i in range(3)] for j in range(2)])
+                    for _ in range(5)
+                ],
+            )
+        )
+
+        values_no_dataclasses = values.dataclasses_to_values()
+
+        values_no_dataclasses_expected = Values(
+            data=Values(
+                x=0,
+                v=geo.V3.symbolic("v"),
+                r=geo.Rot3.symbolic("r"),
+                sub=[
+                    Values(a=1, b=[[i * j for i in range(3)] for j in range(2)]) for _ in range(5)
+                ],
+            )
+        )
+
+        self.assertEqual(values_no_dataclasses, values_no_dataclasses_expected)
 
 
 if __name__ == "__main__":
