@@ -520,31 +520,30 @@ def generate_lcm_types(
     cpp_types_dir = os.path.join(lcm_output_dir, "cpp", "lcmtypes")
     lcm_include_dir = os.path.join("lcmtypes")
 
-    for lcm_file in lcm_files:
-        lcm_file_path = os.path.join(lcm_type_dir, lcm_file)
-        if USE_SKYMARSHAL:
-            python_util.execute_subprocess(
-                [
-                    str(path_util.skymarshal_exe()),
-                    lcm_file_path,
-                    "--python",
-                    "--python-path",
-                    python_types_dir,
-                    "--python-empty-init",
-                ]
-            )
-            python_util.execute_subprocess(
-                [
-                    str(path_util.skymarshal_exe()),
-                    lcm_file_path,
-                    "--cpp",
-                    "--cpp-hpath",
-                    cpp_types_dir,
-                    "--cpp-include",
-                    lcm_include_dir,
-                ]
-            )
-        else:
+    if USE_SKYMARSHAL:
+        from skymarshal import skymarshal
+        from skymarshal.emit_python import SkymarshalPython
+        from skymarshal.emit_cpp import SkymarshalCpp
+
+        skymarshal.main(
+            [SkymarshalPython, SkymarshalCpp],
+            args=[
+                lcm_type_dir,
+                "--python",
+                "--python-path",
+                python_types_dir,
+                "--python-empty-init",
+                "--cpp",
+                "--cpp-hpath",
+                cpp_types_dir,
+                "--cpp-include",
+                lcm_include_dir,
+            ],
+        )
+    else:
+        for lcm_file in lcm_files:
+            lcm_file_path = os.path.join(lcm_type_dir, lcm_file)
+
             python_util.execute_subprocess(
                 [
                     str(path_util.lcm_gen_exe()),
@@ -566,7 +565,7 @@ def generate_lcm_types(
                 ]
             )
 
-        # Autoformat generated python files
-        format_util.format_py_dir(python_types_dir)
+    # Autoformat generated python files
+    format_util.format_py_dir(python_types_dir)
 
     return {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}

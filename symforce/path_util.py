@@ -56,8 +56,3 @@ def lcm_gen_exe() -> Path:
 
 def symenginepy_install_dir() -> Path:
     return _Manifest.get_entry("symenginepy_install_dir")
-
-
-def skymarshal_exe() -> Path:
-    ***REMOVED*** = ***REMOVED***.parent
-    return ***REMOVED*** / "bin" / "skymarshal"
