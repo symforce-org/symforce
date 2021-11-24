@@ -57,6 +57,8 @@ set(SYMFORCE_SYMENGINE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/symengine_inst
   "Directory to install symengine"
 )
 
+set(SYMENGINEPY_INSTALL_ENV "" CACHE STRING "Options for symenginepy install step")
+
 # ==============================================================================
 # Setup
 # ==============================================================================
@@ -404,7 +406,8 @@ if(SYMFORCE_BUILD_SYMENGINE)
         build_ext
         --build-type=Release
         --symengine-dir ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}/lib/
-    INSTALL_COMMAND ${SYMFORCE_PYTHON} ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
+    INSTALL_COMMAND env ${SYMENGINEPY_INSTALL_ENV} ${SYMFORCE_PYTHON}
+        ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
         --verbose
         install
         --prefix ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}
