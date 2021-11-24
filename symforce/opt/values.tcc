@@ -35,11 +35,7 @@ T Values<Scalar>::At(const index_entry_t& entry) const {
 template <typename Scalar>
 template <typename T>
 T Values<Scalar>::At(const Key& key) const {
-  const auto it = map_.find(key);
-  if (it == map_.end()) {
-    throw std::runtime_error(fmt::format("Key not found: {}", key));
-  }
-  return At<T>(it->second);
+  return At<T>(IndexEntryAt(key));
 }
 
 template <typename Scalar>

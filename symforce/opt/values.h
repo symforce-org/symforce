@@ -162,6 +162,15 @@ class Values {
   index_t CreateIndex(const std::vector<Key>& keys) const;
 
   /**
+   * Retrieve an index entry by key. This performs a map lookup.
+   *
+   * An index entry will be INVALIDATED if the following happens:
+   *  1) Remove() is called with the indexed key, or RemoveAll() is called
+   *  2) Cleanup() is called to re-pack the data array
+   */
+  index_entry_t IndexEntryAt(const Key& key) const;
+
+  /**
    * Retrieve a value by index entry. This avoids a map lookup compared to At(key).
    */
   template <typename T>

@@ -161,6 +161,15 @@ index_t Values<Scalar>::CreateIndex(const std::vector<Key>& keys) const {
 }
 
 template <typename Scalar>
+index_entry_t Values<Scalar>::IndexEntryAt(const Key& key) const {
+  const auto it = map_.find(key);
+  if (it == map_.end()) {
+    throw std::runtime_error(fmt::format("Key not found: {}", key));
+  }
+  return it->second;
+}
+
+template <typename Scalar>
 void Values<Scalar>::FillLcmType(LcmType* msg) const {
   SYM_ASSERT(msg != nullptr);
   msg->index = CreateIndex(Keys());

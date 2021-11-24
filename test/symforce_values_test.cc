@@ -116,6 +116,42 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.Data().size() == 0);
 }
 
+TEST_CASE("Test IndexEntryAt", "[values]") {
+  spdlog::info("*** Testing Values IndexEntryAt ***");
+
+  sym::Valuesd values;
+  const sym::Key k1 = sym::Key('k', 1);
+  const sym::Key k2 = sym::Key('k', 2);
+  const sym::Key k3 = sym::Key('k', 3);
+  values.Set<double>(k1, 1.0);
+  values.Set<double>(k2, 2.0);
+
+  const sym::index_entry_t entry2 = values.IndexEntryAt(k2);
+
+  // Can be used with At to access an entry
+  CHECK(values.At<double>(entry2) == 2.0);
+
+  // Entry remains valid when a value is added afterwards
+  values.Set<double>(k3, 3.0);
+  CHECK(values.At<double>(entry2) == 2.0);
+
+  // Entry remains valid when a value added before it is removed
+  values.Remove(k1);
+  CHECK(values.At<double>(entry2) == 2.0);
+
+  // Entry remains valid when the value is re-set
+  values.Set<double>(k2, 4.0);
+  CHECK(values.At<double>(entry2) == 4.0);
+
+  // Entry remains valid even when updated with UpdateOrSet
+  sym::Valuesd other_values;
+  other_values.Set<double>(k1, -1.0);
+  other_values.Set<double>(k2, -2.0);
+  other_values.Set<double>(k3, -3.0);
+  values.UpdateOrSet(other_values.CreateIndex({k1, k2, k3}), other_values);
+  CHECK(values.At<double>(entry2) == -2.0);
+}
+
 TEST_CASE("Test implicit construction", "[values]") {
   spdlog::info("*** Testing Values Implicit Construction ***");
 
