@@ -1,0 +1,108 @@
+from io import BytesIO
+import enum
+import struct
+import typing as T  # pylint: disable=unused-import
+
+class {{enumtype.name}}(enum.Enum):  # type: ignore[no-redef]
+    {% if enumtype.comment %}
+    """{{enumtype.comment}}"""
+    {% endif %}
+
+{% for case in enumtype.cases %}
+    {{case.name}} = {{case.int_value}}
+{% endfor %}
+
+    def __repr__(self):
+        # type: () -> str
+        return "{}.{}".format(self.__class__.__name__, self.name)
+
+    @staticmethod
+    def _skytype_meta():
+        # type: () -> T.Dict[str, str]
+        return dict(
+            type="enum",
+            package="{{enumtype.package.name}}",
+            name="{{enumtype.name}}",
+        )
+
+    @classmethod
+    def _default(cls):
+        # type: () -> {{enumtype.name}}
+        # Return the first enum case
+        return list(cls)[0]
+
+    def encode(self):
+        # type: () -> bytes
+        buf = BytesIO()
+        buf.write(self._get_packed_fingerprint())
+        self._encode_one(buf)
+        return buf.getvalue()
+
+    def _encode_one(self, buf):
+        # type: (T.BinaryIO) -> None
+        {{ enumtype.encode_value() }}
+
+    @classmethod
+    def decode(cls, data):
+        # type: (T.Union[bytes, T.BinaryIO]) -> {{enumtype.name}}
+        # NOTE(eric): This function can technically accept either a BinaryIO or
+        # anything that supports the C++ Buffer Protocol,
+        # which is unspecifiable in type hints.
+
+        if hasattr(data, "read"):
+            # NOTE(eric): mypy isn't able to figure out the hasattr check
+            buf = T.cast(T.BinaryIO, data)
+        else:
+            buf = BytesIO(T.cast(bytes, data))
+
+        if buf.read(8) != cls._get_packed_fingerprint():
+            raise ValueError("Decode error")
+        return cls._decode_one(buf)
+
+    @classmethod
+    def _decode_one(cls, buf):
+        # type: (T.BinaryIO) -> {{enumtype.name}}
+        value = {{ enumtype.decode_value() }}
+        result = cls.from_int(value)
+        if result is None:
+            return cls._default()
+        return result
+
+    @T.overload
+    @classmethod
+    def from_int(cls, value, default):
+        # type: (int, {{enumtype.name}}) -> {{enumtype.name}}
+        pass
+
+    @T.overload
+    @classmethod
+    def from_int(cls, value, default=None):  # pylint: disable=function-redefined
+        # type: (int, None) -> T.Optional[{{enumtype.name}}]
+        pass
+
+    @classmethod
+    def from_int(cls, value, default=None):  # pylint: disable=function-redefined
+        # type: (int, T.Optional[{{enumtype.name}}]) -> T.Optional[{{enumtype.name}}]
+        """
+        An alternative to "{{enumtype.name}}(value)" which will return
+        the given default instead of raising a ValueError for unknown values.
+        """
+        try:
+            return cls(value)
+        except ValueError:
+            # Value unlisted / not associated with any case
+            return default
+
+    @classmethod
+    def _get_hash_recursive(cls, parents):
+        # type: (T.List[T.Type]) -> int
+        if cls in parents:
+            return 0
+        tmphash = ({{enumtype.hash.hex_no_padding()}}) & 0xffffffffffffffff
+        tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
+        return tmphash
+
+    @classmethod
+    def _get_packed_fingerprint(cls):
+        # type: () -> bytes
+        return struct.pack(">Q", cls._get_hash_recursive([]))

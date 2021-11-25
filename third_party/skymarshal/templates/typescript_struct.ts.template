@@ -1,0 +1,382 @@
+{#
+    Square brackets for indexing the num^th element.
+    Example: for num=2, you get [i0][i1]
+#}
+{%- macro chain_brackets(num) %}
+{% for i in range(num) %}[i{{i}}]{% endfor %}
+{% endmacro -%}
+
+{#
+    Get a string for the size of an array
+    Example output: this.size_a or 128
+#}
+{%- macro dimension_size(dim) %}
+{%- if dim.dynamic -%}
+  {%- if dim.auto_member -%}
+    v_{{dim.size_str}}
+  {%- else -%}
+    this.{{dim.size_str}}
+  {%- endif -%}
+{%- else -%}
+  {{dim.size_str}}
+{%- endif -%}
+{% endmacro -%}
+
+{#
+    Get number of elements in array
+    Example output: this.size_a * 128 * v_size_c
+#}
+{%- macro dimension_size_multiplied(member) %}
+{%- set asterisk = joiner(" * ") -%}
+{% for i in range(member.ndim) %}{{asterisk()}}{{dimension_size(member.dims[i])}}{% endfor %}
+{% endmacro -%}
+
+{#
+    Canonical TS initialization for an array
+    level: the dimension index in member.dims that this array represents
+    Example: new Array(this.size_a) or new Array(128)
+#}
+{%- macro array_initialization(member, level) -%}
+new Array({{dimension_size(member.dims[level])}})
+{%- endmacro -%}
+
+{#
+    Start the for loop for an array at a dimension level and length
+    level: for loop level (starts at 0, last level is at member.ndim - 1)
+    decode_statement: code to decode a single element of the array
+    member: the member of the struct that we are decoding into
+#}
+{%- macro recursive_decode_for(level, decode_statement, member) -%}
+{% if level > member.ndim - 1 -%}
+
+{# generate tightest loop level #}
+this.{{member.name}}{{chain_brackets(level)}} = {{decode_statement}};
+
+{%- else -%}
+
+{# Generate auto_member placeholder (e.g. const v_num_items = decoder.decode_int32_t();) #}
+{%- if member.has_auto_member -%}
+const {{dimension_size(member.dims[0])}} = {{decode_one_any(member.auto_member_type_ref)}};
+{% endif -%}
+{# Generate array accessor (e.g. this.what[i0][i1] = new Array(128);) #}
+this.{{member.name}}{{chain_brackets(level)}} = {{array_initialization(member, level)}};
+{# Generate for loop (e.g. for (let i0 = 0; i0 < 128; i0++) {) #}
+for (let i{{level}} = 0; i{{level}} < {{dimension_size(member.dims[level])}}; i{{level}}++) {
+{# Generate another level of for loop if necessary #}
+{# use indent filter to indent another 2 spaces #}
+{{recursive_decode_for(level + 1, decode_statement, member) | indent(2, true)}}
+}
+
+{%- endif -%}
+{%- endmacro -%}
+
+{#
+    Start the for loop for an array at a dimension level and length
+    level: for loop level (starts at 0, last level is at member.ndim - 1)
+    encode_statement: code to encode a single element of the array (given a value)
+    member: the member of the struct that we are decoding into
+#}
+{%- macro recursive_encode_for(level, encode_statement, member) -%}
+{% if level > member.ndim - 1 -%}
+
+{# generate tightest loop level #}
+{{encode_statement}};
+
+{%- else -%}
+
+{# Generate auto_member placeholder (e.g. encoder.encode_int32_t(this.items.length);) #}
+{%- if member.has_auto_member -%}
+const {{dimension_size(member.dims[0])}} = this.{{member.name}}.length;
+encoder.encode_{{member.auto_member_type_ref.name}}({{dimension_size(member.dims[0])}});
+{% endif -%}
+{# Generate for loop (e.g. for (let i0 = 0; i0 < 128; i0++) {) #}
+for (let i{{level}} = 0; i{{level}} < {{dimension_size(member.dims[level])}}; i{{level}}++) {
+{# Generate another level of for loop if necessary #}
+{# use indent filter to indent another 2 spaces #}
+{{recursive_encode_for(level + 1, encode_statement, member) | indent(2, true)}}
+}
+
+{%- endif -%}
+{%- endmacro -%}
+
+{#
+    Make a decode statement for one of any type
+    no arrays allowed
+    decodes a primitive or creates a zeroed struct/enum and calls decode_one
+#}
+{%- macro decode_one_any(type_ref) %}
+{% if type_ref.is_primitive_type() -%}
+  decoder.decode_{{type_ref.name}}()
+{%- else -%}
+  new {{type_ref.name}}().decode_one(decoder)
+{%- endif %}
+{% endmacro -%}
+
+{#
+    Make a encode statement for one of any type
+    can't encode a full array, but can be used to encode a single element of an array
+    encode a primitive or passes structs/enums to encode_one
+#}
+{%- macro encode_one_any(member) %}
+{% if member.type_ref.is_primitive_type() -%}
+  encoder.encode_{{member.type_ref.name}}(this.{{member.name}}
+  {%- if member.ndim > 0 -%}{{chain_brackets(member.ndim)}}{%- endif -%})
+{%- else -%}
+  this.{{member.name}}
+  {%- if member.ndim > 0 -%}{{chain_brackets(member.ndim)}}{%- endif -%}
+  .encode_one(encoder)
+{%- endif %}
+{% endmacro -%}
+
+{#
+    Generate decoder statement for an array
+#}
+{%- macro decode_array(member) -%}
+{%- if member.is_byte_array -%}
+  this.{{member.name}} = decoder.decode_uint8_array([
+  {%- if member.has_auto_member -%}
+    {{decode_one_any(member.auto_member_type_ref)}}
+  {%- else -%}
+    {{dimension_size(member.dims[0])}}
+  {%- endif -%}
+  ]);
+{%- else -%}
+  {{recursive_decode_for(0, decode_one_any(member.type_ref), member)}}
+{%- endif -%}
+{%- endmacro -%}
+
+{#
+    Generate decoder statement for an array
+    Has special handling for byte[] to encode as Uint8Array
+#}
+{%- macro encode_array(member) -%}
+{%- if member.is_byte_array -%}
+{%- if member.has_auto_member -%}
+  encoder.encode_{{member.auto_member_type_ref.name}}(this.{{member.name}}.length);
+{% endif -%}
+  encoder.encode_uint8_array(this.{{member.name}});
+{%- else -%}
+  {{recursive_encode_for(0, encode_one_any(member), member)}}
+{%- endif -%}
+{%- endmacro -%}
+
+{#
+    Generate decoder statement for an unknown type
+    (calls either decode_array or decode_one_any)
+#}
+{%- macro decode_member(member) %}
+{% if member.ndim > 0 -%}
+  {{decode_array(member)}}
+{%- else -%}
+  this.{{member.name}} = {{decode_one_any(member.type_ref)}};
+{%- endif %}
+{% endmacro -%}
+
+{#
+    Generate encoder statement for an unknown type
+    (calls either encode_array or encode_one_any)
+#}
+{%- macro encode_member(member) %}
+{% if member.ndim > 0 -%}
+  {{encode_array(member)}}
+{%- else -%}
+  {{encode_one_any(member)}};
+{%- endif %}
+{% endmacro -%}
+
+{#
+    Start the for loop for an array at a dimension level and length
+    level: for loop level (starts at 0, last level is at member.ndim - 1)
+    size_statement: code to size a single element of the array (given a value)
+    member: the member of the struct that we are decoding into
+#}
+{%- macro recursive_size_for(level, size_statement, member) -%}
+{% if level > member.ndim - 1 -%}
+
+{# generate tightest loop level #}
+{{size_statement}}
+
+{%- else -%}
+
+{# Generate for loop (e.g. for (let i0 = 0; i0 < 128; i0++) {) #}
+for (let i{{level}} = 0; i{{level}} < {{dimension_size(member.dims[level])}}; i{{level}}++) {
+{# Generate another level of for loop if necessary #}
+{# use indent filter to indent another 2 spaces #}
+{{recursive_size_for(level + 1, size_statement, member) | indent(2, true)}}
+}
+
+{%- endif -%}
+{%- endmacro -%}
+
+{#
+    Make a size statement for a single string or struct/enum
+    TODO(danny): strings might be able to be memoized?
+#}
+{%- macro size_one_complex(member) %}
+{% if member.type_ref.name == "string" -%}
+  total_size += 4 + new TextEncoder().encode(this.{{member.name}}
+  {%- if member.ndim > 0 -%}{{chain_brackets(member.ndim)}}{%- endif -%}
+  ).length + 1;
+{%- else -%}
+  total_size += this.{{member.name}}
+  {%- if member.ndim > 0 -%}{{chain_brackets(member.ndim)}}{%- endif -%}
+  ._get_encoded_size();
+{%- endif %}
+{% endmacro -%}
+
+{#
+    Generate size statement for an array
+#}
+{%- macro size_complex(member) -%}
+{%- if member.ndim > 0 -%}
+{{recursive_size_for(0, size_one_complex(member), member)}}
+{%- else -%}
+{{size_one_complex(member)}}
+{%- endif %}
+{%- endmacro -%}
+
+{#
+    Generate encoder size counting statement for an unknown type
+#}
+{%- macro size_member(member) %}
+{# Generate auto_member placeholder (e.g. const v_num_items = decoder.decode_int32_t();) #}
+{%- if member.has_auto_member -%}
+const {{dimension_size(member.dims[0])}} = this.{{member.name}}.length;
+total_size += {{member.auto_member_type_ref.storage_size}};
+{% endif -%}
+{# size all fixed sized members #}
+{%- if member.type_ref.is_non_string_primitive_type() -%}
+  total_size += {{member.type_ref.storage_size}}
+  {%- if member.ndim > 0 %} * {{dimension_size_multiplied(member)}}{%- endif %};
+{%- else -%}
+  {{size_complex(member)}}{# size all dynamically sized members #}
+{%- endif %}
+{% endmacro -%}
+
+{# ----- Begin template code ----- #}
+// This file automatically generated by skymarshal.
+// DO NOT MODIFY BY HAND!!!!
+
+{# -- Import other types that are referenced -- #}
+{% for include in struct_type.include_list %}
+import {{ include }};
+{% endfor %}
+
+{# -- import dependencies from long and our library-- #}
+import Long from "long";
+import Decoder from "{{typescript_library_path}}/decoder";
+import Encoder from "{{typescript_library_path}}/encoder";
+import LcmMsg from "{{typescript_library_path}}/lcm";
+import ReflectionMeta from "{{typescript_library_path}}/reflection";
+
+{# -- Define the lcm struct with decode methods -- #}
+export class {{struct_type.name}} extends LcmMsg {
+  ["constructor"]: typeof {{struct_type.name}};
+  private static _hash = Long.fromString("{{struct_type.hash.int_value}}", true);
+  private static _packed_fingerprint?: Long;
+
+  /** @internal */
+  public static _get_packed_fingerprint(): Long {
+    if ({{struct_type.name}}._packed_fingerprint === undefined) {
+      {{struct_type.name}}._packed_fingerprint = {{struct_type.name}}._get_hash_recursive([]);
+    }
+    return {{struct_type.name}}._packed_fingerprint;
+  }
+
+  /** @internal */
+  public static _get_hash_recursive(parents: any[]): Long {
+    if (parents.indexOf({{struct_type.name}}) > -1) {
+      return Long.fromNumber(0, true);
+    }
+{% if struct_type.has_complex_members() %}
+    const new_parents = parents.concat([{{struct_type.name}}]);
+{% endif %}
+    let tmp_hash = {{struct_type.name}}._hash;
+{% for member in struct_type.complex_members() %}
+    tmp_hash = tmp_hash.add({{member.type_ref.name}}._get_hash_recursive(new_parents));
+{% endfor %}
+    return tmp_hash.shl(1).add(tmp_hash.shru(63));
+  }
+
+  /** @internal */
+  public static _reflection_meta: ReflectionMeta = {
+{% for member in struct_type.members %}
+    {{member.name}}: {{member.type_reflection_dict}},
+{% endfor %}
+  };
+
+  {# Define constant members of the class (lcm constants) #}
+{%- for member in struct_type.constants %}
+  public static {{member.name}}: {{member.type_declaration}} = {{member.value_str}};
+{% endfor -%}
+
+{# Define public members of the class (lcm members) #}
+{%- for member in struct_type.members %}
+  public {{member.name}}: {{member.type_declaration}};
+{% endfor %}
+
+  public decode(byte_array: Uint8Array): {{struct_type.name}} {
+    const decoder = new Decoder(new DataView(
+      byte_array.buffer, byte_array.byteOffset, byte_array.byteLength
+    ));
+    const hash = decoder.decode_hash();
+    if (!hash.equals({{struct_type.name}}._get_packed_fingerprint())) {
+      console.error("Hash mismatch", hash, {{struct_type.name}}._get_packed_fingerprint());
+      throw new Error("Hash mismatch!");
+    }
+    this.decode_one(decoder);
+    return this;
+  }
+
+  {# -- Generate decode, use indent to put it at right level -- #}
+  public decode_one(decoder: Decoder): {{struct_type.name}} {
+{% for member in struct_type.members -%}
+  {{decode_member(member) | indent(2 * 2, true)}}
+{% endfor %}
+    return this;
+  }
+
+  /** @internal */
+  public _get_encoded_size(): number {
+    let total_size = 0;
+{% for member in struct_type.members -%}
+  {{size_member(member) | indent(2 * 2, true)}}
+{% endfor %}
+    return total_size;
+  }
+
+  public encode(): ArrayBuffer {
+    const encoder = new Encoder(8 + this._get_encoded_size()); // hash + rest
+    encoder.encode_hash({{struct_type.name}}._get_packed_fingerprint());
+    this.encode_one(encoder);
+
+    return encoder.view.buffer;
+  }
+
+  public encode_one(encoder: Encoder): void {
+{% for member in struct_type.members -%}
+  {{encode_member(member) | indent(2 * 2, true)}}
+{% endfor %}
+  }
+
+  {# Create constructor #}
+  constructor(init?: {
+{%- set comma = joiner(", ") -%}
+{%- for member in struct_type.members -%}
+  {{comma()}}{{member.name}}?: {{member.type_declaration}}
+{%- endfor %} }) {
+    super();
+{% for member in struct_type.members %}
+    this.{{member.name}} = {{member.default_initializer}};
+{% endfor %}
+
+    // optionally override default values
+    if (!init) {
+      return;
+    }
+{# initialize each member with passed in value, no undefined check #}
+{% for member in struct_type.members %}
+    this.{{member.name}} = init.{{member.name}} || this.{{member.name}};
+{% endfor %}
+  }
+}
