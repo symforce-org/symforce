@@ -9,6 +9,7 @@
 #include <limits>
 
 #include <Eigen/Dense>
+
 #include <sym/util/epsilon.h>
 
 #include "./storage_ops.h"

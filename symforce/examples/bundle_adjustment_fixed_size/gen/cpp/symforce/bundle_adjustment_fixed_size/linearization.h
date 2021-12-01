@@ -7,6 +7,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+
 #include <sym/pose3.h>
 
 namespace bundle_adjustment_fixed_size {

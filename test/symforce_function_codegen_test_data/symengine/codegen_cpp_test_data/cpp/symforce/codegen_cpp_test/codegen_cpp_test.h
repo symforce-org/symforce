@@ -7,11 +7,12 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <sym/rot3.h>
 
 #include <lcmtypes/codegen_cpp_test/constants_t.hpp>
 #include <lcmtypes/codegen_cpp_test/states_t.hpp>
 #include <lcmtypes/codegen_cpp_test/values_vec_t.hpp>
+
+#include <sym/rot3.h>
 
 namespace codegen_cpp_test {
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+
 #include <sym/linear_camera_cal.h>
 
 namespace sym {

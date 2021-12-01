@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <sym/rot2.h>
-
 #include <lcmtypes/sym/type_t.hpp>
+
+#include <sym/rot2.h>
 
 namespace sym {
 

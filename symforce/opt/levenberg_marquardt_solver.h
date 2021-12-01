@@ -2,11 +2,12 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <symforce/opt/linear/sparse_cholesky_solver.h>
-#include <symforce/opt/values.h>
 
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 #include <lcmtypes/sym/optimizer_params_t.hpp>
+
+#include <symforce/opt/linear/sparse_cholesky_solver.h>
+#include <symforce/opt/values.h>
 
 #include "./internal/levenberg_marquardt_state.h"
 

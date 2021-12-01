@@ -14,6 +14,7 @@
 
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+
 #include <sym/pose2.h>
 #include <sym/pose3.h>
 #include <sym/rot2.h>

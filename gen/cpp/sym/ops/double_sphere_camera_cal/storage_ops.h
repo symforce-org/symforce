@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+
 #include <sym/double_sphere_camera_cal.h>
 
 namespace sym {

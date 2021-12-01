@@ -1,11 +1,12 @@
 #pragma once
 
 #include <Eigen/Dense>
+
+#include <lcmtypes/sym/optimizer_params_t.hpp>
+
 #include <sym/linear_camera_cal.h>
 #include <sym/posed_camera.h>
 #include <sym/util/typedefs.h>
-
-#include <lcmtypes/sym/optimizer_params_t.hpp>
 
 namespace sym {
 namespace example_utils {

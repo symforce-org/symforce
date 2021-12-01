@@ -7,6 +7,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+
 #include <sym/rot2.h>
 
 namespace sym {

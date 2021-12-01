@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+
 #include <sym/spherical_camera_cal.h>
 
 namespace sym {

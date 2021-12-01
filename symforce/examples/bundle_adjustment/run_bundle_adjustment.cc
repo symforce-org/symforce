@@ -1,4 +1,5 @@
 #include <spdlog/spdlog.h>
+
 #include <sym/factors/between_factor_pose3.h>
 #include <sym/factors/inverse_range_landmark_prior_factor.h>
 #include <sym/factors/inverse_range_landmark_reprojection_error_factor.h>

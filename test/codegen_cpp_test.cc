@@ -1,9 +1,9 @@
-#include <sym/rot3.h>
-#include <symforce/codegen_cpp_test/codegen_cpp_test.h>
-
 #include <lcmtypes/codegen_cpp_test/constants_t.hpp>
 #include <lcmtypes/codegen_cpp_test/states_t.hpp>
 #include <lcmtypes/codegen_cpp_test/values_vec_t.hpp>
+
+#include <sym/rot3.h>
+#include <symforce/codegen_cpp_test/codegen_cpp_test.h>
 
 #include "catch.hpp"
 

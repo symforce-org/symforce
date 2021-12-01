@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include <spdlog/spdlog.h>
+
 #include <sym/rot3.h>
 #include <symforce/codegen_nan_test/identity_dist_jacobian.h>
 

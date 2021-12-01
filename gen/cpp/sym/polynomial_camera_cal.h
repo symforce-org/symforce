@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+
 #include <sym/ops/storage_ops.h>
 
 namespace sym {

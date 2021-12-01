@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+
 #include <sym/equidistant_epipolar_camera_cal.h>
 
 namespace sym {

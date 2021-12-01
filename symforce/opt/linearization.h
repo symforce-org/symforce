@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
 #include <sym/util/typedefs.h>
 
 namespace sym {

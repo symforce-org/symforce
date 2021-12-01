@@ -7,6 +7,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+
 #include <sym/camera.h>
 #include <sym/pose3.h>
 

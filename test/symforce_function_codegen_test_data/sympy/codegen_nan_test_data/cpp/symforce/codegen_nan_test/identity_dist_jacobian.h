@@ -7,6 +7,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+
 #include <sym/rot3.h>
 
 namespace codegen_nan_test {

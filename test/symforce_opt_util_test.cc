@@ -1,4 +1,5 @@
 #include <Eigen/Dense>
+
 #include <sym/rot3.h>
 #include <symforce/opt/util.h>
 

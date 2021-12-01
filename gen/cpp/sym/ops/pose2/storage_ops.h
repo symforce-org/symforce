@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <sym/pose2.h>
-
 #include <lcmtypes/sym/type_t.hpp>
+
+#include <sym/pose2.h>
 
 namespace sym {
 

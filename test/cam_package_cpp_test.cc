@@ -14,6 +14,7 @@
 #include <Eigen/Dense>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+
 #include <sym/atan_camera_cal.h>
 #include <sym/camera.h>
 #include <sym/double_sphere_camera_cal.h>

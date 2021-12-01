@@ -1,4 +1,5 @@
 #include <spdlog/spdlog.h>
+
 #include <sym/factors/between_factor_pose3.h>
 #include <sym/factors/between_factor_rot3.h>
 #include <sym/factors/prior_factor_pose3.h>

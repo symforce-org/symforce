@@ -3,6 +3,7 @@
 
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+
 #include <sym/ops/lie_group_ops.h>
 #include <sym/rot3.h>
 

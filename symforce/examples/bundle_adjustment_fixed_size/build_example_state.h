@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <symforce/opt/values.h>
 
 #include <lcmtypes/sym/optimizer_params_t.hpp>
+
+#include <symforce/opt/values.h>
 
 namespace bundle_adjustment_fixed_size {
 

@@ -32,10 +32,13 @@ IncludeCategories:
   - Regex:           '^<lcmtypes/'          # Includes to lcmtypes generated files
     Priority:        3
 
+  - Regex:           '^<(symforce|sym)/'    # SymForce includes
+    Priority:        4
+
   - Regex:           '^<'                   # Everything else with <>
     Priority:        2
 
   - Regex:           '.*'                   # Everything else
-    Priority:        4
+    Priority:        5
 
 ---

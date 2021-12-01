@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+
 #include <sym/atan_camera_cal.h>
 
 namespace sym {

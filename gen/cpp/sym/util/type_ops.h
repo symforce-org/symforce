@@ -7,6 +7,8 @@
 #pragma once
 
 // Import all the known types.
+#include <lcmtypes/sym/type_t.hpp>
+
 #include <sym/linear_camera_cal.h>
 #include <sym/ops/lie_group_ops.h>
 #include <sym/ops/storage_ops.h>
@@ -15,8 +17,6 @@
 #include <sym/rot2.h>
 #include <sym/rot3.h>
 #include <sym/util/typedefs.h>
-
-#include <lcmtypes/sym/type_t.hpp>
 
 namespace sym {
 
