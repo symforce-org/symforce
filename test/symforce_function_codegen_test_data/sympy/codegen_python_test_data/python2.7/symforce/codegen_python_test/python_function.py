@@ -4,14 +4,17 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-import math
-import numpy
-import typing as T
+import math  # pylint: disable=unused-import
+import numpy  # pylint: disable=unused-import
+import typing as T  # pylint: disable=unused-import
 
 import sym  # pylint: disable=unused-import
 
 
 import codegen_python_test
+
+
+# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 
 
 def python_function(

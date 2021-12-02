@@ -4,11 +4,14 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-import math
-import numpy
-import typing as T
+import math  # pylint: disable=unused-import
+import numpy  # pylint: disable=unused-import
+import typing as T  # pylint: disable=unused-import
 
 import sym  # pylint: disable=unused-import
+
+
+# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 
 
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
