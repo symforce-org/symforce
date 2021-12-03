@@ -1,6 +1,6 @@
 #include <spdlog/spdlog.h>
 
-#include "../symforce/opt/gnc.h"
+#include "../symforce/opt/gnc_optimizer.h"
 #include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
 #include "catch.hpp"
 
