@@ -78,10 +78,17 @@ void AddFactorWrapper(pybind11::module_ module) {
       .def_static("jacobian", &MakeJacobianFactor, py::arg("jacobian_func"), py::arg("keys"))
       .def("linearize",
            [](const sym::Factord& factor, const sym::Valuesd& values) {
-             Eigen::VectorXd residual;
-             Eigen::MatrixXd jacobian;
-             factor.Linearize(values, &residual, &jacobian);
-             return py::make_tuple(residual, jacobian);
+             if (factor.IsSparse()) {
+               Eigen::VectorXd residual;
+               Eigen::SparseMatrix<double> jacobian;
+               factor.Linearize(values, &residual, &jacobian);
+               return py::make_tuple(residual, jacobian);
+             } else {
+               Eigen::VectorXd residual;
+               Eigen::MatrixXd jacobian;
+               factor.Linearize(values, &residual, &jacobian);
+               return py::make_tuple(residual, jacobian);
+             }
            })
       .def("linearized_factor",
            py::overload_cast<const sym::Valuesd&>(&sym::Factord::Linearize, py::const_),

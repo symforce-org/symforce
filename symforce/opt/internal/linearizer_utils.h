@@ -1,6 +1,7 @@
 #include <Eigen/Sparse>
 
-#include <lcmtypes/sym/linearization_factor_helper_t.hpp>
+#include <lcmtypes/sym/linearization_dense_factor_helper_t.hpp>
+#include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "../factor.h"
 #include "./hash_combine.h"
@@ -84,12 +85,12 @@ CoordsToStorageMap CoordsToStorageOffset(const Eigen::SparseMatrix<Scalar>& mat)
 
 template <typename Scalar>
 void ComputeKeyHelperSparseColOffsets(
-    const typename Factor<Scalar>::LinearizedFactor& linearized_factor,
+    const typename Factor<Scalar>::LinearizedDenseFactor& linearized_factor,
     const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
-    linearization_factor_helper_t& factor_helper) {
+    linearization_dense_factor_helper_t& factor_helper) {
   for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
-    linearization_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
+    linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
     for (int32_t col = 0; col < key_helper.tangent_dim; ++col) {
@@ -110,7 +111,7 @@ void ComputeKeyHelperSparseColOffsets(
 
     // Off diagonal blocks
     for (int key_j = 0; key_j < key_i; key_j++) {
-      const linearization_key_helper_t& j_key_helper = factor_helper.key_helpers[key_j];
+      const linearization_dense_key_helper_t& j_key_helper = factor_helper.key_helpers[key_j];
       std::vector<int32_t>& col_starts = key_helper.hessian_storage_col_starts[key_j];
 
       // If key_j comes after key_i in the full problem, we need to transpose things
@@ -131,30 +132,66 @@ void ComputeKeyHelperSparseColOffsets(
   }
 }
 
-/**
- * Create a linearized factor with the same structure as the given one, but with all ones
- * in the entries.
- */
 template <typename Scalar>
-typename Factor<Scalar>::LinearizedFactor CopyLinearizedFactorAllOnes(
-    const typename Factor<Scalar>::LinearizedFactor& factor) {
-  typename Factor<Scalar>::LinearizedFactor one_value_factor;
-  one_value_factor.index = factor.index;
-  one_value_factor.residual =
-      Eigen::Matrix<Scalar, Eigen::Dynamic, 1>::Ones(factor.residual.rows());
-  one_value_factor.jacobian = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>::Ones(
-      factor.jacobian.rows(), factor.jacobian.cols());
-  one_value_factor.hessian = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>::Ones(
-      factor.hessian.rows(), factor.hessian.cols());
-  one_value_factor.rhs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>::Ones(factor.rhs.rows());
-  return one_value_factor;
+void ComputeKeyHelperSparseMap(
+    const typename Factor<Scalar>::LinearizedSparseFactor& linearized_factor,
+    const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
+    const CoordsToStorageMap& hessian_row_col_to_storage_offset,
+    linearization_sparse_factor_helper_t& factor_helper) {
+  // We're computing this in UpdateFromSparseOnesFactorIntoTripletLists too...
+  std::vector<int> key_for_factor_offset;
+  // Reserve?
+  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); key_i++) {
+    for (int key_offset = 0; key_offset < factor_helper.key_helpers[key_i].tangent_dim;
+         key_offset++) {
+      key_for_factor_offset.push_back(key_i);
+    }
+  }
+
+  factor_helper.jacobian_index_map.reserve(linearized_factor.jacobian.nonZeros());
+  for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
+    for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
+                                                                outer_i);
+         it; ++it) {
+      const auto row = it.row();
+      const auto col = it.col();
+
+      const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
+      const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
+      factor_helper.jacobian_index_map.push_back(jacobian_row_col_to_storage_offset.at(
+          std::make_pair(row + factor_helper.combined_residual_offset, problem_col)));
+    }
+  }
+
+  factor_helper.hessian_index_map.reserve(linearized_factor.hessian.nonZeros());
+  for (int outer_i = 0; outer_i < linearized_factor.hessian.outerSize(); ++outer_i) {
+    for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.hessian, outer_i);
+         it; ++it) {
+      const auto row = it.row();
+      const auto col = it.col();
+
+      const auto& key_helper_row = factor_helper.key_helpers[key_for_factor_offset[row]];
+      const auto& key_helper_col = factor_helper.key_helpers[key_for_factor_offset[col]];
+      const auto problem_row = row - key_helper_row.factor_offset + key_helper_row.combined_offset;
+      const auto problem_col = col - key_helper_col.factor_offset + key_helper_col.combined_offset;
+
+      // Put the entry in the lower triangle - even if the factor hessian is lower triangular, the
+      // entry might naively go into the upper triangle if the key order is reversed in the full
+      // problem
+      const auto full_problem_indices = problem_row >= problem_col
+                                            ? std::make_pair(problem_row, problem_col)
+                                            : std::make_pair(problem_col, problem_row);
+      factor_helper.hessian_index_map.push_back(
+          hessian_row_col_to_storage_offset.at(full_problem_indices));
+    }
+  }
 }
 
-template <typename Scalar>
-linearization_factor_helper_t ComputeFactorHelper(
-    const typename Factor<Scalar>::LinearizedFactor& factor,
-    const std::unordered_map<key_t, index_entry_t>& state_index, int& combined_residual_offset) {
-  linearization_factor_helper_t factor_helper;
+template <typename Scalar, typename LinearizedFactorT, typename FactorHelperT>
+FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
+                                  const std::unordered_map<key_t, index_entry_t>& state_index,
+                                  int& combined_residual_offset) {
+  FactorHelperT factor_helper;
 
   factor_helper.residual_dim = factor.residual.rows();
   factor_helper.combined_residual_offset = combined_residual_offset;
@@ -168,7 +205,7 @@ linearization_factor_helper_t ComputeFactorHelper(
     }
 
     factor_helper.key_helpers.emplace_back();
-    linearization_key_helper_t& key_helper = factor_helper.key_helpers.back();
+    auto& key_helper = factor_helper.key_helpers.back();
 
     // Offset of this key within the factor's state
     key_helper.factor_offset = entry.offset;

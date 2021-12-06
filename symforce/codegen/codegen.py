@@ -500,6 +500,7 @@ class Codegen:
         include_result: bool = True,
         name: str = None,
         linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
+        sparse_linearization: bool = False,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
@@ -523,6 +524,8 @@ class Codegen:
             linearization_mode: Whether to generate a single jacobian matrix (STACKED_JACOBIANS), or
                                 generate a full linearization with a hessian and rhs
                                 (FULL_LINEARIZATION).
+            sparse_linearization: Whether to output matrices (jacobian and/or hessian) as sparse
+                                  matrices, as opposed to dense
         """
         if which_args is None:
             which_args = list(range(len(list(self.inputs.keys()))))
@@ -602,12 +605,18 @@ class Codegen:
                 which_args, include_result, linearization_mode
             )
 
+        sparse_matrices = (
+            [key for key in ("jacobian", "hessian") if key in outputs]
+            if sparse_linearization
+            else None
+        )
         return Codegen(
             name=name,
             inputs=self.inputs,
             outputs=outputs,
             config=self.config,
             return_key=return_key,
+            sparse_matrices=sparse_matrices,
             scalar_type=self.scalar_type,
             docstring="\n".join(docstring_lines),
         )
@@ -618,6 +627,7 @@ class Codegen:
         which_results: T.Sequence[int] = (0,),
         include_results: bool = True,
         name: str = None,
+        sparse_jacobians: bool = False,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes some number of results,
@@ -642,6 +652,7 @@ class Codegen:
                              which_results are always still returned.
             name: Generated function name. If not given, picks a reasonable name based on the one
                   given at construction.
+            sparse_jacobians: Whether to output jacobians as sparse matrices, as opposed to dense
         """
         if which_args is None:
             which_args = list(range(len(list(self.inputs.keys()))))
@@ -676,6 +687,7 @@ class Codegen:
         input_args = [all_input_args[arg_index] for arg_index in which_args]
 
         all_outputs = list(self.outputs.items())
+        all_jacobian_names = []
         for i in which_results:
             result_name, result = all_outputs[i]
 
@@ -686,6 +698,7 @@ class Codegen:
             for (arg_name, arg), arg_jacobian in zip(input_args, arg_jacobians):
                 jacobian_name = f"{result_name}_D_{arg_name}"
                 outputs[jacobian_name] = arg_jacobian
+                all_jacobian_names.append(jacobian_name)
 
                 result_dim = ops.LieGroupOps.tangent_dim(result)
                 arg_dim = ops.LieGroupOps.tangent_dim(arg)
@@ -709,12 +722,14 @@ class Codegen:
                 which_args, include_results, linearization_mode=None
             )
 
+        sparse_matrices = all_jacobian_names if sparse_jacobians else None
         return Codegen(
             name=name,
             inputs=self.inputs,
             outputs=outputs,
             config=self.config,
             return_key=return_key,
+            sparse_matrices=sparse_matrices,
             scalar_type=self.scalar_type,
             docstring="\n".join(docstring_lines),
         )

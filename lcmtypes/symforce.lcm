@@ -39,7 +39,7 @@ struct valuesf_t {
 // Storage for the linearization of a factor
 // ------------------------------------------------------------------------------------------------
 
-struct linearized_factor_t {
+struct linearized_dense_factor_t {
   // Index containing keys of this factor and their offsets within the factor residual/jacobian
   index_t index;
 
@@ -50,8 +50,8 @@ struct linearized_factor_t {
   eigen_lcm.VectorXd rhs;      // Jtb
 };
 
-// Same as linearized_factor_t but for floats.
-struct linearized_factorf_t {
+// Same as linearized_dense_factor_t but for floats.
+struct linearized_dense_factorf_t {
   index_t index;
 
   eigen_lcm.VectorXf residual;  // b
@@ -67,7 +67,7 @@ struct linearized_factorf_t {
 
 // Index information for a single key within a linearized factor
 // Aids with rapid repeated linearization
-struct linearization_key_helper_t {
+struct linearization_dense_key_helper_t {
   // Offset of this key within the factor's state vector
   int32_t factor_offset;
   // Offset of this key within the whole problem's state vector
@@ -87,13 +87,37 @@ struct linearization_key_helper_t {
 
 // Index information for a linearized factor into the combined problem
 // Aids with rapid repeated linearization
-struct linearization_factor_helper_t {
+struct linearization_dense_factor_helper_t {
   // Total residual dimension of the factor
   int32_t residual_dim;
   // Offset of this factor's residual slice within the whole problem residual
   int32_t combined_residual_offset;
   // Data about each key's state offsets
-  linearization_key_helper_t key_helpers[];
+  linearization_dense_key_helper_t key_helpers[];
+};
+
+struct linearization_sparse_key_helper_t {
+  // Offset of this key within the factor's state vector
+  int32_t factor_offset;
+  // Offset of this key within the whole problem's state vector
+  int32_t combined_offset;
+  // Tangent dimension of the key
+  int32_t tangent_dim;
+};
+
+struct linearization_sparse_factor_helper_t {
+  // Total residual dimension of the factor
+  int32_t residual_dim;
+  // Offset of this factor's residual slice within the whole problem residual
+  int32_t combined_residual_offset;
+  // Data about each key's state offsets
+  linearization_sparse_key_helper_t key_helpers[];
+
+  // Mapping from factor jacobian flat storage into problem jacobian flat storage
+  int32_t jacobian_index_map[];
+
+  // Mapping from factor hessian flat storage into problem hessian flat storage
+  int32_t hessian_index_map[];
 };
 
 // Parameters for the Optimizer

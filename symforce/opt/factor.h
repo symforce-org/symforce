@@ -2,8 +2,10 @@
 
 #include <ostream>
 
-#include <lcmtypes/sym/linearized_factor_t.hpp>
-#include <lcmtypes/sym/linearized_factorf_t.hpp>
+#include <Eigen/Sparse>
+
+#include <lcmtypes/sym/linearized_dense_factor_t.hpp>
+#include <lcmtypes/sym/linearized_dense_factorf_t.hpp>
 
 #include "./templates.h"
 #include "./values.h"
@@ -11,7 +13,30 @@
 namespace sym {
 
 template <typename _S>
-struct LinearizedFactorTypeHelper;
+struct LinearizedDenseFactorTypeHelper;
+
+template <typename _S>
+struct LinearizedSparseFactorTypeHelper;
+
+// NOTE(aaron): Unlike the dense versions of these, we don't have SparseMatrix eigen_lcm types, so
+// we just defined these as structs, since we don't need to serialize them anyway
+struct linearized_sparse_factor_t {
+  index_t index;
+
+  Eigen::VectorXd residual;              // b
+  Eigen::SparseMatrix<double> jacobian;  // J
+  Eigen::SparseMatrix<double> hessian;   // H, JtJ
+  Eigen::VectorXd rhs;                   // Jtb
+};
+
+struct linearized_sparse_factorf_t {
+  index_t index;
+
+  Eigen::VectorXf residual;             // b
+  Eigen::SparseMatrix<float> jacobian;  // J
+  Eigen::SparseMatrix<float> hessian;   // H, JtJ
+  Eigen::VectorXf rhs;                  // Jtb
+};
 
 /**
  * A residual term for optimization.
@@ -25,17 +50,19 @@ class Factor {
  public:
   using Scalar = ScalarType;
 
-  // Helper to expose the correct LCM type for the scalar type
-  using LinearizedFactor = typename LinearizedFactorTypeHelper<Scalar>::Type;
+  // Helpers to expose the correct LCM type for the scalar type
+  using LinearizedDenseFactor = typename LinearizedDenseFactorTypeHelper<Scalar>::Type;
+  using LinearizedSparseFactor = typename LinearizedSparseFactorTypeHelper<Scalar>::Type;
 
   // ----------------------------------------------------------------------------------------------
   // Residual function forms
   //
-  // These are the functions the Factor operates on. In fact it stores only a HessianFunc as any
-  // JacobianFunc specification is used to compute a HessianFunc. However, it is not common for
-  // the user to specify these directly as usually functions do not accept a Values, rather the
-  // individual input arguments. There are helper constructors to automate the task of extracting
-  // and forwarding the proper inputs from the Values using the Keys in the Factor.
+  // These are the functions the Factor operates on. In fact it stores only a HessianFunc (or
+  // SparseHessianFunc) as any JacobianFunc specification is used to compute a HessianFunc. However,
+  // it is not common for the user to specify these directly as usually functions do not accept a
+  // Values, rather the individual input arguments. There are helper constructors to automate the
+  // task of extracting and forwarding the proper inputs from the Values using the Keys in the
+  // Factor.
   // ----------------------------------------------------------------------------------------------
 
   using JacobianFunc = std::function<void(const Values<Scalar>&,  // Input storage
@@ -50,6 +77,13 @@ class Factor {
                                          VectorX<Scalar>*        // Nx1 right-hand side
                                          )>;
 
+  using SparseHessianFunc = std::function<void(const Values<Scalar>&,         // Input storage
+                                               VectorX<Scalar>*,              // Mx1 residual
+                                               Eigen::SparseMatrix<Scalar>*,  // MxN jacobian
+                                               Eigen::SparseMatrix<Scalar>*,  // NxN hessian
+                                               VectorX<Scalar>*               // Nx1 right-hand side
+                                               )>;
+
   // ----------------------------------------------------------------------------------------------
   // Constructors
   // ----------------------------------------------------------------------------------------------
@@ -57,10 +91,21 @@ class Factor {
   Factor() {}
 
   /**
-   * Create directly from a hessian functor. This is the lowest-level constructor.
+   * Create directly from a (dense) hessian functor. This is the lowest-level constructor.
    */
-  template <typename HessianFunctor>
-  Factor(HessianFunctor&& hessian_func, const std::vector<Key>& keys);
+  Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys);
+
+  /**
+   * Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
+   */
+  Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys);
+
+  /**
+   * Does this factor use a sparse jacobian/hessian matrix?
+   */
+  bool IsSparse() const {
+    return is_sparse_;
+  }
 
   /**
    * Create from a function that computes the jacobian. The hessian will be computed using the
@@ -141,17 +186,51 @@ class Factor {
 
   /**
    * Evaluate the factor at the given linearization point and output just the
-   * numerical values of the residual and jacobian.
+   * numerical values of the residual.
    */
-  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual,
-                 MatrixX<ScalarType>* jacobian = nullptr) const;
+  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual) const;
 
   /**
-   * Evaluate the factor at the given linearization point and output a LinearizedFactor that
-   * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+   * Evaluate the factor at the given linearization point and output just the
+   * numerical values of the residual and jacobian.
+   *
+   * This overload can only be called if IsSparse is false; otherwise, it will throw
    */
-  void Linearize(const Values<Scalar>& values, LinearizedFactor* linearized_factor) const;
-  LinearizedFactor Linearize(const Values<Scalar>& values) const;
+  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual,
+                 MatrixX<ScalarType>* jacobian) const;
+
+  /**
+   * Evaluate the factor at the given linearization point and output just the
+   * numerical values of the residual and jacobian.
+   *
+   * This overload can only be called if IsSparse is true; otherwise, it will throw
+   */
+  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual,
+                 Eigen::SparseMatrix<ScalarType>* jacobian) const;
+
+  /**
+   * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
+   * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+   *
+   * This overload can only be called if IsSparse is false; otherwise, it will throw
+   */
+  void Linearize(const Values<Scalar>& values, LinearizedDenseFactor* linearized_factor) const;
+
+  /**
+   * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
+   * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+   *
+   * This overload can only be called if IsSparse is false; otherwise, it will throw
+   */
+  LinearizedDenseFactor Linearize(const Values<Scalar>& values) const;
+
+  /**
+   * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
+   * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+   *
+   * This overload can only be called if IsSparse is true; otherwise, it will throw
+   */
+  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor* linearized_factor) const;
 
   // ----------------------------------------------------------------------------------------------
   // Helpers
@@ -159,7 +238,13 @@ class Factor {
   const std::vector<Key>& Keys() const;
 
  private:
+  template <typename LinearizedFactorT>
+  void FillLinearizedFactorIndex(const Values<Scalar>& values,
+                                 LinearizedFactorT& linearized_factor) const;
+
   HessianFunc hessian_func_;
+  SparseHessianFunc sparse_hessian_func_;
+  bool is_sparse_;
 
   // Keys to be optimized in this factor, which must match the column order of the jacobian.
   std::vector<Key> keys_;
@@ -175,9 +260,9 @@ std::ostream& operator<<(std::ostream& os, const sym::Factor<Scalar>& factor);
 // TODO(hayk): Why doesn't this work instead of splitting out the types?
 // template <typename Scalar>
 // std::ostream& operator<<(std::ostream& os,
-//                          const typename sym::Factor<Scalar>::LinearizedFactor& factor);
-std::ostream& operator<<(std::ostream& os, const sym::linearized_factor_t& factor);
-std::ostream& operator<<(std::ostream& os, const sym::linearized_factorf_t& factor);
+//                          const typename sym::Factor<Scalar>::LinearizedDenseFactor& factor);
+std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factor_t& factor);
+std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factorf_t& factor);
 
 }  // namespace sym
 

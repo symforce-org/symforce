@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 // Import all the known types.
 #include <lcmtypes/sym/type_t.hpp>
 
@@ -22,6 +25,10 @@ namespace sym {
 
 template <typename T>
 static constexpr const bool kIsEigenType = std::is_base_of<Eigen::MatrixBase<T>, T>::value;
+
+template <typename T>
+static constexpr const bool kIsSparseEigenType =
+    std::is_base_of<Eigen::SparseMatrix<typename T::Scalar>, T>::value;
 
 /**
  * Helper to handle polymorphism by creating a switch from a runtime type enum to dispatch

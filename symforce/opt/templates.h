@@ -63,7 +63,7 @@ struct function_traits<ReturnType(Args...)> {
   };
 };
 
-// Specialialize for function pointers
+// Specialize for function pointers
 template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType (*)(Args...)> : public function_traits<ReturnType(Args...)> {};
 

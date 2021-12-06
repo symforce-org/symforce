@@ -4,7 +4,8 @@
 
 #include <Eigen/Sparse>
 
-#include <lcmtypes/sym/linearization_factor_helper_t.hpp>
+#include <lcmtypes/sym/linearization_dense_factor_helper_t.hpp>
+#include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "./factor.h"
 #include "./linearization.h"
@@ -24,7 +25,8 @@ template <typename ScalarType>
 class Linearizer {
  public:
   using Scalar = ScalarType;
-  using LinearizedFactor = typename Factor<Scalar>::LinearizedFactor;
+  using LinearizedDenseFactor = typename Factor<Scalar>::LinearizedDenseFactor;
+  using LinearizedSparseFactor = typename Factor<Scalar>::LinearizedSparseFactor;
 
   /**
    * Construct a Linearizer from factors and optional keys
@@ -77,7 +79,8 @@ class Linearizer {
   /**
    * Basic accessors.
    */
-  const std::vector<LinearizedFactor>& LinearizedFactors() const;
+  std::pair<const std::vector<LinearizedDenseFactor>&, const std::vector<LinearizedSparseFactor>&>
+  LinearizedFactors() const;
   const std::vector<Key>& Keys() const;
 
  private:
@@ -91,21 +94,32 @@ class Linearizer {
    * Hashmap of keys to information about the key's offset in the full problem.
    */
   static std::unordered_map<key_t, index_entry_t> ComputeStateIndex(
-      const std::vector<LinearizedFactor>& factors, const std::vector<Key>& keys);
+      const std::vector<LinearizedDenseFactor>& factors,
+      const std::vector<LinearizedSparseFactor>& sparse_factors, const std::vector<Key>& keys);
 
   /**
    * Update the sparse combined problem linearization from a single factor.
    */
-  void UpdateFromLinearizedFactorIntoSparse(const LinearizedFactor& linearized_factor,
-                                            const linearization_factor_helper_t& factor_helper,
-                                            Linearization<Scalar>* const linearization) const;
+  void UpdateFromLinearizedDenseFactorIntoSparse(
+      const LinearizedDenseFactor& linearized_factor,
+      const linearization_dense_factor_helper_t& factor_helper,
+      Linearization<Scalar>* const linearization) const;
+  void UpdateFromLinearizedSparseFactorIntoSparse(
+      const LinearizedSparseFactor& linearized_factor,
+      const linearization_sparse_factor_helper_t& factor_helper,
+      Linearization<Scalar>* const linearization) const;
+
   /**
    * Update the combined residual and rhs, along with triplet lists for the sparse matrices, from a
    * single factor
    */
-  void UpdateFromLinearizedFactorIntoTripletLists(
-      const LinearizedFactor& linearized_factor, const linearization_factor_helper_t& factor_helper,
-      sym::VectorX<Scalar>* const residual, sym::VectorX<Scalar>* const rhs,
+  void UpdatePatternFromDenseFactorIntoTripletLists(
+      const linearization_dense_factor_helper_t& factor_helper,
+      std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
+      std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const;
+  void UpdatePatternFromSparseFactorIntoTripletLists(
+      const LinearizedSparseFactor& linearized_factor,
+      const linearization_sparse_factor_helper_t& factor_helper,
       std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
       std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const;
 
@@ -118,17 +132,17 @@ class Linearizer {
    * Update the combined sparse problem linearization from linearized factors by directly
    * updating the indices of the sparse storage.
    */
-  void BuildCombinedProblemSparse(const std::vector<LinearizedFactor>& linearized_factors,
-                                  Linearization<Scalar>* const linearization) const;
+  void BuildCombinedProblemSparse(
+      const std::vector<LinearizedDenseFactor>& dense_linearized_factors,
+      const std::vector<LinearizedSparseFactor>& sparse_linearized_factors,
+      Linearization<Scalar>* const linearization) const;
 
   /**
-   * Create the combined problem linearization from linearized_factors which should have all ones in
-   * potentially nonzero locations.  This is done by creating the sparse matrices from triplet
-   * lists.
+   * Create the combined problem linearization sparsity pattern, assuming nonzeros in all locations
+   * for dense factors, and all existing locations in sparse factors.  This is done by creating the
+   * sparse matrices from triplet lists.
    */
-  void BuildCombinedProblemFromOnesFactors(
-      const std::vector<LinearizedFactor>& all_ones_linearized_factors,
-      Linearization<Scalar>* const linearization);
+  void BuildCombinedProblemSparsityPattern(Linearization<Scalar>* const linearization) const;
 
   bool initialized_{false};
 
@@ -136,7 +150,8 @@ class Linearizer {
   const std::vector<Factor<Scalar>>* factors_;
 
   // Linearized factors - stores individual factor residuals, jacobians, etc
-  std::vector<LinearizedFactor> linearized_factors_;
+  std::vector<LinearizedDenseFactor> dense_linearized_factors_;
+  std::vector<LinearizedSparseFactor> sparse_linearized_factors_;
 
   // Keys that form the state vector
   std::vector<Key> keys_;
@@ -145,7 +160,8 @@ class Linearizer {
   std::unordered_map<key_t, index_entry_t> state_index_;
 
   // Helpers for updating the combined problem from linearized factors
-  std::vector<linearization_factor_helper_t> factor_update_helpers_;
+  std::vector<linearization_dense_factor_helper_t> dense_factor_update_helpers_;
+  std::vector<linearization_sparse_factor_helper_t> sparse_factor_update_helpers_;
 
   Linearization<Scalar> linearization_ones_;
 };

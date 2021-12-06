@@ -4,9 +4,18 @@
 namespace sym {
 
 template <typename Scalar>
-template <typename HessianFunctor>
-Factor<Scalar>::Factor(HessianFunctor&& hessian_func, const std::vector<Key>& keys)
-    : hessian_func_(std::move(hessian_func)), keys_(keys) {}
+Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys)
+    : hessian_func_(std::move(hessian_func)),
+      sparse_hessian_func_(),
+      is_sparse_(false),
+      keys_(keys) {}
+
+template <typename Scalar>
+Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func, const std::vector<Key>& keys)
+    : hessian_func_(),
+      sparse_hessian_func_(std::move(sparse_hessian_func)),
+      is_sparse_(true),
+      keys_(keys) {}
 
 // ------------------------------------------------------------------------------------------------
 // Factor::Jacobian constructor dispatcher
@@ -243,12 +252,26 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
   return Hessian(func, keys, keys);
 }
 
-// Struct to allow partial specialization based on whether matrices are dynamic
-template <bool IsDynamic, typename Scalar>
+// Struct to allow partial specialization based on whether matrices are dynamic and/or sparse
+template <bool IsDynamic, bool IsSparse, typename Scalar>
 struct HessianDispatcher {
   template <typename Functor>
   Factor<Scalar> operator()(Functor func, const std::vector<Key>& keys_to_func,
                             const std::vector<Key>& keys_to_optimize);
+};
+
+// Struct to help extract matrix types from signature
+template <typename Functor>
+struct HessianFuncTypeHelper {
+  using Traits = function_traits<Functor>;
+
+  template <int Index>
+  using ArgType = typename Traits::template arg<Index>::base_type;
+
+  using ResidualVec = typename std::remove_pointer<ArgType<Traits::num_arguments - 4>>::type;
+  using JacobianMat = typename std::remove_pointer<ArgType<Traits::num_arguments - 3>>::type;
+  using HessianMat = typename std::remove_pointer<ArgType<Traits::num_arguments - 2>>::type;
+  using RhsVec = typename std::remove_pointer<ArgType<Traits::num_arguments - 1>>::type;
 };
 
 template <typename Scalar>
@@ -261,32 +284,36 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
   SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 4);
 
   // Get matrix types from function signature
-  using ResidualVec = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 4>::type>::type;
-  using JacobianMat = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 3>::type>::type;
-  using HessianMat = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 2>::type>::type;
-  using RhsVec = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 1>::type>::type;
+  using ResidualVec = typename HessianFuncTypeHelper<Functor>::ResidualVec;
+  using JacobianMat = typename HessianFuncTypeHelper<Functor>::JacobianMat;
+  using HessianMat = typename HessianFuncTypeHelper<Functor>::HessianMat;
+  using RhsVec = typename HessianFuncTypeHelper<Functor>::RhsVec;
 
   // Check that they're Eigen matrices (nice for error messages)
   static_assert(kIsEigenType<ResidualVec>,
                 "ResidualVec (4th from last argument) should be an Eigen::Matrix");
-  static_assert(kIsEigenType<JacobianMat>,
-                "JacobianMat (3rd from last argument) should be an Eigen::Matrix");
-  static_assert(kIsEigenType<HessianMat>,
-                "HessianMat (2nd from last argument) should be an Eigen::Matrix");
+  static_assert(
+      kIsEigenType<JacobianMat> || kIsSparseEigenType<JacobianMat>,
+      "JacobianMat (3rd from last argument) should be an Eigen::Matrix or Eigen::SparseMatrix");
+  static_assert(
+      kIsEigenType<HessianMat> || kIsSparseEigenType<HessianMat>,
+      "HessianMat (2nd from last argument) should be an Eigen::Matrix or Eigen::SparseMatrix");
   static_assert(kIsEigenType<RhsVec>, "RhsVec (last argument) should be an Eigen::Matrix");
 
+  // Check sparse vs dense
+  constexpr bool jacobian_is_sparse = !kIsEigenType<JacobianMat>;
+  constexpr bool hessian_is_sparse = !kIsEigenType<HessianMat>;
+  static_assert(jacobian_is_sparse == hessian_is_sparse,
+                "Matrices cannot be mixed dense and sparse.");
+
   // Get dimensions
-  constexpr int M = JacobianMat::RowsAtCompileTime;
-  constexpr int N = JacobianMat::ColsAtCompileTime;
-  static_assert(ResidualVec::RowsAtCompileTime == M, "Inconsistent sizes.");
+  constexpr int M = ResidualVec::RowsAtCompileTime;
+  constexpr int N = RhsVec::RowsAtCompileTime;
   static_assert(ResidualVec::ColsAtCompileTime == 1, "Inconsistent sizes.");
-  static_assert(HessianMat::RowsAtCompileTime == N, "Inconsistent sizes.");
-  static_assert(HessianMat::ColsAtCompileTime == N, "Inconsistent sizes.");
-  static_assert(RhsVec::RowsAtCompileTime == N, "Inconsistent sizes.");
+  static_assert(JacobianMat::RowsAtCompileTime == M || jacobian_is_sparse, "Inconsistent sizes.");
+  static_assert(JacobianMat::ColsAtCompileTime == N || jacobian_is_sparse, "Inconsistent sizes.");
+  static_assert(HessianMat::RowsAtCompileTime == N || hessian_is_sparse, "Inconsistent sizes.");
+  static_assert(HessianMat::ColsAtCompileTime == N || hessian_is_sparse, "Inconsistent sizes.");
   static_assert(RhsVec::ColsAtCompileTime == 1, "Inconsistent sizes.");
 
   constexpr bool is_dynamic = (M == Eigen::Dynamic) && (N == Eigen::Dynamic);
@@ -294,7 +321,8 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return HessianDispatcher<is_dynamic, Scalar>{}(func, keys_to_func, keys_to_optimize);
+  return HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(func, keys_to_func,
+                                                                     keys_to_optimize);
 }
 
 /**
@@ -302,10 +330,13 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
  */
 template <typename Scalar, typename Functor>
 struct HessianFuncValuesExtractor {
-  using Traits = function_traits<Functor>;
-
   template <int Index>
-  using ArgType = typename Traits::template arg<Index>::base_type;
+  using ArgType = typename HessianFuncTypeHelper<Functor>::template ArgType<Index>;
+
+  using ResidualVec = typename HessianFuncTypeHelper<Functor>::ResidualVec;
+  using JacobianMat = typename HessianFuncTypeHelper<Functor>::JacobianMat;
+  using HessianMat = typename HessianFuncTypeHelper<Functor>::HessianMat;
+  using RhsVec = typename HessianFuncTypeHelper<Functor>::RhsVec;
 
   /** Pull out the arg given by Index from the Values. */
   template <int Index>
@@ -315,25 +346,19 @@ struct HessianFuncValuesExtractor {
   }
 
   /** Invokes the user function with the proper input args extracted from the Values. */
-  template <int... S, int M, int N>
+  template <int... S>
   inline static void InvokeAtRange(Functor func, const sym::Values<Scalar>& values,
-                                   const std::vector<sym::Key>& keys,
-                                   Eigen::Matrix<Scalar, M, 1>* residual,
-                                   Eigen::Matrix<Scalar, M, N>* jacobian,
-                                   Eigen::Matrix<Scalar, N, N>* hessian,
-                                   Eigen::Matrix<Scalar, N, 1>* rhs, Sequence<S...>) {
+                                   const std::vector<sym::Key>& keys, ResidualVec* residual,
+                                   JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs,
+                                   Sequence<S...>) {
     func(GetValue<S>(values, keys)..., residual, jacobian, hessian, rhs);
   }
 
-  template <int M, int N>
   inline static void Invoke(Functor func, const sym::Values<Scalar>& values,
-                            const std::vector<sym::Key>& keys,
-                            Eigen::Matrix<Scalar, M, 1>* residual,
-                            Eigen::Matrix<Scalar, M, N>* jacobian,
-                            Eigen::Matrix<Scalar, N, N>* hessian,
-                            Eigen::Matrix<Scalar, N, 1>* rhs) {
+                            const std::vector<sym::Key>& keys, ResidualVec* residual,
+                            JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs) {
     InvokeAtRange(func, values, keys, residual, jacobian, hessian, rhs,
-                  typename RangeGenerator<Traits::num_arguments - 4>::Range());
+                  typename RangeGenerator<function_traits<Functor>::num_arguments - 4>::Range());
   }
 };
 
@@ -344,12 +369,12 @@ struct HessianFuncValuesExtractor {
 template <typename Scalar, typename Functor>
 Factor<Scalar> HessianDynamic(Functor func, const std::vector<Key>& keys_to_func,
                               const std::vector<Key>& keys_to_optimize) {
+  using JacobianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::JacobianMat;
+  using HessianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::HessianMat;
+
   return Factor<Scalar>(
       [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                           MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
-                           VectorX<Scalar>* rhs) {
-        SYM_ASSERT(residual != nullptr);
-
+                           JacobianMat* jacobian, HessianMat* hessian, VectorX<Scalar>* rhs) {
         HessianFuncValuesExtractor<Scalar, Functor>::Invoke(func, values, keys_to_func, residual,
                                                             jacobian, hessian, rhs);
       },
@@ -357,8 +382,8 @@ Factor<Scalar> HessianDynamic(Functor func, const std::vector<Key>& keys_to_func
 }
 
 /** Specialize the dispatch mechanism */
-template <typename Scalar>
-struct HessianDispatcher<true /* is_dynamic */, Scalar> {
+template <bool IsSparse, typename Scalar>
+struct HessianDispatcher<true /* is_dynamic */, IsSparse, Scalar> {
   template <typename Functor>
   Factor<Scalar> operator()(Functor func, const std::vector<Key>& keys_to_func,
                             const std::vector<Key>& keys_to_optimize) {
@@ -371,13 +396,10 @@ struct HessianDispatcher<true /* is_dynamic */, Scalar> {
 // ----------------------------------------------------------------------------
 
 template <typename Scalar, typename Functor>
-Factor<Scalar> HessianFixed(Functor func, const std::vector<Key>& keys_to_func,
-                            const std::vector<Key>& keys_to_optimize) {
-  using Traits = function_traits<Functor>;
-
+Factor<Scalar> HessianFixedDense(Functor func, const std::vector<Key>& keys_to_func,
+                                 const std::vector<Key>& keys_to_optimize) {
   // Get matrix types from function signature
-  using JacobianMat = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 3>::type>::type;
+  using JacobianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::JacobianMat;
 
   // Get dimensions (these have already been sanity checked in Factor::Hessian)
   constexpr int M = JacobianMat::RowsAtCompileTime;
@@ -387,19 +409,19 @@ Factor<Scalar> HessianFixed(Functor func, const std::vector<Key>& keys_to_func,
       [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
                            MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
                            VectorX<Scalar>* rhs) {
-        SYM_ASSERT(residual != nullptr);
-
         Eigen::Matrix<Scalar, M, 1> residual_fixed;
         Eigen::Matrix<Scalar, M, N> jacobian_fixed;
         Eigen::Matrix<Scalar, N, N> hessian_fixed;
         Eigen::Matrix<Scalar, N, 1> rhs_fixed;
 
         HessianFuncValuesExtractor<Scalar, Functor>::Invoke(
-            func, values, keys_to_func, &residual_fixed,
+            func, values, keys_to_func, residual == nullptr ? nullptr : &residual_fixed,
             jacobian == nullptr ? nullptr : &jacobian_fixed,
             hessian == nullptr ? nullptr : &hessian_fixed, rhs == nullptr ? nullptr : &rhs_fixed);
 
-        (*residual) = residual_fixed;
+        if (residual != nullptr) {
+          (*residual) = residual_fixed;
+        }
 
         if (jacobian != nullptr) {
           (*jacobian) = jacobian_fixed;
@@ -418,11 +440,55 @@ Factor<Scalar> HessianFixed(Functor func, const std::vector<Key>& keys_to_func,
 
 /** Specialize the dispatch mechanism */
 template <typename Scalar>
-struct HessianDispatcher<false /* is_dynamic */, Scalar> {
+struct HessianDispatcher<false /* is_dynamic */, false /* is_sparse */, Scalar> {
   template <typename Functor>
   Factor<Scalar> operator()(Functor func, const std::vector<Key>& keys_to_func,
                             const std::vector<Key>& keys_to_optimize) {
-    return HessianFixed<Scalar>(func, keys_to_func, keys_to_optimize);
+    return HessianFixedDense<Scalar>(func, keys_to_func, keys_to_optimize);
+  }
+};
+
+// ----------------------------------------------------------------------------
+// Factor::Hessian constructor support for fixed size vectors and sparse matrices
+// ----------------------------------------------------------------------------
+
+template <typename Scalar, typename Functor>
+Factor<Scalar> HessianFixedSparse(Functor func, const std::vector<Key>& keys_to_func,
+                                  const std::vector<Key>& keys_to_optimize) {
+  // Get matrix types from function signature
+  using ResidualVec = typename HessianFuncValuesExtractor<Scalar, Functor>::ResidualVec;
+  using JacobianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::JacobianMat;
+  using HessianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::HessianMat;
+  using RhsVec = typename HessianFuncValuesExtractor<Scalar, Functor>::RhsVec;
+
+  return Factor<Scalar>(
+      [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
+                           JacobianMat* jacobian, HessianMat* hessian, VectorX<Scalar>* rhs) {
+        ResidualVec residual_fixed;
+        RhsVec rhs_fixed;
+
+        HessianFuncValuesExtractor<Scalar, Functor>::Invoke(
+            func, values, keys_to_func, residual == nullptr ? nullptr : &residual_fixed, jacobian,
+            hessian, rhs == nullptr ? nullptr : &rhs_fixed);
+
+        if (residual != nullptr) {
+          (*residual) = residual_fixed;
+        }
+
+        if (rhs != nullptr) {
+          (*rhs) = rhs_fixed;
+        }
+      },
+      keys_to_optimize);
+}
+
+/** Specialize the dispatch mechanism */
+template <typename Scalar>
+struct HessianDispatcher<false /* is_dynamic */, true /* is_sparse */, Scalar> {
+  template <typename Functor>
+  Factor<Scalar> operator()(Functor func, const std::vector<Key>& keys_to_func,
+                            const std::vector<Key>& keys_to_optimize) {
+    return HessianFixedSparse<Scalar>(func, keys_to_func, keys_to_optimize);
   }
 };
 
@@ -431,13 +497,23 @@ struct HessianDispatcher<false /* is_dynamic */, Scalar> {
 // ----------------------------------------------------------------------------
 
 template <>
-struct LinearizedFactorTypeHelper<double> {
-  using Type = linearized_factor_t;
+struct LinearizedDenseFactorTypeHelper<double> {
+  using Type = linearized_dense_factor_t;
 };
 
 template <>
-struct LinearizedFactorTypeHelper<float> {
-  using Type = linearized_factorf_t;
+struct LinearizedDenseFactorTypeHelper<float> {
+  using Type = linearized_dense_factorf_t;
+};
+
+template <>
+struct LinearizedSparseFactorTypeHelper<double> {
+  using Type = linearized_sparse_factor_t;
+};
+
+template <>
+struct LinearizedSparseFactorTypeHelper<float> {
+  using Type = linearized_sparse_factorf_t;
 };
 
 }  // namespace sym

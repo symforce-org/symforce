@@ -10,7 +10,7 @@ from symforce.test_util import TestCase
 from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
-from lcmtypes.sym._linearized_factor_t import linearized_factor_t
+from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
@@ -362,7 +362,7 @@ class SymforceCCSymTest(TestCase):
             pi_values = so.Values()
             eval_value = 3.0
             pi_values.set(pi_key, eval_value)
-            self.assertIsInstance(pi_factor.linearized_factor(pi_values), linearized_factor_t)
+            self.assertIsInstance(pi_factor.linearized_factor(pi_values), linearized_dense_factor_t)
 
             residual, jacobian = pi_factor.linearize(pi_values)
             target_residual, target_jacobian, *_ = SymforceCCSymTest.pi_residual(eval_value)

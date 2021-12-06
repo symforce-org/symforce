@@ -14,7 +14,7 @@
 #include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/index_t.hpp>
 #include <lcmtypes/sym/key_t.hpp>
-#include <lcmtypes/sym/linearized_factor_t.hpp>
+#include <lcmtypes/sym/linearized_dense_factor_t.hpp>
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 #include <lcmtypes/sym/optimizer_params_t.hpp>
@@ -79,7 +79,8 @@ struct type_caster<sym::index_t> : public lcm_type_caster<sym::index_t> {};
 template <>
 struct type_caster<sym::key_t> : public lcm_type_caster<sym::key_t> {};
 template <>
-struct type_caster<sym::linearized_factor_t> : public lcm_type_caster<sym::linearized_factor_t> {};
+struct type_caster<sym::linearized_dense_factor_t>
+    : public lcm_type_caster<sym::linearized_dense_factor_t> {};
 template <>
 struct type_caster<sym::optimization_iteration_t>
     : public lcm_type_caster<sym::optimization_iteration_t> {};
