@@ -165,6 +165,8 @@ class Optimizer {
    * Will reuse entries in covariances_by_key, allocating new entries so that the result contains
    * exactly the set of keys optimized by this Optimizer.  `covariances_by_key` must not contain any
    * keys that are not optimized by this Optimizer.
+   *
+   * May not be called before either Optimize or Linearize has been called.
    */
   void ComputeAllCovariances(const Linearization<Scalar>& linearization,
                              std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);

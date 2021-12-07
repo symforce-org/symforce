@@ -102,6 +102,7 @@ template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
     const Linearization<Scalar>& linearization,
     std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) {
+  SYM_ASSERT(IsInitialized());
   nonlinear_solver_.ComputeCovariance(linearization.hessian_lower,
                                       &compute_covariances_storage_.covariance);
   linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys_,
