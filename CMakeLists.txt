@@ -235,20 +235,20 @@ target_include_directories(
 
 if(NOT SYMFORCE_BUILD_GEN_ONLY)
   # ------------------------------------------------------------------------------
-  # symforce_opt_linear
+  # symforce_cholesky
 
   # NOTE(hayk): For licensing reasons keep this as a shared library and
   # do not link statically. Treat this as code for which we can provide source.
-  file(GLOB SYMFORCE_OPT_LINEAR_SOURCES CONFIGURE_DEPENDS symforce/opt/linear/*.cc)
-  file(GLOB SYMFORCE_OPT_LINEAR_HEADERS CONFIGURE_DEPENDS symforce/opt/linear/*.h symforce/opt/linear/*.tcc)
+  file(GLOB SYMFORCE_CHOLESKY_SOURCES CONFIGURE_DEPENDS symforce/opt/cholesky/*.cc)
+  file(GLOB SYMFORCE_CHOLESKY_HEADERS CONFIGURE_DEPENDS symforce/opt/cholesky/*.h symforce/opt/cholesky/*.tcc)
   add_library(
-    symforce_opt_linear
+    symforce_cholesky
     SHARED
-    ${SYMFORCE_OPT_LINEAR_SOURCES}
-    ${SYMFORCE_OPT_LINEAR_HEADERS}
+    ${SYMFORCE_CHOLESKY_SOURCES}
+    ${SYMFORCE_CHOLESKY_HEADERS}
   )
-  target_link_libraries(symforce_opt_linear metis Eigen3::Eigen)
-  target_include_directories(symforce_opt_linear PUBLIC .)
+  target_link_libraries(symforce_cholesky metis Eigen3::Eigen)
+  target_include_directories(symforce_cholesky PUBLIC .)
 
   # ------------------------------------------------------------------------------
   # symforce_opt
@@ -263,7 +263,7 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   )
   target_link_libraries(symforce_opt
     symforce_gen
-    symforce_opt_linear
+    symforce_cholesky
     fmt::fmt
     spdlog::spdlog
     tl::optional

@@ -10,7 +10,7 @@
 #include <Eigen/SparseCholesky>
 
 #include <sym/ops/storage_ops.h>
-#include <symforce/opt/linear/sparse_cholesky_solver.h>
+#include <symforce/opt/cholesky/sparse_cholesky_solver.h>
 #include <symforce/opt/tic_toc.h>
 
 #include "catch.hpp"

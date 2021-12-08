@@ -11,8 +11,8 @@
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
 
-#include <symforce/opt/linear/sparse_cholesky_solver.h>
-#include <symforce/opt/linear/sparse_schur_solver.h>
+#include <symforce/opt/cholesky/sparse_cholesky_solver.h>
+#include <symforce/opt/sparse_schur_solver.h>
 #include <symforce/opt/tic_toc.h>
 
 #include "catch.hpp"

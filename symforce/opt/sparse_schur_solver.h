@@ -4,7 +4,7 @@
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
 
-#include "./sparse_cholesky_solver.h"
+#include "./cholesky/sparse_cholesky_solver.h"
 
 namespace sym {
 
