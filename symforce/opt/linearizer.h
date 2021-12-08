@@ -189,7 +189,7 @@ std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factor
   // Aggregate uniques
   std::unordered_set<Key> key_set;
   for (const Factor<Scalar>& factor : factors) {
-    key_set.insert(factor.Keys().begin(), factor.Keys().end());
+    key_set.insert(factor.OptimizedKeys().begin(), factor.OptimizedKeys().end());
   }
 
   // Copy to vector

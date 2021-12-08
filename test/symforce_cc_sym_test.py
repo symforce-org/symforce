@@ -357,11 +357,15 @@ class SymforceCCSymTest(TestCase):
 
         pi_key = so.Key("3", 1, 4)
         pi_factor = so.Factor(
-            hessian_func=lambda values: SymforceCCSymTest.pi_residual(values.at(pi_key)),
+            hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
+                values.at(index_entries[0])
+            ),
             keys=[pi_key],
         )
         pi_jacobian_factor = so.Factor.jacobian(
-            jacobian_func=lambda values: SymforceCCSymTest.pi_residual(values.at(pi_key))[0:2],
+            jacobian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
+                values.at(index_entries[0])
+            )[0:2],
             keys=[pi_key],
         )
 
@@ -376,8 +380,9 @@ class SymforceCCSymTest(TestCase):
             self.assertAlmostEqual(target_residual[0], residual[0])
             self.assertAlmostEqual(target_jacobian[0], jacobian[0, 0])
 
-        with self.subTest(msg="Test that Factor.keys is wrapped"):
-            self.assertEqual(pi_factor.keys(), [pi_key])
+        with self.subTest(msg="Test that Factor.all_keys and optimized_keys are wrapped"):
+            self.assertEqual(pi_factor.all_keys(), [pi_key])
+            self.assertEqual(pi_factor.optimized_keys(), [pi_key])
 
     def test_optimization_stats(self) -> None:
         """
@@ -420,7 +425,9 @@ class SymforceCCSymTest(TestCase):
 
         pi_key = so.Key("3", 1, 4)
         pi_factor = so.Factor(
-            hessian_func=lambda values: SymforceCCSymTest.pi_residual(values.at(pi_key)),
+            hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
+                values.at(index_entries[0])
+            ),
             keys=[pi_key],
         )
 

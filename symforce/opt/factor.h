@@ -65,23 +65,26 @@ class Factor {
   // Factor.
   // ----------------------------------------------------------------------------------------------
 
-  using JacobianFunc = std::function<void(const Values<Scalar>&,  // Input storage
-                                          VectorX<Scalar>*,       // Mx1 residual
-                                          MatrixX<Scalar>*        // MxN jacobian
+  using JacobianFunc = std::function<void(const Values<Scalar>&,              // Input storage
+                                          const std::vector<index_entry_t>&,  // Keys
+                                          VectorX<Scalar>*,                   // Mx1 residual
+                                          MatrixX<Scalar>*                    // MxN jacobian
                                           )>;
 
-  using HessianFunc = std::function<void(const Values<Scalar>&,  // Input storage
-                                         VectorX<Scalar>*,       // Mx1 residual
-                                         MatrixX<Scalar>*,       // MxN jacobian
-                                         MatrixX<Scalar>*,       // NxN hessian
-                                         VectorX<Scalar>*        // Nx1 right-hand side
+  using HessianFunc = std::function<void(const Values<Scalar>&,              // Input storage
+                                         const std::vector<index_entry_t>&,  // Keys
+                                         VectorX<Scalar>*,                   // Mx1 residual
+                                         MatrixX<Scalar>*,                   // MxN jacobian
+                                         MatrixX<Scalar>*,                   // NxN hessian
+                                         VectorX<Scalar>*                    // Nx1 right-hand side
                                          )>;
 
-  using SparseHessianFunc = std::function<void(const Values<Scalar>&,         // Input storage
-                                               VectorX<Scalar>*,              // Mx1 residual
-                                               Eigen::SparseMatrix<Scalar>*,  // MxN jacobian
-                                               Eigen::SparseMatrix<Scalar>*,  // NxN hessian
-                                               VectorX<Scalar>*               // Nx1 right-hand side
+  using SparseHessianFunc = std::function<void(const Values<Scalar>&,              // Input storage
+                                               const std::vector<index_entry_t>&,  // Keys
+                                               VectorX<Scalar>*,                   // Mx1 residual
+                                               Eigen::SparseMatrix<Scalar>*,       // MxN jacobian
+                                               Eigen::SparseMatrix<Scalar>*,       // NxN hessian
+                                               VectorX<Scalar>*  // Nx1 right-hand side
                                                )>;
 
   // ----------------------------------------------------------------------------------------------
@@ -92,13 +95,25 @@ class Factor {
 
   /**
    * Create directly from a (dense) hessian functor. This is the lowest-level constructor.
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
   Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys);
 
   /**
    * Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
+   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
+   *                     be a subset of keys_to_func.
    */
-  Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys);
+  Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+         const std::vector<Key>& keys_to_optimize);
+  Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func);
+  Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+         const std::vector<Key>& keys_to_optimize);
 
   /**
    * Does this factor use a sparse jacobian/hessian matrix?
@@ -112,8 +127,25 @@ class Factor {
    * Gauss Newton approximation:
    *    H   = J.T * J
    *    rhs = J.T * b
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
   static Factor Jacobian(const JacobianFunc& jacobian_func, const std::vector<Key>& keys);
+
+  /**
+   * Create from a function that computes the jacobian. The hessian will be computed using the
+   * Gauss Newton approximation:
+   *    H   = J.T * J
+   *    rhs = J.T * b
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
+   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
+   *                     be a subset of keys_to_func.
+   */
+  static Factor Jacobian(const JacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
+                         const std::vector<Key>& keys_to_optimize);
 
   /**
    * Create from a function that computes the jacobian. The hessian will be computed using the
@@ -235,9 +267,20 @@ class Factor {
   // ----------------------------------------------------------------------------------------------
   // Helpers
   // ----------------------------------------------------------------------------------------------
-  const std::vector<Key>& Keys() const;
+
+  /**
+   * Get the optimized keys for this factor
+   */
+  const std::vector<Key>& OptimizedKeys() const;
+
+  /**
+   * Get all keys required to evaluate this factor
+   */
+  const std::vector<Key>& AllKeys() const;
 
  private:
+  void EnsureIndexEntriesExist(const Values<Scalar>& values) const;
+
   template <typename LinearizedFactorT>
   void FillLinearizedFactorIndex(const Values<Scalar>& values,
                                  LinearizedFactorT& linearized_factor) const;
@@ -247,7 +290,13 @@ class Factor {
   bool is_sparse_;
 
   // Keys to be optimized in this factor, which must match the column order of the jacobian.
+  std::vector<Key> keys_to_optimize_;
+
+  // All keys required to evaluate the factor
   std::vector<Key> keys_;
+
+  // Index entries for the above keys, cached to avoid repeated unordered_map lookups
+  mutable std::vector<index_entry_t> index_entries_;
 };
 
 // Shorthand instantiations

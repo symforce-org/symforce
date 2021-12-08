@@ -26,15 +26,21 @@ namespace sym {
 //---------------------------- Helpers for wrapping sym::Factord ---------------------------------//
 //================================================================================================//
 
-sym::Factord MakeHessianFactor(std::function<py::tuple(const sym::Valuesd&)> hessian_func,
-                               const std::vector<sym::Key>& keys) {
+namespace {
+
+using PyHessianFunc =
+    std::function<py::tuple(const sym::Valuesd&, const std::vector<index_entry_t>&)>;
+
+sym::Factord MakeHessianFactor(PyHessianFunc hessian_func,
+                               const std::vector<sym::Key>& keys_to_func,
+                               const std::vector<sym::Key>& keys_to_optimize) {
   using Vec = Eigen::VectorXd;
   using Mat = Eigen::MatrixXd;
   return sym::Factord(
-      [hessian_func = std::move(hessian_func)](const sym::Valuesd& values, Vec* const residual,
-                                               Mat* const jacobian, Mat* const hessian,
-                                               Vec* const rhs) {
-        const py::tuple out_tuple = hessian_func(values);
+      [hessian_func = std::move(hessian_func)](
+          const sym::Valuesd& values, const std::vector<index_entry_t>& keys, Vec* const residual,
+          Mat* const jacobian, Mat* const hessian, Vec* const rhs) {
+        const py::tuple out_tuple = hessian_func(values, keys);
         if (residual != nullptr) {
           *residual = py::cast<Vec>(out_tuple[0]);
         }
@@ -48,25 +54,40 @@ sym::Factord MakeHessianFactor(std::function<py::tuple(const sym::Valuesd&)> hes
           *rhs = py::cast<Vec>(out_tuple[3]);
         }
       },
-      keys);
+      keys_to_func, keys_to_optimize);
 }
 
-sym::Factord MakeJacobianFactor(std::function<py::tuple(const sym::Valuesd&)> jacobian_func,
-                                const std::vector<sym::Key>& keys) {
-  return sym::Factord::Jacobian(
-      sym::Factord::JacobianFunc([jacobian_func = std::move(jacobian_func)](
-                                     const sym::Valuesd& values, Eigen::VectorXd* const residual,
-                                     Eigen::MatrixXd* const jacobian) {
-        const py::tuple out_tuple = jacobian_func(values);
-        if (residual != nullptr) {
-          *residual = py::cast<Eigen::VectorXd>(out_tuple[0]);
-        }
-        if (jacobian != nullptr) {
-          *jacobian = py::cast<Eigen::MatrixXd>(out_tuple[1]);
-        }
-      }),
-      keys);
+sym::Factord MakeHessianFactor(PyHessianFunc hessian_func, const std::vector<sym::Key>& keys) {
+  return MakeHessianFactor(std::move(hessian_func), keys, keys);
 }
+
+using PyJacobianFunc =
+    std::function<py::tuple(const sym::Valuesd&, const std::vector<index_entry_t>&)>;
+
+sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func,
+                                const std::vector<sym::Key>& keys_to_func,
+                                const std::vector<sym::Key>& keys_to_optimize) {
+  return sym::Factord::Jacobian(
+      sym::Factord::JacobianFunc(
+          [jacobian_func = std::move(jacobian_func)](
+              const sym::Valuesd& values, const std::vector<index_entry_t>& keys,
+              Eigen::VectorXd* const residual, Eigen::MatrixXd* const jacobian) {
+            const py::tuple out_tuple = jacobian_func(values, keys);
+            if (residual != nullptr) {
+              *residual = py::cast<Eigen::VectorXd>(out_tuple[0]);
+            }
+            if (jacobian != nullptr) {
+              *jacobian = py::cast<Eigen::MatrixXd>(out_tuple[1]);
+            }
+          }),
+      keys_to_func, keys_to_optimize);
+}
+
+sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func, const std::vector<sym::Key>& keys) {
+  return MakeJacobianFactor(std::move(jacobian_func), keys, keys);
+}
+
+}  // namespace
 
 //================================================================================================//
 //-------------------------------- The Public Factor Wrapper -------------------------------------//
@@ -74,8 +95,20 @@ sym::Factord MakeJacobianFactor(std::function<py::tuple(const sym::Valuesd&)> ja
 
 void AddFactorWrapper(pybind11::module_ module) {
   py::class_<sym::Factord>(module, "Factor")
-      .def(py::init(&MakeHessianFactor), py::arg("hessian_func"), py::arg("keys"))
-      .def_static("jacobian", &MakeJacobianFactor, py::arg("jacobian_func"), py::arg("keys"))
+      .def(py::init(py::overload_cast<PyHessianFunc, const std::vector<Key>&>(&MakeHessianFactor)),
+           py::arg("hessian_func"), py::arg("keys"))
+      .def(py::init(
+               py::overload_cast<PyHessianFunc, const std::vector<Key>&, const std::vector<Key>&>(
+                   &MakeHessianFactor)),
+           py::arg("hessian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"))
+      .def_static("jacobian",
+                  py::overload_cast<PyJacobianFunc, const std::vector<Key>&>(&MakeJacobianFactor),
+                  py::arg("jacobian_func"), py::arg("keys"))
+      .def_static(
+          "jacobian",
+          py::overload_cast<PyJacobianFunc, const std::vector<Key>&, const std::vector<Key>&>(
+              &MakeJacobianFactor),
+          py::arg("jacobian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"))
       .def("linearize",
            [](const sym::Factord& factor, const sym::Valuesd& values) {
              if (factor.IsSparse()) {
@@ -93,7 +126,8 @@ void AddFactorWrapper(pybind11::module_ module) {
       .def("linearized_factor",
            py::overload_cast<const sym::Valuesd&>(&sym::Factord::Linearize, py::const_),
            py::arg("values"))
-      .def("keys", &sym::Factord::Keys)
+      .def("optimized_keys", &sym::Factord::OptimizedKeys)
+      .def("all_keys", &sym::Factord::AllKeys)
       .def("__repr__", [](const sym::Factord& factor) { return fmt::format("{}", factor); });
 }
 

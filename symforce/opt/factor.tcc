@@ -5,17 +5,30 @@ namespace sym {
 
 template <typename Scalar>
 Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys)
+    : Factor(std::move(hessian_func), keys, keys) {}
+
+template <typename Scalar>
+Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),
       is_sparse_(false),
-      keys_(keys) {}
+      keys_to_optimize_(keys_to_optimize),
+      keys_(keys_to_func) {}
 
 template <typename Scalar>
 Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func, const std::vector<Key>& keys)
+    : Factor(std::move(sparse_hessian_func), keys, keys) {}
+
+template <typename Scalar>
+Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func,
+                       const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize)
     : hessian_func_(),
       sparse_hessian_func_(std::move(sparse_hessian_func)),
       is_sparse_(true),
-      keys_(keys) {}
+      keys_to_optimize_(keys_to_optimize),
+      keys_(keys_to_func) {}
 
 // ------------------------------------------------------------------------------------------------
 // Factor::Jacobian constructor dispatcher
@@ -91,14 +104,14 @@ struct JacobianFuncValuesExtractor {
   /** Pull out the arg given by Index from the Values. */
   template <int Index>
   inline static ArgType<Index> GetValue(const sym::Values<Scalar>& values,
-                                        const std::vector<sym::Key>& keys) {
+                                        const std::vector<index_entry_t>& keys) {
     return values.template At<ArgType<Index>>(keys[Index]);
   }
 
   /** Invokes the user function with the proper input args extracted from the Values. */
   template <int... S, int M, int N>
   inline static void InvokeAtRange(Functor func, const sym::Values<Scalar>& values,
-                                   const std::vector<sym::Key>& keys,
+                                   const std::vector<index_entry_t>& keys,
                                    Eigen::Matrix<Scalar, M, 1>* residual,
                                    Eigen::Matrix<Scalar, M, N>* jacobian, Sequence<S...>) {
     func(GetValue<S>(values, keys)..., residual, jacobian);
@@ -106,7 +119,7 @@ struct JacobianFuncValuesExtractor {
 
   template <int M, int N>
   inline static void Invoke(Functor func, const sym::Values<Scalar>& values,
-                            const std::vector<sym::Key>& keys,
+                            const std::vector<index_entry_t>& keys,
                             Eigen::Matrix<Scalar, M, 1>* residual,
                             Eigen::Matrix<Scalar, M, N>* jacobian) {
     InvokeAtRange(func, values, keys, residual, jacobian,
@@ -119,9 +132,9 @@ template <typename Scalar, typename Functor>
 Factor<Scalar> JacobianDynamic(Functor func, const std::vector<Key>& keys_to_func,
                                const std::vector<Key>& keys_to_optimize) {
   return Factor<Scalar>(
-      [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                           MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
-                           VectorX<Scalar>* rhs) {
+      [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+             VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
+             VectorX<Scalar>* rhs) {
         SYM_ASSERT(residual != nullptr);
         JacobianFuncValuesExtractor<Scalar, Functor>::Invoke(func, values, keys_to_func, residual,
                                                              jacobian);
@@ -146,7 +159,7 @@ Factor<Scalar> JacobianDynamic(Functor func, const std::vector<Key>& keys_to_fun
           (*rhs) = jacobian->transpose() * (*residual);
         }
       },
-      keys_to_optimize);
+      keys_to_func, keys_to_optimize);
 }
 
 /** Specialize the dispatch mechanism */
@@ -182,9 +195,9 @@ Factor<Scalar> JacobianFixed(Functor func, const std::vector<Key>& keys_to_func,
   constexpr int N = JacobianMat::ColsAtCompileTime;
 
   return Factor<Scalar>(
-      [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                           MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
-                           VectorX<Scalar>* rhs) {
+      [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+             VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
+             VectorX<Scalar>* rhs) {
         SYM_ASSERT(residual != nullptr);
         Eigen::Matrix<Scalar, M, 1> residual_fixed;
 
@@ -225,7 +238,7 @@ Factor<Scalar> JacobianFixed(Functor func, const std::vector<Key>& keys_to_func,
 
         (*residual) = residual_fixed;
       },
-      keys_to_optimize);
+      keys_to_func, keys_to_optimize);
 }
 
 /** Specialize the dispatch mechanism */
@@ -341,21 +354,21 @@ struct HessianFuncValuesExtractor {
   /** Pull out the arg given by Index from the Values. */
   template <int Index>
   inline static ArgType<Index> GetValue(const sym::Values<Scalar>& values,
-                                        const std::vector<sym::Key>& keys) {
+                                        const std::vector<index_entry_t>& keys) {
     return values.template At<ArgType<Index>>(keys[Index]);
   }
 
   /** Invokes the user function with the proper input args extracted from the Values. */
   template <int... S>
   inline static void InvokeAtRange(Functor func, const sym::Values<Scalar>& values,
-                                   const std::vector<sym::Key>& keys, ResidualVec* residual,
+                                   const std::vector<index_entry_t>& keys, ResidualVec* residual,
                                    JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs,
                                    Sequence<S...>) {
     func(GetValue<S>(values, keys)..., residual, jacobian, hessian, rhs);
   }
 
   inline static void Invoke(Functor func, const sym::Values<Scalar>& values,
-                            const std::vector<sym::Key>& keys, ResidualVec* residual,
+                            const std::vector<index_entry_t>& keys, ResidualVec* residual,
                             JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs) {
     InvokeAtRange(func, values, keys, residual, jacobian, hessian, rhs,
                   typename RangeGenerator<function_traits<Functor>::num_arguments - 4>::Range());
@@ -373,12 +386,13 @@ Factor<Scalar> HessianDynamic(Functor func, const std::vector<Key>& keys_to_func
   using HessianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::HessianMat;
 
   return Factor<Scalar>(
-      [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                           JacobianMat* jacobian, HessianMat* hessian, VectorX<Scalar>* rhs) {
+      [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+             VectorX<Scalar>* residual, JacobianMat* jacobian, HessianMat* hessian,
+             VectorX<Scalar>* rhs) {
         HessianFuncValuesExtractor<Scalar, Functor>::Invoke(func, values, keys_to_func, residual,
                                                             jacobian, hessian, rhs);
       },
-      keys_to_optimize);
+      keys_to_func, keys_to_optimize);
 }
 
 /** Specialize the dispatch mechanism */
@@ -406,9 +420,9 @@ Factor<Scalar> HessianFixedDense(Functor func, const std::vector<Key>& keys_to_f
   constexpr int N = JacobianMat::ColsAtCompileTime;
 
   return Factor<Scalar>(
-      [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                           MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
-                           VectorX<Scalar>* rhs) {
+      [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+             VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
+             VectorX<Scalar>* rhs) {
         Eigen::Matrix<Scalar, M, 1> residual_fixed;
         Eigen::Matrix<Scalar, M, N> jacobian_fixed;
         Eigen::Matrix<Scalar, N, N> hessian_fixed;
@@ -435,7 +449,7 @@ Factor<Scalar> HessianFixedDense(Functor func, const std::vector<Key>& keys_to_f
           (*rhs) = rhs_fixed;
         }
       },
-      keys_to_optimize);
+      keys_to_func, keys_to_optimize);
 }
 
 /** Specialize the dispatch mechanism */
@@ -462,8 +476,9 @@ Factor<Scalar> HessianFixedSparse(Functor func, const std::vector<Key>& keys_to_
   using RhsVec = typename HessianFuncValuesExtractor<Scalar, Functor>::RhsVec;
 
   return Factor<Scalar>(
-      [func, keys_to_func](const Values<Scalar>& values, VectorX<Scalar>* residual,
-                           JacobianMat* jacobian, HessianMat* hessian, VectorX<Scalar>* rhs) {
+      [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+             VectorX<Scalar>* residual, JacobianMat* jacobian, HessianMat* hessian,
+             VectorX<Scalar>* rhs) {
         ResidualVec residual_fixed;
         RhsVec rhs_fixed;
 
@@ -479,7 +494,7 @@ Factor<Scalar> HessianFixedSparse(Functor func, const std::vector<Key>& keys_to_
           (*rhs) = rhs_fixed;
         }
       },
-      keys_to_optimize);
+      keys_to_func, keys_to_optimize);
 }
 
 /** Specialize the dispatch mechanism */

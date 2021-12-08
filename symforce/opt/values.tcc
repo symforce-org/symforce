@@ -16,10 +16,10 @@ template <typename Scalar>
 template <typename T>
 T Values<Scalar>::At(const index_entry_t& entry) const {
   // Check the type
-  // TODO(hayk): Depend on fmtlib?
   const type_t type = StorageOps<T>::TypeEnum();
   if (entry.type != type) {
-    throw std::runtime_error("Mismatched types.");
+    throw std::runtime_error(
+        fmt::format("Mismatched types; index entry is type {}, T is {}", entry.type, type));
   }
 
   // Construct the object
