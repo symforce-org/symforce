@@ -32,6 +32,13 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(so.Key("a", 1), so.Key("a", 1))
             self.assertEqual(so.Key("a", 1, 2), so.Key("a", 1, 2))
 
+        with self.subTest(msg="Two keys with different fields are not equal"):
+            self.assertNotEqual(so.Key("a"), so.Key("b"))
+
+        with self.subTest(msg="A key is not equal to instances of other types"):
+            self.assertNotEqual(so.Key("a"), 1)
+            self.assertNotEqual("a", so.Key("a"))
+
         with self.subTest(msg="A key can be specified with keyword arguments"):
             self.assertEqual(so.Key("a"), so.Key(letter="a"))
             self.assertEqual(so.Key("a", 1), so.Key(letter="a", sub=1))

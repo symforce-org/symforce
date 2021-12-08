@@ -23,7 +23,10 @@ void AddKeyWrapper(py::module_ module) {
       .def_property_readonly("super", &sym::Key::Super)
       .def_static("with_super", &sym::Key::WithSuper, py::arg("key"), py::arg("super"))
       .def("get_lcm_type", &sym::Key::GetLcmType)
-      .def("__eq__", &sym::Key::operator==)
+      .def("__eq__",
+           [](const sym::Key& self, const py::object& other) {
+             return py::isinstance<sym::Key>(other) && self == other.cast<sym::Key>();
+           })
       .def("lexical_less_than", &sym::Key::LexicalLessThan)
       .def("__hash__", std::hash<sym::Key>{})
       .def("__repr__", [](const sym::Key& key) { return fmt::format("{}", key); });
