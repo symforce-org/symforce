@@ -20,29 +20,19 @@ all_reqs: reqs test_reqs docs_reqs
 reqs:
 	${PYTHON} -m pip install -r requirements.txt
 
-CPP_FILES_TO_FORMAT=$(shell find . -not -path "*/lcmtypes/*" -and -not -path "./third_party/*" \( \
-	-name "*.c" \
-	-o -name "*.cpp" \
-	-o -name "*.cxx" \
-	-o -name "*.h" \
-	-o -name "*.hpp" \
-	-o -name "*.hxx" \
-	-o -name "*.cu" \
-	-o -name "*.cuh" \
-	-o -name "*.cc" \
-	-o -name "*.tcc" \
-	\) )
+FIND_CPP_FILES_TO_FORMAT=find . -not -path "*/lcmtypes/*" -and -not -path "./third_party/*" \
+	-regextype posix-extended -regex ".*\.(h|cc|tcc)"
 
 # Format using black and clang-format
 BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "./third_party/*"
 format:
 	$(BLACK_CMD)
-	$(CPP_FORMAT) -i $(CPP_FILES_TO_FORMAT)
+	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) -i
 
 # Check formatting using black and clang-format - print diff, do not modify files
 check_format:
 	$(BLACK_CMD) --check --diff
-	$(foreach file, $(CPP_FILES_TO_FORMAT), $(CPP_FORMAT) $(file) | diff --unified $(file) - &&) true
+	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) --dry-run -Werror
 
 # Check type hints using mypy
 # NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
