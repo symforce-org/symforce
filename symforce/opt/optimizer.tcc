@@ -48,7 +48,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
 template <typename ScalarType, typename NonlinearSolverType>
 OptimizationStats<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Optimize(
     Values<Scalar>* const values, int num_iterations, bool populate_best_linearization) {
-  OptimizationStats<Scalar> stats;
+  OptimizationStats<Scalar> stats{};
   Optimize(values, num_iterations, populate_best_linearization, &stats);
   return stats;
 }
