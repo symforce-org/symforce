@@ -17,6 +17,8 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
   values.Set<double>('e', 1e-9);
 
+  sym::linearized_sparse_factor_t linearized_sparse_factor{};
+
   // Unary / v1 output with fixed size
   const sym::Factord unary_v1 = sym::Factord::Jacobian(
       [](double a, Eigen::Matrix<double, 1, 1>* res, Eigen::Matrix<double, 1, 1>* jac) {
@@ -129,6 +131,23 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
       {'x', 'y', 'z'});
   spdlog::info(ternary_v3.Linearize(values));
 
+  // This is not allowed, because we can't deduce the size the Rhs vector should be:
+  // Ternary / v3 output with fixed size, and a sparse jacobian
+  // const sym::Factord ternary_v3_sparse = sym::Factord::Jacobian(
+  //     [](double a, double b, double c, Eigen::Matrix<double, 3, 1>* res,
+  //        Eigen::SparseMatrix<double>* jac) {
+  //       (*res) << a * a, 2 * b, b + c;
+  //       jac->resize(3, 3);
+  //       jac->coeffRef(0, 0) = 2 * a;
+  //       jac->coeffRef(1, 1) = 2.0;
+  //       jac->coeffRef(2, 1) = 1.0;
+  //       jac->coeffRef(2, 2) = 1.0;
+  //       jac->makeCompressed();
+  //     },
+  //     {'x', 'y', 'z'});
+  // ternary_v3_sparse.Linearize(values, &linearized_sparse_factor);
+  // spdlog::info(linearized_sparse_factor);
+
   // Ternary / v3 output with dynamic size
   const sym::Factord ternary_v3_dyn = sym::Factord::Jacobian(
       [](double a, double b, double c, Eigen::VectorXd* res, Eigen::MatrixXd* jac) {
@@ -141,6 +160,22 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
       },
       {'x', 'y', 'z'});
   spdlog::info(ternary_v3_dyn.Linearize(values));
+
+  // Ternary / v3 output with dynamic size, and a sparse jacobian
+  const sym::Factord ternary_v3_dyn_sparse = sym::Factord::Jacobian(
+      [](double a, double b, double c, Eigen::VectorXd* res, Eigen::SparseMatrix<double>* jac) {
+        res->resize(3);
+        (*res) << a * a, 2 * b, b + c;
+        jac->resize(3, 3);
+        jac->coeffRef(0, 0) = 2 * a;
+        jac->coeffRef(1, 1) = 2.0;
+        jac->coeffRef(2, 1) = 1.0;
+        jac->coeffRef(2, 2) = 1.0;
+        jac->makeCompressed();
+      },
+      {'x', 'y', 'z'});
+  ternary_v3_dyn_sparse.Linearize(values, &linearized_sparse_factor);
+  spdlog::info(linearized_sparse_factor);
 
   // Unary with Rot3
   const sym::Factord unary_rot3 = sym::Factord::Jacobian(
@@ -202,6 +237,8 @@ TEST_CASE("Test hessian constructors", "[factors]") {
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.3, 0.5));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
   values.Set<double>('e', 1e-9);
+
+  sym::linearized_sparse_factor_t linearized_sparse_factor{};
 
   // Unary / v1 output with fixed size
   const sym::Factord unary_v1 = sym::Factord::Hessian(
@@ -381,6 +418,29 @@ TEST_CASE("Test hessian constructors", "[factors]") {
       {'x', 'y', 'z'});
   spdlog::info(ternary_v3.Linearize(values));
 
+  // Ternary / v3 output with fixed size, and a sparse jacobian and hessian
+  const sym::Factord ternary_v3_sparse = sym::Factord::Hessian(
+      [](double a, double b, double c, Eigen::Matrix<double, 3, 1>* res,
+         Eigen::SparseMatrix<double>* jac, Eigen::SparseMatrix<double>* hessian,
+         Eigen::Matrix<double, 3, 1>* rhs) {
+        (*res) << a * a, 2 * b, b + c;
+
+        jac->resize(3, 3);
+        jac->coeffRef(0, 0) = 2 * a;
+        jac->coeffRef(1, 1) = 2.0;
+        jac->coeffRef(2, 1) = 1.0;
+        jac->coeffRef(2, 2) = 1.0;
+        jac->makeCompressed();
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->selfadjointView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).selfadjointView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y', 'z'});
+  ternary_v3_sparse.Linearize(values, &linearized_sparse_factor);
+  spdlog::info(linearized_sparse_factor);
+
   // Ternary / v3 output with dynamic size
   const sym::Factord ternary_v3_dyn = sym::Factord::Hessian(
       [](double a, double b, double c, Eigen::VectorXd* res, Eigen::MatrixXd* jac,
@@ -399,6 +459,28 @@ TEST_CASE("Test hessian constructors", "[factors]") {
       },
       {'x', 'y', 'z'});
   spdlog::info(ternary_v3_dyn.Linearize(values));
+
+  // Ternary / v3 output with dynamic size, and a sparse jacobian and hessian
+  const sym::Factord ternary_v3_dyn_sparse = sym::Factord::Hessian(
+      [](double a, double b, double c, Eigen::VectorXd* res, Eigen::SparseMatrix<double>* jac,
+         Eigen::SparseMatrix<double>* hessian, Eigen::VectorXd* rhs) {
+        res->resize(3);
+        (*res) << a * a, 2 * b, b + c;
+        jac->resize(3, 3);
+        jac->coeffRef(0, 0) = 2 * a;
+        jac->coeffRef(1, 1) = 2.0;
+        jac->coeffRef(2, 1) = 1.0;
+        jac->coeffRef(2, 2) = 1.0;
+        jac->makeCompressed();
+
+        hessian->resize(jac->cols(), jac->cols());
+        hessian->selfadjointView<Eigen::Lower>() =
+            (jac->transpose() * (*jac)).selfadjointView<Eigen::Lower>();
+        (*rhs) = jac->transpose() * (*res);
+      },
+      {'x', 'y', 'z'});
+  ternary_v3_dyn_sparse.Linearize(values, &linearized_sparse_factor);
+  spdlog::info(linearized_sparse_factor);
 
   // Unary with Rot3
   const sym::Factord unary_rot3 = sym::Factord::Hessian(

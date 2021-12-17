@@ -170,27 +170,34 @@ template std::ostream& operator<<<float>(std::ostream& os, const sym::Factor<flo
 template std::ostream& operator<<<double>(std::ostream& os, const sym::Factor<double>& factor);
 
 // TODO(hayk): Why is this needed instead of being able to template operator<<?
-template <typename Scalar>
-std::ostream& PrintLinearizedFactor(
-    std::ostream& os, const typename sym::Factor<Scalar>::LinearizedDenseFactor& factor) {
+template <typename LinearizedFactorT>
+std::ostream& PrintLinearizedFactor(std::ostream& os, const LinearizedFactorT& factor) {
   std::vector<key_t> factor_keys;
   std::transform(factor.index.entries.begin(), factor.index.entries.end(),
                  std::back_inserter(factor_keys), [](const auto& entry) { return entry.key; });
   fmt::print(os,
-             "<LinearizedDenseFactor\n  keys: {{{}}}}\n  storage_dim: {}\n  tangent_dim: {}\n  "
+             "<{}\n  keys: {{{}}}\n  storage_dim: {}\n  tangent_dim: {}\n  "
              "residual: ({})\n  jacobian: ({})\n  error: "
              "{}\n>\n",
-             factor_keys, factor.index.storage_dim, factor.index.tangent_dim,
+             factor.getTypeName(), factor_keys, factor.index.storage_dim, factor.index.tangent_dim,
              factor.residual.transpose(), factor.jacobian, 0.5 * factor.residual.squaredNorm());
   return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factor_t& factor) {
-  return PrintLinearizedFactor<double>(os, factor);
+  return PrintLinearizedFactor(os, factor);
 }
 
 std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factorf_t& factor) {
-  return PrintLinearizedFactor<float>(os, factor);
+  return PrintLinearizedFactor(os, factor);
+}
+
+std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factor_t& factor) {
+  return PrintLinearizedFactor(os, factor);
+}
+
+std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factorf_t& factor) {
+  return PrintLinearizedFactor(os, factor);
 }
 
 }  // namespace sym

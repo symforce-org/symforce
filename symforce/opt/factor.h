@@ -27,6 +27,10 @@ struct linearized_sparse_factor_t {
   Eigen::SparseMatrix<double> jacobian;  // J
   Eigen::SparseMatrix<double> hessian;   // H, JtJ
   Eigen::VectorXd rhs;                   // Jtb
+
+  static constexpr const char* getTypeName() {
+    return "linearized_sparse_factor_t";
+  }
 };
 
 struct linearized_sparse_factorf_t {
@@ -36,6 +40,10 @@ struct linearized_sparse_factorf_t {
   Eigen::SparseMatrix<float> jacobian;  // J
   Eigen::SparseMatrix<float> hessian;   // H, JtJ
   Eigen::VectorXf rhs;                  // Jtb
+
+  static constexpr const char* getTypeName() {
+    return "linearized_sparse_factorf_t";
+  }
 };
 
 /**
@@ -312,6 +320,8 @@ std::ostream& operator<<(std::ostream& os, const sym::Factor<Scalar>& factor);
 //                          const typename sym::Factor<Scalar>::LinearizedDenseFactor& factor);
 std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factor_t& factor);
 std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factorf_t& factor);
+std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factor_t& factor);
+std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factorf_t& factor);
 
 }  // namespace sym
 
