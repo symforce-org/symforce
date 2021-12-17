@@ -1,3 +1,4 @@
+import dataclasses
 import math
 import numpy as np
 
@@ -6,6 +7,7 @@ import sym
 
 from symforce import typing as T
 from symforce.test_util import TestCase
+from symforce.opt import optimizer
 
 from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._index_entry_t import index_entry_t
@@ -570,6 +572,15 @@ class SymforceCCSymTest(TestCase):
             self.assertAlmostEqual(values.at(pi_key), math.pi)
 
             so.optimize(params=so.default_optimizer_params(), factors=[pi_factor], values=values)
+
+    def test_default_params_match(self) -> None:
+        """
+        Check that the default params in C++ and Python are the same
+        """
+        self.assertEqual(
+            so.default_optimizer_params(),
+            optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params())),
+        )
 
 
 if __name__ == "__main__":
