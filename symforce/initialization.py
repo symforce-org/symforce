@@ -3,6 +3,7 @@ Internal initialization code. Should not be called by users.
 """
 
 import contextlib
+import sys
 
 from symforce import logger
 from symforce import typing as T
@@ -249,6 +250,9 @@ def add_custom_methods(sympy_module: T.Type) -> None:
     def register(func: T.Callable) -> T.Callable:
         setattr(sympy_module, func.__name__, func)
         return func
+
+    # Should match C++ default epsilon in epsilon.h
+    sympy_module.default_epsilon = 10 * sys.float_info.epsilon
 
     @register
     def atan2_safe(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:

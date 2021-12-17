@@ -3,15 +3,15 @@ from symforce import cam
 from symforce.cam import LinearCameraCal
 from symforce import geo
 from symforce.geo import Pose3, Vector3
+from symforce.test_util import TestCase
+from symforce.type_helpers import deduce_input_types
 from symforce import typing as T
 from symforce.typing import Scalar
-from symforce.codegen.type_helper import deduce_input_types
-from symforce.test_util import TestCase
 
 
-class SymforceCodegenTypeHelperTest(TestCase):
+class SymforceTypeHelpersTest(TestCase):
     """
-    Test type_helper.py
+    Test type_helpers.py
     """
 
     def test_deduce_input_types(self) -> None:

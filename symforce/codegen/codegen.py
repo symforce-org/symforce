@@ -18,8 +18,8 @@ from symforce.values import Values
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
 from symforce.codegen import codegen_config
-from symforce.codegen import type_helper
 from symforce.codegen import types_package_codegen
+from symforce.type_helpers import symbolic_inputs
 
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -170,28 +170,14 @@ class Codegen:
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
         """
-        if input_types is None:
-            input_types = type_helper.deduce_input_types(func)
-
         if name is None:
             assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
             name = func.__name__
 
-        parameters = inspect.signature(func).parameters
-        # Formulate symbolic arguments to function
-        assert len(parameters) == len(input_types)
-        symbolic_args = []
-        inputs = Values()
-        for arg_parameter, arg_type in zip(parameters.values(), input_types):
-            if arg_parameter.kind in (
-                inspect.Parameter.POSITIONAL_ONLY,
-                inspect.Parameter.POSITIONAL_OR_KEYWORD,
-            ):
-                inputs[arg_parameter.name] = ops.StorageOps.symbolic(arg_type, arg_parameter.name)
-                symbolic_args.append(inputs[arg_parameter.name])
+        inputs = symbolic_inputs(func, input_types)
 
         # Run the symbolic arguments through the function and get the symbolic output expression(s)
-        res = func(*symbolic_args)
+        res = func(*inputs.values())
 
         if isinstance(res, tuple):
             # Function returns multiple objects
