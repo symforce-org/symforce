@@ -49,7 +49,7 @@ def tangent_jacobians_first_order(
         Returns a first order approximation to LieGroupOps.retract(v)
         """
         return StorageOps.from_storage(
-            type(a),
+            a,
             (geo.M(StorageOps.to_storage(a)) + LieGroupOps.storage_D_tangent(a) * v).to_storage(),
         )
 

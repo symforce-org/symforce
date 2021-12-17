@@ -163,14 +163,24 @@ def _flatten_storage_type_subs(
     """
     new_subs_dict = {}
     for key, value in subs_pairs:
-        if hasattr(key, "to_storage"):
-            new_keys = key.to_storage()
+        # Import these lazily, since initialization.py is imported from symforce/__init__.py
+        from symforce import ops
+        from symforce import python_util
+
+        if python_util.scalar_like(key):
+            assert python_util.scalar_like(value)
+            new_subs_dict[key] = value
+            continue
+
+        try:
+            new_keys = ops.StorageOps.to_storage(key)
+            new_values = ops.StorageOps.to_storage(value)
+        except NotImplementedError:
+            new_subs_dict[key] = value
+        else:
             assert type(key) == type(value)
-            new_values = value.to_storage()
             for new_key, new_value in zip(new_keys, new_values):
                 new_subs_dict[new_key] = new_value
-        else:
-            new_subs_dict[key] = value
     return new_subs_dict
 
 

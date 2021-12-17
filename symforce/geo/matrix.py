@@ -407,23 +407,18 @@ class Matrix(LieGroup):
         """
         Compute the jacobian with respect to the tangent space of X if tangent_space = True,
         otherwise returns the jacobian wih respect to the storage elements of X.
-
-        This overrides the sympy implementation so that we can construct jacobians with
-        respect to symforce objects.
         """
         assert self.cols == 1, "Jacobian is for column vectors."
 
-        # Compute jacobian wrt X storage
-        self_D_storage = Matrix(
-            [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in self.mat]
-        )
+        if tangent_space and not isinstance(X, Matrix):
+            # This imports geo, so lazily import here
+            from symforce import jacobian_helpers
 
-        if tangent_space:
-            # Return jacobian wrt X tangent space
-            return self_D_storage * ops.LieGroupOps.storage_D_tangent(X)
-
-        # Return jacobian wrt X storage
-        return self_D_storage
+            # This calls Matrix.jacobian, so don't call it if X is a Matrix to prevent recursion
+            return jacobian_helpers.tangent_jacobians(self, [X])[0]
+        else:
+            # Compute jacobian wrt X storage
+            return Matrix([[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in self.mat])
 
     def diff(self, *args: _T.Tuple[_T.Scalar]) -> Matrix:
         """
