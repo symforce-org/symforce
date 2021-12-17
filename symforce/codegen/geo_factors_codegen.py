@@ -122,7 +122,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             output_names=["res"],
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
-        ).with_linearization(name=f"between_factor_{cls.__name__.lower()}", which_args=[0, 1])
+        ).with_linearization(name=f"between_factor_{cls.__name__.lower()}", which_args=["a", "b"])
         files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
 
         prior_codegen = Codegen.function(
@@ -131,7 +131,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             output_names=["res"],
             config=CppConfig(),
             docstring=get_prior_docstring(),
-        ).with_linearization(name=f"prior_factor_{cls.__name__.lower()}", which_args=[0])
+        ).with_linearization(name=f"prior_factor_{cls.__name__.lower()}", which_args=["value"])
         files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
 
     return files_dict
@@ -207,32 +207,32 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         output_names=["res"],
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_R_b"),
-    ).with_linearization(name="between_factor_pose3_rotation", which_args=[0, 1])
+    ).with_linearization(name="between_factor_pose3_rotation", which_args=["a", "b"])
 
     between_position_codegen = Codegen.function(
         func=between_factor_pose3_position,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_t_b"),
-    ).with_linearization(name="between_factor_pose3_position", which_args=[0, 1])
+    ).with_linearization(name="between_factor_pose3_position", which_args=["a", "b"])
 
     between_translation_norm_codegen = Codegen.function(
         func=between_factor_pose3_translation_norm, output_names=["res"], config=CppConfig(),
-    ).with_linearization(name="between_factor_pose3_translation_norm", which_args=[0, 1])
+    ).with_linearization(name="between_factor_pose3_translation_norm", which_args=["a", "b"])
 
     prior_rotation_codegen = Codegen.function(
         func=prior_factor_pose3_rotation,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_prior_docstring(),
-    ).with_linearization(name="prior_factor_pose3_rotation", which_args=[0])
+    ).with_linearization(name="prior_factor_pose3_rotation", which_args=["value"])
 
     prior_position_codegen = Codegen.function(
         func=prior_factor_pose3_position,
         output_names=["res"],
         config=CppConfig(),
         docstring=get_prior_docstring(),
-    ).with_linearization(name="prior_factor_pose3_position", which_args=[0])
+    ).with_linearization(name="prior_factor_pose3_position", which_args=["value"])
 
     files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
     files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)

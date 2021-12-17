@@ -36,7 +36,7 @@ class SymGncCodegenTest(TestCase):
 
         # Compute code
         codegen.Codegen.function(func=barron_factor, config=codegen.CppConfig()).with_linearization(
-            which_args=[0]
+            which_args=["x"]
         ).generate_function(output_dir=output_dir, namespace=namespace)
 
         self.compare_or_update_directory(

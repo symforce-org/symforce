@@ -515,16 +515,16 @@ class SymforceCodegenTest(TestCase):
         codegens["all_jacs"] = codegen_function.with_jacobians(include_results=False)
 
         # First jacobian, no value - should return the jacobian
-        codegens["jac_0"] = codegen_function.with_jacobians([0], include_results=False)
+        codegens["jac_0"] = codegen_function.with_jacobians(["a"], include_results=False)
 
         # Second jacobian, no value - should return the jacobian
-        codegens["jac_1"] = codegen_function.with_jacobians([1], include_results=False)
+        codegens["jac_1"] = codegen_function.with_jacobians(["b"], include_results=False)
 
         # Value and first jacobian - should return the value
-        codegens["value_and_jac_0"] = codegen_function.with_jacobians([0], include_results=True)
+        codegens["value_and_jac_0"] = codegen_function.with_jacobians(["a"], include_results=True)
 
         # Value and second jacobian - should return the value
-        codegens["value_and_jac_1"] = codegen_function.with_jacobians([1], include_results=True)
+        codegens["value_and_jac_1"] = codegen_function.with_jacobians(["b"], include_results=True)
 
         # Generate all
         for codegen_function in codegens.values():
@@ -576,14 +576,14 @@ class SymforceCodegenTest(TestCase):
             dict(args=dict(include_results=False), return_key=None, outputs=4),
             # First jacobian for first output, no value - should return distance and jacobian as
             # output args
-            dict(args=dict(which_args=[0], include_results=False), return_key=None, outputs=2),
+            dict(args=dict(which_args=["a"], include_results=False), return_key=None, outputs=2),
             # Second jacobian for first output, no value - should return distance and jacobian as
             # output args
-            dict(args=dict(which_args=[1], include_results=False), return_key=None, outputs=2),
+            dict(args=dict(which_args=["b"], include_results=False), return_key=None, outputs=2),
             # Value and first jacobian for first output - should return the value
-            dict(args=dict(which_args=[0], include_results=True), return_key="cross", outputs=3),
+            dict(args=dict(which_args=["a"], include_results=True), return_key="cross", outputs=3),
             # Value and second jacobian for first output - should return the value
-            dict(args=dict(which_args=[1], include_results=True), return_key="cross", outputs=3),
+            dict(args=dict(which_args=["b"], include_results=True), return_key="cross", outputs=3),
         ]
 
         # -------------------------------------------------------------------
@@ -598,14 +598,14 @@ class SymforceCodegenTest(TestCase):
             dict(args=dict(include_results=False), return_key="cross", outputs=4),
             # First jacobian for second output, no value - should return cross, and jacobian as
             # output arg
-            dict(args=dict(which_args=[0], include_results=False), return_key="cross", outputs=2),
+            dict(args=dict(which_args=["a"], include_results=False), return_key="cross", outputs=2),
             # Second jacobian for second output, no value - should return cross, and jacobian as
             # output arg
-            dict(args=dict(which_args=[1], include_results=False), return_key="cross", outputs=2),
+            dict(args=dict(which_args=["b"], include_results=False), return_key="cross", outputs=2),
             # Value and first jacobian for second output - should return cross
-            dict(args=dict(which_args=[0], include_results=True), return_key="cross", outputs=3),
+            dict(args=dict(which_args=["a"], include_results=True), return_key="cross", outputs=3),
             # Value and second jacobian for second output - should return cross
-            dict(args=dict(which_args=[1], include_results=True), return_key="cross", outputs=3),
+            dict(args=dict(which_args=["b"], include_results=True), return_key="cross", outputs=3),
         ]
 
         # -------------------------------------------------------------------
@@ -617,13 +617,13 @@ class SymforceCodegenTest(TestCase):
             # All jacobians for both outputs, no values - should return jacobians as output args
             dict(args=dict(include_results=False), return_key=None, outputs=6),
             # First jacobian for both outputs, no values - should return jacobians as output args
-            dict(args=dict(which_args=[0], include_results=False), return_key=None, outputs=2),
+            dict(args=dict(which_args=["a"], include_results=False), return_key=None, outputs=2),
             # Second jacobian for both outputs, no values - should return jacobians as output args
-            dict(args=dict(which_args=[1], include_results=False), return_key=None, outputs=2),
+            dict(args=dict(which_args=["b"], include_results=False), return_key=None, outputs=2),
             # Value and first jacobian for both outputs - should return cross
-            dict(args=dict(which_args=[0], include_results=True), return_key="cross", outputs=4),
+            dict(args=dict(which_args=["a"], include_results=True), return_key="cross", outputs=4),
             # Value and second jacobian for both outputs - should return cross
-            dict(args=dict(which_args=[1], include_results=True), return_key="cross", outputs=4),
+            dict(args=dict(which_args=["b"], include_results=True), return_key="cross", outputs=4),
         ]
 
         specs = (

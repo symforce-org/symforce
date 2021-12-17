@@ -467,7 +467,7 @@ class Codegen:
 
     def _pick_name_for_function_with_derivatives(
         self,
-        which_args: T.Sequence[int],
+        which_args: T.Sequence[str],
         include_results: bool,
         linearization_mode: T.Optional[LinearizationMode],
     ) -> str:
@@ -490,13 +490,13 @@ class Codegen:
             if len(which_args) == len(self.inputs):
                 name += jacobians
             else:
-                name += jacobians + "".join(str(s) for s in which_args)
+                name += jacobians + "".join(str(self.inputs.keys().index(s)) for s in which_args)
 
         return name
 
     def with_linearization(
         self,
-        which_args: T.Sequence[int] = None,
+        which_args: T.Sequence[str] = None,
         include_result: bool = True,
         name: str = None,
         linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
@@ -515,7 +515,7 @@ class Codegen:
 
         Args:
             self: Existing codegen object that returns a single value
-            which_args: Indices of args for which to compute jacobians. If not given, uses all.
+            which_args: Names of args for which to compute jacobians. If not given, uses all.
             include_result: For the STACKED_JACOBIAN mode, whether we should still include the
                             result or only return the jacobian.  For the FULL_LINEARIZATION mode, we
                             always include the result (which is the residual).
@@ -528,7 +528,7 @@ class Codegen:
                                   matrices, as opposed to dense
         """
         if which_args is None:
-            which_args = list(range(len(list(self.inputs.keys()))))
+            which_args = self.inputs.keys()
 
         assert which_args, "Cannot compute a linearization with respect to 0 arguments"
 
@@ -547,14 +547,12 @@ class Codegen:
             # Remove return val line from docstring
             docstring_lines = docstring_lines[:-1]
 
-        all_input_args = list(self.inputs.items())
-        input_args = [all_input_args[arg_index] for arg_index in which_args]
-        jacobian = geo.Matrix.block_matrix(
-            [jacobian_helpers.tangent_jacobians(result, [arg for _, arg in input_args])]
-        )
+        input_args = [self.inputs[arg] for arg in which_args]
+        jacobian = geo.Matrix.block_matrix([jacobian_helpers.tangent_jacobians(result, input_args)])
 
         docstring_args = [
-            f"{arg_name} ({ops.LieGroupOps.tangent_dim(arg)})" for arg_name, arg in input_args
+            f"{arg_name} ({ops.LieGroupOps.tangent_dim(arg)})"
+            for arg_name, arg in zip(which_args, input_args)
         ]
 
         formatted_arg_list = "{} {}".format(
@@ -623,7 +621,7 @@ class Codegen:
 
     def with_jacobians(
         self,
-        which_args: T.Sequence[int] = None,
+        which_args: T.Sequence[str] = None,
         which_results: T.Sequence[int] = (0,),
         include_results: bool = True,
         name: str = None,
@@ -644,7 +642,7 @@ class Codegen:
 
         Args:
             self: Existing codegen object that return a single value
-            which_args: Indices of args for which to compute jacobians. If not given, uses all.
+            which_args: Names of args for which to compute jacobians. If not given, uses all.
             which_results: Indices of results for which to compute jacobians.  If not given, uses
                            the first result.
             include_results: Whether we should still return the values in addition to the
@@ -655,7 +653,7 @@ class Codegen:
             sparse_jacobians: Whether to output jacobians as sparse matrices, as opposed to dense
         """
         if which_args is None:
-            which_args = list(range(len(list(self.inputs.keys()))))
+            which_args = self.inputs.keys()
 
         assert which_args, "Cannot compute a linearization with respect to 0 arguments"
 
@@ -683,19 +681,16 @@ class Codegen:
                 del docstring_lines[index_from_back]
 
         # Add all the jacobians
-        all_input_args = list(self.inputs.items())
-        input_args = [all_input_args[arg_index] for arg_index in which_args]
+        input_args = [self.inputs[arg] for arg in which_args]
 
         all_outputs = list(self.outputs.items())
         all_jacobian_names = []
         for i in which_results:
             result_name, result = all_outputs[i]
 
-            arg_jacobians = jacobian_helpers.tangent_jacobians(
-                result, [arg for _, arg in input_args]
-            )
+            arg_jacobians = jacobian_helpers.tangent_jacobians(result, input_args)
 
-            for (arg_name, arg), arg_jacobian in zip(input_args, arg_jacobians):
+            for arg_name, arg, arg_jacobian in zip(which_args, input_args, arg_jacobians):
                 jacobian_name = f"{result_name}_D_{arg_name}"
                 outputs[jacobian_name] = arg_jacobian
                 all_jacobian_names.append(jacobian_name)

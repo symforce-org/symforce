@@ -16,6 +16,6 @@ def generate(output_dir: str) -> None:
 
     codegen.Codegen.function(
         func=custom_between_factor_residual, config=codegen.CppConfig()
-    ).with_linearization(which_args=[0, 1]).generate_function(
+    ).with_linearization(which_args=["nav_T_src", "nav_T_target"]).generate_function(
         output_dir=output_dir, namespace=namespace
     )
