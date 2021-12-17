@@ -63,7 +63,7 @@
  #}
 {%- macro get_return_type(spec) %}
     {%- if spec.outputs.keys() | length == 1 -%}
-        {%- set name, type = spec.outputs.items()[0] -%}
+        {%- set name, type = spec.outputs.items() | first -%}
         {{ format_typename(type, name, is_input=False) }}
     {%- elif spec.outputs -%}
         T.Tuple[

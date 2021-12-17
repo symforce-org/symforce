@@ -19,7 +19,7 @@ from .attr_accessor import AttrAccessor
 from .index_entry import IndexEntry
 
 
-class Values:
+class Values(T.MutableMapping[str, T.Any]):
     """
     Ordered dictionary serializable storage. This class is the basis for specifying both inputs
     and outputs in symforce. The hierarchy of nested values get code generated into types, and
@@ -57,23 +57,23 @@ class Values:
     # Dict API
     # -------------------------------------------------------------------------
 
-    def keys(self) -> T.List[str]:
+    def keys(self) -> T.KeysView[str]:
         """
         An object providing a view on contained keys.
         """
-        return list(self.dict.keys())
+        return self.dict.keys()
 
-    def values(self) -> T.List[T.Any]:
+    def values(self) -> T.ValuesView[T.Any]:
         """
         An object providing a view on contained values.
         """
-        return list(self.dict.values())
+        return self.dict.values()
 
-    def items(self) -> T.List[T.Tuple[str, T.Any]]:
+    def items(self) -> T.ItemsView[str, T.Any]:
         """
         An object providng a view on contained key/value pairs.
         """
-        return list(self.dict.items())
+        return self.dict.items()
 
     def get(self, key: str, default: T.Any = None) -> T.Any:
         """
@@ -88,13 +88,6 @@ class Values:
         """
         return self.dict.get(key, default)
 
-    def update(self, other: T.Union[Values, T.Mapping[str, T.Any]]) -> None:
-        """
-        Updates keys in this Values from those of the other.
-        """
-        for key, value in other.items():
-            self[key] = value
-
     def copy(self) -> Values:
         """
         Returns a deepcopy of this Values.
@@ -106,6 +99,13 @@ class Values:
         Return the number of elements in this Values
         """
         return len(self.dict)
+
+    # -------------------------------------------------------------------------
+    # Mapping API
+    # -------------------------------------------------------------------------
+
+    def __iter__(self) -> T.Iterator[str]:
+        return iter(self.keys_recursive())
 
     # -------------------------------------------------------------------------
     # Serialization
@@ -166,6 +166,7 @@ class Values:
         """
         flat_items: T.List[T.Tuple[str, T.Any]] = []
 
+        key_value_pairs: T.Iterable[T.Tuple[str, T.Any]]
         if isinstance(v, Values):
             key_value_pairs = v.items()
         else:
@@ -665,7 +666,10 @@ class Values:
                 item = item[i]
             del item[indices[-1]]
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, key: object) -> bool:
+        if not isinstance(key, str):
+            raise TypeError(f"key should be a string, instead got a {key} of type {type(key)}")
+
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
         if not indices:
             return values.dict.__contains__(key_name)

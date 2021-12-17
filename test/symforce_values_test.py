@@ -46,15 +46,15 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         keys = v.keys()
         self.assertEqual(len(keys), 2)
-        self.assertEqual(keys[0], "z")
+        self.assertEqual(next(iter(keys)), "z")
 
         values = v.values()
         self.assertEqual(len(values), 2)
-        self.assertEqual(values[0], 5)
+        self.assertEqual(next(iter(values)), 5)
 
         items = v.items()
         self.assertEqual(len(items), 2)
-        self.assertEqual(items[0], ("z", 5))
+        self.assertEqual(next(iter(items)), ("z", 5))
 
         self.assertEqual(v.get("bar"), "foo")
         self.assertEqual(v.get("baz"), None)

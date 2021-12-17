@@ -94,4 +94,4 @@ def symbolic_eval(func: T.Callable[..., _T]) -> _T:
     Returns:
         The outputs of `func` evaluated on the constructed symbolic args
     """
-    return func(**symbolic_inputs(func).dict)
+    return func(**symbolic_inputs(func))

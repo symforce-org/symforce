@@ -476,7 +476,8 @@ class Codegen:
             if len(which_args) == len(self.inputs):
                 name += jacobians
             else:
-                name += jacobians + "".join(str(self.inputs.keys().index(s)) for s in which_args)
+                inputs_keys = list(self.inputs.keys())
+                name += jacobians + "".join(str(inputs_keys.index(s)) for s in which_args)
 
         return name
 
@@ -514,7 +515,7 @@ class Codegen:
                                   matrices, as opposed to dense
         """
         if which_args is None:
-            which_args = self.inputs.keys()
+            which_args = list(self.inputs.keys())
 
         assert which_args, "Cannot compute a linearization with respect to 0 arguments"
 
@@ -639,7 +640,7 @@ class Codegen:
             sparse_jacobians: Whether to output jacobians as sparse matrices, as opposed to dense
         """
         if which_args is None:
-            which_args = self.inputs.keys()
+            which_args = list(self.inputs.keys())
 
         assert which_args, "Cannot compute a linearization with respect to 0 arguments"
 
@@ -655,7 +656,7 @@ class Codegen:
             outputs = Values()
 
             # Copy in results we're not differentiating
-            self_outputs_keys = self.outputs.keys()
+            self_outputs_keys = list(self.outputs.keys())
             for i in range(len(self.outputs)):
                 if i not in which_results:
                     outputs[self_outputs_keys[i]] = self.outputs[self_outputs_keys[i]]
