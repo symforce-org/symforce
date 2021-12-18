@@ -1,0 +1,8 @@
+// A set of LCM types to make it easy to serialize Eigen types and send them over LCM.
+// These are hand-written types that aren't included in the generated eigen_lcm.lcm
+
+package eigen_lcm;
+
+struct Matrix43f {
+  float data[12];
+};
