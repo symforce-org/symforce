@@ -10,9 +10,11 @@ pybind11_add_module(
   cc_values.cc
 )
 
-set_target_properties(cc_sym PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY ${PYTHON3_OUTPUT_PATH}
-)
+if(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH)
+  set_target_properties(cc_sym PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH}
+  )
+endif()
 
 target_link_libraries(
   cc_sym

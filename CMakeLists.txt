@@ -59,6 +59,10 @@ set(SYMFORCE_SYMENGINE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/symengine_inst
 
 set(SYMENGINEPY_INSTALL_ENV "" CACHE STRING "Options for symenginepy install step")
 
+set(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH "" CACHE PATH
+  "Location to place generated python extension modules"
+)
+
 # ==============================================================================
 # Setup
 # ==============================================================================
