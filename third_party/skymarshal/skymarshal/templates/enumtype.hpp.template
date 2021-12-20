@@ -76,7 +76,7 @@ class {{enumtype.name}}
          *
          * @param buf The buffer containing the encoded message.
          * @param offset The byte offset into @p buf where the encoded message starts.
-         * @param maxlen The maximum number of bytes to reqad while decoding.
+         * @param maxlen The maximum number of bytes to read while decoding.
          * @return The number of bytes decoded, or <0 if an error occured.
          */
         inline int decode(const void *buf, int offset, int maxlen);
