@@ -9,10 +9,10 @@ package codegen_cpp_test;
 struct values_vec_t {
   double x;
   double y;
-  double rot[4];
-  double rot_vec[3][4];
+  eigen_lcm.Vector4d rot;
+  eigen_lcm.Vector4d rot_vec[3];
   double scalar_vec[3];
-  double list_of_lists[3][3][4];
+  eigen_lcm.Vector4d list_of_lists[3][3];
 }
 
 struct constants_t {
@@ -20,5 +20,5 @@ struct constants_t {
 }
 
 struct states_t {
-  double p[2];
+  eigen_lcm.Vector2d p;
 }

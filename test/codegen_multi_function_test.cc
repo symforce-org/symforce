@@ -17,8 +17,8 @@ void FillChunkOfValues(T& values) {
   values.x = 2.0;
   values.y = -5.0;
 
-  const auto fill_rot = [&rot](double rot_to_fill[]) {
-    std::copy_n(rot.Data().data(), 4, &rot_to_fill[0]);
+  const auto fill_rot = [&rot](eigen_lcm::Vector4d& rot_to_fill) {
+    std::copy_n(rot.Data().data(), 4, rot_to_fill.data());
   };
 
   fill_rot(values.rot);

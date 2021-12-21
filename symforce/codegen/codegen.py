@@ -317,6 +317,7 @@ class Codegen:
             package_name=namespace,
             file_name=generated_file_name,
             values_indices=values_indices,
+            use_eigen_types=self.config.use_eigen_types,
             shared_types=shared_types,
             scalar_type=self.scalar_type,
             output_dir=output_dir,

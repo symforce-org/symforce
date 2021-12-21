@@ -20,11 +20,14 @@ all_reqs: reqs test_reqs docs_reqs
 reqs:
 	${PYTHON} -m pip install -r requirements.txt
 
-FIND_CPP_FILES_TO_FORMAT=find . -not -path "*/lcmtypes/*" -and -not -path "./third_party/*" \
+FIND_CPP_FILES_TO_FORMAT=find . \
+	-not -path "*/lcmtypes/*" \
+	-and -not -path "./third_party/*" \
+	-and -not -path "./build/*" \
 	-regextype posix-extended -regex ".*\.(h|cc|tcc)"
 
 # Format using black and clang-format
-BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "./third_party/*"
+BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "third_party/.*|build/.*"
 format:
 	$(BLACK_CMD)
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) -i
@@ -43,14 +46,16 @@ check_types:
 	$(MYPY_COMMAND) symforce $(shell find . \
 		\( -path ./symforce \
 		-o -path ./third_party \
+		-o -path ./build \
 		-o -path ./gen/python/setup.py \
 		-o -path ./test/symforce_function_codegen_test_data \
-		\) -prune -o -name "*.py" -print)
+		\) -prune -o -name "*.py" -print) \
+		--exclude "symforce/examples/.*/gen/python2\.7/lcmtypes"
 	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/sympy \
-		-path "*/lcmtypes/*" -prune -false \
+		-path "*/lcmtypes" -prune -false \
 		-o -name "*.py")
 	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/symengine \
-		-path "*/lcmtypes/*" -prune -false \
+		-path "*/lcmtypes" -prune -false \
 		-o -name "*.py")
 
 # Lint check for formatting and type hints

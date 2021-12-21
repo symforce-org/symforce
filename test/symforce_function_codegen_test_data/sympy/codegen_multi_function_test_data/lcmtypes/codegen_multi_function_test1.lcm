@@ -9,10 +9,10 @@ package codegen_multi_function_test;
 struct values_vec_t {
   double x;
   double y;
-  double rot[4];
-  double rot_vec[3][4];
+  eigen_lcm.Vector4d rot;
+  eigen_lcm.Vector4d rot_vec[3];
   double scalar_vec[3];
-  double list_of_lists[3][3][4];
+  eigen_lcm.Vector4d list_of_lists[3][3];
 }
 
 struct inputs_constants_t {
@@ -20,16 +20,16 @@ struct inputs_constants_t {
 }
 
 struct inputs_states_t {
-  double p[2];
+  eigen_lcm.Vector2d p;
 }
 
 struct inputs_t {
   double x;
   double y;
-  double rot[4];
-  double rot_vec[3][4];
+  eigen_lcm.Vector4d rot;
+  eigen_lcm.Vector4d rot_vec[3];
   double scalar_vec[3];
-  double list_of_lists[3][3][4];
+  eigen_lcm.Vector4d list_of_lists[3][3];
   values_vec_t values_vec[3];
   values_vec_t values_vec_2D[2][1];
   inputs_constants_t constants;

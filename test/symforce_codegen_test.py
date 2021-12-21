@@ -153,9 +153,19 @@ class SymforceCodegenTest(TestCase):
 
             geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
 
-            geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "sym"))
-            types_module = codegen_util.load_generated_package(
-                os.path.join(codegen_data["python_types_dir"], namespace)
+            geo_pkg = codegen_util.load_generated_package(
+                "sym", os.path.join(output_dir, "sym", "__init__.py")
+            )
+            values_vec_t = codegen_util.load_generated_lcmtype(
+                namespace, "values_vec_t", os.path.join(codegen_data["python_types_dir"])
+            )
+
+            states_t = codegen_util.load_generated_lcmtype(
+                namespace, "states_t", os.path.join(codegen_data["python_types_dir"])
+            )
+
+            constants_t = codegen_util.load_generated_lcmtype(
+                namespace, "constants_t", os.path.join(codegen_data["python_types_dir"])
             )
 
             x = 2.0
@@ -165,18 +175,20 @@ class SymforceCodegenTest(TestCase):
             scalar_vec = [1.0, 2.0, 3.0]
             list_of_lists = [rot_vec, rot_vec, rot_vec]
             values_vec = [
-                types_module.values_vec_t(),
-                types_module.values_vec_t(),
-                types_module.values_vec_t(),
+                values_vec_t(),
+                values_vec_t(),
+                values_vec_t(),
             ]
-            values_vec_2D = [[types_module.values_vec_t()], [types_module.values_vec_t()]]
+            values_vec_2D = [[values_vec_t()], [values_vec_t()]]
 
-            states = types_module.states_t()
+            states = states_t()
             states.p = [1.0, 2.0]
-            constants = types_module.constants_t()
+            constants = constants_t()
             constants.epsilon = 1e-8
 
-            gen_module = codegen_util.load_generated_package(codegen_data["python_function_dir"])
+            gen_module = codegen_util.load_generated_package(
+                namespace, codegen_data["python_function_dir"]
+            )
             # TODO(nathan): Split this test into several different functions
             (
                 foo,
@@ -236,7 +248,7 @@ class SymforceCodegenTest(TestCase):
         self.compare_or_update_file(expected_code_file, output_function)
 
         gen_module = codegen_util.load_generated_package(
-            numba_test_func_codegen_data["python_function_dir"]
+            "sym", numba_test_func_codegen_data["python_function_dir"]
         )
 
         x = np.array([1, 2, 3])

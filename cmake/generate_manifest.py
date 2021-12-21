@@ -27,7 +27,6 @@ REQUIRED_KEYS = (
     ("lcm_include_dirs", AllowedCount.MULTIPLE),
     ("spdlog_include_dirs", AllowedCount.MULTIPLE),
     ("catch2_include_dirs", AllowedCount.MULTIPLE),
-    ("lcm_gen_exe", AllowedCount.SINGLE),
     ("symenginepy_install_dir", AllowedCount.SINGLE),
 )
 

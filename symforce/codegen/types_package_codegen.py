@@ -14,6 +14,7 @@ def generate_types(
     package_name: str,
     file_name: str,
     values_indices: T.Mapping[str, T.Dict[str, IndexEntry]],
+    use_eigen_types: bool,
     shared_types: T.Mapping[str, str] = None,
     scalar_type: str = "double",
     output_dir: T.Optional[str] = None,
@@ -99,7 +100,7 @@ def generate_types(
                 data,
                 types_to_generate=types_to_generate,
                 types_util=types_util,
-                use_eigen_types=codegen_util.USE_SKYMARSHAL,
+                use_eigen_types=use_eigen_types,
             ),
         )
 

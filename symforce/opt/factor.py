@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import enum
 import numpy as np
+import uuid
 
 import cc_sym
 from symforce import codegen
@@ -100,12 +101,16 @@ class Factor:
         self.optimized_keys = optimized_keys
 
         inputs = list(self.codegen.inputs.keys())
+        namespace = f"factor_{uuid.uuid4().hex}"
         codegen_data = self.codegen.with_linearization(
             which_args=[inputs[i] for i, key in enumerate(self.keys) if key in self.optimized_keys]
-        ).generate_function()
+        ).generate_function(namespace=namespace)
         assert self.name is not None
         self.generated_residual = getattr(
-            codegen_util.load_generated_package(codegen_data["python_function_dir"]), self.name
+            codegen_util.load_generated_package(
+                f"{namespace}.{self.name}", codegen_data["python_function_dir"]
+            ),
+            self.name,
         )
         python_util.remove_if_exists(codegen_data["output_dir"])
 

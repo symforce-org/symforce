@@ -115,7 +115,7 @@ class SymforceGenCodegenTest(TestCase):
         python_util.execute_subprocess([current_python, generated_code_file])
 
         # Also hot load package directly in to this process
-        geo_pkg = codegen_util.load_generated_package(os.path.join(output_dir, "sym"))
+        geo_pkg = codegen_util.load_generated_package("sym", os.path.join(output_dir, "sym"))
 
         # Test something basic from the hot loaded package
         rot = geo_pkg.Rot3.from_tangent([math.pi / 2, 0, 0])

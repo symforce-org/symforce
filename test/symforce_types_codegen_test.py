@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from symforce import geo
 from symforce import sympy as sm
@@ -60,6 +61,7 @@ class SymforceTypesCodegenTest(TestCase):
             package_name=name,
             file_name=name,
             values_indices=dict(input=inputs.index(), output=outputs.index()),
+            use_eigen_types=True,
             shared_types=shared_types,
             scalar_type=scalar_type,
             output_dir=output_dir,
@@ -73,7 +75,10 @@ class SymforceTypesCodegenTest(TestCase):
         # Check generated files
         for typename in expected_types:
             python_gen_path = os.path.join(
-                codegen_data["python_types_dir"], codegen_data["package_name"], typename + ".py",
+                codegen_data["python_types_dir"],
+                "lcmtypes",
+                codegen_data["package_name"],
+                f"_{typename}.py",
             )
             cpp_gen_path = os.path.join(
                 codegen_data["output_dir"],
@@ -108,14 +113,15 @@ class SymforceTypesCodegenTest(TestCase):
             ),
         )
 
-        package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
-        package = codegen_util.load_generated_package(package_dir)
+        input_t = codegen_util.load_generated_lcmtype(
+            "vanilla", "input_t", codegen_data["python_types_dir"]
+        )
 
-        inp = package.input_t()
+        inp = input_t()
         inp.x = 1.2
         inp.y = 4.5
         inp.constants.epsilon = -2
-        inp2 = package.input_t.decode(inp.encode())
+        inp2 = input_t.decode(inp.encode())
         self.assertEqual(inp.x, inp2.x)
         self.assertEqual(inp.constants.epsilon, inp2.constants.epsilon)
 
@@ -145,14 +151,15 @@ class SymforceTypesCodegenTest(TestCase):
             expected_types=expected_types,
         )
 
-        package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
-        package = codegen_util.load_generated_package(package_dir)
+        foo_t = codegen_util.load_generated_lcmtype(
+            "renames", "foo_t", codegen_data["python_types_dir"]
+        )
 
-        inp = package.foo_t()
+        inp = foo_t()
         inp.x = 1.2
         inp.y = 4.5
         inp.constants.epsilon = -2
-        inp2 = package.foo_t.decode(inp.encode())
+        inp2 = foo_t.decode(inp.encode())
         self.assertEqual(inp.x, inp2.x)
         self.assertEqual(inp.constants.epsilon, inp2.constants.epsilon)
 
@@ -206,6 +213,7 @@ class SymforceTypesCodegenTest(TestCase):
             package_name="reuse",
             file_name="reuse",
             values_indices=dict(input=inputs.index(), output=outputs.index()),
+            use_eigen_types=True,
             shared_types=shared_types,
             scalar_type="double",
             output_dir=output_dir,
@@ -215,20 +223,25 @@ class SymforceTypesCodegenTest(TestCase):
 
         self.assertEqual(set(types_dict.keys()), {"input_t", "rot_t"})
 
-        package_dir = os.path.join(codegen_data["python_types_dir"], codegen_data["package_name"])
-        package = codegen_util.load_generated_package(package_dir)
+        rot_t = codegen_util.load_generated_lcmtype(
+            "reuse", "rot_t", codegen_data["python_types_dir"]
+        )
 
-        rot = package.rot_t()
+        input_t = codegen_util.load_generated_lcmtype(
+            "reuse", "input_t", codegen_data["python_types_dir"]
+        )
+
+        rot = rot_t()
         rot.id = 1
-        rot.R = geo.Rot3.identity().to_storage()
+        rot.R.data = geo.Rot3.identity().to_storage()
 
-        inp = package.input_t()
+        inp = input_t()
         inp.foo = 1.2
         inp.one = rot
         inp.two = rot
 
-        inp2 = package.input_t.decode(inp.encode())
-        self.assertNear(rot.R, inp2.two.R, places=9)
+        inp2 = input_t.decode(inp.encode())
+        self.assertNear(rot.R.data, inp2.two.R.data, places=9)
 
 
 if __name__ == "__main__":

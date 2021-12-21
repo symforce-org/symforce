@@ -1,7 +1,8 @@
-project(symforce)
 # NOTE(aaron): This is the minimum version for FetchContent, not sure if we need newer; certainly no
 # newer than 3.15 required
 cmake_minimum_required(VERSION 3.11)
+
+project(symforce)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -39,7 +40,14 @@ set(SYMFORCE_TIC_TOC_MACRO "" CACHE STRING
 # ------------------------------------------------------------------------------
 # LCM
 
-set(SYMFORCE_LCMGEN_PATH "" CACHE STRING "This should be the path to the lcm-gen executable")
+option(SYMFORCE_USE_EXTERNAL_LCM
+  "Use external LCM and generated bindings instead of generating them ourselves"
+  OFF
+)
+
+set(SYMFORCE_LCMTYPES_TARGET "" CACHE STRING
+  "If SYMFORCE_LCMTYPES_EXTERNAL is on, this should be the name of a target we can depend on to get the already generated LCM types"
+)
 
 # ------------------------------------------------------------------------------
 # Misc
@@ -236,6 +244,48 @@ endif(NOT SYMFORCE_BUILD_GEN_ONLY)
 # SymForce Targets
 # ==============================================================================
 
+if(SYMFORCE_USE_EXTERNAL_LCM)
+  add_library(symforce_lcmtypes_cpp INTERFACE)
+  target_link_libraries(symforce_lcmtypes_cpp ${SYMFORCE_LCMTYPES_TARGET})
+else()
+  include(third_party/skymarshal/cmake/skymarshal.cmake)
+
+  add_skymarshal_bindings(symforce_lcmtypes
+    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes
+    ${CMAKE_CURRENT_SOURCE_DIR}/lcmtypes
+  )
+
+  target_include_directories(symforce_lcmtypes_cpp
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen_lcm/lcmtypes/eigen_lcm_lcm/cpp
+  )
+
+  add_skymarshal_bindings(eigen_lcm
+    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen_lcm/lcmtypes
+    LANGUAGES python
+  )
+
+  add_custom_target(symforce_eigen_lcm_py ALL DEPENDS eigen_lcm_py)
+
+  file(WRITE
+    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/setup.py
+    "
+from setuptools import setup, find_packages
+setup(
+  name='lcmtypes',
+  version='0.1',
+  description='lcmtype python bindings (installed by SymForce)',
+  long_description='lcmtype python bindings (installed by SymForce)',
+  author='Skydio, Inc',
+  author_email='hayk@skydio.com',
+  license='None',
+  packages=find_packages(),
+  zip_safe=False,
+)
+    "
+  )
+endif()
+
 # ------------------------------------------------------------------------------
 # symforce_gen
 
@@ -247,7 +297,7 @@ add_library(
   ${SYMFORCE_GEN_SOURCES}
   ${SYMFORCE_GEN_HEADERS}
 )
-target_link_libraries(symforce_gen Eigen3::Eigen)
+target_link_libraries(symforce_gen Eigen3::Eigen symforce_lcmtypes_cpp)
 target_include_directories(
   symforce_gen
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gen/cpp
@@ -419,7 +469,6 @@ if(SYMFORCE_GENERATE_MANIFEST)
                                 --lcm_include_dirs "${CMAKE_CURRENT_SOURCE_DIR}/third_party/lcm"
                                 --spdlog_include_dirs "${spdlog_include_dirs}"
                                 --catch2_include_dirs "${catch2_include_dirs}"
-                                --lcm_gen_exe "${SYMFORCE_LCMGEN_PATH}"
                                 --symenginepy_install_dir "${SYMFORCE_SYMENGINE_INSTALL_PREFIX}"
                                 # TODO(aaron): Put this somewhere smarter
                                 --manifest_path ${CMAKE_CURRENT_SOURCE_DIR}/build/manifest.json
