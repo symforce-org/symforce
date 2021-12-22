@@ -90,12 +90,6 @@ class Rot3(LieGroup):
 
         Also flips the sign of the quaternion of w is negative, which makes sure
         that the resulting tangent vector has norm <= pi
-
-        See discussion:
-        ***REMOVED***
-        ***REMOVED***
-        ***REMOVED***
-        As well as symforce/notebooks/epsilon-sandbox.ipynb
         """
         w_positive = sm.Abs(self.q.w)
         w_safe = sm.Min(1 - epsilon, w_positive)
