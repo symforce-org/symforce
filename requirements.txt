@@ -1,10 +1,11 @@
 black==19.10b0
 breathe
 clang-format
+cython
 ipykernel
 Jinja2
 matplotlib
-mypy>=0.910
+mypy==0.910
 nbsphinx
 numpy
 sphinx_autodoc_typehints
