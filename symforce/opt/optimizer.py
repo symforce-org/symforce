@@ -107,7 +107,7 @@ class Optimizer:
         best_index: int
 
         def error(self) -> float:
-            return self.iteration_stats[self.best_index].error
+            return self.iteration_stats[self.best_index].new_error
 
     def __init__(
         self, factors: T.Sequence[Factor], optimized_keys: T.Set[str], params: Optimizer.Params
