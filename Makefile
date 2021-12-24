@@ -42,7 +42,9 @@ check_format:
 # See https://github.com/python/mypy/issues/8548
 # We don't need to run find on `symforce` because we know the whole thing is a package
 MYPY_COMMAND=$(PYTHON) -m mypy
+SYMFORCE_LCMTYPES_DIR ?= build/lcmtypes/python2.7
 check_types:
+	export SYMFORCE_LCMTYPES_DIR=$(SYMFORCE_LCMTYPES_DIR); \
 	$(MYPY_COMMAND) symforce $(shell find . \
 		\( -path ./symforce \
 		-o -path ./third_party \

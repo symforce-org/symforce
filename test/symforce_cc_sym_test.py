@@ -109,7 +109,7 @@ class SymforceCCSymTest(TestCase):
             values = so.Values()
             for rows in range(1, 10):
                 for cols in range(1, 10):
-                    matrix = [[0] * cols] * rows
+                    matrix = np.array([[0] * cols] * rows)
                     values.set(so.Key("l", rows, cols), matrix)
                     values.at(so.Key("l", rows, cols))
 
@@ -434,13 +434,10 @@ class SymforceCCSymTest(TestCase):
         )
 
         with self.subTest(msg="Can construct an Optimizer with or without default arguments"):
-            required_args = {
-                "params": so.default_optimizer_params(),
-                "factors": [pi_factor],
-            }
-            so.Optimizer(**required_args)
+            so.Optimizer(params=so.default_optimizer_params(), factors=[pi_factor])
             so.Optimizer(
-                **required_args,
+                params=so.default_optimizer_params(),
+                factors=[pi_factor],
                 epsilon=1e-6,
                 name="OptimizeTest",
                 keys=[],
@@ -532,8 +529,8 @@ class SymforceCCSymTest(TestCase):
 
             lin.set_initialized()
             self.assertIsInstance(lin.error(), T.Scalar)
-            self.assertIsInstance(lin.linear_error(x_update=[0.01]), T.Scalar)
-            lin.linear_error([0.01])
+            self.assertIsInstance(lin.linear_error(x_update=np.array([0.01])), T.Scalar)
+            lin.linear_error(np.array([0.01]))
 
         with self.subTest(msg="Optimizer.compute_all_covariances has been wrapped"):
             values = so.Values()

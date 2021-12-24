@@ -1,4 +1,5 @@
 import black
+import copy
 import os
 import pathlib
 
@@ -40,6 +41,15 @@ def format_py(file_contents: str) -> str:
     Autoformat a given Python file using black
     """
     return black.format_str(file_contents, mode=BLACK_FILE_MODE)
+
+
+def format_pyi(file_contents: str) -> str:
+    """
+    Autoformat a given Python interface file using black
+    """
+    mode = copy.copy(BLACK_FILE_MODE)
+    mode.is_pyi = True
+    return black.format_str(file_contents, mode=mode)
 
 
 def format_py_dir(dirname: str) -> None:

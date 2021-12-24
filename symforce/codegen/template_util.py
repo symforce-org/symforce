@@ -21,6 +21,7 @@ LCM_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "lcm_templates")
 class FileType(enum.Enum):
     CPP = enum.auto()
     PYTHON = enum.auto()
+    PYTHON_INTERFACE = enum.auto()
     CUDA = enum.auto()
     LCM = enum.auto()
     MAKEFILE = enum.auto()
@@ -34,6 +35,8 @@ class FileType(enum.Enum):
             return FileType.CUDA
         elif extension == "py":
             return FileType.PYTHON
+        elif extension == "pyi":
+            return FileType.PYTHON_INTERFACE
         elif extension == "lcm":
             return FileType.LCM
         elif extension == "Makefile":
@@ -134,6 +137,8 @@ def render_template(
         )
     elif filetype == FileType.PYTHON:
         rendered_str = format_util.format_py(rendered_str)
+    elif filetype == FileType.PYTHON_INTERFACE:
+        rendered_str = format_util.format_pyi(rendered_str)
 
     if output_path:
         directory = os.path.dirname(output_path)

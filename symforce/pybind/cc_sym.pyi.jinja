@@ -1,0 +1,12 @@
+{% for lcmtype_name in spec.lcm_include_type_names %}
+from lcmtypes.sym._{{ lcmtype_name }} import {{ lcmtype_name }}
+{% endfor %}
+
+{% for sym_type_name in spec.sym_include_type_names %}
+from sym import {{ sym_type_name }}
+{% endfor %}
+
+{% for include_stmt in spec.third_party_includes %}
+{{ include_stmt }}
+{% endfor %}
+{{ spec.cleaned_up_stubgen_output }}
