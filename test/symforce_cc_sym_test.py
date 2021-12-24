@@ -2,7 +2,7 @@ import dataclasses
 import math
 import numpy as np
 
-import cc_sym as so
+from symforce import cc_sym
 import sym
 
 from symforce import typing as T
@@ -30,24 +30,24 @@ class SymforceCCSymTest(TestCase):
             cc_sym.Key
         """
         with self.subTest(msg="Two keys with the same fields are equal"):
-            self.assertEqual(so.Key("a"), so.Key("a"))
-            self.assertEqual(so.Key("a", 1), so.Key("a", 1))
-            self.assertEqual(so.Key("a", 1, 2), so.Key("a", 1, 2))
+            self.assertEqual(cc_sym.Key("a"), cc_sym.Key("a"))
+            self.assertEqual(cc_sym.Key("a", 1), cc_sym.Key("a", 1))
+            self.assertEqual(cc_sym.Key("a", 1, 2), cc_sym.Key("a", 1, 2))
 
         with self.subTest(msg="Two keys with different fields are not equal"):
-            self.assertNotEqual(so.Key("a"), so.Key("b"))
+            self.assertNotEqual(cc_sym.Key("a"), cc_sym.Key("b"))
 
         with self.subTest(msg="A key is not equal to instances of other types"):
-            self.assertNotEqual(so.Key("a"), 1)
-            self.assertNotEqual("a", so.Key("a"))
+            self.assertNotEqual(cc_sym.Key("a"), 1)
+            self.assertNotEqual("a", cc_sym.Key("a"))
 
         with self.subTest(msg="A key can be specified with keyword arguments"):
-            self.assertEqual(so.Key("a"), so.Key(letter="a"))
-            self.assertEqual(so.Key("a", 1), so.Key(letter="a", sub=1))
-            self.assertEqual(so.Key("a", 1, 2), so.Key(letter="a", sub=1, super=2))
+            self.assertEqual(cc_sym.Key("a"), cc_sym.Key(letter="a"))
+            self.assertEqual(cc_sym.Key("a", 1), cc_sym.Key(letter="a", sub=1))
+            self.assertEqual(cc_sym.Key("a", 1, 2), cc_sym.Key(letter="a", sub=1, super=2))
 
         with self.subTest(msg="Accessors correctly return the fields"):
-            key = so.Key("a", 1, 2)
+            key = cc_sym.Key("a", 1, 2)
             self.assertEqual(key.letter, "a")
             self.assertEqual(key.sub, 1)
             self.assertEqual(key.super, 2)
@@ -56,8 +56,8 @@ class SymforceCCSymTest(TestCase):
             letter = "a"
             sub = 1
             superscript = 2
-            key_base = so.Key(letter=letter, sub=sub)
-            key_with_super = so.Key.with_super(key=key_base, super=superscript)
+            key_base = cc_sym.Key(letter=letter, sub=sub)
+            key_with_super = cc_sym.Key.with_super(key=key_base, super=superscript)
             self.assertEqual(key_with_super.letter, letter)
             self.assertEqual(key_with_super.sub, sub)
             self.assertEqual(key_with_super.super, superscript)
@@ -76,14 +76,14 @@ class SymforceCCSymTest(TestCase):
             for tuple1 in letter_sub_super_samples:
                 for tuple2 in letter_sub_super_samples:
                     self.assertEqual(
-                        so.Key(*tuple1).lexical_less_than(so.Key(*tuple2)), tuple1 < tuple2
+                        cc_sym.Key(*tuple1).lexical_less_than(cc_sym.Key(*tuple2)), tuple1 < tuple2
                     )
 
         with self.subTest(msg="cc_sym.Key.__hash__ is defined"):
-            hash(so.Key("a"))
+            hash(cc_sym.Key("a"))
 
         with self.subTest(msg="cc_sym.Key.get_lcm_type returns a key_t"):
-            self.assertIsInstance(so.Key("a").get_lcm_type(), key_t)
+            self.assertIsInstance(cc_sym.Key("a").get_lcm_type(), key_t)
 
     def test_values(self) -> None:
         """
@@ -100,71 +100,71 @@ class SymforceCCSymTest(TestCase):
 
         for tp in supported_types:
             with self.subTest(msg=f"Can set and retrieve {tp.__name__}"):
-                values = so.Values()
+                values = cc_sym.Values()
                 val = tp()
-                values.set(so.Key("v"), val)
-                self.assertEqual(values.at(so.Key("v")), val)
+                values.set(cc_sym.Key("v"), val)
+                self.assertEqual(values.at(cc_sym.Key("v")), val)
 
         with self.subTest(msg=f"Can set and at 9x9 matrices and smaller"):
-            values = so.Values()
+            values = cc_sym.Values()
             for rows in range(1, 10):
                 for cols in range(1, 10):
                     matrix = np.array([[0] * cols] * rows)
-                    values.set(so.Key("l", rows, cols), matrix)
-                    values.at(so.Key("l", rows, cols))
+                    values.set(cc_sym.Key("l", rows, cols), matrix)
+                    values.at(cc_sym.Key("l", rows, cols))
 
-                    values.set(so.Key("a", rows, cols), np.array(matrix))
-                    values.at(so.Key("a", rows, cols))
+                    values.set(cc_sym.Key("a", rows, cols), np.array(matrix))
+                    values.at(cc_sym.Key("a", rows, cols))
 
         with self.subTest(msg="at raises RuntimeError if no entry exists"):
             with self.assertRaises(RuntimeError):
-                so.Values().at(so.Key("a"))
+                cc_sym.Values().at(cc_sym.Key("a"))
 
         with self.subTest(msg="set returns true no value existed yet for the key"):
-            values = so.Values()
-            self.assertTrue(values.set(so.Key("a"), 1))
-            self.assertFalse(values.set(so.Key("a"), 2))
+            values = cc_sym.Values()
+            self.assertTrue(values.set(cc_sym.Key("a"), 1))
+            self.assertFalse(values.set(cc_sym.Key("a"), 2))
 
         with self.subTest(msg="has returns whether or not key is present in Values"):
-            values = so.Values()
-            key = so.Key("a")
+            values = cc_sym.Values()
+            key = cc_sym.Key("a")
             self.assertFalse(values.has(key))
             values.set(key, 1)
             self.assertTrue(values.has(key))
 
         with self.subTest(msg="test that Remove returns whether or not key to be removed existed"):
-            values = so.Values()
-            key = so.Key("a")
+            values = cc_sym.Values()
+            key = cc_sym.Key("a")
             self.assertFalse(values.remove(key))
             values.set(key, 3)
             self.assertTrue(values.remove(key))
 
         with self.subTest(msg="Test that remove is consistent with has"):
-            values = so.Values()
-            key = so.Key("a")
+            values = cc_sym.Values()
+            key = cc_sym.Key("a")
             values.set(key, 1)
             values.remove(key=key)
             self.assertFalse(values.has(key))
 
         with self.subTest(msg="num_entries returns the correct number of entries"):
-            values = so.Values()
+            values = cc_sym.Values()
             self.assertEqual(values.num_entries(), 0)
-            values.set(so.Key("a"), 1.2)
+            values.set(cc_sym.Key("a"), 1.2)
             self.assertEqual(values.num_entries(), 1)
-            values.remove(so.Key("a"))
+            values.remove(cc_sym.Key("a"))
             self.assertEqual(values.num_entries(), 0)
 
         with self.subTest(msg="Values.empty returns true if empty and false otherwise"):
-            values = so.Values()
+            values = cc_sym.Values()
             self.assertTrue(values.empty())
-            values.set(so.Key("a"), 1)
+            values.set(cc_sym.Key("a"), 1)
             self.assertFalse(values.empty())
 
         with self.subTest("Values.keys works correctly"):
-            values = so.Values()
-            a = so.Key("a")
-            a_1 = so.Key("a", 1)
-            b = so.Key("b")
+            values = cc_sym.Values()
+            a = cc_sym.Key("a")
+            a_1 = cc_sym.Key("a", 1)
+            b = cc_sym.Key("b")
             values.set(a_1, 1)
             values.set(b, 2)
             values.set(a, 3)
@@ -176,8 +176,8 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(3, len(keys_false))
 
         with self.subTest("Values.items returns a dict[Key, index_entry_t]"):
-            values = so.Values()
-            a = so.Key("a")
+            values = cc_sym.Values()
+            a = cc_sym.Key("a")
             values.set(a, 1)
             items = values.items()
             self.assertIsInstance(items, dict)
@@ -185,35 +185,35 @@ class SymforceCCSymTest(TestCase):
             self.assertIsInstance(items[a], index_entry_t)
 
         with self.subTest("Values.items and Values.at [index_entry_t version] work together"):
-            values = so.Values()
-            a = so.Key("a")
+            values = cc_sym.Values()
+            a = cc_sym.Key("a")
             values.set(a, 1)
             items = values.items()
             self.assertEqual(values.at(entry=items[a]), 1)
 
         with self.subTest("Values.data returns the correct value"):
-            values = so.Values()
-            values.set(so.Key("a"), 1)
-            values.set(so.Key("b"), 2)
+            values = cc_sym.Values()
+            values.set(cc_sym.Key("a"), 1)
+            values.set(cc_sym.Key("b"), 2)
             self.assertEqual(values.data(), [1, 2])
 
         with self.subTest(msg="Values.create_index returns an index_t"):
-            values = so.Values()
-            keys = [so.Key("a", i) for i in range(10)]
+            values = cc_sym.Values()
+            keys = [cc_sym.Key("a", i) for i in range(10)]
             for key in keys:
                 values.set(key, key.sub)
             self.assertIsInstance(values.create_index(keys=keys), index_t)
 
         with self.subTest(msg="Values.update_or_set works as expected"):
-            key_a = so.Key("a")
-            key_b = so.Key("b")
-            key_c = so.Key("c")
+            key_a = cc_sym.Key("a")
+            key_b = cc_sym.Key("b")
+            key_c = cc_sym.Key("c")
 
-            values_1 = so.Values()
+            values_1 = cc_sym.Values()
             values_1.set(key_a, 1)
             values_1.set(key_b, 2)
 
-            values_2 = so.Values()
+            values_2 = cc_sym.Values()
             values_2.set(key_b, 3)
             values_2.set(key_c, 4)
 
@@ -224,37 +224,37 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values_1.at(key_c), 4)
 
         with self.subTest(msg="Values.remove_all leaves a values as empty"):
-            values = so.Values()
+            values = cc_sym.Values()
             for i in range(4):
-                values.set(so.Key("a", i), i)
+                values.set(cc_sym.Key("a", i), i)
             values.remove_all()
             self.assertTrue(values.empty())
 
         with self.subTest(msg="Test that Values.cleanup is callable and returns correct output"):
-            values = so.Values()
-            values.set(so.Key("a"), 1)
-            values.set(so.Key("b"), 2)
-            values.remove(so.Key("a"))
+            values = cc_sym.Values()
+            values.set(cc_sym.Key("a"), 1)
+            values.set(cc_sym.Key("b"), 2)
+            values.remove(cc_sym.Key("a"))
             self.assertEqual(values.cleanup(), 1)
 
         for tp in supported_types:
             with self.subTest(msg=f"Can call set as a function of index_entry_t and {tp.__name__}"):
-                values = so.Values()
-                a = so.Key("a")
+                values = cc_sym.Values()
+                a = cc_sym.Key("a")
                 values.set(a, tp())
                 values.set(values.items()[a], tp())
 
         with self.subTest(msg="Test Values.update (since index overlaod) works as expected"):
-            key_a = so.Key("a")
-            key_b = so.Key("b")
-            key_c = so.Key("c")
+            key_a = cc_sym.Key("a")
+            key_b = cc_sym.Key("b")
+            key_c = cc_sym.Key("c")
 
-            values_1 = so.Values()
+            values_1 = cc_sym.Values()
             values_1.set(key_a, 1)
             values_1.set(key_b, 2)
             values_1.set(key_c, 3)
 
-            values_2 = so.Values()
+            values_2 = cc_sym.Values()
             values_2.set(key_a, 4)
             values_2.set(key_b, 5)
             values_2.set(key_c, 6)
@@ -266,16 +266,16 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values_1.at(key_c), 6)
 
         with self.subTest(msg="Test Values.update (two index overlaod) works as expected"):
-            key_a = so.Key("a")
-            key_b = so.Key("b")
-            key_c = so.Key("c")
+            key_a = cc_sym.Key("a")
+            key_b = cc_sym.Key("b")
+            key_c = cc_sym.Key("c")
 
-            values_1 = so.Values()
+            values_1 = cc_sym.Values()
             values_1.set(key_a, 1)
             values_1.set(key_b, 2)
             values_1.set(key_c, 3)
 
-            values_2 = so.Values()
+            values_2 = cc_sym.Values()
             values_2.set(key_b, 4)
             values_2.set(key_c, 5)
 
@@ -290,10 +290,10 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values_1.at(key_c), 5)
 
         with self.subTest(msg="Test that Values.retract works roughly"):
-            a = so.Key("a")
-            values_1 = so.Values()
+            a = cc_sym.Key("a")
+            values_1 = cc_sym.Values()
             values_1.set(a, 0)
-            values_2 = so.Values()
+            values_2 = cc_sym.Values()
             values_2.set(a, 0)
 
             values_2.retract(values_2.create_index([a]), [1], 1e-8)
@@ -301,25 +301,25 @@ class SymforceCCSymTest(TestCase):
             self.assertNotEqual(values_1, values_2)
 
         with self.subTest(msg="Test that Values.local_coordinates works roughly"):
-            a = so.Key("a")
-            values_1 = so.Values()
+            a = cc_sym.Key("a")
+            values_1 = cc_sym.Values()
             values_1.set(a, 0)
-            values_2 = so.Values()
+            values_2 = cc_sym.Values()
             values_2.set(a, 10)
             self.assertEqual(
                 values_2.local_coordinates(values_1, values_1.create_index([a]), 0), 10
             )
 
         with self.subTest(msg="Test that Values.get_lcm_type returns a values_t"):
-            v = so.Values()
-            v.set(so.Key("a", 1, 2), 10)
+            v = cc_sym.Values()
+            v.set(cc_sym.Key("a", 1, 2), 10)
             self.assertIsInstance(v.get_lcm_type(), values_t)
 
         with self.subTest(msg="Test the initializer from values_t"):
-            v = so.Values()
-            a = so.Key("a")
-            v.set(so.Key("a"), 1)
-            v_copy = so.Values(v.get_lcm_type())
+            v = cc_sym.Values()
+            a = cc_sym.Key("a")
+            v.set(cc_sym.Key("a"), 1)
+            v_copy = cc_sym.Values(v.get_lcm_type())
             self.assertTrue(v_copy.has(a))
             self.assertEqual(v_copy.at(a), v.at(a))
 
@@ -357,14 +357,14 @@ class SymforceCCSymTest(TestCase):
             cc_sym.Factor
         """
 
-        pi_key = so.Key("3", 1, 4)
-        pi_factor = so.Factor(
+        pi_key = cc_sym.Key("3", 1, 4)
+        pi_factor = cc_sym.Factor(
             hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
                 values.at(index_entries[0])
             ),
             keys=[pi_key],
         )
-        pi_jacobian_factor = so.Factor.jacobian(
+        pi_jacobian_factor = cc_sym.Factor.jacobian(
             jacobian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
                 values.at(index_entries[0])
             )[0:2],
@@ -372,7 +372,7 @@ class SymforceCCSymTest(TestCase):
         )
 
         with self.subTest(msg="Test that Factor.linearized_factor/linearize are wrapped"):
-            pi_values = so.Values()
+            pi_values = cc_sym.Values()
             eval_value = 3.0
             pi_values.set(pi_key, eval_value)
             self.assertIsInstance(pi_factor.linearized_factor(pi_values), linearized_dense_factor_t)
@@ -394,24 +394,24 @@ class SymforceCCSymTest(TestCase):
         """
 
         with self.subTest(msg="Can read and write to iterations field"):
-            stats = so.OptimizationStats()
+            stats = cc_sym.OptimizationStats()
             self.assertIsInstance(stats.iterations, list)
             stats.iterations = [optimization_iteration_t() for _ in range(5)]
 
         with self.subTest(msg="Can read and write to best_index and early_exited"):
-            stats = so.OptimizationStats()
+            stats = cc_sym.OptimizationStats()
             stats.best_index = stats.best_index
             stats.early_exited = stats.early_exited
 
         with self.subTest(msg="Can read and write to best_linearization"):
-            stats = so.OptimizationStats()
+            stats = cc_sym.OptimizationStats()
             stats.best_linearization = None
             self.assertIsNone(stats.best_linearization)
-            stats.best_linearization = so.Linearization()
-            self.assertIsInstance(stats.best_linearization, so.Linearization)
+            stats.best_linearization = cc_sym.Linearization()
+            self.assertIsInstance(stats.best_linearization, cc_sym.Linearization)
 
         with self.subTest(msg="get_lcm_type is wrapped"):
-            stats = so.OptimizationStats()
+            stats = cc_sym.OptimizationStats()
             self.assertIsInstance(stats.get_lcm_type(), optimization_stats_t)
 
     def test_optimizer(self) -> None:
@@ -423,10 +423,10 @@ class SymforceCCSymTest(TestCase):
         """
 
         with self.subTest(msg="Test that default_optimizer_params is wrapped"):
-            self.assertIsInstance(so.default_optimizer_params(), optimizer_params_t)
+            self.assertIsInstance(cc_sym.default_optimizer_params(), optimizer_params_t)
 
-        pi_key = so.Key("3", 1, 4)
-        pi_factor = so.Factor(
+        pi_key = cc_sym.Key("3", 1, 4)
+        pi_factor = cc_sym.Factor(
             hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
                 values.at(index_entries[0])
             ),
@@ -434,9 +434,9 @@ class SymforceCCSymTest(TestCase):
         )
 
         with self.subTest(msg="Can construct an Optimizer with or without default arguments"):
-            so.Optimizer(params=so.default_optimizer_params(), factors=[pi_factor])
-            so.Optimizer(
-                params=so.default_optimizer_params(),
+            cc_sym.Optimizer(params=cc_sym.default_optimizer_params(), factors=[pi_factor])
+            cc_sym.Optimizer(
+                params=cc_sym.default_optimizer_params(),
                 factors=[pi_factor],
                 epsilon=1e-6,
                 name="OptimizeTest",
@@ -445,10 +445,12 @@ class SymforceCCSymTest(TestCase):
                 check_derivatives=False,
             )
 
-        make_opt = lambda: so.Optimizer(params=so.default_optimizer_params(), factors=[pi_factor])
+        make_opt = lambda: cc_sym.Optimizer(
+            params=cc_sym.default_optimizer_params(), factors=[pi_factor]
+        )
 
         with self.subTest(msg="Optimizer.optimize has been wrapped"):
-            values = so.Values()
+            values = cc_sym.Values()
             values.set(pi_key, 3.0)
 
             opt = make_opt()
@@ -456,16 +458,17 @@ class SymforceCCSymTest(TestCase):
             # Testing the wrapping of overload
             # OptimizationStats<Scalar> Optimize(Values<Scalar>* values, int num_iterations = -1,
             #                                    bool populate_best_linearization = false);
-            self.assertIsInstance(opt.optimize(values=values), so.OptimizationStats)
+            self.assertIsInstance(opt.optimize(values=values), cc_sym.OptimizationStats)
             self.assertAlmostEqual(values.at(pi_key), math.pi)
 
             self.assertIsInstance(
-                opt.optimize(values=values, num_iterations=2), so.OptimizationStats
+                opt.optimize(values=values, num_iterations=2), cc_sym.OptimizationStats
             )
             self.assertIsInstance(
-                opt.optimize(values=values, populate_best_linearization=True), so.OptimizationStats
+                opt.optimize(values=values, populate_best_linearization=True),
+                cc_sym.OptimizationStats,
             )
-            self.assertIsInstance(opt.optimize(values, 2, True), so.OptimizationStats)
+            self.assertIsInstance(opt.optimize(values, 2, True), cc_sym.OptimizationStats)
 
             # Testing the wrapping of overload
             # void Optimize(Values<Scalar>* values, int num_iterations,
@@ -475,40 +478,40 @@ class SymforceCCSymTest(TestCase):
                     values=values,
                     num_iterations=2,
                     populate_best_linearization=False,
-                    stats=so.OptimizationStats(),
+                    stats=cc_sym.OptimizationStats(),
                 )
             )
-            self.assertIsNone(opt.optimize(values, 2, False, so.OptimizationStats(),))
+            self.assertIsNone(opt.optimize(values, 2, False, cc_sym.OptimizationStats(),))
 
             # Testing the wrapping of overload
             # void Optimize(Values<Scalar>* values, int num_iterations,
             #               OptimizationStats<Scalar>* stats);
             self.assertIsNone(
-                opt.optimize(values=values, num_iterations=2, stats=so.OptimizationStats())
+                opt.optimize(values=values, num_iterations=2, stats=cc_sym.OptimizationStats())
             )
-            self.assertIsNone(opt.optimize(values, 2, so.OptimizationStats()))
+            self.assertIsNone(opt.optimize(values, 2, cc_sym.OptimizationStats()))
 
             # Testing the wrapping of overlaod
             # void Optimize(Values<Scalar>* values, OptimizationStats<Scalar>* stats);
-            self.assertIsNone(opt.optimize(values=values, stats=so.OptimizationStats()))
-            self.assertIsNone(opt.optimize(values, so.OptimizationStats()))
+            self.assertIsNone(opt.optimize(values=values, stats=cc_sym.OptimizationStats()))
+            self.assertIsNone(opt.optimize(values, cc_sym.OptimizationStats()))
 
             # Testing that the passed in stats are actually modified
-            stats = so.OptimizationStats()
+            stats = cc_sym.OptimizationStats()
             self.assertEqual(len(stats.iterations), 0)
             opt.optimize(values=values, stats=stats)
             self.assertNotEqual(len(stats.iterations), 0)
 
         with self.subTest(msg="Optimizer.linearize has been wrapped"):
-            values = so.Values()
+            values = cc_sym.Values()
             values.set(pi_key, 2.0)
             opt = make_opt()
-            self.assertIsInstance(opt.linearize(values=values), so.Linearization)
+            self.assertIsInstance(opt.linearize(values=values), cc_sym.Linearization)
 
         with self.subTest(msg="The methods of Linearization have been wrapped"):
-            so.Linearization()
+            cc_sym.Linearization()
 
-            values = so.Values()
+            values = cc_sym.Values()
             values.set(pi_key, 3.0)
             opt = make_opt()
             lin = opt.linearize(values=values)
@@ -533,7 +536,7 @@ class SymforceCCSymTest(TestCase):
             lin.linear_error(np.array([0.01]))
 
         with self.subTest(msg="Optimizer.compute_all_covariances has been wrapped"):
-            values = so.Values()
+            values = cc_sym.Values()
             values.set(pi_key, 2.0)
             opt = make_opt()
             opt.optimize(values=values)
@@ -542,7 +545,7 @@ class SymforceCCSymTest(TestCase):
             )
 
         with self.subTest(msg="Optimizer.compute_covariances has been wrapped"):
-            values = so.Values()
+            values = cc_sym.Values()
             values.set(pi_key, 1.0)
             opt = make_opt()
             self.assertIsInstance(
@@ -555,27 +558,29 @@ class SymforceCCSymTest(TestCase):
 
         with self.subTest(msg="Optimizer.update_params is wrapped"):
             opt = make_opt()
-            opt.update_params(params=so.default_optimizer_params())
+            opt.update_params(params=cc_sym.default_optimizer_params())
 
         with self.subTest(msg="cc_sym.optimize is wrapped"):
-            values = so.Values()
+            values = cc_sym.Values()
             values.set(pi_key, 3.0)
-            so.optimize(
-                params=so.default_optimizer_params(),
+            cc_sym.optimize(
+                params=cc_sym.default_optimizer_params(),
                 factors=[pi_factor],
                 values=values,
                 epsilon=1e-9,
             )
             self.assertAlmostEqual(values.at(pi_key), math.pi)
 
-            so.optimize(params=so.default_optimizer_params(), factors=[pi_factor], values=values)
+            cc_sym.optimize(
+                params=cc_sym.default_optimizer_params(), factors=[pi_factor], values=values
+            )
 
     def test_default_params_match(self) -> None:
         """
         Check that the default params in C++ and Python are the same
         """
         self.assertEqual(
-            so.default_optimizer_params(),
+            cc_sym.default_optimizer_params(),
             optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params())),
         )
 

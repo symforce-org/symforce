@@ -28,6 +28,7 @@ REQUIRED_KEYS = (
     ("spdlog_include_dirs", AllowedCount.MULTIPLE),
     ("catch2_include_dirs", AllowedCount.MULTIPLE),
     ("symenginepy_install_dir", AllowedCount.SINGLE),
+    ("cc_sym_install_dir", AllowedCount.SINGLE),
 )
 
 

@@ -4,7 +4,7 @@ import enum
 import numpy as np
 import uuid
 
-import cc_sym
+from symforce import cc_sym
 from symforce import codegen
 from symforce.codegen import codegen_util
 from symforce import geo

@@ -67,7 +67,7 @@ set(SYMFORCE_SYMENGINE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/symengine_inst
 
 set(SYMENGINEPY_INSTALL_ENV "" CACHE STRING "Options for symenginepy install step")
 
-set(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH "" CACHE PATH
+set(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/pybind CACHE PATH
   "Location to place generated python extension modules"
 )
 
@@ -470,6 +470,7 @@ if(SYMFORCE_GENERATE_MANIFEST)
                                 --spdlog_include_dirs "${spdlog_include_dirs}"
                                 --catch2_include_dirs "${catch2_include_dirs}"
                                 --symenginepy_install_dir "${SYMFORCE_SYMENGINE_INSTALL_PREFIX}"
+                                --cc_sym_install_dir "${SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH}"
                                 # TODO(aaron): Put this somewhere smarter
                                 --manifest_path ${CMAKE_CURRENT_SOURCE_DIR}/build/manifest.json
     )

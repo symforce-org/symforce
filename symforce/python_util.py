@@ -138,7 +138,7 @@ def files_in_dir(dirname: T.Openable, relative: bool = False) -> T.Iterator[str]
     """
     Return a list of files in the given directory.
     """
-    for root, _, filenames in os.walk(str(dirname)):
+    for root, _, filenames in os.walk(os.fspath(dirname)):
         for filename in filenames:
             abspath = os.path.join(root, filename)
             if relative:

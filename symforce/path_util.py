@@ -56,3 +56,7 @@ def lcm_gen_exe() -> Path:
 
 def symenginepy_install_dir() -> Path:
     return _Manifest.get_entry("symenginepy_install_dir")
+
+
+def cc_sym_install_dir() -> Path:
+    return _Manifest.get_entry("cc_sym_install_dir")

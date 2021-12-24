@@ -9,7 +9,7 @@ from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.values import Values
-import cc_sym
+from symforce import cc_sym
 
 
 class Optimizer:
