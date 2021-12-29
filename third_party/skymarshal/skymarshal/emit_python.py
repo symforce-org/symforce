@@ -551,6 +551,10 @@ class PythonClass(StructBuilder):
 
         return code.getvalue().rstrip()
 
+    @property
+    def hashable(self):
+        return any(notation.name == "#hashable" for notation in self.struct.notations)
+
 
 class PyEnum(EnumBuilder):
     # TODO: Add unpacker support for enums, which should be pretty easy.

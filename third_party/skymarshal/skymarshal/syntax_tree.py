@@ -155,6 +155,7 @@ class Notation(AstNode):
                 NotationSpecProperty(name="allow_negative_enums", type="bool",),
             ],
         ),
+        "#hashable": NotationSpec(allowed={"struct"}, properties=[],),  # enums are always hashable
     }
 
     def __init__(self, name, properties, lineno):

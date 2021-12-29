@@ -70,8 +70,18 @@ class {{ lcmtype.name }}(object):
         return True
         {% endif %}
 
+{% if lcmtype.hashable %}
+    def __hash__(self):
+        # type: () -> int
+        return hash((
+            {% for member in lcmtype.members %}
+            self.{{member.name}},
+            {% endfor %}
+        ))
+{% else %}
     # Disallow hashing for python struct lcmtypes.
     __hash__ = None  # type: ignore
+{% endif %}
 
     def encode(self):
         # type: () -> bytes
