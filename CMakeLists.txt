@@ -53,7 +53,7 @@ set(SYMFORCE_LCMTYPES_TARGET "" CACHE STRING
 # Misc
 
 option(SYMFORCE_BUILD_STATIC_LIBRARIES
-  "Build libraries as static (symforce_opt_linear is always built as shared)"
+  "Build libraries as static (symforce_cholesky is always built as shared)"
   OFF
 )
 
