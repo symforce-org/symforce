@@ -12,7 +12,7 @@ from symforce import python_util
 
 class Matrix(LieGroup):
     """
-    Matrix type that inherits from the Sympy Matrix class. Care has been taken to allow this class
+    Matrix type that wraps the Sympy Matrix class. Care has been taken to allow this class
     to create fixed-size child classes like Matrix31. Anytime __new__ is called, the appropriate
     fixed size class is returned rather than the type of the arguments. The API is meant to parallel
     the way Eigen's C++ matrix classes work with dynamic and fixed sizes.
@@ -454,14 +454,19 @@ class Matrix(LieGroup):
             ret = self.__class__([[ret]])
         return ret
 
-    def cross(self, other: Vector3) -> Vector3:
+    # NOTE(aaron): We could annotate this as (self, Vector3) -> Vector3.  However, many operations
+    # on Matrix aren't shape-aware, e.g. *_join or matmul.  So it results in a lot of instances of
+    # mypy getting mad about calling this on a Matrix instead of the Vector3 subclass.  So just
+    # check the shape at runtime like we do for those other methods until mypy supports shapes
+    # nicely
+    def cross(self: MatrixT, other: MatrixT) -> Vector3:
         """
         Cross product.
         """
-        if self.shape != (3, 1):
+        if self.shape != (3, 1) or other.shape != (3, 1):
             raise TypeError(
-                "Cross can only be called on shape (3, 1), this matrix is shape {}".format(
-                    self.shape
+                "Cross can only be called on shape (3, 1), got matrices of shapes {} and {}".format(
+                    self.shape, other.shape
                 )
             )
 
@@ -507,6 +512,14 @@ class Matrix(LieGroup):
 
         # This sqrt can be near 0, if max_norm can be exactly 0
         return self * sm.Min(1, sm.sqrt(max_squared_norm / squared_norm))
+
+    def multiply_elementwise(self: MatrixT, rhs: MatrixT) -> MatrixT:
+        """
+        Do the elementwise multiplication between self and rhs, and return the result as a new
+        Matrix
+        """
+        assert self.shape == rhs.shape
+        return self.__class__(self.mat.multiply_elementwise(rhs.mat))
 
     def applyfunc(self: MatrixT, func: _T.Callable) -> MatrixT:
         """

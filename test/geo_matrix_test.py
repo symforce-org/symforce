@@ -317,6 +317,30 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
                     )
                 )
 
+    def test_multiply_elementwise(self) -> None:
+        """
+        Tests:
+            Matrix.multiply_elementwise
+        """
+        a = geo.M34()
+        a[0, 1] = 1
+        a[1, 0] = 2
+        a[2, 3] = 3
+
+        b = geo.M34()
+        b[1, 0] = 4
+        b[2, 3] = 5
+
+        expected_result = geo.M34()
+        expected_result[1, 0] = 2 * 4
+        expected_result[2, 3] = 3 * 5
+
+        self.assertEqual(a.multiply_elementwise(b), expected_result)
+
+        with self.assertRaises(AssertionError):
+            # This should fail mypy, since it's actually wrong
+            a.multiply_elementwise(geo.M43())  # type: ignore
+
 
 if __name__ == "__main__":
     TestCase.main()
