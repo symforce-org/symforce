@@ -752,26 +752,62 @@ class Values(T.MutableMapping[str, T.Any]):
         return self.from_storage(sm.simplify(sm.Matrix(self.to_storage())))
 
     @staticmethod
-    def _dataclasses_to_values(value: T.Any) -> T.Any:
+    def _apply_to_leaves(value: T.Any, func: T.Callable) -> T.Any:
+        """
+        Recursive implementation of `.apply_to_leaves`.
+        """
         if isinstance(value, Values):
-            return Values(**{k: Values._dataclasses_to_values(v) for k, v in value.items()})
+            return Values(**{k: Values._apply_to_leaves(v, func) for k, v in value.items()})
         elif isinstance(value, (list, tuple)):
-            return type(value)([Values._dataclasses_to_values(v) for v in value])
+            return type(value)([Values._apply_to_leaves(v, func) for v in value])
         elif isinstance(value, T.Dataclass):
             return Values(
                 **{
-                    field.name: Values._dataclasses_to_values(getattr(value, field.name))
+                    field.name: Values._apply_to_leaves(getattr(value, field.name), func)
                     for field in dataclasses.fields(value)
                 }
             )
         else:
-            return value
+            return func(value)
+
+    def apply_to_leaves(self, func: T.Callable[[T.Any], T.Any]) -> Values:
+        """
+        Apply the given function to each leaf node of the Values, and return
+        a new Values. This currently also converts any dataclasses to Values.
+        """
+        return Values._apply_to_leaves(value=self, func=func)
 
     def dataclasses_to_values(self) -> Values:
         """
         Recursively convert dataclasses to Values
         """
-        return Values._dataclasses_to_values(self)
+        return self.apply_to_leaves(lambda x: x)
+
+    def to_numerical(self) -> Values:
+        """
+        Convert any symbolic types in this Values to numerical quantities. This currently
+        also converts any dataclasses to Values.
+        """
+        import sym
+
+        def _leaf_to_numerical(value: T.Any) -> T.Any:
+            typename = type(value).__name__
+
+            # If the type exists in the generated sym module, convert to it
+            if hasattr(sym, typename):
+                sym_attr = getattr(sym, typename)
+                if isinstance(sym_attr, type):
+                    return T.cast(T.Any, sym_attr).from_storage(
+                        [float(v) for v in value.to_storage()]
+                    )
+
+            # Evaluate scalars
+            if isinstance(value, sm.Expr):
+                return float(value)
+
+            return value
+
+        return self.apply_to_leaves(_leaf_to_numerical)
 
 
 from symforce.ops.impl.class_lie_group_ops import ClassLieGroupOps

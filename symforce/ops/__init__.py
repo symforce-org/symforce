@@ -39,3 +39,13 @@ from symforce import typing as T
 from .impl.dataclass_storage_ops import DataclassStorageOps
 
 StorageOps.register(T.Dataclass, DataclassStorageOps)
+
+# TODO(hayk): Are these okay here or where can we put them? In theory we could just have this
+# be automatic that if the given type has the methods that it gets registered automatically.
+import sym
+from .impl.class_lie_group_ops import ClassLieGroupOps
+
+LieGroupOps.register(sym.Rot2, ClassLieGroupOps)
+LieGroupOps.register(sym.Rot3, ClassLieGroupOps)
+LieGroupOps.register(sym.Pose2, ClassLieGroupOps)
+LieGroupOps.register(sym.Pose3, ClassLieGroupOps)

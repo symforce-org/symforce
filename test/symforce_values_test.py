@@ -14,6 +14,8 @@ from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.values import Values
 
+import sym
+
 
 class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     """
@@ -610,6 +612,35 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         )
 
         self.assertEqual(values_no_dataclasses, values_no_dataclasses_expected)
+
+    def test_to_numerical(self) -> None:
+        """
+        Test that `Values.to_numerical()` works as expected to convert symbolic types
+        to python runtime types.
+        """
+        values = Values(
+            x=1.0,
+            y=sm.S(5.4),
+            z=sm.S.One,
+            foo=sm.sqrt(5),
+            R=geo.Rot3.from_yaw_pitch_roll(yaw=0.1, pitch=sm.S(3), roll=0),
+            sub_values=Values(hey=geo.Pose3.identity(), other=[sm.S(5.4), sm.sqrt(10)]),
+        )
+
+        expected_numerical_values = Values(
+            x=1.0,
+            y=5.4,
+            z=1.0,
+            foo=np.sqrt(5),
+            R=sym.Rot3.from_yaw_pitch_roll(yaw=0.1, pitch=3, roll=0),
+            sub_values=Values(hey=sym.Pose3.identity(), other=[5.4, np.sqrt(10)]),
+        )
+
+        # Make sure they match
+        diff = values.to_numerical().local_coordinates(
+            expected_numerical_values, epsilon=sm.default_epsilon
+        )
+        self.assertLess(geo.M(diff).norm(), 1e-10)
 
 
 if __name__ == "__main__":
