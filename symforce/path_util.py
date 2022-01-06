@@ -34,10 +34,6 @@ def eigen_include_dirs() -> T.List[Path]:
     return _Manifest.get_entries("eigen_include_dirs")
 
 
-def lcm_include_dirs() -> T.List[Path]:
-    return _Manifest.get_entries("lcm_include_dirs")
-
-
 def spdlog_include_dirs() -> T.List[Path]:
     return _Manifest.get_entries("spdlog_include_dirs")
 

@@ -466,7 +466,6 @@ if(SYMFORCE_GENERATE_MANIFEST)
     execute_process(
       COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_manifest.py
                                 --eigen_include_dirs "${eigen_include_dirs}"
-                                --lcm_include_dirs "${CMAKE_CURRENT_SOURCE_DIR}/third_party/lcm"
                                 --spdlog_include_dirs "${spdlog_include_dirs}"
                                 --catch2_include_dirs "${catch2_include_dirs}"
                                 --symenginepy_install_dir "${SYMFORCE_SYMENGINE_INSTALL_PREFIX}"

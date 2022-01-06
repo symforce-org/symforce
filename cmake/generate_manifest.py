@@ -24,7 +24,6 @@ class AllowedCount(enum.Enum):
 
 REQUIRED_KEYS = (
     ("eigen_include_dirs", AllowedCount.MULTIPLE),
-    ("lcm_include_dirs", AllowedCount.MULTIPLE),
     ("spdlog_include_dirs", AllowedCount.MULTIPLE),
     ("catch2_include_dirs", AllowedCount.MULTIPLE),
     ("symenginepy_install_dir", AllowedCount.SINGLE),
