@@ -63,6 +63,8 @@ class Factor:
             self.codegen = codegen.Codegen.function(
                 residual, name=name, config=codegen.PythonConfig()
             )
+            if self.name is None:
+                self.name = self.codegen.name
         else:
             if inputs is None or outputs is None:
                 raise ValueError
@@ -101,16 +103,19 @@ class Factor:
         self.optimized_keys = optimized_keys
 
         inputs = list(self.codegen.inputs.keys())
+        codegen_with_linearization = self.codegen.with_linearization(
+            which_args=[inputs[i] for i, key in enumerate(self.keys) if key in self.optimized_keys],
+        )
+
         namespace = f"factor_{uuid.uuid4().hex}"
-        codegen_data = self.codegen.with_linearization(
-            which_args=[inputs[i] for i, key in enumerate(self.keys) if key in self.optimized_keys]
-        ).generate_function(namespace=namespace)
-        assert self.name is not None
+        codegen_data = codegen_with_linearization.generate_function(namespace=namespace)
+
+        assert codegen_with_linearization.name is not None
         self.generated_residual = getattr(
             codegen_util.load_generated_package(
                 f"{namespace}.{self.name}", codegen_data["python_function_dir"]
             ),
-            self.name,
+            codegen_with_linearization.name,
         )
         python_util.remove_if_exists(codegen_data["output_dir"])
 

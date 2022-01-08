@@ -110,19 +110,34 @@ class Optimizer:
             return self.iteration_stats[self.best_index].new_error
 
     def __init__(
-        self, factors: T.Sequence[Factor], optimized_keys: T.Set[str], params: Optimizer.Params
+        self,
+        factors: T.Sequence[Factor],
+        optimized_keys: T.Collection[str],
+        params: Optimizer.Params = None,
     ):
         self.factors = factors
-        self.optimized_keys = optimized_keys
-        self.params = params
+
+        # Allow passing in any iterable of keys but check for uniqueness
+        self.optimized_keys = set(optimized_keys)
+        assert len(self.optimized_keys) == len(
+            optimized_keys
+        ), f"Duplicates in optimized keys: {optimized_keys}"
+
+        # Set default params if none given
+        if params is None:
+            self.params = Optimizer.Params()
+        else:
+            self.params = params
 
         self._initialized = False
 
+        # Create a mapping from python identifier string keys to fixed-size C++ Key objects
         # Initialize the keys map with the optimized keys, which are needed to construct the factors
         # This works because the factors maintain a reference to this, so everything is fine as long
         # as the unoptimized keys are also in here before we attempt to linearize any of the factors
         self._cc_keys_map = {key: cc_sym.Key("x", i) for i, key in enumerate(optimized_keys)}
 
+        # Construct the C++ optimizer
         self._cc_optimizer = cc_sym.Optimizer(
             optimizer_params_t(**dataclasses.asdict(self.params)),
             [factor.cc_factor(self.optimized_keys, self._cc_keys_map) for factor in self.factors],
@@ -149,7 +164,7 @@ class Optimizer:
             The optimization results, with additional stats and debug information.  See the
             `Optimizer.Result` documentation for more information
         """
-        initial_guess = initial_guess.dataclasses_to_values()
+        initial_guess = initial_guess.to_numerical()
 
         if not self._initialized:
             self._initialize(initial_guess)
@@ -158,7 +173,10 @@ class Optimizer:
         for key, cc_key in self._cc_keys_map.items():
             cc_values.set(cc_key, initial_guess[key])
 
-        stats = self._cc_optimizer.optimize(cc_values)
+        try:
+            stats = self._cc_optimizer.optimize(cc_values)
+        except ZeroDivisionError as ex:
+            raise ZeroDivisionError("ERROR: Division by zero - check your use of epsilon!") from ex
 
         optimized_values = Values(
             **{key: cc_values.at(self._cc_keys_map[key]) for key in initial_guess.keys_recursive()}
