@@ -2,6 +2,7 @@ black==19.10b0
 breathe
 clang-format
 cython
+graphviz
 ipykernel
 Jinja2
 matplotlib

@@ -1,0 +1,18 @@
+graph {
+	forcelabels=true
+	x0 [label="x0 : Rot3"]
+	x1 [label="x1 : Rot3"]
+	x2 [label="x2 : Rot3"]
+	factor_0 [height=0.15 shape=point xlabel="between (0)"]
+	factor_0 -- x0
+	factor_0 -- x1
+	factor_1 [height=0.15 shape=point xlabel="between (1)"]
+	factor_1 -- x1
+	factor_1 -- x2
+	factor_2 [height=0.15 shape=point xlabel="prior (2)"]
+	factor_2 -- x0
+	factor_3 [height=0.15 shape=point xlabel="prior (3)"]
+	factor_3 -- x1
+	factor_4 [height=0.15 shape=point xlabel="prior (4)"]
+	factor_4 -- x2
+}

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import enum
+import graphviz
 import numpy as np
+from pathlib import Path
 import uuid
 
 from symforce import cc_sym
@@ -76,6 +78,7 @@ class Factor:
                 inputs=inputs, outputs=outputs, name=self.name, config=codegen.PythonConfig(),
             )
 
+        # TODO(hayk): Should we convert to a set and make sure there were no duplicates?
         self.keys = keys
 
         self.generated_residual = None
@@ -155,3 +158,39 @@ class Factor:
             )
         else:
             raise NotImplementedError
+
+
+def visualize_factors(factors: T.Sequence[Factor], outfile: T.Openable = None) -> graphviz.Graph:
+    """
+    Construct a dot file of the factor graph given by the input set of factors.
+
+    Args:
+        factors: List of factors to visualize, including all mentioned keys
+        outfile: Output file, if given. Format is parsed from the extension.
+
+    Returns:
+        graph object
+    """
+    key_to_type: T.Dict[str, type] = {}
+    for factor in factors:
+        for key, value in zip(factor.keys, factor.codegen.inputs.values()):
+            key_to_type[key] = type(value)
+
+    dot = graphviz.Graph(engine="dot")
+    dot.attr(forcelabels="true")
+
+    for key, value_type in key_to_type.items():
+        dot.node(key, label=f"{key} : {value_type.__name__}")
+
+    for i, factor in enumerate(factors):
+        name = f"factor_{i}"
+        dot.node(name, xlabel=f"{factor.name} ({i})", shape="point", height="0.15")
+        for key in factor.keys:
+            dot.edge(name, key)
+
+    if outfile:
+        dot.render(
+            outfile=outfile, format=Path(outfile).suffix[1:], cleanup=True, overwrite_filepath=True
+        )
+
+    return dot
