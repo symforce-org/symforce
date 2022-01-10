@@ -65,26 +65,30 @@ class Pose3(LieGroup):
         return self.R.to_storage() + self.t.to_storage()
 
     @classmethod
-    def from_storage(cls, vec: T.Sequence[T.Scalar]) -> Pose3:
+    def from_storage(cls: T.Type[Pose3T], vec: T.Sequence[T.Scalar]) -> Pose3T:
         assert len(vec) == cls.storage_dim()
         return cls(
             R=Rot3.from_storage(vec[0 : Rot3.storage_dim()]),
             t=Vector3(*vec[Rot3.storage_dim() : Rot3.storage_dim() + 3]),
         )
 
+    @classmethod
+    def symbolic(cls: T.Type[Pose3T], name: str, **kwargs: T.Any) -> Pose3T:
+        return cls(R=Rot3.symbolic(f"{name}.R"), t=Vector3.symbolic(f"{name}.t"))
+
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
     # -------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls) -> Pose3:
+    def identity(cls: T.Type[Pose3T]) -> Pose3T:
         return cls(R=Rot3.identity(), t=Vector3.zero())
 
-    def compose(self, other: Pose3) -> Pose3:
+    def compose(self: Pose3T, other: Pose3T) -> Pose3T:
         assert isinstance(other, self.__class__)
         return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
 
-    def inverse(self) -> Pose3:
+    def inverse(self: Pose3T) -> Pose3T:
         so3_inv = self.R.inverse()
         return self.__class__(R=so3_inv, t=-(so3_inv * self.t))
 
@@ -97,18 +101,18 @@ class Pose3(LieGroup):
         return 6
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3:
+    def from_tangent(cls: T.Type[Pose3T], v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3T:
         R_tangent = (v[0], v[1], v[2])
         t_tangent_vector = Vector3(v[3], v[4], v[5])
 
         R = Rot3.from_tangent(R_tangent, epsilon=epsilon)
         return cls(R, t_tangent_vector)
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self: Pose3T, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         R_tangent = Vector3(self.R.to_tangent(epsilon=epsilon))
         return R_tangent.col_join(self.t).to_flat_list()
 
-    def storage_D_tangent(self) -> Matrix:
+    def storage_D_tangent(self: Pose3T) -> Matrix:
         """
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
@@ -118,7 +122,7 @@ class Pose3(LieGroup):
             [[storage_D_tangent_R, Matrix.zeros(4, 3)], [Matrix.zeros(3, 3), storage_D_tangent_t],]
         )
 
-    def tangent_D_storage(self) -> Matrix:
+    def tangent_D_storage(self: Pose3T) -> Matrix:
         """
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
@@ -132,8 +136,8 @@ class Pose3(LieGroup):
     # the Lie group as the product manifold of SO3 x R3 while leaving compose as normal
     # Pose3 composition.
 
-    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3:
-        return Pose3(
+    def retract(self: Pose3T, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3T:
+        return self.__class__(
             R=self.R.retract(vec[:3], epsilon=epsilon), t=self.t.retract(vec[3:], epsilon=epsilon)
         )
 
@@ -147,14 +151,14 @@ class Pose3(LieGroup):
     # -------------------------------------------------------------------------
 
     @T.overload
-    def __mul__(self, right: Pose3) -> Pose3:  # pragma: no cover
+    def __mul__(self: Pose3T, right: Pose3T) -> Pose3T:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, right: Vector3) -> Vector3:  # pragma: no cover
+    def __mul__(self: Pose3T, right: Vector3) -> Vector3:  # pragma: no cover
         pass
 
-    def __mul__(self, right: T.Union[Pose3, Vector3]) -> T.Union[Pose3, Vector3]:
+    def __mul__(self: Pose3T, right: T.Union[Pose3T, Vector3]) -> T.Union[Pose3T, Vector3]:
         """
         Left-multiply with a compatible quantity.
         """

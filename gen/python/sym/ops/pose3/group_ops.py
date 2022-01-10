@@ -50,14 +50,14 @@ class GroupOps(object):
         _tmp0 = -2 * _a[1] ** 2
         _tmp1 = 1 - 2 * _a[2] ** 2
         _tmp2 = 2 * _a[0]
-        _tmp3 = _a[1] * _tmp2
-        _tmp4 = 2 * _a[2]
-        _tmp5 = _a[3] * _tmp4
-        _tmp6 = 2 * _a[1] * _a[3]
-        _tmp7 = _a[2] * _tmp2
+        _tmp3 = _a[2] * _tmp2
+        _tmp4 = 2 * _a[3]
+        _tmp5 = _a[1] * _tmp4
+        _tmp6 = _a[1] * _tmp2
+        _tmp7 = _a[2] * _tmp4
         _tmp8 = -2 * _a[0] ** 2
-        _tmp9 = _a[3] * _tmp2
-        _tmp10 = _a[1] * _tmp4
+        _tmp9 = 2 * _a[1] * _a[2]
+        _tmp10 = _a[3] * _tmp2
 
         # Output terms
         _res = [0.0] * 7
@@ -65,9 +65,9 @@ class GroupOps(object):
         _res[1] = -_a[1]
         _res[2] = -_a[2]
         _res[3] = _a[3]
-        _res[4] = -_a[4] * (_tmp0 + _tmp1) - _a[5] * (_tmp3 + _tmp5) - _a[6] * (-_tmp6 + _tmp7)
-        _res[5] = -_a[4] * (_tmp3 - _tmp5) - _a[5] * (_tmp1 + _tmp8) - _a[6] * (_tmp10 + _tmp9)
-        _res[6] = -_a[4] * (_tmp6 + _tmp7) - _a[5] * (_tmp10 - _tmp9) - _a[6] * (_tmp0 + _tmp8 + 1)
+        _res[4] = -_a[4] * (_tmp0 + _tmp1) - _a[5] * (_tmp6 + _tmp7) - _a[6] * (_tmp3 - _tmp5)
+        _res[5] = -_a[4] * (_tmp6 - _tmp7) - _a[5] * (_tmp1 + _tmp8) - _a[6] * (_tmp10 + _tmp9)
+        _res[6] = -_a[4] * (_tmp3 + _tmp5) - _a[5] * (-_tmp10 + _tmp9) - _a[6] * (_tmp0 + _tmp8 + 1)
         return _res
 
     @staticmethod
@@ -81,17 +81,17 @@ class GroupOps(object):
         _b = b.data
 
         # Intermediate terms (11)
-        _tmp0 = -2 * _a[1] ** 2
-        _tmp1 = -2 * _a[2] ** 2
-        _tmp2 = 2 * _a[0] * _a[1]
-        _tmp3 = 2 * _a[3]
-        _tmp4 = _a[2] * _tmp3
-        _tmp5 = _a[1] * _tmp3
-        _tmp6 = 2 * _a[2]
-        _tmp7 = _a[0] * _tmp6
+        _tmp0 = -2 * _a[2] ** 2
+        _tmp1 = -2 * _a[1] ** 2
+        _tmp2 = 2 * _a[0]
+        _tmp3 = _a[2] * _tmp2
+        _tmp4 = 2 * _a[3]
+        _tmp5 = _a[1] * _tmp4
+        _tmp6 = _a[1] * _tmp2
+        _tmp7 = _a[2] * _tmp4
         _tmp8 = 1 - 2 * _a[0] ** 2
-        _tmp9 = _a[0] * _tmp3
-        _tmp10 = _a[1] * _tmp6
+        _tmp9 = 2 * _a[1] * _a[2]
+        _tmp10 = _a[3] * _tmp2
 
         # Output terms
         _res = [0.0] * 7
@@ -100,13 +100,13 @@ class GroupOps(object):
         _res[2] = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2]
         _res[3] = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3]
         _res[4] = (
-            _a[4] + _b[4] * (_tmp0 + _tmp1 + 1) + _b[5] * (_tmp2 - _tmp4) + _b[6] * (_tmp5 + _tmp7)
+            _a[4] + _b[4] * (_tmp0 + _tmp1 + 1) + _b[5] * (_tmp6 - _tmp7) + _b[6] * (_tmp3 + _tmp5)
         )
         _res[5] = (
-            _a[5] + _b[4] * (_tmp2 + _tmp4) + _b[5] * (_tmp1 + _tmp8) + _b[6] * (_tmp10 - _tmp9)
+            _a[5] + _b[4] * (_tmp6 + _tmp7) + _b[5] * (_tmp0 + _tmp8) + _b[6] * (-_tmp10 + _tmp9)
         )
         _res[6] = (
-            _a[6] + _b[4] * (-_tmp5 + _tmp7) + _b[5] * (_tmp10 + _tmp9) + _b[6] * (_tmp0 + _tmp8)
+            _a[6] + _b[4] * (_tmp3 - _tmp5) + _b[5] * (_tmp10 + _tmp9) + _b[6] * (_tmp1 + _tmp8)
         )
         return _res
 
@@ -121,26 +121,26 @@ class GroupOps(object):
         _b = b.data
 
         # Intermediate terms (20)
-        _tmp0 = -2 * _a[1] ** 2
-        _tmp1 = -2 * _a[2] ** 2
-        _tmp2 = _tmp0 + _tmp1 + 1
+        _tmp0 = -2 * _a[2] ** 2
+        _tmp1 = 1 - 2 * _a[1] ** 2
+        _tmp2 = _tmp0 + _tmp1
         _tmp3 = 2 * _a[0]
-        _tmp4 = _a[1] * _tmp3
-        _tmp5 = 2 * _a[2]
-        _tmp6 = _a[3] * _tmp5
-        _tmp7 = _tmp4 + _tmp6
-        _tmp8 = 2 * _a[1] * _a[3]
-        _tmp9 = _a[2] * _tmp3
-        _tmp10 = -_tmp8 + _tmp9
-        _tmp11 = 1 - 2 * _a[0] ** 2
-        _tmp12 = _tmp1 + _tmp11
-        _tmp13 = _tmp4 - _tmp6
+        _tmp4 = _a[2] * _tmp3
+        _tmp5 = 2 * _a[3]
+        _tmp6 = _a[1] * _tmp5
+        _tmp7 = _tmp4 - _tmp6
+        _tmp8 = _a[1] * _tmp3
+        _tmp9 = _a[2] * _tmp5
+        _tmp10 = _tmp8 + _tmp9
+        _tmp11 = -2 * _a[0] ** 2
+        _tmp12 = _tmp0 + _tmp11 + 1
+        _tmp13 = 2 * _a[1] * _a[2]
         _tmp14 = _a[3] * _tmp3
-        _tmp15 = _a[1] * _tmp5
-        _tmp16 = _tmp14 + _tmp15
-        _tmp17 = _tmp0 + _tmp11
-        _tmp18 = -_tmp14 + _tmp15
-        _tmp19 = _tmp8 + _tmp9
+        _tmp15 = _tmp13 + _tmp14
+        _tmp16 = _tmp8 - _tmp9
+        _tmp17 = _tmp1 + _tmp11
+        _tmp18 = _tmp13 - _tmp14
+        _tmp19 = _tmp4 + _tmp6
 
         # Output terms
         _res = [0.0] * 7
@@ -150,19 +150,19 @@ class GroupOps(object):
         _res[3] = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
         _res[4] = (
             -_a[4] * _tmp2
-            - _a[5] * _tmp7
-            - _a[6] * _tmp10
+            - _a[5] * _tmp10
+            - _a[6] * _tmp7
             + _b[4] * _tmp2
-            + _b[5] * _tmp7
-            + _b[6] * _tmp10
+            + _b[5] * _tmp10
+            + _b[6] * _tmp7
         )
         _res[5] = (
-            -_a[4] * _tmp13
+            -_a[4] * _tmp16
             - _a[5] * _tmp12
-            - _a[6] * _tmp16
-            + _b[4] * _tmp13
+            - _a[6] * _tmp15
+            + _b[4] * _tmp16
             + _b[5] * _tmp12
-            + _b[6] * _tmp16
+            + _b[6] * _tmp15
         )
         _res[6] = (
             -_a[4] * _tmp19
@@ -184,54 +184,54 @@ class GroupOps(object):
         _a = a.data
 
         # Intermediate terms (48)
-        _tmp0 = _a[1] ** 2
+        _tmp0 = _a[2] ** 2
         _tmp1 = 2 * _tmp0
         _tmp2 = -_tmp1
-        _tmp3 = _a[2] ** 2
+        _tmp3 = _a[1] ** 2
         _tmp4 = 2 * _tmp3
         _tmp5 = -_tmp4
         _tmp6 = 2 * _a[0]
-        _tmp7 = _a[1] * _tmp6
-        _tmp8 = 2 * _a[2]
-        _tmp9 = _a[3] * _tmp8
-        _tmp10 = _a[5] * (_tmp7 + _tmp9)
-        _tmp11 = 2 * _a[1] * _a[3]
-        _tmp12 = -_tmp11
-        _tmp13 = _a[2] * _tmp6
-        _tmp14 = _a[6] * (_tmp12 + _tmp13)
+        _tmp7 = _a[2] * _tmp6
+        _tmp8 = 2 * _a[3]
+        _tmp9 = _a[1] * _tmp8
+        _tmp10 = -_tmp9
+        _tmp11 = _a[6] * (_tmp10 + _tmp7)
+        _tmp12 = _a[1] * _tmp6
+        _tmp13 = _a[2] * _tmp8
+        _tmp14 = _a[5] * (_tmp12 + _tmp13)
         _tmp15 = _a[0] ** 2
         _tmp16 = 2 * _tmp15
         _tmp17 = 1 - _tmp16
-        _tmp18 = -_tmp9
-        _tmp19 = _a[4] * (_tmp18 + _tmp7)
-        _tmp20 = _a[3] * _tmp6
-        _tmp21 = _a[1] * _tmp8
-        _tmp22 = _a[6] * (_tmp20 + _tmp21)
-        _tmp23 = -_tmp20
-        _tmp24 = _a[5] * (_tmp21 + _tmp23)
-        _tmp25 = _a[4] * (_tmp11 + _tmp13)
+        _tmp18 = 2 * _a[1] * _a[2]
+        _tmp19 = _a[3] * _tmp6
+        _tmp20 = _a[6] * (_tmp18 + _tmp19)
+        _tmp21 = -_tmp13
+        _tmp22 = _a[4] * (_tmp12 + _tmp21)
+        _tmp23 = -_tmp19
+        _tmp24 = _a[5] * (_tmp18 + _tmp23)
+        _tmp25 = _a[4] * (_tmp7 + _tmp9)
         _tmp26 = _a[3] ** 2
         _tmp27 = -_tmp26
         _tmp28 = _tmp0 + _tmp27
         _tmp29 = -_tmp15
         _tmp30 = _tmp29 + _tmp3
         _tmp31 = _tmp28 + _tmp30
-        _tmp32 = -_tmp7
-        _tmp33 = _tmp32 + _tmp9
-        _tmp34 = -_tmp13
-        _tmp35 = _tmp12 + _tmp34
-        _tmp36 = _tmp18 + _tmp32
-        _tmp37 = -_tmp0
-        _tmp38 = _tmp15 + _tmp27 + _tmp3 + _tmp37
-        _tmp39 = -_tmp21
-        _tmp40 = _tmp20 + _tmp39
-        _tmp41 = _tmp11 + _tmp34
-        _tmp42 = _tmp23 + _tmp39
-        _tmp43 = -_tmp3
-        _tmp44 = _tmp15 + _tmp43
-        _tmp45 = _tmp28 + _tmp44
-        _tmp46 = _tmp1 - 1
-        _tmp47 = _tmp26 + _tmp37
+        _tmp32 = -_tmp12
+        _tmp33 = _tmp13 + _tmp32
+        _tmp34 = -_tmp7
+        _tmp35 = _tmp10 + _tmp34
+        _tmp36 = _tmp21 + _tmp32
+        _tmp37 = -_tmp3
+        _tmp38 = _tmp15 + _tmp37
+        _tmp39 = _tmp28 + _tmp38
+        _tmp40 = -_tmp18
+        _tmp41 = _tmp19 + _tmp40
+        _tmp42 = _tmp34 + _tmp9
+        _tmp43 = _tmp23 + _tmp40
+        _tmp44 = -_tmp0
+        _tmp45 = _tmp15 + _tmp27 + _tmp3 + _tmp44
+        _tmp46 = _tmp26 + _tmp44
+        _tmp47 = _tmp16 - 1
 
         # Output terms
         _res = [0.0] * 7
@@ -239,9 +239,9 @@ class GroupOps(object):
         _res[1] = -_a[1]
         _res[2] = -_a[2]
         _res[3] = _a[3]
-        _res[4] = -_a[4] * (_tmp2 + _tmp5 + 1) - _tmp10 - _tmp14
-        _res[5] = -_a[5] * (_tmp17 + _tmp5) - _tmp19 - _tmp22
-        _res[6] = -_a[6] * (_tmp17 + _tmp2) - _tmp24 - _tmp25
+        _res[4] = -_a[4] * (_tmp2 + _tmp5 + 1) - _tmp11 - _tmp14
+        _res[5] = -_a[5] * (_tmp17 + _tmp2) - _tmp20 - _tmp22
+        _res[6] = -_a[6] * (_tmp17 + _tmp5) - _tmp24 - _tmp25
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = _tmp31
         _res_D_a[0, 1] = _tmp33
@@ -250,180 +250,180 @@ class GroupOps(object):
         _res_D_a[0, 4] = 0
         _res_D_a[0, 5] = 0
         _res_D_a[1, 0] = _tmp36
-        _res_D_a[1, 1] = _tmp38
-        _res_D_a[1, 2] = _tmp40
+        _res_D_a[1, 1] = _tmp39
+        _res_D_a[1, 2] = _tmp41
         _res_D_a[1, 3] = 0
         _res_D_a[1, 4] = 0
         _res_D_a[1, 5] = 0
-        _res_D_a[2, 0] = _tmp41
-        _res_D_a[2, 1] = _tmp42
+        _res_D_a[2, 0] = _tmp42
+        _res_D_a[2, 1] = _tmp43
         _res_D_a[2, 2] = _tmp45
         _res_D_a[2, 3] = 0
         _res_D_a[2, 4] = 0
         _res_D_a[2, 5] = 0
         _res_D_a[3, 0] = 0
-        _res_D_a[3, 1] = -_a[4] * _tmp35 - _a[5] * _tmp40 - _a[6] * _tmp45
-        _res_D_a[3, 2] = -_a[5] * (_tmp0 + _tmp26 + _tmp29 + _tmp43) - _tmp19 - _tmp22
-        _res_D_a[3, 3] = _tmp4 + _tmp46
+        _res_D_a[3, 1] = -_a[4] * _tmp35 - _a[5] * _tmp41 - _a[6] * _tmp45
+        _res_D_a[3, 2] = -_a[5] * (_tmp30 + _tmp46) - _tmp20 - _tmp22
+        _res_D_a[3, 3] = _tmp1 + _tmp4 - 1
         _res_D_a[3, 4] = _tmp36
-        _res_D_a[3, 5] = _tmp41
-        _res_D_a[4, 0] = -_a[6] * (_tmp30 + _tmp47) - _tmp24 - _tmp25
+        _res_D_a[3, 5] = _tmp42
+        _res_D_a[4, 0] = -_a[6] * (_tmp0 + _tmp26 + _tmp29 + _tmp37) - _tmp24 - _tmp25
         _res_D_a[4, 1] = 0
-        _res_D_a[4, 2] = -_a[4] * _tmp31 - _a[5] * _tmp36 - _a[6] * _tmp41
+        _res_D_a[4, 2] = -_a[4] * _tmp31 - _a[5] * _tmp36 - _a[6] * _tmp42
         _res_D_a[4, 3] = _tmp33
-        _res_D_a[4, 4] = _tmp16 + _tmp4 - 1
-        _res_D_a[4, 5] = _tmp42
-        _res_D_a[5, 0] = -_a[4] * _tmp33 - _a[5] * _tmp38 - _a[6] * _tmp42
-        _res_D_a[5, 1] = -_a[4] * (_tmp44 + _tmp47) - _tmp10 - _tmp14
+        _res_D_a[4, 4] = _tmp1 + _tmp47
+        _res_D_a[4, 5] = _tmp43
+        _res_D_a[5, 0] = -_a[4] * _tmp33 - _a[5] * _tmp39 - _a[6] * _tmp43
+        _res_D_a[5, 1] = -_a[4] * (_tmp38 + _tmp46) - _tmp11 - _tmp14
         _res_D_a[5, 2] = 0
         _res_D_a[5, 3] = _tmp35
-        _res_D_a[5, 4] = _tmp40
-        _res_D_a[5, 5] = _tmp16 + _tmp46
+        _res_D_a[5, 4] = _tmp41
+        _res_D_a[5, 5] = _tmp4 + _tmp47
         return _res, _res_D_a
 
     @staticmethod
     def compose_with_jacobians(a, b):
         # type: (sym.Pose3, sym.Pose3) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
 
-        # Total ops: 363
+        # Total ops: 362
 
         # Input arrays
         _a = a.data
         _b = b.data
 
         # Intermediate terms (132)
-        _tmp0 = _a[1] * _b[2]
+        _tmp0 = _a[2] * _b[1]
         _tmp1 = _a[0] * _b[3]
-        _tmp2 = _a[3] * _b[0]
-        _tmp3 = _a[2] * _b[1]
-        _tmp4 = _tmp0 + _tmp1 + _tmp2 - _tmp3
-        _tmp5 = _a[1] * _b[3]
-        _tmp6 = _a[0] * _b[2]
-        _tmp7 = _a[3] * _b[1]
+        _tmp2 = _a[1] * _b[2]
+        _tmp3 = _a[3] * _b[0]
+        _tmp4 = -_tmp0 + _tmp1 + _tmp2 + _tmp3
+        _tmp5 = _a[3] * _b[1]
+        _tmp6 = _a[1] * _b[3]
+        _tmp7 = _a[0] * _b[2]
         _tmp8 = _a[2] * _b[0]
-        _tmp9 = _tmp5 - _tmp6 + _tmp7 + _tmp8
-        _tmp10 = _a[1] * _b[0]
-        _tmp11 = _a[0] * _b[1]
+        _tmp9 = _tmp5 + _tmp6 - _tmp7 + _tmp8
+        _tmp10 = _a[0] * _b[1]
+        _tmp11 = _a[2] * _b[3]
         _tmp12 = _a[3] * _b[2]
-        _tmp13 = _a[2] * _b[3]
-        _tmp14 = -_tmp10 + _tmp11 + _tmp12 + _tmp13
-        _tmp15 = _a[3] * _b[3]
-        _tmp16 = _a[1] * _b[1]
+        _tmp13 = _a[1] * _b[0]
+        _tmp14 = _tmp10 + _tmp11 + _tmp12 - _tmp13
+        _tmp15 = _a[1] * _b[1]
+        _tmp16 = _a[2] * _b[2]
         _tmp17 = _a[0] * _b[0]
-        _tmp18 = _a[2] * _b[2]
-        _tmp19 = _tmp15 - _tmp16 - _tmp17 - _tmp18
+        _tmp18 = _a[3] * _b[3]
+        _tmp19 = -_tmp15 - _tmp16 - _tmp17 + _tmp18
         _tmp20 = _a[2] ** 2
         _tmp21 = -2 * _tmp20
         _tmp22 = _a[1] ** 2
-        _tmp23 = 1 - 2 * _tmp22
-        _tmp24 = _tmp21 + _tmp23
-        _tmp25 = 2 * _a[0] * _a[1]
-        _tmp26 = 2 * _a[3]
-        _tmp27 = _a[2] * _tmp26
-        _tmp28 = -_tmp27
-        _tmp29 = _tmp25 + _tmp28
-        _tmp30 = _a[1] * _tmp26
-        _tmp31 = 2 * _a[2]
-        _tmp32 = _a[0] * _tmp31
+        _tmp23 = -2 * _tmp22
+        _tmp24 = _tmp21 + _tmp23 + 1
+        _tmp25 = 2 * _a[0]
+        _tmp26 = _a[2] * _tmp25
+        _tmp27 = 2 * _a[3]
+        _tmp28 = _a[1] * _tmp27
+        _tmp29 = _tmp26 + _tmp28
+        _tmp30 = _a[1] * _tmp25
+        _tmp31 = _a[2] * _tmp27
+        _tmp32 = -_tmp31
         _tmp33 = _tmp30 + _tmp32
         _tmp34 = _a[0] ** 2
-        _tmp35 = -2 * _tmp34
-        _tmp36 = _tmp21 + _tmp35 + 1
-        _tmp37 = _tmp25 + _tmp27
-        _tmp38 = _a[0] * _tmp26
+        _tmp35 = 1 - 2 * _tmp34
+        _tmp36 = _tmp21 + _tmp35
+        _tmp37 = 2 * _a[1] * _a[2]
+        _tmp38 = _a[0] * _tmp27
         _tmp39 = -_tmp38
-        _tmp40 = _a[1] * _tmp31
-        _tmp41 = _tmp39 + _tmp40
+        _tmp40 = _tmp37 + _tmp39
+        _tmp41 = _tmp30 + _tmp31
         _tmp42 = _tmp23 + _tmp35
-        _tmp43 = _tmp38 + _tmp40
-        _tmp44 = -_tmp30
-        _tmp45 = _tmp32 + _tmp44
-        _tmp46 = (1.0 / 2.0) * _tmp0
-        _tmp47 = (1.0 / 2.0) * _tmp1
-        _tmp48 = -_tmp47
-        _tmp49 = (1.0 / 2.0) * _tmp3
+        _tmp43 = _tmp37 + _tmp38
+        _tmp44 = -_tmp28
+        _tmp45 = _tmp26 + _tmp44
+        _tmp46 = (1.0 / 2.0) * _tmp10
+        _tmp47 = -_tmp46
+        _tmp48 = (1.0 / 2.0) * _tmp11
+        _tmp49 = (1.0 / 2.0) * _tmp12
         _tmp50 = -_tmp49
-        _tmp51 = (1.0 / 2.0) * _tmp2
+        _tmp51 = (1.0 / 2.0) * _tmp13
         _tmp52 = -_tmp51
         _tmp53 = _tmp50 + _tmp52
-        _tmp54 = 2 * _tmp46 + 2 * _tmp48 + 2 * _tmp53
-        _tmp55 = (1.0 / 2.0) * _tmp5
-        _tmp56 = -_tmp55
-        _tmp57 = (1.0 / 2.0) * _tmp7
-        _tmp58 = (1.0 / 2.0) * _tmp6
-        _tmp59 = -_tmp58
-        _tmp60 = (1.0 / 2.0) * _tmp8
-        _tmp61 = -_tmp60
-        _tmp62 = _tmp59 + _tmp61
-        _tmp63 = _tmp56 + _tmp57 + _tmp62
-        _tmp64 = 2 * _tmp9
-        _tmp65 = (1.0 / 2.0) * _tmp10
-        _tmp66 = -_tmp65
-        _tmp67 = (1.0 / 2.0) * _tmp13
-        _tmp68 = _tmp66 + _tmp67
-        _tmp69 = (1.0 / 2.0) * _tmp11
-        _tmp70 = -_tmp69
-        _tmp71 = (1.0 / 2.0) * _tmp12
+        _tmp54 = _tmp47 + _tmp48 + _tmp53
+        _tmp55 = 2 * _tmp14
+        _tmp56 = (1.0 / 2.0) * _tmp6
+        _tmp57 = -_tmp56
+        _tmp58 = (1.0 / 2.0) * _tmp5
+        _tmp59 = (1.0 / 2.0) * _tmp7
+        _tmp60 = -_tmp59
+        _tmp61 = (1.0 / 2.0) * _tmp8
+        _tmp62 = -_tmp61
+        _tmp63 = _tmp60 + _tmp62
+        _tmp64 = _tmp57 + _tmp58 + _tmp63
+        _tmp65 = 2 * _tmp9
+        _tmp66 = (1.0 / 2.0) * _tmp1
+        _tmp67 = -_tmp66
+        _tmp68 = (1.0 / 2.0) * _tmp3
+        _tmp69 = -_tmp68
+        _tmp70 = _tmp67 + _tmp69
+        _tmp71 = (1.0 / 2.0) * _tmp0
         _tmp72 = -_tmp71
-        _tmp73 = _tmp70 + _tmp72
-        _tmp74 = _tmp68 + _tmp73
-        _tmp75 = 2 * _tmp14
-        _tmp76 = (1.0 / 2.0) * _tmp16
-        _tmp77 = (1.0 / 2.0) * _tmp17
-        _tmp78 = -_tmp77
-        _tmp79 = (1.0 / 2.0) * _tmp15
-        _tmp80 = (1.0 / 2.0) * _tmp18
-        _tmp81 = _tmp79 + _tmp80
-        _tmp82 = _tmp76 + _tmp78 + _tmp81
+        _tmp73 = (1.0 / 2.0) * _tmp2
+        _tmp74 = _tmp72 + _tmp73
+        _tmp75 = _tmp70 + _tmp74
+        _tmp76 = 2 * _tmp4
+        _tmp77 = (1.0 / 2.0) * _tmp15
+        _tmp78 = (1.0 / 2.0) * _tmp16
+        _tmp79 = (1.0 / 2.0) * _tmp18
+        _tmp80 = (1.0 / 2.0) * _tmp17
+        _tmp81 = _tmp79 - _tmp80
+        _tmp82 = _tmp77 + _tmp78 + _tmp81
         _tmp83 = 2 * _tmp19
-        _tmp84 = _tmp59 + _tmp60
-        _tmp85 = -_tmp57
-        _tmp86 = _tmp56 + _tmp85
-        _tmp87 = _tmp84 + _tmp86
-        _tmp88 = 2 * _tmp4
-        _tmp89 = -_tmp46
-        _tmp90 = _tmp47 + _tmp53 + _tmp89
-        _tmp91 = -_tmp76
-        _tmp92 = _tmp77 + _tmp81 + _tmp91
-        _tmp93 = -_tmp67
-        _tmp94 = _tmp66 + _tmp93
-        _tmp95 = _tmp70 + _tmp71 + _tmp94
-        _tmp96 = _tmp69 + _tmp72 + _tmp94
-        _tmp97 = _tmp79 - _tmp80
-        _tmp98 = _tmp76 + _tmp77 + _tmp97
-        _tmp99 = _tmp50 + _tmp51
-        _tmp100 = _tmp48 + _tmp89
-        _tmp101 = _tmp100 + _tmp99
-        _tmp102 = _tmp55 + _tmp62 + _tmp85
-        _tmp103 = -_tmp25
+        _tmp84 = -_tmp77
+        _tmp85 = _tmp79 + _tmp80
+        _tmp86 = _tmp78 + _tmp84 + _tmp85
+        _tmp87 = -_tmp73
+        _tmp88 = _tmp72 + _tmp87
+        _tmp89 = _tmp66 + _tmp69 + _tmp88
+        _tmp90 = -_tmp58
+        _tmp91 = _tmp57 + _tmp90
+        _tmp92 = _tmp60 + _tmp61
+        _tmp93 = _tmp91 + _tmp92
+        _tmp94 = -_tmp48
+        _tmp95 = _tmp47 + _tmp94
+        _tmp96 = _tmp49 + _tmp52
+        _tmp97 = _tmp95 + _tmp96
+        _tmp98 = _tmp67 + _tmp68 + _tmp88
+        _tmp99 = -_tmp78
+        _tmp100 = _tmp77 + _tmp85 + _tmp99
+        _tmp101 = _tmp46 + _tmp53 + _tmp94
+        _tmp102 = _tmp56 + _tmp63 + _tmp90
+        _tmp103 = -_tmp30
         _tmp104 = -_tmp22
-        _tmp105 = _a[3] ** 2
-        _tmp106 = _tmp104 + _tmp105
-        _tmp107 = -_tmp20
-        _tmp108 = _tmp107 + _tmp34
-        _tmp109 = -_tmp32
-        _tmp110 = -_tmp34
+        _tmp105 = _tmp104 + _tmp34
+        _tmp106 = -_tmp20
+        _tmp107 = _a[3] ** 2
+        _tmp108 = _tmp106 + _tmp107
+        _tmp109 = -_tmp26
+        _tmp110 = -_tmp107
         _tmp111 = _tmp110 + _tmp20
-        _tmp112 = -_tmp105
+        _tmp112 = -_tmp34
         _tmp113 = _tmp112 + _tmp22
-        _tmp114 = -_tmp40
-        _tmp115 = _tmp100 + _tmp49 + _tmp52
-        _tmp116 = -_tmp115 * _tmp88
-        _tmp117 = _tmp58 + _tmp61 + _tmp86
-        _tmp118 = -_tmp117 * _tmp64
-        _tmp119 = _tmp68 + _tmp69 + _tmp71
-        _tmp120 = _tmp78 + _tmp91 + _tmp97
-        _tmp121 = _tmp120 * _tmp83
-        _tmp122 = _tmp117 * _tmp88
-        _tmp123 = _tmp46 + _tmp47 + _tmp99
-        _tmp124 = _tmp120 * _tmp75
-        _tmp125 = _tmp65 + _tmp73 + _tmp93
-        _tmp126 = _tmp120 * _tmp64
-        _tmp127 = _tmp115 * _tmp75
-        _tmp128 = _tmp55 + _tmp57 + _tmp84
-        _tmp129 = _tmp121 - _tmp125 * _tmp75
-        _tmp130 = _tmp120 * _tmp88
-        _tmp131 = _tmp125 * _tmp64
+        _tmp114 = -_tmp37
+        _tmp115 = _tmp46 + _tmp48 + _tmp96
+        _tmp116 = _tmp70 + _tmp71 + _tmp87
+        _tmp117 = -_tmp116 * _tmp76
+        _tmp118 = _tmp59 + _tmp62 + _tmp91
+        _tmp119 = _tmp81 + _tmp84 + _tmp99
+        _tmp120 = _tmp119 * _tmp83
+        _tmp121 = -_tmp118 * _tmp65 + _tmp120
+        _tmp122 = _tmp119 * _tmp55
+        _tmp123 = _tmp66 + _tmp68 + _tmp74
+        _tmp124 = _tmp118 * _tmp76
+        _tmp125 = _tmp50 + _tmp51 + _tmp95
+        _tmp126 = _tmp116 * _tmp55
+        _tmp127 = _tmp119 * _tmp65
+        _tmp128 = _tmp56 + _tmp58 + _tmp92
+        _tmp129 = -_tmp125 * _tmp55
+        _tmp130 = _tmp125 * _tmp65
+        _tmp131 = _tmp119 * _tmp76
 
         # Output terms
         _res = [0.0] * 7
@@ -431,62 +431,62 @@ class GroupOps(object):
         _res[1] = _tmp9
         _res[2] = _tmp14
         _res[3] = _tmp19
-        _res[4] = _a[4] + _b[4] * _tmp24 + _b[5] * _tmp29 + _b[6] * _tmp33
-        _res[5] = _a[5] + _b[4] * _tmp37 + _b[5] * _tmp36 + _b[6] * _tmp41
+        _res[4] = _a[4] + _b[4] * _tmp24 + _b[5] * _tmp33 + _b[6] * _tmp29
+        _res[5] = _a[5] + _b[4] * _tmp41 + _b[5] * _tmp36 + _b[6] * _tmp40
         _res[6] = _a[6] + _b[4] * _tmp45 + _b[5] * _tmp43 + _b[6] * _tmp42
         _res_D_a = numpy.zeros((6, 6))
-        _res_D_a[0, 0] = -_tmp4 * _tmp54 - _tmp63 * _tmp64 + _tmp74 * _tmp75 + _tmp82 * _tmp83
-        _res_D_a[0, 1] = -_tmp64 * _tmp90 + _tmp75 * _tmp92 + _tmp83 * _tmp95 - _tmp87 * _tmp88
-        _res_D_a[0, 2] = _tmp101 * _tmp75 + _tmp102 * _tmp83 - _tmp64 * _tmp98 - _tmp88 * _tmp96
+        _res_D_a[0, 0] = _tmp54 * _tmp55 - _tmp64 * _tmp65 - _tmp75 * _tmp76 + _tmp82 * _tmp83
+        _res_D_a[0, 1] = _tmp55 * _tmp86 - _tmp65 * _tmp89 - _tmp76 * _tmp93 + _tmp83 * _tmp97
+        _res_D_a[0, 2] = -_tmp100 * _tmp65 - _tmp101 * _tmp76 + _tmp102 * _tmp83 + _tmp55 * _tmp98
         _res_D_a[0, 3] = 0
         _res_D_a[0, 4] = 0
         _res_D_a[0, 5] = 0
-        _res_D_a[1, 0] = -_tmp54 * _tmp9 + _tmp63 * _tmp88 + _tmp74 * _tmp83 - _tmp75 * _tmp82
-        _res_D_a[1, 1] = -_tmp64 * _tmp87 - _tmp75 * _tmp95 + _tmp83 * _tmp92 + _tmp88 * _tmp90
-        _res_D_a[1, 2] = _tmp101 * _tmp83 - _tmp102 * _tmp75 - _tmp64 * _tmp96 + _tmp88 * _tmp98
+        _res_D_a[1, 0] = _tmp54 * _tmp83 - _tmp55 * _tmp82 + _tmp64 * _tmp76 - _tmp65 * _tmp75
+        _res_D_a[1, 1] = -_tmp55 * _tmp97 - _tmp65 * _tmp93 + _tmp76 * _tmp89 + _tmp83 * _tmp86
+        _res_D_a[1, 2] = _tmp100 * _tmp76 - _tmp101 * _tmp65 - _tmp102 * _tmp55 + _tmp83 * _tmp98
         _res_D_a[1, 3] = 0
         _res_D_a[1, 4] = 0
         _res_D_a[1, 5] = 0
-        _res_D_a[2, 0] = -_tmp14 * _tmp54 + _tmp63 * _tmp83 + _tmp64 * _tmp82 - _tmp74 * _tmp88
-        _res_D_a[2, 1] = _tmp64 * _tmp95 - _tmp75 * _tmp87 + _tmp83 * _tmp90 - _tmp88 * _tmp92
-        _res_D_a[2, 2] = -_tmp101 * _tmp88 + _tmp102 * _tmp64 - _tmp75 * _tmp96 + _tmp83 * _tmp98
+        _res_D_a[2, 0] = -_tmp54 * _tmp76 - _tmp55 * _tmp75 + _tmp64 * _tmp83 + _tmp65 * _tmp82
+        _res_D_a[2, 1] = -_tmp55 * _tmp93 + _tmp65 * _tmp97 - _tmp76 * _tmp86 + _tmp83 * _tmp89
+        _res_D_a[2, 2] = _tmp100 * _tmp83 - _tmp101 * _tmp55 + _tmp102 * _tmp65 - _tmp76 * _tmp98
         _res_D_a[2, 3] = 0
         _res_D_a[2, 4] = 0
         _res_D_a[2, 5] = 0
-        _res_D_a[3, 0] = _b[5] * _tmp33 + _b[6] * (_tmp103 + _tmp27)
-        _res_D_a[3, 1] = _b[4] * (_tmp109 + _tmp44) + _b[6] * (_tmp106 + _tmp108)
-        _res_D_a[3, 2] = _b[4] * _tmp29 + _b[5] * (_tmp111 + _tmp113)
+        _res_D_a[3, 0] = _b[5] * _tmp29 + _b[6] * (_tmp103 + _tmp31)
+        _res_D_a[3, 1] = _b[4] * (_tmp109 + _tmp44) + _b[6] * (_tmp105 + _tmp108)
+        _res_D_a[3, 2] = _b[4] * _tmp33 + _b[5] * (_tmp111 + _tmp113)
         _res_D_a[3, 3] = 1
         _res_D_a[3, 4] = 0
         _res_D_a[3, 5] = 0
-        _res_D_a[4, 0] = _b[5] * _tmp41 + _b[6] * (_tmp104 + _tmp112 + _tmp20 + _tmp34)
-        _res_D_a[4, 1] = _b[4] * (_tmp114 + _tmp38) + _b[6] * _tmp37
-        _res_D_a[4, 2] = _b[4] * (_tmp105 + _tmp107 + _tmp110 + _tmp22) + _b[5] * (_tmp103 + _tmp28)
+        _res_D_a[4, 0] = _b[5] * _tmp40 + _b[6] * (_tmp105 + _tmp111)
+        _res_D_a[4, 1] = _b[4] * (_tmp114 + _tmp38) + _b[6] * _tmp41
+        _res_D_a[4, 2] = _b[4] * (_tmp108 + _tmp113) + _b[5] * (_tmp103 + _tmp32)
         _res_D_a[4, 3] = 0
         _res_D_a[4, 4] = 1
         _res_D_a[4, 5] = 0
-        _res_D_a[5, 0] = _b[5] * (_tmp106 + _tmp111) + _b[6] * (_tmp114 + _tmp39)
-        _res_D_a[5, 1] = _b[4] * (_tmp108 + _tmp113) + _b[6] * _tmp45
-        _res_D_a[5, 2] = _b[4] * _tmp43 + _b[5] * (_tmp109 + _tmp30)
+        _res_D_a[5, 0] = _b[5] * (_tmp104 + _tmp107 + _tmp112 + _tmp20) + _b[6] * (_tmp114 + _tmp39)
+        _res_D_a[5, 1] = _b[4] * (_tmp106 + _tmp110 + _tmp22 + _tmp34) + _b[6] * _tmp45
+        _res_D_a[5, 2] = _b[4] * _tmp43 + _b[5] * (_tmp109 + _tmp28)
         _res_D_a[5, 3] = 0
         _res_D_a[5, 4] = 0
         _res_D_a[5, 5] = 1
         _res_D_b = numpy.zeros((6, 6))
-        _res_D_b[0, 0] = _tmp116 + _tmp118 + _tmp119 * _tmp75 + _tmp121
-        _res_D_b[0, 1] = -_tmp122 - _tmp123 * _tmp64 + _tmp124 + _tmp125 * _tmp83
-        _res_D_b[0, 2] = -_tmp125 * _tmp88 - _tmp126 + _tmp127 + _tmp128 * _tmp83
+        _res_D_b[0, 0] = _tmp115 * _tmp55 + _tmp117 + _tmp121
+        _res_D_b[0, 1] = _tmp122 - _tmp123 * _tmp65 - _tmp124 + _tmp125 * _tmp83
+        _res_D_b[0, 2] = -_tmp125 * _tmp76 + _tmp126 - _tmp127 + _tmp128 * _tmp83
         _res_D_b[0, 3] = 0
         _res_D_b[0, 4] = 0
         _res_D_b[0, 5] = 0
-        _res_D_b[1, 0] = -_tmp115 * _tmp64 + _tmp119 * _tmp83 + _tmp122 - _tmp124
-        _res_D_b[1, 1] = _tmp118 + _tmp123 * _tmp88 + _tmp129
-        _res_D_b[1, 2] = _tmp115 * _tmp83 - _tmp128 * _tmp75 + _tmp130 - _tmp131
+        _res_D_b[1, 0] = _tmp115 * _tmp83 - _tmp116 * _tmp65 - _tmp122 + _tmp124
+        _res_D_b[1, 1] = _tmp121 + _tmp123 * _tmp76 + _tmp129
+        _res_D_b[1, 2] = _tmp116 * _tmp83 - _tmp128 * _tmp55 - _tmp130 + _tmp131
         _res_D_b[1, 3] = 0
         _res_D_b[1, 4] = 0
         _res_D_b[1, 5] = 0
-        _res_D_b[2, 0] = _tmp117 * _tmp83 - _tmp119 * _tmp88 + _tmp126 - _tmp127
-        _res_D_b[2, 1] = -_tmp117 * _tmp75 + _tmp123 * _tmp83 - _tmp130 + _tmp131
-        _res_D_b[2, 2] = _tmp116 + _tmp128 * _tmp64 + _tmp129
+        _res_D_b[2, 0] = -_tmp115 * _tmp76 + _tmp118 * _tmp83 - _tmp126 + _tmp127
+        _res_D_b[2, 1] = -_tmp118 * _tmp55 + _tmp123 * _tmp83 + _tmp130 - _tmp131
+        _res_D_b[2, 2] = _tmp117 + _tmp120 + _tmp128 * _tmp65 + _tmp129
         _res_D_b[2, 3] = 0
         _res_D_b[2, 4] = 0
         _res_D_b[2, 5] = 0
@@ -494,14 +494,14 @@ class GroupOps(object):
         _res_D_b[3, 1] = 0
         _res_D_b[3, 2] = 0
         _res_D_b[3, 3] = _tmp24
-        _res_D_b[3, 4] = _tmp29
-        _res_D_b[3, 5] = _tmp33
+        _res_D_b[3, 4] = _tmp33
+        _res_D_b[3, 5] = _tmp29
         _res_D_b[4, 0] = 0
         _res_D_b[4, 1] = 0
         _res_D_b[4, 2] = 0
-        _res_D_b[4, 3] = _tmp37
+        _res_D_b[4, 3] = _tmp41
         _res_D_b[4, 4] = _tmp36
-        _res_D_b[4, 5] = _tmp41
+        _res_D_b[4, 5] = _tmp40
         _res_D_b[5, 0] = 0
         _res_D_b[5, 1] = 0
         _res_D_b[5, 2] = 0
@@ -514,75 +514,75 @@ class GroupOps(object):
     def between_with_jacobians(a, b):
         # type: (sym.Pose3, sym.Pose3) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
 
-        # Total ops: 370
+        # Total ops: 373
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (141)
-        _tmp0 = _a[1] * _b[2]
+        # Intermediate terms (144)
+        _tmp0 = _a[2] * _b[1]
         _tmp1 = _a[0] * _b[3]
-        _tmp2 = _a[3] * _b[0]
-        _tmp3 = _a[2] * _b[1]
-        _tmp4 = -_tmp0 - _tmp1 + _tmp2 + _tmp3
-        _tmp5 = _a[1] * _b[3]
-        _tmp6 = _a[0] * _b[2]
-        _tmp7 = _a[3] * _b[1]
+        _tmp2 = _a[1] * _b[2]
+        _tmp3 = _a[3] * _b[0]
+        _tmp4 = _tmp0 - _tmp1 - _tmp2 + _tmp3
+        _tmp5 = _a[3] * _b[1]
+        _tmp6 = _a[1] * _b[3]
+        _tmp7 = _a[0] * _b[2]
         _tmp8 = _a[2] * _b[0]
-        _tmp9 = -_tmp5 + _tmp6 + _tmp7 - _tmp8
-        _tmp10 = _a[1] * _b[0]
-        _tmp11 = _a[0] * _b[1]
+        _tmp9 = _tmp5 - _tmp6 + _tmp7 - _tmp8
+        _tmp10 = _a[0] * _b[1]
+        _tmp11 = _a[2] * _b[3]
         _tmp12 = _a[3] * _b[2]
-        _tmp13 = _a[2] * _b[3]
-        _tmp14 = _tmp10 - _tmp11 + _tmp12 - _tmp13
-        _tmp15 = _a[3] * _b[3]
-        _tmp16 = _a[1] * _b[1]
+        _tmp13 = _a[1] * _b[0]
+        _tmp14 = -_tmp10 - _tmp11 + _tmp12 + _tmp13
+        _tmp15 = _a[1] * _b[1]
+        _tmp16 = _a[2] * _b[2]
         _tmp17 = _a[0] * _b[0]
-        _tmp18 = _a[2] * _b[2]
+        _tmp18 = _a[3] * _b[3]
         _tmp19 = _tmp15 + _tmp16 + _tmp17 + _tmp18
-        _tmp20 = _a[1] ** 2
+        _tmp20 = _a[2] ** 2
         _tmp21 = 2 * _tmp20
         _tmp22 = -_tmp21
-        _tmp23 = _a[2] ** 2
+        _tmp23 = _a[1] ** 2
         _tmp24 = 2 * _tmp23
-        _tmp25 = 1 - _tmp24
-        _tmp26 = _tmp22 + _tmp25
-        _tmp27 = 2 * _a[1]
+        _tmp25 = -_tmp24
+        _tmp26 = _tmp22 + _tmp25 + 1
+        _tmp27 = 2 * _a[2]
         _tmp28 = _a[0] * _tmp27
-        _tmp29 = 2 * _a[3]
-        _tmp30 = _a[2] * _tmp29
-        _tmp31 = _tmp28 + _tmp30
-        _tmp32 = _a[5] * _tmp31
-        _tmp33 = _a[1] * _tmp29
-        _tmp34 = -_tmp33
-        _tmp35 = 2 * _a[0] * _a[2]
+        _tmp29 = 2 * _a[1]
+        _tmp30 = _a[3] * _tmp29
+        _tmp31 = -_tmp30
+        _tmp32 = _tmp28 + _tmp31
+        _tmp33 = _a[6] * _tmp32
+        _tmp34 = _a[0] * _tmp29
+        _tmp35 = _a[3] * _tmp27
         _tmp36 = _tmp34 + _tmp35
-        _tmp37 = _a[6] * _tmp36
-        _tmp38 = _b[5] * _tmp31 + _b[6] * _tmp36
+        _tmp37 = _a[5] * _tmp36
+        _tmp38 = _b[5] * _tmp36 + _b[6] * _tmp32
         _tmp39 = _a[0] ** 2
         _tmp40 = 2 * _tmp39
-        _tmp41 = -_tmp40
-        _tmp42 = _tmp25 + _tmp41
-        _tmp43 = -_tmp30
-        _tmp44 = _tmp28 + _tmp43
-        _tmp45 = _a[4] * _tmp44
-        _tmp46 = _a[0] * _tmp29
-        _tmp47 = _a[2] * _tmp27
-        _tmp48 = _tmp46 + _tmp47
-        _tmp49 = _a[6] * _tmp48
-        _tmp50 = _b[4] * _tmp44 + _b[6] * _tmp48
-        _tmp51 = _tmp22 + _tmp41 + 1
-        _tmp52 = -_tmp46
-        _tmp53 = _tmp47 + _tmp52
+        _tmp41 = 1 - _tmp40
+        _tmp42 = _tmp22 + _tmp41
+        _tmp43 = _a[2] * _tmp29
+        _tmp44 = 2 * _a[0] * _a[3]
+        _tmp45 = _tmp43 + _tmp44
+        _tmp46 = _a[6] * _tmp45
+        _tmp47 = -_tmp35
+        _tmp48 = _tmp34 + _tmp47
+        _tmp49 = _a[4] * _tmp48
+        _tmp50 = _b[4] * _tmp48 + _b[6] * _tmp45
+        _tmp51 = _tmp25 + _tmp41
+        _tmp52 = -_tmp44
+        _tmp53 = _tmp43 + _tmp52
         _tmp54 = _a[5] * _tmp53
-        _tmp55 = _tmp33 + _tmp35
+        _tmp55 = _tmp28 + _tmp30
         _tmp56 = _a[4] * _tmp55
         _tmp57 = _b[4] * _tmp55 + _b[5] * _tmp53
-        _tmp58 = (1.0 / 2.0) * _tmp16
-        _tmp59 = (1.0 / 2.0) * _tmp17
-        _tmp60 = (1.0 / 2.0) * _tmp15
-        _tmp61 = (1.0 / 2.0) * _tmp18
+        _tmp58 = (1.0 / 2.0) * _tmp15
+        _tmp59 = (1.0 / 2.0) * _tmp18
+        _tmp60 = (1.0 / 2.0) * _tmp16
+        _tmp61 = (1.0 / 2.0) * _tmp17
         _tmp62 = -_tmp58 - _tmp59 - _tmp60 - _tmp61
         _tmp63 = 2 * _tmp19
         _tmp64 = _tmp62 * _tmp63
@@ -590,78 +590,81 @@ class GroupOps(object):
         _tmp66 = (1.0 / 2.0) * _tmp1
         _tmp67 = (1.0 / 2.0) * _tmp2
         _tmp68 = (1.0 / 2.0) * _tmp3
-        _tmp69 = -_tmp65 - _tmp66 + _tmp67 + _tmp68
+        _tmp69 = _tmp65 - _tmp66 - _tmp67 + _tmp68
         _tmp70 = 2 * _tmp4
         _tmp71 = _tmp69 * _tmp70
         _tmp72 = (1.0 / 2.0) * _tmp5
         _tmp73 = (1.0 / 2.0) * _tmp6
         _tmp74 = (1.0 / 2.0) * _tmp7
         _tmp75 = (1.0 / 2.0) * _tmp8
-        _tmp76 = _tmp72 - _tmp73 - _tmp74 + _tmp75
+        _tmp76 = -_tmp72 + _tmp73 - _tmp74 + _tmp75
         _tmp77 = 2 * _tmp9
         _tmp78 = -_tmp76 * _tmp77
         _tmp79 = (1.0 / 2.0) * _tmp10
         _tmp80 = (1.0 / 2.0) * _tmp11
         _tmp81 = (1.0 / 2.0) * _tmp12
         _tmp82 = (1.0 / 2.0) * _tmp13
-        _tmp83 = _tmp79 - _tmp80 + _tmp81 - _tmp82
-        _tmp84 = 2 * _tmp14
-        _tmp85 = _tmp83 * _tmp84
+        _tmp83 = -_tmp79 - _tmp80 + _tmp81 + _tmp82
+        _tmp84 = 2 * _tmp83
+        _tmp85 = _tmp14 * _tmp84
         _tmp86 = _tmp78 + _tmp85
-        _tmp87 = -_tmp72 + _tmp73 + _tmp74 - _tmp75
-        _tmp88 = 2 * _tmp62
-        _tmp89 = _tmp14 * _tmp88
-        _tmp90 = -_tmp69 * _tmp77
-        _tmp91 = -_tmp79 + _tmp80 - _tmp81 + _tmp82
-        _tmp92 = _tmp63 * _tmp91 + _tmp90
-        _tmp93 = -_tmp70 * _tmp83
-        _tmp94 = _tmp88 * _tmp9
-        _tmp95 = _tmp65 + _tmp66 - _tmp67 - _tmp68
-        _tmp96 = _tmp84 * _tmp95
-        _tmp97 = _tmp63 * _tmp87 + _tmp96
-        _tmp98 = _tmp70 * _tmp76
-        _tmp99 = _tmp63 * _tmp83 + _tmp98
-        _tmp100 = _tmp77 * _tmp87
-        _tmp101 = -_tmp84 * _tmp91
-        _tmp102 = _tmp101 + _tmp71
-        _tmp103 = _tmp4 * _tmp88
-        _tmp104 = -_tmp84 * _tmp87
-        _tmp105 = _tmp104 + _tmp63 * _tmp95
-        _tmp106 = _tmp63 * _tmp76 + _tmp93
-        _tmp107 = _tmp77 * _tmp91
-        _tmp108 = _tmp107 + _tmp63 * _tmp69
-        _tmp109 = -_tmp70 * _tmp95
-        _tmp110 = -_tmp23
-        _tmp111 = _tmp110 + _tmp20
-        _tmp112 = _a[3] ** 2
-        _tmp113 = -_tmp112
-        _tmp114 = _tmp113 + _tmp39
-        _tmp115 = _tmp111 + _tmp114
-        _tmp116 = -_tmp47
-        _tmp117 = _tmp116 + _tmp46
-        _tmp118 = -_tmp35
-        _tmp119 = _tmp118 + _tmp34
-        _tmp120 = -_tmp39
-        _tmp121 = _tmp112 + _tmp120
-        _tmp122 = _tmp111 + _tmp121
-        _tmp123 = _tmp24 - 1
-        _tmp124 = -_tmp28
-        _tmp125 = _tmp124 + _tmp43
-        _tmp126 = _tmp118 + _tmp33
-        _tmp127 = -_tmp20
-        _tmp128 = _tmp127 + _tmp23
-        _tmp129 = _tmp121 + _tmp128
-        _tmp130 = _tmp113 + _tmp120 + _tmp20 + _tmp23
-        _tmp131 = _tmp124 + _tmp30
-        _tmp132 = _tmp116 + _tmp52
-        _tmp133 = _tmp114 + _tmp128
-        _tmp134 = _tmp110 + _tmp112 + _tmp127 + _tmp39
-        _tmp135 = _tmp58 + _tmp59 + _tmp60 + _tmp61
-        _tmp136 = _tmp135 * _tmp63
-        _tmp137 = _tmp109 + _tmp136
-        _tmp138 = _tmp135 * _tmp84
-        _tmp139 = _tmp135 * _tmp77
-        _tmp140 = _tmp135 * _tmp70
+        _tmp87 = 2 * _tmp14
+        _tmp88 = _tmp62 * _tmp87
+        _tmp89 = _tmp72 - _tmp73 + _tmp74 - _tmp75
+        _tmp90 = 2 * _tmp89
+        _tmp91 = -_tmp69 * _tmp77
+        _tmp92 = _tmp79 + _tmp80 - _tmp81 - _tmp82
+        _tmp93 = _tmp63 * _tmp92 + _tmp91
+        _tmp94 = -_tmp4 * _tmp84
+        _tmp95 = _tmp62 * _tmp77
+        _tmp96 = -_tmp65 + _tmp66 + _tmp67 - _tmp68
+        _tmp97 = _tmp87 * _tmp96
+        _tmp98 = _tmp63 * _tmp89 + _tmp97
+        _tmp99 = _tmp70 * _tmp76
+        _tmp100 = _tmp63 * _tmp83 + _tmp99
+        _tmp101 = 2 * _tmp92
+        _tmp102 = -_tmp101 * _tmp14
+        _tmp103 = _tmp9 * _tmp90
+        _tmp104 = _tmp62 * _tmp70
+        _tmp105 = -_tmp14 * _tmp90
+        _tmp106 = _tmp105 + _tmp63 * _tmp96
+        _tmp107 = _tmp63 * _tmp76 + _tmp94
+        _tmp108 = _tmp101 * _tmp9
+        _tmp109 = _tmp108 + _tmp63 * _tmp69
+        _tmp110 = -_tmp70 * _tmp96
+        _tmp111 = _tmp103 + _tmp110
+        _tmp112 = -_tmp20
+        _tmp113 = _a[3] ** 2
+        _tmp114 = -_tmp113
+        _tmp115 = _tmp112 + _tmp114 + _tmp23 + _tmp39
+        _tmp116 = -_tmp43
+        _tmp117 = _tmp116 + _tmp44
+        _tmp118 = -_tmp28
+        _tmp119 = _tmp118 + _tmp31
+        _tmp120 = _tmp112 + _tmp113
+        _tmp121 = -_tmp39
+        _tmp122 = _tmp121 + _tmp23
+        _tmp123 = _tmp120 + _tmp122
+        _tmp124 = -_tmp34
+        _tmp125 = _tmp124 + _tmp47
+        _tmp126 = _tmp118 + _tmp30
+        _tmp127 = -_tmp23
+        _tmp128 = _tmp113 + _tmp121 + _tmp127 + _tmp20
+        _tmp129 = _tmp114 + _tmp20
+        _tmp130 = _tmp122 + _tmp129
+        _tmp131 = _tmp124 + _tmp35
+        _tmp132 = _tmp40 - 1
+        _tmp133 = _tmp116 + _tmp52
+        _tmp134 = _tmp127 + _tmp39
+        _tmp135 = _tmp129 + _tmp134
+        _tmp136 = _tmp120 + _tmp134
+        _tmp137 = _tmp58 + _tmp59 + _tmp60 + _tmp61
+        _tmp138 = _tmp137 * _tmp63
+        _tmp139 = 2 * _tmp137
+        _tmp140 = _tmp139 * _tmp14
+        _tmp141 = _tmp137 * _tmp77
+        _tmp142 = _tmp102 + _tmp138
+        _tmp143 = _tmp139 * _tmp4
 
         # Output terms
         _res = [0.0] * 7
@@ -669,25 +672,25 @@ class GroupOps(object):
         _res[1] = _tmp9
         _res[2] = _tmp14
         _res[3] = _tmp19
-        _res[4] = -_a[4] * _tmp26 + _b[4] * _tmp26 - _tmp32 - _tmp37 + _tmp38
-        _res[5] = -_a[5] * _tmp42 + _b[5] * _tmp42 - _tmp45 - _tmp49 + _tmp50
+        _res[4] = -_a[4] * _tmp26 + _b[4] * _tmp26 - _tmp33 - _tmp37 + _tmp38
+        _res[5] = -_a[5] * _tmp42 + _b[5] * _tmp42 - _tmp46 - _tmp49 + _tmp50
         _res[6] = -_a[6] * _tmp51 + _b[6] * _tmp51 - _tmp54 - _tmp56 + _tmp57
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = _tmp64 - _tmp71 + _tmp86
-        _res_D_a[0, 1] = -_tmp70 * _tmp87 + _tmp89 + _tmp92
-        _res_D_a[0, 2] = _tmp93 - _tmp94 + _tmp97
+        _res_D_a[0, 1] = -_tmp4 * _tmp90 + _tmp88 + _tmp93
+        _res_D_a[0, 2] = _tmp94 - _tmp95 + _tmp98
         _res_D_a[0, 3] = 0
         _res_D_a[0, 4] = 0
         _res_D_a[0, 5] = 0
-        _res_D_a[1, 0] = -_tmp89 + _tmp90 + _tmp99
-        _res_D_a[1, 1] = -_tmp100 + _tmp102 + _tmp64
-        _res_D_a[1, 2] = _tmp103 + _tmp105 - _tmp77 * _tmp83
+        _res_D_a[1, 0] = _tmp100 - _tmp88 + _tmp91
+        _res_D_a[1, 1] = _tmp102 - _tmp103 + _tmp64 + _tmp71
+        _res_D_a[1, 2] = _tmp104 + _tmp106 - _tmp84 * _tmp9
         _res_D_a[1, 3] = 0
         _res_D_a[1, 4] = 0
         _res_D_a[1, 5] = 0
-        _res_D_a[2, 0] = _tmp106 - _tmp69 * _tmp84 + _tmp94
-        _res_D_a[2, 1] = -_tmp103 + _tmp104 + _tmp108
-        _res_D_a[2, 2] = _tmp100 + _tmp109 + _tmp64 - _tmp85
+        _res_D_a[2, 0] = _tmp107 - _tmp69 * _tmp87 + _tmp95
+        _res_D_a[2, 1] = -_tmp104 + _tmp105 + _tmp109
+        _res_D_a[2, 2] = _tmp111 + _tmp64 - _tmp85
         _res_D_a[2, 3] = 0
         _res_D_a[2, 4] = 0
         _res_D_a[2, 5] = 0
@@ -700,11 +703,11 @@ class GroupOps(object):
             + _b[5] * _tmp117
             + _b[6] * _tmp115
         )
-        _res_D_a[3, 2] = -_a[5] * _tmp122 + _b[5] * _tmp122 - _tmp45 - _tmp49 + _tmp50
-        _res_D_a[3, 3] = _tmp123 + _tmp21
+        _res_D_a[3, 2] = -_a[5] * _tmp123 + _b[5] * _tmp123 - _tmp46 - _tmp49 + _tmp50
+        _res_D_a[3, 3] = _tmp21 + _tmp24 - 1
         _res_D_a[3, 4] = _tmp125
         _res_D_a[3, 5] = _tmp126
-        _res_D_a[4, 0] = -_a[6] * _tmp129 + _b[6] * _tmp129 - _tmp54 - _tmp56 + _tmp57
+        _res_D_a[4, 0] = -_a[6] * _tmp128 + _b[6] * _tmp128 - _tmp54 - _tmp56 + _tmp57
         _res_D_a[4, 1] = 0
         _res_D_a[4, 2] = (
             -_a[4] * _tmp130
@@ -715,37 +718,37 @@ class GroupOps(object):
             + _b[6] * _tmp126
         )
         _res_D_a[4, 3] = _tmp131
-        _res_D_a[4, 4] = _tmp123 + _tmp40
-        _res_D_a[4, 5] = _tmp132
+        _res_D_a[4, 4] = _tmp132 + _tmp21
+        _res_D_a[4, 5] = _tmp133
         _res_D_a[5, 0] = (
             -_a[4] * _tmp131
-            - _a[5] * _tmp133
-            - _a[6] * _tmp132
+            - _a[5] * _tmp135
+            - _a[6] * _tmp133
             + _b[4] * _tmp131
-            + _b[5] * _tmp133
-            + _b[6] * _tmp132
+            + _b[5] * _tmp135
+            + _b[6] * _tmp133
         )
-        _res_D_a[5, 1] = -_a[4] * _tmp134 + _b[4] * _tmp134 - _tmp32 - _tmp37 + _tmp38
+        _res_D_a[5, 1] = -_a[4] * _tmp136 + _b[4] * _tmp136 - _tmp33 - _tmp37 + _tmp38
         _res_D_a[5, 2] = 0
         _res_D_a[5, 3] = _tmp119
         _res_D_a[5, 4] = _tmp117
-        _res_D_a[5, 5] = _tmp21 + _tmp40 - 1
+        _res_D_a[5, 5] = _tmp132 + _tmp24
         _res_D_b = numpy.zeros((6, 6))
-        _res_D_b[0, 0] = _tmp137 + _tmp86
-        _res_D_b[0, 1] = _tmp138 + _tmp92 - _tmp98
-        _res_D_b[0, 2] = -_tmp139 - _tmp70 * _tmp91 + _tmp97
+        _res_D_b[0, 0] = _tmp110 + _tmp138 + _tmp86
+        _res_D_b[0, 1] = _tmp140 + _tmp93 - _tmp99
+        _res_D_b[0, 2] = -_tmp101 * _tmp4 - _tmp141 + _tmp98
         _res_D_b[0, 3] = 0
         _res_D_b[0, 4] = 0
         _res_D_b[0, 5] = 0
-        _res_D_b[1, 0] = -_tmp138 - _tmp77 * _tmp95 + _tmp99
-        _res_D_b[1, 1] = _tmp102 + _tmp136 + _tmp78
-        _res_D_b[1, 2] = _tmp105 - _tmp107 + _tmp140
+        _res_D_b[1, 0] = _tmp100 - _tmp140 - _tmp77 * _tmp96
+        _res_D_b[1, 1] = _tmp142 + _tmp71 + _tmp78
+        _res_D_b[1, 2] = _tmp106 - _tmp108 + _tmp143
         _res_D_b[1, 3] = 0
         _res_D_b[1, 4] = 0
         _res_D_b[1, 5] = 0
-        _res_D_b[2, 0] = _tmp106 + _tmp139 - _tmp96
-        _res_D_b[2, 1] = _tmp108 - _tmp140 - _tmp76 * _tmp84
-        _res_D_b[2, 2] = _tmp100 + _tmp101 + _tmp137
+        _res_D_b[2, 0] = _tmp107 + _tmp141 - _tmp97
+        _res_D_b[2, 1] = _tmp109 - _tmp143 - _tmp76 * _tmp87
+        _res_D_b[2, 2] = _tmp111 + _tmp142
         _res_D_b[2, 3] = 0
         _res_D_b[2, 4] = 0
         _res_D_b[2, 5] = 0
@@ -753,14 +756,14 @@ class GroupOps(object):
         _res_D_b[3, 1] = 0
         _res_D_b[3, 2] = 0
         _res_D_b[3, 3] = _tmp26
-        _res_D_b[3, 4] = _tmp31
-        _res_D_b[3, 5] = _tmp36
+        _res_D_b[3, 4] = _tmp36
+        _res_D_b[3, 5] = _tmp32
         _res_D_b[4, 0] = 0
         _res_D_b[4, 1] = 0
         _res_D_b[4, 2] = 0
-        _res_D_b[4, 3] = _tmp44
+        _res_D_b[4, 3] = _tmp48
         _res_D_b[4, 4] = _tmp42
-        _res_D_b[4, 5] = _tmp48
+        _res_D_b[4, 5] = _tmp45
         _res_D_b[5, 0] = 0
         _res_D_b[5, 1] = 0
         _res_D_b[5, 2] = 0

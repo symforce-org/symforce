@@ -35,13 +35,13 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
   const Eigen::Matrix<Scalar, 7, 1>& _nav_T_cam = nav_T_cam.Data();
 
   // Intermediate terms (23)
-  const Scalar _tmp0 = 2 * _nav_T_cam[1];
-  const Scalar _tmp1 = _nav_T_cam[0] * _tmp0;
-  const Scalar _tmp2 = 2 * _nav_T_cam[3];
-  const Scalar _tmp3 = _nav_T_cam[2] * _tmp2;
-  const Scalar _tmp4 = _tmp1 - _tmp3;
-  const Scalar _tmp5 = _nav_T_cam[0] * _tmp2;
-  const Scalar _tmp6 = _nav_T_cam[2] * _tmp0;
+  const Scalar _tmp0 = 2 * _nav_T_cam[3];
+  const Scalar _tmp1 = _nav_T_cam[2] * _tmp0;
+  const Scalar _tmp2 = 2 * _nav_T_cam[1];
+  const Scalar _tmp3 = _nav_T_cam[0] * _tmp2;
+  const Scalar _tmp4 = -_tmp1 + _tmp3;
+  const Scalar _tmp5 = _nav_T_cam[0] * _tmp0;
+  const Scalar _tmp6 = _nav_T_cam[2] * _tmp2;
   const Scalar _tmp7 = _tmp5 + _tmp6;
   const Scalar _tmp8 = -2 * std::pow(_nav_T_cam[0], Scalar(2));
   const Scalar _tmp9 = 1 - 2 * std::pow(_nav_T_cam[2], Scalar(2));
@@ -50,9 +50,9 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
                         _tmp10 * nav_t_point(1, 0) + _tmp4 * nav_t_point(0, 0) +
                         _tmp7 * nav_t_point(2, 0);
   const Scalar _tmp12 = _tmp1 + _tmp3;
-  const Scalar _tmp13 = 2 * _nav_T_cam[0] * _nav_T_cam[2];
-  const Scalar _tmp14 = _nav_T_cam[1] * _tmp2;
-  const Scalar _tmp15 = _tmp13 - _tmp14;
+  const Scalar _tmp13 = _nav_T_cam[1] * _tmp0;
+  const Scalar _tmp14 = 2 * _nav_T_cam[0] * _nav_T_cam[2];
+  const Scalar _tmp15 = -_tmp13 + _tmp14;
   const Scalar _tmp16 = -2 * std::pow(_nav_T_cam[1], Scalar(2));
   const Scalar _tmp17 = _tmp16 + _tmp9;
   const Scalar _tmp18 = -_nav_T_cam[4] * _tmp17 - _nav_T_cam[5] * _tmp12 - _nav_T_cam[6] * _tmp15 +

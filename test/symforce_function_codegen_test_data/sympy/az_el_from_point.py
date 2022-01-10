@@ -35,13 +35,13 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
     _nav_T_cam = nav_T_cam.data
 
     # Intermediate terms (23)
-    _tmp0 = 2 * _nav_T_cam[1]
-    _tmp1 = _nav_T_cam[0] * _tmp0
-    _tmp2 = 2 * _nav_T_cam[3]
-    _tmp3 = _nav_T_cam[2] * _tmp2
-    _tmp4 = _tmp1 - _tmp3
-    _tmp5 = _nav_T_cam[0] * _tmp2
-    _tmp6 = _nav_T_cam[2] * _tmp0
+    _tmp0 = 2 * _nav_T_cam[3]
+    _tmp1 = _nav_T_cam[2] * _tmp0
+    _tmp2 = 2 * _nav_T_cam[1]
+    _tmp3 = _nav_T_cam[0] * _tmp2
+    _tmp4 = -_tmp1 + _tmp3
+    _tmp5 = _nav_T_cam[0] * _tmp0
+    _tmp6 = _nav_T_cam[2] * _tmp2
     _tmp7 = _tmp5 + _tmp6
     _tmp8 = -2 * _nav_T_cam[0] ** 2
     _tmp9 = 1 - 2 * _nav_T_cam[2] ** 2
@@ -55,9 +55,9 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
         + _tmp7 * nav_t_point[2]
     )
     _tmp12 = _tmp1 + _tmp3
-    _tmp13 = 2 * _nav_T_cam[0] * _nav_T_cam[2]
-    _tmp14 = _nav_T_cam[1] * _tmp2
-    _tmp15 = _tmp13 - _tmp14
+    _tmp13 = _nav_T_cam[1] * _tmp0
+    _tmp14 = 2 * _nav_T_cam[0] * _nav_T_cam[2]
+    _tmp15 = -_tmp13 + _tmp14
     _tmp16 = -2 * _nav_T_cam[1] ** 2
     _tmp17 = _tmp16 + _tmp9
     _tmp18 = (
