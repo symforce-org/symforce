@@ -223,9 +223,9 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
 
   // Create initial values as random pertubations from the first prior
   sym::Valuesd values;
-  std::srand(0);
+  std::mt19937 gen(42);
   for (int i = 0; i < num_keys; ++i) {
-    const sym::Rot3d value = prior_start.Retract(0.4 * Eigen::Vector3d::Random());
+    const sym::Rot3d value = prior_start.Retract(0.4 * sym::Random<Eigen::Vector3d>(gen));
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
@@ -249,8 +249,8 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   spdlog::info("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
-  CHECK(last_iter.iteration == 7);
-  CHECK(last_iter.current_lambda == Catch::Approx(6.1e-5).epsilon(1e-1));
+  CHECK(last_iter.iteration == 6);
+  CHECK(last_iter.current_lambda == Catch::Approx(2.4e-4).epsilon(1e-1));
   CHECK(last_iter.new_error == Catch::Approx(2.174).epsilon(1e-3));
 
   // Check that H = J^T J
