@@ -60,7 +60,7 @@ class Rot3(LieGroup):
         return cls(Quaternion.identity())
 
     def compose(self, other: Rot3) -> Rot3:
-        return Rot3(self.q * other.q)
+        return self.__class__(self.q * other.q)
 
     def inverse(self) -> Rot3:
         # NOTE(hayk): Since we have a unit quaternion, no need to call q.inv()

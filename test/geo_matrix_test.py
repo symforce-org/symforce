@@ -87,7 +87,6 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             Matrix.ones
             Matrix.diag
             Matrix.eye
-            Matrix.matrix_identity
             Matrix.column_stack
         """
         element = GeoMatrixTest.element()
@@ -99,7 +98,6 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         eye_matrix = geo.Matrix.diag([1, 1, 1])
         self.assertEqual(eye_matrix, geo.Matrix.eye(3))
-        self.assertEqual(eye_matrix, eye_matrix.matrix_identity())
 
         nonsquare_diag_matrix = geo.Matrix([[1, 0, 0], [0, 1, 0]])
         self.assertEqual(nonsquare_diag_matrix, geo.Matrix.eye(2, 3))
@@ -119,7 +117,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         """
 
         test_matrix = geo.Matrix([[2, 0], [0, 4]])
-        inv_matrix = test_matrix.matrix_inverse()
+        inv_matrix = test_matrix.inv()
         self.assertEqual(geo.Matrix.eye(2), test_matrix * inv_matrix)
 
         self.assertEqual(geo.Matrix.ones(2, 2), geo.Matrix.zeros(2, 2) + 1)
@@ -167,7 +165,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         mat_lim_y_to_0 = geo.Matrix([0, x, 1])
         self.assertEqual(mat.limit(y, 0), mat_lim_y_to_0)
 
-        pi_mat = sm.pi * geo.M22.matrix_identity()
+        pi_mat = sm.pi * geo.M22.eye()
         pi_mat_num = geo.Matrix([[3.14159265, 0], [0, 3.14159265]])
         self.assertNear(pi_mat, pi_mat_num)
 
@@ -230,7 +228,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(vec_D_pose_storage, geo.Matrix(3, pose.storage_dim()).zero())
 
         x = geo.M21.symbolic("x")
-        self.assertEqual(geo.M22.matrix_identity(), x.jacobian(x))
+        self.assertEqual(geo.M22.eye(), x.jacobian(x))
 
         mat = geo.M22.symbolic("a")
         vec = mat[:, 0]

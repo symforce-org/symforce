@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from symforce import ops
 from symforce.ops.interfaces.lie_group import LieGroup
 from symforce import typing as T
 
@@ -112,7 +113,7 @@ class Pose2(LieGroup):
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
         storage_D_tangent_R = self.R.storage_D_tangent()
-        storage_D_tangent_t = Matrix22.matrix_identity()
+        storage_D_tangent_t = Matrix22.eye()
         return Matrix.block_matrix(
             [[Matrix.zeros(2, 2), storage_D_tangent_R], [storage_D_tangent_t, Matrix.zeros(2, 1)]]
         )
@@ -122,7 +123,7 @@ class Pose2(LieGroup):
         Note: generated from symforce/notebooks/tangent_D_storage.ipynb
         """
         tangent_D_storage_R = self.R.tangent_D_storage()
-        tangent_D_storage_t = Matrix22.matrix_identity()
+        tangent_D_storage_t = Matrix22.eye()
         return Matrix.block_matrix(
             [[Matrix.zeros(2, 2), tangent_D_storage_t], [tangent_D_storage_R, Matrix.zeros(1, 2)]]
         )
@@ -133,13 +134,14 @@ class Pose2(LieGroup):
 
     def retract(self: Pose2, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2:
         return Pose2(
-            R=self.R.retract(vec[2:], epsilon=epsilon), t=self.t.retract(vec[:2], epsilon=epsilon)
+            R=self.R.retract(vec[2:], epsilon=epsilon),
+            t=ops.LieGroupOps.retract(self.t, vec[:2], epsilon=epsilon),
         )
 
     def local_coordinates(self: Pose2T, b: Pose2T, epsilon: T.Scalar = 0,) -> T.List[T.Scalar]:
-        return self.t.local_coordinates(b.t, epsilon=epsilon) + self.R.local_coordinates(
-            b.R, epsilon=epsilon
-        )
+        return ops.LieGroupOps.local_coordinates(
+            self.t, b.t, epsilon=epsilon
+        ) + self.R.local_coordinates(b.R, epsilon=epsilon)
 
     # -------------------------------------------------------------------------
     # Helper methods

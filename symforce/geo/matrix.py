@@ -4,13 +4,13 @@ import numpy as np
 
 import symforce
 from symforce import ops
-from symforce.ops.interfaces import LieGroup
+from symforce.ops.interfaces import Storage
 from symforce import sympy as sm
 from symforce import typing as _T  # We already have a Matrix.T which collides
 from symforce import python_util
 
 
-class Matrix(LieGroup):
+class Matrix(Storage):
     """
     Matrix type that wraps the Sympy Matrix class. Care has been taken to allow this class
     to create fixed-size child classes like Matrix31. Anytime __new__ is called, the appropriate
@@ -23,11 +23,12 @@ class Matrix(LieGroup):
         https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html
         https://en.wikipedia.org/wiki/Vector_space
 
-    It is also treated as lie group that represents the linear space of two dimensional matrices
-    under the *addition* operation. This causes some confusion between the naming of methods, such
-    as `.identity()` and `.inverse()`. The linear algebra equivalents are available at
-    `.matrix_identity()` and `.matrix_inverse()`. Splitting the matrix type and the lie group ops
-    is a possible action to make this better.
+    Matrix does not implement the group or lie group concepts using instance/class methods directly,
+    because we want it to represent the group R^{NxM}, not GL(n), which leads to the `identity` and
+    `inverse` methods being confusingly named.  For the group ops and lie group ops, use
+    `ops.GroupOps` and `ops.LieGroupOps` respectively, which use the implementations in
+    matrix_group_ops.py and matrix_lie_group_ops.py of the R^{NxM} group under matrix addition.  For
+    the identity matrix and inverse matrix, see `Matrix.eye` and `Matrix.inv` respectively.
     """
 
     # Type that represents this or any subclasses
@@ -143,7 +144,7 @@ class Matrix(LieGroup):
         fixed_size_type = fixed_type_from_shape((rows, cols))
 
         # Build object
-        instance = LieGroup.__new__(fixed_size_type)
+        instance = Storage.__new__(fixed_size_type)
 
         # Set the underlying sympy array
         instance.mat = sm.Matrix(rows, cols, flat_list)
@@ -194,24 +195,6 @@ class Matrix(LieGroup):
 
     def to_storage(self) -> _T.List[_T.Scalar]:
         return self.to_tangent()
-
-    # -------------------------------------------------------------------------
-    # Group concept - see symforce.ops.group_ops
-    # -------------------------------------------------------------------------
-
-    @classmethod
-    def identity(cls: _T.Type[MatrixT]) -> MatrixT:
-        return cls.zero()
-
-    def compose(self: MatrixT, other: MatrixT) -> MatrixT:
-        return self + other
-
-    def inverse(self: MatrixT) -> MatrixT:
-        return -self
-
-    # -------------------------------------------------------------------------
-    # Lie group concept - see symforce.ops.lie_group_ops
-    # -------------------------------------------------------------------------
 
     @classmethod
     def tangent_dim(cls) -> int:
@@ -275,27 +258,58 @@ class Matrix(LieGroup):
             mat[i, i] = diagonal[i]
         return mat
 
+    # NOTE(aaron):  The following set of overloads is the correct signature for `eye`. However, when
+    # I do this mypy thinks the signature is:
+    #
+    #     Overload(def (rows: builtins.int) -> symforce.geo.matrix.Matrix, def (rows: builtins.int,
+    #     cols: builtins.int) -> symforce.geo.matrix.Matrix)
+    #
+    # And I cannot figure out why for the life of me.  So instead we lie to the type checker, and
+    # tell it we always return `cls`, even though we also support returning a superclass if called
+    # with a different shape.
+
+    # @_T.overload
+    # @classmethod
+    # def eye(cls: _T.Type[MatrixT]) -> MatrixT:  # pragma: no cover
+    #     pass
+
+    # @_T.overload
+    # @classmethod
+    # def eye(cls: _T.Type[Matrix], rows: int) -> Matrix:  # pragma: no cover
+    #     pass
+
+    # @_T.overload
+    # @classmethod
+    # def eye(cls: _T.Type[Matrix], rows: int, cols: int) -> Matrix:  # pragma: no cover
+    #     pass
+
     @classmethod
-    def eye(cls, rows: int, cols: int = None) -> Matrix:
+    def eye(cls: _T.Type[MatrixT], rows: int = None, cols: int = None) -> MatrixT:
         """
-        Construct an identity matrix of the given dimensions. Square if cols is None.
+        Construct an identity matrix
+
+        If neither rows nor cols is provided, this must be called as a class method on a fixed-size
+        class.
+
+        If rows is provided, returns a square identity matrix of shape (rows x rows).
+
+        If rows and cols are provided, returns a (rows x cols) matrix, with ones on the diagonal.
         """
+        if rows is None and cols is None:
+            assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+            return cls.eye(*cls.SHAPE)  #  type: ignore
+
+        if rows is None:
+            raise ValueError("If cols is not None, rows must not be None")
+
         if cols is None:
             cols = rows
         mat = cls.zeros(rows, cols)
         for i in range(min(rows, cols)):
             mat[i, i] = sm.S.One
-        return mat
+        return mat  # type: ignore
 
-    @classmethod
-    def matrix_identity(cls: _T.Type[MatrixT]) -> MatrixT:
-        """
-        Identity matrix - ones on the diagonal, rest zeros.
-        """
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-        return cls.eye(*cls.SHAPE)  #  type: ignore
-
-    def matrix_inverse(self: MatrixT, method: str = "LU") -> MatrixT:
+    def inv(self: MatrixT, method: str = "LU") -> MatrixT:
         """
         Inverse of the matrix.
         """
@@ -651,7 +665,7 @@ class Matrix(LieGroup):
         if python_util.scalar_like(right):
             return self.applyfunc(lambda x: x / sm.S(right))
         elif isinstance(right, Matrix):
-            return self * right.matrix_inverse()
+            return self * right.inv()
         else:
             return self.__class__(self.mat * _T.cast(sm.Matrix, right).inv())
 
@@ -780,7 +794,7 @@ class Matrix(LieGroup):
         )
 
     def __hash__(self) -> int:
-        return LieGroup.__hash__(self)
+        return Storage.__hash__(self)
 
     @classmethod
     def _is_fixed_size(cls) -> bool:
@@ -1116,13 +1130,19 @@ M66 = Matrix66
 
 
 # Identity convenience names
-I1 = I11 = M11.matrix_identity
-I2 = I22 = M22.matrix_identity
-I3 = I33 = M33.matrix_identity
-I4 = I44 = M44.matrix_identity
-I5 = I55 = M55.matrix_identity
-I6 = I66 = M66.matrix_identity
+I1 = I11 = M11.eye
+I2 = I22 = M22.eye
+I3 = I33 = M33.eye
+I4 = I44 = M44.eye
+I5 = I55 = M55.eye
+I6 = I66 = M66.eye
 
 
 # Register printing for ipython
 Matrix.init_printing()
+
+
+# Register ops
+from symforce.ops.impl.matrix_lie_group_ops import MatrixLieGroupOps
+
+ops.LieGroupOps.register(Matrix, MatrixLieGroupOps)

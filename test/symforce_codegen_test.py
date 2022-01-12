@@ -406,7 +406,7 @@ class SymforceCodegenTest(TestCase):
         # Function that generates both dense and sparse outputs
         multiple_outputs = Values()
         multiple_outputs["sparse_first"] = 2 * outputs["matrix_out"]
-        multiple_outputs["dense"] = 3 * geo.Matrix44.matrix_identity()
+        multiple_outputs["dense"] = 3 * geo.Matrix44.eye()
         multiple_outputs["sparse_second"] = 4 * outputs["matrix_out"]
         multiple_outputs["result"] = geo.Matrix33().zero()
 

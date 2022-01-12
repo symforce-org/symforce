@@ -28,11 +28,11 @@ ElementOrType = Union[Element, Type]
 
 # Specialization for scalar elements
 ScalarElement = Scalar
-ScalarElementOrType = Union[ScalarElement, Type]
+ScalarElementOrType = Union[ScalarElement, Type[ScalarElement]]
 
 # Specialization for sequence elements
 SequenceElement = Union[Sequence[Element], "np.ndarray"]
-SequenceElementOrType = Union[SequenceElement, Type]
+SequenceElementOrType = Union[SequenceElement, Type[SequenceElement]]
 
 
 # Dataclass Metaclass
