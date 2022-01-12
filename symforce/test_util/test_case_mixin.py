@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -18,6 +19,11 @@ class SymforceTestCaseMixin(unittest.TestCase):
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing
     UPDATE = False
+
+    KEEP_PATHS = [
+        r".*/__pycache__/.*",
+        r".*\.pyc",
+    ]
 
     @staticmethod
     def main() -> None:
@@ -95,14 +101,25 @@ class SymforceTestCaseMixin(unittest.TestCase):
             code = f.read()
         self.compare_or_update(path, code)
 
+    def _filtered_paths_in_dir(self, directory: T.Openable) -> T.List[str]:
+        """
+        Find the list of paths in a directory not in KEEP_PATHS, recursively.  The result is in
+        sorted order
+        """
+        keep_regex = re.compile("|".join(self.KEEP_PATHS))
+
+        files_in_dir = python_util.files_in_dir(directory, relative=True)
+        return sorted(path for path in files_in_dir if not re.match(keep_regex, path))
+
     def compare_or_update_directory(self, actual_dir: T.Openable, expected_dir: T.Openable) -> None:
         """
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.
         """
         logger.debug(f'Comparing directories: actual="{actual_dir}", expected="{expected_dir}"')
-        actual_paths = sorted(list(python_util.files_in_dir(actual_dir, relative=True)))
-        expected_paths = sorted(list(python_util.files_in_dir(expected_dir, relative=True)))
+
+        actual_paths = self._filtered_paths_in_dir(actual_dir)
+        expected_paths = self._filtered_paths_in_dir(expected_dir)
 
         if not SymforceTestCaseMixin.UPDATE:
             # If checking, make sure all file paths are the same
