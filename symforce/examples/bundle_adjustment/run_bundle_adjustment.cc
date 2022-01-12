@@ -1,8 +1,8 @@
 #include <spdlog/spdlog.h>
 
 #include <sym/factors/between_factor_pose3.h>
+#include <sym/factors/inverse_range_landmark_linear_reprojection_error_factor.h>
 #include <sym/factors/inverse_range_landmark_prior_factor.h>
-#include <sym/factors/inverse_range_landmark_reprojection_error_factor.h>
 #include <symforce/examples/example_utils/bundle_adjustment_util.h>
 #include <symforce/opt/assert.h>
 #include <symforce/opt/factor.h>
@@ -47,7 +47,7 @@ sym::Factord CreateInverseRangeLandmarkPriorFactor(const int i, const int landma
  */
 sym::Factord CreateInverseRangeLandmarkReprojectionErrorFactor(const int i,
                                                                const int landmark_idx) {
-  return sym::Factord::Hessian(sym::InverseRangeLandmarkReprojectionErrorFactor<double>,
+  return sym::Factord::Hessian(sym::InverseRangeLandmarkLinearReprojectionErrorFactor<double>,
                                {{Var::VIEW, 0},
                                 {Var::CALIBRATION, 0},
                                 {Var::VIEW, i},

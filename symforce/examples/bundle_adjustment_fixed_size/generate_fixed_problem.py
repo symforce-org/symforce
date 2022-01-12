@@ -1,6 +1,7 @@
 import re
 import textwrap
 
+from symforce import cam
 from symforce import geo
 from symforce import codegen
 from symforce import logger
@@ -153,6 +154,7 @@ class FixedBundleAdjustmentProblem:
                         self.values["costs"]["reprojection_error_gnc_mu"],
                         self.values["costs"]["reprojection_error_gnc_scale"],
                         self.values["epsilon"],
+                        cam.LinearCameraCal,
                     )
                 )
 

@@ -28,9 +28,9 @@ namespace sym {
  *
  * Args:
  *     source_pose: The pose of the source camera
- *     source_calibration_storage: The storage vector of the source (Linear) camera calibration
+ *     source_calibration_storage: The storage vector of the source camera calibration
  *     target_pose: The pose of the target camera
- *     target_calibration_storage: The storage vector of the target (Linear) camera calibration
+ *     target_calibration_storage: The storage vector of the target camera calibration
  *     source_inverse_range: The inverse range of the landmark in the source camera
  *     source_pixel: The location of the landmark in the source camera
  *     target_pixel: The location of the correspondence in the target camera
@@ -38,6 +38,7 @@ namespace sym {
  *     gnc_mu: The mu convexity parameter for the Barron noise model
  *     gnc_scale: The scale parameter for the Barron noise model
  *     epsilon: Small positive value
+ *     camera_model_class: The subclass of CameraCal to use as the camera model
  *
  * Outputs:
  *     res: 2dof residual of the reprojection
@@ -49,7 +50,7 @@ namespace sym {
  *          (1)
  */
 template <typename Scalar>
-void InverseRangeLandmarkReprojectionErrorFactor(
+void InverseRangeLandmarkLinearReprojectionErrorFactor(
     const sym::Pose3<Scalar>& source_pose,
     const Eigen::Matrix<Scalar, 4, 1>& source_calibration_storage,
     const sym::Pose3<Scalar>& target_pose,

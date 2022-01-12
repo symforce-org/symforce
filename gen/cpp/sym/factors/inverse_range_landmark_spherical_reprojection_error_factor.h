@@ -35,6 +35,7 @@ namespace sym {
  * normalized target_pixel: The location of the correspondence in the target camera weight: The
  * weight of the factor gnc_mu: The mu convexity parameter for the Barron noise model gnc_scale: The
  * scale parameter for the Barron noise model epsilon: Small positive value
+ *     target_camera_model_class: The subclass of CameraCal to use as the target camera model
  *
  * Outputs:
  *     res: 2dof whiten residual of the reprojection
@@ -46,7 +47,7 @@ namespace sym {
  *          (1)
  */
 template <typename Scalar>
-void InverseRangeLandmarkSphericalCameraReprojectionErrorFactor(
+void InverseRangeLandmarkSphericalReprojectionErrorFactor(
     const sym::Pose3<Scalar>& source_pose, const sym::Pose3<Scalar>& target_pose,
     const Eigen::Matrix<Scalar, 9, 1>& target_calibration_storage,
     const Scalar source_inverse_range, const Eigen::Matrix<Scalar, 3, 1>& p_camera_source,

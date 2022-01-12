@@ -21,7 +21,9 @@ def deduce_input_type(
 
     # 1)
     if annotation is not parameter.empty:
-        return python_util.get_type_hints_of_maybe_bound_function(func)[parameter.name]
+        return T.get_type_hints(python_util.get_func_from_maybe_bound_function(func))[
+            parameter.name
+        ]
 
     # 2)
     if is_first_parameter and parameter.name == "self":
@@ -61,19 +63,21 @@ def symbolic_inputs(func: T.Callable, input_types: T.Sequence[T.ElementOrType] =
     Returns:
         A tuple with a symbolic object for each input to func
     """
+    parameters = [
+        p
+        for p in inspect.signature(func).parameters.values()
+        if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+    ]
+
     if input_types is None:
         input_types = deduce_input_types(func)
+    else:
+        assert len(parameters) == len(input_types)
 
-    parameters = inspect.signature(func).parameters
     # Formulate symbolic arguments to function
-    assert len(parameters) == len(input_types)
     inputs = Values()
-    for arg_parameter, arg_type in zip(parameters.values(), input_types):
-        if arg_parameter.kind in (
-            inspect.Parameter.POSITIONAL_ONLY,
-            inspect.Parameter.POSITIONAL_OR_KEYWORD,
-        ):
-            inputs[arg_parameter.name] = ops.StorageOps.symbolic(arg_type, arg_parameter.name)
+    for arg_parameter, arg_type in zip(parameters, input_types):
+        inputs[arg_parameter.name] = ops.StorageOps.symbolic(arg_type, arg_parameter.name)
 
     return inputs
 

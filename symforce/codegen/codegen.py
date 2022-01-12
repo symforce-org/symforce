@@ -169,6 +169,8 @@ class Codegen:
                 If multiple objects are returned, they must be named.
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
+            docstring: The docstring to be used with the generated function.  Default is to use the
+                       existing docstring
         """
         if name is None:
             assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
@@ -203,11 +205,12 @@ class Codegen:
 
         # Pull docstring out of function if not provided
         if docstring is None:
-            if func.__doc__:
-                docstring = func.__doc__
+            inner_func = python_util.get_func_from_maybe_bound_function(func)
+            if inner_func.__doc__:
+                docstring = inner_func.__doc__
             else:
                 docstring = Codegen.default_docstring(
-                    inputs=inputs, outputs=outputs, original_function=func
+                    inputs=inputs, outputs=outputs, original_function=inner_func
                 )
 
         return cls(

@@ -245,14 +245,14 @@ def plural(singular: str, count: int, plural: str = None) -> str:
         return plural or (singular + "s")
 
 
-def get_type_hints_of_maybe_bound_function(func: T.Callable) -> T.Dict[str, T.Type]:
+def get_func_from_maybe_bound_function(func: T.Callable) -> T.Callable:
     """
-    Get type hints for a function, handling bound functions created by functools.partial
+    Get the original function, from a function possibly bound by functools.partial
     """
     if isinstance(func, functools.partial):
-        return get_type_hints_of_maybe_bound_function(func.func)
+        return func.func
     else:
-        return T.get_type_hints(func)
+        return func
 
 
 def get_class_for_method(func: T.Callable) -> T.Type:
