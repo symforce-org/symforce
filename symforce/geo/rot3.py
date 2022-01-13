@@ -302,7 +302,9 @@ class Rot3(LieGroup):
         return y, p, r
 
     @classmethod
-    def from_yaw_pitch_roll(cls, yaw: T.Scalar, pitch: T.Scalar, roll: T.Scalar) -> Rot3:
+    def from_yaw_pitch_roll(
+        cls, yaw: T.Scalar = 0, pitch: T.Scalar = 0, roll: T.Scalar = 0
+    ) -> Rot3:
         """
         Construct from yaw, pitch, and roll Euler angles in radians
         """
