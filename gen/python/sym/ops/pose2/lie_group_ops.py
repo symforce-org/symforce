@@ -18,7 +18,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (T.Sequence[float], float) -> T.List[float]
+        # type: (T.Sequence[float], float) -> sym.Pose2
 
         # Total ops: 2
 
@@ -32,7 +32,7 @@ class LieGroupOps(object):
         _res[1] = math.sin(vec[2])
         _res[2] = vec[0]
         _res[3] = vec[1]
-        return _res
+        return sym.Pose2.from_storage(_res)
 
     @staticmethod
     def to_tangent(a, epsilon):
@@ -54,7 +54,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.Pose2, T.Sequence[float], float) -> T.List[float]
+        # type: (sym.Pose2, T.Sequence[float], float) -> sym.Pose2
 
         # Total ops: 11
 
@@ -71,7 +71,7 @@ class LieGroupOps(object):
         _res[1] = _a[0] * _tmp0 + _a[1] * _tmp1
         _res[2] = _a[2] + vec[0]
         _res[3] = _a[3] + vec[1]
-        return _res
+        return sym.Pose2.from_storage(_res)
 
     @staticmethod
     def local_coordinates(a, b, epsilon):

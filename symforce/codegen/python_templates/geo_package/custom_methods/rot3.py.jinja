@@ -3,7 +3,7 @@
     def __init__(self, q=None):
         # type: (T.Sequence[float]) -> None
         if q is None:
-            self.data = ops.GroupOps.identity()
+            self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
             assert len(q) == self.storage_dim()
             self.data = list(q)

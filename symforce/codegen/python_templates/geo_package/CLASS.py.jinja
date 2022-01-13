@@ -49,7 +49,7 @@ class {{ cls.__name__ }}(object):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[float]) -> {{ cls.__name__ }}
-        instance = cls()
+        instance = cls.__new__(cls)
 
         if isinstance(vec, list):
             instance.data = vec
@@ -68,19 +68,19 @@ class {{ cls.__name__ }}(object):
     @classmethod
     def identity(cls):
         # type: () -> {{ cls.__name__ }}
-        return cls.from_storage(ops.GroupOps.identity())
+        return ops.GroupOps.identity()
 
     def inverse(self):
     # type: () -> {{ cls.__name__ }}
-        return self.__class__.from_storage(ops.GroupOps.inverse(self))
+        return ops.GroupOps.inverse(self)
 
     def compose(self, b):
         # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
-        return self.__class__.from_storage(ops.GroupOps.compose(self, b))
+        return ops.GroupOps.compose(self, b)
 
     def between(self, b):
         # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
-        return self.__class__.from_storage(ops.GroupOps.between(self, b))
+        return ops.GroupOps.between(self, b)
 
     {% if is_lie_group %}
     # --------------------------------------------------------------------------
@@ -96,7 +96,7 @@ class {{ cls.__name__ }}(object):
     def from_tangent(cls, vec, epsilon=1e-8):
         # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
         assert len(vec) == cls.tangent_dim(), '{}, {}'.format(len(vec), cls.tangent_dim())
-        return cls.from_storage(ops.LieGroupOps.from_tangent(vec, epsilon))
+        return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
         # type: (float) -> T.List[float]
@@ -105,7 +105,7 @@ class {{ cls.__name__ }}(object):
     def retract(self, vec, epsilon=1e-8):
         # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
         assert len(vec) == self.tangent_dim(), '{}, {}'.format(len(vec), self.tangent_dim())
-        return self.__class__.from_storage(ops.LieGroupOps.retract(self, vec, epsilon))
+        return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
         # type: ({{ cls.__name__ }}, float) -> T.List[float]

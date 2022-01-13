@@ -18,7 +18,7 @@ class GroupOps(object):
 
     @staticmethod
     def identity():
-        # type: () -> T.List[float]
+        # type: () -> sym.Rot3
 
         # Total ops: 0
 
@@ -32,11 +32,11 @@ class GroupOps(object):
         _res[1] = 0
         _res[2] = 0
         _res[3] = 1
-        return _res
+        return sym.Rot3.from_storage(_res)
 
     @staticmethod
     def inverse(a):
-        # type: (sym.Rot3) -> T.List[float]
+        # type: (sym.Rot3) -> sym.Rot3
 
         # Total ops: 3
 
@@ -51,11 +51,11 @@ class GroupOps(object):
         _res[1] = -_a[1]
         _res[2] = -_a[2]
         _res[3] = _a[3]
-        return _res
+        return sym.Rot3.from_storage(_res)
 
     @staticmethod
     def compose(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> T.List[float]
+        # type: (sym.Rot3, sym.Rot3) -> sym.Rot3
 
         # Total ops: 32
 
@@ -71,11 +71,11 @@ class GroupOps(object):
         _res[1] = -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1]
         _res[2] = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2]
         _res[3] = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3]
-        return _res
+        return sym.Rot3.from_storage(_res)
 
     @staticmethod
     def between(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> T.List[float]
+        # type: (sym.Rot3, sym.Rot3) -> sym.Rot3
 
         # Total ops: 38
 
@@ -91,11 +91,11 @@ class GroupOps(object):
         _res[1] = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
         _res[2] = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]
         _res[3] = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        return _res
+        return sym.Rot3.from_storage(_res)
 
     @staticmethod
     def inverse_with_jacobian(a):
-        # type: (sym.Rot3) -> T.Tuple[T.List[float], numpy.ndarray]
+        # type: (sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray]
 
         # Total ops: 39
 
@@ -133,11 +133,11 @@ class GroupOps(object):
         _res_D_a[2, 0] = _tmp10 + _tmp9
         _res_D_a[2, 1] = -_tmp11 + _tmp12
         _res_D_a[2, 2] = -_tmp0 + _tmp1 + _tmp4
-        return _res, _res_D_a
+        return sym.Rot3.from_storage(_res), _res_D_a
 
     @staticmethod
     def compose_with_jacobians(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
+        # type: (sym.Rot3, sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray, numpy.ndarray]
 
         # Total ops: 260
 
@@ -267,11 +267,11 @@ class GroupOps(object):
         _res_D_b[2, 0] = -_tmp40 * _tmp77 + _tmp58 * _tmp78 - _tmp88 + _tmp89
         _res_D_b[2, 1] = -_tmp30 * _tmp78 + _tmp58 * _tmp86 - _tmp92 + _tmp93
         _res_D_b[2, 2] = _tmp50 * _tmp90 + _tmp83 + _tmp91
-        return _res, _res_D_a, _res_D_b
+        return sym.Rot3.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
+        # type: (sym.Rot3, sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray, numpy.ndarray]
 
         # Total ops: 201
 
@@ -385,4 +385,4 @@ class GroupOps(object):
         _res_D_b[2, 0] = -_tmp58 + _tmp68 + _tmp76
         _res_D_b[2, 1] = -_tmp39 * _tmp45 + _tmp70 - _tmp77
         _res_D_b[2, 2] = _tmp62 + _tmp63 + _tmp74
-        return _res, _res_D_a, _res_D_b
+        return sym.Rot3.from_storage(_res), _res_D_a, _res_D_b

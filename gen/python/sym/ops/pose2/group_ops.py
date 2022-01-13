@@ -18,7 +18,7 @@ class GroupOps(object):
 
     @staticmethod
     def identity():
-        # type: () -> T.List[float]
+        # type: () -> sym.Pose2
 
         # Total ops: 0
 
@@ -32,11 +32,11 @@ class GroupOps(object):
         _res[1] = 0
         _res[2] = 0
         _res[3] = 0
-        return _res
+        return sym.Pose2.from_storage(_res)
 
     @staticmethod
     def inverse(a):
-        # type: (sym.Pose2) -> T.List[float]
+        # type: (sym.Pose2) -> sym.Pose2
 
         # Total ops: 10
 
@@ -51,11 +51,11 @@ class GroupOps(object):
         _res[1] = -_a[1]
         _res[2] = -_a[0] * _a[2] - _a[1] * _a[3]
         _res[3] = -_a[0] * _a[3] + _a[1] * _a[2]
-        return _res
+        return sym.Pose2.from_storage(_res)
 
     @staticmethod
     def compose(a, b):
-        # type: (sym.Pose2, sym.Pose2) -> T.List[float]
+        # type: (sym.Pose2, sym.Pose2) -> sym.Pose2
 
         # Total ops: 16
 
@@ -71,11 +71,11 @@ class GroupOps(object):
         _res[1] = _a[0] * _b[1] + _a[1] * _b[0]
         _res[2] = _a[0] * _b[2] - _a[1] * _b[3] + _a[2]
         _res[3] = _a[0] * _b[3] + _a[1] * _b[2] + _a[3]
-        return _res
+        return sym.Pose2.from_storage(_res)
 
     @staticmethod
     def between(a, b):
-        # type: (sym.Pose2, sym.Pose2) -> T.List[float]
+        # type: (sym.Pose2, sym.Pose2) -> sym.Pose2
 
         # Total ops: 25
 
@@ -91,11 +91,11 @@ class GroupOps(object):
         _res[1] = _a[0] * _b[1] - _a[1] * _b[0]
         _res[2] = -_a[0] * _a[2] + _a[0] * _b[2] - _a[1] * _a[3] + _a[1] * _b[3]
         _res[3] = -_a[0] * _a[3] + _a[0] * _b[3] + _a[1] * _a[2] - _a[1] * _b[2]
-        return _res
+        return sym.Pose2.from_storage(_res)
 
     @staticmethod
     def inverse_with_jacobian(a):
-        # type: (sym.Pose2) -> T.Tuple[T.List[float], numpy.ndarray]
+        # type: (sym.Pose2) -> T.Tuple[sym.Pose2, numpy.ndarray]
 
         # Total ops: 18
 
@@ -125,11 +125,11 @@ class GroupOps(object):
         _res_D_a[2, 0] = 0
         _res_D_a[2, 1] = 0
         _res_D_a[2, 2] = -_a[0] ** 2 - _a[1] ** 2
-        return _res, _res_D_a
+        return sym.Pose2.from_storage(_res), _res_D_a
 
     @staticmethod
     def compose_with_jacobians(a, b):
-        # type: (sym.Pose2, sym.Pose2) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
+        # type: (sym.Pose2, sym.Pose2) -> T.Tuple[sym.Pose2, numpy.ndarray, numpy.ndarray]
 
         # Total ops: 27
 
@@ -173,11 +173,11 @@ class GroupOps(object):
         _res_D_b[2, 0] = 0
         _res_D_b[2, 1] = 0
         _res_D_b[2, 2] = _tmp7
-        return _res, _res_D_a, _res_D_b
+        return sym.Pose2.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(a, b):
-        # type: (sym.Pose2, sym.Pose2) -> T.Tuple[T.List[float], numpy.ndarray, numpy.ndarray]
+        # type: (sym.Pose2, sym.Pose2) -> T.Tuple[sym.Pose2, numpy.ndarray, numpy.ndarray]
 
         # Total ops: 47
 
@@ -227,4 +227,4 @@ class GroupOps(object):
         _res_D_b[2, 0] = 0
         _res_D_b[2, 1] = 0
         _res_D_b[2, 2] = _tmp2 ** 2 - _tmp5 * (_tmp3 - _tmp4)
-        return _res, _res_D_a, _res_D_b
+        return sym.Pose2.from_storage(_res), _res_D_a, _res_D_b

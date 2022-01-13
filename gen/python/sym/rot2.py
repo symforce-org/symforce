@@ -31,7 +31,7 @@ class Rot2(object):
     def __init__(self, z=None):
         # type: (T.Sequence[float]) -> None
         if z is None:
-            self.data = ops.GroupOps.identity()
+            self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
             assert len(z) == self.storage_dim()
             self.data = list(z)
@@ -65,7 +65,7 @@ class Rot2(object):
     @classmethod
     def from_storage(cls, vec):
         # type: (T.Sequence[float]) -> Rot2
-        instance = cls()
+        instance = cls.__new__(cls)
 
         if isinstance(vec, list):
             instance.data = vec
@@ -85,19 +85,19 @@ class Rot2(object):
     @classmethod
     def identity(cls):
         # type: () -> Rot2
-        return cls.from_storage(ops.GroupOps.identity())
+        return ops.GroupOps.identity()
 
     def inverse(self):
         # type: () -> Rot2
-        return self.__class__.from_storage(ops.GroupOps.inverse(self))
+        return ops.GroupOps.inverse(self)
 
     def compose(self, b):
         # type: (Rot2) -> Rot2
-        return self.__class__.from_storage(ops.GroupOps.compose(self, b))
+        return ops.GroupOps.compose(self, b)
 
     def between(self, b):
         # type: (Rot2) -> Rot2
-        return self.__class__.from_storage(ops.GroupOps.between(self, b))
+        return ops.GroupOps.between(self, b)
 
     # --------------------------------------------------------------------------
     # LieGroupOps concept
@@ -112,7 +112,7 @@ class Rot2(object):
     def from_tangent(cls, vec, epsilon=1e-8):
         # type: (T.Sequence[float], float) -> Rot2
         assert len(vec) == cls.tangent_dim(), "{}, {}".format(len(vec), cls.tangent_dim())
-        return cls.from_storage(ops.LieGroupOps.from_tangent(vec, epsilon))
+        return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
         # type: (float) -> T.List[float]
@@ -121,7 +121,7 @@ class Rot2(object):
     def retract(self, vec, epsilon=1e-8):
         # type: (T.Sequence[float], float) -> Rot2
         assert len(vec) == self.tangent_dim(), "{}, {}".format(len(vec), self.tangent_dim())
-        return self.__class__.from_storage(ops.LieGroupOps.retract(self, vec, epsilon))
+        return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
         # type: (Rot2, float) -> T.List[float]

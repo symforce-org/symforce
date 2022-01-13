@@ -67,7 +67,7 @@ class GeoPackageTest(unittest.TestCase):
         # TODO(Nathan): Consider reorganizing how the generated python geo package is structured so that
         # each class doesn't have to use helper functions to call the underlying group_ops functions
         # Example using the underlying group_ops implementation:
-        self.assertEqual(identity, geo_class.from_storage(group_ops.identity()))
+        self.assertEqual(identity, group_ops.identity())
 
         # Example using the helper functions:
         self.assertEqual(identity, geo_class.identity())
@@ -157,7 +157,7 @@ class GeoPackageTest(unittest.TestCase):
         # TODO(Nathan): Consider reorganizing how the generated python geo package is structured so that
         # each class doesn't have to use helper functions to call the underlying group_ops functions
         # Example using the underlying group_ops implementation:
-        self.assertEqual(identity, geo_class.from_storage(group_ops.identity()))
+        self.assertEqual(identity, group_ops.identity())
 
         # Example using the helper functions:
         self.assertEqual(identity, geo_class.identity())
@@ -247,7 +247,7 @@ class GeoPackageTest(unittest.TestCase):
         # TODO(Nathan): Consider reorganizing how the generated python geo package is structured so that
         # each class doesn't have to use helper functions to call the underlying group_ops functions
         # Example using the underlying group_ops implementation:
-        self.assertEqual(identity, geo_class.from_storage(group_ops.identity()))
+        self.assertEqual(identity, group_ops.identity())
 
         # Example using the helper functions:
         self.assertEqual(identity, geo_class.identity())
@@ -337,7 +337,7 @@ class GeoPackageTest(unittest.TestCase):
         # TODO(Nathan): Consider reorganizing how the generated python geo package is structured so that
         # each class doesn't have to use helper functions to call the underlying group_ops functions
         # Example using the underlying group_ops implementation:
-        self.assertEqual(identity, geo_class.from_storage(group_ops.identity()))
+        self.assertEqual(identity, group_ops.identity())
 
         # Example using the helper functions:
         self.assertEqual(identity, geo_class.identity())

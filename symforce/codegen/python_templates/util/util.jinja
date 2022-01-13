@@ -40,17 +40,17 @@
          # {{ spec.namespaces_dict[name] }}.{{ spec.typenames_dict[name] }}
         -#}
         T.Any
-    {%- elif is_input and is_sequence(T_or_value) -%}
-        T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
-    {%- else -%}
+    {%- elif is_sequence(T_or_value) -%}
         {%- if is_input -%}
-            {%- if "geo" in T.__module__ or "cam" in T.__module__ -%}
-                sym.
-            {%- endif -%}
-            {{- T.__name__ -}}
+            T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
         {%- else -%}
             T.List[float]
         {%- endif -%}
+    {%- else -%}
+        {%- if "geo" in T.__module__ or "cam" in T.__module__ -%}
+            sym.
+        {%- endif -%}
+        {{- T.__name__ -}}
     {%- endif -%}
 {% endmacro -%}
 
@@ -157,6 +157,12 @@ def {{ camelcase_to_snakecase(spec.name) }}(
     {% endfor %}
     return
     {%- for name, type in spec.outputs.items() %}
- _{{name}}{% if not loop.last %}, {% endif %}
+        {% set T = python_util.get_type(type) %}
+        {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
+ _{{name}}
+        {%- else %}
+ sym.{{T.__name__}}.from_storage(_{{name}})
+        {%- endif %}
+        {%- if not loop.last %}, {% endif %}
     {%- endfor -%}
 {% endmacro %}
