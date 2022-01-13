@@ -182,12 +182,12 @@ class Optimizer:
     def __init__(
         self,
         params: optimizer_params_t,
-        factors: typing.List[Factor] = ...,
-        epsilon: float = ...,
-        name: str = ...,
-        keys: typing.List[Key] = ...,
-        debug_stats: bool = ...,
-        check_derivatives: bool = ...,
+        factors: typing.List[Factor],
+        epsilon: float = 1e-09,
+        name: str = "sym::Optimize",
+        keys: typing.List[Key] = [],
+        debug_stats: bool = False,
+        check_derivatives: bool = False,
     ) -> None: ...
     def compute_all_covariances(
         self, linearization: Linearization

@@ -34,16 +34,10 @@ class SymforceCCSymStubsCodegenTest(TestCase):
     def test_generate_cc_sym_stubs(self) -> None:
         output_dir = Path(self.make_output_dir("sf_cc_sym_stubs_codegen_test"))
 
-        stubgen_output = self.cc_sym_stubgen_output()
-        # Add in Optimizer.__init__ Note(brad): I don't know why it wasn't generated in the first place
-        stubgen_output = re.sub(
-            r"(?<=class Optimizer\(\):)(\s*)",
-            r"\1def __init__(self, params: optimizer_params_t, factors: typing.List[Factor] = ..., epsilon: float = ..., name: str = ..., keys: typing.List[Key] = ..., debug_stats: bool = ..., check_derivatives: bool = ...) -> None: ...\1",
-            stubgen_output,
-        )
-
         # Change return type of Values.at to be Any rather than object
-        stubgen_output = re.sub(r"(def at\([^)]*\) ->) object", r"\1 typing.Any", stubgen_output)
+        stubgen_output = re.sub(
+            r"(def at\([^)]*\) ->) object", r"\1 typing.Any", self.cc_sym_stubgen_output()
+        )
 
         @dataclass
         class TypeStubParts:
