@@ -1,3 +1,4 @@
+import functools
 import importlib.util
 import logging
 import numpy as np
@@ -478,7 +479,7 @@ class SymforceCodegenTest(TestCase):
             Codegen.function should assert on trying to deduce the name from a lambda
         """
 
-        def my_function(x: T.Scalar) -> T.Scalar:
+        def my_function(x: T.Scalar, y: T.Scalar) -> T.Scalar:
             return x
 
         self.assertEqual(
@@ -488,6 +489,14 @@ class SymforceCodegenTest(TestCase):
 
         self.assertEqual(
             codegen.Codegen.function(func=my_function, config=codegen.CppConfig()).name,
+            "my_function",
+        )
+
+        # Should still work with functools.partial
+        self.assertEqual(
+            codegen.Codegen.function(
+                func=functools.partial(my_function, y=2), config=codegen.CppConfig()
+            ).name,
             "my_function",
         )
 

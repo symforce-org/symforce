@@ -173,8 +173,9 @@ class Codegen:
                        existing docstring
         """
         if name is None:
-            assert func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
-            name = func.__name__
+            inner_func = python_util.get_func_from_maybe_bound_function(func)
+            assert inner_func.__name__ != "<lambda>", "Can't deduce name automatically for a lambda"
+            name = inner_func.__name__
 
         inputs = symbolic_inputs(func, input_types)
 
