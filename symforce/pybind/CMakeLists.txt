@@ -8,6 +8,7 @@ pybind11_add_module(
   cc_optimizer.cc
   cc_sym.cc
   cc_values.cc
+  sym_type_casters.cc
 )
 
 if(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH)

@@ -9,6 +9,21 @@ namespace sym {
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
+Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
+                                                      const std::vector<Factor<Scalar>>& factors,
+                                                      const Scalar epsilon, const std::string& name,
+                                                      const std::vector<Key>& keys,
+                                                      bool debug_stats, bool check_derivatives)
+    : factors_(factors),
+      nonlinear_solver_(params, name, epsilon),
+      epsilon_(epsilon),
+      debug_stats_(debug_stats),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
+      index_(),
+      linearizer_(factors_, keys_),
+      linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
+
+template <typename ScalarType, typename NonlinearSolverType>
 template <typename... NonlinearSolverArgs>
 Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
     const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
@@ -20,6 +35,22 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
       epsilon_(epsilon),
       debug_stats_(debug_stats),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
+      index_(),
+      linearizer_(factors_, keys_),
+      linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
+
+template <typename ScalarType, typename NonlinearSolverType>
+Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
+                                                      std::vector<Factor<Scalar>>&& factors,
+                                                      const Scalar epsilon, const std::string& name,
+                                                      std::vector<Key>&& keys, bool debug_stats,
+                                                      bool check_derivatives)
+    : factors_(std::move(factors)),
+      nonlinear_solver_(params, name, epsilon),
+      epsilon_(epsilon),
+      debug_stats_(debug_stats),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)
+                         : std::move(keys)),
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}

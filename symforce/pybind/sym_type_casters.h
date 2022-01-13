@@ -19,30 +19,45 @@
 
 namespace py = pybind11;
 
-template <typename T>
-constexpr char kPyTypeName[0];
-template <>
-constexpr char kPyTypeName<sym::Rot2d>[] = "Rot2";
-template <>
-constexpr char kPyTypeName<sym::Rot3d>[] = "Rot3";
-template <>
-constexpr char kPyTypeName<sym::Pose2d>[] = "Pose2";
-template <>
-constexpr char kPyTypeName<sym::Pose3d>[] = "Pose3";
-
 namespace pybind11 {
 namespace detail {
+
+// based on pybind11/cast.h:783
+template <typename T>
+struct handle_sym_type_name {
+  static constexpr auto name = _("");
+};
+
+template <>
+struct handle_sym_type_name<sym::Rot2d> {
+  static constexpr auto name = _("Rot2");
+};
+
+template <>
+struct handle_sym_type_name<sym::Rot3d> {
+  static constexpr auto name = _("Rot3");
+};
+
+template <>
+struct handle_sym_type_name<sym::Pose2d> {
+  static constexpr auto name = _("Pose2");
+};
+
+template <>
+struct handle_sym_type_name<sym::Pose3d> {
+  static constexpr auto name = _("Pose3");
+};
 
 // type_caster is what does the conversions between python types and C++ types. Needed
 // for custom conversions (which we need for the geo types, since we're not using the wrapper)
 template <typename T>
 struct sym_type_caster {
-  PYBIND11_TYPE_CASTER(T, _(kPyTypeName<T>));
+  PYBIND11_TYPE_CASTER(T, handle_sym_type_name<T>::name);
 
   bool load(const handle src, bool /* implicit_conversion */) {
     // Converts src (a thin wrapper of a PyObject*) to a T, and assigns to value (a member of the
     // class declared by PYBIND11_TYPE_CASTER)
-    if (!py::isinstance(src, py::module_::import("sym").attr(kPyTypeName<T>))) {
+    if (!py::isinstance(src, py::module_::import("sym").attr(handle_sym_type_name<T>::name.text))) {
       return false;
     }
     const std::vector<double> data_vec = src.attr("to_storage")().cast<std::vector<double>>();
@@ -59,7 +74,7 @@ struct sym_type_caster {
       list[i] = data[i];
     }
     const py::object from_storage =
-        py::module_::import("sym").attr(kPyTypeName<T>).attr("from_storage");
+        py::module_::import("sym").attr(handle_sym_type_name<T>::name.text).attr("from_storage");
     py::object result = from_storage(list);
     result.inc_ref();
     return result;

@@ -57,7 +57,7 @@ class GncOptimizer : public BaseOptimizerType {
     values->template Set<Scalar>(gnc_mu_key_, gnc_params_.mu_initial);
 
     // Cache the index entry for mu
-    const auto mu_index = values->template Items().at(gnc_mu_key_);
+    const auto mu_index = values->Items().at(gnc_mu_key_);
 
     optimizer_params_t optimizer_params = this->nonlinear_solver_.Params();
     const double early_exit_min_reduction = optimizer_params.early_exit_min_reduction;

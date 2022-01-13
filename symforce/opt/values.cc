@@ -42,7 +42,7 @@ bool Values<Scalar>::Has(const Key& key) const {
 template <typename Scalar>
 void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& other) {
   for (const auto& entry_other : index.entries) {
-    const auto offset_other = other.data_.template begin() + entry_other.offset;
+    const auto offset_other = other.data_.begin() + entry_other.offset;
     const Key key(entry_other.key);
     auto it = map_.find(key);
     // insert keys if not existed
@@ -54,8 +54,7 @@ void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& oth
       // extend end of data
       data_.insert(data_.end(), offset_other, offset_other + entry_other.storage_dim);
     } else {
-      std::copy_n(offset_other, entry_other.storage_dim,
-                  data_.template begin() + it->second.offset);
+      std::copy_n(offset_other, entry_other.storage_dim, data_.begin() + it->second.offset);
     }
   }
 }
@@ -187,8 +186,8 @@ template <typename Scalar>
 void Values<Scalar>::Update(const index_t& index, const Values<Scalar>& other) {
   SYM_ASSERT(data_.size() == other.data_.size());
   for (const index_entry_t& entry : index.entries) {
-    std::copy_n(other.data_.template begin() + entry.offset, entry.storage_dim,
-                data_.template begin() + entry.offset);
+    std::copy_n(other.data_.begin() + entry.offset, entry.storage_dim,
+                data_.begin() + entry.offset);
   }
 }
 
@@ -201,8 +200,8 @@ void Values<Scalar>::Update(const index_t& index_this, const index_t& index_othe
     const index_entry_t& entry_other = index_other.entries[i];
     SYM_ASSERT(entry_this.storage_dim == entry_other.storage_dim);
     SYM_ASSERT(entry_this.key == entry_other.key);
-    std::copy_n(other.data_.template begin() + entry_other.offset, entry_this.storage_dim,
-                data_.template begin() + entry_this.offset);
+    std::copy_n(other.data_.begin() + entry_other.offset, entry_this.storage_dim,
+                data_.begin() + entry_this.offset);
   }
 }
 

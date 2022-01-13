@@ -128,7 +128,7 @@ struct RegisterMatricesHelper<0, 1> {
  * n, m in [1, SquareSize]
  */
 template <int SquareSize>
-constexpr void RegisterMatrices(py::class_<sym::Valuesd> cls) {
+constexpr void RegisterMatrices(py::class_<sym::Valuesd>& cls) {
   RegisterMatricesHelper<SquareSize, SquareSize>::Register(cls);
 }
 

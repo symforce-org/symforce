@@ -6,6 +6,8 @@
 
 #include "./sym_type_casters.h"
 
+namespace py = pybind11;
+
 namespace sym {
 
 void AddLinearizationWrapper(pybind11::module_ module) {

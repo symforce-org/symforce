@@ -28,10 +28,10 @@ template <typename Scalar>
 void ComputeCovarianceBlockWithSchurComplement(Eigen::SparseMatrix<Scalar>* const hessian_lower,
                                                const size_t block_dim, const Scalar epsilon,
                                                sym::MatrixX<Scalar>* const covariance_block) {
-  const int marginalized_dim = hessian_lower->template rows() - block_dim;
+  const int marginalized_dim = hessian_lower->rows() - block_dim;
 
   // Damp the C portion of the hessian, which is the block we need to invert directly
-  hessian_lower->template diagonal().template tail(marginalized_dim).template array() += epsilon;
+  hessian_lower->diagonal().tail(marginalized_dim).array() += epsilon;
 
   // Compute the inverse of the Schur complement
   // TODO(aaron): Cache the solver and the sparsity pattern for this. Similarly this doesn't handle
