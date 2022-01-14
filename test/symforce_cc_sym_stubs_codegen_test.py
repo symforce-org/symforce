@@ -25,7 +25,13 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                 "-o",
                 output_dir,
                 "cc_sym",
-            ]
+            ],
+            env=dict(
+                os.environ,
+                PYTHONPATH=os.pathsep.join(
+                    [os.environ.get("PYTHONPATH", ""), os.fspath(path_util.cc_sym_install_dir())]
+                ),
+            ),
         )
         generated_file = output_dir / "cc_sym-stubs" / "__init__.pyi"
 
