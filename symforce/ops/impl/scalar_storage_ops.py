@@ -1,4 +1,3 @@
-from symforce import python_util
 from symforce import typing as T
 from symforce import sympy as sm
 

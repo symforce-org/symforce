@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import numpy as np
 
-import symforce
 from symforce import ops
 from symforce.ops.interfaces import Storage
 from symforce import sympy as sm
@@ -147,13 +146,13 @@ class Matrix(Storage):
         instance = Storage.__new__(fixed_size_type)
 
         # Set the underlying sympy array
-        instance.mat = sm.Matrix(rows, cols, flat_list)
+        instance.mat = sm.Matrix(rows, cols, flat_list, **kwargs)
 
         return instance
 
     def __init__(self, *args: _T.Any, **kwargs: _T.Any) -> None:
         if _T.TYPE_CHECKING:
-            self.mat = sm.Matrix()
+            self.mat = sm.Matrix(*args, **kwargs)
 
         assert self.__class__.SHAPE == self.mat.shape, "Inconsistent Matrix"
 
@@ -254,8 +253,8 @@ class Matrix(Storage):
         Construct a square matrix from the diagonal.
         """
         mat = cls.zeros(len(diagonal), len(diagonal))
-        for i in range(len(diagonal)):
-            mat[i, i] = diagonal[i]
+        for i, x in enumerate(diagonal):
+            mat[i, i] = x
         return mat
 
     # NOTE(aaron):  The following set of overloads is the correct signature for `eye`. However, when
@@ -426,7 +425,7 @@ class Matrix(Storage):
 
         if tangent_space and not isinstance(X, Matrix):
             # This imports geo, so lazily import here
-            from symforce import jacobian_helpers
+            from symforce import jacobian_helpers  # pylint: disable=cyclic-import
 
             # This calls Matrix.jacobian, so don't call it if X is a Matrix to prevent recursion
             return jacobian_helpers.tangent_jacobians(self, [X])[0]
@@ -807,7 +806,7 @@ class Matrix(Storage):
         """
         Display self.mat in IPython, with SymPy's pretty printing
         """
-        display(self.mat)  # type: ignore # not defined outside of ipython
+        display(self.mat)  # type: ignore # pylint: disable=undefined-variable # not defined outside of ipython
 
     @staticmethod
     def init_printing() -> None:

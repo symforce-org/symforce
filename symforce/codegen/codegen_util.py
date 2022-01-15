@@ -2,15 +2,12 @@
 Shared helper code between codegen of all languages.
 """
 
-from enum import Enum
 import importlib.abc
 import importlib.util
-import inspect
 import itertools
 import os
 from pathlib import Path
 import sys
-import textwrap
 
 from symforce import ops
 from symforce import geo
@@ -19,7 +16,6 @@ from symforce import sympy as sm
 from symforce import typing as T
 from symforce.codegen import printers, format_util
 from symforce.codegen import codegen_config
-from symforce import path_util
 from symforce import python_util
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
@@ -246,7 +242,7 @@ def format_symbols(
         for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
     ]
 
-    sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs, config)
+    sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs)
     sparse_output_terms_formatted = [
         list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
         for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
@@ -435,9 +431,7 @@ def get_sparse_mat_data(sparse_matrix: geo.Matrix) -> T.Dict[str, T.Any]:
     return sparse_mat_data
 
 
-def get_formatted_sparse_list(
-    sparse_outputs: Values, config: codegen_config.CodegenConfig
-) -> T.List[T.List[T.Scalar]]:
+def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions for sparse matrices.
     """
@@ -459,8 +453,11 @@ def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
 
     if isinstance(config, codegen_config.PythonConfig):
         # Support specifying python2 for different versions of sympy in different ways
-        settings = dict()
-        if "standard" in printers.PythonCodePrinter._default_settings:
+        settings = {}
+        if (
+            "standard"
+            in printers.PythonCodePrinter._default_settings  # pylint: disable=protected-access
+        ):
             settings["standard"] = config.standard.value
 
         printer = printers.PythonCodePrinter(settings=settings)
@@ -469,13 +466,11 @@ def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
             printer.standard = config.standard.value
 
     elif isinstance(config, codegen_config.CppConfig):
-        from sympy.codegen import ast
-
         printer = printers.CppCodePrinter(
-            settings=dict(
+            settings={
                 # TODO(hayk): Emit separately for floats and doubles.
-                # type_aliases={ast.real: ast.float32}
-            )
+                # type_aliases: {sympy.codegen.ast.real: sympy.codegen.ast.float32}
+            }
         )
     else:
         raise NotImplementedError(f"Unknown config type: {config}")

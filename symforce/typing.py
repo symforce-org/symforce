@@ -6,7 +6,7 @@ import dataclasses
 import os
 
 # Expose all types.
-from typing import *
+from typing import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 # This is kind of a heavy/unnecessary dependency,here so only import when type checking so we can
 # resolve the annotation below

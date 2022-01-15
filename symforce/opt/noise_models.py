@@ -11,7 +11,8 @@ class NoiseModel:
     def __init__(self, epsilon: T.Scalar) -> None:
         self.epsilon = epsilon
 
-    def reduce(self, whitened_residual: geo.Matrix) -> T.Scalar:
+    @staticmethod
+    def reduce(whitened_residual: geo.Matrix) -> T.Scalar:
         """
         Take the sum of squares of the residual.
         """

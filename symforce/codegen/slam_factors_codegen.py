@@ -14,7 +14,6 @@ from symforce import cam
 from symforce import codegen
 from symforce import geo
 from symforce import python_util
-from symforce import sympy as sm
 from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
 

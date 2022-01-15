@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from symforce import typing as T
 
 from .class_group_ops import ClassGroupOps
@@ -20,11 +22,11 @@ class ClassLieGroupOps(ClassGroupOps):
         return a.to_tangent(epsilon)
 
     @staticmethod
-    def storage_D_tangent(a: T.Element) -> "geo.Matrix":
+    def storage_D_tangent(a: T.Element) -> geo.Matrix:
         return a.storage_D_tangent()
 
     @staticmethod
-    def tangent_D_storage(a: T.Element) -> "geo.Matrix":
+    def tangent_D_storage(a: T.Element) -> geo.Matrix:
         return a.tangent_D_storage()
 
     @staticmethod

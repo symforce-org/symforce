@@ -5,15 +5,12 @@ import contextlib
 import dataclasses
 import numpy as np
 
-from symforce import logger
 from symforce import sympy as sm
 from symforce import typing as T
 from symforce import geo
-from symforce import cam
 from symforce import initialization
 from symforce import ops
 from symforce import python_util
-from symforce.ops.interfaces import Storage
 
 from .attr_accessor import AttrAccessor
 from .index_entry import IndexEntry
@@ -130,9 +127,11 @@ class Values(T.MutableMapping[str, T.Any]):
         index_dict = collections.OrderedDict()
         for name, value in items:
 
-            entry_helper = lambda datatype=type(value), shape=None, item_index=None: IndexEntry(
-                offset=offset,
-                storage_dim=ops.StorageOps.storage_dim(value),
+            entry_helper = lambda datatype=type(
+                value
+            ), shape=None, item_index=None, curr_offset=offset, curr_value=value: IndexEntry(
+                offset=curr_offset,
+                storage_dim=ops.StorageOps.storage_dim(curr_value),
                 stored_datatype=datatype,
                 shape=shape,
                 item_index=item_index,
@@ -147,7 +146,10 @@ class Values(T.MutableMapping[str, T.Any]):
             elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
                 entry = entry_helper(datatype=T.Scalar)
             elif isinstance(value, (list, tuple)):
-                assert all([type(v) == type(value[0]) for v in value])
+                assert all(
+                    type(v) == type(value[0])  # pylint: disable=unidiomatic-typecheck
+                    for v in value
+                )
                 name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
                 entry = entry_helper(item_index=item_index)
@@ -719,8 +721,8 @@ class Values(T.MutableMapping[str, T.Any]):
         else:
             try:
                 name = value.name
-            except AttributeError:
-                raise NameError(f"Expr of type {type(value)} has no .name")
+            except AttributeError as ex:
+                raise NameError(f"Expr of type {type(value)} has no .name") from ex
             else:
                 self[self._remove_scope(name)] = value
 

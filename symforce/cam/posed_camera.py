@@ -4,7 +4,6 @@ from .camera_cal import CameraCal
 from .camera import Camera
 
 from symforce import geo
-from symforce import sympy as sm
 from symforce import typing as T
 
 

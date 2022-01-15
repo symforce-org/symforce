@@ -60,7 +60,7 @@ class SymforceGenCodegenTest(TestCase):
         for cls in geo_package_codegen.DEFAULT_GEO_TYPES:
             tangent_D_storage_codegen = codegen.Codegen.function(
                 func=ops.LieGroupOps.tangent_D_storage,
-                input_types=[cls, sm.Symbol],
+                input_types=[cls],
                 config=codegen.CppConfig(),
             )
             tangent_D_storage_codegen.generate_function(

@@ -8,4 +8,4 @@ from symforce import path_util
 
 sys.path.append(os.fspath(path_util.cc_sym_install_dir()))
 
-from cc_sym import *
+from cc_sym import *  # pylint: disable=wildcard-import

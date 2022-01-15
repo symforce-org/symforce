@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
 from symforce.python_util import get_type
@@ -32,7 +34,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
         return get_type(a)([x for v in a for x in LieGroupOps.to_tangent(v, epsilon)])
 
     @staticmethod
-    def storage_D_tangent(a: T.SequenceElement) -> "geo.Matrix":
+    def storage_D_tangent(a: T.SequenceElement) -> geo.Matrix:
         from symforce import geo
 
         mat = geo.Matrix(StorageOps.storage_dim(a), LieGroupOps.tangent_dim(a))
@@ -47,7 +49,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
         return mat
 
     @staticmethod
-    def tangent_D_storage(a: T.SequenceElement) -> "geo.Matrix":
+    def tangent_D_storage(a: T.SequenceElement) -> geo.Matrix:
         from symforce import geo
 
         mat = geo.Matrix(LieGroupOps.tangent_dim(a), StorageOps.storage_dim(a))

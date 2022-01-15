@@ -5,7 +5,6 @@ from symforce.ops.interfaces import LieGroup
 from symforce import typing as T
 
 from .matrix import Matrix
-from .matrix import Matrix31
 from .matrix import Matrix33
 from .matrix import Vector3
 from .rot3 import Rot3

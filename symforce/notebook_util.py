@@ -46,7 +46,9 @@ def display_code(code: str, language: str) -> None:
     lexer = T.cast(T.Any, pygments).lexers.get_lexer_by_name(language)
 
     # And sometimes not this either
-    formatter = T.cast(T.Any, pygments).formatters.HtmlFormatter(noclasses=True)
+    formatter = T.cast(T.Any, pygments).formatters.HtmlFormatter(  # pylint: disable=no-member
+        noclasses=True
+    )
     html = pygments.highlight(code, lexer, formatter)
 
     IPython.display.display(IPython.display.HTML(html))

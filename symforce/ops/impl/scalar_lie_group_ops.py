@@ -1,6 +1,5 @@
-import numpy as np
+from __future__ import annotations
 
-from symforce import python_util
 from symforce import typing as T
 from symforce import sympy as sm
 
@@ -27,13 +26,13 @@ class ScalarLieGroupOps(ScalarGroupOps):
         return [a]
 
     @staticmethod
-    def storage_D_tangent(a: T.ScalarElement) -> "geo.Matrix":
+    def storage_D_tangent(a: T.ScalarElement) -> geo.Matrix:
         from symforce import geo
 
         return geo.Matrix([1])
 
     @staticmethod
-    def tangent_D_storage(a: T.ScalarElement) -> "geo.Matrix":
+    def tangent_D_storage(a: T.ScalarElement) -> geo.Matrix:
         from symforce import geo
 
         return geo.Matrix([1])

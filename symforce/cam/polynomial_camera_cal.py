@@ -49,13 +49,13 @@ class PolynomialCameraCal(CameraCal):
                      are numerical. The maximum FOV (field of view) determines the maximum
                      image plane coordinates which is used to compute maximum radius.
         """
-        super(PolynomialCameraCal, self).__init__(focal_length, principal_point, distortion_coeffs)
+        super().__init__(focal_length, principal_point, distortion_coeffs)
 
         if critical_undistorted_radius is not None:
             self.critical_undistorted_radius = critical_undistorted_radius
         else:
             if any(
-                [isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs]
+                isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs
             ):
                 raise ValueError(
                     "critical_undistorted_radius must be provided if the distortion_coeffs are not all numerical"

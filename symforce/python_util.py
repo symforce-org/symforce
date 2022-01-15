@@ -57,10 +57,13 @@ def execute_subprocess(
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
     logger.info(f"Subprocess: {cmd_str}")
 
-    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)  # type: ignore
-    (stdout, _) = proc.communicate(stdin_data_encoded)
+    with subprocess.Popen(
+        cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
+    ) as proc:
+        (stdout, _) = proc.communicate(stdin_data_encoded)
+        return_code = proc.returncode
 
-    going_to_log_to_err = proc.returncode != 0 and log_stdout_to_error_on_error
+    going_to_log_to_err = return_code != 0 and log_stdout_to_error_on_error
 
     stdout_decoded = stdout.decode("utf-8")
     if log_stdout and not going_to_log_to_err:
@@ -68,11 +71,11 @@ def execute_subprocess(
 
     if going_to_log_to_err:
         logger.error(
-            f"Subprocess {cmd} exited with code: {proc.returncode}.  Output:\n{stdout_decoded}"
+            f"Subprocess {cmd} exited with code: {return_code}.  Output:\n{stdout_decoded}"
         )
 
-    if proc.returncode != 0:
-        raise subprocess.CalledProcessError(proc.returncode, cmd, stdout_decoded)
+    if return_code != 0:
+        raise subprocess.CalledProcessError(return_code, cmd, stdout_decoded)
 
     return stdout_decoded
 
@@ -200,7 +203,7 @@ class InvalidPythonIdentifierError(InvalidKeyError):
 
 
 def base_and_indices(indexed_array: str) -> T.Tuple[str, T.List[int]]:
-    """
+    r"""
     Decomposes indexed_array into (base, indices) in the sense that,
     "arr[1][2]" -> ("arr", [1, 2]). base is the initial substring of indexed_array
     that does not contain either "[" or "]"; indices is is the list of integer indices

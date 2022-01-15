@@ -5,7 +5,7 @@ from .scalar_storage_ops import ScalarStorageOps
 
 class ScalarGroupOps(ScalarStorageOps):
     @staticmethod
-    def identity(a: T.ScalarElementOrType) -> T.ScalarElement:
+    def identity(_: T.ScalarElementOrType) -> T.ScalarElement:
         return 0.0
 
     @staticmethod

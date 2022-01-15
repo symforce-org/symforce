@@ -4,7 +4,6 @@ import tempfile
 
 from symforce import logger
 from symforce import typing as T
-from symforce import python_util
 from symforce.values import Values, IndexEntry
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
@@ -73,7 +72,7 @@ def generate_types(
         "name": package_name,
         "scalar_type": scalar_type,
         "types_dict": types_dict,
-        "to_set": lambda a: set(a),
+        "to_set": set,
     }
 
     types_util = {"np.prod": np.prod}
@@ -122,8 +121,8 @@ def generate_types(
     # to get the namespace of a type (whether internal or external) from the name of the variable
     # when generating code.
     # TODO(nathan): Not sure if all edge cases are caught in the following, could probably clean this up some
-    codegen_data["typenames_dict"] = dict()  # Maps typenames to generated types
-    codegen_data["namespaces_dict"] = dict()  # Maps typenames to namespaces
+    codegen_data["typenames_dict"] = {}  # Maps typenames to generated types
+    codegen_data["namespaces_dict"] = {}  # Maps typenames to namespaces
     for name in values_indices.keys():
         # Record namespace/typenames for top-level types. If the type is external, we get the
         # namespace and typename from shared_types.
@@ -168,9 +167,9 @@ def build_types_dict(
     Compute the structure of the types we need to generate for the given Values.
     """
     if shared_types is None:
-        shared_types = dict()
+        shared_types = {}
 
-    types_dict: T.Dict[str, T.Dict[str, T.Any]] = dict()
+    types_dict: T.Dict[str, T.Dict[str, T.Any]] = {}
 
     for key, index in values_indices.items():
         _fill_types_dict_recursive(

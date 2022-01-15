@@ -18,7 +18,7 @@ namespace sym {
  *
  */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a, const Scalar epsilon) {
+Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a) {
   // Total ops: 7
 
   // Input arrays

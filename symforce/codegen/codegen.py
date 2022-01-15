@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import enum
-import inspect
 import os
 import pathlib
 import tempfile
@@ -87,12 +86,12 @@ class Codegen:
 
         # All symbols in outputs must be present in inputs
         input_symbols = set(inputs.to_storage())
-        assert all([sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage()])
+        assert all(sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage())
 
         # Names given by keys in inputs/outputs must be valid variable names
         # TODO(aaron): Also check recursively
-        assert all([k.isidentifier() for k in inputs.keys()])
-        assert all([k.isidentifier() for k in outputs.keys()])
+        assert all(k.isidentifier() for k in inputs.keys())
+        assert all(k.isidentifier() for k in outputs.keys())
 
         # Symbols in inputs must be unique
         assert len(set(inputs.to_storage())) == len(
@@ -102,7 +101,7 @@ class Codegen:
         )
 
         # Outputs must not have same variable names/keys as inputs
-        assert all([key not in list(outputs.keys()) for key in inputs.keys()])
+        assert all(key not in list(outputs.keys()) for key in inputs.keys())
 
         self.inputs = inputs
         self.outputs = outputs
@@ -117,8 +116,8 @@ class Codegen:
         # Mapping between sparse matrix keys and constants needed for static CSC construction
         self.sparse_mat_data: T.Dict[str, T.Dict[str, T.Any]] = {}
         if sparse_matrices is not None:
-            assert all([key in outputs for key in sparse_matrices])
-            assert all([isinstance(outputs[key], geo.Matrix) for key in sparse_matrices])
+            assert all(key in outputs for key in sparse_matrices)
+            assert all(isinstance(outputs[key], geo.Matrix) for key in sparse_matrices)
             for key in sparse_matrices:
                 self.sparse_mat_data[key] = codegen_util.get_sparse_mat_data(outputs[key])
 
@@ -138,6 +137,11 @@ class Codegen:
             sparse_mat_data=self.sparse_mat_data,
             config=self.config,
         )
+        self.types_included: T.Optional[T.Set[str]] = None
+        self.typenames_dict: T.Optional[T.Dict[str, str]] = None
+        self.namespaces_dict: T.Optional[T.Dict[str, str]] = None
+        self.unique_namespaces: T.Optional[T.Set[str]] = None
+        self.namespace: T.Optional[str] = None
 
     @classmethod
     def function(
@@ -333,7 +337,8 @@ class Codegen:
         self.typenames_dict = types_codegen_data["typenames_dict"]
         # Maps typenames to namespaces
         self.namespaces_dict = types_codegen_data["namespaces_dict"]
-        self.unique_namespaces = {v for v in self.namespaces_dict.values()}
+        assert self.namespaces_dict is not None
+        self.unique_namespaces = set(self.namespaces_dict.values())
 
         # Namespace of this function + generated types
         self.namespace = namespace

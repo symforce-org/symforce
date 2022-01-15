@@ -56,7 +56,7 @@ def format_py_dir(dirname: str) -> None:
     """
     Autoformat python files in a directory (recursively) in-place
     """
-    for root, dirs, files in os.walk(dirname):
+    for root, _, files in os.walk(dirname):
         for filename in files:
             if filename.endswith(".py"):
                 black.format_file_in_place(

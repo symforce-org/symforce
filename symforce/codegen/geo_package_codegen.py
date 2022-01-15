@@ -16,7 +16,6 @@ from symforce.codegen import CppConfig
 from symforce.codegen import PythonConfig
 from symforce.codegen import codegen_util
 from symforce.codegen import template_util
-from symforce import path_util
 
 CURRENT_DIR = os.path.dirname(__file__)
 # Default geo types to generate

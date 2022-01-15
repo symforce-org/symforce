@@ -46,7 +46,7 @@ def deduce_input_types(func: T.Callable) -> T.Sequence[T.ElementOrType]:
     signature = inspect.signature(func)
 
     input_types = []
-    for i, (parameter_name, parameter) in enumerate(signature.parameters.items()):
+    for i, parameter in enumerate(signature.parameters.values()):
         input_types.append(deduce_input_type(parameter, func, i == 0))
 
     return input_types
@@ -72,7 +72,9 @@ def symbolic_inputs(func: T.Callable, input_types: T.Sequence[T.ElementOrType] =
     if input_types is None:
         input_types = deduce_input_types(func)
     else:
-        assert len(parameters) == len(input_types)
+        assert len(parameters) == len(
+            input_types
+        ), f"Parameters: {parameters}, inputs_types: {input_types}"
 
     # Formulate symbolic arguments to function
     inputs = Values()

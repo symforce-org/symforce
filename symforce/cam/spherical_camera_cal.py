@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import math
-import numpy as np
 
 from .camera_cal import CameraCal
 
 from symforce.cam.camera_util import compute_odd_polynomial_critical_point
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
-from symforce import logger
 from symforce import sympy as sm
 from symforce import typing as T
 
@@ -66,13 +64,13 @@ class SphericalCameraCal(CameraCal):
                        numerical, see the description for critical_theta.  The default value of 180
                        degrees should generally be fine regardless of the actual field of view
         """
-        super(SphericalCameraCal, self).__init__(focal_length, principal_point, distortion_coeffs)
+        super().__init__(focal_length, principal_point, distortion_coeffs)
 
         if critical_theta is not None:
             self.critical_theta = critical_theta
         else:
             if any(
-                [isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs]
+                isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs
             ):
                 raise ValueError(
                     "critical_theta must be provided if the distortion_coeffs are not all numerical"

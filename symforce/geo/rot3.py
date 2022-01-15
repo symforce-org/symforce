@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import numpy as np
-
 from symforce.ops.interfaces import LieGroup
 from symforce import sympy as sm
 from symforce import typing as T

@@ -7,7 +7,6 @@ from symforce import typing as T
 from symforce import sympy as sm
 from symforce.codegen import CppConfig
 from symforce.codegen import Codegen
-from symforce.values import Values
 
 TYPES = (geo.Rot2, geo.Rot3, geo.V3, geo.Pose2, geo.Pose3)
 
@@ -52,7 +51,7 @@ def get_prior_docstring() -> str:
 def between_factor(
     a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
 ) -> geo.Matrix:
-    assert type(a) == type(b) == type(a_T_b)
+    assert type(a) == type(b) == type(a_T_b)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
 
     # Compute error
@@ -69,7 +68,7 @@ def between_factor(
 def prior_factor(
     value: T.Element, prior: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
 ) -> geo.Matrix:
-    assert type(value) == type(prior)
+    assert type(value) == type(prior)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
 
     # Compute error

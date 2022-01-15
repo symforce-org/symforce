@@ -5,7 +5,6 @@ import sys
 import tempfile
 import unittest
 
-import symforce
 from symforce import logger
 from symforce import python_util
 from symforce import typing as T
@@ -37,7 +36,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
 
         unittest.main()
 
-    def make_output_dir(self, prefix: str, dir: str = "/tmp") -> str:
+    def make_output_dir(self, prefix: str, directory: str = "/tmp") -> str:
         """
         Create a temporary output directory, which will be automatically removed (regardless of
         exceptions) on shutdown, unless logger.level is DEBUG
@@ -49,7 +48,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Returns:
             str: The absolute path to the created output directory
         """
-        output_dir = tempfile.mkdtemp(prefix=prefix, dir=dir)
+        output_dir = tempfile.mkdtemp(prefix=prefix, dir=directory)
         logger.debug(f"Creating temp directory: {output_dir}")
         self.output_dirs.append(output_dir)
         return output_dir

@@ -33,7 +33,6 @@ def override_symbol_new(sympy_module: T.Any) -> None:
         sympy_module (module):
     """
     if sympy_module.__package__ == "symengine":
-        original_symbol = sympy_module.Symbol
 
         class Symbol(sympy_module.Symbol):  # type: ignore # mypy thinks sm.Symbol isn't defined
             def __init__(
@@ -113,7 +112,9 @@ def override_limit(sympy_module: T.Type) -> None:
 
     import sympy
 
-    def limit(e: T.Any, z: T.Any, z0: T.Any, dir: str = "+") -> sympy.S:
+    def limit(
+        e: T.Any, z: T.Any, z0: T.Any, dir: str = "+"  # pylint: disable=redefined-builtin
+    ) -> sympy.S:
         logger.warning("Converting to sympy to use .limit")
         return sympy_module.S(sympy.limit(sympy.S(e), sympy.S(z), sympy.S(z0), dir=dir))
 
@@ -164,8 +165,8 @@ def _flatten_storage_type_subs(
     new_subs_dict = {}
     for key, value in subs_pairs:
         # Import these lazily, since initialization.py is imported from symforce/__init__.py
-        from symforce import ops
-        from symforce import python_util
+        from symforce import ops  # pylint: disable=cyclic-import
+        from symforce import python_util  # pylint: disable=cyclic-import
 
         if python_util.scalar_like(key):
             assert python_util.scalar_like(value)
@@ -178,7 +179,7 @@ def _flatten_storage_type_subs(
         except NotImplementedError:
             new_subs_dict[key] = value
         else:
-            assert type(key) == type(value)
+            assert type(key) == type(value)  # pylint: disable=unidiomatic-typecheck
             for new_key, new_value in zip(new_keys, new_values):
                 new_subs_dict[new_key] = new_value
     return new_subs_dict
@@ -209,7 +210,7 @@ def override_subs(sympy_module: T.Type) -> None:
         # For some reason this doesn't exist unless we import the symengine_wrapper directly as a
         # local variable, i.e. just `import symengine.lib.symengine_wrapper` does not let us access
         # symengine.lib.symengine_wrapper
-        import symengine.lib.symengine_wrapper as wrapper
+        import symengine.lib.symengine_wrapper as wrapper  # pylint: disable=no-name-in-module
 
         original_get_dict = wrapper.get_dict
         wrapper.get_dict = lambda *args: original_get_dict(_get_subs_dict(*args))
@@ -233,7 +234,9 @@ def override_solve(sympy_module: T.Type) -> None:
         # Unfortunately this already doesn't have a docstring or argument list in symengine
         def solve(*args: T.Any, **kwargs: T.Any) -> T.List[T.Scalar]:
             solution = original_solve(*args, **kwargs)
-            from symengine.lib.symengine_wrapper import EmptySet
+            from symengine.lib.symengine_wrapper import (  # pylint: disable=no-name-in-module
+                EmptySet,
+            )
 
             if isinstance(solution, sympy_module.FiniteSet):
                 return list(solution.args)

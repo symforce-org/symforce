@@ -2,7 +2,6 @@ import multiprocessing
 import numpy as np
 import os
 import random
-import re
 import sys
 import unittest
 import logging
@@ -14,7 +13,6 @@ from symforce import logger
 from symforce import python_util
 from symforce import typing as T
 from symforce.ops import StorageOps
-from symforce.ops import GroupOps
 from symforce.ops import LieGroupOps
 from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
 
@@ -55,8 +53,9 @@ class TestCase(SymforceTestCaseMixin):
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
+    @staticmethod
     def assertNear(
-        self, actual: T.Any, desired: T.Any, places: int = 7, msg: str = "", verbose: bool = True,
+        actual: T.Any, desired: T.Any, places: int = 7, msg: str = "", verbose: bool = True,
     ) -> None:
         """
         Check that two elements are close. Handles sequences, scalars, and geometry types
@@ -70,8 +69,8 @@ class TestCase(SymforceTestCaseMixin):
             verbose=verbose,
         )
 
+    @staticmethod
     def assertLieGroupNear(
-        self,
         actual: LieGroupOpsType,
         desired: LieGroupOpsType,
         places: int = 7,

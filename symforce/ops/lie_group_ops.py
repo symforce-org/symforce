@@ -1,10 +1,9 @@
+from __future__ import annotations
+
 from symforce import typing as T
-from symforce import sympy as sm
 from symforce import logger
 from symforce.python_util import get_type
 
-from .ops import Ops
-from .storage_ops import StorageOps
 from .group_ops import GroupOps
 
 if T.TYPE_CHECKING:
@@ -118,7 +117,7 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).local_coordinates(a, b, epsilon)
 
     @staticmethod
-    def storage_D_tangent(a: T.Element) -> "geo.Matrix":
+    def storage_D_tangent(a: T.Element) -> geo.Matrix:
         """
         Computes the jacobian of the storage space of an element with respect to the tangent space around
         that element.
@@ -131,10 +130,10 @@ class LieGroupOps(GroupOps):
                     get_type(a)
                 )
             )
-            raise NotImplementedError()
+            raise
 
     @staticmethod
-    def tangent_D_storage(a: T.Element, epsilon: T.Element = 0) -> "geo.Matrix":
+    def tangent_D_storage(a: T.Element) -> geo.Matrix:
         """
         Computes the jacobian of the tangent space around an element with respect to the storage space of
         that element.
@@ -147,4 +146,4 @@ class LieGroupOps(GroupOps):
                     get_type(a)
                 )
             )
-            raise NotImplementedError()
+            raise

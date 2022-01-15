@@ -1,6 +1,5 @@
 import numpy as np
 
-from symforce import sympy as sm
 from symforce import geo
 from symforce import typing as T
 from symforce.ops import StorageOps

@@ -1,5 +1,3 @@
-import numpy as np
-
 from symforce.python_util import get_type, scalar_like
 from symforce import sympy as sm
 from symforce import typing as T

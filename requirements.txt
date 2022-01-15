@@ -10,6 +10,7 @@ mypy==0.910
 nbsphinx
 numpy
 pybind11-stubgen
+pylint
 scipy
 sphinx_autodoc_typehints
 sphinx_rtd_theme

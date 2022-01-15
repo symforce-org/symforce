@@ -14,8 +14,6 @@ from symforce import python_util
 from symforce import typing as T
 from symforce.values import Values
 
-from lcmtypes.sym._index_entry_t import index_entry_t
-
 
 class FactorCodegenLanguage(enum.Enum):
     PYTHON = 1
@@ -98,7 +96,7 @@ class Factor:
         # This is unused, but if we don't import it things blow up.  I _think_ it's because
         # the generated residual imports it, and we import that then delete the directory
         # where it was generated...
-        import sym
+        import sym  # pylint: disable=unused-import
 
         if self.generated_residual is not None and self.optimized_keys == optimized_keys:
             return

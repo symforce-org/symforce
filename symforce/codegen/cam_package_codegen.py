@@ -8,11 +8,9 @@ from symforce import geo
 from symforce import cam
 from symforce import sympy as sm
 from symforce import typing as T
-from symforce import path_util
 from symforce import python_util
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig, CppConfig
-from symforce.codegen import codegen_util
 from symforce.codegen import template_util
 
 from .geo_package_codegen import make_storage_ops_funcs
@@ -157,7 +155,7 @@ def class_template_data(
     cls: T.Type, functions_to_doc: T.Sequence["function"]
 ) -> T.Dict[str, T.Any]:
     data = Codegen.common_data()
-    data["doc"] = dict()
+    data["doc"] = {}
     data["doc"]["cls"] = textwrap.dedent(cls.__doc__).strip()  # type: ignore
     for func in functions_to_doc:
         if func.__doc__ is not None:

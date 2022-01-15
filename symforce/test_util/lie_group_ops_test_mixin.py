@@ -1,7 +1,6 @@
 import numpy as np
 import unittest
 
-from symforce import sympy as sm
 from symforce import geo
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
