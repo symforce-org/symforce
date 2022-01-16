@@ -86,7 +86,9 @@ class Codegen:
 
         # All symbols in outputs must be present in inputs
         input_symbols = set(inputs.to_storage())
-        assert all(sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage())
+        assert all(
+            sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage()
+        ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
 
         # Names given by keys in inputs/outputs must be valid variable names
         # TODO(aaron): Also check recursively
