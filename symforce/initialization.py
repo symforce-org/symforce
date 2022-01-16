@@ -267,6 +267,9 @@ def add_custom_methods(sympy_module: T.Type) -> None:
     # Should match C++ default epsilon in epsilon.h
     sympy_module.default_epsilon = 10 * sys.float_info.epsilon
 
+    # Create a symbolic epsilon to encourage consistent use
+    sympy_module.epsilon = sympy_module.Symbol("epsilon")
+
     @register
     def atan2_safe(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
         return sympy_module.atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
