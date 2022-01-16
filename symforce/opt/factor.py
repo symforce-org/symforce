@@ -82,6 +82,12 @@ class Factor:
         self.generated_residual = None
         self.optimized_keys: T.Optional[T.Set[str]] = None
 
+    def __repr__(self) -> str:
+        """
+        Return a string representation.
+        """
+        return f"<Factor {self.name} ({', '.join(self.keys)})>"
+
     def _generate_python_function(self, optimized_keys: T.Set[str]) -> None:
         """
         Generate a numerical Python function for the factor, and store it in self.generated_residual
