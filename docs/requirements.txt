@@ -1,4 +1,6 @@
+ipykernel
 matplotlib
+myst-parser
 nbsphinx
 nbstripout
 Sphinx

@@ -1,20 +1,19 @@
 black==19.10b0
-breathe
 clang-format
 cython
 graphviz
-ipykernel
 Jinja2
-matplotlib
 mypy==0.910
-nbsphinx
 numpy
 pybind11-stubgen
 pylint
 scipy
-sphinx_autodoc_typehints
-sphinx_rtd_theme
 sympy
 types-jinja2
 types-pygments
 types-setuptools
+
+-r docs/requirements.txt
+
+-r third_party/skymarshal/requirements.txt
+-e third_party/skymarshal
