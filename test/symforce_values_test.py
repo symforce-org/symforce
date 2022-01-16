@@ -238,7 +238,18 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v_expected = Values(lst=[1, 2, 3])
             self.assertEqual(v, v_expected)
 
-        with self.subTest(msg="Can set new items within nested lists"):
+        with self.subTest(msg="Can set a new item within a nested list"):
+            v = Values()
+            v["foo[0][0]"] = 5
+            v["foo[0][1]"] = 5
+
+            with self.assertRaises(IndexError):
+                v["foo[2][0]"] = 5
+
+            with self.assertRaises(IndexError):
+                v["bar[0][1]"] = 5
+
+        with self.subTest(msg="Can set new items within nested lists in structs"):
             v = Values()
             v["alpha.beta[0][0].gamma[0].delta"] = 5
             v["alpha.beta[1][0].gamma[0].delta"] = 6

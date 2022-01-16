@@ -656,7 +656,9 @@ class Values(T.MutableMapping[str, T.Any]):
             if key_name not in values.dict:
                 values.dict[key_name] = []
             item = values.dict[key_name]
-            self._recurse_into_sequence(item, indices, should_set=True, set_target=value)
+            self._recurse_into_sequence(
+                item, indices, create=True, should_set=True, set_target=value
+            )
 
     def __delitem__(self, key: str) -> None:
         values, key_name, indices = self._get_subvalues_key_and_indices(key)
