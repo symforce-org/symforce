@@ -16,11 +16,12 @@ import sympy as sympy_py
 sympy_py.init_printing()
 
 import symforce
+from symforce import geo
 from symforce import sympy as sm
 from symforce import typing as T
 
 
-def display(*args: T.List) -> None:
+def display(*args: T.Any) -> None:
     """
     Display the given expressions in latex, or print if not an expression.
     """
@@ -28,8 +29,15 @@ def display(*args: T.List) -> None:
         IPython.display.display(*args)
         return
 
+    converted_args = []
+    for arg in args:
+        if isinstance(arg, geo.Matrix):
+            converted_args.append(arg.mat)
+        else:
+            converted_args.append(arg)
+
     try:
-        IPython.display.display(sympy_py.S(*args, strict=True))
+        IPython.display.display(sympy_py.S(*converted_args, strict=True))
     except (sympy_py.SympifyError, AttributeError, TypeError):
         IPython.display.display(*args)
 
