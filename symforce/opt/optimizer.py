@@ -111,11 +111,11 @@ class Optimizer:
 
     def __init__(
         self,
-        factors: T.Sequence[Factor],
+        factors: T.Iterable[Factor],
         optimized_keys: T.Collection[str],
         params: Optimizer.Params = None,
     ):
-        self.factors = factors
+        self.factors = list(factors)
 
         # Allow passing in any iterable of keys but check for uniqueness
         self.optimized_keys = set(optimized_keys)
