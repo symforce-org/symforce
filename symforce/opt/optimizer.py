@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
+from lcmtypes.sym._values_t import values_t
 
 from symforce import typing as T
 from symforce.opt.factor import Factor
@@ -114,6 +115,7 @@ class Optimizer:
         factors: T.Iterable[Factor],
         optimized_keys: T.Collection[str],
         params: Optimizer.Params = None,
+        debug_stats: bool = False,
     ):
         self.factors = list(factors)
 
@@ -129,6 +131,8 @@ class Optimizer:
         else:
             self.params = params
 
+        self.debug_stats = debug_stats
+
         self._initialized = False
 
         # Create a mapping from python identifier string keys to fixed-size C++ Key objects
@@ -141,6 +145,7 @@ class Optimizer:
         self._cc_optimizer = cc_sym.Optimizer(
             optimizer_params_t(**dataclasses.asdict(self.params)),
             [factor.cc_factor(self.optimized_keys, self._cc_keys_map) for factor in self.factors],
+            debug_stats=self.debug_stats,
         )
 
     def _initialize(self, values: Values) -> None:
@@ -189,3 +194,18 @@ class Optimizer:
             best_index=stats.best_index,
             early_exited=stats.early_exited,
         )
+
+    def load_iteration_values(self, values_msg: values_t) -> Values:
+        """
+        Load a values_t message into a Python Values by first creating a C++ Values, then
+        converting back to the python key names.
+        """
+        cc_values = cc_sym.Values(values_msg)
+        py_values = Values()
+        # NOTE(hayk): The sorting here is important for insertion so a key like "foo[2]"
+        # does not get inserted before "foo[0]", as this will raise an exception. We do
+        # this differently than in `optimize` because we don't have a python values to
+        # start from.
+        for py_key in sorted(self._cc_keys_map.keys()):
+            py_values[py_key] = cc_values.at(self._cc_keys_map[py_key])
+        return py_values
