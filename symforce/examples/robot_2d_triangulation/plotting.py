@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from matplotlib import animation
 from matplotlib.widgets import Slider
 import numpy as np
 
 import sym
-from symforce import typing as T
 from symforce.opt.optimizer import Optimizer
 from symforce.python_util import AttrDict
 from symforce.values import Values

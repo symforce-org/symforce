@@ -125,7 +125,7 @@ def generate_bearing_residual_code() -> None:
 
     # Generate the function and print the code
     metadata = codegen.generate_function()
-    print(open(metadata["generated_files"][0]).read())
+    print(Path(metadata["generated_files"][0]).read_text())
 
     # Create a Codegen object that computes jacobians from the residual Codegen object,
     # by introspecting and symbolically differentiating the given arguments
@@ -133,7 +133,7 @@ def generate_bearing_residual_code() -> None:
 
     # Generate the function and print the code
     metadata = codegen_with_jacobians.generate_function()
-    print(open(metadata["generated_files"][0]).read())
+    print(Path(metadata["generated_files"][0]).read_text())
 
 
 if __name__ == "__main__":
