@@ -270,9 +270,12 @@ def add_custom_methods(sympy_module: T.Type) -> None:
     # Create a symbolic epsilon to encourage consistent use
     sympy_module.epsilon = sympy_module.Symbol("epsilon")
 
+    # Save original functions to reference in wrappers
+    original_atan2 = sympy_module.atan2
+
     @register
-    def atan2_safe(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
-        return sympy_module.atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
+    def atan2(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
+        return original_atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
 
     @register
     def asin_safe(x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:

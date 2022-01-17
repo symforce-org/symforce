@@ -286,13 +286,13 @@ class Rot3(LieGroup):
             Scalar: Pitch angle [radians]
             Scalar: Roll angle [radians]
         """
-        y = sm.atan2_safe(
+        y = sm.atan2(
             2 * self.q.x * self.q.y + 2 * self.q.w * self.q.z,
             self.q.x * self.q.x + self.q.w * self.q.w - self.q.z * self.q.z - self.q.y * self.q.y,
             epsilon,
         )
         p = -sm.asin_safe(2 * self.q.x * self.q.z - 2 * self.q.w * self.q.y, epsilon)
-        r = sm.atan2_safe(
+        r = sm.atan2(
             2 * self.q.y * self.q.z + 2 * self.q.w * self.q.x,
             self.q.z * self.q.z - self.q.y * self.q.y - self.q.x * self.q.x + self.q.w * self.q.w,
             epsilon,

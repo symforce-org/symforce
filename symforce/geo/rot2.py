@@ -80,7 +80,7 @@ class Rot2(LieGroup):
         return Rot2(Complex(sm.cos(theta), sm.sin(theta)))
 
     def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
-        return [sm.atan2_safe(self.z.imag, self.z.real, epsilon=epsilon)]
+        return [sm.atan2(self.z.imag, self.z.real, epsilon=epsilon)]
 
     @classmethod
     def hat(cls, vec: T.Sequence[T.Scalar]) -> Matrix22:

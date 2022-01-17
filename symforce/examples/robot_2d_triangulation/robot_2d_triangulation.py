@@ -19,7 +19,7 @@ def bearing_residual(
     Residual from a relative bearing mesurement of a 2D pose to a landmark.
     """
     t_body = pose.inverse() * landmark
-    predicted_angle = sm.atan2_safe(t_body[1], t_body[0], epsilon=epsilon)
+    predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
     return geo.V1(sm.wrap_angle(predicted_angle - angle_deg * sm.pi / 180))
 
 

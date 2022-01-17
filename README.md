@@ -219,7 +219,7 @@ def bearing_residual(
     pose: geo.Pose2, landmark: geo.V2, angle_deg: T.Scalar, epsilon: T.Scalar
 ) -> geo.V1:
     t_body = pose.inverse() * landmark
-    predicted_angle = sm.atan2_safe(t_body[1], t_body[0], epsilon=epsilon)
+    predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
     return geo.V1(sm.wrap_angle(predicted_angle - angle_deg * sm.pi / 180))
 ```
 This function takes in a pose and landmark variable and returns the error between the predicted bearing angle and a measured value. Note that we call `sm.wrap_angle` on the angle difference to prevent wraparound bugs.

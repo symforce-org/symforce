@@ -43,7 +43,7 @@ def az_el_from_point(
     """
     cam_t_point = nav_T_cam.inverse() * nav_t_point
     x, y, z = cam_t_point.to_flat_list()
-    theta = sm.atan2_safe(y, x, epsilon=epsilon)
+    theta = sm.atan2(y, x, epsilon=epsilon)
     phi = sm.pi / 2 - sm.acos(z / (cam_t_point.norm() + epsilon))
     return geo.V2(theta, phi)
 
