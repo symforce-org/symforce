@@ -1,2 +1,3 @@
-This directory is self-contained (does not include any external code) pending review by legal.  It
-is also built as its own shared library in symforce/CMakeLists.txt for this reason
+This directory is self-contained and does not include any external SymForce code.
+
+It is built as its own shared library in symforce/CMakeLists.txt.
