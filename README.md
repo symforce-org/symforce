@@ -1,4 +1,4 @@
-<img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_horizontal_white.png" width="600px"/>
+<img alt="SymForce" src="docs/figures/symforce_horizontal_white.png" width="600px"/>
 
 [![Documentation](https://img.shields.io/badge/api-reference-blue)](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/index.html)
 [![Source Code](https://img.shields.io/badge/source-code-blue)](https://github.com/symforce-org/symforce)
@@ -21,7 +21,7 @@ SymForce accelerates robotics, vision, and applied science tasks like visual odo
 
 <br/>
 
-<img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_diagram.png" width="700px"/>
+<img alt="SymForce" src="docs/figures/symforce_diagram.png" width="700px"/>
 
 <br/>
 
@@ -119,7 +119,7 @@ Let's walk through a simple example of modeling and optimizing a problem with Sy
 
 The goal is to estimate the position and heading angle of the robot at multiple time steps given noisy measurements. The robot's heading angle is defined wrt the x-axis, and its relative bearing measurements are defined wrt the robot's forward direction:
 
-<img alt="Robot 2D Triangulation Figure" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_figure.png" width="300px"/>
+<img alt="Robot 2D Triangulation Figure" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation.png" width="350px"/>
 
 Note that both angles are negative as drawn in this diagram (counter-clockwise is positive).
 
@@ -260,7 +260,7 @@ for i in range(num_poses - 1):
 
 Here is a visualization of the structure of this factor graph:
 
-<img alt="Robot 2D Triangulation Factor Graph" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_factor_graph.png" width="600px"/>
+<img alt="Robot 2D Triangulation Factor Graph" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation_factor_graph.png" width="600px"/>
 
 ## Solve the problem
 
@@ -298,7 +298,7 @@ Let's visualize what the optimizer did. The green circle represent the fixed lan
 from symforce.examples.robot_2d_triangulation.plotting import plot_solution
 plot_solution(optimizer, result)
 ```
-<img alt="Robot 2D Triangulation Solution" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
+<img alt="Robot 2D Triangulation Solution" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation_iterations.gif" width="600px"/>
 
 With the `verbose=True` param in the optimizer, it will print a table of its progress:
 ```
