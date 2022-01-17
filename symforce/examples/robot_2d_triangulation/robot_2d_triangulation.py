@@ -127,14 +127,17 @@ def generate_bearing_residual_code() -> None:
     metadata = codegen.generate_function()
     print(Path(metadata["generated_files"][0]).read_text())
 
-    # Create a Codegen object that computes jacobians from the residual Codegen object,
+    # Create a Codegen object that computes a linearization from the residual Codegen object,
     # by introspecting and symbolically differentiating the given arguments
-    codegen_with_jacobians = codegen.with_jacobians(which_args=["pose"])
+    codegen_with_linearization = codegen.with_linearization(which_args=["pose"])
 
     # Generate the function and print the code
-    metadata = codegen_with_jacobians.generate_function()
+    metadata = codegen_with_linearization.generate_function()
     print(Path(metadata["generated_files"][0]).read_text())
 
 
 if __name__ == "__main__":
     main()
+
+    # Uncomment this to print generated C++ code
+    # generate_bearing_residual_code()
