@@ -36,7 +36,7 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::FromTangent(const TangentVec& vec
 template <typename Scalar>
 typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::ToTangent(
     const sym::Pose2<Scalar>& a, const Scalar epsilon) {
-  // Total ops: 1
+  // Total ops: 5
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -48,7 +48,7 @@ typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::ToTa
 
   _res(0, 0) = _a[2];
   _res(1, 0) = _a[3];
-  _res(2, 0) = std::atan2(_a[1], _a[0]);
+  _res(2, 0) = std::atan2(_a[1], _a[0] + epsilon * ((((_a[0]) > 0) - ((_a[0]) < 0)) + Scalar(0.5)));
 
   return _res;
 }
@@ -80,20 +80,22 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>&
 template <typename Scalar>
 typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::LocalCoordinates(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 12
+  // Total ops: 16
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (0)
+  // Intermediate terms (1)
+  const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
   _res(0, 0) = -_a[2] + _b[2];
   _res(1, 0) = -_a[3] + _b[3];
-  _res(2, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _a[0] * _b[0] + _a[1] * _b[1]);
+  _res(2, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
+                          _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
 
   return _res;
 }

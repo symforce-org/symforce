@@ -37,14 +37,14 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
                        Eigen::Matrix<Scalar, 1, 2>* const jacobian = nullptr,
                        Eigen::Matrix<Scalar, 2, 2>* const hessian = nullptr,
                        Eigen::Matrix<Scalar, 2, 1>* const rhs = nullptr) {
-  // Total ops: 65
+  // Total ops: 69
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 2, 1>& _b = b.Data();
   const Eigen::Matrix<Scalar, 2, 1>& _a_T_b = a_T_b.Data();
 
-  // Intermediate terms (26)
+  // Intermediate terms (27)
   const Scalar _tmp0 = _a[0] * _b[0];
   const Scalar _tmp1 = _a[1] * _b[1];
   const Scalar _tmp2 = _tmp0 + _tmp1;
@@ -57,51 +57,52 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
   const Scalar _tmp9 = _a_T_b[0] * _tmp2;
   const Scalar _tmp10 = _a_T_b[1] * _tmp6;
   const Scalar _tmp11 = _tmp10 + _tmp9;
-  const Scalar _tmp12 = std::atan2(_tmp8, _tmp11);
-  const Scalar _tmp13 = -_tmp0 - _tmp1;
-  const Scalar _tmp14 = Scalar(1.0) / (_tmp11);
-  const Scalar _tmp15 = std::pow(_tmp11, Scalar(2));
-  const Scalar _tmp16 = _tmp8 / _tmp15;
-  const Scalar _tmp17 =
-      _tmp14 * (_a_T_b[0] * _tmp13 - _tmp10) - _tmp16 * (_a_T_b[1] * _tmp13 + _tmp7);
-  const Scalar _tmp18 = _tmp15 + std::pow(_tmp8, Scalar(2));
-  const Scalar _tmp19 = _tmp15 / _tmp18;
-  const Scalar _tmp20 = _tmp19 * sqrt_info(0, 0);
-  const Scalar _tmp21 = -_tmp4 + _tmp5;
-  const Scalar _tmp22 =
-      _tmp14 * (-_a_T_b[1] * _tmp21 + _tmp9) - _tmp16 * (_a_T_b[0] * _tmp21 + _tmp3);
-  const Scalar _tmp23 = std::pow(sqrt_info(0, 0), Scalar(2));
-  const Scalar _tmp24 = std::pow(_tmp11, Scalar(4)) * _tmp23 / std::pow(_tmp18, Scalar(2));
-  const Scalar _tmp25 = _tmp12 * _tmp19 * _tmp23;
+  const Scalar _tmp12 = _tmp11 + epsilon * ((((_tmp11) > 0) - ((_tmp11) < 0)) + Scalar(0.5));
+  const Scalar _tmp13 = std::atan2(_tmp8, _tmp12);
+  const Scalar _tmp14 = -_tmp0 - _tmp1;
+  const Scalar _tmp15 = Scalar(1.0) / (_tmp12);
+  const Scalar _tmp16 = std::pow(_tmp12, Scalar(2));
+  const Scalar _tmp17 = _tmp8 / _tmp16;
+  const Scalar _tmp18 =
+      _tmp15 * (_a_T_b[0] * _tmp14 - _tmp10) - _tmp17 * (_a_T_b[1] * _tmp14 + _tmp7);
+  const Scalar _tmp19 = _tmp16 + std::pow(_tmp8, Scalar(2));
+  const Scalar _tmp20 = _tmp16 / _tmp19;
+  const Scalar _tmp21 = _tmp20 * sqrt_info(0, 0);
+  const Scalar _tmp22 = -_tmp4 + _tmp5;
+  const Scalar _tmp23 =
+      _tmp15 * (-_a_T_b[1] * _tmp22 + _tmp9) - _tmp17 * (_a_T_b[0] * _tmp22 + _tmp3);
+  const Scalar _tmp24 = std::pow(sqrt_info(0, 0), Scalar(2));
+  const Scalar _tmp25 = std::pow(_tmp12, Scalar(4)) * _tmp24 / std::pow(_tmp19, Scalar(2));
+  const Scalar _tmp26 = _tmp13 * _tmp20 * _tmp24;
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp12 * sqrt_info(0, 0);
+    _res(0, 0) = _tmp13 * sqrt_info(0, 0);
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 1, 2>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp17 * _tmp20;
-    _jacobian(0, 1) = _tmp20 * _tmp22;
+    _jacobian(0, 0) = _tmp18 * _tmp21;
+    _jacobian(0, 1) = _tmp21 * _tmp23;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 2, 2>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow(_tmp17, Scalar(2)) * _tmp24;
+    _hessian(0, 0) = std::pow(_tmp18, Scalar(2)) * _tmp25;
     _hessian(0, 1) = 0;
-    _hessian(1, 0) = _tmp17 * _tmp22 * _tmp24;
-    _hessian(1, 1) = std::pow(_tmp22, Scalar(2)) * _tmp24;
+    _hessian(1, 0) = _tmp18 * _tmp23 * _tmp25;
+    _hessian(1, 1) = std::pow(_tmp23, Scalar(2)) * _tmp25;
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 2, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp17 * _tmp25;
-    _rhs(1, 0) = _tmp22 * _tmp25;
+    _rhs(0, 0) = _tmp18 * _tmp26;
+    _rhs(1, 0) = _tmp23 * _tmp26;
   }
 }  // NOLINT(readability/fn_size)
 

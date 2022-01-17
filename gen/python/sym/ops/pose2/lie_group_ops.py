@@ -38,7 +38,7 @@ class LieGroupOps(object):
     def to_tangent(a, epsilon):
         # type: (sym.Pose2, float) -> T.List[float]
 
-        # Total ops: 1
+        # Total ops: 5
 
         # Input arrays
         _a = a.data
@@ -49,7 +49,9 @@ class LieGroupOps(object):
         _res = [0.0] * 3
         _res[0] = _a[2]
         _res[1] = _a[3]
-        _res[2] = math.atan2(_a[1], _a[0])
+        _res[2] = math.atan2(
+            _a[1], _a[0] + epsilon * ((0.0 if _a[0] == 0 else math.copysign(1, _a[0])) + 0.5)
+        )
         return _res
 
     @staticmethod
@@ -77,17 +79,21 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Pose2, sym.Pose2, float) -> T.List[float]
 
-        # Total ops: 12
+        # Total ops: 16
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (0)
+        # Intermediate terms (1)
+        _tmp0 = _a[0] * _b[0] + _a[1] * _b[1]
 
         # Output terms
         _res = [0.0] * 3
         _res[0] = -_a[2] + _b[2]
         _res[1] = -_a[3] + _b[3]
-        _res[2] = math.atan2(_a[0] * _b[1] - _a[1] * _b[0], _a[0] * _b[0] + _a[1] * _b[1])
+        _res[2] = math.atan2(
+            _a[0] * _b[1] - _a[1] * _b[0],
+            _tmp0 + epsilon * ((0.0 if _tmp0 == 0 else math.copysign(1, _tmp0)) + 0.5),
+        )
         return _res
