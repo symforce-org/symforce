@@ -35,7 +35,7 @@ class SymforcePyOptimizerTest(TestCase):
         ### Prior factors
 
         for i in range(num_samples):
-            x_prior = geo.Rot3.from_yaw_pitch_roll(yaw=0.0, pitch=0.0, roll=0.1 * i)
+            x_prior = geo.Rot3.from_yaw_pitch_roll(roll=0.1 * i)
 
             def prior_residual(x: geo.Rot3, epsilon: T.Scalar) -> geo.V3:
                 return geo.V3(x.local_coordinates(x_prior, epsilon=epsilon))

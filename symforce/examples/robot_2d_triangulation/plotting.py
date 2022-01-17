@@ -129,7 +129,7 @@ def plot_solution(optimizer: Optimizer, result: Optimizer.Result, animated: bool
         )
         plt.show()
     else:
-        # Add a slider fro iterations at the bottom of the plot
+        # Add a slider for iterations at the bottom of the plot
         plt.subplots_adjust(bottom=0.2)
         ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03])
         iteration_slider = Slider(
