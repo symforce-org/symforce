@@ -216,13 +216,14 @@ The residual function comprises of two terms - one for the bearing measurements 
 from symforce import typing as T
 
 def bearing_residual(
-    pose: geo.Pose2, landmark: geo.V2, angle_deg: T.Scalar, epsilon: T.Scalar
+    pose: geo.Pose2, landmark: geo.V2, angle: T.Scalar, epsilon: T.Scalar
 ) -> geo.V1:
     t_body = pose.inverse() * landmark
     predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
-    return geo.V1(sm.wrap_angle(predicted_angle - angle_deg * sm.pi / 180))
+    return geo.V1(sm.wrap_angle(predicted_angle - angle))
 ```
-This function takes in a pose and landmark variable and returns the error between the predicted bearing angle and a measured value. Note that we call `sm.wrap_angle` on the angle difference to prevent wraparound bugs.
+
+This function takes in a pose and landmark variable and returns the error between the predicted bearing angle and a measured value. Note that we call `sm.wrap_angle` on the angle difference to prevent wraparound effects.
 
 The residual for distance traveled is even simpler:
 
@@ -274,13 +275,14 @@ optimizer = Optimizer(
 Now we need to instantiate numerical values for the problem, including an initial guess for our unknown poses (just set them to identity).
 
 ```python
+import numpy as np
 from symforce.values import Values
 
 initial_values = Values(
     poses=[geo.Pose2.identity()] * num_poses,
     landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
     distances=[1.7, 1.4],
-    angles=[[145, 335, 55], [185, 310, 70], [215, 310, 70]],
+    angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
     epsilon=sm.default_epsilon,
 )
 ```

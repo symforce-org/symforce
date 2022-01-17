@@ -3,6 +3,7 @@ Demonstrates solving a 2D triangulation problem with SymForce. The goal is for a
 in a 2D plane to compute its trajectory given distance measurements from wheel odometry
 and relative bearing angle measurements to known landmarks in the environment.
 """
+# pylint: disable=ungrouped-imports
 
 # -----------------------------------------------------------------------------
 # Define residual functions
@@ -13,14 +14,14 @@ from symforce import typing as T
 
 
 def bearing_residual(
-    pose: geo.Pose2, landmark: geo.V2, angle_deg: T.Scalar, epsilon: T.Scalar
+    pose: geo.Pose2, landmark: geo.V2, angle: T.Scalar, epsilon: T.Scalar
 ) -> geo.V1:
     """
     Residual from a relative bearing mesurement of a 2D pose to a landmark.
     """
     t_body = pose.inverse() * landmark
     predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
-    return geo.V1(sm.wrap_angle(predicted_angle - angle_deg * sm.pi / 180))
+    return geo.V1(sm.wrap_angle(predicted_angle - angle))
 
 
 def odometry_residual(
@@ -59,6 +60,7 @@ def build_factors(num_poses: int, num_landmarks: int) -> T.Iterator[Factor]:
 # -----------------------------------------------------------------------------
 # Instantiate, optimize, and visualize
 # -----------------------------------------------------------------------------
+import numpy as np
 from symforce.opt.optimizer import Optimizer
 from symforce.values import Values
 
@@ -71,7 +73,7 @@ def main() -> None:
         poses=[geo.Pose2.identity()] * num_poses,
         landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
         distances=[1.7, 1.4],
-        angles=[[55, 245, -35], [95, 220, -20], [125, 220, -20]],
+        angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
         epsilon=sm.default_epsilon,
     )
 

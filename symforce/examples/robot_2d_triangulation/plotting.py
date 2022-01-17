@@ -166,7 +166,7 @@ def get_data_to_plot(v: Values) -> AttrDict:
         [
             [
                 v["poses"][i].rotation()
-                * sym.Rot2.from_tangent([np.deg2rad(v["angles"][i][landmark_inx])])
+                * sym.Rot2.from_tangent([v["angles"][i][landmark_inx]])
                 * np.array([50, 0])
                 for landmark_inx in range(len(v["landmarks"]))
             ]
