@@ -1,4 +1,4 @@
-symforce home
+SymForce Docs
 =============
 
 .. include:: ../README.md
@@ -47,7 +47,8 @@ Guides
 
 .. _api-reference:
 .. toctree::
-    :maxdepth: -1
+    :hidden:
+    :maxdepth: 2
     :titlesonly:
     :caption: symforce Reference
 
@@ -55,7 +56,8 @@ Guides
 
 .. _genpy-api-reference:
 .. toctree::
-    :maxdepth: -1
+    :maxdepth: 2
+    :hidden:
     :titlesonly:
     :caption: sym Python Reference
 
@@ -63,7 +65,8 @@ Guides
 
 .. _gencpp-api-reference:
 .. toctree::
-    :maxdepth: -1
+    :maxdepth: 2
+    :hidden:
     :titlesonly:
     :caption: sym C++ Reference
 
@@ -73,7 +76,8 @@ Guides
 
 .. _cpp-api-reference:
 .. toctree::
-    :maxdepth: -1
+    :hidden:
+    :maxdepth: 2
     :titlesonly:
     :caption: opt C++ Reference
 
