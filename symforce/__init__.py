@@ -38,7 +38,7 @@ def set_log_level(log_level: str) -> None:
 
 
 # Set default
-set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "INFO"))
+set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "WARNING"))
 
 # -------------------------------------------------------------------------------------------------
 # Symbolic backend configuration
