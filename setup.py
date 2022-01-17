@@ -7,5 +7,5 @@ setup(
     author_email="hayk@skydio.com",
     packages=find_packages(),
     license="None",
-    long_description=open("README.rst").read(),
+    long_description=open("README.md").read(),
 )
