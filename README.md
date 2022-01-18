@@ -1,6 +1,6 @@
-<img alt="SymForce" src="docs/figures/symforce_horizontal_white.png" width="600px"/>
+<img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_horizontal_white.png" width="600px"/>
 
-[![Documentation](https://img.shields.io/badge/api-reference-blue)](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/index.html)
+[![Documentation](https://img.shields.io/badge/api-docs-blue)](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/index.html)
 [![Source Code](https://img.shields.io/badge/source-code-blue)](https://github.com/symforce-org/symforce)
 [![Issues](https://img.shields.io/badge/issue-tracker-blue)](https://github.com/symforce-org/symforce/issues)
 ![Python 3.8](https://img.shields.io/badge/python-3.8-blue)
@@ -17,22 +17,22 @@ SymForce is a Python and C++ library for symbolic computation and code generatio
 
 + **Optimization Library** - performs on-manifold factor graph optimization with a highly optimized implementation for real-time robotics applications
 
-SymForce accelerates robotics, vision, and applied science tasks like visual odometry, bundle adjustment, calibration, sparse nonlinear MPC, and embedded motor control. It is battle-hardened in production robotics.
+SymForce accelerates robotics and computer vision tasks like visual odometry, bundle adjustment, calibration, sparse nonlinear MPC, and embedded motor control.
 
 <br/>
 
-<img alt="SymForce" src="docs/figures/symforce_diagram.png" width="700px"/>
+<img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_diagram.png" width="700px"/>
 
 <br/>
 
-What it enables:
+Features:
 
 + Rapidly prototype and analyze complex problems with symbolic math
 + Compute fast and correct tangent-space jacobians for any expression
 + Reduce duplication and minimize bugs by generating native runtime code in multiple languages from a canonical symbolic representation
 + Generate embedded-friendly C++ functions that depend only on Eigen, are templated on the scalar type, and require no dynamic allocation
 + Outperform automatic differentiation techniques, sometimes by 10x
-+ Leverage high quality and performant APIs at all levels
++ Leverage high quality, battle-hardened, and performant APIs at all levels
 
 # Note to early access participants
 
@@ -51,6 +51,8 @@ Things to try:
 * Use the generated C++ geometry module
 * Use the C++ Factor and Optimizer to solve a problem
 * Read and understand the SymForce codebase
+
+[**Read the docs!**](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/index.html)
 
 In the future we will share a survey with specific questions, but more generally we are interested in all feedback you can provide about the value of the library, comparisons to alternatives, and any guidance to us.
 
@@ -121,7 +123,7 @@ The robot measures:
 
 The robot's heading angle is defined counter-clockwise from the x-axis, and its relative bearing measurements are defined from the robot's forward direction:
 
-<img alt="Robot 2D Triangulation Figure" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation.png" width="350px"/>
+<img alt="Robot 2D Triangulation Figure" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_figure.png" width="350px"/>
 
 ## Explore the math
 
@@ -223,7 +225,7 @@ def odometry_residual(
     return geo.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
 ```
 
-Now we can create factor objects from the residual functions and a set of keys. The keys are named strings for the function arguments, which will be accessed by name from a `Values` class we later instantiate with numerical quantities.
+Now we can create [`Factor`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.opt.factor.html) objects from the residual functions and a set of keys. The keys are named strings for the function arguments, which will be accessed by name from a [`Values`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.values.values.html) class we later instantiate with numerical quantities.
 
 ```python
 num_poses = 3
@@ -249,11 +251,11 @@ for i in range(num_poses - 1):
 
 Here is a visualization of the structure of this factor graph:
 
-<img alt="Robot 2D Triangulation Factor Graph" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation_factor_graph.png" width="600px"/>
+<img alt="Robot 2D Triangulation Factor Graph" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_factor_graph.png" width="600px"/>
 
 ## Solve the problem
 
-Our goal is to find poses of the robot that minimize the residual of this factor graph. We create an optimizer with these factors and tell it to only optimize the pose keys (the rest are held constant):
+Our goal is to find poses of the robot that minimize the residual of this factor graph. We create an [`Optimizer`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.opt.optimizer.html) with these factors and tell it to only optimize the pose keys (the rest are held constant):
 ```python
 optimizer = Optimizer(
     factors=factors,
@@ -261,7 +263,7 @@ optimizer = Optimizer(
 )
 ```
 
-Now we need to instantiate numerical values for the problem, including an initial guess for our unknown poses (just set them to identity).
+Now we need to instantiate numerical [`Values`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.values.values.html) for the problem, including an initial guess for our unknown poses (just set them to identity).
 
 ```python
 import numpy as np
@@ -276,7 +278,7 @@ initial_values = Values(
 )
 ```
 
-Now run the optimization! This returns an `Optimizer.Result` object that contains the optimized values, error statistics, and per-iteration debug stats (if enabled).
+Now run the optimization! This returns an [`Optimizer.Result`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.opt.optimizer.html#symforce.opt.optimizer.Optimizer.Result) object that contains the optimized values, error statistics, and per-iteration debug stats (if enabled).
 ```python
 result = optimizer.optimize(initial_values)
 ```
@@ -287,7 +289,7 @@ Let's visualize what the optimizer did. The green circle represent the fixed lan
 from symforce.examples.robot_2d_triangulation.plotting import plot_solution
 plot_solution(optimizer, result)
 ```
-<img alt="Robot 2D Triangulation Solution" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation_iterations.gif" width="600px"/>
+<img alt="Robot 2D Triangulation Solution" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
 
 With the `verbose=True` param in the optimizer, it will print a table of its progress:
 ```
@@ -336,7 +338,7 @@ As a convenience, the Python `Optimizer` class can accept symbolic types in its 
 
 Let's look under the hood to understand how that works. For each factor, SymForce introspects the form of the symbolic function, passes through symbolic inputs to build an output expression, automatically computes tangent-space jacobians of those output expressions wrt the optimized variables, and generates fast runtime code for them.
 
-The `Codegen` class is the central tool for generating runtime code from symbolic expressions. In this case, we pass it the bearing residual function and configure it to generate C++ code:
+The [`Codegen`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.codegen.codegen.html) class is the central tool for generating runtime code from symbolic expressions. In this case, we pass it the bearing residual function and configure it to generate C++ code:
 ```python
 from symforce.codegen import Codegen, CppConfig
 
