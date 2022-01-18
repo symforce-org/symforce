@@ -54,7 +54,7 @@ Things to try:
 
 In the future we will share a survey with specific questions, but more generally we are interested in all feedback you can provide about the value of the library, comparisons to alternatives, and any guidance to us.
 
-# Building from source
+# Build from source
 
 <span style="color:blue">TODO: Create wheels for <code style="color:blue"><b>pip install symforce</b></code></span>
 
@@ -112,23 +112,23 @@ Verify the installation in Python:
 
 # Tutorial
 
-Let's walk through a simple example of modeling and optimizing a problem with SymForce. In this example a robot moves through a 2D plane. The robot can measure:
+Let's walk through a simple example of modeling and optimizing a problem with SymForce. In this example a robot moves through a 2D plane and the goal is to estimate its pose at multiple time steps given noisy measurements.
+
+The robot measures:
 
  * the distance it traveled from an odometry sensor
- * relative bearing angles to known landmarks in the environment
+ * relative bearing angles to known landmarks in the scene
 
-The goal is to estimate the position and heading angle of the robot at multiple time steps given noisy measurements. The robot's heading angle is defined wrt the x-axis, and its relative bearing measurements are defined wrt the robot's forward direction:
+The robot's heading angle is defined counter-clockwise from the x-axis, and its relative bearing measurements are defined from the robot's forward direction:
 
 <img alt="Robot 2D Triangulation Figure" src="symforce/examples/robot_2d_triangulation/figures/robot_2d_triangulation.png" width="350px"/>
-
-Note that both angles are negative as drawn in this diagram (counter-clockwise is positive).
 
 ## Explore the math
 
 Import the augmented SymPy API and geometry module:
 ```python
-from symforce import geo
 from symforce import sympy as sm
+from symforce import geo
 ```
 
 Create a symbolic 2D pose and landmark location. Using symbolic variables lets us explore and build up the math in a pure form.
@@ -144,65 +144,54 @@ Let's transform the landmark into the local frame of the robot:
 ```python
 landmark_body = pose.inverse() * landmark
 ```
-$
+<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;\begin{bmatrix}&space;&space;R_{re}&space;L_0&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0&space;\\&space;&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1\end{bmatrix}" width="250px" />
+
+<!-- $
 \begin{bmatrix}
   R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\
   -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1
 \end{bmatrix}
-$
+$ -->
 
-You can see that `geo.Rot2` is represented internally by a complex number $(R_{re}, R_{im})$ and we can study how it rotates the landmark $L$.
+You can see that `geo.Rot2` is represented internally by a complex number (𝑅𝑟𝑒, 𝑅𝑖𝑚) and we can study how it rotates the landmark 𝐿.
 
-For exploration purposes, we can look at the jacobian of the body-frame landmark with respect to the tangent space of the `Pose2`, which is $(x, y,\theta)$:
+For exploration purposes, let's take the jacobian of the body-frame landmark with respect to the tangent space of the `Pose2`, parameterized as (𝑥, 𝑦, 𝜃):
 
 <!-- TODO: flip this when we make Pose2 (theta, x, y) -->
 
 ```python
 landmark_body.jacobian(pose)
 ```
-$
+<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;\begin{bmatrix}&space;&space;-R_{re}&space;,&space;&&space;-R_{im},&space;&space;&&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;-&space;R_{re}&space;t_1&space;\\&space;&space;R_{im}&space;,&space;&&space;-R_{re}&space;,&space;&&space;-R_{re}&space;L_0&space;-&space;R_{im}&space;L_1&space;&plus;&space;R_{re}&space;t_0&space;&plus;&space;R_{im}&space;t_1\end{bmatrix}" width="350px" />
+
+<!-- $
 \begin{bmatrix}
   -R_{re} , & -R_{im},  & -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 - R_{re} t_1 \\
   R_{im} , & -R_{re} , & -R_{re} L_0 - R_{im} L_1 + R_{re} t_0 + R_{im} t_1
 \end{bmatrix}
-$
+$ -->
 
-Now use `atan2` to compute the relative bearing angle:
+Note that even though the orientation is stored as a complex number, the tangent space is a scalar angle and SymForce understands that.
+
+Now compute the relative bearing angle:
 
 ```python
 sm.atan2(landmark_body[1], landmark_body[0])
 ```
-$
-atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
-$
-
-<span style="color:blue">TODO: I wanted to show `geo.V1(sm.atan2(landmark_body[1], landmark_body[0])).jacobian(pose.R)`, but you have to call `sm.simplify` to get the expression to -1, otherwise it's more complicated. All this is also showing up extraneously in the generated code. Discuss what to show.</span>
+<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;atan_2(-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1,&space;R_{re}&space;L_0&space;&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0)" width="500px" />
 
 <!-- $
-\frac{
-    (-\frac{
-        (-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1)^2
-    }{
-        (R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)^2
-    } + \frac{
-
-        }{
-
-        })(R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)^2
-    }{
-        (-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1)^2 +
-        (R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)^2
-    }
+atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
 $ -->
 
-One important note is that `atan2` is singular at $(0, 0)$. In SymForce we handle this by placing a symbol $\epsilon$ (epsilon) that preserves the value of an expression in the limit of $\epsilon \rightarrow 0$, but allows evaluating at runtime with a very small nonzero value. Functions with singularities accept an `epsilon` argument:
+One important note is that `atan2` is singular at (0, 0). In SymForce we handle this by placing a symbol ϵ (epsilon) that preserves the value of an expression in the limit of ϵ → 0, but allows evaluating at runtime with a very small nonzero value. Functions with singularities accept an `epsilon` argument:
 
 ```python
 geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
 ```
-$\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$
+<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;\sqrt{x_0^2&space;&plus;&space;x_1^2&space;&plus;&space;x_2^2&space;&plus;&space;\epsilon}" width="135px" />
 
-<!-- TODO: Revisit why we don't support sm.atan2(y, x, epsilon=epsilon). -->
+<!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
 
 <span style="color:blue">TODO: Link to a detailed epsilon tutorial once created.</span>
 
@@ -314,6 +303,35 @@ With the `verbose=True` param in the optimizer, it will print a table of its pro
 Final error: 0.000220
 ```
 
+## Symbolic vs Numerical Types
+
+SymForce provides `sym` packages with runtime code for geometry and camera types that are generated from its symbolic `geo` and `cam` packages. As such, there are multiple versions of a class like `Pose3` and it can be a common source of confusion.
+
+The canonical symbolic class [`geo.Pose3`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.geo.pose3.html) lives in the `symforce` package:
+```python
+from symforce import geo
+geo.Pose3.identity()
+```
+
+The autogenerated Python runtime class [`sym.Pose3`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api-gen-py/sym.pose3.html) lives in the `sym` package:
+```python
+import sym
+sym.Pose.identity()
+```
+
+The autogenerated C++ runtime class [`sym::Pose3`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api-gen-cpp/class/classsym_1_1Pose3.html) lives in the `sym::` namespace:
+```C++
+sym::Pose3<double>::Identity()
+```
+
+The matrix type for symbolic code is [`geo.Matrix`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.geo.matrix.html), for generated Python is [`numpy.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html), and for C++ is [`Eigen::Matrix`](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html).
+
+The symbolic classes can also handle numerical values, but will be dramatically slower than the generated classes. The symbolic classes must be used when defining functions for codegen and optimization. Generated functions always accept the runtime types.
+
+The `Codegen` or `Factor` objects require symbolic types and functions to do math and generate code. However, once code is generated, numerical types should be used when invoking generated functions and in the initial values when calling the `Optimizer`.
+
+As a convenience, the Python `Optimizer` class can accept symbolic types in its `Values` and convert to numerical types before invoking generated functions. This is done in the tutorial example for simplicity.
+
 ## Generate runtime C++ code
 
 Let's look under the hood to understand how that works. For each factor, SymForce introspects the form of the symbolic function, passes through symbolic inputs to build an output expression, automatically computes tangent-space jacobians of those output expressions wrt the optimized variables, and generates fast runtime code for them.
@@ -357,12 +375,12 @@ namespace sym {
  */
 template <typename Scalar>
 void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2, 1>& landmark,
-                   const Scalar angle_deg, const Scalar epsilon,
+                   const Scalar angle, const Scalar epsilon,
                    Eigen::Matrix<Scalar, 1, 1>* const res = nullptr,
                    Eigen::Matrix<Scalar, 1, 3>* const jacobian = nullptr,
                    Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                    Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 80
+  // Total ops: 79
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _pose = pose.Data();
@@ -377,8 +395,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
   const Scalar _tmp6 = _pose[0] * landmark(0, 0);
   const Scalar _tmp7 = -_tmp4 + _tmp5 + _tmp6;
   const Scalar _tmp8 = _tmp7 + epsilon * ((((_tmp7) > 0) - ((_tmp7) < 0)) + Scalar(0.5));
-  const Scalar _tmp9 =
-      -Scalar(1) / Scalar(180) * Scalar(M_PI) * angle_deg + std::atan2(_tmp3, _tmp8);
+  const Scalar _tmp9 = -angle + std::atan2(_tmp3, _tmp8);
   const Scalar _tmp10 =
       _tmp9 - 2 * Scalar(M_PI) *
                   std::floor((Scalar(1) / Scalar(2)) * (_tmp9 + Scalar(M_PI)) / Scalar(M_PI));
@@ -489,7 +506,27 @@ std::cout << "Optimized values:" << values << std::endl;
 
 This tutorial shows the central workflow in SymForce for creating symbolic expressions, generating code, and optimizing. This approach works well for a wide range of complex problems in robotics, computer vision, and applied science.
 
-## Learn More
+
+<!-- $
+<span style="color:blue">TODO: I wanted to show `geo.V1(sm.atan2(landmark_body[1], landmark_body[0])).jacobian(pose.R)`, but you have to call `sm.simplify` to get the expression to -1, otherwise it's more complicated. All this is also showing up extraneously in the generated code. Discuss what to show.</span>
+
+\frac{
+    (-\frac{
+        (-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1)^2
+    }{
+        (R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)^2
+    } + \frac{
+
+        }{
+
+        })(R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)^2
+    }{
+        (-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1)^2 +
+        (R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)^2
+    }
+$ -->
+
+# Learn More
 
 You can find more SymForce tutorials [here](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/index.html#guides).
 
@@ -497,4 +534,4 @@ You can find more SymForce tutorials [here](https://symforce-6d87c842-22de-4727-
 
 SymForce is released under the [BSD-3](https://opensource.org/licenses/BSD-3-Clause) license.
 
-Copyright 2022 by the SymForce authors and Skydio, Inc.
+See the LICENSE file for more information.
