@@ -27,7 +27,7 @@ SymForce accelerates robotics and computer vision tasks like visual odometry, bu
 
 Features:
 
-+ Rapidly prototype and analyze complex problems with symbolic math
++ Rapidly prototype and analyze complex problems with symbolic math, with a seamless workflow into production use
 + Compute fast and correct tangent-space jacobians for any expression
 + Reduce duplication and minimize bugs by generating native runtime code in multiple languages from a canonical symbolic representation
 + Generate embedded-friendly C++ functions that depend only on Eigen, are templated on the scalar type, and require no dynamic allocation
@@ -53,6 +53,8 @@ Things to try:
 * Read and understand the SymForce codebase
 
 [**Read the docs!**](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/index.html)
+
+We know that currently some things will be slow, missing, or confusing. We're working on it, but please let us know what you encounter.
 
 In the future we will share a survey with specific questions, but more generally we are interested in all feedback you can provide about the value of the library, comparisons to alternatives, and any guidance to us.
 
@@ -114,7 +116,7 @@ Verify the installation in Python:
 
 # Tutorial
 
-Let's walk through a simple example of modeling and optimizing a problem with SymForce. In this example a robot moves through a 2D plane and the goal is to estimate its pose at multiple time steps given noisy measurements.
+Let's walk through a simple example of modeling and solving an optimization problem with SymForce. In this example a robot moves through a 2D plane and the goal is to estimate its pose at multiple time steps given noisy measurements.
 
 The robot measures:
 
@@ -291,20 +293,6 @@ plot_solution(optimizer, result)
 ```
 <img alt="Robot 2D Triangulation Solution" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
 
-With the `verbose=True` param in the optimizer, it will print a table of its progress:
-```
-[iter 0] lambda: 1.000e+00, error prev/linear/new: 6.396/2.952/2.282, rel reduction: 0.64328
-[iter 1] lambda: 2.500e-01, error prev/linear/new: 2.282/0.088/0.074, rel reduction: 0.96768
-[iter 2] lambda: 6.250e-02, error prev/linear/new: 0.074/0.007/0.007, rel reduction: 0.91152
-[iter 3] lambda: 1.562e-02, error prev/linear/new: 0.007/0.001/0.001, rel reduction: 0.90289
-[iter 4] lambda: 3.906e-03, error prev/linear/new: 0.001/0.000/0.000, rel reduction: 0.61885
-[iter 5] lambda: 9.766e-04, error prev/linear/new: 0.000/0.000/0.000, rel reduction: 0.08876
-[iter 6] lambda: 2.441e-04, error prev/linear/new: 0.000/0.000/0.000, rel reduction: 0.00013
-[iter 7] lambda: 6.104e-05, error prev/linear/new: 0.000/0.000/0.000, rel reduction: 0.00000
-
-Final error: 0.000220
-```
-
 ## Symbolic vs Numerical Types
 
 SymForce provides `sym` packages with runtime code for geometry and camera types that are generated from its symbolic `geo` and `cam` packages. As such, there are multiple versions of a class like `Pose3` and it can be a common source of confusion.
@@ -336,7 +324,7 @@ As a convenience, the Python `Optimizer` class can accept symbolic types in its 
 
 ## Generate runtime C++ code
 
-Let's look under the hood to understand how that works. For each factor, SymForce introspects the form of the symbolic function, passes through symbolic inputs to build an output expression, automatically computes tangent-space jacobians of those output expressions wrt the optimized variables, and generates fast runtime code for them.
+Let's look under the hood to understand how that optimization worked. For each factor, SymForce introspects the form of the symbolic function, passes through symbolic inputs to build an output expression, automatically computes tangent-space jacobians of those output expressions wrt the optimized variables, and generates fast runtime code for them.
 
 The [`Codegen`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.codegen.codegen.html) class is the central tool for generating runtime code from symbolic expressions. In this case, we pass it the bearing residual function and configure it to generate C++ code:
 ```python
@@ -456,7 +444,9 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
 }  // namespace sym
 ```
 
-SymForce can also generate runtime Python code that depends only on `numpy`. The code generation system is written with pluggable `jinja2` templates to minimize the work to add new backend languages.
+SymForce can also generate runtime Python code that depends only on `numpy`.
+
+The code generation system is written with pluggable [`jinja`](https://palletsprojects.com/p/jinja/) templates to minimize the work to add new backend languages. Some of our top candidates to add are TypeScript, CUDA, and PyTorch.
 
 ## Optimize from C++
 
@@ -507,6 +497,8 @@ std::cout << "Optimized values:" << values << std::endl;
 ```
 
 This tutorial shows the central workflow in SymForce for creating symbolic expressions, generating code, and optimizing. This approach works well for a wide range of complex problems in robotics, computer vision, and applied science.
+
+However, each piece may also be used independently. The optimization machinery can work with handwritten functions, and the symbolic math and code generation is useful outside of any optimization context.
 
 
 <!-- $

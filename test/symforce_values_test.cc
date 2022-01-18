@@ -299,7 +299,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
 
     // test local coordinates
     const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
-    CHECK(local_coords.isApprox(tangent_vec));
+    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, 1e-6));
   }
 }
 
