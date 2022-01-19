@@ -1,4 +1,4 @@
-export {
+export type {
   byte,
   int8_t,
   int16_t,
@@ -9,7 +9,7 @@ export {
   uint32_t,
   uint64_t,
   float,
-  double
+  double,
 } from "./types";
 export { default as LcmMsg } from "./lcm";
 export { LcmType } from "./lcm";
