@@ -202,35 +202,21 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   # ------------------------------------------------------------------------------
   # METIS
 
-  # Libs for metis - our version of metis does not bundle this
-  FetchContent_Declare(
-    GKlib
-    GIT_REPOSITORY https://github.com/KarypisLab/GKlib
-    # GKlib does not have releases, this is picked to be around our METIS version
-    GIT_TAG 3c4d4853957fd23d93e608c826acfbb3d6b8941e
-    # GKlib's build does various things that are both undesirable and unconfigurable, fix them
-    PATCH_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_gklib.sh" "${FETCHCONTENT_BASE_DIR}/gklib-src"
-  )
-  FetchContent_MakeAvailable(GKlib)
-
   function(add_metis)
     FetchContent_Declare(
       metis
-      GIT_REPOSITORY https://github.com/KarypisLab/METIS
-      # METIS on GitHub doesn't build with straight CMake after 81d70ba, and between c903288 and
-      # 81d70ba it tries and fails to include GKlib as a submodule.  So we use c903288, and add GKlib
-      # ourselves (above).
-      GIT_TAG c9032886f6073478d1013b4b2d75d59071530394
+      # METIS does not have releases recently.  Previously were using nearly the initial commit on
+      # github, which is newer than the release on the METIS website. All of the releases on github
+      # seem to have memory bugs, which do not appear in this release:
+      URL https://symforce-org.github.io/downloads/metis-5.1.0.tar.gz
+      # GKlib builds some test executables we can't disable without patching
+      PATCH_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_metis.sh" "${FETCHCONTENT_BASE_DIR}/metis-src"
     )
 
     # Tell metis where to find GKlib
-    FetchContent_GetProperties(GKlib SOURCE_DIR GKlib_SOURCE_DIR)
-    set(GKLIB_PATH ${GKlib_SOURCE_DIR} CACHE PATH "path to GKlib" FORCE)
+    set(GKLIB_PATH "${FETCHCONTENT_BASE_DIR}/metis-src/GKlib" CACHE PATH "path to GKlib" FORCE)
 
     FetchContent_MakeAvailable(metis)
-
-    # libmetis has warnings on gcc 4.6+, but they add -Werror, so we need to cancel that out
-    target_compile_options(metis PRIVATE "-Wno-error")
 
     # Metis doesn't put its main header (metis.h) on the metis target
     FetchContent_GetProperties(metis SOURCE_DIR metis_SOURCE_DIR)
