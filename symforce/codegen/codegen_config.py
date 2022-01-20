@@ -28,11 +28,13 @@ class CppConfig(CodegenConfig):
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
+        support_complex: Generate code that can work with std::complex or with regular float types
     """
 
     doc_comment_line_prefix: str = " * "
     line_length: int = 100
     use_eigen_types: bool = True
+    support_complex: bool = False
 
 
 @dataclass

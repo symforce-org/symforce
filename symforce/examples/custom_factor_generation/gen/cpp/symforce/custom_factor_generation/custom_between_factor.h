@@ -85,7 +85,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
   const Scalar _tmp30 = _tmp21 * _tmp29;
   const Scalar _tmp31 = 1 - epsilon;
   const Scalar _tmp32 = std::min<Scalar>(_tmp31, std::fabs(_tmp26 - _tmp27));
-  const Scalar _tmp33 = std::acos(_tmp32) / std::sqrt(1 - std::pow(_tmp32, Scalar(2)));
+  const Scalar _tmp33 = std::acos(_tmp32) / std::sqrt(Scalar(1 - std::pow(_tmp32, Scalar(2))));
   const Scalar _tmp34 = _tmp20 * _tmp30 * _tmp33;
   const Scalar _tmp35 = _tmp29 * _tmp33;
   const Scalar _tmp36 = Scalar(1.0) / (epsilon + prior_sigmas(1, 0));

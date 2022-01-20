@@ -206,7 +206,7 @@ void Linearization(
   const Scalar _tmp41 = -epsilon;
   const Scalar _tmp42 = _tmp41 + 1;
   const Scalar _tmp43 = std::min<Scalar>(_tmp42, std::fabs(_tmp38));
-  const Scalar _tmp44 = std::acos(_tmp43) / std::sqrt(1 - std::pow(_tmp43, Scalar(2)));
+  const Scalar _tmp44 = std::acos(_tmp43) / std::sqrt(Scalar(1 - std::pow(_tmp43, Scalar(2))));
   const Scalar _tmp45 = _tmp40 * _tmp44;
   const Scalar _tmp46 = _tmp32 * _tmp45;
   const Scalar _tmp47 = -2 * std::pow(_views_0_pose[1], Scalar(2));
@@ -407,9 +407,10 @@ void Linearization(
       _tmp183 + epsilon * (2 * std::min<Scalar>(0, (((_tmp183) > 0) - ((_tmp183) < 0))) + 1);
   const Scalar _tmp185 = (Scalar(1) / Scalar(2)) * _tmp184;
   const Scalar _tmp186 = 2 * _tmp180 / _tmp184;
-  const Scalar _tmp187 = std::sqrt(_tmp186 * (std::pow(_tmp182, _tmp185) - 1));
+  const Scalar _tmp187 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp182, _tmp185) - 1)));
   const Scalar _tmp188 = (((_tmp166) > 0) - ((_tmp166) < 0));
-  const Scalar _tmp189 = std::sqrt(matches_0_0_weight) * std::sqrt(std::max<Scalar>(0, _tmp188));
+  const Scalar _tmp189 =
+      std::sqrt(matches_0_0_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp188)));
   const Scalar _tmp190 = _tmp187 * _tmp189;
   const Scalar _tmp191 = _tmp177 * _tmp190;
   const Scalar _tmp192 = _tmp171 * _tmp191;
@@ -445,9 +446,10 @@ void Linearization(
   const Scalar _tmp215 = std::pow(_tmp210, Scalar(2)) + std::pow(_tmp214, Scalar(2)) + epsilon;
   const Scalar _tmp216 = std::pow(_tmp215, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp217 = _tmp181 * _tmp215 + 1;
-  const Scalar _tmp218 = std::sqrt(_tmp186 * (std::pow(_tmp217, _tmp185) - 1));
+  const Scalar _tmp218 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp217, _tmp185) - 1)));
   const Scalar _tmp219 = (((_tmp205) > 0) - ((_tmp205) < 0));
-  const Scalar _tmp220 = std::sqrt(matches_0_1_weight) * std::sqrt(std::max<Scalar>(0, _tmp219));
+  const Scalar _tmp220 =
+      std::sqrt(matches_0_1_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp219)));
   const Scalar _tmp221 = _tmp218 * _tmp220;
   const Scalar _tmp222 = _tmp216 * _tmp221;
   const Scalar _tmp223 = _tmp210 * _tmp222;
@@ -483,9 +485,10 @@ void Linearization(
   const Scalar _tmp246 = std::pow(_tmp241, Scalar(2)) + std::pow(_tmp245, Scalar(2)) + epsilon;
   const Scalar _tmp247 = std::pow(_tmp246, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp248 = _tmp181 * _tmp246 + 1;
-  const Scalar _tmp249 = std::sqrt(_tmp186 * (std::pow(_tmp248, _tmp185) - 1));
+  const Scalar _tmp249 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp248, _tmp185) - 1)));
   const Scalar _tmp250 = (((_tmp236) > 0) - ((_tmp236) < 0));
-  const Scalar _tmp251 = std::sqrt(matches_0_2_weight) * std::sqrt(std::max<Scalar>(0, _tmp250));
+  const Scalar _tmp251 =
+      std::sqrt(matches_0_2_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp250)));
   const Scalar _tmp252 = _tmp249 * _tmp251;
   const Scalar _tmp253 = _tmp247 * _tmp252;
   const Scalar _tmp254 = _tmp241 * _tmp253;
@@ -521,9 +524,10 @@ void Linearization(
   const Scalar _tmp277 = std::pow(_tmp272, Scalar(2)) + std::pow(_tmp276, Scalar(2)) + epsilon;
   const Scalar _tmp278 = std::pow(_tmp277, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp279 = (((_tmp267) > 0) - ((_tmp267) < 0));
-  const Scalar _tmp280 = std::sqrt(matches_0_3_weight) * std::sqrt(std::max<Scalar>(0, _tmp279));
+  const Scalar _tmp280 =
+      std::sqrt(matches_0_3_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp279)));
   const Scalar _tmp281 = _tmp181 * _tmp277 + 1;
-  const Scalar _tmp282 = std::sqrt(_tmp186 * (std::pow(_tmp281, _tmp185) - 1));
+  const Scalar _tmp282 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp281, _tmp185) - 1)));
   const Scalar _tmp283 = _tmp280 * _tmp282;
   const Scalar _tmp284 = _tmp278 * _tmp283;
   const Scalar _tmp285 = _tmp272 * _tmp284;
@@ -559,9 +563,10 @@ void Linearization(
   const Scalar _tmp308 = std::pow(_tmp303, Scalar(2)) + std::pow(_tmp307, Scalar(2)) + epsilon;
   const Scalar _tmp309 = std::pow(_tmp308, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp310 = _tmp181 * _tmp308 + 1;
-  const Scalar _tmp311 = std::sqrt(_tmp186 * (std::pow(_tmp310, _tmp185) - 1));
+  const Scalar _tmp311 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp310, _tmp185) - 1)));
   const Scalar _tmp312 = (((_tmp298) > 0) - ((_tmp298) < 0));
-  const Scalar _tmp313 = std::sqrt(matches_0_4_weight) * std::sqrt(std::max<Scalar>(0, _tmp312));
+  const Scalar _tmp313 =
+      std::sqrt(matches_0_4_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp312)));
   const Scalar _tmp314 = _tmp311 * _tmp313;
   const Scalar _tmp315 = _tmp309 * _tmp314;
   const Scalar _tmp316 = _tmp303 * _tmp315;
@@ -597,9 +602,10 @@ void Linearization(
   const Scalar _tmp339 = std::pow(_tmp334, Scalar(2)) + std::pow(_tmp338, Scalar(2)) + epsilon;
   const Scalar _tmp340 = std::pow(_tmp339, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp341 = _tmp181 * _tmp339 + 1;
-  const Scalar _tmp342 = std::sqrt(_tmp186 * (std::pow(_tmp341, _tmp185) - 1));
+  const Scalar _tmp342 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp341, _tmp185) - 1)));
   const Scalar _tmp343 = (((_tmp329) > 0) - ((_tmp329) < 0));
-  const Scalar _tmp344 = std::sqrt(matches_0_5_weight) * std::sqrt(std::max<Scalar>(0, _tmp343));
+  const Scalar _tmp344 =
+      std::sqrt(matches_0_5_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp343)));
   const Scalar _tmp345 = _tmp342 * _tmp344;
   const Scalar _tmp346 = _tmp340 * _tmp345;
   const Scalar _tmp347 = _tmp334 * _tmp346;
@@ -635,9 +641,10 @@ void Linearization(
   const Scalar _tmp370 = std::pow(_tmp365, Scalar(2)) + std::pow(_tmp369, Scalar(2)) + epsilon;
   const Scalar _tmp371 = std::pow(_tmp370, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp372 = (((_tmp360) > 0) - ((_tmp360) < 0));
-  const Scalar _tmp373 = std::sqrt(matches_0_6_weight) * std::sqrt(std::max<Scalar>(0, _tmp372));
+  const Scalar _tmp373 =
+      std::sqrt(matches_0_6_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp372)));
   const Scalar _tmp374 = _tmp181 * _tmp370 + 1;
-  const Scalar _tmp375 = std::sqrt(_tmp186 * (std::pow(_tmp374, _tmp185) - 1));
+  const Scalar _tmp375 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp374, _tmp185) - 1)));
   const Scalar _tmp376 = _tmp373 * _tmp375;
   const Scalar _tmp377 = _tmp371 * _tmp376;
   const Scalar _tmp378 = _tmp365 * _tmp377;
@@ -673,9 +680,10 @@ void Linearization(
   const Scalar _tmp401 = std::pow(_tmp396, Scalar(2)) + std::pow(_tmp400, Scalar(2)) + epsilon;
   const Scalar _tmp402 = std::pow(_tmp401, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp403 = _tmp181 * _tmp401 + 1;
-  const Scalar _tmp404 = std::sqrt(_tmp186 * (std::pow(_tmp403, _tmp185) - 1));
+  const Scalar _tmp404 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp403, _tmp185) - 1)));
   const Scalar _tmp405 = (((_tmp391) > 0) - ((_tmp391) < 0));
-  const Scalar _tmp406 = std::sqrt(matches_0_7_weight) * std::sqrt(std::max<Scalar>(0, _tmp405));
+  const Scalar _tmp406 =
+      std::sqrt(matches_0_7_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp405)));
   const Scalar _tmp407 = _tmp404 * _tmp406;
   const Scalar _tmp408 = _tmp402 * _tmp407;
   const Scalar _tmp409 = _tmp396 * _tmp408;
@@ -711,9 +719,10 @@ void Linearization(
   const Scalar _tmp432 = std::pow(_tmp427, Scalar(2)) + std::pow(_tmp431, Scalar(2)) + epsilon;
   const Scalar _tmp433 = std::pow(_tmp432, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp434 = (((_tmp422) > 0) - ((_tmp422) < 0));
-  const Scalar _tmp435 = std::sqrt(matches_0_8_weight) * std::sqrt(std::max<Scalar>(0, _tmp434));
+  const Scalar _tmp435 =
+      std::sqrt(matches_0_8_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp434)));
   const Scalar _tmp436 = _tmp181 * _tmp432 + 1;
-  const Scalar _tmp437 = std::sqrt(_tmp186 * (std::pow(_tmp436, _tmp185) - 1));
+  const Scalar _tmp437 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp436, _tmp185) - 1)));
   const Scalar _tmp438 = _tmp435 * _tmp437;
   const Scalar _tmp439 = _tmp433 * _tmp438;
   const Scalar _tmp440 = _tmp427 * _tmp439;
@@ -749,9 +758,10 @@ void Linearization(
   const Scalar _tmp463 = std::pow(_tmp458, Scalar(2)) + std::pow(_tmp462, Scalar(2)) + epsilon;
   const Scalar _tmp464 = std::pow(_tmp463, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp465 = _tmp181 * _tmp463 + 1;
-  const Scalar _tmp466 = std::sqrt(_tmp186 * (std::pow(_tmp465, _tmp185) - 1));
+  const Scalar _tmp466 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp465, _tmp185) - 1)));
   const Scalar _tmp467 = (((_tmp453) > 0) - ((_tmp453) < 0));
-  const Scalar _tmp468 = std::sqrt(matches_0_9_weight) * std::sqrt(std::max<Scalar>(0, _tmp467));
+  const Scalar _tmp468 =
+      std::sqrt(matches_0_9_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp467)));
   const Scalar _tmp469 = _tmp466 * _tmp468;
   const Scalar _tmp470 = _tmp464 * _tmp469;
   const Scalar _tmp471 = _tmp458 * _tmp470;
@@ -787,9 +797,10 @@ void Linearization(
   const Scalar _tmp494 = std::pow(_tmp489, Scalar(2)) + std::pow(_tmp493, Scalar(2)) + epsilon;
   const Scalar _tmp495 = std::pow(_tmp494, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp496 = (((_tmp484) > 0) - ((_tmp484) < 0));
-  const Scalar _tmp497 = std::sqrt(matches_0_10_weight) * std::sqrt(std::max<Scalar>(0, _tmp496));
+  const Scalar _tmp497 =
+      std::sqrt(matches_0_10_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp496)));
   const Scalar _tmp498 = _tmp181 * _tmp494 + 1;
-  const Scalar _tmp499 = std::sqrt(_tmp186 * (std::pow(_tmp498, _tmp185) - 1));
+  const Scalar _tmp499 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp498, _tmp185) - 1)));
   const Scalar _tmp500 = _tmp497 * _tmp499;
   const Scalar _tmp501 = _tmp495 * _tmp500;
   const Scalar _tmp502 = _tmp489 * _tmp501;
@@ -825,9 +836,10 @@ void Linearization(
   const Scalar _tmp525 = std::pow(_tmp520, Scalar(2)) + std::pow(_tmp524, Scalar(2)) + epsilon;
   const Scalar _tmp526 = std::pow(_tmp525, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp527 = (((_tmp515) > 0) - ((_tmp515) < 0));
-  const Scalar _tmp528 = std::sqrt(matches_0_11_weight) * std::sqrt(std::max<Scalar>(0, _tmp527));
+  const Scalar _tmp528 =
+      std::sqrt(matches_0_11_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp527)));
   const Scalar _tmp529 = _tmp181 * _tmp525 + 1;
-  const Scalar _tmp530 = std::sqrt(_tmp186 * (std::pow(_tmp529, _tmp185) - 1));
+  const Scalar _tmp530 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp529, _tmp185) - 1)));
   const Scalar _tmp531 = _tmp528 * _tmp530;
   const Scalar _tmp532 = _tmp526 * _tmp531;
   const Scalar _tmp533 = _tmp520 * _tmp532;
@@ -863,9 +875,10 @@ void Linearization(
   const Scalar _tmp556 = std::pow(_tmp551, Scalar(2)) + std::pow(_tmp555, Scalar(2)) + epsilon;
   const Scalar _tmp557 = std::pow(_tmp556, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp558 = _tmp181 * _tmp556 + 1;
-  const Scalar _tmp559 = std::sqrt(_tmp186 * (std::pow(_tmp558, _tmp185) - 1));
+  const Scalar _tmp559 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp558, _tmp185) - 1)));
   const Scalar _tmp560 = (((_tmp546) > 0) - ((_tmp546) < 0));
-  const Scalar _tmp561 = std::sqrt(matches_0_12_weight) * std::sqrt(std::max<Scalar>(0, _tmp560));
+  const Scalar _tmp561 =
+      std::sqrt(matches_0_12_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp560)));
   const Scalar _tmp562 = _tmp559 * _tmp561;
   const Scalar _tmp563 = _tmp557 * _tmp562;
   const Scalar _tmp564 = _tmp551 * _tmp563;
@@ -901,9 +914,10 @@ void Linearization(
   const Scalar _tmp587 = std::pow(_tmp582, Scalar(2)) + std::pow(_tmp586, Scalar(2)) + epsilon;
   const Scalar _tmp588 = std::pow(_tmp587, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp589 = _tmp181 * _tmp587 + 1;
-  const Scalar _tmp590 = std::sqrt(_tmp186 * (std::pow(_tmp589, _tmp185) - 1));
+  const Scalar _tmp590 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp589, _tmp185) - 1)));
   const Scalar _tmp591 = (((_tmp577) > 0) - ((_tmp577) < 0));
-  const Scalar _tmp592 = std::sqrt(matches_0_13_weight) * std::sqrt(std::max<Scalar>(0, _tmp591));
+  const Scalar _tmp592 =
+      std::sqrt(matches_0_13_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp591)));
   const Scalar _tmp593 = _tmp590 * _tmp592;
   const Scalar _tmp594 = _tmp588 * _tmp593;
   const Scalar _tmp595 = _tmp582 * _tmp594;
@@ -939,9 +953,10 @@ void Linearization(
   const Scalar _tmp618 = std::pow(_tmp613, Scalar(2)) + std::pow(_tmp617, Scalar(2)) + epsilon;
   const Scalar _tmp619 = std::pow(_tmp618, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp620 = (((_tmp608) > 0) - ((_tmp608) < 0));
-  const Scalar _tmp621 = std::sqrt(matches_0_14_weight) * std::sqrt(std::max<Scalar>(0, _tmp620));
+  const Scalar _tmp621 =
+      std::sqrt(matches_0_14_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp620)));
   const Scalar _tmp622 = _tmp181 * _tmp618 + 1;
-  const Scalar _tmp623 = std::sqrt(_tmp186 * (std::pow(_tmp622, _tmp185) - 1));
+  const Scalar _tmp623 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp622, _tmp185) - 1)));
   const Scalar _tmp624 = _tmp621 * _tmp623;
   const Scalar _tmp625 = _tmp619 * _tmp624;
   const Scalar _tmp626 = _tmp613 * _tmp625;
@@ -977,9 +992,10 @@ void Linearization(
   const Scalar _tmp649 = std::pow(_tmp644, Scalar(2)) + std::pow(_tmp648, Scalar(2)) + epsilon;
   const Scalar _tmp650 = std::pow(_tmp649, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp651 = (((_tmp639) > 0) - ((_tmp639) < 0));
-  const Scalar _tmp652 = std::sqrt(matches_0_15_weight) * std::sqrt(std::max<Scalar>(0, _tmp651));
+  const Scalar _tmp652 =
+      std::sqrt(matches_0_15_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp651)));
   const Scalar _tmp653 = _tmp181 * _tmp649 + 1;
-  const Scalar _tmp654 = std::sqrt(_tmp186 * (std::pow(_tmp653, _tmp185) - 1));
+  const Scalar _tmp654 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp653, _tmp185) - 1)));
   const Scalar _tmp655 = _tmp652 * _tmp654;
   const Scalar _tmp656 = _tmp650 * _tmp655;
   const Scalar _tmp657 = _tmp644 * _tmp656;
@@ -1015,9 +1031,10 @@ void Linearization(
   const Scalar _tmp680 = std::pow(_tmp675, Scalar(2)) + std::pow(_tmp679, Scalar(2)) + epsilon;
   const Scalar _tmp681 = std::pow(_tmp680, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp682 = _tmp181 * _tmp680 + 1;
-  const Scalar _tmp683 = std::sqrt(_tmp186 * (std::pow(_tmp682, _tmp185) - 1));
+  const Scalar _tmp683 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp682, _tmp185) - 1)));
   const Scalar _tmp684 = (((_tmp670) > 0) - ((_tmp670) < 0));
-  const Scalar _tmp685 = std::sqrt(matches_0_16_weight) * std::sqrt(std::max<Scalar>(0, _tmp684));
+  const Scalar _tmp685 =
+      std::sqrt(matches_0_16_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp684)));
   const Scalar _tmp686 = _tmp683 * _tmp685;
   const Scalar _tmp687 = _tmp681 * _tmp686;
   const Scalar _tmp688 = _tmp675 * _tmp687;
@@ -1053,9 +1070,10 @@ void Linearization(
   const Scalar _tmp711 = std::pow(_tmp706, Scalar(2)) + std::pow(_tmp710, Scalar(2)) + epsilon;
   const Scalar _tmp712 = std::pow(_tmp711, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp713 = (((_tmp701) > 0) - ((_tmp701) < 0));
-  const Scalar _tmp714 = std::sqrt(matches_0_17_weight) * std::sqrt(std::max<Scalar>(0, _tmp713));
+  const Scalar _tmp714 =
+      std::sqrt(matches_0_17_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp713)));
   const Scalar _tmp715 = _tmp181 * _tmp711 + 1;
-  const Scalar _tmp716 = std::sqrt(_tmp186 * (std::pow(_tmp715, _tmp185) - 1));
+  const Scalar _tmp716 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp715, _tmp185) - 1)));
   const Scalar _tmp717 = _tmp714 * _tmp716;
   const Scalar _tmp718 = _tmp712 * _tmp717;
   const Scalar _tmp719 = _tmp706 * _tmp718;
@@ -1091,9 +1109,10 @@ void Linearization(
   const Scalar _tmp742 = std::pow(_tmp737, Scalar(2)) + std::pow(_tmp741, Scalar(2)) + epsilon;
   const Scalar _tmp743 = std::pow(_tmp742, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp744 = (((_tmp732) > 0) - ((_tmp732) < 0));
-  const Scalar _tmp745 = std::sqrt(matches_0_18_weight) * std::sqrt(std::max<Scalar>(0, _tmp744));
+  const Scalar _tmp745 =
+      std::sqrt(matches_0_18_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp744)));
   const Scalar _tmp746 = _tmp181 * _tmp742 + 1;
-  const Scalar _tmp747 = std::sqrt(_tmp186 * (std::pow(_tmp746, _tmp185) - 1));
+  const Scalar _tmp747 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp746, _tmp185) - 1)));
   const Scalar _tmp748 = _tmp745 * _tmp747;
   const Scalar _tmp749 = _tmp743 * _tmp748;
   const Scalar _tmp750 = _tmp737 * _tmp749;
@@ -1129,9 +1148,10 @@ void Linearization(
   const Scalar _tmp773 = std::pow(_tmp768, Scalar(2)) + std::pow(_tmp772, Scalar(2)) + epsilon;
   const Scalar _tmp774 = std::pow(_tmp773, Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp775 = _tmp181 * _tmp773 + 1;
-  const Scalar _tmp776 = std::sqrt(_tmp186 * (std::pow(_tmp775, _tmp185) - 1));
+  const Scalar _tmp776 = std::sqrt(Scalar(_tmp186 * (std::pow(_tmp775, _tmp185) - 1)));
   const Scalar _tmp777 = (((_tmp763) > 0) - ((_tmp763) < 0));
-  const Scalar _tmp778 = std::sqrt(matches_0_19_weight) * std::sqrt(std::max<Scalar>(0, _tmp777));
+  const Scalar _tmp778 =
+      std::sqrt(matches_0_19_weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp777)));
   const Scalar _tmp779 = _tmp776 * _tmp778;
   const Scalar _tmp780 = _tmp774 * _tmp779;
   const Scalar _tmp781 = _tmp768 * _tmp780;

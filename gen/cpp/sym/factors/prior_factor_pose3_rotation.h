@@ -59,7 +59,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
   const Scalar _tmp12 = 2 * _tmp11;
   const Scalar _tmp13 = 1 - epsilon;
   const Scalar _tmp14 = std::min<Scalar>(_tmp13, std::fabs(_tmp10));
-  const Scalar _tmp15 = std::acos(_tmp14) / std::sqrt(1 - std::pow(_tmp14, Scalar(2)));
+  const Scalar _tmp15 = std::acos(_tmp14) / std::sqrt(Scalar(1 - std::pow(_tmp14, Scalar(2))));
   const Scalar _tmp16 = _tmp12 * _tmp15;
   const Scalar _tmp17 = _tmp16 * _tmp4;
   const Scalar _tmp18 = _prior[0] * _value[1];

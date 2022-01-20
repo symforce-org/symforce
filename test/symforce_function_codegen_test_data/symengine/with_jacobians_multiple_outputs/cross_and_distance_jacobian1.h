@@ -39,9 +39,9 @@ void CrossAndDistanceJacobian1(const Eigen::Matrix<Scalar, 3, 1>& a,
   if (distance != nullptr) {
     Scalar& _distance = (*distance);
 
-    _distance = std::sqrt(epsilon + std::pow(Scalar(a(0, 0) - b(0, 0)), Scalar(2)) +
-                          std::pow(Scalar(a(1, 0) - b(1, 0)), Scalar(2)) +
-                          std::pow(Scalar(a(2, 0) - b(2, 0)), Scalar(2)));
+    _distance = std::sqrt(Scalar(epsilon + std::pow(Scalar(a(0, 0) - b(0, 0)), Scalar(2)) +
+                                 std::pow(Scalar(a(1, 0) - b(1, 0)), Scalar(2)) +
+                                 std::pow(Scalar(a(2, 0) - b(2, 0)), Scalar(2))));
   }
 
   if (cross_D_b != nullptr) {

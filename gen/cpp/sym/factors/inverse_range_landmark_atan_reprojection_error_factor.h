@@ -158,8 +158,8 @@ void InverseRangeLandmarkAtanReprojectionErrorFactor(
   const Scalar _tmp84 = _tmp3 + _tmp77;
   const Scalar _tmp85 = _tmp72 + _tmp73;
   const Scalar _tmp86 = _tmp39 * _tmp83 + _tmp56 * _tmp84 + _tmp67 * _tmp85;
-  const Scalar _tmp87 = std::sqrt(std::pow(_tmp68, Scalar(2)) * _tmp81 +
-                                  _tmp81 * std::pow(_tmp86, Scalar(2)) + epsilon);
+  const Scalar _tmp87 = std::sqrt(Scalar(std::pow(_tmp68, Scalar(2)) * _tmp81 +
+                                         _tmp81 * std::pow(_tmp86, Scalar(2)) + epsilon));
   const Scalar _tmp88 = Scalar(0.5) * target_calibration_storage(4, 0);
   const Scalar _tmp89 = std::atan(2 * _tmp87 * std::tan(_tmp88)) / (_tmp80 * _tmp87);
   const Scalar _tmp90 = target_calibration_storage(2, 0) - target_pixel(0, 0);
@@ -180,10 +180,10 @@ void InverseRangeLandmarkAtanReprojectionErrorFactor(
   const Scalar _tmp104 =
       weight * std::max<Scalar>(0, (((-std::fabs(_tmp19) + Scalar(M_PI_2)) > 0) -
                                     ((-std::fabs(_tmp19) + Scalar(M_PI_2)) < 0)));
-  const Scalar _tmp105 = std::sqrt(_tmp104) *
-                         std::sqrt(_tmp103 * (std::pow(Scalar(_tmp95 * _tmp99 + 1), _tmp102) - 1)) *
-                         std::sqrt(std::max<Scalar>(0, (((_tmp79) > 0) - ((_tmp79) < 0)))) /
-                         std::sqrt(_tmp95);
+  const Scalar _tmp105 =
+      std::sqrt(_tmp104) *
+      std::sqrt(Scalar(_tmp103 * (std::pow(Scalar(_tmp95 * _tmp99 + 1), _tmp102) - 1))) *
+      std::sqrt(Scalar(std::max<Scalar>(0, (((_tmp79) > 0) - ((_tmp79) < 0))))) / std::sqrt(_tmp95);
   const Scalar _tmp106 = _tmp105 * _tmp91;
   const Scalar _tmp107 = _tmp105 * _tmp94;
   const Scalar _tmp108 = std::pow(_source_pose[3], Scalar(2));
@@ -274,8 +274,8 @@ void InverseRangeLandmarkAtanReprojectionErrorFactor(
   const Scalar _tmp185 = _tmp174 * _tmp176 + _tmp182 * _tmp184;
   const Scalar _tmp186 = std::pow(_tmp175, Scalar(2)) + std::pow(_tmp183, Scalar(2)) + epsilon;
   const Scalar _tmp187 = _tmp186 * _tmp99 + 1;
-  const Scalar _tmp188 = std::sqrt(_tmp103 * (std::pow(_tmp187, _tmp102) - 1));
-  const Scalar _tmp189 = std::sqrt(_tmp104) * std::sqrt(std::max<Scalar>(0, _tmp158));
+  const Scalar _tmp188 = std::sqrt(Scalar(_tmp103 * (std::pow(_tmp187, _tmp102) - 1)));
+  const Scalar _tmp189 = std::sqrt(_tmp104) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp158)));
   const Scalar _tmp190 = _tmp188 * _tmp189;
   const Scalar _tmp191 = _tmp190 / (_tmp186 * std::sqrt(_tmp186));
   const Scalar _tmp192 = (Scalar(1) / Scalar(2)) * _tmp191;

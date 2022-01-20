@@ -167,14 +167,16 @@ void InverseRangeLandmarkEquidistantEpipolarReprojectionErrorFactor(
   const Scalar _tmp85 = std::pow(gnc_scale, Scalar(-2));
   const Scalar _tmp86 = _tmp79 * _tmp85 / _tmp82 + 1;
   const Scalar _tmp87 = (Scalar(1) / Scalar(2)) * _tmp84;
-  const Scalar _tmp88 = std::sqrt(2) * std::sqrt(_tmp82 * (std::pow(_tmp86, _tmp87) - 1) / _tmp84);
+  const Scalar _tmp88 =
+      std::sqrt(Scalar(2)) * std::sqrt(Scalar(_tmp82 * (std::pow(_tmp86, _tmp87) - 1) / _tmp84));
   const Scalar _tmp89 = Scalar(M_PI_2);
   const Scalar _tmp90 =
-      std::sqrt(weight) * std::sqrt(std::max<Scalar>(0, (((_tmp73) > 0) - ((_tmp73) < 0)))) *
-      std::sqrt(std::max<Scalar>(
-          0, (((_tmp89 - std::fabs(_tmp11)) > 0) - ((_tmp89 - std::fabs(_tmp11)) < 0)))) *
-      std::sqrt(std::max<Scalar>(
-          0, (((_tmp89 - std::fabs(_tmp9)) > 0) - ((_tmp89 - std::fabs(_tmp9)) < 0))));
+      std::sqrt(weight) *
+      std::sqrt(Scalar(std::max<Scalar>(0, (((_tmp73) > 0) - ((_tmp73) < 0))))) *
+      std::sqrt(Scalar(std::max<Scalar>(
+          0, (((_tmp89 - std::fabs(_tmp11)) > 0) - ((_tmp89 - std::fabs(_tmp11)) < 0))))) *
+      std::sqrt(Scalar(std::max<Scalar>(
+          0, (((_tmp89 - std::fabs(_tmp9)) > 0) - ((_tmp89 - std::fabs(_tmp9)) < 0)))));
   const Scalar _tmp91 = _tmp88 * _tmp90;
   const Scalar _tmp92 = _tmp80 * _tmp91;
   const Scalar _tmp93 = _tmp76 * _tmp92;

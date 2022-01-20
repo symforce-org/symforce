@@ -2,6 +2,10 @@
 
 #pragma once
 
+{% if spec.config.support_complex %}
+#include <complex>
+{% endif %}
+
 {# Conditional? #}
 #include <Eigen/Dense>
 {% if spec.sparse_mat_data.__len__() > 0 -%}
@@ -27,6 +31,10 @@ namespace {{ spec.namespace }} {
 {% endif %}
 template <typename {{ util.format_typename(Symbol) }}>
 {{ util.function_declaration(spec, is_declaration=True) }} {
+    {% if spec.config.support_complex %}
+    using namespace std::complex_literals;
+    {% endif %}
+
     {{ util.expr_code(spec) -}}
 }  // NOLINT(readability/fn_size)
 

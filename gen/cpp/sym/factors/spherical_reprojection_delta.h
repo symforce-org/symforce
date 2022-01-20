@@ -95,7 +95,7 @@ void SphericalReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp30 =
       _tmp16 * (_tmp27 + _tmp28) + _tmp22 * (_tmp23 + _tmp29 + 1) + _tmp25 * (-_tmp17 + _tmp18);
   const Scalar _tmp31 =
-      std::sqrt(std::pow(_tmp26, Scalar(2)) + std::pow(_tmp30, Scalar(2)) + epsilon);
+      std::sqrt(Scalar(std::pow(_tmp26, Scalar(2)) + std::pow(_tmp30, Scalar(2)) + epsilon));
   const Scalar _tmp32 = std::atan2(
       _tmp31, _tmp16 * (_tmp24 + _tmp29) + _tmp22 * (_tmp27 - _tmp28) + _tmp25 * (_tmp1 + _tmp3));
   const Scalar _tmp33 = std::min<Scalar>(_tmp32, -epsilon + target_calibration_storage(4, 0));

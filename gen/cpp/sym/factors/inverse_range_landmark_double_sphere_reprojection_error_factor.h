@@ -88,7 +88,7 @@ void InverseRangeLandmarkDoubleSphereReprojectionErrorFactor(
   const Scalar _tmp15 = -_tmp14 * std::pow(source_calibration_storage(5, 0), Scalar(2)) + 1;
   const Scalar _tmp16 = -_tmp14 * (2 * source_calibration_storage(5, 0) - 1) + 1;
   const Scalar _tmp17 =
-      source_calibration_storage(5, 0) * std::sqrt(std::max<Scalar>(_tmp16, epsilon)) -
+      source_calibration_storage(5, 0) * std::sqrt(Scalar(std::max<Scalar>(_tmp16, epsilon))) -
       source_calibration_storage(5, 0) + 1;
   const Scalar _tmp18 =
       _tmp17 + epsilon * (2 * std::min<Scalar>(0, (((_tmp17) > 0) - ((_tmp17) < 0))) + 1);
@@ -99,8 +99,8 @@ void InverseRangeLandmarkDoubleSphereReprojectionErrorFactor(
       _tmp21 + epsilon * (2 * std::min<Scalar>(0, (((_tmp21) > 0) - ((_tmp21) < 0))) + 1);
   const Scalar _tmp23 =
       _tmp14 * (1 - std::pow(source_calibration_storage(4, 0), Scalar(2))) + _tmp20;
-  const Scalar _tmp24 =
-      _tmp19 * source_calibration_storage(4, 0) + std::sqrt(std::max<Scalar>(_tmp23, epsilon));
+  const Scalar _tmp24 = _tmp19 * source_calibration_storage(4, 0) +
+                        std::sqrt(Scalar(std::max<Scalar>(_tmp23, epsilon)));
   const Scalar _tmp25 = _tmp24 / _tmp22;
   const Scalar _tmp26 = _tmp19 * _tmp25 - source_calibration_storage(4, 0);
   const Scalar _tmp27 = std::pow(_tmp24, Scalar(2)) / std::pow(_tmp22, Scalar(2));
@@ -174,9 +174,9 @@ void InverseRangeLandmarkDoubleSphereReprojectionErrorFactor(
   const Scalar _tmp88 = _tmp55 * _tmp83 + _tmp87;
   const Scalar _tmp89 =
       std::pow(_tmp67, Scalar(2)) + std::pow(_tmp88, Scalar(2)) + std::pow(epsilon, Scalar(2));
-  const Scalar _tmp90 = std::sqrt(std::pow(_tmp82, Scalar(2)) + _tmp89);
+  const Scalar _tmp90 = std::sqrt(Scalar(std::pow(_tmp82, Scalar(2)) + _tmp89));
   const Scalar _tmp91 = _tmp82 + _tmp90 * target_calibration_storage(4, 0);
-  const Scalar _tmp92 = std::sqrt(_tmp89 + std::pow(_tmp91, Scalar(2)));
+  const Scalar _tmp92 = std::sqrt(Scalar(_tmp89 + std::pow(_tmp91, Scalar(2))));
   const Scalar _tmp93 = _tmp70 * _tmp92 + _tmp72 * _tmp91;
   const Scalar _tmp94 = std::fabs(_tmp93);
   const Scalar _tmp95 = std::max<Scalar>(_tmp94, epsilon);
@@ -193,10 +193,10 @@ void InverseRangeLandmarkDoubleSphereReprojectionErrorFactor(
   const Scalar _tmp106 = std::pow(_tmp104, Scalar(2)) / std::pow(_tmp105, Scalar(2));
   const Scalar _tmp107 = _tmp103 * _tmp106 - _tmp103 + 1;
   const Scalar _tmp108 =
-      std::sqrt(weight *
-                std::min<Scalar>(1 - std::max<Scalar>(0, -(((_tmp16) > 0) - ((_tmp16) < 0))),
-                                 1 - std::max<Scalar>(0, -(((_tmp23) > 0) - ((_tmp23) < 0))))) *
-      std::sqrt(std::max<Scalar>(
+      std::sqrt(Scalar(
+          weight * std::min<Scalar>(1 - std::max<Scalar>(0, -(((_tmp16) > 0) - ((_tmp16) < 0))),
+                                    1 - std::max<Scalar>(0, -(((_tmp23) > 0) - ((_tmp23) < 0)))))) *
+      std::sqrt(Scalar(std::max<Scalar>(
           0,
           std::min<Scalar>(
               std::max<Scalar>(
@@ -209,17 +209,17 @@ void InverseRangeLandmarkDoubleSphereReprojectionErrorFactor(
                   -(((_tmp107) > 0) - ((_tmp107) < 0)),
                   1 - std::max<Scalar>(
                           0, -(((_tmp82 - _tmp90 * (-_tmp104 *
-                                                        std::sqrt(std::max<Scalar>(
-                                                            _tmp107, std::sqrt(epsilon))) /
+                                                        std::sqrt(Scalar(std::max<Scalar>(
+                                                            _tmp107, std::sqrt(epsilon)))) /
                                                         _tmp105 +
                                                     _tmp106 * target_calibration_storage(4, 0) -
                                                     target_calibration_storage(4, 0))) > 0) -
                                ((_tmp82 - _tmp90 * (-_tmp104 *
-                                                        std::sqrt(std::max<Scalar>(
-                                                            _tmp107, std::sqrt(epsilon))) /
+                                                        std::sqrt(Scalar(std::max<Scalar>(
+                                                            _tmp107, std::sqrt(epsilon)))) /
                                                         _tmp105 +
                                                     _tmp106 * target_calibration_storage(4, 0) -
-                                                    target_calibration_storage(4, 0))) < 0)))))));
+                                                    target_calibration_storage(4, 0))) < 0))))))));
   const Scalar _tmp109 = Scalar(1.0) / (epsilon - gnc_mu + 1);
   const Scalar _tmp110 = epsilon + std::fabs(_tmp109);
   const Scalar _tmp111 = std::pow(gnc_scale, Scalar(-2));
@@ -228,8 +228,8 @@ void InverseRangeLandmarkDoubleSphereReprojectionErrorFactor(
   const Scalar _tmp114 =
       _tmp113 + epsilon * (2 * std::min<Scalar>(0, (((_tmp113) > 0) - ((_tmp113) < 0))) + 1);
   const Scalar _tmp115 = (Scalar(1) / Scalar(2)) * _tmp114;
-  const Scalar _tmp116 =
-      std::sqrt(2) * std::sqrt(_tmp110 * (std::pow(_tmp112, _tmp115) - 1) / _tmp114);
+  const Scalar _tmp116 = std::sqrt(Scalar(2)) *
+                         std::sqrt(Scalar(_tmp110 * (std::pow(_tmp112, _tmp115) - 1) / _tmp114));
   const Scalar _tmp117 = _tmp108 * _tmp116;
   const Scalar _tmp118 = _tmp102 * _tmp117;
   const Scalar _tmp119 = _tmp118 * _tmp98;

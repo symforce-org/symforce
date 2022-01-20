@@ -161,10 +161,10 @@ void InverseRangeLandmarkPolynomialReprojectionErrorFactor(
   const Scalar _tmp82 = (((_tmp48) > 0) - ((_tmp48) < 0));
   const Scalar _tmp83 =
       std::sqrt(weight) *
-      std::sqrt(std::max<Scalar>(
+      std::sqrt(Scalar(std::max<Scalar>(
           0, std::min<Scalar>(_tmp82,
                               (((-std::sqrt(_tmp70) + target_calibration_storage(4, 0)) > 0) -
-                               ((-std::sqrt(_tmp70) + target_calibration_storage(4, 0)) < 0)))));
+                               ((-std::sqrt(_tmp70) + target_calibration_storage(4, 0)) < 0))))));
   const Scalar _tmp84 = Scalar(1.0) / (epsilon - gnc_mu + 1);
   const Scalar _tmp85 = epsilon + std::fabs(_tmp84);
   const Scalar _tmp86 = 2 - _tmp84;
@@ -173,7 +173,8 @@ void InverseRangeLandmarkPolynomialReprojectionErrorFactor(
   const Scalar _tmp88 = std::pow(gnc_scale, Scalar(-2));
   const Scalar _tmp89 = _tmp80 * _tmp88 / _tmp85 + 1;
   const Scalar _tmp90 = (Scalar(1) / Scalar(2)) * _tmp87;
-  const Scalar _tmp91 = std::sqrt(2) * std::sqrt(_tmp85 * (std::pow(_tmp89, _tmp90) - 1) / _tmp87);
+  const Scalar _tmp91 =
+      std::sqrt(Scalar(2)) * std::sqrt(Scalar(_tmp85 * (std::pow(_tmp89, _tmp90) - 1) / _tmp87));
   const Scalar _tmp92 = _tmp83 * _tmp91;
   const Scalar _tmp93 = _tmp81 * _tmp92;
   const Scalar _tmp94 = _tmp76 * _tmp93;

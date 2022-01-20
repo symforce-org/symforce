@@ -1,2 +1,2 @@
-from .cpp_code_printer import CppCodePrinter
+from .cpp_code_printer import CppCodePrinter, ComplexCppCodePrinter
 from .python_code_printer import PythonCodePrinter

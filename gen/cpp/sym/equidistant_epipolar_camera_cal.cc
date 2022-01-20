@@ -58,10 +58,10 @@ Eigen::Matrix<Scalar, 2, 1> EquidistantEpipolarCameraCal<Scalar>::PixelFromCamer
   // Output terms (2)
   Eigen::Matrix<Scalar, 2, 1> _pixel;
 
-  _pixel(0, 0) =
-      _self[0] * std::atan2(point(0, 0), std::sqrt(epsilon + std::pow(point(1, 0), Scalar(2)) +
-                                                   std::pow(point(2, 0), Scalar(2)))) +
-      _self[2];
+  _pixel(0, 0) = _self[0] * std::atan2(point(0, 0),
+                                       std::sqrt(Scalar(epsilon + std::pow(point(1, 0), Scalar(2)) +
+                                                        std::pow(point(2, 0), Scalar(2))))) +
+                 _self[2];
   _pixel(1, 0) = _self[1] * std::atan2(point(1, 0), epsilon + point(2, 0)) + _self[3];
 
   if (is_valid != nullptr) {

@@ -77,7 +77,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
       -_a_T_b[0] * _tmp10 + _a_T_b[1] * _tmp16 - _a_T_b[2] * _tmp4 + _a_T_b[3] * _tmp22;
   const Scalar _tmp29 = 1 - epsilon;
   const Scalar _tmp30 = std::min<Scalar>(_tmp29, std::fabs(_tmp24));
-  const Scalar _tmp31 = std::acos(_tmp30) / std::sqrt(1 - std::pow(_tmp30, Scalar(2)));
+  const Scalar _tmp31 = std::acos(_tmp30) / std::sqrt(Scalar(1 - std::pow(_tmp30, Scalar(2))));
   const Scalar _tmp32 = _tmp28 * _tmp31;
   const Scalar _tmp33 =
       _a_T_b[0] * _tmp22 - _a_T_b[1] * _tmp4 - _a_T_b[2] * _tmp16 + _a_T_b[3] * _tmp10;

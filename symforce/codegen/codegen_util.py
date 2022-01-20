@@ -466,12 +466,10 @@ def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
             printer.standard = config.standard.value
 
     elif isinstance(config, codegen_config.CppConfig):
-        printer = printers.CppCodePrinter(
-            settings={
-                # TODO(hayk): Emit separately for floats and doubles.
-                # type_aliases: {sympy.codegen.ast.real: sympy.codegen.ast.float32}
-            }
-        )
+        if config.support_complex:
+            printer = printers.ComplexCppCodePrinter()
+        else:
+            printer = printers.CppCodePrinter()
     else:
         raise NotImplementedError(f"Unknown config type: {config}")
 

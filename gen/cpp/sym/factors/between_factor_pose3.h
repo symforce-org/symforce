@@ -111,7 +111,7 @@ void BetweenFactorPose3(const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b
   const Scalar _tmp60 = 2 * _tmp59;
   const Scalar _tmp61 = 1 - epsilon;
   const Scalar _tmp62 = std::min<Scalar>(_tmp61, std::fabs(_tmp57 - _tmp58));
-  const Scalar _tmp63 = std::acos(_tmp62) / std::sqrt(1 - std::pow(_tmp62, Scalar(2)));
+  const Scalar _tmp63 = std::acos(_tmp62) / std::sqrt(Scalar(1 - std::pow(_tmp62, Scalar(2))));
   const Scalar _tmp64 = _tmp60 * _tmp63;
   const Scalar _tmp65 = _tmp53 * _tmp64;
   const Scalar _tmp66 =

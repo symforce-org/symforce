@@ -110,8 +110,8 @@ void AtanReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp42 = std::pow(_tmp41, Scalar(-2));
   const Scalar _tmp43 =
       _tmp24 * (-_tmp26 + _tmp28) + _tmp32 * (_tmp0 + _tmp39 + 1) + _tmp35 * (_tmp37 + _tmp38);
-  const Scalar _tmp44 = std::sqrt(std::pow(_tmp36, Scalar(2)) * _tmp42 +
-                                  _tmp42 * std::pow(_tmp43, Scalar(2)) + epsilon);
+  const Scalar _tmp44 = std::sqrt(Scalar(std::pow(_tmp36, Scalar(2)) * _tmp42 +
+                                         _tmp42 * std::pow(_tmp43, Scalar(2)) + epsilon));
   const Scalar _tmp45 =
       std::atan(2 * _tmp44 * std::tan(Scalar(0.5) * target_calibration_storage(4, 0))) /
       (_tmp41 * _tmp44 * target_calibration_storage(4, 0));

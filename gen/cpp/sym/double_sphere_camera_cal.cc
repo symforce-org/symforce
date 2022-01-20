@@ -56,7 +56,7 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPoint(
   // Intermediate terms (13)
   const Scalar _tmp0 = std::pow(epsilon, Scalar(2)) + std::pow(point(0, 0), Scalar(2)) +
                        std::pow(point(1, 0), Scalar(2));
-  const Scalar _tmp1 = std::sqrt(_tmp0 + std::pow(point(2, 0), Scalar(2)));
+  const Scalar _tmp1 = std::sqrt(Scalar(_tmp0 + std::pow(point(2, 0), Scalar(2))));
   const Scalar _tmp2 = _self[4] * _tmp1 + point(2, 0);
   const Scalar _tmp3 =
       std::min<Scalar>(0, (((_self[5] + Scalar(-0.5)) > 0) - ((_self[5] + Scalar(-0.5)) < 0)));
@@ -65,8 +65,9 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPoint(
   const Scalar _tmp6 = -_tmp5;
   const Scalar _tmp7 =
       Scalar(1.0) /
-      (std::max<Scalar>(epsilon, std::fabs(_tmp2 * (_tmp6 + 1) +
-                                           _tmp5 * std::sqrt(_tmp0 + std::pow(_tmp2, Scalar(2))))));
+      (std::max<Scalar>(epsilon,
+                        std::fabs(_tmp2 * (_tmp6 + 1) +
+                                  _tmp5 * std::sqrt(Scalar(_tmp0 + std::pow(_tmp2, Scalar(2)))))));
   const Scalar _tmp8 = (Scalar(1) / Scalar(2)) * _tmp4 + _tmp6 + 1;
   const Scalar _tmp9 = _tmp3 + _tmp5;
   const Scalar _tmp10 = std::pow(_tmp8, Scalar(2)) / std::pow(_tmp9, Scalar(2));
@@ -83,25 +84,24 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPoint(
     Scalar& _is_valid = (*is_valid);
 
     _is_valid = std::max<Scalar>(
-        0,
-        std::min<Scalar>(
-            std::max<Scalar>(-(((_self[4] - 1) > 0) - ((_self[4] - 1) < 0)),
-                             1 - std::max<Scalar>(0, -(((_self[4] * point(2, 0) + _tmp1) > 0) -
-                                                       ((_self[4] * point(2, 0) + _tmp1) < 0)))),
-            std::max<Scalar>(
-                -(((_tmp12) > 0) - ((_tmp12) < 0)),
-                1 - std::max<Scalar>(
-                        0,
-                        -(((-_tmp1 *
-                                (_self[4] * _tmp10 - _self[4] -
-                                 _tmp8 * std::sqrt(std::max<Scalar>(_tmp12, std::sqrt(epsilon))) /
-                                     _tmp9) +
-                            point(2, 0)) > 0) -
-                          ((-_tmp1 *
-                                (_self[4] * _tmp10 - _self[4] -
-                                 _tmp8 * std::sqrt(std::max<Scalar>(_tmp12, std::sqrt(epsilon))) /
-                                     _tmp9) +
-                            point(2, 0)) < 0))))));
+        0, std::min<Scalar>(
+               std::max<Scalar>(-(((_self[4] - 1) > 0) - ((_self[4] - 1) < 0)),
+                                1 - std::max<Scalar>(0, -(((_self[4] * point(2, 0) + _tmp1) > 0) -
+                                                          ((_self[4] * point(2, 0) + _tmp1) < 0)))),
+               std::max<Scalar>(
+                   -(((_tmp12) > 0) - ((_tmp12) < 0)),
+                   1 - std::max<Scalar>(0, -(((-_tmp1 * (_self[4] * _tmp10 - _self[4] -
+                                                         _tmp8 *
+                                                             std::sqrt(Scalar(std::max<Scalar>(
+                                                                 _tmp12, std::sqrt(epsilon)))) /
+                                                             _tmp9) +
+                                               point(2, 0)) > 0) -
+                                             ((-_tmp1 * (_self[4] * _tmp10 - _self[4] -
+                                                         _tmp8 *
+                                                             std::sqrt(Scalar(std::max<Scalar>(
+                                                                 _tmp12, std::sqrt(epsilon)))) /
+                                                             _tmp9) +
+                                               point(2, 0)) < 0))))));
   }
 
   return _pixel;
@@ -120,9 +120,9 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPointW
   // Intermediate terms (41)
   const Scalar _tmp0 = std::pow(epsilon, Scalar(2)) + std::pow(point(0, 0), Scalar(2)) +
                        std::pow(point(1, 0), Scalar(2));
-  const Scalar _tmp1 = std::sqrt(_tmp0 + std::pow(point(2, 0), Scalar(2)));
+  const Scalar _tmp1 = std::sqrt(Scalar(_tmp0 + std::pow(point(2, 0), Scalar(2))));
   const Scalar _tmp2 = _self[4] * _tmp1 + point(2, 0);
-  const Scalar _tmp3 = std::sqrt(_tmp0 + std::pow(_tmp2, Scalar(2)));
+  const Scalar _tmp3 = std::sqrt(Scalar(_tmp0 + std::pow(_tmp2, Scalar(2))));
   const Scalar _tmp4 =
       std::min<Scalar>(0, (((_self[5] + Scalar(-0.5)) > 0) - ((_self[5] + Scalar(-0.5)) < 0)));
   const Scalar _tmp5 = 2 * _tmp4;
@@ -174,25 +174,27 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPointW
     Scalar& _is_valid = (*is_valid);
 
     _is_valid = std::max<Scalar>(
-        0,
-        std::min<Scalar>(
-            std::max<Scalar>(
-                -(((_self[4] - 1) > 0) - ((_self[4] - 1) < 0)),
-                1 - std::max<Scalar>(0, -(((_tmp1 + _tmp15) > 0) - ((_tmp1 + _tmp15) < 0)))),
-            std::max<Scalar>(
-                -(((_tmp20) > 0) - ((_tmp20) < 0)),
-                1 - std::max<Scalar>(
-                        0,
-                        -(((-_tmp1 *
-                                (_self[4] * _tmp18 - _self[4] -
-                                 _tmp16 * std::sqrt(std::max<Scalar>(_tmp20, std::sqrt(epsilon))) /
-                                     _tmp17) +
-                            point(2, 0)) > 0) -
-                          ((-_tmp1 *
-                                (_self[4] * _tmp18 - _self[4] -
-                                 _tmp16 * std::sqrt(std::max<Scalar>(_tmp20, std::sqrt(epsilon))) /
-                                     _tmp17) +
-                            point(2, 0)) < 0))))));
+        0, std::min<Scalar>(
+               std::max<Scalar>(
+                   -(((_self[4] - 1) > 0) - ((_self[4] - 1) < 0)),
+                   1 - std::max<Scalar>(0, -(((_tmp1 + _tmp15) > 0) - ((_tmp1 + _tmp15) < 0)))),
+               std::max<Scalar>(
+                   -(((_tmp20) > 0) - ((_tmp20) < 0)),
+                   1 - std::max<Scalar>(
+                           0, -(((-_tmp1 *
+                                      (_self[4] * _tmp18 - _self[4] -
+                                       _tmp16 *
+                                           std::sqrt(Scalar(
+                                               std::max<Scalar>(_tmp20, std::sqrt(epsilon)))) /
+                                           _tmp17) +
+                                  point(2, 0)) > 0) -
+                                ((-_tmp1 *
+                                      (_self[4] * _tmp18 - _self[4] -
+                                       _tmp16 *
+                                           std::sqrt(Scalar(
+                                               std::max<Scalar>(_tmp20, std::sqrt(epsilon)))) /
+                                           _tmp17) +
+                                  point(2, 0)) < 0))))));
   }
 
   if (pixel_D_cal != nullptr) {
@@ -240,7 +242,8 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixel(
   const Scalar _tmp2 = std::pow(_tmp1, Scalar(2)) / std::pow(_self[1], Scalar(2)) +
                        std::pow(_tmp0, Scalar(2)) / std::pow(_self[0], Scalar(2));
   const Scalar _tmp3 = -_tmp2 * (2 * _self[5] - 1) + 1;
-  const Scalar _tmp4 = _self[5] * std::sqrt(std::max<Scalar>(_tmp3, epsilon)) - _self[5] + 1;
+  const Scalar _tmp4 =
+      _self[5] * std::sqrt(Scalar(std::max<Scalar>(_tmp3, epsilon))) - _self[5] + 1;
   const Scalar _tmp5 =
       _tmp4 + epsilon * (2 * std::min<Scalar>(0, (((_tmp4) > 0) - ((_tmp4) < 0))) + 1);
   const Scalar _tmp6 = -std::pow(_self[5], Scalar(2)) * _tmp2 + 1;
@@ -249,7 +252,7 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixel(
   const Scalar _tmp9 = _tmp2 * (1 - std::pow(_self[4], Scalar(2))) + _tmp8;
   const Scalar _tmp10 = _tmp2 + _tmp8;
   const Scalar _tmp11 =
-      (_self[4] * _tmp7 + std::sqrt(std::max<Scalar>(_tmp9, epsilon))) /
+      (_self[4] * _tmp7 + std::sqrt(Scalar(std::max<Scalar>(_tmp9, epsilon)))) /
       (_tmp10 + epsilon * (2 * std::min<Scalar>(0, (((_tmp10) > 0) - ((_tmp10) < 0))) + 1));
 
   // Output terms (2)
@@ -291,7 +294,7 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixelWit
   const Scalar _tmp8 = 2 * _self[5];
   const Scalar _tmp9 = _tmp8 - 1;
   const Scalar _tmp10 = -_tmp7 * _tmp9 + 1;
-  const Scalar _tmp11 = std::sqrt(std::max<Scalar>(_tmp10, epsilon));
+  const Scalar _tmp11 = std::sqrt(Scalar(std::max<Scalar>(_tmp10, epsilon)));
   const Scalar _tmp12 = _self[5] * _tmp11 - _self[5] + 1;
   const Scalar _tmp13 =
       _tmp12 + epsilon * (2 * std::min<Scalar>(0, (((_tmp12) > 0) - ((_tmp12) < 0))) + 1);
@@ -304,7 +307,7 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixelWit
   const Scalar _tmp20 = _tmp18 * _tmp19;
   const Scalar _tmp21 = 1 - std::pow(_self[4], Scalar(2));
   const Scalar _tmp22 = _tmp20 + _tmp21 * _tmp7;
-  const Scalar _tmp23 = std::sqrt(std::max<Scalar>(_tmp22, epsilon));
+  const Scalar _tmp23 = std::sqrt(Scalar(std::max<Scalar>(_tmp22, epsilon)));
   const Scalar _tmp24 = _self[4] * _tmp17 + _tmp23;
   const Scalar _tmp25 = _tmp20 + _tmp7;
   const Scalar _tmp26 =

@@ -115,7 +115,8 @@ void EquidistantEpipolarReprojectionDelta(
         target_calibration_storage(0, 0) *
             std::atan2(
                 _tmp22 * (_tmp0 + _tmp1) + _tmp30 * (_tmp24 - _tmp26) + _tmp33 * (_tmp31 + _tmp32),
-                std::sqrt(std::pow(_tmp37, Scalar(2)) + std::pow(_tmp38, Scalar(2)) + epsilon)) +
+                std::sqrt(
+                    Scalar(std::pow(_tmp37, Scalar(2)) + std::pow(_tmp38, Scalar(2)) + epsilon))) +
         target_calibration_storage(2, 0) - target_pixel(0, 0);
     _reprojection_delta(1, 0) =
         target_calibration_storage(1, 0) * std::atan2(_tmp37, _tmp38 + epsilon) +

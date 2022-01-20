@@ -160,9 +160,10 @@ void InverseRangeLandmarkLinearReprojectionErrorFactor(
   const Scalar _tmp81 = std::pow(gnc_scale, Scalar(-2));
   const Scalar _tmp82 = _tmp75 * _tmp81 / _tmp78 + 1;
   const Scalar _tmp83 = (Scalar(1) / Scalar(2)) * _tmp80;
-  const Scalar _tmp84 = std::sqrt(2) * std::sqrt(_tmp78 * (std::pow(_tmp82, _tmp83) - 1) / _tmp80);
+  const Scalar _tmp84 =
+      std::sqrt(Scalar(2)) * std::sqrt(Scalar(_tmp78 * (std::pow(_tmp82, _tmp83) - 1) / _tmp80));
   const Scalar _tmp85 = (((_tmp61) > 0) - ((_tmp61) < 0));
-  const Scalar _tmp86 = std::sqrt(weight) * std::sqrt(std::max<Scalar>(0, _tmp85));
+  const Scalar _tmp86 = std::sqrt(weight) * std::sqrt(Scalar(std::max<Scalar>(0, _tmp85)));
   const Scalar _tmp87 = _tmp84 * _tmp86;
   const Scalar _tmp88 = _tmp76 * _tmp87;
   const Scalar _tmp89 = _tmp66 * _tmp88;

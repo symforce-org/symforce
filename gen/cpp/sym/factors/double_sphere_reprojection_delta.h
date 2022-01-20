@@ -78,7 +78,7 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp17 = -_tmp16 * std::pow(source_calibration_storage(5, 0), Scalar(2)) + 1;
   const Scalar _tmp18 = -_tmp16 * (2 * source_calibration_storage(5, 0) - 1) + 1;
   const Scalar _tmp19 =
-      source_calibration_storage(5, 0) * std::sqrt(std::max<Scalar>(_tmp18, epsilon)) -
+      source_calibration_storage(5, 0) * std::sqrt(Scalar(std::max<Scalar>(_tmp18, epsilon))) -
       source_calibration_storage(5, 0) + 1;
   const Scalar _tmp20 =
       _tmp19 + epsilon * (2 * std::min<Scalar>(0, (((_tmp19) > 0) - ((_tmp19) < 0))) + 1);
@@ -89,8 +89,8 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
       _tmp23 + epsilon * (2 * std::min<Scalar>(0, (((_tmp23) > 0) - ((_tmp23) < 0))) + 1);
   const Scalar _tmp25 =
       _tmp16 * (1 - std::pow(source_calibration_storage(4, 0), Scalar(2))) + _tmp22;
-  const Scalar _tmp26 =
-      _tmp21 * source_calibration_storage(4, 0) + std::sqrt(std::max<Scalar>(_tmp25, epsilon));
+  const Scalar _tmp26 = _tmp21 * source_calibration_storage(4, 0) +
+                        std::sqrt(Scalar(std::max<Scalar>(_tmp25, epsilon)));
   const Scalar _tmp27 = _tmp26 / _tmp24;
   const Scalar _tmp28 = _tmp21 * _tmp27 - source_calibration_storage(4, 0);
   const Scalar _tmp29 = std::pow(_tmp26, Scalar(2)) / std::pow(_tmp24, Scalar(2));
@@ -132,12 +132,13 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
       _tmp39 * (_tmp41 + _tmp52) + _tmp45 * (_tmp5 + _tmp7) + _tmp48 * (-_tmp50 + _tmp51);
   const Scalar _tmp55 =
       std::pow(_tmp53, Scalar(2)) + std::pow(_tmp54, Scalar(2)) + std::pow(epsilon, Scalar(2));
-  const Scalar _tmp56 = std::sqrt(std::pow(_tmp49, Scalar(2)) + _tmp55);
+  const Scalar _tmp56 = std::sqrt(Scalar(std::pow(_tmp49, Scalar(2)) + _tmp55));
   const Scalar _tmp57 = _tmp49 + _tmp56 * target_calibration_storage(4, 0);
   const Scalar _tmp58 =
       Scalar(1.0) /
-      (std::max<Scalar>(epsilon, std::fabs(_tmp2 * std::sqrt(_tmp55 + std::pow(_tmp57, Scalar(2))) +
-                                           _tmp57 * (_tmp3 + 1))));
+      (std::max<Scalar>(epsilon,
+                        std::fabs(_tmp2 * std::sqrt(Scalar(_tmp55 + std::pow(_tmp57, Scalar(2)))) +
+                                  _tmp57 * (_tmp3 + 1))));
   const Scalar _tmp59 = std::pow(target_calibration_storage(4, 0), Scalar(2));
   const Scalar _tmp60 = (Scalar(1) / Scalar(2)) * _tmp1 + _tmp3 + 1;
   const Scalar _tmp61 = _tmp0 + _tmp2;
@@ -171,14 +172,14 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                     -(((_tmp63) > 0) - ((_tmp63) < 0)),
                     1 - std::max<Scalar>(
                             0, -(((_tmp49 - _tmp56 * (-_tmp60 *
-                                                          std::sqrt(std::max<Scalar>(
-                                                              _tmp63, std::sqrt(epsilon))) /
+                                                          std::sqrt(Scalar(std::max<Scalar>(
+                                                              _tmp63, std::sqrt(epsilon)))) /
                                                           _tmp61 +
                                                       _tmp62 * target_calibration_storage(4, 0) -
                                                       target_calibration_storage(4, 0))) > 0) -
                                  ((_tmp49 - _tmp56 * (-_tmp60 *
-                                                          std::sqrt(std::max<Scalar>(
-                                                              _tmp63, std::sqrt(epsilon))) /
+                                                          std::sqrt(Scalar(std::max<Scalar>(
+                                                              _tmp63, std::sqrt(epsilon)))) /
                                                           _tmp61 +
                                                       _tmp62 * target_calibration_storage(4, 0) -
                                                       target_calibration_storage(4, 0))) < 0)))))) *
