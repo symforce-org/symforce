@@ -21,28 +21,6 @@ from symforce.codegen import template_util
 DEFAULT_GEO_TYPES = (geo.Rot2, geo.Pose2, geo.Rot3, geo.Pose3)
 
 
-def make_storage_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
-    """
-    Create func spec arguments for storage_ops on the given class.
-    """
-    storage_vec = geo.M(ops.StorageOps.storage_dim(cls), 1)
-    return [
-        Codegen.function(
-            func=ops.StorageOps.to_storage,
-            input_types=[cls],
-            config=config,
-            docstring=ops.StorageOps.to_storage.__doc__,
-        ),
-        Codegen.function(
-            name="from_storage",
-            func=(lambda vec: ops.StorageOps.from_storage(cls, vec)),
-            input_types=[storage_vec],
-            config=config,
-            docstring=ops.StorageOps.from_storage.__doc__,
-        ),
-    ]
-
-
 def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for group ops on the given class.
@@ -121,9 +99,6 @@ def geo_class_common_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.A
     data["cls"] = cls
 
     data["specs"] = collections.defaultdict(list)
-
-    for func in make_storage_ops_funcs(cls, config):
-        data["specs"]["StorageOps"].append(func)
 
     for func in make_group_ops_funcs(cls, config):
         data["specs"]["GroupOps"].append(func)

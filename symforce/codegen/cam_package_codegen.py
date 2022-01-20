@@ -13,8 +13,6 @@ from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig, CppConfig
 from symforce.codegen import template_util
 
-from .geo_package_codegen import make_storage_ops_funcs
-
 # Default cam types to generate
 DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
 
@@ -139,9 +137,6 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     data["cls"] = cls
 
     data["specs"] = collections.defaultdict(list)
-
-    for func in make_storage_ops_funcs(cls, config):
-        data["specs"]["StorageOps"].append(func)
 
     for func in make_camera_funcs(cls, config):
         data["specs"]["CameraOps"].append(func)
