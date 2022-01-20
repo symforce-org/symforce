@@ -1,4 +1,4 @@
-import os
+import pathlib
 import tempfile
 import textwrap
 import collections
@@ -196,12 +196,12 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         logger.debug(f"Creating temp directory: {output_dir}")
 
     # Subdirectory for everything we'll generate
-    cam_package_dir = os.path.join(output_dir, "sym")
+    cam_package_dir = pathlib.Path(output_dir, "sym")
     templates = template_util.TemplateList()
 
     if isinstance(config, CppConfig):
         logger.info(f'Creating C++ cam package at: "{cam_package_dir}"')
-        template_dir = os.path.join(template_util.CPP_TEMPLATE_DIR, "cam_package")
+        template_dir = pathlib.Path(template_util.CPP_TEMPLATE_DIR, "cam_package")
 
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
@@ -212,27 +212,27 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         for cls in DEFAULT_CAM_TYPES:
             data = cam_class_data(cls, config=config)
 
-            for path in (
-                "CLASS.h",
-                "CLASS.cc",
-                "ops/CLASS/storage_ops.h",
-                "ops/CLASS/storage_ops.cc",
+            for base_dir, relative_path in (
+                ("cam_package", "CLASS.h"),
+                ("cam_package", "CLASS.cc"),
+                (".", "ops/CLASS/storage_ops.h"),
+                (".", "ops/CLASS/storage_ops.cc"),
             ):
-                template_path = os.path.join(template_dir, path) + ".jinja"
-                output_path = os.path.join(cam_package_dir, path).replace(
+                template_path = str(
+                    pathlib.Path(template_util.CPP_TEMPLATE_DIR, base_dir, relative_path + ".jinja")
+                )
+                output_path = str(cam_package_dir / relative_path).replace(
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )
                 templates.add(template_path, output_path, data)
 
         # Add Camera and PosedCamera
         templates.add(
-            os.path.join(template_dir, "camera.h.jinja"),
-            os.path.join(cam_package_dir, "camera.h"),
-            camera_data(),
+            str(template_dir / "camera.h.jinja"), str(cam_package_dir / "camera.h"), camera_data(),
         )
         templates.add(
-            os.path.join(template_dir, "posed_camera.h.jinja"),
-            os.path.join(cam_package_dir, "posed_camera.h"),
+            str(template_dir / "posed_camera.h.jinja"),
+            str(cam_package_dir / "posed_camera.h"),
             posed_camera_data(),
         )
 
@@ -251,8 +251,8 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                     return True
 
             templates.add(
-                os.path.join(template_dir, "..", "tests", name) + ".jinja",
-                os.path.join(output_dir, "tests", name),
+                str(pathlib.Path(template_dir, "..", "tests", name + ".jinja")),
+                str(pathlib.Path(output_dir, "tests", name)),
                 dict(
                     Codegen.common_data(),
                     all_types=DEFAULT_CAM_TYPES,

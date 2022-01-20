@@ -1,7 +1,9 @@
 #pragma once
 
 #include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
+{% if "geo" in cls.__module__ %}
 #include {{ lcm_type_t_include_dir }}
+{% endif %}
 
 namespace sym {
 
@@ -20,6 +22,7 @@ struct StorageOps<{{ cls.__name__ }}<ScalarType>> {
   static void ToStorage(const T& a, ScalarType* out);
   static T FromStorage(const ScalarType* data);
 
+  {% if "geo" in cls.__module__ %}
   static constexpr type_t TypeEnum() {
     return type_t::{{ cls.__name__.upper() }};
   }
@@ -28,6 +31,7 @@ struct StorageOps<{{ cls.__name__ }}<ScalarType>> {
   static T Random(Generator& gen) {
     return T::Random(gen);
   }
+  {% endif %}
 };
 
 }  // namespace sym
