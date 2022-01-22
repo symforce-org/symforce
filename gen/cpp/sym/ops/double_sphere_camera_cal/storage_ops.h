@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <lcmtypes/sym/type_t.hpp>
+
 #include <sym/double_sphere_camera_cal.h>
 
 namespace sym {
@@ -25,6 +27,10 @@ struct StorageOps<DoubleSphereCameraCal<ScalarType>> {
 
   static void ToStorage(const T& a, ScalarType* out);
   static T FromStorage(const ScalarType* data);
+
+  static constexpr type_t TypeEnum() {
+    return type_t::DOUBLE_SPHERE_CAMERA_CAL;
+  }
 };
 
 }  // namespace sym

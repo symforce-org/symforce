@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <lcmtypes/sym/type_t.hpp>
+
 #include <sym/linear_camera_cal.h>
 
 namespace sym {
@@ -24,6 +26,10 @@ struct StorageOps<LinearCameraCal<ScalarType>> {
 
   static void ToStorage(const T& a, ScalarType* out);
   static T FromStorage(const ScalarType* data);
+
+  static constexpr type_t TypeEnum() {
+    return type_t::LINEAR_CAMERA_CAL;
+  }
 };
 
 }  // namespace sym

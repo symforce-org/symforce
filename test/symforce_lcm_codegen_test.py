@@ -1,5 +1,6 @@
 import os
 
+from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
 from symforce.codegen import template_util
 from symforce.test_util import TestCase
 
@@ -12,7 +13,7 @@ class SymforceLcmCodegenTest(TestCase):
 
         template_util.render_template(
             os.path.join(template_util.LCM_TEMPLATE_DIR, "symforce_types.lcm.jinja"),
-            data={},
+            data=lcm_symforce_types_data(),
             output_path=os.path.join(output_dir, "symforce_types.lcm"),
         )
 

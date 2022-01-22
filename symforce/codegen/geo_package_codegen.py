@@ -15,6 +15,7 @@ from symforce.codegen import CodegenConfig
 from symforce.codegen import CppConfig
 from symforce.codegen import PythonConfig
 from symforce.codegen import codegen_util
+from symforce.codegen import lcm_types_codegen
 from symforce.codegen import template_util
 
 # Default geo types to generate
@@ -316,7 +317,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
     templates.add(
         str(pathlib.Path(template_util.LCM_TEMPLATE_DIR, "symforce_types.lcm.jinja")),
         str(package_dir / ".." / "lcmtypes" / "lcmtypes" / "symforce_types.lcm"),
-        {},
+        lcm_types_codegen.lcm_symforce_types_data(),
     )
 
     templates.render()

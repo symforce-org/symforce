@@ -100,6 +100,13 @@ def snakecase_to_camelcase(s: str) -> str:
     )
 
 
+def camelcase_to_screaming_snakecase(s: str) -> str:
+    """
+    Convert CamelCase -> SCREAMING_SNAKE_CASE
+    """
+    return camelcase_to_snakecase(s).upper()
+
+
 def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:
     """
     Call str.replace(old, new) for every pair (old, new) in replacements
