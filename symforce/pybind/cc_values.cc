@@ -152,7 +152,7 @@ void AddValuesWrapper(pybind11::module_ module) {
       .def("empty", &sym::Valuesd::Empty)
       .def("keys", &sym::Valuesd::Keys, py::arg("sort_by_offset") = true)
       .def("items", &sym::Valuesd::Items)
-      .def("data", &sym::Valuesd::Data)
+      .def("data", py::overload_cast<>(&sym::Valuesd::Data, py::const_))
       .def("remove", &sym::Valuesd::Remove, py::arg("key"))
       .def("remove_all", &sym::Valuesd::RemoveAll)
       .def("cleanup", &sym::Valuesd::Cleanup)

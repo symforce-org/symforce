@@ -1,0 +1,48 @@
+#include <vector>
+
+#include <Eigen/Dense>
+
+#include <sym/pose3.h>
+#include <sym/util/typedefs.h>
+
+namespace robot_3d_localization {
+
+// Measurement values for matching factors.
+extern const std::vector<std::vector<Eigen::Vector3d>> body_t_landmark_measurements
+  {
+  {% for frame in body_t_landmark_measurements %}
+    {
+    {% for point in frame %}
+      Eigen::Vector3d({{ point[0] }}, {{ point[1] }}, {{ point[2] }})
+      {% if not loop.last %},{% endif %}
+    {% endfor %}
+    }{% if not loop.last %},{% endif %}
+  {% endfor %}
+  };
+
+// Measurement values for odometry factors.
+extern const std::vector<sym::Pose3d> odometry_relative_pose_measurements
+    {
+    {% for pose in odometry_relative_pose_measurements %}
+      sym::Pose3d((sym::Vector7d() <<
+        {{ pose.to_storage()[0] }},
+        {{ pose.to_storage()[1] }},
+        {{ pose.to_storage()[2] }},
+        {{ pose.to_storage()[3] }},
+        {{ pose.to_storage()[4] }},
+        {{ pose.to_storage()[5] }},
+        {{ pose.to_storage()[6] }}
+      ).finished()){% if not loop.last %},{% endif %}
+    {% endfor %}
+    };
+
+// Landmark positions.
+extern const std::vector<Eigen::Vector3d> landmark_positions
+    {
+      {% for landmark in landmarks %}
+        Eigen::Vector3d({{ landmark[0] }}, {{ landmark[1] }}, {{ landmark[2] }})
+        {% if not loop.last %},{% endif %}
+      {% endfor %}
+    };
+
+}  // namespace robot_3d_localization

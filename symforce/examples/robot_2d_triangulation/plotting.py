@@ -88,7 +88,7 @@ def plot_solution(optimizer: Optimizer, result: Optimizer.Result, animated: bool
             headlength=0,
             capstyle="butt",
         )
-        for landmark_inx in range(data.heading_vectors.shape[0])
+        for landmark_inx in range(data.heading_vectors.shape[1])
     ]
 
     # Text box to write iteration stats

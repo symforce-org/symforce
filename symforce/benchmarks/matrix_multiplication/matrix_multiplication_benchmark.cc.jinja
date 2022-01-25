@@ -1,0 +1,178 @@
+///
+/// Experiment to show timing for the matrix multiplication example in the SymForce paper.
+///
+/// Run with:
+///
+///     build/bin/benchmarks/matrix_multiplication_benchmark_{{ matrix_name }}
+///
+/// See run_matmul_benchmarks.py for more information
+///
+
+#include <chrono>
+#include <thread>
+
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <spdlog/spdlog.h>
+
+#include <symforce/opt/tic_toc.h>
+#include <symforce/opt/util.h>
+
+#include "catch.hpp"
+
+using namespace sym;
+
+#include "./{{ matrix_name }}_compute_a.h"
+#include "./{{ matrix_name }}_compute_a_dense.h"
+#include "./{{ matrix_name }}_compute_a_dense_dynamic.h"
+#include "./{{ matrix_name }}_compute_at_b.h"
+#include "./{{ matrix_name }}_compute_b.h"
+#include "./{{ matrix_name }}_compute_b_dense.h"
+#include "./{{ matrix_name }}_compute_b_dense_dynamic.h"
+
+template <typename Scalar>
+__attribute__((noinline)) Eigen::Matrix<Scalar, {{ M }}, {{ M }}> {{ matrix_name_camel }}ComputeDenseFixed(
+    {% for i in range(n_symbols) %}const Scalar x{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}
+  ) {
+  Eigen::Matrix<Scalar, {{ N }}, {{ M }}> A = {{ matrix_name_camel }}ComputeADense<Scalar>(
+      {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+  );
+  Eigen::Matrix<Scalar, {{ N }}, {{ M }}> B = {{ matrix_name_camel }}ComputeBDense<Scalar>(
+      {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+  );
+  return A.transpose() * B;
+}
+
+template <typename Scalar>
+__attribute__((noinline)) Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>
+  {{ matrix_name_camel }}ComputeDenseDynamic(
+    {% for i in range(n_symbols) %}const Scalar x{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}
+  ) {
+  const auto A = {{ matrix_name_camel }}ComputeADenseDynamic<Scalar>(
+      {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+  );
+  const auto B = {{ matrix_name_camel }}ComputeBDenseDynamic<Scalar>(
+      {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+  );
+  return A.transpose() * B;
+}
+
+template <typename Scalar>
+__attribute__((noinline)) Eigen::SparseMatrix<Scalar> {{ matrix_name_camel }}ComputeSparse(
+    {% for i in range(n_symbols) %}const Scalar x{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}
+  ) {
+  Eigen::SparseMatrix<Scalar> A = {{ matrix_name_camel }}ComputeA<Scalar>(
+      {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+  );
+  Eigen::SparseMatrix<Scalar> B = {{ matrix_name_camel }}ComputeB<Scalar>(
+      {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+  );
+  return A.transpose() * B;
+}
+
+// ----------------------------------------------------------------------------
+// Test Cases
+// ----------------------------------------------------------------------------
+
+TEMPLATE_TEST_CASE("{{ matrix_name }}_sparse", "", double, float) {
+  using Scalar = TestType;
+
+  {% for i in range(2, n_symbols) %}
+  const Scalar x{{ i }} = {{ i - 1 }}.0;
+  {% endfor %}
+
+  std::chrono::milliseconds timespan(100);
+  std::this_thread::sleep_for(timespan);
+
+  Scalar sum = 0.0;
+  {
+    SYM_TIME_SCOPE("{{ matrix_name }}_sparse_{}", typeid(Scalar).name());
+
+    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+      for (Scalar x1 = 0.1; x1 < {{ size2 }}; x1 += 0.1) {
+        auto mat = {{ matrix_name_camel }}ComputeSparse(
+          {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+        );
+        sum += mat.valuePtr()[0];
+      }
+    }
+  }
+}
+
+TEMPLATE_TEST_CASE("{{ matrix_name }}_dense_dynamic", "", double, float) {
+  using Scalar = TestType;
+
+  {% for i in range(2, n_symbols) %}
+  const Scalar x{{ i }} = {{ i - 1 }}.0;
+  {% endfor %}
+
+  std::chrono::milliseconds timespan(100);
+  std::this_thread::sleep_for(timespan);
+
+  Scalar sum = 0.0;
+  {
+    SYM_TIME_SCOPE("{{ matrix_name }}_dense_dynamic_{}", typeid(Scalar).name());
+    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+      for (Scalar x1 = 0.1; x1 < {{ size2 }}; x1 += 0.1) {
+        auto mat = {{ matrix_name_camel }}ComputeDenseDynamic<Scalar>(
+          {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+        );
+        sum += mat(0, 0);
+      }
+    }
+  }
+}
+
+{% if M * N * 8 <= 131072 and M * M * 8 <= 131072 %}
+TEMPLATE_TEST_CASE("{{ matrix_name }}_dense_fixed", "", double, float) {
+  using Scalar = TestType;
+
+  {% for i in range(2, n_symbols) %}
+  const Scalar x{{ i }} = {{ i - 1 }}.0;
+  {% endfor %}
+
+  std::chrono::milliseconds timespan(100);
+  std::this_thread::sleep_for(timespan);
+
+  Scalar sum = 0.0;
+  {
+    SYM_TIME_SCOPE("{{ matrix_name }}_dense_fixed_{}", typeid(Scalar).name());
+    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+      for (Scalar x1 = 0.1; x1 < {{ size2 }}; x1 += 0.1) {
+        auto mat = {{ matrix_name_camel }}ComputeDenseFixed<Scalar>(
+          {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+        );
+        sum += mat(0, 0);
+      }
+    }
+  }
+}
+{% endif %}
+
+TEMPLATE_TEST_CASE("{{ matrix_name }}_flattened", "", double, float) {
+  using Scalar = TestType;
+
+  {% for i in range(2, n_symbols) %}
+  const Scalar x{{ i }} = {{ i - 1 }}.0;
+  {% endfor %}
+
+  std::chrono::milliseconds timespan(100);
+  std::this_thread::sleep_for(timespan);
+
+  Scalar sum = 0.0;
+  {
+    SYM_TIME_SCOPE("{{ matrix_name }}_flattened_{}", typeid(Scalar).name());
+    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+      for (Scalar x1 = 0.1; x1 < {{ size2 }}; x1 += 0.1) {
+        auto mat = {{ matrix_name_camel }}ComputeAtB(
+          {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
+        );
+        {% if is_sparse %}
+        sum += mat.valuePtr()[0];
+        {% else %}
+        sum += mat(0, 0);
+        {% endif %}
+      }
+    }
+  }
+}

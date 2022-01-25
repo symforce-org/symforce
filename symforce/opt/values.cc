@@ -98,6 +98,11 @@ const typename Values<Scalar>::ArrayType& Values<Scalar>::Data() const {
 }
 
 template <typename Scalar>
+typename Values<Scalar>::ArrayType& Values<Scalar>::Data() {
+  return data_;
+}
+
+template <typename Scalar>
 template <typename NewScalar>
 Values<NewScalar> Values<Scalar>::Cast() const {
   Values<NewScalar> new_values{};

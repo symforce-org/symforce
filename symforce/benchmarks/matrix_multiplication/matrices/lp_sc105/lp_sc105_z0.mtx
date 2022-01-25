@@ -1,0 +1,8 @@
+%%MatrixMarket matrix array real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/LPnetlib/lp_sc105
+% name: LPnetlib/lp_sc105 : z0 matrix
+%-------------------------------------------------------------------------------
+1 1
+0

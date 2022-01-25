@@ -1,0 +1,11 @@
+minister 1
+p.minister
+minister 2
+minister 3
+minister 4
+minister 5
+minister 6
+minister 7
+adviser 1
+adviser 2
+adviser 3

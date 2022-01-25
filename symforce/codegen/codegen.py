@@ -10,6 +10,7 @@ import enum
 import functools
 import os
 import pathlib
+from pathlib import Path
 import tempfile
 import textwrap
 
@@ -255,8 +256,8 @@ class Codegen:
 
     def generate_function(
         self,
-        output_dir: str = None,
-        lcm_bindings_output_dir: str = None,
+        output_dir: T.Openable = None,
+        lcm_bindings_output_dir: T.Openable = None,
         shared_types: T.Mapping[str, str] = None,
         namespace: str = "sym",
         generated_file_name: str = None,
@@ -292,11 +293,17 @@ class Codegen:
         ), "Name should be set either at construction or by with_jacobians"
 
         if output_dir is None:
-            output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp")
+            output_dir = Path(tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp"))
             logger.debug(f"Creating temp directory: {output_dir}")
+        elif isinstance(output_dir, str):
+            output_dir = Path(output_dir)
+        assert isinstance(output_dir, Path)
 
         if lcm_bindings_output_dir is None:
             lcm_bindings_output_dir = output_dir
+        elif isinstance(lcm_bindings_output_dir, str):
+            lcm_bindings_output_dir = Path(lcm_bindings_output_dir)
+        assert isinstance(lcm_bindings_output_dir, Path)
 
         if generated_file_name is None:
             generated_file_name = self.name
@@ -328,8 +335,8 @@ class Codegen:
             values_indices=values_indices,
             use_eigen_types=self.config.use_eigen_types,
             shared_types=shared_types,
-            output_dir=output_dir,
-            lcm_bindings_output_dir=lcm_bindings_output_dir,
+            output_dir=os.fspath(output_dir),
+            lcm_bindings_output_dir=os.fspath(lcm_bindings_output_dir),
             templates=templates,
         )
 
@@ -355,18 +362,18 @@ class Codegen:
             if skip_directory_nesting:
                 python_function_dir = output_dir
             else:
-                python_function_dir = os.path.join(output_dir, "python2.7", "symforce", namespace)
+                python_function_dir = output_dir / "python2.7" / "symforce" / namespace
 
             logger.info(f'Creating python function "{self.name}" at "{python_function_dir}"')
 
             templates.add(
-                os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "FUNCTION.py.jinja"),
-                os.path.join(python_function_dir, generated_file_name + ".py"),
+                Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "FUNCTION.py.jinja",
+                python_function_dir / f"{generated_file_name}.py",
                 template_data,
             )
             templates.add(
-                os.path.join(template_util.PYTHON_TEMPLATE_DIR, "function", "__init__.py.jinja"),
-                os.path.join(python_function_dir, "__init__.py"),
+                Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "__init__.py.jinja",
+                python_function_dir / "__init__.py",
                 template_data,
             )
 
@@ -375,15 +382,15 @@ class Codegen:
             if skip_directory_nesting:
                 cpp_function_dir = output_dir
             else:
-                cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
+                cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
 
             logger.info(
                 f'Creating C++ function "{python_util.snakecase_to_camelcase(self.name)}" at "{cpp_function_dir}"'
             )
 
             templates.add(
-                os.path.join(template_util.CPP_TEMPLATE_DIR, "function", "FUNCTION.h.jinja"),
-                os.path.join(cpp_function_dir, generated_file_name + ".h"),
+                Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.h.jinja",
+                cpp_function_dir / f"{generated_file_name}.h",
                 template_data,
             )
 

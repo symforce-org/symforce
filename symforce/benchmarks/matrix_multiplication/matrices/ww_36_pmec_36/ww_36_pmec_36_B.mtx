@@ -1,0 +1,8 @@
+%%MatrixMarket matrix coordinate real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/Rommes/ww_36_pmec_36
+% name: Rommes/ww_36_pmec_36 : B matrix
+%-------------------------------------------------------------------------------
+66 1 1
+44 1 .01893939346902902

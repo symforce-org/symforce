@@ -96,6 +96,7 @@ def print_code(
             input_symbols=input_symbols,
             output_exprs=output_exprs,
             substitute_inputs=substitute_inputs,
+            cse_optimizations=config.cse_optimizations,
         )
     else:
         temps = []
@@ -155,6 +156,7 @@ def perform_cse(
     input_symbols: T.Sequence[T.Scalar],
     output_exprs: DenseAndSparseOutputTerms,
     substitute_inputs: bool = True,
+    cse_optimizations: T.Union[str, T.Sequence[T.Tuple[T.Callable, T.Callable]]] = None,
 ) -> T.Tuple[T_terms, DenseAndSparseOutputTerms]:
     """
     Run common sub-expression elimination on the given input/output values.
@@ -172,7 +174,11 @@ def perform_cse(
     flat_output_exprs = [
         x for storage in (output_exprs.dense + output_exprs.sparse) for x in storage
     ]
-    temps, flat_simplified_outputs = sm.cse(flat_output_exprs)
+
+    if cse_optimizations is not None:
+        temps, flat_simplified_outputs = sm.cse(flat_output_exprs, optimizations=cse_optimizations)
+    else:
+        temps, flat_simplified_outputs = sm.cse(flat_output_exprs)
 
     # Unflatten output of CSE
     simplified_outputs = DenseAndSparseOutputTerms(dense=[], sparse=[])

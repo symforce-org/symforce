@@ -121,6 +121,7 @@ class Values {
    * Raw data buffer.
    */
   const ArrayType& Data() const;
+  ArrayType& Data();
 
   /**
    * Cast to another Scalar type (returns a copy)

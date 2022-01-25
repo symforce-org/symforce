@@ -228,6 +228,10 @@ class Optimizer {
    */
   void UpdateParams(const optimizer_params_t& params);
 
+  sym::Linearizer<Scalar>& Linearizer() {
+    return linearizer_;
+  }
+
  protected:
   /**
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations

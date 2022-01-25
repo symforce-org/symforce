@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
+from pathlib import Path
 
 from symforce import typing as T
 from symforce.codegen import Codegen, template_util
@@ -13,7 +13,7 @@ from symforce.values.values import Values
 
 def generate_values_keys(
     values: Values,
-    output_dir: str,
+    output_dir: T.Openable,
     namespace: str = "sym",
     generated_file_name: str = "keys.h",
     excluded_keys: T.Set[generated_key_selection.GeneratedKey] = None,
@@ -29,16 +29,20 @@ def generate_values_keys(
         excluded_keys: Set of disallowed generated keys (for instance, if that key is used
                        elsewhere)
     """
+    if not isinstance(output_dir, Path):
+        output_dir = Path(output_dir)
+
     items = values.items_recursive()
+    items = list({key.rstrip("[]1234567890"): value for key, value in items}.items())
     keys = [item[0] for item in items]
     generated_keys = generated_key_selection.pick_generated_keys_for_variable_names(
         keys, excluded_keys
     )
     vars_to_generate = [(key, generated_keys[key], value) for key, value in items]
 
-    cpp_function_dir = os.path.join(output_dir, "cpp", "symforce", namespace)
+    cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
     template_util.render_template(
-        template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "keys.h.jinja"),
+        template_path=Path(template_util.CPP_TEMPLATE_DIR) / "keys.h.jinja",
         data=dict(Codegen.common_data(), namespace=namespace, vars=vars_to_generate),
-        output_path=os.path.join(cpp_function_dir, generated_file_name),
+        output_path=cpp_function_dir / generated_file_name,
     )

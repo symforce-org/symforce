@@ -147,6 +147,8 @@ class Optimizer:
         # as the unoptimized keys are also in here before we attempt to linearize any of the factors
         self._cc_keys_map = {key: cc_sym.Key("x", i) for i, key in enumerate(optimized_keys)}
 
+        self.values_keys_ordered: T.Optional[T.List[str]] = None
+
         # Construct the C++ optimizer
         self._cc_optimizer = cc_sym.Optimizer(
             optimizer_params_t(**dataclasses.asdict(self.params)),
@@ -160,6 +162,8 @@ class Optimizer:
             if key not in self._cc_keys_map:
                 # Give these a different name (`v`) so we don't have to deal with numbering
                 self._cc_keys_map[key] = cc_sym.Key("v", i)
+
+        self.values_keys_ordered = list(values.keys_recursive())
 
         self._initialized = True
 
@@ -226,13 +230,17 @@ class Optimizer:
         converting back to the python key names.
         """
         cc_values = cc_sym.Values(values_msg)
-        py_values = Values()
         # NOTE(hayk): The sorting here is important for insertion so a key like "foo[2]"
         # does not get inserted before "foo[0]", as this will raise an exception. We do
         # this differently than in `optimize` because we don't have a python values to
         # start from.
-        for py_key in sorted(self._cc_keys_map.keys()):
-            py_values[py_key] = cc_values.at(self._cc_keys_map[py_key])
+
+        assert self.values_keys_ordered is not None
+
+        py_values = Values(
+            **{key: cc_values.at(self._cc_keys_map[key]) for key in self.values_keys_ordered}
+        )
+
         return py_values
 
     def linearization_index(self) -> T.Dict[str, index_entry_t]:

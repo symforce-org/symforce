@@ -25,6 +25,7 @@ option(SYMFORCE_BUILD_EXAMPLES "Build the examples" ON)
 option(SYMFORCE_BUILD_TESTS "Build the tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
 option(SYMFORCE_GENERATE_MANIFEST "Generate build manifest" ON)
+option(SYMFORCE_BUILD_BENCHMARKS "Generate examples for alternative libraries" OFF)
 
 # ------------------------------------------------------------------------------
 # TicTocs
@@ -130,6 +131,8 @@ if(SYMFORCE_EIGEN_TARGET STREQUAL "Eigen3::Eigen")
     endfunction()
 
     add_eigen()
+  else()
+    message(STATUS "Eigen found at ${Eigen3_DIR}")
   endif()
 endif()
 
@@ -210,6 +213,8 @@ if(SYMFORCE_BUILD_OPT)
   # METIS
 
   function(add_metis)
+    set(CMAKE_POSITION_INDEPENDENT_CODE True)
+
     FetchContent_Declare(
       metis
       # METIS does not have releases recently.  Previously were using nearly the initial commit on
@@ -221,7 +226,11 @@ if(SYMFORCE_BUILD_OPT)
     )
 
     # Tell metis where to find GKlib
-    set(GKLIB_PATH "${FETCHCONTENT_BASE_DIR}/metis-src/GKlib" CACHE PATH "path to GKlib" FORCE)
+    set(GKLIB_PATH
+      "${FETCHCONTENT_BASE_DIR}/metis-src/GKlib" CACHE PATH "Path to GKlib for METIS" FORCE
+    )
+
+    set(METIS_LIBRARY_TYPE "SHARED" CACHE STRING "Always build METIS as a shared library" FORCE)
 
     FetchContent_MakeAvailable(metis)
 
@@ -250,6 +259,96 @@ if(SYMFORCE_BUILD_CC_SYM)
     message(STATUS "pybind11 found")
   endif()
 endif(SYMFORCE_BUILD_CC_SYM)
+
+# Pull in third party packages used for benchmarking
+if(SYMFORCE_BUILD_BENCHMARKS)
+
+  # ------------------------------------------------------------------------------
+  # Sophus
+
+  find_package(sophus QUIET)
+  if (NOT sophus_FOUND)
+    message(STATUS "Sophus not found, adding with FetchContent")
+    function(add_sophus)
+      set(BUILD_TESTS OFF CACHE INTERNAL "Sophus shouldn't build tests by default" FORCE)
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        sophus
+        GIT_REPOSITORY https://github.com/strasdat/Sophus
+        GIT_TAG v1.0.0
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(sophus)
+      find_package(Sophus)
+    endfunction()
+
+    add_sophus()
+  else()
+    message(STATUS "Sophus found")
+  endif()
+
+  # ------------------------------------------------------------------------------
+  # GTSAM
+
+  find_package(gtsam QUIET)
+  if (NOT gtsam_FOUND)
+    message(STATUS "GTSAM not found, adding with FetchContent")
+    function(add_gtsam)
+      set(GTSAM_BUILD_WITH_MARCH_NATIVE OFF CACHE INTERNAL "GTSAM shouldn't build native by default")
+      set(GTSAM_BUILD_TESTS OFF CACHE INTERNAL "Don't build GTSAM tests")
+      set(GTSAM_BUILD_EXAMPLES_ALWAYS OFF CACHE INTERNAL "Don't build GTSAM examples")
+      set(GTSAM_WITH_TBB OFF CACHE INTERNAL "Don't build TBB with GTSAM for accurate profiling")
+      # NOTE(aaron): This seems to have no effect on the experiments we're doing
+      set(GTSAM_SLOW_BUT_CORRECT_BETWEENFACTOR ON CACHE INTERNAL "Use the correct BetweenFactor")
+      # NOTE(aaron): This has no effect other than making inverse compose chained slower
+      set(GTSAM_USE_QUATERNIONS ON CACHE INTERNAL "Use quaternions for Rot3")
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        gtsam
+        GIT_REPOSITORY https://github.com/borglab/gtsam
+        GIT_TAG 4.1.1
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(gtsam)
+    endfunction()
+
+    add_gtsam()
+  else()
+    message(STATUS "GTSAM found")
+  endif()
+
+  # ------------------------------------------------------------------------------
+  # Ceres
+
+  find_package(Ceres QUIET)
+  if (NOT Ceres_FOUND)
+    message(STATUS "Ceres not found, adding with FetchContent")
+    function(add_ceres)
+      set(BUILD_TESTING OFF CACHE INTERNAL "Dont enable tests")
+      set(BUILD_EXAMPLES OFF CACHE INTERNAL "Dont build examples")
+      set(BUILD_BENCHMARKS OFF CACHE INTERNAL "Dont build Ceres benchmarking suite")
+      set(PROVIDE_UNINSTALL_TARGET
+        OFF CACHE INTERNAL "Ceres shouldn't add uninstall target, gtsam does too" FORCE
+      )
+      set(
+        CERES_THREADING_MODEL "NO_THREADS" CACHE INTERNAL "Don't use threads for benchmarking" FORCE
+      )
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        ceres
+        GIT_REPOSITORY https://github.com/ceres-solver/ceres-solver
+        GIT_TAG 2.0.0
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(ceres)
+    endfunction()
+
+    add_ceres()
+  else()
+    message(STATUS "Ceres found")
+  endif()
+
+endif()
 
 # ==============================================================================
 # SymForce Targets
@@ -370,7 +469,7 @@ endif(SYMFORCE_BUILD_CC_SYM)
 
 
 # ==============================================================================
-# Examples and Tests
+# Examples, Benchmarks, and Tests
 # ==============================================================================
 
 if(SYMFORCE_BUILD_EXAMPLES)
@@ -395,6 +494,10 @@ if(SYMFORCE_BUILD_EXAMPLES)
     symforce_examples
     PUBLIC symforce/examples/bundle_adjustment_fixed_size/gen/cpp
   )
+endif()
+
+if (SYMFORCE_BUILD_BENCHMARKS)
+  add_subdirectory(symforce/benchmarks)
 endif()
 
 if(SYMFORCE_BUILD_TESTS)
