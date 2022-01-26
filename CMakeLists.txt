@@ -71,6 +71,10 @@ set(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/pybind 
   "Location to place generated python extension modules"
 )
 
+set(SYMFORCE_EIGEN_TARGET "Eigen3::Eigen" CACHE STRING
+  "Target to depend on for Eigen. Default is to find Eigen with find_package."
+)
+
 # ==============================================================================
 # Setup
 # ==============================================================================
@@ -90,24 +94,26 @@ include(FetchContent)
 # ------------------------------------------------------------------------------
 # eigen3
 
-find_package(Eigen3 QUIET)
-if(NOT Eigen3_FOUND)
-  message(STATUS "Eigen3 not found, adding with FetchContent")
-  function(add_eigen)
-    FetchContent_Declare(
-      eigen3
-      GIT_REPOSITORY https://gitlab.com/libeigen/eigen
-      GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c  # release 3.4.0
-      GIT_SHALLOW TRUE
-    )
+if(SYMFORCE_EIGEN_TARGET STREQUAL "Eigen3::Eigen")
+  find_package(Eigen3 QUIET)
+  if(NOT Eigen3_FOUND)
+    message(STATUS "Eigen3 not found, adding with FetchContent")
+    function(add_eigen)
+      FetchContent_Declare(
+        eigen3
+        GIT_REPOSITORY https://gitlab.com/libeigen/eigen
+        GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c  # release 3.4.0
+        GIT_SHALLOW TRUE
+      )
 
-    set(EIGEN_BUILD_DOC OFF CACHE BOOL "Don't build Eigen docs")
-    set(BUILD_TESTING OFF CACHE BOOL "Don't build Eigen tests")
-    set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "Don't build Eigen pkg-config")
-    FetchContent_MakeAvailable(eigen3)
-  endfunction()
+      set(EIGEN_BUILD_DOC OFF CACHE BOOL "Don't build Eigen docs")
+      set(BUILD_TESTING OFF CACHE BOOL "Don't build Eigen tests")
+      set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "Don't build Eigen pkg-config")
+      FetchContent_MakeAvailable(eigen3)
+    endfunction()
 
-  add_eigen()
+    add_eigen()
+  endif()
 endif()
 
 
@@ -283,7 +289,7 @@ add_library(
   ${SYMFORCE_GEN_SOURCES}
   ${SYMFORCE_GEN_HEADERS}
 )
-target_link_libraries(symforce_gen Eigen3::Eigen symforce_lcmtypes_cpp)
+target_link_libraries(symforce_gen ${SYMFORCE_EIGEN_TARGET} symforce_lcmtypes_cpp)
 target_include_directories(
   symforce_gen
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gen/cpp
@@ -303,7 +309,7 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
     ${SYMFORCE_CHOLESKY_SOURCES}
     ${SYMFORCE_CHOLESKY_HEADERS}
   )
-  target_link_libraries(symforce_cholesky metis Eigen3::Eigen)
+  target_link_libraries(symforce_cholesky metis ${SYMFORCE_EIGEN_TARGET})
   target_include_directories(symforce_cholesky PUBLIC .)
 
   # ------------------------------------------------------------------------------
@@ -323,7 +329,7 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
     fmt::fmt
     spdlog::spdlog
     tl::optional
-    Eigen3::Eigen
+    ${SYMFORCE_EIGEN_TARGET}
   )
 
   if(SYMFORCE_CUSTOM_TIC_TOCS)
@@ -361,7 +367,7 @@ if(SYMFORCE_BUILD_EXAMPLES)
     symforce_examples
     symforce_gen
     symforce_opt
-    Eigen3::Eigen
+    ${SYMFORCE_EIGEN_TARGET}
   )
   target_include_directories(
     symforce_examples
@@ -446,7 +452,7 @@ endif(SYMFORCE_BUILD_TESTS)
 
 if(SYMFORCE_GENERATE_MANIFEST)
   function(generate_manifest)
-    get_target_property(eigen_include_dirs Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(eigen_include_dirs ${SYMFORCE_EIGEN_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(spdlog_include_dirs spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(catch2_include_dirs symforce_catch2 INTERFACE_INCLUDE_DIRECTORIES)
     execute_process(
