@@ -14,7 +14,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ------------------------------------------------------------------------------
 # Enable/Disable Components
 
-option(SYMFORCE_BUILD_GEN_ONLY "Build only the symforce_gen target" OFF)
+option(SYMFORCE_BUILD_OPT "Build symforce_opt and related targets for optimization" ON)
+option(SYMFORCE_BUILD_CC_SYM "Build cc_sym and related targets for python wrapping" ON)
 option(SYMFORCE_BUILD_EXAMPLES "Build the examples" ON)
 option(SYMFORCE_BUILD_TESTS "Build the tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
@@ -85,6 +86,17 @@ else()
   set(SYMFORCE_LIBRARY_TYPE SHARED)
 endif()
 
+if(SYMFORCE_BUILD_CC_SYM
+   OR SYMFORCE_BUILD_EXAMPLES
+   OR SYMFORCE_BUILD_TESTS
+   OR SYMFORCE_GENERATE_MANIFEST)
+  if(NOT SYMFORCE_BUILD_OPT)
+    message(FATAL_ERROR
+      "Attempting to build targets that depend on symforce_opt, without building symforce_opt"
+    )
+  endif()
+endif()
+
 # ==============================================================================
 # Third Party Dependencies (needed for build)
 # ==============================================================================
@@ -118,7 +130,7 @@ endif()
 
 
 # These dependencies are not needed for symforce_gen
-if(NOT SYMFORCE_BUILD_GEN_ONLY)
+if(SYMFORCE_BUILD_OPT)
   # ------------------------------------------------------------------------------
   # fmtlib
 
@@ -139,22 +151,6 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
     add_fmt()
   else()
     message(STATUS "fmt found")
-  endif()
-
-  # ------------------------------------------------------------------------------
-  # pybind11
-
-  find_package(pybind11 QUIET)
-  if (NOT pybind11_FOUND)
-    message(STATUS "pybind11 not found, adding with FetchContent")
-    FetchContent_Declare(
-      pybind11
-      GIT_REPOSITORY https://github.com/pybind/pybind11
-      GIT_TAG e7c9753f1d35061d137ac3ce561e94a7407e5583 # release 2.8.1
-    )
-    FetchContent_MakeAvailable(pybind11)
-  else()
-    message(STATUS "pybind11 found")
   endif()
 
   # ------------------------------------------------------------------------------
@@ -230,7 +226,25 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
   endfunction()
 
   add_metis()
-endif(NOT SYMFORCE_BUILD_GEN_ONLY)
+endif(SYMFORCE_BUILD_OPT)
+
+if(SYMFORCE_BUILD_CC_SYM)
+  # ------------------------------------------------------------------------------
+  # pybind11
+
+  find_package(pybind11 QUIET)
+  if (NOT pybind11_FOUND)
+    message(STATUS "pybind11 not found, adding with FetchContent")
+    FetchContent_Declare(
+      pybind11
+      GIT_REPOSITORY https://github.com/pybind/pybind11
+      GIT_TAG e7c9753f1d35061d137ac3ce561e94a7407e5583 # release 2.8.1
+    )
+    FetchContent_MakeAvailable(pybind11)
+  else()
+    message(STATUS "pybind11 found")
+  endif()
+endif(SYMFORCE_BUILD_CC_SYM)
 
 # ==============================================================================
 # SymForce Targets
@@ -295,7 +309,7 @@ target_include_directories(
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gen/cpp
 )
 
-if(NOT SYMFORCE_BUILD_GEN_ONLY)
+if(SYMFORCE_BUILD_OPT)
   # ------------------------------------------------------------------------------
   # symforce_cholesky
 
@@ -340,12 +354,15 @@ if(NOT SYMFORCE_BUILD_GEN_ONLY)
     )
   endif(SYMFORCE_CUSTOM_TIC_TOCS)
 
+endif(SYMFORCE_BUILD_OPT)
+
+if(SYMFORCE_BUILD_CC_SYM)
   # ------------------------------------------------------------------------------
   # cc_sym
 
   add_subdirectory(symforce/pybind)
+endif(SYMFORCE_BUILD_CC_SYM)
 
-endif(NOT SYMFORCE_BUILD_GEN_ONLY)
 
 # ==============================================================================
 # Examples and Tests
