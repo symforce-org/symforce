@@ -455,17 +455,21 @@ class Matrix(Storage):
     def reshape(self, rows: int, cols: int) -> Matrix:
         return self.__class__(self.mat.reshape(rows, cols))
 
-    def dot(self, other: Matrix) -> Matrix:
+    def dot(self, other: Matrix) -> _T.Scalar:
         """
-        Dot product.
+        Dot product, also known as inner product.
+        dot only supports mapping 1 x n or n x 1 Matrices to scalars. Note that both matrices must have the same shape.
         """
-        ret = self.mat.dot(other.mat)
-        if isinstance(ret, sm.Matrix):
-            ret = self.__class__(ret)
-        else:
-            # Result is a Scalar, wrap in a Matrix
-            ret = self.__class__([[ret]])
-        return ret
+        if not (self.is_vector() and other.is_vector()):
+            raise TypeError(
+                f"Dot can only be called on vectors, got matrices of shapes {self.shape} and {other.shape}"
+            )
+        if self.shape[0] != other.shape[0] or self.shape[1] != other.shape[1]:
+            raise TypeError(
+                f"Dot expects both vectors to be the same shape, got matrices of shapes {self.shape} and {other.shape}"
+            )
+
+        return self.mat.dot(other.mat)
 
     # NOTE(aaron): We could annotate this as (self, Vector3) -> Vector3.  However, many operations
     # on Matrix aren't shape-aware, e.g. *_join or matmul.  So it results in a lot of instances of
@@ -490,7 +494,7 @@ class Matrix(Storage):
         Squared norm of a vector, equivalent to the dot product with itself.
         """
         self._assert_is_vector()
-        return self.dot(self)[0, 0]
+        return self.dot(self)
 
     def norm(self, epsilon: _T.Scalar = 0) -> _T.Scalar:
         """
@@ -784,8 +788,11 @@ class Matrix(Storage):
 
         return cls([col.to_flat_list() for col in columns]).T
 
+    def is_vector(self) -> bool:
+        return (self.shape[0] == 1) or (self.shape[1] == 1)
+
     def _assert_is_vector(self) -> None:
-        assert (self.shape[0] == 1) or (self.shape[1] == 1), "Not a vector."
+        assert self.is_vector(), "Not a vector."
 
     def _assert_sanity(self) -> None:
         assert self.shape == self.SHAPE, "Inconsistent Matrix!. shape={}, SHAPE={}".format(

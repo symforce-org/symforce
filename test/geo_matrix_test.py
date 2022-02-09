@@ -339,6 +339,35 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             # This should fail mypy, since it's actually wrong
             a.multiply_elementwise(geo.M43())  # type: ignore
 
+    def test_dot_product(self) -> None:
+        """
+        Tests:
+            Matrix.dot
+        """
+
+        a = geo.V2()
+        a[0] = 1
+        a[1] = 2
+
+        b = geo.V2()
+        b[0] = 3
+        b[1] = 4
+
+        expected_result = 3 + 2 * 4
+        self.assertEqual(a.dot(b), expected_result)
+        # NOTE(harrison): update this if we start supporting complex
+        self.assertEqual(b.dot(a), expected_result)
+        self.assertEqual(a.T.dot(b.T), expected_result)
+
+        with self.assertRaises(TypeError):
+            c = geo.M33()
+            d = geo.M33()
+            c.dot(d)
+        with self.assertRaises(TypeError):
+            self.assertEqual(a.T.dot(b), expected_result)
+        with self.assertRaises(TypeError):
+            self.assertEqual(a.dot(b.T), expected_result)
+
 
 if __name__ == "__main__":
     TestCase.main()

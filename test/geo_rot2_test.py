@@ -87,9 +87,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats
-            angles = np.array(
-                [sm.acos(P.dot(P_rot)[0, 0]) for P_rot in Ps_rotated], dtype=np.float64
-            )
+            angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
 
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)

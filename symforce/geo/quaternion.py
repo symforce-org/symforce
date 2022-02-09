@@ -79,7 +79,7 @@ class Quaternion(Group):
     def compose(self, other: Quaternion) -> Quaternion:
         return self.__class__(
             xyz=self.w * other.xyz + other.w * self.xyz + self.xyz.cross(other.xyz),
-            w=self.w * other.w - self.xyz.dot(other.xyz)[0, 0],
+            w=self.w * other.w - self.xyz.dot(other.xyz),
         )
 
     def inverse(self) -> Quaternion:
@@ -154,7 +154,7 @@ class Quaternion(Group):
         Returns:
             Scalar:
         """
-        return self.xyz.dot(self.xyz)[0, 0] + self.w ** 2
+        return self.xyz.dot(self.xyz) + self.w ** 2
 
     def conj(self) -> Quaternion:
         """
