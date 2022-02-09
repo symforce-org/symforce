@@ -12,9 +12,24 @@ from symforce import typing as T
 from symforce.python_util import InvalidKeyError
 from symforce.test_util import TestCase, slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
+from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
 from symforce.values import Values
 
 import sym
+
+
+@dataclass
+class MySubDataclass:
+    a: T.Scalar
+    b: T.Sequence[T.Sequence[T.Scalar]]
+
+
+@dataclass
+class MyDataclass:
+    x: T.Scalar
+    v: geo.V3
+    r: geo.Rot3
+    sub: T.Sequence[MySubDataclass]
 
 
 class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
@@ -579,51 +594,6 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v_goal = Values(inner_v=Values(sym=3))
             self.assertEqual(v_goal, v.subs({"x": 3}))
 
-    def test_dataclasses(self) -> None:
-        """
-        Tests:
-            Values.dataclasses_to_values
-        """
-
-        @dataclass
-        class MySubDataclass:
-            a: T.Scalar
-            b: T.Sequence[T.Sequence[T.Scalar]]
-
-        @dataclass
-        class MyDataclass:
-            x: T.Scalar
-            v: geo.V3
-            r: geo.Rot3
-            sub: T.Sequence[MySubDataclass]
-
-        values = Values(
-            data=MyDataclass(
-                x=0,
-                v=geo.V3.symbolic("v"),
-                r=geo.Rot3.symbolic("r"),
-                sub=[
-                    MySubDataclass(a=1, b=[[i * j for i in range(3)] for j in range(2)])
-                    for _ in range(5)
-                ],
-            )
-        )
-
-        values_no_dataclasses = values.dataclasses_to_values()
-
-        values_no_dataclasses_expected = Values(
-            data=Values(
-                x=0,
-                v=geo.V3.symbolic("v"),
-                r=geo.Rot3.symbolic("r"),
-                sub=[
-                    Values(a=1, b=[[i * j for i in range(3)] for j in range(2)]) for _ in range(5)
-                ],
-            )
-        )
-
-        self.assertEqual(values_no_dataclasses, values_no_dataclasses_expected)
-
     def test_to_numerical(self) -> None:
         """
         Test that `Values.to_numerical()` works as expected to convert symbolic types
@@ -652,6 +622,45 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             expected_numerical_values, epsilon=sm.default_epsilon
         )
         self.assertLess(geo.M(diff).norm(), 1e-10)
+
+
+class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
+    """
+    Runs StorageOps tests on a Values object containing dataclasses
+    """
+
+    @classmethod
+    def element(cls) -> Values:
+        v = SymforceValuesTest.element()
+        v["data"] = MyDataclass(
+            x=0,
+            v=geo.V3.symbolic("v"),
+            r=geo.Rot3.symbolic("r"),
+            sub=[
+                MySubDataclass(a=1, b=[[i * j for i in range(3)] for j in range(2)])
+                for _ in range(5)
+            ],
+        )
+        return v
+
+    def test_dataclasses(self) -> None:
+        """
+        Tests:
+            Values.dataclasses_to_values
+        """
+        values = self.element()
+
+        values_no_dataclasses = values.dataclasses_to_values()
+
+        values_no_dataclasses_expected = values.copy()
+        values_no_dataclasses_expected["data"] = Values(
+            x=0,
+            v=geo.V3.symbolic("v"),
+            r=geo.Rot3.symbolic("r"),
+            sub=[Values(a=1, b=[[i * j for i in range(3)] for j in range(2)]) for _ in range(5)],
+        )
+
+        self.assertEqual(values_no_dataclasses, values_no_dataclasses_expected)
 
 
 if __name__ == "__main__":

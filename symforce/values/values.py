@@ -153,6 +153,11 @@ class Values(T.MutableMapping[str, T.Any]):
                 name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
                 entry = entry_helper(item_index=item_index)
+            elif isinstance(value, T.Dataclass):
+                names_list = [field.name for field in dataclasses.fields(value)]
+                item_list = [getattr(value, name) for name in names_list]
+                item_index = Values.get_index_from_items(zip(names_list, item_list))
+                entry = entry_helper(item_index=item_index)
             else:
                 entry = entry_helper()
 
@@ -286,6 +291,9 @@ class Values(T.MutableMapping[str, T.Any]):
             elif issubclass(datatype, (list, tuple)):
                 assert entry.item_index is not None
                 values[name] = datatype(cls.from_storage_index(vec, entry.item_index).values())
+            elif issubclass(datatype, T.Dataclass):
+                assert entry.item_index is not None
+                values[name] = datatype(**cls.from_storage_index(vec, entry.item_index))
             else:
                 values[name] = ops.StorageOps.from_storage(datatype, vec)
 
