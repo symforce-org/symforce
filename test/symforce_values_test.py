@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import numpy as np
 import itertools
 import unittest
+import pickle
+from pathlib import Path
 
 from symforce import logger
 from symforce import geo
@@ -634,8 +636,8 @@ class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
         v = SymforceValuesTest.element()
         v["data"] = MyDataclass(
             x=0,
-            v=geo.V3.symbolic("v"),
-            r=geo.Rot3.symbolic("r"),
+            v=geo.V3(np.random.normal(size=(3,))),
+            r=geo.Rot3.random(),
             sub=[
                 MySubDataclass(a=1, b=[[i * j for i in range(3)] for j in range(2)])
                 for _ in range(5)
@@ -655,12 +657,30 @@ class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
         values_no_dataclasses_expected = values.copy()
         values_no_dataclasses_expected["data"] = Values(
             x=0,
-            v=geo.V3.symbolic("v"),
-            r=geo.Rot3.symbolic("r"),
+            v=values["data"].v,
+            r=values["data"].r,
             sub=[Values(a=1, b=[[i * j for i in range(3)] for j in range(2)]) for _ in range(5)],
         )
 
         self.assertEqual(values_no_dataclasses, values_no_dataclasses_expected)
+
+    def test_pickle(self) -> None:
+        """
+        Test that we can pickle and unpickle Values objects without changing the data
+        """
+        values = self.element()
+        output_dir = self.make_output_dir("sf_values_pickle_test")
+        pickle_file = Path(output_dir) / "values.pickle"
+
+        # Pickle the object
+        with open(pickle_file, "wb") as f:
+            pickle.dump(values, f)
+
+        # Unpickle the object
+        with open(pickle_file, "rb") as f:
+            recovered_values = pickle.load(f)
+
+        self.assertEqual(values, recovered_values)
 
 
 if __name__ == "__main__":

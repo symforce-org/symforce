@@ -821,6 +821,22 @@ class Values(T.MutableMapping[str, T.Any]):
 
         return self.apply_to_leaves(_leaf_to_numerical)
 
+    def __getstate__(self) -> T.Dict[str, T.Any]:
+        """
+        Called when pickling this Values. Because some symengine objects cannot be pickled, we first
+        convert any symbolic types to numerical types, and then store the data + index.
+        """
+        storage = [float(x) for x in self.evalf().to_storage()]
+        return {"storage": storage, "index": self.index()}
+
+    def __setstate__(self, d: T.Dict[str, T.Any]) -> None:
+        """
+        Called when unpickling a Values object. Rebuilds the Values object using the storage data
+        and index of the pickled object.
+        """
+        recovered_values = Values.from_storage_index(d["storage"], d["index"])
+        self.__dict__.update(recovered_values.__dict__)
+
 
 from symforce.ops.impl.class_lie_group_ops import ClassLieGroupOps
 
