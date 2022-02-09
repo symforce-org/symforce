@@ -3,11 +3,11 @@ import numpy as np
 from symforce import cam
 from symforce import geo
 from symforce.test_util import TestCase
-from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
+from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.test_util.cam_test_mixin import CamTestMixin
 
 
-class CamLinearTest(StorageOpsTestMixin, CamTestMixin, TestCase):
+class CamLinearTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
     """
     Test the LinearCameraCal class.
     Note the mixin that tests all storage ops and camera projection/reprojection ops.

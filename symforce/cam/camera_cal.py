@@ -1,4 +1,5 @@
 from symforce import geo
+from symforce import ops
 from symforce.ops.interfaces import Storage
 from symforce import sympy as sm
 from symforce import typing as T
@@ -105,3 +106,9 @@ class CameraCal(Storage):
             is_valid: 1 if the operation is within bounds else 0
         """
         raise NotImplementedError()
+
+
+# Register ops
+from symforce.ops.impl.vector_class_lie_group_ops import VectorClassLieGroupOps
+
+ops.LieGroupOps.register(CameraCal, VectorClassLieGroupOps)

@@ -13,7 +13,6 @@ from .lie_group_ops import LieGroupOps
 # Register ops for scalars and sequences
 import numpy as np
 from symforce import sympy as sm
-from .impl.scalar_storage_ops import ScalarStorageOps
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
 

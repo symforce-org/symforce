@@ -5,10 +5,10 @@ from symforce import geo
 from symforce import sympy as sm
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
-from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
+from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
-class CamPolynomialTest(StorageOpsTestMixin, TestCase):
+class CamPolynomialTest(LieGroupOpsTestMixin, TestCase):
     """
     Test the Polynomial camera model class.
 

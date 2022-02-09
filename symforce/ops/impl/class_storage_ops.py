@@ -11,7 +11,7 @@ class ClassStorageOps:
         return a.to_storage()
 
     @staticmethod
-    def from_storage(a: T.ElementOrType, elements: T.List[T.Scalar]) -> T.Element:
+    def from_storage(a: T.ElementOrType, elements: T.Sequence[T.Scalar]) -> T.Element:
         return a.from_storage(elements)
 
     @staticmethod

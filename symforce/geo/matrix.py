@@ -25,8 +25,8 @@ class Matrix(Storage):
     Matrix does not implement the group or lie group concepts using instance/class methods directly,
     because we want it to represent the group R^{NxM}, not GL(n), which leads to the `identity` and
     `inverse` methods being confusingly named.  For the group ops and lie group ops, use
-    `ops.GroupOps` and `ops.LieGroupOps` respectively, which use the implementations in
-    matrix_group_ops.py and matrix_lie_group_ops.py of the R^{NxM} group under matrix addition.  For
+    `ops.GroupOps` and `ops.LieGroupOps` respectively, which use the implementation in
+    vector_class_lie_group_ops.py of the R^{NxM} group under matrix addition.  For
     the identity matrix and inverse matrix, see `Matrix.eye` and `Matrix.inv` respectively.
     """
 
@@ -1142,6 +1142,6 @@ Matrix.init_printing()
 
 
 # Register ops
-from symforce.ops.impl.matrix_lie_group_ops import MatrixLieGroupOps
+from symforce.ops.impl.vector_class_lie_group_ops import VectorClassLieGroupOps
 
-ops.LieGroupOps.register(Matrix, MatrixLieGroupOps)
+ops.LieGroupOps.register(Matrix, VectorClassLieGroupOps)
