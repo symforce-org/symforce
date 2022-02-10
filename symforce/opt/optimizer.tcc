@@ -15,6 +15,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
                                                       const std::vector<Key>& keys,
                                                       bool debug_stats, bool check_derivatives)
     : factors_(factors),
+      name_(name),
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
@@ -30,6 +31,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
     const Scalar epsilon, const std::string& name, const std::vector<Key>& keys, bool debug_stats,
     bool check_derivatives, NonlinearSolverArgs&&... nonlinear_solver_args)
     : factors_(factors),
+      name_(name),
       nonlinear_solver_(params, name, epsilon,
                         std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
       epsilon_(epsilon),
@@ -46,6 +48,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
                                                       std::vector<Key>&& keys, bool debug_stats,
                                                       bool check_derivatives)
     : factors_(std::move(factors)),
+      name_(name),
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
@@ -89,6 +92,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* const 
                                                           int num_iterations,
                                                           bool populate_best_linearization,
                                                           OptimizationStats<Scalar>* const stats) {
+  SYM_TIME_SCOPE("Optimizer<{}>::Optimize", name_);
   SYM_ASSERT(values != nullptr);
   SYM_ASSERT(stats != nullptr);
 
@@ -164,6 +168,11 @@ const std::vector<Key>& Optimizer<ScalarType, NonlinearSolverType>::Keys() const
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
+const std::vector<Factor<ScalarType>>& Optimizer<ScalarType, NonlinearSolverType>::Factors() const {
+  return factors_;
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_params_t& params) {
   nonlinear_solver_.UpdateParams(params);
 }
@@ -176,6 +185,7 @@ template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     Values<Scalar>* const values, const size_t num_iterations,
     const bool populate_best_linearization, OptimizationStats<Scalar>* const stats) {
+  SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name_);
   bool optimization_early_exited = false;
 
   // Iterate
@@ -187,14 +197,17 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     }
   }
 
-  // Save best results
-  (*values) = nonlinear_solver_.GetBestValues();
+  {
+    SYM_TIME_SCOPE("Optimizer<{}>::CopyValuesAndLinearization", name_);
+    // Save best results
+    (*values) = nonlinear_solver_.GetBestValues();
 
-  if (populate_best_linearization) {
-    // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead put a
-    // Linearization** in the stats, but then we'd have the issue of defining when the pointer
-    // becomes invalid
-    stats->best_linearization = nonlinear_solver_.GetBestLinearization();
+    if (populate_best_linearization) {
+      // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead put a
+      // Linearization** in the stats, but then we'd have the issue of defining when the pointer
+      // becomes invalid
+      stats->best_linearization = nonlinear_solver_.GetBestLinearization();
+    }
   }
 
   stats->early_exited = optimization_early_exited;
@@ -226,6 +239,11 @@ void Optimizer<ScalarType, NonlinearSolverType>::Initialize(const Values<Scalar>
     index_ = values.CreateIndex(keys_);
     nonlinear_solver_.SetIndex(index_);
   }
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+const std::string& Optimizer<ScalarType, NonlinearSolverType>::GetName() {
+  return name_;
 }
 
 }  // namespace sym

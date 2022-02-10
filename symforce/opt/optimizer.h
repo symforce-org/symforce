@@ -209,6 +209,11 @@ class Optimizer {
   const std::vector<Key>& Keys() const;
 
   /**
+   * Get the factors.
+   */
+  const std::vector<Factor<Scalar>>& Factors() const;
+
+  /**
    * Update the optimizer params
    */
   void UpdateParams(const optimizer_params_t& params);
@@ -233,9 +238,14 @@ class Optimizer {
    */
   void Initialize(const Values<Scalar>& values);
 
+  const std::string& GetName();
+
   // Store a copy of the nonlinear factors. The Linearization object in the state keeps a
   // pointer to this memory.
   std::vector<Factor<Scalar>> factors_;
+
+  // The name of this optimizer to be used for printing debug information.
+  std::string name_;
 
   // Underlying nonlinear solver class.
   NonlinearSolver nonlinear_solver_;

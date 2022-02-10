@@ -44,6 +44,7 @@ class GncOptimizer : public BaseOptimizerType {
   virtual void Optimize(Values<Scalar>* const values, int num_iterations,
                         bool populate_best_linearization,
                         OptimizationStats<Scalar>* const stats) override {
+    SYM_TIME_SCOPE("GNC<{}>::Optimize", BaseOptimizer::GetName());
     SYM_ASSERT(values != nullptr);
     SYM_ASSERT(stats != nullptr);
 

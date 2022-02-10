@@ -11,6 +11,7 @@
 
 #include "./internal/levenberg_marquardt_state.h"
 #include "./optimization_stats.h"
+#include "./tic_toc.h"
 
 namespace sym {
 
@@ -148,6 +149,7 @@ class LevenbergMarquardtSolver {
   // Reset the state values, such as if the cost function changes and linearizations are invalid.
   // Resets the values for optimization, but doesn't reset lambda or the number of iterations.
   void ResetState(const Values<Scalar>& values) {
+    SYM_TIME_SCOPE("LM<{}>::ResetState", id_);
     // Should have called SetIndex already
     SYM_ASSERT(!index_.entries.empty());
 
