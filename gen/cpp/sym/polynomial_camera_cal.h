@@ -147,4 +147,6 @@ extern template class sym::PolynomialCameraCal<double>;
 extern template class sym::PolynomialCameraCal<float>;
 
 // Concept implementations for this class
+#include "./ops/polynomial_camera_cal/group_ops.h"
+#include "./ops/polynomial_camera_cal/lie_group_ops.h"
 #include "./ops/polynomial_camera_cal/storage_ops.h"

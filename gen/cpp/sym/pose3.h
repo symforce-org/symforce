@@ -225,9 +225,7 @@ std::ostream& operator<<(std::ostream& os, const Pose3<float>& a);
 extern template class sym::Pose3<double>;
 extern template class sym::Pose3<float>;
 
-// Concept implementations for this class (include order matters here)
-// clang-format off
-#include "./ops/pose3/storage_ops.h"
-#include "./ops/pose3/lie_group_ops.h"
+// Concept implementations for this class
 #include "./ops/pose3/group_ops.h"
-// clang-format on
+#include "./ops/pose3/lie_group_ops.h"
+#include "./ops/pose3/storage_ops.h"

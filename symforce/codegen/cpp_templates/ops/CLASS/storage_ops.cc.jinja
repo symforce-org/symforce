@@ -1,5 +1,10 @@
 {%- import "../../util/util.jinja" as util with context -%}
 
+#include <algorithm>
+#include <Eigen/Dense>
+
+#include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
+
 #include "./storage_ops.h"
 
 namespace sym {

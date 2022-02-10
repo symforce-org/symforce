@@ -15,7 +15,8 @@ struct GroupOps {
   static T Compose(const T& a, const T& b);
   static T Between(const T& a, const T& b);
 
-  using SelfJacobian = typename sym::LieGroupOps<T>::SelfJacobian;
+  using SelfJacobian =
+      Eigen::Matrix<typename T::Scalar, LieGroupOps<T>::TangentDim(), LieGroupOps<T>::TangentDim()>;
 
   static T InverseWithJacobian(const T& a, SelfJacobian* const res_D_a);
 

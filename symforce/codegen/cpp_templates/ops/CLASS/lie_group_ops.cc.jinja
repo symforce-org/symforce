@@ -1,7 +1,7 @@
-{%- import "../../../util/util.jinja" as util with context -%}
+{%- import "../../util/util.jinja" as util with context -%}
 
-#include <algorithm>
 #include <cmath>
+
 #include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 
 #include "./lie_group_ops.h"

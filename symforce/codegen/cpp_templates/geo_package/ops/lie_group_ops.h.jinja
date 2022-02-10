@@ -17,7 +17,6 @@ struct LieGroupOps {
 
   static constexpr int32_t TangentDim();
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
-  using SelfJacobian = Eigen::Matrix<Scalar, TangentDim(), TangentDim()>;
 
   static T FromTangent(const TangentVec& vec, const Scalar epsilon);
   static TangentVec ToTangent(const T& a, const Scalar epsilon);

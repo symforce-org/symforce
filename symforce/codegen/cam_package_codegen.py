@@ -12,6 +12,8 @@ from symforce import python_util
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig, CppConfig
 from symforce.codegen import template_util
+from symforce.codegen.ops_codegen_util import make_group_ops_funcs
+from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
 # Default cam types to generate
 DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
@@ -138,6 +140,12 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
 
     data["specs"] = collections.defaultdict(list)
 
+    for func in make_group_ops_funcs(cls, config):
+        data["specs"]["GroupOps"].append(func)
+
+    for func in make_lie_group_ops_funcs(cls, config):
+        data["specs"]["LieGroupOps"].append(func)
+
     for func in make_camera_funcs(cls, config):
         data["specs"]["CameraOps"].append(func)
 
@@ -212,6 +220,10 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 ("cam_package", "CLASS.cc"),
                 (".", "ops/CLASS/storage_ops.h"),
                 (".", "ops/CLASS/storage_ops.cc"),
+                (".", "ops/CLASS/group_ops.h"),
+                (".", "ops/CLASS/group_ops.cc"),
+                (".", "ops/CLASS/lie_group_ops.h"),
+                (".", "ops/CLASS/lie_group_ops.cc"),
             ):
                 template_path = str(
                     pathlib.Path(template_util.CPP_TEMPLATE_DIR, base_dir, relative_path + ".jinja")

@@ -4,7 +4,6 @@ import textwrap
 import collections
 import functools
 
-from symforce import ops
 from symforce import geo
 from symforce import logger
 from symforce import python_util
@@ -17,78 +16,11 @@ from symforce.codegen import PythonConfig
 from symforce.codegen import codegen_util
 from symforce.codegen import lcm_types_codegen
 from symforce.codegen import template_util
+from symforce.codegen.ops_codegen_util import make_group_ops_funcs
+from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
 # Default geo types to generate
 DEFAULT_GEO_TYPES = (geo.Rot2, geo.Pose2, geo.Rot3, geo.Pose3)
-
-
-def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
-    """
-    Create func spec arguments for group ops on the given class.
-    """
-    identity = Codegen.function(
-        name="identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], config=config
-    )
-
-    inverse = Codegen.function(
-        func=ops.GroupOps.inverse,
-        input_types=[cls],
-        config=config,
-        docstring=ops.GroupOps.inverse.__doc__,
-    )
-
-    compose = Codegen.function(
-        func=ops.GroupOps.compose,
-        input_types=[cls, cls],
-        config=config,
-        docstring=ops.GroupOps.compose.__doc__,
-    )
-
-    between = Codegen.function(func=ops.GroupOps.between, input_types=[cls, cls], config=config)
-
-    return [
-        identity,
-        inverse,
-        compose,
-        between,
-        inverse.with_jacobians(),
-        compose.with_jacobians(),
-        between.with_jacobians(),
-    ]
-
-
-def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
-    """
-    Create func spec arguments for lie group ops on the given class.
-    """
-    tangent_vec = geo.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
-    return [
-        Codegen.function(
-            name="from_tangent",
-            func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
-            input_types=[tangent_vec, sm.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.from_tangent.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.to_tangent,
-            input_types=[cls, sm.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.to_tangent.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.retract,
-            input_types=[cls, tangent_vec, sm.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.retract.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.local_coordinates,
-            input_types=[cls, cls, sm.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.local_coordinates.__doc__,
-        ),
-    ]
 
 
 def geo_class_common_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
@@ -262,10 +194,10 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 ("geo_package", "CLASS.cc"),
                 (".", "ops/CLASS/storage_ops.h"),
                 (".", "ops/CLASS/storage_ops.cc"),
-                ("geo_package", "ops/CLASS/group_ops.h"),
-                ("geo_package", "ops/CLASS/group_ops.cc"),
-                ("geo_package", "ops/CLASS/lie_group_ops.h"),
-                ("geo_package", "ops/CLASS/lie_group_ops.cc"),
+                (".", "ops/CLASS/group_ops.h"),
+                (".", "ops/CLASS/group_ops.cc"),
+                (".", "ops/CLASS/lie_group_ops.h"),
+                (".", "ops/CLASS/lie_group_ops.cc"),
             ):
                 template_path = str(
                     pathlib.Path(template_util.CPP_TEMPLATE_DIR, base_dir, relative_path + ".jinja")

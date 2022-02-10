@@ -1,4 +1,6 @@
-{%- import "../../../util/util.jinja" as util with context -%}
+{%- import "../../util/util.jinja" as util with context -%}
+
+#include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 
 #include "./group_ops.h"
 

@@ -206,9 +206,7 @@ std::ostream& operator<<(std::ostream& os, const Rot2<float>& a);
 extern template class sym::Rot2<double>;
 extern template class sym::Rot2<float>;
 
-// Concept implementations for this class (include order matters here)
-// clang-format off
-#include "./ops/rot2/storage_ops.h"
-#include "./ops/rot2/lie_group_ops.h"
+// Concept implementations for this class
 #include "./ops/rot2/group_ops.h"
-// clang-format on
+#include "./ops/rot2/lie_group_ops.h"
+#include "./ops/rot2/storage_ops.h"

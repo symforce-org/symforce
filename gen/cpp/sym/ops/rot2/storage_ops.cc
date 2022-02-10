@@ -6,6 +6,12 @@
 
 #include "./storage_ops.h"
 
+#include <algorithm>
+
+#include <Eigen/Dense>
+
+#include <sym/rot2.h>
+
 namespace sym {
 
 template <typename ScalarType>

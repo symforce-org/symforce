@@ -179,4 +179,6 @@ extern template class sym::SphericalCameraCal<double>;
 extern template class sym::SphericalCameraCal<float>;
 
 // Concept implementations for this class
+#include "./ops/spherical_camera_cal/group_ops.h"
+#include "./ops/spherical_camera_cal/lie_group_ops.h"
 #include "./ops/spherical_camera_cal/storage_ops.h"

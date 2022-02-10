@@ -8,7 +8,15 @@
 
 #include <lcmtypes/sym/type_t.hpp>
 
-#include <sym/pose3.h>
+#include "../storage_ops.h"
+
+// Forward declare class, without including header
+// We could include the class header here, but we forward declare to be consistent
+// with "./group_ops.h", which must forward declare. See that file for an explanation.
+namespace sym {
+template <typename ScalarType>
+class Pose3;
+}  // namespace sym
 
 namespace sym {
 
@@ -18,7 +26,7 @@ namespace sym {
 template <typename ScalarType>
 struct StorageOps<Pose3<ScalarType>> {
   using T = Pose3<ScalarType>;
-  using Scalar = typename Pose3<ScalarType>::Scalar;
+  using Scalar = ScalarType;
 
   static constexpr int32_t StorageDim() {
     return 7;

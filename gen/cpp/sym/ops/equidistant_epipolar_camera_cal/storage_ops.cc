@@ -6,6 +6,12 @@
 
 #include "./storage_ops.h"
 
+#include <algorithm>
+
+#include <Eigen/Dense>
+
+#include <sym/equidistant_epipolar_camera_cal.h>
+
 namespace sym {
 
 template <typename ScalarType>

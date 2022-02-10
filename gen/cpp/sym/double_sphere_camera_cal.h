@@ -198,4 +198,6 @@ extern template class sym::DoubleSphereCameraCal<double>;
 extern template class sym::DoubleSphereCameraCal<float>;
 
 // Concept implementations for this class
+#include "./ops/double_sphere_camera_cal/group_ops.h"
+#include "./ops/double_sphere_camera_cal/lie_group_ops.h"
 #include "./ops/double_sphere_camera_cal/storage_ops.h"

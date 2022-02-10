@@ -8,7 +8,15 @@
 
 #include <lcmtypes/sym/type_t.hpp>
 
-#include <sym/polynomial_camera_cal.h>
+#include "../storage_ops.h"
+
+// Forward declare class, without including header
+// We could include the class header here, but we forward declare to be consistent
+// with "./group_ops.h", which must forward declare. See that file for an explanation.
+namespace sym {
+template <typename ScalarType>
+class PolynomialCameraCal;
+}  // namespace sym
 
 namespace sym {
 
@@ -19,7 +27,7 @@ namespace sym {
 template <typename ScalarType>
 struct StorageOps<PolynomialCameraCal<ScalarType>> {
   using T = PolynomialCameraCal<ScalarType>;
-  using Scalar = typename PolynomialCameraCal<ScalarType>::Scalar;
+  using Scalar = ScalarType;
 
   static constexpr int32_t StorageDim() {
     return 8;

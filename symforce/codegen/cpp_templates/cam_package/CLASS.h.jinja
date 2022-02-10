@@ -115,3 +115,5 @@ extern template class sym::{{ cls.__name__ }}<{{ scalar }}>;
 
 // Concept implementations for this class
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h"
+#include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"

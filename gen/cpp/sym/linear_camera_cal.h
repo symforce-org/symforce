@@ -178,4 +178,6 @@ extern template class sym::LinearCameraCal<double>;
 extern template class sym::LinearCameraCal<float>;
 
 // Concept implementations for this class
+#include "./ops/linear_camera_cal/group_ops.h"
+#include "./ops/linear_camera_cal/lie_group_ops.h"
 #include "./ops/linear_camera_cal/storage_ops.h"

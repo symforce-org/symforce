@@ -6,6 +6,12 @@
 
 #include "./storage_ops.h"
 
+#include <algorithm>
+
+#include <Eigen/Dense>
+
+#include <sym/double_sphere_camera_cal.h>
+
 namespace sym {
 
 template <typename ScalarType>

@@ -171,4 +171,6 @@ extern template class sym::EquidistantEpipolarCameraCal<double>;
 extern template class sym::EquidistantEpipolarCameraCal<float>;
 
 // Concept implementations for this class
+#include "./ops/equidistant_epipolar_camera_cal/group_ops.h"
+#include "./ops/equidistant_epipolar_camera_cal/lie_group_ops.h"
 #include "./ops/equidistant_epipolar_camera_cal/storage_ops.h"

@@ -6,6 +6,12 @@
 
 #include "./storage_ops.h"
 
+#include <algorithm>
+
+#include <Eigen/Dense>
+
+#include <sym/polynomial_camera_cal.h>
+
 namespace sym {
 
 template <typename ScalarType>

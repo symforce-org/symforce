@@ -16,6 +16,9 @@
 #include <sym/posed_camera.h>
 #include <sym/pose3.h>
 #include <sym/rot3.h>
+#include <sym/ops/group_ops.h>
+#include <sym/ops/lie_group_ops.h>
+#include <sym/util/epsilon.h>
 
 #include "catch.hpp"
 
@@ -130,6 +133,45 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", {{ ", ".join(cpp_cam_typ
   arr[0] = 2.1;
   const T cam_cal3 = sym::StorageOps<T>::FromStorage(arr.data());
   CHECK(cam_cal.Data() != cam_cal3.Data());
+}
+
+TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", {{ ", ".join(cpp_cam_types) }}) {
+  using T = TestType;
+
+  const T identity = sym::GroupOps<T>::Identity();
+  spdlog::info("*** Testing GroupOps: {} ***", identity);
+
+  using SelfJacobian = typename sym::GroupOps<T>::SelfJacobian;
+
+  const auto tangent_dim = sym::LieGroupOps<T>::TangentDim();
+  CHECK(tangent_dim == SelfJacobian::RowsAtCompileTime);
+  CHECK(tangent_dim == SelfJacobian::ColsAtCompileTime);
+
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Compose(identity, identity), 1e-9));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Inverse(identity), 1e-9));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Between(identity, identity), 1e-9));
+
+  SelfJacobian jacobian1 = SelfJacobian::Zero();
+  SelfJacobian jacobian2 = SelfJacobian::Zero();
+  CHECK(identity.IsApprox(sym::GroupOps<T>::ComposeWithJacobians(identity, identity, &jacobian1, &jacobian2), 1e-9));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::InverseWithJacobian(identity, &jacobian1), 1e-9));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::BetweenWithJacobians(identity, identity, &jacobian1, &jacobian2), 1e-9));
+}
+
+TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", {{ ", ".join(cpp_cam_types) }}) {
+  using T = TestType;
+
+  const T identity = sym::GroupOps<T>::Identity();
+  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
+
+  CHECK(sym::LieGroupOps<T>::TangentDim() == sym::LieGroupOps<T>::TangentVec::RowsAtCompileTime);
+
+  using TangentVec = typename sym::LieGroupOps<T>::TangentVec;
+  CHECK(identity.IsApprox(sym::LieGroupOps<T>::FromTangent(TangentVec::Zero(), sym::kDefaultEpsilond), sym::kDefaultEpsilond));
+
+  CHECK(sym::LieGroupOps<T>::ToTangent(identity, sym::kDefaultEpsilond).norm() < sym::kDefaultEpsilond);
+  CHECK(identity.IsApprox(sym::LieGroupOps<T>::Retract(identity, TangentVec::Zero(), sym::kDefaultEpsilond), sym::kDefaultEpsilond));
+  CHECK(sym::LieGroupOps<T>::LocalCoordinates(identity, identity, sym::kDefaultEpsilond).norm() < sym::kDefaultEpsilond);
 }
 
 TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", {{ ", ".join(fully_implemented_cpp_cam_types) }}) {

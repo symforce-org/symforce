@@ -258,9 +258,7 @@ std::ostream& operator<<(std::ostream& os, const Rot3<float>& a);
 extern template class sym::Rot3<double>;
 extern template class sym::Rot3<float>;
 
-// Concept implementations for this class (include order matters here)
-// clang-format off
-#include "./ops/rot3/storage_ops.h"
-#include "./ops/rot3/lie_group_ops.h"
+// Concept implementations for this class
 #include "./ops/rot3/group_ops.h"
-// clang-format on
+#include "./ops/rot3/lie_group_ops.h"
+#include "./ops/rot3/storage_ops.h"

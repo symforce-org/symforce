@@ -1,7 +1,15 @@
 #pragma once
 
-#include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 #include {{ lcm_type_t_include_dir }}
+
+#include "../storage_ops.h"
+
+// Forward declare class, without including header
+// We could include the class header here, but we forward declare to be consistent
+// with "./group_ops.h", which must forward declare. See that file for an explanation.
+namespace sym {
+template<typename ScalarType> class {{ cls.__name__ }};
+}  // namespace sym
 
 namespace sym {
 
@@ -11,7 +19,7 @@ namespace sym {
 template <typename ScalarType>
 struct StorageOps<{{ cls.__name__ }}<ScalarType>> {
   using T = {{ cls.__name__ }}<ScalarType>;
-  using Scalar = typename {{ cls.__name__ }}<ScalarType>::Scalar;
+  using Scalar = ScalarType;
 
   static constexpr int32_t StorageDim() {
     return {{ ops.StorageOps.storage_dim(cls) }};
