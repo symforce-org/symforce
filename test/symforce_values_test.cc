@@ -4,8 +4,15 @@
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
+#include <sym/atan_camera_cal.h>
+#include <sym/double_sphere_camera_cal.h>
+#include <sym/equidistant_epipolar_camera_cal.h>
+#include <sym/linear_camera_cal.h>
 #include <sym/ops/lie_group_ops.h>
+#include <sym/polynomial_camera_cal.h>
 #include <sym/rot3.h>
+#include <sym/spherical_camera_cal.h>
+#include <sym/util/epsilon.h>
 
 #include "../symforce/opt/util.h"
 #include "../symforce/opt/values.h"
@@ -115,6 +122,42 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   v.RemoveAll();
   CHECK(v.NumEntries() == 0);
   CHECK(v.Data().size() == 0);
+}
+
+TEMPLATE_PRODUCT_TEST_CASE("Test storage and retrieval of camera cals", "[values]",
+                           (sym::LinearCameraCal, sym::ATANCameraCal, sym::SphericalCameraCal,
+                            sym::EquidistantEpipolarCameraCal, sym::PolynomialCameraCal,
+                            sym::DoubleSphereCameraCal),
+                           (double, float)) {
+  using T = TestType;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+
+  sym::Values<Scalar> values;
+
+  const T camera_cal = sym::GroupOps<T>::Identity();
+  values.Set('a', camera_cal);
+  CHECK(camera_cal == values.template At<T>('a'));
+}
+
+// TODO(brad): SphericalCameraCal and PolynomialCameraCal should fail this test.
+TEMPLATE_PRODUCT_TEST_CASE("Test Retract and LocalCoordinates of camera cals", "[values]",
+                           (sym::LinearCameraCal, sym::ATANCameraCal, sym::SphericalCameraCal,
+                            sym::EquidistantEpipolarCameraCal, sym::PolynomialCameraCal,
+                            sym::DoubleSphereCameraCal),
+                           (double, float)) {
+  using T = TestType;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
+
+  sym::Values<Scalar> values;
+
+  const T camera_cal = sym::GroupOps<T>::Identity();
+  values.Set('a', camera_cal);
+  const sym::index_t index = values.CreateIndex({'a'});
+  const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(camera_cal, sym::kDefaultEpsilond);
+  values.Retract(index, tangent_vec.data(), sym::kDefaultEpsilond);
+
+  sym::Values<Scalar> values2 = values;
+  sym::VectorX<Scalar> vec = values.LocalCoordinates(values2, index, sym::kDefaultEpsilond);
 }
 
 TEST_CASE("Test IndexEntryAt", "[values]") {

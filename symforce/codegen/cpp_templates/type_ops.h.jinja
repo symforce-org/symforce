@@ -4,13 +4,15 @@
 #include <Eigen/Sparse>
 
 // Import all the known types.
-#include <sym/linear_camera_cal.h>
 #include <sym/ops/lie_group_ops.h>
 #include <sym/ops/storage_ops.h>
 #include <sym/pose2.h>
 #include <sym/pose3.h>
 #include <sym/rot2.h>
 #include <sym/rot3.h>
+{% for class_name in camera_cal_class_names %}
+#include <sym/{{ python_util.camelcase_to_snakecase(class_name) }}.h>
+{% endfor %}
 #include <sym/util/typedefs.h>
 
 #include <lcmtypes/sym/type_t.hpp>
@@ -56,6 +58,10 @@ static constexpr const bool kIsSparseEigenType =
         return func<Eigen::Matrix<Scalar, {{ i }}, {{ j }}>>(args...); \
         {% endfor %}
         {% endfor %}
+      {% for class_name in camera_cal_class_names %}
+      case type_t::{{ python_util.camelcase_to_screaming_snakecase(class_name) }}: \
+        return func<sym::{{ class_name }}<Scalar>>(args...);         \
+      {% endfor %}
       default:                                                         \
         SYM_ASSERT(false);                                             \
     }                                                                  \

@@ -32,8 +32,8 @@ enum type_t : int32_t {
   {% endfor %}
 
   // Camera calibrations
-  {% for name in camera_cal_enum_names %}
-  {{ name }} = {{ k.value }},
+  {% for name in camera_cal_class_names %}
+  {{ python_util.camelcase_to_screaming_snakecase(name) }} = {{ k.value }},
   {% set k.value = k.value + 1 %}
   {% endfor %}
 };

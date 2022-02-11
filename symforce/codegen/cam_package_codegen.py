@@ -19,6 +19,15 @@ from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
 
 
+def camera_cal_class_names() -> T.List[str]:
+    """
+    Returns a sorted list of the CameraCal subclass names.
+    """
+    class_names = [cam_cal_cls.__name__ for cam_cal_cls in cam.CameraCal.__subclasses__()]
+    class_names.sort()
+    return class_names
+
+
 def pixel_from_camera_point_with_jacobians(
     self: cam.CameraCal, point: geo.V3, epsilon: T.Scalar
 ) -> T.Tuple[geo.V2, T.Scalar, geo.M, geo.M]:

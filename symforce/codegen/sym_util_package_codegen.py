@@ -1,8 +1,10 @@
 import os
 import tempfile
 
-from symforce import logger
 from symforce import codegen
+from symforce import logger
+from symforce import python_util
+from symforce.codegen import cam_package_codegen
 from symforce.codegen import template_util
 
 
@@ -31,7 +33,10 @@ def generate(config: codegen.CodegenConfig, output_dir: str = None) -> str:
         templates.add(
             template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "type_ops.h.jinja"),
             output_path=os.path.join(package_dir, "type_ops.h"),
-            data={},
+            data=dict(
+                python_util=python_util,
+                camera_cal_class_names=cam_package_codegen.camera_cal_class_names(),
+            ),
         )
 
         templates.add(
