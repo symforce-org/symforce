@@ -94,6 +94,7 @@ def render_template(
     data: T.Dict[str, T.Any],
     output_path: T.Optional[str] = None,
     template_dir: str = CURRENT_DIR,
+    autoformat: bool = True,
 ) -> str:
     """
     Boiler plate to render template. Returns the rendered string and optionally writes to file.
@@ -103,6 +104,7 @@ def render_template(
         data: dictionary of inputs for template
         output_path: If provided, writes to file
         template_dir: Base directory where templates are found, defaults to symforce/codegen
+        autoformat: Run a code formatter on the generated code
     """
     logger.debug(f"Template  IN <-- {template_path}")
     if output_path:
@@ -124,21 +126,22 @@ def render_template(
     template = env.get_template(template_name)
     rendered_str = add_preamble(str(template.render(**data)), template_name, filetype)
 
-    if filetype in (FileType.CPP, FileType.CUDA):
-        # Come up with a fake filename to give to the formatter just for formatting purposes, even
-        # if this isn't being written to disk
-        if output_path is not None:
-            format_cpp_filename = os.path.basename(output_path)
-        else:
-            format_cpp_filename = template_name.replace(".jinja", "")
+    if autoformat:
+        if filetype in (FileType.CPP, FileType.CUDA):
+            # Come up with a fake filename to give to the formatter just for formatting purposes, even
+            # if this isn't being written to disk
+            if output_path is not None:
+                format_cpp_filename = os.path.basename(output_path)
+            else:
+                format_cpp_filename = template_name.replace(".jinja", "")
 
-        rendered_str = format_util.format_cpp(
-            rendered_str, filename=os.path.join(CURRENT_DIR, format_cpp_filename)
-        )
-    elif filetype == FileType.PYTHON:
-        rendered_str = format_util.format_py(rendered_str)
-    elif filetype == FileType.PYTHON_INTERFACE:
-        rendered_str = format_util.format_pyi(rendered_str)
+            rendered_str = format_util.format_cpp(
+                rendered_str, filename=os.path.join(CURRENT_DIR, format_cpp_filename)
+            )
+        elif filetype == FileType.PYTHON:
+            rendered_str = format_util.format_py(rendered_str)
+        elif filetype == FileType.PYTHON_INTERFACE:
+            rendered_str = format_util.format_pyi(rendered_str)
 
     if output_path:
         directory = os.path.dirname(output_path)
@@ -169,8 +172,11 @@ class TemplateList:
             self.TemplateListEntry(template_path=template_path, output_path=output_path, data=data)
         )
 
-    def render(self) -> None:
+    def render(self, autoformat: bool = True) -> None:
         for entry in self.items:
             render_template(
-                template_path=entry.template_path, output_path=entry.output_path, data=entry.data
+                template_path=entry.template_path,
+                output_path=entry.output_path,
+                data=entry.data,
+                autoformat=autoformat,
             )

@@ -12,11 +12,13 @@ class CodegenConfig:
                                  block-style docstrings
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
+        autoformat: Run a code formatter on the generated code
     """
 
     doc_comment_line_prefix: str
     line_length: int
     use_eigen_types: bool
+    autoformat: bool = True
 
 
 @dataclass
@@ -28,6 +30,7 @@ class CppConfig(CodegenConfig):
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
+        autoformat: Run a code formatter on the generated code
         support_complex: Generate code that can work with std::complex or with regular float types
     """
 
@@ -47,6 +50,7 @@ class PythonConfig(CodegenConfig):
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
+        autoformat: Run a code formatter on the generated code
         use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly
                    speed up functions by compiling them to machine code, but has large overhead
                    on the first call and some overhead on subsequent calls, so it should not be

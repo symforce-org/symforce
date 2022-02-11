@@ -393,7 +393,7 @@ class Codegen:
         else:
             raise NotImplementedError(f'Unknown config type: "{self.config}"')
 
-        templates.render()
+        templates.render(autoformat=self.config.autoformat)
         lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data["lcm_type_dir"],
             lcm_files=types_codegen_data["lcm_files"],

@@ -61,7 +61,12 @@ class Factor:
 
         if residual is not None:
             self.codegen = codegen.Codegen.function(
-                residual, name=name, config=codegen.PythonConfig()
+                residual,
+                name=name,
+                config=codegen.PythonConfig(
+                    # NOTE(hayk): This is to speed up generation
+                    autoformat=False
+                ),
             )
             if self.name is None:
                 self.name = self.codegen.name
