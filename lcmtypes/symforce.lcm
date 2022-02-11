@@ -11,7 +11,7 @@ struct index_entry_t {
   key_t key;
   sym.type_t type;
 
-  // Location within the data array
+  // Location within the storage or tangent vector, depending on context
   int32_t offset;
 
   // Size parameters
