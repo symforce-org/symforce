@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the Apache 2.0 license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 #include <lcmtypes/codegen_cpp_test/constants_t.hpp>
 #include <lcmtypes/codegen_cpp_test/states_t.hpp>
 #include <lcmtypes/codegen_cpp_test/values_vec_t.hpp>

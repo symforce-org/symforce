@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the Apache 2.0 license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 #include "./optimizer.h"
 
 sym::optimizer_params_t sym::DefaultOptimizerParams() {

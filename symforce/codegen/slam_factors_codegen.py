@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 """
 Factors generally useful for visual SLAM problems (or visual odometry or structure-from-motion
 problems)

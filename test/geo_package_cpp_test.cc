@@ -4,6 +4,11 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the Apache 2.0 license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 /**
  * Tests for C++ geometry types. Mostly checking all the templates compile since
  * the math is tested comprehensively in symbolic form.

@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the LGPL license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 #pragma once
 
 #include "./assert.h"

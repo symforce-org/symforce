@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the Apache 2.0 license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 #include <spdlog/spdlog.h>
 
 #include "../symforce/opt/levenberg_marquardt_solver.h"

@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 import os
 
 from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data

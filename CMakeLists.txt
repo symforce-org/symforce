@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 # NOTE(aaron): This is the minimum version for FetchContent, not sure if we need newer; certainly no
 # newer than 3.15 required
 cmake_minimum_required(VERSION 3.11)
@@ -279,12 +284,12 @@ else()
 from setuptools import setup, find_packages
 setup(
   name='lcmtypes',
-  version='0.1',
+  version='0.2dev',
   description='lcmtype python bindings (installed by SymForce)',
   long_description='lcmtype python bindings (installed by SymForce)',
   author='Skydio, Inc',
   author_email='hayk@skydio.com',
-  license='None',
+  license='Apache 2.0',
   packages=find_packages(),
   zip_safe=False,
 )

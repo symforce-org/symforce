@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 from sympy.printing.c import get_math_macros
 from sympy.printing.cxx import CXX11CodePrinter
 

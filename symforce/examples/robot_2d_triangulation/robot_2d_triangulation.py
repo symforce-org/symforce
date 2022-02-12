@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 """
 Demonstrates solving a 2D triangulation problem with SymForce. The goal is for a robot
 in a 2D plane to compute its trajectory given distance measurements from wheel odometry

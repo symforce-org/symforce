@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the Apache 2.0 license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 // -----------------------------------------------------------------------------
 // Defines template specializations of pybind11::detail::type_caster<T> for
 // T = sym::Rot2, sym::Rot3, sym::Pose2, and sym::Pose3.

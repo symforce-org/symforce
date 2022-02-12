@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the LGPL license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
 #pragma once
 
 #ifndef SYM_SPARSE_CHOLESKY_SOLVER_H

@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 """
 A tool to run a command based on whether the git-hash of the provided path matches the hash in the
 stamp file

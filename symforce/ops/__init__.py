@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 """
 API for mathematical groups in python with minimal dependencies. Assumes elements
 have appropriate methods, or for the case of scalar types (ints, floats, sympy.Symbols)

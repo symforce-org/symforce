@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 import math
 import os
 import sys
@@ -88,7 +93,7 @@ class SymforceGenCodegenTest(TestCase):
             output_path=os.path.join(output_dir, "setup.py"),
             data=dict(
                 package_name="sym",
-                version="0.1",
+                version="0.2dev",
                 description="generated numerical python package",
                 long_description="generated numerical python package",
             ),

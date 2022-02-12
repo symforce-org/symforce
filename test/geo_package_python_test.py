@@ -4,6 +4,12 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 import numpy as np
 import os
 import sys

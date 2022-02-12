@@ -1,3 +1,8 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 """
 The C++ Values object uses fixed-size Key structs that contain a char with integer subscript and superscript. SymPy symbols can have arbitrary string names. This module contains heuristics to map from string symbol names to Key types that are reasonably intuitive and debuggable. Some of these heuristics include:
 
