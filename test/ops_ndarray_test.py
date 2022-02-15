@@ -21,7 +21,6 @@ class LieGroupNdarrayTest(LieGroupOpsTestMixin, TestCase):
     def element(cls) -> np.ndarray:
         return np.array([[1, 2, 3], [4, 5, 6]], dtype=T.Scalar)
 
-    @unittest.expectedFailure
     def test_storage_ops(self) -> None:
         LieGroupOpsTestMixin.test_storage_ops(self)
 

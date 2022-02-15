@@ -33,6 +33,13 @@ class TestCase(SymforceTestCaseMixin):
     # if we're on the SymPy backend
     _RUN_SLOW_TESTS = False
 
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
+
+        # Registers assertArrayEqual with python unittest TestCase such that we use numpy array
+        # comparison functions rather than the "==" operator, which throws an error for ndarrays
+        self.addTypeEqualityFunc(np.ndarray, TestCase.assertArrayEqual)
+
     @staticmethod
     def should_run_slow_tests() -> bool:
 
@@ -57,6 +64,32 @@ class TestCase(SymforceTestCaseMixin):
         random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
+
+    @staticmethod
+    def assertArrayEqual(actual: T.ArrayElement, desired: T.ArrayElement, msg: str = "") -> None:
+        """
+        Called by unittest TestCase base class when comparing ndarrays when "assertEqual" is called.
+        By default, "assertEqual" uses the "==" operator, which is not implemented for ndarrays.
+        """
+        return np.testing.assert_array_equal(actual, desired, err_msg=msg)
+
+    def assertNotEqual(self, first: T.Any, second: T.Any, msg: str = "") -> None:
+        """
+        Overrides unittest.TestCase.assertNotEqual to handle ndarrays separately. "assertNotEqual"
+        uses the "!=" operator, but this is not implemented for ndarrays. Instead, we check that
+        np.testing.assert_array_equal raises an assertion error, as numpy testing does not provide
+        a assert_array_not_equal function.
+
+        Note that assertNotEqual does not work like assertEqual in unittest.TestCase. Rather than
+        allowing you to register a custom equality evaluator (e.g. with `addTypeEqualityFunc()`),
+        assertNotEqual assumes the "!=" can be used with the arguments regardless of type.
+        """
+        if isinstance(first, np.ndarray):
+            return np.testing.assert_raises(
+                AssertionError, np.testing.assert_array_equal, first, second, msg
+            )
+        else:
+            return super().assertNotEqual(first, second, msg)
 
     @staticmethod
     def assertNear(

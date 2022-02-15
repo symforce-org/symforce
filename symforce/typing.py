@@ -36,9 +36,16 @@ ScalarElement = Scalar
 ScalarElementOrType = Union[ScalarElement, Type[ScalarElement]]
 
 # Specialization for sequence elements
-SequenceElement = Union[Sequence[Element], "np.ndarray"]
+SequenceElement = Sequence[Element]
 SequenceElementOrType = Union[SequenceElement, Type[SequenceElement]]
 
+# Specialization for array elements
+# We need "Union" here to avoid import errors associated with numpy only being imported when type
+# checking. Without "Union" mypy thinks our type alias is just a string, not a type alias.
+# See https://mypy.readthedocs.io/en/stable/kinds_of_types.html#type-aliases
+# This could be improved after we upgrade to Mypy 0.930 or later by using "TypeAlias"
+ArrayElement = Union["np.ndarray"]
+ArrayElementOrType = Union[ArrayElement, Type[ArrayElement]]
 
 # Dataclass Metaclass
 if TYPE_CHECKING:

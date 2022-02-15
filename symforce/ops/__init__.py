@@ -20,6 +20,7 @@ import numpy as np
 from symforce import sympy as sm
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
+from .impl.array_storage_ops import ArrayStorageOps
 
 LieGroupOps.register(float, ScalarLieGroupOps)
 LieGroupOps.register(np.float32, ScalarLieGroupOps)
@@ -33,11 +34,8 @@ LieGroupOps.register(np.int64, ScalarLieGroupOps)
 
 LieGroupOps.register(list, SequenceLieGroupOps)
 LieGroupOps.register(tuple, SequenceLieGroupOps)
-# TODO(nathan): I think we need to write a new set of implementations for numpy arrays
-# because they can be 2D; the current SequenceOps won't work properly for them (except for
-# to_storage)
-LieGroupOps.register(np.ndarray, SequenceLieGroupOps)
 
+StorageOps.register(np.ndarray, ArrayStorageOps)
 
 from symforce import typing as T
 from .impl.dataclass_storage_ops import DataclassStorageOps
