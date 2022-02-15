@@ -15,8 +15,7 @@ class SequenceStorageOps:
 
     @staticmethod
     def to_storage(a: T.SequenceElement) -> T.List[T.Scalar]:
-        flat_list = [scalar for v in a for scalar in StorageOps.to_storage(v)]
-        return get_type(a)(flat_list)
+        return [scalar for v in a for scalar in StorageOps.to_storage(v)]
 
     @staticmethod
     def from_storage(a: T.SequenceElement, elements: T.List[T.Scalar]) -> T.SequenceElement:
