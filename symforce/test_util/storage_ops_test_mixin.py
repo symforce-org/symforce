@@ -63,7 +63,7 @@ class StorageOpsTestMixin(_Base):
         # Check equalities
         self.assertEqual(value, value2)
         vec2[0] = 10000.0
-        self.assertNotEqual(element, StorageOps.from_storage(value, vec2))
+        self.assertNotEqual(value, StorageOps.from_storage(value, vec2))
 
         # Exercise printing
         self.assertGreater(len(str(value)), 0)
