@@ -20,7 +20,7 @@ import numpy as np
 from symforce import sympy as sm
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
-from .impl.array_storage_ops import ArrayStorageOps
+from .impl.array_lie_group_ops import ArrayLieGroupOps
 
 LieGroupOps.register(float, ScalarLieGroupOps)
 LieGroupOps.register(np.float32, ScalarLieGroupOps)
@@ -35,7 +35,7 @@ LieGroupOps.register(np.int64, ScalarLieGroupOps)
 LieGroupOps.register(list, SequenceLieGroupOps)
 LieGroupOps.register(tuple, SequenceLieGroupOps)
 
-StorageOps.register(np.ndarray, ArrayStorageOps)
+LieGroupOps.register(np.ndarray, ArrayLieGroupOps)
 
 from symforce import typing as T
 from .impl.dataclass_storage_ops import DataclassStorageOps

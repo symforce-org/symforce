@@ -11,7 +11,7 @@ from symforce import typing as T
 
 class ArrayStorageOps:
     """
-    StorageOps implementations for numpy ndarrays.
+    Implements Storage operations for numpy ndarrays.
     """
 
     @staticmethod
