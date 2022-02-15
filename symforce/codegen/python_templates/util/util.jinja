@@ -121,7 +121,7 @@ def {{ camelcase_to_snakecase(spec.name) }}(
  #     spec (Codegen):
  #}
 {% macro expr_code(spec) %}
-    # Total ops: {{ spec.total_ops }}
+    # Total ops: {{ spec.print_code_results.total_ops }}
 
     # Input arrays
     {% for name, type in spec.inputs.items() %}
@@ -131,13 +131,13 @@ def {{ camelcase_to_snakecase(spec.name) }}(
         {% endif %}
     {% endfor %}
 
-    # Intermediate terms ({{ spec.intermediate_terms | length }})
-    {% for lhs, rhs in spec.intermediate_terms %}
+    # Intermediate terms ({{ spec.print_code_results.intermediate_terms | length }})
+    {% for lhs, rhs in spec.print_code_results.intermediate_terms %}
     {{ lhs }} = {{ rhs }}
     {% endfor %}
 
     # Output terms
-    {% for name, type, terms in spec.output_terms %}
+    {% for name, type, terms in spec.print_code_results.output_terms %}
         {%- set T = python_util.get_type(type) -%}
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
             {% set rows = type.shape[0] %}

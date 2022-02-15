@@ -345,7 +345,7 @@ _{{ lhs }} = {{ rhs }};
 
 {# Helper to generate all pointer outputs #}
 {% macro format_outputs_dense_and_sparse(spec) -%}
-    {% for name, type, terms in spec.output_terms %}
+    {% for name, type, terms in spec.print_code_results.output_terms %}
         {% if name == spec.return_key %}
     {{ format_output_dense(name, type, terms, spec) | indent(width=4) | trim }}
         {% else %}
@@ -355,7 +355,7 @@ _{{ lhs }} = {{ rhs }};
         {% endif %}
 
     {% endfor %}
-    {% for name, type, terms in spec.sparse_terms %}
+    {% for name, type, terms in spec.print_code_results.sparse_terms %}
         {% set T = python_util.get_type(type) %}
         {% if name == spec.return_key %}
     {{ sparse_matrix_init(name, spec.outputs[name], spec) }}
@@ -388,7 +388,7 @@ _{{ lhs }} = {{ rhs }};
  #     spec (Codegen):
  #}
 {% macro expr_code(spec) -%}
-    // Total ops: {{ spec.total_ops }}
+    // Total ops: {{ spec.print_code_results.total_ops }}
 
     // Input arrays
     {% for name, type in spec.inputs.items() %}
@@ -402,8 +402,8 @@ _{{ lhs }} = {{ rhs }};
         {% endif %}
     {% endfor %}
 
-    // Intermediate terms ({{ spec.intermediate_terms | length }})
-    {% for lhs, rhs in spec.intermediate_terms %}
+    // Intermediate terms ({{ spec.print_code_results.intermediate_terms | length }})
+    {% for lhs, rhs in spec.print_code_results.intermediate_terms %}
     const {{ format_typename(Symbol) }} {{ lhs }} = {{ rhs }};
     {% endfor %}
 

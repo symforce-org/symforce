@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import enum
+import functools
 import os
 import pathlib
 import tempfile
@@ -130,20 +131,6 @@ class Codegen:
 
         self.docstring = docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
 
-        # TODO(aaron): We should either do this in generate_function instead, or migrate
-        # create_with_* to function_with_* so that the typical flow of creating a function with
-        # derivatives doesn't do this twice
-        (
-            self.intermediate_terms,
-            self.output_terms,
-            self.sparse_terms,
-            self.total_ops,
-        ) = codegen_util.print_code(
-            inputs=self.inputs,
-            outputs=self.outputs,
-            sparse_mat_data=self.sparse_mat_data,
-            config=self.config,
-        )
         self.types_included: T.Optional[T.Set[str]] = None
         self.typenames_dict: T.Optional[T.Dict[str, str]] = None
         self.namespaces_dict: T.Optional[T.Dict[str, str]] = None
@@ -258,6 +245,15 @@ class Codegen:
         data["issubclass"] = issubclass
         data["is_sequence"] = lambda arg: isinstance(arg, (list, tuple))
         return data
+
+    @functools.cached_property
+    def print_code_results(self) -> codegen_util.PrintCodeResult:
+        return codegen_util.print_code(
+            inputs=self.inputs,
+            outputs=self.outputs,
+            sparse_mat_data=self.sparse_mat_data,
+            config=self.config,
+        )
 
     def generate_function(
         self,

@@ -42,9 +42,9 @@ class OutputWithTerms(T.NamedTuple):
 
 
 class PrintCodeResult(T.NamedTuple):
-    temps_code: T_terms_printed
-    outputs_code: T.List[OutputWithTerms]
-    sparse_outputs_code: T.List[OutputWithTerms]
+    intermediate_terms: T_terms_printed
+    output_terms: T.List[OutputWithTerms]
+    sparse_terms: T.List[OutputWithTerms]
     total_ops: int
 
 
@@ -121,7 +121,7 @@ def print_code(
     printer = get_code_printer(config)
 
     # Print code
-    temps_code = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
+    intermediate_terms = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
     outputs_code_no_names = [
         [(str(var), printer.doprint(t)) for var, t in single_output_terms]
         for single_output_terms in simplified_outputs_formatted
@@ -132,11 +132,11 @@ def print_code(
     ]
 
     # Pack names and types with outputs
-    outputs_code = [
+    output_terms = [
         OutputWithTerms(key, value, output_code_no_name)
         for output_code_no_name, (key, value) in zip(outputs_code_no_names, dense_outputs.items())
     ]
-    sparse_outputs_code = [
+    sparse_terms = [
         OutputWithTerms(key, value, sparse_output_code_no_name)
         for sparse_output_code_no_name, (key, value) in zip(
             sparse_outputs_code_no_names, sparse_outputs.items()
@@ -144,9 +144,9 @@ def print_code(
     ]
 
     return PrintCodeResult(
-        temps_code=temps_code,
-        outputs_code=outputs_code,
-        sparse_outputs_code=sparse_outputs_code,
+        intermediate_terms=intermediate_terms,
+        output_terms=output_terms,
+        sparse_terms=sparse_terms,
         total_ops=total_ops,
     )
 
