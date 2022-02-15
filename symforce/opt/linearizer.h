@@ -86,7 +86,10 @@ class Linearizer {
    */
   std::pair<const std::vector<LinearizedDenseFactor>&, const std::vector<LinearizedSparseFactor>&>
   LinearizedFactors() const;
+
   const std::vector<Key>& Keys() const;
+
+  const std::unordered_map<key_t, index_entry_t>& StateIndex() const;
 
  private:
   /**

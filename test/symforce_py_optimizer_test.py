@@ -6,6 +6,7 @@
 import functools
 import numpy as np
 
+from symforce import cc_sym
 from symforce import geo
 from symforce import sympy as sm
 from symforce import typing as T
@@ -13,6 +14,10 @@ from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
 from symforce.test_util import TestCase
 from symforce.values import Values
+
+from lcmtypes.sym._index_entry_t import index_entry_t
+from lcmtypes.sym._key_t import key_t
+from lcmtypes.sym._type_t import type_t
 
 
 class SymforcePyOptimizerTest(TestCase):
@@ -65,6 +70,25 @@ class SymforcePyOptimizerTest(TestCase):
         # Check values
         self.assertEqual(len(result.iteration_stats), 7)
         self.assertAlmostEqual(result.error(), 0.039, places=3)
+
+        # Check that we can pull out the variable blocks
+        index_entry = optimizer.linearization_index()["x1"]
+        self.assertEqual(
+            index_entry,
+            index_entry_t(
+                # The key here is an implementation detail, so just copy the key that we got, and
+                # check below that it's not empty
+                key=index_entry.key,
+                type=type_t.ROT3,
+                offset=3,
+                storage_dim=4,
+                tangent_dim=3,
+            ),
+        )
+        self.assertNotEqual(index_entry.key, key_t())
+
+        index_entry2 = optimizer.linearization_index_entry("x1")
+        self.assertEqual(index_entry, index_entry2)
 
 
 if __name__ == "__main__":

@@ -107,6 +107,12 @@ const std::vector<Key>& Linearizer<ScalarType>::Keys() const {
   return keys_;
 }
 
+template <typename ScalarType>
+const std::unordered_map<key_t, index_entry_t>& Linearizer<ScalarType>::StateIndex() const {
+  SYM_ASSERT(IsInitialized());
+  return state_index_;
+}
+
 // ----------------------------------------------------------------------------
 // Private Methods
 // ----------------------------------------------------------------------------

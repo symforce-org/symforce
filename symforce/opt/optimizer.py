@@ -8,6 +8,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import dataclass
 
+from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
@@ -214,3 +215,25 @@ class Optimizer:
         for py_key in sorted(self._cc_keys_map.keys()):
             py_values[py_key] = cc_values.at(self._cc_keys_map[py_key])
         return py_values
+
+    def linearization_index(self) -> T.Dict[str, index_entry_t]:
+        """
+        Get the index mapping keys to their positions in the linearized state vector.  Useful for
+        extracting blocks from the problem jacobian, hessian, or RHS
+
+        Returns: The index for the Optimizer's problem linearization
+        """
+        index = self._cc_optimizer.linearization_index()
+        return {key: index[self._cc_keys_map[key]] for key in self.optimized_keys}
+
+    def linearization_index_entry(self, key: str) -> index_entry_t:
+        """
+        Get the index entry for a given key in the linearized state vector.  Useful for extracting
+        blocks from the problem jacobian, hessian, or RHS
+
+        Args:
+            key: The string key for a variable in the Python Values
+
+        Returns: The index entry for the variable in the Optimizer's problem linearization
+        """
+        return self._cc_optimizer.linearization_index_entry(self._cc_keys_map[key])

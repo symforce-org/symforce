@@ -60,6 +60,21 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           },
           py::arg("linearization"), py::arg("keys"))
       .def("keys", &Optimizerd::Keys)
+      .def("linearization_index",
+           [](const Optimizerd& opt) -> py::dict {
+             // Convert to cc_sym.Key, which is hashable
+             py::dict py_index;
+             for (const auto& key_and_entry : opt.Linearizer().StateIndex()) {
+               py_index[py::cast(Key(key_and_entry.first))] = key_and_entry.second;
+             }
+             return py_index;
+           })
+      .def(
+          "linearization_index_entry",
+          [](const Optimizerd& opt, const Key& key) -> index_entry_t {
+            return opt.Linearizer().StateIndex().at(key.GetLcmType());
+          },
+          py::arg("key"))
       .def("update_params", &Optimizerd::UpdateParams, py::arg("params"));
 
   // Wrapping free functions

@@ -219,6 +219,11 @@ class Optimizer {
   const std::vector<Factor<Scalar>>& Factors() const;
 
   /**
+   * Get the Linearizer object
+   */
+  const sym::Linearizer<Scalar>& Linearizer() const;
+
+  /**
    * Update the optimizer params
    */
   void UpdateParams(const optimizer_params_t& params);

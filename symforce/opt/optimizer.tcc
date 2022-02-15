@@ -178,6 +178,11 @@ const std::vector<Factor<ScalarType>>& Optimizer<ScalarType, NonlinearSolverType
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
+const Linearizer<ScalarType>& Optimizer<ScalarType, NonlinearSolverType>::Linearizer() const {
+  return linearizer_;
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_params_t& params) {
   nonlinear_solver_.UpdateParams(params);
 }
