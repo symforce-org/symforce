@@ -46,6 +46,10 @@ class Factor:
                  must be provided
         codegen_language: The language in which to generate numerical code to evaluate the factor,
                           if needed.  Defaults to PYTHON, which does not require any compilation
+        jacobian_func: A functor that computes the jacobian, typically unnecessary unless a "wrong"
+                       jacobian is desired.  If provided, this should be a function that takes the
+                       set of optimized keys, and returns the jacobian of the residual with respect
+                       to those keys
     """
 
     def __init__(
@@ -57,12 +61,14 @@ class Factor:
         inputs: Values = None,
         outputs: Values = None,
         codegen_language: FactorCodegenLanguage = FactorCodegenLanguage.PYTHON,
+        jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
     ):
         if codegen_language != FactorCodegenLanguage.PYTHON:
             raise NotImplementedError
 
         self.name = name
         self.codegen_language = codegen_language
+        self.jacobian_func = jacobian_func
 
         if residual is not None:
             self.codegen = codegen.Codegen.function(
@@ -122,6 +128,11 @@ class Factor:
         inputs = list(self.codegen.inputs.keys())
         codegen_with_linearization = self.codegen.with_linearization(
             which_args=[inputs[i] for i, key in enumerate(self.keys) if key in self.optimized_keys],
+            custom_jacobian=self.jacobian_func(
+                [key for key in self.keys if key in self.optimized_keys]
+            )
+            if self.jacobian_func is not None
+            else None,
         )
 
         namespace = f"factor_{uuid.uuid4().hex}"

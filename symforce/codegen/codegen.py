@@ -505,6 +505,7 @@ class Codegen:
         name: str = None,
         linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
         sparse_linearization: bool = False,
+        custom_jacobian: geo.Matrix = None,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
@@ -530,6 +531,14 @@ class Codegen:
                                 (FULL_LINEARIZATION).
             sparse_linearization: Whether to output matrices (jacobian and/or hessian) as sparse
                                   matrices, as opposed to dense
+            custom_jacobian: This is generally unnecessary, unless you want to override the jacobian
+                             computed by SymForce, e.g. to stop derivatives with respect to certain
+                             variables or directions, or because the jacobian can be analytically
+                             simplified in a way that SymForce won't do automatically. If not
+                             provided, the jacobian will be computed automatically.  If provided,
+                             should have shape (result_dim, input_tangent_dim), where
+                             input_tangent_dim is the sum of the tangent dimensions of arguments
+                             corresponding to which_args
         """
         if which_args is None:
             which_args = list(self.inputs.keys())
@@ -552,7 +561,12 @@ class Codegen:
             docstring_lines = docstring_lines[:-1]
 
         input_args = [self.inputs[arg] for arg in which_args]
-        jacobian = geo.Matrix.block_matrix([jacobian_helpers.tangent_jacobians(result, input_args)])
+        if custom_jacobian is not None:
+            jacobian = custom_jacobian
+        else:
+            jacobian = geo.Matrix.block_matrix(
+                [jacobian_helpers.tangent_jacobians(result, input_args)]
+            )
 
         docstring_args = [
             f"{arg_name} ({ops.LieGroupOps.tangent_dim(arg)})"
