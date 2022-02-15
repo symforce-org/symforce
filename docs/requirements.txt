@@ -4,6 +4,7 @@ myst-parser
 nbsphinx
 nbstripout
 Sphinx
-sphinx-autodoc-typehints
+# sphinx-autodoc-typehints >=1.15 contains a bug causing it to crash parsing our typing.py
+sphinx-autodoc-typehints<1.15
 sphinx-rtd-theme
 breathe

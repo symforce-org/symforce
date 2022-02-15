@@ -289,7 +289,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=symforce.cc_sym  # pylint can't figure this out but mypy can, so just leave it to mypy
+ignored-modules=symforce.cc_sym,cc_sym,symengine  # pylint can't figure this out but mypy can, so just leave it to mypy
 
 # Show a hint with possible names when a member name was not found. The aspect
 # of finding the hint is based on edit distance.
