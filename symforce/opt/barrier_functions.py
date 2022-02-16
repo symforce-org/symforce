@@ -59,3 +59,73 @@ def symmetric_power_barrier(
     return error_nominal * sm.Pow(
         sm.Max(0, sm.Abs(x) - x_zero_error) / dist_zero_to_nominal, power,
     )
+
+
+def min_max_power_barrier(
+    x: T.Scalar,
+    x_nominal_lower: T.Scalar,
+    x_nominal_upper: T.Scalar,
+    error_nominal: T.Scalar,
+    dist_zero_to_nominal: T.Scalar,
+    power: T.Scalar,
+) -> T.Scalar:
+    """
+    A symmetric barrier centered between x_nominal_lower and x_nominal_upper. See
+    symmetric_power_barrier for a detailed description of the barrier function.
+    As an example, the barrier with power = 1 will look like:
+
+                                     **          |              **
+                                      **         |             **
+    (x_nominal_lower, error_nominal) - **        |            ** - (x_nominal_upper, error_nominal)
+                                        **       |           **
+                                         **      |          ** <- x^power is the shape of the curve
+                                          **     |         **
+                                 ----------*****************---------
+                  dist_zero_to_nominal |<->|     |         |<->| dist_zero_to_nominal
+
+    Args:
+        x: The point at which we want to evaluate the barrier function.
+        x_nominal_lower: x-value of the point at which the error is equal to error_nominal on
+            the left-hand side of the barrier function.
+        x_nominal_upper: x-value of the point at which the error is equal to error_nominal on
+            the right-hand side of the barrier function.
+        error_nominal: Error returned when x equals x_nominal_lower or x_nominal_upper.
+        dist_zero_to_nominal: The distance from either of the x_nominal points to the region of
+            zero error. Must be less than half the distance between x_nominal_lower and
+            x_nominal_upper, and must be greater than zero.
+        power: The power used to describe the curve of the error tails. Note that
+            when applying the barrier function to a residual used in a least-squares problem,
+            a power = 1 will lead to a quadratic cost in the optimization problem.
+    """
+    center = (x_nominal_lower + x_nominal_upper) / 2
+    x_shifted = x - center
+    x_nominal_shifted = x_nominal_upper - center
+    return symmetric_power_barrier(
+        x=x_shifted,
+        x_nominal=x_nominal_shifted,
+        error_nominal=error_nominal,
+        dist_zero_to_nominal=dist_zero_to_nominal,
+        power=power,
+    )
+
+
+def min_max_linear_barrier(
+    x: T.Scalar,
+    x_nominal_lower: T.Scalar,
+    x_nominal_upper: T.Scalar,
+    error_nominal: T.Scalar,
+    dist_zero_to_nominal: T.Scalar,
+) -> T.Scalar:
+    """
+    Applies "min_max_power_barrier" with power = 1. When applied to a residual of a least-squares
+    problem, this produces a quadratic cost in the optimization problem because
+    cost = 1/2 * residual^2. See "min_max_power_barrier" for more details.
+    """
+    return min_max_power_barrier(
+        x=x,
+        x_nominal_lower=x_nominal_lower,
+        x_nominal_upper=x_nominal_upper,
+        error_nominal=error_nominal,
+        dist_zero_to_nominal=dist_zero_to_nominal,
+        power=1,
+    )
