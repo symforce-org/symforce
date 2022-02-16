@@ -258,6 +258,10 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
     const LinearizedDenseFactor& linearized_factor,
     const linearization_dense_factor_helper_t& factor_helper,
     Linearization<Scalar>* const linearization) const {
+  // The residual dimension must be the same, even for factors that return VectorX.  If the residual
+  // size changes, the optimizer must be re-created.
+  SYM_ASSERT(factor_helper.residual_dim == linearized_factor.residual.size());
+
   // Fill in the combined residual slice
   linearization->residual.segment(factor_helper.combined_residual_offset,
                                   factor_helper.residual_dim) = linearized_factor.residual;
@@ -325,6 +329,10 @@ void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
     const LinearizedSparseFactor& linearized_factor,
     const linearization_sparse_factor_helper_t& factor_helper,
     Linearization<Scalar>* const linearization) const {
+  // The residual dimension must be the same, even for factors that return VectorX.  If the residual
+  // size changes, the optimizer must be re-created.
+  SYM_ASSERT(factor_helper.residual_dim == linearized_factor.residual.size());
+
   // Fill in the combined residual slice
   linearization->residual.segment(factor_helper.combined_residual_offset,
                                   factor_helper.residual_dim) = linearized_factor.residual;
