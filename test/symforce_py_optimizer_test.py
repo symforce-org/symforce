@@ -31,6 +31,7 @@ class SymforcePyOptimizerTest(TestCase):
         """
         num_samples = 10
         xs = [f"x{i}" for i in range(num_samples)]
+        x_priors = [f"x_prior{i}" for i in range(num_samples)]
 
         factors = []
 
@@ -44,13 +45,13 @@ class SymforcePyOptimizerTest(TestCase):
 
         ### Prior factors
 
+        def prior_residual(x: geo.Rot3, epsilon: T.Scalar, x_prior: geo.Rot3) -> geo.V3:
+            return geo.V3(x.local_coordinates(x_prior, epsilon=epsilon))
+
         for i in range(num_samples):
-            x_prior = geo.Rot3.from_yaw_pitch_roll(roll=0.1 * i)
-
-            def prior_residual(x: geo.Rot3, epsilon: T.Scalar) -> geo.V3:
-                return geo.V3(x.local_coordinates(x_prior, epsilon=epsilon))
-
-            factors.append(Factor(keys=[xs[i], "epsilon"], name="prior", residual=prior_residual,))
+            factors.append(
+                Factor(keys=[xs[i], "epsilon", x_priors[i]], name="prior", residual=prior_residual)
+            )
 
         # Create the optimizer
         optimizer = Optimizer(factors=factors, optimized_keys=xs)
@@ -59,6 +60,8 @@ class SymforcePyOptimizerTest(TestCase):
         initial_values = Values(epsilon=sm.default_epsilon)
         for i in range(num_samples):
             initial_values[xs[i]] = geo.Rot3.from_yaw_pitch_roll(yaw=0.0, pitch=0.1 * i, roll=0.0)
+        for i in range(num_samples):
+            initial_values[x_priors[i]] = geo.Rot3.from_yaw_pitch_roll(roll=0.1 * i)
 
         result = optimizer.optimize(initial_values)
 
