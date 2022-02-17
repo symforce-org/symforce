@@ -6,7 +6,7 @@
 
 #include "./group_ops.h"
 
-#include <sym/equidistant_epipolar_camera_cal.h>
+#include <sym/equirectangular_camera_cal.h>
 
 namespace sym {
 
@@ -19,12 +19,11 @@ namespace sym {
  * Args:
  *
  * Outputs:
- *     res: EquidistantEpipolarCameraCal
+ *     res: EquirectangularCameraCal
  *
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar>
-GroupOps<EquidistantEpipolarCameraCal<Scalar>>::Identity() {
+sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Identity() {
   // Total ops: 0
 
   // Input arrays
@@ -39,7 +38,7 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::Identity() {
   _res[2] = 0;
   _res[3] = 0;
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 /**
@@ -51,8 +50,8 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::Identity() {
  *
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<Scalar>>::Inverse(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a) {
+sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Inverse(
+    const sym::EquirectangularCameraCal<Scalar>& a) {
   // Total ops: 4
 
   // Input arrays
@@ -68,7 +67,7 @@ sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<
   _res[2] = -_a[2];
   _res[3] = -_a[3];
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 /**
@@ -80,9 +79,9 @@ sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<
  *
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<Scalar>>::Compose(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a,
-    const sym::EquidistantEpipolarCameraCal<Scalar>& b) {
+sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Compose(
+    const sym::EquirectangularCameraCal<Scalar>& a,
+    const sym::EquirectangularCameraCal<Scalar>& b) {
   // Total ops: 4
 
   // Input arrays
@@ -99,7 +98,7 @@ sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<
   _res[2] = _a[2] + _b[2];
   _res[3] = _a[3] + _b[3];
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 /**
@@ -113,9 +112,9 @@ sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<
  *
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<Scalar>>::Between(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a,
-    const sym::EquidistantEpipolarCameraCal<Scalar>& b) {
+sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Between(
+    const sym::EquirectangularCameraCal<Scalar>& a,
+    const sym::EquirectangularCameraCal<Scalar>& b) {
   // Total ops: 8
 
   // Input arrays
@@ -132,7 +131,7 @@ sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<
   _res[2] = -_a[2] + _b[2];
   _res[3] = -_a[3] + _b[3];
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 /**
@@ -144,9 +143,9 @@ sym::EquidistantEpipolarCameraCal<Scalar> GroupOps<EquidistantEpipolarCameraCal<
  *     res_D_a: (4x4) jacobian of res (4) wrt arg a (4)
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar>
-GroupOps<EquidistantEpipolarCameraCal<Scalar>>::InverseWithJacobian(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a, SelfJacobian* const res_D_a) {
+sym::EquirectangularCameraCal<Scalar>
+GroupOps<EquirectangularCameraCal<Scalar>>::InverseWithJacobian(
+    const sym::EquirectangularCameraCal<Scalar>& a, SelfJacobian* const res_D_a) {
   // Total ops: 4
 
   // Input arrays
@@ -183,7 +182,7 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::InverseWithJacobian(
     _res_D_a(3, 3) = -1;
   }
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 /**
@@ -196,11 +195,10 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::InverseWithJacobian(
  *     res_D_b: (4x4) jacobian of res (4) wrt arg b (4)
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar>
-GroupOps<EquidistantEpipolarCameraCal<Scalar>>::ComposeWithJacobians(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a,
-    const sym::EquidistantEpipolarCameraCal<Scalar>& b, SelfJacobian* const res_D_a,
-    SelfJacobian* const res_D_b) {
+sym::EquirectangularCameraCal<Scalar>
+GroupOps<EquirectangularCameraCal<Scalar>>::ComposeWithJacobians(
+    const sym::EquirectangularCameraCal<Scalar>& a, const sym::EquirectangularCameraCal<Scalar>& b,
+    SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
   // Total ops: 4
 
   // Input arrays
@@ -259,7 +257,7 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::ComposeWithJacobians(
     _res_D_b(3, 3) = 1;
   }
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 /**
@@ -274,11 +272,10 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::ComposeWithJacobians(
  *     res_D_b: (4x4) jacobian of res (4) wrt arg b (4)
  */
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar>
-GroupOps<EquidistantEpipolarCameraCal<Scalar>>::BetweenWithJacobians(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a,
-    const sym::EquidistantEpipolarCameraCal<Scalar>& b, SelfJacobian* const res_D_a,
-    SelfJacobian* const res_D_b) {
+sym::EquirectangularCameraCal<Scalar>
+GroupOps<EquirectangularCameraCal<Scalar>>::BetweenWithJacobians(
+    const sym::EquirectangularCameraCal<Scalar>& a, const sym::EquirectangularCameraCal<Scalar>& b,
+    SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
   // Total ops: 8
 
   // Input arrays
@@ -337,11 +334,11 @@ GroupOps<EquidistantEpipolarCameraCal<Scalar>>::BetweenWithJacobians(
     _res_D_b(3, 3) = 1;
   }
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::GroupOps<sym::EquidistantEpipolarCameraCal<double>>;
-template struct sym::GroupOps<sym::EquidistantEpipolarCameraCal<float>>;
+template struct sym::GroupOps<sym::EquirectangularCameraCal<double>>;
+template struct sym::GroupOps<sym::EquirectangularCameraCal<float>>;

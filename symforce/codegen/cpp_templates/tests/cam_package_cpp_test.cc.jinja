@@ -97,8 +97,8 @@ struct CamCals<sym::PolynomialCameraCal<Scalar>> {
 };
 
 template <typename Scalar>
-struct CamCals<sym::EquidistantEpipolarCameraCal<Scalar>> {
-  using T = sym::EquidistantEpipolarCameraCal<Scalar>;
+struct CamCals<sym::EquirectangularCameraCal<Scalar>> {
+  using T = sym::EquirectangularCameraCal<Scalar>;
   static std::vector<T> Get() {
     return {
         CalFromData<T>({90, 90, 60, 80}),

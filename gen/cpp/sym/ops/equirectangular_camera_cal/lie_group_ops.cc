@@ -8,14 +8,13 @@
 
 #include <cmath>
 
-#include <sym/equidistant_epipolar_camera_cal.h>
+#include <sym/equirectangular_camera_cal.h>
 
 namespace sym {
 
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar>
-LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::FromTangent(const TangentVec& vec,
-                                                               const Scalar epsilon) {
+sym::EquirectangularCameraCal<Scalar> LieGroupOps<EquirectangularCameraCal<Scalar>>::FromTangent(
+    const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 0
 
   // Input arrays
@@ -30,13 +29,13 @@ LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::FromTangent(const TangentVec&
   _res[2] = vec(2, 0);
   _res[3] = vec(3, 0);
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 template <typename Scalar>
-typename LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::TangentVec
-LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::ToTangent(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a, const Scalar epsilon) {
+typename LieGroupOps<EquirectangularCameraCal<Scalar>>::TangentVec
+LieGroupOps<EquirectangularCameraCal<Scalar>>::ToTangent(
+    const sym::EquirectangularCameraCal<Scalar>& a, const Scalar epsilon) {
   // Total ops: 0
 
   // Input arrays
@@ -56,10 +55,8 @@ LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::ToTangent(
 }
 
 template <typename Scalar>
-sym::EquidistantEpipolarCameraCal<Scalar>
-LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::Retract(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a, const TangentVec& vec,
-    const Scalar epsilon) {
+sym::EquirectangularCameraCal<Scalar> LieGroupOps<EquirectangularCameraCal<Scalar>>::Retract(
+    const sym::EquirectangularCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 4
 
   // Input arrays
@@ -75,14 +72,14 @@ LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::Retract(
   _res[2] = _a[2] + vec(2, 0);
   _res[3] = _a[3] + vec(3, 0);
 
-  return sym::EquidistantEpipolarCameraCal<Scalar>(_res);
+  return sym::EquirectangularCameraCal<Scalar>(_res);
 }
 
 template <typename Scalar>
-typename LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::TangentVec
-LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::LocalCoordinates(
-    const sym::EquidistantEpipolarCameraCal<Scalar>& a,
-    const sym::EquidistantEpipolarCameraCal<Scalar>& b, const Scalar epsilon) {
+typename LieGroupOps<EquirectangularCameraCal<Scalar>>::TangentVec
+LieGroupOps<EquirectangularCameraCal<Scalar>>::LocalCoordinates(
+    const sym::EquirectangularCameraCal<Scalar>& a, const sym::EquirectangularCameraCal<Scalar>& b,
+    const Scalar epsilon) {
   // Total ops: 8
 
   // Input arrays
@@ -105,5 +102,5 @@ LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>::LocalCoordinates(
 }  // namespace sym
 
 // Explicit instantiation
-template struct sym::LieGroupOps<sym::EquidistantEpipolarCameraCal<double>>;
-template struct sym::LieGroupOps<sym::EquidistantEpipolarCameraCal<float>>;
+template struct sym::LieGroupOps<sym::EquirectangularCameraCal<double>>;
+template struct sym::LieGroupOps<sym::EquirectangularCameraCal<float>>;

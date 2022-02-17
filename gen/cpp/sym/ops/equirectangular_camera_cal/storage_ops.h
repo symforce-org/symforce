@@ -15,18 +15,18 @@
 // with "./group_ops.h", which must forward declare. See that file for an explanation.
 namespace sym {
 template <typename ScalarType>
-class EquidistantEpipolarCameraCal;
+class EquirectangularCameraCal;
 }  // namespace sym
 
 namespace sym {
 
 /**
  * C++ StorageOps implementation for <class
- * 'symforce.cam.equidistant_epipolar_cal.EquidistantEpipolarCameraCal'>.
+ * 'symforce.cam.equirectangular_camera_cal.EquirectangularCameraCal'>.
  */
 template <typename ScalarType>
-struct StorageOps<EquidistantEpipolarCameraCal<ScalarType>> {
-  using T = EquidistantEpipolarCameraCal<ScalarType>;
+struct StorageOps<EquirectangularCameraCal<ScalarType>> {
+  using T = EquirectangularCameraCal<ScalarType>;
   using Scalar = ScalarType;
 
   static constexpr int32_t StorageDim() {
@@ -37,12 +37,12 @@ struct StorageOps<EquidistantEpipolarCameraCal<ScalarType>> {
   static T FromStorage(const ScalarType* data);
 
   static constexpr type_t TypeEnum() {
-    return type_t::EQUIDISTANT_EPIPOLAR_CAMERA_CAL;
+    return type_t::EQUIRECTANGULAR_CAMERA_CAL;
   }
 };
 
 }  // namespace sym
 
 // Explicit instantiation
-extern template struct sym::StorageOps<sym::EquidistantEpipolarCameraCal<double>>;
-extern template struct sym::StorageOps<sym::EquidistantEpipolarCameraCal<float>>;
+extern template struct sym::StorageOps<sym::EquirectangularCameraCal<double>>;
+extern template struct sym::StorageOps<sym::EquirectangularCameraCal<float>>;

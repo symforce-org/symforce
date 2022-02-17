@@ -17,19 +17,19 @@
 // errors.
 namespace sym {
 template <typename ScalarType>
-class EquidistantEpipolarCameraCal;
+class EquirectangularCameraCal;
 }  // namespace sym
 
 namespace sym {
 
 /**
  * C++ LieGroupOps implementation for <class
- * 'symforce.cam.equidistant_epipolar_cal.EquidistantEpipolarCameraCal'>.
+ * 'symforce.cam.equirectangular_camera_cal.EquirectangularCameraCal'>.
  */
 template <typename Scalar>
-struct LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>
-    : public internal::LieGroupOpsBase<EquidistantEpipolarCameraCal<Scalar>, Scalar> {
-  using T = EquidistantEpipolarCameraCal<Scalar>;
+struct LieGroupOps<EquirectangularCameraCal<Scalar>>
+    : public internal::LieGroupOpsBase<EquirectangularCameraCal<Scalar>, Scalar> {
+  using T = EquirectangularCameraCal<Scalar>;
 
   static constexpr int32_t TangentDim() {
     return 4;
@@ -46,5 +46,5 @@ struct LieGroupOps<EquidistantEpipolarCameraCal<Scalar>>
 }  // namespace sym
 
 // Explicit instantiation
-extern template struct sym::LieGroupOps<sym::EquidistantEpipolarCameraCal<double>>;
-extern template struct sym::LieGroupOps<sym::EquidistantEpipolarCameraCal<float>>;
+extern template struct sym::LieGroupOps<sym::EquirectangularCameraCal<double>>;
+extern template struct sym::LieGroupOps<sym::EquirectangularCameraCal<float>>;

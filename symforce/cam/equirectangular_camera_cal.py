@@ -11,13 +11,10 @@ from symforce import sympy as sm
 from symforce import typing as T
 
 
-class EquidistantEpipolarCameraCal(CameraCal):
+class EquirectangularCameraCal(CameraCal):
     """
-    Equidistant epipolar camera model with parameters [fx, fy, cx, cy].
+    Equirectangular camera model with parameters [fx, fy, cx, cy].
     (fx, fy) representing focal length; (cx, cy) representing principal point.
-
-    See here for more details:
-    http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.473.5861&rep=rep1&type=pdf
     """
 
     NUM_DISTORTION_COEFFS = 0
@@ -25,16 +22,16 @@ class EquidistantEpipolarCameraCal(CameraCal):
     def pixel_from_camera_point(
         self, point: geo.V3, epsilon: T.Scalar = 0
     ) -> T.Tuple[geo.V2, T.Scalar]:
-        cam_yz_norm = sm.sqrt(point[1] ** 2 + point[2] ** 2 + epsilon)
-        ud_x = sm.atan2(point[0], cam_yz_norm)
-        ud_y = sm.atan2(point[1], point[2] + epsilon)
+        cam_xz_norm = geo.V2(point[0], point[2]).norm(epsilon)
+        ud_x = sm.atan2(point[0], point[2], epsilon=epsilon)
+        ud_y = sm.atan2(point[1], cam_xz_norm, epsilon=0)
 
         linear_camera_cal = LinearCameraCal(
             self.focal_length.to_flat_list(), self.principal_point.to_flat_list()
         )
         pixel = linear_camera_cal.pixel_from_unit_depth(geo.V2(ud_x, ud_y))
 
-        is_valid = sm.Max(sm.sign(point[2]), 0)
+        is_valid = sm.is_positive(point.squared_norm())
         return pixel, is_valid
 
     def camera_ray_from_pixel(
@@ -45,12 +42,14 @@ class EquidistantEpipolarCameraCal(CameraCal):
         )
         unit_depth = linear_camera_cal.unit_depth_from_pixel(pixel)
         xyz = geo.V3(
-            sm.sin(unit_depth[0]),
-            sm.cos(unit_depth[0]) * sm.sin(unit_depth[1]),
-            sm.cos(unit_depth[0]) * sm.cos(unit_depth[1]),
+            sm.cos(unit_depth[1]) * sm.sin(unit_depth[0]),
+            sm.sin(unit_depth[1]),
+            sm.cos(unit_depth[1]) * sm.cos(unit_depth[0]),
         )
 
-        is_valid = sm.Mul(
-            *[sm.Max(sm.sign(sm.pi / 2 - sm.Abs(p)), 0) for p in (unit_depth[0], unit_depth[1])]
+        is_valid = sm.logical_and(
+            sm.is_positive(sm.pi - sm.Abs(unit_depth[0])),
+            sm.is_positive(sm.pi / 2 - sm.Abs(unit_depth[1])),
+            unsafe=True,
         )
         return xyz, is_valid

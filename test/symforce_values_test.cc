@@ -11,7 +11,7 @@
 
 #include <sym/atan_camera_cal.h>
 #include <sym/double_sphere_camera_cal.h>
-#include <sym/equidistant_epipolar_camera_cal.h>
+#include <sym/equirectangular_camera_cal.h>
 #include <sym/linear_camera_cal.h>
 #include <sym/ops/lie_group_ops.h>
 #include <sym/polynomial_camera_cal.h>
@@ -131,7 +131,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
 
 TEMPLATE_PRODUCT_TEST_CASE("Test storage and retrieval of camera cals", "[values]",
                            (sym::LinearCameraCal, sym::ATANCameraCal, sym::SphericalCameraCal,
-                            sym::EquidistantEpipolarCameraCal, sym::PolynomialCameraCal,
+                            sym::EquirectangularCameraCal, sym::PolynomialCameraCal,
                             sym::DoubleSphereCameraCal),
                            (double, float)) {
   using T = TestType;
@@ -147,7 +147,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test storage and retrieval of camera cals", "[values
 // TODO(brad): SphericalCameraCal and PolynomialCameraCal should fail this test.
 TEMPLATE_PRODUCT_TEST_CASE("Test Retract and LocalCoordinates of camera cals", "[values]",
                            (sym::LinearCameraCal, sym::ATANCameraCal, sym::SphericalCameraCal,
-                            sym::EquidistantEpipolarCameraCal, sym::PolynomialCameraCal,
+                            sym::EquirectangularCameraCal, sym::PolynomialCameraCal,
                             sym::DoubleSphereCameraCal),
                            (double, float)) {
   using T = TestType;

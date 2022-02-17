@@ -8,7 +8,7 @@
 
 #include <Eigen/Dense>
 
-#include <sym/equidistant_epipolar_camera_cal.h>
+#include <sym/equirectangular_camera_cal.h>
 
 #include "../group_ops.h"
 #include "./lie_group_ops.h"
@@ -18,18 +18,18 @@
 // with "./group_ops.h", which must forward declare. See that file for an explanation.
 namespace sym {
 template <typename ScalarType>
-class EquidistantEpipolarCameraCal;
+class EquirectangularCameraCal;
 }  // namespace sym
 
 namespace sym {
 
 /**
  * C++ GroupOps implementation for <class
- * 'symforce.cam.equidistant_epipolar_cal.EquidistantEpipolarCameraCal'>.
+ * 'symforce.cam.equirectangular_camera_cal.EquirectangularCameraCal'>.
  */
 template <typename Scalar>
-struct GroupOps<EquidistantEpipolarCameraCal<Scalar>> {
-  using T = EquidistantEpipolarCameraCal<Scalar>;
+struct GroupOps<EquirectangularCameraCal<Scalar>> {
+  using T = EquirectangularCameraCal<Scalar>;
   using SelfJacobian =
       Eigen::Matrix<Scalar, LieGroupOps<T>::TangentDim(), LieGroupOps<T>::TangentDim()>;
 
@@ -47,5 +47,5 @@ struct GroupOps<EquidistantEpipolarCameraCal<Scalar>> {
 }  // namespace sym
 
 // Explicit instantiation
-extern template struct sym::GroupOps<sym::EquidistantEpipolarCameraCal<double>>;
-extern template struct sym::GroupOps<sym::EquidistantEpipolarCameraCal<float>>;
+extern template struct sym::GroupOps<sym::EquirectangularCameraCal<double>>;
+extern template struct sym::GroupOps<sym::EquirectangularCameraCal<float>>;
