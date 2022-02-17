@@ -12,6 +12,7 @@ from symforce.opt.barrier_functions import (
     max_linear_barrier,
     min_power_barrier,
     min_linear_barrier,
+    min_max_centering_power_barrier,
 )
 
 
@@ -146,6 +147,63 @@ class SymforceOptBarriersTest(TestCase):
                     expected_error = power_barrier(x, 1.0)
                     error = linear_barrier(x)
                     self.assertEqual(error, expected_error)
+
+    def test_centering_barrier(self) -> None:
+        """
+        Tests min_max_centering_power_barrier
+        """
+        x_nominal_lower = -20.0
+        x_nominal_upper = -10.0
+        error_nominal = 1.5
+        dist_zero_to_nominal = 0.5
+        centering_scale = 0.5
+
+        centering_barrier_helper = lambda x, power: min_max_centering_power_barrier(
+            x=x,
+            x_nominal_lower=x_nominal_lower,
+            x_nominal_upper=x_nominal_upper,
+            error_nominal=error_nominal,
+            dist_zero_to_nominal=dist_zero_to_nominal,
+            power=power,
+            centering_scale=centering_scale,
+        )
+
+        powers = [0.5, 1, 2]
+        for power in powers:
+            with self.subTest(power=power):
+                # Check center
+                center = (x_nominal_lower + x_nominal_upper) / 2
+                self.assertEqual(centering_barrier_helper(center, power), 0.0)
+
+                # Check corners
+                left_corner = x_nominal_lower + dist_zero_to_nominal
+                right_corner = x_nominal_upper - dist_zero_to_nominal
+                self.assertNotEqual(centering_barrier_helper(left_corner, power), 0.0)
+                self.assertNotEqual(centering_barrier_helper(right_corner, power), 0.0)
+
+                # Check nominal point
+                self.assertEqual(centering_barrier_helper(x_nominal_lower, power), error_nominal)
+                self.assertEqual(centering_barrier_helper(x_nominal_upper, power), error_nominal)
+
+                # Check curve shape on bounding curve
+                x_bounding = x_nominal_upper + 1
+                expected_error_bounding = (
+                    error_nominal * ((x_bounding - right_corner) / dist_zero_to_nominal) ** power
+                )
+                self.assertEqual(
+                    centering_barrier_helper(x_bounding, power), expected_error_bounding
+                )
+
+                # Check curve shape on centering curve
+                x_centering = center + 0.1
+                expected_error_centering = (
+                    centering_scale
+                    * error_nominal
+                    * ((x_centering - center) / (x_nominal_upper - center)) ** power
+                )
+                self.assertNear(
+                    centering_barrier_helper(x_centering, power), expected_error_centering
+                )
 
 
 if __name__ == "__main__":
