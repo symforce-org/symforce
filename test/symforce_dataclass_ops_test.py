@@ -11,6 +11,7 @@ from symforce import typing as T
 
 from symforce.test_util import TestCase
 from symforce.ops import StorageOps
+from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
 @dataclass
@@ -34,10 +35,23 @@ class TestFixedSizeType:
     seq: TestSubType
 
 
-class SymforceDataclassOpsTest(TestCase):
+class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
     """
     Tests ops.impl.dataclass_*_ops.py
     """
+
+    @classmethod
+    def element(cls) -> T.Dataclass:
+        element = TestDynamicSizeType(
+            rot=geo.Rot3.identity(),
+            x=1.0,
+            subtype=TestSubType(rot=geo.Rot3.from_yaw_pitch_roll(1.0, 2.0, 3.0)),
+            seq=[
+                [TestSubType(rot=geo.Rot3.from_yaw_pitch_roll(0.1, 0.2, 0.3)) for _ in range(3)]
+                for _ in range(5)
+            ],
+        )
+        return element
 
     def test_fixed_size_storage_ops(self) -> None:
         """
@@ -78,12 +92,7 @@ class SymforceDataclassOpsTest(TestCase):
         Tests:
             DataclassStorageOps, with dynamic size type
         """
-        empty_instance = TestDynamicSizeType(
-            rot=geo.Rot3.symbolic("rot"),
-            x=sm.Symbol("x"),
-            subtype=TestSubType(rot=geo.Rot3.symbolic("rot")),
-            seq=[[TestSubType(rot=geo.Rot3.symbolic("rot")) for _ in range(3)] for _ in range(5)],
-        )
+        empty_instance = self.element()
 
         expected_size = 1 + (
             2 + len(empty_instance.seq) * len(empty_instance.seq[0])

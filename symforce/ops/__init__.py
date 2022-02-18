@@ -21,6 +21,7 @@ from symforce import sympy as sm
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
 from .impl.array_lie_group_ops import ArrayLieGroupOps
+from .impl.dataclass_lie_group_ops import DataclassLieGroupOps
 
 LieGroupOps.register(float, ScalarLieGroupOps)
 LieGroupOps.register(np.float32, ScalarLieGroupOps)
@@ -38,9 +39,8 @@ LieGroupOps.register(tuple, SequenceLieGroupOps)
 LieGroupOps.register(np.ndarray, ArrayLieGroupOps)
 
 from symforce import typing as T
-from .impl.dataclass_storage_ops import DataclassStorageOps
 
-StorageOps.register(T.Dataclass, DataclassStorageOps)
+LieGroupOps.register(T.Dataclass, DataclassLieGroupOps)
 
 # TODO(hayk): Are these okay here or where can we put them? In theory we could just have this
 # be automatic that if the given type has the methods that it gets registered automatically.

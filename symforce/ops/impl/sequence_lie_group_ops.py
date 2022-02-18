@@ -23,7 +23,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
 
     @staticmethod
     def from_tangent(
-        a: T.SequenceElement, vec: T.List[T.Scalar], epsilon: T.Scalar
+        a: T.SequenceElement, vec: T.Sequence[T.Scalar], epsilon: T.Scalar
     ) -> T.SequenceElement:
         assert len(vec) == SequenceLieGroupOps.tangent_dim(a)
         new_a = []
@@ -70,7 +70,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
 
     @staticmethod
     def retract(
-        a: T.SequenceElement, vec: T.List[T.Scalar], epsilon: T.Scalar
+        a: T.SequenceElement, vec: T.Sequence[T.Scalar], epsilon: T.Scalar
     ) -> T.SequenceElement:
         assert len(vec) == SequenceLieGroupOps.tangent_dim(a)
         new_a = []

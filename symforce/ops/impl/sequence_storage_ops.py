@@ -18,7 +18,7 @@ class SequenceStorageOps:
         return [scalar for v in a for scalar in StorageOps.to_storage(v)]
 
     @staticmethod
-    def from_storage(a: T.SequenceElement, elements: T.List[T.Scalar]) -> T.SequenceElement:
+    def from_storage(a: T.SequenceElement, elements: T.Sequence[T.Scalar]) -> T.SequenceElement:
         assert len(elements) == SequenceStorageOps.storage_dim(a)
         new_a = []
         inx = 0

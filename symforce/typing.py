@@ -67,6 +67,8 @@ else:
             return dataclasses.is_dataclass(subclass) and isinstance(subclass, type)
 
 
+DataclassOrType = Union[Dataclass, Type[Dataclass]]
+
 # Abstract method helpers
 _ReturnType = TypeVar("_ReturnType")
 

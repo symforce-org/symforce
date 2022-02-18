@@ -1,0 +1,128 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+from __future__ import annotations
+
+import dataclasses
+
+from symforce.ops import StorageOps
+from symforce.ops import LieGroupOps
+from symforce.python_util import get_type
+from symforce import typing as T
+
+from .dataclass_group_ops import DataclassGroupOps
+
+if T.TYPE_CHECKING:
+    from symforce import geo
+
+
+class DataclassLieGroupOps(DataclassGroupOps):
+    @staticmethod
+    def tangent_dim(a: T.DataclassOrType) -> int:
+        if isinstance(a, type):
+            count = 0
+            type_hints_map = T.get_type_hints(a)
+            for field in dataclasses.fields(a):
+                count += LieGroupOps.tangent_dim(type_hints_map[field.name])
+            return count
+        else:
+            count = 0
+            for field in dataclasses.fields(a):
+                count += LieGroupOps.tangent_dim(getattr(a, field.name))
+            return count
+
+    @staticmethod
+    def from_tangent(
+        a: T.DataclassOrType, vec: T.Sequence[T.Scalar], epsilon: T.Scalar
+    ) -> T.Dataclass:
+        if isinstance(a, type):
+            constructed_fields = {}
+            offset = 0
+            type_hints_map = T.get_type_hints(a)
+            for field in dataclasses.fields(a):
+                field_type = type_hints_map[field.name]
+                tangent_dim = LieGroupOps.tangent_dim(field_type)
+                constructed_fields[field.name] = LieGroupOps.from_tangent(
+                    field_type, vec[offset : offset + tangent_dim], epsilon
+                )
+                offset += tangent_dim
+            return a(**constructed_fields)
+        else:
+            constructed_fields = {}
+            offset = 0
+            for field in dataclasses.fields(a):
+                field_instance = getattr(a, field.name)
+                tangent_dim = LieGroupOps.tangent_dim(field_instance)
+                constructed_fields[field.name] = LieGroupOps.from_tangent(
+                    field_instance, vec[offset : offset + tangent_dim], epsilon
+                )
+                offset += tangent_dim
+            return get_type(a)(**constructed_fields)
+
+    @staticmethod
+    def to_tangent(a: T.Dataclass, epsilon: T.Scalar) -> T.List[T.Scalar]:
+        tangent = []
+        for field in dataclasses.fields(a):
+            tangent.extend(LieGroupOps.to_tangent(getattr(a, field.name), epsilon))
+        return tangent
+
+    @staticmethod
+    def storage_D_tangent(a: T.Dataclass) -> geo.Matrix:
+        from symforce import geo
+
+        mat = geo.Matrix(StorageOps.storage_dim(a), LieGroupOps.tangent_dim(a))
+        s_inx = 0
+        t_inx = 0
+        for field in dataclasses.fields(a):
+            field_instance = getattr(a, field.name)
+            s_dim = StorageOps.storage_dim(field_instance)
+            t_dim = LieGroupOps.tangent_dim(field_instance)
+            mat[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = LieGroupOps.storage_D_tangent(
+                field_instance
+            )
+            s_inx += s_dim
+            t_inx += t_dim
+        return mat
+
+    @staticmethod
+    def tangent_D_storage(a: T.Dataclass) -> geo.Matrix:
+        from symforce import geo
+
+        mat = geo.Matrix(LieGroupOps.tangent_dim(a), StorageOps.storage_dim(a))
+        s_inx = 0
+        t_inx = 0
+        for field in dataclasses.fields(a):
+            field_instance = getattr(a, field.name)
+            s_dim = StorageOps.storage_dim(field_instance)
+            t_dim = LieGroupOps.tangent_dim(field_instance)
+            mat[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = LieGroupOps.tangent_D_storage(
+                field_instance
+            )
+            s_inx += s_dim
+            t_inx += t_dim
+        return mat
+
+    @staticmethod
+    def retract(a: T.Dataclass, vec: T.Sequence[T.Scalar], epsilon: T.Scalar) -> T.Dataclass:
+        constructed_fields = {}
+        offset = 0
+        for field in dataclasses.fields(a):
+            field_instance = getattr(a, field.name)
+            tangent_dim = LieGroupOps.tangent_dim(field_instance)
+            constructed_fields[field.name] = LieGroupOps.retract(
+                field_instance, vec[offset : offset + tangent_dim], epsilon
+            )
+            offset += tangent_dim
+        return get_type(a)(**constructed_fields)
+
+    @staticmethod
+    def local_coordinates(a: T.Dataclass, b: T.Dataclass, epsilon: T.Scalar) -> T.List[T.Scalar]:
+        assert get_type(a) == get_type(b)
+        return [
+            x
+            for field in dataclasses.fields(a)
+            for x in LieGroupOps.local_coordinates(
+                getattr(a, field.name), getattr(b, field.name), epsilon
+            )
+        ]

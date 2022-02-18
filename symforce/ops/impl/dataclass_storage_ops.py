@@ -23,7 +23,7 @@ class DataclassStorageOps:
     """
 
     @staticmethod
-    def storage_dim(a: T.ElementOrType) -> int:
+    def storage_dim(a: T.DataclassOrType) -> int:
         if isinstance(a, type):
             count = 0
             type_hints_map = T.get_type_hints(a)
@@ -37,14 +37,14 @@ class DataclassStorageOps:
             return count
 
     @staticmethod
-    def to_storage(a: T.Element) -> T.List[T.Scalar]:
+    def to_storage(a: T.Dataclass) -> T.List[T.Scalar]:
         storage = []
         for field in dataclasses.fields(a):
             storage.extend(StorageOps.to_storage(getattr(a, field.name)))
         return storage
 
     @staticmethod
-    def from_storage(a: T.ElementOrType, elements: T.List[T.Scalar]) -> T.Element:
+    def from_storage(a: T.DataclassOrType, elements: T.Sequence[T.Scalar]) -> T.Dataclass:
         if isinstance(a, type):
             constructed_fields = {}
             offset = 0
@@ -70,7 +70,7 @@ class DataclassStorageOps:
             return get_type(a)(**constructed_fields)
 
     @staticmethod
-    def symbolic(a: T.ElementOrType, name: T.Optional[str], **kwargs: T.Dict) -> T.Element:
+    def symbolic(a: T.DataclassOrType, name: T.Optional[str], **kwargs: T.Dict) -> T.Dataclass:
         """
         Return a symbolic instance of a Dataclass
 

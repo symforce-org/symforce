@@ -27,7 +27,9 @@ class ArrayLieGroupOps(ArrayGroupOps):
         return sum([LieGroupOps.tangent_dim(v) for v in a])
 
     @staticmethod
-    def from_tangent(a: T.ArrayElement, vec: T.List[T.Scalar], epsilon: T.Scalar) -> T.ArrayElement:
+    def from_tangent(
+        a: T.ArrayElement, vec: T.Sequence[T.Scalar], epsilon: T.Scalar
+    ) -> T.ArrayElement:
         assert len(vec) == ArrayLieGroupOps.tangent_dim(a)
         new_a = []
         inx = 0
@@ -54,7 +56,7 @@ class ArrayLieGroupOps(ArrayGroupOps):
         return geo.M.eye(StorageOps.storage_dim(a), LieGroupOps.tangent_dim(a))
 
     @staticmethod
-    def retract(a: T.ArrayElement, vec: T.List[T.Scalar], epsilon: T.Scalar) -> T.ArrayElement:
+    def retract(a: T.ArrayElement, vec: T.Sequence[T.Scalar], epsilon: T.Scalar) -> T.ArrayElement:
         assert len(vec) == ArrayLieGroupOps.tangent_dim(a)
         new_a = []
         inx = 0
