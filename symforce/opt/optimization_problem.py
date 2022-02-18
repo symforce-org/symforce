@@ -7,10 +7,8 @@ import itertools
 from pathlib import Path
 
 from symforce import geo
-from symforce import jacobian_helpers
 from symforce import ops
 from symforce.opt.factor import Factor
-from symforce.opt.residual_block import ResidualBlockWithCustomJacobian
 from symforce.opt.sub_problem import SubProblem
 from symforce import typing as T
 from symforce.values import Values
@@ -106,47 +104,12 @@ class OptimizationProblem:
             a Factor and then compute derivatives with respect to different sets of optimized
             variables.
             """
-            jacobians = []
-            for residual_key, residual_block in self.residual_blocks.items_recursive():
-                if isinstance(residual_block, ResidualBlockWithCustomJacobian):
-                    # If the user has provided custom jacobians for this residual:
-                    residual_jacobians = []
-                    for key in keys:
-                        input_element = inputs[key]
-                        if input_element in residual_block.custom_jacobians:
-                            # The user provided a derivative with respect to this input
-                            residual_jacobians.append(
-                                residual_block.custom_jacobians[input_element]
-                            )
-                        else:
-                            # The user did not provide a derivative with respect to this input.  So,
-                            # compute it.  If it's nonzero, raise an error, since the user probably
-                            # wants to provide custom jacobians for all the variables if they
-                            # provided one
-                            residual_input_jacobian = residual_block.residual.jacobian(
-                                input_element
-                            )
-                            if (
-                                residual_input_jacobian
-                                != geo.Matrix(residual_input_jacobian.shape).zero()
-                            ):
-                                raise ValueError(
-                                    f"The residual `{residual_key}` has a nonzero jacobian with "
-                                    f"respect to input `{key}`.  Custom jacobians were provided for"
-                                    " this residual, but not for this input variable.  If you wish "
-                                    "to use the automatically computed jacobian for this input, "
-                                    "please compute it using "
-                                    "`jacobian_helpers.tangent_jacobians(residual, [input])[0]` and"
-                                    " add it to the custom_jacobians dictionary"
-                                )
-                            residual_jacobians.append(residual_input_jacobian)
-                    jacobians.append(residual_jacobians)
-                else:
-                    jacobians.append(
-                        jacobian_helpers.tangent_jacobians(
-                            residual_block.residual, [inputs[key] for key in keys]
-                        )
-                    )
+            jacobians = [
+                residual_block.compute_jacobians(
+                    [inputs[key] for key in keys], residual_name=residual_key, key_names=keys
+                )
+                for residual_key, residual_block in self.residual_blocks.items_recursive()
+            ]
             return geo.Matrix.block_matrix(jacobians)
 
         return [
