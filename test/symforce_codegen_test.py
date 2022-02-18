@@ -130,92 +130,79 @@ class SymforceCodegenTest(TestCase):
         """
         inputs, outputs = self.build_values()
 
-        for scalar_type in ("double", "float"):
-            python_func = codegen.Codegen(
-                inputs=inputs,
-                outputs=outputs,
-                config=codegen.PythonConfig(),
-                name="python_function",
-                scalar_type=scalar_type,
-            )
-            shared_types = {
-                "values_vec": "values_vec_t",
-                "values_vec_out": "values_vec_t",
-                "values_vec_2D": "values_vec_t",
-                "values_vec_2D_out": "values_vec_t",
-            }
-            namespace = "codegen_python_test"
+        python_func = codegen.Codegen(
+            inputs=inputs, outputs=outputs, config=codegen.PythonConfig(), name="python_function"
+        )
+        shared_types = {
+            "values_vec": "values_vec_t",
+            "values_vec_out": "values_vec_t",
+            "values_vec_2D": "values_vec_t",
+            "values_vec_2D_out": "values_vec_t",
+        }
+        namespace = "codegen_python_test"
 
-            output_dir = self.make_output_dir("sf_codegen_python_test_")
+        output_dir = self.make_output_dir("sf_codegen_python_test_")
 
-            codegen_data = python_func.generate_function(
-                shared_types=shared_types, namespace=namespace, output_dir=output_dir
-            )
-            if scalar_type == "double":
-                self.compare_or_update_directory(
-                    actual_dir=output_dir,
-                    expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
-                )
+        codegen_data = python_func.generate_function(
+            shared_types=shared_types, namespace=namespace, output_dir=output_dir
+        )
+        self.compare_or_update_directory(
+            actual_dir=output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data")
+        )
 
-            geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
+        geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
 
-            geo_pkg = codegen_util.load_generated_package(
-                "sym", os.path.join(output_dir, "sym", "__init__.py")
-            )
-            values_vec_t = codegen_util.load_generated_lcmtype(
-                namespace, "values_vec_t", os.path.join(codegen_data["python_types_dir"])
-            )
+        geo_pkg = codegen_util.load_generated_package(
+            "sym", os.path.join(output_dir, "sym", "__init__.py")
+        )
+        values_vec_t = codegen_util.load_generated_lcmtype(
+            namespace, "values_vec_t", os.path.join(codegen_data["python_types_dir"])
+        )
 
-            states_t = codegen_util.load_generated_lcmtype(
-                namespace, "states_t", os.path.join(codegen_data["python_types_dir"])
-            )
+        states_t = codegen_util.load_generated_lcmtype(
+            namespace, "states_t", os.path.join(codegen_data["python_types_dir"])
+        )
 
-            constants_t = codegen_util.load_generated_lcmtype(
-                namespace, "constants_t", os.path.join(codegen_data["python_types_dir"])
-            )
+        constants_t = codegen_util.load_generated_lcmtype(
+            namespace, "constants_t", os.path.join(codegen_data["python_types_dir"])
+        )
 
-            x = 2.0
-            y = -5.0
-            rot = geo_pkg.Rot3()
-            rot_vec = [geo_pkg.Rot3(), geo_pkg.Rot3(), geo_pkg.Rot3()]
-            scalar_vec = [1.0, 2.0, 3.0]
-            list_of_lists = [rot_vec, rot_vec, rot_vec]
-            values_vec = [
-                values_vec_t(),
-                values_vec_t(),
-                values_vec_t(),
-            ]
-            values_vec_2D = [[values_vec_t()], [values_vec_t()]]
+        x = 2.0
+        y = -5.0
+        rot = geo_pkg.Rot3()
+        rot_vec = [geo_pkg.Rot3(), geo_pkg.Rot3(), geo_pkg.Rot3()]
+        scalar_vec = [1.0, 2.0, 3.0]
+        list_of_lists = [rot_vec, rot_vec, rot_vec]
+        values_vec = [
+            values_vec_t(),
+            values_vec_t(),
+            values_vec_t(),
+        ]
+        values_vec_2D = [[values_vec_t()], [values_vec_t()]]
 
-            states = states_t()
-            states.p = [1.0, 2.0]
-            constants = constants_t()
-            constants.epsilon = 1e-8
+        states = states_t()
+        states.p = [1.0, 2.0]
+        constants = constants_t()
+        constants.epsilon = 1e-8
 
-            gen_module = codegen_util.load_generated_package(
-                namespace, codegen_data["python_function_dir"]
-            )
-            # TODO(nathan): Split this test into several different functions
-            (
-                foo,
-                bar,
-                scalar_vec_out,
-                values_vec_out,
-                values_vec_2D_out,
-            ) = gen_module.python_function(
-                x,
-                y,
-                rot,
-                rot_vec,
-                scalar_vec,
-                list_of_lists,
-                values_vec,
-                values_vec_2D,
-                constants,
-                states,
-            )
-            self.assertNear(foo, x ** 2 + rot.data[3])
-            self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
+        gen_module = codegen_util.load_generated_package(
+            namespace, codegen_data["python_function_dir"]
+        )
+        # TODO(nathan): Split this test into several different functions
+        (foo, bar, scalar_vec_out, values_vec_out, values_vec_2D_out) = gen_module.python_function(
+            x,
+            y,
+            rot,
+            rot_vec,
+            scalar_vec,
+            list_of_lists,
+            values_vec,
+            values_vec_2D,
+            constants,
+            states,
+        )
+        self.assertNear(foo, x ** 2 + rot.data[3])
+        self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
 
     def test_function_codegen_python(self) -> None:
         output_dir = self.make_output_dir("sf_codegen_function_codegen_python_")
@@ -273,27 +260,23 @@ class SymforceCodegenTest(TestCase):
         """
         inputs, outputs = self.build_values()
 
-        for scalar_type in ("double", "float"):
-            cpp_func = codegen.Codegen(
-                inputs, outputs, codegen.CppConfig(), "codegen_cpp_test", scalar_type=scalar_type
-            )
-            shared_types = {
-                "values_vec": "values_vec_t",
-                "values_vec_out": "values_vec_t",
-                "values_vec_2D": "values_vec_t",
-                "values_vec_2D_out": "values_vec_t",
-            }
-            namespace = "codegen_cpp_test"
-            output_dir = self.make_output_dir(f"sf_codegen_cpp_{scalar_type}_")
-            codegen_data = cpp_func.generate_function(
-                shared_types=shared_types, namespace=namespace, output_dir=output_dir
-            )
+        cpp_func = codegen.Codegen(inputs, outputs, codegen.CppConfig(), "codegen_cpp_test")
+        shared_types = {
+            "values_vec": "values_vec_t",
+            "values_vec_out": "values_vec_t",
+            "values_vec_2D": "values_vec_t",
+            "values_vec_2D_out": "values_vec_t",
+        }
+        namespace = "codegen_cpp_test"
+        output_dir = self.make_output_dir("sf_codegen_cpp_")
+        codegen_data = cpp_func.generate_function(
+            shared_types=shared_types, namespace=namespace, output_dir=output_dir
+        )
 
-            if scalar_type == "double":
-                self.compare_or_update_directory(
-                    actual_dir=os.path.join(output_dir),
-                    expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
-                )
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(output_dir),
+            expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+        )
 
     def test_function_codegen_cpp(self) -> None:
         output_dir = self.make_output_dir("sf_codegen_function_codegen_cpp_")
@@ -324,7 +307,6 @@ class SymforceCodegenTest(TestCase):
             outputs=Values(dist_D_R1=dist_D_R1),
             return_key="dist_D_R1",
             config=codegen.CppConfig(),
-            scalar_type="double",
         )
         codegen_data = cpp_func.generate_function(namespace=namespace, output_dir=output_dir)
 
@@ -402,7 +384,6 @@ class SymforceCodegenTest(TestCase):
             outputs=outputs,
             return_key="matrix_out",
             config=codegen.CppConfig(),
-            scalar_type="double",
             sparse_matrices=["matrix_out"],
         )
         get_sparse_func_data = get_sparse_func.generate_function(
@@ -422,7 +403,6 @@ class SymforceCodegenTest(TestCase):
             outputs=multiple_outputs,
             return_key="result",
             config=codegen.CppConfig(),
-            scalar_type="double",
             sparse_matrices=["sparse_first", "sparse_second"],
         )
         get_dense_and_sparse_func_data = get_dense_and_sparse_func.generate_function(
@@ -435,7 +415,6 @@ class SymforceCodegenTest(TestCase):
             inputs=inputs,
             outputs=Values(updated_mat=2 * outputs["matrix_out"]),
             config=codegen.CppConfig(),
-            scalar_type="double",
             sparse_matrices=["updated_mat"],
         )
         update_spase_func_data = update_spase_func.generate_function(

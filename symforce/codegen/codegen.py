@@ -62,7 +62,6 @@ class Codegen:
         name: T.Optional[str] = None,
         return_key: T.Optional[str] = None,
         sparse_matrices: T.List[str] = None,
-        scalar_type: str = "double",
         docstring: str = None,
     ) -> None:
         """
@@ -80,7 +79,6 @@ class Codegen:
             return_key: If specified, the output with this key is returned rather than filled
                         in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
-            scalar_type: Type used for generated scalar expressions
             docstring: The docstring to be used with the generated function
         """
 
@@ -115,7 +113,6 @@ class Codegen:
         self.outputs = outputs
 
         self.config = config
-        self.scalar_type = scalar_type
 
         if return_key is not None:
             assert return_key in outputs
@@ -330,7 +327,6 @@ class Codegen:
             values_indices=values_indices,
             use_eigen_types=self.config.use_eigen_types,
             shared_types=shared_types,
-            scalar_type=self.scalar_type,
             output_dir=output_dir,
             lcm_bindings_output_dir=lcm_bindings_output_dir,
             templates=templates,
@@ -629,7 +625,6 @@ class Codegen:
             config=self.config,
             return_key=return_key,
             sparse_matrices=sparse_matrices,
-            scalar_type=self.scalar_type,
             docstring="\n".join(docstring_lines),
         )
 
@@ -739,6 +734,5 @@ class Codegen:
             config=self.config,
             return_key=return_key,
             sparse_matrices=sparse_matrices,
-            scalar_type=self.scalar_type,
             docstring="\n".join(docstring_lines),
         )
