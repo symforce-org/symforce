@@ -95,9 +95,9 @@ def add_preamble(source: str, name: str, filetype: FileType) -> str:
 
 
 def render_template(
-    template_path: str,
+    template_path: T.Openable,
     data: T.Dict[str, T.Any],
-    output_path: T.Optional[str] = None,
+    output_path: T.Optional[T.Openable] = None,
     template_dir: str = CURRENT_DIR,
     autoformat: bool = True,
 ) -> str:
@@ -115,9 +115,9 @@ def render_template(
     if output_path:
         logger.debug(f"Template OUT --> {output_path}")
 
-    template_name = os.path.relpath(template_path, template_dir)
+    template_name = os.path.relpath(os.fspath(template_path), template_dir)
 
-    loader = jinja2.FileSystemLoader(template_dir)
+    loader = jinja2.FileSystemLoader(os.fspath(template_dir))
     env = RelEnvironment(
         loader=loader,
         trim_blocks=True,
@@ -172,7 +172,9 @@ class TemplateList:
     def __init__(self) -> None:
         self.items: T.List = []
 
-    def add(self, template_path: str, output_path: str, data: T.Dict[str, T.Any]) -> None:
+    def add(
+        self, template_path: T.Openable, output_path: T.Openable, data: T.Dict[str, T.Any]
+    ) -> None:
         self.items.append(
             self.TemplateListEntry(template_path=template_path, output_path=output_path, data=data)
         )
