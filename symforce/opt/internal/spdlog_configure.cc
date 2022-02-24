@@ -20,6 +20,9 @@ class SpdlogConfigurator {
   }
 
   void SetLogLevel() const {
+    // Default log level to warning
+    spdlog::set_level(spdlog::level::warn);
+
     // This is not an owning pointer - it points to the actual location of the string for this
     // environment variable in the process address space.  And this is thread safe, assuming no one
     // modifies SYMFORCE_LOGLEVEL at that location
