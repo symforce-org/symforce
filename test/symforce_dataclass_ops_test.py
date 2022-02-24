@@ -25,6 +25,7 @@ class TestDynamicSizeType:
     x: T.Scalar
     subtype: TestSubType
     seq: T.Sequence[T.Sequence[TestSubType]]
+    optional: T.Optional[T.Scalar] = None
 
 
 @dataclass

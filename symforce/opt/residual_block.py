@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from symforce import geo
 from symforce import jacobian_helpers
@@ -18,7 +18,7 @@ class ResidualBlock:
     """
 
     residual: geo.Matrix
-    extra_values: T.Dataclass
+    extra_values: T.Optional[T.Dataclass] = None
 
     def compute_jacobians(
         self,
@@ -55,7 +55,7 @@ class ResidualBlockWithCustomJacobian(ResidualBlock):
     respect to each of those inputs.
     """
 
-    custom_jacobians: T.Dict[T.Element, geo.Matrix]
+    custom_jacobians: T.Dict[T.Element, geo.Matrix] = field(default_factory=dict)
 
     def compute_jacobians(
         self,

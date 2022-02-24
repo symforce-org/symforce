@@ -90,6 +90,7 @@ disable=raw-checker-failed,
         # Overzealous checks
         fixme,
         too-few-public-methods,
+        useless-return,
 
         # Unnecessary checks
         import-outside-toplevel,
