@@ -184,7 +184,8 @@ def _flatten_storage_type_subs(
         except NotImplementedError:
             new_subs_dict[key] = value
         else:
-            assert type(key) == type(value)  # pylint: disable=unidiomatic-typecheck
+            error_msg = f"key type {type(key)} is not the same as value type {type(value)}"
+            assert type(key) == type(value), error_msg  # pylint: disable=unidiomatic-typecheck
             for new_key, new_value in zip(new_keys, new_values):
                 new_subs_dict[new_key] = new_value
     return new_subs_dict
