@@ -6,7 +6,7 @@
 import dataclasses
 
 from symforce.ops import StorageOps
-from symforce.python_util import get_type
+from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
 from symforce import typing as T
 
 
@@ -15,7 +15,15 @@ class DataclassStorageOps:
     StorageOps implementation for dataclasses
 
     Supports nested types.  If any of the fields are of unknown size (e.g. sequences), the relevant
-    functions expect to be passed an instance instead of the type.
+    functions expect to be passed an instance instead of the type. However, the length of sequences
+    can be specified using field metadata, allowing for StorageOps functions such as "storage_dim",
+    "from_storage", and "symbolic" to be passed the dataclass type rather than an instance. Adding
+    a sequence of length 10, for example, would look like:
+
+    @dataclass
+    class ExampleDataclass:
+        example_list: T.Sequence[ExampleType] = field(metadata={"length": 10})
+
 
     NOTE(aaron): We use T.get_type_hints in multiple places in here to the field types, does this
     always work?  A bit worried that this never uses field.type, e.g. if it isn't a simple
@@ -28,7 +36,14 @@ class DataclassStorageOps:
             count = 0
             type_hints_map = T.get_type_hints(a)
             for field in dataclasses.fields(a):
-                count += StorageOps.storage_dim(type_hints_map[field.name])
+                field_type = type_hints_map[field.name]
+                if field.metadata.get("length") is not None:
+                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                        field, field_type
+                    )
+                    count += StorageOps.storage_dim(sequence_instance)
+                else:
+                    count += StorageOps.storage_dim(field_type)
             return count
         else:
             count = 0
@@ -51,10 +66,19 @@ class DataclassStorageOps:
             type_hints_map = T.get_type_hints(a)
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
-                storage_dim = StorageOps.storage_dim(field_type)
-                constructed_fields[field.name] = StorageOps.from_storage(
-                    field_type, elements[offset : offset + storage_dim],
-                )
+                if field.metadata.get("length") is not None:
+                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                        field, field_type
+                    )
+                    storage_dim = StorageOps.storage_dim(sequence_instance)
+                    constructed_fields[field.name] = StorageOps.from_storage(
+                        sequence_instance, elements[offset : offset + storage_dim],
+                    )
+                else:
+                    storage_dim = StorageOps.storage_dim(field_type)
+                    constructed_fields[field.name] = StorageOps.from_storage(
+                        field_type, elements[offset : offset + storage_dim],
+                    )
                 offset += storage_dim
             return a(**constructed_fields)
         else:
@@ -85,11 +109,18 @@ class DataclassStorageOps:
             type_hints_map = T.get_type_hints(a)
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
-
                 try:
-                    constructed_fields[field.name] = StorageOps.symbolic(
-                        field_type, f"{name_prefix}{field.name}", **kwargs
-                    )
+                    if field.metadata.get("length") is not None:
+                        sequence_instance = get_sequence_from_dataclass_sequence_field(
+                            field, field_type
+                        )
+                        constructed_fields[field.name] = StorageOps.symbolic(
+                            sequence_instance, f"{name_prefix}{field.name}", **kwargs,
+                        )
+                    else:
+                        constructed_fields[field.name] = StorageOps.symbolic(
+                            field_type, f"{name_prefix}{field.name}", **kwargs
+                        )
                 except NotImplementedError as ex:
                     raise NotImplementedError(
                         f"Could not create field {field.name} of type {field_type}"
@@ -97,12 +128,9 @@ class DataclassStorageOps:
             return get_type(a)(**constructed_fields)
         else:
             constructed_fields = {}
-
             name_prefix = f"{name}." if name is not None else ""
-            type_hints_map = T.get_type_hints(type(a))
             for field in dataclasses.fields(a):
                 field_instance = getattr(a, field.name)
-
                 try:
                     constructed_fields[field.name] = StorageOps.symbolic(
                         field_instance, f"{name_prefix}{field.name}", **kwargs

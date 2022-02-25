@@ -8,7 +8,7 @@ import dataclasses
 
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
-from symforce.python_util import get_type
+from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
 from symforce import typing as T
 
 from .dataclass_group_ops import DataclassGroupOps
@@ -24,7 +24,14 @@ class DataclassLieGroupOps(DataclassGroupOps):
             count = 0
             type_hints_map = T.get_type_hints(a)
             for field in dataclasses.fields(a):
-                count += LieGroupOps.tangent_dim(type_hints_map[field.name])
+                field_type = type_hints_map[field.name]
+                if field.metadata.get("length") is not None:
+                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                        field, field_type
+                    )
+                    count += LieGroupOps.tangent_dim(sequence_instance)
+                else:
+                    count += LieGroupOps.tangent_dim(field_type)
             return count
         else:
             count = 0
@@ -42,10 +49,19 @@ class DataclassLieGroupOps(DataclassGroupOps):
             type_hints_map = T.get_type_hints(a)
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
-                tangent_dim = LieGroupOps.tangent_dim(field_type)
-                constructed_fields[field.name] = LieGroupOps.from_tangent(
-                    field_type, vec[offset : offset + tangent_dim], epsilon
-                )
+                if field.metadata.get("length") is not None:
+                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                        field, field_type
+                    )
+                    tangent_dim = LieGroupOps.tangent_dim(sequence_instance)
+                    constructed_fields[field.name] = LieGroupOps.from_tangent(
+                        sequence_instance, vec[offset : offset + tangent_dim],
+                    )
+                else:
+                    tangent_dim = LieGroupOps.tangent_dim(field_type)
+                    constructed_fields[field.name] = LieGroupOps.from_tangent(
+                        field_type, vec[offset : offset + tangent_dim], epsilon
+                    )
                 offset += tangent_dim
             return a(**constructed_fields)
         else:

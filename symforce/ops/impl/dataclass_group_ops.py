@@ -6,7 +6,7 @@
 import dataclasses
 
 from symforce.ops import GroupOps
-from symforce.python_util import get_type
+from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
 from symforce import typing as T
 
 from .dataclass_storage_ops import DataclassStorageOps
@@ -19,7 +19,14 @@ class DataclassGroupOps(DataclassStorageOps):
         if isinstance(a, type):
             type_hints_map = T.get_type_hints(a)
             for field in dataclasses.fields(a):
-                constructed_fields[field.name] = GroupOps.identity(type_hints_map[field.name])
+                field_type = type_hints_map[field.name]
+                if field.metadata.get("length") is not None:
+                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                        field, field_type
+                    )
+                    constructed_fields[field.name] = GroupOps.identity(sequence_instance)
+                else:
+                    constructed_fields[field.name] = GroupOps.identity(field_type)
             return a(**constructed_fields)
         else:
             for field in dataclasses.fields(a):

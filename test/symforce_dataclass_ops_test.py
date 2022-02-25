@@ -3,14 +3,14 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from symforce import geo
 from symforce import sympy as sm
 from symforce import typing as T
 
 from symforce.test_util import TestCase
-from symforce.ops import StorageOps
+from symforce.ops import StorageOps, GroupOps, LieGroupOps
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
@@ -33,7 +33,7 @@ class TestFixedSizeType:
     rot: geo.Rot3
     x: T.Scalar
     subtype: TestSubType
-    seq: TestSubType
+    seq: T.Sequence[TestSubType] = field(metadata={"length": 2})
 
 
 class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
@@ -54,20 +54,21 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
         )
         return element
 
-    def test_fixed_size_storage_ops(self) -> None:
+    def test_fixed_size_ops(self) -> None:
         """
         Tests:
-            DataclassStorageOps, with fixed size type
+            Dataclass ops, with fixed size type. Also tests ops which take a type (rather than an
+            instance) on a dataclass with a sequence of known size.
         """
         with self.subTest("storage dim"):
-            self.assertEqual(StorageOps.storage_dim(TestFixedSizeType), 13)
+            self.assertEqual(StorageOps.storage_dim(TestFixedSizeType), 17)
 
         with self.subTest("symbolic"):
             instance = StorageOps.symbolic(TestFixedSizeType, "instance")
 
         with self.subTest("to_storage"):
             storage = StorageOps.to_storage(instance)
-            self.assertEqual(len(storage), 13)
+            self.assertEqual(len(storage), 17)
             for x in storage:
                 self.assertIsInstance(x, sm.Symbol)
                 self.assertTrue(x.name.startswith("instance"))
@@ -80,13 +81,25 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             instance.x = sm.S(5)
             instance.rot = geo.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
             instance.subtype.rot = instance.rot.inverse()
-            instance.seq.rot = instance.rot * instance.rot
+            instance.seq[0].rot = instance.rot * instance.rot
+            instance.seq[1].rot = instance.rot * instance.rot
 
             instancef = StorageOps.evalf(instance)
 
             for x in StorageOps.to_storage(instancef):
                 xf = float(x)
                 self.assertIsInstance(xf, float)
+
+        with self.subTest("identity"):
+            identity = GroupOps.identity(TestFixedSizeType)
+
+        with self.subTest("tangent_dim"):
+            self.assertEqual(LieGroupOps.tangent_dim(TestFixedSizeType), 13)
+
+        with self.subTest("from_tangent"):
+            tangent = LieGroupOps.to_tangent(instance)
+            instance2 = LieGroupOps.from_tangent(TestFixedSizeType, tangent)
+            self.assertLieGroupNear(instance, instance2)
 
     def test_dynamic_size_storage_ops(self) -> None:
         """

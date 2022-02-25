@@ -15,6 +15,7 @@ import re
 import shutil
 import string
 import subprocess
+import dataclasses
 
 from symforce import logger
 from symforce import sympy as sm
@@ -293,6 +294,20 @@ def get_class_for_method(func: T.Callable) -> T.Type:
         if isinstance(cls, type):
             return cls
     return getattr(func, "__objclass__")  # handle special descriptor objects
+
+
+def get_sequence_from_dataclass_sequence_field(
+    field: dataclasses.Field, field_type: T.Type
+) -> T.Sequence[T.Any]:
+    origin = T.get_origin(field_type)
+    length = field.metadata.get("length")
+    if origin is None or not issubclass(origin, T.Sequence):
+        raise TypeError(
+            f"Annotated field with `length={length}` that is of type {field_type}, not T.Sequence"
+        )
+    assert isinstance(length, int)
+    arg_type = T.get_args(field_type)[0]
+    return [arg_type] * length
 
 
 class AttrDict(dict):
