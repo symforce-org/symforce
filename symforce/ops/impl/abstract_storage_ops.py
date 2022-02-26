@@ -7,8 +7,11 @@ import abc
 
 from symforce import typing as T
 
+ElementT = T.TypeVar("ElementT")
+ElementOrTypeT = T.Union[ElementT, T.Type[ElementT]]
 
-class AbstractStorageOps(abc.ABC):
+
+class AbstractStorageOps(abc.ABC, T.Generic[ElementT]):
     """
     An abstract base class for StorageOps implementations.
 
@@ -22,20 +25,20 @@ class AbstractStorageOps(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def storage_dim(a: T.ElementOrType) -> int:
+    def storage_dim(a: ElementOrTypeT) -> int:
         pass
 
     @staticmethod
     @abc.abstractmethod
-    def to_storage(a: T.Element) -> T.List[T.Scalar]:
+    def to_storage(a: ElementT) -> T.List[T.Scalar]:
         pass
 
     @staticmethod
     @abc.abstractmethod
-    def from_storage(a: T.ElementOrType, elements: T.Sequence[T.Scalar]) -> T.Element:
+    def from_storage(a: ElementOrTypeT, elements: T.Sequence[T.Scalar]) -> ElementT:
         pass
 
     @staticmethod
     @abc.abstractmethod
-    def symbolic(a: T.ElementOrType, name: str, **kwargs: T.Dict) -> T.Element:
+    def symbolic(a: ElementOrTypeT, name: str, **kwargs: T.Dict) -> ElementT:
         pass

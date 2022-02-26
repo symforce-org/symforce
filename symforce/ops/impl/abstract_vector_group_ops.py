@@ -7,8 +7,11 @@ from .abstract_storage_ops import AbstractStorageOps
 
 from symforce import typing as T
 
+ElementT = T.TypeVar("ElementT")
+ElementOrTypeT = T.Union[ElementT, T.Type[ElementT]]
 
-class AbstractVectorGroupOps(AbstractStorageOps):
+
+class AbstractVectorGroupOps(AbstractStorageOps[ElementT]):
     """
     An abstract base class for GroupOps implementations whose group operation
     is equivalent to storage representation addition, and whose identity element
@@ -19,11 +22,11 @@ class AbstractVectorGroupOps(AbstractStorageOps):
     """
 
     @classmethod
-    def identity(cls, a: T.ElementOrType) -> T.Element:
+    def identity(cls, a: ElementOrTypeT) -> ElementT:
         return cls.from_storage(a, [0] * cls.storage_dim(a))
 
     @classmethod
-    def compose(cls, a: T.Element, b: T.Element) -> T.Element:
+    def compose(cls, a: ElementT, b: ElementT) -> ElementT:
         if cls.storage_dim(a) != cls.storage_dim(b):
             raise ValueError(
                 f"Elements must have the same storage length ({cls.storage_dim(a)} != {cls.storage_dim(b)})."
@@ -33,5 +36,5 @@ class AbstractVectorGroupOps(AbstractStorageOps):
         )
 
     @classmethod
-    def inverse(cls, a: T.Element) -> T.Element:
+    def inverse(cls, a: ElementT) -> ElementT:
         return cls.from_storage(a, [-x for x in cls.to_storage(a)])

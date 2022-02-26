@@ -5,8 +5,10 @@
 from symforce import typing as T
 from symforce.ops.impl.abstract_vector_lie_group_ops import AbstractVectorLieGroupOps
 
+NoneElementOrType = T.Union[None, T.Type[None]]
 
-class NoneTypeLieGroupOps(AbstractVectorLieGroupOps):
+
+class NoneTypeLieGroupOps(AbstractVectorLieGroupOps[None]):
     """
     Class for implementing ops on "None" object. This is primarily used when performing ops
     on dataclasses with optional fields which could be "None".
@@ -16,18 +18,18 @@ class NoneTypeLieGroupOps(AbstractVectorLieGroupOps):
     """
 
     @staticmethod
-    def storage_dim(a: T.Any) -> int:
+    def storage_dim(a: NoneElementOrType) -> int:
         return 0
 
     @staticmethod
-    def to_storage(a: T.Any) -> T.List[T.Scalar]:
+    def to_storage(a: None) -> T.List[T.Scalar]:
         return []
 
     @staticmethod
-    def from_storage(a: T.Any, elements: T.Sequence[T.Scalar]) -> None:
+    def from_storage(a: NoneElementOrType, elements: T.Sequence[T.Scalar]) -> None:
         assert len(elements) == 0
         return None
 
     @staticmethod
-    def symbolic(a: T.Any, name: str, **kwargs: T.Dict) -> None:
+    def symbolic(a: NoneElementOrType, name: str, **kwargs: T.Dict) -> None:
         return None

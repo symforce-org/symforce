@@ -5,9 +5,10 @@
 
 from .class_storage_ops import ClassStorageOps
 from .abstract_vector_lie_group_ops import AbstractVectorLieGroupOps
+from ..interfaces import Storage
 
 
-class VectorClassLieGroupOps(ClassStorageOps, AbstractVectorLieGroupOps):
+class VectorClassLieGroupOps(ClassStorageOps, AbstractVectorLieGroupOps[Storage]):
     """
     A generic implementation of Lie group ops for subclasses of symforce.ops.interfaces.Storage.
 
