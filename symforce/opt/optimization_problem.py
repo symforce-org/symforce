@@ -120,7 +120,7 @@ class OptimizationProblem:
                     **{f"arg{i}": value for i, value in enumerate(inputs.values_recursive())}
                 ),
                 outputs=Values(residual=geo.M(self.residuals.to_storage())),
-                jacobian_func=compute_jacobians,
+                custom_jacobian_func=compute_jacobians,
             )
         ]
 
