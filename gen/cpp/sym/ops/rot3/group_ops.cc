@@ -80,7 +80,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Inverse(const sym::Rot3<Scalar>& a) {
 template <typename Scalar>
 sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Compose(const sym::Rot3<Scalar>& a,
                                                   const sym::Rot3<Scalar>& b) {
-  // Total ops: 32
+  // Total ops: 28
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -112,7 +112,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Compose(const sym::Rot3<Scalar>& a,
 template <typename Scalar>
 sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Between(const sym::Rot3<Scalar>& a,
                                                   const sym::Rot3<Scalar>& b) {
-  // Total ops: 38
+  // Total ops: 29
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -142,7 +142,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Between(const sym::Rot3<Scalar>& a,
 template <typename Scalar>
 sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(const sym::Rot3<Scalar>& a,
                                                               SelfJacobian* const res_D_a) {
-  // Total ops: 39
+  // Total ops: 33
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -201,7 +201,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(const sym::Rot3<S
                                                                const sym::Rot3<Scalar>& b,
                                                                SelfJacobian* const res_D_a,
                                                                SelfJacobian* const res_D_b) {
-  // Total ops: 260
+  // Total ops: 224
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -358,7 +358,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(const sym::Rot3<S
                                                                const sym::Rot3<Scalar>& b,
                                                                SelfJacobian* const res_D_a,
                                                                SelfJacobian* const res_D_b) {
-  // Total ops: 201
+  // Total ops: 159
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

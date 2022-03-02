@@ -48,7 +48,7 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PrincipalPoint() const 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPoint(
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
-  // Total ops: 36
+  // Total ops: 34
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _self = Data();
@@ -90,7 +90,7 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 2, 7>* const pixel_D_cal,
     Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point) const {
-  // Total ops: 110
+  // Total ops: 105
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _self = Data();

@@ -116,7 +116,7 @@ sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Compose(
 template <typename Scalar>
 sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Between(
     const sym::ATANCameraCal<Scalar>& a, const sym::ATANCameraCal<Scalar>& b) {
-  // Total ops: 10
+  // Total ops: 5
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _a = a.Data();
@@ -304,7 +304,7 @@ template <typename Scalar>
 sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::ATANCameraCal<Scalar>& a, const sym::ATANCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 10
+  // Total ops: 5
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _a = a.Data();

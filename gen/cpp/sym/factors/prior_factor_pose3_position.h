@@ -37,7 +37,7 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
                               Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                               Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                               Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 66
+  // Total ops: 63
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _value = value.Data();

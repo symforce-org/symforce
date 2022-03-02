@@ -35,7 +35,7 @@ void PriorFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& value,
                          Eigen::Matrix<Scalar, 3, 3>* const jacobian = nullptr,
                          Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                          Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 66
+  // Total ops: 63
 
   // Input arrays
 

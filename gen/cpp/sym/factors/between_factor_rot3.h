@@ -37,7 +37,7 @@ void BetweenFactorRot3(const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b,
                        Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                        Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                        Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 866
+  // Total ops: 759
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

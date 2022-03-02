@@ -86,7 +86,7 @@ typename LieGroupOps<DoubleSphereCameraCal<Scalar>>::TangentVec
 LieGroupOps<DoubleSphereCameraCal<Scalar>>::LocalCoordinates(
     const sym::DoubleSphereCameraCal<Scalar>& a, const sym::DoubleSphereCameraCal<Scalar>& b,
     const Scalar epsilon) {
-  // Total ops: 12
+  // Total ops: 6
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _a = a.Data();

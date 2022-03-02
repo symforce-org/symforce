@@ -146,7 +146,7 @@ void Linearization(
     Eigen::SparseMatrix<Scalar>* const jacobian = nullptr,
     Eigen::SparseMatrix<Scalar>* const hessian = nullptr,
     Eigen::Matrix<Scalar, 26, 1>* const rhs = nullptr) {
-  // Total ops: 11260
+  // Total ops: 10372
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _views_0_pose = views_0_pose.Data();

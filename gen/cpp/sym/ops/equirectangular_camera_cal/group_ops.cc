@@ -115,7 +115,7 @@ template <typename Scalar>
 sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Between(
     const sym::EquirectangularCameraCal<Scalar>& a,
     const sym::EquirectangularCameraCal<Scalar>& b) {
-  // Total ops: 8
+  // Total ops: 4
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -276,7 +276,7 @@ sym::EquirectangularCameraCal<Scalar>
 GroupOps<EquirectangularCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::EquirectangularCameraCal<Scalar>& a, const sym::EquirectangularCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 8
+  // Total ops: 4
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

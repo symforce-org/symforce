@@ -54,7 +54,7 @@ class LieGroupOps(object):
     def retract(a, vec, epsilon):
         # type: (sym.Rot2, T.Sequence[float], float) -> sym.Rot2
 
-        # Total ops: 9
+        # Total ops: 8
 
         # Input arrays
         _a = a.data
@@ -73,7 +73,7 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Rot2, sym.Rot2, float) -> T.List[float]
 
-        # Total ops: 12
+        # Total ops: 11
 
         # Input arrays
         _a = a.data

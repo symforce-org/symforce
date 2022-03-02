@@ -31,7 +31,7 @@ void BetweenFactorPose3TranslationNorm(const sym::Pose3<Scalar>& a, const sym::P
                                        Eigen::Matrix<Scalar, 1, 12>* const jacobian = nullptr,
                                        Eigen::Matrix<Scalar, 12, 12>* const hessian = nullptr,
                                        Eigen::Matrix<Scalar, 12, 1>* const rhs = nullptr) {
-  // Total ops: 49
+  // Total ops: 44
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();

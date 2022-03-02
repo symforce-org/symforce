@@ -95,7 +95,7 @@ typename LieGroupOps<SphericalCameraCal<Scalar>>::TangentVec
 LieGroupOps<SphericalCameraCal<Scalar>>::LocalCoordinates(const sym::SphericalCameraCal<Scalar>& a,
                                                           const sym::SphericalCameraCal<Scalar>& b,
                                                           const Scalar epsilon) {
-  // Total ops: 18
+  // Total ops: 9
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();

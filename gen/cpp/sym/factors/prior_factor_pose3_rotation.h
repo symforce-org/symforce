@@ -37,7 +37,7 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
                               Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                               Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                               Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 416
+  // Total ops: 365
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _value = value.Data();

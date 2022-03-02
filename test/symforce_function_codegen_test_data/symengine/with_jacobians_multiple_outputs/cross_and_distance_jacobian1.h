@@ -29,7 +29,7 @@ void CrossAndDistanceJacobian1(const Eigen::Matrix<Scalar, 3, 1>& a,
                                const Eigen::Matrix<Scalar, 3, 1>& b, const Scalar epsilon,
                                Scalar* const distance = nullptr,
                                Eigen::Matrix<Scalar, 3, 3>* const cross_D_b = nullptr) {
-  // Total ops: 16
+  // Total ops: 13
 
   // Input arrays
 

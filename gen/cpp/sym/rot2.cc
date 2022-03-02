@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, const Rot2f& a) {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::Compose(
     const Eigen::Matrix<Scalar, 2, 1>& right) const {
-  // Total ops: 7
+  // Total ops: 6
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _self = Data();

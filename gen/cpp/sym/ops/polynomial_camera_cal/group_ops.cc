@@ -125,7 +125,7 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Compose(
 template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Between(
     const sym::PolynomialCameraCal<Scalar>& a, const sym::PolynomialCameraCal<Scalar>& b) {
-  // Total ops: 16
+  // Total ops: 8
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _a = a.Data();
@@ -439,7 +439,7 @@ template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::PolynomialCameraCal<Scalar>& a, const sym::PolynomialCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 16
+  // Total ops: 8
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _a = a.Data();

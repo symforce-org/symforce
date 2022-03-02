@@ -34,7 +34,7 @@ void InverseRangeLandmarkPriorFactor(const Scalar landmark_inverse_range,
                                      Eigen::Matrix<Scalar, 1, 1>* const jacobian = nullptr,
                                      Eigen::Matrix<Scalar, 1, 1>* const hessian = nullptr,
                                      Eigen::Matrix<Scalar, 1, 1>* const rhs = nullptr) {
-  // Total ops: 10
+  // Total ops: 8
 
   // Input arrays
 

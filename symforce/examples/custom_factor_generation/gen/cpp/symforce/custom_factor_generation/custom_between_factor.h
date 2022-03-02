@@ -42,7 +42,7 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
                          Eigen::Matrix<Scalar, 6, 12>* const jacobian = nullptr,
                          Eigen::Matrix<Scalar, 12, 12>* const hessian = nullptr,
                          Eigen::Matrix<Scalar, 12, 1>* const rhs = nullptr) {
-  // Total ops: 1048
+  // Total ops: 949
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _nav_T_src = nav_T_src.Data();

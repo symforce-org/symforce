@@ -51,7 +51,7 @@ typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::ToTang
 template <typename Scalar>
 sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
                                                      const TangentVec& vec, const Scalar epsilon) {
-  // Total ops: 9
+  // Total ops: 8
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
@@ -72,7 +72,7 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
 template <typename Scalar>
 typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::LocalCoordinates(
     const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 12
+  // Total ops: 11
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();

@@ -113,7 +113,7 @@ sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Compose(
 template <typename Scalar>
 sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Between(
     const sym::LinearCameraCal<Scalar>& a, const sym::LinearCameraCal<Scalar>& b) {
-  // Total ops: 8
+  // Total ops: 4
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -271,7 +271,7 @@ template <typename Scalar>
 sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::LinearCameraCal<Scalar>& a, const sym::LinearCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 8
+  // Total ops: 4
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

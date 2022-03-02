@@ -56,7 +56,7 @@ template <typename Scalar>
 sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>& a,
                                                        const TangentVec& vec,
                                                        const Scalar epsilon) {
-  // Total ops: 11
+  // Total ops: 10
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -79,7 +79,7 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>&
 template <typename Scalar>
 typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::LocalCoordinates(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 16
+  // Total ops: 13
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

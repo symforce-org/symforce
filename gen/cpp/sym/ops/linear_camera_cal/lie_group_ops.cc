@@ -80,7 +80,7 @@ typename LieGroupOps<LinearCameraCal<Scalar>>::TangentVec
 LieGroupOps<LinearCameraCal<Scalar>>::LocalCoordinates(const sym::LinearCameraCal<Scalar>& a,
                                                        const sym::LinearCameraCal<Scalar>& b,
                                                        const Scalar epsilon) {
-  // Total ops: 8
+  // Total ops: 4
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

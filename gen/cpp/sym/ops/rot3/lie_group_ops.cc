@@ -15,7 +15,7 @@ namespace sym {
 template <typename Scalar>
 sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::FromTangent(const TangentVec& vec,
                                                          const Scalar epsilon) {
-  // Total ops: 16
+  // Total ops: 15
 
   // Input arrays
 
@@ -63,7 +63,7 @@ typename LieGroupOps<Rot3<Scalar>>::TangentVec LieGroupOps<Rot3<Scalar>>::ToTang
 template <typename Scalar>
 sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::Retract(const sym::Rot3<Scalar>& a,
                                                      const TangentVec& vec, const Scalar epsilon) {
-  // Total ops: 49
+  // Total ops: 44
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -94,7 +94,7 @@ sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::Retract(const sym::Rot3<Scalar>& a,
 template <typename Scalar>
 typename LieGroupOps<Rot3<Scalar>>::TangentVec LieGroupOps<Rot3<Scalar>>::LocalCoordinates(
     const sym::Rot3<Scalar>& a, const sym::Rot3<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 57
+  // Total ops: 48
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

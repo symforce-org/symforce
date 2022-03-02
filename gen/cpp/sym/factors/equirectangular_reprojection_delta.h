@@ -46,7 +46,7 @@ void EquirectangularReprojectionDelta(
     const Eigen::Matrix<Scalar, 2, 1>& target_pixel, const Scalar epsilon,
     Eigen::Matrix<Scalar, 2, 1>* const reprojection_delta = nullptr,
     Scalar* const is_valid = nullptr) {
-  // Total ops: 161
+  // Total ops: 144
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();

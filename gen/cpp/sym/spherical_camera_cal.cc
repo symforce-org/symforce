@@ -48,7 +48,7 @@ Eigen::Matrix<Scalar, 2, 1> SphericalCameraCal<Scalar>::PrincipalPoint() const {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> SphericalCameraCal<Scalar>::PixelFromCameraPoint(
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
-  // Total ops: 33
+  // Total ops: 30
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _self = Data();
@@ -88,7 +88,7 @@ Eigen::Matrix<Scalar, 2, 1> SphericalCameraCal<Scalar>::PixelFromCameraPointWith
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 2, 8>* const pixel_D_cal,
     Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point) const {
-  // Total ops: 135
+  // Total ops: 125
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _self = Data();

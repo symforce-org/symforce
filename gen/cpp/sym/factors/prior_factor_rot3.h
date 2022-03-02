@@ -36,7 +36,7 @@ void PriorFactorRot3(const sym::Rot3<Scalar>& value, const sym::Rot3<Scalar>& pr
                      Eigen::Matrix<Scalar, 3, 3>* const jacobian = nullptr,
                      Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                      Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 415
+  // Total ops: 364
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _value = value.Data();

@@ -37,7 +37,7 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
                            Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                            Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                            Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 126
+  // Total ops: 102
 
   // Input arrays
 

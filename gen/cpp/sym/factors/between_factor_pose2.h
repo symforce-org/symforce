@@ -38,7 +38,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
                         Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                         Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                         Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 294
+  // Total ops: 266
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

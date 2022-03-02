@@ -28,7 +28,7 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> CrossAndDistanceSecondJacobian0(
     const Eigen::Matrix<Scalar, 3, 1>& a, const Eigen::Matrix<Scalar, 3, 1>& b,
     const Scalar epsilon, Eigen::Matrix<Scalar, 1, 3>* const distance_D_a = nullptr) {
-  // Total ops: 28
+  // Total ops: 22
 
   // Input arrays
 

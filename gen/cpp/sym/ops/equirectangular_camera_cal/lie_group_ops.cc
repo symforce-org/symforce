@@ -80,7 +80,7 @@ typename LieGroupOps<EquirectangularCameraCal<Scalar>>::TangentVec
 LieGroupOps<EquirectangularCameraCal<Scalar>>::LocalCoordinates(
     const sym::EquirectangularCameraCal<Scalar>& a, const sym::EquirectangularCameraCal<Scalar>& b,
     const Scalar epsilon) {
-  // Total ops: 8
+  // Total ops: 4
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

@@ -34,7 +34,7 @@ Eigen::Matrix<Scalar, 3, 1> CrossAndDistanceSecondWithJacobians(
     Eigen::Matrix<Scalar, 1, 3>* const distance_D_a = nullptr,
     Eigen::Matrix<Scalar, 1, 3>* const distance_D_b = nullptr,
     Eigen::Matrix<Scalar, 1, 1>* const distance_D_epsilon = nullptr) {
-  // Total ops: 33
+  // Total ops: 27
 
   // Input arrays
 

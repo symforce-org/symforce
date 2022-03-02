@@ -83,7 +83,7 @@ typename LieGroupOps<ATANCameraCal<Scalar>>::TangentVec
 LieGroupOps<ATANCameraCal<Scalar>>::LocalCoordinates(const sym::ATANCameraCal<Scalar>& a,
                                                      const sym::ATANCameraCal<Scalar>& b,
                                                      const Scalar epsilon) {
-  // Total ops: 10
+  // Total ops: 5
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _a = a.Data();

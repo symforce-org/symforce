@@ -128,7 +128,7 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Between(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b) {
-  // Total ops: 18
+  // Total ops: 9
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
@@ -496,7 +496,7 @@ template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 18
+  // Total ops: 9
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();

@@ -51,7 +51,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Identity() {
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Inverse(const sym::Pose2<Scalar>& a) {
-  // Total ops: 10
+  // Total ops: 9
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -80,7 +80,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Inverse(const sym::Pose2<Scalar>& a)
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
                                                     const sym::Pose2<Scalar>& b) {
-  // Total ops: 16
+  // Total ops: 14
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -112,7 +112,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Between(const sym::Pose2<Scalar>& a,
                                                     const sym::Pose2<Scalar>& b) {
-  // Total ops: 25
+  // Total ops: 20
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -142,7 +142,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Between(const sym::Pose2<Scalar>& a,
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::InverseWithJacobian(const sym::Pose2<Scalar>& a,
                                                                 SelfJacobian* const res_D_a) {
-  // Total ops: 18
+  // Total ops: 15
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -193,7 +193,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::ComposeWithJacobians(const sym::Pose
                                                                  const sym::Pose2<Scalar>& b,
                                                                  SelfJacobian* const res_D_a,
                                                                  SelfJacobian* const res_D_b) {
-  // Total ops: 27
+  // Total ops: 22
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -264,7 +264,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(const sym::Pose
                                                                  const sym::Pose2<Scalar>& b,
                                                                  SelfJacobian* const res_D_a,
                                                                  SelfJacobian* const res_D_b) {
-  // Total ops: 47
+  // Total ops: 35
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

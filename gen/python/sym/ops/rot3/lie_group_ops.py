@@ -20,7 +20,7 @@ class LieGroupOps(object):
     def from_tangent(vec, epsilon):
         # type: (T.Sequence[float], float) -> sym.Rot3
 
-        # Total ops: 16
+        # Total ops: 15
 
         # Input arrays
 
@@ -66,7 +66,7 @@ class LieGroupOps(object):
     def retract(a, vec, epsilon):
         # type: (sym.Rot3, T.Sequence[float], float) -> sym.Rot3
 
-        # Total ops: 49
+        # Total ops: 44
 
         # Input arrays
         _a = a.data
@@ -93,7 +93,7 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Rot3, sym.Rot3, float) -> T.List[float]
 
-        # Total ops: 57
+        # Total ops: 48
 
         # Input arrays
         _a = a.data

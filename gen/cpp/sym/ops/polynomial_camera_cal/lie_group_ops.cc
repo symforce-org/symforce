@@ -92,7 +92,7 @@ typename LieGroupOps<PolynomialCameraCal<Scalar>>::TangentVec
 LieGroupOps<PolynomialCameraCal<Scalar>>::LocalCoordinates(
     const sym::PolynomialCameraCal<Scalar>& a, const sym::PolynomialCameraCal<Scalar>& b,
     const Scalar epsilon) {
-  // Total ops: 16
+  // Total ops: 8
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _a = a.Data();

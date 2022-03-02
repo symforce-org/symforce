@@ -119,7 +119,7 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Comp
 template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Between(
     const sym::DoubleSphereCameraCal<Scalar>& a, const sym::DoubleSphereCameraCal<Scalar>& b) {
-  // Total ops: 12
+  // Total ops: 6
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _a = a.Data();
@@ -343,7 +343,7 @@ template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::DoubleSphereCameraCal<Scalar>& a, const sym::DoubleSphereCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 12
+  // Total ops: 6
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _a = a.Data();
