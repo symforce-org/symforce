@@ -163,6 +163,23 @@ class Optimizer:
 
         self._initialized = True
 
+    def _cc_values(self, values: Values) -> cc_sym.Values:
+        """
+        Create a cc_sym.Values from the given Python Values
+
+        This uses the stored cc_keys_map, which will be initialized if it does not exist yet.
+        """
+        values = values.to_numerical()
+
+        if not self._initialized:
+            self._initialize(values)
+
+        cc_values = cc_sym.Values()
+        for key, cc_key in self._cc_keys_map.items():
+            cc_values.set(cc_key, values[key])
+
+        return cc_values
+
     def optimize(self, initial_guess: Values) -> Optimizer.Result:
         """
         Optimize from the given initial guess, and return the optimized Values and stats
@@ -175,14 +192,7 @@ class Optimizer:
             The optimization results, with additional stats and debug information.  See the
             `Optimizer.Result` documentation for more information
         """
-        initial_guess = initial_guess.to_numerical()
-
-        if not self._initialized:
-            self._initialize(initial_guess)
-
-        cc_values = cc_sym.Values()
-        for key, cc_key in self._cc_keys_map.items():
-            cc_values.set(cc_key, initial_guess[key])
+        cc_values = self._cc_values(initial_guess)
 
         try:
             stats = self._cc_optimizer.optimize(cc_values)
@@ -190,7 +200,10 @@ class Optimizer:
             raise ZeroDivisionError("ERROR: Division by zero - check your use of epsilon!") from ex
 
         optimized_values = Values(
-            **{key: cc_values.at(self._cc_keys_map[key]) for key in initial_guess.keys_recursive()}
+            **{
+                key: cc_values.at(self._cc_keys_map[key])
+                for key in initial_guess.dataclasses_to_values().keys_recursive()
+            }
         )
 
         return Optimizer.Result(
@@ -200,6 +213,12 @@ class Optimizer:
             best_index=stats.best_index,
             early_exited=stats.early_exited,
         )
+
+    def linearize(self, values: Values) -> cc_sym.Linearization:
+        """
+        Compute and return the linearization at the given Values
+        """
+        return self._cc_optimizer.linearize(self._cc_values(values))
 
     def load_iteration_values(self, values_msg: values_t) -> Values:
         """

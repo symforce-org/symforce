@@ -144,11 +144,14 @@ pose = geo.Pose2(
 landmark = geo.V2.symbolic("L")
 ```
 
-Let's transform the landmark into the local frame of the robot:
+Let's transform the landmark into the local frame of the robot.  We choose to represent poses as
+`world_T_body`, meaning that to take a landmark in the world frame and get its position in the body
+frame, we do:
 ```python
 landmark_body = pose.inverse() * landmark
 ```
-<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;\begin{bmatrix}&space;&space;R_{re}&space;L_0&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0&space;\\&space;&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1\end{bmatrix}" width="250px" />
+<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;\begin{bmatrix}&space;&space;R_{re}&space;L_0&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0&space;\\&space;&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1\end{bmatrix}"
+    width="250px" class="latex-eqn" />
 
 <!-- $
 \begin{bmatrix}
@@ -166,7 +169,8 @@ For exploration purposes, let's take the jacobian of the body-frame landmark wit
 ```python
 landmark_body.jacobian(pose)
 ```
-<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;\begin{bmatrix}&space;&space;-R_{re}&space;,&space;&&space;-R_{im},&space;&space;&&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;-&space;R_{re}&space;t_1&space;\\&space;&space;R_{im}&space;,&space;&&space;-R_{re}&space;,&space;&&space;-R_{re}&space;L_0&space;-&space;R_{im}&space;L_1&space;&plus;&space;R_{re}&space;t_0&space;&plus;&space;R_{im}&space;t_1\end{bmatrix}" width="350px" />
+<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;\begin{bmatrix}&space;&space;-R_{re}&space;,&space;&&space;-R_{im},&space;&space;&&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;-&space;R_{re}&space;t_1&space;\\&space;&space;R_{im}&space;,&space;&&space;-R_{re}&space;,&space;&&space;-R_{re}&space;L_0&space;-&space;R_{im}&space;L_1&space;&plus;&space;R_{re}&space;t_0&space;&plus;&space;R_{im}&space;t_1\end{bmatrix}"
+    width="350px" class="latex-eqn" />
 
 <!-- $
 \begin{bmatrix}
@@ -182,7 +186,8 @@ Now compute the relative bearing angle:
 ```python
 sm.atan2(landmark_body[1], landmark_body[0])
 ```
-<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;atan_2(-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1,&space;R_{re}&space;L_0&space;&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0)" width="500px" />
+<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;atan_2(-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1,&space;R_{re}&space;L_0&space;&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0)"
+    width="500px" class="latex-eqn" />
 
 <!-- $
 atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
@@ -193,7 +198,8 @@ One important note is that `atan2` is singular at (0, 0). In SymForce we handle 
 ```python
 geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
 ```
-<img src="https://latex.codecogs.com/png.image?\dpi{200}&space;\sqrt{x_0^2&space;&plus;&space;x_1^2&space;&plus;&space;x_2^2&space;&plus;&space;\epsilon}" width="135px" />
+<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;\sqrt{x_0^2&space;&plus;&space;x_1^2&space;&plus;&space;x_2^2&space;&plus;&space;\epsilon}"
+    width="135px" class="latex-eqn" />
 
 <!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
 
@@ -230,6 +236,8 @@ def odometry_residual(
 Now we can create [`Factor`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.opt.factor.html) objects from the residual functions and a set of keys. The keys are named strings for the function arguments, which will be accessed by name from a [`Values`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.values.values.html) class we later instantiate with numerical quantities.
 
 ```python
+from symforce.opt.factor import Factor
+
 num_poses = 3
 num_landmarks = 3
 
@@ -257,11 +265,18 @@ Here is a visualization of the structure of this factor graph:
 
 ## Solve the problem
 
-Our goal is to find poses of the robot that minimize the residual of this factor graph. We create an [`Optimizer`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.opt.optimizer.html) with these factors and tell it to only optimize the pose keys (the rest are held constant):
+Our goal is to find poses of the robot that minimize the residual of this factor graph, assuming the
+landmark positions in the world are known. We create an
+[`Optimizer`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api/symforce.opt.optimizer.html)
+with these factors and tell it to only optimize the pose keys (the rest are held constant):
 ```python
+from symforce.opt.optimizer import Optimizer
+
 optimizer = Optimizer(
     factors=factors,
-    optimized_keys=[f"poses[{i}]" for i in range(num_poses)]
+    optimized_keys=[f"poses[{i}]" for i in range(num_poses)],
+    # So that we save more information about each iteration, to visualize later:
+    debug_stats=True,
 )
 ```
 
@@ -285,13 +300,16 @@ Now run the optimization! This returns an [`Optimizer.Result`](https://symforce-
 result = optimizer.optimize(initial_values)
 ```
 
-Let's visualize what the optimizer did. The green circle represent the fixed landmarks, the blue circles represent the robot, and the dotted lines represent the bearing measurements.
+Let's visualize what the optimizer did. The orange circles represent the fixed landmarks, the blue
+circles represent the robot, and the dotted lines represent the bearing measurements.
 
 ```python
 from symforce.examples.robot_2d_triangulation.plotting import plot_solution
 plot_solution(optimizer, result)
 ```
 <img alt="Robot 2D Triangulation Solution" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
+
+All of the code for this example can also be found in `symforce/examples/robot_2d_triangulation`.
 
 ## Symbolic vs Numerical Types
 
@@ -306,7 +324,7 @@ geo.Pose3.identity()
 The autogenerated Python runtime class [`sym.Pose3`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api-gen-py/sym.pose3.html) lives in the `sym` package:
 ```python
 import sym
-sym.Pose.identity()
+sym.Pose3.identity()
 ```
 
 The autogenerated C++ runtime class [`sym::Pose3`](https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/docs/api-gen-cpp/class/classsym_1_1Pose3.html) lives in the `sym::` namespace:
@@ -488,9 +506,9 @@ sym::Values<double> values;
 for (int i = 0; i < num_poses; ++i) {
     values.Set({'P', i}, sym::Pose2::Identity());
 }
-... (initialize all keys)
+// ... (initialize all keys)
 
-# Optimize!
+// Optimize!
 const auto stats = optimizer.Optimize(&values);
 
 std::cout << "Optimized values:" << values << std::endl;
@@ -529,3 +547,22 @@ You can find more SymForce tutorials [here](https://symforce-6d87c842-22de-4727-
 SymForce is released under the [BSD-3](https://opensource.org/licenses/BSD-3-Clause) license.
 
 See the LICENSE file for more information.
+
+# Future Ideas
+
+There are lots of features we'd like to add, or would be happy to see added by contributors from the
+community.  Some of these are outlined in
+[the current Issues](https://github.com/symforce-org/symforce/issues), but some other major possible
+additions are:
+
+- Easily swap in approximate or architecture-specific implementations of primitive
+functions, such as trig functions
+- Add more backend languages, such as CUDA, GLSL/HLSL, and TypeScript
+- More Lie group types, in particular Sim(3)
+
+<style>
+img.latex-eqn {
+    background-color:white;
+    padding: 20px;
+}
+</style>
