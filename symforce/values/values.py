@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import collections
 import contextlib
+import copy
 import dataclasses
 import numpy as np
 
@@ -90,11 +91,19 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         return self.dict.get(key, default)
 
+    def __deepcopy__(self, memo: T.Dict[int, T.Any]) -> Values:
+        """
+        Returns a deepcopy of this Values.
+
+        Use copy.deepcopy to call.
+        """
+        return self.from_storage(self.to_storage())
+
     def copy(self) -> Values:
         """
         Returns a deepcopy of this Values.
         """
-        return self.from_storage(self.to_storage())
+        return copy.deepcopy(self)
 
     def __len__(self) -> int:
         """

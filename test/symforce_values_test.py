@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import copy
 from dataclasses import dataclass
 import numpy as np
 import itertools
@@ -53,7 +54,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v["float"] = 3.0
         v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist())
         v["pose3"] = geo.Pose3.from_tangent(np.random.normal(size=(6,)).tolist())
-        other_values = v.copy()
+        other_values = copy.deepcopy(v)
         v["values"] = other_values
         v["vec_values"] = [other_values, other_values]
         v["vec_rot3"] = [
@@ -198,7 +199,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         logger.debug("v:\n" + string)
 
         # Copy into other values and change element
-        new_v = v.copy()
+        new_v = copy.deepcopy(v)
         self.assertEqual(new_v, v)
         v["list"].append(4)
         self.assertNotEqual(new_v, v)
@@ -659,7 +660,7 @@ class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
 
         values_no_dataclasses = values.dataclasses_to_values()
 
-        values_no_dataclasses_expected = values.copy()
+        values_no_dataclasses_expected = copy.deepcopy(values)
         values_no_dataclasses_expected["data"] = Values(
             x=0,
             v=values["data"].v,

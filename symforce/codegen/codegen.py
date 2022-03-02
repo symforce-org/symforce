@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import copy
 import enum
 import functools
 import os
@@ -673,7 +674,7 @@ class Codegen:
 
         # Make the new outputs
         if include_results:
-            outputs = self.outputs.copy()
+            outputs = copy.deepcopy(self.outputs)
         else:
             outputs = Values()
 

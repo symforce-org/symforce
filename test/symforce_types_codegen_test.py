@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import copy
 import os
 from pathlib import Path
 
@@ -36,7 +37,7 @@ class SymforceTypesCodegenTest(TestCase):
         inputs.add(sm.Symbol("constants.epsilon"))
 
         # Vector
-        sub_values = inputs.copy()
+        sub_values = copy.deepcopy(inputs)
         inputs["values_vec"] = [sub_values, sub_values]
 
         with inputs.scope("states"):

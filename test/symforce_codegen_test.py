@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import copy
 import functools
 import importlib.util
 import logging
@@ -86,7 +87,7 @@ class SymforceCodegenTest(TestCase):
             ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec2"),
             ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec3"),
         ]
-        inputs_copy = inputs.copy()
+        inputs_copy = copy.deepcopy(inputs)
         inputs["values_vec"] = [
             inputs_copy.symbolic("inputs_copy1"),
             inputs_copy.symbolic("inputs_copy2"),
