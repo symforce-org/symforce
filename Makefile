@@ -165,9 +165,17 @@ docs_apidoc:
 	doxygen docs/Doxyfile-gen-cpp
 	$(PYTHON) -m breathe.apidoc -o docs/api-cpp --project api-cpp $(BUILD_DIR)/doxygen-cpp/xml
 	$(PYTHON) -m breathe.apidoc -o docs/api-gen-cpp --project api-gen-cpp $(BUILD_DIR)/doxygen-gen-cpp/xml
+# The generated symforce.cc_sym.rst file says to generate docs for symforce.cc_sym. However, that file
+# only rexports cc_sym, and consequently the actual contents of cc_sym are not documented. We replace
+# symforce.cc_sym.rst with a copy which is the same except it says to generate docs for cc_sym instead.
+	rm docs/api/symforce.cc_sym.rst
+	cp docs/symforce.cc_sym.rst docs/api/symforce.cc_sym.rst
+
+PY_EXTENSION_MODULE_PATH?=$(BUILD_DIR)/pybind
 
 docs_html: docs_apidoc
-	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j4
+	export PYTHONPATH=$(PY_EXTENSION_MODULE_PATH):$(PYTHONPATH); \
+	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j $$(nproc)
 
 docs: docs_clean docs_html
 
