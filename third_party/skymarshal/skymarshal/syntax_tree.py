@@ -156,6 +156,8 @@ class Notation(AstNode):
             ],
         ),
         "#hashable": NotationSpec(allowed={"struct"}, properties=[],),  # enums are always hashable
+        # Emits a ostream operator for LCM types that only have primitive members.
+        "#cpp_display": NotationSpec(allowed={"struct"}, properties=[]),
     }
 
     def __init__(self, name, properties, lineno):

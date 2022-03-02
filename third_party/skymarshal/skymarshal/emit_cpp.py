@@ -603,6 +603,19 @@ class CppStruct(StructBuilder, CppBase):
             self.decode_recursive(code, member, 0)
         code(0, "")
 
+    @property
+    def cpp_display(self):
+        has_cpp = any(notation.name == "#cpp_display" for notation in self.struct.notations)
+        if not has_cpp:
+            return False
+        if self.has_complex_members():
+            raise TypeError(
+                "#cpp_display notation is not supported on structs that have complex members: {}".format(
+                    self.full_name
+                )
+            )
+        return True
+
 
 class SkymarshalCpp(SkymarshalLanguage):
     @classmethod

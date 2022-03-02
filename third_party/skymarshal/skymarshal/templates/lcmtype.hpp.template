@@ -9,6 +9,9 @@
 #ifndef __{{lcmtype.underscored}}_hpp__
 #define __{{lcmtype.underscored}}_hpp__
 
+{% if lcmtype.cpp_display %}
+#include <ostream>
+{% endif %}
 {{lcmtype.includes()}}
 namespace {{lcmtype.namespace}}
 {
@@ -108,6 +111,18 @@ class {{lcmtype.name}}
         // Comparison operators.
         inline bool operator==(const {{lcmtype.name}}& other) const;
         inline bool operator!=(const {{lcmtype.name}}& other) const;
+{% endif %}
+{% if lcmtype.cpp_display %}
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const {{lcmtype.name}}& obj) {
+            stream << "{{lcmtype.name}}(";
+            {% for member in lcmtype.members %}
+              stream << "{{member.name}}=" << obj.{{member.name}}{% if not loop.last %} << ", "{% endif %};
+            {% endfor %}
+            stream << ")";
+            return stream;
+        }
 {% endif %}
 };
 {% if lcmtype.members and not lcmtype.args.cpp_no_operators %}
