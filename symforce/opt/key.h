@@ -17,7 +17,7 @@ namespace sym {
 
 /**
  * Key type for Values. Contains a letter plus an integral subscript and superscript.
- * Can construct with a letter + sub, letter + sub + super, but not letter + super.
+ * Can construct with a letter, a letter + sub, or a letter + sub + super, but not letter + super.
  *
  * TODO(hayk): Consider an abstraction where Key contains a type enum.
  */

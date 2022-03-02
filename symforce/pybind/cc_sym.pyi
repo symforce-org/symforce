@@ -72,6 +72,10 @@ class Factor:
     pass
 
 class Key:
+    """
+    Key type for Values. Contains a letter plus an integral subscript and superscript. Can construct with a letter, a letter + sub, or a letter + sub + super, but not a letter + super.
+    """
+
     def __eq__(self, arg0: object) -> bool: ...
     def __hash__(self) -> int: ...
     @typing.overload
@@ -82,24 +86,39 @@ class Key:
     def __init__(self, letter: str, sub: int, super: int) -> None: ...
     def __repr__(self) -> str: ...
     def get_lcm_type(self) -> key_t: ...
-    def lexical_less_than(self, arg0: Key) -> bool: ...
+    def lexical_less_than(self, arg0: Key) -> bool:
+        """
+        Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).
+        """
     @staticmethod
-    def with_super(key: Key, super: int) -> Key: ...
+    def with_super(key: Key, super: int) -> Key:
+        """
+        Create a new Key from an existing Key and a superscript. The superscript on the existing Key must be empty.
+        """
     @property
     def letter(self) -> str:
         """
+        The letter value of the key.
+
         :type: str
         """
     @property
     def sub(self) -> int:
         """
+        The subscript value of the key (INVALID_SUB if not set).
+
         :type: int
         """
     @property
     def super(self) -> int:
         """
+        The superscript value of the key (INVALID_SUPER if not set).
+
         :type: int
         """
+    INVALID_LETTER = "\x00"
+    INVALID_SUB = -9223372036854775808
+    INVALID_SUPER = -9223372036854775808
     pass
 
 class Linearization:

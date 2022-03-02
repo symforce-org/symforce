@@ -11,6 +11,10 @@
 
 namespace sym {
 
+constexpr char Key::kInvalidLetter;
+constexpr Key::subscript_t Key::kInvalidSub;
+constexpr Key::superscript_t Key::kInvalidSuper;
+
 bool Key::LexicalLessThan(const Key& a, const Key& b) {
   return std::make_tuple(a.Letter(), a.Sub(), a.Super()) <
          std::make_tuple(b.Letter(), b.Sub(), b.Super());

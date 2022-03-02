@@ -34,6 +34,11 @@ class SymforceCCSymTest(TestCase):
         Tests:
             cc_sym.Key
         """
+        with self.subTest(msg="static member fields were wrapped"):
+            self.assertIsInstance(cc_sym.Key.INVALID_LETTER, str)
+            self.assertIsInstance(cc_sym.Key.INVALID_SUB, int)
+            self.assertIsInstance(cc_sym.Key.INVALID_SUPER, int)
+
         with self.subTest(msg="Two keys with the same fields are equal"):
             self.assertEqual(cc_sym.Key("a"), cc_sym.Key("a"))
             self.assertEqual(cc_sym.Key("a", 1), cc_sym.Key("a", 1))
