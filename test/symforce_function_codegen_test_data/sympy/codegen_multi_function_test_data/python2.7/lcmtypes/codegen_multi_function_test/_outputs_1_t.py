@@ -143,7 +143,11 @@ class outputs_1_t(object):
 
     def deepcopy(self, **kwargs):
         # type: (**T.Any) -> outputs_1_t
-        """Ptree-style deep copy. Returns a copy w/ specified members replaced."""
+        """
+        Deep copy of this LCM type
+
+        Returns a copy w/ members specified by kwargs replaced with new values specified by kwargs.
+        """
         result = copy.deepcopy(self)
         for key in kwargs:
             if not hasattr(result, key):
