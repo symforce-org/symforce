@@ -19,6 +19,8 @@ from sym import Pose2
 from sym import Pose3
 
 import scipy
+
+"""This module wraps many of the C++ optimization classes."""
 from __future__ import annotations
 import cc_sym
 import typing

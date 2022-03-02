@@ -13,6 +13,7 @@
 #include "./cc_values.h"
 
 PYBIND11_MODULE(cc_sym, generated_module) {
+  generated_module.doc() = "This module wraps many of the C++ optimization classes.";
   sym::AddKeyWrapper(generated_module);
   sym::AddValuesWrapper(generated_module);
   sym::AddFactorWrapper(generated_module);
