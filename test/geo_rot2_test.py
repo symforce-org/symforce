@@ -64,7 +64,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         matrix_expected = expmap.to_rotation_matrix()
 
         # They should match!
-        self.assertNear(hat_exp, matrix_expected, places=5)
+        self.assertStorageNear(hat_exp, matrix_expected, places=5)
 
     def test_random(self) -> None:
         """
@@ -83,8 +83,8 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
             random_from_uniform_sample_elements.append(rand_uniform_sample_element)
 
             # Check unit norm
-            self.assertNear(random_element.z.squared_norm(), 1.0, places=7)
-            self.assertNear(rand_uniform_sample_element.z.squared_norm(), 1.0, places=7)
+            self.assertStorageNear(random_element.z.squared_norm(), 1.0, places=7)
+            self.assertStorageNear(rand_uniform_sample_element.z.squared_norm(), 1.0, places=7)
 
         for elements in [random_elements, random_from_uniform_sample_elements]:
             # Rotate a point through
@@ -96,7 +96,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
 
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
-            self.assertNear(np.mean(angles), np.pi / 2, places=1)
+            self.assertStorageNear(np.mean(angles), np.pi / 2, places=1)
 
             # Plot the circle to show uniform distribution
             if logger.level == logging.DEBUG and self.verbose:

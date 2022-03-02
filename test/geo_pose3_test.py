@@ -65,7 +65,7 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
         tangent_vec = [1.0] * 6
 
         value = LieGroupOps.from_tangent(element, tangent_vec, epsilon=self.EPSILON)
-        self.assertNear(value.t, tangent_vec[3:], places=7)
+        self.assertStorageNear(value.t, tangent_vec[3:], places=7)
 
 
 if __name__ == "__main__":

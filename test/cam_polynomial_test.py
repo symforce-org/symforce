@@ -36,7 +36,7 @@ class CamPolynomialTest(LieGroupOpsTestMixin, TestCase):
 
         # Camera with a critical point. Computed by hand.
         cal = cam.PolynomialCameraCal((300.0, 300.0), (500.0, 500.0), (-4 / 3, 0.0, 0.0))
-        self.assertNear(cal.critical_undistorted_radius, 0.5)
+        self.assertStorageNear(cal.critical_undistorted_radius, 0.5)
 
     def test_projection_valid(self) -> None:
         # Critical point is 0.5 as seen above.
@@ -52,13 +52,13 @@ class CamPolynomialTest(LieGroupOpsTestMixin, TestCase):
             rotation = geo.Rot3.from_yaw_pitch_roll(np.rad2deg(theta), 0, valid_angle)
             p_cam = rotation * unit_z
             _, is_valid = cal.pixel_from_camera_point(p_cam)
-            self.assertNear(sm.S(is_valid).evalf(), 1.0)
+            self.assertStorageNear(sm.S(is_valid).evalf(), 1.0)
 
         for theta in np.linspace(0, 2 * np.pi, 10):
             rotation = geo.Rot3.from_yaw_pitch_roll(np.rad2deg(theta), 0, invalid_angle)
             p_cam = rotation * unit_z
             _, is_valid = cal.pixel_from_camera_point(p_cam)
-            self.assertNear(sm.S(is_valid).evalf(), 0.0)
+            self.assertStorageNear(sm.S(is_valid).evalf(), 0.0)
 
 
 if __name__ == "__main__":

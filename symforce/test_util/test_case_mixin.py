@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import numpy as np
 import logging
 import os
 import re
@@ -13,12 +14,18 @@ import unittest
 from symforce import logger
 from symforce import python_util
 from symforce import typing as T
+from symforce import geo
+from symforce.ops import interfaces
+from symforce.ops import StorageOps
+from symforce.ops import LieGroupOps
 
 
 class SymforceTestCaseMixin(unittest.TestCase):
     """
     Mixin for SymForce tests, adds useful helpers for code generation
     """
+
+    LieGroupOpsType = T.Union[interfaces.LieGroup, T.Scalar]
 
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing
@@ -28,6 +35,13 @@ class SymforceTestCaseMixin(unittest.TestCase):
         r".*/__pycache__/.*",
         r".*\.pyc",
     ]
+
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
+
+        # Registers assertArrayEqual with python unittest TestCase such that we use numpy array
+        # comparison functions rather than the "==" operator, which throws an error for ndarrays
+        self.addTypeEqualityFunc(np.ndarray, SymforceTestCaseMixin.assertArrayEqual)
 
     @staticmethod
     def main() -> None:
@@ -40,6 +54,73 @@ class SymforceTestCaseMixin(unittest.TestCase):
             sys.argv.remove("--update")
 
         unittest.main()
+
+    @staticmethod
+    def assertStorageNear(
+        actual: T.Any, desired: T.Any, *, places: int = 7, msg: str = "", verbose: bool = True,
+    ) -> None:
+        """
+        Check that two elements are close. Handles sequences, scalars, and geometry types
+        using StorageOps.
+        """
+        return np.testing.assert_almost_equal(
+            actual=np.array(StorageOps.evalf(StorageOps.to_storage(actual)), dtype=np.double),
+            desired=np.array(StorageOps.evalf(StorageOps.to_storage(desired)), dtype=np.double),
+            decimal=places,
+            err_msg=msg,
+            verbose=verbose,
+        )
+
+    @staticmethod
+    def assertLieGroupNear(
+        actual: LieGroupOpsType,
+        desired: LieGroupOpsType,
+        *,
+        places: int = 7,
+        msg: str = "",
+        verbose: bool = True,
+    ) -> None:
+        """
+        Check that two LieGroup elements are close.
+        """
+        epsilon = 10 ** (-max(9, places + 1))
+        # Compute the tangent space pertubation around `actual` that produces `desired`
+        local_coordinates = LieGroupOps.local_coordinates(actual, desired, epsilon=epsilon)
+        # Compute the identity tangent space pertubation to compare against
+        identity = geo.Matrix.zeros(LieGroupOps.tangent_dim(actual), 1)
+        return np.testing.assert_almost_equal(
+            actual=StorageOps.evalf(local_coordinates),
+            desired=StorageOps.to_storage(identity),
+            decimal=places,
+            err_msg=msg,
+            verbose=verbose,
+        )
+
+    @staticmethod
+    def assertArrayEqual(actual: T.ArrayElement, desired: T.ArrayElement, msg: str = "") -> None:
+        """
+        Called by unittest base class when comparing ndarrays when "assertEqual" is called.
+        By default, "assertEqual" uses the "==" operator, which is not implemented for ndarrays.
+        """
+        return np.testing.assert_array_equal(actual, desired, err_msg=msg)
+
+    def assertNotEqual(self, first: T.Any, second: T.Any, msg: str = "") -> None:
+        """
+        Overrides unittest.assertNotEqual to handle ndarrays separately. "assertNotEqual"
+        uses the "!=" operator, but this is not implemented for ndarrays. Instead, we check that
+        np.testing.assert_array_equal raises an assertion error, as numpy testing does not provide
+        a assert_array_not_equal function.
+
+        Note that assertNotEqual does not work like assertEqual in unittest. Rather than
+        allowing you to register a custom equality evaluator (e.g. with `addTypeEqualityFunc()`),
+        assertNotEqual assumes the "!=" can be used with the arguments regardless of type.
+        """
+        if isinstance(first, np.ndarray):
+            return np.testing.assert_raises(
+                AssertionError, np.testing.assert_array_equal, first, second, msg
+            )
+        else:
+            return super().assertNotEqual(first, second, msg)
 
     def make_output_dir(self, prefix: str, directory: str = "/tmp") -> str:
         """

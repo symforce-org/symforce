@@ -46,9 +46,9 @@ class CamTestMixin(_Base):
 
             if abs(StorageOps.evalf(is_valid_forward_proj) - 1) < self.EPSILON:
                 self.assertTrue(geo.Matrix.are_parallel(point, camera_ray, epsilon=self.EPSILON))
-                self.assertNear(is_valid_back_proj, 1)
+                self.assertStorageNear(is_valid_back_proj, 1)
             else:
-                self.assertNear(is_valid_forward_proj, 0)
+                self.assertStorageNear(is_valid_forward_proj, 0)
 
     def test_camera_ray_from_pixel(self) -> None:
         """
@@ -72,7 +72,7 @@ class CamTestMixin(_Base):
             )
 
             if abs(StorageOps.evalf(is_valid_back_proj) - 1) < self.EPSILON:
-                self.assertNear(pixel, pixel_reprojected)
-                self.assertNear(is_valid_forward_proj, 1)
+                self.assertStorageNear(pixel, pixel_reprojected)
+                self.assertStorageNear(is_valid_forward_proj, 1)
             else:
-                self.assertNear(is_valid_back_proj, 0)
+                self.assertStorageNear(is_valid_back_proj, 0)

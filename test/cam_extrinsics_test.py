@@ -83,13 +83,13 @@ class PosedCameraTest(CamTestMixin, TestCase):
                 global_point_reprojected, _ = posed_cam.global_point_from_pixel(
                     pixel, range_to_point=range_to_point
                 )
-                self.assertNear(global_point, global_point_reprojected)
+                self.assertStorageNear(global_point, global_point_reprojected)
 
             # Transform pixel to global coordinates and back
             pixel = geo.V2(np.random.uniform(low=0, high=1000, size=(2,)))
             global_point, _ = posed_cam.global_point_from_pixel(pixel, range_to_point=1)
             pixel_reprojected, _ = posed_cam.pixel_from_global_point(global_point)
-            self.assertNear(pixel, pixel_reprojected)
+            self.assertStorageNear(pixel, pixel_reprojected)
 
     def test_warp_pixel(self) -> None:
         """
@@ -116,7 +116,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
             pixel=pixel_1, inverse_range=inverse_range, target_cam=posed_cam_2
         )
         self.assertEqual(is_valid_warp_into_2, 1)
-        self.assertNear(pixel_1, pixel_2)
+        self.assertStorageNear(pixel_1, pixel_2)
 
         # Try with a camera posed such that the point is invalid
         posed_cam_3 = cam.PosedCamera(
@@ -141,14 +141,14 @@ class PosedCameraTest(CamTestMixin, TestCase):
         cam_2_ray = posed_cam_2.pose.R.inverse() * (posed_cam_1.pose.R * cam_1_ray)
         pixel_inf_2_rot_only, _ = posed_cam_2.pixel_from_camera_point(cam_2_ray)
         self.assertEqual(is_valid_inf.subs(inverse_range, 0), 1)  # type: ignore
-        self.assertNear(pixel_inf_2.subs(inverse_range, 0), pixel_inf_2_rot_only, places=4)
+        self.assertStorageNear(pixel_inf_2.subs(inverse_range, 0), pixel_inf_2_rot_only, places=4)
 
         # Check that when inverse_range = 0 and epsilon = 0 we exactly recover rotation-only math
         pixel_inf_2_exact, is_valid_inf = posed_cam_1.warp_pixel(
             pixel=pixel_inf_1, inverse_range=0, target_cam=posed_cam_2,
         )
         self.assertEqual(is_valid_inf, 1)
-        self.assertNear(pixel_inf_2_exact, pixel_inf_2_rot_only, places=9)
+        self.assertStorageNear(pixel_inf_2_exact, pixel_inf_2_rot_only, places=9)
 
 
 if __name__ == "__main__":

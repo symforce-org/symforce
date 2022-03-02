@@ -50,9 +50,9 @@ class CamATANTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
             distorted_unit_depth_coords = linear_camera_cal.unit_depth_from_pixel(pixel)
             distorted_radius = distorted_unit_depth_coords.norm()
             if abs(distorted_radius * cam_cal.distortion_coeffs[0]) >= np.pi / 2.0:
-                self.assertNear(is_valid_back_proj, 0)
+                self.assertStorageNear(is_valid_back_proj, 0)
             else:
-                self.assertNear(is_valid_back_proj, 1)
+                self.assertStorageNear(is_valid_back_proj, 1)
 
     def test_invalid_points(self) -> None:
         """

@@ -151,10 +151,10 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         num_vector = geo.V3(1, 2, -3.1)
         self.assertEqual(num_vector, sym_vector.subs(sym_vector, num_vector))
         norm = sm.S(sym_vector.norm())
-        self.assertNear(num_vector.norm(), norm.subs(sym_vector, num_vector), places=9)
-        self.assertNear(num_vector.norm(), norm.subs({sym_vector: num_vector}), places=9)
-        self.assertNear(num_vector.norm(), norm.subs([(sym_vector, num_vector)]), places=9)
-        self.assertNear(
+        self.assertStorageNear(num_vector.norm(), norm.subs(sym_vector, num_vector), places=9)
+        self.assertStorageNear(num_vector.norm(), norm.subs({sym_vector: num_vector}), places=9)
+        self.assertStorageNear(num_vector.norm(), norm.subs([(sym_vector, num_vector)]), places=9)
+        self.assertStorageNear(
             num_vector * num_vector.T,
             (sym_vector * sym_vector.T).subs(sym_vector, num_vector),
             places=9,
@@ -172,11 +172,11 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         pi_mat = sm.pi * geo.M22.eye()
         pi_mat_num = geo.Matrix([[3.14159265, 0], [0, 3.14159265]])
-        self.assertNear(pi_mat, pi_mat_num)
+        self.assertStorageNear(pi_mat, pi_mat_num)
 
         numpy_mat = np.array([[2.0, 1.0], [4.0, 3.0]])
         geo_mat = geo.Matrix([[2.0, 1.0], [4.0, 3.0]])
-        self.assertNear(numpy_mat, geo_mat.to_numpy())
+        self.assertStorageNear(numpy_mat, geo_mat.to_numpy())
 
         # Make sure we assert when calling a method that expects fixed size on geo.M
         self.assertRaises(AssertionError, lambda: geo.M.symbolic("C"))
@@ -300,11 +300,11 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         with self.subTest("max_norm = 2"):
             v_clamped = v.clamp_norm(2)
-            self.assertNear(v_clamped, v.normalized() * 2)
+            self.assertStorageNear(v_clamped, v.normalized() * 2)
 
         with self.subTest("max_norm = 10"):
             v_clamped = v.clamp_norm(10)
-            self.assertNear(v_clamped, v)
+            self.assertStorageNear(v_clamped, v)
 
         if symforce.get_backend() == "sympy":
             with self.subTest("epsilon handling"):

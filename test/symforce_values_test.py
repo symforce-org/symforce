@@ -214,7 +214,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         logger.debug(v_evalf)
 
         self.assertEqual(v["a"].evalf(), v_evalf["a"])
-        self.assertNear(v_evalf["a"], 0.3333333, places=6)
+        self.assertStorageNear(v_evalf["a"], 0.3333333, places=6)
 
     INVALID_KEYS = ["", "+", "0", "no[1]dot"]
 

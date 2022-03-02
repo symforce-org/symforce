@@ -47,7 +47,7 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!
-        self.assertNear(hat_exp, matrix_expected, places=5)
+        self.assertStorageNear(hat_exp, matrix_expected, places=5)
 
     def pose3_operations(self, a: geo.Pose3_SE3, b: geo.Pose3_SE3) -> None:
         """

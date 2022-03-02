@@ -37,9 +37,9 @@ class EquirectangularTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
 
                 # Points at the origin should be invalid
                 if point == point.zero():
-                    self.assertNear(is_valid_forward_proj, 0)
+                    self.assertStorageNear(is_valid_forward_proj, 0)
                 else:
-                    self.assertNear(is_valid_forward_proj, 1)
+                    self.assertStorageNear(is_valid_forward_proj, 1)
 
                 _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
@@ -51,9 +51,9 @@ class EquirectangularTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
                     abs(StorageOps.evalf(unit_depth[0])) >= np.pi
                     or abs(StorageOps.evalf(unit_depth[1])) >= np.pi / 2.0
                 ):
-                    self.assertNear(is_valid_back_proj, 0)
+                    self.assertStorageNear(is_valid_back_proj, 0)
                 else:
-                    self.assertNear(is_valid_back_proj, 1)
+                    self.assertStorageNear(is_valid_back_proj, 1)
 
     def test_invalid_points(self) -> None:
         """

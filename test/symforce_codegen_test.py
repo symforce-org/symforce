@@ -201,8 +201,8 @@ class SymforceCodegenTest(TestCase):
             constants,
             states,
         )
-        self.assertNear(foo, x ** 2 + rot.data[3])
-        self.assertNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
+        self.assertStorageNear(foo, x ** 2 + rot.data[3])
+        self.assertStorageNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
 
     def test_function_codegen_python(self) -> None:
         output_dir = self.make_output_dir("sf_codegen_function_codegen_python_")

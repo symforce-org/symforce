@@ -56,7 +56,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         rot1 = geo.Rot3.from_angle_axis(0.3, x_axis)
         rot2 = geo.Rot3.from_angle_axis(-1.1, x_axis)
         angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
-        self.assertNear(angle, 1.4, places=7)
+        self.assertStorageNear(angle, 1.4, places=7)
 
     def get_rotations_to_test(self) -> T.List[geo.Rot3]:
         """
@@ -92,7 +92,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         # 180 degree rotation
         rot_180 = geo.Matrix33([[1, 0, 0], [0, -1, 0], [0, 0, -1]])
         R_180 = geo.Rot3.from_rotation_matrix(rot_180, epsilon=1e-10)
-        self.assertNear(rot_180, R_180.to_rotation_matrix())
+        self.assertStorageNear(rot_180, R_180.to_rotation_matrix())
 
         # Check functions are inverses of each other
         for rot in self.get_rotations_to_test():
@@ -102,7 +102,9 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         # Edge case where all components of quaternion are equal
         *xyz, w = [sm.Rational(1, 2)] * 4
         rot_equal = geo.Rot3(geo.Quaternion(xyz=geo.V3(*xyz), w=w)).to_rotation_matrix()
-        self.assertNear(rot_equal, geo.Rot3.from_rotation_matrix(rot_equal).to_rotation_matrix())
+        self.assertStorageNear(
+            rot_equal, geo.Rot3.from_rotation_matrix(rot_equal).to_rotation_matrix()
+        )
 
     def test_from_rotation_matrix_theta_equals_180(self) -> None:
         """
@@ -149,7 +151,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
                 # axis, but, due to numerical errors, is not exactly.
                 R_i = geo.Rot3.from_angle_axis(np.pi / i, axis).to_rotation_matrix()
                 R = geo.M33(np.linalg.matrix_power(R_i.to_numpy(), i))
-                self.assertNear(R, geo.Rot3.from_rotation_matrix(R).to_rotation_matrix())
+                self.assertStorageNear(R, geo.Rot3.from_rotation_matrix(R).to_rotation_matrix())
 
     def test_to_from_yaw_pitch_roll(self) -> None:
         """
@@ -181,7 +183,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         rot = geo.Rot3.from_two_unit_vectors(one, two)
 
         one_rotated = rot * one
-        self.assertNear(one_rotated, two)
+        self.assertStorageNear(one_rotated, two)
 
     def test_random(self) -> None:
         """
@@ -200,8 +202,8 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             random_from_uniform_samples_elements.append(rand_uniform_sample_element)
 
             # Check unit norm
-            self.assertNear(random_element.q.squared_norm(), 1.0, places=7)
-            self.assertNear(rand_uniform_sample_element.q.squared_norm(), 1.0, places=7)
+            self.assertStorageNear(random_element.q.squared_norm(), 1.0, places=7)
+            self.assertStorageNear(rand_uniform_sample_element.q.squared_norm(), 1.0, places=7)
 
         for elements in [random_elements, random_from_uniform_samples_elements]:
             # Rotate a point through
@@ -212,7 +214,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
-            self.assertNear(np.mean(angles), np.pi / 2, places=1)
+            self.assertStorageNear(np.mean(angles), np.pi / 2, places=1)
 
             # Check that we've included both sides of the double cover
             self.assertLess(min([e.evalf().q.w for e in elements]), -0.8)
@@ -253,7 +255,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         matrix_expected = expmap.to_rotation_matrix()
 
         # They should match!
-        self.assertNear(hat_exp, matrix_expected, places=5)
+        self.assertStorageNear(hat_exp, matrix_expected, places=5)
 
 
 if __name__ == "__main__":

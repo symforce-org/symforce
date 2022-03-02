@@ -28,18 +28,18 @@ class NoiseModelTest(TestCase):
         jac = error.jacobian(x_matrix)
 
         # Test 0: Derivative should be 0 at 0
-        self.assertNear(jac.subs(x, 0.0).evalf(), 0)
+        self.assertStorageNear(jac.subs(x, 0.0).evalf(), 0)
 
         # Test 1: Derivative should be symmetric.
         test1a = jac.subs(x, 1.0).evalf()
         test1b = jac.subs(x, -1.0).evalf()
-        self.assertNear(test1a, -test1b)
+        self.assertStorageNear(test1a, -test1b)
 
         # Test 2: Derivative should be constant for large values w/ alpha==1,
         # this should be pseudo-huber
         test2a = jac.subs(x, 1000.0).evalf()
         test2b = jac.subs(x, 2000.0).evalf()
-        self.assertNear(test2a, test2b, places=4)
+        self.assertStorageNear(test2a, test2b, places=4)
 
         # Test 3: for alpha=-inf, it should asymptote at 1
         alpha = -1.0e10
@@ -48,10 +48,10 @@ class NoiseModelTest(TestCase):
         jac = error.jacobian(x_matrix)
 
         test3a = error.subs(x, 1000.0).evalf()
-        self.assertNear(test3a, 1.0, places=2)
+        self.assertStorageNear(test3a, 1.0, places=2)
 
         test3b = jac.subs(x, 1000.0).evalf()
-        self.assertNear(test3b, 0.0)
+        self.assertStorageNear(test3b, 0.0)
 
         # Test 4: the residual gradient w/ 0 weight should be 0 (and finite!)
         # Make all the params symbolic so they don't get removed.
@@ -60,7 +60,7 @@ class NoiseModelTest(TestCase):
         whitened_residual = noise_model.whiten(x_matrix)
         jac = whitened_residual.jacobian(x_matrix)
         test4 = jac.subs({alpha: 1.0, scale: 2.0, weight: 0.0, epsilon: 1e-10, x: 0.0}).evalf()
-        self.assertNear(test4, 0.0)
+        self.assertStorageNear(test4, 0.0)
 
     @sympy_only
     def test_barron_noise_model_epsilon_handling(self) -> None:

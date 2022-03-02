@@ -31,17 +31,17 @@ class GroupOpsTestMixin(StorageOpsTestMixin):
         self.assertEqual(element, element)
 
         # Inverse of identity is identity
-        self.assertNear(identity, GroupOps.inverse(identity))
+        self.assertStorageNear(identity, GroupOps.inverse(identity))
 
         # Composition with identity
-        self.assertNear(element, GroupOps.compose(element, identity))
-        self.assertNear(element, GroupOps.compose(identity, element))
+        self.assertStorageNear(element, GroupOps.compose(element, identity))
+        self.assertStorageNear(element, GroupOps.compose(identity, element))
 
         # Composition with inverse
-        self.assertNear(identity, GroupOps.compose(GroupOps.inverse(element), element))
-        self.assertNear(identity, GroupOps.compose(element, GroupOps.inverse(element)))
+        self.assertStorageNear(identity, GroupOps.compose(GroupOps.inverse(element), element))
+        self.assertStorageNear(identity, GroupOps.compose(element, GroupOps.inverse(element)))
 
         # Between for differencing
-        self.assertNear(identity, GroupOps.between(element, element))
-        self.assertNear(element, GroupOps.between(identity, element))
-        self.assertNear(GroupOps.inverse(element), GroupOps.between(element, identity))
+        self.assertStorageNear(identity, GroupOps.between(element, element))
+        self.assertStorageNear(element, GroupOps.between(identity, element))
+        self.assertStorageNear(GroupOps.inverse(element), GroupOps.between(element, identity))

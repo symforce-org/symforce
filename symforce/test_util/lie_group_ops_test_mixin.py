@@ -56,30 +56,30 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         self.assertEqual(type(recovered_perturbation), list)
 
         # Assert we are close (near epsilon) to the original
-        self.assertNear(perturbation, recovered_perturbation, places=6)
+        self.assertStorageNear(perturbation, recovered_perturbation, places=6)
 
         # Element from zero tangent vector is identity
         identity_actual = LieGroupOps.from_tangent(element, [0] * dim, epsilon=self.EPSILON)
 
-        self.assertNear(identity, identity_actual, places=7)
+        self.assertStorageNear(identity, identity_actual, places=7)
 
         # Tangent vector of identity element is zero
         tangent_zero_actual = LieGroupOps.to_tangent(identity, epsilon=self.EPSILON)
-        self.assertNear(tangent_zero_actual, geo.M.zeros(dim, 1), places=7)
+        self.assertStorageNear(tangent_zero_actual, geo.M.zeros(dim, 1), places=7)
 
         # Test zero retraction
         element_actual = LieGroupOps.retract(element, [0] * dim, epsilon=self.EPSILON)
-        self.assertNear(element_actual, element, places=7)
+        self.assertStorageNear(element_actual, element, places=7)
 
         # Test that it recovers the original perturbation
         retracted_element = LieGroupOps.retract(element, perturbation, epsilon=self.EPSILON)
         perturbation_recovered = LieGroupOps.local_coordinates(
             element, retracted_element, epsilon=self.EPSILON
         )
-        self.assertNear(perturbation, perturbation_recovered, places=6)
+        self.assertStorageNear(perturbation, perturbation_recovered, places=6)
 
         # Test an identity local coordinates
-        self.assertNear(
+        self.assertStorageNear(
             LieGroupOps.local_coordinates(element, element, epsilon=self.EPSILON),
             geo.M.zeros(dim, 1),
             places=7,
@@ -104,7 +104,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
 
         # Test retraction behaves as expected (compose and from_tangent)
         retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
-        self.assertNear(retracted_element, LieGroupOps.compose(element, value), places=7)
+        self.assertStorageNear(retracted_element, LieGroupOps.compose(element, value), places=7)
 
         # Test local_coordinates behaves as expected (between and to_tangent)
         retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
@@ -112,7 +112,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
             element, retracted_element, epsilon=self.EPSILON
         )
         diff_element = LieGroupOps.between(element, retracted_element)
-        self.assertNear(
+        self.assertStorageNear(
             LieGroupOps.to_tangent(diff_element, epsilon=self.EPSILON),
             pertubation_recovered,
             places=7,
@@ -135,7 +135,7 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         element_perturbed_storage = StorageOps.to_storage(element_perturbed)
         storage_D_tangent_approx = geo.M(element_perturbed_storage).jacobian(xi)
         storage_D_tangent_approx = storage_D_tangent_approx.subs(xi, self.EPSILON * xi.one())
-        self.assertNear(storage_D_tangent, storage_D_tangent_approx)
+        self.assertStorageNear(storage_D_tangent, storage_D_tangent_approx)
 
     def test_tangent_D_storage(self) -> None:
         element = self.element()
@@ -157,4 +157,4 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         tangent_D_storage_approx = element_perturbed_tangent.jacobian(xi)
         tangent_D_storage_approx = tangent_D_storage_approx.subs(xi, xi.zero())
 
-        self.assertNear(tangent_D_storage, tangent_D_storage_approx)
+        self.assertStorageNear(tangent_D_storage, tangent_D_storage_approx)

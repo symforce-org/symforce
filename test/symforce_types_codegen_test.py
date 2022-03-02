@@ -246,7 +246,7 @@ class SymforceTypesCodegenTest(TestCase):
         inp.two = rot
 
         inp2 = input_t.decode(inp.encode())
-        self.assertNear(rot.R.data, inp2.two.R.data, places=9)
+        self.assertStorageNear(rot.R.data, inp2.two.R.data, places=9)
 
 
 if __name__ == "__main__":

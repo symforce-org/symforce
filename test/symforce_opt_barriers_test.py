@@ -201,7 +201,7 @@ class SymforceOptBarriersTest(TestCase):
                     * error_nominal
                     * ((x_centering - center) / (x_nominal_upper - center)) ** power
                 )
-                self.assertNear(
+                self.assertStorageNear(
                     centering_barrier_helper(x_centering, power), expected_error_centering
                 )
 
