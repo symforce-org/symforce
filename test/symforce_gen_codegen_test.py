@@ -22,7 +22,7 @@ from symforce.codegen import geo_package_codegen
 from symforce.codegen import slam_factors_codegen
 from symforce.codegen import sym_util_package_codegen
 from symforce.codegen import template_util
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase, symengine_only
 from symforce import path_util
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -130,7 +130,8 @@ class SymforceGenCodegenTest(TestCase):
         for i in range(len(identity_expected.data)):
             self.assertAlmostEqual(identity_expected.data[i], identity_actual.data[i], places=7)
 
-    @slow_on_sympy
+    # This is so slow on sympy that we disable it entirely
+    @symengine_only
     def test_gen_package_codegen_cpp(self) -> None:
         """
         Test C++ code generation
@@ -149,11 +150,10 @@ class SymforceGenCodegenTest(TestCase):
         cam_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
 
         # Check against existing generated package (only on SymEngine)
-        if symforce.get_backend() == "symengine":
-            self.compare_or_update_directory(
-                actual_dir=os.path.join(output_dir, "sym"),
-                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym"),
-            )
+        self.compare_or_update_directory(
+            actual_dir=os.path.join(output_dir, "sym"),
+            expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym"),
+        )
 
         # Generate functions for testing tangent_D_storage numerical derivatives
         self.generate_tangent_d_storage_functions(output_dir)
@@ -162,16 +162,15 @@ class SymforceGenCodegenTest(TestCase):
         self.generate_cam_example_function(output_dir)
 
         # Compare against the checked-in tests
-        if symforce.get_backend() == "symengine":
-            for test_name in (
-                "cam_package_cpp_test.cc",
-                "cam_function_codegen_cpp_test.cc",
-                "geo_package_cpp_test.cc",
-            ):
-                self.compare_or_update_file(
-                    path=os.path.join(SYMFORCE_DIR, "test", test_name),
-                    new_file=os.path.join(output_dir, "tests", test_name),
-                )
+        for test_name in (
+            "cam_package_cpp_test.cc",
+            "cam_function_codegen_cpp_test.cc",
+            "geo_package_cpp_test.cc",
+        ):
+            self.compare_or_update_file(
+                path=os.path.join(SYMFORCE_DIR, "test", test_name),
+                new_file=os.path.join(output_dir, "tests", test_name),
+            )
 
 
 if __name__ == "__main__":
