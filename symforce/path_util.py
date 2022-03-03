@@ -51,10 +51,6 @@ def catch2_include_dirs() -> T.List[Path]:
     return _Manifest.get_entries("catch2_include_dirs")
 
 
-def lcm_gen_exe() -> Path:
-    return _Manifest.get_entry("lcm_gen_exe")
-
-
 def symenginepy_install_dir() -> Path:
     return _Manifest.get_entry("symenginepy_install_dir")
 
