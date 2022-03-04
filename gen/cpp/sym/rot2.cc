@@ -46,6 +46,23 @@ Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::Compose(
 }
 
 template <typename Scalar>
+sym::Rot2<Scalar> sym::Rot2<Scalar>::FromAngle(const Scalar theta) {
+  // Total ops: 2
+
+  // Input arrays
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 2, 1> _res;
+
+  _res[0] = std::cos(theta);
+  _res[1] = std::sin(theta);
+
+  return sym::Rot2<Scalar>(_res);
+}
+
+template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
   // Total ops: 1
 

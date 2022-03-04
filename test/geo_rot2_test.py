@@ -40,6 +40,15 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         comp = geo.Complex.symbolic("rot")
         self.assertEqual(rot, geo.Rot2(comp))
 
+    def test_angle_constructor(self) -> None:
+        """
+        Tests:
+            Rot2.from_angle
+        """
+        rot1 = geo.Rot2.from_angle(1.5)
+        rot2 = geo.Rot2.from_tangent([1.5])
+        self.assertEqual(rot1, rot2)
+
     def test_lie_exponential(self) -> None:
         """
         Tests:

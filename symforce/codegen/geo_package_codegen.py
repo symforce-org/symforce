@@ -94,6 +94,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     return {
         geo.Rot2: [
             codegen_mul(geo.Rot2, geo.Vector2),
+            Codegen.function(func=geo.Rot2.from_angle, config=config),
             Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config),
         ],
         geo.Rot3: [

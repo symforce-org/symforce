@@ -128,6 +128,15 @@ class Rot2(LieGroup):
         else:
             raise NotImplementedError('Unsupported type: "{}"'.format(type(right)))
 
+    @classmethod
+    def from_angle(cls, theta: T.Scalar) -> Rot2:
+        """
+        Create a Rot2 from an angle `theta` in radians
+
+        This is equivalent to from_tangent([theta])
+        """
+        return cls.from_tangent([theta])
+
     def to_rotation_matrix(self) -> Matrix22:
         """
         A matrix representation of this element in the Euclidean space that contains it.

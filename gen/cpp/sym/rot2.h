@@ -69,19 +69,15 @@ class Rot2 {
   }
 
   // Construct Rot2 representing rotation by angle
-  explicit Rot2(const Scalar angle, const Scalar epsilon = kDefaultEpsilon<Scalar>)
-      : Rot2(FromTangent(Eigen::Matrix<Scalar, 1, 1>(angle), epsilon)) {}
-
-  // Construct Rot2 representing rotation by angle
-  static Self FromAngle(const Scalar angle, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
-    return Rot2(angle, epsilon);
-  }
+  explicit Rot2(const Scalar angle) : Rot2(FromAngle(angle)) {}
 
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
 
   Vector2 Compose(const Vector2& right) const;
+
+  static sym::Rot2<Scalar> FromAngle(const Scalar theta);
 
   Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
 
