@@ -5,6 +5,7 @@
 
 import itertools
 from pathlib import Path
+import re
 
 from symforce import geo
 from symforce import ops
@@ -96,6 +97,20 @@ class OptimizationProblem:
         """
         inputs = self.inputs.dataclasses_to_values()
 
+        leading_trailing_dots_and_brackets_regex = re.compile(r"^[\.\[\]]+|[\.\[\]]+$")
+        dots_and_brackets_regex = re.compile(r"[\.\[\]]+")
+
+        def dots_and_brackets_to_underscores(s: str) -> str:
+            """
+            Converts all "." and "[]" in the given string to underscores such that the resulting
+            string is a valid/readable variable name.
+            """
+            return re.sub(
+                dots_and_brackets_regex,
+                "_",
+                re.sub(leading_trailing_dots_and_brackets_regex, "", s),
+            )
+
         def compute_jacobians(keys: T.Iterable[str]) -> geo.Matrix:
             """
             Functor that computes the jacobians of the residual with respect to a set of keys
@@ -117,7 +132,10 @@ class OptimizationProblem:
                 keys=inputs.keys_recursive(),
                 name=f"{name}_factor",
                 inputs=Values(
-                    **{f"arg{i}": value for i, value in enumerate(inputs.values_recursive())}
+                    **{
+                        dots_and_brackets_to_underscores(key): value
+                        for key, value in inputs.items_recursive()
+                    }
                 ),
                 outputs=Values(residual=geo.M(self.residuals.to_storage())),
                 custom_jacobian_func=compute_jacobians,
