@@ -74,15 +74,13 @@ class Factor:
         self.codegen_language = codegen_language
         self.custom_jacobian_func = custom_jacobian_func
 
+        config = codegen.PythonConfig(
+            # NOTE(hayk): This is to speed up generation
+            autoformat=False
+        )
+
         if residual is not None:
-            self.codegen = codegen.Codegen.function(
-                residual,
-                name=name,
-                config=codegen.PythonConfig(
-                    # NOTE(hayk): This is to speed up generation
-                    autoformat=False
-                ),
-            )
+            self.codegen = codegen.Codegen.function(residual, name=name, config=config)
             if self.name is None:
                 self.name = self.codegen.name
         else:
@@ -93,7 +91,7 @@ class Factor:
                 raise ValueError
 
             self.codegen = codegen.Codegen(
-                inputs=inputs, outputs=outputs, name=self.name, config=codegen.PythonConfig(),
+                inputs=inputs, outputs=outputs, name=self.name, config=config
             )
 
         # TODO(hayk): Should we convert to a set and make sure there were no duplicates?
