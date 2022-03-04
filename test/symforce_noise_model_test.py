@@ -7,10 +7,83 @@ from symforce import geo
 import symforce.opt.noise_models as nm
 from symforce import sympy as sm
 from symforce import typing as T
+from symforce.ops import StorageOps
 from symforce.test_util import TestCase, sympy_only, epsilon_handling
 
 
 class NoiseModelTest(TestCase):
+    def test_isotropic_noise_model(self) -> None:
+        weight = 42
+        noise_model = nm.IsotropicNoiseModel(weight)
+
+        # Check whitening function
+        unwhitened_residual = geo.V3(1, 2, 3)
+        whitened_residual = StorageOps.evalf(noise_model.whiten(unwhitened_residual))
+        self.assertEqual(StorageOps.evalf(sm.sqrt(weight) * unwhitened_residual), whitened_residual)
+
+        # Check overall cost
+        self.assertEqual(
+            weight * unwhitened_residual.dot(unwhitened_residual) / 2,
+            noise_model.error(unwhitened_residual),
+        )
+
+        # Check ops used for IsotropicNoiseModel.from_sigma; we should not get something like
+        # x / sqrt(sigma^2)
+        x = geo.V1.symbolic("x")
+        sigma = sm.Symbol("sigma")
+        model = nm.IsotropicNoiseModel.from_sigma(sigma)
+        self.assertEqual(model.whiten(x), x / sigma)
+
+        # Test other constructors
+        noise_model_from_variance = nm.IsotropicNoiseModel.from_variance(1 / weight)
+        noise_model_from_sigma = nm.IsotropicNoiseModel.from_sigma(1 / sm.sqrt(weight))
+        self.assertEqual(
+            StorageOps.evalf(noise_model_from_variance.whiten(unwhitened_residual)),
+            whitened_residual,
+        )
+        self.assertEqual(
+            StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual,
+        )
+
+    def test_diagonal_noise_model(self) -> None:
+        weights = [1, 2, 3]
+        noise_model = nm.DiagonalNoiseModel(weights)
+
+        # Check whitening function
+        unwhitened_residual = geo.V3(4, 5, 6)
+        whitened_residual = StorageOps.evalf(noise_model.whiten(unwhitened_residual))
+        expected_whitened_residual = geo.M(
+            [sm.sqrt(w) * v for w, v in zip(weights, unwhitened_residual)]
+        )
+        self.assertEqual(StorageOps.evalf(expected_whitened_residual), whitened_residual)
+
+        # Check overall cost
+        self.assertEqual(
+            expected_whitened_residual.dot(expected_whitened_residual) / 2,
+            noise_model.error(unwhitened_residual),
+        )
+
+        # Check ops used for DiagonalNoiseModel.from_sigma; we should not get something like
+        # x / sqrt(sigma^2)
+        sigmas = geo.V3.symbolic("sigma").to_storage()
+        x = geo.V3.symbolic("x")
+        model = nm.DiagonalNoiseModel.from_sigmas(sigmas)
+        for i in range(3):
+            self.assertEqual(model.whiten(x)[i], x[i] / sigmas[i])
+
+        # Test other constructors
+        noise_model_from_variance = nm.DiagonalNoiseModel.from_variances([1 / w for w in weights])
+        noise_model_from_sigma = nm.DiagonalNoiseModel.from_sigmas(
+            [1 / sm.sqrt(w) for w in weights]
+        )
+        self.assertEqual(
+            StorageOps.evalf(noise_model_from_variance.whiten(unwhitened_residual)),
+            whitened_residual,
+        )
+        self.assertEqual(
+            StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual,
+        )
+
     def test_barron_noise_model(self) -> None:
         """
         Some simple tests on the Barron noise model.
@@ -19,11 +92,13 @@ class NoiseModelTest(TestCase):
         x_matrix = geo.V1(x)
 
         alpha = 1.0
-        scale = 2.0
-        weight = 1.0
+        delta = 2.0
+        scalar_information = 1.0
         epsilon = 1.0e-6
 
-        noise_model = nm.BarronNoiseModel(alpha, scale, weight, epsilon)
+        noise_model = nm.BarronNoiseModel(
+            alpha=alpha, delta=delta, scalar_information=scalar_information, x_epsilon=epsilon
+        )
         error = geo.V1(noise_model.error(x_matrix))
         jac = error.jacobian(x_matrix)
 
@@ -41,25 +116,31 @@ class NoiseModelTest(TestCase):
         test2b = jac.subs(x, 2000.0).evalf()
         self.assertStorageNear(test2a, test2b, places=4)
 
-        # Test 3: for alpha=-inf, it should asymptote at 1
+        # Test 3: for alpha=-inf, it should asymptote at delta^2
         alpha = -1.0e10
-        noise_model = nm.BarronNoiseModel(alpha, scale, weight, epsilon)
+        noise_model = nm.BarronNoiseModel(
+            alpha=alpha, delta=delta, scalar_information=scalar_information, x_epsilon=epsilon
+        )
         error = geo.V1(noise_model.error(x_matrix))
         jac = error.jacobian(x_matrix)
 
         test3a = error.subs(x, 1000.0).evalf()
-        self.assertStorageNear(test3a, 1.0, places=2)
+        self.assertStorageNear(test3a, delta ** 2, places=2)
 
         test3b = jac.subs(x, 1000.0).evalf()
         self.assertStorageNear(test3b, 0.0)
 
         # Test 4: the residual gradient w/ 0 weight should be 0 (and finite!)
         # Make all the params symbolic so they don't get removed.
-        alpha, scale, weight, epsilon = sm.symbols("alpha, scale, weight, epsilon")
-        noise_model = nm.BarronNoiseModel(alpha, scale, weight, epsilon)
+        alpha, delta, scalar_information, epsilon = sm.symbols("alpha, scale, weight, epsilon")
+        noise_model = nm.BarronNoiseModel(
+            alpha, delta=delta, scalar_information=scalar_information, x_epsilon=epsilon
+        )
         whitened_residual = noise_model.whiten(x_matrix)
         jac = whitened_residual.jacobian(x_matrix)
-        test4 = jac.subs({alpha: 1.0, scale: 2.0, weight: 0.0, epsilon: 1e-10, x: 0.0}).evalf()
+        test4 = jac.subs(
+            {alpha: 1.0, delta: 2.0, scalar_information: 0.0, epsilon: 1e-10, x: 0.0}
+        ).evalf()
         self.assertStorageNear(test4, 0.0)
 
     @sympy_only
@@ -68,23 +149,23 @@ class NoiseModelTest(TestCase):
         Epsilon handling for BarronNoiseModel.whiten_norm should be correct (i.e. value and
         derivative at 0 should be correct as epsilon->0)
         """
-        scale = 10
-        weight = 2
+        delta = 10
+        scalar_information = 2
 
         def test_epsilon_at_alpha(alpha: T.Scalar) -> bool:
             def whiten_ratio(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
                 noise_model = nm.BarronNoiseModel(
                     alpha=alpha,
-                    scale=scale,
-                    weight=weight,
+                    delta=delta,
+                    scalar_information=scalar_information,
                     alpha_epsilon=epsilon,
                     x_epsilon=epsilon,
                 )
-                return noise_model.whiten_norm(geo.V1(x))[0, 0]
+                return noise_model.whiten_norm(geo.V1(x), epsilon)[0, 0]
 
             # SymPy fails to calculate the limits correctly here, so we provide the correct answers
             return epsilon_handling.is_epsilon_correct(
-                whiten_ratio, expected_value=0, expected_derivative=sm.sqrt(weight) / scale
+                whiten_ratio, expected_value=0, expected_derivative=sm.sqrt(scalar_information),
             )
 
         self.assertTrue(test_epsilon_at_alpha(1))

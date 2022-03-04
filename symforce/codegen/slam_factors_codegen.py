@@ -18,6 +18,7 @@ import os
 from symforce import cam
 from symforce import codegen
 from symforce import geo
+from symforce import sympy as sm
 from symforce import python_util
 from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
@@ -159,13 +160,13 @@ def inverse_range_landmark_reprojection_error_residual(
 
     noise_model = BarronNoiseModel(
         alpha=BarronNoiseModel.compute_alpha_from_mu(gnc_mu, epsilon),
-        scale=gnc_scale,
-        weight=weight * warp_is_valid,
+        scalar_information=1 / gnc_scale ** 2,
         x_epsilon=epsilon,
-        alpha_epsilon=epsilon,
     )
 
-    whitened_residual = noise_model.whiten_norm(reprojection_error)
+    whitened_residual = (
+        warp_is_valid * sm.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+    )
 
     return whitened_residual
 
@@ -277,14 +278,12 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     # Compute whitened residual with a noise model.
     alpha = BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon)
     noise_model = BarronNoiseModel(
-        alpha=alpha,
-        scale=gnc_scale,
-        weight=weight * is_valid,
-        x_epsilon=epsilon,
-        alpha_epsilon=epsilon,
+        alpha=alpha, scalar_information=1 / gnc_scale ** 2, x_epsilon=epsilon,
     )
 
-    whitened_residual = noise_model.whiten_norm(reprojection_error)
+    whitened_residual = (
+        is_valid * sm.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+    )
 
     return whitened_residual
 

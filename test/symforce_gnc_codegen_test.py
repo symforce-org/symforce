@@ -23,9 +23,9 @@ def barron_factor(x: geo.Matrix51, y: geo.Matrix51, mu: T.Scalar, eps: T.Scalar)
     # by alpha=2-1/(1-mu)
     # This transformation means alpha will range from 1 to -inf, so that
     # the noise model starts as a pseudo-huber and goes to a robust Welsch cost.
-    alpha = 2 - 1 / (1 - mu + eps)
+    alpha = BarronNoiseModel.compute_alpha_from_mu(mu, eps)
 
-    noise_model = BarronNoiseModel(alpha, scale=1, weight=1, x_epsilon=eps)
+    noise_model = BarronNoiseModel(alpha=alpha, delta=1, scalar_information=1, x_epsilon=eps)
     return noise_model.whiten(x - y)
 
 

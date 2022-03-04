@@ -253,7 +253,7 @@ class Matrix(Storage):
         return cls([[sm.S.One] * cols for _ in range(rows)])
 
     @classmethod
-    def diag(cls, diagonal: _T.List[_T.Scalar]) -> Matrix:
+    def diag(cls, diagonal: _T.Sequence[_T.Scalar]) -> Matrix:
         """
         Construct a square matrix from the diagonal.
         """

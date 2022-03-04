@@ -2,6 +2,9 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
+from __future__ import annotations
+
+from abc import abstractmethod
 
 from symforce import geo
 from symforce import sympy as sm
@@ -10,32 +13,59 @@ from symforce import typing as T
 
 class NoiseModel:
     """
-    Base class for computing a least squares error term from a residual vector.
+    Base class for whitening unwhitened residuals and/or computing their associated error in a
+    least-squares problem.
     """
 
-    def __init__(self, epsilon: T.Scalar) -> None:
-        self.epsilon = epsilon
+    @abstractmethod
+    def whiten(self, unwhitened_residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
+        """
+        Whiten the residual vector.
+        """
+        pass
 
     @staticmethod
-    def reduce(whitened_residual: geo.Matrix) -> T.Scalar:
+    def reduce(whitened_residual: geo.Matrix.MatrixT) -> T.Scalar:
         """
         Take the sum of squares of the residual.
         """
         return whitened_residual.squared_norm() / 2
 
-    def _whiten(self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar) -> geo.Matrix.MatrixT:
+    def error(self, unwhitened_residual: geo.Matrix.MatrixT) -> T.Scalar:
         """
-        Whiten the residual vector with the given epsilon.
+        Return a scalar error.
         """
-        raise NotImplementedError()
+        return self.reduce(self.whiten(unwhitened_residual))
 
-    def whiten(self, residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
-        """
-        Whiten the residual vector.
-        """
-        return self._whiten(residual, self.epsilon)
 
-    def whiten_norm(self, residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
+class ScalarNoiseModel(NoiseModel):
+    """
+    Base class for noise models that apply a whitening function to each element of the unwhitened
+    residual. I.e. if f() is the whiten_scalar function, each element of the whitened residual can be
+    written as:
+        whitened_residual[i] = f(unwhitened_residual[i])
+    """
+
+    @abstractmethod
+    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+        """
+        A scalar-valued whitening function which is applied to each element of the unwhitened
+        residual.
+
+        Args:
+            x: A single element of the unwhitened residual
+        """
+        pass
+
+    def whiten(self, unwhitened_residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
+        """
+        Whiten the unwhitened residual vector by applying `whiten_scalar` to each element.
+        """
+        return unwhitened_residual.applyfunc(self.whiten_scalar)
+
+    def whiten_norm(
+        self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar = 0
+    ) -> geo.Matrix.MatrixT:
         """
         Whiten the norm of the residual vector.
 
@@ -45,64 +75,217 @@ class NoiseModel:
         and so we're minimizing the whitened norm of the full residual
         for each point.
         """
-        norm = residual.norm(self.epsilon)
+        norm = residual.norm(epsilon)
 
-        # norm here is sqrt(epsilon) at 0, so this is safe to call with epsilon=0, and the result
-        # is also proportional to sqrt(epsilon), so the division is safe
-        whitened_norm = self._whiten(geo.V1(norm), epsilon=0)[0, 0]
+        # Because `norm` is sqrt(epsilon) at 0, we tell `whiten_scalar` the function is bounded
+        # away from zero, allowing for the function to ignore epsilons used to avoid singularities
+        # at x = 0 if they exist, reducing unneeded ops. The result is also proportional to
+        # sqrt(epsilon), so the division is safe
+        whitened_norm = self.whiten_scalar(norm, bounded_away_from_zero=True)
 
         scale_factor = whitened_norm / norm
         return scale_factor * residual
 
-    def error(self, residual: geo.Matrix) -> T.Scalar:
-        """
-        Return a scalar error.
-        """
-        return self.reduce(self.whiten(residual))
 
-
-class BarronNoiseModel(NoiseModel):
+class IsotropicNoiseModel(ScalarNoiseModel):
     """
-    Loss function adapted from:
-    A General and Adaptive Robust Loss Function
-    Jonathan T. Barron
+    Isotropic noise model; equivalent to multiplying the squared residual by a scalar. The cost
+    used in the optimization is:
 
-    e(x) = (b/d) * (( (x/scale)^2 / b + 1)^(d/2) - 1)
+        cost = 0.5 * information * unwhitened_residual.T * unwhitened_residual
+
+    such that:
+        cost = 0.5 * whitened_residual.T * whitened_residual
+
+    The whitened residual is:
+        whitened_residual = sqrt(information) * unwhitened_residual
+
+    Args:
+        scalar_information: Scalar by which the least-squares error will be multiplied. In the
+            context of probability theory, the information is the inverse of the variance of the
+            unwhitened residual. The information represents the weight given to a specific
+            unwhitened residual relative to other residuals used in the least-squares optimization.
+        scalar_sqrt_information: Square-root of scalar_information. If scalar_sqrt_information is
+            specified, we avoid needing to take the square root of scalar_information. Note that
+            only one of scalar_information and scalar_sqrt_information needs to be specified.
+    """
+
+    def __init__(
+        self,
+        scalar_information: T.Optional[T.Scalar] = None,
+        scalar_sqrt_information: T.Optional[T.Scalar] = None,
+    ) -> None:
+        if scalar_sqrt_information is not None:
+            # User has given the square root information, so we can avoid taking the square root
+            self.scalar_sqrt_information = scalar_sqrt_information
+        else:
+            assert (
+                scalar_information is not None
+            ), 'Either "scalar_information" or "scalar_sqrt_information" must be provided.'
+            self.scalar_sqrt_information = sm.sqrt(scalar_information)
+
+    @classmethod
+    def from_variance(cls, variance: T.Scalar) -> IsotropicNoiseModel:
+        """
+        Returns an IsotropicNoiseModel given a variance. Typically used when we treat the residual
+        as a random variable with known variance, and wish to weight its cost according to the
+        information gained by that measurement (i.e. the inverse of the variance).
+
+        Args:
+            variance: Typically the variance of the residual elements. Results in cost
+                cost = 0.5 * (1 / variance) * unwhitened_residual.T * unwhitened_residual
+        """
+        return cls(scalar_information=1 / variance)
+
+    @classmethod
+    def from_sigma(cls, standard_deviation: T.Scalar) -> IsotropicNoiseModel:
+        """
+        Returns an IsotropicNoiseModel given a standard deviation. Typically used when we treat the
+        residual as a random variable with known standard deviation, and wish to weight its cost
+        according to the information gained by that measurement (i.e. the inverse of the variance).
+
+        Args:
+            standard_deviation: The standard deviation of the residual elements. Results in
+                cost = 0.5 * (1 / sigma^2) * unwhitened_residual.T * unwhitened_residual
+        """
+        return IsotropicNoiseModel(scalar_sqrt_information=1 / standard_deviation)
+
+    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+        """
+        Multiplies a single element of the unwhitened residual by `sqrt(information)` so
+        that the least-squares cost associated with the element is scaled by `information`.
+
+        Args:
+            x: Single element of the unwhitened residual
+            bounded_away_from_zero: True if x is guaranteed to not be zero. Typically used to avoid
+                extra ops incurred by using epsilons to avoid singularities at x = 0 when it's
+                known that x != 0. However, this argument is unused because there is no singularity
+                at x = 0 for this whitening function.
+        """
+        return self.scalar_sqrt_information * x
+
+
+class DiagonalNoiseModel(NoiseModel):
+    """
+    Noise model with diagonal weighting matrix. The cost used in the optimization is:
+
+        cost = 0.5 * unwhitened_residual.T * sm.diag(information_diag) * unwhitened_residual
+    where `information_diag` is a vector of scalars representing the relative importance of each
+    element of the unwhitened residual.
+
+    The total cost is then:
+        cost = 0.5 * whitened_residual.T * whitened_residual
+
+    Thus, the whitened residual is:
+        whitened_residual = sm.diag(sqrt_information_diag) * unwhitened_residual
+    where `sqrt_information_diag` is the element-wise square root of `information_diag`.
+
+    Args:
+        information_diag: List of elements of the diagonal of the information matrix. In the context
+            of probability theory, this vector represents the inverse of the variance of each
+            element of the unwhitened residual, assuming that each element is an independent
+            random variable.
+        sqrt_information_diag: Element-wise square-root of information_diag. If specified, we avoid
+            needing to take the square root of each element of information_diag. Note that only one
+            of information_diag and sqrt_information_diag needs to be specified.
+    """
+
+    def __init__(
+        self,
+        information_diag: T.Optional[T.Sequence[T.Scalar]] = None,
+        sqrt_information_diag: T.Optional[T.Sequence[T.Scalar]] = None,
+    ) -> None:
+        if sqrt_information_diag is not None:
+            # User has given the square root information, so we can avoid taking the square root
+            self.sqrt_information_matrix = geo.Matrix.diag(sqrt_information_diag)
+        else:
+            assert (
+                information_diag is not None
+            ), 'Either "information_diag" or "sqrt_information_diag" must be provided.'
+            self.sqrt_information_matrix = geo.Matrix.diag(information_diag).applyfunc(sm.sqrt)
+
+    @classmethod
+    def from_variances(cls, variances: T.Sequence[T.Scalar]) -> DiagonalNoiseModel:
+        """
+        Returns an DiagonalNoiseModel given a list of variances of each element of the unwhitened
+        residual. Typically used when we treat the unwhitened residual as a sequence of independent
+        random variables with known variances.
+
+        Args:
+            variances: List of the variances of each element of the unwhitened residual
+        """
+        return cls(information_diag=[1 / v for v in variances])
+
+    @classmethod
+    def from_sigmas(cls, standard_deviations: T.Sequence[T.Scalar]) -> DiagonalNoiseModel:
+        """
+        Returns an DiagonalNoiseModel given a list of standard deviations of each element of the
+        unwhitened residual. Typically used when we treat the unwhitened residual as a sequence of
+        independent random variables with known standard deviations.
+
+        Args:
+            standard_deviations: List of the standard deviations of each element of the unwhitened
+                residual
+        """
+        return cls(sqrt_information_diag=[1 / s for s in standard_deviations])
+
+    def whiten(self, unwhitened_residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
+        return T.cast(geo.Matrix.MatrixT, self.sqrt_information_matrix * unwhitened_residual)
+
+
+class BarronNoiseModel(ScalarNoiseModel):
+    """
+    Noise model adapted from:
+        Barron, Jonathan T. "A general and adaptive robust loss function." Proceedings of the
+        IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2019.
+
+    This noise model applies a modified version of the "practical implementation" from Appendix B
+    of the paper to each scalar element of an unwhitened residual. The Barron loss function is
+    defined as:
+        barron_loss(x) = delta^2 * (b/d) * (( scalar_information * (x/delta)^2 / b + 1)^(d/2) - 1)
     where
-    b = |alpha - 2| + epsilon
-    d = alpha + epsilon if alpha >= 0 else alpha - epsilon
+        b = |alpha - 2| + epsilon
+        d = alpha + epsilon if alpha >= 0 else alpha - epsilon
+    Here delta controls the point at which the loss function transitions from quadratic to robust.
+    This is different from the original Barron loss function, and is designed to match the pseudo-
+    huber loss function.
 
-    The above is the "practical implementation" from Appendix B of the paper.
+    Thus, the cost used in the optimization will be:
+        cost = sum( barron_loss(unwhitened_residual[i]) )
+        cost = 0.5 * whitened_residual.T * whitened_residual
+    where the sum is taken over the elements of the unwhitened residual.
 
-    The parameter `scale` is the transition point from quadratic to robust, while `alpha`
-    controls the shape and convexity. Notable values:
-    alpha=2 -> L2 loss
-    alpha=1 -> Pseudo-huber loss
-    alpha=0 -> Cauchy loss
-    alpha=-2 -> Geman-McClure loss
-    alpha=-inf -> Welsch loss
+    Thus, the whitened residual is:
+        whitened_residual[i] = sqrt( 2 * barron_loss(unwhitened_residual[i]) )
+
+    Args:
+        alpha: Controls shape and convexity of the loss function. Notable values:
+            alpha = 2 -> L2 loss
+            alpha = 1 -> Pseudo-huber loss
+            alpha = 0 -> Cauchy loss
+            alpha = -2 -> Geman-McClure loss
+            alpha = -inf -> Welsch loss
+        delta: Determines the transition point from quadratic to robust. Similar to "delta" as used
+            by the pseudo-huber loss function.
+        scalar_information: Scalar representing the inverse of the variance of an element of the
+            unwhitened residual. Conceptually, we use "scalar_information" to whiten (in a
+            probabalistic sense) the unwhitened residual before passing it through the Barron loss.
+        x_epsilon: Small value used for handling the singularity at x == 0.
+        alpha_epsilon: Small value used for handling singularities around alpha.
     """
 
     def __init__(
         self,
         alpha: T.Scalar,
-        scale: T.Scalar,
-        weight: T.Scalar,
+        scalar_information: T.Scalar,
         x_epsilon: T.Scalar,
+        delta: T.Scalar = 1,
         alpha_epsilon: T.Scalar = None,
     ) -> None:
-        """
-        Args:
-            alpha (Scalar): shape parameter
-            scale (Scalar): scale parameter, the transition point
-            x_epsilon (Scalar): small value used for handling the singularity at x == 0, defaults
-                                to alpha_epsilon
-            alpha_epsilon (Scalar): small value used for handling singularities around alpha
-        """
-        super().__init__(epsilon=x_epsilon)
         self.alpha = alpha
-        self.scale = scale
-        self.weight = weight
+        self.delta = delta
+        self.scalar_information = scalar_information
+        self.x_epsilon = x_epsilon
         self.alpha_epsilon = x_epsilon if alpha_epsilon is None else alpha_epsilon
 
     @staticmethod
@@ -113,8 +296,8 @@ class BarronNoiseModel(NoiseModel):
         goes to a robust Welsch cost.
 
         Args:
-            mu (Scalar): ranges from 0->1
-            epsilon (Scalar): small value to avoid numerical instability
+            mu: ranges from 0->1
+            epsilon: small value to avoid numerical instability
 
         Returns:
             T.Scalar: alpha for use in the BarronNoiseModel construction
@@ -127,19 +310,29 @@ class BarronNoiseModel(NoiseModel):
         Return the barron cost function error for the argument x.
 
         Args:
-            x (Scalar): argument to return the cost for.
+            x: argument to return the cost for.
 
         Returns:
-            (Scalar): Barron loss at value x
+            Barron loss at value x
         """
         b = sm.Abs(self.alpha - 2) + self.alpha_epsilon
         d = self.alpha + (sm.sign_no_zero(self.alpha) * self.alpha_epsilon)
-        return (b / d) * ((((x / self.scale) ** 2) / b + 1) ** (d / 2) - 1)
+        return (
+            self.delta ** 2
+            * (b / d)
+            * (((self.scalar_information * (x / self.delta) ** 2) / b + 1) ** (d / 2) - 1)
+        )
 
-    def _whiten(self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar) -> geo.Matrix.MatrixT:
-        def whiten_scalar(r: T.Scalar) -> T.Scalar:
-            return sm.sqrt(self.weight) * (
-                sm.sqrt(2 * self.barron_error(r) + epsilon) - sm.sqrt(epsilon)
-            )
+    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+        """
+        Applies a whitening function to a single element of the unwhitened residual such that the
+        cost associated with the element in the least-sqaures cost function is the Barron loss
+        function (weighted by self.weight).
 
-        return residual.applyfunc(whiten_scalar)
+        Args:
+            x: Single element of the unwhitened residual
+        """
+        x_epsilon = self.x_epsilon
+        if bounded_away_from_zero:
+            x_epsilon = 0
+        return sm.sqrt(2 * self.barron_error(x) + x_epsilon) - sm.sqrt(x_epsilon)
