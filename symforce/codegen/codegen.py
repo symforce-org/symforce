@@ -89,10 +89,11 @@ class Codegen:
         assert isinstance(inputs, Values)
         assert isinstance(outputs, Values)
 
-        # All symbols in outputs must be present in inputs
+        # All symbols in outputs must be present in inputs.  Convert to Matrix before calling
+        # free_symbols because it's much faster to call once
         input_symbols = set(inputs.to_storage())
-        assert all(
-            sm.S(v).free_symbols.issubset(input_symbols) for v in outputs.to_storage()
+        assert sm.S(geo.Matrix(outputs.to_storage()).mat).free_symbols.issubset(
+            input_symbols
         ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
 
         # Names given by keys in inputs/outputs must be valid variable names
