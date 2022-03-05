@@ -15,11 +15,15 @@
 namespace sym {
 
 void AddOptimizationStatsWrapper(pybind11::module_ module) {
-  py::class_<sym::OptimizationStatsd>(module, "OptimizationStats")
+  py::class_<sym::OptimizationStatsd>(module, "OptimizationStats",
+                                      "Debug stats for a full optimization run.")
       .def(py::init<>())
       .def_readwrite("iterations", &sym::OptimizationStatsd::iterations)
-      .def_readwrite("best_index", &sym::OptimizationStatsd::best_index)
-      .def_readwrite("early_exited", &sym::OptimizationStatsd::early_exited)
+      .def_readwrite("best_index", &sym::OptimizationStatsd::best_index,
+                     "Index into iterations of the best iteration (containing the optimal Values).")
+      .def_readwrite("early_exited", &sym::OptimizationStatsd::early_exited,
+                     "Did the optimization early exit? (either because it converged, or because it "
+                     "could not find a good step).")
       .def_property(
           "best_linearization",
           /* getter */

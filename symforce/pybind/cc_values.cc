@@ -96,9 +96,12 @@ py::object ValuesAt(const sym::Valuesd& v, const sym::Key& key) {
 template <typename T>
 void RegisterTypeWithValues(py::class_<sym::Valuesd> cls) {
   cls.def("set", py::overload_cast<const sym::Key&, const T&>(&sym::Valuesd::Set<T>),
-          py::arg("key"), py::arg("value"));
+          py::arg("key"), py::arg("value"),
+          "Add or update a value by key. Returns true if added, false if updated.");
   cls.def("set", py::overload_cast<const sym::index_entry_t&, const T&>(&sym::Valuesd::Set<T>),
-          py::arg("key"), py::arg("value"));
+          py::arg("key"), py::arg("value"),
+          "Update a value by index entry with no map lookup (compared to Set(key)). This does NOT "
+          "add new values and assumes the key exists already.");
 }
 
 /**
@@ -142,29 +145,72 @@ constexpr void RegisterMatrices(py::class_<sym::Valuesd>& cls) {
 //================================================================================================//
 
 void AddValuesWrapper(pybind11::module_ module) {
-  auto values_class = py::class_<sym::Valuesd>(module, "Values");
-  values_class.def(py::init<>())
-      .def(py::init<const sym::values_t&>(), py::arg("msg"))
-      .def("has", &sym::Valuesd::Has, py::arg("key"))
-      .def("at", &ValuesAt, py::arg("key"))
-      .def("update_or_set", &sym::Valuesd::UpdateOrSet, py::arg("index"), py::arg("other"))
-      .def("num_entries", &sym::Valuesd::NumEntries)
-      .def("empty", &sym::Valuesd::Empty)
-      .def("keys", &sym::Valuesd::Keys, py::arg("sort_by_offset") = true)
-      .def("items", &sym::Valuesd::Items)
-      .def("data", &sym::Valuesd::Data)
-      .def("remove", &sym::Valuesd::Remove, py::arg("key"))
-      .def("remove_all", &sym::Valuesd::RemoveAll)
-      .def("cleanup", &sym::Valuesd::Cleanup)
-      .def("create_index", &sym::Valuesd::CreateIndex, py::arg("keys"))
-      .def("at", &ValuesAtIndexEntry, py::arg("entry"))
+  auto values_class = py::class_<sym::Valuesd>(module, "Values", R"(
+    Efficient polymorphic data structure to store named types with a dict-like interface and
+    support efficient repeated operations using a key index. Supports on-manifold optimization.
+    
+    Compatible types are given by the type_t enum. All types implement the StorageOps and
+    LieGroupOps concepts, which are the core operating mechanisms in this class.
+  )");
+  values_class.def(py::init<>(), "Default construct as empty.")
+      .def(py::init<const sym::values_t&>(), py::arg("msg"), "Construct from serialized form.")
+      .def("has", &sym::Valuesd::Has, py::arg("key"), "Return whether the key exists.")
+      .def("at", &ValuesAt, py::arg("key"), "Retrieve a value by key.")
+      .def("update_or_set", &sym::Valuesd::UpdateOrSet, py::arg("index"), py::arg("other"), R"(
+        Update or add keys to this Values base on other Values of different structure.
+        index MUST be valid for other.
+        
+        NOTE(alvin): it is less efficient than the Update methods below if index objects are created and cached. This method performs map lookup for each key of the index
+      )")
+      .def("num_entries", &sym::Valuesd::NumEntries, "Number of keys.")
+      .def("empty", &sym::Valuesd::Empty, "Has zero keys.")
+      .def("keys", &sym::Valuesd::Keys, py::arg("sort_by_offset") = true, R"(
+        Get all keys.
+        
+        Args:
+          sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
+      )")
+      .def("items", &sym::Valuesd::Items, "Expose map type to allow iteration.")
+      .def("data", &sym::Valuesd::Data, "Raw data buffer.")
+      .def("remove", &sym::Valuesd::Remove, py::arg("key"), R"(
+        Remove the given key. Only removes the index entry, does not change the data array.
+        Returns true if removed, false if already not present.
+        
+        Call cleanup() to re-pack the data array.
+      )")
+      .def("remove_all", &sym::Valuesd::RemoveAll, "Remove all keys and empty out the storage.")
+      .def("cleanup", &sym::Valuesd::Cleanup, R"(
+        Repack the data array to get rid of empty space from removed keys. If regularly removing
+        keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
+        number of Scalar elements cleaned up from the data array.
+        
+        It will INVALIDATE all indices, offset increments, and pointers.
+        Re-create an index with create_index().
+      )")
+      .def("create_index", &sym::Valuesd::CreateIndex, py::arg("keys"), R"(
+        Create an index from the given ordered subset of keys. This object can then be used
+        for repeated efficient operations on that subset of keys.
+        
+        If you want an index of all the keys, call `values.create_index(values.keys())`.
+        
+        An index will be INVALIDATED if the following happens:
+          1) remove() is called with a contained key, or remove_all() is called
+          2) cleanup() is called to re-pack the data array
+      )")
+      .def("at", &ValuesAtIndexEntry, py::arg("entry"),
+           "Retrieve a value by index entry. This avoids a map lookup compared to at(key).")
       .def("update",
            py::overload_cast<const sym::index_t&, const sym::Valuesd&>(&sym::Valuesd::Update),
-           py::arg("index"), py::arg("other"))
+           py::arg("index"), py::arg("other"),
+           "Efficiently update the keys given by this index from other into this. This purely "
+           "copies slices of the data arrays, the index MUST be valid for both objects!")
       .def("update",
            py::overload_cast<const sym::index_t&, const sym::index_t&, const sym::Valuesd&>(
                &sym::Valuesd::Update),
-           py::arg("index_this"), py::arg("index_other"), py::arg("other"))
+           py::arg("index_this"), py::arg("index_other"), py::arg("other"),
+           "Efficiently update the keys from a different structured Values, given by this index "
+           "and other index. This purely copies slices of the data arrays. index_this MUST be "
+           "valid for this object; index_other MUST be valid for other object.")
       .def(
           "retract",
           [](sym::Valuesd& v, const sym::index_t& index, const std::vector<double>& delta,
@@ -176,10 +222,24 @@ void AddValuesWrapper(pybind11::module_ module) {
             }
             v.Retract(index, delta.data(), epsilon);
           },
-          py::arg("index"), py::arg("delta"), py::arg("epsilon"))
+          py::arg("index"), py::arg("delta"), py::arg("epsilon"), R"(
+            Perform a retraction from an update vector.
+            
+            Args:
+              index: Ordered list of keys in the delta vector
+              delta: Update vector - MUST be the size of index.tangent_dim!
+              epsilon: Small constant to avoid singularities (do not use zero)
+          )")
       .def("local_coordinates", &sym::Valuesd::LocalCoordinates, py::arg("others"),
-           py::arg("index"), py::arg("epsilon"))
-      .def("get_lcm_type", &sym::Valuesd::GetLcmType)
+           py::arg("index"), py::arg("epsilon"), R"(
+            Express this Values in the local coordinate of others Values, i.e., this \ominus others
+            
+            Args:
+              others: The other Values that the local coordinate is relative to
+              index: Ordered list of keys to include (MUST be valid for both this and others Values)
+              epsilon: Small constant to avoid singularities (do not use zero)
+           )")
+      .def("get_lcm_type", &sym::Valuesd::GetLcmType, "Serialize to LCM.")
       .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); });
   RegisterTypeWithValues<double>(values_class);
   RegisterTypeWithValues<sym::Rot2d>(values_class);

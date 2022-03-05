@@ -98,40 +98,83 @@ sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func, const std::vector<
 //================================================================================================//
 
 void AddFactorWrapper(pybind11::module_ module) {
-  py::class_<sym::Factord>(module, "Factor")
+  py::class_<sym::Factord>(module, "Factor", R"(
+      A residual term for optimization.
+ 
+      Created from a function and a set of Keys that act as inputs. Given a Values as an evaluation
+      point, generates a linear approximation to the residual function.
+  )")
       .def(py::init(py::overload_cast<PyHessianFunc, const std::vector<Key>&>(&MakeHessianFactor)),
-           py::arg("hessian_func"), py::arg("keys"))
+           py::arg("hessian_func"), py::arg("keys"), R"(
+              Create directly from a (dense) hessian functor. This is the lowest-level constructor.
+              
+              Args:
+                keys: The set of input arguments, in order, accepted by func.
+           )")
       .def(py::init(
                py::overload_cast<PyHessianFunc, const std::vector<Key>&, const std::vector<Key>&>(
                    &MakeHessianFactor)),
-           py::arg("hessian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"))
+           py::arg("hessian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"),
+           R"(
+              Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
+              
+              Args:
+                keys_to_func: The set of input arguments, in order, accepted by func.
+                keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+           )")
       .def_static("jacobian",
                   py::overload_cast<PyJacobianFunc, const std::vector<Key>&>(&MakeJacobianFactor),
-                  py::arg("jacobian_func"), py::arg("keys"))
+                  py::arg("jacobian_func"), py::arg("keys"), R"(
+                    Create from a function that computes the jacobian. The hessian will be computed using the
+                    Gauss Newton approximation:
+                        H   = J.T * J
+                        rhs = J.T * b
+                    
+                    Args:
+                      keys: The set of input arguments, in order, accepted by func.
+                  )")
       .def_static(
           "jacobian",
           py::overload_cast<PyJacobianFunc, const std::vector<Key>&, const std::vector<Key>&>(
               &MakeJacobianFactor),
-          py::arg("jacobian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"))
-      .def("linearize",
-           [](const sym::Factord& factor, const sym::Valuesd& values) {
-             if (factor.IsSparse()) {
-               Eigen::VectorXd residual;
-               Eigen::SparseMatrix<double> jacobian;
-               factor.Linearize(values, &residual, &jacobian);
-               return py::make_tuple(residual, jacobian);
-             } else {
-               Eigen::VectorXd residual;
-               Eigen::MatrixXd jacobian;
-               factor.Linearize(values, &residual, &jacobian);
-               return py::make_tuple(residual, jacobian);
-             }
-           })
+          py::arg("jacobian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"), R"(
+            Create from a function that computes the jacobian. The hessian will be computed using the
+            Gauss Newton approximation:
+                H   = J.T * J
+                rhs = J.T * b
+            
+            Args:
+              keys_to_func: The set of input arguments, in order, accepted by func.
+              keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+          )")
+      .def(
+          "linearize",
+          [](const sym::Factord& factor, const sym::Valuesd& values) {
+            if (factor.IsSparse()) {
+              Eigen::VectorXd residual;
+              Eigen::SparseMatrix<double> jacobian;
+              factor.Linearize(values, &residual, &jacobian);
+              return py::make_tuple(residual, jacobian);
+            } else {
+              Eigen::VectorXd residual;
+              Eigen::MatrixXd jacobian;
+              factor.Linearize(values, &residual, &jacobian);
+              return py::make_tuple(residual, jacobian);
+            }
+          },
+          "Evaluate the factor at the given linearization point and output just the numerical "
+          "values of the residual and jacobian.")
       .def("linearized_factor",
            py::overload_cast<const sym::Valuesd&>(&sym::Factord::Linearize, py::const_),
-           py::arg("values"))
-      .def("optimized_keys", &sym::Factord::OptimizedKeys)
-      .def("all_keys", &sym::Factord::AllKeys)
+           py::arg("values"), R"(
+             Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
+             contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+   
+             This can only be called if is_sparse is false; otherwise, it will throw.
+           )")
+      .def("optimized_keys", &sym::Factord::OptimizedKeys,
+           "Get the optimized keys for this factor.")
+      .def("all_keys", &sym::Factord::AllKeys, "Get all keys required to evaluate this factor.")
       .def("__repr__", [](const sym::Factord& factor) { return fmt::format("{}", factor); });
 }
 

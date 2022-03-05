@@ -38,12 +38,33 @@ __all__ = [
 ]
 
 class Factor:
+    """
+    A residual term for optimization.
+
+    Created from a function and a set of Keys that act as inputs. Given a Values as an evaluation
+    point, generates a linear approximation to the residual function.
+    """
+
     @typing.overload
     def __init__(
         self,
         hessian_func: typing.Callable[[Values, typing.List[index_entry_t]], tuple],
         keys: typing.List[Key],
-    ) -> None: ...
+    ) -> None:
+        """
+        Create directly from a (dense) hessian functor. This is the lowest-level constructor.
+
+        Args:
+          keys: The set of input arguments, in order, accepted by func.
+
+
+
+        Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
+
+        Args:
+          keys_to_func: The set of input arguments, in order, accepted by func.
+          keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+        """
     @typing.overload
     def __init__(
         self,
@@ -52,13 +73,36 @@ class Factor:
         keys_to_optimize: typing.List[Key],
     ) -> None: ...
     def __repr__(self) -> str: ...
-    def all_keys(self) -> typing.List[Key]: ...
+    def all_keys(self) -> typing.List[Key]:
+        """
+        Get all keys required to evaluate this factor.
+        """
     @staticmethod
     @typing.overload
     def jacobian(
         jacobian_func: typing.Callable[[Values, typing.List[index_entry_t]], tuple],
         keys: typing.List[Key],
-    ) -> Factor: ...
+    ) -> Factor:
+        """
+                Create from a function that computes the jacobian. The hessian will be computed using the
+                Gauss Newton approximation:
+                    H   = J.T * J
+                    rhs = J.T * b
+                
+                Args:
+                  keys: The set of input arguments, in order, accepted by func.
+              
+
+
+        Create from a function that computes the jacobian. The hessian will be computed using the
+        Gauss Newton approximation:
+            H   = J.T * J
+            rhs = J.T * b
+
+        Args:
+          keys_to_func: The set of input arguments, in order, accepted by func.
+          keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+        """
     @staticmethod
     @typing.overload
     def jacobian(
@@ -66,9 +110,21 @@ class Factor:
         keys_to_func: typing.List[Key],
         keys_to_optimize: typing.List[Key],
     ) -> Factor: ...
-    def linearize(self, arg0: Values) -> tuple: ...
-    def linearized_factor(self, values: Values) -> linearized_dense_factor_t: ...
-    def optimized_keys(self) -> typing.List[Key]: ...
+    def linearize(self, arg0: Values) -> tuple:
+        """
+        Evaluate the factor at the given linearization point and output just the numerical values of the residual and jacobian.
+        """
+    def linearized_factor(self, values: Values) -> linearized_dense_factor_t:
+        """
+        Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
+        contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+
+        This can only be called if is_sparse is false; otherwise, it will throw.
+        """
+    def optimized_keys(self) -> typing.List[Key]:
+        """
+        Get the optimized keys for this factor.
+        """
     pass
 
 class Key:
@@ -122,11 +178,21 @@ class Key:
     pass
 
 class Linearization:
+    """
+    Class for storing a problem linearization evaluated at a Values (i.e. a residual, jacobian, hessian, and rhs).
+    """
+
     def __init__(self) -> None: ...
     def error(self) -> float: ...
-    def is_initialized(self) -> bool: ...
+    def is_initialized(self) -> bool:
+        """
+        Returns whether the linearization is currently valid for the corresponding values. Accessing any of the members when this is false could result in unexpected behavior.
+        """
     def linear_error(self, x_update: numpy.ndarray) -> float: ...
-    def reset(self) -> None: ...
+    def reset(self) -> None:
+        """
+        Set to invalid.
+        """
     def set_initialized(self, initialized: bool = True) -> None: ...
     @property
     def hessian_lower(self) -> scipy.sparse.csc_matrix[numpy.float64]:
@@ -163,16 +229,24 @@ class Linearization:
     pass
 
 class OptimizationStats:
+    """
+    Debug stats for a full optimization run.
+    """
+
     def __init__(self) -> None: ...
     def get_lcm_type(self) -> optimization_stats_t: ...
     @property
     def best_index(self) -> int:
         """
+        Index into iterations of the best iteration (containing the optimal Values).
+
         :type: int
         """
     @best_index.setter
     def best_index(self, arg0: int) -> None:
-        pass
+        """
+        Index into iterations of the best iteration (containing the optimal Values).
+        """
     @property
     def best_linearization(self) -> object:
         """
@@ -184,11 +258,15 @@ class OptimizationStats:
     @property
     def early_exited(self) -> bool:
         """
+        Did the optimization early exit? (either because it converged, or because it could not find a good step).
+
         :type: bool
         """
     @early_exited.setter
     def early_exited(self, arg0: bool) -> None:
-        pass
+        """
+        Did the optimization early exit? (either because it converged, or because it could not find a good step).
+        """
     @property
     def iterations(self) -> typing.List[optimization_iteration_t]:
         """
@@ -200,6 +278,10 @@ class OptimizationStats:
     pass
 
 class Optimizer:
+    """
+    Class for optimizing a nonlinear least-squares problem specified as a list of Factors. For efficient use, create once and call Optimize() multiple times with different initial guesses, as long as the factors remain constant and the structure of the Values is identical.
+    """
+
     def __init__(
         self,
         params: optimizer_params_t,
@@ -212,18 +294,90 @@ class Optimizer:
     ) -> None: ...
     def compute_all_covariances(
         self, linearization: Linearization
-    ) -> typing.Dict[Key, numpy.ndarray]: ...
+    ) -> typing.Dict[Key, numpy.ndarray]:
+        """
+        Get covariances for each optimized key at the given linearization
+
+        May not be called before either optimize or Linearize has been called.
+        """
     def compute_covariances(
         self, linearization: Linearization, keys: typing.List[Key]
-    ) -> typing.Dict[Key, numpy.ndarray]: ...
-    def keys(self) -> typing.List[Key]: ...
+    ) -> typing.Dict[Key, numpy.ndarray]:
+        """
+        Get covariances for the given subset of keys at the given linearization.  This version is
+        potentially much more efficient than computing the covariances for all keys in the problem.
+
+        Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
+        for the full problem, and in the same order.  It uses the Schur complement trick, so will be
+        most efficient if the hessian is of the following form, with C block diagonal::
+
+          A = ( B    E )
+              ( E^T  C )
+        """
+    def keys(self) -> typing.List[Key]:
+        """
+        Get the optimized keys.
+        """
     def linearization_index(self) -> dict: ...
     def linearization_index_entry(self, key: Key) -> index_entry_t: ...
-    def linearize(self, values: Values) -> Linearization: ...
+    def linearize(self, values: Values) -> Linearization:
+        """
+        Linearize the problem around the given values.
+        """
     @typing.overload
     def optimize(
         self, values: Values, num_iterations: int = -1, populate_best_linearization: bool = False
-    ) -> OptimizationStats: ...
+    ) -> OptimizationStats:
+        """
+        Optimize the given values in-place
+
+        Args:
+          num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction.
+
+          populate_best_linearization: If true, the linearization at the best values will be filled out in the stats.
+
+        Returns:
+            The optimization stats
+
+
+
+        Optimize the given values in-place
+
+        This overload takes the stats as an argument, and stores into there.  This allows users to
+        avoid reallocating memory for any of the entries in the stats, for use cases where that's
+        important.  If passed, stats must not be None.
+
+        Args:
+          num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction
+
+          populate_best_linearization: If true, the linearization at the best values will be filled out in the stats
+
+          stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
+
+
+
+        Optimize the given values in-place
+
+        This overload takes the stats as an argument, and stores into there.  This allows users to
+        avoid reallocating memory for any of the entries in the stats, for use cases where that's
+        important.  If passed, stats must not be None.
+
+        Args:
+          num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction
+
+          stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
+
+
+
+        Optimize the given values in-place
+
+        This overload takes the stats as an argument, and stores into there.  This allows users to
+        avoid reallocating memory for any of the entries in the stats, for use cases where that's
+        important.  If passed, stats must not be None.
+
+        Args:
+          stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
+        """
     @typing.overload
     def optimize(
         self,
@@ -236,36 +390,467 @@ class Optimizer:
     def optimize(self, values: Values, num_iterations: int, stats: OptimizationStats) -> None: ...
     @typing.overload
     def optimize(self, values: Values, stats: OptimizationStats) -> None: ...
-    def update_params(self, params: optimizer_params_t) -> None: ...
+    def update_params(self, params: optimizer_params_t) -> None:
+        """
+        Update the optimizer params.
+        """
     pass
 
 class Values:
+    """
+    Efficient polymorphic data structure to store named types with a dict-like interface and
+    support efficient repeated operations using a key index. Supports on-manifold optimization.
+
+    Compatible types are given by the type_t enum. All types implement the StorageOps and
+    LieGroupOps concepts, which are the core operating mechanisms in this class.
+    """
+
     @typing.overload
-    def __init__(self) -> None: ...
+    def __init__(self) -> None:
+        """
+        Default construct as empty.
+
+        Construct from serialized form.
+        """
     @typing.overload
     def __init__(self, msg: values_t) -> None: ...
     def __repr__(self) -> str: ...
     @typing.overload
-    def at(self, entry: index_entry_t) -> typing.Any: ...
+    def at(self, entry: index_entry_t) -> typing.Any:
+        """
+        Retrieve a value by key.
+
+        Retrieve a value by index entry. This avoids a map lookup compared to at(key).
+        """
     @typing.overload
     def at(self, key: Key) -> typing.Any: ...
-    def cleanup(self) -> int: ...
-    def create_index(self, keys: typing.List[Key]) -> index_t: ...
-    def data(self) -> typing.List[float]: ...
-    def empty(self) -> bool: ...
-    def get_lcm_type(self) -> values_t: ...
-    def has(self, key: Key) -> bool: ...
-    def items(self) -> typing.Dict[Key, index_entry_t]: ...
-    def keys(self, sort_by_offset: bool = True) -> typing.List[Key]: ...
-    def local_coordinates(
-        self, others: Values, index: index_t, epsilon: float
-    ) -> numpy.ndarray: ...
-    def num_entries(self) -> int: ...
-    def remove(self, key: Key) -> bool: ...
-    def remove_all(self) -> None: ...
-    def retract(self, index: index_t, delta: typing.List[float], epsilon: float) -> None: ...
+    def cleanup(self) -> int:
+        """
+        Repack the data array to get rid of empty space from removed keys. If regularly removing
+        keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
+        number of Scalar elements cleaned up from the data array.
+
+        It will INVALIDATE all indices, offset increments, and pointers.
+        Re-create an index with create_index().
+        """
+    def create_index(self, keys: typing.List[Key]) -> index_t:
+        """
+        Create an index from the given ordered subset of keys. This object can then be used
+        for repeated efficient operations on that subset of keys.
+
+        If you want an index of all the keys, call `values.create_index(values.keys())`.
+
+        An index will be INVALIDATED if the following happens:
+          1) remove() is called with a contained key, or remove_all() is called
+          2) cleanup() is called to re-pack the data array
+        """
+    def data(self) -> typing.List[float]:
+        """
+        Raw data buffer.
+        """
+    def empty(self) -> bool:
+        """
+        Has zero keys.
+        """
+    def get_lcm_type(self) -> values_t:
+        """
+        Serialize to LCM.
+        """
+    def has(self, key: Key) -> bool:
+        """
+        Return whether the key exists.
+        """
+    def items(self) -> typing.Dict[Key, index_entry_t]:
+        """
+        Expose map type to allow iteration.
+        """
+    def keys(self, sort_by_offset: bool = True) -> typing.List[Key]:
+        """
+        Get all keys.
+
+        Args:
+          sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
+        """
+    def local_coordinates(self, others: Values, index: index_t, epsilon: float) -> numpy.ndarray:
+        """
+        Express this Values in the local coordinate of others Values, i.e., this \ominus others
+
+        Args:
+          others: The other Values that the local coordinate is relative to
+          index: Ordered list of keys to include (MUST be valid for both this and others Values)
+          epsilon: Small constant to avoid singularities (do not use zero)
+        """
+    def num_entries(self) -> int:
+        """
+        Number of keys.
+        """
+    def remove(self, key: Key) -> bool:
+        """
+        Remove the given key. Only removes the index entry, does not change the data array.
+        Returns true if removed, false if already not present.
+
+        Call cleanup() to re-pack the data array.
+        """
+    def remove_all(self) -> None:
+        """
+        Remove all keys and empty out the storage.
+        """
+    def retract(self, index: index_t, delta: typing.List[float], epsilon: float) -> None:
+        """
+        Perform a retraction from an update vector.
+
+        Args:
+          index: Ordered list of keys in the delta vector
+          delta: Update vector - MUST be the size of index.tangent_dim!
+          epsilon: Small constant to avoid singularities (do not use zero)
+        """
     @typing.overload
-    def set(self, key: Key, value: Pose2) -> bool: ...
+    def set(self, key: Key, value: Pose2) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
     @typing.overload
     def set(self, key: Key, value: Pose3) -> bool: ...
     @typing.overload
@@ -289,16 +874,31 @@ class Values:
     @typing.overload
     def set(self, key: index_entry_t, value: numpy.ndarray) -> None: ...
     @typing.overload
-    def update(self, index: index_t, other: Values) -> None: ...
+    def update(self, index: index_t, other: Values) -> None:
+        """
+        Efficiently update the keys given by this index from other into this. This purely copies slices of the data arrays, the index MUST be valid for both objects!
+
+        Efficiently update the keys from a different structured Values, given by this index and other index. This purely copies slices of the data arrays. index_this MUST be valid for this object; index_other MUST be valid for other object.
+        """
     @typing.overload
     def update(self, index_this: index_t, index_other: index_t, other: Values) -> None: ...
-    def update_or_set(self, index: index_t, other: Values) -> None: ...
+    def update_or_set(self, index: index_t, other: Values) -> None:
+        """
+        Update or add keys to this Values base on other Values of different structure.
+        index MUST be valid for other.
+
+        NOTE(alvin): it is less efficient than the Update methods below if index objects are created and cached. This method performs map lookup for each key of the index
+        """
     pass
 
 def default_optimizer_params() -> optimizer_params_t:
-    pass
+    """
+    Sensible default parameters for Optimizer.
+    """
 
 def optimize(
     params: optimizer_params_t, factors: typing.List[Factor], values: Values, epsilon: float = 1e-09
 ) -> OptimizationStats:
-    pass
+    """
+    Simple wrapper to make optimization one function call.
+    """
