@@ -381,6 +381,12 @@ class SymforceCCSymTest(TestCase):
             keys=[pi_key],
         )
 
+        with self.subTest(msg="Test that Factor.is_sparse is wrapped"):
+            self.assertFalse(pi_factor.is_sparse())
+            self.assertFalse(pi_jacobian_factor.is_sparse())
+            # TODO(brad): Add test of is_sparse for a factor which is sparse (once the
+            # creation of such factors is enabled).
+
         with self.subTest(msg="Test that Factor.linearized_factor/linearize are wrapped"):
             pi_values = cc_sym.Values()
             eval_value = 3.0

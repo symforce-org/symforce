@@ -77,6 +77,10 @@ class Factor:
         """
         Get all keys required to evaluate this factor.
         """
+    def is_sparse(self) -> bool:
+        """
+        Does this factor use a sparse jacobian/hessian matrix?
+        """
     @staticmethod
     @typing.overload
     def jacobian(

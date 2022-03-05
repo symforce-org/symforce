@@ -104,6 +104,7 @@ void AddFactorWrapper(pybind11::module_ module) {
       Created from a function and a set of Keys that act as inputs. Given a Values as an evaluation
       point, generates a linear approximation to the residual function.
   )")
+      // TODO(brad): Add wrapper of the constructor from SparseHessianFunc
       .def(py::init(py::overload_cast<PyHessianFunc, const std::vector<Key>&>(&MakeHessianFactor)),
            py::arg("hessian_func"), py::arg("keys"), R"(
               Create directly from a (dense) hessian functor. This is the lowest-level constructor.
@@ -122,6 +123,8 @@ void AddFactorWrapper(pybind11::module_ module) {
                 keys_to_func: The set of input arguments, in order, accepted by func.
                 keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
            )")
+      .def("is_sparse", &sym::Factord::IsSparse,
+           "Does this factor use a sparse jacobian/hessian matrix?")
       .def_static("jacobian",
                   py::overload_cast<PyJacobianFunc, const std::vector<Key>&>(&MakeJacobianFactor),
                   py::arg("jacobian_func"), py::arg("keys"), R"(
