@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import collections
 import enum
+import functools
 import jinja2
 import jinja2.ext
 import os
@@ -94,6 +95,22 @@ def add_preamble(source: str, name: str, filetype: FileType) -> str:
     )
 
 
+@functools.lru_cache
+def jinja_env(template_dir: T.Openable) -> RelEnvironment:
+    """
+    Helper function to cache the Jinja environment, which enables caching of loaded templates
+    """
+    loader = jinja2.FileSystemLoader(os.fspath(template_dir))
+    env = RelEnvironment(
+        loader=loader,
+        trim_blocks=True,
+        lstrip_blocks=True,
+        keep_trailing_newline=True,
+        undefined=jinja2.StrictUndefined,
+    )
+    return env
+
+
 def render_template(
     template_path: T.Openable,
     data: T.Dict[str, T.Any],
@@ -117,18 +134,9 @@ def render_template(
 
     template_name = os.path.relpath(os.fspath(template_path), template_dir)
 
-    loader = jinja2.FileSystemLoader(os.fspath(template_dir))
-    env = RelEnvironment(
-        loader=loader,
-        trim_blocks=True,
-        lstrip_blocks=True,
-        keep_trailing_newline=True,
-        undefined=jinja2.StrictUndefined,
-    )
-
     filetype = FileType.from_template_path(pathlib.Path(template_name))
 
-    template = env.get_template(template_name)
+    template = jinja_env(template_dir).get_template(template_name)
     rendered_str = add_preamble(str(template.render(**data)), template_name, filetype)
 
     if autoformat:
