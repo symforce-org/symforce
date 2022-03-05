@@ -233,6 +233,64 @@ class DiagonalNoiseModel(NoiseModel):
         return T.cast(geo.Matrix.MatrixT, self.sqrt_information_matrix * unwhitened_residual)
 
 
+class PseudoHuberNoiseModel(ScalarNoiseModel):
+    """
+    A smooth loss function that behaves like the L2 loss for small x and the L1 loss for large x.
+    The cost used in the least-squares optimization will be:
+        cost = sum( pseudo_huber_loss(unwhitened_residual[i]) )
+        cost = 0.5 * whitened_residual.T * whitened_residual
+    where the sum is taken over the elements of the unwhitened residual.
+
+    This noise model applies the square-root of the pseudo-huber loss function to each element of
+    the unwhitened residual such that the resulting cost used in the least-squares problem is the
+    pseudo-huber loss. The pseudo-huber loss is defined as:
+        pseudo_huber_loss(x) = delta^2 * ( sqrt( 1 + scalar_information * (x/delta)^2 ) - 1)
+
+    The whitened residual is then:
+        whitened_residual[i] = sqrt( 2 * pseudo_huber_loss(unwhitened_residual[i]) )
+
+    Args:
+        delta: Controls the point at which the loss function transitions from the L2 to L1 loss.
+            Must be greater than zero.
+        scalar_information: Constant scalar weight that changes the steepness of the loss function.
+            Can be considered the inverse of the variance of an element of the unwhitened residual.
+        epsilon: Small value used to handle singularity at x = 0.
+    """
+
+    def __init__(
+        self, delta: T.Scalar, scalar_information: T.Scalar, epsilon: T.Scalar = 0
+    ) -> None:
+        self.delta = delta
+        self.scalar_information = scalar_information
+        self.epsilon = epsilon
+
+    def pseudo_huber_error(self, x: T.Scalar) -> T.Scalar:
+        """
+        Return the pseudo-huber cost function error for the argument x.
+
+        Args:
+            x: argument to return the cost for.
+        """
+        return self.delta ** 2 * (sm.sqrt(1 + self.scalar_information * (x / self.delta) ** 2) - 1)
+
+    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+        """
+        Applies a whitening function to a single element of the unwhitened residual such that the
+        cost associated with the element in the least-sqaures cost function is the Pseudo-Huber
+        loss function.
+
+        Args:
+            x: Single element of the unwhitened residual
+            bounded_away_from_zero: True if x is guaranteed to not be zero. Typically used to avoid
+                extra ops incurred by using epsilons to avoid singularities at x = 0 when it's
+                known that x != 0.
+        """
+        epsilon = self.epsilon
+        if bounded_away_from_zero:
+            epsilon = 0
+        return sm.sqrt(2 * self.pseudo_huber_error(x) + epsilon) - sm.sqrt(epsilon)
+
+
 class BarronNoiseModel(ScalarNoiseModel):
     """
     Noise model adapted from:

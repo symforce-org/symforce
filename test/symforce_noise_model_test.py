@@ -84,6 +84,70 @@ class NoiseModelTest(TestCase):
             StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual,
         )
 
+    def test_pseudo_huber_noise_model(self) -> None:
+        """
+        Tests the residual and jacobian values of the pseudo-huber noise model
+        """
+        delta = 10.0
+        scalar_information = sm.Symbol("scalar_information")
+        scalar_information_num = 3.0
+        epsilon = 1.0e-8
+        noise_model = nm.PseudoHuberNoiseModel(
+            delta=delta, scalar_information=scalar_information, epsilon=epsilon
+        )
+
+        # Check the jacobian at points we care about
+        unwhitened_residual = geo.V3.symbolic("res")
+        error = geo.V1(noise_model.error(unwhitened_residual)).subs(
+            scalar_information, scalar_information_num
+        )
+        jacobian = error.jacobian(unwhitened_residual)
+
+        # Jacobian should be zero when the residual is zero
+        self.assertEqual(jacobian.subs(unwhitened_residual, geo.V3.zero()), geo.M13.zero())
+
+        # Negating residual should flip the sign of the jacobian because the error function should
+        # by symmetric
+        unwhitened_residual_numeric = geo.V3(0.1, -0.2, 0.3)
+        self.assertEqual(
+            jacobian.subs(unwhitened_residual, unwhitened_residual_numeric),
+            -jacobian.subs(unwhitened_residual, -unwhitened_residual_numeric),
+        )
+
+        # Jacobian should be constant for large values because the tails of the error function
+        # should be linear
+        large_unwhitened_residual = geo.V3(10000.0, 20000.0, 30000.0)
+        self.assertStorageNear(
+            jacobian.subs(unwhitened_residual, large_unwhitened_residual),
+            jacobian.subs(unwhitened_residual, 2 * large_unwhitened_residual),
+            places=4,
+        )
+
+        # Error should behave like the L2 loss for small values
+        small_unwhitened_residual = geo.V3(0.01, -0.02, 0.03)
+        self.assertStorageNear(
+            error.subs(unwhitened_residual, 3.0 * small_unwhitened_residual),
+            9.0 * error.subs(unwhitened_residual, small_unwhitened_residual),
+            places=4,
+        )
+
+    @sympy_only
+    def test_pseudo_huber_epsilon_handling(self) -> None:
+        """
+        Epsilon handling for PseudoHuberNoiseModel.whiten_norm should be correct (i.e. value and
+        derivative at 0 should be correct as epsilon->0)
+        """
+        delta = 10
+        scalar_information = 2
+
+        def whiten_ratio(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+            noise_model = nm.PseudoHuberNoiseModel(
+                delta=delta, scalar_information=scalar_information, epsilon=epsilon,
+            )
+            return noise_model.whiten_norm(geo.V1(x), epsilon)[0, 0]
+
+        self.assertTrue(epsilon_handling.is_epsilon_correct(whiten_ratio, expected_value=0))
+
     def test_barron_noise_model(self) -> None:
         """
         Some simple tests on the Barron noise model.
