@@ -318,6 +318,10 @@ class Optimizer:
           A = ( B    E )
               ( E^T  C )
         """
+    def factors(self) -> typing.List[Factor]:
+        """
+        Get the factors.
+        """
     def keys(self) -> typing.List[Key]:
         """
         Get the optimized keys.

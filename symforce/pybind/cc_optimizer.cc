@@ -122,6 +122,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
                   ( E^T  C )
           )")
       .def("keys", &Optimizerd::Keys, "Get the optimized keys.")
+      .def("factors", &Optimizerd::Factors, "Get the factors.")
       .def("update_params", &Optimizerd::UpdateParams, py::arg("params"),
            "Update the optimizer params.")
       .def("linearization_index",

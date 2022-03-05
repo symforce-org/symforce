@@ -465,6 +465,12 @@ class SymforceCCSymTest(TestCase):
             params=cc_sym.default_optimizer_params(), factors=[pi_factor]
         )
 
+        with self.subTest(msg="Optimizer.factors has been wrapped"):
+            opt = make_opt()
+
+            self.assertEqual(1, len(opt.factors()))
+            self.assertEqual(opt.factors()[0].all_keys(), pi_factor.all_keys())
+
         with self.subTest(msg="Optimizer.optimize has been wrapped"):
             values = cc_sym.Values()
             values.set(pi_key, 3.0)
