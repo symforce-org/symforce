@@ -42,7 +42,7 @@ class NoiseModelTest(TestCase):
             whitened_residual,
         )
         self.assertEqual(
-            StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual,
+            StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual
         )
 
     def test_diagonal_noise_model(self) -> None:
@@ -81,7 +81,7 @@ class NoiseModelTest(TestCase):
             whitened_residual,
         )
         self.assertEqual(
-            StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual,
+            StorageOps.evalf(noise_model_from_sigma.whiten(unwhitened_residual)), whitened_residual
         )
 
     def test_pseudo_huber_noise_model(self) -> None:
@@ -142,7 +142,7 @@ class NoiseModelTest(TestCase):
 
         def whiten_ratio(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
             noise_model = nm.PseudoHuberNoiseModel(
-                delta=delta, scalar_information=scalar_information, epsilon=epsilon,
+                delta=delta, scalar_information=scalar_information, epsilon=epsilon
             )
             return noise_model.whiten_norm(geo.V1(x), epsilon)[0, 0]
 
@@ -229,7 +229,7 @@ class NoiseModelTest(TestCase):
 
             # SymPy fails to calculate the limits correctly here, so we provide the correct answers
             return epsilon_handling.is_epsilon_correct(
-                whiten_ratio, expected_value=0, expected_derivative=sm.sqrt(scalar_information),
+                whiten_ratio, expected_value=0, expected_derivative=sm.sqrt(scalar_information)
             )
 
         self.assertTrue(test_epsilon_at_alpha(1))

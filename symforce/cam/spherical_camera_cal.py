@@ -155,7 +155,7 @@ class SphericalCameraCal(CameraCal):
         return acc
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = 0,
+        self, point: geo.Matrix31, epsilon: T.Scalar = 0
     ) -> T.Tuple[geo.Matrix21, T.Scalar]:
 
         # compute theta

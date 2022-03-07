@@ -33,20 +33,20 @@ class LieGroup(Group):
 
     @classmethod
     def from_tangent(
-        cls: T.Type[LieGroupT], vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0,
+        cls: T.Type[LieGroupT], vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0
     ) -> LieGroupT:
         """
         Mapping from the tangent space vector about identity into a group element.
         """
         raise NotImplementedError()
 
-    def to_tangent(self: LieGroupT, epsilon: T.Scalar = 0,) -> T.List[T.Scalar]:
+    def to_tangent(self: LieGroupT, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Mapping from this element to the tangent space vector about identity.
         """
         raise NotImplementedError()
 
-    def retract(self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0,) -> LieGroupT:
+    def retract(self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> LieGroupT:
         """
         Apply a tangent space pertubation vec to this. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
@@ -56,9 +56,7 @@ class LieGroup(Group):
         """
         return self.compose(self.from_tangent(vec, epsilon=epsilon))
 
-    def local_coordinates(
-        self: LieGroupT, b: LieGroupT, epsilon: T.Scalar = 0,
-    ) -> T.List[T.Scalar]:
+    def local_coordinates(self: LieGroupT, b: LieGroupT, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         """
         Computes a tangent space pertubation around this to produce b. Often used in optimization
         to minimize the distance between two group elements.

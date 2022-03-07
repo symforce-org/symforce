@@ -67,9 +67,7 @@ class CamTestMixin(_Base):
             )
 
             camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
-            (pixel_reprojected, is_valid_forward_proj,) = cam_cal.pixel_from_camera_point(
-                camera_ray
-            )
+            (pixel_reprojected, is_valid_forward_proj) = cam_cal.pixel_from_camera_point(camera_ray)
 
             if abs(StorageOps.evalf(is_valid_back_proj) - 1) < self.EPSILON:
                 self.assertStorageNear(pixel, pixel_reprojected)

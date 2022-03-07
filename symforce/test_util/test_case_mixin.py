@@ -57,7 +57,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
 
     @staticmethod
     def assertStorageNear(
-        actual: T.Any, desired: T.Any, *, places: int = 7, msg: str = "", verbose: bool = True,
+        actual: T.Any, desired: T.Any, *, places: int = 7, msg: str = "", verbose: bool = True
     ) -> None:
         """
         Check that two elements are close. Handles sequences, scalars, and geometry types

@@ -55,7 +55,7 @@ class DataclassLieGroupOps(DataclassGroupOps):
                     )
                     tangent_dim = LieGroupOps.tangent_dim(sequence_instance)
                     constructed_fields[field.name] = LieGroupOps.from_tangent(
-                        sequence_instance, vec[offset : offset + tangent_dim],
+                        sequence_instance, vec[offset : offset + tangent_dim]
                     )
                 else:
                     tangent_dim = LieGroupOps.tangent_dim(field_type)

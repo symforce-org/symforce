@@ -15,7 +15,7 @@ from skymarshal.language_plugin import SkymarshalLanguage
 
 
 class EnumCase(object):
-    """ A template-friendly wrapper object for LCM #djinni Enum Cases """
+    """A template-friendly wrapper object for LCM #djinni Enum Cases"""
 
     def __init__(self, int_value, name):
         self.int_value = int_value
@@ -28,7 +28,7 @@ class EnumCase(object):
 
 
 class EnumType(object):
-    """ A template-friendly wrapper object for LCM #djinni Enums """
+    """A template-friendly wrapper object for LCM #djinni Enums"""
 
     # pylint: disable=too-many-instance-attributes
 
@@ -121,7 +121,9 @@ class SkymarshalDjinni(SkymarshalLanguage):
             idl_file = "{}.djinni".format(args.djinni_module)
             if args.djinni_idl_path:
                 idl_file = os.path.join(
-                    args.djinni_idl_path, idl_file, enum_types[0].djinni_idl_name + "_et_al",
+                    args.djinni_idl_path,
+                    idl_file,
+                    enum_types[0].djinni_idl_name + "_et_al",
                 )
                 file_map[idl_file] = render("djinni_idl.djinni.template", enum_types=enum_types)
 

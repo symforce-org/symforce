@@ -46,13 +46,13 @@ class Storage:
         raise NotImplementedError()
 
     @classmethod
-    def from_storage(cls: T.Type[StorageT], elements: T.Sequence[T.Scalar],) -> StorageT:
+    def from_storage(cls: T.Type[StorageT], elements: T.Sequence[T.Scalar]) -> StorageT:
         """
         Construct from a flat list representation. Opposite of `.to_storage()`.
         """
         raise NotImplementedError()
 
-    def __eq__(self: StorageT, other: T.Any,) -> bool:
+    def __eq__(self: StorageT, other: T.Any) -> bool:
         """
         Returns exact equality between self and other.
         """

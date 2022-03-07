@@ -124,7 +124,7 @@ class Pose3(LieGroup):
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = Matrix33.eye()
         return Matrix.block_matrix(
-            [[storage_D_tangent_R, Matrix.zeros(4, 3)], [Matrix.zeros(3, 3), storage_D_tangent_t],]
+            [[storage_D_tangent_R, Matrix.zeros(4, 3)], [Matrix.zeros(3, 3), storage_D_tangent_t]]
         )
 
     def tangent_D_storage(self: Pose3T) -> Matrix:
@@ -134,7 +134,7 @@ class Pose3(LieGroup):
         tangent_D_storage_R = self.R.tangent_D_storage()
         tangent_D_storage_t = Matrix33.eye()
         return Matrix.block_matrix(
-            [[tangent_D_storage_R, Matrix.zeros(3, 3)], [Matrix.zeros(3, 4), tangent_D_storage_t],]
+            [[tangent_D_storage_R, Matrix.zeros(3, 3)], [Matrix.zeros(3, 4), tangent_D_storage_t]]
         )
 
     # NOTE(hayk, aaron): Override retract + local_coordinates, because we're treating
@@ -147,7 +147,7 @@ class Pose3(LieGroup):
             t=ops.LieGroupOps.retract(self.t, vec[3:], epsilon=epsilon),
         )
 
-    def local_coordinates(self: Pose3T, b: Pose3T, epsilon: T.Scalar = 0,) -> T.List[T.Scalar]:
+    def local_coordinates(self: Pose3T, b: Pose3T, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon
         )

@@ -83,7 +83,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         )
 
         self.compare_or_update_file(
-            new_file=output_dir / "cc_sym.pyi", path=pybind_dir / "cc_sym.pyi",
+            new_file=output_dir / "cc_sym.pyi", path=pybind_dir / "cc_sym.pyi"
         )
 
 

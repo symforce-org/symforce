@@ -503,7 +503,7 @@ class SymforceCCSymTest(TestCase):
                     stats=cc_sym.OptimizationStats(),
                 )
             )
-            self.assertIsNone(opt.optimize(values, 2, False, cc_sym.OptimizationStats(),))
+            self.assertIsNone(opt.optimize(values, 2, False, cc_sym.OptimizationStats()))
 
             # Testing the wrapping of overload
             # void Optimize(Values<Scalar>* values, int num_iterations,

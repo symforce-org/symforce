@@ -230,7 +230,12 @@ class PythonClass(StructBuilder):
                     ">%s%c" % (dim.size_str, info.struct_format)
                 )
                 code(
-                    indent, "%slist(%s.unpack(buf.read(%d)))%s", accessor, unpacker, length, suffix,
+                    indent,
+                    "%slist(%s.unpack(buf.read(%d)))%s",
+                    accessor,
+                    unpacker,
+                    length,
+                    suffix,
                 )
             else:
                 if dim.auto_member:
@@ -339,7 +344,11 @@ class PythonClass(StructBuilder):
                     ">%s%c" % (dim.size_str, info.struct_format)
                 )
                 code(
-                    indent, "buf.write(%s.pack(*%s[:%s]))", packer, accessor, dim.size_str,
+                    indent,
+                    "buf.write(%s.pack(*%s[:%s]))",
+                    packer,
+                    accessor,
+                    dim.size_str,
                 )
             else:
                 if dim.auto_member:
@@ -368,7 +377,12 @@ class PythonClass(StructBuilder):
             assert info.pack_format is not None
             unpacker = self.get_or_create_pack_struct(info.pack_format)
             code(
-                indent, "%s%s.unpack(buf.read(%s))[0]%s", accessor, unpacker, info.size, suffix,
+                indent,
+                "%s%s.unpack(buf.read(%s))[0]%s",
+                accessor,
+                unpacker,
+                info.size,
+                suffix,
             )
         elif member.type_ref.name == "string":
             unpacker = self.get_or_create_pack_struct(">I")
@@ -622,13 +636,15 @@ class SkymarshalPython(SkymarshalLanguage):
         for struct in package.struct_definitions:
             pyclass = PythonClass(package, struct, args)  # type: T.Union[PythonClass, PyEnum]
             file_map[pyclass.fullpath] = render(
-                "python_struct_default_wrapper.py.template", lcmtype=pyclass,
+                "python_struct_default_wrapper.py.template",
+                lcmtype=pyclass,
             )
             module_items.append((pyclass.module_name, pyclass.name))
         for enum in package.enum_definitions:
             pyclass = PyEnum(package, enum, args)
             file_map[pyclass.fullpath] = render(
-                "python_enum_default_wrapper.py.template", enumtype=pyclass,
+                "python_enum_default_wrapper.py.template",
+                enumtype=pyclass,
             )
             module_items.append((pyclass.module_name, pyclass.name))
 

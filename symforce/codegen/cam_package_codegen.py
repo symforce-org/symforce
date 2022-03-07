@@ -249,7 +249,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
         # Add Camera and PosedCamera
         templates.add(
-            str(template_dir / "camera.h.jinja"), str(cam_package_dir / "camera.h"), camera_data(),
+            str(template_dir / "camera.h.jinja"), str(cam_package_dir / "camera.h"), camera_data()
         )
         templates.add(
             str(template_dir / "posed_camera.h.jinja"),

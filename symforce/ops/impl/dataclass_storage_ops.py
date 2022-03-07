@@ -72,12 +72,12 @@ class DataclassStorageOps:
                     )
                     storage_dim = StorageOps.storage_dim(sequence_instance)
                     constructed_fields[field.name] = StorageOps.from_storage(
-                        sequence_instance, elements[offset : offset + storage_dim],
+                        sequence_instance, elements[offset : offset + storage_dim]
                     )
                 else:
                     storage_dim = StorageOps.storage_dim(field_type)
                     constructed_fields[field.name] = StorageOps.from_storage(
-                        field_type, elements[offset : offset + storage_dim],
+                        field_type, elements[offset : offset + storage_dim]
                     )
                 offset += storage_dim
             return a(**constructed_fields)
@@ -88,7 +88,7 @@ class DataclassStorageOps:
                 field_instance = getattr(a, field.name)
                 storage_dim = StorageOps.storage_dim(field_instance)
                 constructed_fields[field.name] = StorageOps.from_storage(
-                    field_instance, elements[offset : offset + storage_dim],
+                    field_instance, elements[offset : offset + storage_dim]
                 )
                 offset += storage_dim
             return get_type(a)(**constructed_fields)
@@ -115,7 +115,7 @@ class DataclassStorageOps:
                             field, field_type
                         )
                         constructed_fields[field.name] = StorageOps.symbolic(
-                            sequence_instance, f"{name_prefix}{field.name}", **kwargs,
+                            sequence_instance, f"{name_prefix}{field.name}", **kwargs
                         )
                     else:
                         constructed_fields[field.name] = StorageOps.symbolic(

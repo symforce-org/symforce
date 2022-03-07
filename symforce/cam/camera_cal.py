@@ -64,7 +64,7 @@ class CameraCal(Storage):
                 )
             else:
                 return cls(
-                    focal_length=sm.symbols("f_x f_y"), principal_point=sm.symbols("c_x c_y"),
+                    focal_length=sm.symbols("f_x f_y"), principal_point=sm.symbols("c_x c_y")
                 )
 
     def __repr__(self) -> str:

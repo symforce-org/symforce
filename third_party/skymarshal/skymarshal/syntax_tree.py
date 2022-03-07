@@ -111,14 +111,15 @@ class Package(AstNode):
         if name not in self.type_definitions:
             raise NameError(
                 "Struct/Enum `{}` not found in package `{}`. Did you forget to run make?".format(
-                    name, self.name,
+                    name,
+                    self.name,
                 )
             )
         # should be no duplicates
         return self.type_definitions[name]
 
     def extend_with_package(self, other_package):
-        """ Add the given package's structs and enums to this package """
+        """Add the given package's structs and enums to this package"""
         assert self.name == other_package.name
         for name, t in iteritems(other_package.type_definitions):
             if name in self.type_definitions:
@@ -144,18 +145,39 @@ NotationSpec = T.NamedTuple(
 class Notation(AstNode):
     NOTATION_SPECS = {
         "#djinni": NotationSpec(
-            allowed={"enum"}, properties=[NotationSpecProperty(name="idl_name", type="string",),],
+            allowed={"enum"},
+            properties=[
+                NotationSpecProperty(
+                    name="idl_name",
+                    type="string",
+                ),
+            ],
         ),
         "#protobuf": NotationSpec(
             allowed={"enum", "struct"},
             properties=[
-                NotationSpecProperty(name="typename", type="string",),
-                NotationSpecProperty(name="filename", type="string",),
-                NotationSpecProperty(name="allow_short_ints", type="bool",),
-                NotationSpecProperty(name="allow_negative_enums", type="bool",),
+                NotationSpecProperty(
+                    name="typename",
+                    type="string",
+                ),
+                NotationSpecProperty(
+                    name="filename",
+                    type="string",
+                ),
+                NotationSpecProperty(
+                    name="allow_short_ints",
+                    type="bool",
+                ),
+                NotationSpecProperty(
+                    name="allow_negative_enums",
+                    type="bool",
+                ),
             ],
         ),
-        "#hashable": NotationSpec(allowed={"struct"}, properties=[],),  # enums are always hashable
+        "#hashable": NotationSpec(
+            allowed={"struct"},
+            properties=[],
+        ),  # enums are always hashable
         # Emits a ostream operator for LCM types that only have primitive members.
         "#cpp_display": NotationSpec(allowed={"struct"}, properties=[]),
     }
@@ -191,7 +213,9 @@ class Notation(AstNode):
             if '"' not in raw_value:
                 raise KeyError(
                     "Expected a string for notation {} {}: {}".format(
-                        self.name, prop_name, raw_value,
+                        self.name,
+                        prop_name,
+                        raw_value,
                     )
                 )
             return raw_value[1:-1]
@@ -199,7 +223,9 @@ class Notation(AstNode):
             if raw_value not in ("true", "false"):
                 raise KeyError(
                     "Expected true or false for notation {} {}: {}".format(
-                        self.name, prop_name, raw_value,
+                        self.name,
+                        prop_name,
+                        raw_value,
                     )
                 )
             return dict(true=True, false=False)[raw_value]
@@ -232,7 +258,9 @@ class Enum(AstNode):
                 existing_name = value_to_case[case_value]
                 raise KeyError(
                     'Value {} is not unique: it is used by "{}" and "{}"'.format(
-                        case_value, existing_name, case_name,
+                        case_value,
+                        existing_name,
+                        case_name,
                     )
                 )
             value_to_case[case_value] = case_name
@@ -266,7 +294,11 @@ class Enum(AstNode):
         if self.reserved_ids:
             reserved = "  {}\n".format(ReservedFieldGroup(self.reserved_ids))
         return "{}enum {} : {} {{\n{}{}\n}};".format(
-            notations, self.name, self.storage_type_ref, reserved, children,
+            notations,
+            self.name,
+            self.storage_type_ref,
+            reserved,
+            children,
         )
 
     def __eq__(self, other):
@@ -331,7 +363,9 @@ class Enum(AstNode):
             if case.int_value in cases_by_id:
                 raise KeyError(
                     "Enum case {} reuses id {}. Also used by {}".format(
-                        case.name, case.int_value, cases_by_id[case.int_value],
+                        case.name,
+                        case.int_value,
+                        cases_by_id[case.int_value],
                     )
                 )
             cases_by_id[case.int_value] = case.name
@@ -449,7 +483,8 @@ class Struct(AstNode):
                 if dim_member.name in dimension_members and has_protobuf_notation:
                     raise KeyError(
                         "multiple members of {} use the same dim member: {}".format(
-                            self.name, dim_member.name,
+                            self.name,
+                            dim_member.name,
                         )
                     )
                 dimension_members.add(dim_member.name)
@@ -464,32 +499,42 @@ class Struct(AstNode):
                     # NOTE(jeff): We could probably support this, but it's likely a bug
                     raise KeyError(
                         "member {}.{} cannot be used as a dimension and"
-                        "have an id for protobuf".format(self.name, member.name,)
+                        "have an id for protobuf".format(
+                            self.name,
+                            member.name,
+                        )
                     )
             # make sure there is an id
             if member.field_id is None:
                 if has_protobuf_notation:
                     raise KeyError(
                         "member {}.{} is missing an id required for protobuf".format(
-                            self.name, member.name,
+                            self.name,
+                            member.name,
                         )
                     )
             elif member.field_id <= 0:
                 raise KeyError(
                     "member {}.{} has non-positive field id {}".format(
-                        self.name, member.name, member.field_id,
+                        self.name,
+                        member.name,
+                        member.field_id,
                     )
                 )
             elif member.field_id in self.reserved_ids:
                 raise KeyError(
                     "member {}.{} has reserved field id {}".format(
-                        self.name, member.name, member.field_id,
+                        self.name,
+                        member.name,
+                        member.field_id,
                     )
                 )
             elif member.field_id in field_ids:
                 raise KeyError(
                     "member {}.{} has non-unique field id {}".format(
-                        self.name, member.name, member.field_id,
+                        self.name,
+                        member.name,
+                        member.field_id,
                     )
                 )
             if member.field_id is not None:
@@ -710,7 +755,8 @@ class ArrayDim(AstNode):
             if type_name not in INTEGER_TYPES:
                 raise TypeError(
                     "ArrayDim {} does not specify a valid integer type: {}".format(
-                        size_declaration, type_name,
+                        size_declaration,
+                        type_name,
                     )
                 )
 
@@ -718,7 +764,8 @@ class ArrayDim(AstNode):
             if member_name in struct.member_map:
                 raise NameError(
                     "ArrayDim {} with auto-size conflicts with existing member {}".format(
-                        size_declaration, member_name,
+                        size_declaration,
+                        member_name,
                     )
                 )
 
@@ -811,7 +858,10 @@ class ConstMember(Member):
         if not type_ref.is_const_type():
             raise TypeError(
                 "Constant '{}' from line {} must be one of {}. '{}' found.".format(
-                    name, type_ref.lineno, CONST_TYPES, type_ref.name,
+                    name,
+                    type_ref.lineno,
+                    CONST_TYPES,
+                    type_ref.name,
                 )
             )
         try:

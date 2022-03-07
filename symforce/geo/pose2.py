@@ -142,7 +142,7 @@ class Pose2(LieGroup):
             t=ops.LieGroupOps.retract(self.t, vec[:2], epsilon=epsilon),
         )
 
-    def local_coordinates(self: Pose2T, b: Pose2T, epsilon: T.Scalar = 0,) -> T.List[T.Scalar]:
+    def local_coordinates(self: Pose2T, b: Pose2T, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         return ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon
         ) + self.R.local_coordinates(b.R, epsilon=epsilon)

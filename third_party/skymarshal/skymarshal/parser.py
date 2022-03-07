@@ -19,8 +19,8 @@ from .tokenizer import tokens  # pylint: disable=unused-import
 
 def recurse_left(p, spaces=0, extend=False):
     """items :
-             | item
-             | items <spaces> item"""
+    | item
+    | items <spaces> item"""
     # Helper function for recursively defined productions.
     if len(p) == 1:
         # This is an empty sequence. Create the empty list.
@@ -41,7 +41,7 @@ def recurse_left(p, spaces=0, extend=False):
 # This is the top-level rule: return a list of packages
 def p_packages(p):
     """packages : packages package
-                | """
+    |"""
     recurse_left(p)
 
 
@@ -60,14 +60,14 @@ def p_identifier(p):
 # A close_brace_semi is a CLOSE_BRACE optionally followed by a SEMICOLON
 def p_close_brace_semi(p):
     """close_brace_semi : CLOSE_BRACE
-                        | CLOSE_BRACE SEMICOLON"""
+    | CLOSE_BRACE SEMICOLON"""
     p[0] = p[1]
 
 
 # Each enum has an identifier, optional type, and enum_contents
 def p_enum(p):
     """enum : notations ENUM identifier COLON type OPEN_BRACE enum_contents close_brace_semi
-            | notations ENUM identifier OPEN_BRACE enum_contents close_brace_semi"""
+    | notations ENUM identifier OPEN_BRACE enum_contents close_brace_semi"""
     if len(p) == 9:
         type_ref = p[5]
         reserved_ids, cases = p[7]
@@ -85,14 +85,14 @@ def p_enum(p):
 
 def p_notations(p):
     """notations : notations notation
-                 | """
+    |"""
     recurse_left(p)
 
 
 def p_notation(p):
     """notation : MACRO OPEN_BRACE notation_properties CLOSE_BRACE
-                | MACRO OPEN_BRACE CLOSE_BRACE
-                | MACRO """
+    | MACRO OPEN_BRACE CLOSE_BRACE
+    | MACRO"""
     if len(p) == 5:
         p[0] = syntax_tree.Notation(name=p[1][1], properties=dict(p[3]), lineno=p[1][0])
     else:
@@ -102,28 +102,28 @@ def p_notation(p):
 # Assignments are comma-delimited and cannot be empty
 def p_notation_properties(p):
     """notation_properties : notation_property
-                           | notation_properties COMMA notation_property"""
+    | notation_properties COMMA notation_property"""
     recurse_left(p, 1)
 
 
 # A single assignment has a equals sign
 def p_notation_property(p):
     """notation_property : identifier EQUALS const_value
-                         | identifier EQUALS const_string"""
+    | identifier EQUALS const_string"""
     p[0] = (p[1], p[3])
 
 
 # enum_contents are any number of reserved statements, followed by enum values
 def p_enum_contents(p):
     """enum_contents : reserved_groups enum_values
-                     | reserved_groups enum_values COMMA"""
+    | reserved_groups enum_values COMMA"""
     p[0] = p[1], p[2]
 
 
 # The enum_values is a list of 1 or more comma separated 'enum_value's
 def p_enum_values(p):
     """enum_values : enum_values COMMA enum_value
-                   | enum_value"""
+    | enum_value"""
     recurse_left(p, spaces=1)
 
 
@@ -136,8 +136,8 @@ def p_enum_value(p):
 # A struct list contains zero or more structs
 def p_type_definitions(p):
     """type_definitions : type_definitions struct
-                         | type_definitions enum
-                         | """
+    | type_definitions enum
+    |"""
     recurse_left(p)
 
 
@@ -152,7 +152,7 @@ def p_struct(p):
 # The members list is created by pulling individual members out of "type groups"
 def p_members(p):
     """members : members type_group
-               | """
+    |"""
     recurse_left(p, extend=True)
 
 
@@ -186,7 +186,7 @@ def p_member_reserved_group(p):
 
 def p_reserved_groups(p):
     """reserved_groups : reserved_groups reserved_group
-                       | """
+    |"""
     recurse_left(p, extend=True)
 
 
@@ -197,7 +197,7 @@ def p_reserved_group(p):
 
 def p_field_ids(p):
     """field_ids : field_id
-                 | field_ids COMMA field_id"""
+    | field_ids COMMA field_id"""
     recurse_left(p, spaces=1)
 
 
@@ -218,7 +218,7 @@ def p_type(p):
 # Member names are comma-delimited and cannot be empty
 def p_member_names(p):
     """member_names : identifier
-                    | member_names COMMA identifier"""
+    | member_names COMMA identifier"""
     recurse_left(p, 1)
 
 
@@ -234,7 +234,7 @@ def p_const_member_type_group(p):
 # Assignments are comma-delimited and cannot be empty
 def p_const_member_assignments(p):
     """const_member_assignments : assignment
-                                | const_member_assignments COMMA assignment"""
+    | const_member_assignments COMMA assignment"""
     recurse_left(p, 1)
 
 
@@ -272,15 +272,15 @@ def p_array_member_with_id_type_group(p):
 # A non-empty list of dimensions
 def p_array_dims(p):
     """array_dims : array_dim
-                  | array_dims array_dim"""
+    | array_dims array_dim"""
     recurse_left(p)
 
 
 # A single dimension
 def p_array_dim(p):
     """array_dim : OPEN_BRACKET CLOSE_BRACKET
-                 | OPEN_BRACKET WORD CLOSE_BRACKET
-                 | OPEN_BRACKET WORD WORD CLOSE_BRACKET"""
+    | OPEN_BRACKET WORD CLOSE_BRACKET
+    | OPEN_BRACKET WORD WORD CLOSE_BRACKET"""
     if len(p) == 3:
         # Empty brackets
         p[0] = syntax_tree.ArrayDim(tuple())

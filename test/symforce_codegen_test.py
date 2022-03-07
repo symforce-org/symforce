@@ -355,7 +355,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare the generated types
         self.compare_or_update_directory(
-            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data")
         )
 
     @slow_on_sympy
@@ -424,7 +424,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare the function files
         self.compare_or_update_directory(
-            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data")
         )
 
     def test_invalid_codegen_raises(self) -> None:

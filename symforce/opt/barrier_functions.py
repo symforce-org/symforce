@@ -55,7 +55,7 @@ def max_power_barrier(
         power: The power used to describe the curve of the error tails.
     """
     x_zero_error = x_nominal - dist_zero_to_nominal
-    return error_nominal * sm.Pow(sm.Max(0, x - x_zero_error) / dist_zero_to_nominal, power,)
+    return error_nominal * sm.Pow(sm.Max(0, x - x_zero_error) / dist_zero_to_nominal, power)
 
 
 def max_linear_barrier(

@@ -103,7 +103,7 @@ class SymforceOptimizationProblemTest(TestCase):
         factor = problem.make_factors("custom_jacobian_problem")[0]
         cc_factor = factor.cc_factor(
             {"custom_jacobian.v"},
-            {"custom_jacobian.v": cc_sym.Key("v"), "custom_jacobian.v0": cc_sym.Key("v", 0),},
+            {"custom_jacobian.v": cc_sym.Key("v"), "custom_jacobian.v0": cc_sym.Key("v", 0)},
         )
 
         cc_values = cc_sym.Values()

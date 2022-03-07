@@ -181,7 +181,7 @@ class Factor:
                 return self.generated_residual(*[values.at(cc_key_map[key]) for key in self.keys])
 
             return cc_sym.Factor(
-                wrapped, [cc_key_map[key] for key in self.keys if key in optimized_keys],
+                wrapped, [cc_key_map[key] for key in self.keys if key in optimized_keys]
             )
         else:
             raise NotImplementedError

@@ -86,7 +86,7 @@ class Pose2_SE2(Pose2):
     def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
         return LieGroup.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = 0,) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         return LieGroup.local_coordinates(self, b, epsilon)
 
     # -------------------------------------------------------------------------

@@ -72,7 +72,7 @@ PRIMITIVE_MAP = {
 
 
 class EnumCase(object):
-    """ A template-friendly wrapper object for LCM #protobuf Enum Cases """
+    """A template-friendly wrapper object for LCM #protobuf Enum Cases"""
 
     def __init__(self, int_value, name):
         self.int_value = int_value
@@ -80,7 +80,7 @@ class EnumCase(object):
 
 
 class EnumType(object):
-    """ A template-friendly wrapper object for LCM #protobuf Enums """
+    """A template-friendly wrapper object for LCM #protobuf Enums"""
 
     def __init__(self, package_name, enum, args):
         self.args = args
@@ -108,7 +108,10 @@ class EnumType(object):
                 raise ValueError(
                     "#protobuf enum {}.{} has negative value for {}={}.  Use "
                     "#protobuf{{allow_negative_enums = true}} to suppress this error.".format(
-                        package_name, enum.name, case.name, case.int_value,
+                        package_name,
+                        enum.name,
+                        case.name,
+                        case.int_value,
                     )
                 )
 
@@ -144,12 +147,16 @@ class EnumType(object):
 
     def single_lcm_to_pb(self, field_name, in_expression):
         return "out->set_{}(static_cast<{}>({}.int_value()))".format(
-            field_name, self.proto_cpp_type, in_expression,
+            field_name,
+            self.proto_cpp_type,
+            in_expression,
         )
 
     def add_lcm_to_pb(self, field_name, in_expression):
         return "out->add_{}(static_cast<{}>({}.int_value()))".format(
-            field_name, self.proto_cpp_type, in_expression,
+            field_name,
+            self.proto_cpp_type,
+            in_expression,
         )
 
     @property
@@ -158,7 +165,7 @@ class EnumType(object):
 
 
 class StructField(object):
-    """ A template-friendly wrapper object for LCM #protobuf Struct Fields """
+    """A template-friendly wrapper object for LCM #protobuf Struct Fields"""
 
     def __init__(self, parent, member, type_map, args):
         self.args = args
@@ -233,15 +240,23 @@ class StructField(object):
             if dim.size_int is None:
                 # dynamic array is easy because we pass along the size
                 return "for (int i = 0; i < {}; i++) {{\n  out.{}.push_back({});\n}}".format(
-                    var_max_expression, self.lcm_name, in_expression,
+                    var_max_expression,
+                    self.lcm_name,
+                    in_expression,
                 )
 
             # fixed arrays need to be filled with default values if the protobuf isn't long enough
             main_loop = "for (int i = 0; i < {} && i < {}; i++) {{\n  out.{}[i] = {};\n}}".format(
-                dim.size_int, var_max_expression, self.lcm_name, in_expression,
+                dim.size_int,
+                var_max_expression,
+                self.lcm_name,
+                in_expression,
             )
             fill_loop = "for (int i = {}; i < {}; i++) {{\n  out.{}[i] = {};\n}}".format(
-                var_max_expression, dim.size_int, self.lcm_name, field_type.default_lcm_value,
+                var_max_expression,
+                dim.size_int,
+                self.lcm_name,
+                field_type.default_lcm_value,
             )
 
             if self.type_ref.name == "string":
@@ -271,10 +286,13 @@ class StructField(object):
             in_expression = "in.{}".format(self.lcm_name)
             if dim.auto_member:
                 return "out->set_{}(std::string({in_expr}.begin(), {in_expr}.end()));".format(
-                    self.proto_name, in_expr=in_expression,
+                    self.proto_name,
+                    in_expr=in_expression,
                 )
             return "out->set_{}(std::string({expr}.begin(), {expr}.begin() + in.{dim}));".format(
-                self.proto_name, expr=in_expression, dim=dim.size_str,
+                self.proto_name,
+                expr=in_expression,
+                dim=dim.size_str,
             )
 
         max_expression = "in.{}".format(dim.size_str) if dim.size_int is None else dim.size_int
@@ -285,7 +303,7 @@ class StructField(object):
 
 
 class StructType(object):
-    """ A template-friendly wrapper object for LCM #protobuf Structs """
+    """A template-friendly wrapper object for LCM #protobuf Structs"""
 
     def __init__(self, package, struct, type_map, args):
         self.args = args

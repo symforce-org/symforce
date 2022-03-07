@@ -344,7 +344,7 @@ def get_formatted_list(
 
 
 def _get_scalar_keys_recursive(
-    index_value: IndexEntry, prefix: str, config: codegen_config.CodegenConfig, use_data: bool,
+    index_value: IndexEntry, prefix: str, config: codegen_config.CodegenConfig, use_data: bool
 ) -> T.List[str]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
@@ -552,7 +552,7 @@ def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
 
 
 def generate_lcm_types(
-    lcm_type_dir: str, lcm_files: T.Sequence[str], lcm_output_dir: T.Optional[str] = None,
+    lcm_type_dir: str, lcm_files: T.Sequence[str], lcm_output_dir: T.Optional[str] = None
 ) -> T.Dict[str, T.Any]:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.

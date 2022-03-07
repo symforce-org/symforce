@@ -1,4 +1,4 @@
-black==19.10b0
+black[jupyter]==21.12b0
 clang-format
 cython
 graphviz
@@ -8,7 +8,7 @@ numpy
 pybind11-stubgen
 pylint
 scipy
-sympy
+sympy==1.9
 types-jinja2
 types-pygments
 types-setuptools

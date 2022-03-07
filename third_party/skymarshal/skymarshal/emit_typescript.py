@@ -168,7 +168,7 @@ class TsBase(BaseBuilder):
     @property
     def bare_base_path(self):
         # type: () -> str
-        """ package_name/filename """
+        """package_name/filename"""
         return os.path.join(self.package.name, self.name)
 
     @property

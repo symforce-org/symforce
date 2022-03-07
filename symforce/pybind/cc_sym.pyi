@@ -92,10 +92,10 @@ class Factor:
                 Gauss Newton approximation:
                     H   = J.T * J
                     rhs = J.T * b
-                
+
                 Args:
                   keys: The set of input arguments, in order, accepted by func.
-              
+
 
 
         Create from a function that computes the jacobian. The hessian will be computed using the

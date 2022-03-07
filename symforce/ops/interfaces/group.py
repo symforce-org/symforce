@@ -31,7 +31,7 @@ class Group(Storage):
         """
         raise NotImplementedError()
 
-    def compose(self: GroupT, other: GroupT,) -> GroupT:
+    def compose(self: GroupT, other: GroupT) -> GroupT:
         """
         Apply the group operation with other.
         """
@@ -43,7 +43,7 @@ class Group(Storage):
         """
         raise NotImplementedError()
 
-    def between(self: GroupT, b: GroupT,) -> GroupT:
+    def between(self: GroupT, b: GroupT) -> GroupT:
         """
         Returns the element that when composed with this produces b. For vector spaces it is `this - a`.
 

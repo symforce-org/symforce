@@ -25,8 +25,8 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
     def test_construction(self) -> None:
         """
-            Tests:
-                Matrix.__new__
+        Tests:
+            Matrix.__new__
         """
         # Numbers here match Matrix.__new__
 
@@ -255,7 +255,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         M21 = geo.M21([5, 5])
         M13 = geo.M13([6, 6, 6])
         self.assertEqual(
-            geo.M.block_matrix([[M22, M21], [M13]]), geo.M([[1, 1, 5], [1, 1, 5], [6, 6, 6]]),
+            geo.M.block_matrix([[M22, M21], [M13]]), geo.M([[1, 1, 5], [1, 1, 5], [6, 6, 6]])
         )
         self.assertRaises(
             AssertionError, lambda: geo.M.block_matrix([[M22, M23], [M11, geo.M15()]])

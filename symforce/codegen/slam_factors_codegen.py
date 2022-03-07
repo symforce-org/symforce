@@ -278,7 +278,7 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     # Compute whitened residual with a noise model.
     alpha = BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon)
     noise_model = BarronNoiseModel(
-        alpha=alpha, scalar_information=1 / gnc_scale ** 2, x_epsilon=epsilon,
+        alpha=alpha, scalar_information=1 / gnc_scale ** 2, x_epsilon=epsilon
     )
 
     whitened_residual = (

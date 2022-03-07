@@ -53,7 +53,7 @@ class SymforceCppCodePrinterTest(TestCase):
 
         heaviside_codegen = codegen.Codegen.function(func=heaviside, config=codegen.CppConfig())
         heaviside_codegen_data = heaviside_codegen.generate_function(
-            output_dir=output_dir, namespace="cpp_code_printer_test",
+            output_dir=output_dir, namespace="cpp_code_printer_test"
         )
 
         # Compare to expected

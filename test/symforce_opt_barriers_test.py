@@ -77,7 +77,7 @@ class SymforceOptBarriersTest(TestCase):
         dist_zero_to_nominal = 0.5
 
         min_max_power_barrier_helper = lambda x, power: min_max_power_barrier(
-            x, x_nominal_lower, x_nominal_upper, error_nominal, dist_zero_to_nominal, power,
+            x, x_nominal_lower, x_nominal_upper, error_nominal, dist_zero_to_nominal, power
         )
         max_power_barrier_helper = lambda x, power: max_power_barrier(
             x, x_nominal_upper, error_nominal, dist_zero_to_nominal, power
@@ -127,13 +127,13 @@ class SymforceOptBarriersTest(TestCase):
         # Check that min_max_linear_barrier returns the same error for several points
 
         min_max_linear_barrier_helper = lambda x: min_max_linear_barrier(
-            x, x_nominal_lower, x_nominal_upper, error_nominal, dist_zero_to_nominal,
+            x, x_nominal_lower, x_nominal_upper, error_nominal, dist_zero_to_nominal
         )
         max_linear_barrier_helper = lambda x: max_linear_barrier(
-            x, x_nominal_upper, error_nominal, dist_zero_to_nominal,
+            x, x_nominal_upper, error_nominal, dist_zero_to_nominal
         )
         min_linear_barrier_helper = lambda x: min_linear_barrier(
-            x, x_nominal_lower, error_nominal, dist_zero_to_nominal,
+            x, x_nominal_lower, error_nominal, dist_zero_to_nominal
         )
 
         barrier_map = (

@@ -54,7 +54,7 @@ def get_prior_docstring() -> str:
 
 
 def between_factor(
-    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0
 ) -> geo.Matrix:
     assert type(a) == type(b) == type(a_T_b)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
@@ -71,7 +71,7 @@ def between_factor(
 
 
 def prior_factor(
-    value: T.Element, prior: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0,
+    value: T.Element, prior: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0
 ) -> geo.Matrix:
     assert type(value) == type(prior)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
@@ -151,7 +151,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     """
 
     def between_factor_pose3_rotation(
-        a: geo.Pose3, b: geo.Pose3, a_R_b: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
+        a: geo.Pose3, b: geo.Pose3, a_R_b: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0
     ) -> geo.Matrix:
         # NOTE(aaron): This should be equivalent to between_factor(a.R, b.R, a_R_b), but we write it
         # this way for explicitness and symmetry with between_factor_pose3_position, where the two
@@ -197,12 +197,12 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return sqrt_info * geo.M([error])
 
     def prior_factor_pose3_rotation(
-        value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
+        value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0
     ) -> geo.Matrix:
         return prior_factor(value.R, prior, sqrt_info, epsilon)
 
     def prior_factor_pose3_position(
-        value: geo.Pose3, prior: geo.Vector3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0,
+        value: geo.Pose3, prior: geo.Vector3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0
     ) -> geo.Matrix:
         return prior_factor(value.t, prior, sqrt_info, epsilon)
 
@@ -221,7 +221,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     ).with_linearization(name="between_factor_pose3_position", which_args=["a", "b"])
 
     between_translation_norm_codegen = Codegen.function(
-        func=between_factor_pose3_translation_norm, output_names=["res"], config=CppConfig(),
+        func=between_factor_pose3_translation_norm, output_names=["res"], config=CppConfig()
     ).with_linearization(name="between_factor_pose3_translation_norm", which_args=["a", "b"])
 
     prior_rotation_codegen = Codegen.function(

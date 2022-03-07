@@ -145,7 +145,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
 
         # Check that when inverse_range = 0 and epsilon = 0 we exactly recover rotation-only math
         pixel_inf_2_exact, is_valid_inf = posed_cam_1.warp_pixel(
-            pixel=pixel_inf_1, inverse_range=0, target_cam=posed_cam_2,
+            pixel=pixel_inf_1, inverse_range=0, target_cam=posed_cam_2
         )
         self.assertEqual(is_valid_inf, 1)
         self.assertStorageNear(pixel_inf_2_exact, pixel_inf_2_rot_only, places=9)

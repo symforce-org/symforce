@@ -96,7 +96,7 @@ def dim_size_access(dim, array_member=None):
 
 
 class CppBase(BaseBuilder):
-    """ Base helper for lcm stucts and enums """
+    """Base helper for lcm stucts and enums"""
 
     @property
     def namespace(self):
@@ -144,7 +144,7 @@ class CppEnum(EnumBuilder, CppBase):
 
     @property
     def string_cast_type(self):
-        """ If printing a number, cast int8_t to int16_t otherwise it is treated as a character """
+        """If printing a number, cast int8_t to int16_t otherwise it is treated as a character"""
         storage_name = str(self.storage_type)
         return {"int8_t": "int16_t"}.get(storage_name, storage_name)
 
@@ -288,7 +288,8 @@ class CppStruct(StructBuilder, CppBase):
                         " member",
                     )
                     code(
-                        2, "// then re-run lcm-gen with '--cpp-std=c++11' to generate code that is",
+                        2,
+                        "// then re-run lcm-gen with '--cpp-std=c++11' to generate code that is",
                     )
                     code(2, "// compliant with C++11")
                     code(

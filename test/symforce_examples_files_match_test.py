@@ -20,9 +20,7 @@ class ExampleFilesMatchTest(TestCase):
         with open(example2.joinpath(path)) as f:
             example2_data = replacer(f.read())
 
-        self.compare_or_update(
-            path=example1.joinpath(path), data=example2_data,
-        )
+        self.compare_or_update(path=example1.joinpath(path), data=example2_data)
 
     def test_equivalent_files_are_identical(self) -> None:
         """

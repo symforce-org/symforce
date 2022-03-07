@@ -59,9 +59,7 @@ class FixedBundleAdjustmentProblem:
         linearization_func = self._build_codegen_object()
 
         namespace = "bundle_adjustment_fixed_size"
-        linearization_func.generate_function(
-            output_dir=output_dir, namespace=namespace,
-        )
+        linearization_func.generate_function(output_dir=output_dir, namespace=namespace)
 
     def _build_codegen_object(self) -> codegen.Codegen:
         """
