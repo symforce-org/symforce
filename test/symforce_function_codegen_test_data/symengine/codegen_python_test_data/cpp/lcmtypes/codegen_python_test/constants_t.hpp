@@ -80,7 +80,11 @@ class constants_t
         inline int _encodeNoHash(void *buf, int offset, int maxlen) const;
         inline int _getEncodedSizeNoHash() const;
         inline int _decodeNoHash(const void *buf, int offset, int maxlen);
-        constexpr static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        constexpr static uint64_t _computeHash(const __lcm_hash_ptr *)
+        {
+            uint64_t hash = 0x152f505c823f2cbcLL;
+            return (hash<<1) + ((hash>>63)&1);
+        }
 
         // Comparison operators.
         inline bool operator==(const constants_t& other) const;
@@ -169,12 +173,6 @@ int constants_t::_getEncodedSizeNoHash() const
     int enc_size = 0;
     enc_size += __double_encoded_array_size(NULL, 1);
     return enc_size;
-}
-
-constexpr uint64_t constants_t::_computeHash(const __lcm_hash_ptr *)
-{
-    uint64_t hash = 0x152f505c823f2cbcLL;
-    return (hash<<1) + ((hash>>63)&1);
 }
 
 bool constants_t::operator==(const constants_t& other) const {

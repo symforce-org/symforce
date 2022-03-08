@@ -80,7 +80,11 @@ class outputs_2_t
         inline int _encodeNoHash(void *buf, int offset, int maxlen) const;
         inline int _getEncodedSizeNoHash() const;
         inline int _decodeNoHash(const void *buf, int offset, int maxlen);
-        constexpr static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        constexpr static uint64_t _computeHash(const __lcm_hash_ptr *)
+        {
+            uint64_t hash = 0x2acd1c65693943deLL;
+            return (hash<<1) + ((hash>>63)&1);
+        }
 
         // Comparison operators.
         inline bool operator==(const outputs_2_t& other) const;
@@ -169,12 +173,6 @@ int outputs_2_t::_getEncodedSizeNoHash() const
     int enc_size = 0;
     enc_size += __double_encoded_array_size(NULL, 1);
     return enc_size;
-}
-
-constexpr uint64_t outputs_2_t::_computeHash(const __lcm_hash_ptr *)
-{
-    uint64_t hash = 0x2acd1c65693943deLL;
-    return (hash<<1) + ((hash>>63)&1);
 }
 
 bool outputs_2_t::operator==(const outputs_2_t& other) const {

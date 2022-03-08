@@ -84,7 +84,19 @@ class states_t
 #if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
         __attribute__((noinline))
 #endif
-        inline static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        static uint64_t _computeHash(const __lcm_hash_ptr *p)
+        {
+            const __lcm_hash_ptr *fp;
+            for(fp = p; fp != NULL; fp = fp->parent)
+                if(fp->v == states_t::getHash)
+                    return 0;
+            const __lcm_hash_ptr cp = { p, states_t::getHash };
+
+            uint64_t hash = 0x0012345678017000LL +
+                ::eigen_lcm::Vector2d::_computeHash(&cp);
+
+            return (hash<<1) + ((hash>>63)&1);
+        }
 
         // Comparison operators.
         inline bool operator==(const states_t& other) const;
@@ -174,23 +186,6 @@ int states_t::_getEncodedSizeNoHash() const
     int enc_size = 0;
     enc_size += this->p._getEncodedSizeNoHash();
     return enc_size;
-}
-
-#if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
-__attribute__((noinline))
-#endif
-uint64_t states_t::_computeHash(const __lcm_hash_ptr *p)
-{
-    const __lcm_hash_ptr *fp;
-    for(fp = p; fp != NULL; fp = fp->parent)
-        if(fp->v == states_t::getHash)
-            return 0;
-    const __lcm_hash_ptr cp = { p, states_t::getHash };
-
-    uint64_t hash = 0x0012345678017000LL +
-         ::eigen_lcm::Vector2d::_computeHash(&cp);
-
-    return (hash<<1) + ((hash>>63)&1);
 }
 
 bool states_t::operator==(const states_t& other) const {

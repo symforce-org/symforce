@@ -102,9 +102,25 @@ class {{lcmtype.name}}
 #if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
         __attribute__((noinline))
 #endif
-        inline static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        static uint64_t _computeHash(const __lcm_hash_ptr *p)
+        {
+            const __lcm_hash_ptr *fp;
+            for(fp = p; fp != NULL; fp = fp->parent)
+                if(fp->v == {{lcmtype.name}}::getHash)
+                    return 0;
+            const __lcm_hash_ptr cp = { p, {{lcmtype.name}}::getHash };
+
+            uint64_t hash = {{lcmtype.hash}}L +
+                {{ lcmtype.compute_hash() }};
+
+            return (hash<<1) + ((hash>>63)&1);
+        }
 {% else %}
-        constexpr static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        constexpr static uint64_t _computeHash(const __lcm_hash_ptr *)
+        {
+            uint64_t hash = {{lcmtype.hash}}L;
+            return (hash<<1) + ((hash>>63)&1);
+        }
 {% endif %}
 {% if not lcmtype.args.cpp_no_operators %}
 
@@ -229,31 +245,6 @@ int {{lcmtype.name}}::_getEncodedSizeNoHash() const
 {
 {{ lcmtype.encoded_size() }}
 }
-
-{% if lcmtype.has_complex_members() %}
-#if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
-__attribute__((noinline))
-#endif
-uint64_t {{lcmtype.name}}::_computeHash(const __lcm_hash_ptr *p)
-{
-    const __lcm_hash_ptr *fp;
-    for(fp = p; fp != NULL; fp = fp->parent)
-        if(fp->v == {{lcmtype.name}}::getHash)
-            return 0;
-    const __lcm_hash_ptr cp = { p, {{lcmtype.name}}::getHash };
-
-    uint64_t hash = {{lcmtype.hash}}L +
-         {{ lcmtype.compute_hash() }};
-
-    return (hash<<1) + ((hash>>63)&1);
-}
-{% else %}
-constexpr uint64_t {{lcmtype.name}}::_computeHash(const __lcm_hash_ptr *)
-{
-    uint64_t hash = {{lcmtype.hash}}L;
-    return (hash<<1) + ((hash>>63)&1);
-}
-{% endif %}
 
 {% if not lcmtype.args.cpp_no_operators %}
 bool {{lcmtype.name}}::operator==(const {{lcmtype.name}}& other) const {

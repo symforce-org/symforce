@@ -115,7 +115,25 @@ class inputs_t
 #if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
         __attribute__((noinline))
 #endif
-        inline static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        static uint64_t _computeHash(const __lcm_hash_ptr *p)
+        {
+            const __lcm_hash_ptr *fp;
+            for(fp = p; fp != NULL; fp = fp->parent)
+                if(fp->v == inputs_t::getHash)
+                    return 0;
+            const __lcm_hash_ptr cp = { p, inputs_t::getHash };
+
+            uint64_t hash = 0x9c920d836f45c850LL +
+                ::eigen_lcm::Vector4d::_computeHash(&cp) +
+         ::eigen_lcm::Vector4d::_computeHash(&cp) +
+         ::eigen_lcm::Vector4d::_computeHash(&cp) +
+         ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
+         ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
+         ::codegen_multi_function_test::inputs_constants_t::_computeHash(&cp) +
+         ::codegen_multi_function_test::inputs_states_t::_computeHash(&cp);
+
+            return (hash<<1) + ((hash>>63)&1);
+        }
 
         // Comparison operators.
         inline bool operator==(const inputs_t& other) const;
@@ -322,29 +340,6 @@ int inputs_t::_getEncodedSizeNoHash() const
     enc_size += this->constants._getEncodedSizeNoHash();
     enc_size += this->states._getEncodedSizeNoHash();
     return enc_size;
-}
-
-#if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
-__attribute__((noinline))
-#endif
-uint64_t inputs_t::_computeHash(const __lcm_hash_ptr *p)
-{
-    const __lcm_hash_ptr *fp;
-    for(fp = p; fp != NULL; fp = fp->parent)
-        if(fp->v == inputs_t::getHash)
-            return 0;
-    const __lcm_hash_ptr cp = { p, inputs_t::getHash };
-
-    uint64_t hash = 0x9c920d836f45c850LL +
-         ::eigen_lcm::Vector4d::_computeHash(&cp) +
-         ::eigen_lcm::Vector4d::_computeHash(&cp) +
-         ::eigen_lcm::Vector4d::_computeHash(&cp) +
-         ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
-         ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
-         ::codegen_multi_function_test::inputs_constants_t::_computeHash(&cp) +
-         ::codegen_multi_function_test::inputs_states_t::_computeHash(&cp);
-
-    return (hash<<1) + ((hash>>63)&1);
 }
 
 bool inputs_t::operator==(const inputs_t& other) const {

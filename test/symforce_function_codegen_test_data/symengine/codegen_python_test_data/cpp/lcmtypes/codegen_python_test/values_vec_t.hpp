@@ -100,7 +100,21 @@ class values_vec_t
 #if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
         __attribute__((noinline))
 #endif
-        inline static uint64_t _computeHash(const __lcm_hash_ptr *p);
+        static uint64_t _computeHash(const __lcm_hash_ptr *p)
+        {
+            const __lcm_hash_ptr *fp;
+            for(fp = p; fp != NULL; fp = fp->parent)
+                if(fp->v == values_vec_t::getHash)
+                    return 0;
+            const __lcm_hash_ptr cp = { p, values_vec_t::getHash };
+
+            uint64_t hash = 0xe7b60b55c8cf5417LL +
+                ::eigen_lcm::Vector4d::_computeHash(&cp) +
+         ::eigen_lcm::Vector4d::_computeHash(&cp) +
+         ::eigen_lcm::Vector4d::_computeHash(&cp);
+
+            return (hash<<1) + ((hash>>63)&1);
+        }
 
         // Comparison operators.
         inline bool operator==(const values_vec_t& other) const;
@@ -253,25 +267,6 @@ int values_vec_t::_getEncodedSizeNoHash() const
         }
     }
     return enc_size;
-}
-
-#if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
-__attribute__((noinline))
-#endif
-uint64_t values_vec_t::_computeHash(const __lcm_hash_ptr *p)
-{
-    const __lcm_hash_ptr *fp;
-    for(fp = p; fp != NULL; fp = fp->parent)
-        if(fp->v == values_vec_t::getHash)
-            return 0;
-    const __lcm_hash_ptr cp = { p, values_vec_t::getHash };
-
-    uint64_t hash = 0xe7b60b55c8cf5417LL +
-         ::eigen_lcm::Vector4d::_computeHash(&cp) +
-         ::eigen_lcm::Vector4d::_computeHash(&cp) +
-         ::eigen_lcm::Vector4d::_computeHash(&cp);
-
-    return (hash<<1) + ((hash>>63)&1);
 }
 
 bool values_vec_t::operator==(const values_vec_t& other) const {
