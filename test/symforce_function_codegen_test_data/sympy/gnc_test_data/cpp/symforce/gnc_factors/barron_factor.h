@@ -34,7 +34,7 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
                   Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
                   Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
                   Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
-  // Total ops: 158
+  // Total ops: 152
 
   // Input arrays
 

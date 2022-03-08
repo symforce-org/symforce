@@ -13,6 +13,8 @@ import sys
 from symforce import logger
 from symforce import typing as T
 
+from . import _sympy_count_ops
+
 
 def modify_symbolic_api(sympy_module: T.Any) -> None:
     """
@@ -28,6 +30,7 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     add_scoping(sympy_module)
     add_custom_methods(sympy_module)
     override_solve(sympy_module)
+    override_count_ops(sympy_module)
 
 
 def override_symbol_new(sympy_module: T.Any) -> None:
@@ -259,6 +262,15 @@ def override_solve(sympy_module: T.Type) -> None:
         return
     else:
         raise NotImplementedError(f"Unknown backend: '{sympy_module.__name__}'")
+
+
+def override_count_ops(sympy_module: T.Type) -> None:
+    """
+    Patch count_ops to yield more reasonable outputs from the perspective of generated code. Only
+    sympy.count_ops is modified here as the symengine.count_ops is modified directly.
+    """
+    if sympy_module.__name__ == "sympy":
+        sympy_module.count_ops = _sympy_count_ops.count_ops
 
 
 def add_custom_methods(sympy_module: T.Type) -> None:

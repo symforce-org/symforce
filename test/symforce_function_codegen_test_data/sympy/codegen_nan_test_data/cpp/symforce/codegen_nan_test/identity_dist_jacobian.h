@@ -25,7 +25,7 @@ namespace codegen_nan_test {
  */
 template <typename Scalar>
 Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
-  // Total ops: 41
+  // Total ops: 39
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _R1 = R1.Data();

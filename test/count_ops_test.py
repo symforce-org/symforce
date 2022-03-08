@@ -56,6 +56,22 @@ class CountOpsTest(TestCase):
             self.assertEqual(2, sm.count_ops(x * y ** 2))
             self.assertEqual(2, sm.count_ops(x * y ** (-2)))
 
+    def test_constants(self) -> None:
+        """
+        Tests that constants are no ops.
+        """
+        with self.subTest(msg=f"{sm.__name__} counts decimals as 0 ops"):
+            self.assertEqual(0, sm.count_ops(1.1))
+            self.assertEqual(0, sm.count_ops(-1.1))
+
+        with self.subTest(msg=f"{sm.__name__} counts integers as 0 ops"):
+            self.assertEqual(0, sm.count_ops(2))
+            self.assertEqual(0, sm.count_ops(-sm.S(2)))
+
+        with self.subTest(msg=f"{sm.__name__} counts rationals as 0 ops"):
+            self.assertEqual(0, sm.count_ops(sm.Rational(2, 3)))
+            self.assertEqual(0, sm.count_ops(sm.Rational(-2, 3)))
+
 
 if __name__ == "__main__":
     TestCase.main()

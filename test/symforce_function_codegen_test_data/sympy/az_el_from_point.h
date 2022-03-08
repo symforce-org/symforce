@@ -29,7 +29,7 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
                                           const Eigen::Matrix<Scalar, 3, 1>& nav_t_point,
                                           const Scalar epsilon) {
-  // Total ops: 78
+  // Total ops: 77
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _nav_T_cam = nav_T_cam.Data();
