@@ -44,7 +44,7 @@ class LieGroupOps(object):
     def to_tangent(a, epsilon):
         # type: (sym.Pose3, float) -> T.List[float]
 
-        # Total ops: 19
+        # Total ops: 17
 
         # Input arrays
         _a = a.data
@@ -102,7 +102,7 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Pose3, sym.Pose3, float) -> T.List[float]
 
-        # Total ops: 52
+        # Total ops: 50
 
         # Input arrays
         _a = a.data

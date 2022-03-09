@@ -46,7 +46,7 @@ void LinearReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                              const Eigen::Matrix<Scalar, 2, 1>& target_pixel, const Scalar epsilon,
                              Eigen::Matrix<Scalar, 2, 1>* const reprojection_delta = nullptr,
                              Scalar* const is_valid = nullptr) {
-  // Total ops: 119
+  // Total ops: 123
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();

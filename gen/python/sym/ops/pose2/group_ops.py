@@ -38,7 +38,7 @@ class GroupOps(object):
     def inverse(a):
         # type: (sym.Pose2) -> sym.Pose2
 
-        # Total ops: 9
+        # Total ops: 8
 
         # Input arrays
         _a = a.data
@@ -97,7 +97,7 @@ class GroupOps(object):
     def inverse_with_jacobian(a):
         # type: (sym.Pose2) -> T.Tuple[sym.Pose2, numpy.ndarray]
 
-        # Total ops: 15
+        # Total ops: 14
 
         # Input arrays
         _a = a.data

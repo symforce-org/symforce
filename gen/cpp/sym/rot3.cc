@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, const Rot3f& a) {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::Compose(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
-  // Total ops: 41
+  // Total ops: 43
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
@@ -62,7 +62,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::Compose(
 
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
-  // Total ops: 26
+  // Total ops: 28
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
@@ -99,7 +99,7 @@ Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
 template <typename Scalar>
 sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1, const Scalar u2,
                                                               const Scalar u3) {
-  // Total ops: 15
+  // Total ops: 14
 
   // Input arrays
 

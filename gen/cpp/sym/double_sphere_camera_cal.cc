@@ -48,7 +48,7 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PrincipalPoint() cons
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPoint(
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid) const {
-  // Total ops: 85
+  // Total ops: 74
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _self = Data();
@@ -112,7 +112,7 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPointW
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 2, 6>* const pixel_D_cal,
     Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point) const {
-  // Total ops: 150
+  // Total ops: 139
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _self = Data();
@@ -231,7 +231,7 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPointW
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixel(
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
-  // Total ops: 67
+  // Total ops: 62
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _self = Data();
@@ -277,7 +277,7 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixelWit
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 3, 6>* const point_D_cal,
     Eigen::Matrix<Scalar, 3, 2>* const point_D_pixel) const {
-  // Total ops: 302
+  // Total ops: 298
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _self = Data();

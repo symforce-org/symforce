@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Compose(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
-  // Total ops: 44
+  // Total ops: 46
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
@@ -63,7 +63,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Compose(
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
     const Eigen::Matrix<Scalar, 3, 1>& point) const {
-  // Total ops: 59
+  // Total ops: 61
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _self = Data();

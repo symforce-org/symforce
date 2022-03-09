@@ -112,7 +112,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Compose(const sym::Rot3<Scalar>& a,
 template <typename Scalar>
 sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Between(const sym::Rot3<Scalar>& a,
                                                   const sym::Rot3<Scalar>& b) {
-  // Total ops: 29
+  // Total ops: 28
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -142,7 +142,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Between(const sym::Rot3<Scalar>& a,
 template <typename Scalar>
 sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(const sym::Rot3<Scalar>& a,
                                                               SelfJacobian* const res_D_a) {
-  // Total ops: 33
+  // Total ops: 34
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -358,7 +358,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(const sym::Rot3<S
                                                                const sym::Rot3<Scalar>& b,
                                                                SelfJacobian* const res_D_a,
                                                                SelfJacobian* const res_D_b) {
-  // Total ops: 159
+  // Total ops: 161
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

@@ -23,7 +23,7 @@ template <typename Scalar>
 sym::Pose3<Scalar> ComposePose3WithJacobian0(const sym::Pose3<Scalar>& a,
                                              const sym::Pose3<Scalar>& b,
                                              Eigen::Matrix<Scalar, 6, 6>* const res_D_a = nullptr) {
-  // Total ops: 252
+  // Total ops: 259
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();

@@ -12,6 +12,7 @@ import importlib.util
 import itertools
 import os
 from pathlib import Path
+import sympy
 import sys
 
 from symforce import ops
@@ -22,6 +23,7 @@ from symforce import typing as T
 from symforce.codegen import printers, format_util
 from symforce.codegen import codegen_config
 from symforce import python_util
+from symforce import _sympy_count_ops
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
@@ -101,12 +103,6 @@ def print_code(
         temps = []
         simplified_outputs = output_exprs
 
-    total_ops = (
-        sm.count_ops(temps)
-        + sm.count_ops(simplified_outputs.dense)
-        + sm.count_ops(simplified_outputs.sparse)
-    )
-
     # Replace default symbols with vector notation (e.g. "R_re" -> "_R[0]")
     temps_formatted, simplified_outputs_formatted, sparse_terms_formatted = format_symbols(
         inputs=inputs,
@@ -115,6 +111,24 @@ def print_code(
         intermediate_terms=temps,
         output_terms=simplified_outputs,
         config=config,
+    )
+
+    simpify_list = lambda lst: [sympy.S(term) for term in lst]
+    simpify_nested_lists = lambda nested_lsts: [simpify_list(lst) for lst in nested_lsts]
+
+    temps_formatted = simpify_list(temps_formatted)
+    simplified_outputs_formatted = simpify_nested_lists(simplified_outputs_formatted)
+    sparse_terms_formatted = simpify_nested_lists(sparse_terms_formatted)
+
+    def count_ops(expr: sm.Expr) -> int:
+        op_count = _sympy_count_ops.count_ops(expr)
+        assert isinstance(op_count, int)
+        return op_count
+
+    total_ops = (
+        count_ops(temps_formatted)
+        + count_ops(simplified_outputs_formatted)
+        + count_ops(sparse_terms_formatted)
     )
 
     # Get printer

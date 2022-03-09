@@ -41,7 +41,7 @@ class GroupOps(object):
     def inverse(a):
         # type: (sym.Pose3) -> sym.Pose3
 
-        # Total ops: 47
+        # Total ops: 49
 
         # Input arrays
         _a = a.data
@@ -74,7 +74,7 @@ class GroupOps(object):
     def compose(a, b):
         # type: (sym.Pose3, sym.Pose3) -> sym.Pose3
 
-        # Total ops: 72
+        # Total ops: 74
 
         # Input arrays
         _a = a.data
@@ -114,7 +114,7 @@ class GroupOps(object):
     def between(a, b):
         # type: (sym.Pose3, sym.Pose3) -> sym.Pose3
 
-        # Total ops: 88
+        # Total ops: 89
 
         # Input arrays
         _a = a.data
@@ -178,7 +178,7 @@ class GroupOps(object):
     def inverse_with_jacobian(a):
         # type: (sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray]
 
-        # Total ops: 116
+        # Total ops: 115
 
         # Input arrays
         _a = a.data
@@ -285,7 +285,7 @@ class GroupOps(object):
     def compose_with_jacobians(a, b):
         # type: (sym.Pose3, sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray, numpy.ndarray]
 
-        # Total ops: 326
+        # Total ops: 328
 
         # Input arrays
         _a = a.data
@@ -514,7 +514,7 @@ class GroupOps(object):
     def between_with_jacobians(a, b):
         # type: (sym.Pose3, sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray, numpy.ndarray]
 
-        # Total ops: 310
+        # Total ops: 308
 
         # Input arrays
         _a = a.data
