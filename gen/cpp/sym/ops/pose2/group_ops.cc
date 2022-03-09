@@ -165,15 +165,15 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::InverseWithJacobian(const sym::Pose2
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _tmp4;
-    _res_D_a(0, 1) = _tmp0;
-    _res_D_a(0, 2) = -_tmp2 + _tmp3;
-    _res_D_a(1, 0) = _a[1];
+    _res_D_a(0, 0) = -std::pow(_a[0], Scalar(2)) - std::pow(_a[1], Scalar(2));
+    _res_D_a(0, 1) = 0;
+    _res_D_a(0, 2) = 0;
+    _res_D_a(1, 0) = -_tmp2 + _tmp3;
     _res_D_a(1, 1) = _tmp4;
-    _res_D_a(1, 2) = _tmp1;
-    _res_D_a(2, 0) = 0;
-    _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = -std::pow(_a[0], Scalar(2)) - std::pow(_a[1], Scalar(2));
+    _res_D_a(1, 2) = _tmp0;
+    _res_D_a(2, 0) = _tmp1;
+    _res_D_a(2, 1) = _a[1];
+    _res_D_a(2, 2) = _tmp4;
   }
 
   return sym::Pose2<Scalar>(_res);
@@ -220,29 +220,29 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::ComposeWithJacobians(const sym::Pose
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = 1;
+    _res_D_a(0, 0) = _tmp7;
     _res_D_a(0, 1) = 0;
-    _res_D_a(0, 2) = -_tmp5 - _tmp6;
-    _res_D_a(1, 0) = 0;
+    _res_D_a(0, 2) = 0;
+    _res_D_a(1, 0) = -_tmp5 - _tmp6;
     _res_D_a(1, 1) = 1;
-    _res_D_a(1, 2) = _tmp4;
-    _res_D_a(2, 0) = 0;
+    _res_D_a(1, 2) = 0;
+    _res_D_a(2, 0) = _tmp4;
     _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = _tmp7;
+    _res_D_a(2, 2) = 1;
   }
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
 
-    _res_D_b(0, 0) = _a[0];
-    _res_D_b(0, 1) = -_a[1];
+    _res_D_b(0, 0) = _tmp7;
+    _res_D_b(0, 1) = 0;
     _res_D_b(0, 2) = 0;
-    _res_D_b(1, 0) = _a[1];
+    _res_D_b(1, 0) = 0;
     _res_D_b(1, 1) = _a[0];
-    _res_D_b(1, 2) = 0;
+    _res_D_b(1, 2) = -_a[1];
     _res_D_b(2, 0) = 0;
-    _res_D_b(2, 1) = 0;
-    _res_D_b(2, 2) = _tmp7;
+    _res_D_b(2, 1) = _a[1];
+    _res_D_b(2, 2) = _a[0];
   }
 
   return sym::Pose2<Scalar>(_res);
@@ -297,29 +297,29 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(const sym::Pose
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
-    _res_D_a(0, 0) = _tmp12;
-    _res_D_a(0, 1) = _tmp13;
-    _res_D_a(0, 2) = _tmp10 + _tmp11 - _tmp9;
-    _res_D_a(1, 0) = _a[1];
+    _res_D_a(0, 0) = _tmp2 * (-_tmp0 - _tmp1) - std::pow(_tmp5, Scalar(2));
+    _res_D_a(0, 1) = 0;
+    _res_D_a(0, 2) = 0;
+    _res_D_a(1, 0) = _tmp10 + _tmp11 - _tmp9;
     _res_D_a(1, 1) = _tmp12;
-    _res_D_a(1, 2) = _tmp6 - _tmp7 - _tmp8;
-    _res_D_a(2, 0) = 0;
-    _res_D_a(2, 1) = 0;
-    _res_D_a(2, 2) = _tmp2 * (-_tmp0 - _tmp1) - std::pow(_tmp5, Scalar(2));
+    _res_D_a(1, 2) = _tmp13;
+    _res_D_a(2, 0) = _tmp6 - _tmp7 - _tmp8;
+    _res_D_a(2, 1) = _a[1];
+    _res_D_a(2, 2) = _tmp12;
   }
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
 
-    _res_D_b(0, 0) = _a[0];
-    _res_D_b(0, 1) = _a[1];
+    _res_D_b(0, 0) = std::pow(_tmp2, Scalar(2)) - _tmp5 * (_tmp3 - _tmp4);
+    _res_D_b(0, 1) = 0;
     _res_D_b(0, 2) = 0;
-    _res_D_b(1, 0) = _tmp13;
+    _res_D_b(1, 0) = 0;
     _res_D_b(1, 1) = _a[0];
-    _res_D_b(1, 2) = 0;
+    _res_D_b(1, 2) = _a[1];
     _res_D_b(2, 0) = 0;
-    _res_D_b(2, 1) = 0;
-    _res_D_b(2, 2) = std::pow(_tmp2, Scalar(2)) - _tmp5 * (_tmp3 - _tmp4);
+    _res_D_b(2, 1) = _tmp13;
+    _res_D_b(2, 2) = _a[0];
   }
 
   return sym::Pose2<Scalar>(_res);

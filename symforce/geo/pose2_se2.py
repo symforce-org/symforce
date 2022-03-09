@@ -25,9 +25,9 @@ class Pose2_SE2(Pose2):
 
     The storage space is a complex (real, imag) for rotation followed by a position (x, y).
 
-    The tangent space is two elements for translation in the rotated frame followed by one angle
-    for rotation. This means we interpolate the translation in the tangent of the rotating frame
-    for lie operations. This can be useful but is more expensive than R2 x SO(2) for often no
+    The tangent space is one angle for rotation followed by two elements for translation in the
+    rotated frame. This means we interpolate the translation in the tangent of the rotating frame
+    for lie operations. This can be useful but is more expensive than SO(2) x R2 for often no
     benefit.
     """
 
@@ -37,7 +37,7 @@ class Pose2_SE2(Pose2):
 
     @classmethod
     def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
-        theta = v[2]
+        theta = v[0]
         R = Rot2.from_tangent([theta], epsilon=epsilon)
 
         a = (R.z.imag + epsilon * sm.sign_no_zero(R.z.imag)) / (
@@ -45,7 +45,7 @@ class Pose2_SE2(Pose2):
         )
         b = (1 - R.z.real) / (theta + epsilon * sm.sign_no_zero(theta))
 
-        t = Vector2(a * v[0] - b * v[1], b * v[0] + a * v[1])
+        t = Vector2(a * v[1] - b * v[2], b * v[1] + a * v[2])
         return cls(R, t)
 
     def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
@@ -61,7 +61,7 @@ class Pose2_SE2(Pose2):
 
         V_inv = Matrix([[a, halftheta], [-halftheta, a]])
         t_tangent = V_inv * self.t
-        return [t_tangent[0], t_tangent[1], theta]
+        return [theta, t_tangent[0], t_tangent[1]]
 
     def storage_D_tangent(self) -> Matrix:
         """
@@ -70,7 +70,7 @@ class Pose2_SE2(Pose2):
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = self.R.to_rotation_matrix()
         return Matrix.block_matrix(
-            [[Matrix.zeros(2, 2), storage_D_tangent_R], [storage_D_tangent_t, Matrix.zeros(2, 1)]]
+            [[storage_D_tangent_R, Matrix.zeros(2, 2)], [Matrix.zeros(2, 1), storage_D_tangent_t]]
         )
 
     def tangent_D_storage(self) -> Matrix:
@@ -80,7 +80,7 @@ class Pose2_SE2(Pose2):
         tangent_D_storage_R = self.R.tangent_D_storage()
         tangent_D_storage_t = self.R.to_rotation_matrix().T
         return Matrix.block_matrix(
-            [[Matrix.zeros(2, 2), tangent_D_storage_t], [tangent_D_storage_R, Matrix.zeros(1, 2)]]
+            [[tangent_D_storage_R, Matrix.zeros(1, 2)], [Matrix.zeros(2, 2), tangent_D_storage_t]]
         )
 
     def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
@@ -95,8 +95,8 @@ class Pose2_SE2(Pose2):
 
     @classmethod
     def hat(cls, vec: T.List[T.Scalar]) -> Matrix33:
-        t_tangent = [vec[0], vec[1]]
-        R_tangent = [vec[2]]
+        R_tangent = [vec[0]]
+        t_tangent = [vec[1], vec[2]]
         top_left = Rot2.hat(R_tangent)
         top_right = Matrix21(t_tangent)
         bottom = Matrix13.zero()

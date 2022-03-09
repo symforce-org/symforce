@@ -21,21 +21,19 @@ class Pose2(LieGroup):
 
     The storage space is a complex (real, imag) for rotation followed by a position (x, y).
 
-    The tangent space is two elements for translation in the non-rotated frame followed by one
-    angle for rotation.
+    The tangent space is one angle for rotation followed by two elements for translation in the
+    non-rotated frame.
 
     For Lie group enthusiasts: This class is on the PRODUCT manifold, if you really really want
     SE(2) you should use Pose2_SE2.  On this class, the group operations (e.g. compose and between)
     operate as you'd expect for a Pose or SE(2), but the manifold operations (e.g. retract and
-    local_coordinates) operate on the product manifold R2 x SO(2).  This means that:
+    local_coordinates) operate on the product manifold SO(2) x R2.  This means that:
 
       - retract(a, vec) != compose(a, from_tangent(vec))
 
       - local_coordinates(a, b) != to_tangent(between(a, b))
 
       - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
-
-    TODO(hayk): Flip this to match Pose3 with rotation first!!
     """
 
     Pose2T = T.TypeVar("Pose2T", bound="Pose2")
@@ -102,15 +100,15 @@ class Pose2(LieGroup):
 
     @classmethod
     def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2:
-        theta = v[2]
+        theta = v[0]
         R = Rot2.from_tangent([theta], epsilon=epsilon)
-        t = Vector2(v[0], v[1])
+        t = Vector2(v[1], v[2])
         return cls(R, t)
 
     def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
         # This uses atan2, so the resulting theta is between -pi and pi
         theta = self.R.to_tangent(epsilon=epsilon)[0]
-        return [self.t[0], self.t[1], theta]
+        return [theta, self.t[0], self.t[1]]
 
     def storage_D_tangent(self) -> Matrix:
         """
@@ -119,7 +117,7 @@ class Pose2(LieGroup):
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = Matrix22.eye()
         return Matrix.block_matrix(
-            [[Matrix.zeros(2, 2), storage_D_tangent_R], [storage_D_tangent_t, Matrix.zeros(2, 1)]]
+            [[storage_D_tangent_R, Matrix.zeros(2, 2)], [Matrix.zeros(2, 1), storage_D_tangent_t]]
         )
 
     def tangent_D_storage(self) -> Matrix:
@@ -129,7 +127,7 @@ class Pose2(LieGroup):
         tangent_D_storage_R = self.R.tangent_D_storage()
         tangent_D_storage_t = Matrix22.eye()
         return Matrix.block_matrix(
-            [[Matrix.zeros(2, 2), tangent_D_storage_t], [tangent_D_storage_R, Matrix.zeros(1, 2)]]
+            [[tangent_D_storage_R, Matrix.zeros(1, 2)], [Matrix.zeros(2, 2), tangent_D_storage_t]]
         )
 
     # NOTE(hayk, aaron): Override retract + local_coordinates, because we're treating
@@ -138,14 +136,14 @@ class Pose2(LieGroup):
 
     def retract(self: Pose2, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2:
         return Pose2(
-            R=self.R.retract(vec[2:], epsilon=epsilon),
-            t=ops.LieGroupOps.retract(self.t, vec[:2], epsilon=epsilon),
+            R=self.R.retract(vec[:1], epsilon=epsilon),
+            t=ops.LieGroupOps.retract(self.t, vec[1:], epsilon=epsilon),
         )
 
     def local_coordinates(self: Pose2T, b: Pose2T, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
-        return ops.LieGroupOps.local_coordinates(
+        return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon
-        ) + self.R.local_coordinates(b.R, epsilon=epsilon)
+        )
 
     # -------------------------------------------------------------------------
     # Helper methods

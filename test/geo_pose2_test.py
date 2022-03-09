@@ -22,7 +22,7 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> geo.Pose2:
-        return geo.Pose2.from_tangent([-0.2, 5.3, 1.2])
+        return geo.Pose2.from_tangent([5.3, 1.2, -0.2])
 
     def pose2_operations(self, a: geo.Pose2, b: geo.Pose2) -> None:
         """
@@ -63,7 +63,7 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         tangent_vec = [1.0] * 3
 
         value = LieGroupOps.from_tangent(element, tangent_vec, epsilon=self.EPSILON)
-        self.assertStorageNear(value.t, tangent_vec[:2], places=7)
+        self.assertStorageNear(value.t, tangent_vec[1:], places=7)
 
 
 if __name__ == "__main__":

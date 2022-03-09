@@ -38,14 +38,14 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
                         Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                         Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                         Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 266
+  // Total ops: 265
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _a_T_b = a_T_b.Data();
 
-  // Intermediate terms (70)
+  // Intermediate terms (68)
   const Scalar _tmp0 = _a[0] * _a[3];
   const Scalar _tmp1 = _a[1] * _a[2];
   const Scalar _tmp2 = _a[0] * _b[3] - _a[1] * _b[2];
@@ -69,61 +69,60 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp20 = _tmp19 + epsilon * ((((_tmp19) > 0) - ((_tmp19) < 0)) + Scalar(0.5));
   const Scalar _tmp21 = std::atan2(_tmp16, _tmp20);
   const Scalar _tmp22 =
-      _tmp21 * sqrt_info(0, 2) + _tmp3 * sqrt_info(0, 1) + _tmp7 * sqrt_info(0, 0);
+      _tmp21 * sqrt_info(0, 0) + _tmp3 * sqrt_info(0, 2) + _tmp7 * sqrt_info(0, 1);
   const Scalar _tmp23 =
-      _tmp21 * sqrt_info(1, 2) + _tmp3 * sqrt_info(1, 1) + _tmp7 * sqrt_info(1, 0);
+      _tmp21 * sqrt_info(1, 0) + _tmp3 * sqrt_info(1, 2) + _tmp7 * sqrt_info(1, 1);
   const Scalar _tmp24 =
-      _tmp21 * sqrt_info(2, 2) + _tmp3 * sqrt_info(2, 1) + _tmp7 * sqrt_info(2, 0);
-  const Scalar _tmp25 = _a[0] * sqrt_info(0, 0);
-  const Scalar _tmp26 = _a[1] * sqrt_info(0, 1);
-  const Scalar _tmp27 = -_tmp25 + _tmp26;
-  const Scalar _tmp28 = _a[0] * sqrt_info(0, 1);
-  const Scalar _tmp29 = _a[1] * sqrt_info(0, 0);
-  const Scalar _tmp30 = -_tmp28 - _tmp29;
-  const Scalar _tmp31 = -_tmp8 - _tmp9;
-  const Scalar _tmp32 = Scalar(1.0) / (_tmp20);
-  const Scalar _tmp33 = std::pow(_tmp20, Scalar(2));
-  const Scalar _tmp34 = _tmp16 / _tmp33;
-  const Scalar _tmp35 =
-      _tmp32 * (_a_T_b[0] * _tmp31 - _tmp18) - _tmp34 * (_a_T_b[1] * _tmp31 + _tmp15);
-  const Scalar _tmp36 = std::pow(_tmp16, Scalar(2)) + _tmp33;
-  const Scalar _tmp37 = _tmp33 / _tmp36;
-  const Scalar _tmp38 = _tmp35 * _tmp37;
-  const Scalar _tmp39 = -_tmp0 + _tmp1 + _tmp2;
-  const Scalar _tmp40 = _tmp4 - _tmp5 - _tmp6;
-  const Scalar _tmp41 =
-      _tmp38 * sqrt_info(0, 2) + _tmp39 * sqrt_info(0, 0) + _tmp40 * sqrt_info(0, 1);
-  const Scalar _tmp42 = _tmp25 - _tmp26;
-  const Scalar _tmp43 = _tmp28 + _tmp29;
-  const Scalar _tmp44 = _tmp12 - _tmp13;
-  const Scalar _tmp45 =
-      _tmp32 * (-_a_T_b[1] * _tmp44 + _tmp17) - _tmp34 * (_a_T_b[0] * _tmp44 + _tmp11);
-  const Scalar _tmp46 = _tmp37 * _tmp45;
-  const Scalar _tmp47 = _tmp46 * sqrt_info(0, 2);
-  const Scalar _tmp48 = _a[1] * sqrt_info(1, 1);
-  const Scalar _tmp49 = _a[0] * sqrt_info(1, 0);
+      _tmp21 * sqrt_info(2, 0) + _tmp3 * sqrt_info(2, 2) + _tmp7 * sqrt_info(2, 1);
+  const Scalar _tmp25 = -_tmp8 - _tmp9;
+  const Scalar _tmp26 = Scalar(1.0) / (_tmp20);
+  const Scalar _tmp27 = std::pow(_tmp20, Scalar(2));
+  const Scalar _tmp28 = _tmp16 / _tmp27;
+  const Scalar _tmp29 = std::pow(_tmp16, Scalar(2)) + _tmp27;
+  const Scalar _tmp30 = _tmp27 / _tmp29;
+  const Scalar _tmp31 =
+      _tmp30 * (_tmp26 * (_a_T_b[0] * _tmp25 - _tmp18) - _tmp28 * (_a_T_b[1] * _tmp25 + _tmp15));
+  const Scalar _tmp32 = -_tmp0 + _tmp1 + _tmp2;
+  const Scalar _tmp33 = _tmp4 - _tmp5 - _tmp6;
+  const Scalar _tmp34 =
+      _tmp31 * sqrt_info(0, 0) + _tmp32 * sqrt_info(0, 1) + _tmp33 * sqrt_info(0, 2);
+  const Scalar _tmp35 = _a[0] * sqrt_info(0, 1);
+  const Scalar _tmp36 = _a[1] * sqrt_info(0, 2);
+  const Scalar _tmp37 = -_tmp35 + _tmp36;
+  const Scalar _tmp38 = _a[0] * sqrt_info(0, 2);
+  const Scalar _tmp39 = _a[1] * sqrt_info(0, 1);
+  const Scalar _tmp40 = -_tmp38 - _tmp39;
+  const Scalar _tmp41 = _tmp12 - _tmp13;
+  const Scalar _tmp42 =
+      _tmp26 * (-_a_T_b[1] * _tmp41 + _tmp17) - _tmp28 * (_a_T_b[0] * _tmp41 + _tmp11);
+  const Scalar _tmp43 = _tmp30 * _tmp42;
+  const Scalar _tmp44 = _tmp43 * sqrt_info(0, 0);
+  const Scalar _tmp45 = _tmp35 - _tmp36;
+  const Scalar _tmp46 = _tmp38 + _tmp39;
+  const Scalar _tmp47 =
+      _tmp31 * sqrt_info(1, 0) + _tmp32 * sqrt_info(1, 1) + _tmp33 * sqrt_info(1, 2);
+  const Scalar _tmp48 = _a[1] * sqrt_info(1, 2);
+  const Scalar _tmp49 = _a[0] * sqrt_info(1, 1);
   const Scalar _tmp50 = _tmp48 - _tmp49;
-  const Scalar _tmp51 = _a[1] * sqrt_info(1, 0);
-  const Scalar _tmp52 = _a[0] * sqrt_info(1, 1);
+  const Scalar _tmp51 = _a[1] * sqrt_info(1, 1);
+  const Scalar _tmp52 = _a[0] * sqrt_info(1, 2);
   const Scalar _tmp53 = -_tmp51 - _tmp52;
-  const Scalar _tmp54 =
-      _tmp38 * sqrt_info(1, 2) + _tmp39 * sqrt_info(1, 0) + _tmp40 * sqrt_info(1, 1);
+  const Scalar _tmp54 = _tmp43 * sqrt_info(1, 0);
   const Scalar _tmp55 = -_tmp48 + _tmp49;
   const Scalar _tmp56 = _tmp51 + _tmp52;
-  const Scalar _tmp57 = _tmp46 * sqrt_info(1, 2);
-  const Scalar _tmp58 = _a[1] * sqrt_info(2, 1);
-  const Scalar _tmp59 = _a[0] * sqrt_info(2, 0);
+  const Scalar _tmp57 =
+      _tmp31 * sqrt_info(2, 0) + _tmp32 * sqrt_info(2, 1) + _tmp33 * sqrt_info(2, 2);
+  const Scalar _tmp58 = _a[1] * sqrt_info(2, 2);
+  const Scalar _tmp59 = _a[0] * sqrt_info(2, 1);
   const Scalar _tmp60 = _tmp58 - _tmp59;
-  const Scalar _tmp61 = _a[1] * sqrt_info(2, 0);
-  const Scalar _tmp62 = _a[0] * sqrt_info(2, 1);
+  const Scalar _tmp61 = _a[1] * sqrt_info(2, 1);
+  const Scalar _tmp62 = _a[0] * sqrt_info(2, 2);
   const Scalar _tmp63 = -_tmp61 - _tmp62;
-  const Scalar _tmp64 = _tmp37 * sqrt_info(2, 2);
-  const Scalar _tmp65 = _tmp35 * _tmp64 + _tmp39 * sqrt_info(2, 0) + _tmp40 * sqrt_info(2, 1);
-  const Scalar _tmp66 = -_tmp58 + _tmp59;
-  const Scalar _tmp67 = _tmp61 + _tmp62;
-  const Scalar _tmp68 = _tmp45 * _tmp64;
-  const Scalar _tmp69 =
-      std::pow(_tmp20, Scalar(4)) * std::pow(_tmp45, Scalar(2)) / std::pow(_tmp36, Scalar(2));
+  const Scalar _tmp64 = _tmp43 * sqrt_info(2, 0);
+  const Scalar _tmp65 = -_tmp58 + _tmp59;
+  const Scalar _tmp66 = _tmp61 + _tmp62;
+  const Scalar _tmp67 =
+      std::pow(_tmp20, Scalar(4)) * std::pow(_tmp42, Scalar(2)) / std::pow(_tmp29, Scalar(2));
 
   // Output terms (4)
   if (res != nullptr) {
@@ -137,83 +136,83 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp27;
-    _jacobian(0, 1) = _tmp30;
-    _jacobian(0, 2) = _tmp41;
-    _jacobian(0, 3) = _tmp42;
-    _jacobian(0, 4) = _tmp43;
-    _jacobian(0, 5) = _tmp47;
-    _jacobian(1, 0) = _tmp50;
-    _jacobian(1, 1) = _tmp53;
-    _jacobian(1, 2) = _tmp54;
-    _jacobian(1, 3) = _tmp55;
-    _jacobian(1, 4) = _tmp56;
-    _jacobian(1, 5) = _tmp57;
-    _jacobian(2, 0) = _tmp60;
-    _jacobian(2, 1) = _tmp63;
-    _jacobian(2, 2) = _tmp65;
-    _jacobian(2, 3) = _tmp66;
-    _jacobian(2, 4) = _tmp67;
-    _jacobian(2, 5) = _tmp68;
+    _jacobian(0, 0) = _tmp34;
+    _jacobian(0, 1) = _tmp37;
+    _jacobian(0, 2) = _tmp40;
+    _jacobian(0, 3) = _tmp44;
+    _jacobian(0, 4) = _tmp45;
+    _jacobian(0, 5) = _tmp46;
+    _jacobian(1, 0) = _tmp47;
+    _jacobian(1, 1) = _tmp50;
+    _jacobian(1, 2) = _tmp53;
+    _jacobian(1, 3) = _tmp54;
+    _jacobian(1, 4) = _tmp55;
+    _jacobian(1, 5) = _tmp56;
+    _jacobian(2, 0) = _tmp57;
+    _jacobian(2, 1) = _tmp60;
+    _jacobian(2, 2) = _tmp63;
+    _jacobian(2, 3) = _tmp64;
+    _jacobian(2, 4) = _tmp65;
+    _jacobian(2, 5) = _tmp66;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow(_tmp27, Scalar(2)) + std::pow(_tmp50, Scalar(2)) + std::pow(_tmp60, Scalar(2));
+        std::pow(_tmp34, Scalar(2)) + std::pow(_tmp47, Scalar(2)) + std::pow(_tmp57, Scalar(2));
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
     _hessian(0, 3) = 0;
     _hessian(0, 4) = 0;
     _hessian(0, 5) = 0;
-    _hessian(1, 0) = _tmp27 * _tmp30 + _tmp50 * _tmp53 + _tmp60 * _tmp63;
+    _hessian(1, 0) = _tmp34 * _tmp37 + _tmp47 * _tmp50 + _tmp57 * _tmp60;
     _hessian(1, 1) =
-        std::pow(_tmp30, Scalar(2)) + std::pow(_tmp53, Scalar(2)) + std::pow(_tmp63, Scalar(2));
+        std::pow(_tmp37, Scalar(2)) + std::pow(_tmp50, Scalar(2)) + std::pow(_tmp60, Scalar(2));
     _hessian(1, 2) = 0;
     _hessian(1, 3) = 0;
     _hessian(1, 4) = 0;
     _hessian(1, 5) = 0;
-    _hessian(2, 0) = _tmp27 * _tmp41 + _tmp50 * _tmp54 + _tmp60 * _tmp65;
-    _hessian(2, 1) = _tmp30 * _tmp41 + _tmp53 * _tmp54 + _tmp63 * _tmp65;
+    _hessian(2, 0) = _tmp34 * _tmp40 + _tmp47 * _tmp53 + _tmp57 * _tmp63;
+    _hessian(2, 1) = _tmp37 * _tmp40 + _tmp50 * _tmp53 + _tmp60 * _tmp63;
     _hessian(2, 2) =
-        std::pow(_tmp41, Scalar(2)) + std::pow(_tmp54, Scalar(2)) + std::pow(_tmp65, Scalar(2));
+        std::pow(_tmp40, Scalar(2)) + std::pow(_tmp53, Scalar(2)) + std::pow(_tmp63, Scalar(2));
     _hessian(2, 3) = 0;
     _hessian(2, 4) = 0;
     _hessian(2, 5) = 0;
-    _hessian(3, 0) = _tmp27 * _tmp42 + _tmp50 * _tmp55 + _tmp60 * _tmp66;
-    _hessian(3, 1) = _tmp30 * _tmp42 + _tmp53 * _tmp55 + _tmp63 * _tmp66;
-    _hessian(3, 2) = _tmp41 * _tmp42 + _tmp54 * _tmp55 + _tmp65 * _tmp66;
-    _hessian(3, 3) =
-        std::pow(_tmp42, Scalar(2)) + std::pow(_tmp55, Scalar(2)) + std::pow(_tmp66, Scalar(2));
+    _hessian(3, 0) = _tmp34 * _tmp44 + _tmp47 * _tmp54 + _tmp57 * _tmp64;
+    _hessian(3, 1) = _tmp37 * _tmp44 + _tmp50 * _tmp54 + _tmp60 * _tmp64;
+    _hessian(3, 2) = _tmp40 * _tmp44 + _tmp53 * _tmp54 + _tmp63 * _tmp64;
+    _hessian(3, 3) = _tmp67 * std::pow(sqrt_info(0, 0), Scalar(2)) +
+                     _tmp67 * std::pow(sqrt_info(1, 0), Scalar(2)) +
+                     _tmp67 * std::pow(sqrt_info(2, 0), Scalar(2));
     _hessian(3, 4) = 0;
     _hessian(3, 5) = 0;
-    _hessian(4, 0) = _tmp27 * _tmp43 + _tmp50 * _tmp56 + _tmp60 * _tmp67;
-    _hessian(4, 1) = _tmp30 * _tmp43 + _tmp53 * _tmp56 + _tmp63 * _tmp67;
-    _hessian(4, 2) = _tmp41 * _tmp43 + _tmp54 * _tmp56 + _tmp65 * _tmp67;
-    _hessian(4, 3) = _tmp42 * _tmp43 + _tmp55 * _tmp56 + _tmp66 * _tmp67;
+    _hessian(4, 0) = _tmp34 * _tmp45 + _tmp47 * _tmp55 + _tmp57 * _tmp65;
+    _hessian(4, 1) = _tmp37 * _tmp45 + _tmp50 * _tmp55 + _tmp60 * _tmp65;
+    _hessian(4, 2) = _tmp40 * _tmp45 + _tmp53 * _tmp55 + _tmp63 * _tmp65;
+    _hessian(4, 3) = _tmp44 * _tmp45 + _tmp54 * _tmp55 + _tmp64 * _tmp65;
     _hessian(4, 4) =
-        std::pow(_tmp43, Scalar(2)) + std::pow(_tmp56, Scalar(2)) + std::pow(_tmp67, Scalar(2));
+        std::pow(_tmp45, Scalar(2)) + std::pow(_tmp55, Scalar(2)) + std::pow(_tmp65, Scalar(2));
     _hessian(4, 5) = 0;
-    _hessian(5, 0) = _tmp27 * _tmp47 + _tmp50 * _tmp57 + _tmp60 * _tmp68;
-    _hessian(5, 1) = _tmp30 * _tmp47 + _tmp53 * _tmp57 + _tmp63 * _tmp68;
-    _hessian(5, 2) = _tmp41 * _tmp47 + _tmp54 * _tmp57 + _tmp65 * _tmp68;
-    _hessian(5, 3) = _tmp42 * _tmp47 + _tmp55 * _tmp57 + _tmp66 * _tmp68;
-    _hessian(5, 4) = _tmp43 * _tmp47 + _tmp56 * _tmp57 + _tmp67 * _tmp68;
-    _hessian(5, 5) = _tmp69 * std::pow(sqrt_info(0, 2), Scalar(2)) +
-                     _tmp69 * std::pow(sqrt_info(1, 2), Scalar(2)) +
-                     _tmp69 * std::pow(sqrt_info(2, 2), Scalar(2));
+    _hessian(5, 0) = _tmp34 * _tmp46 + _tmp47 * _tmp56 + _tmp57 * _tmp66;
+    _hessian(5, 1) = _tmp37 * _tmp46 + _tmp50 * _tmp56 + _tmp60 * _tmp66;
+    _hessian(5, 2) = _tmp40 * _tmp46 + _tmp53 * _tmp56 + _tmp63 * _tmp66;
+    _hessian(5, 3) = _tmp44 * _tmp46 + _tmp54 * _tmp56 + _tmp64 * _tmp66;
+    _hessian(5, 4) = _tmp45 * _tmp46 + _tmp55 * _tmp56 + _tmp65 * _tmp66;
+    _hessian(5, 5) =
+        std::pow(_tmp46, Scalar(2)) + std::pow(_tmp56, Scalar(2)) + std::pow(_tmp66, Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 6, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp22 * _tmp27 + _tmp23 * _tmp50 + _tmp24 * _tmp60;
-    _rhs(1, 0) = _tmp22 * _tmp30 + _tmp23 * _tmp53 + _tmp24 * _tmp63;
-    _rhs(2, 0) = _tmp22 * _tmp41 + _tmp23 * _tmp54 + _tmp24 * _tmp65;
-    _rhs(3, 0) = _tmp22 * _tmp42 + _tmp23 * _tmp55 + _tmp24 * _tmp66;
-    _rhs(4, 0) = _tmp22 * _tmp43 + _tmp23 * _tmp56 + _tmp24 * _tmp67;
-    _rhs(5, 0) = _tmp22 * _tmp47 + _tmp23 * _tmp57 + _tmp24 * _tmp68;
+    _rhs(0, 0) = _tmp22 * _tmp34 + _tmp23 * _tmp47 + _tmp24 * _tmp57;
+    _rhs(1, 0) = _tmp22 * _tmp37 + _tmp23 * _tmp50 + _tmp24 * _tmp60;
+    _rhs(2, 0) = _tmp22 * _tmp40 + _tmp23 * _tmp53 + _tmp24 * _tmp63;
+    _rhs(3, 0) = _tmp22 * _tmp44 + _tmp23 * _tmp54 + _tmp24 * _tmp64;
+    _rhs(4, 0) = _tmp22 * _tmp45 + _tmp23 * _tmp55 + _tmp24 * _tmp65;
+    _rhs(5, 0) = _tmp22 * _tmp46 + _tmp23 * _tmp56 + _tmp24 * _tmp66;
   }
 }  // NOLINT(readability/fn_size)
 

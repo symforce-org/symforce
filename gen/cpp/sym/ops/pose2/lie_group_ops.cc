@@ -24,10 +24,10 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::FromTangent(const TangentVec& vec
   // Output terms (1)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = std::cos(vec(2, 0));
-  _res[1] = std::sin(vec(2, 0));
-  _res[2] = vec(0, 0);
-  _res[3] = vec(1, 0);
+  _res[0] = std::cos(vec(0, 0));
+  _res[1] = std::sin(vec(0, 0));
+  _res[2] = vec(1, 0);
+  _res[3] = vec(2, 0);
 
   return sym::Pose2<Scalar>(_res);
 }
@@ -45,9 +45,9 @@ typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::ToTa
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
-  _res(0, 0) = _a[2];
-  _res(1, 0) = _a[3];
-  _res(2, 0) = std::atan2(_a[1], _a[0] + epsilon * ((((_a[0]) > 0) - ((_a[0]) < 0)) + Scalar(0.5)));
+  _res(0, 0) = std::atan2(_a[1], _a[0] + epsilon * ((((_a[0]) > 0) - ((_a[0]) < 0)) + Scalar(0.5)));
+  _res(1, 0) = _a[2];
+  _res(2, 0) = _a[3];
 
   return _res;
 }
@@ -62,16 +62,16 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>&
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
   // Intermediate terms (2)
-  const Scalar _tmp0 = std::sin(vec(2, 0));
-  const Scalar _tmp1 = std::cos(vec(2, 0));
+  const Scalar _tmp0 = std::sin(vec(0, 0));
+  const Scalar _tmp1 = std::cos(vec(0, 0));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
   _res[0] = _a[0] * _tmp1 - _a[1] * _tmp0;
   _res[1] = _a[0] * _tmp0 + _a[1] * _tmp1;
-  _res[2] = _a[2] + vec(0, 0);
-  _res[3] = _a[3] + vec(1, 0);
+  _res[2] = _a[2] + vec(1, 0);
+  _res[3] = _a[3] + vec(2, 0);
 
   return sym::Pose2<Scalar>(_res);
 }
@@ -91,10 +91,10 @@ typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::Loca
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
-  _res(0, 0) = -_a[2] + _b[2];
-  _res(1, 0) = -_a[3] + _b[3];
-  _res(2, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
+  _res(0, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
                           _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+  _res(1, 0) = -_a[2] + _b[2];
+  _res(2, 0) = -_a[3] + _b[3];
 
   return _res;
 }

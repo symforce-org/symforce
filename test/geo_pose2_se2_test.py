@@ -20,7 +20,7 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> geo.Pose2_SE2:
-        return geo.Pose2_SE2.from_tangent([-0.2, 5.3, 1.2])
+        return geo.Pose2_SE2.from_tangent([5.3, 1.2, -0.2])
 
     def test_lie_exponential(self) -> None:
         """
