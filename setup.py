@@ -6,9 +6,11 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
+from symforce._version import version
+
 setup(
     name="symforce",
-    version="0.2dev",
+    version=version,
     author="Skydio, Inc",
     author_email="hayk@skydio.com",
     packages=find_packages(),

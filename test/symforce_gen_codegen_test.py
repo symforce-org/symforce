@@ -93,7 +93,7 @@ class SymforceGenCodegenTest(TestCase):
             output_path=os.path.join(output_dir, "setup.py"),
             data=dict(
                 package_name="sym",
-                version="0.2dev",
+                version=symforce.__version__,
                 description="generated numerical python package",
                 long_description="generated numerical python package",
             ),

@@ -210,6 +210,7 @@ if(SYMFORCE_BUILD_OPT)
   # METIS
 
   function(add_metis)
+    set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       metis
       # METIS does not have releases recently.  Previously were using nearly the initial commit on
@@ -278,13 +279,19 @@ else()
 
   add_custom_target(symforce_eigen_lcm_py ALL DEPENDS eigen_lcm_py)
 
+  # Get SymForce version
+  execute_process(
+    COMMAND ${SYMFORCE_PYTHON} -c "from _version import version; print(version, end='')"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/symforce
+    OUTPUT_VARIABLE SYMFORCE_VERSION
+  )
   file(WRITE
     ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/setup.py
     "
 from setuptools import setup, find_packages
 setup(
   name='lcmtypes',
-  version='0.2dev',
+  version='${SYMFORCE_VERSION}',
   description='lcmtype python bindings (installed by SymForce)',
   long_description='lcmtype python bindings (installed by SymForce)',
   author='Skydio, Inc',
