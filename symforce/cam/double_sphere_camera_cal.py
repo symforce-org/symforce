@@ -39,9 +39,17 @@ class DoubleSphereCameraCal(CameraCal):
     def xi(self) -> T.Scalar:
         return self.distortion_coeffs[0]
 
+    @xi.setter
+    def xi(self, value: T.Scalar) -> None:
+        self.distortion_coeffs[0] = value
+
     @property
     def alpha(self) -> T.Scalar:
         return self.distortion_coeffs[1]
+
+    @alpha.setter
+    def alpha(self, value: T.Scalar) -> None:
+        self.distortion_coeffs[1] = value
 
     def pixel_from_camera_point(
         self, point: geo.Matrix31, epsilon: T.Scalar = 0

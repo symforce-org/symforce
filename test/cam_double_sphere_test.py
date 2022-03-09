@@ -44,6 +44,23 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
             distortion_coeffs=(xi, alpha),
         )
 
+    def test_xi_and_alpha_properties(self) -> None:
+        """
+        Tests that the xi and alpha properties can be correctly read and written to.
+        """
+        xi, alpha = sm.symbols("xi alpha")
+        cal = self._make_cal(xi=xi, alpha=alpha)
+
+        with self.subTest(msg="Test getters"):
+            self.assertEqual(cal.xi, xi)
+            self.assertEqual(cal.alpha, alpha)
+
+        with self.subTest(msg="Test setters"):
+            cal.xi = alpha
+            cal.alpha = xi
+            self.assertEqual(cal.xi, alpha)
+            self.assertEqual(cal.alpha, xi)
+
     def test_is_valid_forward(self) -> None:
         """
         Tests if strategically chosen points have valid projections
