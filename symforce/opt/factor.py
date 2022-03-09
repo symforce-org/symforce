@@ -14,10 +14,12 @@ import uuid
 from symforce import cc_sym
 from symforce import codegen
 from symforce.codegen import codegen_util
+from symforce.codegen.similarity_index import SimilarityIndex
 from symforce import geo
 from symforce import python_util
 from symforce import typing as T
 from symforce.values import Values
+from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
 
 
 class FactorCodegenLanguage(enum.Enum):
@@ -55,6 +57,8 @@ class Factor:
                               takes the set of optimized keys, and returns the jacobian of the
                               residual with respect to those keys
     """
+
+    _generated_residual_cache = GeneratedResidualCache()
 
     def __init__(
         self,
@@ -97,7 +101,7 @@ class Factor:
         # TODO(hayk): Should we convert to a set and make sure there were no duplicates?
         self.keys = keys
 
-        self.generated_residual = None
+        self.generated_residual: T.Optional[T.Callable] = None
         self.optimized_keys: T.Optional[T.Set[str]] = None
 
     def __repr__(self) -> str:
@@ -127,6 +131,14 @@ class Factor:
 
         self.optimized_keys = optimized_keys
 
+        similarity_index = SimilarityIndex.from_codegen(self.codegen)
+        cached_residual = Factor._generated_residual_cache.get_residual(
+            similarity_index, optimized_keys
+        )
+        if cached_residual is not None:
+            self.generated_residual = cached_residual
+            return
+
         inputs = list(self.codegen.inputs.keys())
         codegen_with_linearization = self.codegen.with_linearization(
             which_args=[inputs[i] for i, key in enumerate(self.keys) if key in self.optimized_keys],
@@ -148,6 +160,11 @@ class Factor:
             codegen_with_linearization.name,
         )
         python_util.remove_if_exists(codegen_data["output_dir"])
+
+        assert self.generated_residual is not None
+        Factor._generated_residual_cache.cache_residual(
+            similarity_index, optimized_keys, self.generated_residual
+        )
 
     def cc_factor(
         self, optimized_keys: T.Set[str], cc_key_map: T.Mapping[str, cc_sym.Key]
