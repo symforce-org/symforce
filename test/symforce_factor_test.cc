@@ -7,7 +7,8 @@
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
-#include "../symforce/opt/factor.h"
+#include <symforce/opt/factor.h>
+
 #include "catch.hpp"
 
 TEST_CASE("Test jacobian constructors", "[factors]") {

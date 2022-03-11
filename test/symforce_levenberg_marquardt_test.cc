@@ -5,7 +5,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include "../symforce/opt/levenberg_marquardt_solver.h"
+#include <symforce/opt/levenberg_marquardt_solver.h>
+
 #include "catch.hpp"
 
 /**

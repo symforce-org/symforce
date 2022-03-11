@@ -9,8 +9,8 @@
 #include <sym/factors/between_factor_rot3.h>
 #include <sym/factors/prior_factor_pose3.h>
 #include <sym/factors/prior_factor_rot3.h>
+#include <symforce/opt/optimizer.h>
 
-#include "../symforce/opt/optimizer.h"
 #include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {

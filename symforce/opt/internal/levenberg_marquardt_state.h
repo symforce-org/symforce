@@ -9,9 +9,9 @@
 #include <Eigen/Sparse>
 
 #include <sym/util/typedefs.h>
-#include <symforce/opt/values.h>
 
 #include "../linearization.h"
+#include "../values.h"
 
 namespace sym {
 namespace internal {

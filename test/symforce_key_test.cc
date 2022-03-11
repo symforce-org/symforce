@@ -5,7 +5,8 @@
 
 #include <sstream>
 
-#include "../symforce/opt/key.h"
+#include <symforce/opt/key.h>
+
 #include "catch.hpp"
 
 TEST_CASE("Key prints correctly", "[key]") {

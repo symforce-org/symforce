@@ -8,8 +8,8 @@
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 
-#include <symforce/opt/linearization.h>
-#include <symforce/opt/optional.h>
+#include "./linearization.h"
+#include "./optional.h"
 
 namespace sym {
 

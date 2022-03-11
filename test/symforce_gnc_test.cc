@@ -5,9 +5,10 @@
 
 #include <spdlog/spdlog.h>
 
-#include "../symforce/opt/gnc_optimizer.h"
-#include "./symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
+#include <symforce/opt/gnc_optimizer.h>
+
 #include "catch.hpp"
+#include "symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
 
 sym::optimizer_params_t DefaultLmParams() {
   sym::optimizer_params_t params{};

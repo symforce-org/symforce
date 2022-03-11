@@ -83,6 +83,15 @@ def _import_symengine_from_build() -> ModuleType:
     if "symengine" in sys.modules:
         return sys.modules["symengine"]
 
+    try:
+        # If symengine is available on python path, use it
+        # TODO(will, aaron): this might not be the version of symengine that we want
+        import symengine
+
+        return symengine
+    except ImportError:
+        pass
+
     import importlib
     import importlib.abc
     import importlib.util

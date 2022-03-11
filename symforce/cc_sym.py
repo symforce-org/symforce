@@ -11,6 +11,10 @@ import sys
 
 from symforce import path_util
 
-sys.path.append(os.fspath(path_util.cc_sym_install_dir()))
+try:
+    # If cc_sym is availble on the python path, use it
+    from cc_sym import *  # pylint: disable=wildcard-import
+except ImportError:
+    sys.path.append(os.fspath(path_util.cc_sym_install_dir()))
 
-from cc_sym import *  # pylint: disable=wildcard-import
+    from cc_sym import *  # pylint: disable=wildcard-import

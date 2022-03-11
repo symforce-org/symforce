@@ -8,7 +8,8 @@
 #include <Eigen/Sparse>
 
 #include <sym/util/typedefs.h>
-#include <symforce/opt/sparse_schur_solver.h>
+
+#include "../sparse_schur_solver.h"
 
 namespace sym {
 namespace internal {

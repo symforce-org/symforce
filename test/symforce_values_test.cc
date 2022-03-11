@@ -18,9 +18,9 @@
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
 #include <sym/util/epsilon.h>
+#include <symforce/opt/util.h>
+#include <symforce/opt/values.h>
 
-#include "../symforce/opt/util.h"
-#include "../symforce/opt/values.h"
 #include "catch.hpp"
 
 TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
