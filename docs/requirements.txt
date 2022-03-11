@@ -1,4 +1,6 @@
 ipykernel
+# nbconvert depends on this, but doesn't specify the dependency
+ipython_genutils
 matplotlib
 myst-parser
 nbsphinx
