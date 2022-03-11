@@ -40,7 +40,7 @@ class SkymarshalLCMOut(SkymarshalLanguage):
         for package in packages:
             for definition in package.type_definitions.values():
                 output_filename = os.path.join(
-                    args.lcmout_path, "{}.{}.lcm".format(package.name, definition.name)
+                    args.lcmout_path, package.name, "{}.lcm".format(definition.name)
                 )
                 output_contents = "package {};\n\n{}".format(package.name, str(definition))
                 file_map[output_filename] = output_contents

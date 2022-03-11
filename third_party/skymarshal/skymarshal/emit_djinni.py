@@ -117,15 +117,11 @@ class SkymarshalDjinni(SkymarshalLanguage):
 
         enum_types.sort(key=lambda x: x.djinni_idl_name)
 
-        if len(enum_types) > 0:
+        for enum_type in enum_types:
             idl_file = "{}.djinni".format(args.djinni_module)
             if args.djinni_idl_path:
-                idl_file = os.path.join(
-                    args.djinni_idl_path,
-                    idl_file,
-                    enum_types[0].djinni_idl_name + "_et_al",
-                )
-                file_map[idl_file] = render("djinni_idl.djinni.template", enum_types=enum_types)
+                idl_file = os.path.join(args.djinni_idl_path, idl_file, enum_type.djinni_idl_name)
+                file_map[idl_file] = render("djinni_idl.djinni.template", enum_types=[enum_type])
 
         for enum_type in enum_types:
             # set paths
