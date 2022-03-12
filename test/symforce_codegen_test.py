@@ -10,6 +10,7 @@ import logging
 import numpy as np
 import sys
 import os
+from pathlib import Path
 import unittest
 
 import symforce
@@ -26,9 +27,9 @@ from symforce.codegen import codegen_util
 from symforce.test_util import TestCase, slow_on_sympy, symengine_only
 from symforce.values import Values
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+SYMFORCE_DIR = Path(__file__).parent.parent
+TEST_DATA_DIR = (
+    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_backend()
 )
 
 # Test function
@@ -543,6 +544,37 @@ class SymforceCodegenTest(TestCase):
         self.compare_or_update_directory(
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
             expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians"),
+        )
+
+    def test_with_jacobians_values(self) -> None:
+        """
+        Tests:
+            Codegen.with_jacobians, with complex inputs and outputs
+        """
+        output_dir = self.make_output_dir("sf_codegen_with_jacobians_values_")
+
+        inputs = Values(
+            a=geo.Rot3.symbolic("a"),
+            b=sm.Symbol("b"),
+            c=geo.V5.symbolic("c"),
+            d=Values(x=sm.Symbol("d0"), y=geo.V2.symbolic("d1")),
+        )
+
+        outputs = Values(
+            a_out=inputs.attr.a * geo.V3(0, 0, inputs.attr.b),
+            b_out=inputs.attr.c.norm() + inputs.attr.b ** 2,
+            c_out=(inputs.attr.d.x * geo.V2(1, 1) + inputs.attr.d.y).T * geo.M22(((1, 2), (3, 4))),
+            d_out=Values(x=3, y=inputs.attr.a.q.w + inputs.attr.b),
+        )
+
+        codegen_obj = codegen.Codegen(
+            inputs=inputs, outputs=outputs, name="misc_function", config=codegen.CppConfig()
+        )
+
+        codegen_with_jacobians = codegen_obj.with_jacobians(which_results=list(range(len(outputs))))
+        codegen_with_jacobians.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+        self.compare_or_update_directory(
+            actual_dir=output_dir, expected_dir=TEST_DATA_DIR / "with_jacobians_values"
         )
 
     # This test generates a lot of code, and it isn't really valuable to test on sympy as well
