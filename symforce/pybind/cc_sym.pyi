@@ -35,6 +35,7 @@ __all__ = [
     "Values",
     "default_optimizer_params",
     "optimize",
+    "set_log_level",
 ]
 
 class Factor:
@@ -910,3 +911,6 @@ def optimize(
     """
     Simple wrapper to make optimization one function call.
     """
+
+def set_log_level(arg0: str) -> None:
+    pass

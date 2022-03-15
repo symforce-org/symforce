@@ -9,6 +9,7 @@ pybind11_add_module(
   cc_factor.cc
   cc_key.cc
   cc_linearization.cc
+  cc_logger.cc
   cc_optimization_stats.cc
   cc_optimizer.cc
   cc_sym.cc

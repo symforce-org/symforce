@@ -48,6 +48,14 @@ def set_log_level(log_level: str) -> None:
         raise RuntimeError(f'Unknown log level: "{log_level}"')
     logger.setLevel(getattr(logging, log_level.upper()))
 
+    # Only do this if already imported, in case users don't want to use any C++ binaries
+    import sys
+
+    if "cc_sym" in sys.modules:
+        import cc_sym
+
+        cc_sym.set_log_level(log_level)
+
 
 # Set default
 set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "WARNING"))
