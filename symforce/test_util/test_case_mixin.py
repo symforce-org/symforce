@@ -44,7 +44,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         self.addTypeEqualityFunc(np.ndarray, SymforceTestCaseMixin.assertArrayEqual)
 
     @staticmethod
-    def main() -> None:
+    def main(*args: T.Any, **kwargs: T.Any) -> None:
         """
         Call this to run all tests in scope.
         """
@@ -53,7 +53,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
             SymforceTestCaseMixin.UPDATE = True
             sys.argv.remove("--update")
 
-        unittest.main()
+        unittest.main(*args, **kwargs)
 
     @staticmethod
     def assertStorageNear(

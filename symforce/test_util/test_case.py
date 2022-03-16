@@ -38,12 +38,12 @@ class TestCase(SymforceTestCaseMixin):
         return TestCase._RUN_SLOW_TESTS
 
     @staticmethod
-    def main() -> None:
+    def main(*args: T.Any, **kwargs: T.Any) -> None:
         """
         Call this to run all tests in scope.
         """
         TestCase.should_run_slow_tests()
-        SymforceTestCaseMixin.main()
+        SymforceTestCaseMixin.main(*args, **kwargs)
 
     def setUp(self) -> None:
         super().setUp()

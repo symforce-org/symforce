@@ -7,6 +7,11 @@ from libcpp.pair cimport pair
 
 include "config.pxi"
 
+cdef extern from "py_callable_wrapper.h" namespace "SymEngine":
+    cdef cppclass PyCallableWrapper:
+        PyCallableWrapper()
+        PyCallableWrapper(object)
+
 cdef extern from 'symengine/mp_class.h' namespace "SymEngine":
     ctypedef unsigned long mp_limb_t
     ctypedef struct __mpz_struct:
@@ -324,6 +329,7 @@ cdef extern from "<symengine/basic.h>" namespace "SymEngine":
     void as_numer_denom(rcp_const_basic &x, const Ptr[RCP[Basic]] &numer, const Ptr[RCP[Basic]] &denom) nogil
     void as_real_imag(rcp_const_basic &x, const Ptr[RCP[Basic]] &real, const Ptr[RCP[Basic]] &imag) nogil
     void cse(vec_pair &replacements, vec_basic &reduced_exprs, const vec_basic &exprs) nogil except +
+    void cse(vec_pair &replacements, vec_basic &reduced_exprs, const vec_basic &exprs, PyCallableWrapper symbols) except +
 
 cdef extern from "<symengine/subs.h>" namespace "SymEngine":
     rcp_const_basic msubs (rcp_const_basic &x, const map_basic_basic &x) nogil

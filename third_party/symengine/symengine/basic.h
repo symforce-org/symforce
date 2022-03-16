@@ -286,6 +286,9 @@ RCP<const Basic> rewrite_as_exp(const RCP<const Basic> &x);
 // Return a vector of replacement pairs and a vector of reduced exprs
 void cse(vec_pair &replacements, vec_basic &reduced_exprs,
          const vec_basic &exprs);
+void cse(vec_pair &replacements, vec_basic &reduced_exprs,
+         const vec_basic &exprs,
+         const std::function<RCP<const Symbol>()> &symbols);
 
 /*! This `<<` overloaded function simply calls `p.__str__`, so it allows any
    Basic

@@ -186,7 +186,12 @@ def perform_cse(
     flat_output_exprs = [
         x for storage in (output_exprs.dense + output_exprs.sparse) for x in storage
     ]
-    temps, flat_simplified_outputs = sm.cse(flat_output_exprs)
+
+    def tmp_symbols() -> T.Iterable[str]:
+        for i in itertools.count():
+            yield sm.Symbol(f"_tmp{i}")
+
+    temps, flat_simplified_outputs = sm.cse(flat_output_exprs, symbols=tmp_symbols())
 
     # Unflatten output of CSE
     simplified_outputs = DenseAndSparseOutputTerms(dense=[], sparse=[])
@@ -197,24 +202,6 @@ def perform_cse(
     for storage in output_exprs.sparse:
         simplified_outputs.sparse.append(flat_simplified_outputs[flat_i : flat_i + len(storage)])
         flat_i += len(storage)
-
-    # Substitute names of temp symbols
-    tmp_name = lambda i: f"_tmp{i}"
-    temps_renames = [(t[0], sm.Symbol(tmp_name(i))) for i, t in enumerate(temps)]
-    temps_renames_dict = dict(temps_renames)
-    temps = [
-        (temps_renames[i][1], sm.S(t[1]).subs(temps_renames_dict)) for i, t in enumerate(temps)
-    ]
-    simplified_outputs = DenseAndSparseOutputTerms(
-        dense=[
-            [sm.S(v).subs(temps_renames_dict) for v in storage]
-            for storage in simplified_outputs.dense
-        ],
-        sparse=[
-            [sm.S(v).subs(temps_renames_dict) for v in storage]
-            for storage in simplified_outputs.sparse
-        ],
-    )
 
     # Substitute symbols to an input array
     # Rather than having the code contain the names of each symbol, we convert the

@@ -4,7 +4,7 @@ from symengine cimport (RCP, pair, add_operands_map, add_operands_map_iterator,
     map_basic_basic, umap_int_basic,
     umap_int_basic_iterator, umap_basic_num, umap_basic_num_iterator,
     rcp_const_basic, std_pair_short_rcp_const_basic,
-    rcp_const_seriescoeffinterface, CRCPBasic)
+    rcp_const_seriescoeffinterface, CRCPBasic, PyCallableWrapper)
 from libcpp cimport bool as cppbool
 from libcpp.string cimport string
 from libcpp.vector cimport vector
@@ -5326,7 +5326,30 @@ def linsolve(eqs, syms):
     return vec_basic_to_tuple(ret)
 
 
-def cse(exprs):
+def cse(exprs, symbols=None):
+    """
+    Perform common subexpression elimination on an expression.
+
+    Parameters
+    ==========
+
+    exprs : iterable of symengine expressions
+        The expressions to reduce.
+    symbols : infinite iterator yielding unique Symbols
+        The symbols used to label the common subexpressions which are pulled
+        out. The default is a stream of symbols of the form "x0", "x1", etc.
+        This must be an infinite iterator.
+
+    Returns
+    =======
+
+    replacements : list of (Symbol, expression) pairs
+        All of the common subexpressions that were replaced. Subexpressions
+        earlier in this list might show up in subexpressions later in this
+        list.
+    reduced_exprs : list of symengine expressions
+        The reduced expressions with all of the replacements above.
+    """
     cdef symengine.vec_basic vec
     cdef symengine.vec_pair replacements
     cdef symengine.vec_basic reduced_exprs
@@ -5334,7 +5357,21 @@ def cse(exprs):
     for expr in exprs:
         b = sympify(expr)
         vec.push_back(b.thisptr)
-    symengine.cse(replacements, reduced_exprs, vec)
+    if symbols is None:
+        symengine.cse(replacements, reduced_exprs, vec)
+    else:
+        iterator = iter(symbols)
+        def generator():
+            # We pull out the name here and convert back to a Symbol in
+            # PyCallableWrapper.  Fixing this would introduce a dependency cycle
+            # between symengine.pxd and py_callable_wrapper, since we'd need to be
+            # able to pull an RCP<Symbol> out of the python object returned from within
+            # PyCallableWrapper.  We could probably break this cycle, but that would
+            # require a large refactor of these files.  This should be fine and isn't
+            # too slow, but it does mean we lose information of whether this is
+            # actually a subclass of Symbol.
+            return next(iterator).name
+        symengine.cse(replacements, reduced_exprs, vec, PyCallableWrapper(generator))
     return (vec_pair_to_list(replacements), vec_basic_to_list(reduced_exprs))
 
 def latex(expr):

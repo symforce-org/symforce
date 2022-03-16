@@ -190,9 +190,14 @@ def scalar_like(a: T.Any) -> bool:
     a_type = get_type(a)
     if issubclass(a_type, (int, float, np.float32, np.float64)):
         return True
+
     is_expr = issubclass(a_type, sm.Expr)
+    if not is_expr:
+        return False
+
+    # It is an expr, check that it's not a matrix
     is_matrix = issubclass(a_type, sm.MatrixBase) or (hasattr(a, "is_Matrix") and a.is_Matrix)
-    return is_expr and not is_matrix
+    return not is_matrix
 
 
 def getattr_recursive(obj: object, attrs: T.Sequence[str]) -> T.Any:
