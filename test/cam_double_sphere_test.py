@@ -30,7 +30,7 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
         xi = np.random.uniform(low=-1.0, high=10.0)
         alpha = np.random.uniform(high=0.9, low=-10.0)
         return cam.DoubleSphereCameraCal(
-            focal_length=(f_x, f_y), principal_point=(c_x, c_y), distortion_coeffs=(xi, alpha)
+            focal_length=(f_x, f_y), principal_point=(c_x, c_y), xi=xi, alpha=alpha
         )
 
     @staticmethod
@@ -41,7 +41,8 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
         return cam.DoubleSphereCameraCal(
             focal_length=focal_length,
             principal_point=principal_point,
-            distortion_coeffs=(xi, alpha),
+            xi=xi,
+            alpha=alpha,
         )
 
     def test_xi_and_alpha_properties(self) -> None:

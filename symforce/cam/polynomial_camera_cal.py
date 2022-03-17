@@ -70,6 +70,28 @@ class PolynomialCameraCal(CameraCal):
                     max_fov
                 )
 
+    @classmethod
+    def from_distortion_coeffs(
+        cls,
+        focal_length: T.Sequence[T.Scalar],
+        principal_point: T.Sequence[T.Scalar],
+        distortion_coeffs: T.Sequence[T.Scalar] = tuple(),
+        **kwargs: T.Scalar,
+    ) -> PolynomialCameraCal:
+        """
+        Construct a Camera Cal of type cls from the focal_length, principal_point, and distortion_coeffs.
+
+        kwargs are additional arguments which will be passed to the constructor.
+
+        Symbolic arguments may only be passed if the kwarg critical_undistorted_radius is passed.
+        """
+        return cls(
+            focal_length=focal_length,
+            principal_point=principal_point,
+            distortion_coeffs=distortion_coeffs,
+            **kwargs,
+        )
+
     def _distortion_weight(self, undistorted_radius: T.Scalar) -> T.Scalar:
         """
         Compute the distortion weight for the given undistorted radius. This weight is applied to

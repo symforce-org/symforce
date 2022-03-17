@@ -3,6 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 from .camera_cal import CameraCal
 
 from symforce.cam.linear_camera_cal import LinearCameraCal
@@ -34,6 +36,25 @@ class DoubleSphereCameraCal(CameraCal):
     """
 
     NUM_DISTORTION_COEFFS = 2
+
+    def __init__(
+        self,
+        focal_length: T.Sequence[T.Scalar],
+        principal_point: T.Sequence[T.Scalar],
+        xi: T.Scalar,
+        alpha: T.Scalar,
+    ) -> None:
+        super().__init__(focal_length, principal_point, [xi, alpha])
+
+    @classmethod
+    def symbolic(cls, name: str, **kwargs: T.Any) -> DoubleSphereCameraCal:
+        with sm.scope(name):
+            return cls(
+                focal_length=sm.symbols("f_x f_y"),
+                principal_point=sm.symbols("c_x c_y"),
+                xi=sm.Symbol("xi"),
+                alpha=sm.Symbol("alpha"),
+            )
 
     @property
     def xi(self) -> T.Scalar:

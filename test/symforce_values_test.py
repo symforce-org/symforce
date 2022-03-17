@@ -535,7 +535,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         with v_cam.scope("CameraCals"):
             [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
             for c in cam.CameraCal.__subclasses__():
-                v_cam[c.__name__] = c(
+                v_cam[c.__name__] = c.from_distortion_coeffs(
                     focal_length=(f_x, f_y),
                     principal_point=(c_x, c_y),
                     distortion_coeffs=np.random.uniform(

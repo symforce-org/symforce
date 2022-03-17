@@ -3,6 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 from .camera_cal import CameraCal
 from .linear_camera_cal import LinearCameraCal
 
@@ -22,6 +24,23 @@ class ATANCameraCal(CameraCal):
     """
 
     NUM_DISTORTION_COEFFS = 1
+
+    def __init__(
+        self,
+        focal_length: T.Sequence[T.Scalar],
+        principal_point: T.Sequence[T.Scalar],
+        omega: T.Scalar,
+    ) -> None:
+        super().__init__(focal_length, principal_point, [omega])
+
+    @classmethod
+    def symbolic(cls, name: str, **kwargs: T.Any) -> ATANCameraCal:
+        with sm.scope(name):
+            return cls(
+                focal_length=sm.symbols("f_x f_y"),
+                principal_point=sm.symbols("c_x c_y"),
+                omega=sm.Symbol("omega"),
+            )
 
     def pixel_from_camera_point(
         self, point: geo.V3, epsilon: T.Scalar = 0

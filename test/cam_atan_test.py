@@ -23,9 +23,7 @@ class CamATANTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
     def element(cls) -> cam.ATANCameraCal:
         [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
         omega = np.random.uniform(low=0.1, high=0.8)
-        return cam.ATANCameraCal(
-            focal_length=(f_x, f_y), principal_point=(c_x, c_y), distortion_coeffs=[omega]
-        )
+        return cam.ATANCameraCal(focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega)
 
     def test_is_valid(self) -> None:
         """
@@ -80,7 +78,7 @@ class CamATANTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
         c_x, c_y = (320, 240)
         omega = 0.35
         cam_cal = cam.ATANCameraCal(
-            focal_length=(f_x, f_y), principal_point=(c_x, c_y), distortion_coeffs=[omega]
+            focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega
         )
         invalid_pixels = [
             geo.V2(f_x * (np.pi / 2.0 + 1e-6) / omega + c_x, 0),

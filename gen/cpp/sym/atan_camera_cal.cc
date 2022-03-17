@@ -81,7 +81,7 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PixelFromCameraPointWithJacob
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 2, 5>* const pixel_D_cal,
     Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point) const {
-  // Total ops: 118
+  // Total ops: 121
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _self = Data();
@@ -97,53 +97,53 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PixelFromCameraPointWithJacob
   const Scalar _tmp7 = _tmp2 * _tmp5 + _tmp5 * _tmp6 + epsilon;
   const Scalar _tmp8 = std::sqrt(_tmp7);
   const Scalar _tmp9 = 2 * _tmp8;
-  const Scalar _tmp10 = std::atan(_tmp1 * _tmp9);
-  const Scalar _tmp11 = Scalar(1.0) / (_tmp8);
-  const Scalar _tmp12 = Scalar(1.0) / (_self[4]);
+  const Scalar _tmp10 = Scalar(1.0) / (_self[4]);
+  const Scalar _tmp11 = _tmp10 * std::atan(_tmp1 * _tmp9);
+  const Scalar _tmp12 = Scalar(1.0) / (_tmp8);
   const Scalar _tmp13 = Scalar(1.0) / (_tmp4);
   const Scalar _tmp14 = _tmp12 * _tmp13;
-  const Scalar _tmp15 = _tmp11 * _tmp14;
-  const Scalar _tmp16 = _tmp10 * _tmp15;
-  const Scalar _tmp17 = _self[0] * _tmp16;
-  const Scalar _tmp18 = _self[1] * _tmp16;
+  const Scalar _tmp15 = _self[0] * _tmp14;
+  const Scalar _tmp16 = _tmp11 * _tmp15;
+  const Scalar _tmp17 = _self[1] * _tmp11;
+  const Scalar _tmp18 = _tmp14 * _tmp17;
   const Scalar _tmp19 = (((point(2, 0)) > 0) - ((point(2, 0)) < 0));
   const Scalar _tmp20 = std::tan(_tmp0);
   const Scalar _tmp21 = std::atan(_tmp20 * _tmp9);
-  const Scalar _tmp22 = _tmp15 * _tmp21;
-  const Scalar _tmp23 = _self[0] * point(0, 0);
-  const Scalar _tmp24 = _tmp14 * _tmp23;
-  const Scalar _tmp25 = std::pow(_tmp20, Scalar(2));
-  const Scalar _tmp26 = 4 * _tmp7;
-  const Scalar _tmp27 = Scalar(1.0) * (_tmp25 + 1) / (_tmp25 * _tmp26 + 1);
-  const Scalar _tmp28 = _tmp11 * _tmp23;
-  const Scalar _tmp29 = _tmp13 * _tmp21 / std::pow(_self[4], Scalar(2));
-  const Scalar _tmp30 = _self[1] * point(1, 0);
-  const Scalar _tmp31 = _tmp14 * _tmp30;
-  const Scalar _tmp32 = _tmp10 / (_tmp7 * std::sqrt(_tmp7));
-  const Scalar _tmp33 = _tmp12 * _tmp32;
-  const Scalar _tmp34 = std::pow(_tmp4, Scalar(-3));
-  const Scalar _tmp35 = _tmp2 * _tmp34;
-  const Scalar _tmp36 = _self[0] * _tmp35;
-  const Scalar _tmp37 = _tmp1 / (_tmp7 * (std::pow(_tmp1, Scalar(2)) * _tmp26 + 1));
-  const Scalar _tmp38 = 2 * _tmp37;
-  const Scalar _tmp39 = _tmp12 * _tmp38;
-  const Scalar _tmp40 = _tmp34 * point(1, 0);
-  const Scalar _tmp41 = _tmp23 * _tmp40;
-  const Scalar _tmp42 = _tmp34 * _tmp6;
-  const Scalar _tmp43 = _tmp19 * ((((_tmp3 - epsilon) > 0) - ((_tmp3 - epsilon) < 0)) + 1);
-  const Scalar _tmp44 = -_tmp35 * _tmp43 - _tmp42 * _tmp43;
-  const Scalar _tmp45 = _tmp24 * _tmp44;
-  const Scalar _tmp46 = (Scalar(1) / Scalar(2)) * _tmp32;
-  const Scalar _tmp47 = (Scalar(1) / Scalar(2)) * _tmp10 * _tmp43 * _tmp5;
-  const Scalar _tmp48 = _self[1] * _tmp12;
-  const Scalar _tmp49 = _tmp40 * _tmp48 * point(0, 0);
-  const Scalar _tmp50 = _tmp42 * _tmp48;
-  const Scalar _tmp51 = _tmp31 * _tmp44;
+  const Scalar _tmp22 = _tmp21 * point(0, 0);
+  const Scalar _tmp23 = _tmp10 * _tmp14;
+  const Scalar _tmp24 = _self[0] * point(0, 0);
+  const Scalar _tmp25 = _tmp10 * _tmp13;
+  const Scalar _tmp26 = _tmp24 * _tmp25;
+  const Scalar _tmp27 = std::pow(_tmp20, Scalar(2));
+  const Scalar _tmp28 = 4 * _tmp7;
+  const Scalar _tmp29 = Scalar(1.0) * (_tmp27 + 1) / (_tmp27 * _tmp28 + 1);
+  const Scalar _tmp30 = std::pow(_self[4], Scalar(-2));
+  const Scalar _tmp31 = _tmp21 * point(1, 0);
+  const Scalar _tmp32 = _self[1] * _tmp25 * point(1, 0);
+  const Scalar _tmp33 = std::pow(_tmp4, Scalar(-3));
+  const Scalar _tmp34 = _tmp2 * _tmp33;
+  const Scalar _tmp35 = _self[0] * _tmp34;
+  const Scalar _tmp36 = std::pow(_tmp7, Scalar(Scalar(-3) / Scalar(2)));
+  const Scalar _tmp37 = _tmp11 * _tmp36;
+  const Scalar _tmp38 = _tmp1 / (_tmp7 * (std::pow(_tmp1, Scalar(2)) * _tmp28 + 1));
+  const Scalar _tmp39 = 2 * _tmp10 * _tmp38;
+  const Scalar _tmp40 = _tmp33 * point(1, 0);
+  const Scalar _tmp41 = _tmp24 * _tmp37;
+  const Scalar _tmp42 = _tmp19 * ((((_tmp3 - epsilon) > 0) - ((_tmp3 - epsilon) < 0)) + 1);
+  const Scalar _tmp43 = _tmp33 * _tmp6;
+  const Scalar _tmp44 = -_tmp34 * _tmp42 - _tmp42 * _tmp43;
+  const Scalar _tmp45 = _tmp38 * _tmp44;
+  const Scalar _tmp46 = _tmp12 * _tmp42 * _tmp5;
+  const Scalar _tmp47 = _tmp13 * _tmp44;
+  const Scalar _tmp48 = _tmp17 * _tmp36;
+  const Scalar _tmp49 = _tmp40 * point(0, 0);
+  const Scalar _tmp50 = _self[1] * _tmp39;
+  const Scalar _tmp51 = (Scalar(1) / Scalar(2)) * point(1, 0);
 
   // Output terms (4)
   Eigen::Matrix<Scalar, 2, 1> _pixel;
 
-  _pixel(0, 0) = _self[2] + _tmp17 * point(0, 0);
+  _pixel(0, 0) = _self[2] + _tmp16 * point(0, 0);
   _pixel(1, 0) = _self[3] + _tmp18 * point(1, 0);
 
   if (is_valid != nullptr) {
@@ -155,28 +155,28 @@ Eigen::Matrix<Scalar, 2, 1> ATANCameraCal<Scalar>::PixelFromCameraPointWithJacob
   if (pixel_D_cal != nullptr) {
     Eigen::Matrix<Scalar, 2, 5>& _pixel_D_cal = (*pixel_D_cal);
 
-    _pixel_D_cal(0, 0) = _tmp22 * point(0, 0);
+    _pixel_D_cal(0, 0) = _tmp22 * _tmp23;
     _pixel_D_cal(0, 1) = 0;
     _pixel_D_cal(0, 2) = 1;
     _pixel_D_cal(0, 3) = 0;
-    _pixel_D_cal(0, 4) = _tmp24 * _tmp27 - _tmp28 * _tmp29;
+    _pixel_D_cal(0, 4) = -_tmp15 * _tmp22 * _tmp30 + _tmp26 * _tmp29;
     _pixel_D_cal(1, 0) = 0;
-    _pixel_D_cal(1, 1) = _tmp22 * point(1, 0);
+    _pixel_D_cal(1, 1) = _tmp23 * _tmp31;
     _pixel_D_cal(1, 2) = 0;
     _pixel_D_cal(1, 3) = 1;
-    _pixel_D_cal(1, 4) = -_tmp11 * _tmp29 * _tmp30 + _tmp27 * _tmp31;
+    _pixel_D_cal(1, 4) = -_self[1] * _tmp14 * _tmp30 * _tmp31 + _tmp29 * _tmp32;
   }
 
   if (pixel_D_point != nullptr) {
     Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
 
-    _pixel_D_point(0, 0) = _tmp17 - _tmp33 * _tmp36 + _tmp36 * _tmp39;
-    _pixel_D_point(0, 1) = -_tmp33 * _tmp41 + _tmp39 * _tmp41;
-    _pixel_D_point(0, 2) = -_tmp12 * _tmp28 * _tmp47 + _tmp37 * _tmp45 - _tmp45 * _tmp46;
-    _pixel_D_point(1, 0) = -_tmp32 * _tmp49 + _tmp38 * _tmp49;
-    _pixel_D_point(1, 1) = _tmp18 - _tmp32 * _tmp50 + _tmp38 * _tmp50;
-    _pixel_D_point(1, 2) =
-        -_tmp11 * _tmp47 * _tmp48 * point(1, 0) + _tmp37 * _tmp51 - _tmp46 * _tmp51;
+    _pixel_D_point(0, 0) = _tmp16 - _tmp35 * _tmp37 + _tmp35 * _tmp39;
+    _pixel_D_point(0, 1) = _tmp24 * _tmp39 * _tmp40 - _tmp40 * _tmp41;
+    _pixel_D_point(0, 2) = -Scalar(1) / Scalar(2) * _tmp11 * _tmp24 * _tmp46 + _tmp26 * _tmp45 -
+                           Scalar(1) / Scalar(2) * _tmp41 * _tmp47;
+    _pixel_D_point(1, 0) = -_tmp48 * _tmp49 + _tmp49 * _tmp50;
+    _pixel_D_point(1, 1) = _tmp18 - _tmp43 * _tmp48 + _tmp43 * _tmp50;
+    _pixel_D_point(1, 2) = -_tmp17 * _tmp46 * _tmp51 + _tmp32 * _tmp45 - _tmp47 * _tmp48 * _tmp51;
   }
 
   return _pixel;
@@ -222,98 +222,106 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixelWithJacobia
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 3, 5>* const point_D_cal,
     Eigen::Matrix<Scalar, 3, 2>* const point_D_pixel) const {
-  // Total ops: 122
+  // Total ops: 133
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _self = Data();
 
-  // Intermediate terms (46)
+  // Intermediate terms (54)
   const Scalar _tmp0 = -_self[2] + pixel(0, 0);
-  const Scalar _tmp1 = Scalar(1.0) / (_self[0]);
-  const Scalar _tmp2 = _tmp0 * _tmp1;
-  const Scalar _tmp3 = -_self[3] + pixel(1, 0);
-  const Scalar _tmp4 = std::pow(_tmp3, Scalar(2));
-  const Scalar _tmp5 = std::pow(_self[1], Scalar(-2));
-  const Scalar _tmp6 = std::pow(_tmp0, Scalar(2));
-  const Scalar _tmp7 = std::pow(_self[0], Scalar(-2));
-  const Scalar _tmp8 = _tmp4 * _tmp5 + _tmp6 * _tmp7 + epsilon;
-  const Scalar _tmp9 = std::sqrt(_tmp8);
-  const Scalar _tmp10 = _self[4] * _tmp9;
-  const Scalar _tmp11 = std::tan(_tmp10);
-  const Scalar _tmp12 = _tmp11 / _tmp9;
-  const Scalar _tmp13 = Scalar(0.5) * _self[4];
-  const Scalar _tmp14 = (Scalar(1) / Scalar(2)) / std::tan(_tmp13);
+  const Scalar _tmp1 = -_self[3] + pixel(1, 0);
+  const Scalar _tmp2 = std::pow(_tmp1, Scalar(2));
+  const Scalar _tmp3 = std::pow(_self[1], Scalar(-2));
+  const Scalar _tmp4 = std::pow(_tmp0, Scalar(2));
+  const Scalar _tmp5 = std::pow(_self[0], Scalar(-2));
+  const Scalar _tmp6 = _tmp2 * _tmp3 + _tmp4 * _tmp5 + epsilon;
+  const Scalar _tmp7 = std::sqrt(_tmp6);
+  const Scalar _tmp8 = _self[4] * _tmp7;
+  const Scalar _tmp9 = std::tan(_tmp8);
+  const Scalar _tmp10 = _tmp9 / _tmp7;
+  const Scalar _tmp11 = Scalar(0.5) * _self[4];
+  const Scalar _tmp12 = Scalar(1.0) / (std::tan(_tmp11));
+  const Scalar _tmp13 = Scalar(1.0) / (_self[0]);
+  const Scalar _tmp14 = (Scalar(1) / Scalar(2)) * _tmp13;
   const Scalar _tmp15 = _tmp12 * _tmp14;
-  const Scalar _tmp16 = Scalar(1.0) / (_self[1]);
-  const Scalar _tmp17 = _tmp16 * _tmp3;
-  const Scalar _tmp18 = std::tan(_tmp13);
-  const Scalar _tmp19 = (Scalar(1) / Scalar(2)) / _tmp18;
-  const Scalar _tmp20 = _tmp12 * _tmp19;
-  const Scalar _tmp21 = _tmp0 * _tmp7;
-  const Scalar _tmp22 = _tmp11 / (_tmp8 * std::sqrt(_tmp8));
-  const Scalar _tmp23 = _tmp19 * _tmp22;
-  const Scalar _tmp24 = [&]() {
+  const Scalar _tmp16 = _tmp10 * _tmp15;
+  const Scalar _tmp17 = Scalar(1.0) / (_self[1]);
+  const Scalar _tmp18 = (Scalar(1) / Scalar(2)) * _tmp17;
+  const Scalar _tmp19 = _tmp1 * _tmp18;
+  const Scalar _tmp20 = _tmp10 * _tmp12;
+  const Scalar _tmp21 = [&]() {
     const Scalar base = _tmp0;
     return base * base * base;
   }() / std::pow(_self[0], Scalar(4));
-  const Scalar _tmp25 = std::pow(_tmp11, Scalar(2)) + 1;
-  const Scalar _tmp26 = _tmp19 * _tmp25;
-  const Scalar _tmp27 = _self[4] / _tmp8;
-  const Scalar _tmp28 = _tmp26 * _tmp27;
-  const Scalar _tmp29 = _tmp2 * _tmp26;
-  const Scalar _tmp30 = _tmp4 / [&]() {
+  const Scalar _tmp22 = std::tan(_tmp11);
+  const Scalar _tmp23 = Scalar(1.0) / (_tmp22);
+  const Scalar _tmp24 = std::pow(_tmp9, Scalar(2)) + 1;
+  const Scalar _tmp25 = _tmp23 * _tmp24;
+  const Scalar _tmp26 = _self[4] / _tmp6;
+  const Scalar _tmp27 = (Scalar(1) / Scalar(2)) * _tmp26;
+  const Scalar _tmp28 = _tmp25 * _tmp27;
+  const Scalar _tmp29 = _tmp9 / (_tmp6 * std::sqrt(_tmp6));
+  const Scalar _tmp30 = (Scalar(1) / Scalar(2)) * _tmp29;
+  const Scalar _tmp31 = _tmp23 * _tmp30;
+  const Scalar _tmp32 = _tmp10 * _tmp23;
+  const Scalar _tmp33 = (Scalar(1) / Scalar(2)) * _tmp32;
+  const Scalar _tmp34 = _tmp0 * _tmp5;
+  const Scalar _tmp35 = _tmp2 / [&]() {
     const Scalar base = _self[1];
     return base * base * base;
   }();
-  const Scalar _tmp31 = _tmp27 * _tmp30;
-  const Scalar _tmp32 = _tmp23 * _tmp30;
-  const Scalar _tmp33 = _tmp6 / [&]() {
+  const Scalar _tmp36 = _tmp0 * _tmp14;
+  const Scalar _tmp37 = _tmp25 * _tmp36;
+  const Scalar _tmp38 = _tmp26 * _tmp37;
+  const Scalar _tmp39 = _tmp23 * _tmp29;
+  const Scalar _tmp40 = _tmp36 * _tmp39;
+  const Scalar _tmp41 = _tmp4 / [&]() {
     const Scalar base = _self[0];
     return base * base * base;
   }();
-  const Scalar _tmp34 = _tmp27 * _tmp33;
-  const Scalar _tmp35 = _tmp23 * _tmp33;
-  const Scalar _tmp36 = _tmp3 * _tmp5;
-  const Scalar _tmp37 = _tmp2 * _tmp36;
-  const Scalar _tmp38 = std::pow(_tmp18, Scalar(2));
-  const Scalar _tmp39 = Scalar(0.25) * _tmp12 * (_tmp38 + 1) / _tmp38;
-  const Scalar _tmp40 = _tmp17 * _tmp26;
-  const Scalar _tmp41 = [&]() {
-    const Scalar base = _tmp3;
+  const Scalar _tmp42 = _tmp1 * _tmp3;
+  const Scalar _tmp43 = std::pow(_tmp22, Scalar(2));
+  const Scalar _tmp44 = Scalar(0.25) * _tmp10 * (_tmp43 + 1) / _tmp43;
+  const Scalar _tmp45 = _tmp19 * _tmp25;
+  const Scalar _tmp46 = _tmp26 * _tmp45;
+  const Scalar _tmp47 = _tmp19 * _tmp39;
+  const Scalar _tmp48 = [&]() {
+    const Scalar base = _tmp1;
     return base * base * base;
   }() / std::pow(_self[1], Scalar(4));
-  const Scalar _tmp42 = _tmp17 * _tmp21;
-  const Scalar _tmp43 = _tmp14 * _tmp22;
-  const Scalar _tmp44 = _tmp14 * _tmp25;
-  const Scalar _tmp45 = _tmp27 * _tmp44;
+  const Scalar _tmp49 = _tmp12 * _tmp30;
+  const Scalar _tmp50 = _tmp12 * _tmp24;
+  const Scalar _tmp51 = _tmp27 * _tmp50;
+  const Scalar _tmp52 = _tmp0 * _tmp15 * _tmp42;
+  const Scalar _tmp53 = _tmp19 * _tmp34;
 
   // Output terms (4)
   Eigen::Matrix<Scalar, 3, 1> _camera_ray;
 
-  _camera_ray(0, 0) = _tmp15 * _tmp2;
-  _camera_ray(1, 0) = _tmp15 * _tmp17;
+  _camera_ray(0, 0) = _tmp0 * _tmp16;
+  _camera_ray(1, 0) = _tmp19 * _tmp20;
   _camera_ray(2, 0) = 1;
 
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
 
-    _is_valid = std::max<Scalar>(0, (((-std::fabs(_tmp10) + Scalar(M_PI_2)) > 0) -
-                                     ((-std::fabs(_tmp10) + Scalar(M_PI_2)) < 0)));
+    _is_valid = std::max<Scalar>(0, (((-std::fabs(_tmp8) + Scalar(M_PI_2)) > 0) -
+                                     ((-std::fabs(_tmp8) + Scalar(M_PI_2)) < 0)));
   }
 
   if (point_D_cal != nullptr) {
     Eigen::Matrix<Scalar, 3, 5>& _point_D_cal = (*point_D_cal);
 
-    _point_D_cal(0, 0) = -_tmp20 * _tmp21 + _tmp23 * _tmp24 - _tmp24 * _tmp28;
-    _point_D_cal(0, 1) = _tmp2 * _tmp32 - _tmp29 * _tmp31;
-    _point_D_cal(0, 2) = -_tmp1 * _tmp20 - _tmp26 * _tmp34 + _tmp35;
-    _point_D_cal(0, 3) = _tmp23 * _tmp37 - _tmp27 * _tmp29 * _tmp36;
-    _point_D_cal(0, 4) = -_tmp2 * _tmp39 + _tmp29;
-    _point_D_cal(1, 0) = _tmp17 * _tmp35 - _tmp34 * _tmp40;
-    _point_D_cal(1, 1) = -_tmp20 * _tmp36 + _tmp23 * _tmp41 - _tmp28 * _tmp41;
-    _point_D_cal(1, 2) = -_tmp21 * _tmp27 * _tmp40 + _tmp23 * _tmp42;
-    _point_D_cal(1, 3) = -_tmp16 * _tmp20 - _tmp26 * _tmp31 + _tmp32;
-    _point_D_cal(1, 4) = -_tmp17 * _tmp39 + _tmp40;
+    _point_D_cal(0, 0) = -_tmp21 * _tmp28 + _tmp21 * _tmp31 - _tmp33 * _tmp34;
+    _point_D_cal(0, 1) = -_tmp35 * _tmp38 + _tmp35 * _tmp40;
+    _point_D_cal(0, 2) = -_tmp14 * _tmp32 - _tmp28 * _tmp41 + _tmp31 * _tmp41;
+    _point_D_cal(0, 3) = -_tmp38 * _tmp42 + _tmp40 * _tmp42;
+    _point_D_cal(0, 4) = -_tmp0 * _tmp13 * _tmp44 + _tmp37;
+    _point_D_cal(1, 0) = -_tmp41 * _tmp46 + _tmp41 * _tmp47;
+    _point_D_cal(1, 1) = -_tmp28 * _tmp48 + _tmp31 * _tmp48 - _tmp33 * _tmp42;
+    _point_D_cal(1, 2) = -_tmp34 * _tmp46 + _tmp34 * _tmp47;
+    _point_D_cal(1, 3) = -_tmp18 * _tmp32 - _tmp28 * _tmp35 + _tmp31 * _tmp35;
+    _point_D_cal(1, 4) = -_tmp1 * _tmp17 * _tmp44 + _tmp45;
     _point_D_cal(2, 0) = 0;
     _point_D_cal(2, 1) = 0;
     _point_D_cal(2, 2) = 0;
@@ -324,10 +332,10 @@ Eigen::Matrix<Scalar, 3, 1> ATANCameraCal<Scalar>::CameraRayFromPixelWithJacobia
   if (point_D_pixel != nullptr) {
     Eigen::Matrix<Scalar, 3, 2>& _point_D_pixel = (*point_D_pixel);
 
-    _point_D_pixel(0, 0) = _tmp1 * _tmp15 - _tmp33 * _tmp43 + _tmp34 * _tmp44;
-    _point_D_pixel(0, 1) = -_tmp37 * _tmp43 + _tmp37 * _tmp45;
-    _point_D_pixel(1, 0) = -_tmp42 * _tmp43 + _tmp42 * _tmp45;
-    _point_D_pixel(1, 1) = _tmp15 * _tmp16 - _tmp30 * _tmp43 + _tmp31 * _tmp44;
+    _point_D_pixel(0, 0) = _tmp16 - _tmp41 * _tmp49 + _tmp41 * _tmp51;
+    _point_D_pixel(0, 1) = _tmp24 * _tmp26 * _tmp52 - _tmp29 * _tmp52;
+    _point_D_pixel(1, 0) = -_tmp12 * _tmp29 * _tmp53 + _tmp26 * _tmp50 * _tmp53;
+    _point_D_pixel(1, 1) = _tmp18 * _tmp20 - _tmp35 * _tmp49 + _tmp35 * _tmp51;
     _point_D_pixel(2, 0) = 0;
     _point_D_pixel(2, 1) = 0;
   }

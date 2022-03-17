@@ -27,9 +27,27 @@ class CameraCal(Storage):
         distortion_coeffs: T.Sequence[T.Scalar] = tuple(),
     ) -> None:
         assert len(distortion_coeffs) == self.NUM_DISTORTION_COEFFS
-        self.distortion_coeffs = geo.M(distortion_coeffs)
         self.focal_length = geo.V2(focal_length)
         self.principal_point = geo.V2(principal_point)
+        self.distortion_coeffs = geo.M(distortion_coeffs)
+
+    @classmethod
+    def from_distortion_coeffs(
+        cls: T.Type[CameraCalT],
+        focal_length: T.Sequence[T.Scalar],
+        principal_point: T.Sequence[T.Scalar],
+        distortion_coeffs: T.Sequence[T.Scalar] = tuple(),
+    ) -> CameraCalT:
+        """
+        Construct a Camera Cal of type cls from the focal_length, principal_point, and distortion_coeffs.
+
+        Note, some subclasses may not allow symbolic arguments unless additional keyword arguments are passed in.
+        """
+        instance = cls.__new__(cls)
+        instance.focal_length = geo.V2(focal_length)
+        instance.principal_point = geo.V2(principal_point)
+        instance.distortion_coeffs = geo.M(distortion_coeffs)
+        return instance
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
@@ -49,13 +67,15 @@ class CameraCal(Storage):
     @classmethod
     def from_storage(cls: T.Type[CameraCalT], vec: T.Sequence[T.Scalar]) -> CameraCalT:
         assert len(vec) == cls.storage_dim()
-        return cls(focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:])
+        return cls.from_distortion_coeffs(
+            focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:]
+        )
 
     @classmethod
     def symbolic(cls: T.Type[CameraCalT], name: str, **kwargs: T.Any) -> CameraCalT:
         with sm.scope(name):
             if cls.NUM_DISTORTION_COEFFS > 0:
-                return cls(
+                return cls.from_distortion_coeffs(
                     focal_length=sm.symbols("f_x f_y"),
                     principal_point=sm.symbols("c_x c_y"),
                     distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
