@@ -8,6 +8,7 @@ import dataclasses
 from symforce import ops
 from symforce.opt.sub_problem import SubProblem
 from symforce import typing as T
+from symforce.python_util import get_sequence_from_dataclass_sequence_field
 
 
 class TimestepSubProblem(SubProblem):
@@ -32,20 +33,15 @@ class TimestepSubProblem(SubProblem):
         """
         Build the inputs block of the subproblem, and store in self.inputs.
 
-        The default implementation works for Dataclasses where all sequences are of length
-        self.timesteps; to customize this, override this function.  Each field in the subproblem
-        Inputs that's meant to be a sequence of length `self.timesteps` should be marked with
-        `"timestepped": True` in the field metadata, e.g.
+        Each field in the subproblem Inputs that's meant to be a sequence of length `self.timesteps`
+        should be marked with `"timestepped": True` in the field metadata. Other sequences of known
+        length should be marked with the `"length": <sequence length>` in the field metadata, where
+        `<sequence length>` is the length of the sequence. For example:
 
             @dataclass
             class Inputs:
-                my_field: T.Sequence[T.Scalar] = field(metadata={"timestepped": True})
-
-        or
-
-            @dataclass
-            class Inputs:
-                my_field: T.Sequence[T.Scalar] = TimestepSubProblem.sequence_field()
+                my_timestepped_field: T.Sequence[T.Scalar] = field(metadata={"timestepped": True})
+                my_sequence_field: T.Sequence[T.Scalar] = field(metadata={"length": 3})
 
         Any remaining fields of unknown size will cause an exception.
         """
@@ -61,6 +57,11 @@ class TimestepSubProblem(SubProblem):
                     ops.StorageOps.symbolic(field_type, f"{self.name}.{field.name}[{i}]")
                     for i in range(self.timesteps)
                 ]
+            elif field.metadata.get("length", False):
+                sequence_instance = get_sequence_from_dataclass_sequence_field(field, field_type)
+                constructed_fields[field.name] = ops.StorageOps.symbolic(
+                    sequence_instance, f"{self.name}.{field.name}"
+                )
             else:
                 try:
                     constructed_fields[field.name] = ops.StorageOps.symbolic(
@@ -74,23 +75,3 @@ class TimestepSubProblem(SubProblem):
                     ) from ex
 
         self.inputs = self.Inputs(**constructed_fields)
-
-    @staticmethod
-    def sequence_field(*args: T.Any, **kwargs: T.Any) -> dataclasses.Field:
-        """
-        Replacement for dataclasses.field(metadata={"timestepped": True})
-
-        Seemed cleaner to me, but mypy doesn't recognize it and gets mad about creating defaults for
-        some fields and not others (it thinks this is creating a default, instead of a Field).  So
-        probably best to just delete, and have the user write out
-        my_field: MyType = field(metadata={"timestepped": True})
-
-        In py3.9, we could probably do T.Annotated[MyType, ...] instead of dataclasses.field, which
-        would be super nice.
-        """
-        if "metadata" in kwargs:
-            kwargs["metadata"]["timestepped"] = True
-        else:
-            kwargs["metadata"] = {"timestepped": True}
-
-        return dataclasses.field(*args, **kwargs)
