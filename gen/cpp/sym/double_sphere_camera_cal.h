@@ -47,6 +47,15 @@ class DoubleSphereCameraCal {
   using Self = DoubleSphereCameraCal<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 6, 1>;
 
+  // Construct from focal_length, principal_point, xi, and alpha.
+  DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                        const Eigen::Matrix<Scalar, 2, 1>& principal_point, const Scalar xi,
+                        const Scalar alpha)
+      : DoubleSphereCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
+             principal_point, xi, alpha)
+                .finished()) {}
+
   // Construct from data vec
   explicit DoubleSphereCameraCal(const DataVec& data) : data_(data) {}
 
@@ -54,20 +63,6 @@ class DoubleSphereCameraCal {
   inline const DataVec& Data() const {
     return data_;
   }
-
-  // --------------------------------------------------------------------------
-  // Handwritten methods included from "custom_methods/double_sphere_camera_cal.h.jinja"
-  // --------------------------------------------------------------------------
-
-  // Construct from FocalLength, PrincipalPoint, and distortion coefficients
-  explicit DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
-                                 const Eigen::Matrix<Scalar, 2, 1>& principal_point,
-                                 const Scalar xi, const Scalar alpha)
-      : DoubleSphereCameraCal(
-            (Eigen::Matrix<Scalar, sym::StorageOps<DoubleSphereCameraCal>::StorageDim(), 1>()
-                 << focal_length,
-             principal_point, xi, alpha)
-                .finished()) {}
 
   // --------------------------------------------------------------------------
   // StorageOps concept

@@ -92,6 +92,15 @@ class PolynomialCameraCal(CameraCal):
             **kwargs,
         )
 
+    @classmethod
+    def storage_order(cls) -> T.Tuple[T.Tuple[str, int], ...]:
+        return (
+            ("focal_length", 2),
+            ("principal_point", 2),
+            ("critical_undistorted_radius", 1),
+            ("distortion_coeffs", cls.NUM_DISTORTION_COEFFS),
+        )
+
     def _distortion_weight(self, undistorted_radius: T.Scalar) -> T.Scalar:
         """
         Compute the distortion weight for the given undistorted radius. This weight is applied to

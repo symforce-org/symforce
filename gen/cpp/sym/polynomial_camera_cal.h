@@ -39,6 +39,17 @@ class PolynomialCameraCal {
   using Self = PolynomialCameraCal<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 8, 1>;
 
+  // Construct from focal_length, principal_point, critical_undistorted_radius, and
+  // distortion_coeffs.
+  PolynomialCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                      const Eigen::Matrix<Scalar, 2, 1>& principal_point,
+                      const Scalar critical_undistorted_radius,
+                      const Eigen::Matrix<Scalar, 3, 1>& distortion_coeffs)
+      : PolynomialCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
+             principal_point, critical_undistorted_radius, distortion_coeffs)
+                .finished()) {}
+
   // Construct from data vec
   explicit PolynomialCameraCal(const DataVec& data) : data_(data) {}
 

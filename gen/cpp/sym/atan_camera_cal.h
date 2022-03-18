@@ -34,6 +34,14 @@ class ATANCameraCal {
   using Self = ATANCameraCal<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 5, 1>;
 
+  // Construct from focal_length, principal_point, and omega.
+  ATANCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                const Eigen::Matrix<Scalar, 2, 1>& principal_point, const Scalar omega)
+      : ATANCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
+             principal_point, omega)
+                .finished()) {}
+
   // Construct from data vec
   explicit ATANCameraCal(const DataVec& data) : data_(data) {}
 

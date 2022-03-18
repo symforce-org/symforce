@@ -11,13 +11,12 @@ from symforce import sympy as sm
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
+from symforce.test_util.cam_cal_test_mixin import CamCalTestMixin
 
 
-class CamPolynomialTest(LieGroupOpsTestMixin, TestCase):
+class CamPolynomialTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
     """
     Test the Polynomial camera model class.
-
-    TODO(aaron, dominic): Back projection is not implemented so cannot test with CamTestMixin.
     """
 
     @classmethod

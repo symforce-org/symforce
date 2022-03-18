@@ -13,10 +13,10 @@ from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
-from symforce.test_util.cam_test_mixin import CamTestMixin
+from symforce.test_util.cam_cal_test_mixin import CamCalTestMixin
 
 
-class DoubleSphereTest(LieGroupOpsTestMixin, CamTestMixin, TestCase):
+class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
     """
     Test the DoubleSphereCameraCal class.
     Note the mixin that tests all storage ops and camera projection/reprojection ops.

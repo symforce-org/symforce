@@ -105,6 +105,15 @@ class SphericalCameraCal(CameraCal):
             **kwargs,
         )
 
+    @classmethod
+    def storage_order(cls) -> T.Tuple[T.Tuple[str, int], ...]:
+        return (
+            ("focal_length", 2),
+            ("principal_point", 2),
+            ("critical_theta", 1),
+            ("distortion_coeffs", cls.NUM_DISTORTION_COEFFS),
+        )
+
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------

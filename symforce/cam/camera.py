@@ -88,6 +88,13 @@ class Camera:
         is_valid *= self.maybe_check_in_view(pixel)
         return camera_ray, is_valid
 
+    def has_camera_ray_from_pixel(self) -> bool:
+        """
+        Returns True if self has implemented the method camera_ray_from_pixel, and False
+        otherwise.
+        """
+        return self.calibration.has_camera_ray_from_pixel()
+
     def maybe_check_in_view(self, pixel: geo.V2) -> int:
         if self.image_size is None:
             return sm.S.One

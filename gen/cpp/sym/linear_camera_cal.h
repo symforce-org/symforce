@@ -30,23 +30,20 @@ class LinearCameraCal {
   using Self = LinearCameraCal<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 4, 1>;
 
+  // Construct from focal_length, and principal_point.
+  LinearCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                  const Eigen::Matrix<Scalar, 2, 1>& principal_point)
+      : LinearCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
+             principal_point)
+                .finished()) {}
+
   // Construct from data vec
   explicit LinearCameraCal(const DataVec& data) : data_(data) {}
 
   // Access underlying storage as const
   inline const DataVec& Data() const {
     return data_;
-  }
-
-  // --------------------------------------------------------------------------
-  // Handwritten methods included from "custom_methods/linear_camera_cal.h.jinja"
-  // --------------------------------------------------------------------------
-
-  // Construct from FocalLength and PrincipalPoint
-  explicit LinearCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
-                           const Eigen::Matrix<Scalar, 2, 1>& principal_point) {
-    data_.template head<2>() = focal_length;
-    data_.template tail<2>() = principal_point;
   }
 
   // --------------------------------------------------------------------------

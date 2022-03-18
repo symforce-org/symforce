@@ -42,6 +42,10 @@ class ATANCameraCal(CameraCal):
                 omega=sm.Symbol("omega"),
             )
 
+    @classmethod
+    def storage_order(cls) -> T.Tuple[T.Tuple[str, int], ...]:
+        return ("focal_length", 2), ("principal_point", 2), ("omega", 1)
+
     def pixel_from_camera_point(
         self, point: geo.V3, epsilon: T.Scalar = 0
     ) -> T.Tuple[geo.V2, T.Scalar]:

@@ -72,6 +72,10 @@ class DoubleSphereCameraCal(CameraCal):
     def alpha(self, value: T.Scalar) -> None:
         self.distortion_coeffs[1] = value
 
+    @classmethod
+    def storage_order(cls) -> T.Tuple[T.Tuple[str, int], ...]:
+        return ("focal_length", 2), ("principal_point", 2), ("xi", 1), ("alpha", 1)
+
     def pixel_from_camera_point(
         self, point: geo.Matrix31, epsilon: T.Scalar = 0
     ) -> T.Tuple[geo.V2, T.Scalar]:

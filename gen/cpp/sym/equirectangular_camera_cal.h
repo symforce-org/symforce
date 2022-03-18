@@ -31,6 +31,14 @@ class EquirectangularCameraCal {
   using Self = EquirectangularCameraCal<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 4, 1>;
 
+  // Construct from focal_length, and principal_point.
+  EquirectangularCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                           const Eigen::Matrix<Scalar, 2, 1>& principal_point)
+      : EquirectangularCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
+             principal_point)
+                .finished()) {}
+
   // Construct from data vec
   explicit EquirectangularCameraCal(const DataVec& data) : data_(data) {}
 

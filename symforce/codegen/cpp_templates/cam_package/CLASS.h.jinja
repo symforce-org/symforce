@@ -33,6 +33,14 @@ class {{ cls.__name__ }} {
   using Self = {{ cls.__name__ }}<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, {{ ops.StorageOps.storage_dim(cls) }}, 1>;
 
+  // Construct from {% for arg, _ in storage_order %}{% if not loop.last %}{{ arg }}, {% else %}and {{ arg }}{% endif %}{% endfor %}.
+  {{ cls.__name__ }}(
+        {% for arg, size in storage_order %}
+        const {% if size == 1 %}Scalar{% else %}Eigen::Matrix<Scalar, {{ size }}, 1>&{% endif %} {{ arg }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+  ) : {{ cls.__name__ }}((Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() <<
+        {% for arg, _ in storage_order %}{{ arg }}{% if not loop.last %}, {% endif %}{% endfor %}).finished()) {}
+
   // Construct from data vec
   explicit {{ cls.__name__ }}(const DataVec& data) : data_(data) {}
 
@@ -40,15 +48,6 @@ class {{ cls.__name__ }} {
   inline const DataVec& Data() const {
       return data_;
   }
-
-  {% set custom_template_name = "custom_methods/{}.h.jinja".format(python_util.camelcase_to_snakecase(cls.__name__)) %}
-  {% if pathlib.Path(path_to_codegen).joinpath("cpp_templates", "cam_package", custom_template_name).exists() %}
-  // --------------------------------------------------------------------------
-  // Handwritten methods included from "{{ custom_template_name }}"
-  // --------------------------------------------------------------------------
-
-  {% include custom_template_name %}
-  {% endif %}
 
   // --------------------------------------------------------------------------
   // StorageOps concept

@@ -56,6 +56,16 @@ class SphericalCameraCal {
   using Self = SphericalCameraCal<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, 9, 1>;
 
+  // Construct from focal_length, principal_point, critical_theta, and distortion_coeffs.
+  SphericalCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
+                     const Eigen::Matrix<Scalar, 2, 1>& principal_point,
+                     const Scalar critical_theta,
+                     const Eigen::Matrix<Scalar, 4, 1>& distortion_coeffs)
+      : SphericalCameraCal(
+            (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
+             principal_point, critical_theta, distortion_coeffs)
+                .finished()) {}
+
   // Construct from data vec
   explicit SphericalCameraCal(const DataVec& data) : data_(data) {}
 
@@ -63,21 +73,6 @@ class SphericalCameraCal {
   inline const DataVec& Data() const {
     return data_;
   }
-
-  // --------------------------------------------------------------------------
-  // Handwritten methods included from "custom_methods/spherical_camera_cal.h.jinja"
-  // --------------------------------------------------------------------------
-
-  // Construct from FocalLength, PrincipalPoint, critical_theta, and distortion coefficients
-  explicit SphericalCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
-                              const Eigen::Matrix<Scalar, 2, 1>& principal_point,
-                              const Scalar critical_theta,
-                              const Eigen::Matrix<Scalar, 4, 1>& distortion_coeffs)
-      : SphericalCameraCal(
-            (Eigen::Matrix<Scalar, sym::StorageOps<SphericalCameraCal>::StorageDim(), 1>()
-                 << focal_length,
-             principal_point, critical_theta, distortion_coeffs)
-                .finished()) {}
 
   // --------------------------------------------------------------------------
   // StorageOps concept

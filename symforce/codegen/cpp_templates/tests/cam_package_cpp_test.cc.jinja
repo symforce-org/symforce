@@ -315,7 +315,43 @@ TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", {{ ", ".join(fully
   }
 }
 
-TEMPLATE_TEST_CASE("Test LinearCameraCal custom methods", "[cam_package]", double, float) {
+TEMPLATE_TEST_CASE("Test ATANCameraCal named constructor", "[cam_package]", double, float) {
+  using Scalar = TestType;
+
+  const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
+  const Eigen::Matrix<Scalar, 2, 1> principal_point = Eigen::Matrix<Scalar, 2, 1>(300, 400);
+  const Scalar omega = 0.5;
+  sym::ATANCameraCal<Scalar> cal(focal_length, principal_point, omega);
+  CHECK(cal.FocalLength() == focal_length);
+  CHECK(cal.PrincipalPoint() == principal_point);
+  CHECK(cal.Data()[4] == omega);
+}
+
+TEMPLATE_TEST_CASE("Test DoubleSphereCameraCal named constructor", "[cam_package]", double, float) {
+  using Scalar = TestType;
+
+  const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
+  const Eigen::Matrix<Scalar, 2, 1> principal_point = Eigen::Matrix<Scalar, 2, 1>(300, 400);
+  const Scalar xi = 0.1;
+  const Scalar alpha = 0.2;
+  sym::DoubleSphereCameraCal<Scalar> cal(focal_length, principal_point, xi, alpha);
+  CHECK(cal.FocalLength() == focal_length);
+  CHECK(cal.PrincipalPoint() == principal_point);
+  CHECK(cal.Data()[4] == xi);
+  CHECK(cal.Data()[5] == alpha);
+}
+
+TEMPLATE_TEST_CASE("Test EquirectangularCameraCal named constructor", "[cam_package]", double, float) {
+  using Scalar = TestType;
+
+  const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
+  const Eigen::Matrix<Scalar, 2, 1> principal_point = Eigen::Matrix<Scalar, 2, 1>(300, 400);
+  sym::EquirectangularCameraCal<Scalar> cal(focal_length, principal_point);
+  CHECK(cal.FocalLength() == focal_length);
+  CHECK(cal.PrincipalPoint() == principal_point);
+}
+
+TEMPLATE_TEST_CASE("Test LinearCameraCal named constructor", "[cam_package]", double, float) {
   using Scalar = TestType;
 
   const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
@@ -325,7 +361,23 @@ TEMPLATE_TEST_CASE("Test LinearCameraCal custom methods", "[cam_package]", doubl
   CHECK(cal.PrincipalPoint() == principal_point);
 }
 
-TEMPLATE_TEST_CASE("Test SphericalCameraCal custom methods", "[cam_package]", double, float) {
+TEMPLATE_TEST_CASE("Test PolynomialCameraCal named constructor", "[cam_package]", double, float) {
+  using Scalar = TestType;
+
+  const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
+  const Eigen::Matrix<Scalar, 2, 1> principal_point = Eigen::Matrix<Scalar, 2, 1>(300, 400);
+  const Scalar critical_undistorted_radius = 0.5;
+  const Eigen::Matrix<Scalar, 3, 1> distortion_coeffs =
+      Eigen::Matrix<Scalar, 3, 1>(0.1, 0.2, 0.3);
+  sym::PolynomialCameraCal<Scalar> cal(focal_length, principal_point, critical_undistorted_radius,
+                                      distortion_coeffs);
+  CHECK(cal.FocalLength() == focal_length);
+  CHECK(cal.PrincipalPoint() == principal_point);
+  CHECK(cal.Data()[4] == critical_undistorted_radius);
+  CHECK(cal.Data().template tail<3>() == distortion_coeffs);
+}
+
+TEMPLATE_TEST_CASE("Test SphericalCameraCal named constructor", "[cam_package]", double, float) {
   using Scalar = TestType;
 
   const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
@@ -339,18 +391,4 @@ TEMPLATE_TEST_CASE("Test SphericalCameraCal custom methods", "[cam_package]", do
   CHECK(cal.PrincipalPoint() == principal_point);
   CHECK(cal.Data()[4] == critical_theta);
   CHECK(cal.Data().template tail<4>() == distortion_coeffs);
-}
-
-TEMPLATE_TEST_CASE("Test DoubleSphereCameraCal custom methods", "[cam_package]", double, float) {
-  using Scalar = TestType;
-
-  const Eigen::Matrix<Scalar, 2, 1> focal_length = Eigen::Matrix<Scalar, 2, 1>(100, 200);
-  const Eigen::Matrix<Scalar, 2, 1> principal_point = Eigen::Matrix<Scalar, 2, 1>(300, 400);
-  const Scalar xi = 0.1;
-  const Scalar alpha = 0.2;
-  sym::DoubleSphereCameraCal<Scalar> cal(focal_length, principal_point, xi, alpha);
-  CHECK(cal.FocalLength() == focal_length);
-  CHECK(cal.PrincipalPoint() == principal_point);
-  CHECK(cal.Data()[4] == xi);
-  CHECK(cal.Data()[5] == alpha);
 }

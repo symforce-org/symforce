@@ -36,12 +36,18 @@ class CamTestMixin(_Base):
         Tests:
             pixel_from_camera_point
         """
+        if not self.element().has_camera_ray_from_pixel():
+            # TODO(aaron, dominic, brad): Back projection is not implemented for SphericalCameraCal or
+            # PolynomialCameraCal.
+            self.skipTest(f"camera_ray_from_pixel not implemented for {type(self.element())}.")
+
         # Check that we can project a point in 3D into the image and back
         for _ in range(10):
             cam_cal = self.element()
             point = geo.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
 
             pixel, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
+
             camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
             if abs(StorageOps.evalf(is_valid_forward_proj) - 1) < self.EPSILON:
@@ -55,6 +61,11 @@ class CamTestMixin(_Base):
         Tests:
             camera_ray_from_pixel
         """
+        if not self.element().has_camera_ray_from_pixel():
+            # TODO(aaron, dominic, brad): Back projection is not implemented for SphericalCameraCal or
+            # PolynomialCameraCal.
+            self.skipTest(f"camera_ray_from_pixel not implemented for {type(self.element())}.")
+
         # Check that we can project a point in the image into 3D and back
         for _ in range(10):
             cam_cal = self.element()
@@ -67,6 +78,7 @@ class CamTestMixin(_Base):
             )
 
             camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
+
             (pixel_reprojected, is_valid_forward_proj) = cam_cal.pixel_from_camera_point(camera_ray)
 
             if abs(StorageOps.evalf(is_valid_back_proj) - 1) < self.EPSILON:

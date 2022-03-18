@@ -163,6 +163,8 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     for func in make_camera_funcs(cls, config):
         data["specs"]["CameraOps"].append(func)
 
+    data["storage_order"] = cls.storage_order()
+
     data["doc"] = textwrap.dedent(cls.__doc__).strip() if cls.__doc__ else ""
 
     return data

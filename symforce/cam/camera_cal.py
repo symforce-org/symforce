@@ -7,6 +7,7 @@ from symforce import geo
 from symforce import ops
 from symforce.ops.interfaces import Storage
 from symforce import sympy as sm
+from symforce import type_helpers
 from symforce import typing as T
 
 
@@ -48,6 +49,14 @@ class CameraCal(Storage):
         instance.principal_point = geo.V2(principal_point)
         instance.distortion_coeffs = geo.M(distortion_coeffs)
         return instance
+
+    @classmethod
+    def storage_order(cls) -> T.Tuple[T.Tuple[str, int], ...]:
+        """
+        Return list of the names of values returned in the storage paired with
+        the dimension of each value.
+        """
+        return ("focal_length", 2), ("principal_point", 2)
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
@@ -131,6 +140,18 @@ class CameraCal(Storage):
             is_valid: 1 if the operation is within bounds else 0
         """
         raise NotImplementedError()
+
+    @classmethod
+    def has_camera_ray_from_pixel(cls) -> bool:
+        """
+        Returns True if cls has implemented the method camera_ray_from_pixel, and False
+        otherwise.
+        """
+        try:
+            type_helpers.symbolic_eval(cls.camera_ray_from_pixel)
+        except NotImplementedError:
+            return False
+        return True
 
 
 # Register ops
