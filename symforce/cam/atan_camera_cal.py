@@ -33,6 +33,14 @@ class ATANCameraCal(CameraCal):
     ) -> None:
         super().__init__(focal_length, principal_point, [omega])
 
+    @property
+    def omega(self) -> T.Scalar:
+        return self.distortion_coeffs[0]
+
+    @omega.setter
+    def omega(self, value: T.Scalar) -> None:
+        self.distortion_coeffs[0] = value
+
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> ATANCameraCal:
         with sm.scope(name):

@@ -7,6 +7,7 @@ import numpy as np
 
 from symforce import cam
 from symforce import geo
+from symforce import sympy as sm
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -24,6 +25,19 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
         omega = np.random.uniform(low=0.1, high=0.8)
         return cam.ATANCameraCal(focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega)
+
+    def test_omega_property(self) -> None:
+        """
+        Test that the omega property can be written to and read.
+        """
+        omega, omega_alt = sm.symbols("omega omega_alt")
+        cal = cam.ATANCameraCal(focal_length=[0, 0], principal_point=[0, 0], omega=omega)
+
+        self.assertEqual(omega, cal.omega)
+
+        cal.omega = omega_alt
+
+        self.assertEqual(omega_alt, cal.omega)
 
     def test_is_valid(self) -> None:
         """
