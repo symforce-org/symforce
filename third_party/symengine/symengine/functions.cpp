@@ -611,7 +611,7 @@ RCP<const Basic> floor(const RCP<const Basic> &arg)
     if (is_a<Add>(*arg)) {
         RCP<const Number> s = down_cast<const Add &>(*arg).get_coef();
         add_operands_map d = down_cast<const Add &>(*arg).get_dict();
-        if (is_a<Integer>(*s)) {
+        if (is_a<Integer>(*s) and not down_cast<const Integer &>(*s).is_zero()) {
             return add(
                 s, floor(Add::from_dict(zero, std::move(d))));
         }
@@ -707,7 +707,7 @@ RCP<const Basic> ceiling(const RCP<const Basic> &arg)
     if (is_a<Add>(*arg)) {
         RCP<const Number> s = down_cast<const Add &>(*arg).get_coef();
         add_operands_map d = down_cast<const Add &>(*arg).get_dict();
-        if (is_a<Integer>(*s)) {
+        if (is_a<Integer>(*s) and not down_cast<const Integer &>(*s).is_zero()) {
             return add(
                 s, ceiling(Add::from_dict(zero, std::move(d))));
         }
