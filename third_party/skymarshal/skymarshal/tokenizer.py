@@ -5,6 +5,8 @@
 from __future__ import absolute_import, print_function
 from functools import wraps
 from ply import lex
+import os
+import sys
 import typing as T
 
 # Sorry pylint, PLY expects certain names in the module.
@@ -187,8 +189,17 @@ def t_error(arg):
     print("error", arg)
 
 
+if sys.version_info.major < 3:
+    lextab_opt = "lextab_py2"
+else:
+    lextab_opt = "lextab_py3"
+
+
 # Create the lexer (this lowercase name is required by PLY)
-lexer = lex.lex()
+if os.environ.get("SKYMARSHAL_REGENERATE_LEXER"):
+    lexer = lex.lex(optimize=1)  # this will create lextab.py
+else:
+    lexer = lex.lex(lextab=lextab_opt)
 
 
 def generate_tokens(src):
