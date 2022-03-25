@@ -2,7 +2,7 @@ black[jupyter]==21.12b0
 clang-format
 cython
 graphviz
-Jinja2
+Jinja2~=3.0.3
 mypy==0.910
 numpy
 pybind11-stubgen
