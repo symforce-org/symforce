@@ -30,6 +30,7 @@ from .lib.symengine_wrapper import (
     golden_ratio as GoldenRatio,
     catalan as Catalan,
     eulergamma as EulerGamma,
+    DataBuffer,
     Mod,
     solve
 )

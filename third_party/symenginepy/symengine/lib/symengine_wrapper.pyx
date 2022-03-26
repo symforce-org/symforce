@@ -258,6 +258,8 @@ cdef object c2py(rcp_const_basic o):
         r = Boolean.__new__(Xor)
     elif (symengine.is_a_UnevaluatedExpr(deref(o))):
         r = Function.__new__(UnevaluatedExpr)
+    elif (symengine.is_a_DataBufferElement(deref(o))):
+        r = Expr.__new__(DataBufferElement)
     else:
         raise Exception("Unsupported SymEngine class.")
     r.thisptr = o
@@ -273,6 +275,7 @@ def sympy2symengine(a, raise_error=False):
     """
     import sympy
     from sympy.core.function import AppliedUndef as sympy_AppliedUndef
+    from sympy.matrices.expressions import matexpr
     if isinstance(a, sympy.Symbol):
         return Symbol(a.name)
     elif isinstance(a, sympy.Dummy):
@@ -486,6 +489,13 @@ def sympy2symengine(a, raise_error=False):
             raise NotImplementedError
     elif isinstance(a, sympy.polys.domains.modularinteger.ModularInteger):
         return PyNumber(a, sympy_module)
+    elif isinstance(a, sympy.MatrixSymbol):
+        return DataBuffer(a.name, a.shape[0], a.shape[1])
+    elif isinstance(a, matexpr.MatrixElement):
+        # args is (parent (MatrixElement), row_index, col_index)
+        assert a.args[0].cols == 1 or a.args[0].rows == 1, "sympy2symengine: can only conver 1-D MatrixElement"
+        inx = a.args[1] * a.args[0].cols + a.args[2]
+        return DataBufferElement(a.args[0].name, inx)
     elif sympy.__version__ > '1.0':
         if isinstance(a, sympy.acsch):
             return acsch(a.args[0])
@@ -1088,6 +1098,11 @@ cdef class Basic(object):
     @property
     def is_real(self):
         return is_real(self)
+
+
+    @property
+    def is_DataBufferElement(self):
+        return False
 
     def copy(self):
         return self
@@ -2261,6 +2276,65 @@ class Pow(Expr):
     @property
     def func(self):
         return self.__class__
+
+class DataBufferElement(Expr):
+    """
+    Represents an index into an external memory buffer.
+    """
+    def __new__(cls, name, i):
+        cdef Basic s_name = sympify(name)
+        cdef Basic s_i = sympify(i)
+        cdef RCP[const symengine.Symbol] s_name_sym = symengine.rcp_static_cast_Symbol(s_name.thisptr)
+        return c2py(symengine.data_buffer_element(s_name_sym, s_i.thisptr))
+
+    @property
+    def name(Basic self):
+        cdef RCP[const symengine.DataBufferElement] X = symengine.rcp_static_cast_DataBufferElement(self.thisptr)
+        return c2py(deref(X).get_name())
+
+    @property
+    def i(Basic self):
+        cdef RCP[const symengine.DataBufferElement] X = symengine.rcp_static_cast_DataBufferElement(self.thisptr)
+        return c2py(deref(X).get_i())
+
+    @property
+    def is_DataBufferElement(self):
+        return True
+
+    def _sympy_(Basic self):
+        cdef RCP[const symengine.DataBufferElement] X = symengine.rcp_static_cast_DataBufferElement(self.thisptr)
+        name = c2py(deref(X).get_name())
+        i = c2py(deref(X).get_i())
+        import sympy
+        # Immediately index into the MatrixSymbol so we're returning a Matrix Element
+        # This is a bit of a hack to get a MatrixElement w/ a MatrixSymbol parent.
+        # Since in printing we only care about size[1], the size symbol doesn't matter
+        return sympy.MatrixSymbol(name.name, sympy.Symbol('size'), 1)[sympy.S(i), 0]
+
+class DataBuffer(Symbol):
+    """
+    Represents an external one-dimensional data buffer that can be indexed.
+    """
+    def __init__(self, name, rows=None):
+        super(DataBuffer, self).__init__(name)
+        self.shape = (rows, 1)
+
+    def __getitem__(self, args):
+        arg_len = 0
+        if hasattr(args, '__len__'):
+            arg_len = len(args)
+
+        if arg_len == 0:
+            inx = args
+        elif arg_len == 1:
+            inx = args[0]
+        # since we only support 1-D buffer, only allow [i,0] indexing
+        elif arg_len == 2 and args[1] == 0:
+            inx = args[0]
+        else:
+            raise NotImplementedError('DataBuffer is one-dimensional!')
+        return DataBufferElement(self, inx)
+
 
 
 class Function(Expr):

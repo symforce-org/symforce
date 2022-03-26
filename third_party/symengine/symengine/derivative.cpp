@@ -800,6 +800,11 @@ void DiffVisitor::bvisit(const Piecewise &self)
     result_ = piecewise(std::move(v));
 }
 
+void DiffVisitor::bvisit(const DataBufferElement &self)
+{
+    result_ = zero;
+}
+
 const RCP<const Basic> &DiffVisitor::apply(const Basic &b)
 {
     apply(b.rcp_from_this());

@@ -268,6 +268,23 @@ public:
         result_ = subs(expr, new_subs_dict);
     }
 
+    void bvisit(const DataBufferElement &x)
+    {
+        RCP<const Basic> name = apply(x.get_name());
+        RCP<const Basic> i = apply(x.get_i());
+
+        if (not is_a<Symbol>(*name)) {
+            throw std::runtime_error("Can't substitute DataBufferElement symbol with non-symbol.");
+        }
+
+        RCP<const Symbol> name_sym = rcp_static_cast<const Symbol>(name);
+        if (name_sym == x.get_name() and i == x.get_i()) {
+            result_ = x.rcp_from_this();
+        } else {
+            result_ = data_buffer_element(name_sym, i);
+        }
+    }
+
     RCP<const Basic> apply(const Basic &x)
     {
         return apply(x.rcp_from_this());

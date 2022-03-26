@@ -31,6 +31,7 @@ set(SRC
     constants.cpp
     cse.cpp
     cwrapper.cpp
+    data_buffer_element.cpp
     dense_matrix.cpp
     derivative.cpp
     dict.cpp
@@ -126,6 +127,7 @@ set(HEADERS
     complex_mpc.h
     constants.h
     cwrapper.h
+    data_buffer_element.h
     derivative.h
     dict.h
     diophantine.h

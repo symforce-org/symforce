@@ -233,6 +233,7 @@ cdef extern from "<symengine/basic.h>" namespace "SymEngine":
     RCP[const PyFunction] rcp_static_cast_PyFunction "SymEngine::rcp_static_cast<const SymEngine::PyFunction>"(rcp_const_basic &b) nogil
     RCP[const Boolean] rcp_static_cast_Boolean "SymEngine::rcp_static_cast<const SymEngine::Boolean>"(rcp_const_basic &b) nogil
     RCP[const Set] rcp_static_cast_Set "SymEngine::rcp_static_cast<const SymEngine::Set>"(rcp_const_basic &b) nogil
+    RCP[const DataBufferElement] rcp_static_cast_DataBufferElement "SymEngine::rcp_static_cast<const SymEngine::DataBufferElement>"(rcp_const_basic &b) nogil
     Ptr[RCP[Basic]] outArg(rcp_const_basic &arg) nogil
     Ptr[RCP[Integer]] outArg_Integer "SymEngine::outArg<SymEngine::RCP<const SymEngine::Integer>>"(RCP[const Integer] &arg) nogil
 
@@ -325,6 +326,7 @@ cdef extern from "<symengine/basic.h>" namespace "SymEngine":
     bool is_a_Not "SymEngine::is_a<SymEngine::Not>"(const Basic &b) nogil
     bool is_a_Or "SymEngine::is_a<SymEngine::Or>"(const Basic &b) nogil
     bool is_a_Xor "SymEngine::is_a<SymEngine::Xor>"(const Basic &b) nogil
+    bool is_a_DataBufferElement "SymEngine::is_a<SymEngine::DataBufferElement>"(const Basic &b) nogil
     rcp_const_basic expand(rcp_const_basic &o, bool deep) nogil except +
     void as_numer_denom(rcp_const_basic &x, const Ptr[RCP[Basic]] &numer, const Ptr[RCP[Basic]] &denom) nogil
     void as_real_imag(rcp_const_basic &x, const Ptr[RCP[Basic]] &real, const Ptr[RCP[Basic]] &imag) nogil
@@ -925,6 +927,13 @@ cdef extern from "<symengine/ntheory.h>" namespace "SymEngine":
         sieve_iterator()
         sieve_iterator(unsigned limit) nogil
         unsigned next_prime() nogil
+
+cdef extern from "<symengine/data_buffer_element.h>" namespace "SymEngine":
+    cdef rcp_const_basic data_buffer_element(RCP[const Symbol] &name, rcp_const_basic &i) nogil except+
+
+    cdef cppclass DataBufferElement(Basic):
+        rcp_const_basic get_name() nogil
+        rcp_const_basic get_i() nogil
 
 cdef extern from "<symengine/visitor.h>" namespace "SymEngine":
     bool has_symbol(const Basic &b, const Symbol &x) nogil except +

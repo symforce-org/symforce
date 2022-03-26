@@ -24,6 +24,7 @@
 #include <symengine/nan.h>
 #include <symengine/matrix.h>
 #include <symengine/symengine_casts.h>
+#include <symengine/data_buffer_element.h>
 
 namespace SymEngine
 {

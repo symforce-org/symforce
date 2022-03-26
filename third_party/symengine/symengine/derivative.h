@@ -117,6 +117,7 @@ public:
     void bvisit(const Min &self);
     void bvisit(const GaloisField &self);
     void bvisit(const Piecewise &self);
+    void bvisit(const DataBufferElement &self);
     const RCP<const Basic> &apply(const Basic &b);
     const RCP<const Basic> &apply(const RCP<const Basic> &b);
 };

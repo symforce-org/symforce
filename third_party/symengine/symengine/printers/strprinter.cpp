@@ -704,6 +704,13 @@ void StrPrinter::bvisit(const GaloisField &x)
     str_ = s.str();
 }
 
+void StrPrinter::bvisit(const DataBufferElement &x)
+{
+    std::ostringstream s;
+    s << x.get_name()->__str__() << "[" << apply(*x.get_i()) << "]";
+    str_ = s.str();
+}
+
 // Printing of Integer and Rational Polynomials, tests taken
 // from SymPy and printing ensures that there is compatibility
 template <typename P>
