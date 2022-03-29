@@ -1,3 +1,6 @@
+# Required by black, but not specified by our version of black
+click~=8.0.4
+
 black[jupyter]==21.12b0
 clang-format
 cython
