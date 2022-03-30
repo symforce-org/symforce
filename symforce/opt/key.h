@@ -39,6 +39,8 @@ class Key {
 
   Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
 
+  Key() {}
+
   char Letter() const {
     return letter_;
   }
