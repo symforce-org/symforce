@@ -210,6 +210,12 @@ std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factor
   return keys;
 }
 
+// If no comparator is specified, use sym::Key::LexicalLessThan.
+template <typename Scalar>
+std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factors) {
+  return ComputeKeysToOptimize(factors, &sym::Key::LexicalLessThan);
+}
+
 }  // namespace sym
 
 #include "./linearizer.tcc"

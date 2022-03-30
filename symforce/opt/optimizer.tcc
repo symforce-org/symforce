@@ -24,7 +24,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
-      keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : keys),
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
@@ -41,7 +41,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
                         std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
-      keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan) : keys),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : keys),
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
@@ -57,8 +57,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
-      keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)
-                         : std::move(keys)),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
@@ -74,8 +73,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
                         std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
-      keys_(keys.empty() ? ComputeKeysToOptimize(factors_, &Key::LexicalLessThan)
-                         : std::move(keys)),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
       linearizer_(factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}

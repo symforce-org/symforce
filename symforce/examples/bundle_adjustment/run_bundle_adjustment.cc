@@ -114,7 +114,7 @@ std::vector<sym::Key> ComputeKeysToOptimizeWithoutView0(const std::vector<sym::F
   // ComputeKeysToOptimize will return all of the keys touched by all of the factors we've
   // created (specifically the optimized keys for those factors, i.e. the keys for which the factors
   // have derivatives, as opposed to other factor parameters like weights or epsilon)
-  for (const auto& key : ComputeKeysToOptimize(factors, sym::Key::LexicalLessThan)) {
+  for (const auto& key : ComputeKeysToOptimize(factors)) {
     // Don't optimize view 0
     if (key == sym::Key(Var::VIEW, 0)) {
       continue;

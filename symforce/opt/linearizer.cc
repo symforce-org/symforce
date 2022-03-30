@@ -19,7 +19,7 @@ Linearizer<ScalarType>::Linearizer(const std::vector<Factor<Scalar>>& factors,
                                    const std::vector<Key>& key_order)
     : factors_(&factors), dense_linearized_factors_(), sparse_linearized_factors_() {
   if (key_order.empty()) {
-    keys_ = ComputeKeysToOptimize(factors, &Key::LexicalLessThan);
+    keys_ = ComputeKeysToOptimize(factors);
   } else {
     keys_ = key_order;
   }
