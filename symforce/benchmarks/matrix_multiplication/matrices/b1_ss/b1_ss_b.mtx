@@ -1,0 +1,14 @@
+%%MatrixMarket matrix array real general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/Grund/b1_ss
+% name: Grund/b1_ss : b matrix
+%-------------------------------------------------------------------------------
+7 1
+-.0001
+.1167
+-.2333
+.1167
+-.4993128
+.3435885
+.7467878

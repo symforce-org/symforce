@@ -441,84 +441,26 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 12, 12>& _hessian = (*hessian);
 
+    _hessian.setZero();
+
     _hessian(0, 0) =
         std::pow(_tmp133, Scalar(2)) + std::pow(_tmp181, Scalar(2)) + std::pow(_tmp197, Scalar(2));
-    _hessian(0, 1) = 0;
-    _hessian(0, 2) = 0;
-    _hessian(0, 3) = 0;
-    _hessian(0, 4) = 0;
-    _hessian(0, 5) = 0;
-    _hessian(0, 6) = 0;
-    _hessian(0, 7) = 0;
-    _hessian(0, 8) = 0;
-    _hessian(0, 9) = 0;
-    _hessian(0, 10) = 0;
-    _hessian(0, 11) = 0;
     _hessian(1, 0) = _tmp133 * _tmp148 + _tmp181 * _tmp185 + _tmp197 * _tmp199;
     _hessian(1, 1) =
         std::pow(_tmp148, Scalar(2)) + std::pow(_tmp185, Scalar(2)) + std::pow(_tmp199, Scalar(2));
-    _hessian(1, 2) = 0;
-    _hessian(1, 3) = 0;
-    _hessian(1, 4) = 0;
-    _hessian(1, 5) = 0;
-    _hessian(1, 6) = 0;
-    _hessian(1, 7) = 0;
-    _hessian(1, 8) = 0;
-    _hessian(1, 9) = 0;
-    _hessian(1, 10) = 0;
-    _hessian(1, 11) = 0;
     _hessian(2, 0) = _tmp133 * _tmp158 + _tmp181 * _tmp189 + _tmp197 * _tmp201;
     _hessian(2, 1) = _tmp148 * _tmp158 + _tmp185 * _tmp189 + _tmp199 * _tmp201;
     _hessian(2, 2) =
         std::pow(_tmp158, Scalar(2)) + std::pow(_tmp189, Scalar(2)) + std::pow(_tmp201, Scalar(2));
-    _hessian(2, 3) = 0;
-    _hessian(2, 4) = 0;
-    _hessian(2, 5) = 0;
-    _hessian(2, 6) = 0;
-    _hessian(2, 7) = 0;
-    _hessian(2, 8) = 0;
-    _hessian(2, 9) = 0;
-    _hessian(2, 10) = 0;
-    _hessian(2, 11) = 0;
-    _hessian(3, 0) = 0;
-    _hessian(3, 1) = 0;
-    _hessian(3, 2) = 0;
     _hessian(3, 3) = _tmp239 * std::pow(_tmp83, Scalar(2)) + _tmp240 * std::pow(_tmp73, Scalar(2)) +
                      _tmp241 * std::pow(_tmp48, Scalar(2));
-    _hessian(3, 4) = 0;
-    _hessian(3, 5) = 0;
-    _hessian(3, 6) = 0;
-    _hessian(3, 7) = 0;
-    _hessian(3, 8) = 0;
-    _hessian(3, 9) = 0;
-    _hessian(3, 10) = 0;
-    _hessian(3, 11) = 0;
-    _hessian(4, 0) = 0;
-    _hessian(4, 1) = 0;
-    _hessian(4, 2) = 0;
     _hessian(4, 3) = _tmp242 * _tmp83 + _tmp243 * _tmp48 + _tmp244 * _tmp73;
     _hessian(4, 4) = _tmp239 * std::pow(_tmp81, Scalar(2)) + _tmp240 * std::pow(_tmp67, Scalar(2)) +
                      _tmp241 * std::pow(_tmp52, Scalar(2));
-    _hessian(4, 5) = 0;
-    _hessian(4, 6) = 0;
-    _hessian(4, 7) = 0;
-    _hessian(4, 8) = 0;
-    _hessian(4, 9) = 0;
-    _hessian(4, 10) = 0;
-    _hessian(4, 11) = 0;
-    _hessian(5, 0) = 0;
-    _hessian(5, 1) = 0;
-    _hessian(5, 2) = 0;
     _hessian(5, 3) = _tmp240 * _tmp70 * _tmp73 + _tmp245 * _tmp83 + _tmp246 * _tmp48;
     _hessian(5, 4) = _tmp242 * _tmp79 + _tmp243 * _tmp58 + _tmp244 * _tmp70;
     _hessian(5, 5) = _tmp239 * std::pow(_tmp79, Scalar(2)) + _tmp240 * std::pow(_tmp70, Scalar(2)) +
                      _tmp241 * std::pow(_tmp58, Scalar(2));
-    _hessian(5, 6) = 0;
-    _hessian(5, 7) = 0;
-    _hessian(5, 8) = 0;
-    _hessian(5, 9) = 0;
-    _hessian(5, 10) = 0;
-    _hessian(5, 11) = 0;
     _hessian(6, 0) = _tmp133 * _tmp166 + _tmp181 * _tmp190 + _tmp197 * _tmp202;
     _hessian(6, 1) = _tmp148 * _tmp166 + _tmp185 * _tmp190 + _tmp199 * _tmp202;
     _hessian(6, 2) = _tmp158 * _tmp166 + _tmp189 * _tmp190 + _tmp201 * _tmp202;
@@ -528,11 +470,6 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(6, 6) = std::pow(_tmp166, Scalar(2)) + std::pow(_tmp190, Scalar(2)) +
                      std::pow(_tmp202, Scalar(2)) + std::pow(_tmp225, Scalar(2)) * _tmp240 +
                      std::pow(_tmp235, Scalar(2)) * _tmp239;
-    _hessian(6, 7) = 0;
-    _hessian(6, 8) = 0;
-    _hessian(6, 9) = 0;
-    _hessian(6, 10) = 0;
-    _hessian(6, 11) = 0;
     _hessian(7, 0) = _tmp133 * _tmp171 + _tmp181 * _tmp192 + _tmp197 * _tmp203;
     _hessian(7, 1) = _tmp148 * _tmp171 + _tmp185 * _tmp192 + _tmp199 * _tmp203;
     _hessian(7, 2) = _tmp158 * _tmp171 + _tmp189 * _tmp192 + _tmp201 * _tmp203;
@@ -543,10 +480,6 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(7, 7) = std::pow(_tmp171, Scalar(2)) + std::pow(_tmp192, Scalar(2)) +
                      std::pow(_tmp203, Scalar(2)) + std::pow(_tmp213, Scalar(2)) * _tmp241 +
                      std::pow(_tmp237, Scalar(2)) * _tmp239;
-    _hessian(7, 8) = 0;
-    _hessian(7, 9) = 0;
-    _hessian(7, 10) = 0;
-    _hessian(7, 11) = 0;
     _hessian(8, 0) = _tmp133 * _tmp176 + _tmp181 * _tmp193 + _tmp197 * _tmp204;
     _hessian(8, 1) = _tmp148 * _tmp176 + _tmp185 * _tmp193 + _tmp199 * _tmp204;
     _hessian(8, 2) = _tmp158 * _tmp176 + _tmp189 * _tmp193 + _tmp201 * _tmp204;
@@ -558,12 +491,6 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(8, 8) = std::pow(_tmp176, Scalar(2)) + std::pow(_tmp193, Scalar(2)) +
                      std::pow(_tmp204, Scalar(2)) + std::pow(_tmp218, Scalar(2)) * _tmp241 +
                      std::pow(_tmp228, Scalar(2)) * _tmp240;
-    _hessian(8, 9) = 0;
-    _hessian(8, 10) = 0;
-    _hessian(8, 11) = 0;
-    _hessian(9, 0) = 0;
-    _hessian(9, 1) = 0;
-    _hessian(9, 2) = 0;
     _hessian(9, 3) = _tmp212 * _tmp239 * _tmp83 + _tmp253 * _tmp73 + _tmp254 * _tmp48;
     _hessian(9, 4) = _tmp212 * _tmp242 + _tmp229 * _tmp244 + _tmp254 * _tmp52;
     _hessian(9, 5) = _tmp212 * _tmp245 + _tmp253 * _tmp70 + _tmp254 * _tmp58;
@@ -573,11 +500,6 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(9, 9) = std::pow(_tmp212, Scalar(2)) * _tmp239 +
                      std::pow(_tmp219, Scalar(2)) * _tmp241 +
                      std::pow(_tmp229, Scalar(2)) * _tmp240;
-    _hessian(9, 10) = 0;
-    _hessian(9, 11) = 0;
-    _hessian(10, 0) = 0;
-    _hessian(10, 1) = 0;
-    _hessian(10, 2) = 0;
     _hessian(10, 3) = _tmp255 * _tmp83 + _tmp256 * _tmp48 + _tmp257 * _tmp73;
     _hessian(10, 4) = _tmp255 * _tmp81 + _tmp256 * _tmp52 + _tmp257 * _tmp67;
     _hessian(10, 5) = _tmp255 * _tmp79 + _tmp256 * _tmp58 + _tmp257 * _tmp70;
@@ -588,10 +510,6 @@ void CustomBetweenFactor(const sym::Pose3<Scalar>& nav_T_src,
     _hessian(10, 10) = std::pow(_tmp210, Scalar(2)) * _tmp239 +
                        std::pow(_tmp221, Scalar(2)) * _tmp241 +
                        std::pow(_tmp231, Scalar(2)) * _tmp240;
-    _hessian(10, 11) = 0;
-    _hessian(11, 0) = 0;
-    _hessian(11, 1) = 0;
-    _hessian(11, 2) = 0;
     _hessian(11, 3) = _tmp222 * _tmp241 * _tmp48 + _tmp258 * _tmp83 + _tmp259 * _tmp73;
     _hessian(11, 4) = _tmp222 * _tmp243 + _tmp238 * _tmp242 + _tmp259 * _tmp67;
     _hessian(11, 5) = _tmp222 * _tmp246 + _tmp258 * _tmp79 + _tmp259 * _tmp70;

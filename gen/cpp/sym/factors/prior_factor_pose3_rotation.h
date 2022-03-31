@@ -213,45 +213,17 @@ void PriorFactorPose3Rotation(const sym::Pose3<Scalar>& value, const sym::Rot3<S
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
+    _hessian.setZero();
+
     _hessian(0, 0) =
         std::pow(_tmp103, Scalar(2)) + std::pow(_tmp76, Scalar(2)) + std::pow(_tmp97, Scalar(2));
-    _hessian(0, 1) = 0;
-    _hessian(0, 2) = 0;
-    _hessian(0, 3) = 0;
-    _hessian(0, 4) = 0;
-    _hessian(0, 5) = 0;
     _hessian(1, 0) = _tmp103 * _tmp104 + _tmp76 * _tmp85 + _tmp97 * _tmp98;
     _hessian(1, 1) =
         std::pow(_tmp104, Scalar(2)) + std::pow(_tmp85, Scalar(2)) + std::pow(_tmp98, Scalar(2));
-    _hessian(1, 2) = 0;
-    _hessian(1, 3) = 0;
-    _hessian(1, 4) = 0;
-    _hessian(1, 5) = 0;
     _hessian(2, 0) = _tmp103 * _tmp105 + _tmp76 * _tmp92 + _tmp97 * _tmp99;
     _hessian(2, 1) = _tmp104 * _tmp105 + _tmp85 * _tmp92 + _tmp98 * _tmp99;
     _hessian(2, 2) =
         std::pow(_tmp105, Scalar(2)) + std::pow(_tmp92, Scalar(2)) + std::pow(_tmp99, Scalar(2));
-    _hessian(2, 3) = 0;
-    _hessian(2, 4) = 0;
-    _hessian(2, 5) = 0;
-    _hessian(3, 0) = 0;
-    _hessian(3, 1) = 0;
-    _hessian(3, 2) = 0;
-    _hessian(3, 3) = 0;
-    _hessian(3, 4) = 0;
-    _hessian(3, 5) = 0;
-    _hessian(4, 0) = 0;
-    _hessian(4, 1) = 0;
-    _hessian(4, 2) = 0;
-    _hessian(4, 3) = 0;
-    _hessian(4, 4) = 0;
-    _hessian(4, 5) = 0;
-    _hessian(5, 0) = 0;
-    _hessian(5, 1) = 0;
-    _hessian(5, 2) = 0;
-    _hessian(5, 3) = 0;
-    _hessian(5, 4) = 0;
-    _hessian(5, 5) = 0;
   }
 
   if (rhs != nullptr) {

@@ -171,41 +171,13 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Inve
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
 
+    _res_D_a.setZero();
+
     _res_D_a(0, 0) = -1;
-    _res_D_a(0, 1) = 0;
-    _res_D_a(0, 2) = 0;
-    _res_D_a(0, 3) = 0;
-    _res_D_a(0, 4) = 0;
-    _res_D_a(0, 5) = 0;
-    _res_D_a(1, 0) = 0;
     _res_D_a(1, 1) = -1;
-    _res_D_a(1, 2) = 0;
-    _res_D_a(1, 3) = 0;
-    _res_D_a(1, 4) = 0;
-    _res_D_a(1, 5) = 0;
-    _res_D_a(2, 0) = 0;
-    _res_D_a(2, 1) = 0;
     _res_D_a(2, 2) = -1;
-    _res_D_a(2, 3) = 0;
-    _res_D_a(2, 4) = 0;
-    _res_D_a(2, 5) = 0;
-    _res_D_a(3, 0) = 0;
-    _res_D_a(3, 1) = 0;
-    _res_D_a(3, 2) = 0;
     _res_D_a(3, 3) = -1;
-    _res_D_a(3, 4) = 0;
-    _res_D_a(3, 5) = 0;
-    _res_D_a(4, 0) = 0;
-    _res_D_a(4, 1) = 0;
-    _res_D_a(4, 2) = 0;
-    _res_D_a(4, 3) = 0;
     _res_D_a(4, 4) = -1;
-    _res_D_a(4, 5) = 0;
-    _res_D_a(5, 0) = 0;
-    _res_D_a(5, 1) = 0;
-    _res_D_a(5, 2) = 0;
-    _res_D_a(5, 3) = 0;
-    _res_D_a(5, 4) = 0;
     _res_D_a(5, 5) = -1;
   }
 
@@ -246,82 +218,26 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Comp
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
 
+    _res_D_a.setZero();
+
     _res_D_a(0, 0) = 1;
-    _res_D_a(0, 1) = 0;
-    _res_D_a(0, 2) = 0;
-    _res_D_a(0, 3) = 0;
-    _res_D_a(0, 4) = 0;
-    _res_D_a(0, 5) = 0;
-    _res_D_a(1, 0) = 0;
     _res_D_a(1, 1) = 1;
-    _res_D_a(1, 2) = 0;
-    _res_D_a(1, 3) = 0;
-    _res_D_a(1, 4) = 0;
-    _res_D_a(1, 5) = 0;
-    _res_D_a(2, 0) = 0;
-    _res_D_a(2, 1) = 0;
     _res_D_a(2, 2) = 1;
-    _res_D_a(2, 3) = 0;
-    _res_D_a(2, 4) = 0;
-    _res_D_a(2, 5) = 0;
-    _res_D_a(3, 0) = 0;
-    _res_D_a(3, 1) = 0;
-    _res_D_a(3, 2) = 0;
     _res_D_a(3, 3) = 1;
-    _res_D_a(3, 4) = 0;
-    _res_D_a(3, 5) = 0;
-    _res_D_a(4, 0) = 0;
-    _res_D_a(4, 1) = 0;
-    _res_D_a(4, 2) = 0;
-    _res_D_a(4, 3) = 0;
     _res_D_a(4, 4) = 1;
-    _res_D_a(4, 5) = 0;
-    _res_D_a(5, 0) = 0;
-    _res_D_a(5, 1) = 0;
-    _res_D_a(5, 2) = 0;
-    _res_D_a(5, 3) = 0;
-    _res_D_a(5, 4) = 0;
     _res_D_a(5, 5) = 1;
   }
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
 
+    _res_D_b.setZero();
+
     _res_D_b(0, 0) = 1;
-    _res_D_b(0, 1) = 0;
-    _res_D_b(0, 2) = 0;
-    _res_D_b(0, 3) = 0;
-    _res_D_b(0, 4) = 0;
-    _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = 0;
     _res_D_b(1, 1) = 1;
-    _res_D_b(1, 2) = 0;
-    _res_D_b(1, 3) = 0;
-    _res_D_b(1, 4) = 0;
-    _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = 0;
-    _res_D_b(2, 1) = 0;
     _res_D_b(2, 2) = 1;
-    _res_D_b(2, 3) = 0;
-    _res_D_b(2, 4) = 0;
-    _res_D_b(2, 5) = 0;
-    _res_D_b(3, 0) = 0;
-    _res_D_b(3, 1) = 0;
-    _res_D_b(3, 2) = 0;
     _res_D_b(3, 3) = 1;
-    _res_D_b(3, 4) = 0;
-    _res_D_b(3, 5) = 0;
-    _res_D_b(4, 0) = 0;
-    _res_D_b(4, 1) = 0;
-    _res_D_b(4, 2) = 0;
-    _res_D_b(4, 3) = 0;
     _res_D_b(4, 4) = 1;
-    _res_D_b(4, 5) = 0;
-    _res_D_b(5, 0) = 0;
-    _res_D_b(5, 1) = 0;
-    _res_D_b(5, 2) = 0;
-    _res_D_b(5, 3) = 0;
-    _res_D_b(5, 4) = 0;
     _res_D_b(5, 5) = 1;
   }
 
@@ -364,82 +280,26 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Betw
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_a = (*res_D_a);
 
+    _res_D_a.setZero();
+
     _res_D_a(0, 0) = -1;
-    _res_D_a(0, 1) = 0;
-    _res_D_a(0, 2) = 0;
-    _res_D_a(0, 3) = 0;
-    _res_D_a(0, 4) = 0;
-    _res_D_a(0, 5) = 0;
-    _res_D_a(1, 0) = 0;
     _res_D_a(1, 1) = -1;
-    _res_D_a(1, 2) = 0;
-    _res_D_a(1, 3) = 0;
-    _res_D_a(1, 4) = 0;
-    _res_D_a(1, 5) = 0;
-    _res_D_a(2, 0) = 0;
-    _res_D_a(2, 1) = 0;
     _res_D_a(2, 2) = -1;
-    _res_D_a(2, 3) = 0;
-    _res_D_a(2, 4) = 0;
-    _res_D_a(2, 5) = 0;
-    _res_D_a(3, 0) = 0;
-    _res_D_a(3, 1) = 0;
-    _res_D_a(3, 2) = 0;
     _res_D_a(3, 3) = -1;
-    _res_D_a(3, 4) = 0;
-    _res_D_a(3, 5) = 0;
-    _res_D_a(4, 0) = 0;
-    _res_D_a(4, 1) = 0;
-    _res_D_a(4, 2) = 0;
-    _res_D_a(4, 3) = 0;
     _res_D_a(4, 4) = -1;
-    _res_D_a(4, 5) = 0;
-    _res_D_a(5, 0) = 0;
-    _res_D_a(5, 1) = 0;
-    _res_D_a(5, 2) = 0;
-    _res_D_a(5, 3) = 0;
-    _res_D_a(5, 4) = 0;
     _res_D_a(5, 5) = -1;
   }
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
 
+    _res_D_b.setZero();
+
     _res_D_b(0, 0) = 1;
-    _res_D_b(0, 1) = 0;
-    _res_D_b(0, 2) = 0;
-    _res_D_b(0, 3) = 0;
-    _res_D_b(0, 4) = 0;
-    _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = 0;
     _res_D_b(1, 1) = 1;
-    _res_D_b(1, 2) = 0;
-    _res_D_b(1, 3) = 0;
-    _res_D_b(1, 4) = 0;
-    _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = 0;
-    _res_D_b(2, 1) = 0;
     _res_D_b(2, 2) = 1;
-    _res_D_b(2, 3) = 0;
-    _res_D_b(2, 4) = 0;
-    _res_D_b(2, 5) = 0;
-    _res_D_b(3, 0) = 0;
-    _res_D_b(3, 1) = 0;
-    _res_D_b(3, 2) = 0;
     _res_D_b(3, 3) = 1;
-    _res_D_b(3, 4) = 0;
-    _res_D_b(3, 5) = 0;
-    _res_D_b(4, 0) = 0;
-    _res_D_b(4, 1) = 0;
-    _res_D_b(4, 2) = 0;
-    _res_D_b(4, 3) = 0;
     _res_D_b(4, 4) = 1;
-    _res_D_b(4, 5) = 0;
-    _res_D_b(5, 0) = 0;
-    _res_D_b(5, 1) = 0;
-    _res_D_b(5, 2) = 0;
-    _res_D_b(5, 3) = 0;
-    _res_D_b(5, 4) = 0;
     _res_D_b(5, 5) = 1;
   }
 

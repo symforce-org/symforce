@@ -57,3 +57,7 @@ def symenginepy_install_dir() -> Path:
 
 def cc_sym_install_dir() -> Path:
     return _Manifest.get_entry("cc_sym_install_dir")
+
+
+def binary_output_dir() -> Path:
+    return _Manifest.get_entry("binary_output_dir")

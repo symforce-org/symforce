@@ -150,43 +150,19 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
   if (a_out_D_c != nullptr) {
     Eigen::Matrix<Scalar, 3, 5>& _a_out_D_c = (*a_out_D_c);
 
-    _a_out_D_c(0, 0) = 0;
-    _a_out_D_c(0, 1) = 0;
-    _a_out_D_c(0, 2) = 0;
-    _a_out_D_c(0, 3) = 0;
-    _a_out_D_c(0, 4) = 0;
-    _a_out_D_c(1, 0) = 0;
-    _a_out_D_c(1, 1) = 0;
-    _a_out_D_c(1, 2) = 0;
-    _a_out_D_c(1, 3) = 0;
-    _a_out_D_c(1, 4) = 0;
-    _a_out_D_c(2, 0) = 0;
-    _a_out_D_c(2, 1) = 0;
-    _a_out_D_c(2, 2) = 0;
-    _a_out_D_c(2, 3) = 0;
-    _a_out_D_c(2, 4) = 0;
+    _a_out_D_c.setZero();
   }
 
   if (a_out_D_d != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _a_out_D_d = (*a_out_D_d);
 
-    _a_out_D_d(0, 0) = 0;
-    _a_out_D_d(0, 1) = 0;
-    _a_out_D_d(0, 2) = 0;
-    _a_out_D_d(1, 0) = 0;
-    _a_out_D_d(1, 1) = 0;
-    _a_out_D_d(1, 2) = 0;
-    _a_out_D_d(2, 0) = 0;
-    _a_out_D_d(2, 1) = 0;
-    _a_out_D_d(2, 2) = 0;
+    _a_out_D_d.setZero();
   }
 
   if (b_out_D_a != nullptr) {
     Eigen::Matrix<Scalar, 1, 3>& _b_out_D_a = (*b_out_D_a);
 
-    _b_out_D_a(0, 0) = 0;
-    _b_out_D_a(0, 1) = 0;
-    _b_out_D_a(0, 2) = 0;
+    _b_out_D_a.setZero();
   }
 
   if (b_out_D_b != nullptr) {
@@ -208,42 +184,25 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
   if (b_out_D_d != nullptr) {
     Eigen::Matrix<Scalar, 1, 3>& _b_out_D_d = (*b_out_D_d);
 
-    _b_out_D_d(0, 0) = 0;
-    _b_out_D_d(0, 1) = 0;
-    _b_out_D_d(0, 2) = 0;
+    _b_out_D_d.setZero();
   }
 
   if (c_out_D_a != nullptr) {
     Eigen::Matrix<Scalar, 2, 3>& _c_out_D_a = (*c_out_D_a);
 
-    _c_out_D_a(0, 0) = 0;
-    _c_out_D_a(0, 1) = 0;
-    _c_out_D_a(0, 2) = 0;
-    _c_out_D_a(1, 0) = 0;
-    _c_out_D_a(1, 1) = 0;
-    _c_out_D_a(1, 2) = 0;
+    _c_out_D_a.setZero();
   }
 
   if (c_out_D_b != nullptr) {
     Eigen::Matrix<Scalar, 2, 1>& _c_out_D_b = (*c_out_D_b);
 
-    _c_out_D_b(0, 0) = 0;
-    _c_out_D_b(1, 0) = 0;
+    _c_out_D_b.setZero();
   }
 
   if (c_out_D_c != nullptr) {
     Eigen::Matrix<Scalar, 2, 5>& _c_out_D_c = (*c_out_D_c);
 
-    _c_out_D_c(0, 0) = 0;
-    _c_out_D_c(0, 1) = 0;
-    _c_out_D_c(0, 2) = 0;
-    _c_out_D_c(0, 3) = 0;
-    _c_out_D_c(0, 4) = 0;
-    _c_out_D_c(1, 0) = 0;
-    _c_out_D_c(1, 1) = 0;
-    _c_out_D_c(1, 2) = 0;
-    _c_out_D_c(1, 3) = 0;
-    _c_out_D_c(1, 4) = 0;
+    _c_out_D_c.setZero();
   }
 
   if (c_out_D_d != nullptr) {
@@ -278,27 +237,13 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
   if (d_out_D_c != nullptr) {
     Eigen::Matrix<Scalar, 2, 5>& _d_out_D_c = (*d_out_D_c);
 
-    _d_out_D_c(0, 0) = 0;
-    _d_out_D_c(0, 1) = 0;
-    _d_out_D_c(0, 2) = 0;
-    _d_out_D_c(0, 3) = 0;
-    _d_out_D_c(0, 4) = 0;
-    _d_out_D_c(1, 0) = 0;
-    _d_out_D_c(1, 1) = 0;
-    _d_out_D_c(1, 2) = 0;
-    _d_out_D_c(1, 3) = 0;
-    _d_out_D_c(1, 4) = 0;
+    _d_out_D_c.setZero();
   }
 
   if (d_out_D_d != nullptr) {
     Eigen::Matrix<Scalar, 2, 3>& _d_out_D_d = (*d_out_D_d);
 
-    _d_out_D_d(0, 0) = 0;
-    _d_out_D_d(0, 1) = 0;
-    _d_out_D_d(0, 2) = 0;
-    _d_out_D_d(1, 0) = 0;
-    _d_out_D_d(1, 1) = 0;
-    _d_out_D_d(1, 2) = 0;
+    _d_out_D_d.setZero();
   }
 }  // NOLINT(readability/fn_size)
 

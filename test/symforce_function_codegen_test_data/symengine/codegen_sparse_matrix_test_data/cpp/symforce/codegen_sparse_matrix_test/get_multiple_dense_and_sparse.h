@@ -40,35 +40,17 @@ Eigen::Matrix<Scalar, 3, 3> GetMultipleDenseAndSparse(
   if (dense != nullptr) {
     Eigen::Matrix<Scalar, 4, 4>& _dense = (*dense);
 
+    _dense.setZero();
+
     _dense(0, 0) = 3;
-    _dense(0, 1) = 0;
-    _dense(0, 2) = 0;
-    _dense(0, 3) = 0;
-    _dense(1, 0) = 0;
     _dense(1, 1) = 3;
-    _dense(1, 2) = 0;
-    _dense(1, 3) = 0;
-    _dense(2, 0) = 0;
-    _dense(2, 1) = 0;
     _dense(2, 2) = 3;
-    _dense(2, 3) = 0;
-    _dense(3, 0) = 0;
-    _dense(3, 1) = 0;
-    _dense(3, 2) = 0;
     _dense(3, 3) = 3;
   }
 
   Eigen::Matrix<Scalar, 3, 3> _result;
 
-  _result(0, 0) = 0;
-  _result(0, 1) = 0;
-  _result(0, 2) = 0;
-  _result(1, 0) = 0;
-  _result(1, 1) = 0;
-  _result(1, 2) = 0;
-  _result(2, 0) = 0;
-  _result(2, 1) = 0;
-  _result(2, 2) = 0;
+  _result.setZero();
 
   if (sparse_first != nullptr) {
     static constexpr int kRows_sparse_first = 100;

@@ -330,8 +330,16 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 {{ vector_type(dims) }} _{{ name }};
 {% endif %}
 
+{% set set_zero = issubclass(T, Matrix) and should_set_zero(
+    spec.outputs[name], spec.config.zero_initialization_sparsity_threshold) %}
+{% if set_zero %}
+_{{ name }}.setZero();
+{% endif %}
+
 {% for lhs, rhs in terms %}
+{% if not set_zero or rhs != "0" %}
 _{{ lhs }} = {{ rhs }};
+{% endif %}
 {% endfor %}
 {% if name != spec.return_key %}
     {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}

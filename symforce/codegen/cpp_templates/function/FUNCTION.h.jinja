@@ -35,6 +35,9 @@ namespace {{ spec.namespace }} {
 {{ util.print_docstring(spec.docstring) }}
 {% endif %}
 template <typename {{ util.format_typename(Symbol) }}>
+{% if spec.config.force_no_inline %}
+__attribute__((noinline))
+{% endif %}
 {{ util.function_declaration(spec, is_declaration=True) }} {
     {% if spec.config.support_complex %}
     using namespace std::complex_literals;

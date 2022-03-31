@@ -181,6 +181,11 @@ const Linearizer<ScalarType>& Optimizer<ScalarType, NonlinearSolverType>::Linear
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
+Linearizer<ScalarType>& Optimizer<ScalarType, NonlinearSolverType>::Linearizer() {
+  return linearizer_;
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_params_t& params) {
   nonlinear_solver_.UpdateParams(params);
 }

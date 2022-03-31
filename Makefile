@@ -24,6 +24,7 @@ FIND_CPP_FILES_TO_FORMAT=find . \
 	-not -path "*/lcmtypes/*" \
 	-and -not -path "./third_party/*" \
 	-and -not -path "./build/*" \
+	-and -not -path "./symforce/benchmarks/matrix_multiplication/gen/*" \
 	-regextype posix-extended -regex ".*\.(h|cc|tcc)"
 
 # Format using black and clang-format

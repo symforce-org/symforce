@@ -139,3 +139,5 @@ dmypy.json
 .DS_store
 
 docs/notebooks/scratch
+
+benchmark_outputs/

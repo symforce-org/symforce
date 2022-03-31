@@ -222,6 +222,7 @@ class Optimizer {
    * Get the Linearizer object
    */
   const sym::Linearizer<Scalar>& Linearizer() const;
+  sym::Linearizer<Scalar>& Linearizer();
 
   /**
    * Update the optimizer params

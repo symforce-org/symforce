@@ -102,64 +102,28 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 5, 5>& _jacobian = (*jacobian);
 
+    _jacobian.setZero();
+
     _jacobian(0, 0) = _tmp38;
-    _jacobian(0, 1) = 0;
-    _jacobian(0, 2) = 0;
-    _jacobian(0, 3) = 0;
-    _jacobian(0, 4) = 0;
-    _jacobian(1, 0) = 0;
     _jacobian(1, 1) = _tmp40;
-    _jacobian(1, 2) = 0;
-    _jacobian(1, 3) = 0;
-    _jacobian(1, 4) = 0;
-    _jacobian(2, 0) = 0;
-    _jacobian(2, 1) = 0;
     _jacobian(2, 2) = _tmp42;
-    _jacobian(2, 3) = 0;
-    _jacobian(2, 4) = 0;
-    _jacobian(3, 0) = 0;
-    _jacobian(3, 1) = 0;
-    _jacobian(3, 2) = 0;
     _jacobian(3, 3) = _tmp44;
-    _jacobian(3, 4) = 0;
-    _jacobian(4, 0) = 0;
-    _jacobian(4, 1) = 0;
-    _jacobian(4, 2) = 0;
-    _jacobian(4, 3) = 0;
     _jacobian(4, 4) = _tmp46;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 5, 5>& _hessian = (*hessian);
 
+    _hessian.setZero();
+
     _hessian(0, 0) = std::pow(_tmp36, Scalar(2)) * std::pow(_tmp4, _tmp10) * _tmp47 /
                      (_tmp13 * std::pow(_tmp4, Scalar(2)));
-    _hessian(0, 1) = 0;
-    _hessian(0, 2) = 0;
-    _hessian(0, 3) = 0;
-    _hessian(0, 4) = 0;
-    _hessian(1, 0) = 0;
     _hessian(1, 1) = std::pow(_tmp16, _tmp10) * std::pow(_tmp39, Scalar(2)) * _tmp47 /
                      (std::pow(_tmp16, Scalar(2)) * _tmp18);
-    _hessian(1, 2) = 0;
-    _hessian(1, 3) = 0;
-    _hessian(1, 4) = 0;
-    _hessian(2, 0) = 0;
-    _hessian(2, 1) = 0;
     _hessian(2, 2) = std::pow(_tmp21, _tmp10) * std::pow(_tmp41, Scalar(2)) * _tmp47 /
                      (std::pow(_tmp21, Scalar(2)) * _tmp23);
-    _hessian(2, 3) = 0;
-    _hessian(2, 4) = 0;
-    _hessian(3, 0) = 0;
-    _hessian(3, 1) = 0;
-    _hessian(3, 2) = 0;
     _hessian(3, 3) = std::pow(_tmp26, _tmp10) * std::pow(_tmp43, Scalar(2)) * _tmp47 /
                      (std::pow(_tmp26, Scalar(2)) * _tmp28);
-    _hessian(3, 4) = 0;
-    _hessian(4, 0) = 0;
-    _hessian(4, 1) = 0;
-    _hessian(4, 2) = 0;
-    _hessian(4, 3) = 0;
     _hessian(4, 4) = std::pow(_tmp31, _tmp10) * std::pow(_tmp45, Scalar(2)) * _tmp47 /
                      (std::pow(_tmp31, Scalar(2)) * _tmp33);
   }

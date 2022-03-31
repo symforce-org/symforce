@@ -15,6 +15,7 @@ from pathlib import Path
 import sympy
 import sys
 
+import symforce
 from symforce import ops
 from symforce import geo
 from symforce.values import Values, IndexEntry
@@ -98,6 +99,7 @@ def print_code(
             input_symbols=input_symbols,
             output_exprs=output_exprs,
             substitute_inputs=substitute_inputs,
+            cse_optimizations=config.cse_optimizations,
         )
     else:
         temps = []
@@ -169,6 +171,9 @@ def perform_cse(
     input_symbols: T.Sequence[T.Scalar],
     output_exprs: DenseAndSparseOutputTerms,
     substitute_inputs: bool = True,
+    cse_optimizations: T.Union[
+        T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]
+    ] = None,
 ) -> T.Tuple[T_terms, DenseAndSparseOutputTerms]:
     """
     Run common sub-expression elimination on the given input/output values.
@@ -191,7 +196,15 @@ def perform_cse(
         for i in itertools.count():
             yield sm.Symbol(f"_tmp{i}")
 
-    temps, flat_simplified_outputs = sm.cse(flat_output_exprs, symbols=tmp_symbols())
+    if cse_optimizations is not None:
+        if symforce.get_backend() == "symengine":
+            raise ValueError("cse_optimizations is not supported on the symengine backend")
+
+        temps, flat_simplified_outputs = sm.cse(
+            flat_output_exprs, symbols=tmp_symbols(), optimizations=cse_optimizations
+        )
+    else:
+        temps, flat_simplified_outputs = sm.cse(flat_output_exprs, symbols=tmp_symbols())
 
     # Unflatten output of CSE
     simplified_outputs = DenseAndSparseOutputTerms(dense=[], sparse=[])

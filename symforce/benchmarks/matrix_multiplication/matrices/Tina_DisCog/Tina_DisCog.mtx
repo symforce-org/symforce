@@ -1,0 +1,72 @@
+%%MatrixMarket matrix coordinate pattern general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/Pajek/Tina_DisCog
+% name: Pajek/Tina_DisCog
+% [Pajek network: student govt, Univ. Ljubljana, 1992 (discuss, recog.)]
+% id: 1528
+% date: 1992
+% author: V. Batagelj
+% ed: V. Batagelj
+% fields: name title A id kind notes aux date author ed
+% aux: nodename
+% kind: directed graph
+%-------------------------------------------------------------------------------
+% notes:
+% ------------------------------------------------------------------------------
+% Pajek network converted to sparse adjacency matrix for inclusion in UF sparse 
+% matrix collection, Tim Davis.  For Pajek datasets, See V. Batagelj & A. Mrvar,
+% http://vlado.fmf.uni-lj.si/pub/networks/data/.                                
+% ------------------------------------------------------------------------------
+%  STUDENT GOVERNMENT OF UNIVERSITY OF LJUBLJANA (Hlebec 1992)                  
+%  discussion, recognition                                                      
+%-------------------------------------------------------------------------------
+11 11 48
+3 1
+10 1
+1 2
+3 2
+5 2
+6 2
+8 2
+9 2
+10 2
+1 3
+9 3
+10 3
+2 4
+3 4
+5 4
+6 4
+7 4
+8 4
+11 4
+3 5
+6 5
+10 5
+1 6
+2 6
+3 6
+5 6
+11 6
+3 7
+4 7
+5 7
+6 7
+8 7
+9 7
+2 8
+3 8
+4 8
+5 8
+6 8
+7 8
+9 8
+11 8
+7 9
+1 10
+3 10
+5 10
+7 11
+8 11
+9 11

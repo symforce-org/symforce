@@ -29,17 +29,11 @@ Eigen::Matrix<Scalar, 3, 4> TangentDStorage(const sym::Pose2<Scalar>& a) {
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 4> _res;
 
+  _res.setZero();
+
   _res(0, 0) = -_a[1];
   _res(0, 1) = _a[0];
-  _res(0, 2) = 0;
-  _res(0, 3) = 0;
-  _res(1, 0) = 0;
-  _res(1, 1) = 0;
   _res(1, 2) = 1;
-  _res(1, 3) = 0;
-  _res(2, 0) = 0;
-  _res(2, 1) = 0;
-  _res(2, 2) = 0;
   _res(2, 3) = 1;
 
   return _res;

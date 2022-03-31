@@ -36,47 +36,22 @@ Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a) {
   // Output terms (1)
   Eigen::Matrix<Scalar, 6, 7> _res;
 
+  _res.setZero();
+
   _res(0, 0) = _tmp0;
   _res(0, 1) = _tmp1;
   _res(0, 2) = _tmp3;
   _res(0, 3) = _tmp5;
-  _res(0, 4) = 0;
-  _res(0, 5) = 0;
-  _res(0, 6) = 0;
   _res(1, 0) = _tmp6;
   _res(1, 1) = _tmp0;
   _res(1, 2) = _tmp4;
   _res(1, 3) = _tmp3;
-  _res(1, 4) = 0;
-  _res(1, 5) = 0;
-  _res(1, 6) = 0;
   _res(2, 0) = _tmp2;
   _res(2, 1) = _tmp5;
   _res(2, 2) = _tmp0;
   _res(2, 3) = _tmp6;
-  _res(2, 4) = 0;
-  _res(2, 5) = 0;
-  _res(2, 6) = 0;
-  _res(3, 0) = 0;
-  _res(3, 1) = 0;
-  _res(3, 2) = 0;
-  _res(3, 3) = 0;
   _res(3, 4) = 1;
-  _res(3, 5) = 0;
-  _res(3, 6) = 0;
-  _res(4, 0) = 0;
-  _res(4, 1) = 0;
-  _res(4, 2) = 0;
-  _res(4, 3) = 0;
-  _res(4, 4) = 0;
   _res(4, 5) = 1;
-  _res(4, 6) = 0;
-  _res(5, 0) = 0;
-  _res(5, 1) = 0;
-  _res(5, 2) = 0;
-  _res(5, 3) = 0;
-  _res(5, 4) = 0;
-  _res(5, 5) = 0;
   _res(5, 6) = 1;
 
   return _res;

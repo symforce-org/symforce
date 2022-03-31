@@ -25,6 +25,7 @@ option(SYMFORCE_BUILD_EXAMPLES "Build the examples" ON)
 option(SYMFORCE_BUILD_TESTS "Build the tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
 option(SYMFORCE_GENERATE_MANIFEST "Generate build manifest" ON)
+option(SYMFORCE_BUILD_BENCHMARKS "Generate examples for alternative libraries" OFF)
 
 # ------------------------------------------------------------------------------
 # TicTocs
@@ -130,6 +131,14 @@ if(SYMFORCE_EIGEN_TARGET STREQUAL "Eigen3::Eigen")
     endfunction()
 
     add_eigen()
+
+    # Enable use of Eigen3_ROOT, which is necessary for sophus to be able to find Eigen when
+    # included this way
+    # See https://cmake.org/cmake/help/latest/policy/CMP0074.html
+    set(CMAKE_POLICY_DEFAULT_CMP0074 NEW CACHE STRING "" FORCE)
+    set(Eigen3_ROOT "${FETCHCONTENT_BASE_DIR}/eigen3-src" CACHE PATH "Phooey" FORCE)
+  else()
+    message(STATUS "Eigen found at ${Eigen3_DIR}")
   endif()
 endif()
 
@@ -222,7 +231,11 @@ if(SYMFORCE_BUILD_OPT)
     )
 
     # Tell metis where to find GKlib
-    set(GKLIB_PATH "${FETCHCONTENT_BASE_DIR}/metis-src/GKlib" CACHE PATH "path to GKlib" FORCE)
+    set(GKLIB_PATH
+      "${FETCHCONTENT_BASE_DIR}/metis-src/GKlib" CACHE PATH "Path to GKlib for METIS" FORCE
+    )
+
+    set(METIS_LIBRARY_TYPE "SHARED" CACHE STRING "Always build METIS as a shared library" FORCE)
 
     FetchContent_MakeAvailable(metis)
 
@@ -251,6 +264,104 @@ if(SYMFORCE_BUILD_CC_SYM)
     message(STATUS "pybind11 found")
   endif()
 endif(SYMFORCE_BUILD_CC_SYM)
+
+# Pull in third party packages used for benchmarking
+if(SYMFORCE_BUILD_BENCHMARKS)
+
+  # ------------------------------------------------------------------------------
+  # Sophus
+
+  find_package(Sophus QUIET)
+  if (NOT Sophus_FOUND)
+    message(STATUS "Sophus not found, adding with FetchContent")
+    function(add_sophus)
+      set(BUILD_TESTS OFF CACHE INTERNAL "Sophus shouldn't build tests by default")
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        sophus
+        GIT_REPOSITORY https://github.com/strasdat/Sophus
+        GIT_TAG v1.0.0
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(sophus)
+      find_package(Sophus)
+    endfunction()
+
+    add_sophus()
+  else()
+    message(STATUS "Sophus found")
+  endif()
+
+  # ------------------------------------------------------------------------------
+  # GTSAM
+
+  find_package(gtsam QUIET)
+  if (NOT gtsam_FOUND)
+    # NOTE(aaron): gtsam will not build against a copy of Eigen we've downloaded but not installed,
+    # because they include the eigen include directories in their install targets, and CMake
+    # complains (correctly) about directories inside the build folder in install targets.  They
+    # handle this correctly for their bundled version, but we cannot use that because the version of
+    # Eigen that GTSAM is built with must match our version (which is what's used when we call GTSAM
+    # code)
+    message(STATUS "GTSAM not found, adding with FetchContent")
+    function(add_gtsam)
+      set(GTSAM_BUILD_WITH_MARCH_NATIVE OFF CACHE INTERNAL "GTSAM shouldn't build native by default")
+      set(GTSAM_BUILD_TESTS OFF CACHE INTERNAL "Don't build GTSAM tests")
+      set(GTSAM_BUILD_EXAMPLES_ALWAYS OFF CACHE INTERNAL "Don't build GTSAM examples")
+      set(GTSAM_WITH_TBB OFF CACHE INTERNAL "Don't build TBB with GTSAM for accurate profiling")
+      # NOTE(aaron): This seems to have no effect on the experiments we're doing
+      set(GTSAM_SLOW_BUT_CORRECT_BETWEENFACTOR ON CACHE INTERNAL "Use the correct BetweenFactor")
+      # NOTE(aaron): This has no effect other than making inverse compose chained slower
+      set(GTSAM_USE_QUATERNIONS ON CACHE INTERNAL "Use quaternions for Rot3")
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        gtsam
+        GIT_REPOSITORY https://github.com/borglab/gtsam
+        GIT_TAG 4.1.1
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(gtsam)
+    endfunction()
+
+    add_gtsam()
+  else()
+    message(STATUS "GTSAM found")
+  endif()
+
+  # ------------------------------------------------------------------------------
+  # Ceres
+
+  find_package(Ceres QUIET)
+  if (NOT Ceres_FOUND)
+    message(STATUS "Ceres not found, adding with FetchContent")
+    function(add_ceres)
+      set(BUILD_TESTING OFF CACHE INTERNAL "Don't enable tests")
+      set(BUILD_EXAMPLES OFF CACHE INTERNAL "Don't build examples")
+      set(BUILD_BENCHMARKS OFF CACHE INTERNAL "Don't build Ceres benchmarking suite")
+      set(PROVIDE_UNINSTALL_TARGET
+        OFF CACHE INTERNAL
+        "Ceres shouldn't add uninstall target, gtsam already adds a target with the same name that collides"
+        FORCE
+      )
+      set(
+        CERES_THREADING_MODEL "NO_THREADS" CACHE INTERNAL "Don't use threads for benchmarking" FORCE
+      )
+      set(CMAKE_POSITION_INDEPENDENT_CODE True)
+      FetchContent_Declare(
+        ceres
+        GIT_REPOSITORY https://github.com/ceres-solver/ceres-solver
+        GIT_TAG 2.0.0
+        GIT_SHALLOW TRUE
+      )
+      FetchContent_MakeAvailable(ceres)
+    endfunction()
+
+    add_ceres()
+  else()
+    message(STATUS "Ceres found")
+  endif()
+
+endif()
 
 # ==============================================================================
 # SymForce Targets
@@ -377,7 +488,7 @@ endif(SYMFORCE_BUILD_CC_SYM)
 
 
 # ==============================================================================
-# Examples and Tests
+# Examples, Benchmarks, and Tests
 # ==============================================================================
 
 if(SYMFORCE_BUILD_EXAMPLES)
@@ -402,6 +513,10 @@ if(SYMFORCE_BUILD_EXAMPLES)
     symforce_examples
     PUBLIC symforce/examples/bundle_adjustment_fixed_size/gen/cpp
   )
+endif()
+
+if (SYMFORCE_BUILD_BENCHMARKS)
+  add_subdirectory(symforce/benchmarks)
 endif()
 
 if(SYMFORCE_BUILD_TESTS)
@@ -491,6 +606,7 @@ if(SYMFORCE_GENERATE_MANIFEST)
                                 --catch2_include_dirs "${catch2_include_dirs}"
                                 --symenginepy_install_dir "${SYMFORCE_SYMENGINE_INSTALL_PREFIX}"
                                 --cc_sym_install_dir "${SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH}"
+                                --binary_output_dir "${CMAKE_BINARY_DIR}"
                                 # TODO(aaron): Put this somewhere smarter
                                 --manifest_path ${CMAKE_CURRENT_SOURCE_DIR}/build/manifest.json
     )

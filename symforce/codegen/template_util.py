@@ -11,7 +11,7 @@ import functools
 import jinja2
 import jinja2.ext
 import os
-import pathlib
+from pathlib import Path
 import textwrap
 
 from symforce import logger
@@ -53,7 +53,7 @@ class FileType(enum.Enum):
             raise ValueError(f"Could not get FileType from extension {extension}")
 
     @staticmethod
-    def from_template_path(template_path: pathlib.Path) -> FileType:
+    def from_template_path(template_path: Path) -> FileType:
         parts = template_path.name.split(".")
         if parts[-1] != "jinja":
             raise ValueError(
@@ -73,7 +73,7 @@ class RelEnvironment(jinja2.Environment):
         return os.path.normpath(os.path.join(os.path.dirname(parent), str(template)))
 
 
-def add_preamble(source: str, name: str, filetype: FileType) -> str:
+def add_preamble(source: str, name: Path, filetype: FileType) -> str:
     prefix = (
         "//"
         if filetype in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.TYPESCRIPT)
@@ -115,7 +115,7 @@ def render_template(
     template_path: T.Openable,
     data: T.Dict[str, T.Any],
     output_path: T.Optional[T.Openable] = None,
-    template_dir: str = CURRENT_DIR,
+    template_dir: T.Openable = CURRENT_DIR,
     autoformat: bool = True,
 ) -> str:
     """
@@ -132,11 +132,17 @@ def render_template(
     if output_path:
         logger.debug(f"Template OUT --> {output_path}")
 
-    template_name = os.path.relpath(os.fspath(template_path), template_dir)
+    if not isinstance(template_path, Path):
+        template_path = Path(template_path)
 
-    filetype = FileType.from_template_path(pathlib.Path(template_name))
+    if not isinstance(template_dir, Path):
+        template_dir = Path(template_dir)
 
-    template = jinja_env(template_dir).get_template(template_name)
+    template_name = template_path.resolve().relative_to(template_dir.resolve())
+
+    filetype = FileType.from_template_path(Path(template_name))
+
+    template = jinja_env(template_dir).get_template(os.fspath(template_name))
     rendered_str = add_preamble(str(template.render(**data)), template_name, filetype)
 
     if autoformat:
@@ -146,7 +152,7 @@ def render_template(
             if output_path is not None:
                 format_cpp_filename = os.path.basename(output_path)
             else:
-                format_cpp_filename = template_name.replace(".jinja", "")
+                format_cpp_filename = os.fspath(template_name).replace(".jinja", "")
 
             rendered_str = format_util.format_cpp(
                 rendered_str, filename=os.path.join(CURRENT_DIR, format_cpp_filename)

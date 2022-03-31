@@ -34,6 +34,7 @@ REQUIRED_KEYS = (
     ("catch2_include_dirs", AllowedCount.MULTIPLE),
     ("symenginepy_install_dir", AllowedCount.SINGLE),
     ("cc_sym_install_dir", AllowedCount.SINGLE),
+    ("binary_output_dir", AllowedCount.SINGLE),
 )
 
 

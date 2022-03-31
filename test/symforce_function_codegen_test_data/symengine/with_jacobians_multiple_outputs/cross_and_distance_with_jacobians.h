@@ -89,9 +89,7 @@ Eigen::Matrix<Scalar, 3, 1> CrossAndDistanceWithJacobians(
   if (cross_D_epsilon != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _cross_D_epsilon = (*cross_D_epsilon);
 
-    _cross_D_epsilon(0, 0) = 0;
-    _cross_D_epsilon(1, 0) = 0;
-    _cross_D_epsilon(2, 0) = 0;
+    _cross_D_epsilon.setZero();
   }
 
   return _cross;

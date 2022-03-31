@@ -99,60 +99,24 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 5, 5>& _jacobian = (*jacobian);
 
+    _jacobian.setZero();
+
     _jacobian(0, 0) = _tmp39;
-    _jacobian(0, 1) = 0;
-    _jacobian(0, 2) = 0;
-    _jacobian(0, 3) = 0;
-    _jacobian(0, 4) = 0;
-    _jacobian(1, 0) = 0;
     _jacobian(1, 1) = _tmp40;
-    _jacobian(1, 2) = 0;
-    _jacobian(1, 3) = 0;
-    _jacobian(1, 4) = 0;
-    _jacobian(2, 0) = 0;
-    _jacobian(2, 1) = 0;
     _jacobian(2, 2) = _tmp41;
-    _jacobian(2, 3) = 0;
-    _jacobian(2, 4) = 0;
-    _jacobian(3, 0) = 0;
-    _jacobian(3, 1) = 0;
-    _jacobian(3, 2) = 0;
     _jacobian(3, 3) = _tmp42;
-    _jacobian(3, 4) = 0;
-    _jacobian(4, 0) = 0;
-    _jacobian(4, 1) = 0;
-    _jacobian(4, 2) = 0;
-    _jacobian(4, 3) = 0;
     _jacobian(4, 4) = _tmp43;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 5, 5>& _hessian = (*hessian);
 
+    _hessian.setZero();
+
     _hessian(0, 0) = _tmp2 * std::pow(_tmp6, _tmp44) / _tmp11;
-    _hessian(0, 1) = 0;
-    _hessian(0, 2) = 0;
-    _hessian(0, 3) = 0;
-    _hessian(0, 4) = 0;
-    _hessian(1, 0) = 0;
     _hessian(1, 1) = _tmp15 * std::pow(_tmp16, _tmp44) / _tmp17;
-    _hessian(1, 2) = 0;
-    _hessian(1, 3) = 0;
-    _hessian(1, 4) = 0;
-    _hessian(2, 0) = 0;
-    _hessian(2, 1) = 0;
     _hessian(2, 2) = _tmp21 * std::pow(_tmp22, _tmp44) / _tmp23;
-    _hessian(2, 3) = 0;
-    _hessian(2, 4) = 0;
-    _hessian(3, 0) = 0;
-    _hessian(3, 1) = 0;
-    _hessian(3, 2) = 0;
     _hessian(3, 3) = _tmp27 * std::pow(_tmp28, _tmp44) / _tmp29;
-    _hessian(3, 4) = 0;
-    _hessian(4, 0) = 0;
-    _hessian(4, 1) = 0;
-    _hessian(4, 2) = 0;
-    _hessian(4, 3) = 0;
     _hessian(4, 4) = _tmp33 * std::pow(_tmp34, _tmp44) / _tmp35;
   }
 
