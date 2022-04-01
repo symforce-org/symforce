@@ -21,7 +21,6 @@ namespace codegen_nan_test {
  *
  * Outputs:
  *     dist_D_R1: Scalar
- *
  */
 template <typename Scalar>
 Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {

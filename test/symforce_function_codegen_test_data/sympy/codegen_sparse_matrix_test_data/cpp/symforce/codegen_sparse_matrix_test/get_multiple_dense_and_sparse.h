@@ -22,7 +22,6 @@ namespace codegen_sparse_matrix_test {
  *     dense: Matrix44
  *     sparse_second: Matrix100_100
  *     result: Matrix33
- *
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 3> GetMultipleDenseAndSparse(

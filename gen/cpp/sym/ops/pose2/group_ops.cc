@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: Pose2
- *
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Identity() {
@@ -47,7 +46,6 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Identity() {
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Inverse(const sym::Pose2<Scalar>& a) {
@@ -75,7 +73,6 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Inverse(const sym::Pose2<Scalar>& a)
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
@@ -107,7 +104,6 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Between(const sym::Pose2<Scalar>& a,

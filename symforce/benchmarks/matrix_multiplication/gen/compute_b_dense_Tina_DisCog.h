@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix11_11
-*
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 11, 11> ComputeBDenseTinaDiscog(const Scalar x0, const Scalar x1) {

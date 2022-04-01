@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: ATANCameraCal
- *
  */
 template <typename Scalar>
 sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Identity() {
@@ -48,7 +47,6 @@ sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Identity() {
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Inverse(
@@ -78,7 +76,6 @@ sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Inverse(
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Compose(
@@ -111,7 +108,6 @@ sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Compose(
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Between(

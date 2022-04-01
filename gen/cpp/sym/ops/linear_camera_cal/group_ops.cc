@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: LinearCameraCal
- *
  */
 template <typename Scalar>
 sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Identity() {
@@ -47,7 +46,6 @@ sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Identity() {
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Inverse(
@@ -76,7 +74,6 @@ sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Inverse(
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Compose(
@@ -108,7 +105,6 @@ sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Compose(
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Between(

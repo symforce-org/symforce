@@ -129,7 +129,9 @@ class Codegen:
             for key in sparse_matrices:
                 self.sparse_mat_data[key] = codegen_util.get_sparse_mat_data(outputs[key])
 
-        self.docstring = docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
+        self.docstring = (
+            docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
+        ).rstrip()
 
         self.types_included: T.Optional[T.Set[str]] = None
         self.typenames_dict: T.Optional[T.Dict[str, str]] = None

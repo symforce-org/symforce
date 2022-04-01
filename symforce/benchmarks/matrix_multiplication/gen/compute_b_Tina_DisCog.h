@@ -24,7 +24,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix11_11
-*
 */
 template <typename Scalar>
 Eigen::SparseMatrix<Scalar> ComputeBTinaDiscog(const Scalar x0, const Scalar x1) {

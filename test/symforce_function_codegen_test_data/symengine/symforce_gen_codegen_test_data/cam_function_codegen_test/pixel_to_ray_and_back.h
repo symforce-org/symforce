@@ -13,7 +13,6 @@ namespace cam_function_codegen_test {
 /**
  * Transform a given pixel into a ray and project the ray back to
  * pixel coordinates. Input and output should match.
- *
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> PixelToRayAndBack(const Eigen::Matrix<Scalar, 2, 1>& pixel,

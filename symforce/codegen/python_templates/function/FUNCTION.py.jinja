@@ -26,7 +26,8 @@ import {{ namespace }}
 @numba.njit
 {% endif %}
 {{ util.function_declaration(spec) }}
-    {%- if spec.docstring %}
-    {{ util.print_docstring(spec.docstring) | indent(4) -}}
+    {% if spec.docstring %}
+    {{ util.print_docstring(spec.docstring) | indent(4) }}
     {% endif %}
-    {{- util.expr_code(spec) }}
+
+    {{ util.expr_code(spec) }}

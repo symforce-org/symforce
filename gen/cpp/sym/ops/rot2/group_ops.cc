@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: Rot2
- *
  */
 template <typename Scalar>
 sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Identity() {
@@ -45,7 +44,6 @@ sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Identity() {
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Inverse(const sym::Rot2<Scalar>& a) {
@@ -71,7 +69,6 @@ sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Inverse(const sym::Rot2<Scalar>& a) {
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Compose(const sym::Rot2<Scalar>& a,
@@ -101,7 +98,6 @@ sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Compose(const sym::Rot2<Scalar>& a,
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Between(const sym::Rot2<Scalar>& a,

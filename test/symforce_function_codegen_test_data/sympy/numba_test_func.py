@@ -28,8 +28,8 @@ def numba_test_func(x):
 
     Outputs:
         res: Matrix21
-
     """
+
     # Total ops: 0
 
     # Input arrays

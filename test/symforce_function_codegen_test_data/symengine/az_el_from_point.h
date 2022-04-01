@@ -23,7 +23,6 @@ namespace sym {
  *
  * Returns:
  *     geo.Matrix: (azimuth, elevation)
- *
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,

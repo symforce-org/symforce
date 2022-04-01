@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix105_163
-*
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> ComputeADenseDynamicLpSc105(const Scalar x0, const Scalar x1) {

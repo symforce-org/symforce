@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix36_84
-*
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> ComputeADenseDynamicBibd93(const Scalar x0, const Scalar x1) {

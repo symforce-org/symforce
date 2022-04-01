@@ -180,8 +180,8 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         # Test example
         for name in ("geo_package_python_test.py",):
             templates.add(
-                template_dir / "geo_package" / "example" / (name + ".jinja"),
-                Path(output_dir, "example", name),
+                template_dir / "tests" / (name + ".jinja"),
+                Path(output_dir, "tests", name),
                 dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
             )
 

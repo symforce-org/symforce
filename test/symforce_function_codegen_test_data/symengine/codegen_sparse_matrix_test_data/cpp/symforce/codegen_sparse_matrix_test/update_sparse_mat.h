@@ -19,7 +19,6 @@ namespace codegen_sparse_matrix_test {
  *
  * Outputs:
  *     updated_mat: Matrix100_100
- *
  */
 template <typename Scalar>
 void UpdateSparseMat(const Eigen::Matrix<Scalar, 100, 100>& matrix_in,

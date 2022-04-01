@@ -87,7 +87,7 @@ class SymforceGenCodegenTest(TestCase):
         """
         output_dir = self.make_output_dir("sf_gen_codegen_test_")
 
-        geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
+        cam_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
         template_util.render_template(
             template_path=os.path.join(template_util.PYTHON_TEMPLATE_DIR, "setup.py.jinja"),
             output_path=os.path.join(output_dir, "setup.py"),
@@ -110,14 +110,18 @@ class SymforceGenCodegenTest(TestCase):
                 path=os.path.join(SYMFORCE_DIR, "gen", "python", "setup.py"),
             )
 
-        # Compare against the checked-in test itself
-        expected_code_file = os.path.join(SYMFORCE_DIR, "test", "geo_package_python_test.py")
-        generated_code_file = os.path.join(output_dir, "example", "geo_package_python_test.py")
-        self.compare_or_update_file(expected_code_file, generated_code_file)
+        # Compare against the checked-in tests
+        for test_name in ("cam_package_python_test.py", "geo_package_python_test.py"):
+            generated_code_file = os.path.join(output_dir, "tests", test_name)
 
-        # Run generated example / test from disk in a standalone process
-        current_python = sys.executable
-        python_util.execute_subprocess([current_python, generated_code_file])
+            self.compare_or_update_file(
+                path=os.path.join(SYMFORCE_DIR, "test", test_name),
+                new_file=generated_code_file,
+            )
+
+            # Run generated example / test from disk in a standalone process
+            current_python = sys.executable
+            python_util.execute_subprocess([current_python, generated_code_file])
 
         # Also hot load package directly in to this process
         geo_pkg = codegen_util.load_generated_package("sym", os.path.join(output_dir, "sym"))

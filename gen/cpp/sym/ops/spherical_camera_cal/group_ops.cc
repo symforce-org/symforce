@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: SphericalCameraCal
- *
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Identity() {
@@ -52,7 +51,6 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Identity()
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Inverse(
@@ -86,7 +84,6 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Inverse(
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
@@ -123,7 +120,6 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Between(

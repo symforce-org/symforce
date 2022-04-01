@@ -21,7 +21,6 @@ namespace codegen_multi_function_test {
  *
  * Outputs:
  *     outputs_2: Values
- *
  */
 template <typename Scalar>
 void CodegenMultiFunctionTest2(

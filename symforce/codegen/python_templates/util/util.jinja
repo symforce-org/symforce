@@ -30,8 +30,10 @@
  #     T_or_value (type or Element):
  #     name (str): Name in case type is a generated struct
  #     is_input (bool): Is this an input argument or return value?
+ #     defined_class (Optional[type]): Do not prefix the emitted string with sym. if
+ #       type is defined_class
  #}
-{%- macro format_typename(T_or_value, name, is_input) %}
+{%- macro format_typename(T_or_value, name, is_input, defined_class = None) %}
     {%- set T = python_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
         float
@@ -52,7 +54,7 @@
             T.List[float]
         {%- endif -%}
     {%- else -%}
-        {%- if "geo" in T.__module__ or "cam" in T.__module__ -%}
+        {%- if T != defined_class and ("geo" in T.__module__ or "cam" in T.__module__) -%}
             sym.
         {%- endif -%}
         {{- T.__name__ -}}
@@ -65,15 +67,17 @@
  #
  # Args:
  #     spec (Codegen):
+ #     defined_class (Optional[type]): Do not prefix the emitted string with sym. if
+ #       type is defined_class
  #}
-{%- macro get_return_type(spec) %}
+{%- macro get_return_type(spec, defined_class = None) %}
     {%- if spec.outputs.keys() | length == 1 -%}
         {%- set name, type = spec.outputs.items() | first -%}
-        {{ format_typename(type, name, is_input=False) }}
+        {{ format_typename(type, name, is_input=False, defined_class=defined_class) }}
     {%- elif spec.outputs -%}
         T.Tuple[
         {%- for name, type in spec.outputs.items() -%}
-        {{ format_typename(type, name, is_input=False) }}{% if not loop.last %}, {% endif %}
+        {{ format_typename(type, name, is_input=False, defined_class=defined_class) }}{% if not loop.last %}, {% endif %}
         {%- endfor -%}]
     {%- else -%}
         None
@@ -96,22 +100,34 @@
 {% endmacro %}
 
 {# ------------------------------------------------------------------------- #}
+{# Generate function name and arguments:
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro function_name_and_args(spec) -%}
+{{ camelcase_to_snakecase(spec.name) }}(
+{%- for name in spec.inputs.keys() -%}
+{{ name }}{% if not loop.last %}, {% endif %}
+{%- endfor -%})
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
 
 {# Generate function declaration
  #
  # Args:
  #     spec (Codegen):
+ #     defined_class (Optional[type]): If function is a method of a class, set
+ #       defined_class to the class
  #}
-{%- macro function_declaration(spec) -%}
-def {{ camelcase_to_snakecase(spec.name) }}(
-    {%- for name in spec.inputs.keys() -%}
-    {{ name }}{% if not loop.last %}, {% endif %}
-    {%- endfor -%}):
+{%- macro function_declaration(spec, defined_class = None) -%}
+def {{ function_name_and_args(spec) }}:
     # type: (
     {%- for name, type in spec.inputs.items() -%}
-    {{ format_typename(type, name, is_input=True) }}{% if not loop.last %}, {% endif %}
-    {%- endfor -%}) -> {{ get_return_type(spec) }}
-{% endmacro -%}
+    {{ format_typename(type, name, is_input=True, defined_class=defined_class) }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}) -> {{ get_return_type(spec, defined_class=defined_class) }}
+{%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
 

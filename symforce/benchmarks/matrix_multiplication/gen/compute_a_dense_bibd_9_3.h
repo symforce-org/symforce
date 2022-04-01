@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix36_84
-*
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 36, 84> ComputeADenseBibd93(const Scalar x0, const Scalar x1) {

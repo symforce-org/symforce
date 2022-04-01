@@ -24,7 +24,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix7_7
-*
 */
 template <typename Scalar>
 Eigen::SparseMatrix<Scalar> ComputeBB1Ss(const Scalar x0, const Scalar x1) {

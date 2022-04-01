@@ -82,7 +82,6 @@ class LinearCameraCal {
    * Return:
    *     pixel: (x, y) coordinate in pixels if valid
    *     is_valid: 1 if the operation is within bounds else 0
-   *
    */
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point,
                                                    const Scalar epsilon,
@@ -96,8 +95,6 @@ class LinearCameraCal {
    *     is_valid: 1 if the operation is within bounds else 0
    *     pixel_D_cal: Derivative of pixel with respect to intrinsic calibration parameters
    *     pixel_D_point: Derivative of pixel with respect to point
-   *
-   *
    */
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPointWithJacobians(
       const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon,
@@ -112,7 +109,6 @@ class LinearCameraCal {
    * Return:
    *     camera_ray: The ray in the camera frame (NOT normalized)
    *     is_valid: 1 if the operation is within bounds else 0
-   *
    */
   Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixel(const Eigen::Matrix<Scalar, 2, 1>& pixel,
                                                  const Scalar epsilon,
@@ -126,7 +122,6 @@ class LinearCameraCal {
    *     is_valid: 1 if the operation is within bounds else 0
    *     point_D_cal: Derivative of point with respect to intrinsic calibration parameters
    *     point_D_pixel: Derivation of point with respect to pixel
-   *
    */
   Eigen::Matrix<Scalar, 3, 1> CameraRayFromPixelWithJacobians(
       const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon,

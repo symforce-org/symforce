@@ -24,7 +24,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix20_15
-*
 */
 template <typename Scalar>
 Eigen::SparseMatrix<Scalar> ComputeBN3C4B2(const Scalar x0, const Scalar x1) {

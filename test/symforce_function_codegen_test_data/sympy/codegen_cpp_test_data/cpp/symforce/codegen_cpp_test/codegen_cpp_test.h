@@ -37,7 +37,6 @@ namespace codegen_cpp_test {
  *     scalar_vec_out: list
  *     values_vec_out: list
  *     values_vec_2D_out: list
- *
  */
 template <typename Scalar>
 void CodegenCppTest(

@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: PolynomialCameraCal
- *
  */
 template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Identity() {
@@ -51,7 +50,6 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Identity
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Inverse(
@@ -84,7 +82,6 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Inverse(
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Compose(
@@ -120,7 +117,6 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Compose(
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Between(

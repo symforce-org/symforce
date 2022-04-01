@@ -90,9 +90,10 @@ class Pose2(object):
         else:
             instance.data = list(vec)
 
-        assert len(vec) == cls.storage_dim(), "{} has storage dim {}, got {}.".format(
-            cls.__name__, cls.storage_dim(), len(vec)
-        )
+        if len(vec) != cls.storage_dim():
+            raise ValueError(
+                "{} has storage dim {}, got {}.".format(cls.__name__, cls.storage_dim(), len(vec))
+            )
 
         return instance
 
@@ -129,7 +130,12 @@ class Pose2(object):
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
         # type: (T.Sequence[float], float) -> Pose2
-        assert len(vec) == cls.tangent_dim(), "{}, {}".format(len(vec), cls.tangent_dim())
+        if len(vec) != cls.tangent_dim():
+            raise ValueError(
+                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
+                    len(vec), cls.tangent_dim()
+                )
+            )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
@@ -138,7 +144,12 @@ class Pose2(object):
 
     def retract(self, vec, epsilon=1e-8):
         # type: (T.Sequence[float], float) -> Pose2
-        assert len(vec) == self.tangent_dim(), "{}, {}".format(len(vec), self.tangent_dim())
+        if len(vec) != self.tangent_dim():
+            raise ValueError(
+                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
+                    len(vec), self.tangent_dim()
+                )
+            )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
@@ -153,7 +164,7 @@ class Pose2(object):
         if isinstance(other, Pose2):
             return self.data == other.data
         else:
-            raise NotImplementedError("Cannot compare {} to {}".format(type(self), type(other)))
+            return False
 
     @T.overload
     def __mul__(self, other):  # pragma: no cover

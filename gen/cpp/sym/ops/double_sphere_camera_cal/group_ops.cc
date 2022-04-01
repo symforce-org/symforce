@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: DoubleSphereCameraCal
- *
  */
 template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Identity() {
@@ -49,7 +48,6 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Iden
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Inverse(
@@ -80,7 +78,6 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Inve
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Compose(
@@ -114,7 +111,6 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Comp
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Between(

@@ -19,6 +19,7 @@ class LieGroupOps(object):
     {% for spec in specs['LieGroupOps'] %}
     @staticmethod
     {{ util.function_declaration(spec) }}
+
     {{ util.expr_code(spec) | indent(4) }}
 
     {% endfor %}

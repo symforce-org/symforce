@@ -15,7 +15,6 @@ namespace sym {
 /**
  * Computes the jacobian of the tangent space around an element with respect to the storage space of
  * that element.
- *
  */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 4> TangentDStorage(const sym::Rot3<Scalar>& a) {

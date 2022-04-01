@@ -20,7 +20,6 @@ namespace sym {
  *
  * Outputs:
  *     res: EquirectangularCameraCal
- *
  */
 template <typename Scalar>
 sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Identity() {
@@ -47,7 +46,6 @@ sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *
  */
 template <typename Scalar>
 sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Inverse(
@@ -76,7 +74,6 @@ sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>
  *
  * Returns:
  *     Element: a @ b
- *
  */
 template <typename Scalar>
 sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Compose(
@@ -109,7 +106,6 @@ sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>
  *
  * Returns:
  *     Element: c such that a @ c = b
- *
  */
 template <typename Scalar>
 sym::EquirectangularCameraCal<Scalar> GroupOps<EquirectangularCameraCal<Scalar>>::Between(

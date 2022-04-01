@@ -20,7 +20,6 @@ namespace cpp_code_printer_test {
  *
  * Outputs:
  *     res: Scalar
- *
  */
 template <typename Scalar>
 Scalar Heaviside(const Scalar x) {

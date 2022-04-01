@@ -1,0 +1,26 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+{%- import "../../../util/util.jinja" as util with context -%}
+
+import math
+import numpy
+import typing as T
+
+import sym  # pylint: disable=unused-import
+
+
+class CameraOps(object):
+    """
+    Python CameraOps implementation for {{ cls }}.
+    """
+
+    {% for spec in specs["CameraOps"] %}
+    @staticmethod
+    {{ util.function_declaration(spec) }}
+        {{ util.print_docstring(spec.docstring) | indent(8) }}
+
+    {{ util.expr_code(spec) | indent(4) }}
+
+    {% endfor %}

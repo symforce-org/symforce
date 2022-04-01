@@ -42,8 +42,8 @@ def python_function(
         scalar_vec_out: list
         values_vec_out: list
         values_vec_2D_out: list
-
     """
+
     # Total ops: 748
 
     # Input arrays

@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix15_15
-*
 */
 template <typename Scalar>
 __attribute__((noinline))

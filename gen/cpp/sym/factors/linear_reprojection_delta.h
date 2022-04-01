@@ -34,7 +34,6 @@ namespace sym {
  * Outputs:
  *     res: 2dof pixel reprojection error
  *     valid: is valid projection or not
- *
  */
 template <typename Scalar>
 void LinearReprojectionDelta(const sym::Pose3<Scalar>& source_pose,

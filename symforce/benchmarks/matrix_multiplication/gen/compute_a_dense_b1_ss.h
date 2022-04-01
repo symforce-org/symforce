@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix7_7
-*
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 7, 7> ComputeADenseB1Ss(const Scalar x0, const Scalar x1) {

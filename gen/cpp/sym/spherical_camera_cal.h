@@ -110,7 +110,6 @@ class SphericalCameraCal {
    * Return:
    *     pixel: (x, y) coordinate in pixels if valid
    *     is_valid: 1 if the operation is within bounds else 0
-   *
    */
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPoint(const Eigen::Matrix<Scalar, 3, 1>& point,
                                                    const Scalar epsilon,
@@ -124,8 +123,6 @@ class SphericalCameraCal {
    *     is_valid: 1 if the operation is within bounds else 0
    *     pixel_D_cal: Derivative of pixel with respect to intrinsic calibration parameters
    *     pixel_D_point: Derivative of pixel with respect to point
-   *
-   *
    */
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPointWithJacobians(
       const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon,

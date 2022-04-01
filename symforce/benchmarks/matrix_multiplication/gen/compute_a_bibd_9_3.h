@@ -24,7 +24,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix36_84
-*
 */
 template <typename Scalar>
 Eigen::SparseMatrix<Scalar> ComputeABibd93(const Scalar x0, const Scalar x1) {

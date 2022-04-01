@@ -23,7 +23,6 @@ namespace sym {
 *
 * Outputs:
 *     result: Matrix105_163
-*
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, 105, 163> ComputeBDenseLpSc105(const Scalar x0, const Scalar x1) {

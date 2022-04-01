@@ -33,7 +33,6 @@ namespace sym {
  * Outputs:
  *     res: 2dof reprojection delta
  *     valid: is valid projection or not
- *
  */
 template <typename Scalar>
 void SphericalReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
