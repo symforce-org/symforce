@@ -1,4 +1,6 @@
+<a href="http://symforce.org">
 <img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_horizontal_white.png" width="600px"/>
+</a>
 
 [![Documentation](https://img.shields.io/badge/api-docs-blue)](https://symforce.org)
 [![Source Code](https://img.shields.io/badge/source-code-blue)](https://github.com/symforce-org/symforce)
