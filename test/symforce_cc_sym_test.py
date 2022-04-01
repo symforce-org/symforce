@@ -105,13 +105,44 @@ class SymforceCCSymTest(TestCase):
                 sym.Rot3
                 sym.Pose2
                 sym.Pose3
+                sym.ATANCameraCal
+                sym.DoubleSphereCameraCal
+                sym.EquirectangularCameraCal
+                sym.LinearCameraCal
+                sym.PolynomialCameraCal
+                sym.SphericalCameraCal
         """
-        supported_types = [T.Scalar, sym.Rot2, sym.Rot3, sym.Pose2, sym.Pose3]
+
+        supported_types = [
+            T.Scalar,
+            sym.Rot2,
+            sym.Rot3,
+            sym.Pose2,
+            sym.Pose3,
+            sym.ATANCameraCal,
+            sym.DoubleSphereCameraCal,
+            sym.EquirectangularCameraCal,
+            sym.LinearCameraCal,
+            sym.PolynomialCameraCal,
+            sym.SphericalCameraCal,
+        ]
+
+        def instantiate_type(tp: T.Type[T.Any]) -> T.Any:
+            """
+            Helper to instantiate tp. Useful for getting an instance of tp to test storage
+            of that type in cc_sym.Values
+            """
+            try:
+                return tp()
+            except TypeError:
+                # The camera cals do not have a default constructor, so we construct it
+                # from storage instead.
+                return tp.from_storage([0] * tp.storage_dim())
 
         for tp in supported_types:
             with self.subTest(msg=f"Can set and retrieve {tp.__name__}"):
                 values = cc_sym.Values()
-                val = tp()
+                val: T.Any = instantiate_type(tp)
                 values.set(cc_sym.Key("v"), val)
                 self.assertEqual(values.at(cc_sym.Key("v")), val)
 
@@ -251,8 +282,8 @@ class SymforceCCSymTest(TestCase):
             with self.subTest(msg=f"Can call set as a function of index_entry_t and {tp.__name__}"):
                 values = cc_sym.Values()
                 a = cc_sym.Key("a")
-                values.set(a, tp())
-                values.set(values.items()[a], tp())
+                values.set(a, instantiate_type(tp))
+                values.set(values.items()[a], instantiate_type(tp))
 
         with self.subTest(msg="Test Values.update (since index overlaod) works as expected"):
             key_a = cc_sym.Key("a")

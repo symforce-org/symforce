@@ -22,11 +22,17 @@
 #include <lcmtypes/sym/type_t.hpp>
 #include <lcmtypes/sym/values_t.hpp>
 
+#include <sym/atan_camera_cal.h>
+#include <sym/double_sphere_camera_cal.h>
+#include <sym/equirectangular_camera_cal.h>
+#include <sym/linear_camera_cal.h>
 #include <sym/ops/storage_ops.h>
+#include <sym/polynomial_camera_cal.h>
 #include <sym/pose2.h>
 #include <sym/pose3.h>
 #include <sym/rot2.h>
 #include <sym/rot3.h>
+#include <sym/spherical_camera_cal.h>
 #include <sym/util/type_ops.h>
 #include <symforce/opt/key.h>
 #include <symforce/opt/values.h>
@@ -246,6 +252,12 @@ void AddValuesWrapper(pybind11::module_ module) {
   RegisterTypeWithValues<sym::Rot3d>(values_class);
   RegisterTypeWithValues<sym::Pose2d>(values_class);
   RegisterTypeWithValues<sym::Pose3d>(values_class);
+  RegisterTypeWithValues<sym::ATANCameraCald>(values_class);
+  RegisterTypeWithValues<sym::DoubleSphereCameraCald>(values_class);
+  RegisterTypeWithValues<sym::EquirectangularCameraCald>(values_class);
+  RegisterTypeWithValues<sym::LinearCameraCald>(values_class);
+  RegisterTypeWithValues<sym::PolynomialCameraCald>(values_class);
+  RegisterTypeWithValues<sym::SphericalCameraCald>(values_class);
   // The template paramater below is 9 because all (and only) matrices up to size 9x9 are supported
   // by sym::Values.
   RegisterMatrices<9>(values_class);

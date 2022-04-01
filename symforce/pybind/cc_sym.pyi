@@ -17,6 +17,12 @@ from sym import Rot2
 from sym import Rot3
 from sym import Pose2
 from sym import Pose3
+from sym import ATANCameraCal
+from sym import DoubleSphereCameraCal
+from sym import EquirectangularCameraCal
+from sym import LinearCameraCal
+from sym import PolynomialCameraCal
+from sym import SphericalCameraCal
 
 import scipy
 
@@ -514,7 +520,7 @@ class Values:
           epsilon: Small constant to avoid singularities (do not use zero)
         """
     @typing.overload
-    def set(self, key: Key, value: Pose2) -> bool:
+    def set(self, key: Key, value: ATANCameraCal) -> bool:
         """
         Add or update a value by key. Returns true if added, false if updated.
 
@@ -859,7 +865,41 @@ class Values:
         Add or update a value by key. Returns true if added, false if updated.
 
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
+    @typing.overload
+    def set(self, key: Key, value: DoubleSphereCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: Key, value: EquirectangularCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: Key, value: LinearCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: Key, value: PolynomialCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: Key, value: Pose2) -> bool: ...
     @typing.overload
     def set(self, key: Key, value: Pose3) -> bool: ...
     @typing.overload
@@ -867,9 +907,21 @@ class Values:
     @typing.overload
     def set(self, key: Key, value: Rot3) -> bool: ...
     @typing.overload
+    def set(self, key: Key, value: SphericalCameraCal) -> bool: ...
+    @typing.overload
     def set(self, key: Key, value: float) -> bool: ...
     @typing.overload
     def set(self, key: Key, value: numpy.ndarray) -> bool: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: ATANCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: DoubleSphereCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: EquirectangularCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: LinearCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: PolynomialCameraCal) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: Pose2) -> None: ...
     @typing.overload
@@ -878,6 +930,8 @@ class Values:
     def set(self, key: index_entry_t, value: Rot2) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: Rot3) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: SphericalCameraCal) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: float) -> None: ...
     @typing.overload
