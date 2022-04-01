@@ -495,29 +495,75 @@ def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
     return printer
 
 
-def load_generated_package(name: str, path: T.Union[str, Path]) -> T.Any:
+def _load_generated_package_internal(name: str, path: Path) -> T.Tuple[T.Any, T.List[str]]:
     """
     Dynamically load generated package (or module).
-    """
-    path = Path(path)
 
+    Returns the generated package (module) and a list of the names of all modules added
+    to sys.module by this function.
+
+    Does not remove the modules it imports from sys.modules.
+
+    Precondition: If m is a module from the same package as name and is imported by name, then
+    there does not exist a different module with the same name as m in sys.modules. This is to
+    ensure name imports the correct modules.
+    """
     if path.is_dir():
         path = path / "__init__.py"
 
     parts = name.split(".")
     if len(parts) > 1:
         # Load parent packages
-        load_generated_package(".".join(parts[:-1]), path.parent / "__init__.py")
+        _, added_module_names = _load_generated_package_internal(
+            ".".join(parts[:-1]), path.parent / "__init__.py"
+        )
+    else:
+        added_module_names = []
 
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
+    added_module_names.append(name)
 
     # For mypy: https://github.com/python/typeshed/issues/2793
     assert isinstance(spec.loader, importlib.abc.Loader)
 
     spec.loader.exec_module(module)
+    return module, added_module_names
+
+
+def load_generated_package(name: str, path: T.Openable) -> T.Any:
+    """
+    Dynamically load generated package (or module).
+    """
+    # NOTE(brad): We remove all possibly conflicting modules from the cache. This is
+    # to ensure that when name is executed, it loads local modules (if any) rather
+    # than any with colliding names that have been loaded elsewhere
+    root_package_name = name.split(".")[0]
+    callee_saved_modules: T.List[T.Tuple[str, T.Any]] = []
+    for module_name in tuple(sys.modules.keys()):
+        if root_package_name == module_name.split(".")[0]:
+            try:
+                conflicting_module = sys.modules[module_name]
+                del sys.modules[module_name]
+                callee_saved_modules.append((module_name, conflicting_module))
+            except KeyError:
+                pass
+
+    module, added_module_names = _load_generated_package_internal(name, Path(path))
+
+    # We remove the temporarily added modules
+    for added_name in added_module_names:
+        try:
+            del sys.modules[added_name]
+        except KeyError:
+            pass
+
+    # And we restore the original removed modules
+    for removed_name, removed_module in callee_saved_modules:
+        sys.modules[removed_name] = removed_module
+
     return module
 
 
