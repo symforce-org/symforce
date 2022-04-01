@@ -1,4 +1,4 @@
-<a href="http://symforce.org">
+<a href="http://symforce.org" target="_blank">
 <img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_horizontal_white.png" width="600px"/>
 </a>
 
@@ -20,7 +20,7 @@ SymForce is a fast symbolic computation and code generation library for robotics
 
 SymForce automatically computes tangent space Jacobians, eliminating the need for any bug-prone handwritten derivatives. Generated functions can be directly used as factors in our nonlinear optimizer. This workflow enables faster runtime functions, faster development time, and fewer lines of handwritten code versus alternative methods.
 
-SymForce was developed at [Skydio](https://skydio.com/). It is used in production to accelerate tasks like SLAM, bundle adjustment, calibration, and sparse nonlinear MPC for autonomous robots at scale.
+SymForce is developed and maintained by [Skydio](https://skydio.com/). It is used in production to accelerate tasks like SLAM, bundle adjustment, calibration, and sparse nonlinear MPC for autonomous robots at scale.
 
 <br/>
 
