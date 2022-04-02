@@ -1,6 +1,5 @@
 package sym;
 
-#hashable
 struct key_t {
   // TODO(hayk): Issue for alignment?
   byte letter;
