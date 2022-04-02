@@ -108,6 +108,7 @@ disable=raw-checker-failed,
 
         # These have some false positives and mypy seems to handle them much better
         abstract-method,
+        arguments-differ,
         unpacking-non-sequence,
         unsubscriptable-object,
 

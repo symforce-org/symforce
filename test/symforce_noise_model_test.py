@@ -234,7 +234,7 @@ class NoiseModelTest(TestCase):
 
         self.assertTrue(test_epsilon_at_alpha(1))
         self.assertTrue(test_epsilon_at_alpha(2))
-        self.assertTrue(test_epsilon_at_alpha(int(-1e10)))
+        self.assertTrue(test_epsilon_at_alpha(int(-1e7)))
 
 
 if __name__ == "__main__":

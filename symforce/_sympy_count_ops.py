@@ -10,9 +10,11 @@ to our needs.
 Based on: https://github.com/sympy/sympy/blob/c1deac1ce6c989ee2c66fc505595603cca77681f/sympy/core/function.py#L3059
 with light modification.
 
-Note, there are a few instances of of # type: ignore, and # pylint: disable=...
-While the code could be modified to pass linting without these, we wanted to
-change as little as possible from the original sympy code (to better distinguish
+Note, type checking is disabled on the functions in this module with the decorator
+@T.no_type_check. Fundamentally, this is because the code relies heavily on
+object's fields to deduce their subtype (which mypy isn't able to understand).
+We're not interested in modifying the code to pass the linter because we wanted
+to change as little as possible from the original sympy code (to better distinguish
 our own material changes).
 
 Currently, the body of of count_ops is the body as found in sympy, modified only
@@ -27,15 +29,16 @@ from sympy import S
 from sympy import Basic
 from sympy import Derivative
 from sympy import Add
-from sympy.core.compatibility import iterable
 from sympy.core.function import UndefinedFunction
 from sympy.core.operations import LatticeOp
+from sympy.utilities.iterables import iterable
 
 from symforce import typing as T
 from symforce.typing import Dict
 
 
-def _coeff_isneg(a: sympy.Expr) -> bool:
+@T.no_type_check
+def _coeff_isneg(a: Basic) -> bool:
     """Return True if the leading Number is negative.
     Examples
     ========
@@ -65,7 +68,8 @@ def _coeff_isneg(a: sympy.Expr) -> bool:
     return a.is_Number and a.is_extended_negative
 
 
-def count_ops(expr: sympy.Expr, visual: bool = False) -> T.Union[sympy.Expr, int]:
+@T.no_type_check
+def count_ops(expr: sympy.Expr, visual: bool = False) -> T.Union[Expr, int]:
     """
     Return a representation (integer or expression) of the operations in expr.
     Parameters
@@ -253,11 +257,7 @@ def count_ops(expr: sympy.Expr, visual: bool = False) -> T.Union[sympy.Expr, int
     if visual:
         return ops
 
-    # NOTE(brad): This type ignore is needed becasue above we change the type of ops
-    # from a list to a sympy.Add. This could be fixed by changing the names of the
-    # variables, but this is how it was done in sympy's implementation and I'd rather
-    # not make changes that don't change functionality (to reduce noise).
-    if ops.is_Number:  # type: ignore
-        return int(ops)  # type: ignore
+    if ops.is_Number:
+        return int(ops)
 
     return sum(int((a.args or [1])[0]) for a in Add.make_args(ops))

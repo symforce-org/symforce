@@ -34,12 +34,12 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
                   Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
                   Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
                   Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
-  // Total ops: 152
+  // Total ops: 151
 
   // Input arrays
 
   // Intermediate terms (48)
-  const Scalar _tmp0 = -std::sqrt(eps);
+  const Scalar _tmp0 = std::sqrt(eps);
   const Scalar _tmp1 = eps - mu + 1;
   const Scalar _tmp2 = eps + Scalar(1.0) / (std::fabs(_tmp1));
   const Scalar _tmp3 = Scalar(1.0) / (_tmp2);
@@ -54,27 +54,27 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
   const Scalar _tmp12 = 2 * _tmp11 * _tmp2;
   const Scalar _tmp13 = _tmp12 * (_tmp9 - 1) + eps;
   const Scalar _tmp14 = std::sqrt(_tmp13);
-  const Scalar _tmp15 = _tmp0 + _tmp14;
+  const Scalar _tmp15 = -_tmp0 + _tmp14;
   const Scalar _tmp16 = _tmp3 * std::pow(Scalar(x(1, 0) - y(1, 0)), Scalar(2)) + 1;
   const Scalar _tmp17 = std::pow(_tmp16, _tmp8);
   const Scalar _tmp18 = _tmp12 * (_tmp17 - 1) + eps;
   const Scalar _tmp19 = std::sqrt(_tmp18);
-  const Scalar _tmp20 = _tmp0 + _tmp19;
+  const Scalar _tmp20 = -_tmp0 + _tmp19;
   const Scalar _tmp21 = _tmp3 * std::pow(Scalar(x(2, 0) - y(2, 0)), Scalar(2)) + 1;
   const Scalar _tmp22 = std::pow(_tmp21, _tmp8);
   const Scalar _tmp23 = _tmp12 * (_tmp22 - 1) + eps;
   const Scalar _tmp24 = std::sqrt(_tmp23);
-  const Scalar _tmp25 = _tmp0 + _tmp24;
+  const Scalar _tmp25 = -_tmp0 + _tmp24;
   const Scalar _tmp26 = _tmp3 * std::pow(Scalar(x(3, 0) - y(3, 0)), Scalar(2)) + 1;
   const Scalar _tmp27 = std::pow(_tmp26, _tmp8);
   const Scalar _tmp28 = _tmp12 * (_tmp27 - 1) + eps;
   const Scalar _tmp29 = std::sqrt(_tmp28);
-  const Scalar _tmp30 = _tmp0 + _tmp29;
+  const Scalar _tmp30 = -_tmp0 + _tmp29;
   const Scalar _tmp31 = _tmp3 * std::pow(Scalar(x(4, 0) - y(4, 0)), Scalar(2)) + 1;
   const Scalar _tmp32 = std::pow(_tmp31, _tmp8);
   const Scalar _tmp33 = _tmp12 * (_tmp32 - 1) + eps;
   const Scalar _tmp34 = std::sqrt(_tmp33);
-  const Scalar _tmp35 = _tmp0 + _tmp34;
+  const Scalar _tmp35 = -_tmp0 + _tmp34;
   const Scalar _tmp36 = 2 * x(0, 0) - 2 * y(0, 0);
   const Scalar _tmp37 = _tmp11 * _tmp8;
   const Scalar _tmp38 = _tmp36 * _tmp37 * _tmp9 / (_tmp14 * _tmp4);

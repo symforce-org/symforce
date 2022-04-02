@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 from dataclasses import dataclass
-from enum import Enum
 
 from symforce import typing as T
 
@@ -65,7 +64,6 @@ class PythonConfig(CodegenConfig):
     Python Codegen configuration
 
     Args:
-        standard: Version of the Python language, either both 2 and 3 or just 3
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
@@ -78,11 +76,6 @@ class PythonConfig(CodegenConfig):
                    times.
     """
 
-    class PythonVersion(Enum):
-        PYTHON2AND3 = "python2"
-        PYTHON3 = "python3"
-
-    standard: PythonVersion = PythonVersion.PYTHON2AND3
     doc_comment_line_prefix: str = ""
     line_length: int = 100
     use_eigen_types: bool = True

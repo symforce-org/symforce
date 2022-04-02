@@ -19,9 +19,7 @@ class PythonCodePrinter(_PythonCodePrinter):
         Customizations:
             * Decimal points for Python2 support, doesn't exist in some sympy versions.
         """
-        if self.standard == "python2":
-            return f"{expr.p}./{expr.q}."
-        return f"{expr.p}/{expr.q}"
+        return f"{expr.p}./{expr.q}."
 
     def _print_Max(self, expr: sm.Max) -> str:
         """
@@ -41,7 +39,15 @@ class PythonCodePrinter(_PythonCodePrinter):
         else:
             return "min({})".format(", ".join([self._print(arg) for arg in expr.args]))
 
-    def _print_Heaviside(self, expr: "sm.Heaviside") -> str:
+    # NOTE(brad): We type ignore the signature because mypy complains that it
+    # does not match that of the sympy base class CodePrinter. This is because the base class
+    # defines _print_Heaviside with: _print_Heaviside = None (see
+    # https://github.com/sympy/sympy/blob/95f0228c033d27731f8707cdbb5bb672e500847d/sympy/printing/codeprinter.py#L446
+    # ).
+    # Despite this, our signature here matches the signatures of the sympy defined subclasses
+    # of CodePrinter. I don't know of any other way to resolve this issue other than to
+    # to type ignore.
+    def _print_Heaviside(self, expr: "sm.Heaviside") -> str:  # type: ignore[override]
         """
         Heaviside is not supported by default, so we add a version here.
         """

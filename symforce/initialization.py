@@ -101,7 +101,7 @@ def override_simplify(sympy_module: T.Type) -> None:
 
     import sympy
 
-    def simplify(*args: T.Any, **kwargs: T.Any) -> sympy.S:
+    def simplify(*args: T.Any, **kwargs: T.Any) -> sympy.Basic:
         logger.warning("Converting to sympy to use .simplify")
         return sympy_module.S(sympy.simplify(sympy.S(*args), **kwargs))
 
@@ -122,7 +122,7 @@ def override_limit(sympy_module: T.Type) -> None:
 
     def limit(
         e: T.Any, z: T.Any, z0: T.Any, dir: str = "+"  # pylint: disable=redefined-builtin
-    ) -> sympy.S:
+    ) -> sympy.Basic:
         logger.warning("Converting to sympy to use .limit")
         return sympy_module.S(sympy.limit(sympy.S(e), sympy.S(z), sympy.S(z0), dir=dir))
 

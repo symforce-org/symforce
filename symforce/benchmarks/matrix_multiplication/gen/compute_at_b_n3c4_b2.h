@@ -70,7 +70,7 @@ Eigen::Matrix<Scalar, 15, 15> ComputeAtBN3C4B2(const Scalar x0, const Scalar x1)
     const Scalar _tmp34 = _tmp0*_tmp10;
     const Scalar _tmp35 = std::pow(x1, Scalar(2));
     const Scalar _tmp36 = -_tmp18 + Scalar(-4.0);
-    const Scalar _tmp37 = -_tmp0*_tmp5;
+    const Scalar _tmp37 = _tmp0*_tmp5;
     const Scalar _tmp38 = -_tmp0*(_tmp8 + x1);
     const Scalar _tmp39 = _tmp0*x0;
     const Scalar _tmp40 = _tmp8 - 2;
@@ -226,7 +226,7 @@ Eigen::Matrix<Scalar, 15, 15> ComputeAtBN3C4B2(const Scalar x0, const Scalar x1)
     _result(9, 6) = -_tmp33 - 6;
     _result(9, 7) = _tmp16;
     _result(9, 8) = -_tmp29*x1;
-    _result(9, 9) = -3*_tmp11 + _tmp31*x1 + _tmp33 + _tmp37 - 3;
+    _result(9, 9) = -3*_tmp11 + _tmp31*x1 + _tmp33 - _tmp37 - 3;
     _result(9, 10) = 0;
     _result(9, 11) = 0;
     _result(9, 12) = 0;
@@ -286,7 +286,7 @@ Eigen::Matrix<Scalar, 15, 15> ComputeAtBN3C4B2(const Scalar x0, const Scalar x1)
     _result(13, 6) = 0;
     _result(13, 7) = 0;
     _result(13, 8) = 0;
-    _result(13, 9) = _tmp37;
+    _result(13, 9) = -_tmp37;
     _result(13, 10) = _tmp8;
     _result(13, 11) = _tmp1;
     _result(13, 12) = 3*x1 + 3;

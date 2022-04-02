@@ -28,11 +28,11 @@ template <typename Scalar>
 __attribute__((noinline))
 Eigen::Matrix<Scalar, 11, 11> ComputeAtBTinaDiscog(const Scalar x0, const Scalar x1) {
 
-    // Total ops: 242
+    // Total ops: 245
 
     // Input arrays
 
-    // Intermediate terms (61)
+    // Intermediate terms (60)
     const Scalar _tmp0 = x1 + 4;
     const Scalar _tmp1 = _tmp0*x1;
     const Scalar _tmp2 = 2*x1;
@@ -84,16 +84,15 @@ Eigen::Matrix<Scalar, 11, 11> ComputeAtBTinaDiscog(const Scalar x0, const Scalar
     const Scalar _tmp48 = x1 - 4;
     const Scalar _tmp49 = _tmp33*_tmp34;
     const Scalar _tmp50 = x1 + 1;
-    const Scalar _tmp51 = -_tmp23*_tmp50;
+    const Scalar _tmp51 = _tmp23*_tmp50;
     const Scalar _tmp52 = _tmp13*_tmp7;
     const Scalar _tmp53 = x0 - 2;
-    const Scalar _tmp54 = -_tmp50*_tmp53;
+    const Scalar _tmp54 = _tmp50*_tmp53;
     const Scalar _tmp55 = _tmp17*_tmp50;
     const Scalar _tmp56 = _tmp20*_tmp50;
     const Scalar _tmp57 = _tmp29 + 1;
-    const Scalar _tmp58 = (Scalar(1)/Scalar(2))*_tmp40;
-    const Scalar _tmp59 = Scalar(4.0)*x0;
-    const Scalar _tmp60 = _tmp7 + 2;
+    const Scalar _tmp58 = Scalar(4.0)*x0;
+    const Scalar _tmp59 = _tmp7 + 2;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 11, 11> _result;
@@ -144,23 +143,23 @@ Eigen::Matrix<Scalar, 11, 11> ComputeAtBTinaDiscog(const Scalar x0, const Scalar
     _result(3, 9) = -_tmp9;
     _result(3, 10) = -4*_tmp23 + _tmp32*_tmp38;
     _result(4, 0) = _tmp23*_tmp48 + x1;
-    _result(4, 1) = _tmp49 + _tmp51 - 2;
+    _result(4, 1) = _tmp49 - _tmp51 - 2;
     _result(4, 2) = _tmp19;
     _result(4, 3) = _tmp26 + _tmp52;
     _result(4, 4) = -_tmp24 - _tmp4;
     _result(4, 5) = 3*_tmp23;
-    _result(4, 6) = -_tmp49 + _tmp51;
+    _result(4, 6) = -_tmp49 - _tmp51;
     _result(4, 7) = -_tmp23*_tmp53 - 2;
     _result(4, 8) = 0;
     _result(4, 9) = _tmp23*_tmp46;
     _result(4, 10) = 0;
     _result(5, 0) = _tmp48*_tmp53;
-    _result(5, 1) = _tmp54 - 6;
+    _result(5, 1) = -_tmp54 - 6;
     _result(5, 2) = -2;
     _result(5, 3) = -2;
     _result(5, 4) = -_tmp53;
     _result(5, 5) = _tmp40 + 5*x1 - 10;
-    _result(5, 6) = _tmp54;
+    _result(5, 6) = -_tmp54;
     _result(5, 7) = _tmp43 - std::pow(_tmp53, Scalar(2)) - _tmp8;
     _result(5, 8) = 0;
     _result(5, 9) = -_tmp29*_tmp31 + _tmp46*_tmp53;
@@ -181,16 +180,16 @@ Eigen::Matrix<Scalar, 11, 11> ComputeAtBTinaDiscog(const Scalar x0, const Scalar
     _result(7, 2) = -Scalar(0.5)*x0;
     _result(7, 3) = -_tmp13 - x1;
     _result(7, 4) = _tmp20 - 2;
-    _result(7, 5) = -3*_tmp20 - _tmp57*_tmp58 + 6;
+    _result(7, 5) = -3*_tmp20 - Scalar(1)/Scalar(2)*_tmp40*_tmp57 + 6;
     _result(7, 6) = _tmp20 + _tmp35 + _tmp56 + 6;
-    _result(7, 7) = -_tmp12*_tmp57 - _tmp14 + _tmp20*_tmp53 + _tmp58 - 8;
+    _result(7, 7) = -_tmp12*_tmp57 - _tmp14 + _tmp20*_tmp53 + (Scalar(1)/Scalar(2))*x0*x1 - 8;
     _result(7, 8) = -_tmp47*_tmp7;
     _result(7, 9) = -_tmp20*_tmp46;
     _result(7, 10) = _tmp23 + _tmp44;
     _result(8, 0) = 0;
     _result(8, 1) = 0;
     _result(8, 2) = 0;
-    _result(8, 3) = -_tmp59;
+    _result(8, 3) = -_tmp58;
     _result(8, 4) = 0;
     _result(8, 5) = 0;
     _result(8, 6) = 0;
@@ -210,16 +209,16 @@ Eigen::Matrix<Scalar, 11, 11> ComputeAtBTinaDiscog(const Scalar x0, const Scalar
     _result(9, 9) = 4*_tmp30 + _tmp9;
     _result(9, 10) = 0;
     _result(10, 0) = 0;
-    _result(10, 1) = -_tmp52 - _tmp60*_tmp7;
+    _result(10, 1) = -_tmp52 - _tmp59*_tmp7;
     _result(10, 2) = -Scalar(1.0)*x0;
-    _result(10, 3) = _tmp59 + 2;
+    _result(10, 3) = _tmp58 + 2;
     _result(10, 4) = 0;
     _result(10, 5) = 0;
-    _result(10, 6) = _tmp37 - _tmp60;
+    _result(10, 6) = _tmp37 - _tmp59;
     _result(10, 7) = Scalar(0.5)*x1;
     _result(10, 8) = -Scalar(2.0)*_tmp47;
     _result(10, 9) = 0;
-    _result(10, 10) = _tmp32*_tmp60 - Scalar(3.0)*x0 + Scalar(2.0);
+    _result(10, 10) = _tmp32*_tmp59 - Scalar(3.0)*x0 + Scalar(2.0);
 
     return _result;
 }  // NOLINT(readability/fn_size)

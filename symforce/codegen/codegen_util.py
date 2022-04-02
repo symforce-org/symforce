@@ -471,18 +471,7 @@ def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
     # TODO(hayk): Consider symengine printer if this becomes slow.
 
     if isinstance(config, codegen_config.PythonConfig):
-        # Support specifying python2 for different versions of sympy in different ways
-        settings = {}
-        if (
-            "standard"
-            in printers.PythonCodePrinter._default_settings  # pylint: disable=protected-access
-        ):
-            settings["standard"] = config.standard.value
-
-        printer = printers.PythonCodePrinter(settings=settings)
-
-        if hasattr(printer, "standard"):
-            printer.standard = config.standard.value
+        printer: sm.printing.codeprinter.CodePrinter = printers.PythonCodePrinter()
 
     elif isinstance(config, codegen_config.CppConfig):
         if config.support_complex:

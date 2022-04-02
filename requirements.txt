@@ -12,7 +12,7 @@ numpy
 pybind11-stubgen
 pylint
 scipy
-sympy==1.9
+sympy==1.10.1
 types-jinja2
 types-pygments
 types-setuptools

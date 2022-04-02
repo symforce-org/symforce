@@ -50,7 +50,7 @@ class CppCodePrinter(CXX11CodePrinter):
             "CppConfig"
         )
 
-    def _print_Pow(self, expr: sympy.Pow) -> str:
+    def _print_Pow(self, expr: sympy.Pow, rational: bool = False) -> str:
         """
         Customizations:
             * Convert small powers into multiplies, divides, and square roots.
@@ -120,7 +120,15 @@ class CppCodePrinter(CXX11CodePrinter):
 
         return "{}min<Scalar>({}, {})".format(self._ns, self._print(expr.args[0]), rhs)
 
-    def _print_Heaviside(self, expr: sympy.Heaviside) -> str:
+    # NOTE(brad): We type ignore the signature because mypy complains that it
+    # does not match that of the sympy base class CodePrinter. This is because the base class
+    # defines _print_Heaviside with: _print_Heaviside = None (see
+    # https://github.com/sympy/sympy/blob/95f0228c033d27731f8707cdbb5bb672e500847d/sympy/printing/codeprinter.py#L446
+    # ).
+    # Despite this, our signature here matches the signatures of the sympy defined subclasses
+    # of CodePrinter. I don't know of any other way to resolve this issue other than to
+    # to type ignore.
+    def _print_Heaviside(self, expr: sympy.Heaviside) -> str:  # type: ignore[override]
         """
         Heaviside is not supported by default in C++, so we add a version here.
         """

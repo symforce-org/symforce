@@ -24,7 +24,7 @@ namespace codegen_nan_test {
  */
 template <typename Scalar>
 Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
-  // Total ops: 39
+  // Total ops: 41
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _R1 = R1.Data();
@@ -32,11 +32,11 @@ Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
   // Intermediate terms (14)
   const Scalar _tmp0 = (((_R1[3]) > 0) - ((_R1[3]) < 0));
   const Scalar _tmp1 = std::fabs(_R1[3]);
-  const Scalar _tmp2 = 1 - e;
+  const Scalar _tmp2 = e - 1;
   const Scalar _tmp3 = 8 * _tmp0 * std::pow(Scalar(2 * std::min<Scalar>(0, _tmp0) + 1), Scalar(2)) *
-                       Scalar(0.5) * ((((-_tmp1 + _tmp2) >= 0) - ((-_tmp1 + _tmp2) < 0)) + 1);
+                       Scalar(0.5) * ((((-_tmp1 - _tmp2) >= 0) - ((-_tmp1 - _tmp2) < 0)) + 1);
   const Scalar _tmp4 = std::pow(_R1[0], Scalar(2)) * _tmp3;
-  const Scalar _tmp5 = std::min<Scalar>(_tmp1, _tmp2);
+  const Scalar _tmp5 = std::min<Scalar>(_tmp1, -_tmp2);
   const Scalar _tmp6 = 1 - std::pow(_tmp5, Scalar(2));
   const Scalar _tmp7 = std::acos(_tmp5);
   const Scalar _tmp8 = _tmp7 / (_tmp6 * std::sqrt(_tmp6));
