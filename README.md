@@ -149,9 +149,9 @@ frame, we do:
 ```python
 landmark_body = pose.inverse() * landmark
 ```
-<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}  R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1\end{bmatrix}}#gh-light-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}  R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1\end{bmatrix}}#gh-light-mode-only"
     width="250px" />
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}  R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1\end{bmatrix}}#gh-dark-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}  R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1\end{bmatrix}}#gh-dark-mode-only"
     width="250px" />
 
 <!-- $
@@ -168,9 +168,9 @@ For exploration purposes, let's take the jacobian of the body-frame landmark wit
 ```python
 landmark_body.jacobian(pose)
 ```
-<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}-L_0 R_{im} + L_1 R_{re} + t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} + t_0 R_{re} + t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-light-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}-L_0 R_{im} %2B L_1 R_{re} %2B t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} %2B t_0 R_{re} %2B t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-light-mode-only"
     width="350px" />
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}-L_0 R_{im} + L_1 R_{re} + t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} + t_0 R_{re} + t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-dark-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}-L_0 R_{im} %2B L_1 R_{re} %2B t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} %2B t_0 R_{re} %2B t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-dark-mode-only"
     width="350px" />
 
 <!-- $
@@ -187,9 +187,9 @@ Now compute the relative bearing angle:
 ```python
 sm.atan2(landmark_body[1], landmark_body[0])
 ```
-<img src="https://render.githubusercontent.com/render/math?math={atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-light-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-light-mode-only"
     width="500px" />
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-dark-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-dark-mode-only"
     width="500px" />
 
 <!-- $
@@ -201,9 +201,9 @@ One important note is that `atan2` is singular at (0, 0). In SymForce we handle 
 ```python
 geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
 ```
-<img src="https://render.githubusercontent.com/render/math?math={\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}}#gh-light-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-light-mode-only"
     width="135px" />
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} \sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}}#gh-dark-mode-only"
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} \sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-dark-mode-only"
     width="135px" />
 
 <!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
