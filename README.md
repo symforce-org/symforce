@@ -149,8 +149,10 @@ frame, we do:
 ```python
 landmark_body = pose.inverse() * landmark
 ```
-<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;\begin{bmatrix}&space;&space;R_{re}&space;L_0&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0&space;\\&space;&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1\end{bmatrix}"
-    width="250px" class="latex-eqn" />
+<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}  R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1\end{bmatrix}}#gh-light-mode-only"
+    width="250px" />
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}  R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1\end{bmatrix}}#gh-dark-mode-only"
+    width="250px" />
 
 <!-- $
 \begin{bmatrix}
@@ -161,20 +163,20 @@ $ -->
 
 You can see that `geo.Rot2` is represented internally by a complex number (𝑅𝑟𝑒, 𝑅𝑖𝑚) and we can study how it rotates the landmark 𝐿.
 
-For exploration purposes, let's take the jacobian of the body-frame landmark with respect to the tangent space of the `Pose2`, parameterized as (𝑥, 𝑦, 𝜃):
-
-<!-- TODO: flip this when we make Pose2 (theta, x, y) -->
+For exploration purposes, let's take the jacobian of the body-frame landmark with respect to the tangent space of the `Pose2`, parameterized as (𝜃, 𝑥, 𝑦):
 
 ```python
 landmark_body.jacobian(pose)
 ```
-<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;\begin{bmatrix}&space;&space;-R_{re}&space;,&space;&&space;-R_{im},&space;&space;&&space;-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;-&space;R_{re}&space;t_1&space;\\&space;&space;R_{im}&space;,&space;&&space;-R_{re}&space;,&space;&&space;-R_{re}&space;L_0&space;-&space;R_{im}&space;L_1&space;&plus;&space;R_{re}&space;t_0&space;&plus;&space;R_{im}&space;t_1\end{bmatrix}"
-    width="350px" class="latex-eqn" />
+<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}-L_0 R_{im} + L_1 R_{re} + t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} + t_0 R_{re} + t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-light-mode-only"
+    width="350px" />
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}-L_0 R_{im} + L_1 R_{re} + t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} + t_0 R_{re} + t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-dark-mode-only"
+    width="350px" />
 
 <!-- $
 \begin{bmatrix}
-  -R_{re} , & -R_{im},  & -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 - R_{re} t_1 \\
-  R_{im} , & -R_{re} , & -R_{re} L_0 - R_{im} L_1 + R_{re} t_0 + R_{im} t_1
+  -L_0*R_{im} + L1*R_{re} + t_0*R_{im} - t_1*R_{re}, & -R_{re}, & -R_{im} \\
+  -L_0*R_{re} - L1*R_{im} + t_0*R_{re} + t_1*R_{im}, &  R_{im}, & -R_{re}
 \end{bmatrix}
 $ -->
 
@@ -185,8 +187,10 @@ Now compute the relative bearing angle:
 ```python
 sm.atan2(landmark_body[1], landmark_body[0])
 ```
-<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;atan_2(-R_{im}&space;L_0&space;&plus;&space;R_{re}&space;L_1&space;&plus;&space;R_{im}&space;t_0&space;&plus;&space;R_{re}&space;t_1,&space;R_{re}&space;L_0&space;&space;&plus;&space;R_{im}&space;L_1&space;-&space;R_{im}&space;t_1&space;-&space;R_{re}&space;t_0)"
-    width="500px" class="latex-eqn" />
+<img src="https://render.githubusercontent.com/render/math?math={atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-light-mode-only"
+    width="500px" />
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-dark-mode-only"
+    width="500px" />
 
 <!-- $
 atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
@@ -197,8 +201,10 @@ One important note is that `atan2` is singular at (0, 0). In SymForce we handle 
 ```python
 geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
 ```
-<img src="https://latex.codecogs.com/svg.image?\dpi{200}&space;\sqrt{x_0^2&space;&plus;&space;x_1^2&space;&plus;&space;x_2^2&space;&plus;&space;\epsilon}"
-    width="135px" class="latex-eqn" />
+<img src="https://render.githubusercontent.com/render/math?math={\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}}#gh-light-mode-only"
+    width="135px" />
+<img src="https://render.githubusercontent.com/render/math?math={\color{white} \sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}}#gh-dark-mode-only"
+    width="135px" />
 
 <!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
 
@@ -375,7 +381,18 @@ This C++ code depends only on Eigen and computes the results in a single flat fu
 namespace sym {
 
 /**
- * Residual from a relative bearing mesurement of a 2D pose to a landmark.
+ * This function was autogenerated from a symbolic function. Do not modify by hand.
+ *
+ * Symbolic function: bearing_residual
+ *
+ * Args:
+ *     pose: Pose2
+ *     landmark: Matrix21
+ *     angle: Scalar
+ *     epsilon: Scalar
+ *
+ * Outputs:
+ *     res: Matrix11
  *     jacobian: (1x3) jacobian of res wrt arg pose (3)
  *     hessian: (3x3) Gauss-Newton hessian for arg pose (3)
  *     rhs: (3x1) Gauss-Newton rhs for arg pose (3)
@@ -387,7 +404,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
                    Eigen::Matrix<Scalar, 1, 3>* const jacobian = nullptr,
                    Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                    Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 79
+  // Total ops: 66
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _pose = pose.Data();
@@ -406,19 +423,19 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
   const Scalar _tmp10 =
       _tmp9 - 2 * Scalar(M_PI) *
                   std::floor((Scalar(1) / Scalar(2)) * (_tmp9 + Scalar(M_PI)) / Scalar(M_PI));
-  const Scalar _tmp11 = std::pow(_tmp8, Scalar(2));
-  const Scalar _tmp12 = _tmp3 / _tmp11;
-  const Scalar _tmp13 = Scalar(1.0) / (_tmp8);
-  const Scalar _tmp14 = _pose[0] * _tmp12 + _pose[1] * _tmp13;
-  const Scalar _tmp15 = _tmp11 + std::pow(_tmp3, Scalar(2));
-  const Scalar _tmp16 = _tmp11 / _tmp15;
+  const Scalar _tmp11 = Scalar(1.0) / (_tmp8);
+  const Scalar _tmp12 = std::pow(_tmp8, Scalar(2));
+  const Scalar _tmp13 = _tmp3 / _tmp12;
+  const Scalar _tmp14 = _tmp11 * (_tmp4 - _tmp5 - _tmp6) - _tmp13 * (_tmp0 - _tmp1 + _tmp2);
+  const Scalar _tmp15 = _tmp12 + std::pow(_tmp3, Scalar(2));
+  const Scalar _tmp16 = _tmp12 / _tmp15;
   const Scalar _tmp17 = _tmp14 * _tmp16;
-  const Scalar _tmp18 = -_pose[0] * _tmp13 + _pose[1] * _tmp12;
+  const Scalar _tmp18 = _pose[0] * _tmp13 + _pose[1] * _tmp11;
   const Scalar _tmp19 = _tmp16 * _tmp18;
-  const Scalar _tmp20 = -_tmp12 * (_tmp0 - _tmp1 + _tmp2) + _tmp13 * (_tmp4 - _tmp5 - _tmp6);
+  const Scalar _tmp20 = -_pose[0] * _tmp11 + _pose[1] * _tmp13;
   const Scalar _tmp21 = _tmp16 * _tmp20;
   const Scalar _tmp22 = std::pow(_tmp8, Scalar(4)) / std::pow(_tmp15, Scalar(2));
-  const Scalar _tmp23 = _tmp14 * _tmp22;
+  const Scalar _tmp23 = _tmp18 * _tmp22;
 
   // Output terms (4)
   if (res != nullptr) {
@@ -441,11 +458,11 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
     _hessian(0, 0) = std::pow(_tmp14, Scalar(2)) * _tmp22;
     _hessian(0, 1) = 0;
     _hessian(0, 2) = 0;
-    _hessian(1, 0) = _tmp18 * _tmp23;
+    _hessian(1, 0) = _tmp14 * _tmp23;
     _hessian(1, 1) = std::pow(_tmp18, Scalar(2)) * _tmp22;
     _hessian(1, 2) = 0;
-    _hessian(2, 0) = _tmp20 * _tmp23;
-    _hessian(2, 1) = _tmp18 * _tmp20 * _tmp22;
+    _hessian(2, 0) = _tmp14 * _tmp20 * _tmp22;
+    _hessian(2, 1) = _tmp20 * _tmp23;
     _hessian(2, 2) = std::pow(_tmp20, Scalar(2)) * _tmp22;
   }
 
