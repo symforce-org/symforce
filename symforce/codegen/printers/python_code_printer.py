@@ -5,7 +5,8 @@
 
 from sympy.printing.pycode import PythonCodePrinter as _PythonCodePrinter
 
-from symforce import sympy as sm
+# Everything in this file is SymPy, not SymEngine (even when SymForce is on the SymEngine backend)
+import sympy
 
 
 class PythonCodePrinter(_PythonCodePrinter):
@@ -14,14 +15,14 @@ class PythonCodePrinter(_PythonCodePrinter):
     behavior for codegen compatibility and efficiency.
     """
 
-    def _print_Rational(self, expr: sm.Rational) -> str:
+    def _print_Rational(self, expr: sympy.Rational) -> str:
         """
         Customizations:
             * Decimal points for Python2 support, doesn't exist in some sympy versions.
         """
         return f"{expr.p}./{expr.q}."
 
-    def _print_Max(self, expr: sm.Max) -> str:
+    def _print_Max(self, expr: sympy.Max) -> str:
         """
         Max is not supported by default, so we add a version here.
         """
@@ -30,7 +31,7 @@ class PythonCodePrinter(_PythonCodePrinter):
         else:
             return "max({})".format(", ".join([self._print(arg) for arg in expr.args]))
 
-    def _print_Min(self, expr: sm.Min) -> str:
+    def _print_Min(self, expr: sympy.Min) -> str:
         """
         Min is not supported by default, so we add a version here.
         """
@@ -47,8 +48,16 @@ class PythonCodePrinter(_PythonCodePrinter):
     # Despite this, our signature here matches the signatures of the sympy defined subclasses
     # of CodePrinter. I don't know of any other way to resolve this issue other than to
     # to type ignore.
-    def _print_Heaviside(self, expr: "sm.Heaviside") -> str:  # type: ignore[override]
+    def _print_Heaviside(self, expr: "sympy.Heaviside") -> str:  # type: ignore[override]
         """
         Heaviside is not supported by default, so we add a version here.
         """
         return f"(0.0 if ({self._print(expr.args[0])}) < 0 else 1.0)"
+
+    def _print_MatrixElement(self, expr: sympy.matrices.expressions.matexpr.MatrixElement) -> str:
+        """
+        default printer doesn't cast to int
+        """
+        return "{}[int({})]".format(
+            expr.parent, self._print(expr.j + expr.i * expr.parent.shape[1])
+        )

@@ -31,6 +31,7 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     add_custom_methods(sympy_module)
     override_solve(sympy_module)
     override_count_ops(sympy_module)
+    override_matrix_symbol(sympy_module)
 
 
 def override_symbol_new(sympy_module: T.Any) -> None:
@@ -175,9 +176,15 @@ def _flatten_storage_type_subs(
         # Import these lazily, since initialization.py is imported from symforce/__init__.py
         from symforce import ops  # pylint: disable=cyclic-import
         from symforce import python_util  # pylint: disable=cyclic-import
+        from symforce import sympy as sm
 
         if python_util.scalar_like(key):
             assert python_util.scalar_like(value)
+            new_subs_dict[key] = value
+            continue
+
+        if isinstance(key, sm.DataBuffer) or isinstance(value, sm.DataBuffer):
+            assert isinstance(value, type(key)) or isinstance(key, type(value))
             new_subs_dict[key] = value
             continue
 
@@ -187,8 +194,8 @@ def _flatten_storage_type_subs(
         except NotImplementedError:
             new_subs_dict[key] = value
         else:
-            error_msg = f"key type {type(key)} is not the same as value type {type(value)}"
-            assert type(key) == type(value), error_msg  # pylint: disable=unidiomatic-typecheck
+            error_msg = f"value type {type(value)} is not an instance of key type {type(key)}"
+            assert isinstance(value, type(key)) or isinstance(key, type(value)), error_msg
             for new_key, new_value in zip(new_keys, new_values):
                 new_subs_dict[new_key] = new_value
     return new_subs_dict
@@ -376,3 +383,15 @@ def add_custom_methods(sympy_module: T.Type) -> None:
     from symforce import logic
 
     logic.add_logic_methods(sympy_module)
+
+
+def override_matrix_symbol(sympy_module: T.Type) -> None:
+    """
+    Patch to make sympy MatrixSymbol consistent with symforce's custom Databuffer for symengine
+    We want to force Databuffers to be 1-D since otherwise CSE will (rightfully) treat each index
+    as a separate expression.
+    """
+    if sympy_module.__name__ == "sympy":
+        from symforce.databuffer import DataBuffer
+
+        sympy_module.DataBuffer = DataBuffer

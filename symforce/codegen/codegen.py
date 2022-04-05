@@ -92,8 +92,11 @@ class Codegen:
 
         # All symbols in outputs must be present in inputs.  Convert to Matrix before calling
         # free_symbols because it's much faster to call once
-        input_symbols = set(inputs.to_storage())
-        assert sm.S(geo.Matrix(outputs.to_storage()).mat).free_symbols.issubset(
+        input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
+        input_symbols = set(input_symbols_list)
+        assert sm.S(
+            geo.Matrix(codegen_util.flat_symbols_from_values(outputs)).mat
+        ).free_symbols.issubset(
             input_symbols
         ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
 
@@ -103,10 +106,10 @@ class Codegen:
         assert all(k.isidentifier() for k in outputs.keys())
 
         # Symbols in inputs must be unique
-        assert len(set(inputs.to_storage())) == len(
-            inputs.to_storage()
+        assert len(input_symbols) == len(
+            input_symbols_list
         ), "Symbols in inputs must be unique. Duplicate symbols = {}".format(
-            [symbol for symbol in inputs.to_storage() if inputs.to_storage().count(symbol) > 1]
+            [symbol for symbol in input_symbols_list if input_symbols_list.count(symbol) > 1]
         )
 
         # Outputs must not have same variable names/keys as inputs
@@ -235,6 +238,7 @@ class Codegen:
         data["ops"] = ops
         data["Symbol"] = sm.Symbol
         data["Matrix"] = geo.Matrix
+        data["DataBuffer"] = sm.DataBuffer
         data["Values"] = Values
         data["pathlib"] = pathlib
         data["path_to_codegen"] = CURRENT_DIR

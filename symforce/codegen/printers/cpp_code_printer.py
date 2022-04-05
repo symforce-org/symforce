@@ -136,6 +136,14 @@ class CppCodePrinter(CXX11CodePrinter):
             self._print_Float(sympy.S(0.5)), self._print(expr.args[0])
         )
 
+    def _print_MatrixElement(self, expr: sympy.matrices.expressions.matexpr.MatrixElement) -> str:
+        """
+        default printer doesn't cast to int
+        """
+        return "{}[static_cast<size_t>({})]".format(
+            expr.parent, self._print(expr.j + expr.i * expr.parent.shape[1])
+        )
+
 
 class ComplexCppCodePrinter(CppCodePrinter):  # pylint: disable=too-many-ancestors
     def _print_Integer(self, expr: sympy.Integer) -> str:

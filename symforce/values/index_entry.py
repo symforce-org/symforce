@@ -71,7 +71,8 @@ class IndexEntry:
             do this. For example, the geo.Matrix types with more than 10 rows or columns)
         """
         assert "<locals>" not in self._qualname.split("."), (
-            "The datatype must be accesible from the module; (dynamically created types do not"
-            + " do this. For example, the geo.Matrix types with more than 10 rows or columns)"
+            f"Datatype {self._qualname} must be accesible from the module: dynamically created"
+            + " types do not do this. For example, the geo.Matrix types with more than 10 rows or"
+            + " or columns."
         )
         return python_util.getattr_recursive(sys.modules[self._module], self._qualname.split("."))

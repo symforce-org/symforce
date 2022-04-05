@@ -35,7 +35,9 @@
  #}
 {%- macro format_typename(T_or_value, name, is_input, defined_class = None) %}
     {%- set T = python_util.get_type(T_or_value) -%}
-    {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
+    {%- if T.__name__ == 'DataBuffer' -%}
+        numpy.ndarray
+    {%- elif T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
         float
     {%- elif T.__name__ == 'NoneType' -%}
         None

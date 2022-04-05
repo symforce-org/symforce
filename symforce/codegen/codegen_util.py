@@ -87,7 +87,7 @@ def print_code(
         else:
             dense_outputs[key] = value
 
-    input_symbols = inputs.to_storage()
+    input_symbols = flat_symbols_from_values(inputs)
     output_exprs = DenseAndSparseOutputTerms(
         dense=[ops.StorageOps.to_storage(value) for key, value in dense_outputs.items()],
         sparse=[ops.StorageOps.to_storage(value) for key, value in sparse_outputs.items()],
@@ -250,7 +250,7 @@ def format_symbols(
     symbolic_args = list(
         itertools.chain.from_iterable(get_formatted_list(inputs, config, format_as_inputs=True))
     )
-    input_subs = dict(zip(inputs.to_storage(), symbolic_args))
+    input_subs = dict(zip(flat_symbols_from_values(inputs), symbolic_args))
     intermediate_terms_formatted = [
         (lhs, ops.StorageOps.subs(rhs, input_subs)) for lhs, rhs in intermediate_terms
     ]
@@ -292,7 +292,9 @@ def get_formatted_list(
         # For each item in the given Values object, we construct a list of symbols used
         # to access the scalar elements of the object. These symbols will later be matched up
         # with the flattened Values object symbols.
-        if isinstance(value, (sm.Expr, sm.Symbol)):
+        if issubclass(arg_cls, sm.DataBuffer):
+            symbols = [sm.DataBuffer(key, value.shape[0])]
+        elif isinstance(value, (sm.Expr, sm.Symbol)):
             symbols = [sm.Symbol(key)]
         elif issubclass(arg_cls, geo.Matrix):
             if isinstance(config, codegen_config.PythonConfig):
@@ -387,6 +389,8 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}.{name}", config=config, use_data=False
                 )
             )
+    elif issubclass(datatype, sm.DataBuffer):
+        raise TypeError(f"{datatype} does not allow scalar keys")
     elif issubclass(datatype, (list, tuple)):
         assert index_value.item_index is not None
         # Assume all elements of list are same type as first element
@@ -649,3 +653,18 @@ def generate_lcm_types(
     format_util.format_py_dir(python_types_dir)
 
     return result
+
+
+def flat_symbols_from_values(values: Values) -> T.List[T.Any]:
+    """
+    Returns a flat list of unique symbols in the object for codegen
+    """
+    symbols_list = values.to_storage()
+
+    # convert dataclasses to values so we can recurse through field to look for DataBuffers
+    values = values.dataclasses_to_values()
+
+    for v in values.values_recursive():
+        if isinstance(v, sm.DataBuffer):
+            symbols_list.append(v)
+    return symbols_list

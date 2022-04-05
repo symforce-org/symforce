@@ -39,7 +39,11 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 {%- macro format_typename(T_or_value, name) %}
     {%- set T = python_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) or T.__name__ == 'float' -%}
-        Scalar
+        {%- if issubclass(T, DataBuffer) -%}
+            Scalar* const
+        {%- else -%}
+            Scalar
+        {%- endif -%}
     {%- elif T.__name__ == 'NoneType' -%}
         void
     {%- elif issubclass(T, Matrix) -%}
@@ -103,7 +107,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #}
 {%- macro format_input_arg(T_or_value, name) %}
     {%- set T = python_util.get_type(T_or_value) -%}
-    {% if T == Symbol -%}
+    {% if T == Symbol or T == DataBuffer-%}
         {#- Scalar type is just const -#}
         const {{ format_typename(T_or_value) }} {{ name }}
     {%- else -%}

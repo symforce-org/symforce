@@ -161,6 +161,8 @@ class Values(T.MutableMapping[str, T.Any]):
                 entry = entry_helper(shape=value.shape)
             elif isinstance(value, geo.Matrix):
                 entry = entry_helper(shape=value.shape, datatype=geo.Matrix)
+            elif isinstance(value, sm.DataBuffer):
+                entry = entry_helper(shape=value.shape, datatype=sm.DataBuffer)
             elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
                 entry = entry_helper(datatype=T.Scalar)
             elif isinstance(value, (list, tuple)):
@@ -312,6 +314,9 @@ class Values(T.MutableMapping[str, T.Any]):
             elif issubclass(datatype, T.Dataclass):
                 assert entry.item_index is not None
                 values[name] = datatype(**cls.from_storage_index(vec, entry.item_index))
+            elif issubclass(datatype, sm.DataBuffer):
+                assert entry.shape is not None
+                values[name] = sm.DataBuffer(name, entry.shape[0])
             else:
                 values[name] = ops.StorageOps.from_storage(datatype, vec)
 

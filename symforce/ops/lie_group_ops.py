@@ -83,7 +83,8 @@ class LieGroupOps(GroupOps):
         Returns:
             list: Tangent space pertubation around identity that approximates a.
         """
-        return LieGroupOps.implementation(get_type(a)).to_tangent(a, epsilon)
+        type_a = get_type(a)
+        return LieGroupOps.implementation(type_a).to_tangent(a, epsilon)
 
     @staticmethod
     def retract(a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
