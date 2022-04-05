@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import difflib
 import numpy as np
 import logging
 import os
@@ -175,11 +176,16 @@ class SymforceTestCaseMixin(unittest.TestCase):
             with open(path) as f:
                 expected_data = f.read()
 
-            self.assertMultiLineEqual(
-                data,
-                expected_data,
-                "Data did not match, use --update to check diff and commit if desired.",
-            )
+            if data != expected_data:
+                diff = difflib.unified_diff(
+                    expected_data.splitlines(), data.splitlines(), "expected", "got", lineterm=""
+                )
+                self.fail(
+                    "\n"
+                    + "\n".join(diff)
+                    + f"\n\n{80*'='}\nData did not match for file {path}, see diff above.  Use "
+                    "`--update` to write the changes to the working directory and commit if desired"
+                )
 
     def compare_or_update_file(self, path: T.Openable, new_file: T.Openable) -> None:
         with open(new_file) as f:
