@@ -601,7 +601,7 @@ def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
 
 
 def generate_lcm_types(
-    lcm_type_dir: str, lcm_files: T.Sequence[str], lcm_output_dir: T.Optional[str] = None
+    lcm_type_dir: T.Openable, lcm_files: T.Sequence[str], lcm_output_dir: T.Openable = None
 ) -> T.Dict[str, T.Any]:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.

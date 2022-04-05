@@ -11,7 +11,6 @@ import numpy as np
 from symforce import geo
 from symforce import cc_sym
 from symforce import typing as T
-from symforce.opt.factor import Factor
 from symforce.opt.sub_problem import SubProblem
 from symforce.opt.residual_block import ResidualBlockWithCustomJacobian
 from symforce.opt.optimization_problem import OptimizationProblem
@@ -58,15 +57,8 @@ class SymforceOptimizationProblemTest(TestCase):
             residual_blocks=r,
         )
 
-        factor = problem.make_factors("custom_jacobian_problem")[0]
         with self.assertRaises(ValueError):
-            cc_factor = factor.cc_factor(
-                {"wrong_custom_jacobian.v"},
-                {
-                    "wrong_custom_jacobian.v": cc_sym.Key("v"),
-                    "wrong_custom_jacobian.v0": cc_sym.Key("v", 0),
-                },
-            )
+            problem.make_numeric_factors("custom_jacobian_problem")
 
     def test_custom_jacobians(self) -> None:
         """
@@ -100,9 +92,8 @@ class SymforceOptimizationProblemTest(TestCase):
             residual_blocks=r,
         )
 
-        factor = problem.make_factors("custom_jacobian_problem")[0]
+        factor = problem.make_numeric_factors("custom_jacobian_problem")[0]
         cc_factor = factor.cc_factor(
-            {"custom_jacobian.v"},
             {"custom_jacobian.v": cc_sym.Key("v"), "custom_jacobian.v0": cc_sym.Key("v", 0)},
         )
 

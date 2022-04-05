@@ -15,6 +15,7 @@ from lcmtypes.sym._values_t import values_t
 
 from symforce import typing as T
 from symforce.opt.factor import Factor
+from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
 from symforce import cc_sym
 
@@ -26,21 +27,31 @@ class Optimizer:
     Typical usage is to construct an Optimizer from a set of factors and keys to optimize, and then
     call `optimize` repeatedly with a `Values`.
 
-    Example creation with an `OptimizationProblem`:
+    Example creation with an `OptimizationProblem` using `make_numeric_factors()`. The linearization
+    functions are generated in `make_numeric_factors()` and are linearized with respect to
+    `problem.optimized_keys()`.
 
         problem = OptimizationProblem(subproblems=[...], residual_blocks=...)
-        factors = problem.make_factors("my_problem")
-        optimized_keys = set(problem.optimized_keys())
+        factors = problem.make_numeric_factors("my_problem")
+        optimizer = Optimizer(factors)
 
-        optimizer = Optimizer(factors, optimized_keys)
+    Example creation with an `OptimizationProblem` using `make_symbolic_factors()`. The symbolic
+    factors are converted into numeric factors when the optimizer is created, and are linearized
+    with respect to the "optimized keys" passed to the optimizer. The linearization functions
+    are generated when converting to numeric factors when the optimizer is created.
+
+        problem = OptimizationProblem(subproblems=[...], residual_blocks=...)
+        factors = problem.make_symbolic_factors("my_problem")
+        optimizer = Optimizer(factors, problem.optimized_keys())
 
     Example creation with a single `Factor`:
 
-        factor = Factor([my_key_0, my_key_1, my_key_2], my_residual_function)
-
+        factor = Factor(
+            [my_key_0, my_key_1, my_key_2], my_residual_function
+        )
         optimizer = Optimizer(
             factors=[factor],
-            optimized_keys={my_key_0, my_key_1},
+            optimized_keys=[my_key_0, my_key_1],
         )
 
     And usage:
@@ -53,9 +64,15 @@ class Optimizer:
     optimization results will be identical.
 
     Args:
-        factors: A sequence of Factor objects representing the residuals in the problem
-        optimized_keys: A set of the keys to be optimized
+        factors: A sequence of either Factor or NumericFactor objects representing the
+            residuals in the problem. If (symbolic) Factors are passed, they are convered to
+            NumericFactors by generating linearization functions of the residual with respect to the
+            keys in `optimized_keys`.
+        optimized_keys: A set of the keys to be optimized. Only required if symbolic factors are
+            passed to the optimizer.
         params: Params for the optimizer
+        debug_stats: Whether the optimizer should record debuggins stats such as the optimized
+            values, residual, jacobian, etc. computed at each iteration of the optimization.
     """
 
     @dataclass
@@ -118,18 +135,40 @@ class Optimizer:
 
     def __init__(
         self,
-        factors: T.Iterable[Factor],
-        optimized_keys: T.Collection[str],
+        factors: T.Iterable[T.Union[Factor, NumericFactor]],
+        optimized_keys: T.Sequence[str] = None,
         params: Optimizer.Params = None,
         debug_stats: bool = False,
     ):
-        self.factors = list(factors)
 
-        # Allow passing in any iterable of keys but check for uniqueness
-        self.optimized_keys = set(optimized_keys)
-        assert len(self.optimized_keys) == len(
-            optimized_keys
-        ), f"Duplicates in optimized keys: {optimized_keys}"
+        if optimized_keys is None:
+            # This will be filled with the optimized keys of the numeric factors
+            self.optimized_keys = []
+        else:
+            self.optimized_keys = list(optimized_keys)
+            assert len(optimized_keys) == len(
+                set(optimized_keys)
+            ), f"Duplicates in optimized keys: {optimized_keys}"
+
+        numeric_factors = []
+        for factor in factors:
+            if isinstance(factor, Factor):
+                if optimized_keys is None:
+                    raise ValueError(
+                        "You must specify keys to optimize when passing symbolic factors."
+                    )
+                # We compute the linearization in the same order as `optimized_keys`
+                # so that e.g. columns of the generated jacobians are in the same order
+                factor_opt_keys = [opt_key for opt_key in optimized_keys if opt_key in factor.keys]
+                numeric_factors.append(factor.to_numeric_factor(factor_opt_keys))
+            else:
+                # Add unique keys to optimized keys
+                self.optimized_keys.extend(
+                    opt_key
+                    for opt_key in factor.optimized_keys
+                    if opt_key not in self.optimized_keys
+                )
+                numeric_factors.append(factor)
 
         # Set default params if none given
         if params is None:
@@ -145,7 +184,7 @@ class Optimizer:
         # Initialize the keys map with the optimized keys, which are needed to construct the factors
         # This works because the factors maintain a reference to this, so everything is fine as long
         # as the unoptimized keys are also in here before we attempt to linearize any of the factors
-        self._cc_keys_map = {key: cc_sym.Key("x", i) for i, key in enumerate(optimized_keys)}
+        self._cc_keys_map = {key: cc_sym.Key("x", i) for i, key in enumerate(self.optimized_keys)}
 
         # This stores the list of keys in the python Values, which are necessary for reconstructing
         # a Python Values from C++, in particular for methods that don't otherwise have a Python
@@ -156,7 +195,7 @@ class Optimizer:
         # Construct the C++ optimizer
         self._cc_optimizer = cc_sym.Optimizer(
             optimizer_params_t(**dataclasses.asdict(self.params)),
-            [factor.cc_factor(self.optimized_keys, self._cc_keys_map) for factor in self.factors],
+            [factor.cc_factor(self._cc_keys_map) for factor in numeric_factors],
             debug_stats=self.debug_stats,
         )
 

@@ -5,14 +5,14 @@
 
 import functools
 from pathlib import Path
-import textwrap
+import numpy as np
 
 from symforce import geo
 from symforce import ops
 from symforce import sympy as sm
 from symforce import typing as T
-from symforce.opt.factor import Factor
-from symforce.opt.factor import visualize_factors
+from symforce.opt.factor import Factor, visualize_factors
+from symforce.opt.numeric_factor import NumericFactor
 from symforce.ops.interfaces import LieGroup
 from symforce.test_util import TestCase
 from symforce.values import Values
@@ -20,7 +20,7 @@ from symforce.values import Values
 
 class SymforcePyFactorTest(TestCase):
     """
-    Test the Python Factor (`symforce.opt.factor.Factor`).
+    Test the Python Factor (`symforce.opt.factor.Factor` and `symforce.opt.numeric_factor.NumericFactor`).
     """
 
     @staticmethod
@@ -63,6 +63,41 @@ class SymforcePyFactorTest(TestCase):
         self.assertEqual(
             first_between.codegen.inputs, Values(x=geo.Rot3.symbolic("x"), y=geo.Rot3.symbolic("y"))
         )
+
+    def test_generate_and_read(self) -> None:
+        """
+        Tests factor code generation and loading of previously generated factors
+        """
+        inputs = Values(a=geo.V3.zero(), b=geo.V3.zero())
+        optimized_keys = ["a"]
+
+        def between(a: geo.V3, b: geo.V3) -> geo.V3:
+            return a - b
+
+        # Generate a new factor
+        output_dir = self.make_output_dir("sf_py_factor_test_")
+        namespace = "test"
+        name = "between_factor"
+        numeric_factor = Factor(
+            keys=inputs.keys_recursive(), residual=between, name=name
+        ).to_numeric_factor(
+            optimized_keys=optimized_keys, output_dir=output_dir, namespace=namespace
+        )
+        # Check that we can call the generated function
+        residual, _, _, _ = numeric_factor.linearize(inputs)
+        self.assertStorageNear(residual, np.zeros((3,)))
+
+        # Load the generated function
+        loaded_factor = NumericFactor.from_file_python(
+            keys=inputs.keys_recursive(),
+            optimized_keys=optimized_keys,
+            output_dir=output_dir,
+            namespace=namespace,
+            name=name,
+        )
+        # Check that we can call the loaded function
+        residual, _, _, _ = loaded_factor.linearize(inputs)
+        self.assertStorageNear(residual, np.zeros((3,)))
 
     def test_visualize(self) -> None:
         """

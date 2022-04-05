@@ -2,60 +2,49 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-
 from __future__ import annotations
 
-import enum
 import graphviz
-import numpy as np
 from pathlib import Path
 import uuid
+import logging
 
-from symforce import cc_sym
-from symforce import codegen
-from symforce.codegen import codegen_util
-from symforce.codegen.similarity_index import SimilarityIndex
 from symforce import geo
-from symforce import python_util
 from symforce import typing as T
+from symforce.codegen import Codegen
+from symforce.codegen import codegen_config
+from symforce import python_util
+from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
+from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
-
-
-class FactorCodegenLanguage(enum.Enum):
-    PYTHON = 1
-    CPP = 2
+from symforce import logger
 
 
 class Factor:
     """
-    A symbolic Factor, representing a residual function applied to a set of keys.
-
-    Can be used to generate numerical code for efficiently evaluating the factor in Python or C++
-
-    Can be constructed from either a residual function, or inputs and outputs Values
+    A class used to represent symbolic factors as used in a factor graph. The factor is typically
+    constructed from either a function or from a symbolic expression using
+    `Factor.from_inputs_and_residual()`. A linearization function can be generated from the factor
+    using `generate()` which can be used in a larger optimization.
 
     Args:
-        keys: The set of variables that are inputs to the factor.  These should be in order of
-              the residual function arguments or input Values entries (whichever is applicable)
-        name: The name of the factor - optional for residual function Factors (will be deduced from
-              the function name if not provided)
-        residual: The residual function for the factor.  Either this, or both `inputs` and `outputs`
-                  must be provided
-        inputs: The inputs Values for the factor.  Either this and `outputs`, or just `residual`,
-                must be provided
-        outputs: The outputs Values for the factor.  Either this and `inputs`, or just `residual`,
-                 must be provided
-        codegen_language: The language in which to generate numerical code to evaluate the factor,
-                          if needed.  Defaults to PYTHON, which does not require any compilation
-        custom_jacobian_func: A functor that computes the jacobian, typically unnecessary unless you
-                              want to override the jacobian computed by SymForce, e.g. to stop
-                              derivatives with respect to certain variables or directions, or
-                              because the jacobian can be analytically simplified in a way that
-                              SymForce won't do automatically. If not provided, the jacobian will be
-                              computed automatically.  If provided, this should be a function that
-                              takes the set of optimized keys, and returns the jacobian of the
-                              residual with respect to those keys
+        keys: The set of variables that are inputs to the factor. These should be in order of
+            the residual function arguments.
+        residual: The residual function for the factor. When passed symbolic inputs, this should
+            return a symbolic expression for the residual.
+        config: The language the numeric factor will be generated in. Defaults to Python, which
+            does not require any compilation. Also does not autoformat by default in order to
+            speed up code generation.
+        custom_jacobian_func: A functor that computes the jacobian, typically unnecessary unless
+            you want to override the jacobian computed by SymForce, e.g. to stop derivatives
+            with respect to certain variables or directions, or because the jacobian can be
+            analytically simplified in a way that SymForce won't do automatically. If not
+            provided, the jacobian will be computed automatically.  If provided, this should be
+            a function that takes the set of optimized keys, and returns the jacobian of the
+            residual with respect to those keys.
+        kwargs: Any other arguments to be passed to the codegen object used to generate the
+            numeric factor. See `Codegen.function()` for details.
     """
 
     _generated_residual_cache = GeneratedResidualCache()
@@ -63,145 +52,199 @@ class Factor:
     def __init__(
         self,
         keys: T.Sequence[str],
-        name: str = None,
-        *,
-        residual: T.Callable[..., geo.M] = None,
-        inputs: Values = None,
-        outputs: Values = None,
-        codegen_language: FactorCodegenLanguage = FactorCodegenLanguage.PYTHON,
+        residual: T.Callable[..., geo.Matrix],
+        config: codegen_config.CodegenConfig = None,
         custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
-    ):
-        if codegen_language != FactorCodegenLanguage.PYTHON:
-            raise NotImplementedError
-
-        self.name = name
-        self.codegen_language = codegen_language
-        self.custom_jacobian_func = custom_jacobian_func
-
-        config = codegen.PythonConfig(
-            # NOTE(hayk): This is to speed up generation
-            autoformat=False
+        **kwargs: T.Any,
+    ) -> None:
+        # We use `_initialize()` to set `self.codegen` because we want the default constructor of
+        # `Factor` to take a residual function, but the default constructor of a codegen object
+        # takes inputs and outputs Values. Thus, `from_inputs_and_residual()` does not need to
+        # call `__init__()`, and can instead call `__new__()` + `_initialize()` and pass its own
+        # codegen object constructed using the default codegen object constructor.
+        if config is None:
+            config = codegen_config.PythonConfig(autoformat=False)
+        self._initialize(
+            keys=keys,
+            codegen_obj=Codegen.function(func=residual, config=config, **kwargs),
+            custom_jacobian_func=custom_jacobian_func,
         )
 
-        if residual is not None:
-            self.codegen = codegen.Codegen.function(residual, name=name, config=config)
-            if self.name is None:
-                self.name = self.codegen.name
-        else:
-            if inputs is None or outputs is None:
-                raise ValueError
-
-            if name is None:
-                raise ValueError
-
-            self.codegen = codegen.Codegen(
-                inputs=inputs, outputs=outputs, name=self.name, config=config
-            )
-
-        # TODO(hayk): Should we convert to a set and make sure there were no duplicates?
-        self.keys = keys
-
-        self.generated_residual: T.Optional[T.Callable] = None
-        self.optimized_keys: T.Optional[T.Set[str]] = None
-
-    def __repr__(self) -> str:
+    @classmethod
+    def from_inputs_and_residual(
+        cls,
+        keys: T.Sequence[str],
+        inputs: Values,
+        residual: geo.Matrix,
+        config: codegen_config.CodegenConfig = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        **kwargs: T.Any,
+    ) -> Factor:
         """
-        Return a string representation.
-        """
-        return f"<Factor {self.name} ({', '.join(self.keys)})>"
-
-    def _generate_python_function(self, optimized_keys: T.Set[str]) -> None:
-        """
-        Generate a numerical Python function for the factor, and store it in self.generated_residual
-
-        If we've previously generated a numerical function, but for a different set of optimized
-        keys, this will generate a new residual function for the given set of optimized keys.
+        Constructs a Factor from a set of inputs and a residual vector that consists of
+        symbolic expressions composed from the symbolic variables in the inputs.
 
         Args:
-            optimized_keys: The set of keys which are optimized (keys which we need derivatives with
-                            respect to).  Must be a subset of self.keys.
+            keys: The set of variables that are inputs to the factor. These should be in order of
+                input Values entries (computed using inputs.keys_recursive()), and are the keys used
+                in the overall optimization problem.
+            inputs: The inputs Values for the factor.
+            residual: An expression representing the residual of the factor.
+            config: The language the numeric factor will be generated in. Defaults to Python, which
+                does not require any compilation. Also does not autoformat by default in order to
+                speed up code generation.
+            custom_jacobian_func: A functor that computes the jacobian, typically unnecessary unless
+                you want to override the jacobian computed by SymForce, e.g. to stop derivatives
+                with respect to certain variables or directions, or because the jacobian can be
+                analytically simplified in a way that SymForce won't do automatically. If not
+                provided, the jacobian will be computed automatically.  If provided, this should be
+                a function that takes the set of optimized keys, and returns the jacobian of the
+                residual with respect to those keys.
+            kwargs: Any other arguments to be passed to the codegen object used to generate the
+                numeric factor. See `Codegen.__init__()` for details.
         """
-        # This is unused, but if we don't import it things blow up.  I _think_ it's because
-        # the generated residual imports it, and we import that then delete the directory
-        # where it was generated...
-        import sym  # pylint: disable=unused-import
+        if config is None:
+            config = codegen_config.PythonConfig(autoformat=False)
+        instance = cls.__new__(cls)
+        instance._initialize(
+            keys=keys,
+            codegen_obj=Codegen(
+                inputs=inputs, outputs=Values(residual=residual), config=config, **kwargs
+            ),
+            custom_jacobian_func=custom_jacobian_func,
+        )
+        return instance
 
-        if self.generated_residual is not None and self.optimized_keys == optimized_keys:
-            return
+    def _initialize(
+        self,
+        keys: T.Sequence[str],
+        codegen_obj: Codegen,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+    ) -> None:
+        """
+        Initializes the Factor object from a codegen object
 
-        self.optimized_keys = optimized_keys
+        Args:
+            keys: The set of variables that are inputs to the factor.
+            codegen_obj: Codegen object used to generate the numerical factor.
+            custom_jacobian_func: Custom jacobian function as described in `__init__`.
+        """
+        if len(keys) != len(codegen_obj.inputs.keys_recursive()):
+            raise ValueError(
+                "There must be a key for each input to the residual. Expected"
+                + f" {len(codegen_obj.inputs.keys_recursive())} keys but got {len(keys)} keys."
+            )
 
+        if len(codegen_obj.inputs.keys()) != len(codegen_obj.inputs.keys_recursive()):
+            raise ValueError(
+                "Only flat inputs are currently supported (i.e. inputs should not"
+                + " contain nested Values objects or Dataclasses or Sequences."
+            )
+
+        self.keys = keys
+        self.codegen = codegen_obj
+        self.custom_jacobian_func = custom_jacobian_func
+        self.name = self.codegen.name
+
+    def generate(
+        self, optimized_keys: T.Sequence[str], output_dir: T.Openable = None, namespace: str = None
+    ) -> T.Dict[str, T.Any]:
+        """
+        Generates the code needed to construct a NumericFactor from this Factor.
+
+        Args:
+            optimized_keys: Keys which we compute the linearization of the residual with respect to.
+            output_dir: Where the generated linearization function will be output.
+            namespace: Namespace of the generated linearization function.
+
+        Returns:
+            Dict containing locations where the code was generated (e.g. "output_dir" and
+            "python_function_dir" or "cpp_function_dir") and the name of the generated function.
+        """
+        if namespace is None:
+            namespace = f"sym_{uuid.uuid4().hex}"
+
+        codegen_keys = list(self.codegen.inputs.keys())
+        codegen_with_linearization = self.codegen.with_linearization(
+            which_args=[codegen_keys[self.keys.index(key)] for key in optimized_keys],
+            custom_jacobian=self.custom_jacobian_func(optimized_keys)
+            if self.custom_jacobian_func is not None
+            else None,
+        )
+
+        output_data = codegen_with_linearization.generate_function(
+            output_dir=output_dir, namespace=namespace
+        )
+
+        output_data["name"] = codegen_with_linearization.name
+
+        return output_data
+
+    def to_numeric_factor(
+        self,
+        optimized_keys: T.Sequence[str],
+        output_dir: T.Openable = None,
+        namespace: str = None,
+    ) -> NumericFactor:
+        """
+        Constructs a NumericFactor from this Factor, including generating a linearization
+        function.
+
+        Args:
+            optimized_keys: Keys which we compute the linearization of the residual with respect to.
+            output_dir: Where the generated linearization function will be output
+            namespace: Namespace of the generated linearization function
+        """
+        if namespace is None:
+            namespace = f"sym_{uuid.uuid4().hex}"
+
+        for opt_key in optimized_keys:
+            if opt_key not in self.keys:
+                raise ValueError(
+                    f"Optimization key {opt_key} does not match any of the keys used as inputs"
+                    + " to this factor. The optimization keys must be a subset of the input keys to"
+                    + " this factor."
+                )
+
+        if not isinstance(self.codegen.config, codegen_config.PythonConfig):
+            raise NotImplementedError(
+                "We currently only support generating and then loading python factors."
+            )
+
+        # If we have already generated a factor of the same form, load the previously generated
+        # factor.
         similarity_index = SimilarityIndex.from_codegen(self.codegen)
         cached_residual = Factor._generated_residual_cache.get_residual(
             similarity_index, optimized_keys
         )
         if cached_residual is not None:
-            self.generated_residual = cached_residual
-            return
-
-        inputs = list(self.codegen.inputs.keys())
-        codegen_with_linearization = self.codegen.with_linearization(
-            which_args=[inputs[i] for i, key in enumerate(self.keys) if key in self.optimized_keys],
-            custom_jacobian=self.custom_jacobian_func(
-                [key for key in self.keys if key in self.optimized_keys]
+            return NumericFactor(
+                keys=self.keys,
+                optimized_keys=optimized_keys,
+                linearization_function=cached_residual,
             )
-            if self.custom_jacobian_func is not None
-            else None,
+
+        # Compute the linearization of the residual and generate code
+        output_data = self.generate(optimized_keys, output_dir, namespace)
+
+        # Load the generated function
+        numeric_factor = NumericFactor.from_file_python(
+            keys=self.keys,
+            optimized_keys=optimized_keys,
+            output_dir=output_data["output_dir"],
+            namespace=namespace,
+            name=output_data["name"],
         )
 
-        namespace = f"factor_{uuid.uuid4().hex}"
-        codegen_data = codegen_with_linearization.generate_function(namespace=namespace)
-
-        assert codegen_with_linearization.name is not None
-        self.generated_residual = getattr(
-            codegen_util.load_generated_package(
-                f"{namespace}.{self.name}", codegen_data["python_function_dir"]
-            ),
-            codegen_with_linearization.name,
-        )
-        python_util.remove_if_exists(codegen_data["output_dir"])
-
-        assert self.generated_residual is not None
         Factor._generated_residual_cache.cache_residual(
-            similarity_index, optimized_keys, self.generated_residual
+            similarity_index, optimized_keys, numeric_factor.linearization_function
         )
 
-    def cc_factor(
-        self, optimized_keys: T.Set[str], cc_key_map: T.Mapping[str, cc_sym.Key]
-    ) -> cc_sym.Factor:
-        """
-        Create a C++ Factor from this symbolic Factor, for use with the C++ Optimizer
+        if output_dir is None and logger.level != logging.DEBUG:
+            # We generated the function into a temp directory; delete it now that it's loaded.
+            python_util.remove_if_exists(output_data["output_dir"])
 
-        Note that while this is a C++ Factor object, the residual function may be a compiled C++
-        function or a Python function passed into C++ through pybind, depending on
-        self.codegen_language
-
-        Args:
-            optimized_keys: The set of keys which are optimized (keys which we need derivatives with
-                            respect to).  Must be a subset of self.keys.
-            cc_key_map: Mapping from Python keys (strings, like returned by
-                        `Values.keys_recursive()`) to C++ keys
-
-        Returns:
-            A C++ wrapped Factor object
-        """
-        if self.codegen_language == FactorCodegenLanguage.PYTHON:
-            self._generate_python_function(optimized_keys)
-
-            # We don't use the index_entries here since cc_key_map is populated lazily by the python
-            # Optimizer, so we have to bind cc_key_map in here instead of passing to the Factor
-            # constructor
-            def wrapped(
-                values: cc_sym.Values, _: T.Any
-            ) -> T.Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-                assert self.generated_residual is not None
-                return self.generated_residual(*[values.at(cc_key_map[key]) for key in self.keys])
-
-            return cc_sym.Factor(
-                wrapped, [cc_key_map[key] for key in self.keys if key in optimized_keys]
-            )
-        else:
-            raise NotImplementedError
+        return numeric_factor
 
 
 def visualize_factors(factors: T.Sequence[Factor], outfile: T.Openable = None) -> graphviz.Graph:

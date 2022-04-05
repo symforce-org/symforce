@@ -789,6 +789,7 @@ class Values(T.MutableMapping[str, T.Any]):
         if isinstance(value, Values):
             return Values({k: Values._apply_to_leaves(v, func) for k, v in value.items()})
         elif isinstance(value, (list, tuple)):
+            # pylint: disable=too-many-function-args
             return type(value)([Values._apply_to_leaves(v, func) for v in value])
         elif isinstance(value, T.Dataclass):
             return Values(

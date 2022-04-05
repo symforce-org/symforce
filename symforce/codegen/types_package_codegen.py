@@ -21,8 +21,8 @@ def generate_types(
     use_eigen_types: bool,
     shared_types: T.Mapping[str, str] = None,
     scalar_type: str = "double",
-    output_dir: T.Optional[str] = None,
-    lcm_bindings_output_dir: T.Optional[str] = None,
+    output_dir: T.Openable = None,
+    lcm_bindings_output_dir: T.Openable = None,
     templates: template_util.TemplateList = None,
 ) -> T.Dict[str, T.Any]:
     """

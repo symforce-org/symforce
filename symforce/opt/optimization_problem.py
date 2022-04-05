@@ -4,15 +4,17 @@
 # ----------------------------------------------------------------------------
 
 import itertools
-from pathlib import Path
 import re
 
 from symforce import geo
 from symforce import ops
 from symforce.opt.factor import Factor
+from symforce.opt.numeric_factor import NumericFactor
 from symforce.opt.sub_problem import SubProblem
 from symforce import typing as T
 from symforce.values import Values
+from symforce.codegen import codegen_config
+from symforce import logger
 
 
 class OptimizationProblem:
@@ -66,6 +68,12 @@ class OptimizationProblem:
 
         return residuals, extra_values
 
+    def keys(self) -> T.List[str]:
+        """
+        Compute the set of all keys specified by the subproblems
+        """
+        return self.inputs.dataclasses_to_values().keys_recursive()
+
     def optimized_keys(self) -> T.List[str]:
         """
         Compute the set of optimized keys, as specified by the subproblems
@@ -85,15 +93,41 @@ class OptimizationProblem:
             for value in optimized_values
         ]
 
-    def generate(self, output_dir: Path) -> None:
+    def generate(self, output_dir: T.Openable, namespace: str, name: str) -> None:
         """
-        Generate everything needed to optimize `problem` in C++
-        """
-        raise NotImplementedError()
+        Generate everything needed to optimize `problem` in C++. This currently assumes there is
+        only one factor generated for the optimization problem.
 
-    def make_factors(self, name: str) -> T.List[Factor]:
+        Args:
+            output_dir: Directory in which to output the generated files.
+            namespace: Namespace used in each generated file.
+            name: Name of the generated factor.
         """
-        Return a list of `Factor`s for this problem, for example to pass to `Optimizer`
+        factors = self.make_symbolic_factors(name=name, config=codegen_config.CppConfig())
+        for factor in factors:
+            output_data = factor.generate(
+                optimized_keys=self.optimized_keys(), output_dir=output_dir, namespace=namespace
+            )
+            logger.info(
+                "Generated function `{}` in directory `{}`".format(
+                    output_data["name"], output_data["cpp_function_dir"]
+                )
+            )
+
+    def make_symbolic_factors(
+        self,
+        name: str,
+        config: codegen_config.CodegenConfig = codegen_config.PythonConfig(),
+    ) -> T.List[Factor]:
+        """
+        Return a list of symbolic factors for this problem for analysis purposes. If the factors
+        are to be passed to an optimizer, use `make_numeric_factors` instead.
+
+        Args:
+            name: Name of factors. Note that the generated linearization functions will have
+                "_factor" appended to the function name (see
+                Codegen._pick_name_for_function_with_derivatives for details).
+            config: Language the factors will be generated in when `.generate()` is called.
         """
         inputs = self.inputs.dataclasses_to_values()
 
@@ -115,9 +149,9 @@ class OptimizationProblem:
             """
             Functor that computes the jacobians of the residual with respect to a set of keys
 
-            The set of keys is not known when make_factors is called, because we may want to create
-            a Factor and then compute derivatives with respect to different sets of optimized
-            variables.
+            The set of keys is not known when make_symbolic_factors is called, because we may want
+            to create a NumericFactor which computes derivatives with respect to different sets of
+            optimized variables.
             """
             jacobians = [
                 residual_block.compute_jacobians(
@@ -128,19 +162,43 @@ class OptimizationProblem:
             return geo.Matrix.block_matrix(jacobians)
 
         return [
-            Factor(
-                keys=inputs.keys_recursive(),
-                name=f"{name}_factor",
+            Factor.from_inputs_and_residual(
+                keys=self.keys(),
                 inputs=Values(
                     **{
                         dots_and_brackets_to_underscores(key): value
                         for key, value in inputs.items_recursive()
                     }
                 ),
-                outputs=Values(residual=geo.M(self.residuals.to_storage())),
+                residual=geo.M(self.residuals.to_storage()),
+                config=config,
                 custom_jacobian_func=compute_jacobians,
+                name=name,
             )
         ]
+
+    def make_numeric_factors(
+        self, name: str, optimized_keys: T.Sequence[str] = None
+    ) -> T.List[NumericFactor]:
+        """
+        Returns a list of `NumericFactor`s for this problem, for example to pass to `Optimizer`.
+
+        Args:
+            name: Name of factors. Note that the generated linearization functions will have
+                "_factor" appended to the function name (see
+                Codegen._pick_name_for_function_with_derivatives for details).
+            optimized_keys: List of keys to optimize with respect to. Defaults to the optimized keys
+                specified by the subproblems of this optimization problem.
+        """
+        if optimized_keys is None:
+            optimized_keys = self.optimized_keys()
+        numeric_factors = []
+        for factor in self.make_symbolic_factors(name):
+            factor_optimized_keys = [
+                opt_key for opt_key in optimized_keys if opt_key in factor.keys
+            ]
+            numeric_factors.append(factor.to_numeric_factor(factor_optimized_keys))
+        return numeric_factors
 
 
 def build_inputs(
