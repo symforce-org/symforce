@@ -28,11 +28,12 @@ os.environ["PYTHONPATH"] = package_path + ":" + os.environ.get("PYTHONPATH", "")
 # -- Project information -----------------------------------------------------
 
 project = "symforce"
-copyright = "2020, Skydio, Inc"
+copyright = "2022, Skydio, Inc"
 author = "Skydio"
 
 # The short X.Y version
-version = "0.20"
+from symforce import __version__ as version
+
 # The full version, including alpha/beta/rc tags
 release = version
 
