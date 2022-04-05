@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="sym",
-    version="0.2.0",
+    version="0.3.0",
     description="generated numerical python package (installed by SymForce)",
     long_description="generated numerical python package (installed by SymForce)",
     author="Skydio, Inc",
