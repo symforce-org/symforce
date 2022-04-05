@@ -34,11 +34,12 @@ class Values(T.MutableMapping[str, T.Any]):
         attr: Access with dot notation, such as `v.attr.states.x0` instead of `v['states.x0']`.
     """
 
-    def __init__(self, **kwargs: T.Any) -> None:
+    def __init__(self, _dict: T.Optional[T.Dict[str, T.Any]] = None, **kwargs: T.Any) -> None:
         """
         Create like a Python dict.
 
         Args:
+            _dict (dict): Initial values in as a dictionary
             kwargs (dict): Initial values
         """
         # Underlying storage - ordered dictionary
@@ -53,6 +54,9 @@ class Values(T.MutableMapping[str, T.Any]):
         self.symbol_name_scoper = initialization.create_named_scope(sm.__scopes__)
         self.key_scoper = initialization.create_named_scope(self.__scopes__)
 
+        # Fill with construction dict
+        if _dict is not None:
+            self.update(_dict)
         # Fill with construction kwargs
         self.update(kwargs)
 
@@ -783,12 +787,12 @@ class Values(T.MutableMapping[str, T.Any]):
         Recursive implementation of `.apply_to_leaves`.
         """
         if isinstance(value, Values):
-            return Values(**{k: Values._apply_to_leaves(v, func) for k, v in value.items()})
+            return Values({k: Values._apply_to_leaves(v, func) for k, v in value.items()})
         elif isinstance(value, (list, tuple)):
             return type(value)([Values._apply_to_leaves(v, func) for v in value])
         elif isinstance(value, T.Dataclass):
             return Values(
-                **{
+                {
                     field.name: Values._apply_to_leaves(getattr(value, field.name), func)
                     for field in dataclasses.fields(value)
                 }

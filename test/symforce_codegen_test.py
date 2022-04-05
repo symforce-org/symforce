@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 
 import copy
+from dataclasses import dataclass
 import functools
 import importlib.util
 import logging
@@ -701,6 +702,36 @@ class SymforceCodegenTest(TestCase):
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
             expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians_multiple_outputs"),
         )
+
+    def test_function_with_dataclass(self) -> None:
+        @dataclass
+        class TestDataclass0:
+            v0: T.Scalar
+
+        @dataclass
+        class TestDataclass1:
+            v1: geo.V3
+            v2: TestDataclass0
+
+        def test_function_dataclass(dataclass: TestDataclass1, x: T.Scalar) -> geo.V3:
+            return x * dataclass.v2.v0 * dataclass.v1
+
+        dataclass_codegen = codegen.Codegen.function(
+            func=test_function_dataclass, config=codegen.PythonConfig()
+        )
+        dataclass_codegen_data = dataclass_codegen.generate_function()
+        gen_module = codegen_util.load_generated_package(
+            "test_function_dataclass", dataclass_codegen_data["python_function_dir"]
+        )
+
+        dataclass_t = codegen_util.load_generated_lcmtype(
+            "sym", "dataclass_t", dataclass_codegen_data["python_types_dir"]
+        )()
+        dataclass_t.v1.data = np.zeros(3)
+        dataclass_t.v2.v0 = 1
+
+        # make sure it runs
+        gen_module.test_function_dataclass(dataclass_t, 1)
 
 
 if __name__ == "__main__":

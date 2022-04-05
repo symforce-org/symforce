@@ -182,6 +182,9 @@ class Codegen:
         # Run the symbolic arguments through the function and get the symbolic output expression(s)
         res = func(*inputs.values())
 
+        # at this point replace all dataclasses in the inputs with values
+        inputs = inputs.dataclasses_to_values()
+
         if isinstance(res, tuple):
             # Function returns multiple objects
             output_terms = res
