@@ -111,6 +111,7 @@ disable=raw-checker-failed,
         arguments-differ,
         unpacking-non-sequence,
         unsubscriptable-object,
+        arguments-differ,
 
         # Would be nice to drive these to 0
         arguments-renamed,
