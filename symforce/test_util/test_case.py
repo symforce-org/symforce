@@ -104,6 +104,17 @@ def symengine_only(func: T.Callable) -> T.Callable:
         return func
 
 
+def expected_failure_on_sympy(func: T.Callable) -> T.Callable:
+    """
+    Decorator to mark a test to be expected to fail only on the SymPy backend.
+    """
+    backend = symforce.get_backend()
+    if backend == "sympy":
+        return unittest.expectedFailure(func)
+    else:
+        return func
+
+
 def slow_on_sympy(func: T.Callable) -> T.Callable:
     """
     Decorator to mark a test as slow on the sympy backend.  Will be skipped unless passed the

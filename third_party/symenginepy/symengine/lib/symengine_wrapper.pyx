@@ -3440,6 +3440,17 @@ cdef class DenseMatrixBase(MatrixBase):
                         continue
                     except TypeError:
                         pass
+                    # NOTE(brad): If, for example, value = [np.float64(1)], r = 0, c = 0,
+                    # then value[r][c] is np.float64(1)[0], which raises an IndexError error,
+                    # not a TypeError (likely because np.float64(1) is considered a 0-dim array).
+                    # Otherwise, we do still want to raise the IndexError.
+                    # Since numpy may not be imported, I instead check if the shape attribute is
+                    # that of a 0-dim array.
+                    except IndexError as e:
+                        if hasattr(value[r], "shape") and value[r].shape == ():
+                            pass
+                        else:
+                            raise e
 
                     if len(row_iter) == 1:
                         self.set(row, col, value[c])

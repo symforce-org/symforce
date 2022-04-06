@@ -9,7 +9,7 @@ import symforce
 from symforce import geo
 from symforce import sympy as sm
 from symforce import typing as T
-from symforce.test_util import TestCase, sympy_only, epsilon_handling
+from symforce.test_util import TestCase, sympy_only, expected_failure_on_sympy, epsilon_handling
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
@@ -373,6 +373,38 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(a.T.dot(b), expected_result)
         with self.assertRaises(TypeError):
             self.assertEqual(a.dot(b.T), expected_result)
+
+    @expected_failure_on_sympy
+    def test_setitem(self) -> None:
+        """
+        Tests:
+            Matrix.__setitem__
+        """
+        with self.subTest(msg="Can assign a 1d array to a 1d slice"):
+            m = geo.M12()
+            m[0, :] = [1, 2]
+            self.assertEqual(m, geo.M12([1, 2]))
+
+        with self.subTest(msg="Can assign List[np.float64] to tupled index entry"):
+            m = geo.M12()
+            m[0, :] = [np.float64(1), np.float64(2)]
+            self.assertEqual(m, geo.M12([1.0, 2.0]))
+
+        with self.subTest(msg="Assigning a too small list to a tupled index entry"):
+            m = geo.M12()
+            with self.assertRaises(IndexError):
+                m[0, :] = [np.float64(1)]
+
+        with self.subTest(msg="Assigning a too small 2d array to tupled index entry"):
+            # NOTE(brad): These tests are run to ensure that the fix to keep an IndexError
+            # from being raised for np.float64s doesn't suppress IndexErrors where they
+            # are warranted.
+            m22 = geo.M22()
+            with self.assertRaises(IndexError):
+                m22[:, :] = [[np.float64(1), np.float64(2)]]
+
+            with self.assertRaises(IndexError):
+                m22[:, :] = [[np.float64(1)], [np.float64(2)]]
 
 
 if __name__ == "__main__":
