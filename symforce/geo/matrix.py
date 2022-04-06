@@ -85,6 +85,11 @@ class Matrix(Storage):
                     array[0][0], Matrix
                 ), "Use Matrix.block_matrix to construct using matrices"
                 rows, cols = len(array), len(array[0])
+                if cls._is_fixed_size():
+                    assert (
+                        rows,
+                        cols,
+                    ) == cls.SHAPE, f"{cls} has shape {cls.SHAPE} but arg has shape {(rows, cols)}"
                 assert all(len(arr) == cols for arr in array), "Inconsistent columns: {}".format(
                     args
                 )

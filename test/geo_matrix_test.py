@@ -42,6 +42,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(geo.M([[1, 2], [3, 4]]), geo.M22([1, 2, 3, 4]))
         self.assertRaises(AssertionError, lambda: geo.M([[1, 2], [3, 4, 5]]))
         self.assertRaises(AssertionError, lambda: geo.M([[geo.M22(), geo.M23()]]))
+        self.assertRaises(AssertionError, lambda: geo.M11([[1, 2]]))
 
         # 3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
         self.assertIsInstance(geo.M22([1, 2, 3, 4]), geo.M22)
