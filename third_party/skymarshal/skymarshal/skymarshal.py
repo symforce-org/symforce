@@ -53,6 +53,7 @@ def parse_args(languages, args=None):
 def main(
     languages,  # type: T.Sequence[T.Type[SkymarshalLanguage]]
     args=None,  # type: T.Sequence[str]
+    print_generated=True,  # type: bool
 ):
     # type: (...) -> None
     """The primary executable for generating lcmtypes code from struct definitions.
@@ -87,4 +88,5 @@ def main(
             else:
                 output_file.write(content)
 
-    print("Generated {} files".format(len(files)))
+    if print_generated:
+        print("Generated {} files".format(len(files)))
