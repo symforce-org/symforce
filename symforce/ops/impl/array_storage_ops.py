@@ -15,7 +15,9 @@ class ArrayStorageOps:
     """
 
     @staticmethod
-    def storage_dim(a: T.ArrayElement) -> int:
+    def storage_dim(a: T.ArrayElementOrType) -> int:
+        # NOTE(brad): Must take T.ArrayElementOrType to match AbstractStorageOps
+        assert isinstance(a, np.ndarray)
         return sum([StorageOps.storage_dim(v) for v in a])
 
     @staticmethod
@@ -23,7 +25,9 @@ class ArrayStorageOps:
         return [scalar for v in a for scalar in StorageOps.to_storage(v)]
 
     @staticmethod
-    def from_storage(a: T.ArrayElement, elements: T.List[T.Scalar]) -> T.ArrayElement:
+    def from_storage(a: T.ArrayElementOrType, elements: T.Sequence[T.Scalar]) -> T.ArrayElement:
+        # NOTE(brad): Must take T.ArrayElementOrType to match AbstractStorageOps
+        assert isinstance(a, np.ndarray)
         assert len(elements) == ArrayStorageOps.storage_dim(a)
         new_a = []
         inx = 0
@@ -35,7 +39,9 @@ class ArrayStorageOps:
         return np.array(new_a).reshape(a.shape)
 
     @staticmethod
-    def symbolic(a: T.ArrayElement, name: str, **kwargs: T.Dict) -> T.ArrayElement:
+    def symbolic(a: T.ArrayElementOrType, name: str, **kwargs: T.Dict) -> T.ArrayElement:
+        # NOTE(brad): Must take T.ArrayElementOrType to match AbstractStorageOps
+        assert isinstance(a, np.ndarray)
         return np.array(
             [StorageOps.symbolic(v, f"{name}_{i}", **kwargs) for i, v in enumerate(a)]
         ).reshape(a.shape)
