@@ -544,6 +544,7 @@ if(SYMFORCE_BUILD_TESTS)
     INTERFACE test/symforce_function_codegen_test_data/symengine/codegen_nan_test_data/cpp
     INTERFACE test/symforce_function_codegen_test_data/symengine/codegen_sparse_matrix_test_data/cpp
     INTERFACE test/symforce_function_codegen_test_data/symengine/codegen_cpp_test_data/cpp
+    INTERFACE test/symforce_function_codegen_test_data/sympy/databuffer_codegen_test_data/cpp
   )
   target_compile_definitions(
     symforce_test

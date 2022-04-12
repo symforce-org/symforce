@@ -394,4 +394,5 @@ def override_matrix_symbol(sympy_module: T.Type) -> None:
     if sympy_module.__name__ == "sympy":
         from symforce.databuffer import DataBuffer
 
+        DataBuffer.__sympy_module__ = sympy_module
         sympy_module.DataBuffer = DataBuffer
