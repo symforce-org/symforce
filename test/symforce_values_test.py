@@ -486,14 +486,6 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 [f"rot_list[{i}][{j}]" for i, j in itertools.product(range(2), range(4))], keys
             )
 
-        with self.subTest(msg="Gets keys for the scalar components of non-scalar types in ndrrays"):
-            keys = Values(
-                rot_list=np.array([geo.Rot3.identity(), geo.Rot3.identity()])
-            ).scalar_keys_recursive()
-            self.assertEqual(
-                [f"rot_list[{i * 4 + j}]" for i, j in itertools.product(range(2), range(4))], keys
-            )
-
         with self.subTest(msg="key order is insertion order of highest level dot seperated key"):
             v = Values()
             v["first_top_level"] = Values()

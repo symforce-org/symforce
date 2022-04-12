@@ -181,6 +181,23 @@ def get_type(a: T.Any) -> T.Type:
         return type(a)
 
 
+# NOTE(brad): Each of these classes is automatically registered with ScalarLieGroupOps. (see
+# ops/__init__.py)
+SCALAR_TYPES = (
+    float,
+    np.float16,
+    np.float32,
+    np.float64,
+    # NOTE(hayk): It's weird to call integers lie groups, but the implementation of ScalarLieGroupOps
+    # converts everything to symbolic types so it acts like a floating point.
+    int,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+)
+
+
 def scalar_like(a: T.Any) -> bool:
     """
     Returns whether the element is scalar-like (an int, float, or sympy expression).
@@ -188,7 +205,7 @@ def scalar_like(a: T.Any) -> bool:
     This method does not rely on the value of a, only the type.
     """
     a_type = get_type(a)
-    if issubclass(a_type, (int, float, np.float32, np.float64)):
+    if issubclass(a_type, SCALAR_TYPES):
         return True
 
     is_expr = issubclass(a_type, sm.Expr)

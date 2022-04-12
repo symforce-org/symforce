@@ -18,25 +18,22 @@ class ArrayStorageOps:
     def storage_dim(a: T.ArrayElementOrType) -> int:
         # NOTE(brad): Must take T.ArrayElementOrType to match AbstractStorageOps
         assert isinstance(a, np.ndarray)
-        return sum([StorageOps.storage_dim(v) for v in a])
+        return a.size
 
     @staticmethod
     def to_storage(a: T.ArrayElement) -> T.List[T.Scalar]:
-        return [scalar for v in a for scalar in StorageOps.to_storage(v)]
+        # NOTE(brad): I have the T.cast because mypy thinks the values of np.nditer are tuples.
+        return [
+            T.cast(np.ndarray, scalar)[()] for scalar in np.nditer(a, order="C", flags=["refs_ok"])
+        ]
 
     @staticmethod
     def from_storage(a: T.ArrayElementOrType, elements: T.Sequence[T.Scalar]) -> T.ArrayElement:
         # NOTE(brad): Must take T.ArrayElementOrType to match AbstractStorageOps
         assert isinstance(a, np.ndarray)
         assert len(elements) == ArrayStorageOps.storage_dim(a)
-        new_a = []
-        inx = 0
-        for v in a:
-            dim = StorageOps.storage_dim(v)
-            new_a.append(StorageOps.from_storage(v, elements[inx : inx + dim]))
-            inx += dim
 
-        return np.array(new_a).reshape(a.shape)
+        return np.array(elements).reshape(a.shape)
 
     @staticmethod
     def symbolic(a: T.ArrayElementOrType, name: str, **kwargs: T.Dict) -> T.ArrayElement:

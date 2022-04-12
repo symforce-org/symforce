@@ -20,6 +20,7 @@ import abc
 import numpy as np
 from symforce import sympy as sm
 from symforce import typing as T
+from symforce import python_util
 
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
@@ -48,15 +49,10 @@ class ScalarExpr(abc.ABC):
         return issubclass(subclass, sm.Expr) and isinstance(subclass, type)
 
 
-LieGroupOps.register(float, ScalarLieGroupOps)
-LieGroupOps.register(np.float32, ScalarLieGroupOps)
-LieGroupOps.register(np.float64, ScalarLieGroupOps)
-LieGroupOps.register(ScalarExpr, ScalarLieGroupOps)
+for scalar_type in python_util.SCALAR_TYPES:
+    LieGroupOps.register(scalar_type, ScalarLieGroupOps)
 
-# NOTE(hayk): It's weird to call integers lie groups, but the implementation of ScalarLieGroupOps
-# converts everything to symbolic types so it acts like a floating point.
-LieGroupOps.register(int, ScalarLieGroupOps)
-LieGroupOps.register(np.int64, ScalarLieGroupOps)
+LieGroupOps.register(ScalarExpr, ScalarLieGroupOps)
 
 LieGroupOps.register(list, SequenceLieGroupOps)
 LieGroupOps.register(tuple, SequenceLieGroupOps)
