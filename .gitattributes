@@ -3,6 +3,7 @@
 
 # Do not use git-fat for images in SymForce, to be copybara
 # compatible and to show them from the README on Github.
+*.ico filter=
 *.png filter=
 *.jpg filter=
 *.gif filter=

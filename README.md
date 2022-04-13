@@ -1,12 +1,16 @@
-<a href="http://symforce.org" target="_blank">
-<img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_horizontal_white.png" width="600px"/>
-</a>
+<!-- There's no good way to make an image that's different on light/dark mode that also links
+    somewhere.  The closest thing is to add a #gh-light-mode-only to the target, which does this,
+    but is kinda confusing -->
+![SymForce](docs/static/symforce_banner.png#gh-light-mode-only)
+![SymForce](docs/static/symforce_banner_dark.png#gh-dark-mode-only)
 
-[![Documentation](https://img.shields.io/badge/api-docs-blue)](https://symforce.org)
-[![Source Code](https://img.shields.io/badge/source-code-blue)](https://github.com/symforce-org/symforce)
-[![Issues](https://img.shields.io/badge/issue-tracker-blue)](https://github.com/symforce-org/symforce/issues)
-![Python 3.8](https://img.shields.io/badge/python-3.8-blue)
-![C++ 14](https://img.shields.io/badge/c++-14-blue)
+<p align="center">
+<a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
+<a href="https://github.com/symforce-org/symforce"><img alt="Source Code" src="https://img.shields.io/badge/source-code-blue" /></a>
+<a href="https://github.com/symforce-org/symforce/issues"><img alt="Issues" src="https://img.shields.io/badge/issue-tracker-blue" /></a>
+<img alt="Python 3.8" src="https://img.shields.io/badge/python-3.8-blue" />
+<img alt="C++14" src="https://img.shields.io/badge/c++-14-blue" />
+</p>
 
 ---
 

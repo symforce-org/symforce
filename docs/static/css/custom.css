@@ -1,0 +1,3 @@
+[href$="#gh-dark-mode-only"], [src$="#gh-dark-mode-only"] {
+  display: none;
+}
