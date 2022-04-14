@@ -117,7 +117,7 @@ class OptimizationProblem:
     def make_symbolic_factors(
         self,
         name: str,
-        config: codegen_config.CodegenConfig = codegen_config.PythonConfig(),
+        config: T.Optional[codegen_config.CodegenConfig] = None,
     ) -> T.List[Factor]:
         """
         Return a list of symbolic factors for this problem for analysis purposes. If the factors
@@ -129,6 +129,9 @@ class OptimizationProblem:
                 Codegen._pick_name_for_function_with_derivatives for details).
             config: Language the factors will be generated in when `.generate()` is called.
         """
+        if config is None:
+            config = codegen_config.PythonConfig()
+
         inputs = self.inputs.dataclasses_to_values()
 
         leading_trailing_dots_and_brackets_regex = re.compile(r"^[\.\[\]]+|[\.\[\]]+$")
@@ -193,7 +196,9 @@ class OptimizationProblem:
         if optimized_keys is None:
             optimized_keys = self.optimized_keys()
         numeric_factors = []
-        for factor in self.make_symbolic_factors(name):
+        # we temp generate the factors, so skip formating to save time
+        config = codegen_config.PythonConfig(autoformat=False)
+        for factor in self.make_symbolic_factors(name, config=config):
             factor_optimized_keys = [
                 opt_key for opt_key in optimized_keys if opt_key in factor.keys
             ]
