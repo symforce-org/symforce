@@ -58,7 +58,7 @@ def az_el_from_point(
 
 class SymforceCodegenTest(TestCase):
     """
-    Test symforce.codegen.EvaluatorCodegen.
+    Test symforce.codegen.Codegen.
     """
 
     @staticmethod
