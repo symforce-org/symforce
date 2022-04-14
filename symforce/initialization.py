@@ -172,11 +172,12 @@ def _flatten_storage_type_subs(
     Replace storage types with their scalar counterparts
     """
     new_subs_dict = {}
+    # Import these lazily, since initialization.py is imported from symforce/__init__.py
+    from symforce import ops  # pylint: disable=cyclic-import
+    from symforce import python_util  # pylint: disable=cyclic-import
+    from symforce import sympy as sm
+
     for key, value in subs_pairs:
-        # Import these lazily, since initialization.py is imported from symforce/__init__.py
-        from symforce import ops  # pylint: disable=cyclic-import
-        from symforce import python_util  # pylint: disable=cyclic-import
-        from symforce import sympy as sm
 
         if python_util.scalar_like(key):
             assert python_util.scalar_like(value)
