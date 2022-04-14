@@ -3,6 +3,109 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+# ==============================================================================
+# Third Party Dependencies
+# ==============================================================================
+
+include(FetchContent)
+
+# ------------------------------------------------------------------------------
+# Sophus
+
+find_package(Sophus QUIET)
+if (NOT Sophus_FOUND)
+  message(STATUS "Sophus not found, adding with FetchContent")
+  function(add_sophus)
+    set(BUILD_TESTS OFF CACHE INTERNAL "Sophus shouldn't build tests by default")
+    set(CMAKE_POSITION_INDEPENDENT_CODE True)
+    FetchContent_Declare(
+      sophus
+      GIT_REPOSITORY https://github.com/strasdat/Sophus
+      GIT_TAG v1.0.0
+      GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(sophus)
+    find_package(Sophus)
+  endfunction()
+
+  add_sophus()
+else()
+  message(STATUS "Sophus found")
+endif()
+
+# ------------------------------------------------------------------------------
+# GTSAM
+
+find_package(gtsam QUIET)
+if (NOT gtsam_FOUND)
+  # NOTE(aaron): gtsam will not build against a copy of Eigen we've downloaded but not installed,
+  # because they include the eigen include directories in their install targets, and CMake
+  # complains (correctly) about directories inside the build folder in install targets.  They
+  # handle this correctly for their bundled version, but we cannot use that because the version of
+  # Eigen that GTSAM is built with must match our version (which is what's used when we call GTSAM
+  # code)
+  message(STATUS "GTSAM not found, adding with FetchContent")
+  function(add_gtsam)
+    set(GTSAM_BUILD_WITH_MARCH_NATIVE OFF CACHE INTERNAL "GTSAM shouldn't build native by default")
+    set(GTSAM_BUILD_TESTS OFF CACHE INTERNAL "Don't build GTSAM tests")
+    set(GTSAM_BUILD_EXAMPLES_ALWAYS OFF CACHE INTERNAL "Don't build GTSAM examples")
+    set(GTSAM_WITH_TBB OFF CACHE INTERNAL "Don't build TBB with GTSAM for accurate profiling")
+    # NOTE(aaron): This seems to have no effect on the experiments we're doing
+    set(GTSAM_SLOW_BUT_CORRECT_BETWEENFACTOR ON CACHE INTERNAL "Use the correct BetweenFactor")
+    # NOTE(aaron): This has no effect other than making inverse compose chained slower
+    set(GTSAM_USE_QUATERNIONS ON CACHE INTERNAL "Use quaternions for Rot3")
+    set(CMAKE_POSITION_INDEPENDENT_CODE True)
+    FetchContent_Declare(
+      gtsam
+      GIT_REPOSITORY https://github.com/borglab/gtsam
+      GIT_TAG 4.1.1
+      GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(gtsam)
+  endfunction()
+
+  add_gtsam()
+else()
+  message(STATUS "GTSAM found")
+endif()
+
+# ------------------------------------------------------------------------------
+# Ceres
+
+find_package(Ceres QUIET)
+if (NOT Ceres_FOUND)
+  message(STATUS "Ceres not found, adding with FetchContent")
+  function(add_ceres)
+    set(BUILD_TESTING OFF CACHE INTERNAL "Don't enable tests")
+    set(BUILD_EXAMPLES OFF CACHE INTERNAL "Don't build examples")
+    set(BUILD_BENCHMARKS OFF CACHE INTERNAL "Don't build Ceres benchmarking suite")
+    set(PROVIDE_UNINSTALL_TARGET
+      OFF CACHE INTERNAL
+      "Ceres shouldn't add uninstall target, gtsam already adds a target with the same name that collides"
+      FORCE
+    )
+    set(
+      CERES_THREADING_MODEL "NO_THREADS" CACHE INTERNAL "Don't use threads for benchmarking" FORCE
+    )
+    set(CMAKE_POSITION_INDEPENDENT_CODE True)
+    FetchContent_Declare(
+      ceres
+      GIT_REPOSITORY https://github.com/ceres-solver/ceres-solver
+      GIT_TAG 2.0.0
+      GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(ceres)
+  endfunction()
+
+  add_ceres()
+else()
+  message(STATUS "Ceres found")
+endif()
+
+# ==============================================================================
+# Benchmark Targets
+# ==============================================================================
+
 function(add_matrix_multiplication_benchmark matrix_name)
     add_executable(
         matrix_multiplication_benchmark_${matrix_name}

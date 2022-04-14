@@ -3,6 +3,21 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+include(FetchContent)
+
+find_package(pybind11 QUIET)
+if (NOT pybind11_FOUND)
+  message(STATUS "pybind11 not found, adding with FetchContent")
+  FetchContent_Declare(
+    pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11
+    GIT_TAG e7c9753f1d35061d137ac3ce561e94a7407e5583 # release 2.8.1
+  )
+  FetchContent_MakeAvailable(pybind11)
+else()
+  message(STATUS "pybind11 found")
+endif()
+
 pybind11_add_module(
   cc_sym
   SHARED
