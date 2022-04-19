@@ -175,7 +175,7 @@ class Matrix(Storage):
         return self.mat.cols
 
     @property
-    def shape(self) -> _T.Sequence[int]:
+    def shape(self) -> _T.Tuple[int, int]:
         return self.mat.shape
 
     def __len__(self) -> int:

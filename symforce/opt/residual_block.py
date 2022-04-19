@@ -87,7 +87,10 @@ class ResidualBlockWithCustomJacobian(ResidualBlock):
                 # wants to provide custom jacobians for all the variables if they
                 # provided one
                 residual_input_jacobian = self.residual.jacobian(input_element)
-                if residual_input_jacobian != geo.Matrix(residual_input_jacobian.shape).zero():
+                if (
+                    residual_input_jacobian
+                    != geo.fixed_type_from_shape(residual_input_jacobian.shape).zero()
+                ):
                     residual_name = residual_name or str(self)
 
                     if key_names is not None:

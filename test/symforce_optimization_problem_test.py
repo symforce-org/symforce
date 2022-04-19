@@ -12,7 +12,7 @@ from symforce import geo
 from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt.sub_problem import SubProblem
-from symforce.opt.residual_block import ResidualBlockWithCustomJacobian
+from symforce.opt.residual_block import ResidualBlock, ResidualBlockWithCustomJacobian
 from symforce.opt.optimization_problem import OptimizationProblem
 from symforce.python_util import AttrDict
 from symforce.test_util import TestCase
@@ -70,6 +70,7 @@ class SymforceOptimizationProblemTest(TestCase):
             class Inputs:
                 v: geo.V3
                 v0: geo.V3
+                a: geo.V1
 
             inputs: CustomJacobianSubProblem.Inputs
 
@@ -80,10 +81,13 @@ class SymforceOptimizationProblemTest(TestCase):
                     extra_values=None,
                     custom_jacobians={self.inputs.v: 5 * geo.Matrix.eye(3, 3)},
                 )
+                residual_blocks["residual_a"] = ResidualBlock(
+                    residual=self.inputs.a,
+                )
                 return residual_blocks
 
             def optimized_values(self) -> T.List[T.Any]:
-                return [self.inputs.v]
+                return [self.inputs.v, self.inputs.a]
 
         custom_jacobian_subproblem = CustomJacobianSubProblem()
         r = Values(custom_jacobian_subproblem=custom_jacobian_subproblem.build_residuals())
@@ -94,22 +98,34 @@ class SymforceOptimizationProblemTest(TestCase):
 
         factor = problem.make_numeric_factors("custom_jacobian_problem")[0]
         cc_factor = factor.cc_factor(
-            {"custom_jacobian.v": cc_sym.Key("v"), "custom_jacobian.v0": cc_sym.Key("v", 0)},
+            {
+                "custom_jacobian.v": cc_sym.Key("v"),
+                "custom_jacobian.v0": cc_sym.Key("v", 0),
+                "custom_jacobian.a": cc_sym.Key("a"),
+            },
         )
 
         cc_values = cc_sym.Values()
         cc_values.set(cc_sym.Key("v"), 2 * np.ones(3))
         cc_values.set(cc_sym.Key("v", 0), np.ones(3))
+        cc_values.set(cc_sym.Key("a"), np.ones(1))
 
         linearized_factor = cc_factor.linearized_factor(cc_values)
-        self.assertTrue((np.array(linearized_factor.residual.data) == 10 * np.ones(3)).all())
-        self.assertTrue(
-            (np.array(linearized_factor.jacobian.data).reshape((3, 3)) == 5 * np.eye(3)).all()
-        )
-        self.assertTrue(
-            (np.array(linearized_factor.hessian.data).reshape((3, 3)) == 25 * np.eye(3)).all()
-        )
-        self.assertTrue((np.array(linearized_factor.rhs.data) == 50 * np.ones(3)).all())
+        residual = np.array(linearized_factor.residual.data)
+        self.assertTrue((residual[0:3] == 10 * np.ones(3)).all())
+        self.assertTrue((residual[3] == 1))
+
+        jacobian = np.array(linearized_factor.jacobian.data).reshape((4, 4))
+        self.assertTrue((jacobian[0:3, 0:3] == 5 * np.eye(3)).all())
+        self.assertTrue(jacobian[3, 3] == 1)
+
+        hessian = np.array(linearized_factor.hessian.data).reshape((4, 4))
+        self.assertTrue((hessian[0:3, 0:3] == 25 * np.eye(3)).all())
+        self.assertTrue(hessian[3, 3] == 1)
+
+        rhs = np.array(linearized_factor.rhs.data)
+        self.assertTrue((rhs[0:3] == 50 * np.ones(3)).all())
+        self.assertTrue(rhs[3] == 1)
 
 
 if __name__ == "__main__":
