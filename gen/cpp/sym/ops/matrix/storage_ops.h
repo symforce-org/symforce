@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <random>
 
 #include <Eigen/Dense>

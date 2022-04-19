@@ -118,7 +118,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   sym::Values<Scalar> v2(msg);
   CHECK(v2.NumEntries() == v.NumEntries());
   CHECK(v2.Data() == v.Data());
-  assert(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
+  CHECK(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
 
   // Print
   spdlog::info("v: {}", v);

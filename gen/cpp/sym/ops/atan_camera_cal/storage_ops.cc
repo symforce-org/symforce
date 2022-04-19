@@ -7,6 +7,7 @@
 #include "./storage_ops.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include <Eigen/Dense>
 

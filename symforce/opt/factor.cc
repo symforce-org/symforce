@@ -5,6 +5,8 @@
 
 #include "./factor.h"
 
+#include <cassert>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
