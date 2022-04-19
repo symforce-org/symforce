@@ -202,13 +202,23 @@ def _flatten_storage_type_subs(
     return new_subs_dict
 
 
-def _get_subs_dict(*args: T.Any) -> T.Dict:
+def _get_subs_dict(*args: T.Any, dont_flatten_args: bool = False, **kwargs: T.Any) -> T.Dict:
     """
     Handle args to subs being a single key-value pair or a dict.
+
+    Keyword Args:
+        dont_flatten_args (bool): if true and args is a single argument, assume that args is a
+            dict mapping scalar expressions to other scalar expressions. i.e. StorageOps flattening
+            will *not* occur. This is significantly faster.
+
+        **kwargs is unused but needed for sympy compatibility
     """
     if len(args) == 2:
         subs_pairs = [(args[0], args[1])]
     elif len(args) == 1:
+        if dont_flatten_args:
+            assert isinstance(args[0], T.Dict)
+            return args[0]
         if isinstance(args[0], T.Mapping):
             subs_pairs = list(args[0].items())
         else:
@@ -230,11 +240,13 @@ def override_subs(sympy_module: T.Type) -> None:
         import symengine.lib.symengine_wrapper as wrapper  # pylint: disable=no-name-in-module
 
         original_get_dict = wrapper.get_dict
-        wrapper.get_dict = lambda *args: original_get_dict(_get_subs_dict(*args))
+        wrapper.get_dict = lambda *args, **kwargs: original_get_dict(
+            _get_subs_dict(*args, **kwargs)
+        )
     elif sympy_module.__name__ == "sympy":
         original_subs = sympy_module.Basic.subs
         sympy_module.Basic.subs = lambda self, *args, **kwargs: original_subs(
-            self, _get_subs_dict(*args), **kwargs
+            self, _get_subs_dict(*args, **kwargs), **kwargs
         )
     else:
         raise NotImplementedError(f"Unknown backend: '{sympy_module.__name__}'")

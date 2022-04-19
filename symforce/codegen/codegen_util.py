@@ -252,18 +252,19 @@ def format_symbols(
     )
     input_subs = dict(zip(flat_symbols_from_values(inputs), symbolic_args))
     intermediate_terms_formatted = [
-        (lhs, ops.StorageOps.subs(rhs, input_subs)) for lhs, rhs in intermediate_terms
+        (lhs, ops.StorageOps.subs(rhs, input_subs, dont_flatten_args=True))
+        for lhs, rhs in intermediate_terms
     ]
 
     dense_output_lhs_formatted = get_formatted_list(dense_outputs, config, format_as_inputs=False)
     dense_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
+        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
         for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
     ]
 
     sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs)
     sparse_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs)))
+        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
         for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
     ]
 

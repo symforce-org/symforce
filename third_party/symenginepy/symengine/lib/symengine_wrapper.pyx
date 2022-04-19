@@ -781,12 +781,13 @@ class DictBasic(_DictBasic, MutableMapping):
     def __repr__(self):
         return self.__str__()
 
-def get_dict(*args):
+def get_dict(*args, **kwargs):
     """
     Returns a DictBasic instance from args. Inputs can be,
         1. a DictBasic
         2. a Python dictionary
         3. two args old, new
+    NOTE(harrison): **kwargs are so we can share function signatures with the one we patch in
     """
     cdef _DictBasic D = DictBasic()
     if len(args) == 2:
@@ -948,8 +949,8 @@ cdef class Basic(object):
         warnings.warn("subs_oldnew() is deprecated. Use subs() instead", DeprecationWarning)
         return self.subs({old: new})
 
-    def subs(Basic self not None, *args):
-        cdef _DictBasic D = get_dict(*args)
+    def subs(Basic self not None, *args, **kwargs):
+        cdef _DictBasic D = get_dict(*args, **kwargs)
         return c2py(symengine.ssubs(self.thisptr, D.c))
 
     def xreplace(Basic self not None, *args):
