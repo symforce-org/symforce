@@ -7,6 +7,7 @@
 Shared helper code between codegen of all languages.
 """
 
+import dataclasses
 import importlib.abc
 import importlib.util
 import itertools
@@ -51,10 +52,24 @@ class PrintCodeResult(T.NamedTuple):
     total_ops: int
 
 
+@dataclasses.dataclass
+class CSCFormat:
+    """
+    A matrix written in Compressed Sparse Column format.
+    """
+
+    kRows: int  # Number of rows
+    kCols: int  # Number of columns
+    kNumNonZero: int  # Number of nonzero entries
+    kColPtrs: T.List[int]  # nonzero_elements[kColPtrs[col]] is the first nonzero entry of col
+    kRowIndices: T.List[int]  # row indices of nonzero entries written in column-major order
+    nonzero_elements: T.List[T.Scalar]  # nonzero entries written in column-major order
+
+
 def print_code(
     inputs: Values,
     outputs: Values,
-    sparse_mat_data: T.Dict[str, T.Dict[str, T.Any]],
+    sparse_mat_data: T.Dict[str, CSCFormat],
     config: codegen_config.CodegenConfig,
     cse: bool = True,
     substitute_inputs: bool = False,
@@ -83,7 +98,7 @@ def print_code(
     sparse_outputs = Values()
     for key, value in outputs.items():
         if key in sparse_mat_data:
-            sparse_outputs[key] = sparse_mat_data[key]["nonzero_elements"]
+            sparse_outputs[key] = sparse_mat_data[key].nonzero_elements
         else:
             dense_outputs[key] = value
 
@@ -424,7 +439,7 @@ def _get_scalar_keys_recursive(
     return vec
 
 
-def get_sparse_mat_data(sparse_matrix: geo.Matrix) -> T.Dict[str, T.Any]:
+def get_sparse_mat_data(sparse_matrix: geo.Matrix) -> CSCFormat:
     """
     Returns a dictionary with the metadata required to represent a matrix as a sparse matrix
     in CSC form.
@@ -432,27 +447,29 @@ def get_sparse_mat_data(sparse_matrix: geo.Matrix) -> T.Dict[str, T.Any]:
     Args:
         sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
     """
-    sparse_mat_data: T.Dict[str, T.Any] = {}
-    sparse_mat_data["kRows"] = sparse_matrix.rows
-    sparse_mat_data["kCols"] = sparse_matrix.cols
-    sparse_mat_data["kNumNonZero"] = 0
-    sparse_mat_data["kColPtrs"] = []
-    sparse_mat_data["kRowIndices"] = []
-    sparse_mat_data["nonzero_elements"] = []
+    kColPtrs = []
+    kRowIndices = []
+    nonzero_elements = []
     data_inx = 0
     # Loop through columns because we assume CSC form
     for j in range(sparse_matrix.shape[1]):
-        sparse_mat_data["kColPtrs"].append(data_inx)
+        kColPtrs.append(data_inx)
         for i in range(sparse_matrix.shape[0]):
             if sparse_matrix[i, j] == 0:
                 continue
-            sparse_mat_data["kNumNonZero"] += 1
-            sparse_mat_data["kRowIndices"].append(i)
-            sparse_mat_data["nonzero_elements"].append(sparse_matrix[i, j])
+            kRowIndices.append(i)
+            nonzero_elements.append(sparse_matrix[i, j])
             data_inx += 1
-    sparse_mat_data["kColPtrs"].append(data_inx)
+    kColPtrs.append(data_inx)
 
-    return sparse_mat_data
+    return CSCFormat(
+        kRows=sparse_matrix.rows,
+        kCols=sparse_matrix.cols,
+        kNumNonZero=len(nonzero_elements),
+        kColPtrs=kColPtrs,
+        kRowIndices=kRowIndices,
+        nonzero_elements=nonzero_elements,
+    )
 
 
 def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]]:

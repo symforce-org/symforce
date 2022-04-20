@@ -268,18 +268,18 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 {%- macro sparse_matrix_init(name, element, spec) -%}
     static constexpr int kRows_{{ name }} = {{ element.shape[0] }};
     static constexpr int kCols_{{ name }} = {{ element.shape[1] }};
-    static constexpr int kNumNonZero_{{ name }} = {{ spec.sparse_mat_data[name]["kNumNonZero"] }};
+    static constexpr int kNumNonZero_{{ name }} = {{ spec.sparse_mat_data[name].kNumNonZero }};
     static constexpr int kColPtrs_{{ name }}[] = {
-    {%- for i in spec.sparse_mat_data[name]["kColPtrs"] -%}
+    {%- for i in spec.sparse_mat_data[name].kColPtrs -%}
         {{ i }}{%- if not loop.last -%}, {% endif -%}
     {%- endfor -%} };
     static constexpr int kRowIndices_{{ name }}[] = {
-    {%- for i in spec.sparse_mat_data[name]["kRowIndices"] -%}
+    {%- for i in spec.sparse_mat_data[name].kRowIndices -%}
         {{ i }}{%- if not loop.last -%}, {% endif -%}
     {%- endfor -%} };
     {% set T_return = python_util.get_type(element) %}
     {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
-    Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name]["kNumNonZero"] }}];
+    Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name].kNumNonZero }}];
     Eigen::SparseMatrix<Scalar> {{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
         kRows_{{ name }},
         kCols_{{ name }},
@@ -290,9 +290,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     );
     Scalar* {{ name }}_value_ptr = {{ name }}.valuePtr();
     {% else %}
-    if ({{ name }}->nonZeros() != {{ spec.sparse_mat_data[name]["kNumNonZero"] }} || {{ name }}->outerSize() != {{ element.shape[1] }} || {{ name }}->innerSize() != {{ element.shape[0] }} || !{{ name }}->isCompressed()) {
+    if ({{ name }}->nonZeros() != {{ spec.sparse_mat_data[name].kNumNonZero }} || {{ name }}->outerSize() != {{ element.shape[1] }} || {{ name }}->innerSize() != {{ element.shape[0] }} || !{{ name }}->isCompressed()) {
         // Matrix does not have the expected layout, create a correctly initialized sparse matrix
-        Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name]["kNumNonZero"] }}];
+        Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name].kNumNonZero }}];
         *{{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
             kRows_{{ name }},
             kCols_{{ name }},

@@ -125,7 +125,7 @@ class Codegen:
         self.return_key = return_key
 
         # Mapping between sparse matrix keys and constants needed for static CSC construction
-        self.sparse_mat_data: T.Dict[str, T.Dict[str, T.Any]] = {}
+        self.sparse_mat_data: T.Dict[str, codegen_util.CSCFormat] = {}
         if sparse_matrices is not None:
             assert all(key in outputs for key in sparse_matrices)
             assert all(isinstance(outputs[key], geo.Matrix) for key in sparse_matrices)
