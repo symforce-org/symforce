@@ -562,6 +562,23 @@ $ -->
 
 You can find more SymForce tutorials [here](https://symforce.org/#guides).
 
+# Citing SymForce
+
+To cite SymForce in a publication use
+
+```
+@inproceedings{SymForce-RSS-2022,
+    author    = {Hayk Martiros and Aaron Miller and Nathan Bucki and Bradley Solliday
+                 and Ryan Kennedy and Jack Zhu and Tung Dang and Dominic Pattison
+                 and Harrison Zheng and Teo Tomic and Peter Henry and Josiah VanderMey
+                 and Gareth Cross and Alvin Sun and Samuel Wang and Kristen Holtz},
+    title      = {SymForce: Symbolic Computation and Code Generation for Robotics},
+    url        = {https://github.com/symforce-org/symforce},
+    booktitle  = {Proceedings of Robotics: Science and Systems},
+    year       = {2022}
+}
+```
+
 # License
 
 SymForce is released under the [Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license.
