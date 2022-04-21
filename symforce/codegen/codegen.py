@@ -130,7 +130,7 @@ class Codegen:
             assert all(key in outputs for key in sparse_matrices)
             assert all(isinstance(outputs[key], geo.Matrix) for key in sparse_matrices)
             for key in sparse_matrices:
-                self.sparse_mat_data[key] = codegen_util.get_sparse_mat_data(outputs[key])
+                self.sparse_mat_data[key] = codegen_util.CSCFormat.from_matrix(outputs[key])
 
         self.docstring = (
             docstring or Codegen.default_docstring(inputs=inputs, outputs=outputs)
