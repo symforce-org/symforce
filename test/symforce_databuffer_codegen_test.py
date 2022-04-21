@@ -30,7 +30,8 @@ class SymforceDataBufferCodegenTest(TestCase):
 
     def gen_code(self, output_dir: str) -> None:
         a, b = sm.symbols("a b")
-        buffer = sm.DataBuffer("Buffer")
+        # make sure Databuffer works with whatever namestring works for symbol
+        buffer = sm.DataBuffer("foo.Buffer")
         result = buffer[(a + b) * (b - a)] + buffer[b * b - a * a] + (a + b)
 
         inputs = Values()

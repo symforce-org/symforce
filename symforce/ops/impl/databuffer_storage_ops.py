@@ -30,4 +30,4 @@ class DataBufferStorageOps:
 
     @staticmethod
     def symbolic(a: sm.DataBuffer, name: str, **kwargs: T.Dict) -> sm.DataBuffer:
-        return sm.DataBuffer(name, sm.S(name + "_dim"))
+        return sm.DataBuffer(name, sm.Symbol(name + "_dim"))
