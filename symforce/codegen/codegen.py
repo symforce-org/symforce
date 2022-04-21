@@ -389,7 +389,7 @@ class Codegen:
             if skip_directory_nesting:
                 python_function_dir = output_dir
             else:
-                python_function_dir = output_dir / "python2.7" / "symforce" / namespace
+                python_function_dir = output_dir / "python" / "symforce" / namespace
 
             logger.info(f'Creating python function "{self.name}" at "{python_function_dir}"')
 

@@ -73,7 +73,7 @@ class NumericFactor:
             name: The name of the linearization function.
         """
         assert all(opt_key in keys for opt_key in optimized_keys)
-        function_dir = Path(output_dir) / "python2.7" / "symforce" / namespace
+        function_dir = Path(output_dir) / "python" / "symforce" / namespace
         linearization_function = getattr(
             codegen_util.load_generated_package(f"{namespace}.{name}", function_dir),
             name,

@@ -635,7 +635,7 @@ def generate_lcm_types(
     if lcm_output_dir is None:
         lcm_output_dir = os.path.join(lcm_type_dir, "..")
 
-    python_types_dir = os.path.join(lcm_output_dir, "python2.7")
+    python_types_dir = os.path.join(lcm_output_dir, "python")
     cpp_types_dir = os.path.join(lcm_output_dir, "cpp", "lcmtypes")
     lcm_include_dir = os.path.join("lcmtypes")
 
