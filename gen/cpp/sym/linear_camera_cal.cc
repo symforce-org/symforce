@@ -108,12 +108,12 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPointWithJac
     Eigen::Matrix<Scalar, 2, 4>& _pixel_D_cal = (*pixel_D_cal);
 
     _pixel_D_cal(0, 0) = _tmp2 * point(0, 0);
-    _pixel_D_cal(0, 1) = 0;
-    _pixel_D_cal(0, 2) = 1;
-    _pixel_D_cal(0, 3) = 0;
     _pixel_D_cal(1, 0) = 0;
+    _pixel_D_cal(0, 1) = 0;
     _pixel_D_cal(1, 1) = _tmp2 * point(1, 0);
+    _pixel_D_cal(0, 2) = 1;
     _pixel_D_cal(1, 2) = 0;
+    _pixel_D_cal(0, 3) = 0;
     _pixel_D_cal(1, 3) = 1;
   }
 
@@ -121,10 +121,10 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPointWithJac
     Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
 
     _pixel_D_point(0, 0) = _tmp3;
-    _pixel_D_point(0, 1) = 0;
-    _pixel_D_point(0, 2) = -_self[0] * _tmp6 * point(0, 0);
     _pixel_D_point(1, 0) = 0;
+    _pixel_D_point(0, 1) = 0;
     _pixel_D_point(1, 1) = _tmp4;
+    _pixel_D_point(0, 2) = -_self[0] * _tmp6 * point(0, 0);
     _pixel_D_point(1, 2) = -_self[1] * _tmp6 * point(1, 0);
   }
 
@@ -192,8 +192,8 @@ Eigen::Matrix<Scalar, 3, 1> LinearCameraCal<Scalar>::CameraRayFromPixelWithJacob
     _point_D_cal.setZero();
 
     _point_D_cal(0, 0) = -_tmp0 / std::pow(_self[0], Scalar(2));
-    _point_D_cal(0, 2) = -_tmp1;
     _point_D_cal(1, 1) = -_tmp2 / std::pow(_self[1], Scalar(2));
+    _point_D_cal(0, 2) = -_tmp1;
     _point_D_cal(1, 3) = -_tmp3;
   }
 

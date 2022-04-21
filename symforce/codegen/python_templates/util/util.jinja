@@ -162,8 +162,11 @@ def {{ function_name_and_args(spec) }}:
             {% set cols = type.shape[1] %}
     _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
             {% set ns = namespace(iter=0) %}
-            {% for i in range(rows) %}
-                {% for j in range(cols) %}
+            {# NOTE(brad): The order of the terms is the storage order of geo.Matrix. If the
+            storage order of geo.Matrix is changed (i.e., from column major to row major), the
+            following for loops will have to be changed to match that order. #}
+            {% for j in range(cols) %}
+                {% for i in range(rows) %}
     _{{ name }}[{{ i }}, {{ j }}] = {{ terms[ns.iter][1] }}
                     {% set ns.iter = ns.iter + 1 %}
                 {% endfor %}

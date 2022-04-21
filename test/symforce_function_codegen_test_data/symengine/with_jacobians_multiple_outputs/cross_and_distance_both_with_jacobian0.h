@@ -64,13 +64,13 @@ Eigen::Matrix<Scalar, 3, 1> CrossAndDistanceBothWithJacobian0(
     Eigen::Matrix<Scalar, 3, 3>& _cross_D_a = (*cross_D_a);
 
     _cross_D_a(0, 0) = 0;
-    _cross_D_a(0, 1) = b(2, 0);
-    _cross_D_a(0, 2) = _tmp2;
     _cross_D_a(1, 0) = _tmp4;
-    _cross_D_a(1, 1) = 0;
-    _cross_D_a(1, 2) = b(0, 0);
     _cross_D_a(2, 0) = b(1, 0);
+    _cross_D_a(0, 1) = b(2, 0);
+    _cross_D_a(1, 1) = 0;
     _cross_D_a(2, 1) = _tmp0;
+    _cross_D_a(0, 2) = _tmp2;
+    _cross_D_a(1, 2) = b(0, 0);
     _cross_D_a(2, 2) = 0;
   }
 

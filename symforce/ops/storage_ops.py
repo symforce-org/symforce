@@ -79,4 +79,4 @@ class StorageOps(Ops):
 
     @staticmethod
     def simplify(a: T.Element) -> T.Element:
-        return StorageOps.from_storage(a, sm.simplify(sm.Matrix(StorageOps.to_storage(a))))
+        return StorageOps.from_storage(a, list(sm.simplify(sm.Matrix(StorageOps.to_storage(a)))))

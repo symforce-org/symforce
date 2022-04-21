@@ -170,13 +170,13 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::InverseWithJacobian(const sym::Rot3<Sc
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
     _res_D_a(0, 0) = _tmp0 - _tmp1 + _tmp4;
-    _res_D_a(0, 1) = _tmp6 + _tmp7;
-    _res_D_a(0, 2) = _tmp10 - _tmp9;
     _res_D_a(1, 0) = -_tmp6 + _tmp7;
-    _res_D_a(1, 1) = _tmp0 + _tmp1 + _tmp2 - _tmp3;
-    _res_D_a(1, 2) = _tmp11 + _tmp12;
     _res_D_a(2, 0) = _tmp10 + _tmp9;
+    _res_D_a(0, 1) = _tmp6 + _tmp7;
+    _res_D_a(1, 1) = _tmp0 + _tmp1 + _tmp2 - _tmp3;
     _res_D_a(2, 1) = -_tmp11 + _tmp12;
+    _res_D_a(0, 2) = _tmp10 - _tmp9;
+    _res_D_a(1, 2) = _tmp11 + _tmp12;
     _res_D_a(2, 2) = -_tmp0 + _tmp1 + _tmp4;
   }
 
@@ -290,14 +290,14 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(const sym::Rot3<S
   const Scalar _tmp83 = -_tmp40 * _tmp80 + _tmp82;
   const Scalar _tmp84 = _tmp30 * _tmp81;
   const Scalar _tmp85 = _tmp40 * _tmp78;
-  const Scalar _tmp86 = _tmp31 + _tmp32 + _tmp63;
-  const Scalar _tmp87 = _tmp20 + _tmp28 + _tmp67;
-  const Scalar _tmp88 = _tmp30 * _tmp80;
-  const Scalar _tmp89 = _tmp50 * _tmp81;
-  const Scalar _tmp90 = _tmp41 + _tmp42 + _tmp74;
-  const Scalar _tmp91 = -_tmp30 * _tmp87;
-  const Scalar _tmp92 = _tmp40 * _tmp81;
-  const Scalar _tmp93 = _tmp50 * _tmp87;
+  const Scalar _tmp86 = _tmp30 * _tmp80;
+  const Scalar _tmp87 = _tmp50 * _tmp81;
+  const Scalar _tmp88 = _tmp31 + _tmp32 + _tmp63;
+  const Scalar _tmp89 = _tmp20 + _tmp28 + _tmp67;
+  const Scalar _tmp90 = -_tmp30 * _tmp89;
+  const Scalar _tmp91 = _tmp40 * _tmp81;
+  const Scalar _tmp92 = _tmp50 * _tmp89;
+  const Scalar _tmp93 = _tmp41 + _tmp42 + _tmp74;
 
   // Output terms (3)
   Eigen::Matrix<Scalar, 4, 1> _res;
@@ -311,13 +311,13 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(const sym::Rot3<S
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
     _res_D_a(0, 0) = _tmp29 * _tmp30 - _tmp39 * _tmp40 - _tmp49 * _tmp50 + _tmp57 * _tmp58;
-    _res_D_a(0, 1) = _tmp30 * _tmp60 - _tmp40 * _tmp62 - _tmp50 * _tmp66 + _tmp58 * _tmp69;
-    _res_D_a(0, 2) = _tmp30 * _tmp70 - _tmp40 * _tmp71 - _tmp50 * _tmp73 + _tmp58 * _tmp76;
     _res_D_a(1, 0) = _tmp29 * _tmp58 - _tmp30 * _tmp57 - _tmp39 * _tmp50 + _tmp40 * _tmp49;
-    _res_D_a(1, 1) = -_tmp30 * _tmp69 + _tmp40 * _tmp66 - _tmp50 * _tmp62 + _tmp58 * _tmp60;
-    _res_D_a(1, 2) = -_tmp30 * _tmp76 + _tmp40 * _tmp73 - _tmp50 * _tmp71 + _tmp58 * _tmp70;
     _res_D_a(2, 0) = -_tmp29 * _tmp40 - _tmp30 * _tmp39 + _tmp49 * _tmp58 + _tmp50 * _tmp57;
+    _res_D_a(0, 1) = _tmp30 * _tmp60 - _tmp40 * _tmp62 - _tmp50 * _tmp66 + _tmp58 * _tmp69;
+    _res_D_a(1, 1) = -_tmp30 * _tmp69 + _tmp40 * _tmp66 - _tmp50 * _tmp62 + _tmp58 * _tmp60;
     _res_D_a(2, 1) = -_tmp30 * _tmp62 - _tmp40 * _tmp60 + _tmp50 * _tmp69 + _tmp58 * _tmp66;
+    _res_D_a(0, 2) = _tmp30 * _tmp70 - _tmp40 * _tmp71 - _tmp50 * _tmp73 + _tmp58 * _tmp76;
+    _res_D_a(1, 2) = -_tmp30 * _tmp76 + _tmp40 * _tmp73 - _tmp50 * _tmp71 + _tmp58 * _tmp70;
     _res_D_a(2, 2) = -_tmp30 * _tmp71 - _tmp40 * _tmp70 + _tmp50 * _tmp76 + _tmp58 * _tmp73;
   }
 
@@ -325,14 +325,14 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::ComposeWithJacobians(const sym::Rot3<S
     Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
 
     _res_D_b(0, 0) = _tmp30 * _tmp77 + _tmp79 + _tmp83;
-    _res_D_b(0, 1) = -_tmp50 * _tmp86 + _tmp58 * _tmp87 + _tmp84 - _tmp85;
-    _res_D_b(0, 2) = -_tmp40 * _tmp87 + _tmp58 * _tmp90 + _tmp88 - _tmp89;
     _res_D_b(1, 0) = -_tmp50 * _tmp80 + _tmp58 * _tmp77 - _tmp84 + _tmp85;
-    _res_D_b(1, 1) = _tmp40 * _tmp86 + _tmp79 + _tmp82 + _tmp91;
-    _res_D_b(1, 2) = -_tmp30 * _tmp90 + _tmp58 * _tmp80 + _tmp92 - _tmp93;
-    _res_D_b(2, 0) = -_tmp40 * _tmp77 + _tmp58 * _tmp78 - _tmp88 + _tmp89;
-    _res_D_b(2, 1) = -_tmp30 * _tmp78 + _tmp58 * _tmp86 - _tmp92 + _tmp93;
-    _res_D_b(2, 2) = _tmp50 * _tmp90 + _tmp83 + _tmp91;
+    _res_D_b(2, 0) = -_tmp40 * _tmp77 + _tmp58 * _tmp78 - _tmp86 + _tmp87;
+    _res_D_b(0, 1) = -_tmp50 * _tmp88 + _tmp58 * _tmp89 + _tmp84 - _tmp85;
+    _res_D_b(1, 1) = _tmp40 * _tmp88 + _tmp79 + _tmp82 + _tmp90;
+    _res_D_b(2, 1) = -_tmp30 * _tmp78 + _tmp58 * _tmp88 - _tmp91 + _tmp92;
+    _res_D_b(0, 2) = -_tmp40 * _tmp89 + _tmp58 * _tmp93 + _tmp86 - _tmp87;
+    _res_D_b(1, 2) = -_tmp30 * _tmp93 + _tmp58 * _tmp80 + _tmp91 - _tmp92;
+    _res_D_b(2, 2) = _tmp50 * _tmp93 + _tmp83 + _tmp90;
   }
 
   return sym::Rot3<Scalar>(_res);
@@ -410,29 +410,29 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(const sym::Rot3<S
   const Scalar _tmp46 = 2 * _tmp9;
   const Scalar _tmp47 = -_tmp45 * _tmp46;
   const Scalar _tmp48 = _tmp40 + _tmp47;
-  const Scalar _tmp49 = 2 * _tmp24;
-  const Scalar _tmp50 = _tmp14 * _tmp49;
-  const Scalar _tmp51 = _tmp41 - _tmp42 + _tmp43 - _tmp44;
-  const Scalar _tmp52 = -_tmp31 * _tmp46;
-  const Scalar _tmp53 = -2 * _tmp34 + 2 * _tmp35 + 2 * _tmp36 - 2 * _tmp37;
-  const Scalar _tmp54 = _tmp19 * _tmp53 + _tmp52;
+  const Scalar _tmp49 = -_tmp31 * _tmp46;
+  const Scalar _tmp50 = 2 * _tmp24;
+  const Scalar _tmp51 = _tmp14 * _tmp50;
+  const Scalar _tmp52 = _tmp32 * _tmp45;
+  const Scalar _tmp53 = _tmp25 * _tmp38 + _tmp52;
+  const Scalar _tmp54 = _tmp50 * _tmp9;
   const Scalar _tmp55 = -_tmp32 * _tmp38;
-  const Scalar _tmp56 = _tmp49 * _tmp9;
-  const Scalar _tmp57 = -_tmp27 - _tmp28 + _tmp29 + _tmp30;
-  const Scalar _tmp58 = _tmp39 * _tmp57;
-  const Scalar _tmp59 = _tmp25 * _tmp51 + _tmp58;
-  const Scalar _tmp60 = _tmp32 * _tmp45;
-  const Scalar _tmp61 = _tmp25 * _tmp38 + _tmp60;
-  const Scalar _tmp62 = _tmp46 * _tmp51;
-  const Scalar _tmp63 = -_tmp14 * _tmp53;
-  const Scalar _tmp64 = _tmp33 + _tmp63;
-  const Scalar _tmp65 = _tmp4 * _tmp49;
-  const Scalar _tmp66 = -_tmp39 * _tmp51;
-  const Scalar _tmp67 = _tmp25 * _tmp57 + _tmp66;
-  const Scalar _tmp68 = _tmp25 * _tmp45 + _tmp55;
-  const Scalar _tmp69 = _tmp53 * _tmp9;
-  const Scalar _tmp70 = _tmp25 * _tmp31 + _tmp69;
-  const Scalar _tmp71 = -_tmp32 * _tmp57;
+  const Scalar _tmp56 = _tmp25 * _tmp45 + _tmp55;
+  const Scalar _tmp57 = _tmp41 - _tmp42 + _tmp43 - _tmp44;
+  const Scalar _tmp58 = -2 * _tmp34 + 2 * _tmp35 + 2 * _tmp36 - 2 * _tmp37;
+  const Scalar _tmp59 = _tmp19 * _tmp58 + _tmp49;
+  const Scalar _tmp60 = _tmp46 * _tmp57;
+  const Scalar _tmp61 = -_tmp14 * _tmp58;
+  const Scalar _tmp62 = _tmp33 + _tmp61;
+  const Scalar _tmp63 = -_tmp39 * _tmp57;
+  const Scalar _tmp64 = _tmp4 * _tmp50;
+  const Scalar _tmp65 = _tmp58 * _tmp9;
+  const Scalar _tmp66 = _tmp25 * _tmp31 + _tmp65;
+  const Scalar _tmp67 = -_tmp27 - _tmp28 + _tmp29 + _tmp30;
+  const Scalar _tmp68 = _tmp39 * _tmp67;
+  const Scalar _tmp69 = _tmp25 * _tmp57 + _tmp68;
+  const Scalar _tmp70 = _tmp25 * _tmp67 + _tmp63;
+  const Scalar _tmp71 = -_tmp32 * _tmp67;
   const Scalar _tmp72 = _tmp20 + _tmp21 + _tmp22 + _tmp23;
   const Scalar _tmp73 = _tmp25 * _tmp72;
   const Scalar _tmp74 = _tmp71 + _tmp73;
@@ -452,28 +452,28 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::BetweenWithJacobians(const sym::Rot3<S
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
     _res_D_a(0, 0) = _tmp26 - _tmp33 + _tmp48;
-    _res_D_a(0, 1) = -_tmp32 * _tmp51 + _tmp50 + _tmp54;
-    _res_D_a(0, 2) = _tmp55 - _tmp56 + _tmp59;
-    _res_D_a(1, 0) = -_tmp50 + _tmp52 + _tmp61;
-    _res_D_a(1, 1) = _tmp26 - _tmp62 + _tmp64;
-    _res_D_a(1, 2) = -_tmp38 * _tmp46 + _tmp65 + _tmp67;
-    _res_D_a(2, 0) = -_tmp31 * _tmp39 + _tmp56 + _tmp68;
-    _res_D_a(2, 1) = -_tmp65 + _tmp66 + _tmp70;
-    _res_D_a(2, 2) = _tmp26 - _tmp40 + _tmp62 + _tmp71;
+    _res_D_a(1, 0) = _tmp49 - _tmp51 + _tmp53;
+    _res_D_a(2, 0) = -_tmp31 * _tmp39 + _tmp54 + _tmp56;
+    _res_D_a(0, 1) = -_tmp32 * _tmp57 + _tmp51 + _tmp59;
+    _res_D_a(1, 1) = _tmp26 - _tmp60 + _tmp62;
+    _res_D_a(2, 1) = _tmp63 - _tmp64 + _tmp66;
+    _res_D_a(0, 2) = -_tmp54 + _tmp55 + _tmp69;
+    _res_D_a(1, 2) = -_tmp38 * _tmp46 + _tmp64 + _tmp70;
+    _res_D_a(2, 2) = _tmp26 - _tmp40 + _tmp60 + _tmp71;
   }
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_b = (*res_D_b);
 
     _res_D_b(0, 0) = _tmp48 + _tmp74;
-    _res_D_b(0, 1) = _tmp54 - _tmp60 + _tmp75;
-    _res_D_b(0, 2) = -_tmp4 * _tmp53 + _tmp59 - _tmp76;
-    _res_D_b(1, 0) = -_tmp46 * _tmp57 + _tmp61 - _tmp75;
-    _res_D_b(1, 1) = _tmp47 + _tmp64 + _tmp73;
-    _res_D_b(1, 2) = _tmp67 - _tmp69 + _tmp77;
-    _res_D_b(2, 0) = -_tmp58 + _tmp68 + _tmp76;
-    _res_D_b(2, 1) = -_tmp39 * _tmp45 + _tmp70 - _tmp77;
-    _res_D_b(2, 2) = _tmp62 + _tmp63 + _tmp74;
+    _res_D_b(1, 0) = -_tmp46 * _tmp67 + _tmp53 - _tmp75;
+    _res_D_b(2, 0) = _tmp56 - _tmp68 + _tmp76;
+    _res_D_b(0, 1) = -_tmp52 + _tmp59 + _tmp75;
+    _res_D_b(1, 1) = _tmp47 + _tmp62 + _tmp73;
+    _res_D_b(2, 1) = -_tmp39 * _tmp45 + _tmp66 - _tmp77;
+    _res_D_b(0, 2) = -_tmp4 * _tmp58 + _tmp69 - _tmp76;
+    _res_D_b(1, 2) = -_tmp65 + _tmp70 + _tmp77;
+    _res_D_b(2, 2) = _tmp60 + _tmp61 + _tmp74;
   }
 
   return sym::Rot3<Scalar>(_res);

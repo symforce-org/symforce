@@ -36,10 +36,10 @@ Eigen::Matrix<Scalar, 7, 7> ComputeAtBB1Ss(const Scalar x0, const Scalar x1) {
     const Scalar _tmp0 = x1 + 2;
     const Scalar _tmp1 = x0 - 1;
     const Scalar _tmp2 = x0 - x1;
-    const Scalar _tmp3 = 4*x1;
-    const Scalar _tmp4 = 2*x1;
-    const Scalar _tmp5 = Scalar(1.0)*x0;
-    const Scalar _tmp6 = Scalar(1.0)*x1;
+    const Scalar _tmp3 = Scalar(1.0)*x0;
+    const Scalar _tmp4 = Scalar(1.0)*x1;
+    const Scalar _tmp5 = 2*x1;
+    const Scalar _tmp6 = 4*x1;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 7> _result;
@@ -47,29 +47,29 @@ Eigen::Matrix<Scalar, 7, 7> ComputeAtBB1Ss(const Scalar x0, const Scalar x1) {
     _result.setZero();
 
     _result(0, 0) = -_tmp0*x0 + _tmp1*_tmp2 + 3*x0 - 3*x1 - 6;
-    _result(0, 4) = x0 + 1;
-    _result(0, 5) = 3;
-    _result(0, 6) = _tmp1*(x0 + x1);
+    _result(5, 0) = -_tmp3 + _tmp4 + Scalar(2.0);
+    _result(6, 0) = _tmp3 - _tmp4;
     _result(1, 1) = -_tmp0;
-    _result(1, 2) = Scalar(1.0);
-    _result(1, 3) = _tmp1;
-    _result(1, 4) = Scalar(1.0);
     _result(2, 1) = x1;
-    _result(2, 2) = -_tmp3 + Scalar(-13.0);
-    _result(2, 3) = -_tmp1;
-    _result(2, 5) = -_tmp2*(x1 + 3);
-    _result(3, 1) = _tmp4*x0;
-    _result(3, 2) = -Scalar(2.0)*x0;
-    _result(3, 3) = -2*_tmp1*x0 - _tmp4 - 4;
-    _result(3, 6) = _tmp3 + 8;
+    _result(3, 1) = _tmp5*x0;
     _result(4, 1) = x1;
-    _result(4, 4) = -Scalar(0.5)*x1;
-    _result(5, 0) = -_tmp5 + _tmp6 + Scalar(2.0);
+    _result(1, 2) = Scalar(1.0);
+    _result(2, 2) = -_tmp6 + Scalar(-13.0);
+    _result(3, 2) = -Scalar(2.0)*x0;
     _result(5, 2) = 4;
-    _result(5, 5) = x0 - x1 + Scalar(-1.0);
-    _result(6, 0) = _tmp5 - _tmp6;
+    _result(1, 3) = _tmp1;
+    _result(2, 3) = -_tmp1;
+    _result(3, 3) = -2*_tmp1*x0 - _tmp5 - 4;
     _result(6, 3) = -8;
-    _result(6, 6) = _tmp5 + _tmp6 + 16;
+    _result(0, 4) = x0 + 1;
+    _result(1, 4) = Scalar(1.0);
+    _result(4, 4) = -Scalar(0.5)*x1;
+    _result(0, 5) = 3;
+    _result(2, 5) = -_tmp2*(x1 + 3);
+    _result(5, 5) = x0 - x1 + Scalar(-1.0);
+    _result(0, 6) = _tmp1*(x0 + x1);
+    _result(3, 6) = _tmp6 + 8;
+    _result(6, 6) = _tmp3 + _tmp4 + 16;
 
     return _result;
 }  // NOLINT(readability/fn_size)

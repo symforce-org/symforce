@@ -128,19 +128,19 @@ class CameraOps(object):
         _is_valid = max(0, (0.0 if _tmp6 == 0 else math.copysign(1, _tmp6)))
         _pixel_D_cal = numpy.zeros((2, 4))
         _pixel_D_cal[0, 0] = _tmp1
-        _pixel_D_cal[0, 1] = 0
-        _pixel_D_cal[0, 2] = 1
-        _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 0] = 0
+        _pixel_D_cal[0, 1] = 0
         _pixel_D_cal[1, 1] = _tmp5
+        _pixel_D_cal[0, 2] = 1
         _pixel_D_cal[1, 2] = 0
+        _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 3] = 1
         _pixel_D_point = numpy.zeros((2, 3))
         _pixel_D_point[0, 0] = _tmp0 * _tmp7
-        _pixel_D_point[0, 1] = 0
-        _pixel_D_point[0, 2] = -_tmp7 * point[0]
         _pixel_D_point[1, 0] = -_tmp9 * point[0]
+        _pixel_D_point[0, 1] = 0
         _pixel_D_point[1, 1] = _tmp4 * _tmp8
+        _pixel_D_point[0, 2] = -_tmp7 * point[0]
         _pixel_D_point[1, 2] = -_tmp9 * point[2]
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point
 
@@ -220,11 +220,11 @@ class CameraOps(object):
         _tmp13 = _tmp0 / _self[1] ** 2
         _tmp14 = _tmp13 * _tmp9
         _tmp15 = _tmp11 * _tmp5
-        _tmp16 = _tmp1 * _tmp9
-        _tmp17 = _tmp16 * _tmp7
-        _tmp18 = _tmp1 * _tmp3
-        _tmp19 = _tmp5 * _tmp8
-        _tmp20 = _tmp10 * _tmp16
+        _tmp16 = _tmp5 * _tmp8
+        _tmp17 = _tmp1 * _tmp9
+        _tmp18 = _tmp17 * _tmp7
+        _tmp19 = _tmp1 * _tmp3
+        _tmp20 = _tmp10 * _tmp17
 
         # Output terms
         _camera_ray = [0.0] * 3
@@ -244,22 +244,22 @@ class CameraOps(object):
         )
         _point_D_cal = numpy.zeros((3, 4))
         _point_D_cal[0, 0] = -_tmp11 * _tmp12
-        _point_D_cal[0, 1] = _tmp14 * _tmp7
-        _point_D_cal[0, 2] = -_tmp15
-        _point_D_cal[0, 3] = _tmp17
         _point_D_cal[1, 0] = 0
-        _point_D_cal[1, 1] = -_tmp13 * _tmp3
-        _point_D_cal[1, 2] = 0
-        _point_D_cal[1, 3] = -_tmp18
         _point_D_cal[2, 0] = _tmp12 * _tmp8
+        _point_D_cal[0, 1] = _tmp14 * _tmp7
+        _point_D_cal[1, 1] = -_tmp13 * _tmp3
         _point_D_cal[2, 1] = _tmp10 * _tmp14
-        _point_D_cal[2, 2] = _tmp19
+        _point_D_cal[0, 2] = -_tmp15
+        _point_D_cal[1, 2] = 0
+        _point_D_cal[2, 2] = _tmp16
+        _point_D_cal[0, 3] = _tmp18
+        _point_D_cal[1, 3] = -_tmp19
         _point_D_cal[2, 3] = _tmp20
         _point_D_pixel = numpy.zeros((3, 2))
         _point_D_pixel[0, 0] = _tmp15
-        _point_D_pixel[0, 1] = -_tmp17
         _point_D_pixel[1, 0] = 0
-        _point_D_pixel[1, 1] = _tmp18
-        _point_D_pixel[2, 0] = -_tmp19
+        _point_D_pixel[2, 0] = -_tmp16
+        _point_D_pixel[0, 1] = -_tmp18
+        _point_D_pixel[1, 1] = _tmp19
         _point_D_pixel[2, 1] = -_tmp20
         return _camera_ray, _is_valid, _point_D_cal, _point_D_pixel

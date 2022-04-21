@@ -42,12 +42,12 @@ void CrossAndDistanceBothJacobians(
   // Input arrays
 
   // Intermediate terms (10)
-  const Scalar _tmp0 = -b(1, 0);
-  const Scalar _tmp1 = -b(2, 0);
-  const Scalar _tmp2 = -b(0, 0);
-  const Scalar _tmp3 = _tmp2 + a(0, 0);
-  const Scalar _tmp4 = _tmp0 + a(1, 0);
-  const Scalar _tmp5 = _tmp1 + a(2, 0);
+  const Scalar _tmp0 = -b(2, 0);
+  const Scalar _tmp1 = -b(0, 0);
+  const Scalar _tmp2 = -b(1, 0);
+  const Scalar _tmp3 = _tmp1 + a(0, 0);
+  const Scalar _tmp4 = _tmp2 + a(1, 0);
+  const Scalar _tmp5 = _tmp0 + a(2, 0);
   const Scalar _tmp6 = std::pow(Scalar(std::pow(_tmp3, Scalar(2)) + std::pow(_tmp4, Scalar(2)) +
                                        std::pow(_tmp5, Scalar(2)) + epsilon),
                                 Scalar(Scalar(-1) / Scalar(2)));
@@ -60,13 +60,13 @@ void CrossAndDistanceBothJacobians(
     Eigen::Matrix<Scalar, 3, 3>& _cross_D_a = (*cross_D_a);
 
     _cross_D_a(0, 0) = 0;
-    _cross_D_a(0, 1) = b(2, 0);
-    _cross_D_a(0, 2) = _tmp0;
-    _cross_D_a(1, 0) = _tmp1;
-    _cross_D_a(1, 1) = 0;
-    _cross_D_a(1, 2) = b(0, 0);
+    _cross_D_a(1, 0) = _tmp0;
     _cross_D_a(2, 0) = b(1, 0);
-    _cross_D_a(2, 1) = _tmp2;
+    _cross_D_a(0, 1) = b(2, 0);
+    _cross_D_a(1, 1) = 0;
+    _cross_D_a(2, 1) = _tmp1;
+    _cross_D_a(0, 2) = _tmp2;
+    _cross_D_a(1, 2) = b(0, 0);
     _cross_D_a(2, 2) = 0;
   }
 
@@ -74,13 +74,13 @@ void CrossAndDistanceBothJacobians(
     Eigen::Matrix<Scalar, 3, 3>& _cross_D_b = (*cross_D_b);
 
     _cross_D_b(0, 0) = 0;
-    _cross_D_b(0, 1) = -a(2, 0);
-    _cross_D_b(0, 2) = a(1, 0);
     _cross_D_b(1, 0) = a(2, 0);
-    _cross_D_b(1, 1) = 0;
-    _cross_D_b(1, 2) = -a(0, 0);
     _cross_D_b(2, 0) = -a(1, 0);
+    _cross_D_b(0, 1) = -a(2, 0);
+    _cross_D_b(1, 1) = 0;
     _cross_D_b(2, 1) = a(0, 0);
+    _cross_D_b(0, 2) = a(1, 0);
+    _cross_D_b(1, 2) = -a(0, 0);
     _cross_D_b(2, 2) = 0;
   }
 

@@ -83,59 +83,59 @@ void MatchingFactor(const sym::Pose3<Scalar>& world_T_body,
   const Scalar _tmp40 = _tmp35 * world_t_landmark(0, 0) + _tmp38 * world_t_landmark(1, 0);
   const Scalar _tmp41 = -_tmp34 * _world_T_body[6] + _tmp34 * world_t_landmark(2, 0) - _tmp36 -
                         _tmp39 + _tmp40 - body_t_landmark(2, 0);
-  const Scalar _tmp42 = -_tmp9;
-  const Scalar _tmp43 = _tmp12 + _tmp42;
-  const Scalar _tmp44 = -_tmp25;
-  const Scalar _tmp45 = _tmp26 + _tmp44;
-  const Scalar _tmp46 = -_tmp4;
-  const Scalar _tmp47 = _tmp21 + _tmp46;
-  const Scalar _tmp48 = std::pow(_world_T_body[3], Scalar(2));
-  const Scalar _tmp49 = -_tmp48;
-  const Scalar _tmp50 = _tmp1 + _tmp49;
-  const Scalar _tmp51 = _tmp47 + _tmp50;
-  const Scalar _tmp52 = -_tmp43 * _world_T_body[4] + _tmp43 * world_t_landmark(0, 0) -
-                        _tmp45 * _world_T_body[5] + _tmp45 * world_t_landmark(1, 0) -
-                        _tmp51 * _world_T_body[6] + _tmp51 * world_t_landmark(2, 0);
-  const Scalar _tmp53 = -_tmp21;
-  const Scalar _tmp54 = _tmp1 + _tmp46 + _tmp48 + _tmp53;
-  const Scalar _tmp55 =
-      -_tmp28 - _tmp31 + _tmp32 - _tmp54 * _world_T_body[5] + _tmp54 * world_t_landmark(1, 0);
-  const Scalar _tmp56 = _tmp2 - 1;
-  const Scalar _tmp57 = _tmp5 + _tmp56;
-  const Scalar _tmp58 = -_tmp16;
-  const Scalar _tmp59 = _tmp29 + _tmp58;
-  const Scalar _tmp60 = _tmp11 + _tmp42;
-  const Scalar _tmp61 = -_tmp1;
-  const Scalar _tmp62 = _tmp48 + _tmp61;
-  const Scalar _tmp63 = _tmp4 + _tmp53;
-  const Scalar _tmp64 = _tmp62 + _tmp63;
+  const Scalar _tmp42 = std::pow(_world_T_body[3], Scalar(2));
+  const Scalar _tmp43 = -_tmp1;
+  const Scalar _tmp44 = _tmp42 + _tmp43;
+  const Scalar _tmp45 = -_tmp21;
+  const Scalar _tmp46 = _tmp4 + _tmp45;
+  const Scalar _tmp47 = _tmp44 + _tmp46;
+  const Scalar _tmp48 =
+      -_tmp36 - _tmp39 + _tmp40 - _tmp47 * _world_T_body[6] + _tmp47 * world_t_landmark(2, 0);
+  const Scalar _tmp49 = -_tmp25;
+  const Scalar _tmp50 = _tmp37 + _tmp49;
+  const Scalar _tmp51 = -_tmp16;
+  const Scalar _tmp52 = _tmp15 + _tmp51;
+  const Scalar _tmp53 = -_tmp42;
+  const Scalar _tmp54 = _tmp21 + _tmp4 + _tmp43 + _tmp53;
+  const Scalar _tmp55 = -_tmp50 * _world_T_body[6] + _tmp50 * world_t_landmark(2, 0) -
+                        _tmp52 * _world_T_body[4] + _tmp52 * world_t_landmark(0, 0) -
+                        _tmp54 * _world_T_body[5] + _tmp54 * world_t_landmark(1, 0);
+  const Scalar _tmp56 = -_tmp9;
+  const Scalar _tmp57 = _tmp12 + _tmp56;
+  const Scalar _tmp58 = _tmp26 + _tmp49;
+  const Scalar _tmp59 = -_tmp4;
+  const Scalar _tmp60 = _tmp21 + _tmp59;
+  const Scalar _tmp61 = _tmp1 + _tmp53;
+  const Scalar _tmp62 = _tmp60 + _tmp61;
+  const Scalar _tmp63 = -_tmp57 * _world_T_body[4] + _tmp57 * world_t_landmark(0, 0) -
+                        _tmp58 * _world_T_body[5] + _tmp58 * world_t_landmark(1, 0) -
+                        _tmp62 * _world_T_body[6] + _tmp62 * world_t_landmark(2, 0);
+  const Scalar _tmp64 = _tmp44 + _tmp60;
   const Scalar _tmp65 =
-      -_tmp36 - _tmp39 + _tmp40 - _tmp64 * _world_T_body[6] + _tmp64 * world_t_landmark(2, 0);
-  const Scalar _tmp66 = _tmp50 + _tmp63;
-  const Scalar _tmp67 = -_tmp59 * _world_T_body[5] + _tmp59 * world_t_landmark(1, 0) -
-                        _tmp60 * _world_T_body[6] + _tmp60 * world_t_landmark(2, 0) -
-                        _tmp66 * _world_T_body[4] + _tmp66 * world_t_landmark(0, 0);
-  const Scalar _tmp68 = _tmp15 + _tmp58;
-  const Scalar _tmp69 = _tmp22 + _tmp5 - 1;
-  const Scalar _tmp70 = _tmp37 + _tmp44;
-  const Scalar _tmp71 = _tmp21 + _tmp4 + _tmp49 + _tmp61;
-  const Scalar _tmp72 = -_tmp68 * _world_T_body[4] + _tmp68 * world_t_landmark(0, 0) -
-                        _tmp70 * _world_T_body[6] + _tmp70 * world_t_landmark(2, 0) -
-                        _tmp71 * _world_T_body[5] + _tmp71 * world_t_landmark(1, 0);
-  const Scalar _tmp73 = _tmp47 + _tmp62;
-  const Scalar _tmp74 =
-      -_tmp14 - _tmp18 + _tmp19 - _tmp73 * _world_T_body[4] + _tmp73 * world_t_landmark(0, 0);
-  const Scalar _tmp75 = _tmp22 + _tmp56;
+      -_tmp14 - _tmp18 + _tmp19 - _tmp64 * _world_T_body[4] + _tmp64 * world_t_landmark(0, 0);
+  const Scalar _tmp66 = _tmp1 + _tmp42 + _tmp45 + _tmp59;
+  const Scalar _tmp67 =
+      -_tmp28 - _tmp31 + _tmp32 - _tmp66 * _world_T_body[5] + _tmp66 * world_t_landmark(1, 0);
+  const Scalar _tmp68 = _tmp11 + _tmp56;
+  const Scalar _tmp69 = _tmp29 + _tmp51;
+  const Scalar _tmp70 = _tmp46 + _tmp61;
+  const Scalar _tmp71 = -_tmp68 * _world_T_body[6] + _tmp68 * world_t_landmark(2, 0) -
+                        _tmp69 * _world_T_body[5] + _tmp69 * world_t_landmark(1, 0) -
+                        _tmp70 * _world_T_body[4] + _tmp70 * world_t_landmark(0, 0);
+  const Scalar _tmp72 = _tmp2 - 1;
+  const Scalar _tmp73 = _tmp5 + _tmp72;
+  const Scalar _tmp74 = _tmp22 + _tmp5 - 1;
+  const Scalar _tmp75 = _tmp22 + _tmp72;
   const Scalar _tmp76 = std::pow(sigma, Scalar(-2));
-  const Scalar _tmp77 = _tmp74 * _tmp76;
-  const Scalar _tmp78 = _tmp67 * _tmp76;
-  const Scalar _tmp79 = _tmp55 * _tmp76;
-  const Scalar _tmp80 = _tmp43 * _tmp76;
-  const Scalar _tmp81 = _tmp57 * _tmp76;
-  const Scalar _tmp82 = _tmp69 * _tmp76;
-  const Scalar _tmp83 = _tmp75 * _tmp76;
-  const Scalar _tmp84 = _tmp70 * _tmp76;
-  const Scalar _tmp85 = _tmp60 * _tmp76;
+  const Scalar _tmp77 = _tmp65 * _tmp76;
+  const Scalar _tmp78 = _tmp71 * _tmp76;
+  const Scalar _tmp79 = _tmp57 * _tmp76;
+  const Scalar _tmp80 = _tmp74 * _tmp76;
+  const Scalar _tmp81 = _tmp75 * _tmp76;
+  const Scalar _tmp82 = _tmp50 * _tmp76;
+  const Scalar _tmp83 = _tmp67 * _tmp76;
+  const Scalar _tmp84 = _tmp73 * _tmp76;
+  const Scalar _tmp85 = _tmp68 * _tmp76;
   const Scalar _tmp86 = _tmp41 * _tmp76;
   const Scalar _tmp87 = _tmp33 * _tmp76;
   const Scalar _tmp88 = _tmp20 * _tmp76;
@@ -153,78 +153,78 @@ void MatchingFactor(const sym::Pose3<Scalar>& world_T_body,
     Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
     _jacobian(0, 0) = 0;
-    _jacobian(0, 1) = _tmp0 * _tmp52;
-    _jacobian(0, 2) = _tmp0 * _tmp55;
-    _jacobian(0, 3) = _tmp0 * _tmp57;
-    _jacobian(0, 4) = _tmp0 * _tmp59;
-    _jacobian(0, 5) = _tmp0 * _tmp60;
-    _jacobian(1, 0) = _tmp0 * _tmp65;
+    _jacobian(1, 0) = _tmp0 * _tmp48;
+    _jacobian(2, 0) = _tmp0 * _tmp55;
+    _jacobian(0, 1) = _tmp0 * _tmp63;
     _jacobian(1, 1) = 0;
-    _jacobian(1, 2) = _tmp0 * _tmp67;
-    _jacobian(1, 3) = _tmp0 * _tmp68;
-    _jacobian(1, 4) = _tmp0 * _tmp69;
-    _jacobian(1, 5) = _tmp0 * _tmp70;
-    _jacobian(2, 0) = _tmp0 * _tmp72;
-    _jacobian(2, 1) = _tmp0 * _tmp74;
+    _jacobian(2, 1) = _tmp0 * _tmp65;
+    _jacobian(0, 2) = _tmp0 * _tmp67;
+    _jacobian(1, 2) = _tmp0 * _tmp71;
     _jacobian(2, 2) = 0;
-    _jacobian(2, 3) = _tmp0 * _tmp43;
-    _jacobian(2, 4) = _tmp0 * _tmp45;
+    _jacobian(0, 3) = _tmp0 * _tmp73;
+    _jacobian(1, 3) = _tmp0 * _tmp52;
+    _jacobian(2, 3) = _tmp0 * _tmp57;
+    _jacobian(0, 4) = _tmp0 * _tmp69;
+    _jacobian(1, 4) = _tmp0 * _tmp74;
+    _jacobian(2, 4) = _tmp0 * _tmp58;
+    _jacobian(0, 5) = _tmp0 * _tmp68;
+    _jacobian(1, 5) = _tmp0 * _tmp50;
     _jacobian(2, 5) = _tmp0 * _tmp75;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow(_tmp65, Scalar(2)) * _tmp76 + std::pow(_tmp72, Scalar(2)) * _tmp76;
+    _hessian(0, 0) = std::pow(_tmp48, Scalar(2)) * _tmp76 + std::pow(_tmp55, Scalar(2)) * _tmp76;
+    _hessian(1, 0) = _tmp55 * _tmp77;
+    _hessian(2, 0) = _tmp48 * _tmp78;
+    _hessian(3, 0) = _tmp48 * _tmp52 * _tmp76 + _tmp55 * _tmp79;
+    _hessian(4, 0) = _tmp48 * _tmp80 + _tmp55 * _tmp58 * _tmp76;
+    _hessian(5, 0) = _tmp48 * _tmp82 + _tmp55 * _tmp81;
     _hessian(0, 1) = 0;
+    _hessian(1, 1) = std::pow(_tmp63, Scalar(2)) * _tmp76 + std::pow(_tmp65, Scalar(2)) * _tmp76;
+    _hessian(2, 1) = _tmp63 * _tmp83;
+    _hessian(3, 1) = _tmp57 * _tmp77 + _tmp63 * _tmp84;
+    _hessian(4, 1) = _tmp58 * _tmp77 + _tmp63 * _tmp69 * _tmp76;
+    _hessian(5, 1) = _tmp63 * _tmp85 + _tmp65 * _tmp81;
     _hessian(0, 2) = 0;
-    _hessian(0, 3) = 0;
-    _hessian(0, 4) = 0;
-    _hessian(0, 5) = 0;
-    _hessian(1, 0) = _tmp72 * _tmp77;
-    _hessian(1, 1) = std::pow(_tmp52, Scalar(2)) * _tmp76 + std::pow(_tmp74, Scalar(2)) * _tmp76;
     _hessian(1, 2) = 0;
+    _hessian(2, 2) = std::pow(_tmp67, Scalar(2)) * _tmp76 + std::pow(_tmp71, Scalar(2)) * _tmp76;
+    _hessian(3, 2) = _tmp52 * _tmp78 + _tmp73 * _tmp83;
+    _hessian(4, 2) = _tmp69 * _tmp83 + _tmp74 * _tmp78;
+    _hessian(5, 2) = _tmp68 * _tmp83 + _tmp71 * _tmp82;
+    _hessian(0, 3) = 0;
     _hessian(1, 3) = 0;
-    _hessian(1, 4) = 0;
-    _hessian(1, 5) = 0;
-    _hessian(2, 0) = _tmp65 * _tmp78;
-    _hessian(2, 1) = _tmp52 * _tmp79;
-    _hessian(2, 2) = std::pow(_tmp55, Scalar(2)) * _tmp76 + std::pow(_tmp67, Scalar(2)) * _tmp76;
     _hessian(2, 3) = 0;
+    _hessian(3, 3) = std::pow(_tmp52, Scalar(2)) * _tmp76 + std::pow(_tmp57, Scalar(2)) * _tmp76 +
+                     std::pow(_tmp73, Scalar(2)) * _tmp76;
+    _hessian(4, 3) = _tmp52 * _tmp80 + _tmp58 * _tmp79 + _tmp69 * _tmp84;
+    _hessian(5, 3) = _tmp52 * _tmp82 + _tmp57 * _tmp81 + _tmp73 * _tmp85;
+    _hessian(0, 4) = 0;
+    _hessian(1, 4) = 0;
     _hessian(2, 4) = 0;
-    _hessian(2, 5) = 0;
-    _hessian(3, 0) = _tmp65 * _tmp68 * _tmp76 + _tmp72 * _tmp80;
-    _hessian(3, 1) = _tmp43 * _tmp77 + _tmp52 * _tmp81;
-    _hessian(3, 2) = _tmp57 * _tmp79 + _tmp68 * _tmp78;
-    _hessian(3, 3) = std::pow(_tmp43, Scalar(2)) * _tmp76 + std::pow(_tmp57, Scalar(2)) * _tmp76 +
-                     std::pow(_tmp68, Scalar(2)) * _tmp76;
     _hessian(3, 4) = 0;
+    _hessian(4, 4) = std::pow(_tmp58, Scalar(2)) * _tmp76 + std::pow(_tmp69, Scalar(2)) * _tmp76 +
+                     std::pow(_tmp74, Scalar(2)) * _tmp76;
+    _hessian(5, 4) = _tmp58 * _tmp81 + _tmp69 * _tmp85 + _tmp74 * _tmp82;
+    _hessian(0, 5) = 0;
+    _hessian(1, 5) = 0;
+    _hessian(2, 5) = 0;
     _hessian(3, 5) = 0;
-    _hessian(4, 0) = _tmp45 * _tmp72 * _tmp76 + _tmp65 * _tmp82;
-    _hessian(4, 1) = _tmp45 * _tmp77 + _tmp52 * _tmp59 * _tmp76;
-    _hessian(4, 2) = _tmp59 * _tmp79 + _tmp69 * _tmp78;
-    _hessian(4, 3) = _tmp45 * _tmp80 + _tmp59 * _tmp81 + _tmp68 * _tmp82;
-    _hessian(4, 4) = std::pow(_tmp45, Scalar(2)) * _tmp76 + std::pow(_tmp59, Scalar(2)) * _tmp76 +
-                     std::pow(_tmp69, Scalar(2)) * _tmp76;
     _hessian(4, 5) = 0;
-    _hessian(5, 0) = _tmp65 * _tmp84 + _tmp72 * _tmp83;
-    _hessian(5, 1) = _tmp52 * _tmp85 + _tmp74 * _tmp83;
-    _hessian(5, 2) = _tmp60 * _tmp79 + _tmp67 * _tmp84;
-    _hessian(5, 3) = _tmp43 * _tmp83 + _tmp57 * _tmp85 + _tmp68 * _tmp84;
-    _hessian(5, 4) = _tmp45 * _tmp83 + _tmp59 * _tmp85 + _tmp69 * _tmp84;
-    _hessian(5, 5) = std::pow(_tmp60, Scalar(2)) * _tmp76 + std::pow(_tmp70, Scalar(2)) * _tmp76 +
+    _hessian(5, 5) = std::pow(_tmp50, Scalar(2)) * _tmp76 + std::pow(_tmp68, Scalar(2)) * _tmp76 +
                      std::pow(_tmp75, Scalar(2)) * _tmp76;
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 6, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp65 * _tmp87 + _tmp72 * _tmp86;
-    _rhs(1, 0) = _tmp41 * _tmp77 + _tmp52 * _tmp88;
-    _rhs(2, 0) = _tmp55 * _tmp88 + _tmp67 * _tmp87;
-    _rhs(3, 0) = _tmp41 * _tmp80 + _tmp57 * _tmp88 + _tmp68 * _tmp87;
-    _rhs(4, 0) = _tmp45 * _tmp86 + _tmp59 * _tmp88 + _tmp69 * _tmp87;
-    _rhs(5, 0) = _tmp33 * _tmp84 + _tmp41 * _tmp83 + _tmp60 * _tmp88;
+    _rhs(0, 0) = _tmp48 * _tmp87 + _tmp55 * _tmp86;
+    _rhs(1, 0) = _tmp41 * _tmp77 + _tmp63 * _tmp88;
+    _rhs(2, 0) = _tmp67 * _tmp88 + _tmp71 * _tmp87;
+    _rhs(3, 0) = _tmp41 * _tmp79 + _tmp52 * _tmp87 + _tmp73 * _tmp88;
+    _rhs(4, 0) = _tmp58 * _tmp86 + _tmp69 * _tmp88 + _tmp74 * _tmp87;
+    _rhs(5, 0) = _tmp33 * _tmp82 + _tmp41 * _tmp81 + _tmp68 * _tmp88;
   }
 }  // NOLINT(readability/fn_size)
 

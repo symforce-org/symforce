@@ -117,13 +117,13 @@ class GroupOps(object):
         _res[3] = -_tmp2 + _tmp3
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = -_a[0] ** 2 - _a[1] ** 2
-        _res_D_a[0, 1] = 0
-        _res_D_a[0, 2] = 0
         _res_D_a[1, 0] = -_tmp2 + _tmp3
-        _res_D_a[1, 1] = _tmp4
-        _res_D_a[1, 2] = _tmp0
         _res_D_a[2, 0] = _tmp1
+        _res_D_a[0, 1] = 0
+        _res_D_a[1, 1] = _tmp4
         _res_D_a[2, 1] = _a[1]
+        _res_D_a[0, 2] = 0
+        _res_D_a[1, 2] = _tmp0
         _res_D_a[2, 2] = _tmp4
         return sym.Pose2.from_storage(_res), _res_D_a
 
@@ -155,23 +155,23 @@ class GroupOps(object):
         _res[3] = _a[3] + _tmp5 + _tmp6
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp7
-        _res_D_a[0, 1] = 0
-        _res_D_a[0, 2] = 0
         _res_D_a[1, 0] = -_tmp5 - _tmp6
-        _res_D_a[1, 1] = 1
-        _res_D_a[1, 2] = 0
         _res_D_a[2, 0] = _tmp4
+        _res_D_a[0, 1] = 0
+        _res_D_a[1, 1] = 1
         _res_D_a[2, 1] = 0
+        _res_D_a[0, 2] = 0
+        _res_D_a[1, 2] = 0
         _res_D_a[2, 2] = 1
         _res_D_b = numpy.zeros((3, 3))
         _res_D_b[0, 0] = _tmp7
-        _res_D_b[0, 1] = 0
-        _res_D_b[0, 2] = 0
         _res_D_b[1, 0] = 0
-        _res_D_b[1, 1] = _a[0]
-        _res_D_b[1, 2] = -_a[1]
         _res_D_b[2, 0] = 0
+        _res_D_b[0, 1] = 0
+        _res_D_b[1, 1] = _a[0]
         _res_D_b[2, 1] = _a[1]
+        _res_D_b[0, 2] = 0
+        _res_D_b[1, 2] = -_a[1]
         _res_D_b[2, 2] = _a[0]
         return sym.Pose2.from_storage(_res), _res_D_a, _res_D_b
 
@@ -209,22 +209,22 @@ class GroupOps(object):
         _res[3] = _tmp10 + _tmp11 - _tmp9
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5 ** 2
-        _res_D_a[0, 1] = 0
-        _res_D_a[0, 2] = 0
         _res_D_a[1, 0] = _tmp10 + _tmp11 - _tmp9
-        _res_D_a[1, 1] = _tmp12
-        _res_D_a[1, 2] = _tmp13
         _res_D_a[2, 0] = _tmp6 - _tmp7 - _tmp8
+        _res_D_a[0, 1] = 0
+        _res_D_a[1, 1] = _tmp12
         _res_D_a[2, 1] = _a[1]
+        _res_D_a[0, 2] = 0
+        _res_D_a[1, 2] = _tmp13
         _res_D_a[2, 2] = _tmp12
         _res_D_b = numpy.zeros((3, 3))
         _res_D_b[0, 0] = _tmp2 ** 2 - _tmp5 * (_tmp3 - _tmp4)
-        _res_D_b[0, 1] = 0
-        _res_D_b[0, 2] = 0
         _res_D_b[1, 0] = 0
-        _res_D_b[1, 1] = _a[0]
-        _res_D_b[1, 2] = _a[1]
         _res_D_b[2, 0] = 0
+        _res_D_b[0, 1] = 0
+        _res_D_b[1, 1] = _a[0]
         _res_D_b[2, 1] = _tmp13
+        _res_D_b[0, 2] = 0
+        _res_D_b[1, 2] = _a[1]
         _res_D_b[2, 2] = _a[0]
         return sym.Pose2.from_storage(_res), _res_D_a, _res_D_b

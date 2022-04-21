@@ -318,8 +318,12 @@ def get_formatted_list(
                 symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             elif isinstance(config, codegen_config.CppConfig):
                 symbols = []
-                for i in range(value.shape[0]):
-                    for j in range(value.shape[1]):
+                # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
+                # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
+                # changed to, say, row major, the below for loops would have to be swapped to
+                # reflect that.
+                for j in range(value.shape[1]):
+                    for i in range(value.shape[0]):
                         symbols.append(sm.Symbol(f"{key}({i}, {j})"))
             else:
                 raise NotImplementedError()

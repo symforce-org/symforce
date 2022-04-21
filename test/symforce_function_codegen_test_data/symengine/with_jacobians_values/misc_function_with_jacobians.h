@@ -131,13 +131,13 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
     Eigen::Matrix<Scalar, 3, 3>& _a_out_D_a = (*a_out_D_a);
 
     _a_out_D_a(0, 0) = b * (_tmp14 - _tmp15);
-    _a_out_D_a(0, 1) = b * (-_tmp16 + _tmp17 + _tmp18);
-    _a_out_D_a(0, 2) = 0;
     _a_out_D_a(1, 0) = b * (_tmp16 - _tmp17 + _tmp18);
-    _a_out_D_a(1, 1) = b * (_tmp14 + _tmp15);
-    _a_out_D_a(1, 2) = 0;
     _a_out_D_a(2, 0) = b * (_tmp5 - _tmp6);
+    _a_out_D_a(0, 1) = b * (-_tmp16 + _tmp17 + _tmp18);
+    _a_out_D_a(1, 1) = b * (_tmp14 + _tmp15);
     _a_out_D_a(2, 1) = b * (-_tmp1 + _tmp3);
+    _a_out_D_a(0, 2) = 0;
+    _a_out_D_a(1, 2) = 0;
     _a_out_D_a(2, 2) = 0;
   }
 
@@ -211,10 +211,10 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
     Eigen::Matrix<Scalar, 2, 3>& _c_out_D_d = (*c_out_D_d);
 
     _c_out_D_d(0, 0) = 4;
-    _c_out_D_d(0, 1) = 1;
-    _c_out_D_d(0, 2) = 3;
     _c_out_D_d(1, 0) = 6;
+    _c_out_D_d(0, 1) = 1;
     _c_out_D_d(1, 1) = 2;
+    _c_out_D_d(0, 2) = 3;
     _c_out_D_d(1, 2) = 4;
   }
 
@@ -222,10 +222,10 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
     Eigen::Matrix<Scalar, 2, 3>& _d_out_D_a = (*d_out_D_a);
 
     _d_out_D_a(0, 0) = 0;
-    _d_out_D_a(0, 1) = 0;
-    _d_out_D_a(0, 2) = 0;
     _d_out_D_a(1, 0) = -Scalar(1) / Scalar(2) * _a[0];
+    _d_out_D_a(0, 1) = 0;
     _d_out_D_a(1, 1) = -Scalar(1) / Scalar(2) * _a[1];
+    _d_out_D_a(0, 2) = 0;
     _d_out_D_a(1, 2) = -Scalar(1) / Scalar(2) * _a[2];
   }
 

@@ -75,8 +75,8 @@ Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
   Eigen::Matrix<Scalar, 2, 2> _res;
 
   _res(0, 0) = _self[0];
-  _res(0, 1) = -_self[1];
   _res(1, 0) = _self[1];
+  _res(0, 1) = -_self[1];
   _res(1, 1) = _self[0];
 
   return _res;

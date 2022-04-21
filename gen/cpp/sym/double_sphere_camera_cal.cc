@@ -149,9 +149,9 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPointW
                         (((_tmp9) > 0) - ((_tmp9) < 0)) / std::pow(_tmp11, Scalar(2));
   const Scalar _tmp25 = _self[0] * point(0, 0);
   const Scalar _tmp26 = _tmp24 * _tmp25;
-  const Scalar _tmp27 = _tmp24 * (-_tmp2 + _tmp3);
-  const Scalar _tmp28 = _self[1] * point(1, 0);
-  const Scalar _tmp29 = _tmp24 * _tmp28;
+  const Scalar _tmp27 = _self[1] * point(1, 0);
+  const Scalar _tmp28 = _tmp24 * _tmp27;
+  const Scalar _tmp29 = _tmp24 * (-_tmp2 + _tmp3);
   const Scalar _tmp30 = Scalar(1.0) / (_tmp1);
   const Scalar _tmp31 = _self[4] * _tmp30;
   const Scalar _tmp32 = _tmp31 * _tmp8;
@@ -201,28 +201,28 @@ Eigen::Matrix<Scalar, 2, 1> DoubleSphereCameraCal<Scalar>::PixelFromCameraPointW
     Eigen::Matrix<Scalar, 2, 6>& _pixel_D_cal = (*pixel_D_cal);
 
     _pixel_D_cal(0, 0) = _tmp12 * point(0, 0);
-    _pixel_D_cal(0, 1) = 0;
-    _pixel_D_cal(0, 2) = 1;
-    _pixel_D_cal(0, 3) = 0;
-    _pixel_D_cal(0, 4) = -_tmp23 * _tmp26;
-    _pixel_D_cal(0, 5) = -_tmp25 * _tmp27;
     _pixel_D_cal(1, 0) = 0;
+    _pixel_D_cal(0, 1) = 0;
     _pixel_D_cal(1, 1) = _tmp12 * point(1, 0);
+    _pixel_D_cal(0, 2) = 1;
     _pixel_D_cal(1, 2) = 0;
+    _pixel_D_cal(0, 3) = 0;
     _pixel_D_cal(1, 3) = 1;
-    _pixel_D_cal(1, 4) = -_tmp23 * _tmp29;
-    _pixel_D_cal(1, 5) = -_tmp27 * _tmp28;
+    _pixel_D_cal(0, 4) = -_tmp23 * _tmp26;
+    _pixel_D_cal(1, 4) = -_tmp23 * _tmp28;
+    _pixel_D_cal(0, 5) = -_tmp25 * _tmp29;
+    _pixel_D_cal(1, 5) = -_tmp27 * _tmp29;
   }
 
   if (pixel_D_point != nullptr) {
     Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
 
     _pixel_D_point(0, 0) = _tmp13 - _tmp26 * _tmp36;
+    _pixel_D_point(1, 0) = -_tmp28 * _tmp36;
     _pixel_D_point(0, 1) = -_tmp26 * _tmp38;
+    _pixel_D_point(1, 1) = _tmp14 - _tmp28 * _tmp38;
     _pixel_D_point(0, 2) = -_tmp26 * _tmp40;
-    _pixel_D_point(1, 0) = -_tmp29 * _tmp36;
-    _pixel_D_point(1, 1) = _tmp14 - _tmp29 * _tmp38;
-    _pixel_D_point(1, 2) = -_tmp29 * _tmp40;
+    _pixel_D_point(1, 2) = -_tmp28 * _tmp40;
   }
 
   return _pixel;
@@ -348,64 +348,64 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixelWit
   const Scalar _tmp53 = (Scalar(1) / Scalar(4)) * _tmp52;
   const Scalar _tmp54 = -_tmp35 * _tmp49 + _tmp36 * _tmp51 + _tmp53 * (-_tmp24 * _tmp36 + _tmp45);
   const Scalar _tmp55 = _tmp21 * _tmp54;
-  const Scalar _tmp56 = _tmp3 / [&]() {
+  const Scalar _tmp56 = _tmp2 * _tmp30;
+  const Scalar _tmp57 = _tmp22 * _tmp28;
+  const Scalar _tmp58 = _tmp57 * _tmp8;
+  const Scalar _tmp59 = _tmp28 * _tmp48;
+  const Scalar _tmp60 = _tmp21 * _tmp23;
+  const Scalar _tmp61 = _tmp3 / [&]() {
     const Scalar base = _self[1];
     return base * base * base;
   }();
-  const Scalar _tmp57 = 2 * _tmp56;
-  const Scalar _tmp58 = _tmp39 * _tmp56 - _tmp44 * _tmp56;
-  const Scalar _tmp59 = _tmp46 * (-_tmp57 + _tmp58);
-  const Scalar _tmp60 = -_tmp49 * _tmp56 + _tmp51 * _tmp57 + _tmp53 * (-_tmp24 * _tmp57 + _tmp58);
-  const Scalar _tmp61 = _tmp21 * _tmp60;
-  const Scalar _tmp62 = _tmp32 * _tmp49;
-  const Scalar _tmp63 = 2 * _tmp32;
-  const Scalar _tmp64 = _tmp51 * _tmp63;
-  const Scalar _tmp65 = _tmp24 * _tmp63;
-  const Scalar _tmp66 = _tmp32 * _tmp39;
-  const Scalar _tmp67 = _tmp32 * _tmp44;
-  const Scalar _tmp68 = _tmp66 - _tmp67;
-  const Scalar _tmp69 = _tmp53 * (-_tmp65 + _tmp68) - _tmp62 + _tmp64;
-  const Scalar _tmp70 = _tmp21 * _tmp69;
-  const Scalar _tmp71 = _tmp46 * (-_tmp63 + _tmp68);
-  const Scalar _tmp72 = _tmp2 * _tmp4;
-  const Scalar _tmp73 = 2 * _tmp72;
-  const Scalar _tmp74 = _tmp51 * _tmp73;
-  const Scalar _tmp75 = _tmp49 * _tmp72;
-  const Scalar _tmp76 = _tmp24 * _tmp73;
-  const Scalar _tmp77 = _tmp39 * _tmp72;
-  const Scalar _tmp78 = _tmp44 * _tmp72;
-  const Scalar _tmp79 = _tmp77 - _tmp78;
-  const Scalar _tmp80 = _tmp53 * (-_tmp76 + _tmp79) + _tmp74 - _tmp75;
-  const Scalar _tmp81 = _tmp21 * _tmp80;
-  const Scalar _tmp82 = _tmp46 * (-_tmp73 + _tmp79);
-  const Scalar _tmp83 = (Scalar(1) / Scalar(2)) * _tmp7;
-  const Scalar _tmp84 = -_self[4] * _tmp52 * _tmp83 + _tmp23;
-  const Scalar _tmp85 = _tmp21 * _tmp84;
-  const Scalar _tmp86 = _tmp14 - _tmp42 * _tmp83 - 1;
-  const Scalar _tmp87 = -_self[5] * _tmp38 * _tmp7 - 2 * _tmp40 * _tmp86;
-  const Scalar _tmp88 = _tmp46 * _tmp87;
-  const Scalar _tmp89 = _tmp37 * _tmp86;
-  const Scalar _tmp90 = _tmp11 * _tmp7;
-  const Scalar _tmp91 = -_self[4] * _tmp89 - _tmp50 * _tmp90 + _tmp53 * _tmp87;
-  const Scalar _tmp92 = _tmp21 * _tmp91;
-  const Scalar _tmp93 = _tmp2 * _tmp30;
-  const Scalar _tmp94 = _tmp28 * _tmp72;
-  const Scalar _tmp95 = _tmp22 * _tmp28;
-  const Scalar _tmp96 = _tmp8 * _tmp95;
-  const Scalar _tmp97 = _tmp28 * _tmp48;
-  const Scalar _tmp98 = _tmp21 * _tmp23;
-  const Scalar _tmp99 = _tmp63 * _tmp96;
-  const Scalar _tmp100 = _tmp33 * _tmp48;
-  const Scalar _tmp101 = _tmp48 * _tmp94;
-  const Scalar _tmp102 = _tmp73 * _tmp96;
-  const Scalar _tmp103 = -_tmp66 + _tmp67;
-  const Scalar _tmp104 = _tmp53 * (_tmp103 + _tmp65) + _tmp62 - _tmp64;
+  const Scalar _tmp62 = 2 * _tmp61;
+  const Scalar _tmp63 = _tmp39 * _tmp61 - _tmp44 * _tmp61;
+  const Scalar _tmp64 = _tmp46 * (-_tmp62 + _tmp63);
+  const Scalar _tmp65 = -_tmp49 * _tmp61 + _tmp51 * _tmp62 + _tmp53 * (-_tmp24 * _tmp62 + _tmp63);
+  const Scalar _tmp66 = _tmp21 * _tmp65;
+  const Scalar _tmp67 = _tmp2 * _tmp4;
+  const Scalar _tmp68 = _tmp28 * _tmp67;
+  const Scalar _tmp69 = _tmp32 * _tmp49;
+  const Scalar _tmp70 = 2 * _tmp32;
+  const Scalar _tmp71 = _tmp51 * _tmp70;
+  const Scalar _tmp72 = _tmp24 * _tmp70;
+  const Scalar _tmp73 = _tmp32 * _tmp39;
+  const Scalar _tmp74 = _tmp32 * _tmp44;
+  const Scalar _tmp75 = _tmp73 - _tmp74;
+  const Scalar _tmp76 = _tmp53 * (-_tmp72 + _tmp75) - _tmp69 + _tmp71;
+  const Scalar _tmp77 = _tmp21 * _tmp76;
+  const Scalar _tmp78 = _tmp46 * (-_tmp70 + _tmp75);
+  const Scalar _tmp79 = _tmp58 * _tmp70;
+  const Scalar _tmp80 = _tmp33 * _tmp48;
+  const Scalar _tmp81 = 2 * _tmp67;
+  const Scalar _tmp82 = _tmp51 * _tmp81;
+  const Scalar _tmp83 = _tmp49 * _tmp67;
+  const Scalar _tmp84 = _tmp24 * _tmp81;
+  const Scalar _tmp85 = _tmp39 * _tmp67;
+  const Scalar _tmp86 = _tmp44 * _tmp67;
+  const Scalar _tmp87 = _tmp85 - _tmp86;
+  const Scalar _tmp88 = _tmp53 * (-_tmp84 + _tmp87) + _tmp82 - _tmp83;
+  const Scalar _tmp89 = _tmp21 * _tmp88;
+  const Scalar _tmp90 = _tmp46 * (-_tmp81 + _tmp87);
+  const Scalar _tmp91 = _tmp48 * _tmp68;
+  const Scalar _tmp92 = _tmp58 * _tmp81;
+  const Scalar _tmp93 = (Scalar(1) / Scalar(2)) * _tmp7;
+  const Scalar _tmp94 = -_self[4] * _tmp52 * _tmp93 + _tmp23;
+  const Scalar _tmp95 = _tmp21 * _tmp94;
+  const Scalar _tmp96 = _tmp14 - _tmp42 * _tmp93 - 1;
+  const Scalar _tmp97 = -_self[5] * _tmp38 * _tmp7 - 2 * _tmp40 * _tmp96;
+  const Scalar _tmp98 = _tmp46 * _tmp97;
+  const Scalar _tmp99 = _tmp37 * _tmp96;
+  const Scalar _tmp100 = _tmp11 * _tmp7;
+  const Scalar _tmp101 = -_self[4] * _tmp99 - _tmp100 * _tmp50 + _tmp53 * _tmp97;
+  const Scalar _tmp102 = _tmp101 * _tmp21;
+  const Scalar _tmp103 = -_tmp73 + _tmp74;
+  const Scalar _tmp104 = _tmp53 * (_tmp103 + _tmp72) + _tmp69 - _tmp71;
   const Scalar _tmp105 = _tmp104 * _tmp21;
-  const Scalar _tmp106 = _tmp46 * (_tmp103 + _tmp63);
-  const Scalar _tmp107 = -_tmp77 + _tmp78;
-  const Scalar _tmp108 = _tmp53 * (_tmp107 + _tmp76) - _tmp74 + _tmp75;
+  const Scalar _tmp106 = _tmp46 * (_tmp103 + _tmp70);
+  const Scalar _tmp107 = -_tmp85 + _tmp86;
+  const Scalar _tmp108 = _tmp53 * (_tmp107 + _tmp84) - _tmp82 + _tmp83;
   const Scalar _tmp109 = _tmp108 * _tmp21;
-  const Scalar _tmp110 = _tmp46 * (_tmp107 + _tmp73);
+  const Scalar _tmp110 = _tmp46 * (_tmp107 + _tmp81);
 
   // Output terms (4)
   Eigen::Matrix<Scalar, 3, 1> _camera_ray;
@@ -425,34 +425,34 @@ Eigen::Matrix<Scalar, 3, 1> DoubleSphereCameraCal<Scalar>::CameraRayFromPixelWit
     Eigen::Matrix<Scalar, 3, 6>& _point_D_cal = (*point_D_cal);
 
     _point_D_cal(0, 0) = -_tmp33 - _tmp34 * _tmp47 + _tmp34 * _tmp55;
-    _point_D_cal(0, 1) = -_tmp34 * _tmp59 + _tmp34 * _tmp61;
-    _point_D_cal(0, 2) = -_tmp29 + _tmp34 * _tmp70 - _tmp34 * _tmp71;
-    _point_D_cal(0, 3) = _tmp34 * _tmp81 - _tmp34 * _tmp82;
-    _point_D_cal(0, 4) = _tmp34 * _tmp85;
-    _point_D_cal(0, 5) = -_tmp34 * _tmp88 + _tmp34 * _tmp92;
-    _point_D_cal(1, 0) = -_tmp47 * _tmp93 + _tmp55 * _tmp93;
-    _point_D_cal(1, 1) = -_tmp59 * _tmp93 + _tmp61 * _tmp93 - _tmp94;
-    _point_D_cal(1, 2) = _tmp70 * _tmp93 - _tmp71 * _tmp93;
-    _point_D_cal(1, 3) = -_tmp31 + _tmp81 * _tmp93 - _tmp82 * _tmp93;
-    _point_D_cal(1, 4) = _tmp85 * _tmp93;
-    _point_D_cal(1, 5) = -_tmp88 * _tmp93 + _tmp92 * _tmp93;
-    _point_D_cal(2, 0) = -_tmp23 * _tmp47 - _tmp35 * _tmp97 + _tmp36 * _tmp96 + _tmp54 * _tmp98;
-    _point_D_cal(2, 1) = -_tmp23 * _tmp59 - _tmp56 * _tmp97 + _tmp57 * _tmp96 + _tmp60 * _tmp98;
-    _point_D_cal(2, 2) = -_tmp100 - _tmp23 * _tmp71 + _tmp69 * _tmp98 + _tmp99;
-    _point_D_cal(2, 3) = -_tmp101 + _tmp102 - _tmp23 * _tmp82 + _tmp80 * _tmp98;
-    _point_D_cal(2, 4) = _tmp84 * _tmp98 - 1;
-    _point_D_cal(2, 5) = -_tmp23 * _tmp88 - _tmp28 * _tmp89 - _tmp90 * _tmp95 + _tmp91 * _tmp98;
+    _point_D_cal(1, 0) = -_tmp47 * _tmp56 + _tmp55 * _tmp56;
+    _point_D_cal(2, 0) = -_tmp23 * _tmp47 - _tmp35 * _tmp59 + _tmp36 * _tmp58 + _tmp54 * _tmp60;
+    _point_D_cal(0, 1) = -_tmp34 * _tmp64 + _tmp34 * _tmp66;
+    _point_D_cal(1, 1) = -_tmp56 * _tmp64 + _tmp56 * _tmp66 - _tmp68;
+    _point_D_cal(2, 1) = -_tmp23 * _tmp64 + _tmp58 * _tmp62 - _tmp59 * _tmp61 + _tmp60 * _tmp65;
+    _point_D_cal(0, 2) = -_tmp29 + _tmp34 * _tmp77 - _tmp34 * _tmp78;
+    _point_D_cal(1, 2) = _tmp56 * _tmp77 - _tmp56 * _tmp78;
+    _point_D_cal(2, 2) = -_tmp23 * _tmp78 + _tmp60 * _tmp76 + _tmp79 - _tmp80;
+    _point_D_cal(0, 3) = _tmp34 * _tmp89 - _tmp34 * _tmp90;
+    _point_D_cal(1, 3) = -_tmp31 + _tmp56 * _tmp89 - _tmp56 * _tmp90;
+    _point_D_cal(2, 3) = -_tmp23 * _tmp90 + _tmp60 * _tmp88 - _tmp91 + _tmp92;
+    _point_D_cal(0, 4) = _tmp34 * _tmp95;
+    _point_D_cal(1, 4) = _tmp56 * _tmp95;
+    _point_D_cal(2, 4) = _tmp60 * _tmp94 - 1;
+    _point_D_cal(0, 5) = _tmp102 * _tmp34 - _tmp34 * _tmp98;
+    _point_D_cal(1, 5) = _tmp102 * _tmp56 - _tmp56 * _tmp98;
+    _point_D_cal(2, 5) = -_tmp100 * _tmp57 + _tmp101 * _tmp60 - _tmp23 * _tmp98 - _tmp28 * _tmp99;
   }
 
   if (point_D_pixel != nullptr) {
     Eigen::Matrix<Scalar, 3, 2>& _point_D_pixel = (*point_D_pixel);
 
     _point_D_pixel(0, 0) = _tmp105 * _tmp34 - _tmp106 * _tmp34 + _tmp29;
+    _point_D_pixel(1, 0) = _tmp105 * _tmp56 - _tmp106 * _tmp56;
+    _point_D_pixel(2, 0) = _tmp104 * _tmp60 - _tmp106 * _tmp23 - _tmp79 + _tmp80;
     _point_D_pixel(0, 1) = _tmp109 * _tmp34 - _tmp110 * _tmp34;
-    _point_D_pixel(1, 0) = _tmp105 * _tmp93 - _tmp106 * _tmp93;
-    _point_D_pixel(1, 1) = _tmp109 * _tmp93 - _tmp110 * _tmp93 + _tmp31;
-    _point_D_pixel(2, 0) = _tmp100 + _tmp104 * _tmp98 - _tmp106 * _tmp23 - _tmp99;
-    _point_D_pixel(2, 1) = _tmp101 - _tmp102 + _tmp108 * _tmp98 - _tmp110 * _tmp23;
+    _point_D_pixel(1, 1) = _tmp109 * _tmp56 - _tmp110 * _tmp56 + _tmp31;
+    _point_D_pixel(2, 1) = _tmp108 * _tmp60 - _tmp110 * _tmp23 + _tmp91 - _tmp92;
   }
 
   return _camera_ray;

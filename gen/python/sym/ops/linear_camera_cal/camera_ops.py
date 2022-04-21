@@ -121,19 +121,19 @@ class CameraOps(object):
         _is_valid = max(0, _tmp5)
         _pixel_D_cal = numpy.zeros((2, 4))
         _pixel_D_cal[0, 0] = _tmp2 * point[0]
-        _pixel_D_cal[0, 1] = 0
-        _pixel_D_cal[0, 2] = 1
-        _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 0] = 0
+        _pixel_D_cal[0, 1] = 0
         _pixel_D_cal[1, 1] = _tmp2 * point[1]
+        _pixel_D_cal[0, 2] = 1
         _pixel_D_cal[1, 2] = 0
+        _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 3] = 1
         _pixel_D_point = numpy.zeros((2, 3))
         _pixel_D_point[0, 0] = _tmp3
-        _pixel_D_point[0, 1] = 0
-        _pixel_D_point[0, 2] = -_self[0] * _tmp6 * point[0]
         _pixel_D_point[1, 0] = 0
+        _pixel_D_point[0, 1] = 0
         _pixel_D_point[1, 1] = _tmp4
+        _pixel_D_point[0, 2] = -_self[0] * _tmp6 * point[0]
         _pixel_D_point[1, 2] = -_self[1] * _tmp6 * point[1]
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point
 
@@ -197,22 +197,22 @@ class CameraOps(object):
         _is_valid = 1
         _point_D_cal = numpy.zeros((3, 4))
         _point_D_cal[0, 0] = -_tmp0 / _self[0] ** 2
-        _point_D_cal[0, 1] = 0
-        _point_D_cal[0, 2] = -_tmp1
-        _point_D_cal[0, 3] = 0
         _point_D_cal[1, 0] = 0
-        _point_D_cal[1, 1] = -_tmp2 / _self[1] ** 2
-        _point_D_cal[1, 2] = 0
-        _point_D_cal[1, 3] = -_tmp3
         _point_D_cal[2, 0] = 0
+        _point_D_cal[0, 1] = 0
+        _point_D_cal[1, 1] = -_tmp2 / _self[1] ** 2
         _point_D_cal[2, 1] = 0
+        _point_D_cal[0, 2] = -_tmp1
+        _point_D_cal[1, 2] = 0
         _point_D_cal[2, 2] = 0
+        _point_D_cal[0, 3] = 0
+        _point_D_cal[1, 3] = -_tmp3
         _point_D_cal[2, 3] = 0
         _point_D_pixel = numpy.zeros((3, 2))
         _point_D_pixel[0, 0] = _tmp1
-        _point_D_pixel[0, 1] = 0
         _point_D_pixel[1, 0] = 0
-        _point_D_pixel[1, 1] = _tmp3
         _point_D_pixel[2, 0] = 0
+        _point_D_pixel[0, 1] = 0
+        _point_D_pixel[1, 1] = _tmp3
         _point_D_pixel[2, 1] = 0
         return _camera_ray, _is_valid, _point_D_cal, _point_D_pixel

@@ -79,8 +79,8 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
                         (Scalar(1) / Scalar(2)) * _tmp4 + (Scalar(1) / Scalar(2)) * _tmp5;
   const Scalar _tmp43 = -_tmp42;
   const Scalar _tmp44 = _tmp39 + _tmp41 * _tmp43;
-  const Scalar _tmp45 = -_tmp30;
-  const Scalar _tmp46 = -_tmp31;
+  const Scalar _tmp45 = -_tmp31;
+  const Scalar _tmp46 = -_tmp30;
   const Scalar _tmp47 = _tmp45 * _tmp46;
 
   // Output terms (2)
@@ -98,40 +98,40 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
     Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
 
     _res_D_b(0, 0) = _tmp30 * _tmp31 + _tmp36 + _tmp44;
-    _res_D_b(0, 1) = _tmp31 * _tmp37 + _tmp33 * _tmp43 + _tmp34 * _tmp41 + _tmp38 * _tmp45;
-    _res_D_b(0, 2) = _tmp31 * _tmp35 + _tmp33 * _tmp45 + _tmp37 * _tmp41 + _tmp38 * _tmp42;
-    _res_D_b(0, 3) = 0;
-    _res_D_b(0, 4) = 0;
-    _res_D_b(0, 5) = 0;
-    _res_D_b(1, 0) = _tmp30 * _tmp38 + _tmp32 * _tmp43 + _tmp35 * _tmp41 + _tmp37 * _tmp46;
-    _res_D_b(1, 1) = _tmp32 * _tmp34 + _tmp44 + _tmp47;
-    _res_D_b(1, 2) = _tmp32 * _tmp37 + _tmp35 * _tmp38 + _tmp41 * _tmp45 + _tmp42 * _tmp46;
-    _res_D_b(1, 3) = 0;
-    _res_D_b(1, 4) = 0;
-    _res_D_b(1, 5) = 0;
-    _res_D_b(2, 0) = _tmp30 * _tmp33 + _tmp35 * _tmp46 + _tmp37 * _tmp40 + _tmp38 * _tmp43;
-    _res_D_b(2, 1) = _tmp33 * _tmp37 + _tmp34 * _tmp38 + _tmp40 * _tmp45 + _tmp43 * _tmp46;
-    _res_D_b(2, 2) = _tmp36 + _tmp39 + _tmp40 * _tmp42 + _tmp47;
-    _res_D_b(2, 3) = 0;
-    _res_D_b(2, 4) = 0;
-    _res_D_b(2, 5) = 0;
+    _res_D_b(1, 0) = _tmp30 * _tmp38 + _tmp32 * _tmp43 + _tmp35 * _tmp41 + _tmp37 * _tmp45;
+    _res_D_b(2, 0) = _tmp30 * _tmp33 + _tmp35 * _tmp45 + _tmp37 * _tmp40 + _tmp38 * _tmp43;
     _res_D_b(3, 0) = 0;
-    _res_D_b(3, 1) = 0;
-    _res_D_b(3, 2) = 0;
-    _res_D_b(3, 3) = _tmp21;
-    _res_D_b(3, 4) = _tmp15;
-    _res_D_b(3, 5) = _tmp18;
     _res_D_b(4, 0) = 0;
-    _res_D_b(4, 1) = 0;
-    _res_D_b(4, 2) = 0;
-    _res_D_b(4, 3) = _tmp22;
-    _res_D_b(4, 4) = _tmp26;
-    _res_D_b(4, 5) = _tmp24;
     _res_D_b(5, 0) = 0;
+    _res_D_b(0, 1) = _tmp31 * _tmp37 + _tmp33 * _tmp43 + _tmp34 * _tmp41 + _tmp38 * _tmp46;
+    _res_D_b(1, 1) = _tmp32 * _tmp34 + _tmp44 + _tmp47;
+    _res_D_b(2, 1) = _tmp33 * _tmp37 + _tmp34 * _tmp38 + _tmp40 * _tmp46 + _tmp43 * _tmp45;
+    _res_D_b(3, 1) = 0;
+    _res_D_b(4, 1) = 0;
     _res_D_b(5, 1) = 0;
+    _res_D_b(0, 2) = _tmp31 * _tmp35 + _tmp33 * _tmp46 + _tmp37 * _tmp41 + _tmp38 * _tmp42;
+    _res_D_b(1, 2) = _tmp32 * _tmp37 + _tmp35 * _tmp38 + _tmp41 * _tmp46 + _tmp42 * _tmp45;
+    _res_D_b(2, 2) = _tmp36 + _tmp39 + _tmp40 * _tmp42 + _tmp47;
+    _res_D_b(3, 2) = 0;
+    _res_D_b(4, 2) = 0;
     _res_D_b(5, 2) = 0;
+    _res_D_b(0, 3) = 0;
+    _res_D_b(1, 3) = 0;
+    _res_D_b(2, 3) = 0;
+    _res_D_b(3, 3) = _tmp21;
+    _res_D_b(4, 3) = _tmp22;
     _res_D_b(5, 3) = _tmp27;
+    _res_D_b(0, 4) = 0;
+    _res_D_b(1, 4) = 0;
+    _res_D_b(2, 4) = 0;
+    _res_D_b(3, 4) = _tmp15;
+    _res_D_b(4, 4) = _tmp26;
     _res_D_b(5, 4) = _tmp28;
+    _res_D_b(0, 5) = 0;
+    _res_D_b(1, 5) = 0;
+    _res_D_b(2, 5) = 0;
+    _res_D_b(3, 5) = _tmp18;
+    _res_D_b(4, 5) = _tmp24;
     _res_D_b(5, 5) = _tmp29;
   }
 

@@ -93,8 +93,8 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
     Eigen::Matrix<Scalar, 2, 2>& _hessian = (*hessian);
 
     _hessian(0, 0) = std::pow(_tmp18, Scalar(2)) * _tmp25;
-    _hessian(0, 1) = 0;
     _hessian(1, 0) = _tmp18 * _tmp23 * _tmp25;
+    _hessian(0, 1) = 0;
     _hessian(1, 1) = std::pow(_tmp23, Scalar(2)) * _tmp25;
   }
 

@@ -26,11 +26,11 @@ Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a) {
   // Intermediate terms (7)
   const Scalar _tmp0 = 2 * _a[3];
   const Scalar _tmp1 = 2 * _a[2];
-  const Scalar _tmp2 = 2 * _a[1];
-  const Scalar _tmp3 = -_tmp2;
+  const Scalar _tmp2 = -_tmp1;
+  const Scalar _tmp3 = 2 * _a[1];
   const Scalar _tmp4 = 2 * _a[0];
   const Scalar _tmp5 = -_tmp4;
-  const Scalar _tmp6 = -_tmp1;
+  const Scalar _tmp6 = -_tmp3;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 6, 7> _res;
@@ -38,17 +38,17 @@ Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a) {
   _res.setZero();
 
   _res(0, 0) = _tmp0;
+  _res(1, 0) = _tmp2;
+  _res(2, 0) = _tmp3;
   _res(0, 1) = _tmp1;
-  _res(0, 2) = _tmp3;
-  _res(0, 3) = _tmp5;
-  _res(1, 0) = _tmp6;
   _res(1, 1) = _tmp0;
-  _res(1, 2) = _tmp4;
-  _res(1, 3) = _tmp3;
-  _res(2, 0) = _tmp2;
   _res(2, 1) = _tmp5;
+  _res(0, 2) = _tmp6;
+  _res(1, 2) = _tmp4;
   _res(2, 2) = _tmp0;
-  _res(2, 3) = _tmp6;
+  _res(0, 3) = _tmp5;
+  _res(1, 3) = _tmp6;
+  _res(2, 3) = _tmp2;
   _res(3, 4) = 1;
   _res(4, 5) = 1;
   _res(5, 6) = 1;

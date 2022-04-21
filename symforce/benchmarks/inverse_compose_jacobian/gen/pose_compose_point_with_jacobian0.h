@@ -55,13 +55,13 @@ __attribute__((noinline)) Eigen::Matrix<Scalar, 3, 1> PoseComposePointWithJacobi
   const Scalar _tmp17 = 2 * _tmp16;
   const Scalar _tmp18 = _tmp5 - _tmp6;
   const Scalar _tmp19 = _tmp13 + _tmp14;
-  const Scalar _tmp20 = -_tmp8;
+  const Scalar _tmp20 = -_tmp10;
   const Scalar _tmp21 = std::pow(_pose[3], Scalar(2));
-  const Scalar _tmp22 = -_tmp10 + _tmp21;
-  const Scalar _tmp23 = _tmp16 + _tmp20 + _tmp22;
-  const Scalar _tmp24 = -_tmp16;
-  const Scalar _tmp25 = _tmp22 + _tmp24 + _tmp8;
-  const Scalar _tmp26 = _tmp10 + _tmp20 + _tmp21 + _tmp24;
+  const Scalar _tmp22 = -_tmp16 + _tmp21;
+  const Scalar _tmp23 = _tmp20 + _tmp22 + _tmp8;
+  const Scalar _tmp24 = -_tmp8;
+  const Scalar _tmp25 = _tmp10 + _tmp22 + _tmp24;
+  const Scalar _tmp26 = _tmp16 + _tmp20 + _tmp21 + _tmp24;
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 3, 1> _res;
@@ -77,22 +77,22 @@ __attribute__((noinline)) Eigen::Matrix<Scalar, 3, 1> PoseComposePointWithJacobi
     Eigen::Matrix<Scalar, 3, 6>& _res_D_pose = (*res_D_pose);
 
     _res_D_pose(0, 0) = _tmp4 * point(2, 0) + _tmp7 * point(1, 0);
-    _res_D_pose(0, 1) = _tmp23 * point(2, 0) - _tmp7 * point(0, 0);
-    _res_D_pose(0, 2) = -_tmp23 * point(1, 0) - _tmp4 * point(0, 0);
-    _res_D_pose(0, 3) = 1;
-    _res_D_pose(0, 4) = 0;
-    _res_D_pose(0, 5) = 0;
-    _res_D_pose(1, 0) = -_tmp15 * point(1, 0) - _tmp25 * point(2, 0);
+    _res_D_pose(1, 0) = -_tmp15 * point(1, 0) - _tmp23 * point(2, 0);
+    _res_D_pose(2, 0) = -_tmp19 * point(2, 0) + _tmp25 * point(1, 0);
+    _res_D_pose(0, 1) = _tmp26 * point(2, 0) - _tmp7 * point(0, 0);
     _res_D_pose(1, 1) = _tmp12 * point(2, 0) + _tmp15 * point(0, 0);
-    _res_D_pose(1, 2) = -_tmp12 * point(1, 0) + _tmp25 * point(0, 0);
-    _res_D_pose(1, 3) = 0;
-    _res_D_pose(1, 4) = 1;
-    _res_D_pose(1, 5) = 0;
-    _res_D_pose(2, 0) = -_tmp19 * point(2, 0) + _tmp26 * point(1, 0);
-    _res_D_pose(2, 1) = -_tmp18 * point(2, 0) - _tmp26 * point(0, 0);
+    _res_D_pose(2, 1) = -_tmp18 * point(2, 0) - _tmp25 * point(0, 0);
+    _res_D_pose(0, 2) = -_tmp26 * point(1, 0) - _tmp4 * point(0, 0);
+    _res_D_pose(1, 2) = -_tmp12 * point(1, 0) + _tmp23 * point(0, 0);
     _res_D_pose(2, 2) = _tmp18 * point(1, 0) + _tmp19 * point(0, 0);
+    _res_D_pose(0, 3) = 1;
+    _res_D_pose(1, 3) = 0;
     _res_D_pose(2, 3) = 0;
+    _res_D_pose(0, 4) = 0;
+    _res_D_pose(1, 4) = 1;
     _res_D_pose(2, 4) = 0;
+    _res_D_pose(0, 5) = 0;
+    _res_D_pose(1, 5) = 0;
     _res_D_pose(2, 5) = 1;
   }
 

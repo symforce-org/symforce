@@ -129,9 +129,9 @@ class CameraOps(object):
         _tmp16 = _self[4] - _tmp5
         _tmp17 = _self[0] * point[0]
         _tmp18 = _tmp12 * _tmp17
-        _tmp19 = _tmp12 * _tmp9
-        _tmp20 = _self[1] * point[1]
-        _tmp21 = _tmp12 * _tmp20
+        _tmp19 = _self[1] * point[1]
+        _tmp20 = _tmp12 * _tmp19
+        _tmp21 = _tmp12 * _tmp9
         _tmp22 = (9.0 / 2.0) * _self[8] * _tmp6 ** 8
         _tmp23 = ((0.0 if _tmp0 + _tmp16 == 0 else math.copysign(1, _tmp0 + _tmp16)) + 1) / (
             _tmp3 + point[2] ** 2
@@ -174,26 +174,26 @@ class CameraOps(object):
         _is_valid = max(0, (0.0 if _tmp16 == 0 else math.copysign(1, _tmp16)))
         _pixel_D_cal = numpy.zeros((2, 8))
         _pixel_D_cal[0, 0] = _tmp14
-        _pixel_D_cal[0, 1] = 0
-        _pixel_D_cal[0, 2] = 1
-        _pixel_D_cal[0, 3] = 0
-        _pixel_D_cal[0, 4] = _tmp10 * _tmp18
-        _pixel_D_cal[0, 5] = _tmp18 * _tmp7
-        _pixel_D_cal[0, 6] = _tmp18 * _tmp8
-        _pixel_D_cal[0, 7] = _tmp17 * _tmp19
         _pixel_D_cal[1, 0] = 0
+        _pixel_D_cal[0, 1] = 0
         _pixel_D_cal[1, 1] = _tmp15
+        _pixel_D_cal[0, 2] = 1
         _pixel_D_cal[1, 2] = 0
+        _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 3] = 1
-        _pixel_D_cal[1, 4] = _tmp10 * _tmp21
-        _pixel_D_cal[1, 5] = _tmp21 * _tmp7
-        _pixel_D_cal[1, 6] = _tmp21 * _tmp8
-        _pixel_D_cal[1, 7] = _tmp19 * _tmp20
+        _pixel_D_cal[0, 4] = _tmp10 * _tmp18
+        _pixel_D_cal[1, 4] = _tmp10 * _tmp20
+        _pixel_D_cal[0, 5] = _tmp18 * _tmp7
+        _pixel_D_cal[1, 5] = _tmp20 * _tmp7
+        _pixel_D_cal[0, 6] = _tmp18 * _tmp8
+        _pixel_D_cal[1, 6] = _tmp20 * _tmp8
+        _pixel_D_cal[0, 7] = _tmp17 * _tmp21
+        _pixel_D_cal[1, 7] = _tmp19 * _tmp21
         _pixel_D_point = numpy.zeros((2, 3))
         _pixel_D_point[0, 0] = _self[0] * _tmp13 - _self[0] * _tmp2 * _tmp36 + _tmp18 * _tmp35
+        _pixel_D_point[1, 0] = -_tmp19 * _tmp36 * point[0] + _tmp20 * _tmp35
         _pixel_D_point[0, 1] = -_tmp17 * _tmp36 * point[1] + _tmp18 * _tmp37
+        _pixel_D_point[1, 1] = -_self[1] * _tmp1 * _tmp36 + _self[1] * _tmp13 + _tmp20 * _tmp37
         _pixel_D_point[0, 2] = _tmp17 * _tmp39
-        _pixel_D_point[1, 0] = -_tmp20 * _tmp36 * point[0] + _tmp21 * _tmp35
-        _pixel_D_point[1, 1] = -_self[1] * _tmp1 * _tmp36 + _self[1] * _tmp13 + _tmp21 * _tmp37
-        _pixel_D_point[1, 2] = _tmp20 * _tmp39
+        _pixel_D_point[1, 2] = _tmp19 * _tmp39
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point

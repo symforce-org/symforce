@@ -307,7 +307,12 @@ class Values(T.MutableMapping[str, T.Any]):
                 values[name] = np.array(vec).reshape(*entry.shape)
             elif issubclass(datatype, geo.Matrix):
                 assert entry.shape is not None
-                values[name] = datatype(vec).reshape(*entry.shape)
+                # NOTE(brad): Don't pass entry.shape directly because it has type T.Tuple[int, ...]
+                # (to accomadate ndarray shapes) whereas a T.Tuple[int, int] is expected. mypy does
+                # not accept asserting on the length of the tuple, so writing to an intermediate
+                # tuple is a work around.
+                (rows, cols) = entry.shape
+                values[name] = geo.matrix.fixed_type_from_shape((rows, cols)).from_storage(vec)
             elif issubclass(datatype, (list, tuple)):
                 assert entry.item_index is not None
                 values[name] = datatype(cls.from_storage_index(vec, entry.item_index).values())

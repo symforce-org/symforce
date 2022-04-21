@@ -46,13 +46,13 @@ void CrossAndDistanceBothJacobian1(const Eigen::Matrix<Scalar, 3, 1>& a,
     Eigen::Matrix<Scalar, 3, 3>& _cross_D_b = (*cross_D_b);
 
     _cross_D_b(0, 0) = 0;
-    _cross_D_b(0, 1) = -a(2, 0);
-    _cross_D_b(0, 2) = a(1, 0);
     _cross_D_b(1, 0) = a(2, 0);
-    _cross_D_b(1, 1) = 0;
-    _cross_D_b(1, 2) = -a(0, 0);
     _cross_D_b(2, 0) = -a(1, 0);
+    _cross_D_b(0, 1) = -a(2, 0);
+    _cross_D_b(1, 1) = 0;
     _cross_D_b(2, 1) = a(0, 0);
+    _cross_D_b(0, 2) = a(1, 0);
+    _cross_D_b(1, 2) = -a(0, 0);
     _cross_D_b(2, 2) = 0;
   }
 

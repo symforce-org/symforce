@@ -25,6 +25,7 @@ from symforce import typing as T
 from symforce import codegen
 from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
+from symforce.codegen import template_util
 from symforce.test_util import TestCase, slow_on_sympy, symengine_only
 from symforce.values import Values
 
@@ -206,6 +207,36 @@ class SymforceCodegenTest(TestCase):
         )
         self.assertStorageNear(foo, x ** 2 + rot.data[3])
         self.assertStorageNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
+
+    def test_matrix_order_python(self) -> None:
+        """
+        Tests that codegen.Codegen.generate_function() renders matrices correctly
+        in a simple example.
+
+        Meant to catch particular matrix storage order related bugs.
+        """
+
+        m23 = geo.M23(
+            [
+                [1, 2, 3],
+                [4, 5, 6],
+            ]
+        )
+
+        def matrix_order() -> geo.M23:
+            return m23
+
+        output_dir = self.make_output_dir("sf_test_matrix_order_python")
+        namespace = "matrix_order"
+
+        codegen_data = codegen.Codegen.function(
+            func=matrix_order, config=codegen.PythonConfig()
+        ).generate_function(namespace=namespace, output_dir=output_dir)
+
+        pkg = codegen_util.load_generated_package(namespace, codegen_data["python_function_dir"])
+
+        self.assertEqual(pkg.matrix_order().shape, m23.SHAPE)
+        self.assertStorageNear(pkg.matrix_order(), m23)
 
     def test_function_codegen_python(self) -> None:
         output_dir = self.make_output_dir("sf_codegen_function_codegen_python_")
@@ -701,6 +732,48 @@ class SymforceCodegenTest(TestCase):
         self.compare_or_update_directory(
             actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
             expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians_multiple_outputs"),
+        )
+
+    def test_matrix_order_cpp(self) -> None:
+        """
+        Generates test/symforce_function_codegen_test_data/codegen_matrix_order_data/matrix_order.h
+        which is used by test/codegen_matrix_order_test.cc to test that Codegen.generate_function()
+        preserves the order of the entries of returned matrices. For example
+        [1 2 3]
+        [4 5 6]
+        should be returned as is, and not as, say,
+        [1 4 2]
+        [5 3 6]
+        """
+
+        def generate_function() -> Path:
+            """
+            Generates a C++ function named matrix_order which returns a simple matrix.
+            Returns the path to a temporary file containing this function.
+            """
+
+            def matrix_order() -> geo.M23:
+                return geo.M23(
+                    [
+                        [1, 2, 3],
+                        [4, 5, 6],
+                    ]
+                )
+
+            output_dir = self.make_output_dir("sf_matrix_order_cpp")
+
+            codegen_data = codegen.Codegen.function(
+                func=matrix_order, config=codegen.CppConfig()
+            ).generate_function(namespace="codegen_matrix_order", output_dir=output_dir)
+
+            assert len(codegen_data["generated_files"]) == 1, "only 1 generated file is expected"
+            return codegen_data["generated_files"][0]
+
+        generated_func_path = generate_function()
+
+        self.compare_or_update_file(
+            path=TEST_DATA_DIR / "codegen_matrix_order_data" / generated_func_path.name,
+            new_file=generated_func_path,
         )
 
     def test_function_with_dataclass(self) -> None:

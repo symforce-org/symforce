@@ -120,9 +120,9 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
   const Scalar _tmp18 =
       _tmp13 * (Scalar(1.0) * _tmp4 + Scalar(1.0) * _tmp6 + Scalar(1.0) * epsilon);
   const Scalar _tmp19 = _self[0] * point(0, 0);
-  const Scalar _tmp20 = _tmp13 * _tmp19;
-  const Scalar _tmp21 = _self[1] * point(1, 0);
-  const Scalar _tmp22 = _tmp13 * _tmp21;
+  const Scalar _tmp20 = _self[1] * point(1, 0);
+  const Scalar _tmp21 = _tmp13 * _tmp19;
+  const Scalar _tmp22 = _tmp13 * _tmp20;
   const Scalar _tmp23 = _tmp3 * point(0, 0);
   const Scalar _tmp24 = Scalar(2.0) * _self[5];
   const Scalar _tmp25 = _self[6] * _tmp7;
@@ -160,18 +160,18 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
     Eigen::Matrix<Scalar, 2, 7>& _pixel_D_cal = (*pixel_D_cal);
 
     _pixel_D_cal(0, 0) = _tmp15;
-    _pixel_D_cal(0, 1) = 0;
-    _pixel_D_cal(0, 2) = 1;
-    _pixel_D_cal(0, 3) = 0;
-    _pixel_D_cal(0, 4) = _tmp18 * _tmp19;
-    _pixel_D_cal(0, 5) = _tmp11 * _tmp20;
-    _pixel_D_cal(0, 6) = _tmp20 * _tmp9;
     _pixel_D_cal(1, 0) = 0;
+    _pixel_D_cal(0, 1) = 0;
     _pixel_D_cal(1, 1) = _tmp14 * point(1, 0);
+    _pixel_D_cal(0, 2) = 1;
     _pixel_D_cal(1, 2) = 0;
+    _pixel_D_cal(0, 3) = 0;
     _pixel_D_cal(1, 3) = 1;
-    _pixel_D_cal(1, 4) = _tmp18 * _tmp21;
+    _pixel_D_cal(0, 4) = _tmp18 * _tmp19;
+    _pixel_D_cal(1, 4) = _tmp18 * _tmp20;
+    _pixel_D_cal(0, 5) = _tmp11 * _tmp21;
     _pixel_D_cal(1, 5) = _tmp11 * _tmp22;
+    _pixel_D_cal(0, 6) = _tmp21 * _tmp9;
     _pixel_D_cal(1, 6) = _tmp22 * _tmp9;
   }
 
@@ -179,11 +179,11 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
     Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
 
     _pixel_D_point(0, 0) = _self[0] * _tmp14 + _tmp19 * _tmp29;
+    _pixel_D_point(1, 0) = _tmp20 * _tmp29;
     _pixel_D_point(0, 1) = _tmp19 * _tmp31;
+    _pixel_D_point(1, 1) = _tmp16 + _tmp20 * _tmp31;
     _pixel_D_point(0, 2) = -_tmp19 * _tmp33 + _tmp19 * _tmp36;
-    _pixel_D_point(1, 0) = _tmp21 * _tmp29;
-    _pixel_D_point(1, 1) = _tmp16 + _tmp21 * _tmp31;
-    _pixel_D_point(1, 2) = -_tmp21 * _tmp33 + _tmp21 * _tmp36;
+    _pixel_D_point(1, 2) = -_tmp20 * _tmp33 + _tmp20 * _tmp36;
   }
 
   return _pixel;

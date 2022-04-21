@@ -24,7 +24,7 @@ class ArrayStorageOps:
     def to_storage(a: T.ArrayElement) -> T.List[T.Scalar]:
         # NOTE(brad): I have the T.cast because mypy thinks the values of np.nditer are tuples.
         return [
-            T.cast(np.ndarray, scalar)[()] for scalar in np.nditer(a, order="C", flags=["refs_ok"])
+            T.cast(np.ndarray, scalar)[()] for scalar in np.nditer(a, order="F", flags=["refs_ok"])
         ]
 
     @staticmethod
@@ -33,7 +33,7 @@ class ArrayStorageOps:
         assert isinstance(a, np.ndarray)
         assert len(elements) == ArrayStorageOps.storage_dim(a)
 
-        return np.array(elements).reshape(a.shape)
+        return np.array(elements).reshape(tuple(reversed(a.shape))).transpose()
 
     @staticmethod
     def symbolic(a: T.ArrayElementOrType, name: str, **kwargs: T.Dict) -> T.ArrayElement:

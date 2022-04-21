@@ -200,10 +200,11 @@ class Matrix(Storage):
     @classmethod
     def from_storage(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-        return cls(vec)
+        rows, cols = cls.SHAPE
+        return fixed_type_from_shape((cols, rows))(vec).transpose()
 
     def to_storage(self) -> _T.List[_T.Scalar]:
-        return self.to_tangent()
+        return list(self.mat.transpose())
 
     @classmethod
     def tangent_dim(cls) -> int:
@@ -211,11 +212,10 @@ class Matrix(Storage):
 
     @classmethod
     def from_tangent(cls, vec: _T.Sequence[_T.Scalar], epsilon: _T.Scalar = 0) -> Matrix:
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-        return cls(cls.SHAPE[0], cls.SHAPE[1], list(vec))
+        return cls.from_storage(vec)
 
     def to_tangent(self, epsilon: _T.Scalar = 0) -> _T.List[_T.Scalar]:
-        return list(self.mat)
+        return self.to_storage()
 
     def storage_D_tangent(self) -> Matrix:
         return Matrix.eye(self.storage_dim(), self.tangent_dim())
@@ -424,7 +424,7 @@ class Matrix(Storage):
 
         This overrides the sympy implementation because that clobbers the class type.
         """
-        return self.from_storage([sm.limit(e, *args, **kwargs) for e in self.to_storage()])
+        return self.from_flat_list([sm.limit(e, *args, **kwargs) for e in self.to_flat_list()])
 
     def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
         """
@@ -758,7 +758,7 @@ class Matrix(Storage):
         """
         Perform numerical evaluation of each element in the matrix.
         """
-        return self.__class__.from_storage([ops.StorageOps.evalf(v) for v in self.to_storage()])
+        return self.from_flat_list([ops.StorageOps.evalf(v) for v in self.to_flat_list()])
 
     def to_list(self) -> _T.List[_T.List[_T.Scalar]]:
         """
@@ -772,11 +772,16 @@ class Matrix(Storage):
         """
         return list(self.mat)
 
+    @classmethod
+    def from_flat_list(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
+        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        return cls(vec)
+
     def to_numpy(self, scalar_type: type = np.float64) -> np.ndarray:
         """
         Convert to a numpy array.
         """
-        return np.array(self.evalf().to_storage(), dtype=scalar_type).reshape(self.shape)
+        return np.array(self.evalf().to_flat_list(), dtype=scalar_type).reshape(self.shape)
 
     @classmethod
     def column_stack(cls, *columns: Matrix) -> Matrix:

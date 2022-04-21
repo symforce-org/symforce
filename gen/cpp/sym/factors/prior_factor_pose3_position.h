@@ -63,22 +63,22 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
     Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
     _jacobian(0, 0) = 0;
-    _jacobian(0, 1) = 0;
-    _jacobian(0, 2) = 0;
-    _jacobian(0, 3) = sqrt_info(0, 0);
-    _jacobian(0, 4) = sqrt_info(0, 1);
-    _jacobian(0, 5) = sqrt_info(0, 2);
     _jacobian(1, 0) = 0;
-    _jacobian(1, 1) = 0;
-    _jacobian(1, 2) = 0;
-    _jacobian(1, 3) = sqrt_info(1, 0);
-    _jacobian(1, 4) = sqrt_info(1, 1);
-    _jacobian(1, 5) = sqrt_info(1, 2);
     _jacobian(2, 0) = 0;
+    _jacobian(0, 1) = 0;
+    _jacobian(1, 1) = 0;
     _jacobian(2, 1) = 0;
+    _jacobian(0, 2) = 0;
+    _jacobian(1, 2) = 0;
     _jacobian(2, 2) = 0;
+    _jacobian(0, 3) = sqrt_info(0, 0);
+    _jacobian(1, 3) = sqrt_info(1, 0);
     _jacobian(2, 3) = sqrt_info(2, 0);
+    _jacobian(0, 4) = sqrt_info(0, 1);
+    _jacobian(1, 4) = sqrt_info(1, 1);
     _jacobian(2, 4) = sqrt_info(2, 1);
+    _jacobian(0, 5) = sqrt_info(0, 2);
+    _jacobian(1, 5) = sqrt_info(1, 2);
     _jacobian(2, 5) = sqrt_info(2, 2);
   }
 
@@ -91,10 +91,10 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
                      std::pow(sqrt_info(2, 0), Scalar(2));
     _hessian(4, 3) = sqrt_info(0, 0) * sqrt_info(0, 1) + sqrt_info(1, 0) * sqrt_info(1, 1) +
                      sqrt_info(2, 0) * sqrt_info(2, 1);
-    _hessian(4, 4) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
-                     std::pow(sqrt_info(2, 1), Scalar(2));
     _hessian(5, 3) = sqrt_info(0, 0) * sqrt_info(0, 2) + sqrt_info(1, 0) * sqrt_info(1, 2) +
                      sqrt_info(2, 0) * sqrt_info(2, 2);
+    _hessian(4, 4) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
+                     std::pow(sqrt_info(2, 1), Scalar(2));
     _hessian(5, 4) = sqrt_info(0, 1) * sqrt_info(0, 2) + sqrt_info(1, 1) * sqrt_info(1, 2) +
                      sqrt_info(2, 1) * sqrt_info(2, 2);
     _hessian(5, 5) = std::pow(sqrt_info(0, 2), Scalar(2)) + std::pow(sqrt_info(1, 2), Scalar(2)) +

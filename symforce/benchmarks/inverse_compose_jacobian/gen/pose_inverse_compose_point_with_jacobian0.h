@@ -88,22 +88,22 @@ __attribute__((noinline)) Eigen::Matrix<Scalar, 3, 1> PoseInverseComposePointWit
     Eigen::Matrix<Scalar, 3, 6>& _res_D_pose = (*res_D_pose);
 
     _res_D_pose(0, 0) = 0;
-    _res_D_pose(0, 1) = -_tmp33;
-    _res_D_pose(0, 2) = -_tmp36;
-    _res_D_pose(0, 3) = _tmp16;
-    _res_D_pose(0, 4) = -_tmp8;
-    _res_D_pose(0, 5) = _tmp4;
     _res_D_pose(1, 0) = _tmp33;
-    _res_D_pose(1, 1) = 0;
-    _res_D_pose(1, 2) = -_tmp38;
-    _res_D_pose(1, 3) = _tmp20;
-    _res_D_pose(1, 4) = _tmp19;
-    _res_D_pose(1, 5) = -_tmp23;
     _res_D_pose(2, 0) = _tmp36;
+    _res_D_pose(0, 1) = -_tmp33;
+    _res_D_pose(1, 1) = 0;
     _res_D_pose(2, 1) = _tmp38;
+    _res_D_pose(0, 2) = -_tmp36;
+    _res_D_pose(1, 2) = -_tmp38;
     _res_D_pose(2, 2) = 0;
+    _res_D_pose(0, 3) = _tmp16;
+    _res_D_pose(1, 3) = _tmp20;
     _res_D_pose(2, 3) = -_tmp26;
+    _res_D_pose(0, 4) = -_tmp8;
+    _res_D_pose(1, 4) = _tmp19;
     _res_D_pose(2, 4) = _tmp27;
+    _res_D_pose(0, 5) = _tmp4;
+    _res_D_pose(1, 5) = -_tmp23;
     _res_D_pose(2, 5) = _tmp25;
   }
 

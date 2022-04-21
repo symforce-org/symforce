@@ -84,13 +84,13 @@ Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
   Eigen::Matrix<Scalar, 3, 3> _res;
 
   _res(0, 0) = _tmp0 + _tmp1;
-  _res(0, 1) = _tmp3 - _tmp5;
-  _res(0, 2) = _tmp6 + _tmp7;
   _res(1, 0) = _tmp3 + _tmp5;
-  _res(1, 1) = _tmp1 + _tmp8;
-  _res(1, 2) = _tmp10 - _tmp9;
   _res(2, 0) = -_tmp6 + _tmp7;
+  _res(0, 1) = _tmp3 - _tmp5;
+  _res(1, 1) = _tmp1 + _tmp8;
   _res(2, 1) = _tmp10 + _tmp9;
+  _res(0, 2) = _tmp6 + _tmp7;
+  _res(1, 2) = _tmp10 - _tmp9;
   _res(2, 2) = _tmp0 + _tmp8 + 1;
 
   return _res;

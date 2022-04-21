@@ -13,6 +13,7 @@
  * the math is tested comprehensively in symbolic form.
  */
 
+#include <array>
 #include <iostream>
 #include <limits>
 
@@ -206,6 +207,31 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", {{ ", ".join(cpp_
   vec[0] = 2.1;
   const T value3 = sym::StorageOps<T>::FromStorage(vec.data());
   CHECK(value != value3);
+}
+
+TEST_CASE("Test Matrix storage order is consistent with symbolic storage order") {
+  const auto m = (Eigen::Matrix3d() <<
+    1.0, 2.0, 3.0,
+    4.0, 5.0, 6.0,
+    7.0, 8.0, 9.0
+  ).finished();
+
+  {% set symbolic_m = Matrix([
+    [1.0, 2.0, 3.0],
+    [4.0, 5.0, 6.0],
+    [7.0, 8.0, 9.0],
+  ])%}
+
+  std::array<double, sym::StorageOps<Eigen::Matrix3d>::StorageDim()> storage;
+  sym::StorageOps<Eigen::Matrix3d>::ToStorage(m, storage.data());
+
+  const std::array<double, {{ symbolic_m.storage_dim() }}> symbolic_storage = {
+    {% for val in symbolic_m.to_storage() %}
+    {{ val }}{{", " if not loop.last else ""}}
+    {% endfor %}
+  };
+
+  CHECK(storage == symbolic_storage);
 }
 
 TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", {{ ", ".join(cpp_geo_types) }}) {

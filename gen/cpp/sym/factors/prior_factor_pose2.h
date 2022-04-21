@@ -77,13 +77,13 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
     Eigen::Matrix<Scalar, 3, 3>& _jacobian = (*jacobian);
 
     _jacobian(0, 0) = _tmp15;
-    _jacobian(0, 1) = sqrt_info(0, 1);
-    _jacobian(0, 2) = sqrt_info(0, 2);
     _jacobian(1, 0) = _tmp16;
-    _jacobian(1, 1) = sqrt_info(1, 1);
-    _jacobian(1, 2) = sqrt_info(1, 2);
     _jacobian(2, 0) = _tmp17;
+    _jacobian(0, 1) = sqrt_info(0, 1);
+    _jacobian(1, 1) = sqrt_info(1, 1);
     _jacobian(2, 1) = sqrt_info(2, 1);
+    _jacobian(0, 2) = sqrt_info(0, 2);
+    _jacobian(1, 2) = sqrt_info(1, 2);
     _jacobian(2, 2) = sqrt_info(2, 2);
   }
 
@@ -93,15 +93,15 @@ void PriorFactorPose2(const sym::Pose2<Scalar>& value, const sym::Pose2<Scalar>&
     _hessian(0, 0) = _tmp18 * std::pow(sqrt_info(0, 0), Scalar(2)) +
                      _tmp18 * std::pow(sqrt_info(1, 0), Scalar(2)) +
                      _tmp18 * std::pow(sqrt_info(2, 0), Scalar(2));
-    _hessian(0, 1) = 0;
-    _hessian(0, 2) = 0;
     _hessian(1, 0) = _tmp15 * sqrt_info(0, 1) + _tmp16 * sqrt_info(1, 1) + _tmp17 * sqrt_info(2, 1);
+    _hessian(2, 0) = _tmp15 * sqrt_info(0, 2) + _tmp16 * sqrt_info(1, 2) + _tmp17 * sqrt_info(2, 2);
+    _hessian(0, 1) = 0;
     _hessian(1, 1) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
                      std::pow(sqrt_info(2, 1), Scalar(2));
-    _hessian(1, 2) = 0;
-    _hessian(2, 0) = _tmp15 * sqrt_info(0, 2) + _tmp16 * sqrt_info(1, 2) + _tmp17 * sqrt_info(2, 2);
     _hessian(2, 1) = sqrt_info(0, 1) * sqrt_info(0, 2) + sqrt_info(1, 1) * sqrt_info(1, 2) +
                      sqrt_info(2, 1) * sqrt_info(2, 2);
+    _hessian(0, 2) = 0;
+    _hessian(1, 2) = 0;
     _hessian(2, 2) = std::pow(sqrt_info(0, 2), Scalar(2)) + std::pow(sqrt_info(1, 2), Scalar(2)) +
                      std::pow(sqrt_info(2, 2), Scalar(2));
   }

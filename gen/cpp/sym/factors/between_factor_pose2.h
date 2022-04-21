@@ -86,43 +86,43 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp33 = _tmp4 - _tmp5 - _tmp6;
   const Scalar _tmp34 =
       _tmp31 * sqrt_info(0, 0) + _tmp32 * sqrt_info(0, 1) + _tmp33 * sqrt_info(0, 2);
-  const Scalar _tmp35 = _a[0] * sqrt_info(0, 1);
-  const Scalar _tmp36 = _a[1] * sqrt_info(0, 2);
-  const Scalar _tmp37 = -_tmp35 + _tmp36;
-  const Scalar _tmp38 = _a[0] * sqrt_info(0, 2);
-  const Scalar _tmp39 = _a[1] * sqrt_info(0, 1);
-  const Scalar _tmp40 = -_tmp38 - _tmp39;
-  const Scalar _tmp41 = _tmp12 - _tmp13;
-  const Scalar _tmp42 =
-      _tmp26 * (-_a_T_b[1] * _tmp41 + _tmp17) - _tmp28 * (_a_T_b[0] * _tmp41 + _tmp11);
-  const Scalar _tmp43 = _tmp30 * _tmp42;
-  const Scalar _tmp44 = _tmp43 * sqrt_info(0, 0);
-  const Scalar _tmp45 = _tmp35 - _tmp36;
-  const Scalar _tmp46 = _tmp38 + _tmp39;
-  const Scalar _tmp47 =
+  const Scalar _tmp35 =
       _tmp31 * sqrt_info(1, 0) + _tmp32 * sqrt_info(1, 1) + _tmp33 * sqrt_info(1, 2);
-  const Scalar _tmp48 = _a[1] * sqrt_info(1, 2);
-  const Scalar _tmp49 = _a[0] * sqrt_info(1, 1);
-  const Scalar _tmp50 = _tmp48 - _tmp49;
-  const Scalar _tmp51 = _a[1] * sqrt_info(1, 1);
-  const Scalar _tmp52 = _a[0] * sqrt_info(1, 2);
-  const Scalar _tmp53 = -_tmp51 - _tmp52;
-  const Scalar _tmp54 = _tmp43 * sqrt_info(1, 0);
-  const Scalar _tmp55 = -_tmp48 + _tmp49;
-  const Scalar _tmp56 = _tmp51 + _tmp52;
-  const Scalar _tmp57 =
+  const Scalar _tmp36 =
       _tmp31 * sqrt_info(2, 0) + _tmp32 * sqrt_info(2, 1) + _tmp33 * sqrt_info(2, 2);
-  const Scalar _tmp58 = _a[1] * sqrt_info(2, 2);
-  const Scalar _tmp59 = _a[0] * sqrt_info(2, 1);
-  const Scalar _tmp60 = _tmp58 - _tmp59;
-  const Scalar _tmp61 = _a[1] * sqrt_info(2, 1);
-  const Scalar _tmp62 = _a[0] * sqrt_info(2, 2);
-  const Scalar _tmp63 = -_tmp61 - _tmp62;
-  const Scalar _tmp64 = _tmp43 * sqrt_info(2, 0);
-  const Scalar _tmp65 = -_tmp58 + _tmp59;
-  const Scalar _tmp66 = _tmp61 + _tmp62;
+  const Scalar _tmp37 = _a[0] * sqrt_info(0, 1);
+  const Scalar _tmp38 = _a[1] * sqrt_info(0, 2);
+  const Scalar _tmp39 = -_tmp37 + _tmp38;
+  const Scalar _tmp40 = _a[1] * sqrt_info(1, 2);
+  const Scalar _tmp41 = _a[0] * sqrt_info(1, 1);
+  const Scalar _tmp42 = _tmp40 - _tmp41;
+  const Scalar _tmp43 = _a[1] * sqrt_info(2, 2);
+  const Scalar _tmp44 = _a[0] * sqrt_info(2, 1);
+  const Scalar _tmp45 = _tmp43 - _tmp44;
+  const Scalar _tmp46 = _a[0] * sqrt_info(0, 2);
+  const Scalar _tmp47 = _a[1] * sqrt_info(0, 1);
+  const Scalar _tmp48 = -_tmp46 - _tmp47;
+  const Scalar _tmp49 = _a[1] * sqrt_info(1, 1);
+  const Scalar _tmp50 = _a[0] * sqrt_info(1, 2);
+  const Scalar _tmp51 = -_tmp49 - _tmp50;
+  const Scalar _tmp52 = _a[1] * sqrt_info(2, 1);
+  const Scalar _tmp53 = _a[0] * sqrt_info(2, 2);
+  const Scalar _tmp54 = -_tmp52 - _tmp53;
+  const Scalar _tmp55 = _tmp12 - _tmp13;
+  const Scalar _tmp56 =
+      _tmp26 * (-_a_T_b[1] * _tmp55 + _tmp17) - _tmp28 * (_a_T_b[0] * _tmp55 + _tmp11);
+  const Scalar _tmp57 = _tmp30 * _tmp56;
+  const Scalar _tmp58 = _tmp57 * sqrt_info(0, 0);
+  const Scalar _tmp59 = _tmp57 * sqrt_info(1, 0);
+  const Scalar _tmp60 = _tmp57 * sqrt_info(2, 0);
+  const Scalar _tmp61 = _tmp37 - _tmp38;
+  const Scalar _tmp62 = -_tmp40 + _tmp41;
+  const Scalar _tmp63 = -_tmp43 + _tmp44;
+  const Scalar _tmp64 = _tmp46 + _tmp47;
+  const Scalar _tmp65 = _tmp49 + _tmp50;
+  const Scalar _tmp66 = _tmp52 + _tmp53;
   const Scalar _tmp67 =
-      std::pow(_tmp20, Scalar(4)) * std::pow(_tmp42, Scalar(2)) / std::pow(_tmp29, Scalar(2));
+      std::pow(_tmp20, Scalar(4)) * std::pow(_tmp56, Scalar(2)) / std::pow(_tmp29, Scalar(2));
 
   // Output terms (4)
   if (res != nullptr) {
@@ -137,22 +137,22 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
     _jacobian(0, 0) = _tmp34;
-    _jacobian(0, 1) = _tmp37;
-    _jacobian(0, 2) = _tmp40;
-    _jacobian(0, 3) = _tmp44;
-    _jacobian(0, 4) = _tmp45;
-    _jacobian(0, 5) = _tmp46;
-    _jacobian(1, 0) = _tmp47;
-    _jacobian(1, 1) = _tmp50;
-    _jacobian(1, 2) = _tmp53;
-    _jacobian(1, 3) = _tmp54;
-    _jacobian(1, 4) = _tmp55;
-    _jacobian(1, 5) = _tmp56;
-    _jacobian(2, 0) = _tmp57;
-    _jacobian(2, 1) = _tmp60;
-    _jacobian(2, 2) = _tmp63;
-    _jacobian(2, 3) = _tmp64;
-    _jacobian(2, 4) = _tmp65;
+    _jacobian(1, 0) = _tmp35;
+    _jacobian(2, 0) = _tmp36;
+    _jacobian(0, 1) = _tmp39;
+    _jacobian(1, 1) = _tmp42;
+    _jacobian(2, 1) = _tmp45;
+    _jacobian(0, 2) = _tmp48;
+    _jacobian(1, 2) = _tmp51;
+    _jacobian(2, 2) = _tmp54;
+    _jacobian(0, 3) = _tmp58;
+    _jacobian(1, 3) = _tmp59;
+    _jacobian(2, 3) = _tmp60;
+    _jacobian(0, 4) = _tmp61;
+    _jacobian(1, 4) = _tmp62;
+    _jacobian(2, 4) = _tmp63;
+    _jacobian(0, 5) = _tmp64;
+    _jacobian(1, 5) = _tmp65;
     _jacobian(2, 5) = _tmp66;
   }
 
@@ -160,59 +160,59 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow(_tmp34, Scalar(2)) + std::pow(_tmp47, Scalar(2)) + std::pow(_tmp57, Scalar(2));
+        std::pow(_tmp34, Scalar(2)) + std::pow(_tmp35, Scalar(2)) + std::pow(_tmp36, Scalar(2));
+    _hessian(1, 0) = _tmp34 * _tmp39 + _tmp35 * _tmp42 + _tmp36 * _tmp45;
+    _hessian(2, 0) = _tmp34 * _tmp48 + _tmp35 * _tmp51 + _tmp36 * _tmp54;
+    _hessian(3, 0) = _tmp34 * _tmp58 + _tmp35 * _tmp59 + _tmp36 * _tmp60;
+    _hessian(4, 0) = _tmp34 * _tmp61 + _tmp35 * _tmp62 + _tmp36 * _tmp63;
+    _hessian(5, 0) = _tmp34 * _tmp64 + _tmp35 * _tmp65 + _tmp36 * _tmp66;
     _hessian(0, 1) = 0;
-    _hessian(0, 2) = 0;
-    _hessian(0, 3) = 0;
-    _hessian(0, 4) = 0;
-    _hessian(0, 5) = 0;
-    _hessian(1, 0) = _tmp34 * _tmp37 + _tmp47 * _tmp50 + _tmp57 * _tmp60;
     _hessian(1, 1) =
-        std::pow(_tmp37, Scalar(2)) + std::pow(_tmp50, Scalar(2)) + std::pow(_tmp60, Scalar(2));
+        std::pow(_tmp39, Scalar(2)) + std::pow(_tmp42, Scalar(2)) + std::pow(_tmp45, Scalar(2));
+    _hessian(2, 1) = _tmp39 * _tmp48 + _tmp42 * _tmp51 + _tmp45 * _tmp54;
+    _hessian(3, 1) = _tmp39 * _tmp58 + _tmp42 * _tmp59 + _tmp45 * _tmp60;
+    _hessian(4, 1) = _tmp39 * _tmp61 + _tmp42 * _tmp62 + _tmp45 * _tmp63;
+    _hessian(5, 1) = _tmp39 * _tmp64 + _tmp42 * _tmp65 + _tmp45 * _tmp66;
+    _hessian(0, 2) = 0;
     _hessian(1, 2) = 0;
-    _hessian(1, 3) = 0;
-    _hessian(1, 4) = 0;
-    _hessian(1, 5) = 0;
-    _hessian(2, 0) = _tmp34 * _tmp40 + _tmp47 * _tmp53 + _tmp57 * _tmp63;
-    _hessian(2, 1) = _tmp37 * _tmp40 + _tmp50 * _tmp53 + _tmp60 * _tmp63;
     _hessian(2, 2) =
-        std::pow(_tmp40, Scalar(2)) + std::pow(_tmp53, Scalar(2)) + std::pow(_tmp63, Scalar(2));
+        std::pow(_tmp48, Scalar(2)) + std::pow(_tmp51, Scalar(2)) + std::pow(_tmp54, Scalar(2));
+    _hessian(3, 2) = _tmp48 * _tmp58 + _tmp51 * _tmp59 + _tmp54 * _tmp60;
+    _hessian(4, 2) = _tmp48 * _tmp61 + _tmp51 * _tmp62 + _tmp54 * _tmp63;
+    _hessian(5, 2) = _tmp48 * _tmp64 + _tmp51 * _tmp65 + _tmp54 * _tmp66;
+    _hessian(0, 3) = 0;
+    _hessian(1, 3) = 0;
     _hessian(2, 3) = 0;
-    _hessian(2, 4) = 0;
-    _hessian(2, 5) = 0;
-    _hessian(3, 0) = _tmp34 * _tmp44 + _tmp47 * _tmp54 + _tmp57 * _tmp64;
-    _hessian(3, 1) = _tmp37 * _tmp44 + _tmp50 * _tmp54 + _tmp60 * _tmp64;
-    _hessian(3, 2) = _tmp40 * _tmp44 + _tmp53 * _tmp54 + _tmp63 * _tmp64;
     _hessian(3, 3) = _tmp67 * std::pow(sqrt_info(0, 0), Scalar(2)) +
                      _tmp67 * std::pow(sqrt_info(1, 0), Scalar(2)) +
                      _tmp67 * std::pow(sqrt_info(2, 0), Scalar(2));
+    _hessian(4, 3) = _tmp58 * _tmp61 + _tmp59 * _tmp62 + _tmp60 * _tmp63;
+    _hessian(5, 3) = _tmp58 * _tmp64 + _tmp59 * _tmp65 + _tmp60 * _tmp66;
+    _hessian(0, 4) = 0;
+    _hessian(1, 4) = 0;
+    _hessian(2, 4) = 0;
     _hessian(3, 4) = 0;
-    _hessian(3, 5) = 0;
-    _hessian(4, 0) = _tmp34 * _tmp45 + _tmp47 * _tmp55 + _tmp57 * _tmp65;
-    _hessian(4, 1) = _tmp37 * _tmp45 + _tmp50 * _tmp55 + _tmp60 * _tmp65;
-    _hessian(4, 2) = _tmp40 * _tmp45 + _tmp53 * _tmp55 + _tmp63 * _tmp65;
-    _hessian(4, 3) = _tmp44 * _tmp45 + _tmp54 * _tmp55 + _tmp64 * _tmp65;
     _hessian(4, 4) =
-        std::pow(_tmp45, Scalar(2)) + std::pow(_tmp55, Scalar(2)) + std::pow(_tmp65, Scalar(2));
+        std::pow(_tmp61, Scalar(2)) + std::pow(_tmp62, Scalar(2)) + std::pow(_tmp63, Scalar(2));
+    _hessian(5, 4) = _tmp61 * _tmp64 + _tmp62 * _tmp65 + _tmp63 * _tmp66;
+    _hessian(0, 5) = 0;
+    _hessian(1, 5) = 0;
+    _hessian(2, 5) = 0;
+    _hessian(3, 5) = 0;
     _hessian(4, 5) = 0;
-    _hessian(5, 0) = _tmp34 * _tmp46 + _tmp47 * _tmp56 + _tmp57 * _tmp66;
-    _hessian(5, 1) = _tmp37 * _tmp46 + _tmp50 * _tmp56 + _tmp60 * _tmp66;
-    _hessian(5, 2) = _tmp40 * _tmp46 + _tmp53 * _tmp56 + _tmp63 * _tmp66;
-    _hessian(5, 3) = _tmp44 * _tmp46 + _tmp54 * _tmp56 + _tmp64 * _tmp66;
-    _hessian(5, 4) = _tmp45 * _tmp46 + _tmp55 * _tmp56 + _tmp65 * _tmp66;
     _hessian(5, 5) =
-        std::pow(_tmp46, Scalar(2)) + std::pow(_tmp56, Scalar(2)) + std::pow(_tmp66, Scalar(2));
+        std::pow(_tmp64, Scalar(2)) + std::pow(_tmp65, Scalar(2)) + std::pow(_tmp66, Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 6, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp22 * _tmp34 + _tmp23 * _tmp47 + _tmp24 * _tmp57;
-    _rhs(1, 0) = _tmp22 * _tmp37 + _tmp23 * _tmp50 + _tmp24 * _tmp60;
-    _rhs(2, 0) = _tmp22 * _tmp40 + _tmp23 * _tmp53 + _tmp24 * _tmp63;
-    _rhs(3, 0) = _tmp22 * _tmp44 + _tmp23 * _tmp54 + _tmp24 * _tmp64;
-    _rhs(4, 0) = _tmp22 * _tmp45 + _tmp23 * _tmp55 + _tmp24 * _tmp65;
-    _rhs(5, 0) = _tmp22 * _tmp46 + _tmp23 * _tmp56 + _tmp24 * _tmp66;
+    _rhs(0, 0) = _tmp22 * _tmp34 + _tmp23 * _tmp35 + _tmp24 * _tmp36;
+    _rhs(1, 0) = _tmp22 * _tmp39 + _tmp23 * _tmp42 + _tmp24 * _tmp45;
+    _rhs(2, 0) = _tmp22 * _tmp48 + _tmp23 * _tmp51 + _tmp24 * _tmp54;
+    _rhs(3, 0) = _tmp22 * _tmp58 + _tmp23 * _tmp59 + _tmp24 * _tmp60;
+    _rhs(4, 0) = _tmp22 * _tmp61 + _tmp23 * _tmp62 + _tmp24 * _tmp63;
+    _rhs(5, 0) = _tmp22 * _tmp64 + _tmp23 * _tmp65 + _tmp24 * _tmp66;
   }
 }  // NOLINT(readability/fn_size)
 
