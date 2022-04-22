@@ -262,23 +262,23 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #
  # Args:
  #     name (str): Key of sparse matrix
- #     element (Matrix): Sparse matrix
+ #     sparse_format (CSCFormat): The python sparse representation of the matrix to be initialized
  #     spec (Codegen): Codegen specification containing sparse_mat_data
  #}
-{%- macro sparse_matrix_init(name, element, spec) -%}
-    static constexpr int kRows_{{ name }} = {{ element.shape[0] }};
-    static constexpr int kCols_{{ name }} = {{ element.shape[1] }};
-    static constexpr int kNumNonZero_{{ name }} = {{ spec.sparse_mat_data[name].kNumNonZero }};
+{%- macro sparse_matrix_init(name, sparse_format, spec) -%}
+    static constexpr int kRows_{{ name }} = {{ sparse_format.kRows }};
+    static constexpr int kCols_{{ name }} = {{ sparse_format.kCols }};
+    static constexpr int kNumNonZero_{{ name }} = {{ sparse_format.kNumNonZero }};
     static constexpr int kColPtrs_{{ name }}[] = {
-    {%- for i in spec.sparse_mat_data[name].kColPtrs -%}
+    {%- for i in sparse_format.kColPtrs -%}
         {{ i }}{%- if not loop.last -%}, {% endif -%}
     {%- endfor -%} };
     static constexpr int kRowIndices_{{ name }}[] = {
-    {%- for i in spec.sparse_mat_data[name].kRowIndices -%}
+    {%- for i in sparse_format.kRowIndices -%}
         {{ i }}{%- if not loop.last -%}, {% endif -%}
     {%- endfor -%} };
     {% if name == spec.return_key %}
-    Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name].kNumNonZero }}];
+    Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
     Eigen::SparseMatrix<Scalar> {{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
         kRows_{{ name }},
         kCols_{{ name }},
@@ -289,9 +289,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     );
     Scalar* {{ name }}_value_ptr = {{ name }}.valuePtr();
     {% else %}
-    if ({{ name }}->nonZeros() != {{ spec.sparse_mat_data[name].kNumNonZero }} || {{ name }}->outerSize() != {{ element.shape[1] }} || {{ name }}->innerSize() != {{ element.shape[0] }} || !{{ name }}->isCompressed()) {
+    if ({{ name }}->nonZeros() != {{ sparse_format.kNumNonZero }} || {{ name }}->outerSize() != {{ sparse_format.kCols }} || {{ name }}->innerSize() != {{ sparse_format.kRows }} || !{{ name }}->isCompressed()) {
         // Matrix does not have the expected layout, create a correctly initialized sparse matrix
-        Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name].kNumNonZero }}];
+        Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
         *{{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
             kRows_{{ name }},
             kCols_{{ name }},
@@ -369,14 +369,14 @@ _{{ lhs }} = {{ rhs }};
     {% for name, type, terms in spec.print_code_results.sparse_terms %}
         {% set T = python_util.get_type(type) %}
         {% if name == spec.return_key %}
-    {{ sparse_matrix_init(name, spec.outputs[name], spec) }}
+    {{ sparse_matrix_init(name, spec.sparse_mat_data[name], spec) }}
 
             {% for lhs, rhs in terms %}
     {{ lhs }} = {{ rhs }};
             {% endfor %}
         {% else %}
     if ( {{ name }} != nullptr ) {
-        {{ sparse_matrix_init(name, spec.outputs[name], spec) | indent(width=4) }}
+        {{ sparse_matrix_init(name, spec.sparse_mat_data[name], spec) | indent(width=4) }}
 
             {% for lhs, rhs in terms %}
         {{ lhs }} = {{ rhs }};
