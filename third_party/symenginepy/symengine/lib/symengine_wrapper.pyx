@@ -33,6 +33,11 @@ except ImportError:
 
 include "config.pxi"
 
+# whether or not to allow eval of arguments when constructing sympy objects in class _sympy_ methods
+# if disabled, _sympy_ becomes much faster, thus speeding up symforce codegen
+# it has the downside of missing some small simplifications that can happen
+__EVAL_ON_SYMPY__ = True
+
 class SympifyError(Exception):
     pass
 
@@ -2310,7 +2315,7 @@ class DataBufferElement(Expr):
         # Immediately index into the MatrixSymbol so we're returning a Matrix Element
         # This is a bit of a hack to get a MatrixElement w/ a MatrixSymbol parent.
         # Since in printing we only care about size[1], the size symbol doesn't matter
-        return sympy.MatrixSymbol(name.name, sympy.Symbol('size'), 1)[sympy.S(i), 0]
+        return sympy.MatrixSymbol(name.name, sympy.Symbol('size'), 1)[i._sympy_(), 0]
 
 class DataBuffer(Symbol):
     """
@@ -2362,7 +2367,7 @@ class OneArgFunction(Function):
 
     def _sympy_(self):
         import sympy
-        return getattr(sympy, self.__class__.__name__)(self.get_arg()._sympy_())
+        return getattr(sympy, self.__class__.__name__)(self.get_arg()._sympy_(), evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -2399,7 +2404,7 @@ class zeta(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.zeta(*self.args_as_sympy())
+        return sympy.zeta(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
 class dirichlet_eta(OneArgFunction):
     def __new__(cls, x):
@@ -2414,7 +2419,7 @@ class KroneckerDelta(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.KroneckerDelta(*self.args_as_sympy())
+        return sympy.KroneckerDelta(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -2427,7 +2432,7 @@ class LeviCivita(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.LeviCivita(*self.args_as_sympy())
+        return sympy.LeviCivita(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
 class erf(OneArgFunction):
     def __new__(cls, x):
@@ -2447,7 +2452,7 @@ class lowergamma(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.lowergamma(*self.args_as_sympy())
+        return sympy.lowergamma(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -2461,7 +2466,7 @@ class uppergamma(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.uppergamma(*self.args_as_sympy())
+        return sympy.uppergamma(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -2484,7 +2489,7 @@ class beta(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.beta(*self.args_as_sympy())
+        return sympy.beta(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -2498,7 +2503,7 @@ class polygamma(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.polygamma(*self.args_as_sympy())
+        return sympy.polygamma(*self.args_as_sympy(), evaluate=__EVAL_ON_SYMPY__)
 
 class sign(OneArgFunction):
 
@@ -2673,7 +2678,7 @@ class atan2(Function):
 
     def _sympy_(self):
         import sympy
-        return sympy.atan2(*self.args)
+        return sympy.atan2(*self.args, evaluate=__EVAL_ON_SYMPY__)
 
 # For backwards compatibility
 
@@ -2741,10 +2746,12 @@ class Abs(OneArgFunction):
         cdef Basic X = sympify(x)
         return c2py(symengine.abs(X.thisptr))
 
-    def _sympy_(Basic self):
-        cdef RCP[const symengine.Abs] X = symengine.rcp_static_cast_Abs(self.thisptr)
-        arg = c2py(deref(X).get_arg())._sympy_()
-        return abs(arg)
+    # NOTE(harrison): I have no clue why this doesn't just use the parent _sympy_
+    # using this implementation forces a sympy eval which is horrendously slow
+    # def _sympy_(Basic self):
+    #     cdef RCP[const symengine.Abs] X = symengine.rcp_static_cast_Abs(self.thisptr)
+    #     arg = c2py(deref(X).get_arg())._sympy_()
+    #     return abs(arg)
 
     def _sage_(Basic self):
         cdef RCP[const symengine.Abs] X = symengine.rcp_static_cast_Abs(self.thisptr)
@@ -2893,7 +2900,7 @@ class Max(Function):
     def _sympy_(self):
         import sympy
         s = self.args_as_sympy()
-        return sympy.Max(*s)
+        return sympy.Max(*s, evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -2912,7 +2919,7 @@ class Min(Function):
     def _sympy_(self):
         import sympy
         s = self.args_as_sympy()
-        return sympy.Min(*s)
+        return sympy.Min(*s, evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         import sage.all as sage
@@ -3032,7 +3039,7 @@ class Piecewise(Function):
         l = []
         for i in range(0, len(a), 2):
             l.append((a[i]._sympy_(), a[i + 1]._sympy_()))
-        return sympy.Piecewise(*l)
+        return sympy.Piecewise(*l, evaluate=__EVAL_ON_SYMPY__)
 
 
 cdef class Set(Expr):
@@ -3865,7 +3872,7 @@ cdef class DenseMatrixBase(MatrixBase):
                 l.append(c2py(A.get(i, j))._sympy_())
             s.append(l)
         import sympy
-        return sympy.Matrix(s)
+        return sympy.Matrix(s, evaluate=__EVAL_ON_SYMPY__)
 
     def _sage_(self):
         s = []

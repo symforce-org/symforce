@@ -155,6 +155,24 @@ def _use_sympy() -> None:
     setattr(sympy.Mod, "_eval_derivative", lambda s, v: sympy.S.Zero)
 
 
+def set_symengine_eval_on_sympify(eval_on_sympy: bool = True) -> None:
+    """
+    When using the symengine backed, set whether we should eval args when converting objects to
+    sympy.
+
+    By default, this is enabled since this is the implicit behavior with stock symengine.
+    Disabling eval results in more slightly ops, but greatly speeds up codegen time.
+    """
+    assert sympy is not None
+    if sympy.__package__ == "symengine":
+        import symengine.lib.symengine_wrapper as wrapper
+
+        wrapper.__EVAL_ON_SYMPY__ = eval_on_sympy
+
+    else:
+        logger.debug("set_symengine_fast_sympify has no effect when not using symengine")
+
+
 def set_backend(backend: str) -> None:
     """
     Set the symbolic backend for symforce. The sympy backend is the default and pure python,
