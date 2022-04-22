@@ -277,9 +277,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- for i in sparse_format.kRowIndices -%}
         {{ i }}{%- if not loop.last -%}, {% endif -%}
     {%- endfor -%} };
-    {% if name == spec.return_key %}
-    Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
-    Eigen::SparseMatrix<Scalar> {{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
+
+    {%- macro construct_sparse_map() -%}
+    Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
         kRows_{{ name }},
         kCols_{{ name }},
         kNumNonZero_{{ name }},
@@ -287,22 +287,26 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
         kRowIndices_{{ name }},
         {{ name }}_empty_value_ptr
     );
+    {%- endmacro -%}
+
+    {%- if name == spec.return_key %}
+
+    Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
+    Eigen::SparseMatrix<Scalar> {{ name }} = {{ construct_sparse_map() }}
     Scalar* {{ name }}_value_ptr = {{ name }}.valuePtr();
-    {% else %}
-    if ({{ name }}->nonZeros() != {{ sparse_format.kNumNonZero }} || {{ name }}->outerSize() != {{ sparse_format.kCols }} || {{ name }}->innerSize() != {{ sparse_format.kRows }} || !{{ name }}->isCompressed()) {
+    {% else -%}
+
+    if ({{ name }}->nonZeros() != {{ sparse_format.kNumNonZero }}
+        || {{ name }}->outerSize() != {{ sparse_format.kCols }}
+        || {{ name }}->innerSize() != {{ sparse_format.kRows }}
+        || !{{ name }}->isCompressed()) {
         // Matrix does not have the expected layout, create a correctly initialized sparse matrix
         Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
-        *{{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
-            kRows_{{ name }},
-            kCols_{{ name }},
-            kNumNonZero_{{ name }},
-            kColPtrs_{{ name }},
-            kRowIndices_{{ name }},
-            {{ name }}_empty_value_ptr
-        );
+        *{{ name }} = {{ construct_sparse_map() }}
     }
     Scalar* {{ name }}_value_ptr = {{ name }}->valuePtr();
-    {% endif %}
+
+    {%- endif %}
 {% endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
