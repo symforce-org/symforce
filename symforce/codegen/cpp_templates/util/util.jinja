@@ -277,8 +277,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- for i in spec.sparse_mat_data[name].kRowIndices -%}
         {{ i }}{%- if not loop.last -%}, {% endif -%}
     {%- endfor -%} };
-    {% set T_return = python_util.get_type(element) %}
-    {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+    {% if name == spec.return_key %}
     Scalar {{ name }}_empty_value_ptr[{{ spec.sparse_mat_data[name].kNumNonZero }}];
     Eigen::SparseMatrix<Scalar> {{ name }} = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
         kRows_{{ name }},
