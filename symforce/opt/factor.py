@@ -147,7 +147,11 @@ class Factor:
         self.name = self.codegen.name
 
     def generate(
-        self, optimized_keys: T.Sequence[str], output_dir: T.Openable = None, namespace: str = None
+        self,
+        optimized_keys: T.Sequence[str],
+        output_dir: T.Openable = None,
+        namespace: str = None,
+        sparse_linearization: bool = False,
     ) -> T.Dict[str, T.Any]:
         """
         Generates the code needed to construct a NumericFactor from this Factor.
@@ -170,6 +174,7 @@ class Factor:
             custom_jacobian=self.custom_jacobian_func(optimized_keys)
             if self.custom_jacobian_func is not None
             else None,
+            sparse_linearization=sparse_linearization,
         )
 
         output_data = codegen_with_linearization.generate_function(

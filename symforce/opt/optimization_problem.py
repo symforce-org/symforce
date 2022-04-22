@@ -93,7 +93,14 @@ class OptimizationProblem:
             for value in optimized_values
         ]
 
-    def generate(self, output_dir: T.Openable, namespace: str, name: str) -> None:
+    def generate(
+        self,
+        output_dir: T.Openable,
+        namespace: str,
+        name: str,
+        sparse_linearization: bool = False,
+        config: codegen_config.CppConfig = None,
+    ) -> None:
         """
         Generate everything needed to optimize `problem` in C++. This currently assumes there is
         only one factor generated for the optimization problem.
@@ -102,11 +109,21 @@ class OptimizationProblem:
             output_dir: Directory in which to output the generated files.
             namespace: Namespace used in each generated file.
             name: Name of the generated factor.
+            sparse_linearization: Whether the generated factors should use sparse jacobians/hessians
+            config: C++ code configuration used with the linearization functions generated for each
+                factor.
         """
-        factors = self.make_symbolic_factors(name=name, config=codegen_config.CppConfig())
+        if config is None:
+            config = codegen_config.CppConfig()
+
+        # Generate the C++ code for the residual linearization function
+        factors = self.make_symbolic_factors(name=name, config=config)
         for factor in factors:
             output_data = factor.generate(
-                optimized_keys=self.optimized_keys(), output_dir=output_dir, namespace=namespace
+                optimized_keys=self.optimized_keys(),
+                output_dir=output_dir,
+                namespace=namespace,
+                sparse_linearization=sparse_linearization,
             )
             logger.info(
                 "Generated function `{}` in directory `{}`".format(
