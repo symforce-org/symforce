@@ -259,4 +259,7 @@ const std::string& Optimizer<ScalarType, NonlinearSolverType>::GetName() {
   return name_;
 }
 
+extern template class Optimizer<double>;
+extern template class Optimizer<float>;
+
 }  // namespace sym

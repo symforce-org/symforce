@@ -36,3 +36,8 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
       enable_bold_updates,
   };
 }
+
+// Explicitly instantiate most commonly used optimizer templates to allow for faster compilation
+// times.
+template class sym::Optimizer<double>;
+template class sym::Optimizer<float>;
