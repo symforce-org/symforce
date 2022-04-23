@@ -685,9 +685,6 @@ def flat_symbols_from_values(values: Values) -> T.List[T.Any]:
     """
     symbols_list = values.to_storage()
 
-    # convert dataclasses to values so we can recurse through field to look for DataBuffers
-    values = values.dataclasses_to_values()
-
     for v in values.values_recursive():
         if isinstance(v, sm.DataBuffer):
             symbols_list.append(v)

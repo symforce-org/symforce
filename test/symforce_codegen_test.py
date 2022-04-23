@@ -833,6 +833,43 @@ class SymforceCodegenTest(TestCase):
             expected_dir=TEST_DATA_DIR / (namespace + "_data"),
         )
 
+    def test_dataclass_in_values(self) -> None:
+        """
+        Tests that we correctly handle code generation when the input Values contains a dataclass
+        """
+
+        @dataclass
+        class MyDataclass:
+            rot: geo.Rot3
+
+        sym_rot = geo.Rot3.symbolic("rot")
+        inputs = Values(my_dataclass=MyDataclass(rot=sym_rot))
+        outputs = Values(rot=sym_rot)
+
+        output_dir = Path(self.make_output_dir("sf_codegen_dataclass_"))
+        name = "codegen_dataclass_in_values_test"
+        namespace = "codegen_test"
+
+        python_func = codegen.Codegen(
+            inputs=inputs, outputs=outputs, config=codegen.PythonConfig(), name=name
+        )
+
+        codegen_data = python_func.generate_function(output_dir=output_dir, namespace=namespace)
+        self.compare_or_update_directory(
+            actual_dir=output_dir,
+            expected_dir=TEST_DATA_DIR / (name + "_data"),
+        )
+
+        # Make sure it runs
+        gen_module = codegen_util.load_generated_package(
+            namespace, codegen_data["python_function_dir"]
+        )
+        my_dataclass_t = codegen_util.load_generated_lcmtype(
+            namespace, "my_dataclass_t", codegen_data["python_types_dir"]
+        )()
+        return_rot = gen_module.codegen_dataclass_in_values_test(my_dataclass_t)
+        self.assertEqual(return_rot.data, my_dataclass_t.rot.data)
+
 
 if __name__ == "__main__":
     TestCase.main()

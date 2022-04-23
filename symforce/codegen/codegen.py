@@ -90,6 +90,10 @@ class Codegen:
         assert isinstance(inputs, Values)
         assert isinstance(outputs, Values)
 
+        # Convert any dataclasses to Values so we can more easily recurse through them
+        inputs = inputs.dataclasses_to_values()
+        outputs = outputs.dataclasses_to_values()
+
         # All symbols in outputs must be present in inputs.  Convert to Matrix before calling
         # free_symbols because it's much faster to call once
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
