@@ -43,6 +43,9 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
  + Embedded-friendly C++ generation of templated Eigen code with zero dynamic memory allocation
  + Highly performant, modular, tested, and extensible code
 
+
+ ### Read the paper: [arXiv:2204.07889](https://arxiv.org/abs/2204.07889)
+
 # Early Access Notes
 
 Thank you for helping us develop SymForce! We value the time you're taking to provide feedback during this private beta program. We expect some rough edges and slow, missing, or confusing aspects of the library. Please file [issues](https://github.com/symforce-org/symforce/issues) on GitHub and we will work to address them.
