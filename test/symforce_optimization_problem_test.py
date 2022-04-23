@@ -127,6 +127,43 @@ class SymforceOptimizationProblemTest(TestCase):
         self.assertTrue((rhs[0:3] == 50 * np.ones(3)).all())
         self.assertTrue(rhs[3] == 1)
 
+    def test_optimized_values(self) -> None:
+        """
+        Tests that a TypeError is raised when a subproblem has an optimized_values that returns a
+        different type from the type used in the subproblem Inputs.
+        """
+
+        class CustomSubProblem(SubProblem):
+            @dataclass
+            class Inputs:
+                rot: geo.Rot3
+                rot0: geo.Rot3
+
+            inputs: CustomSubProblem.Inputs
+
+            def build_residuals(self) -> Values:
+                residual_blocks = Values()
+                residual_blocks["residual"] = ResidualBlock(
+                    residual=geo.V1(self.inputs.rot.angle_between(self.inputs.rot0)),
+                    extra_values=None,
+                )
+                return residual_blocks
+
+            def optimized_values(self) -> T.List[T.Any]:
+                return [geo.V4(self.inputs.rot.to_storage())]
+
+        custom_subproblem = CustomSubProblem()
+        r = Values(custom_jacobian_subproblem=custom_subproblem.build_residuals())
+        problem = OptimizationProblem(
+            subproblems=AttrDict(custom_subproblem=custom_subproblem),
+            residual_blocks=r,
+        )
+
+        output_dir = self.make_output_dir("sf_values_codegen_test")
+
+        with self.assertRaises(TypeError):
+            problem.generate(name="optimized_values_test", output_dir=output_dir, namespace="sym")
+
 
 if __name__ == "__main__":
     TestCase.main()

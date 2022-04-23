@@ -88,10 +88,18 @@ class OptimizationProblem:
             tuple(ops.StorageOps.to_storage(value)): key for key, value in inputs.items_recursive()
         }
 
-        return [
-            content_addressible_inputs[tuple(ops.StorageOps.to_storage(value))]
-            for value in optimized_values
-        ]
+        optimized_keys = []
+        for value in optimized_values:
+            optimized_key = content_addressible_inputs[tuple(ops.StorageOps.to_storage(value))]
+            if value != inputs[optimized_key]:
+                raise TypeError(
+                    f"Variable returned by `optimized_values()` ({value}) in "
+                    + "subproblem does not match variable in `Inputs` of subproblem "
+                    + f"({inputs[optimized_key]}) for key {optimized_key}."
+                )
+            optimized_keys.append(optimized_key)
+
+        return optimized_keys
 
     def generate(
         self,
