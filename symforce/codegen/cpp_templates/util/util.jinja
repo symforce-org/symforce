@@ -12,8 +12,8 @@
  # Args:
  #     dim (int):
  #}
-{%- macro vector_type(dim) -%}
-Eigen::Matrix<Scalar, {{ dim }}, 1>
+{%- macro vector_type(dim, scalar_type="Scalar") -%}
+Eigen::Matrix<{{ scalar_type }}, {{ dim }}, 1>
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -24,8 +24,8 @@ Eigen::Matrix<Scalar, {{ dim }}, 1>
  #     rows (int):
  #     cols (int):
  #}
-{%- macro matrix_type(rows, cols) -%}
-Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
+{%- macro matrix_type(rows, cols, scalar_type="Scalar") -%}
+Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -36,31 +36,31 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     T_or_value (type or Element):
  #     name (str): Optional name in case type is a generated struct
  #}
-{%- macro format_typename(T_or_value, name) %}
+{%- macro format_typename(T_or_value, name, scalar_type="Scalar") %}
     {%- set T = python_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) or T.__name__ == 'float' -%}
         {%- if issubclass(T, DataBuffer) -%}
-            Scalar* const
+            {{ scalar_type }}* const
         {%- else -%}
-            Scalar
+            {{ scalar_type }}
         {%- endif -%}
     {%- elif T.__name__ == 'NoneType' -%}
         void
     {%- elif issubclass(T, Matrix) -%}
         {%- if spec is defined and name in spec.sparse_mat_data -%}
-        Eigen::SparseMatrix<Scalar>
+        Eigen::SparseMatrix<{{ scalar_type }}>
         {%- else -%}
-        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1]) }}
+        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1], scalar_type) }}
         {%- endif -%}
     {%- elif issubclass(T, Values) -%}
         {{ spec.namespaces_dict[name] }}::{{ spec.typenames_dict[name] }}
     {%- elif is_sequence(T_or_value) -%}
-        std::array<{{ format_typename(T_or_value[0], name) }}, {{ T_or_value | length }}>
+        std::array<{{ format_typename(T_or_value[0], name, scalar_type) }}, {{ T_or_value | length }}>
     {%- else -%}
         {%- if "geo" in T.__module__ or "cam" in T.__module__ -%}
         sym::
         {%- endif -%}
-        {{- T.__name__ -}}<Scalar>
+        {{- T.__name__ -}}<{{ scalar_type }}>
     {%- endif -%}
 {% endmacro -%}
 
@@ -71,9 +71,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  # Args:
  #     spec (Codegen):
  #}
-{%- macro get_return_type(spec) %}
+{%- macro get_return_type(spec, scalar_type="Scalar") %}
     {%- if spec.return_key is not none -%}
-        {{ format_typename(spec.outputs[spec.return_key], spec.return_key) }}
+        {{ format_typename(spec.outputs[spec.return_key], spec.return_key, scalar_type) }}
     {%- else -%}
         void
     {%- endif -%}
@@ -105,14 +105,14 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     T_or_value (type or Element):
  #     name (str):
  #}
-{%- macro format_input_arg(T_or_value, name) %}
+{%- macro format_input_arg(T_or_value, name, scalar_type="Scalar") %}
     {%- set T = python_util.get_type(T_or_value) -%}
     {% if T == Symbol or T == DataBuffer-%}
         {#- Scalar type is just const -#}
-        const {{ format_typename(T_or_value) }} {{ name }}
+        const {{ format_typename(T_or_value, "", scalar_type) }} {{ name }}
     {%- else -%}
         {#- Otherwise assume const reference -#}
-        const {{ format_typename(T_or_value, name) }}& {{ name }}
+        const {{ format_typename(T_or_value, name, scalar_type) }}& {{ name }}
     {%- endif %}
 {% endmacro -%}
 
@@ -125,8 +125,8 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     name (str):
  #     add_default (bool): Include a default to nullptr?
  #}
-{%- macro format_pointer_arg(T_or_value, name, add_default) %}
-    {{- format_typename(T_or_value, name) -}}* const {{ name }}{% if add_default %} = nullptr{% endif %}
+{%- macro format_pointer_arg(T_or_value, name, add_default, scalar_type="Scalar") %}
+    {{- format_typename(T_or_value, name, scalar_type) -}}* const {{ name }}{% if add_default %} = nullptr{% endif %}
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -138,10 +138,10 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
  #         include default arguments)
  #}
-{%- macro input_args_declaration(spec, is_declaration) %}
+{%- macro input_args_declaration(spec, is_declaration, scalar_type="Scalar") %}
     {%- for name, type in spec.inputs.items() -%}
         {%- if name != "self" -%}
-            {{ format_input_arg(type, name) }}
+            {{ format_input_arg(type, name, scalar_type) }}
             {%- if not loop.last
                 or spec.outputs.items() | length > 1
                 or (spec.outputs.items() | length == 1 and spec.return_key is none) -%}
@@ -150,7 +150,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- endfor -%}
     {%- for name, type in spec.outputs.items() -%}
         {%- if name != spec.return_key -%}
-            {{- format_pointer_arg(type, name, is_declaration) -}}
+            {{- format_pointer_arg(type, name, is_declaration, scalar_type) -}}
             {%- if not loop.last -%}
                 {%- if not (loop.revindex0 == 1 and loop.nextitem[0] == spec.return_key) -%}
                 , {% endif -%}
@@ -191,9 +191,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
  #         include default arguments)
  #}
-{%- macro function_declaration(spec, is_declaration) -%}
+{%- macro function_declaration(spec, is_declaration, scalar_type="Scalar") -%}
 {% set name = python_util.snakecase_to_camelcase(spec.name) %}
-{{ get_return_type(spec) }} {{ name }}({{- input_args_declaration(spec, is_declaration) -}})
+{{ get_return_type(spec, scalar_type) }} {{ name }}({{- input_args_declaration(spec, is_declaration, scalar_type) -}})
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -228,9 +228,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
  #         include default arguments)
  #}
-{%- macro function_declaration_custom_namespace(spec, namespace, is_declaration) -%}
+{%- macro function_declaration_custom_namespace(spec, namespace, is_declaration, scalar_type="Scalar") -%}
 {% set name = python_util.snakecase_to_camelcase(spec.name) %}
-{{ get_return_type(spec) }} {{ namespace }}::{{ name }}({{- input_args_declaration(spec, is_declaration) -}})
+{{ get_return_type(spec, scalar_type) }} {{ namespace }}::{{ name }}({{- input_args_declaration(spec, is_declaration, scalar_type) -}})
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -265,7 +265,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     sparse_format (CSCFormat): The python sparse representation of the matrix to be initialized
  #     spec (Codegen): Codegen specification containing sparse_mat_data
  #}
-{%- macro sparse_matrix_init(name, sparse_format, spec) -%}
+{%- macro sparse_matrix_init(name, sparse_format, spec, scalar_type="Scalar") -%}
     static constexpr int kRows_{{ name }} = {{ sparse_format.kRows }};
     static constexpr int kCols_{{ name }} = {{ sparse_format.kCols }};
     static constexpr int kNumNonZero_{{ name }} = {{ sparse_format.kNumNonZero }};
@@ -279,7 +279,7 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
     {%- endfor -%} };
 
     {%- macro construct_sparse_map() -%}
-    Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
+    Eigen::Map<const Eigen::SparseMatrix<{{ scalar_type }}>>(
         kRows_{{ name }},
         kCols_{{ name }},
         kNumNonZero_{{ name }},
@@ -291,9 +291,9 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
 
     {%- if name == spec.return_key %}
 
-    Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
-    Eigen::SparseMatrix<Scalar> {{ name }} = {{ construct_sparse_map() }}
-    Scalar* {{ name }}_value_ptr = {{ name }}.valuePtr();
+    {{ scalar_type }} {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
+    Eigen::SparseMatrix<{{ scalar_type }}> {{ name }} = {{ construct_sparse_map() }}
+    {{ scalar_type }}* {{ name }}_value_ptr = {{ name }}.valuePtr();
     {% else -%}
 
     if ({{ name }}->nonZeros() != {{ sparse_format.kNumNonZero }}
@@ -301,10 +301,10 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
         || {{ name }}->innerSize() != {{ sparse_format.kRows }}
         || !{{ name }}->isCompressed()) {
         // Matrix does not have the expected layout, create a correctly initialized sparse matrix
-        Scalar {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
+        {{ scalar_type }} {{ name }}_empty_value_ptr[{{ sparse_format.kNumNonZero }}];
         *{{ name }} = {{ construct_sparse_map() }}
     }
-    Scalar* {{ name }}_value_ptr = {{ name }}->valuePtr();
+    {{ scalar_type }}* {{ name }}_value_ptr = {{ name }}->valuePtr();
 
     {%- endif %}
 {% endmacro -%}
@@ -319,22 +319,22 @@ Eigen::Matrix<Scalar, {{ rows }}, {{ cols }}>
  #     terms (List[Tuple[str]]): List of output terms for this object
  #     spec (Codegen):
  #}
-{% macro format_output_dense(name, type, terms, spec) -%}
+{% macro format_output_dense(name, type, terms, spec, scalar_type="Scalar") -%}
 {% set T = python_util.get_type(type) %}
 {% if (issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type)) %}
     {% set T_return = python_util.get_type(type) %}
     {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
         {# Create a new object to return #}
-{{ format_typename(type, name) }} _{{ name }};
+{{ format_typename(type, name, scalar_type) }} _{{ name }};
     {% else %}
         {# Get reference to output passed by reference #}
-{{ format_typename(type, name) }}& _{{ name }} = (*{{ name }});
+{{ format_typename(type, name, scalar_type) }}& _{{ name }} = (*{{ name }});
     {% endif %}
 {% else %}
     {# geo/cam object. Since we can't access individual element of data, create a copy #}
     {# TODO(nathan): Maybe add a [] operator to geo/cam objects so we don't have to do this? #}
     {% set dims = ops.StorageOps.storage_dim(type) %}
-{{ vector_type(dims) }} _{{ name }};
+{{ vector_type(dims, scalar_type) }} _{{ name }};
 {% endif %}
 
 {% set set_zero = issubclass(T, Matrix) and should_set_zero(
@@ -351,7 +351,7 @@ _{{ lhs }} = {{ rhs }};
 {% if name != spec.return_key %}
     {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
 
-*{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
+*{{ name }} = {{ format_typename(type, name, scalar_type) }}(_{{ name }});
     {% endif %}
 {% endif %}
 {% endmacro -%}
@@ -359,13 +359,13 @@ _{{ lhs }} = {{ rhs }};
 {# ------------------------------------------------------------------------- #}
 
 {# Helper to generate all pointer outputs #}
-{% macro format_outputs_dense_and_sparse(spec) -%}
+{% macro format_outputs_dense_and_sparse(spec, scalar_type="Scalar") -%}
     {% for name, type, terms in spec.print_code_results.output_terms %}
         {% if name == spec.return_key %}
-    {{ format_output_dense(name, type, terms, spec) | indent(width=4) | trim }}
+    {{ format_output_dense(name, type, terms, spec, scalar_type) | indent(width=4) | trim }}
         {% else %}
     if ( {{ name }} != nullptr ) {
-        {{ format_output_dense(name, type, terms, spec) | indent(width=8) | trim }}
+        {{ format_output_dense(name, type, terms, spec, scalar_type) | indent(width=8) | trim }}
     }
         {% endif %}
 
@@ -373,21 +373,21 @@ _{{ lhs }} = {{ rhs }};
     {% for name, type, terms in spec.print_code_results.sparse_terms %}
         {% set T = python_util.get_type(type) %}
         {% if name == spec.return_key %}
-    {{ sparse_matrix_init(name, spec.sparse_mat_data[name], spec) }}
+    {{ sparse_matrix_init(name, spec.sparse_mat_data[name], spec, scalar_type) }}
 
             {% for lhs, rhs in terms %}
     {{ lhs }} = {{ rhs }};
             {% endfor %}
         {% else %}
     if ( {{ name }} != nullptr ) {
-        {{ sparse_matrix_init(name, spec.sparse_mat_data[name], spec) | indent(width=4) }}
+        {{ sparse_matrix_init(name, spec.sparse_mat_data[name], spec, scalar_type) | indent(width=4) }}
 
             {% for lhs, rhs in terms %}
         {{ lhs }} = {{ rhs }};
             {% endfor %}
             {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
 
-        *{{ name }} = {{ format_typename(type, name) }}(_{{ name }});
+        *{{ name }} = {{ format_typename(type, name, scalar_type) }}(_{{ name }});
             {% endif %}
     }
         {% endif %}
@@ -402,7 +402,7 @@ _{{ lhs }} = {{ rhs }};
  # Args:
  #     spec (Codegen):
  #}
-{% macro expr_code(spec) -%}
+{% macro expr_code(spec, scalar_type="Scalar") -%}
     // Total ops: {{ spec.print_code_results.total_ops }}
 
     // Input arrays
@@ -410,20 +410,20 @@ _{{ lhs }} = {{ rhs }};
         {% set T = python_util.get_type(type) %}
         {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
             {% if name == "self" %}
-    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = Data();
+    const {{ vector_type(ops.StorageOps.storage_dim(type), scalar_type) }}& _{{ name }} = Data();
             {% else %}
-    const {{ vector_type(ops.StorageOps.storage_dim(type)) }}& _{{ name }} = {{ name }}.Data();
+    const {{ vector_type(ops.StorageOps.storage_dim(type), scalar_type) }}& _{{ name }} = {{ name }}.Data();
             {% endif %}
         {% endif %}
     {% endfor %}
 
     // Intermediate terms ({{ spec.print_code_results.intermediate_terms | length }})
     {% for lhs, rhs in spec.print_code_results.intermediate_terms %}
-    const {{ format_typename(Symbol) }} {{ lhs }} = {{ rhs }};
+    const {{ format_typename(Symbol, scalar_type) }} {{ lhs }} = {{ rhs }};
     {% endfor %}
 
     // Output terms ({{ spec.outputs.items() | length }})
-    {{ format_outputs_dense_and_sparse(spec) | trim }}
+    {{ format_outputs_dense_and_sparse(spec, scalar_type) | trim }}
     {# Populate the output vectors with the generated expressions #}
     {% for name, type in spec.outputs.items() %}
         {% set T_return = python_util.get_type(type) %}
@@ -434,7 +434,7 @@ _{{ lhs }} = {{ rhs }};
             {% elif issubclass(T_return, Matrix) or issubclass(T_return, Values) or is_symbolic(type) or is_sequence(type) %}
     return _{{ name }};
             {% else %}
-    return {{ format_typename(type, name) }}(_{{ name }});
+    return {{ format_typename(type, name, scalar_type) }}(_{{ name }});
             {% endif %}
         {% endif %}
     {% endfor %}

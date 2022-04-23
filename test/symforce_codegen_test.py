@@ -806,6 +806,33 @@ class SymforceCodegenTest(TestCase):
         # make sure it runs
         gen_module.test_function_dataclass(dataclass_t, 1)
 
+    @slow_on_sympy
+    def test_function_explicit_template_instantiation(self) -> None:
+        inputs, outputs = self.build_values()
+
+        cpp_func = codegen.Codegen(
+            inputs,
+            outputs,
+            codegen.CppConfig(use_explicit_template_instantiation=True),
+            "codegen_explicit_template_instantiation_test",
+        )
+        shared_types = {
+            "values_vec": "values_vec_t",
+            "values_vec_out": "values_vec_t",
+            "values_vec_2D": "values_vec_t",
+            "values_vec_2D_out": "values_vec_t",
+        }
+        namespace = "codegen_explicit_template_instantiation_test"
+        output_dir = Path(self.make_output_dir("sf_codegen_cpp_"))
+        codegen_data = cpp_func.generate_function(
+            shared_types=shared_types, namespace=namespace, output_dir=output_dir
+        )
+
+        self.compare_or_update_directory(
+            actual_dir=output_dir,
+            expected_dir=TEST_DATA_DIR / (namespace + "_data"),
+        )
+
 
 if __name__ == "__main__":
     TestCase.main()

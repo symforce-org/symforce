@@ -8,8 +8,15 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
 # ------------------------------------------------------------------------------
 # symforce_test library
 
-add_library(symforce_test INTERFACE)
-target_link_libraries(symforce_test INTERFACE symforce_catch2)
+file(GLOB_RECURSE SYMFORCE_TEST_SOURCES CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.cc)
+file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.hpp)
+add_library(
+  symforce_test
+  ${SYMFORCE_LIBRARY_TYPE}
+  ${SYMFORCE_TEST_SOURCES}
+  ${SYMFORCE_TEST_HEADERS}
+)
+target_link_libraries(symforce_test symforce_catch2 symforce_gen symforce_opt)
 target_include_directories(symforce_test
   INTERFACE symforce_function_codegen_test_data/symengine/cam_function_codegen_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_multi_function_test_data/cpp
@@ -17,7 +24,7 @@ target_include_directories(symforce_test
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_sparse_matrix_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_cpp_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/sympy/databuffer_codegen_test_data/cpp
-
+  PUBLIC symforce_function_codegen_test_data/symengine/codegen_explicit_template_instantiation_test_data/cpp
 )
 target_compile_definitions(
   symforce_test
