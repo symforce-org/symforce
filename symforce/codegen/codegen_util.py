@@ -49,7 +49,7 @@ class OutputWithTerms(T.NamedTuple):
 
 class PrintCodeResult(T.NamedTuple):
     intermediate_terms: T_terms_printed
-    output_terms: T.List[OutputWithTerms]
+    dense_terms: T.List[OutputWithTerms]
     sparse_terms: T.List[OutputWithTerms]
     total_ops: int
 
@@ -156,7 +156,7 @@ def print_code(
         simplified_outputs = output_exprs
 
     # Replace default symbols with vector notation (e.g. "R_re" -> "_R[0]")
-    temps_formatted, simplified_outputs_formatted, sparse_terms_formatted = format_symbols(
+    temps_formatted, dense_outputs_formatted, sparse_outputs_formatted = format_symbols(
         inputs=inputs,
         dense_outputs=dense_outputs,
         sparse_outputs=sparse_outputs,
@@ -169,8 +169,8 @@ def print_code(
     simpify_nested_lists = lambda nested_lsts: [simpify_list(lst) for lst in nested_lsts]
 
     temps_formatted = simpify_list(temps_formatted)
-    simplified_outputs_formatted = simpify_nested_lists(simplified_outputs_formatted)
-    sparse_terms_formatted = simpify_nested_lists(sparse_terms_formatted)
+    dense_outputs_formatted = simpify_nested_lists(dense_outputs_formatted)
+    sparse_outputs_formatted = simpify_nested_lists(sparse_outputs_formatted)
 
     def count_ops(expr: sm.Expr) -> int:
         op_count = _sympy_count_ops.count_ops(expr)
@@ -179,8 +179,8 @@ def print_code(
 
     total_ops = (
         count_ops(temps_formatted)
-        + count_ops(simplified_outputs_formatted)
-        + count_ops(sparse_terms_formatted)
+        + count_ops(dense_outputs_formatted)
+        + count_ops(sparse_outputs_formatted)
     )
 
     # Get printer
@@ -188,19 +188,21 @@ def print_code(
 
     # Print code
     intermediate_terms = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
-    outputs_code_no_names = [
+    dense_outputs_code_no_names = [
         [(str(var), printer.doprint(t)) for var, t in single_output_terms]
-        for single_output_terms in simplified_outputs_formatted
+        for single_output_terms in dense_outputs_formatted
     ]
     sparse_outputs_code_no_names = [
         [(str(var), printer.doprint(t)) for var, t in single_output_terms]
-        for single_output_terms in sparse_terms_formatted
+        for single_output_terms in sparse_outputs_formatted
     ]
 
     # Pack names and types with outputs
-    output_terms = [
+    dense_terms = [
         OutputWithTerms(key, value, output_code_no_name)
-        for output_code_no_name, (key, value) in zip(outputs_code_no_names, dense_outputs.items())
+        for output_code_no_name, (key, value) in zip(
+            dense_outputs_code_no_names, dense_outputs.items()
+        )
     ]
     sparse_terms = [
         OutputWithTerms(key, value, sparse_output_code_no_name)
@@ -211,7 +213,7 @@ def print_code(
 
     return PrintCodeResult(
         intermediate_terms=intermediate_terms,
-        output_terms=output_terms,
+        dense_terms=dense_terms,
         sparse_terms=sparse_terms,
         total_ops=total_ops,
     )

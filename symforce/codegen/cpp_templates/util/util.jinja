@@ -360,7 +360,7 @@ _{{ lhs }} = {{ rhs }};
 
 {# Helper to generate all pointer outputs #}
 {% macro format_outputs_dense_and_sparse(spec, scalar_type="Scalar") -%}
-    {% for name, type, terms in spec.print_code_results.output_terms %}
+    {% for name, type, terms in spec.print_code_results.dense_terms %}
         {% if name == spec.return_key %}
     {{ format_output_dense(name, type, terms, spec, scalar_type) | indent(width=4) | trim }}
         {% else %}

@@ -155,7 +155,7 @@ def {{ function_name_and_args(spec) }}:
     {% endfor %}
 
     # Output terms
-    {% for name, type, terms in spec.print_code_results.output_terms %}
+    {% for name, type, terms in spec.print_code_results.dense_terms %}
         {%- set T = python_util.get_type(type) -%}
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
             {% set rows = type.shape[0] %}
