@@ -234,8 +234,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     if (p_.enable_bold_updates && have_last_update_ && !accept_update) {
       update_angle_change = last_update_.normalized().dot(update_.stableNormalized());
 
-      accept_update =
-          (Square(1 - iteration_stats.update_angle_change) * new_error) <= state_.Best().Error();
+      accept_update = (Square(1 - update_angle_change) * new_error) <= state_.Best().Error();
     }
 
     // If we didn't accept the update and lambda is maxed out, just exit.
