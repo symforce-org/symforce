@@ -298,8 +298,8 @@ std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v) {
   return os;
 }
 
-template std::ostream& operator<<<float>(std::ostream& os, const Values<float>& v);
-template std::ostream& operator<<<double>(std::ostream& os, const Values<double>& v);
+template std::ostream& operator<< <float>(std::ostream& os, const Values<float>& v);
+template std::ostream& operator<< <double>(std::ostream& os, const Values<double>& v);
 
 }  // namespace sym
 

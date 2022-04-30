@@ -173,8 +173,8 @@ std::ostream& operator<<(std::ostream& os, const sym::Factor<Scalar>& factor) {
   return os;
 }
 
-template std::ostream& operator<<<float>(std::ostream& os, const sym::Factor<float>& factor);
-template std::ostream& operator<<<double>(std::ostream& os, const sym::Factor<double>& factor);
+template std::ostream& operator<< <float>(std::ostream& os, const sym::Factor<float>& factor);
+template std::ostream& operator<< <double>(std::ostream& os, const sym::Factor<double>& factor);
 
 // TODO(hayk): Why is this needed instead of being able to template operator<<?
 template <typename LinearizedFactorT>
