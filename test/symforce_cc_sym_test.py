@@ -412,6 +412,23 @@ class SymforceCCSymTest(TestCase):
             keys=[pi_key],
         )
 
+        with self.subTest(msg="Test that alternate Factor constructors can be called"):
+            cc_sym.Factor(
+                hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
+                    values.at(index_entries[0])
+                ),
+                keys_to_func=[pi_key],
+                keys_to_optimize=[pi_key],
+            )
+
+            cc_sym.Factor.jacobian(
+                jacobian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
+                    values.at(index_entries[0])
+                )[0:2],
+                keys_to_func=[pi_key],
+                keys_to_optimize=[pi_key],
+            )
+
         with self.subTest(msg="Test that Factor.is_sparse is wrapped"):
             self.assertFalse(pi_factor.is_sparse())
             self.assertFalse(pi_jacobian_factor.is_sparse())

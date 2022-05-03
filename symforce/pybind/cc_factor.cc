@@ -35,60 +35,67 @@ namespace {
 using PyHessianFunc =
     std::function<py::tuple(const sym::Valuesd&, const std::vector<index_entry_t>&)>;
 
-sym::Factord MakeHessianFactor(PyHessianFunc hessian_func,
-                               const std::vector<sym::Key>& keys_to_func,
-                               const std::vector<sym::Key>& keys_to_optimize) {
+auto WrapPyHessianFunc(PyHessianFunc&& hessian_func) {
   using Vec = Eigen::VectorXd;
   using Mat = Eigen::MatrixXd;
-  return sym::Factord(
-      [hessian_func = std::move(hessian_func)](
-          const sym::Valuesd& values, const std::vector<index_entry_t>& keys, Vec* const residual,
-          Mat* const jacobian, Mat* const hessian, Vec* const rhs) {
-        const py::tuple out_tuple = hessian_func(values, keys);
-        if (residual != nullptr) {
-          *residual = py::cast<Vec>(out_tuple[0]);
-        }
-        if (jacobian != nullptr) {
-          *jacobian = py::cast<Mat>(out_tuple[1]);
-        }
-        if (hessian != nullptr) {
-          *hessian = py::cast<Mat>(out_tuple[2]);
-        }
-        if (rhs != nullptr) {
-          *rhs = py::cast<Vec>(out_tuple[3]);
-        }
-      },
-      keys_to_func, keys_to_optimize);
+  return [hessian_func = std::move(hessian_func)](
+             const sym::Valuesd& values, const std::vector<index_entry_t>& keys,
+             Vec* const residual, Mat* const jacobian, Mat* const hessian, Vec* const rhs) {
+    const py::tuple out_tuple = hessian_func(values, keys);
+    if (residual != nullptr) {
+      *residual = py::cast<Vec>(out_tuple[0]);
+    }
+    if (jacobian != nullptr) {
+      *jacobian = py::cast<Mat>(out_tuple[1]);
+    }
+    if (hessian != nullptr) {
+      *hessian = py::cast<Mat>(out_tuple[2]);
+    }
+    if (rhs != nullptr) {
+      *rhs = py::cast<Vec>(out_tuple[3]);
+    }
+  };
 }
 
-sym::Factord MakeHessianFactor(PyHessianFunc hessian_func, const std::vector<sym::Key>& keys) {
-  return MakeHessianFactor(std::move(hessian_func), keys, keys);
+sym::Factord MakeHessianFactorSeparateKeys(PyHessianFunc hessian_func,
+                                           const std::vector<sym::Key>& keys_to_func,
+                                           const std::vector<sym::Key>& keys_to_optimize) {
+  return sym::Factord(WrapPyHessianFunc(std::move(hessian_func)), keys_to_func, keys_to_optimize);
+}
+
+sym::Factord MakeHessianFactorCommonKeys(PyHessianFunc hessian_func,
+                                         const std::vector<sym::Key>& keys) {
+  return sym::Factord(WrapPyHessianFunc(std::move(hessian_func)), keys);
 }
 
 using PyJacobianFunc =
     std::function<py::tuple(const sym::Valuesd&, const std::vector<index_entry_t>&)>;
 
-sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func,
-                                const std::vector<sym::Key>& keys_to_func,
-                                const std::vector<sym::Key>& keys_to_optimize) {
-  return sym::Factord::Jacobian(
-      sym::Factord::JacobianFunc(
-          [jacobian_func = std::move(jacobian_func)](
-              const sym::Valuesd& values, const std::vector<index_entry_t>& keys,
-              Eigen::VectorXd* const residual, Eigen::MatrixXd* const jacobian) {
-            const py::tuple out_tuple = jacobian_func(values, keys);
-            if (residual != nullptr) {
-              *residual = py::cast<Eigen::VectorXd>(out_tuple[0]);
-            }
-            if (jacobian != nullptr) {
-              *jacobian = py::cast<Eigen::MatrixXd>(out_tuple[1]);
-            }
-          }),
-      keys_to_func, keys_to_optimize);
+sym::Factord::JacobianFunc WrapPyJacobianFunc(PyJacobianFunc&& jacobian_func) {
+  return sym::Factord::JacobianFunc(
+      [jacobian_func = std::move(jacobian_func)](
+          const sym::Valuesd& values, const std::vector<index_entry_t>& keys,
+          Eigen::VectorXd* const residual, Eigen::MatrixXd* const jacobian) {
+        const py::tuple out_tuple = jacobian_func(values, keys);
+        if (residual != nullptr) {
+          *residual = py::cast<Eigen::VectorXd>(out_tuple[0]);
+        }
+        if (jacobian != nullptr) {
+          *jacobian = py::cast<Eigen::MatrixXd>(out_tuple[1]);
+        }
+      });
 }
 
-sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func, const std::vector<sym::Key>& keys) {
-  return MakeJacobianFactor(std::move(jacobian_func), keys, keys);
+sym::Factord MakeJacobianFactorSeparateKeys(PyJacobianFunc jacobian_func,
+                                            const std::vector<sym::Key>& keys_to_func,
+                                            const std::vector<sym::Key>& keys_to_optimize) {
+  return sym::Factord::Jacobian(WrapPyJacobianFunc(std::move(jacobian_func)), keys_to_func,
+                                keys_to_optimize);
+}
+
+sym::Factord MakeJacobianFactorCommonKeys(PyJacobianFunc jacobian_func,
+                                          const std::vector<sym::Key>& keys) {
+  return sym::Factord::Jacobian(WrapPyJacobianFunc(std::move(jacobian_func)), keys);
 }
 
 }  // namespace
@@ -100,52 +107,45 @@ sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func, const std::vector<
 void AddFactorWrapper(pybind11::module_ module) {
   py::class_<sym::Factord>(module, "Factor", R"(
       A residual term for optimization.
- 
+
       Created from a function and a set of Keys that act as inputs. Given a Values as an evaluation
       point, generates a linear approximation to the residual function.
   )")
       // TODO(brad): Add wrapper of the constructor from SparseHessianFunc
-      .def(py::init(py::overload_cast<PyHessianFunc, const std::vector<Key>&>(&MakeHessianFactor)),
-           py::arg("hessian_func"), py::arg("keys"), R"(
+      .def(py::init(&MakeHessianFactorCommonKeys), py::arg("hessian_func"), py::arg("keys"), R"(
               Create directly from a (dense) hessian functor. This is the lowest-level constructor.
-              
+
               Args:
                 keys: The set of input arguments, in order, accepted by func.
            )")
-      .def(py::init(
-               py::overload_cast<PyHessianFunc, const std::vector<Key>&, const std::vector<Key>&>(
-                   &MakeHessianFactor)),
-           py::arg("hessian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"),
+      .def(py::init(&MakeHessianFactorSeparateKeys), py::arg("hessian_func"),
+           py::arg("keys_to_func"), py::arg("keys_to_optimize"),
            R"(
               Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
-              
+
               Args:
                 keys_to_func: The set of input arguments, in order, accepted by func.
                 keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
            )")
       .def("is_sparse", &sym::Factord::IsSparse,
            "Does this factor use a sparse jacobian/hessian matrix?")
-      .def_static("jacobian",
-                  py::overload_cast<PyJacobianFunc, const std::vector<Key>&>(&MakeJacobianFactor),
-                  py::arg("jacobian_func"), py::arg("keys"), R"(
+      .def_static("jacobian", &MakeJacobianFactorCommonKeys, py::arg("jacobian_func"),
+                  py::arg("keys"), R"(
                     Create from a function that computes the jacobian. The hessian will be computed using the
                     Gauss Newton approximation:
                         H   = J.T * J
                         rhs = J.T * b
-                    
+
                     Args:
                       keys: The set of input arguments, in order, accepted by func.
                   )")
-      .def_static(
-          "jacobian",
-          py::overload_cast<PyJacobianFunc, const std::vector<Key>&, const std::vector<Key>&>(
-              &MakeJacobianFactor),
-          py::arg("jacobian_func"), py::arg("keys_to_func"), py::arg("keys_to_optimize"), R"(
+      .def_static("jacobian", &MakeJacobianFactorSeparateKeys, py::arg("jacobian_func"),
+                  py::arg("keys_to_func"), py::arg("keys_to_optimize"), R"(
             Create from a function that computes the jacobian. The hessian will be computed using the
             Gauss Newton approximation:
                 H   = J.T * J
                 rhs = J.T * b
-            
+
             Args:
               keys_to_func: The set of input arguments, in order, accepted by func.
               keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
@@ -172,7 +172,7 @@ void AddFactorWrapper(pybind11::module_ module) {
            py::arg("values"), R"(
              Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
              contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
-   
+
              This can only be called if is_sparse is false; otherwise, it will throw.
            )")
       .def("optimized_keys", &sym::Factord::OptimizedKeys,
