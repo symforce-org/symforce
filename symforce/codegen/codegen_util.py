@@ -107,7 +107,6 @@ def print_code(
     sparse_mat_data: T.Dict[str, CSCFormat],
     config: codegen_config.CodegenConfig,
     cse: bool = True,
-    substitute_inputs: bool = False,
 ) -> PrintCodeResult:
     """
     Return executable code lines from the given input/output values.
@@ -120,7 +119,6 @@ def print_code(
             a list of the keys in outputs which should be treated as sparse matrices
         config: Programming language and configuration in which the expressions are to be generated
         cse: Perform common sub-expression elimination
-        substitute_inputs: If True, replace all input symbols with a uniform array.
 
     Returns:
         T.List[T.Tuple[str, str]]: Line of code per temporary variable
@@ -137,7 +135,6 @@ def print_code(
         else:
             dense_outputs[key] = value
 
-    input_symbols = flat_symbols_from_values(inputs)
     output_exprs = DenseAndSparseOutputTerms(
         dense=[ops.StorageOps.to_storage(value) for key, value in dense_outputs.items()],
         sparse=[ops.StorageOps.to_storage(value) for key, value in sparse_outputs.items()],
@@ -146,9 +143,7 @@ def print_code(
     # CSE If needed
     if cse:
         temps, simplified_outputs = perform_cse(
-            input_symbols=input_symbols,
             output_exprs=output_exprs,
-            substitute_inputs=substitute_inputs,
             cse_optimizations=config.cse_optimizations,
         )
     else:
@@ -220,9 +215,7 @@ def print_code(
 
 
 def perform_cse(
-    input_symbols: T.Sequence[T.Scalar],
     output_exprs: DenseAndSparseOutputTerms,
-    substitute_inputs: bool = True,
     cse_optimizations: T.Union[
         T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]
     ] = None,
@@ -231,13 +224,12 @@ def perform_cse(
     Run common sub-expression elimination on the given input/output values.
 
     Args:
-        input_symbols: AKA inputs.values_recursive()
-        output_exprs: AKA outputs.values_recursive()
-        substitute_inputs: If True, replace all input symbols with a uniform array.
+        output_exprs: expressions on which to perform cse
+        cse_optimizations: optimizations to be forwarded to sm.cse
 
     Returns:
-        T_terms: Temporary variables and their expressions
-        T.Sequence[T.Scalar]: Output expressions based on temporaries
+        T_terms: Temporary variables holding the common sub-expressions found within output_exprs
+        DenseAndSparseOutputTerms: output_exprs, but in terms of the returned temporaries.
     """
     # Perform CSE
     flat_output_exprs = [
@@ -267,19 +259,6 @@ def perform_cse(
     for storage in output_exprs.sparse:
         simplified_outputs.sparse.append(flat_simplified_outputs[flat_i : flat_i + len(storage)])
         flat_i += len(storage)
-
-    # Substitute symbols to an input array
-    # Rather than having the code contain the names of each symbol, we convert the
-    # inputs to elements of an array to make generation more uniform.
-    if substitute_inputs:
-        input_name = lambda i: f"inp[{i}]"
-        input_array = [sm.Symbol(input_name(i)) for i in range(len(input_symbols))]
-        input_subs = dict(zip(input_symbols, input_array))
-        temps = [(var, term.subs(input_subs)) for var, term in temps]
-        simplified_outputs = DenseAndSparseOutputTerms(
-            dense=[[t.subs(input_subs) for t in storage] for storage in simplified_outputs.dense],
-            sparse=[[t.subs(input_subs) for t in storage] for storage in simplified_outputs.sparse],
-        )
 
     return temps, simplified_outputs
 
