@@ -13,7 +13,7 @@ namespace sym {
 template <typename _MatrixType>
 void SparseSchurSolver<_MatrixType>::ComputeSymbolicSparsity(const MatrixType& A, const int C_dim) {
   // A must be square
-  SPARSE_MATH_ASSERT(A.rows() == A.cols());
+  SYM_ASSERT(A.rows() == A.cols());
 
   sparsity_information_.total_dim_ = A.rows();
   sparsity_information_.B_dim_ = sparsity_information_.total_dim_ - C_dim;
@@ -36,12 +36,12 @@ void SparseSchurSolver<_MatrixType>::ComputeSymbolicSparsity(const MatrixType& A
         start_row = it.row();
       }
 
-      SPARSE_MATH_ASSERT(prev_row == -1 || it.row() == prev_row + 1);
+      SYM_ASSERT(prev_row == -1 || it.row() == prev_row + 1);
       prev_row = it.row();
     }
 
     // Make sure that (1) the column wasn't empty and (2) the first nonzero was on the diagonal
-    SPARSE_MATH_ASSERT(start_row != -1 && start_row == col);
+    SYM_ASSERT(start_row != -1 && start_row == col);
 
     const int nonzeros_in_col = prev_row - start_row + 1;
 
@@ -51,7 +51,7 @@ void SparseSchurSolver<_MatrixType>::ComputeSymbolicSparsity(const MatrixType& A
       const auto& block = sparsity_information_.C_blocks_.back();
       const int block_offset = col - block.start_idx;
       const int expected_nonzeros = block.dim - block_offset;
-      SPARSE_MATH_ASSERT(nonzeros_in_col == expected_nonzeros);
+      SYM_ASSERT(nonzeros_in_col == expected_nonzeros);
 
       // Are we at the end of the block?
       if (block_offset == block.dim - 1) {

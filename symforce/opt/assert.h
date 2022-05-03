@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sstream>
 #include <string>
 
 namespace sym {
@@ -12,7 +13,13 @@ namespace sym {
 /**
  * Format an assertion failure.
  */
-std::string FormatFailure(const char* error, const char* func, const char* file, int line);
+inline std::string FormatFailure(const char* error, const char* func, const char* file, int line) {
+  std::stringstream ss;
+  ss << "SYM_ASSERT: " << error << std::endl;
+  ss << "    --> " << func << std::endl;
+  ss << "    --> " << file << ":" << line << std::endl;
+  return ss.str();
+}
 
 }  // namespace sym
 

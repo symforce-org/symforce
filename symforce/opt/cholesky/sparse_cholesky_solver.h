@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "./assert.h"
+#include "../assert.h"
 
 // Needed for Metis
 #include <iostream>

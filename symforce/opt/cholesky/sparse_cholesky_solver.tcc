@@ -13,7 +13,7 @@ namespace sym {
 
 template <typename MatrixType, int UpLo>
 void SparseCholeskySolver<MatrixType, UpLo>::ComputePermutationMatrix(const MatrixType& A) {
-  SPARSE_MATH_ASSERT(A.rows() == A.cols());
+  SYM_ASSERT(A.rows() == A.cols());
 
   // Invoke the ordering object
   const MatrixType A_selfadjoint = A.template selfadjointView<UpLo>();
@@ -27,7 +27,7 @@ void SparseCholeskySolver<MatrixType, UpLo>::ComputePermutationMatrix(const Matr
 
 template <typename MatrixType, int UpLo>
 void SparseCholeskySolver<MatrixType, UpLo>::ComputeSymbolicSparsity(const MatrixType& A) {
-  SPARSE_MATH_ASSERT(A.rows() == A.cols());
+  SYM_ASSERT(A.rows() == A.cols());
 
   // Update permutation matrix
   ComputePermutationMatrix(A);
@@ -112,8 +112,8 @@ void SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
   const Eigen::Index N = A.rows();
 
   // Check some invariants
-  SPARSE_MATH_ASSERT(N == L_.rows());
-  SPARSE_MATH_ASSERT(N == A.cols());
+  SYM_ASSERT(N == L_.rows());
+  SYM_ASSERT(N == A.cols());
 
   // Apply twist
   if (permutation_.size() > 0) {
@@ -230,10 +230,10 @@ template <typename MatrixType, int UpLo>
 template <typename Rhs>
 void SparseCholeskySolver<MatrixType, UpLo>::SolveInPlace(Eigen::MatrixBase<Rhs>* const b) const {
   // Sanity checks
-  SPARSE_MATH_ASSERT(is_initialized_);
-  SPARSE_MATH_ASSERT(b != nullptr);
-  SPARSE_MATH_ASSERT(L_.rows() == b->rows());
-  SPARSE_MATH_ASSERT(D_.size() > 0);
+  SYM_ASSERT(is_initialized_);
+  SYM_ASSERT(b != nullptr);
+  SYM_ASSERT(L_.rows() == b->rows());
+  SYM_ASSERT(D_.size() > 0);
 
   // Pre-computed cholesky decomposition
   const Eigen::TriangularView<const CholMatrixType, Eigen::UnitLower> L(L_);
