@@ -36,10 +36,9 @@ class SymforceDataBufferCodegenTest(TestCase):
 
         inputs = Values()
 
+        inputs["buffer"] = buffer
         inputs["a"] = a
         inputs["b"] = b
-
-        inputs["buffer"] = buffer
 
         outputs = Values(result=result)
 
@@ -79,7 +78,7 @@ class SymforceDataBufferCodegenTest(TestCase):
         # 2 * buffer[b^2 - a^2] + (a+b)
         # 2 * buffer[3] + 3
         expected = 9
-        result_numeric = gen_module.buffer_func(a_numeric, b_numeric, buffer_numeric)
+        result_numeric = gen_module.buffer_func(buffer_numeric, a_numeric, b_numeric)
 
         self.assertStorageNear(expected, result_numeric)
 

@@ -278,16 +278,22 @@ def format_symbols(
     """
     # Rename the symbolic inputs so that they match the code we generate
 
-    symbolic_args = list(
-        itertools.chain.from_iterable(get_formatted_list(inputs, config, format_as_inputs=True))
+    formatted_input_args, original_args = get_formatted_list(inputs, config, format_as_inputs=True)
+    input_subs = dict(
+        zip(
+            itertools.chain.from_iterable(original_args),
+            itertools.chain.from_iterable(formatted_input_args),
+        )
     )
-    input_subs = dict(zip(flat_symbols_from_values(inputs), symbolic_args))
+
     intermediate_terms_formatted = [
         (lhs, ops.StorageOps.subs(rhs, input_subs, dont_flatten_args=True))
         for lhs, rhs in intermediate_terms
     ]
 
-    dense_output_lhs_formatted = get_formatted_list(dense_outputs, config, format_as_inputs=False)
+    dense_output_lhs_formatted, _ = get_formatted_list(
+        dense_outputs, config, format_as_inputs=False
+    )
     dense_output_terms_formatted = [
         list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
         for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
@@ -304,9 +310,10 @@ def format_symbols(
 
 def get_formatted_list(
     values: Values, config: codegen_config.CodegenConfig, format_as_inputs: bool
-) -> T.List[T.List[T.Scalar]]:
+) -> T.Tuple[T.List[T.List[T.Union[sm.Symbol, sm.DataBuffer]]], T.List[T.List[T.Scalar]]]:
     """
-    Returns a nested list of symbols for use in generated functions.
+    Returns a nested list of formatted symbols, as well as a nested list of the corresponding
+    original scalar values. For use in generated functions.
 
     Args:
         values: Values object mapping keys to different objects. Here we only
@@ -315,8 +322,12 @@ def get_formatted_list(
                 required
         format_as_inputs: True if values defines the input symbols, false if values defines output
                           expressions.
+    Returns:
+        flattened_formatted_symbolic_values: nested list of formatted scalar symbols
+        flattened_original_values: nested list of original scalar values
     """
-    symbolic_args = []
+    flattened_formatted_symbolic_values = []
+    flattened_original_values = []
     for key, value in values.items():
         arg_cls = python_util.get_type(value)
         storage_dim = ops.StorageOps.storage_dim(value)
@@ -325,50 +336,57 @@ def get_formatted_list(
         # to access the scalar elements of the object. These symbols will later be matched up
         # with the flattened Values object symbols.
         if issubclass(arg_cls, sm.DataBuffer):
-            symbols = [sm.DataBuffer(key, value.shape[0])]
+            formatted_symbols = [sm.DataBuffer(key, value.shape[0])]
+            flattened_value = [value]
         elif isinstance(value, (sm.Expr, sm.Symbol)):
-            symbols = [sm.Symbol(key)]
+            formatted_symbols = [sm.Symbol(key)]
+            flattened_value = [value]
         elif issubclass(arg_cls, geo.Matrix):
             if isinstance(config, codegen_config.PythonConfig):
                 # TODO(nathan): Not sure this works for 2D matrices
-                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             elif isinstance(config, codegen_config.CppConfig):
-                symbols = []
+                formatted_symbols = []
                 # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
                 # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
                 # changed to, say, row major, the below for loops would have to be swapped to
                 # reflect that.
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
-                        symbols.append(sm.Symbol(f"{key}({i}, {j})"))
+                        formatted_symbols.append(sm.Symbol(f"{key}({i}, {j})"))
             else:
                 raise NotImplementedError()
+            flattened_value = ops.StorageOps.to_storage(value)
 
         elif issubclass(arg_cls, Values):
             # Term is a Values object, so we must flatten it. Here we loop over the index so that
             # we can use the same code with lists.
-            symbols = []
+            formatted_symbols = []
+            flattened_value = value.to_storage()
             for name, index_value in value.index().items():
                 # Elements of a Values object are accessed with the "." operator
-                symbols.extend(
+                formatted_symbols.extend(
                     _get_scalar_keys_recursive(
                         index_value, prefix=f"{key}.{name}", config=config, use_data=False
                     )
                 )
 
-            assert len(symbols) == len(set(symbols)), "Non-unique keys:\n{}".format(
-                [symbol for symbol in symbols if symbols.count(symbol) > 1]
+            assert len(formatted_symbols) == len(
+                set(formatted_symbols)
+            ), "Non-unique keys:\n{}".format(
+                [symbol for symbol in formatted_symbols if formatted_symbols.count(symbol) > 1]
             )
         elif issubclass(arg_cls, (list, tuple)):
             # Term is a list, so we loop over the index of the list, i.e.
             # "values.index()[key].item_index".
-            symbols = []
+            formatted_symbols = []
+            flattened_value = ops.StorageOps.to_storage(value)
 
             sub_index = values.index()[key].item_index
             assert sub_index is not None
             for i, sub_index_val in enumerate(sub_index.values()):
                 # Elements of a list are accessed with the "[]" operator.
-                symbols.extend(
+                formatted_symbols.extend(
                     _get_scalar_keys_recursive(
                         sub_index_val,
                         prefix=f"{key}[{i}]",
@@ -377,22 +395,26 @@ def get_formatted_list(
                     )
                 )
 
-            assert len(symbols) == len(set(symbols)), "Non-unique keys:\n{}".format(
-                [symbol for symbol in symbols if symbols.count(symbol) > 1]
+            assert len(formatted_symbols) == len(
+                set(formatted_symbols)
+            ), "Non-unique keys:\n{}".format(
+                [symbol for symbol in formatted_symbols if formatted_symbols.count(symbol) > 1]
             )
         else:
             if format_as_inputs:
                 # For readability, we will store the data of geo/cam objects in a temp vector named "_key"
                 # where "key" is the name of the given input variable (can be "self" for member functions accessing
                 # object data)
-                symbols = [sm.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sm.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
             else:
                 # For geo/cam objects being output, we can't access "data" directly, so in the
                 # jinja template we will construct a new object from a vector
-                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+            flattened_value = ops.StorageOps.to_storage(value)
 
-        symbolic_args.append(symbols)
-    return symbolic_args
+        flattened_formatted_symbolic_values.append(formatted_symbols)
+        flattened_original_values.append(flattened_value)
+    return flattened_formatted_symbolic_values, flattened_original_values
 
 
 def _get_scalar_keys_recursive(
@@ -663,6 +685,7 @@ def generate_lcm_types(
 def flat_symbols_from_values(values: Values) -> T.List[T.Any]:
     """
     Returns a flat list of unique symbols in the object for codegen
+    Note that this *does not* respect storage ordering
     """
     symbols_list = values.to_storage()
 

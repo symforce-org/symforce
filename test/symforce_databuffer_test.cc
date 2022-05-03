@@ -22,7 +22,7 @@ TEMPLATE_TEST_CASE("Test databuffer func", "[with sympy]", double, float) {
 
   const Scalar a = 1;
   const Scalar b = 2;
-  Scalar result = buffer_test::BufferFunc<Scalar>(a, b, buffer.data());
+  Scalar result = buffer_test::BufferFunc<Scalar>(buffer.data(), a, b);
   // expression is buffer[(a + b) * (b - a)] + buffer[b * b - a * a] + (a + b)
   // 2 * buffer[b^2 - a^2] + (a+b)
   // 2 * buffer[3] + 3
