@@ -28,7 +28,7 @@ def buffer_func(buffer, a, b):
         result: Scalar
     """
 
-    # Total ops: 9
+    # Total ops: 8
 
     # Input arrays
 
@@ -36,5 +36,5 @@ def buffer_func(buffer, a, b):
     _tmp0 = a + b
 
     # Output terms
-    _result = _tmp0 + buffer[int((-a + b) * (a + b))] + buffer[int(-(a ** 2) + b ** 2)]
+    _result = _tmp0 + buffer[int(_tmp0 * (-a + b))] + buffer[int(-(a ** 2) + b ** 2)]
     return _result

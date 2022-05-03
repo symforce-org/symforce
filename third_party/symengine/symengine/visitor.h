@@ -254,6 +254,7 @@ public:
     void bvisit(const Mul &x);
     void bvisit(const Pow &x);
     void bvisit(const OneArgFunction &x);
+    void bvisit(const DataBufferElement &x);
 
     template <class T>
     void bvisit(const TwoArgBasic<T> &x)

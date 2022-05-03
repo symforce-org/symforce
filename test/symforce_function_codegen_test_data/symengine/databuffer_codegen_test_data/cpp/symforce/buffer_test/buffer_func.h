@@ -23,7 +23,7 @@ namespace buffer_test {
  */
 template <typename Scalar>
 Scalar BufferFunc(const Scalar* const buffer, const Scalar a, const Scalar b) {
-  // Total ops: 9
+  // Total ops: 8
 
   // Input arrays
 
@@ -33,7 +33,7 @@ Scalar BufferFunc(const Scalar* const buffer, const Scalar a, const Scalar b) {
   // Output terms (1)
   Scalar _result;
 
-  _result = _tmp0 + buffer[static_cast<size_t>((-a + b) * (a + b))] +
+  _result = _tmp0 + buffer[static_cast<size_t>(_tmp0 * (-a + b))] +
             buffer[static_cast<size_t>(-std::pow(a, Scalar(2)) + std::pow(b, Scalar(2)))];
 
   return _result;

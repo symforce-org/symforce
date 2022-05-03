@@ -150,6 +150,12 @@ void TransformVisitor::bvisit(const Basic &x)
     result_ = x.rcp_from_this();
 }
 
+void TransformVisitor::bvisit(const DataBufferElement &x)
+{
+    auto new_i = apply(x.get_i());
+    result_ = data_buffer_element(x.get_name(), new_i);
+}
+
 void TransformVisitor::bvisit(const Add &x)
 {
     vec_basic newargs;
