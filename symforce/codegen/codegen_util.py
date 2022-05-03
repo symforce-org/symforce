@@ -126,7 +126,7 @@ def print_code(
         T.List[OutputWithTerms]: Collection of lines of code per sparse output variable
         int: Total number of ops
     """
-    # Split outputs into dense and sparse outputs, since we treate them differently when doing codegen
+    # Split outputs into dense and sparse outputs, since we treat them differently when doing codegen
     dense_outputs = Values()
     sparse_outputs = Values()
     for key, value in outputs.items():
@@ -419,7 +419,7 @@ def get_formatted_list(
 
 def _get_scalar_keys_recursive(
     index_value: IndexEntry, prefix: str, config: codegen_config.CodegenConfig, use_data: bool
-) -> T.List[str]:
+) -> T.List[sm.Symbol]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
 
