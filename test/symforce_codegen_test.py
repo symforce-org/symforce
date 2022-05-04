@@ -9,6 +9,7 @@ import functools
 import importlib.util
 import logging
 import numpy as np
+from scipy import sparse
 import sys
 import os
 from pathlib import Path
@@ -237,6 +238,35 @@ class SymforceCodegenTest(TestCase):
 
         self.assertEqual(pkg.matrix_order().shape, m23.SHAPE)
         self.assertStorageNear(pkg.matrix_order(), m23)
+
+    def test_sparse_output_python(self) -> None:
+        """
+        Tests that sparse matrices are correctly generated in python when sparse_matrices
+        argument of codegen.Codegen.__init__ is set appropriately.
+        """
+        output_dir = self.make_output_dir("sf_test_sparse_output_python")
+        namespace = "sparse_output_python"
+        x, y, z = sm.symbols("x y z")
+
+        def matrix_output(x: T.Scalar, y: T.Scalar, z: T.Scalar) -> T.List[T.List[T.Scalar]]:
+            return [[x, y], [0, z]]
+
+        codegen_data = codegen.Codegen(
+            inputs=Values(x=x, y=y, z=z),
+            outputs=Values(out=geo.Matrix(matrix_output(x, y, z))),
+            name="sparse_output_func",
+            config=codegen.PythonConfig(),
+            sparse_matrices=["out"],
+        ).generate_function(namespace=namespace, output_dir=output_dir)
+
+        pkg = codegen_util.load_generated_package(namespace, codegen_data["python_function_dir"])
+
+        output = pkg.sparse_output_func(1, 2, 3)
+
+        self.assertIsInstance(output, sparse.csc_matrix)
+        self.assertTrue((output.todense() == matrix_output(1, 2, 3)).all())
+        self.assertEqual(output.nnz, 3)
+        self.assertTrue(output.has_sorted_indices)
 
     def test_function_codegen_python(self) -> None:
         output_dir = self.make_output_dir("sf_codegen_function_codegen_python_")

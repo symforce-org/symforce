@@ -9,6 +9,10 @@ import math  # pylint: disable=unused-import
 import numba
 {% endif %}
 import numpy  # pylint: disable=unused-import
+{% set sparse_values = spec.print_code_results.sparse_terms | length %}
+{% if sparse_values != 0 %}
+from scipy import sparse
+{% endif %}
 import typing as T  # pylint: disable=unused-import
 
 import sym  # pylint: disable=unused-import

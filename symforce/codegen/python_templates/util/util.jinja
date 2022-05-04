@@ -155,6 +155,7 @@ def {{ function_name_and_args(spec) }}:
     {% endfor %}
 
     # Output terms
+    {# Render all non-sparse terms -#}
     {% for name, type, terms in spec.print_code_results.dense_terms %}
         {%- set T = python_util.get_type(type) -%}
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
@@ -180,6 +181,25 @@ def {{ function_name_and_args(spec) }}:
         {% else %}
     _{{name}} = {{ terms[0][1] }}
         {% endif %}
+    {% endfor %}
+
+    {#- Render all sparse terms -#}
+    {% for name, type, terms in spec.print_code_results.sparse_terms %}
+        {% set csc_format = spec.sparse_mat_data[name] %}
+
+    _{{ name }} = sparse.csc_matrix(({{ csc_format.kRows }}, {{ csc_format.kCols }}))
+    _{{ name }}.data = numpy.empty({{ csc_format.kNumNonZero }})
+    _{{ name }}.indices = numpy.empty({{ csc_format.kRowIndices | length }}, dtype=numpy.int32)
+    _{{ name }}.indptr = numpy.empty({{ csc_format.kColPtrs | length }}, dtype=numpy.int32)
+        {% for _, non_zero in terms %}
+    _{{ name }}.data[{{ loop.index0 }}] = {{ non_zero }}
+        {% endfor %}
+        {% for index in csc_format.kRowIndices %}
+    _{{ name }}.indices[{{ loop.index0 }}] = {{ index }}
+        {% endfor %}
+        {% for ptr in csc_format.kColPtrs %}
+    _{{ name }}.indptr[{{ loop.index0 }}] = {{ ptr }}
+        {% endfor %}
     {% endfor %}
     return
     {%- for name, type in spec.outputs.items() %}
