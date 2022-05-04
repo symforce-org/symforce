@@ -145,6 +145,7 @@ class Factor:
         self.codegen = codegen_obj
         self.custom_jacobian_func = custom_jacobian_func
         self.name = self.codegen.name
+        self.generated_jacobians: T.Dict[T.Tuple[str, ...], geo.Matrix] = {}
 
     def generate(
         self,
@@ -176,6 +177,11 @@ class Factor:
             else None,
             sparse_linearization=sparse_linearization,
         )
+        # Ignore false positive because we define `self.jacobian` in `_initialize()`
+        # pylint: disable=attribute-defined-outside-init
+        self.generated_jacobians[tuple(optimized_keys)] = codegen_with_linearization.outputs[
+            "jacobian"
+        ]
 
         output_data = codegen_with_linearization.generate_function(
             output_dir=output_dir, namespace=namespace
