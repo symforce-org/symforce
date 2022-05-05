@@ -4,8 +4,10 @@
 # We use PLY and regexes to convert a byte stream into a sequence of tokens.
 from __future__ import absolute_import, print_function
 from functools import wraps
+import tempfile
 from ply import lex
 import os
+import shutil
 import sys
 import typing as T
 
@@ -199,7 +201,11 @@ else:
 if os.environ.get("SKYMARSHAL_REGENERATE_LEXER"):
     lexer = lex.lex(optimize=1)  # this will create lextab.py
 else:
-    lexer = lex.lex(lextab=lextab_opt)
+    tempdir = tempfile.mkdtemp()
+    try:
+        lexer = lex.lex(optimize=1, lextab=lextab_opt, outputdir=tempdir)
+    finally:
+        shutil.rmtree(tempdir)
 
 
 def generate_tokens(src):
