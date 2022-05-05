@@ -2325,6 +2325,11 @@ class DataBuffer(Symbol):
         super(DataBuffer, self).__init__(name)
         self.shape = (rows, 1)
 
+    # We do not want DataBuffers to be iterable since they can have symbolic dimensions
+    # since we implement __getitem__ we need to explicitly implement __iter__ and throw an error
+    def __iter__(self):
+        raise TypeError("DataBuffer object is not iterable")
+
     def __getitem__(self, args):
         arg_len = 0
         if hasattr(args, '__len__'):
