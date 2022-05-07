@@ -1,0 +1,27 @@
+name: Try building 2
+on: [push]
+jobs:
+  See-if-I-can-build-2:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      #- run: conda install -c conda-forge doxygen gmp pandoc
+      - name: Install some stuff
+        run: sudo apt-get install doxygen libgmp-dev pandoc
+      # pip must be at least version 20.3 to avoid issues with jinja2 in requirements.txt
+      - name: Install python dependencies
+        uses: py-actions/py-dependency-install@v3
+      - name: Run cmake build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j $(nproc)
+      - name: Run C++ tests
+        run: |
+          cd build
+          ctest
+      - name: Run python tests
+        run: |
+          pip install build/lcmtypes/python2.7
+          make -j2 test
