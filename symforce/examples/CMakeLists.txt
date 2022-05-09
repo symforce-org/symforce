@@ -3,8 +3,14 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-file(GLOB_RECURSE SYMFORCE_EXAMPLES_SOURCES CONFIGURE_DEPENDS **/*.cc)
+# TODO(aaron): Split this into targets per example
+file(GLOB_RECURSE SYMFORCE_EXAMPLES_SOURCES CONFIGURE_DEPENDS
+  bundle_adjustment/*.cc
+  bundle_adjustment_fixed_size/*.cc
+  robot_3d_localization/**.cc
+)
 file(GLOB_RECURSE SYMFORCE_EXAMPLES_HEADERS CONFIGURE_DEPENDS **/*.h **/*.tcc)
+
 add_library(
   symforce_examples
   ${SYMFORCE_LIBRARY_TYPE}
@@ -21,3 +27,7 @@ target_include_directories(
   symforce_examples
   PUBLIC bundle_adjustment_fixed_size/gen/cpp
 )
+
+# ------------------------------------------------------------------------------
+
+add_subdirectory(bundle_adjustment_in_the_large)

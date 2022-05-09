@@ -15,6 +15,7 @@ scipy
 sympy==1.10.1
 types-jinja2
 types-pygments
+types-requests
 types-setuptools
 
 -r docs/requirements.txt
