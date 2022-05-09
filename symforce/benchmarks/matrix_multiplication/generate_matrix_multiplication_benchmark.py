@@ -19,11 +19,11 @@ from symforce.test_util.random_expressions import unary_binary_expression_gen, o
 from symforce.values import Values
 
 # Parameters controlling the randomly generated expressions
-OPS_PER_ENTRY = 2  # Target of ops in the expression tree for each nonzero scalar
-N_SYMBOLS = 2  # Number of leaf symbols that the expressions should be functions of
+OPS_PER_ENTRY = 5  # Target of ops in the expression tree for each nonzero scalar
+N_SYMBOLS = 5  # Number of leaf symbols that the expressions should be functions of
 
 # Number of matrix sparsity patterns to generate functions for
-N_MATRICES = 5
+N_MATRICES = 6
 
 
 def get_matrices() -> T.List[T.Tuple[str, Path, scipy.sparse.csr_matrix]]:
@@ -56,7 +56,7 @@ def get_matrices() -> T.List[T.Tuple[str, Path, scipy.sparse.csr_matrix]]:
 
     matrices.sort(key=lambda m: m[2].nnz)
 
-    return matrices[:N_MATRICES]
+    return matrices if N_MATRICES is None else matrices[:N_MATRICES]
 
 
 def _make_return_dynamic(generated_file: Path, shape: T.Tuple[int, int]) -> None:
@@ -79,6 +79,7 @@ def generate_matrix(
     matrix_name: str,
     matrix: scipy.sparse.csr_matrix,
     symforce_result_is_sparse: bool,
+    i: int,
 ) -> None:
     """
     Generate functions for the given matrix sparsity pattern to compute A, B, and A^T B, in sparse
@@ -194,7 +195,7 @@ def generate_matrix(
             matrix_name_camel=python_util.snakecase_to_camelcase(matrix_name),
             N=matrix.shape[0],
             M=matrix.shape[1],
-            n_runs_multiplier=(100.0 if symforce_result_is_sparse else 1.0),
+            n_runs_multiplier=[100.0, 100.0, 100.0, 10.0, 10.0, 10.0, 1.0, 1.0][i],
             symforce_result_is_sparse=symforce_result_is_sparse,
             n_symbols=N_SYMBOLS,
             cant_allocate_on_stack=cant_allocate_on_stack,
@@ -209,4 +210,4 @@ def generate(output_dir: Path) -> None:
 
     for i, (matrix_name, _filename, matrix) in enumerate(get_matrices()):
         print(f"Generating matrix {matrix_name}")
-        generate_matrix(output_dir, matrix_name, matrix, symforce_result_is_sparse=i > 2)
+        generate_matrix(output_dir, matrix_name, matrix, symforce_result_is_sparse=i > 2, i=i)

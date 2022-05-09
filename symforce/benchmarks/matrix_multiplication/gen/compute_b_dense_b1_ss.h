@@ -20,41 +20,43 @@ namespace sym {
 * Args:
 *     x0: Scalar
 *     x1: Scalar
+*     x2: Scalar
+*     x3: Scalar
+*     x4: Scalar
 *
 * Outputs:
 *     result: Matrix7_7
 */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 7, 7> ComputeBDenseB1Ss(const Scalar x0, const Scalar x1) {
+Eigen::Matrix<Scalar, 7, 7> ComputeBDenseB1Ss(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
 
-    // Total ops: 9
+    // Total ops: 32
 
     // Input arrays
 
     // Intermediate terms (2)
-    const Scalar _tmp0 = x1 + 2;
-    const Scalar _tmp1 = -x0 + x1;
+    const Scalar _tmp0 = x0 + 2;
+    const Scalar _tmp1 = 2*x0;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 7, 7> _result;
 
     _result.setZero();
 
-    _result(4, 0) = _tmp0*x0;
-    _result(5, 0) = _tmp0 - x0;
-    _result(6, 0) = _tmp1;
-    _result(0, 1) = x1;
-    _result(1, 1) = 2;
-    _result(0, 2) = Scalar(-1.0);
-    _result(2, 2) = -4;
-    _result(0, 3) = 1 - x0;
-    _result(3, 3) = 2;
-    _result(1, 4) = Scalar(-1.0);
-    _result(4, 4) = -x0 - 1;
-    _result(2, 5) = _tmp1;
-    _result(5, 5) = -1;
-    _result(3, 6) = -4;
-    _result(6, 6) = -x0 - x1;
+    _result(4, 0) = x0*x2;
+    _result(5, 0) = x1 + std::pow(x2, Scalar(2));
+    _result(6, 0) = -2*(x0 - 2)*(x1 + 1);
+    _result(0, 1) = 1 + x2/x0;
+    _result(1, 1) = _tmp0 - x3;
+    _result(0, 2) = x0*(x2 + 3);
+    _result(2, 2) = -_tmp1*x3 - x3 - 2;
+    _result(0, 3) = x2 + x4;
+    _result(3, 3) = -_tmp0 - x2;
+    _result(1, 4) = -1/(x3 + 4);
+    _result(2, 5) = _tmp1 + 2;
+    _result(5, 5) = -x1/x4;
+    _result(3, 6) = std::pow(x0, Scalar(2))*x2;
+    _result(6, 6) = -[&]() { const Scalar base = x1; return base * base * base; }();
 
     return _result;
 }  // NOLINT(readability/fn_size)

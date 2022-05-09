@@ -20,76 +20,89 @@ namespace sym {
 * Args:
 *     x0: Scalar
 *     x1: Scalar
+*     x2: Scalar
+*     x3: Scalar
+*     x4: Scalar
 *
 * Outputs:
 *     result: Matrix11_11
 */
 template <typename Scalar>
-Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> ComputeADenseDynamicTinaDiscog(const Scalar x0, const Scalar x1) {
+Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> ComputeADenseDynamicTinaDiscog(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
 
-    // Total ops: 28
+    // Total ops: 109
 
     // Input arrays
 
-    // Intermediate terms (5)
-    const Scalar _tmp0 = x0 + 2;
-    const Scalar _tmp1 = std::pow(x0, Scalar(2));
-    const Scalar _tmp2 = 2*x1;
-    const Scalar _tmp3 = 2*x0;
-    const Scalar _tmp4 = x1 + 1;
+    // Intermediate terms (17)
+    const Scalar _tmp0 = x2 - x4;
+    const Scalar _tmp1 = -x1;
+    const Scalar _tmp2 = x0 + 2;
+    const Scalar _tmp3 = _tmp1 + _tmp2;
+    const Scalar _tmp4 = 2*x1;
+    const Scalar _tmp5 = 2*x4;
+    const Scalar _tmp6 = -x2;
+    const Scalar _tmp7 = _tmp6 + x1;
+    const Scalar _tmp8 = -x3;
+    const Scalar _tmp9 = Scalar(1.0) / (x2);
+    const Scalar _tmp10 = x0 + 1;
+    const Scalar _tmp11 = 2*x0;
+    const Scalar _tmp12 = 2*x2;
+    const Scalar _tmp13 = Scalar(1.0) / (x4);
+    const Scalar _tmp14 = _tmp13*x0;
+    const Scalar _tmp15 = x1 + 3;
+    const Scalar _tmp16 = _tmp11 - 2;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> _result(11, 11);
 
     _result.setZero();
 
-    _result(2, 0) = 2;
-    _result(9, 0) = x1 + 4;
-    _result(0, 1) = 1 - x0;
-    _result(2, 1) = 3;
-    _result(4, 1) = _tmp0;
-    _result(5, 1) = _tmp0 - x1;
-    _result(7, 1) = -2/_tmp1;
-    _result(8, 1) = 1 + Scalar(1.0) / (x1);
-    _result(9, 1) = -1;
-    _result(0, 2) = 1;
-    _result(8, 2) = 4;
-    _result(9, 2) = -_tmp2;
-    _result(1, 3) = -4*x1;
-    _result(2, 3) = -2;
-    _result(4, 3) = x0*x1 + x0;
-    _result(5, 3) = -2;
-    _result(6, 3) = -4*x0;
-    _result(7, 3) = x0/_tmp0;
-    _result(10, 3) = 2;
-    _result(2, 4) = _tmp0*x0;
-    _result(5, 4) = _tmp2;
-    _result(9, 4) = 1;
-    _result(0, 5) = -2;
-    _result(1, 5) = -x0 + x1 + 2;
-    _result(2, 5) = x0 - 2;
-    _result(4, 5) = -2;
-    _result(10, 5) = -2;
-    _result(2, 6) = -3;
-    _result(3, 6) = 4;
-    _result(4, 6) = _tmp3;
-    _result(5, 6) = -_tmp4;
-    _result(7, 6) = -4;
-    _result(8, 6) = 2;
-    _result(1, 7) = 2;
-    _result(2, 7) = -_tmp1;
-    _result(3, 7) = 2;
-    _result(5, 7) = 1;
-    _result(6, 7) = x0;
-    _result(8, 7) = x0;
-    _result(10, 7) = _tmp4 + x0;
-    _result(6, 8) = Scalar(-2.0);
-    _result(0, 9) = 4;
-    _result(2, 9) = 2;
-    _result(4, 9) = 2;
-    _result(6, 10) = Scalar(1.0);
-    _result(7, 10) = _tmp3 + 2;
-    _result(8, 10) = _tmp3;
+    _result(2, 0) = x2*x4;
+    _result(9, 0) = -std::pow(x0, Scalar(2)) + 2 + Scalar(1.0) / (x0);
+    _result(0, 1) = 2 - x4;
+    _result(2, 1) = -_tmp0/x3;
+    _result(4, 1) = 4 - x1;
+    _result(5, 1) = x0 - 3;
+    _result(7, 1) = -_tmp3*x4;
+    _result(8, 1) = -_tmp1 - x0*x1 - 2;
+    _result(9, 1) = _tmp2*_tmp5 - _tmp4;
+    _result(0, 2) = -_tmp4 - x3;
+    _result(8, 2) = _tmp0*_tmp7;
+    _result(9, 2) = -_tmp3;
+    _result(2, 3) = _tmp8 + x0 + Scalar(1.0);
+    _result(4, 3) = _tmp9*x3;
+    _result(5, 3) = -_tmp10*std::pow(x1, Scalar(2));
+    _result(6, 3) = -x1*x2 - x3;
+    _result(7, 3) = -x2*(x1 + x4);
+    _result(10, 3) = x0*(_tmp1 + x0);
+    _result(2, 4) = 6 - _tmp11;
+    _result(5, 4) = _tmp12*x3;
+    _result(9, 4) = -_tmp14*(_tmp8 + x1*x3) - _tmp6;
+    _result(0, 5) = x3 - 2;
+    _result(1, 5) = x3/(x2 - 2);
+    _result(2, 5) = -x4*(x0 + x1)*(x1 + x3);
+    _result(4, 5) = x1 + 4;
+    _result(10, 5) = _tmp12 + x3;
+    _result(2, 6) = _tmp15*x1 + x2;
+    _result(4, 6) = _tmp5*(x1 - 1);
+    _result(5, 6) = _tmp4;
+    _result(7, 6) = 1;
+    _result(8, 6) = _tmp16*_tmp9;
+    _result(1, 7) = -_tmp1 - _tmp11*std::pow(x2, Scalar(2))*x4;
+    _result(2, 7) = -_tmp15 - _tmp8;
+    _result(3, 7) = -x3 - x4 - 2;
+    _result(5, 7) = -_tmp14*(_tmp8 + x1) + 1;
+    _result(6, 7) = -_tmp16*x1;
+    _result(8, 7) = _tmp7 + 1;
+    _result(10, 7) = 2*x3*(_tmp10 + x1);
+    _result(6, 8) = x3/(_tmp1 + x4 + 1);
+    _result(0, 9) = -_tmp12*_tmp13 + 4*x0 + 4;
+    _result(2, 9) = Scalar(-1.0);
+    _result(4, 9) = x0 - Scalar(1)/Scalar(2)*x3 - 1;
+    _result(6, 10) = -_tmp13*x2 + x2 + x3;
+    _result(7, 10) = x3 + 4;
+    _result(8, 10) = _tmp4 + 1;
 
     return _result;
 }  // NOLINT(readability/fn_size)

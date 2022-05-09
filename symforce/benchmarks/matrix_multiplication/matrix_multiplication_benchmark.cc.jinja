@@ -82,6 +82,8 @@ __attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparse{{ matrix_nam
 TEMPLATE_TEST_CASE("sparse_{{ matrix_name }}", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", {{ n_runs_multiplier }});
+
   {% for i in range(2, n_symbols) %}
   const Scalar x{{ i }} = {{ i - 1 }}.0;
   {% endfor %}
@@ -93,7 +95,7 @@ TEMPLATE_TEST_CASE("sparse_{{ matrix_name }}", "", double, float) {
   {
     SYM_TIME_SCOPE("sparse_{{ matrix_name }}_{}", typeid(Scalar).name());
 
-    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+    for (Scalar x0 = 0.1; x0 < {{ n_runs_multiplier }}; x0 += 0.1) {
       for (Scalar x1 = 0.1; x1 < {{ n_runs_multiplier }}; x1 += 0.1) {
         auto mat = ComputeSparse{{ matrix_name_camel }}(
           {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
@@ -107,6 +109,8 @@ TEMPLATE_TEST_CASE("sparse_{{ matrix_name }}", "", double, float) {
 TEMPLATE_TEST_CASE("dense_dynamic_{{ matrix_name }}", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", {{ n_runs_multiplier }});
+
   {% for i in range(2, n_symbols) %}
   const Scalar x{{ i }} = {{ i - 1 }}.0;
   {% endfor %}
@@ -117,7 +121,7 @@ TEMPLATE_TEST_CASE("dense_dynamic_{{ matrix_name }}", "", double, float) {
   Scalar sum = 0.0;
   {
     SYM_TIME_SCOPE("dense_dynamic_{{ matrix_name }}_{}", typeid(Scalar).name());
-    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+    for (Scalar x0 = 0.1; x0 < {{ n_runs_multiplier }}; x0 += 0.1) {
       for (Scalar x1 = 0.1; x1 < {{ n_runs_multiplier }}; x1 += 0.1) {
         auto mat = ComputeDenseDynamic{{ matrix_name_camel }}<Scalar>(
           {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
@@ -132,6 +136,8 @@ TEMPLATE_TEST_CASE("dense_dynamic_{{ matrix_name }}", "", double, float) {
 TEMPLATE_TEST_CASE("dense_fixed_{{ matrix_name }}", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", {{ n_runs_multiplier }});
+
   {% for i in range(2, n_symbols) %}
   const Scalar x{{ i }} = {{ i - 1 }}.0;
   {% endfor %}
@@ -142,7 +148,7 @@ TEMPLATE_TEST_CASE("dense_fixed_{{ matrix_name }}", "", double, float) {
   Scalar sum = 0.0;
   {
     SYM_TIME_SCOPE("dense_fixed_{{ matrix_name }}_{}", typeid(Scalar).name());
-    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+    for (Scalar x0 = 0.1; x0 < {{ n_runs_multiplier }}; x0 += 0.1) {
       for (Scalar x1 = 0.1; x1 < {{ n_runs_multiplier }}; x1 += 0.1) {
         auto mat = ComputeDenseFixed{{ matrix_name_camel }}<Scalar>(
           {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
@@ -157,6 +163,8 @@ TEMPLATE_TEST_CASE("dense_fixed_{{ matrix_name }}", "", double, float) {
 TEMPLATE_TEST_CASE("flattened_{{ matrix_name }}", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", {{ n_runs_multiplier }});
+
   {% for i in range(2, n_symbols) %}
   const Scalar x{{ i }} = {{ i - 1 }}.0;
   {% endfor %}
@@ -167,7 +175,7 @@ TEMPLATE_TEST_CASE("flattened_{{ matrix_name }}", "", double, float) {
   Scalar sum = 0.0;
   {
     SYM_TIME_SCOPE("flattened_{{ matrix_name }}_{}", typeid(Scalar).name());
-    for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
+    for (Scalar x0 = 0.1; x0 < {{ n_runs_multiplier }}; x0 += 0.1) {
       for (Scalar x1 = 0.1; x1 < {{ n_runs_multiplier }}; x1 += 0.1) {
         auto mat = ComputeAtB{{ matrix_name_camel }}(
           {% for i in range(n_symbols) %}x{{ i }}{% if not loop.last %},{% endif %}{% endfor %}
