@@ -12,6 +12,7 @@
 #include <fmt/ranges.h>
 
 #include "./assert.h"
+#include "./internal/factor_utils.h"
 
 namespace sym {
 
@@ -23,22 +24,15 @@ Factor<Scalar> Factor<Scalar>::Jacobian(const JacobianFunc& jacobian_func,
       [jacobian_func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
                       VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
                       MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
-        SYM_ASSERT(residual != nullptr);
         jacobian_func(values, keys_to_func, residual, jacobian);
-        SYM_ASSERT(jacobian == nullptr || residual->rows() == jacobian->rows());
 
-        // Compute the lower triangle of the hessian if needed
-        if (hessian != nullptr) {
-          SYM_ASSERT(jacobian != nullptr);
-          hessian->resize(jacobian->cols(), jacobian->cols());
-          hessian->template triangularView<Eigen::Lower>().setZero();
-          hessian->template selfadjointView<Eigen::Lower>().rankUpdate(jacobian->transpose());
-        }
-
-        // Compute RHS if needed
-        if (rhs != nullptr) {
-          SYM_ASSERT(jacobian != nullptr);
-          (*rhs) = jacobian->transpose() * (*residual);
+        SYM_ASSERT(residual != nullptr);
+        if (jacobian == nullptr) {
+          SYM_ASSERT(hessian == nullptr);
+          SYM_ASSERT(rhs == nullptr);
+        } else {
+          SYM_ASSERT(residual->rows() == jacobian->rows());
+          internal::CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
         }
       },
       keys_to_func, keys_to_optimize);

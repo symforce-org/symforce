@@ -80,9 +80,9 @@ struct JacobianFuncValuesExtractor {
 // Factor::Jacobian constructor support for dynamic matrices
 // ----------------------------------------------------------------------------
 
-template <typename MatrixType>
+template <typename HMatrixType, typename JMatrixType = HMatrixType>
 struct RankUpdateHelper {
-  void operator()(MatrixType& hessian, const MatrixType& jacobian) const {
+  void operator()(HMatrixType& hessian, const JMatrixType& jacobian) const {
     // NOTE(aaron):  Testing seemed to show that this matrix multiply is faster than
     // rankUpdate, at least for smallish jacobians that are still large enough for Eigen to
     // not inline the whole multiplication.  More investigation would be necessary to figure
@@ -101,6 +101,25 @@ struct RankUpdateHelper<Eigen::SparseMatrix<Scalar>> {
   }
 };
 
+/**
+ * Precondition: residual and jacobian have the same number of rows
+ */
+template <typename RVecType, typename JMatrixType, typename HMatrixType, typename Scalar>
+void CalculateHessianRhs(const RVecType& residual, const JMatrixType& jacobian,
+                         HMatrixType* hessian, VectorX<Scalar>* rhs) {
+  // Compute the lower triangle of the hessian if needed
+  if (hessian != nullptr) {
+    hessian->resize(jacobian.cols(), jacobian.cols());
+
+    RankUpdateHelper<HMatrixType, JMatrixType>{}(*hessian, jacobian);
+  }
+
+  // Compute RHS if needed
+  if (rhs != nullptr) {
+    (*rhs) = jacobian.transpose() * residual;
+  }
+}
+
 template <typename Scalar, typename Functor>
 Factor<Scalar> JacobianDynamic(Functor func, const std::vector<Key>& keys_to_func,
                                const std::vector<Key>& keys_to_optimize) {
@@ -109,23 +128,15 @@ Factor<Scalar> JacobianDynamic(Functor func, const std::vector<Key>& keys_to_fun
   return Factor<Scalar>(
       [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
              VectorX<Scalar>* residual, Mat* jacobian, Mat* hessian, VectorX<Scalar>* rhs) {
-        SYM_ASSERT(residual != nullptr);
         JacobianFuncValuesExtractor<Scalar, Functor>::Invoke(func, values, keys_to_func, residual,
                                                              jacobian);
-        SYM_ASSERT(jacobian == nullptr || residual->rows() == jacobian->rows());
-
-        // Compute the lower triangle of the hessian if needed
-        if (hessian != nullptr) {
-          SYM_ASSERT(jacobian);
-          hessian->resize(jacobian->cols(), jacobian->cols());
-
-          RankUpdateHelper<Mat>{}(*hessian, *jacobian);
-        }
-
-        // Compute RHS if needed
-        if (rhs != nullptr) {
-          SYM_ASSERT(jacobian);
-          (*rhs) = jacobian->transpose() * (*residual);
+        SYM_ASSERT(residual != nullptr);
+        if (jacobian == nullptr) {
+          SYM_ASSERT(hessian == nullptr);
+          SYM_ASSERT(rhs == nullptr);
+        } else {
+          SYM_ASSERT(residual->rows() == jacobian->rows());
+          CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
         }
       },
       keys_to_func, keys_to_optimize);
@@ -176,24 +187,7 @@ Factor<Scalar> JacobianFixed(Functor func, const std::vector<Key>& keys_to_func,
           JacobianFuncValuesExtractor<Scalar, Functor>::Invoke(func, values, keys_to_func,
                                                                &residual_fixed, &jacobian_fixed);
           (*jacobian) = jacobian_fixed;
-
-          // Compute the lower triangle of the hessian if needed
-          if (hessian != nullptr) {
-            hessian->resize(N, N);
-
-            // NOTE(aaron):  Testing seemed to show that this matrix multiply is faster than
-            // rankUpdate, at least for smallish jacobians that are still large enough for Eigen to
-            // not inline the whole multiplication.  More investigation would be necessary to figure
-            // out why, and if it's expected to be faster for large jacobians
-            hessian->template triangularView<Eigen::Lower>() =
-                (jacobian_fixed.transpose() * jacobian_fixed)
-                    .template triangularView<Eigen::Lower>();
-          }
-
-          // Compute RHS if needed
-          if (rhs != nullptr) {
-            (*rhs) = jacobian_fixed.transpose() * residual_fixed;
-          }
+          CalculateHessianRhs(residual_fixed, jacobian_fixed, hessian, rhs);
         } else {
           // jacobian not requested
           Eigen::Matrix<Scalar, M, N>* const jacobian_invoke_arg = nullptr;
