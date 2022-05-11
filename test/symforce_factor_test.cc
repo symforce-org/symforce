@@ -3,11 +3,18 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <vector>
+
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
+#include <lcmtypes/sym/index_entry_t.hpp>
+#include <lcmtypes/sym/linearized_dense_factor_t.hpp>
+
 #include <symforce/opt/factor.h>
+#include <symforce/opt/key.h>
 
 #include "catch.hpp"
 
@@ -558,6 +565,105 @@ TEST_CASE("Test hessian constructors", "[factors]") {
       },
       keys_to_func, keys_to_optimize);
   spdlog::info(binary_rot3_with_epsilon.Linearize(values));
+}
+
+template <typename MatrixType>
+struct LinearizedFactor;
+template <>
+struct LinearizedFactor<Eigen::MatrixXd> {
+  using type = sym::linearized_dense_factor_t;
+};
+template <>
+struct LinearizedFactor<Eigen::SparseMatrix<double>> {
+  using type = sym::linearized_sparse_factor_t;
+};
+template <typename MatrixType>
+using LinearizedFactor_t = typename LinearizedFactor<MatrixType>::type;
+
+template <typename Matrix, typename... Keys, typename ResidualLambda, typename JacobianLambda>
+void TestJacobianFuncHelper2Args(const ResidualLambda& eval_residual,
+                                 const JacobianLambda& eval_jacobian,
+                                 const std::vector<Keys>&... keys) {
+  const sym::Factord factor = sym::Factord::Jacobian(
+      sym::Factord::JacobianFunc<Matrix>(
+          [&eval_residual, &eval_jacobian](const sym::Valuesd& values,
+                                           const std::vector<sym::index_entry_t>& keys,
+                                           Eigen::VectorXd* residual, Matrix* jacobian) {
+            const double x = values.At<double>(keys[0]);
+            const double y = values.At<double>(keys[1]);
+            if (residual != nullptr) {
+              *residual = eval_residual(x, y);
+            }
+            if (jacobian != nullptr) {
+              *jacobian = eval_jacobian(x, y);
+            }
+          }),
+      {'x', 'y'}, keys...);
+
+  const double x = 3.0;
+  const double y = -1.0;
+  sym::Valuesd values;
+  values.Set<double>('x', x);
+  values.Set<double>('y', y);
+
+  LinearizedFactor_t<Matrix> linearization{};
+  factor.Linearize(values, &linearization);
+
+  const Eigen::VectorXd res = eval_residual(x, y);
+  const Matrix jac = eval_jacobian(x, y);
+  CHECK(linearization.residual.isApprox(res));
+  CHECK(linearization.jacobian.isApprox(jac));
+  CHECK(Matrix(linearization.hessian.template selfadjointView<Eigen::Lower>())
+            .isApprox(jac.transpose() * jac));
+  CHECK(linearization.rhs.isApprox(jac.transpose() * res));
+}
+
+TEST_CASE("Test Factord::Jacobian(DenseJacobianFunc, keys) and linearization", "[factors]") {
+  const auto eval_residual = [](const double x, const double y) {
+    return (Eigen::VectorXd(2) << x * x, x * y).finished();
+  };
+  const auto eval_jacobian = [](const double x, const double y) {
+    return (Eigen::MatrixXd(2, 2) << 2 * x, 0, y, x).finished();
+  };
+
+  TestJacobianFuncHelper2Args<Eigen::MatrixXd>(eval_residual, eval_jacobian);
+}
+
+TEST_CASE("Test Factord::Jacobian(DenseJacobianFunc, keys_to_func, keys_to_optimize", "[factors]") {
+  const auto eval_residual = [](const double x, const double y) {
+    return (Eigen::VectorXd(2) << x * x, x * y).finished();
+  };
+  const auto eval_jacobian = [](const double x, const double y) {
+    return (Eigen::MatrixXd(2, 1) << 2 * x, y).finished();
+  };
+
+  TestJacobianFuncHelper2Args<Eigen::MatrixXd, sym::Key>(eval_residual, eval_jacobian, {'x'});
+}
+
+TEST_CASE("Test Factord::Jacobian(SparseJacobianFunc, keys) and linearization", "[factors]") {
+  using Sparse = Eigen::SparseMatrix<double>;
+
+  const auto eval_residual = [](const double x, const double y) -> Sparse {
+    return (Eigen::VectorXd(2) << x * x, x * y).finished().sparseView();
+  };
+  const auto eval_jacobian = [](const double x, const double y) -> Sparse {
+    return (Eigen::MatrixXd(2, 2) << 2 * x, 0, y, x).finished().sparseView();
+  };
+
+  TestJacobianFuncHelper2Args<Sparse>(eval_residual, eval_jacobian);
+}
+
+TEST_CASE("Test Factord::Jacobian(SparseJacobianFunc, keys_to_func, keys_to_opt", "[factors]") {
+  using Sparse = Eigen::SparseMatrix<double>;
+
+  const auto eval_residual = [](const double x, const double y) -> Sparse {
+    return (Eigen::VectorXd(2) << x * x, x * y).finished().sparseView();
+  };
+  const auto eval_jacobian = [](const double x, const double y) -> Sparse {
+    return (Eigen::MatrixXd(2, 1) << 2 * x, y).finished().sparseView();
+  };
+
+  TestJacobianFuncHelper2Args<Sparse, sym::Key>(eval_residual, eval_jacobian, {'x'});
 }
 
 TEMPLATE_TEST_CASE("Test linearized values", "[factors]", double, float) {

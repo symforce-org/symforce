@@ -16,14 +16,14 @@
 
 namespace sym {
 
-template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const JacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys_to_func,
-                                        const std::vector<Key>& keys_to_optimize) {
+template <typename Scalar, typename Matrix>
+Factor<Scalar> FactorFromJacobianFunc(
+    const typename Factor<Scalar>::template JacobianFunc<Matrix>& jacobian_func,
+    const std::vector<Key>& keys_to_func, const std::vector<Key>& keys_to_optimize) {
   return Factor<Scalar>(
       [jacobian_func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
-                      VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
-                      MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
+                      VectorX<Scalar>* residual, Matrix* jacobian, Matrix* hessian,
+                      VectorX<Scalar>* rhs) {
         jacobian_func(values, keys_to_func, residual, jacobian);
 
         SYM_ASSERT(residual != nullptr);
@@ -39,7 +39,27 @@ Factor<Scalar> Factor<Scalar>::Jacobian(const JacobianFunc& jacobian_func,
 }
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const JacobianFunc& jacobian_func,
+Factor<Scalar> Factor<Scalar>::Jacobian(const DenseJacobianFunc& jacobian_func,
+                                        const std::vector<Key>& keys_to_func,
+                                        const std::vector<Key>& keys_to_optimize) {
+  return FactorFromJacobianFunc<Scalar>(jacobian_func, keys_to_func, keys_to_optimize);
+}
+
+template <typename Scalar>
+Factor<Scalar> Factor<Scalar>::Jacobian(const DenseJacobianFunc& jacobian_func,
+                                        const std::vector<Key>& keys) {
+  return Jacobian(jacobian_func, keys, keys);
+}
+
+template <typename Scalar>
+Factor<Scalar> Factor<Scalar>::Jacobian(const SparseJacobianFunc& jacobian_func,
+                                        const std::vector<Key>& keys_to_func,
+                                        const std::vector<Key>& keys_to_optimize) {
+  return FactorFromJacobianFunc<Scalar>(jacobian_func, keys_to_func, keys_to_optimize);
+}
+
+template <typename Scalar>
+Factor<Scalar> Factor<Scalar>::Jacobian(const SparseJacobianFunc& jacobian_func,
                                         const std::vector<Key>& keys) {
   return Jacobian(jacobian_func, keys, keys);
 }

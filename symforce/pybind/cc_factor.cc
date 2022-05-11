@@ -71,8 +71,8 @@ sym::Factord MakeHessianFactorCommonKeys(PyHessianFunc hessian_func,
 using PyJacobianFunc =
     std::function<py::tuple(const sym::Valuesd&, const std::vector<index_entry_t>&)>;
 
-sym::Factord::JacobianFunc WrapPyJacobianFunc(PyJacobianFunc&& jacobian_func) {
-  return sym::Factord::JacobianFunc(
+sym::Factord::DenseJacobianFunc WrapPyJacobianFunc(PyJacobianFunc&& jacobian_func) {
+  return sym::Factord::DenseJacobianFunc(
       [jacobian_func = std::move(jacobian_func)](
           const sym::Valuesd& values, const std::vector<index_entry_t>& keys,
           Eigen::VectorXd* const residual, Eigen::MatrixXd* const jacobian) {

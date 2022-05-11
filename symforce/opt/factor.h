@@ -9,6 +9,7 @@
 
 #include <Eigen/Sparse>
 
+#include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factor_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factorf_t.hpp>
 
@@ -78,11 +79,15 @@ class Factor {
   // Factor.
   // ----------------------------------------------------------------------------------------------
 
+  template <typename JacobianMatrixType>
   using JacobianFunc = std::function<void(const Values<Scalar>&,              // Input storage
                                           const std::vector<index_entry_t>&,  // Keys
                                           VectorX<Scalar>*,                   // Mx1 residual
-                                          MatrixX<Scalar>*                    // MxN jacobian
+                                          JacobianMatrixType*                 // MxN jacobian
                                           )>;
+
+  using DenseJacobianFunc = JacobianFunc<MatrixX<Scalar>>;
+  using SparseJacobianFunc = JacobianFunc<Eigen::SparseMatrix<Scalar>>;
 
   using HessianFunc = std::function<void(const Values<Scalar>&,              // Input storage
                                          const std::vector<index_entry_t>&,  // Keys
@@ -136,19 +141,19 @@ class Factor {
   }
 
   /**
-   * Create from a function that computes the jacobian. The hessian will be computed using the
-   * Gauss Newton approximation:
+   * Create from a function that computes the (dense) jacobian. The hessian will be computed using
+   * the Gauss Newton approximation:
    *    H   = J.T * J
    *    rhs = J.T * b
    *
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
-  static Factor Jacobian(const JacobianFunc& jacobian_func, const std::vector<Key>& keys);
+  static Factor Jacobian(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys);
 
   /**
-   * Create from a function that computes the jacobian. The hessian will be computed using the
-   * Gauss Newton approximation:
+   * Create from a function that computes the (dense) jacobian. The hessian will be computed using
+   * the Gauss Newton approximation:
    *    H   = J.T * J
    *    rhs = J.T * b
    *
@@ -157,7 +162,34 @@ class Factor {
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
    *                     be a subset of keys_to_func.
    */
-  static Factor Jacobian(const JacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
+  static Factor Jacobian(const DenseJacobianFunc& jacobian_func,
+                         const std::vector<Key>& keys_to_func,
+                         const std::vector<Key>& keys_to_optimize);
+
+  /**
+   * Create from a function that computes the (sparse) jacobian. The hessian will be computed using
+   * the Gauss Newton approximation:
+   *    H   = J.T * J
+   *    rhs = J.T * b
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
+   */
+  static Factor Jacobian(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys);
+
+  /**
+   * Create from a function that computes the (sparse) jacobian. The hessian will be computed using
+   * the Gauss Newton approximation:
+   *    H   = J.T * J
+   *    rhs = J.T * b
+   *
+   * Args:
+   *   keys_to_func: The set of input arguments, in order, accepted by func.
+   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
+   *                     be a subset of keys_to_func.
+   */
+  static Factor Jacobian(const SparseJacobianFunc& jacobian_func,
+                         const std::vector<Key>& keys_to_func,
                          const std::vector<Key>& keys_to_optimize);
 
   /**
