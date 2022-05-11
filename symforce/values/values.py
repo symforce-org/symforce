@@ -842,6 +842,10 @@ class Values(T.MutableMapping[str, T.Any]):
                         [float(v) for v in value.to_storage()]
                     )
 
+            # Evaluate matrices
+            if isinstance(value, geo.Matrix):
+                return value.to_numpy()
+
             # Evaluate scalars
             if isinstance(value, sm.Expr):
                 return float(value)
