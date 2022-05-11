@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)  # For CMAKE_CURRENT_FUNCTION_LIST_DIR
+cmake_minimum_required(VERSION 3.19)  # For interface library headers
 project(skymarshal)
 
 add_library(skymarshal_core INTERFACE include/lcm/lcm_coretypes.h)

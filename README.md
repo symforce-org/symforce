@@ -92,7 +92,7 @@ pip install -r requirements.txt
 
 Install CMake if you don't already have a recent version:
 ```
-pip install "cmake>=3.17"
+pip install "cmake>=3.19"
 ```
 
 Build SymForce (requires C++14 or later):
