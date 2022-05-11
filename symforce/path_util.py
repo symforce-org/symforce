@@ -8,6 +8,10 @@ from pathlib import Path
 import typing as T
 
 
+class MissingManifestException(RuntimeError):
+    pass
+
+
 class _Manifest:
     """
     Internal class to manage loading data from the build manifest and caching that data.  Not
@@ -19,8 +23,12 @@ class _Manifest:
     @classmethod
     def _ensure_loaded(cls) -> None:
         if cls._manifest is None:
-            with open(Path(__file__).parent.parent / "build" / "manifest.json") as f:
-                cls._manifest = json.load(f)
+            manifest_path = Path(__file__).parent.parent / "build" / "manifest.json"
+            try:
+                with open(manifest_path) as f:
+                    cls._manifest = json.load(f)
+            except FileNotFoundError as ex:
+                raise MissingManifestException(f"Manifest not found at {manifest_path}") from ex
 
     @classmethod
     def get_entry(cls, key: str) -> Path:

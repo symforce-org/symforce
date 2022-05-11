@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.17)  # For CMAKE_CURRENT_FUNCTION_LIST_DIR
+
 function(get_package_and_type package_and_type package_outvar type_outvar)
   string(REPLACE " " ";" package_and_type ${package_and_type})
   list(GET package_and_type 0 package)
@@ -58,6 +60,8 @@ function(add_cpp_bindings
   target_include_directories(${target_name}_cpp INTERFACE ${bindings_dir}/cpp ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lcm)
   target_link_libraries(${target_name}_cpp INTERFACE skymarshal_core)
 
+  install(FILES ${generated_files} DESTINATION include)
+
   set(${generated_files_outvar} ${generated_files} PARENT_SCOPE)
 
   list(APPEND skymarshal_args
@@ -81,7 +85,9 @@ function(add_skymarshal_bindings target_name bindings_dir lcmtypes_dir)
     set(args_LANGUAGES python cpp)
   endif()
 
-  set(SKYMARSHAL_PYTHON env PYTHONPATH=${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../.. ${SYMFORCE_PYTHON})
+  # NOTE(aaron):  Who knows if this'll work if there are spaces in the PYTHONPATH?  I don't
+  set(SKYMARSHAL_PYTHON env PYTHONPATH=$ENV{PYTHONPATH}:${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../.. ${SYMFORCE_PYTHON})
+
   execute_process(
     COMMAND ${SKYMARSHAL_PYTHON} ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/parse_types.py ${lcmtypes_dir}
     OUTPUT_VARIABLE TYPES_TO_GENERATE

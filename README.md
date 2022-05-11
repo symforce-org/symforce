@@ -64,14 +64,32 @@ Things to try:
 
 [**Read the docs!**](https://symforce.org)
 
-# Build from source
+# Build from pip
 
-SymForce requires Python 3.8 or later. We suggest using conda or virtualenv:
+SymForce requires Python 3.8 or later. We suggest creating a virtual python environment.
 
+Install the `gmp` package with one of:
 ```
-conda create --name symforce "python>=3.8"
-conda activate symforce
+apt install libgmp-dev            # Linux
+brew install gmp                  # Mac
+conda install -c conda-forge gmp  # Conda
 ```
+
+Install SymForce
+```
+pip install -e .
+```
+
+Verify the installation in Python:
+```python
+>>> from symforce import geo
+>>> geo.Rot3()
+```
+<span style="color:blue">TODO: Create wheels for <code style="color:blue"><b>pip install symforce</b></code></span>
+
+# Build CMake yourself (TODO deconflict)
+
+SymForce requires Python 3.8 or later. We suggest creating a virtual python environment.
 
 Install packages:
 ```

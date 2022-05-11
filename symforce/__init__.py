@@ -106,8 +106,13 @@ def _import_symengine_from_build() -> ModuleType:
 
     from . import path_util
 
+    try:
+        symengine_install_dir = path_util.symenginepy_install_dir()
+    except path_util.MissingManifestException as ex:
+        raise ImportError from ex
+
     symengine_path_candidates = list(
-        path_util.symenginepy_install_dir().glob("lib/python3*/site-packages/symengine/__init__.py")
+        symengine_install_dir.glob("lib/python3*/site-packages/symengine/__init__.py")
     )
     if len(symengine_path_candidates) != 1:
         raise ImportError(

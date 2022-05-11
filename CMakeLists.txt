@@ -223,6 +223,9 @@ target_include_directories(
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gen/cpp
 )
 
+install(TARGETS symforce_gen DESTINATION lib)
+install(FILES ${SYMFORCE_GEN_HEADERS} DESTINATION include)
+
 if(SYMFORCE_BUILD_OPT)
   add_subdirectory(symforce/opt)
 endif()
@@ -266,7 +269,11 @@ if(SYMFORCE_GENERATE_MANIFEST)
   function(generate_manifest)
     get_target_property(eigen_include_dirs ${SYMFORCE_EIGEN_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(spdlog_include_dirs spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(catch2_include_dirs symforce_catch2 INTERFACE_INCLUDE_DIRECTORIES)
+
+    if (SYMFORCE_BUILD_TESTS)
+      get_target_property(catch2_include_dirs symforce_catch2 INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
+
     execute_process(
       COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_manifest.py
                                 --eigen_include_dirs "${eigen_include_dirs}"

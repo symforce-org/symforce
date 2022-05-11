@@ -26,12 +26,13 @@ import typing as T
 class AllowedCount(enum.Enum):
     SINGLE = enum.auto()
     MULTIPLE = enum.auto()
+    MULTIPLE_OR_NONE = enum.auto()
 
 
-REQUIRED_KEYS = (
+KEYS = (
     ("eigen_include_dirs", AllowedCount.MULTIPLE),
     ("spdlog_include_dirs", AllowedCount.MULTIPLE),
-    ("catch2_include_dirs", AllowedCount.MULTIPLE),
+    ("catch2_include_dirs", AllowedCount.MULTIPLE_OR_NONE),
     ("symenginepy_install_dir", AllowedCount.SINGLE),
     ("cc_sym_install_dir", AllowedCount.SINGLE),
     ("binary_output_dir", AllowedCount.SINGLE),
@@ -81,15 +82,17 @@ def parse_cmake_path_list(key: str, cmake_path_list: str) -> T.List[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    for key, _ in REQUIRED_KEYS:
-        parser.add_argument("--{}".format(key), required=True)
+    for key, allowed_count in KEYS:
+        is_required = allowed_count != AllowedCount.MULTIPLE_OR_NONE
+        parser.add_argument("--{}".format(key), required=is_required)
+
     parser.add_argument(
         "--manifest_path", help="Where to put the generated manifest.json", required=True
     )
     args = parser.parse_args()
 
     manifest: T.Dict[str, T.Union[str, T.List[str]]] = {}
-    for key, allowed_count in REQUIRED_KEYS:
+    for key, allowed_count in KEYS:
         arg = getattr(args, key)
         path_list = parse_cmake_path_list(key, arg)
         if allowed_count == AllowedCount.SINGLE:
@@ -99,6 +102,8 @@ def main() -> None:
         elif allowed_count == AllowedCount.MULTIPLE:
             if not path_list:
                 raise ValueError("Got no paths for {}: {}".format(key, arg))
+            manifest[key] = path_list
+        elif allowed_count == AllowedCount.MULTIPLE_OR_NONE:
             manifest[key] = path_list
 
     Path(args.manifest_path).parent.mkdir(parents=True, exist_ok=True)

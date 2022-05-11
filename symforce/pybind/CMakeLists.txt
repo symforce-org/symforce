@@ -44,3 +44,6 @@ target_link_libraries(
   symforce_opt
   symforce_gen
 )
+
+# TODO(aaron): Should there be an install action here?  This is currently installed by setup.py if
+# you do `pip install .`

@@ -16,8 +16,11 @@ from symforce import path_util
 try:
     # If cc_sym is availble on the python path, use it
     from cc_sym import *  # pylint: disable=wildcard-import
-except ImportError:
-    sys.path.append(os.fspath(path_util.cc_sym_install_dir()))
+except ImportError as ex:
+    try:
+        sys.path.append(os.fspath(path_util.cc_sym_install_dir()))
+    except path_util.MissingManifestException as ex2:
+        raise ImportError from ex2
 
     from cc_sym import *  # pylint: disable=wildcard-import
 
