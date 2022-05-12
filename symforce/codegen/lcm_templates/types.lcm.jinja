@@ -22,6 +22,8 @@ struct {{ typename }} {
       {% else %}
   {{ util.get_list_type(scalar_type, entry.item_index) }} {{ key }}{{ util.get_list_dims(entry.item_index) }};
       {% endif %}
+    {% elif issubclass(datatype, DataBuffer)%}
+  int64_t {{ key }};
     {% else %}
       {% if not use_eigen_types %}
   {{ scalar_type }} {{ key }}[{{ info['storage_dims'][key] }}];

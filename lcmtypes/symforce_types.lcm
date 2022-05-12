@@ -21,6 +21,9 @@ enum type_t : int32_t {
   POSE2 = 4,
   POSE3 = 5,
 
+  // DataBuffer
+  DATABUFFER = 6,
+
   // Vector types, dynamic and fixed
   VECTORX = 10,
   VECTOR1 = 11,

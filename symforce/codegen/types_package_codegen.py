@@ -7,6 +7,7 @@ import os
 import numpy as np
 import tempfile
 
+from symforce import sympy as sm
 from symforce import logger
 from symforce import typing as T
 from symforce.values import Values, IndexEntry
@@ -78,6 +79,7 @@ def generate_types(
         "scalar_type": scalar_type,
         "types_dict": types_dict,
         "to_set": set,
+        "DataBuffer": sm.DataBuffer,
     }
 
     types_util = {"np.prod": np.prod}

@@ -448,7 +448,7 @@ def _get_scalar_keys_recursive(
                 )
             )
     elif issubclass(datatype, sm.DataBuffer):
-        raise TypeError(f"{datatype} does not allow scalar keys")
+        vec.append(sm.DataBuffer(prefix))
     elif issubclass(datatype, (list, tuple)):
         assert index_value.item_index is not None
         # Assume all elements of list are same type as first element
