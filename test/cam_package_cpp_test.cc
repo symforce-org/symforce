@@ -310,8 +310,10 @@ TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", sym::LinearCameraC
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
   using Scalar = typename T::Scalar;
-  const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
-  const Scalar tolerance = 10.0 * epsilon;  // For assessing approximate equality
+  // For preventing degenerate numerical cases (e.g. division by zero)
+  const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
+  // For assessing approximate equality
+  const Scalar tolerance = 50.0 * epsilon;
 
   spdlog::info("*** Testing PosedCamera class with calibration: {} ***", cam_cal);
 

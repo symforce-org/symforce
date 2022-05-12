@@ -166,7 +166,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
             logger.debug(f'Updating data at: "{path}"')
 
             dirname = os.path.dirname(path)
-            if not os.path.exists(dirname):
+            if dirname and not os.path.exists(dirname):
                 os.makedirs(dirname)
 
             with open(path, "w") as f:

@@ -16,19 +16,16 @@ all: clean docs coverage coverage_open docs_open
 # Install all needed packages
 all_reqs: reqs test_reqs docs_reqs
 
-# Install python requirements for core library
-reqs:
-	${PYTHON} -m pip install -r requirements.txt
-
 FIND_CPP_FILES_TO_FORMAT=find . \
 	-not -path "*/lcmtypes/*" \
 	-and -not -path "./third_party/*" \
 	-and -not -path "./build/*" \
+	-and -not -path "./.eggs/*" \
 	-and -not -path "./symforce/benchmarks/matrix_multiplication/gen/*" \
 	-regextype posix-extended -regex ".*\.(h|cc|tcc)"
 
 # Format using black and clang-format
-BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "third_party/.*|build/.*"
+BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "third_party/.*|build/.*|\.eggs/.*"
 format:
 	$(BLACK_CMD)
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) -i
@@ -50,6 +47,7 @@ check_types:
 		\( -path ./symforce \
 		-o -path ./third_party \
 		-o -path ./build \
+		-o -path ./.eggs \
 		-o -path ./gen/python/setup.py \
 		-o -path ./test/symforce_function_codegen_test_data \
 		\) -prune -o -name "*.py" -print) \
@@ -86,9 +84,6 @@ TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
 
 # Python files which generate code
 GEN_FILES=test/*codegen*.py
-
-test_reqs:
-	${PYTHON} -m pip install -r test/requirements.txt
 
 test_symengine:
 	$(TEST_ENV) SYMFORCE_BACKEND=symengine $(PYTHON) $(TEST_CMD)
@@ -150,9 +145,6 @@ coverage_open: coverage
 # Documentation
 # -----------------------------------------------------------------------------
 DOCS_DIR=$(BUILD_DIR)/docs
-
-docs_reqs:
-	${PYTHON} -m pip install -r test/requirements.txt
 
 docs_clean:
 	rm -rf $(DOCS_DIR) docs/api docs/api-cpp docs/api-gen-cpp docs/api-gen-py \

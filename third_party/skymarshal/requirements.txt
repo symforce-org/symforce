@@ -1,5 +1,0 @@
-argh
-jinja2
-numpy
-ply
-six

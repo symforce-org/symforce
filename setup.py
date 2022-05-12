@@ -172,6 +172,30 @@ def symforce_version() -> str:
     return version_match.group(1)
 
 
+setup_requirements = [
+    "setuptools",
+    "wheel",
+    "pip",
+    "cmake>=3.17",
+    "cython>=0.19.1",
+    f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
+]
+
+docs_requirements = [
+    "ipykernel",
+    # nbconvert depends on this, but doesn't specify the dependency
+    "ipython-genutils",
+    "matplotlib",
+    "myst-parser",
+    "nbsphinx",
+    "nbstripout",
+    "Sphinx",
+    # sphinx-autodoc-typehints >=1.15 contains a bug causing it to crash parsing our typing.py
+    "sphinx-autodoc-typehints<1.15",
+    "sphinx-rtd-theme",
+    "breathe",
+]
+
 cmdclass: T.Dict[str, T.Any] = dict(build_ext=CMakeBuild, install=InstallWithExtras)
 
 setup(
@@ -225,17 +249,31 @@ setup(
         "jinja2",
         "numpy",
         f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
-        "sympy",
+        "sympy~=1.10.0",
         f"sym @ file://localhost/{SOURCE_DIR}/gen/python",
     ],
-    setup_requires=[
-        "setuptools",
-        "wheel",
-        "pip",
-        "cmake>=3.17",
-        "cython>=0.19.1",
-        f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
-    ],
+    setup_requires=setup_requirements,
+    extras_require={
+        "docs": docs_requirements,
+        "dev": docs_requirements
+        + [
+            "click~=8.0.4",  # Required by black, but not specified by our version of black
+            "argh",
+            "black[jupyter]==21.12b0",
+            "coverage",
+            "jinja2~=3.0.3",
+            "mypy==0.910",
+            "pip-tools",
+            "pybind11-stubgen",
+            "pylint",
+            "scipy",
+            "types-jinja2",
+            "types-pygments",
+            "types-requests",
+            "types-setuptools",
+        ],
+        "_setup": setup_requirements,
+    },
     # Not okay to zip
     zip_safe=False,
 )
