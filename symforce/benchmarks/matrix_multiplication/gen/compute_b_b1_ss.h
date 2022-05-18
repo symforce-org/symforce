@@ -21,28 +21,31 @@ namespace sym {
 * Args:
 *     x0: Scalar
 *     x1: Scalar
+*     x2: Scalar
+*     x3: Scalar
+*     x4: Scalar
 *
 * Outputs:
 *     result: Matrix7_7
 */
 template <typename Scalar>
-Eigen::SparseMatrix<Scalar> ComputeBB1Ss(const Scalar x0, const Scalar x1) {
+Eigen::SparseMatrix<Scalar> ComputeBB1Ss(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
 
-    // Total ops: 9
+    // Total ops: 32
 
     // Input arrays
 
     // Intermediate terms (2)
-    const Scalar _tmp0 = x1 + 2;
-    const Scalar _tmp1 = -x0 + x1;
+    const Scalar _tmp0 = x0 + 2;
+    const Scalar _tmp1 = 2*x0;
 
     // Output terms (1)
     static constexpr int kRows_result = 7;
     static constexpr int kCols_result = 7;
-    static constexpr int kNumNonZero_result = 15;
-    static constexpr int kColPtrs_result[] = {0, 3, 5, 7, 9, 11, 13, 15};
-    static constexpr int kRowIndices_result[] = {4, 5, 6, 0, 1, 0, 2, 0, 3, 1, 4, 2, 5, 3, 6};
-    Scalar result_empty_value_ptr[15];
+    static constexpr int kNumNonZero_result = 14;
+    static constexpr int kColPtrs_result[] = {0, 3, 5, 7, 9, 10, 12, 14};
+    static constexpr int kRowIndices_result[] = {4, 5, 6, 0, 1, 0, 2, 0, 3, 1, 2, 5, 3, 6};
+    Scalar result_empty_value_ptr[14];
     Eigen::SparseMatrix<Scalar> result = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
         kRows_result,
         kCols_result,
@@ -54,21 +57,20 @@ Eigen::SparseMatrix<Scalar> ComputeBB1Ss(const Scalar x0, const Scalar x1) {
     Scalar* result_value_ptr = result.valuePtr();
 
 
-    result_value_ptr[0] = _tmp0*x0;
-    result_value_ptr[1] = _tmp0 - x0;
-    result_value_ptr[2] = _tmp1;
-    result_value_ptr[3] = x1;
-    result_value_ptr[4] = 2;
-    result_value_ptr[5] = Scalar(-1.0);
-    result_value_ptr[6] = -4;
-    result_value_ptr[7] = 1 - x0;
-    result_value_ptr[8] = 2;
-    result_value_ptr[9] = Scalar(-1.0);
-    result_value_ptr[10] = -x0 - 1;
-    result_value_ptr[11] = _tmp1;
-    result_value_ptr[12] = -1;
-    result_value_ptr[13] = -4;
-    result_value_ptr[14] = -x0 - x1;
+    result_value_ptr[0] = x0*x2;
+    result_value_ptr[1] = x1 + std::pow(x2, Scalar(2));
+    result_value_ptr[2] = -2*(x0 - 2)*(x1 + 1);
+    result_value_ptr[3] = 1 + x2/x0;
+    result_value_ptr[4] = _tmp0 - x3;
+    result_value_ptr[5] = x0*(x2 + 3);
+    result_value_ptr[6] = -_tmp1*x3 - x3 - 2;
+    result_value_ptr[7] = x2 + x4;
+    result_value_ptr[8] = -_tmp0 - x2;
+    result_value_ptr[9] = -1/(x3 + 4);
+    result_value_ptr[10] = _tmp1 + 2;
+    result_value_ptr[11] = -x1/x4;
+    result_value_ptr[12] = std::pow(x0, Scalar(2))*x2;
+    result_value_ptr[13] = -[&]() { const Scalar base = x1; return base * base * base; }();
 
     return result;
 }  // NOLINT(readability/fn_size)

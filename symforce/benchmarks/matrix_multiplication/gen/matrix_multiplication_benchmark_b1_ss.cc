@@ -37,26 +37,27 @@ using namespace sym;
 #include "./compute_b_dense_dynamic_b1_ss.h"
 
 template <typename Scalar>
-__attribute__((noinline)) Eigen::Matrix<Scalar, 7, 7> ComputeDenseFixedB1Ss(const Scalar x0,
-                                                                            const Scalar x1) {
-  Eigen::Matrix<Scalar, 7, 7> A = ComputeADenseB1Ss<Scalar>(x0, x1);
-  Eigen::Matrix<Scalar, 7, 7> B = ComputeBDenseB1Ss<Scalar>(x0, x1);
+__attribute__((noinline)) Eigen::Matrix<Scalar, 7, 7> ComputeDenseFixedB1Ss(
+    const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
+  Eigen::Matrix<Scalar, 7, 7> A = ComputeADenseB1Ss<Scalar>(x0, x1, x2, x3, x4);
+  Eigen::Matrix<Scalar, 7, 7> B = ComputeBDenseB1Ss<Scalar>(x0, x1, x2, x3, x4);
   return A.transpose() * B;
 }
 
 template <typename Scalar>
 __attribute__((noinline)) Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>
-ComputeDenseDynamicB1Ss(const Scalar x0, const Scalar x1) {
-  const auto A = ComputeADenseDynamicB1Ss<Scalar>(x0, x1);
-  const auto B = ComputeBDenseDynamicB1Ss<Scalar>(x0, x1);
+ComputeDenseDynamicB1Ss(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3,
+                        const Scalar x4) {
+  const auto A = ComputeADenseDynamicB1Ss<Scalar>(x0, x1, x2, x3, x4);
+  const auto B = ComputeBDenseDynamicB1Ss<Scalar>(x0, x1, x2, x3, x4);
   return A.transpose() * B;
 }
 
 template <typename Scalar>
-__attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparseB1Ss(const Scalar x0,
-                                                                        const Scalar x1) {
-  Eigen::SparseMatrix<Scalar> A = ComputeAB1Ss<Scalar>(x0, x1);
-  Eigen::SparseMatrix<Scalar> B = ComputeBB1Ss<Scalar>(x0, x1);
+__attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparseB1Ss(
+    const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
+  Eigen::SparseMatrix<Scalar> A = ComputeAB1Ss<Scalar>(x0, x1, x2, x3, x4);
+  Eigen::SparseMatrix<Scalar> B = ComputeBB1Ss<Scalar>(x0, x1, x2, x3, x4);
   return A.transpose() * B;
 }
 
@@ -67,6 +68,12 @@ __attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparseB1Ss(const Sc
 TEMPLATE_TEST_CASE("sparse_b1_ss", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -75,8 +82,8 @@ TEMPLATE_TEST_CASE("sparse_b1_ss", "", double, float) {
     SYM_TIME_SCOPE("sparse_b1_ss_{}", typeid(Scalar).name());
 
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeSparseB1Ss(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeSparseB1Ss(x0, x1, x2, x3, x4);
         sum += mat.valuePtr()[0];
       }
     }
@@ -86,6 +93,12 @@ TEMPLATE_TEST_CASE("sparse_b1_ss", "", double, float) {
 TEMPLATE_TEST_CASE("dense_dynamic_b1_ss", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -93,8 +106,8 @@ TEMPLATE_TEST_CASE("dense_dynamic_b1_ss", "", double, float) {
   {
     SYM_TIME_SCOPE("dense_dynamic_b1_ss_{}", typeid(Scalar).name());
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeDenseDynamicB1Ss<Scalar>(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeDenseDynamicB1Ss<Scalar>(x0, x1, x2, x3, x4);
         sum += mat(0, 0);
       }
     }
@@ -104,6 +117,12 @@ TEMPLATE_TEST_CASE("dense_dynamic_b1_ss", "", double, float) {
 TEMPLATE_TEST_CASE("dense_fixed_b1_ss", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -111,8 +130,8 @@ TEMPLATE_TEST_CASE("dense_fixed_b1_ss", "", double, float) {
   {
     SYM_TIME_SCOPE("dense_fixed_b1_ss_{}", typeid(Scalar).name());
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeDenseFixedB1Ss<Scalar>(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeDenseFixedB1Ss<Scalar>(x0, x1, x2, x3, x4);
         sum += mat(0, 0);
       }
     }
@@ -122,6 +141,12 @@ TEMPLATE_TEST_CASE("dense_fixed_b1_ss", "", double, float) {
 TEMPLATE_TEST_CASE("flattened_b1_ss", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -129,8 +154,8 @@ TEMPLATE_TEST_CASE("flattened_b1_ss", "", double, float) {
   {
     SYM_TIME_SCOPE("flattened_b1_ss_{}", typeid(Scalar).name());
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeAtBB1Ss(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeAtBB1Ss(x0, x1, x2, x3, x4);
         sum += mat(0, 0);
       }
     }

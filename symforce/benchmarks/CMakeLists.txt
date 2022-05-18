@@ -129,11 +129,7 @@ add_matrix_multiplication_benchmark(Tina_DisCog)
 add_matrix_multiplication_benchmark(n3c4_b2)
 add_matrix_multiplication_benchmark(bibd_9_3)
 add_matrix_multiplication_benchmark(lp_sc105)
-
-# TODO(aaron): These take forever to compile, fix that and re-enable
-# add_matrix_multiplication_benchmark(rotor1)
-# add_matrix_multiplication_benchmark(ww_36_pmec_36)
-# add_matrix_multiplication_benchmark(mcca)
+add_matrix_multiplication_benchmark(rotor1)
 
 # -----------------------------------------------------------------------------
 

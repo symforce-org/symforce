@@ -20,89 +20,102 @@ namespace sym {
 * Args:
 *     x0: Scalar
 *     x1: Scalar
+*     x2: Scalar
+*     x3: Scalar
+*     x4: Scalar
 *
 * Outputs:
 *     result: Matrix20_15
 */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 20, 15> ComputeBDenseN3C4B2(const Scalar x0, const Scalar x1) {
+Eigen::Matrix<Scalar, 20, 15> ComputeBDenseN3C4B2(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
 
-    // Total ops: 29
+    // Total ops: 134
 
     // Input arrays
 
-    // Intermediate terms (9)
-    const Scalar _tmp0 = x1 - 1;
-    const Scalar _tmp1 = 2*x0;
-    const Scalar _tmp2 = -_tmp1;
-    const Scalar _tmp3 = Scalar(1.0) / (x0);
-    const Scalar _tmp4 = x1 + 2;
-    const Scalar _tmp5 = (Scalar(1)/Scalar(2))*x0;
-    const Scalar _tmp6 = x0 + 2;
-    const Scalar _tmp7 = -_tmp6;
+    // Intermediate terms (19)
+    const Scalar _tmp0 = Scalar(1.0) / (x3);
+    const Scalar _tmp1 = Scalar(1.0) / (x4);
+    const Scalar _tmp2 = std::pow(x1, Scalar(2));
+    const Scalar _tmp3 = x0 + x3;
+    const Scalar _tmp4 = x4 - 2;
+    const Scalar _tmp5 = 2*x4;
+    const Scalar _tmp6 = _tmp5 + x0;
+    const Scalar _tmp7 = -_tmp5;
     const Scalar _tmp8 = x1 + 1;
+    const Scalar _tmp9 = x0*x2;
+    const Scalar _tmp10 = 4*x2;
+    const Scalar _tmp11 = x0 + x1;
+    const Scalar _tmp12 = 2*x2;
+    const Scalar _tmp13 = x1*x4;
+    const Scalar _tmp14 = -x3;
+    const Scalar _tmp15 = -x4;
+    const Scalar _tmp16 = 2*x0;
+    const Scalar _tmp17 = x2 + x3;
+    const Scalar _tmp18 = 2*x1;
 
     // Output terms (1)
     Eigen::Matrix<Scalar, 20, 15> _result;
 
     _result.setZero();
 
-    _result(9, 0) = -_tmp0;
-    _result(15, 0) = x0 - x1;
-    _result(18, 0) = _tmp2;
-    _result(19, 0) = -1/(x1 - 2);
-    _result(8, 1) = x1;
-    _result(14, 1) = x1;
-    _result(17, 1) = 2;
-    _result(19, 1) = 2;
-    _result(7, 2) = -_tmp3;
-    _result(13, 2) = -4;
-    _result(16, 2) = -4;
-    _result(19, 2) = Scalar(1.0);
-    _result(6, 3) = 2;
-    _result(17, 3) = -_tmp3*x1;
-    _result(5, 4) = _tmp4;
-    _result(11, 4) = x0;
-    _result(16, 4) = 2;
-    _result(18, 4) = 1;
-    _result(4, 5) = -4*x1;
-    _result(10, 5) = _tmp5 + Scalar(1)/Scalar(2);
-    _result(16, 5) = _tmp1;
-    _result(17, 5) = _tmp2;
-    _result(3, 6) = _tmp5;
-    _result(12, 6) = _tmp7;
-    _result(14, 6) = 4;
-    _result(15, 6) = _tmp1 + 2;
-    _result(2, 7) = -2;
-    _result(11, 7) = _tmp1;
-    _result(13, 7) = -1;
-    _result(15, 7) = _tmp6;
-    _result(1, 8) = _tmp2;
-    _result(10, 8) = 2 - x0;
-    _result(13, 8) = _tmp1;
-    _result(0, 9) = -_tmp4;
-    _result(10, 9) = _tmp8 + x0;
-    _result(11, 9) = 3*x1;
-    _result(12, 9) = x0 - 1;
-    _result(3, 10) = 1;
-    _result(6, 10) = 2;
-    _result(8, 10) = _tmp0;
-    _result(9, 10) = 8;
-    _result(5, 11) = 2*x1;
-    _result(7, 11) = -2;
-    _result(9, 11) = -1;
-    _result(1, 12) = -4;
-    _result(4, 12) = _tmp8;
-    _result(7, 12) = -1;
-    _result(8, 12) = _tmp2;
-    _result(0, 13) = -_tmp1 - x1;
-    _result(4, 13) = 1;
-    _result(5, 13) = _tmp7;
-    _result(6, 13) = 2;
-    _result(0, 14) = x0;
-    _result(1, 14) = Scalar(2.0);
+    _result(9, 0) = -Scalar(1)/Scalar(2)*_tmp0*x4;
+    _result(15, 0) = -_tmp0*_tmp1*x0;
+    _result(18, 0) = _tmp2*_tmp3;
+    _result(19, 0) = -std::pow(x2, Scalar(2))*(x2 - x3/_tmp4);
+    _result(8, 1) = _tmp6 + 4;
+    _result(14, 1) = x3*(_tmp7 + _tmp8);
+    _result(17, 1) = -Scalar(1)/Scalar(2)*_tmp1*_tmp9;
+    _result(19, 1) = 3 - x4;
+    _result(7, 2) = _tmp10;
+    _result(13, 2) = (4*x0 + x3)/x2;
+    _result(16, 2) = -x0*(2*std::pow(x3, Scalar(2)) + 4);
+    _result(19, 2) = -x4*(_tmp5 + 2);
+    _result(6, 3) = _tmp11*x4;
+    _result(12, 3) = x1 + 4;
+    _result(17, 3) = _tmp12 - x1 + 4;
+    _result(18, 3) = _tmp6 + 1;
+    _result(5, 4) = -_tmp13;
+    _result(11, 4) = _tmp12*x1;
+    _result(16, 4) = _tmp3 - x2*x4;
+    _result(18, 4) = -x0*(x0 + 2);
+    _result(10, 5) = -_tmp4;
+    _result(16, 5) = -_tmp12 - _tmp14 - x4;
+    _result(17, 5) = _tmp3 + x1 - 1;
+    _result(3, 6) = -x3*(_tmp15 + x0) - 2;
+    _result(12, 6) = _tmp16 + std::pow(x4, Scalar(2));
+    _result(14, 6) = -x0*(x0 - 2) - x4;
+    _result(15, 6) = -_tmp8*x3;
+    _result(2, 7) = -x0*x1*(x2 + x4);
+    _result(13, 7) = (Scalar(1)/Scalar(4))*x1 + x3;
+    _result(15, 7) = 2*_tmp0/x1;
+    _result(1, 8) = -x2*(_tmp14 + x1*x2) + 2;
+    _result(10, 8) = -_tmp12 - 2;
+    _result(13, 8) = Scalar(2.0);
+    _result(14, 8) = -x3*(x2 + Scalar(1.0) / (x0));
+    _result(10, 9) = -x2;
+    _result(11, 9) = _tmp17*(x1 - 2);
+    _result(12, 9) = -_tmp14 - x0 - 3;
+    _result(3, 10) = -x0*x3*x4*(_tmp15 + x1);
+    _result(6, 10) = _tmp13*(x2 - 2);
+    _result(9, 10) = _tmp11 + _tmp15;
+    _result(2, 11) = 1 - x4;
+    _result(5, 11) = _tmp0*(_tmp12 - _tmp16 + _tmp5);
+    _result(7, 11) = -_tmp5*x0;
+    _result(9, 11) = Scalar(2.0)*x3 + Scalar(-4.0);
+    _result(1, 12) = 2*_tmp2*(x4 + 1);
+    _result(4, 12) = _tmp7;
+    _result(7, 12) = _tmp5 + 8;
+    _result(8, 12) = _tmp4 + x2;
+    _result(0, 13) = 5 - x1;
+    _result(4, 13) = _tmp10 - x0 + 4;
+    _result(5, 13) = _tmp18;
+    _result(6, 13) = _tmp18 + 1;
+    _result(0, 14) = x3 - 1;
+    _result(1, 14) = -_tmp13*[&]() { const Scalar base = x3; return base * base * base; }();
     _result(2, 14) = x1;
-    _result(3, 14) = -2;
+    _result(3, 14) = _tmp17 + _tmp9 - 2;
 
     return _result;
 }  // NOLINT(readability/fn_size)

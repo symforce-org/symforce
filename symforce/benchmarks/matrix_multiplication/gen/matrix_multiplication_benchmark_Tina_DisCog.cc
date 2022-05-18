@@ -38,25 +38,26 @@ using namespace sym;
 
 template <typename Scalar>
 __attribute__((noinline)) Eigen::Matrix<Scalar, 11, 11> ComputeDenseFixedTinaDiscog(
-    const Scalar x0, const Scalar x1) {
-  Eigen::Matrix<Scalar, 11, 11> A = ComputeADenseTinaDiscog<Scalar>(x0, x1);
-  Eigen::Matrix<Scalar, 11, 11> B = ComputeBDenseTinaDiscog<Scalar>(x0, x1);
+    const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
+  Eigen::Matrix<Scalar, 11, 11> A = ComputeADenseTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
+  Eigen::Matrix<Scalar, 11, 11> B = ComputeBDenseTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
   return A.transpose() * B;
 }
 
 template <typename Scalar>
 __attribute__((noinline)) Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>
-ComputeDenseDynamicTinaDiscog(const Scalar x0, const Scalar x1) {
-  const auto A = ComputeADenseDynamicTinaDiscog<Scalar>(x0, x1);
-  const auto B = ComputeBDenseDynamicTinaDiscog<Scalar>(x0, x1);
+ComputeDenseDynamicTinaDiscog(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3,
+                              const Scalar x4) {
+  const auto A = ComputeADenseDynamicTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
+  const auto B = ComputeBDenseDynamicTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
   return A.transpose() * B;
 }
 
 template <typename Scalar>
-__attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparseTinaDiscog(const Scalar x0,
-                                                                              const Scalar x1) {
-  Eigen::SparseMatrix<Scalar> A = ComputeATinaDiscog<Scalar>(x0, x1);
-  Eigen::SparseMatrix<Scalar> B = ComputeBTinaDiscog<Scalar>(x0, x1);
+__attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparseTinaDiscog(
+    const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
+  Eigen::SparseMatrix<Scalar> A = ComputeATinaDiscog<Scalar>(x0, x1, x2, x3, x4);
+  Eigen::SparseMatrix<Scalar> B = ComputeBTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
   return A.transpose() * B;
 }
 
@@ -67,6 +68,12 @@ __attribute__((noinline)) Eigen::SparseMatrix<Scalar> ComputeSparseTinaDiscog(co
 TEMPLATE_TEST_CASE("sparse_Tina_DisCog", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -75,8 +82,8 @@ TEMPLATE_TEST_CASE("sparse_Tina_DisCog", "", double, float) {
     SYM_TIME_SCOPE("sparse_Tina_DisCog_{}", typeid(Scalar).name());
 
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeSparseTinaDiscog(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeSparseTinaDiscog(x0, x1, x2, x3, x4);
         sum += mat.valuePtr()[0];
       }
     }
@@ -86,6 +93,12 @@ TEMPLATE_TEST_CASE("sparse_Tina_DisCog", "", double, float) {
 TEMPLATE_TEST_CASE("dense_dynamic_Tina_DisCog", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -93,8 +106,8 @@ TEMPLATE_TEST_CASE("dense_dynamic_Tina_DisCog", "", double, float) {
   {
     SYM_TIME_SCOPE("dense_dynamic_Tina_DisCog_{}", typeid(Scalar).name());
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeDenseDynamicTinaDiscog<Scalar>(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeDenseDynamicTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
         sum += mat(0, 0);
       }
     }
@@ -104,6 +117,12 @@ TEMPLATE_TEST_CASE("dense_dynamic_Tina_DisCog", "", double, float) {
 TEMPLATE_TEST_CASE("dense_fixed_Tina_DisCog", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -111,8 +130,8 @@ TEMPLATE_TEST_CASE("dense_fixed_Tina_DisCog", "", double, float) {
   {
     SYM_TIME_SCOPE("dense_fixed_Tina_DisCog_{}", typeid(Scalar).name());
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeDenseFixedTinaDiscog<Scalar>(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeDenseFixedTinaDiscog<Scalar>(x0, x1, x2, x3, x4);
         sum += mat(0, 0);
       }
     }
@@ -122,6 +141,12 @@ TEMPLATE_TEST_CASE("dense_fixed_Tina_DisCog", "", double, float) {
 TEMPLATE_TEST_CASE("flattened_Tina_DisCog", "", double, float) {
   using Scalar = TestType;
 
+  fmt::print("n_runs_multiplier: {};\n", 100.0);
+
+  const Scalar x2 = 1.0;
+  const Scalar x3 = 2.0;
+  const Scalar x4 = 3.0;
+
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
 
@@ -129,8 +154,8 @@ TEMPLATE_TEST_CASE("flattened_Tina_DisCog", "", double, float) {
   {
     SYM_TIME_SCOPE("flattened_Tina_DisCog_{}", typeid(Scalar).name());
     for (Scalar x0 = 0.1; x0 < 100.0; x0 += 0.1) {
-      for (Scalar x1 = 0.1; x1 < 1.0; x1 += 0.1) {
-        auto mat = ComputeAtBTinaDiscog(x0, x1);
+      for (Scalar x1 = 0.1; x1 < 100.0; x1 += 0.1) {
+        auto mat = ComputeAtBTinaDiscog(x0, x1, x2, x3, x4);
         sum += mat(0, 0);
       }
     }

@@ -21,31 +21,46 @@ namespace sym {
 * Args:
 *     x0: Scalar
 *     x1: Scalar
+*     x2: Scalar
+*     x3: Scalar
+*     x4: Scalar
 *
 * Outputs:
 *     result: Matrix11_11
 */
 template <typename Scalar>
-Eigen::SparseMatrix<Scalar> ComputeATinaDiscog(const Scalar x0, const Scalar x1) {
+Eigen::SparseMatrix<Scalar> ComputeATinaDiscog(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
 
-    // Total ops: 28
+    // Total ops: 109
 
     // Input arrays
 
-    // Intermediate terms (5)
-    const Scalar _tmp0 = x0 + 2;
-    const Scalar _tmp1 = std::pow(x0, Scalar(2));
-    const Scalar _tmp2 = 2*x1;
-    const Scalar _tmp3 = 2*x0;
-    const Scalar _tmp4 = x1 + 1;
+    // Intermediate terms (17)
+    const Scalar _tmp0 = x2 - x4;
+    const Scalar _tmp1 = -x1;
+    const Scalar _tmp2 = x0 + 2;
+    const Scalar _tmp3 = _tmp1 + _tmp2;
+    const Scalar _tmp4 = 2*x1;
+    const Scalar _tmp5 = 2*x4;
+    const Scalar _tmp6 = -x2;
+    const Scalar _tmp7 = _tmp6 + x1;
+    const Scalar _tmp8 = -x3;
+    const Scalar _tmp9 = Scalar(1.0) / (x2);
+    const Scalar _tmp10 = x0 + 1;
+    const Scalar _tmp11 = 2*x0;
+    const Scalar _tmp12 = 2*x2;
+    const Scalar _tmp13 = Scalar(1.0) / (x4);
+    const Scalar _tmp14 = _tmp13*x0;
+    const Scalar _tmp15 = x1 + 3;
+    const Scalar _tmp16 = _tmp11 - 2;
 
     // Output terms (1)
     static constexpr int kRows_result = 11;
     static constexpr int kCols_result = 11;
-    static constexpr int kNumNonZero_result = 47;
-    static constexpr int kColPtrs_result[] = {0, 2, 9, 12, 19, 22, 27, 33, 40, 41, 44, 47};
-    static constexpr int kRowIndices_result[] = {2, 9, 0, 2, 4, 5, 7, 8, 9, 0, 8, 9, 1, 2, 4, 5, 6, 7, 10, 2, 5, 9, 0, 1, 2, 4, 10, 2, 3, 4, 5, 7, 8, 1, 2, 3, 5, 6, 8, 10, 6, 0, 2, 4, 6, 7, 8};
-    Scalar result_empty_value_ptr[47];
+    static constexpr int kNumNonZero_result = 45;
+    static constexpr int kColPtrs_result[] = {0, 2, 9, 12, 18, 21, 26, 31, 38, 39, 42, 45};
+    static constexpr int kRowIndices_result[] = {2, 9, 0, 2, 4, 5, 7, 8, 9, 0, 8, 9, 2, 4, 5, 6, 7, 10, 2, 5, 9, 0, 1, 2, 4, 10, 2, 4, 5, 7, 8, 1, 2, 3, 5, 6, 8, 10, 6, 0, 2, 4, 6, 7, 8};
+    Scalar result_empty_value_ptr[45];
     Eigen::SparseMatrix<Scalar> result = Eigen::Map<const Eigen::SparseMatrix<Scalar>>(
         kRows_result,
         kCols_result,
@@ -57,53 +72,51 @@ Eigen::SparseMatrix<Scalar> ComputeATinaDiscog(const Scalar x0, const Scalar x1)
     Scalar* result_value_ptr = result.valuePtr();
 
 
-    result_value_ptr[0] = 2;
-    result_value_ptr[1] = x1 + 4;
-    result_value_ptr[2] = 1 - x0;
-    result_value_ptr[3] = 3;
-    result_value_ptr[4] = _tmp0;
-    result_value_ptr[5] = _tmp0 - x1;
-    result_value_ptr[6] = -2/_tmp1;
-    result_value_ptr[7] = 1 + Scalar(1.0) / (x1);
-    result_value_ptr[8] = -1;
-    result_value_ptr[9] = 1;
-    result_value_ptr[10] = 4;
-    result_value_ptr[11] = -_tmp2;
-    result_value_ptr[12] = -4*x1;
-    result_value_ptr[13] = -2;
-    result_value_ptr[14] = x0*x1 + x0;
-    result_value_ptr[15] = -2;
-    result_value_ptr[16] = -4*x0;
-    result_value_ptr[17] = x0/_tmp0;
-    result_value_ptr[18] = 2;
-    result_value_ptr[19] = _tmp0*x0;
-    result_value_ptr[20] = _tmp2;
-    result_value_ptr[21] = 1;
-    result_value_ptr[22] = -2;
-    result_value_ptr[23] = -x0 + x1 + 2;
-    result_value_ptr[24] = x0 - 2;
-    result_value_ptr[25] = -2;
-    result_value_ptr[26] = -2;
-    result_value_ptr[27] = -3;
-    result_value_ptr[28] = 4;
-    result_value_ptr[29] = _tmp3;
-    result_value_ptr[30] = -_tmp4;
-    result_value_ptr[31] = -4;
-    result_value_ptr[32] = 2;
-    result_value_ptr[33] = 2;
-    result_value_ptr[34] = -_tmp1;
-    result_value_ptr[35] = 2;
-    result_value_ptr[36] = 1;
-    result_value_ptr[37] = x0;
-    result_value_ptr[38] = x0;
-    result_value_ptr[39] = _tmp4 + x0;
-    result_value_ptr[40] = Scalar(-2.0);
-    result_value_ptr[41] = 4;
-    result_value_ptr[42] = 2;
-    result_value_ptr[43] = 2;
-    result_value_ptr[44] = Scalar(1.0);
-    result_value_ptr[45] = _tmp3 + 2;
-    result_value_ptr[46] = _tmp3;
+    result_value_ptr[0] = x2*x4;
+    result_value_ptr[1] = -std::pow(x0, Scalar(2)) + 2 + Scalar(1.0) / (x0);
+    result_value_ptr[2] = 2 - x4;
+    result_value_ptr[3] = -_tmp0/x3;
+    result_value_ptr[4] = 4 - x1;
+    result_value_ptr[5] = x0 - 3;
+    result_value_ptr[6] = -_tmp3*x4;
+    result_value_ptr[7] = -_tmp1 - x0*x1 - 2;
+    result_value_ptr[8] = _tmp2*_tmp5 - _tmp4;
+    result_value_ptr[9] = -_tmp4 - x3;
+    result_value_ptr[10] = _tmp0*_tmp7;
+    result_value_ptr[11] = -_tmp3;
+    result_value_ptr[12] = _tmp8 + x0 + Scalar(1.0);
+    result_value_ptr[13] = _tmp9*x3;
+    result_value_ptr[14] = -_tmp10*std::pow(x1, Scalar(2));
+    result_value_ptr[15] = -x1*x2 - x3;
+    result_value_ptr[16] = -x2*(x1 + x4);
+    result_value_ptr[17] = x0*(_tmp1 + x0);
+    result_value_ptr[18] = 6 - _tmp11;
+    result_value_ptr[19] = _tmp12*x3;
+    result_value_ptr[20] = -_tmp14*(_tmp8 + x1*x3) - _tmp6;
+    result_value_ptr[21] = x3 - 2;
+    result_value_ptr[22] = x3/(x2 - 2);
+    result_value_ptr[23] = -x4*(x0 + x1)*(x1 + x3);
+    result_value_ptr[24] = x1 + 4;
+    result_value_ptr[25] = _tmp12 + x3;
+    result_value_ptr[26] = _tmp15*x1 + x2;
+    result_value_ptr[27] = _tmp5*(x1 - 1);
+    result_value_ptr[28] = _tmp4;
+    result_value_ptr[29] = 1;
+    result_value_ptr[30] = _tmp16*_tmp9;
+    result_value_ptr[31] = -_tmp1 - _tmp11*std::pow(x2, Scalar(2))*x4;
+    result_value_ptr[32] = -_tmp15 - _tmp8;
+    result_value_ptr[33] = -x3 - x4 - 2;
+    result_value_ptr[34] = -_tmp14*(_tmp8 + x1) + 1;
+    result_value_ptr[35] = -_tmp16*x1;
+    result_value_ptr[36] = _tmp7 + 1;
+    result_value_ptr[37] = 2*x3*(_tmp10 + x1);
+    result_value_ptr[38] = x3/(_tmp1 + x4 + 1);
+    result_value_ptr[39] = -_tmp12*_tmp13 + 4*x0 + 4;
+    result_value_ptr[40] = Scalar(-1.0);
+    result_value_ptr[41] = x0 - Scalar(1)/Scalar(2)*x3 - 1;
+    result_value_ptr[42] = -_tmp13*x2 + x2 + x3;
+    result_value_ptr[43] = x3 + 4;
+    result_value_ptr[44] = _tmp4 + 1;
 
     return result;
 }  // NOLINT(readability/fn_size)
