@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 from __future__ import annotations
 
+import dataclasses
 import graphviz
 from pathlib import Path
 import uuid
@@ -187,9 +188,10 @@ class Factor:
             output_dir=output_dir, namespace=namespace
         )
 
-        output_data["name"] = codegen_with_linearization.name
+        metadata = dataclasses.asdict(output_data)
+        metadata["name"] = codegen_with_linearization.name
 
-        return output_data
+        return metadata
 
     def to_numeric_factor(
         self,

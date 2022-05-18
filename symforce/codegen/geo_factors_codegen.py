@@ -95,12 +95,12 @@ def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
     # Read
     assert codegen.name is not None
     filename = "{}.h".format(codegen.name)
-    with open(os.path.join(data["cpp_function_dir"], filename)) as f:
+    with open(os.path.join(data.function_dir, filename)) as f:
         func_code = f.read()
 
     # Cleanup
     if cleanup:
-        python_util.remove_if_exists(data["output_dir"])
+        python_util.remove_if_exists(data.output_dir)
 
     return func_code
 

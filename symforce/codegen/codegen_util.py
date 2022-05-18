@@ -598,7 +598,7 @@ def load_generated_lcmtype(
         my_codegen = Codegen(my_func, config=PythonConfig())
         codegen_data = my_codegen.generate_function(output_dir=output_dir, namespace=namespace)
         my_type_t = codegen_util.load_generated_lcmtype(
-            namespace, "my_type_t", codegen_data["python_types_dir"]
+            namespace, "my_type_t", codegen_data.python_types_dir
         )
         my_type_msg = my_type_t(foo=5)
 
@@ -633,7 +633,7 @@ def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
 
 def generate_lcm_types(
     lcm_type_dir: T.Openable, lcm_files: T.Sequence[str], lcm_output_dir: T.Openable = None
-) -> T.Dict[str, T.Any]:
+) -> T.Dict[str, str]:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.
 

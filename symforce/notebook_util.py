@@ -67,12 +67,12 @@ def display_code(code: str, language: str) -> None:
     IPython.display.display(IPython.display.HTML(html))
 
 
-def display_code_file(path: str, language: str) -> None:
+def display_code_file(path: T.Openable, language: str) -> None:
     """
     Display code from a file path with syntax highlighting.
 
     Args:
-        path (str): Path to source file
+        path (T.Openable): Path to source file
         language (str): {python, c++, anything supported by pygments}
     """
     with open(path) as f:

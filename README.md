@@ -391,7 +391,7 @@ codegen_linearization = codegen.with_linearization(
 Generate a C++ function that computes the linearization wrt the pose argument:
 ```python
 metadata = codegen_linearization.generate_function()
-print(open(metadata["generated_files"][0]).read())
+print(open(metadata.generated_files[0]).read())
 ```
 
 This C++ code depends only on Eigen and computes the results in a single flat function that shares all common sub-expressions:

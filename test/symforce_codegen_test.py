@@ -161,15 +161,15 @@ class SymforceCodegenTest(TestCase):
             "sym", os.path.join(output_dir, "sym", "__init__.py")
         )
         values_vec_t = codegen_util.load_generated_lcmtype(
-            namespace, "values_vec_t", os.path.join(codegen_data["python_types_dir"])
+            namespace, "values_vec_t", codegen_data.python_types_dir
         )
 
         states_t = codegen_util.load_generated_lcmtype(
-            namespace, "states_t", os.path.join(codegen_data["python_types_dir"])
+            namespace, "states_t", codegen_data.python_types_dir
         )
 
         constants_t = codegen_util.load_generated_lcmtype(
-            namespace, "constants_t", os.path.join(codegen_data["python_types_dir"])
+            namespace, "constants_t", codegen_data.python_types_dir
         )
 
         x = 2.0
@@ -190,9 +190,7 @@ class SymforceCodegenTest(TestCase):
         constants = constants_t()
         constants.epsilon = 1e-8
 
-        gen_module = codegen_util.load_generated_package(
-            namespace, codegen_data["python_function_dir"]
-        )
+        gen_module = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
         # TODO(nathan): Split this test into several different functions
         (foo, bar, scalar_vec_out, values_vec_out, values_vec_2D_out) = gen_module.python_function(
             x,
@@ -234,7 +232,7 @@ class SymforceCodegenTest(TestCase):
             func=matrix_order, config=codegen.PythonConfig()
         ).generate_function(namespace=namespace, output_dir=output_dir)
 
-        pkg = codegen_util.load_generated_package(namespace, codegen_data["python_function_dir"])
+        pkg = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
 
         self.assertEqual(pkg.matrix_order().shape, m23.SHAPE)
         self.assertStorageNear(pkg.matrix_order(), m23)
@@ -259,7 +257,7 @@ class SymforceCodegenTest(TestCase):
             sparse_matrices=["out"],
         ).generate_function(namespace=namespace, output_dir=output_dir)
 
-        pkg = codegen_util.load_generated_package(namespace, codegen_data["python_function_dir"])
+        pkg = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
 
         output = pkg.sparse_output_func(1, 2, 3)
 
@@ -279,9 +277,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.py")
-        output_function = os.path.join(
-            az_el_codegen_data["python_function_dir"], "az_el_from_point.py"
-        )
+        output_function = az_el_codegen_data.function_dir / "az_el_from_point.py"
         self.compare_or_update_file(expected_code_file, output_function)
 
     @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
@@ -299,13 +295,11 @@ class SymforceCodegenTest(TestCase):
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "numba_test_func.py")
-        output_function = os.path.join(
-            numba_test_func_codegen_data["python_function_dir"], "numba_test_func.py"
-        )
+        output_function = numba_test_func_codegen_data.function_dir / "numba_test_func.py"
         self.compare_or_update_file(expected_code_file, output_function)
 
         gen_module = codegen_util.load_generated_package(
-            "sym", numba_test_func_codegen_data["python_function_dir"]
+            "sym", numba_test_func_codegen_data.function_dir
         )
 
         x = np.array([1, 2, 3])
@@ -351,7 +345,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.h")
-        output_function = os.path.join(az_el_codegen_data["cpp_function_dir"], "az_el_from_point.h")
+        output_function = az_el_codegen_data.function_dir / "az_el_from_point.h"
         self.compare_or_update_file(expected_code_file, output_function)
 
     def test_cpp_nan(self) -> None:
@@ -376,7 +370,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare the function file
         self.compare_or_update_directory(
-            actual_dir=os.path.join(codegen_data["output_dir"]),
+            actual_dir=codegen_data.output_dir,
             expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
         )
 
@@ -796,8 +790,8 @@ class SymforceCodegenTest(TestCase):
                 func=matrix_order, config=codegen.CppConfig()
             ).generate_function(namespace="codegen_matrix_order", output_dir=output_dir)
 
-            assert len(codegen_data["generated_files"]) == 1, "only 1 generated file is expected"
-            return codegen_data["generated_files"][0]
+            assert len(codegen_data.generated_files) == 1, "only 1 generated file is expected"
+            return codegen_data.generated_files[0]
 
         generated_func_path = generate_function()
 
@@ -824,11 +818,11 @@ class SymforceCodegenTest(TestCase):
         )
         dataclass_codegen_data = dataclass_codegen.generate_function()
         gen_module = codegen_util.load_generated_package(
-            "test_function_dataclass", dataclass_codegen_data["python_function_dir"]
+            "test_function_dataclass", dataclass_codegen_data.function_dir
         )
 
         dataclass_t = codegen_util.load_generated_lcmtype(
-            "sym", "dataclass_t", dataclass_codegen_data["python_types_dir"]
+            "sym", "dataclass_t", dataclass_codegen_data.python_types_dir
         )()
         dataclass_t.v1.data = np.zeros(3)
         dataclass_t.v2.v0 = 1
@@ -891,11 +885,9 @@ class SymforceCodegenTest(TestCase):
         )
 
         # Make sure it runs
-        gen_module = codegen_util.load_generated_package(
-            namespace, codegen_data["python_function_dir"]
-        )
+        gen_module = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
         my_dataclass_t = codegen_util.load_generated_lcmtype(
-            namespace, "my_dataclass_t", codegen_data["python_types_dir"]
+            namespace, "my_dataclass_t", codegen_data.python_types_dir
         )()
         return_rot = gen_module.codegen_dataclass_in_values_test(my_dataclass_t)
         self.assertEqual(return_rot.data, my_dataclass_t.rot.data)

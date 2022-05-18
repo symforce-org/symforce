@@ -150,7 +150,7 @@ def generate_matrix(
     assert compute_a_dense.name is not None
     compute_a_dense.name = compute_a_dense.name.replace("_dense_", "_dense_dynamic_")
     data = compute_a_dense.generate_function(output_dir=output_dir, skip_directory_nesting=True)
-    _make_return_dynamic(Path(data["generated_files"][0]), matrix.shape)
+    _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     compute_b_dense = codegen.Codegen(
         inputs=Values(**{s.name: s for s in symbols}),
@@ -165,7 +165,7 @@ def generate_matrix(
     assert compute_b_dense.name is not None
     compute_b_dense.name = compute_b_dense.name.replace("_dense_", "_dense_dynamic_")
     data = compute_b_dense.generate_function(output_dir=output_dir, skip_directory_nesting=True)
-    _make_return_dynamic(Path(data["generated_files"][0]), matrix.shape)
+    _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     data = codegen.Codegen(
         inputs=Values(**{s.name: s for s in symbols}),
@@ -186,7 +186,7 @@ def generate_matrix(
     )
 
     if cant_allocate_on_stack and not symforce_result_is_sparse:
-        _make_return_dynamic(Path(data["generated_files"][0]), matrix.shape)
+        _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     template_util.render_template(
         template_path=Path(__file__).parent / "matrix_multiplication_benchmark.cc.jinja",

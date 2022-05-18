@@ -118,7 +118,6 @@ def main() -> None:
 # -----------------------------------------------------------------------------
 # (Optional) Generate C++ functions for residuals with on-manifold jacobians
 # -----------------------------------------------------------------------------
-from pathlib import Path
 from symforce.codegen import Codegen, CppConfig
 
 
@@ -132,7 +131,7 @@ def generate_bearing_residual_code() -> None:
 
     # Generate the function and print the code
     metadata = codegen.generate_function()
-    print(Path(metadata["generated_files"][0]).read_text())
+    print(metadata.generated_files[0].read_text())
 
     # Create a Codegen object that computes a linearization from the residual Codegen object,
     # by introspecting and symbolically differentiating the given arguments
@@ -140,7 +139,7 @@ def generate_bearing_residual_code() -> None:
 
     # Generate the function and print the code
     metadata = codegen_with_linearization.generate_function()
-    print(Path(metadata["generated_files"][0]).read_text())
+    print(metadata.generated_files[0].read_text())
 
 
 if __name__ == "__main__":

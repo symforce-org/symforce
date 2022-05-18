@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import copy
+import dataclasses
 import enum
 import functools
 import os
@@ -44,6 +45,16 @@ class LinearizationMode(enum.Enum):
     # and rhs (J^T b).  In this mode, the original function must return a vector (a geo.Matrix with
     # one column).
     FULL_LINEARIZATION = "full_linearization"
+
+
+@dataclasses.dataclass
+class GeneratedPaths:
+    output_dir: Path
+    lcm_type_dir: Path
+    function_dir: Path
+    python_types_dir: Path
+    cpp_types_dir: Path
+    generated_files: T.List[Path]
 
 
 class Codegen:
@@ -293,7 +304,7 @@ class Codegen:
         namespace: str = "sym",
         generated_file_name: str = None,
         skip_directory_nesting: bool = False,
-    ) -> T.Dict[str, T.Any]:
+    ) -> GeneratedPaths:
         """
         Generates a function that computes the given outputs from the given inputs.
 
@@ -381,11 +392,6 @@ class Codegen:
         # Namespace of this function + generated types
         self.namespace = namespace
 
-        output_data = {
-            "output_dir": output_dir,
-            "lcm_type_dir": types_codegen_data["lcm_type_dir"],
-        }
-
         template_data = dict(self.common_data(), spec=self)
 
         # Generate the function
@@ -408,7 +414,7 @@ class Codegen:
                 template_data,
             )
 
-            output_data["python_function_dir"] = python_function_dir
+            out_function_dir = python_function_dir
         elif isinstance(self.config, codegen_config.CppConfig):
             if skip_directory_nesting:
                 cpp_function_dir = output_dir
@@ -432,7 +438,7 @@ class Codegen:
                     template_data,
                 )
 
-            output_data["cpp_function_dir"] = cpp_function_dir
+            out_function_dir = cpp_function_dir
         else:
             raise NotImplementedError(f'Unknown config type: "{self.config}"')
 
@@ -442,11 +448,15 @@ class Codegen:
             lcm_files=types_codegen_data["lcm_files"],
             lcm_output_dir=types_codegen_data["lcm_bindings_output_dir"],
         )
-        output_data.update(lcm_data)
 
-        output_data["generated_files"] = [v[1] for v in templates.items]
-
-        return output_data
+        return GeneratedPaths(
+            output_dir=output_dir,
+            lcm_type_dir=Path(types_codegen_data["lcm_type_dir"]),
+            function_dir=out_function_dir,
+            python_types_dir=Path(lcm_data["python_types_dir"]),
+            cpp_types_dir=Path(lcm_data["cpp_types_dir"]),
+            generated_files=[Path(v.output_path) for v in templates.items],
+        )
 
     @staticmethod
     def default_docstring(

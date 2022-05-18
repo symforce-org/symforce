@@ -69,7 +69,7 @@ class SymforceDataBufferCodegenTest(TestCase):
         # Also test that the generated python code runs
         gen_module = codegen_util.load_generated_package(
             "buffer_func",
-            py_codegen_data["python_function_dir"],
+            py_codegen_data.function_dir,
         )
 
         a_numeric = 1.0

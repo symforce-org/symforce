@@ -58,7 +58,7 @@ class SymforceCppCodePrinterTest(TestCase):
 
         # Compare to expected
         expected_code_file = os.path.join(TEST_DATA_DIR, "heaviside.h")
-        output_function = os.path.join(heaviside_codegen_data["cpp_function_dir"], "heaviside.h")
+        output_function = heaviside_codegen_data.function_dir / "heaviside.h"
         self.compare_or_update_file(expected_code_file, output_function)
 
 

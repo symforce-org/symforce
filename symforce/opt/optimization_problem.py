@@ -135,7 +135,7 @@ class OptimizationProblem:
             )
             logger.info(
                 "Generated function `{}` in directory `{}`".format(
-                    output_data["name"], output_data["cpp_function_dir"]
+                    output_data["name"], output_data["function_dir"]
                 )
             )
 
