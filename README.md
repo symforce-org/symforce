@@ -1,8 +1,8 @@
 <!-- There's no good way to make an image that's different on light/dark mode that also links
     somewhere.  The closest thing is to add a #gh-light-mode-only to the target, which does this,
     but is kinda confusing -->
-![SymForce](docs/static/symforce_banner.png#gh-light-mode-only)
-![SymForce](docs/static/symforce_banner_dark.png#gh-dark-mode-only)
+![SymForce](docs/static/images/symforce_banner.png#gh-light-mode-only)
+![SymForce](docs/static/images/symforce_banner_dark.png#gh-dark-mode-only)
 
 <p align="center">
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
@@ -28,7 +28,7 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
 
 <br/>
 
-<img alt="SymForce" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/symforce_diagram.png" width="700px"/>
+<img alt="SymForce" src="docs/static/images/symforce_diagram.png" width="700px"/>
 
 <br/>
 
@@ -149,7 +149,7 @@ The robot measures:
 
 The robot's heading angle is defined counter-clockwise from the x-axis, and its relative bearing measurements are defined from the robot's forward direction:
 
-<img alt="Robot 2D Triangulation Figure" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_figure.png" width="350px"/>
+<img alt="Robot 2D Triangulation Figure" src="docs/static/images/robot_2d_triangulation/robot_2d_triangulation_figure.png" width="350px"/>
 
 ## Explore the math
 
@@ -291,7 +291,7 @@ for i in range(num_poses - 1):
 
 Here is a visualization of the structure of this factor graph:
 
-<img alt="Robot 2D Triangulation Factor Graph" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_factor_graph.png" width="600px"/>
+<img alt="Robot 2D Triangulation Factor Graph" src="docs/static/images/robot_2d_triangulation/robot_2d_triangulation_factor_graph.png" width="600px"/>
 
 ## Solve the problem
 
@@ -337,7 +337,7 @@ circles represent the robot, and the dotted lines represent the bearing measurem
 from symforce.examples.robot_2d_triangulation.plotting import plot_solution
 plot_solution(optimizer, result)
 ```
-<img alt="Robot 2D Triangulation Solution" src="https://symforce-6d87c842-22de-4727-863b-e556dcc9093b.vercel.app/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
+<img alt="Robot 2D Triangulation Solution" src="docs/static/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
 
 All of the code for this example can also be found in `symforce/examples/robot_2d_triangulation`.
 
@@ -610,8 +610,11 @@ See the LICENSE file for more information.
 
 SymForce is developed and maintained by [Skydio](https://skydio.com/). It is released as a free and open-source library for the robotics community. Contributors to the project are welcome!
 
-<a href="http://skydio.com">
-<img alt="Skydio Logo" src="https://logovectordl.com/wp-content/uploads/2021/03/skydio-inc-logo-vector.png" width="300px" />
+<a href="http://skydio.com#gh-light-mode-only">
+    <img alt="Skydio Logo" src="docs/static/images/skydio-logo-2.png" width="300px" />
+</a>
+<a href="http://skydio.com#gh-dark-mode-only">
+    <img alt="Skydio Logo" src="docs/static/images/skydio-logo-2-white.png" width="300px" />
 </a>
 
 # Future Ideas
