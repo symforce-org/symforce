@@ -8,10 +8,18 @@ setup(
     name='{{ package_name }}',
     version='{{ version }}',
     description='{{ description }} (installed by SymForce)',
+    license_file="LICENSE",
     long_description='{{ description }} (installed by SymForce)',
     author='Skydio, Inc',
     author_email='hayk@skydio.com',
+    install_requires=["numpy"],
     license='Apache 2.0',
     packages=find_packages(),
+    python_requires=">=2.7",
+    project_urls={
+        "Bug Tracker": "https://github.com/symforce-org/symforce/issues",
+        "Source": "https://github.com/symforce-org/symforce/tree/main/gen/python",
+    },
+    url="https://github.com/symforce-org/symforce",
     zip_safe=False,
 )

@@ -91,6 +91,7 @@ function(add_skymarshal_bindings target_name bindings_dir lcmtypes_dir)
   execute_process(
     COMMAND ${SKYMARSHAL_PYTHON} ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/parse_types.py ${lcmtypes_dir}
     OUTPUT_VARIABLE TYPES_TO_GENERATE
+    COMMAND_ERROR_IS_FATAL ANY
   )
   string(REPLACE "\n" ";" TYPES_TO_GENERATE_LIST ${TYPES_TO_GENERATE})
 

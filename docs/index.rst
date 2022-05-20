@@ -1,11 +1,8 @@
-SymForce Docs
+SymForce Home
 =============
 
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
-
-Guides
-======
 
 .. toctree::
    :caption: Pages
@@ -13,6 +10,11 @@ Guides
 
    self
    development
+
+.. toctree::
+   :caption: Tutorials
+   :hidden:
+
    notebooks/sympy_tutorial
    notebooks/geometry_tutorial
    notebooks/ops_tutorial
@@ -20,6 +22,10 @@ Guides
    notebooks/values_tutorial
    notebooks/codegen_tutorial
    notebooks/optimization_tutorial
+   notebooks/epsilon_tutorial
+
+Guides
+======
 
 :doc:`development`
     How to build, configure, and develop
@@ -31,7 +37,7 @@ Guides
     Introductory guide to doing math and geometry
 
 :doc:`notebooks/ops_tutorial`
-    Introductory guide to using Concepts in symforce
+    Introductory guide to using Ops in symforce
 
 :doc:`notebooks/cameras_tutorial`
     Introductory guide to using camera models
@@ -44,6 +50,9 @@ Guides
 
 :doc:`notebooks/optimization_tutorial`
     Basic example of using generated code to do optimization
+
+:doc:`notebooks/epsilon_tutorial`
+    Guide to how Epsilon is used to prevent singularities
 
 .. _api-reference:
 .. toctree::

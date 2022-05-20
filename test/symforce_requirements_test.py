@@ -10,7 +10,7 @@ import sys
 from symforce.test_util import TestCase
 from symforce import python_util
 
-SYMFORCE_DIR = Path(__file__).parent.parent
+SYMFORCE_DIR = Path(__file__).resolve().parent.parent
 
 
 class SymforceRequirementsTest(TestCase):
@@ -21,12 +21,12 @@ class SymforceRequirementsTest(TestCase):
     def test_requirements(self) -> None:
         output_dir = Path(self.make_output_dir("sf_requirements_test_"))
 
-        output_requirements_file = output_dir / "requirements.txt"
-        symforce_requirements_file = SYMFORCE_DIR / "requirements.txt"
+        output_requirements_file = output_dir / "dev_requirements.txt"
+        symforce_requirements_file = SYMFORCE_DIR / "dev_requirements.txt"
 
         local_requirements_map = {
             f"skymarshal @ file://localhost/{SYMFORCE_DIR}/third_party/skymarshal": "file:./third_party/skymarshal",
-            f"sym @ file://localhost/{SYMFORCE_DIR}/gen/python": "file:./gen/python",
+            f"symforce-sym @ file://localhost/{SYMFORCE_DIR}/gen/python": "file:./gen/python",
         }
 
         # Copy the symforce requirements file into the temp directory
@@ -58,7 +58,7 @@ class SymforceRequirementsTest(TestCase):
             cwd=SYMFORCE_DIR,
             env=dict(
                 os.environ,
-                # Compile command to put in the header of requirements.txt
+                # Compile command to put in the header of dev_requirements.txt
                 CUSTOM_COMPILE_COMMAND="python test/symforce_requirements_test.py --update",
             ),
         )
