@@ -65,7 +65,6 @@ docutils==0.17.1
     #   myst-parser
     #   nbsphinx
     #   sphinx
-    #   sphinx-rtd-theme
 entrypoints==0.4
     # via
     #   jupyter-client
@@ -177,15 +176,19 @@ nest-asyncio==1.5.5
 numpy==1.22.3
     # via
     #   matplotlib
+    #   pandas
     #   scipy
     #   skymarshal
     #   symforce (setup.py)
+    #   symforce-sym
 packaging==21.3
     # via
     #   ipykernel
     #   matplotlib
     #   nbconvert
     #   sphinx
+pandas==1.4.2
+    # via symforce (setup.py)
 pandocfilters==1.5.0
     # via nbconvert
 parso==0.8.3
@@ -206,6 +209,8 @@ platformdirs==2.5.1
     # via
     #   black
     #   pylint
+plotly==5.8.0
+    # via symforce (setup.py)
 ply==3.11
     # via skymarshal
 prompt-toolkit==3.0.29
@@ -235,8 +240,11 @@ python-dateutil==2.8.2
     # via
     #   jupyter-client
     #   matplotlib
+    #   pandas
 pytz==2022.1
-    # via babel
+    # via
+    #   babel
+    #   pandas
 pyyaml==6.0
     # via myst-parser
 pyzmq==22.3.0
@@ -263,11 +271,8 @@ sphinx==4.5.0
     #   myst-parser
     #   nbsphinx
     #   sphinx-autodoc-typehints
-    #   sphinx-rtd-theme
     #   symforce (setup.py)
 sphinx-autodoc-typehints==1.14.1
-    # via symforce (setup.py)
-sphinx-rtd-theme==1.0.0
     # via symforce (setup.py)
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
@@ -287,6 +292,8 @@ file:./gen/python
     # via symforce (setup.py)
 sympy==1.10.1
     # via symforce (setup.py)
+tenacity==8.0.1
+    # via plotly
 tinycss2==1.1.1
     # via nbconvert
 tokenize-rt==4.2.1

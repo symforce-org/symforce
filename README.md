@@ -8,8 +8,10 @@
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
 <a href="https://github.com/symforce-org/symforce"><img alt="Source Code" src="https://img.shields.io/badge/source-code-blue" /></a>
 <a href="https://github.com/symforce-org/symforce/issues"><img alt="Issues" src="https://img.shields.io/badge/issue-tracker-blue" /></a>
-<img alt="Python 3.8" src="https://img.shields.io/badge/python-3.8-blue" />
+<img alt="Python 3.8 | 3.9 | 3.10" src="https://img.shields.io/pypi/pyversions/symforce" />
 <img alt="C++14" src="https://img.shields.io/badge/c++-14-blue" />
+<a href="https://pypi.org/project/symforce/"><img alt="PyPI" src="https://img.shields.io/pypi/v/symforce" /></a>
+<a href="https://github.com/symforce-org/symforce/tree/main/LICENSE"><img alt="Apache License" src="https://img.shields.io/pypi/l/symforce" /></a>
 </p>
 
 ---
@@ -48,79 +50,21 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
 SymForce was published to [RSS 2022](https://roboticsconference.org/). Please cite it as follows:
 
 ```
-@inproceedings{Martiros-RSS-22, 
-    author    = {Hayk Martiros AND Aaron Miller AND Nathan Bucki AND Bradley Solliday AND Ryan Kennedy AND Jack Zhu AND Tung Dang AND Dominic Pattison AND Harrison Zheng AND Teo Tomic AND Peter Henry AND Gareth Cross AND Josiah VanderMey AND Alvin Sun AND Samuel Wang AND Kristen Holtz}, 
-    title     = {{SymForce: Symbolic Computation and Code Generation for Robotics}}, 
-    booktitle = {Proceedings of Robotics: Science and Systems}, 
-    year      = {2022}, 
-    doi       = {10.15607/RSS.2022.XVIII.041} 
-} 
+@inproceedings{Martiros-RSS-22,
+    author    = {Hayk Martiros AND Aaron Miller AND Nathan Bucki AND Bradley Solliday AND Ryan Kennedy AND Jack Zhu AND Tung Dang AND Dominic Pattison AND Harrison Zheng AND Teo Tomic AND Peter Henry AND Gareth Cross AND Josiah VanderMey AND Alvin Sun AND Samuel Wang AND Kristen Holtz},
+    title     = {{SymForce: Symbolic Computation and Code Generation for Robotics}},
+    booktitle = {Proceedings of Robotics: Science and Systems},
+    year      = {2022},
+    doi       = {10.15607/RSS.2022.XVIII.041}
+}
 ```
 
-# Build from pip
+# Install
 
-SymForce requires Python 3.8 or later. We suggest creating a virtual python environment.
+Install with pip:
 
-Install the `gmp` package with one of:
-```
-apt install libgmp-dev            # Linux
-brew install gmp                  # Mac
-conda install -c conda-forge gmp  # Conda
-```
-
-Install SymForce
-```
-pip install -e .
-```
-
-Verify the installation in Python:
-```python
->>> from symforce import geo
->>> geo.Rot3()
-```
-<span style="color:blue">TODO: Create wheels for <code style="color:blue"><b>pip install symforce</b></code></span>
-
-# Build CMake yourself (TODO deconflict)
-
-SymForce requires Python 3.8 or later. We suggest creating a virtual python environment.
-
-Install packages:
-```
-# Linux
-apt install doxygen libgmp-dev pandoc
-
-# Mac
-brew install doxygen gmp pandoc
-
-# Conda
-conda install -c conda-forge doxygen gmp pandoc
-```
-
-Install python requirements:
-```
-pip install -r requirements.txt
-```
-
-Install CMake if you don't already have a recent version:
-```
-pip install "cmake>=3.19"
-```
-
-Build SymForce (requires C++14 or later):
-```
-mkdir build
-cd build
-cmake ..
-make -j 7
-```
-If you have build errors, try updating CMake.
-
-Install built Python packages:
-```
-cd ..
-pip install -e build/lcmtypes/python2.7
-pip install -e gen/python
-pip install -e .
+```bash
+pip install symforce
 ```
 
 Verify the installation in Python:
@@ -129,7 +73,7 @@ Verify the installation in Python:
 >>> geo.Rot3()
 ```
 
-<span style="color:blue">TODO: Create wheels for <code style="color:blue"><b>pip install symforce</b></code></span>
+This installs pre-compiled C++ components of SymForce on Linux and Mac using pip wheels, but does not include C++ headers. If you want to compile against C++ SymForce types (like `sym::Optimizer`), you currently need to [build from source](#build-from-source).
 
 # Tutorial
 
@@ -226,7 +170,7 @@ geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
 
 <!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
 
-<span style="color:blue">TODO: Link to a detailed epsilon tutorial once created.</span>
+See the [Epsilon Tutorial](https://symforce.org/notebooks/epsilon_tutorial.html) in the SymForce Docs for more information.
 
 ## Build an optimization problem
 
@@ -573,6 +517,52 @@ However, each piece may also be used independently. The optimization machinery c
 $ -->
 
 To learn more, visit the SymForce tutorials [here](https://symforce.org/#guides).
+
+# Build from Source
+
+SymForce requires Python 3.8 or later. We strongly suggest creating a virtual python environment.
+
+Install the `gmp` package with one of:
+```bash
+apt install libgmp-dev            # Ubuntu
+brew install gmp                  # Mac
+conda install -c conda-forge gmp  # Conda
+```
+
+SymForce contains both C++ and Python code. The C++ code is built using CMake.  You can build the package either by calling pip, or by calling CMake directly.  If building with `pip`, this will call CMake under the hood, and run the same CMake build for the C++ components.
+
+If you encounter build issues, please file an [issue](https://github.com/symforce-org/symforce/issues).
+
+## Build with pip
+
+The recommended way to build and install SymForce if you only plan on making Python changes is with pip.  From the symforce directory:
+```bash
+pip install -e .
+```
+
+This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described [below](#build-with-cmake).
+
+`pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+
+## Build with CMake
+
+If you'll be modifying the C++ parts of SymForce, you should build with CMake directly instead - this method will not install
+SymForce into your Python environment, so you'll need to add it to your PYTHONPATH separately.
+
+Install python requirements:
+```bash
+pip install -r dev_requirements.txt
+```
+
+Build SymForce (requires C++14 or later):
+```bash
+mkdir build
+cd build
+cmake ..
+make -j $(nproc)
+```
+
+You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce) to your PYTHONPATH in order to use them.
 
 # License
 

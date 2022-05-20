@@ -189,14 +189,31 @@ docs_requirements = [
     "myst-parser",
     "nbsphinx",
     "nbstripout",
+    "pandas",
+    "plotly",
     "Sphinx",
     # sphinx-autodoc-typehints >=1.15 contains a bug causing it to crash parsing our typing.py
     "sphinx-autodoc-typehints<1.15",
-    "sphinx-rtd-theme",
     "breathe",
 ]
 
 cmdclass: T.Dict[str, T.Any] = dict(build_ext=CMakeBuild, install=InstallWithExtras)
+
+
+def symforce_data_files() -> T.List[str]:
+    # package_data doesn't support recursive globs until this merges:
+    # https://github.com/pypa/setuptools/pull/3309
+    # So, we do the globbing ourselves
+    SYMFORCE_PKG_DIR = SOURCE_DIR / "symforce"
+    files_with_pattern = lambda pattern: [
+        str(p.relative_to(SYMFORCE_PKG_DIR)) for p in SYMFORCE_PKG_DIR.rglob(pattern)
+    ]
+    return (
+        files_with_pattern("*.jinja")
+        + files_with_pattern("*.mtx")
+        + ["test_util/random_expressions/README"]
+    )
+
 
 setup(
     name="symforce",
@@ -224,10 +241,15 @@ setup(
         "Topic :: Scientific/Engineering :: Mathematics",
         "Topic :: Software Development :: Code Generators",
         "Topic :: Software Development :: Embedded Systems",
+        "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Education :: Computer Aided Instruction (CAI)",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: C++",
-        "License :: OSI Approved :: Apache-2.0 License",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
     # -------------------------------------------------------------------------
@@ -237,6 +259,9 @@ setup(
     python_requires=">=3.8",
     # Find all packages in the directory
     packages=find_packages(),
+    package_data={
+        "symforce": symforce_data_files(),
+    },
     # Override the extension builder with our cmake class
     cmdclass=cmdclass,
     # Build C++ extension module
@@ -248,9 +273,10 @@ setup(
         "graphviz",
         "jinja2",
         "numpy",
+        "scipy",
         f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
         "sympy~=1.10.0",
-        f"sym @ file://localhost/{SOURCE_DIR}/gen/python",
+        f"symforce-sym @ file://localhost/{SOURCE_DIR}/gen/python",
     ],
     setup_requires=setup_requirements,
     extras_require={
@@ -266,7 +292,6 @@ setup(
             "pip-tools",
             "pybind11-stubgen",
             "pylint",
-            "scipy",
             "types-jinja2",
             "types-pygments",
             "types-requests",

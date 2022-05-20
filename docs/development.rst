@@ -15,12 +15,19 @@ See the :ref:`module reference <api-reference>` for the core package structure.
 *************************************************
 Build
 *************************************************
-SymForce is primarily written in Python, aimed to be 3.8+ compatible. It has a top level Makefile to execute high level commands:
+SymForce is primarily written in Python and C++, and is Python 3.8+ and C++14 compatible.  The build
+system is CMake for the C++ components, and optionally pip / setuptools on top for Python packaging.
+See the Build section on the [Homepage](/index.html#build-from-source) for build instructions.
+
+
+*************************************************
+Additional useful commands
+*************************************************
+SymForce also has a top level Makefile which is not used by the build, but provides some high
+level commands for development:
 
 +----------------------------------------------+--------------------------+
-| Install requirements                         | ``make all_reqs``        |
-+----------------------------------------------+--------------------------+
-| Run tests                                    | ``make test``            |
+| Run Python tests                             | ``make test``            |
 +----------------------------------------------+--------------------------+
 | Run tests which update (most) generated code | ``make test_update``     |
 +----------------------------------------------+--------------------------+
@@ -32,17 +39,11 @@ SymForce is primarily written in Python, aimed to be 3.8+ compatible. It has a t
 +----------------------------------------------+--------------------------+
 | Build docs + open in browser                 | ``make docs_open``       |
 +----------------------------------------------+--------------------------+
-| Launch Jupyter server                        | ``make notebook``        |
-+----------------------------------------------+--------------------------+
-| Launch Jupyter server + browser              | ``make notebook_open``   |
-+----------------------------------------------+--------------------------+
 | Run the code formatter (black, clang-format) | ``make format``          |
 +----------------------------------------------+--------------------------+
 | Check types with mypy                        | ``make check_types``     |
 +----------------------------------------------+--------------------------+
 | Check formatting and types                   | ``make lint``            |
-+----------------------------------------------+--------------------------+
-| Clean all build products                     | ``make clean``           |
 +----------------------------------------------+--------------------------+
 
 *************************************************

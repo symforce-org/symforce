@@ -1,3 +1,12 @@
 [href$="#gh-dark-mode-only"], [src$="#gh-dark-mode-only"] {
   display: none;
 }
+
+section#symforce-home h1 {
+  display: none;
+}
+
+/* Hide "Navigation" header on sidebar */
+div.sphinxsidebarwrapper h3:first-of-type {
+  display: none;
+}

@@ -114,27 +114,34 @@ always_document_param_types = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "alabaster"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
+    "description": "Fast symbolic computation, code generation, and nonlinear optimization for robotics",
+    "fixed_sidebar": False,
+    "page_width": "1200px",
+    "github_button": True,
+    "github_user": "symforce-org",
+    "github_repo": "symforce",
+    "github_type": "star",
     # 'canonical_url': '',
     # 'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
     # 'logo_only': False,
-    "display_version": True,
+    # "display_version": True,
     # 'prev_next_buttons_location': 'bottom',
     # 'style_external_links': False,
     # 'vcs_pageview_mode': '',
     # 'style_nav_header_background': 'white',
     # Toc options
-    "collapse_navigation": False,
-    "sticky_navigation": True,
-    "navigation_depth": -1,
-    "includehidden": True,
-    "titles_only": True,
+    # "collapse_navigation": False,
+    # "sticky_navigation": True,
+    # "navigation_depth": -1,
+    "sidebar_includehidden": True,
+    # "titles_only": True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
