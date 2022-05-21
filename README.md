@@ -43,26 +43,19 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
  + Embedded-friendly C++ generation of templated Eigen code with zero dynamic memory allocation
  + Highly performant, modular, tested, and extensible code
 
+### Read the paper: https://arxiv.org/abs/2204.07889
 
- ### Read the paper: [arXiv:2204.07889](https://arxiv.org/abs/2204.07889)
+SymForce was published to [RSS 2022](https://roboticsconference.org/). Please cite it as follows:
 
-# Early Access Notes
-
-Thank you for helping us develop SymForce! We value the time you're taking to provide feedback during this private beta program. We expect some rough edges and slow, missing, or confusing aspects of the library. Please file [issues](https://github.com/symforce-org/symforce/issues) on GitHub and we will work to address them.
-
-Things to try:
-
-* Review our tutorials and documentation
-* Create symbolic expressions in a notebook
-* Use the symbolic geometry and camera modules
-* Compute tangent-space jacobians using `symforce/jacobian_helpers.py`
-* Use the Python Factor and Optimizer to solve a problem
-* Generate runtime C++ code with the Codegen class
-* Use the generated C++ geometry module
-* Use the C++ Factor and Optimizer to solve a problem
-* Read and understand the SymForce codebase
-
-[**Read the docs!**](https://symforce.org)
+```
+@inproceedings{Martiros-RSS-22, 
+    author    = {Hayk Martiros AND Aaron Miller AND Nathan Bucki AND Bradley Solliday AND Ryan Kennedy AND Jack Zhu AND Tung Dang AND Dominic Pattison AND Harrison Zheng AND Teo Tomic AND Peter Henry AND Gareth Cross AND Josiah VanderMey AND Alvin Sun AND Samuel Wang AND Kristen Holtz}, 
+    title     = {{SymForce: Symbolic Computation and Code Generation for Robotics}}, 
+    booktitle = {Proceedings of Robotics: Science and Systems}, 
+    year      = {2022}, 
+    doi       = {10.15607/RSS.2022.XVIII.041} 
+} 
+```
 
 # Build from pip
 
@@ -505,7 +498,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
 
 SymForce can also generate runtime Python code that depends only on `numpy`.
 
-The code generation system is written with pluggable [`jinja`](https://palletsprojects.com/p/jinja/) templates to minimize the work to add new backend languages. Some of our top candidates to add are TypeScript, CUDA, and PyTorch.
+The code generation system is written with pluggable [jinja](https://palletsprojects.com/p/jinja/) templates to minimize the work to add new backend languages. Some of our top candidates to add are TypeScript, CUDA, and PyTorch.
 
 ## Optimize from C++
 
@@ -579,36 +572,17 @@ However, each piece may also be used independently. The optimization machinery c
     }
 $ -->
 
-# Learn More
-
-You can find more SymForce tutorials [here](https://symforce.org/#guides).
-
-# Citing SymForce
-
-To cite SymForce in a publication use
-
-```
-@inproceedings{SymForce-RSS-2022,
-    author    = {Hayk Martiros and Aaron Miller and Nathan Bucki and Bradley Solliday
-                 and Ryan Kennedy and Jack Zhu and Tung Dang and Dominic Pattison
-                 and Harrison Zheng and Teo Tomic and Peter Henry and Josiah VanderMey
-                 and Gareth Cross and Alvin Sun and Samuel Wang and Kristen Holtz},
-    title      = {SymForce: Symbolic Computation and Code Generation for Robotics},
-    url        = {https://github.com/symforce-org/symforce},
-    booktitle  = {Proceedings of Robotics: Science and Systems},
-    year       = {2022}
-}
-```
+To learn more, visit the SymForce tutorials [here](https://symforce.org/#guides).
 
 # License
 
 SymForce is released under the [Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license.
 
-See the LICENSE file for more information.
+See the [LICENSE](https://github.com/symforce-org/symforce/blob/main/LICENSE) file for more information.
 
 # Sponsors
 
-SymForce is developed and maintained by [Skydio](https://skydio.com/). It is released as a free and open-source library for the robotics community. Contributors to the project are welcome!
+SymForce is developed and maintained by [Skydio](https://skydio.com/). It is released as a free and open-source library for the robotics community.
 
 <a href="http://skydio.com#gh-light-mode-only">
     <img alt="Skydio Logo" src="docs/static/images/skydio-logo-2.png" width="300px" />
@@ -617,14 +591,16 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is rel
     <img alt="Skydio Logo" src="docs/static/images/skydio-logo-2-white.png" width="300px" />
 </a>
 
-# Future Ideas
+# Contributing
 
-There are several features we'd like to add, or would be happy to see added by contributors from the
-community.  Some of these are outlined in
-[the current Issues](https://github.com/symforce-org/symforce/issues), but some other major possible
-additions are:
+While SymForce already powers tens of thousands of robots at Skydio, the public library is new and we are releasing it in beta stage. This is just the beginning, and we are excited for engagement from the community. Thank you for helping us develop SymForce! The best way to get started is to file [issues](https://github.com/symforce-org/symforce/issues) for bugs or desired features.
 
+There are many features we're excited to add to SymForce and would love to see contributed by the community. Most are outlined in the issues, but some major desired contributions are:
+
+- Add more backend languages, such as TypeScript, CUDA, GLSL/HLSL, and PyTorch
 - Easily swap in approximate or architecture-specific implementations of primitive
 functions, such as trig functions
-- Add more backend languages, such as CUDA, GLSL/HLSL, and TypeScript
+- Support for WebAssembly compilation
 - More Lie group types, in particular Sim(3)
+- Support for constraints in our optimizer
+- Integration with [ISPC](https://ispc.github.io/)
