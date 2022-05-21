@@ -431,7 +431,7 @@ class Codegen:
                 template_data,
             )
 
-            if self.config.use_explicit_template_instantiation:
+            if self.config.explicit_template_instantiation_types is not None:
                 templates.add(
                     Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.cc.jinja",
                     cpp_function_dir / f"{generated_file_name}.cc",

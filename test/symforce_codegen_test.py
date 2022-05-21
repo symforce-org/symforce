@@ -837,7 +837,7 @@ class SymforceCodegenTest(TestCase):
         cpp_func = codegen.Codegen(
             inputs,
             outputs,
-            codegen.CppConfig(use_explicit_template_instantiation=True),
+            codegen.CppConfig(explicit_template_instantiation_types=["double", "float"]),
             "codegen_explicit_template_instantiation_test",
         )
         shared_types = {

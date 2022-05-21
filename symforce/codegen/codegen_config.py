@@ -48,9 +48,9 @@ class CppConfig(CodegenConfig):
                                                 which we'll initialize an output matrix to 0, so we
                                                 don't have to generate a line to set each zero
                                                 element to 0 individually
-        use_explicit_template_instantiation: Explicity instantiate templated functions in a `.cc`
-            file so that generated function can be compiled in its own translation unit. Useful
-            for large functions which take a long time to compile.
+        explicit_template_instantiation_types: Explicity instantiates templated functions in a `.cc`
+            file for each given type. This allows the generated function to be compiled in its own
+            translation unit. Useful for large functions which take a long time to compile.
     """
 
     doc_comment_line_prefix: str = " * "
@@ -59,7 +59,7 @@ class CppConfig(CodegenConfig):
     support_complex: bool = False
     force_no_inline: bool = False
     zero_initialization_sparsity_threshold: float = 0.5
-    use_explicit_template_instantiation: bool = False
+    explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
 
 
 @dataclass

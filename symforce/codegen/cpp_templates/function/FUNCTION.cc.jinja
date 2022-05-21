@@ -9,11 +9,11 @@
 
 namespace {{ spec.namespace }} {
 
+{% for type in spec.config.explicit_template_instantiation_types %}
 {% set name = python_util.snakecase_to_camelcase(spec.name) %}
-template {{ util.get_return_type(spec, scalar_type="double") }} {{ name }}<double>(
-    {{- util.input_args_declaration(spec, is_declaration=False, scalar_type="double") -}});
+template {{ util.get_return_type(spec, scalar_type=type) }} {{ name }}<{{ type }}>(
+    {{- util.input_args_declaration(spec, is_declaration=False, scalar_type=type) -}});
 
-template {{ util.get_return_type(spec, scalar_type="float") }} {{ name }}<float>(
-    {{- util.input_args_declaration(spec, is_declaration=False, scalar_type="float") -}});
+{% endfor -%}
 
 }  // namespace {{ spec.namespace }}

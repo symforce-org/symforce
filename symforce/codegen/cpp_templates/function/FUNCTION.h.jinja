@@ -46,14 +46,13 @@ __attribute__((noinline))
     {{ util.expr_code(spec) -}}
 }  // NOLINT(readability/fn_size)
 
-{% if spec.config.use_explicit_template_instantiation %}
+{% if spec.config.explicit_template_instantiation_types is not none %}
+{% for type in spec.config.explicit_template_instantiation_types %}
 {% set name = python_util.snakecase_to_camelcase(spec.name) %}
-extern template {{ util.get_return_type(spec, scalar_type="double") }} {{ name }}<double>(
-    {{- util.input_args_declaration(spec, is_declaration=False, scalar_type="double") -}});
+extern template {{ util.get_return_type(spec, scalar_type=type) }} {{ name }}<{{ type }}>(
+    {{- util.input_args_declaration(spec, is_declaration=False, scalar_type=type) -}});
 
-extern template {{ util.get_return_type(spec, scalar_type="float") }} {{ name }}<float>(
-    {{- util.input_args_declaration(spec, is_declaration=False, scalar_type="float") -}});
-    
+{% endfor -%}
 {% endif -%}
 
 // NOLINTNEXTLINE(readability/fn_size)
