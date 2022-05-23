@@ -20,6 +20,7 @@ from symforce.codegen import format_util
 
 CURRENT_DIR = os.path.dirname(__file__)
 CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp_templates")
+JS_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "js_templates")
 PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python_templates")
 LCM_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "lcm_templates")
 
@@ -31,6 +32,7 @@ class FileType(enum.Enum):
     CUDA = enum.auto()
     LCM = enum.auto()
     MAKEFILE = enum.auto()
+    JAVASCRIPT = enum.auto()
     TYPESCRIPT = enum.auto()
 
     @staticmethod
@@ -47,6 +49,8 @@ class FileType(enum.Enum):
             return FileType.LCM
         elif extension == "Makefile":
             return FileType.MAKEFILE
+        elif extension == "js":
+            return FileType.JAVASCRIPT
         elif extension == "ts":
             return FileType.TYPESCRIPT
         else:
@@ -76,7 +80,8 @@ class RelEnvironment(jinja2.Environment):
 def add_preamble(source: str, name: Path, filetype: FileType) -> str:
     prefix = (
         "//"
-        if filetype in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.TYPESCRIPT)
+        if filetype
+        in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.JAVASCRIPT, FileType.TYPESCRIPT)
         else "#"
     )
     dashes = "-" * 77

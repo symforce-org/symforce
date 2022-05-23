@@ -84,3 +84,16 @@ class PythonConfig(CodegenConfig):
     line_length: int = 100
     use_eigen_types: bool = True
     use_numba: bool = False
+
+
+
+
+@dataclass
+class JavascriptConfig(CodegenConfig):
+    """
+    Javascript Codegen configuration
+    """
+
+    doc_comment_line_prefix: str = " * "
+    line_length: int = 100
+    use_eigen_types: bool = True

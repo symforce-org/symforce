@@ -4,4 +4,5 @@
 # ----------------------------------------------------------------------------
 
 from .cpp_code_printer import CppCodePrinter, ComplexCppCodePrinter
+from .javascript_code_printer import JavascriptCodePrinter
 from .python_code_printer import PythonCodePrinter

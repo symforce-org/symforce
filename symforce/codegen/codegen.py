@@ -429,6 +429,25 @@ class Codegen:
                 )
 
             output_data["cpp_function_dir"] = cpp_function_dir
+
+        elif isinstance(self.config, codegen_config.JavascriptConfig):
+            if skip_directory_nesting:
+                function_dir = output_dir
+            else:
+                function_dir = os.path.join(output_dir, "js", "symforce", namespace)
+
+            # TODO camelCase?
+            logger.info(
+                f'Creating JS function "{python_util.snakecase_to_camelcase(self.name)}" at "{function_dir}"'
+            )
+
+            templates.add(
+                os.path.join(template_util.JS_TEMPLATE_DIR, "function", "FUNCTION.js.jinja"),
+                os.path.join(function_dir, generated_file_name + ".js"),
+                template_data,
+            )
+
+            output_data["function_dir"] = function_dir
         else:
             raise NotImplementedError(f'Unknown config type: "{self.config}"')
 

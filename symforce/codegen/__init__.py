@@ -7,5 +7,5 @@
 Package for executable code generation from symbolic expressions.
 """
 
-from .codegen_config import CodegenConfig, CppConfig, PythonConfig
+from .codegen_config import CodegenConfig, CppConfig, JavascriptConfig, PythonConfig
 from .codegen import Codegen, LinearizationMode

@@ -348,10 +348,7 @@ def get_formatted_list(
         elif isinstance(value, (sm.Expr, sm.Symbol)):
             symbols = [sm.Symbol(key)]
         elif issubclass(arg_cls, geo.Matrix):
-            if isinstance(config, codegen_config.PythonConfig):
-                # TODO(nathan): Not sure this works for 2D matrices
-                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
-            elif isinstance(config, codegen_config.CppConfig):
+            if isinstance(config, codegen_config.CppConfig):
                 symbols = []
                 # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
                 # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
@@ -360,8 +357,12 @@ def get_formatted_list(
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
                         symbols.append(sm.Symbol(f"{key}({i}, {j})"))
+            elif isinstance(config, codegen_config.PythonConfig):
+                # TODO(nathan): Not sure this works for 2D matrices
+                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             else:
-                raise NotImplementedError()
+                symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+                # raise NotImplementedError()
 
         elif issubclass(arg_cls, Values):
             # Term is a Values object, so we must flatten it. Here we loop over the index so that
@@ -464,7 +465,7 @@ def _get_scalar_keys_recursive(
             vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
-        if isinstance(config, codegen_config.PythonConfig):
+        if isinstance(config, (codegen_config.PythonConfig, codegen_config.JavascriptConfig())):
             vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
         elif isinstance(config, codegen_config.CppConfig):
             vec.extend(sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(index_value.storage_dim))
@@ -506,6 +507,10 @@ def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
             printer = printers.ComplexCppCodePrinter()
         else:
             printer = printers.CppCodePrinter()
+
+    elif isinstance(config, codegen_config.JavascriptConfig):
+        printer = printers.JavascriptCodePrinter()
+
     else:
         raise NotImplementedError(f"Unknown config type: {config}")
 
