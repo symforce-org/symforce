@@ -453,8 +453,8 @@ class Codegen:
             output_dir=output_dir,
             lcm_type_dir=Path(types_codegen_data["lcm_type_dir"]),
             function_dir=out_function_dir,
-            python_types_dir=Path(lcm_data["python_types_dir"]),
-            cpp_types_dir=Path(lcm_data["cpp_types_dir"]),
+            python_types_dir=lcm_data["python_types_dir"],
+            cpp_types_dir=lcm_data["cpp_types_dir"],
             generated_files=[Path(v.output_path) for v in templates.items],
         )
 

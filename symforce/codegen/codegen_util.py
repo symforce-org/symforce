@@ -13,7 +13,6 @@ import dataclasses
 import importlib.abc
 import importlib.util
 import itertools
-import os
 from pathlib import Path
 import sympy
 import sys
@@ -633,7 +632,7 @@ def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
 
 def generate_lcm_types(
     lcm_type_dir: T.Openable, lcm_files: T.Sequence[str], lcm_output_dir: T.Openable = None
-) -> T.Dict[str, str]:
+) -> T.Dict[str, Path]:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.
 
@@ -641,15 +640,20 @@ def generate_lcm_types(
         lcm_type_dir: Directory containing symforce-generated .lcm files
         lcm_files: List of .lcm files to process
     """
-    if lcm_output_dir is None:
-        lcm_output_dir = os.path.join(lcm_type_dir, "..")
+    lcm_type_dir = Path(lcm_type_dir)
 
-    python_types_dir = os.path.join(lcm_output_dir, "python")
-    cpp_types_dir = os.path.join(lcm_output_dir, "cpp", "lcmtypes")
-    lcm_include_dir = os.path.join("lcmtypes")
+    if lcm_output_dir is None:
+        lcm_output_dir = lcm_type_dir / ".."
+    else:
+        lcm_output_dir = Path(lcm_output_dir)
+
+    python_types_dir = lcm_output_dir / "python"
+    cpp_types_dir = lcm_output_dir / "cpp" / "lcmtypes"
+    lcm_include_dir = "lcmtypes"
 
     result = {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}
 
+    # TODO(brad, aaron): Do something reasonable with lcm_files other than returning early
     # If no LCM files provided, do nothing
     if not lcm_files:
         return result
@@ -661,23 +665,23 @@ def generate_lcm_types(
     skymarshal.main(
         [SkymarshalPython, SkymarshalCpp],
         args=[
-            lcm_type_dir,
+            str(lcm_type_dir),
             "--python",
             "--python-path",
-            os.path.join(python_types_dir, "lcmtypes"),
+            str(python_types_dir / "lcmtypes"),
             "--python-namespace-packages",
             "--python-package-prefix",
             "lcmtypes",
             "--cpp",
             "--cpp-hpath",
-            cpp_types_dir,
+            str(cpp_types_dir),
             "--cpp-include",
             lcm_include_dir,
         ],
     )
 
     # Autoformat generated python files
-    format_util.format_py_dir(python_types_dir)
+    format_util.format_py_dir(str(python_types_dir))
 
     return result
 
