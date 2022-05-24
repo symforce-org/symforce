@@ -174,10 +174,13 @@ Factor<Scalar> JacobianFixed(Functor func, const std::vector<Key>& keys_to_func,
   constexpr int M = JacobianMat::RowsAtCompileTime;
   constexpr int N = JacobianMat::ColsAtCompileTime;
 
+  // NOTE(harrison): accoring to c++ spec you shouldn't have to specify a default lambda capture
+  // and should only have to specify a capture for func. However, this is not handled correctly in
+  // older versions of clang, which is why we have one here.
   return Factor<Scalar>(
-      [func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
-             VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
-             VectorX<Scalar>* rhs) {
+      [=](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+          VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
+          VectorX<Scalar>* rhs) {
         SYM_ASSERT(residual != nullptr);
         Eigen::Matrix<Scalar, M, 1> residual_fixed;
 
