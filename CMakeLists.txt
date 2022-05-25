@@ -191,8 +191,16 @@ else()
   execute_process(
     COMMAND ${SYMFORCE_PYTHON} -c "from _version import version; print(version, end='')"
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/symforce
+    RESULT_VARIABLE STATUS
     OUTPUT_VARIABLE SYMFORCE_VERSION
+    ERROR_VARIABLE SYMFORCE_VERSION_STDERR
   )
+  if(STATUS AND NOT STATUS EQUAL 0)
+    message(FATAL_ERROR
+      "Failed getting symforce version with exit code ${STATUS} and output ${SYMFORCE_VERSION}, stderr ${SYMFORCE_VERSION_STDERR}"
+    )
+  endif()
+
   file(WRITE
     ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/setup.py
     "
@@ -290,7 +298,16 @@ if(SYMFORCE_GENERATE_MANIFEST)
                                 --binary_output_dir "${CMAKE_BINARY_DIR}"
                                 # TODO(aaron): Put this somewhere smarter
                                 --manifest_path ${CMAKE_CURRENT_SOURCE_DIR}/build/manifest.json
+      RESULT_VARIABLE STATUS
+      OUTPUT_VARIABLE GENERATE_MANIFEST_OUTPUT
+      ERROR_VARIABLE GENERATE_MANIFEST_OUTPUT
     )
+
+    if(STATUS AND NOT STATUS EQUAL 0)
+      message(FATAL_ERROR
+        "Failed generating manifest with exit code ${STATUS} and output ${GENERATE_MANIFEST_OUTPUT}"
+      )
+    endif()
   endfunction()
 
   generate_manifest()

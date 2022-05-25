@@ -20,7 +20,7 @@
 namespace robot_3d_localization {
 
 /**
- * Creates a factor for a prior on the relative pose between view i and view j
+ * Creates a factor for a measurement of the position of landmark j from pose i
  */
 template <typename Scalar>
 sym::Factor<Scalar> CreateMatchingFactor(const int i, const int j) {
@@ -32,6 +32,9 @@ sym::Factor<Scalar> CreateMatchingFactor(const int i, const int j) {
                                       {sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i)});
 }
 
+/**
+ * Creates a factor for the odometry measurement between poses i and i + 1
+ */
 template <typename Scalar>
 sym::Factor<Scalar> CreateOdometryFactor(const int i) {
   return sym::Factor<Scalar>::Hessian(
@@ -44,6 +47,10 @@ sym::Factor<Scalar> CreateOdometryFactor(const int i) {
        sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i + 1)});
 }
 
+/**
+ * Builds a list of factors for the given numbers of poses and landmarks (assuming every pose
+ * observes all landmarks)
+ */
 template <typename Scalar>
 std::vector<sym::Factor<Scalar>> BuildDynamicFactors(const int num_poses, const int num_landmarks) {
   std::vector<sym::Factor<Scalar>> factors;
@@ -61,6 +68,9 @@ std::vector<sym::Factor<Scalar>> BuildDynamicFactors(const int num_poses, const 
   return factors;
 }
 
+/**
+ * Build and run the full optimization problem
+ */
 void RunDynamic() {
   auto values = BuildValues<double>(kNumPoses, kNumLandmarks);
 
@@ -97,7 +107,7 @@ void RunDynamic() {
   spdlog::info("Final error: {}", best_iter.new_error);
 }
 
-// Explicit specializations
+// Explicit template specializations for floats and doubles
 template sym::Factor<double> CreateMatchingFactor<double>(const int i, const int j);
 template sym::Factor<float> CreateMatchingFactor<float>(const int i, const int j);
 

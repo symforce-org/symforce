@@ -41,6 +41,10 @@ def snavely_reprojection_residual(
     """
     focal_length, k1, k2 = intrinsics
 
+    # Here we're writing the projection ourselves because this isn't a camera model provided by
+    # SymForce.  For cameras in `symforce.cam` we could just create a `cam.PosedCamera` and call
+    # `camera.pixel_from_global_point` instead, or we could create a subclass of `cam.CameraCal` and
+    # do that.
     point_cam = cam_T_world * point
 
     p = geo.V2(point_cam[:2]) / sm.Max(-point_cam[2], epsilon)
@@ -53,10 +57,20 @@ def snavely_reprojection_residual(
 
 
 def generate(output_dir: Path) -> None:
+    """
+    Generates the snavely_reprojection_factor into C++, as well as a set of Keys to help construct
+    the optimization problem in C++, and puts them into `output_dir`.  This is called by
+    `symforce/test/symforce_examples_bundle_adjustment_in_the_large_codegen_test.py` to generate the
+    contents of the `gen` folder inside this directory.
+    """
+
+    # Generate the residual function (see `gen/snavely_reprojection_factor.h`)
     codegen.Codegen.function(snavely_reprojection_residual, codegen.CppConfig()).with_linearization(
         which_args=["cam_T_world", "intrinsics", "point"]
     ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
 
+    # Make a `Values` with variables used in the C++ problem, and generate C++ Keys for them (see
+    # `gen/keys.h`)
     values = Values(
         cam_T_world=geo.Pose3(),
         intrinsics=geo.V3(),

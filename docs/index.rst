@@ -4,55 +4,61 @@ SymForce Home
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
 
-.. toctree::
-   :caption: Pages
-   :hidden:
-
-   self
-   development
-
-.. toctree::
-   :caption: Tutorials
-   :hidden:
-
-   notebooks/sympy_tutorial
-   notebooks/geometry_tutorial
-   notebooks/ops_tutorial
-   notebooks/cameras_tutorial
-   notebooks/values_tutorial
-   notebooks/codegen_tutorial
-   notebooks/optimization_tutorial
-   notebooks/epsilon_tutorial
-
 Guides
 ======
 
 :doc:`development`
     How to build, configure, and develop
 
-:doc:`notebooks/sympy_tutorial`
+:doc:`tutorials/sympy_tutorial`
     Basic introduction to SymPy
 
-:doc:`notebooks/geometry_tutorial`
+:doc:`tutorials/geometry_tutorial`
     Introductory guide to doing math and geometry
 
-:doc:`notebooks/ops_tutorial`
+:doc:`tutorials/ops_tutorial`
     Introductory guide to using Ops in symforce
 
-:doc:`notebooks/cameras_tutorial`
+:doc:`tutorials/cameras_tutorial`
     Introductory guide to using camera models
 
-:doc:`notebooks/values_tutorial`
+:doc:`tutorials/values_tutorial`
     How to structure large groups of symbols and expressions
 
-:doc:`notebooks/codegen_tutorial`
+:doc:`tutorials/codegen_tutorial`
     How to generate functions from symbolic expressions
 
-:doc:`notebooks/optimization_tutorial`
+:doc:`tutorials/optimization_tutorial`
     Basic example of using generated code to do optimization
 
-:doc:`notebooks/epsilon_tutorial`
+:doc:`tutorials/epsilon_tutorial`
     Guide to how Epsilon is used to prevent singularities
+
+.. toctree::
+   :hidden:
+
+   development
+
+.. toctree::
+   :caption: Tutorials
+   :hidden:
+
+   tutorials/sympy_tutorial
+   tutorials/geometry_tutorial
+   tutorials/ops_tutorial
+   tutorials/cameras_tutorial
+   tutorials/values_tutorial
+   tutorials/codegen_tutorial
+   tutorials/optimization_tutorial
+   tutorials/epsilon_tutorial
+
+.. toctree::
+   :caption: Examples
+   :hidden:
+   :glob:
+   :titlesonly:
+
+   examples/*/README
 
 .. _api-reference:
 .. toctree::

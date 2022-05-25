@@ -10,3 +10,17 @@ section#symforce-home h1 {
 div.sphinxsidebarwrapper h3:first-of-type {
   display: none;
 }
+
+/**
+ * Fix for:
+ * https://github.com/symforce-org/symforce/issues/141
+ * https://github.com/bitprophet/alabaster/issues/181
+ */
+dl.py {
+    margin-bottom: 15px;
+}
+
+div.sphinxsidebarwrapper p.caption span.caption-text {
+  font-size: 140%;
+  font-weight: bold;
+}

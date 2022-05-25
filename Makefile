@@ -168,7 +168,7 @@ PY_EXTENSION_MODULE_PATH?=$(BUILD_DIR)/pybind
 
 docs_html: docs_apidoc
 	export PYTHONPATH=$(PY_EXTENSION_MODULE_PATH):$(PYTHONPATH); \
-	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j $$(nproc)
+	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j auto
 	mkdir $(DOCS_DIR)/docs
 	ln -s ../_static $(DOCS_DIR)/docs/static
 

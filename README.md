@@ -45,7 +45,7 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
  + Embedded-friendly C++ generation of templated Eigen code with zero dynamic memory allocation
  + Highly performant, modular, tested, and extensible code
 
-### Read the paper: https://arxiv.org/abs/2204.07889
+### Read the paper: <a href="https://arxiv.org/abs/2204.07889">https://arxiv.org/abs/2204.07889</a>
 
 SymForce was published to [RSS 2022](https://roboticsconference.org/). Please cite it as follows:
 
@@ -73,7 +73,7 @@ Verify the installation in Python:
 >>> geo.Rot3()
 ```
 
-This installs pre-compiled C++ components of SymForce on Linux and Mac using pip wheels, but does not include C++ headers. If you want to compile against C++ SymForce types (like `sym::Optimizer`), you currently need to [build from source](#build-from-source).
+This installs pre-compiled C++ components of SymForce on Linux and Mac using pip wheels, but does not include C++ headers. If you want to compile against C++ SymForce types (like `sym::Optimizer`), you currently need to <a href="#build-from-source">build from source</a>.
 
 # Tutorial
 
@@ -86,7 +86,7 @@ The robot measures:
 
 The robot's heading angle is defined counter-clockwise from the x-axis, and its relative bearing measurements are defined from the robot's forward direction:
 
-<img alt="Robot 2D Triangulation Figure" src="docs/static/images/robot_2d_triangulation/robot_2d_triangulation_figure.png" width="350px"/>
+<img alt="Robot 2D Localization Figure" src="docs/static/images/robot_2d_localization/problem_setup.png" width="350px"/>
 
 ## Explore the math
 
@@ -228,7 +228,7 @@ for i in range(num_poses - 1):
 
 Here is a visualization of the structure of this factor graph:
 
-<img alt="Robot 2D Triangulation Factor Graph" src="docs/static/images/robot_2d_triangulation/robot_2d_triangulation_factor_graph.png" width="600px"/>
+<img alt="Robot 2D Localization Factor Graph" src="docs/static/images/robot_2d_localization/factor_graph.png" width="600px"/>
 
 ## Solve the problem
 
@@ -271,12 +271,12 @@ Let's visualize what the optimizer did. The orange circles represent the fixed l
 circles represent the robot, and the dotted lines represent the bearing measurements.
 
 ```python
-from symforce.examples.robot_2d_triangulation.plotting import plot_solution
+from symforce.examples.robot_2d_localization.plotting import plot_solution
 plot_solution(optimizer, result)
 ```
-<img alt="Robot 2D Triangulation Solution" src="docs/static/images/robot_2d_triangulation/robot_2d_triangulation_iterations.gif" width="600px"/>
+<img alt="Robot 2D Localization Solution" src="docs/static/images/robot_2d_localization/iterations.gif" width="600px"/>
 
-All of the code for this example can also be found in `symforce/examples/robot_2d_triangulation`.
+All of the code for this example can also be found in `symforce/examples/robot_2d_localization`.
 
 ## Symbolic vs Numerical Types
 
@@ -520,7 +520,7 @@ To learn more, visit the SymForce tutorials [here](https://symforce.org/#guides)
 
 # Build from Source
 
-SymForce requires Python 3.8 or later. We strongly suggest creating a virtual python environment.
+SymForce requires Python 3.8 or later. The build is currently tested on Linux and macOS, SymForce on Windows is untested (see [#145](https://github.com/symforce-org/symforce/issues/145)).  We strongly suggest creating a virtual python environment.
 
 Install the `gmp` package with one of:
 ```bash
@@ -540,7 +540,7 @@ The recommended way to build and install SymForce if you only plan on making Pyt
 pip install -e .
 ```
 
-This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described [below](#build-with-cmake).
+This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described <a href="#build-with-cmake">below</a>.
 
 `pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
 
