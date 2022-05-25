@@ -100,3 +100,21 @@ Symbolic Backends
 SymForce uses the `SymPy <https://www.sympy.org/en/index.html>`_ API, but supports two backend implementations of it. The SymPy backend is pure Python, whereas the `SymEngine <https://github.com/symengine/symengine>`_ backend is wrapped C++. It can be 100-200 times faster for many operations, but is less fully featured and requires a C++ build.
 
 To set the backend, you can either use :func:`symforce.set_backend()` before any other imports, or use the ``SYMFORCE_BACKEND`` environment variable with the options ``sympy`` or ``symengine``. By default SymEngine will be used if found, otherwise SymPy.
+
+*************************************************
+Building wheels
+*************************************************
+
+You should be able to build Python wheels of symforce the standard ways.  We recommend using
+``build``, i.e. running ``python3 -m build --wheel`` from the ``symforce`` directory.  By default,
+this will build a wheel that includes local dependencies on the ``skymarshal`` and ``symforce-sym``
+packages (which are separate Python packages from ``symforce`` itself).  For distribution, you'll
+typically want to set the environment variable ``SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True`` when
+building, and also run ``python3 -m build --wheel third_party/skymarshal`` and
+``python3 -m build --wheel gen/python`` to build wheels for those packages separately.
+
+For SymForce releases, all of this is handled by the ``build_wheels`` GitHub Actions workflow.  This
+workflow is currently run manually on a commit, and produces a ``symforce-wheels.zip`` artifact with
+wheels (and sdists) for distribution (e.g. on PyPI).  It doesn't upload them to PyPI - to do that
+(after verifying that the built wheels work as expected) you should download and unzip the archive,
+and upload to PyPI with ``python -m twine upload [--repository testpypi] --verbose *``.

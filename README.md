@@ -2,7 +2,9 @@
     somewhere.  The closest thing is to add a #gh-light-mode-only to the target, which does this,
     but is kinda confusing -->
 ![SymForce](docs/static/images/symforce_banner.png#gh-light-mode-only)
+<!-- DARK_MODE_ONLY -->
 ![SymForce](docs/static/images/symforce_banner_dark.png#gh-dark-mode-only)
+<!-- /DARK_MODE_ONLY -->
 
 <p align="center">
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
@@ -113,8 +115,10 @@ landmark_body = pose.inverse() * landmark
 ```
 <img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}  R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1\end{bmatrix}}#gh-light-mode-only"
     width="250px" />
+<!-- DARK_MODE_ONLY -->
 <img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}  R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1\end{bmatrix}}#gh-dark-mode-only"
     width="250px" />
+<!-- /DARK_MODE_ONLY -->
 
 <!-- $
 \begin{bmatrix}
@@ -132,8 +136,10 @@ landmark_body.jacobian(pose)
 ```
 <img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}-L_0 R_{im} %2B L_1 R_{re} %2B t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} %2B t_0 R_{re} %2B t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-light-mode-only"
     width="350px" />
+<!-- DARK_MODE_ONLY -->
 <img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}-L_0 R_{im} %2B L_1 R_{re} %2B t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} %2B t_0 R_{re} %2B t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-dark-mode-only"
     width="350px" />
+<!-- /DARK_MODE_ONLY -->
 
 <!-- $
 \begin{bmatrix}
@@ -151,8 +157,10 @@ sm.atan2(landmark_body[1], landmark_body[0])
 ```
 <img src="https://render.githubusercontent.com/render/math?math={atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-light-mode-only"
     width="500px" />
+<!-- DARK_MODE_ONLY -->
 <img src="https://render.githubusercontent.com/render/math?math={\color{white} atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-dark-mode-only"
     width="500px" />
+<!-- /DARK_MODE_ONLY -->
 
 <!-- $
 atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
@@ -165,8 +173,10 @@ geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
 ```
 <img src="https://render.githubusercontent.com/render/math?math={\sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-light-mode-only"
     width="135px" />
+<!-- DARK_MODE_ONLY -->
 <img src="https://render.githubusercontent.com/render/math?math={\color{white} \sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-dark-mode-only"
     width="135px" />
+<!-- /DARK_MODE_ONLY -->
 
 <!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
 
@@ -577,9 +587,11 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is rel
 <a href="http://skydio.com#gh-light-mode-only">
     <img alt="Skydio Logo" src="docs/static/images/skydio-logo-2.png" width="300px" />
 </a>
+<!-- DARK_MODE_ONLY -->
 <a href="http://skydio.com#gh-dark-mode-only">
     <img alt="Skydio Logo" src="docs/static/images/skydio-logo-2-white.png" width="300px" />
 </a>
+<!-- /DARK_MODE_ONLY -->
 
 # Contributing
 

@@ -61,9 +61,22 @@ global_user_options = [
      'options to cmake <var>:<type>=<value>'),
 ]
 
-def _process_define(arg):
-    (defs, one), = getattr(arg, 'define', None) or [('', '1')]
-    assert one == '1'
+def _process_define(arg, install=False):
+    """
+    Parse CMake define arguments
+
+    Arguments
+    =========
+
+    arg ...... The Command instance that should have the `define` attribute
+    install .. True if we're running the install command (which has a different argument format)
+    """
+    if install:
+        defs = getattr(arg, 'define', None) or ''
+    else:
+        (defs, one), = getattr(arg, 'define', None) or [('', '1')]
+        assert one == '1'
+
     defs = [df for df in defs.split(';') if df != '']
     return [(s.strip(), None) if '=' not in s else
             tuple(ss.strip() for ss in s.split('='))
@@ -158,7 +171,7 @@ class InstallWithCmake(_install):
         # The argument parsing will result in self.define being a string, but
         # it has to be a list of 2-tuples.
         # Multiple symbols can be separated with semi-colons.
-        self.define = _process_define(self)
+        self.define = _process_define(self, install=True)
         cmake_opts.extend(self.define)
         cmake_build_type[0] = self.build_type
         cmake_opts.extend([('PYTHON_INSTALL_PATH', path.join(os.getcwd(), self.install_platlib))])

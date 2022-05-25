@@ -1,0 +1,84 @@
+name: Build wheels
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-extra:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Build Wheels
+      run: |
+        pip3 install build
+        python3 -m build --sdist --wheel third_party/skymarshal --outdir ./dist
+        python3 -m build --sdist --wheel gen/python --outdir ./dist
+
+    - name: Upload Wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: symforce-wheels
+        path: dist/*
+
+  build-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        python-version: [cp38, cp39, cp310]
+        arch: [x86_64, arm64]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install cibuildwheel
+      run: python3 -m pip install cibuildwheel==2.5.0
+
+    - name: Build wheels
+      run: python3 -m cibuildwheel --output-dir wheelhouse
+      env:
+        CIBW_BUILD: ${{ matrix.python-version }}-*
+        CIBW_ARCHS_MACOS: ${{ matrix.arch }}
+        CIBW_BUILD_FRONTEND: build
+        GMP_ROOT: /Users/runner/work/symforce/symforce/arm-homebrew/opt/gmp
+        CIBW_BEFORE_BUILD: ./.github/scripts/mac_install_gmp.sh
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: symforce-wheels
+        path: wheelhouse/*.whl
+
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [cp38, cp39, cp310]
+        arch: [x86_64]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install cibuildwheel
+      run: python3 -m pip install cibuildwheel==2.5.0
+
+    - name: Build wheels
+      run: python3 -m cibuildwheel --output-dir wheelhouse
+      env:
+        CIBW_BUILD: ${{ matrix.python-version }}-manylinux_${{ matrix.arch }}
+        CIBW_BUILD_FRONTEND: build
+        CIBW_BEFORE_BUILD: yum install -y gmp-devel git
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
+
+    - name: Upload Wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: symforce-wheels
+        path: wheelhouse/*.whl
