@@ -101,7 +101,7 @@ def plot_solution(
     if show_iteration_text:
         text = ax.text(8, 7, 9, "-", color="black")
 
-    def update_plot(slider_value: np.float64, show_iteration_text: bool) -> None:
+    def update_plot(slider_value: np.float64) -> None:
         """
         Update the plot using the given iteration.
         """
