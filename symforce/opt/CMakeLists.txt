@@ -129,9 +129,6 @@ add_library(
 target_link_libraries(symforce_cholesky metis ${SYMFORCE_EIGEN_TARGET})
 target_include_directories(symforce_cholesky PUBLIC ../..)
 
-install(TARGETS symforce_cholesky DESTINATION lib)
-install(FILES ${SYMFORCE_CHOLESKY_HEADERS} DESTINATION include)
-
 # ------------------------------------------------------------------------------
 # symforce_opt
 
@@ -152,9 +149,6 @@ target_link_libraries(symforce_opt
   ${SYMFORCE_EIGEN_TARGET}
 )
 
-install(TARGETS symforce_opt DESTINATION lib)
-install(FILES ${SYMFORCE_OPT_HEADERS} DESTINATION include)
-
 if(SYMFORCE_CUSTOM_TIC_TOCS)
   target_link_libraries(symforce_opt ${SYMFORCE_TIC_TOC_TARGET})
   target_compile_definitions(symforce_opt
@@ -162,3 +156,11 @@ if(SYMFORCE_CUSTOM_TIC_TOCS)
     PUBLIC SYM_TIME_SCOPE=${SYMFORCE_TIC_TOC_MACRO}
   )
 endif(SYMFORCE_CUSTOM_TIC_TOCS)
+
+
+# ------------------------------------------------------------------------------
+# install
+
+install(TARGETS symforce_cholesky DESTINATION lib)
+install(TARGETS symforce_opt DESTINATION lib)
+install(DIRECTORY ./ DESTINATION include/symforce/opt FILES_MATCHING PATTERN "*.h" PATTERN "*.tcc")
