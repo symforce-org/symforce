@@ -162,6 +162,7 @@ if(SYMFORCE_USE_EXTERNAL_LCM)
   add_library(symforce_lcmtypes_cpp INTERFACE)
   target_link_libraries(symforce_lcmtypes_cpp ${SYMFORCE_LCMTYPES_TARGET})
 else()
+  add_subdirectory(third_party/skymarshal)
   include(third_party/skymarshal/cmake/skymarshal.cmake)
 
   add_skymarshal_bindings(symforce_lcmtypes
@@ -224,7 +225,7 @@ target_include_directories(
 )
 
 install(TARGETS symforce_gen DESTINATION lib)
-install(FILES ${SYMFORCE_GEN_HEADERS} DESTINATION include)
+install(DIRECTORY gen/cpp/ DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "*.tcc")
 
 if(SYMFORCE_BUILD_OPT)
   add_subdirectory(symforce/opt)

@@ -3,3 +3,4 @@ project(skymarshal)
 
 add_library(skymarshal_core INTERFACE include/lcm/lcm_coretypes.h)
 target_include_directories(skymarshal_core INTERFACE include)
+install(DIRECTORY include/ DESTINATION include)

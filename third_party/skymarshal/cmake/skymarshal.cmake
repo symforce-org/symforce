@@ -53,14 +53,15 @@ function(add_cpp_bindings
 
   foreach(package_and_type ${types_to_generate})
     get_package_and_type(${package_and_type} package type)
-    list(APPEND generated_files ${bindings_dir}/cpp/lcmtypes/${package}/${type}.hpp)
+    set(generated_file ${bindings_dir}/cpp/lcmtypes/${package}/${type}.hpp)
+    list(APPEND generated_files ${generated_file})
+
+    install(FILES ${generated_file} DESTINATION include/lcmtypes/${package})
   endforeach()
 
   add_library(${target_name}_cpp INTERFACE ${generated_files})
-  target_include_directories(${target_name}_cpp INTERFACE ${bindings_dir}/cpp ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lcm)
+  target_include_directories(${target_name}_cpp INTERFACE ${bindings_dir}/cpp)
   target_link_libraries(${target_name}_cpp INTERFACE skymarshal_core)
-
-  install(FILES ${generated_files} DESTINATION include)
 
   set(${generated_files_outvar} ${generated_files} PARENT_SCOPE)
 
