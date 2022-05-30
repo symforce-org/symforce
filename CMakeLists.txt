@@ -180,6 +180,11 @@ else()
     LANGUAGES python
   )
 
+  # Install eigen_lcm headers.  Probably only want this when SYMFORCE_USE_EXTERNAL_LCM==OFF, but not
+  # sure
+  # TODO(aaron): Move this into skymarshal when we move eigen_lcm into skymarshal
+  install(DIRECTORY third_party/eigen_lcm/lcmtypes/eigen_lcm_lcm/cpp/ DESTINATION include)
+
   add_custom_target(symforce_eigen_lcm_py ALL DEPENDS eigen_lcm_py)
 
   # Get SymForce version
