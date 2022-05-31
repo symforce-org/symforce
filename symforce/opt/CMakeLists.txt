@@ -16,6 +16,7 @@ find_package(fmt QUIET)
 if (NOT fmt_FOUND)
   message(STATUS "fmt not found, adding with FetchContent")
   function(add_fmt)
+    set(FMT_INSTALL ON CACHE INTERNAL "fmt should create an install target")
     FetchContent_Declare(
       fmtlib
       GIT_REPOSITORY https://github.com/fmtlib/fmt
@@ -38,6 +39,7 @@ find_package(spdlog QUIET)
 if (NOT spdlog_FOUND)
   message(STATUS "spdlog not found, adding with FetchContent")
   function(add_spdlog)
+    set(SPDLOG_INSTALL ON CACHE INTERNAL "spdlog should create an install target")
     set(SPDLOG_FMT_EXTERNAL ON CACHE INTERNAL "spdlog shouldn't use its bundled fmtlib")
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(

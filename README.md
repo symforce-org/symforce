@@ -458,7 +458,7 @@ std::vector<sym::Factor<double>> factors;
 for (int i = 0; i < num_poses; ++i) {
     for (int j = 0; j < num_landmarks; ++j) {
         factors.push_back(sym::Factor<double>::Hessian(
-            &sym::BearingFactor,
+            sym::BearingFactor<double>,
             {{'P', i}, {'L', j}, {'a', i, j}, {'e'}},  // keys
             {{'P', i}}  // keys to optimize
         ));
@@ -468,12 +468,13 @@ for (int i = 0; i < num_poses; ++i) {
 // Odometry factors
 for (int i = 0; i < num_poses - 1; ++i) {
     factors.push_back(sym::Factor<double>::Hessian(
-        &sym::OdometryFactor,
+        sym::OdometryFactor<double>,
         {{'P', i}, {'P', i + 1}, {'d', i}, {'e'}},  // keys
         {{'P', i}, {'P', i + 1}}  // keys to optimize
     ));
 }
 
+const auto params = sym::DefaultOptimizerParams();
 sym::Optimizer<double> optimizer(
     params,
     factors,
@@ -482,9 +483,24 @@ sym::Optimizer<double> optimizer(
 
 sym::Values<double> values;
 for (int i = 0; i < num_poses; ++i) {
-    values.Set({'P', i}, sym::Pose2::Identity());
+    values.Set({'P', i}, sym::Pose2d::Identity());
 }
-// ... (initialize all keys)
+
+// Set additional values
+values.Set({'L', 0}, Eigen::Vector2d(-2, 2));
+values.Set({'L', 1}, Eigen::Vector2d(1, -3));
+values.Set({'L', 2}, Eigen::Vector2d(5, 2));
+values.Set({'d', 0}, 1.7);
+values.Set({'d', 1}, 1.4);
+const std::array<std::array<double, 3>, 3> angles = {
+    {{55, 245, -35}, {95, 220, -20}, {125, 220, -20}}
+};
+for (int i = 0; i < angles.size(); ++i) {
+    for (int j = 0; j < angles[0].size(); ++j) {
+        values.Set({'a', i, j}, angles[i][j] * M_PI / 180);
+    }
+}
+values.Set('e', sym::kDefaultEpsilond);
 
 // Optimize!
 const auto stats = optimizer.Optimize(&values);
