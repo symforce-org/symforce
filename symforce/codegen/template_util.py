@@ -18,13 +18,8 @@ from symforce import logger
 from symforce import typing as T
 from symforce.codegen import format_util
 
-CURRENT_DIR = os.path.dirname(__file__)
-
-# TODO(hayk): Move up to language-specific config or printer. (tag=centralize-language-diffs)
-CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp_templates")
-PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python_templates")
-LCM_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "lcm_templates")
-
+CURRENT_DIR = Path(__file__).parent
+LCM_TEMPLATE_DIR = CURRENT_DIR / "lcm_templates"
 
 class FileType(enum.Enum):
     CPP = enum.auto()
@@ -143,7 +138,7 @@ def render_template(
     prefix = (
         "//"
         if filetype
-        in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.JAVASCRIPT, FileType.TYPESCRIPT)
+        in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.TYPESCRIPT)
         else "#"
     )
 
@@ -161,7 +156,7 @@ def render_template(
                 format_cpp_filename = os.fspath(template_name).replace(".jinja", "")
 
             rendered_str = format_util.format_cpp(
-                rendered_str, filename=os.path.join(CURRENT_DIR, format_cpp_filename)
+                rendered_str, filename=str(CURRENT_DIR / format_cpp_filename)
             )
         elif filetype == FileType.PYTHON:
             rendered_str = format_util.format_py(rendered_str)

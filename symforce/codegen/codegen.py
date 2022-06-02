@@ -29,7 +29,7 @@ from symforce.codegen import codegen_config
 from symforce.codegen import types_package_codegen
 from symforce.type_helpers import symbolic_inputs
 
-CURRENT_DIR = os.path.dirname(__file__)
+CURRENT_DIR = Path(__file__).parent
 
 
 class LinearizationMode(enum.Enum):
@@ -256,7 +256,7 @@ class Codegen:
         data["DataBuffer"] = sm.DataBuffer
         data["Values"] = Values
         data["pathlib"] = pathlib
-        data["path_to_codegen"] = CURRENT_DIR
+        data["path_to_codegen"] = str(CURRENT_DIR)
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util
@@ -393,6 +393,7 @@ class Codegen:
         self.namespace = namespace
 
         template_data = dict(self.common_data(), spec=self)
+        template_dir = self.config.template_dir()
 
         # Generate the function
         if isinstance(self.config, codegen_config.PythonConfig):
@@ -404,12 +405,12 @@ class Codegen:
             logger.info(f'Creating python function "{self.name}" at "{out_function_dir}"')
 
             templates.add(
-                Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "FUNCTION.py.jinja",
+                template_dir / "function" / "FUNCTION.py.jinja",
                 out_function_dir / f"{generated_file_name}.py",
                 template_data,
             )
             templates.add(
-                Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "__init__.py.jinja",
+                template_dir / "function" / "__init__.py.jinja",
                 out_function_dir / "__init__.py",
                 template_data,
             )
@@ -424,14 +425,14 @@ class Codegen:
             )
 
             templates.add(
-                Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.h.jinja",
+                template_dir / "function" / "FUNCTION.h.jinja",
                 out_function_dir / f"{generated_file_name}.h",
                 template_data,
             )
 
             if self.config.explicit_template_instantiation_types is not None:
                 templates.add(
-                    Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.cc.jinja",
+                    template_dir / "function" / "FUNCTION.cc.jinja",
                     out_function_dir / f"{generated_file_name}.cc",
                     template_data,
                 )

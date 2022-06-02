@@ -4,8 +4,11 @@
 # ----------------------------------------------------------------------------
 from __future__ import annotations
 from dataclasses import dataclass
+from pathlib import Path
 
 from symforce import typing as T
+
+CURRENT_DIR = Path(__file__).parent
 
 
 @dataclass
@@ -36,6 +39,13 @@ class CodegenConfig:
     def printer(self) -> "sm.CodePrinter":
         """
         Return the code printer to use for this language.
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def template_dir(cls) -> Path:
+        """
+        Directory for jinja templates.
         """
         raise NotImplementedError()
 
@@ -80,14 +90,20 @@ class CppConfig(CodegenConfig):
 
     def printer(self) -> "sm.CodePrinter":
         from symforce.codegen.printers import cpp_code_printer
+
         if self.support_complex:
             return cpp_code_printer.ComplexCppCodePrinter()
         else:
             return cpp_code_printer.CppCodePrinter()
 
+    @classmethod
+    def template_dir(cls) -> Path:
+        return CURRENT_DIR / "cpp_templates"
+
     @staticmethod
     def format_data_accessor(prefix: str, index: int) -> str:
         return f"{prefix}.Data()[{index}]"
+
 
 @dataclass
 class PythonConfig(CodegenConfig):
@@ -116,5 +132,10 @@ class PythonConfig(CodegenConfig):
 
     def printer(self) -> "sm.CodePrinter":
         from symforce.codegen.printers import python_code_printer
+
         return python_code_printer.PythonCodePrinter()
+
+    @classmethod
+    def template_dir(cls) -> Path:
+        return CURRENT_DIR / "python_templates"
 

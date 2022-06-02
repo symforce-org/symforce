@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 
 from symforce import typing as T
-from symforce.codegen import Codegen, template_util
+from symforce.codegen import Codegen, CppConfig, template_util
 from symforce.values import generated_key_selection
 from symforce.values.values import Values
 
@@ -33,6 +33,7 @@ def generate_values_keys(
         skip_directory_nesting: Generate the output file directly into output_dir instead of adding
                                 the usual directory structure inside output_dir
     """
+    config = CppConfig()
     if not isinstance(output_dir, Path):
         output_dir = Path(output_dir)
 
@@ -50,7 +51,7 @@ def generate_values_keys(
         cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
 
     template_util.render_template(
-        template_path=Path(template_util.CPP_TEMPLATE_DIR) / "keys.h.jinja",
+        template_path=config.template_dir() / "keys.h.jinja",
         data=dict(Codegen.common_data(), namespace=namespace, vars=vars_to_generate),
         output_path=cpp_function_dir / generated_file_name,
     )
