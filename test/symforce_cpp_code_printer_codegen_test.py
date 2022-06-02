@@ -27,7 +27,7 @@ class SymforceCppCodePrinterTest(TestCase):
     """
 
     def test_max_min(self) -> None:
-        printer = codegen_util.get_code_printer(codegen.CppConfig())
+        printer = codegen.CppConfig().printer()
 
         a = sm.Symbol("a")
         b = sm.Symbol("b")

@@ -2,7 +2,7 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-
+from __future__ import annotations
 from dataclasses import dataclass
 
 from symforce import typing as T
@@ -33,6 +33,11 @@ class CodegenConfig:
     # TODO(hayk): Remove this parameter (by making everything 2D?)
     matrix_is_1d: bool = False
 
+    def printer(self) -> "sm.CodePrinter":
+        """
+        Return the code printer to use for this language.
+        """
+        raise NotImplementedError()
 
 @dataclass
 class CppConfig(CodegenConfig):
@@ -64,6 +69,12 @@ class CppConfig(CodegenConfig):
     zero_initialization_sparsity_threshold: float = 0.5
     explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
 
+    def printer(self) -> "sm.CodePrinter":
+        from symforce.codegen.printers import cpp_code_printer
+        if self.support_complex:
+            return cpp_code_printer.ComplexCppCodePrinter()
+        else:
+            return cpp_code_printer.CppCodePrinter()
 
 @dataclass
 class PythonConfig(CodegenConfig):
@@ -89,4 +100,8 @@ class PythonConfig(CodegenConfig):
     use_eigen_types: bool = True
     use_numba: bool = False
     matrix_is_1d: bool = True
+
+    def printer(self) -> "sm.CodePrinter":
+        from symforce.codegen.printers import python_code_printer
+        return python_code_printer.PythonCodePrinter()
 

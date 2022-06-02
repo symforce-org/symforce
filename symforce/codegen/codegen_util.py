@@ -179,7 +179,7 @@ def print_code(
     )
 
     # Get printer
-    printer = get_code_printer(config)
+    printer = config.printer()
 
     # Print code
     intermediate_terms = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
@@ -492,26 +492,6 @@ def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]
         )
 
     return symbolic_args
-
-
-def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
-    """
-    Pick a code printer for the given mode.
-    """
-    # TODO(hayk): Consider symengine printer if this becomes slow.
-
-    if isinstance(config, codegen_config.PythonConfig):
-        printer: sm.printing.codeprinter.CodePrinter = printers.PythonCodePrinter()
-
-    elif isinstance(config, codegen_config.CppConfig):
-        if config.support_complex:
-            printer = printers.ComplexCppCodePrinter()
-        else:
-            printer = printers.CppCodePrinter()
-    else:
-        raise NotImplementedError(f"Unknown config type: {config}")
-
-    return printer
 
 
 def _load_generated_package_internal(name: str, path: Path) -> T.Tuple[T.Any, T.List[str]]:
