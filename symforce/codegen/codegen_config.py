@@ -39,6 +39,15 @@ class CodegenConfig:
         """
         raise NotImplementedError()
 
+    # TODO(hayk): Move this into code printer.
+    @staticmethod
+    def format_data_accessor(prefix: str, index: int) -> str:
+        """
+        Format data for accessing a data array in code.
+        """
+        return f"{prefix}.data[{index}]"
+
+
 @dataclass
 class CppConfig(CodegenConfig):
     """
@@ -75,6 +84,10 @@ class CppConfig(CodegenConfig):
             return cpp_code_printer.ComplexCppCodePrinter()
         else:
             return cpp_code_printer.CppCodePrinter()
+
+    @staticmethod
+    def format_data_accessor(prefix: str, index: int) -> str:
+        return f"{prefix}.Data()[{index}]"
 
 @dataclass
 class PythonConfig(CodegenConfig):

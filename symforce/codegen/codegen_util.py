@@ -466,12 +466,10 @@ def _get_scalar_keys_recursive(
             vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
-        if isinstance(config, codegen_config.PythonConfig):
-            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
-        elif isinstance(config, codegen_config.CppConfig):
-            vec.extend(sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(index_value.storage_dim))
-        else:
-            raise NotImplementedError()
+        vec.extend(
+            sm.Symbol(config.format_data_accessor(prefix=prefix, index=i))
+            for i in range(index_value.storage_dim)
+        )
 
     assert len(vec) == len(set(vec)), "Non-unique keys:\n{}".format(
         [symbol for symbol in vec if vec.count(symbol) > 1]
