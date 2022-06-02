@@ -24,7 +24,7 @@ from symforce import geo
 from symforce.values import Values, IndexEntry
 from symforce import sympy as sm
 from symforce import typing as T
-from symforce.codegen import printers, format_util
+from symforce.codegen import format_util
 from symforce.codegen import codegen_config
 from symforce import python_util
 from symforce import _sympy_count_ops
