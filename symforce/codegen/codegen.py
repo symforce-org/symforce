@@ -397,48 +397,46 @@ class Codegen:
         # Generate the function
         if isinstance(self.config, codegen_config.PythonConfig):
             if skip_directory_nesting:
-                python_function_dir = output_dir
+                out_function_dir = output_dir
             else:
-                python_function_dir = output_dir / "python" / "symforce" / namespace
+                out_function_dir = output_dir / "python" / "symforce" / namespace
 
-            logger.info(f'Creating python function "{self.name}" at "{python_function_dir}"')
+            logger.info(f'Creating python function "{self.name}" at "{out_function_dir}"')
 
             templates.add(
                 Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "FUNCTION.py.jinja",
-                python_function_dir / f"{generated_file_name}.py",
+                out_function_dir / f"{generated_file_name}.py",
                 template_data,
             )
             templates.add(
                 Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "__init__.py.jinja",
-                python_function_dir / "__init__.py",
+                out_function_dir / "__init__.py",
                 template_data,
             )
-
-            out_function_dir = python_function_dir
         elif isinstance(self.config, codegen_config.CppConfig):
             if skip_directory_nesting:
-                cpp_function_dir = output_dir
+                out_function_dir = output_dir
             else:
-                cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
+                out_function_dir = output_dir / "cpp" / "symforce" / namespace
 
             logger.info(
-                f'Creating C++ function "{python_util.snakecase_to_camelcase(self.name)}" at "{cpp_function_dir}"'
+                f'Creating C++ function "{python_util.snakecase_to_camelcase(self.name)}" at "{out_function_dir}"'
             )
 
             templates.add(
                 Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.h.jinja",
-                cpp_function_dir / f"{generated_file_name}.h",
+                out_function_dir / f"{generated_file_name}.h",
                 template_data,
             )
 
             if self.config.explicit_template_instantiation_types is not None:
                 templates.add(
                     Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.cc.jinja",
-                    cpp_function_dir / f"{generated_file_name}.cc",
+                    out_function_dir / f"{generated_file_name}.cc",
                     template_data,
                 )
 
-            out_function_dir = cpp_function_dir
+
         else:
             raise NotImplementedError(f'Unknown config type: "{self.config}"')
 
