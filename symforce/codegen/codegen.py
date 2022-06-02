@@ -23,6 +23,7 @@ from symforce import logger
 from symforce import python_util
 from symforce import typing as T
 from symforce.values import Values
+from symforce import codegen
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
 from symforce.codegen import codegen_config
@@ -396,7 +397,7 @@ class Codegen:
         template_dir = self.config.template_dir()
 
         # Generate the function
-        if isinstance(self.config, codegen_config.PythonConfig):
+        if isinstance(self.config, codegen.PythonConfig):
             if skip_directory_nesting:
                 out_function_dir = output_dir
             else:
@@ -414,7 +415,7 @@ class Codegen:
                 out_function_dir / "__init__.py",
                 template_data,
             )
-        elif isinstance(self.config, codegen_config.CppConfig):
+        elif isinstance(self.config, codegen.CppConfig):
             if skip_directory_nesting:
                 out_function_dir = output_dir
             else:
