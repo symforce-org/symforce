@@ -19,6 +19,8 @@ from symforce import typing as T
 from symforce.codegen import format_util
 
 CURRENT_DIR = os.path.dirname(__file__)
+
+# TODO(hayk): Move up to language-specific config or printer. (tag=centralize-language-diffs)
 CPP_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "cpp_templates")
 PYTHON_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "python_templates")
 LCM_TEMPLATE_DIR = os.path.join(CURRENT_DIR, "lcm_templates")
@@ -73,12 +75,7 @@ class RelEnvironment(jinja2.Environment):
         return os.path.normpath(os.path.join(os.path.dirname(parent), str(template)))
 
 
-def add_preamble(source: str, name: Path, filetype: FileType) -> str:
-    prefix = (
-        "//"
-        if filetype in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.TYPESCRIPT)
-        else "#"
-    )
+def add_preamble(source: str, name: Path, prefix: str) -> str:
     dashes = "-" * 77
     return (
         textwrap.dedent(
@@ -142,10 +139,19 @@ def render_template(
 
     filetype = FileType.from_template_path(Path(template_name))
 
+    # TODO(hayk): Move up to language-specific config or printer. (tag=centralize-language-diffs)
+    prefix = (
+        "//"
+        if filetype
+        in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.JAVASCRIPT, FileType.TYPESCRIPT)
+        else "#"
+    )
+
     template = jinja_env(template_dir).get_template(os.fspath(template_name))
-    rendered_str = add_preamble(str(template.render(**data)), template_name, filetype)
+    rendered_str = add_preamble(str(template.render(**data)), template_name, prefix=prefix)
 
     if autoformat:
+        # TODO(hayk): Move up to language-specific config or printer. (tag=centralize-language-diffs)
         if filetype in (FileType.CPP, FileType.CUDA):
             # Come up with a fake filename to give to the formatter just for formatting purposes, even
             # if this isn't being written to disk
