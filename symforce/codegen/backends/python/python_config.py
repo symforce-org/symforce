@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from symforce import typing as T
 from symforce.codegen.codegen_config import CodegenConfig
 
 
@@ -37,11 +38,21 @@ class PythonConfig(CodegenConfig):
     use_numba: bool = False
     matrix_is_1d: bool = True
 
-    def printer(self) -> "sm.CodePrinter":
-        from symforce.codegen.backends.python import python_code_printer
-
-        return python_code_printer.PythonCodePrinter()
+    @classmethod
+    def backend_name(cls) -> str:
+        return "python"
 
     @classmethod
     def template_dir(cls) -> Path:
         return CURRENT_DIR / "templates"
+
+    def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
+        return [
+            ("function/FUNCTION.py.jinja", f"{generated_file_name}.py"),
+            ("function/__init__.py.jinja", "__init__.py"),
+        ]
+
+    def printer(self) -> "sm.CodePrinter":
+        from symforce.codegen.backends.python import python_code_printer
+
+        return python_code_printer.PythonCodePrinter()

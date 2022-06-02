@@ -36,9 +36,11 @@ class CodegenConfig:
     # TODO(hayk): Remove this parameter (by making everything 2D?)
     matrix_is_1d: bool = False
 
-    def printer(self) -> "sm.CodePrinter":
+    @classmethod
+    def backend_name(cls) -> str:
         """
-        Return the code printer to use for this language.
+        String name for the backend. This should match the directory name in codegen/backends
+        and will be used to namespace by backend in generated code.
         """
         raise NotImplementedError()
 
@@ -46,6 +48,15 @@ class CodegenConfig:
     def template_dir(cls) -> Path:
         """
         Directory for jinja templates.
+        """
+        raise NotImplementedError()
+
+    def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
+        raise NotImplementedError()
+
+    def printer(self) -> "sm.CodePrinter":
+        """
+        Return the code printer to use for this language.
         """
         raise NotImplementedError()
 

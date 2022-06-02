@@ -396,53 +396,21 @@ class Codegen:
         template_data = dict(self.common_data(), spec=self)
         template_dir = self.config.template_dir()
 
-        # Generate the function
-        if isinstance(self.config, codegen.PythonConfig):
-            if skip_directory_nesting:
-                out_function_dir = output_dir
-            else:
-                out_function_dir = output_dir / "python" / "symforce" / namespace
-
-            logger.info(f'Creating python function "{self.name}" at "{out_function_dir}"')
-
-            templates.add(
-                template_dir / "function" / "FUNCTION.py.jinja",
-                out_function_dir / f"{generated_file_name}.py",
-                template_data,
-            )
-            templates.add(
-                template_dir / "function" / "__init__.py.jinja",
-                out_function_dir / "__init__.py",
-                template_data,
-            )
-        elif isinstance(self.config, codegen.CppConfig):
-            if skip_directory_nesting:
-                out_function_dir = output_dir
-            else:
-                out_function_dir = output_dir / "cpp" / "symforce" / namespace
-
-            logger.info(
-                f'Creating C++ function "{python_util.snakecase_to_camelcase(self.name)}" at "{out_function_dir}"'
-            )
-
-            templates.add(
-                template_dir / "function" / "FUNCTION.h.jinja",
-                out_function_dir / f"{generated_file_name}.h",
-                template_data,
-            )
-
-            if self.config.explicit_template_instantiation_types is not None:
-                templates.add(
-                    template_dir / "function" / "FUNCTION.cc.jinja",
-                    out_function_dir / f"{generated_file_name}.cc",
-                    template_data,
-                )
-
-
+        backend_name = self.config.backend_name()
+        if skip_directory_nesting:
+            out_function_dir = output_dir
         else:
-            raise NotImplementedError(f'Unknown config type: "{self.config}"')
+            out_function_dir = output_dir / backend_name / "symforce" / namespace
 
+        logger.info(f'Creating {backend_name} function from "{self.name}" at "{out_function_dir}"')
+
+        # Get templates to render
+        for source, dest in self.config.templates_to_render(generated_file_name):
+            templates.add(template_dir / source, out_function_dir / dest, template_data)
+
+        # Render
         templates.render(autoformat=self.config.autoformat)
+
         lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data["lcm_type_dir"],
             lcm_files=types_codegen_data["lcm_files"],

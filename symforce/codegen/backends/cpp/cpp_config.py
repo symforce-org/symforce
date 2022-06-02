@@ -42,6 +42,24 @@ class CppConfig(CodegenConfig):
     zero_initialization_sparsity_threshold: float = 0.5
     explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
 
+    @classmethod
+    def backend_name(cls) -> str:
+        return "cpp"
+
+    @classmethod
+    def template_dir(cls) -> Path:
+        return CURRENT_DIR / "templates"
+
+    def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
+        # Generate code into a header (since the code is templated)
+        templates = [("function/FUNCTION.h.jinja", f"{generated_file_name}.h")]
+
+        # Generate a cc file only if we need explicit instantiation.
+        if self.explicit_template_instantiation_types is not None:
+            templates.append(("function/FUNCTION.cc.jinja", f"{generated_file_name}.cc"))
+
+        return templates
+
     def printer(self) -> "sm.CodePrinter":
         # NOTE(hayk): Is there any benefit to this being lazy?
         from symforce.codegen.backends.cpp import cpp_code_printer
@@ -50,10 +68,6 @@ class CppConfig(CodegenConfig):
             return cpp_code_printer.ComplexCppCodePrinter()
         else:
             return cpp_code_printer.CppCodePrinter()
-
-    @classmethod
-    def template_dir(cls) -> Path:
-        return CURRENT_DIR / "templates"
 
     @staticmethod
     def format_data_accessor(prefix: str, index: int) -> str:
