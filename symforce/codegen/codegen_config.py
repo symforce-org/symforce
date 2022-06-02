@@ -89,7 +89,7 @@ class CppConfig(CodegenConfig):
     explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
 
     def printer(self) -> "sm.CodePrinter":
-        from symforce.codegen.printers import cpp_code_printer
+        from symforce.codegen.backends.cpp import cpp_code_printer
 
         if self.support_complex:
             return cpp_code_printer.ComplexCppCodePrinter()
@@ -98,7 +98,7 @@ class CppConfig(CodegenConfig):
 
     @classmethod
     def template_dir(cls) -> Path:
-        return CURRENT_DIR / "cpp_templates"
+        return CURRENT_DIR / "backends" / "cpp" / "templates"
 
     @staticmethod
     def format_data_accessor(prefix: str, index: int) -> str:
@@ -131,11 +131,11 @@ class PythonConfig(CodegenConfig):
     matrix_is_1d: bool = True
 
     def printer(self) -> "sm.CodePrinter":
-        from symforce.codegen.printers import python_code_printer
+        from symforce.codegen.backends.python import python_code_printer
 
         return python_code_printer.PythonCodePrinter()
 
     @classmethod
     def template_dir(cls) -> Path:
-        return CURRENT_DIR / "python_templates"
+        return CURRENT_DIR / "backends" / "python" / "templates"
 
