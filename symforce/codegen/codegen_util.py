@@ -342,20 +342,19 @@ def get_formatted_list(
             formatted_symbols = [sm.Symbol(key)]
             flattened_value = [value]
         elif issubclass(arg_cls, geo.Matrix):
-            if isinstance(config, codegen_config.PythonConfig):
-                # TODO(nathan): Not sure this works for 2D matrices
+            if config.matrix_is_1d:
+                # TODO(nathan): Not sure this works for 2D matrices. Get rid of this.
                 formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
-            elif isinstance(config, codegen_config.CppConfig):
-                formatted_symbols = []
+            else:
                 # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
                 # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
                 # changed to, say, row major, the below for loops would have to be swapped to
                 # reflect that.
+                formatted_symbols = []
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
                         formatted_symbols.append(sm.Symbol(f"{key}({i}, {j})"))
-            else:
-                raise NotImplementedError()
+
             flattened_value = ops.StorageOps.to_storage(value)
 
         elif issubclass(arg_cls, Values):

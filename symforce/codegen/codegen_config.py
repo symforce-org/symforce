@@ -20,6 +20,7 @@ class CodegenConfig:
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         cse_optimizations: Optimizations argument to pass to sm.cse
+        matrix_is_1d: Whether geo.Matrix symbols get formatted as 1D
     """
 
     doc_comment_line_prefix: str
@@ -29,6 +30,8 @@ class CodegenConfig:
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None
+    # TODO(hayk): Remove this parameter (by making everything 2D?)
+    matrix_is_1d: bool = False
 
 
 @dataclass
@@ -78,9 +81,12 @@ class PythonConfig(CodegenConfig):
                    on the first call and some overhead on subsequent calls, so it should not be
                    used for small functions or functions that are only called a handfull of
                    times.
+        matrix_is_1D: geo.Matrix symbols get formatted as a 1D array
     """
 
     doc_comment_line_prefix: str = ""
     line_length: int = 100
     use_eigen_types: bool = True
     use_numba: bool = False
+    matrix_is_1d: bool = True
+
