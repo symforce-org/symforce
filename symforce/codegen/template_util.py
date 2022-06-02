@@ -59,7 +59,6 @@ class FileType(enum.Enum):
             )
         return FileType.from_extension(parts[-2])
 
-    # TODO(hayk): Move up to language-specific config or printer. (tag=centralize-language-diffs)
     def comment_prefix(self) -> str:
         """
         Return the comment prefix for this file type.
@@ -70,6 +69,34 @@ class FileType(enum.Enum):
             return "#"
         else:
             raise NotImplementedError(f"Unknown comment prefix for {self}")
+
+    def autoformat(
+        self, file_contents: str, template_name: T.Openable, output_path: T.Openable = None
+    ) -> str:
+        """
+        Format code of this file type.
+        """
+        # TODO(hayk): Move up to language-specific config or printer. This is quite an awkward
+        # place for auto-format logic, but I thought it was better centralized here than down below
+        # hidden in a function. We might want to somehow pass the config through to render a
+        # template so we can move things into the backend code. (tag=centralize-language-diffs)
+        if self in (FileType.CPP, FileType.CUDA):
+            # Come up with a fake filename to give to the formatter just for formatting purposes,
+            # even if this isn't being written to disk
+            if output_path is not None:
+                format_cpp_filename = os.path.basename(output_path)
+            else:
+                format_cpp_filename = os.fspath(template_name).replace(".jinja", "")
+
+            return format_util.format_cpp(
+                file_contents, filename=str(CURRENT_DIR / format_cpp_filename)
+            )
+        elif self == FileType.PYTHON:
+            return format_util.format_py(file_contents)
+        elif self == FileType.PYTHON_INTERFACE:
+            return format_util.format_pyi(file_contents)
+        else:
+            raise NotImplementedError(f"Unknown autoformatter for {self}")
 
 
 class RelEnvironment(jinja2.Environment):
@@ -153,22 +180,9 @@ def render_template(
     )
 
     if autoformat:
-        # TODO(hayk): Move up to language-specific config or printer. (tag=centralize-language-diffs)
-        if filetype in (FileType.CPP, FileType.CUDA):
-            # Come up with a fake filename to give to the formatter just for formatting purposes, even
-            # if this isn't being written to disk
-            if output_path is not None:
-                format_cpp_filename = os.path.basename(output_path)
-            else:
-                format_cpp_filename = os.fspath(template_name).replace(".jinja", "")
-
-            rendered_str = format_util.format_cpp(
-                rendered_str, filename=str(CURRENT_DIR / format_cpp_filename)
-            )
-        elif filetype == FileType.PYTHON:
-            rendered_str = format_util.format_py(rendered_str)
-        elif filetype == FileType.PYTHON_INTERFACE:
-            rendered_str = format_util.format_pyi(rendered_str)
+        rendered_str = filetype.autoformat(
+            file_contents=rendered_str, template_name=template_name, output_path=output_path
+        )
 
     if output_path:
         directory = os.path.dirname(output_path)
