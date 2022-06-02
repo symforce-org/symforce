@@ -2,16 +2,20 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-
+from abc import abstractmethod
 from dataclasses import dataclass
+from pathlib import Path
+from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
+
+CURRENT_DIR = Path(__file__).parent
 
 
 @dataclass
 class CodegenConfig:
     """
-    Base class for language-specific arguments for code generation
+    Base class for backend-specific arguments for code generation.
 
     Args:
         doc_comment_line_prefix: Prefix applied to each line in a docstring, e.g. " * " for C++
@@ -20,6 +24,7 @@ class CodegenConfig:
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         cse_optimizations: Optimizations argument to pass to sm.cse
+        matrix_is_1d: Whether geo.Matrix symbols get formatted as 1D
     """
 
     doc_comment_line_prefix: str
@@ -29,58 +34,45 @@ class CodegenConfig:
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None
+    # TODO(hayk): Remove this parameter (by making everything 2D?)
+    matrix_is_1d: bool = False
 
+    @classmethod
+    @abstractmethod
+    def backend_name(cls) -> str:
+        """
+        String name for the backend. This should match the directory name in codegen/backends
+        and will be used to namespace by backend in generated code.
+        """
+        pass
 
-@dataclass
-class CppConfig(CodegenConfig):
-    """
-    C++ Codegen configuration
+    @classmethod
+    @abstractmethod
+    def template_dir(cls) -> Path:
+        """
+        Directory for jinja templates.
+        """
+        pass
 
-    Args:
-        doc_comment_line_prefix: Prefix applied to each line in a docstring
-        line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
-        use_eigen_types: Use eigen_lcm types for vectors instead of lists
-        autoformat: Run a code formatter on the generated code
-        cse_optimizations: Optimizations argument to pass to sm.cse
-        support_complex: Generate code that can work with std::complex or with regular float types
-        force_no_inline: Mark generated functions as `__attribute__((noinline))`
-        zero_initialization_sparsity_threshold: Threshold between 0 and 1 for the sparsity below
-                                                which we'll initialize an output matrix to 0, so we
-                                                don't have to generate a line to set each zero
-                                                element to 0 individually
-        explicit_template_instantiation_types: Explicity instantiates templated functions in a `.cc`
-            file for each given type. This allows the generated function to be compiled in its own
-            translation unit. Useful for large functions which take a long time to compile.
-    """
+    @abstractmethod
+    def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
+        """
+        Given a single symbolic function's filename, provide one or more Jinja templates to
+        render and the relative output paths where they should go.
+        """
+        pass
 
-    doc_comment_line_prefix: str = " * "
-    line_length: int = 100
-    use_eigen_types: bool = True
-    support_complex: bool = False
-    force_no_inline: bool = False
-    zero_initialization_sparsity_threshold: float = 0.5
-    explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
+    @abstractmethod
+    def printer(self) -> CodePrinter:
+        """
+        Return an instance of the code printer to use for this language.
+        """
+        pass
 
-
-@dataclass
-class PythonConfig(CodegenConfig):
-    """
-    Python Codegen configuration
-
-    Args:
-        doc_comment_line_prefix: Prefix applied to each line in a docstring
-        line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
-        use_eigen_types: Use eigen_lcm types for vectors instead of lists
-        autoformat: Run a code formatter on the generated code
-        cse_optimizations: Optimizations argument to pass to sm.cse
-        use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly
-                   speed up functions by compiling them to machine code, but has large overhead
-                   on the first call and some overhead on subsequent calls, so it should not be
-                   used for small functions or functions that are only called a handfull of
-                   times.
-    """
-
-    doc_comment_line_prefix: str = ""
-    line_length: int = 100
-    use_eigen_types: bool = True
-    use_numba: bool = False
+    # TODO(hayk): Move this into code printer.
+    @staticmethod
+    def format_data_accessor(prefix: str, index: int) -> str:
+        """
+        Format data for accessing a data array in code.
+        """
+        return f"{prefix}.data[{index}]"

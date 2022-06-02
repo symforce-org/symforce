@@ -29,14 +29,15 @@ def generate(config: codegen.CodegenConfig, output_dir: str = None) -> str:
     templates = template_util.TemplateList()
 
     if isinstance(config, codegen.CppConfig):
+        template_dir = config.template_dir()
         templates.add(
-            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "typedefs.h.jinja"),
+            template_path=template_dir / "typedefs.h.jinja",
             output_path=os.path.join(package_dir, "typedefs.h"),
             data={},
         )
 
         templates.add(
-            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "type_ops.h.jinja"),
+            template_path=template_dir / "type_ops.h.jinja",
             output_path=os.path.join(package_dir, "type_ops.h"),
             data=dict(
                 python_util=python_util,
@@ -44,17 +45,12 @@ def generate(config: codegen.CodegenConfig, output_dir: str = None) -> str:
             ),
         )
 
-        templates.add(
-            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "epsilon.h.jinja"),
-            output_path=os.path.join(package_dir, "epsilon.h"),
-            data={},
-        )
-
-        templates.add(
-            template_path=os.path.join(template_util.CPP_TEMPLATE_DIR, "epsilon.cc.jinja"),
-            output_path=os.path.join(package_dir, "epsilon.cc"),
-            data={},
-        )
+        for filename in ("epsilon.h", "epsilon.cc"):
+            templates.add(
+                template_path=template_dir / f"{filename}.jinja",
+                output_path=os.path.join(package_dir, filename),
+                data={},
+            )
     else:
         # sym/util is currently C++ only
         pass

@@ -3,10 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from sympy.printing.pycode import PythonCodePrinter as _PythonCodePrinter
-
-# Everything in this file is SymPy, not SymEngine (even when SymForce is on the SymEngine backend)
 import sympy
+from sympy.printing.pycode import PythonCodePrinter as _PythonCodePrinter
 
 
 class PythonCodePrinter(_PythonCodePrinter):
