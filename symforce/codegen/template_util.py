@@ -29,10 +29,12 @@ class FileType(enum.Enum):
     CUDA = enum.auto()
     LCM = enum.auto()
     MAKEFILE = enum.auto()
+    JAVASCRIPT = enum.auto()
     TYPESCRIPT = enum.auto()
 
     @staticmethod
     def from_extension(extension: str) -> FileType:
+        # TODO(hayk): Move up to language-specific directory. (tag=centralize-language-diffs)
         if extension in ("c", "cpp", "cxx", "cc", "tcc", "h", "hpp", "hxx", "hh"):
             return FileType.CPP
         elif extension in ("cu", "cuh"):
@@ -45,8 +47,8 @@ class FileType(enum.Enum):
             return FileType.LCM
         elif extension == "Makefile":
             return FileType.MAKEFILE
-        elif extension == "ts":
-            return FileType.TYPESCRIPT
+        elif extension == "js":
+            return FileType.JAVASCRIPT
         else:
             raise ValueError(f"Could not get FileType from extension {extension}")
 
@@ -63,7 +65,7 @@ class FileType(enum.Enum):
         """
         Return the comment prefix for this file type.
         """
-        if self in (FileType.CPP, FileType.CUDA, FileType.LCM):
+        if self in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.JAVASCRIPT):
             return "//"
         elif self in (FileType.PYTHON, FileType.PYTHON_INTERFACE):
             return "#"
