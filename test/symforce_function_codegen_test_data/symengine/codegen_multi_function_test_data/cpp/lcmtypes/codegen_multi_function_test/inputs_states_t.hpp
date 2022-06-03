@@ -9,6 +9,7 @@
 #ifndef __codegen_multi_function_test_inputs_states_t_hpp__
 #define __codegen_multi_function_test_inputs_states_t_hpp__
 
+#include <ostream>
 #include "lcmtypes/eigen_lcm/Vector2d.hpp"
 
 namespace codegen_multi_function_test
@@ -101,6 +102,18 @@ class inputs_states_t
         // Comparison operators.
         inline bool operator==(const inputs_states_t& other) const;
         inline bool operator!=(const inputs_states_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const inputs_states_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "inputs_states_t(";
+            stream << "p=<EIGEN_LCM TYPE eigen_lcm.Vector2d>";
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 inputs_states_t::inputs_states_t(

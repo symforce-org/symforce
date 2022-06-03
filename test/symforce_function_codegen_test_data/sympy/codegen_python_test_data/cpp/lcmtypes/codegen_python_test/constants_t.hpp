@@ -9,6 +9,7 @@
 #ifndef __codegen_python_test_constants_t_hpp__
 #define __codegen_python_test_constants_t_hpp__
 
+#include <ostream>
 
 namespace codegen_python_test
 {
@@ -89,6 +90,18 @@ class constants_t
         // Comparison operators.
         inline bool operator==(const constants_t& other) const;
         inline bool operator!=(const constants_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const constants_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "constants_t(";
+            stream << "epsilon=" << obj.epsilon;
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 constants_t::constants_t(

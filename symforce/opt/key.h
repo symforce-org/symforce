@@ -109,7 +109,6 @@ class Key {
  *     Key() -> "NULLKEY"
  */
 std::ostream& operator<<(std::ostream& os, const sym::Key& key);
-std::ostream& operator<<(std::ostream& os, const sym::key_t& key);
 
 }  // namespace sym
 

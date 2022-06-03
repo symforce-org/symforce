@@ -9,6 +9,7 @@
 #ifndef __sym_d_out_t_hpp__
 #define __sym_d_out_t_hpp__
 
+#include <ostream>
 
 namespace sym
 {
@@ -92,6 +93,19 @@ class d_out_t
         // Comparison operators.
         inline bool operator==(const d_out_t& other) const;
         inline bool operator!=(const d_out_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const d_out_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "d_out_t(";
+            stream << "x=" << obj.x << ", ";
+            stream << "y=" << obj.y;
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 d_out_t::d_out_t(

@@ -178,8 +178,20 @@ class Notation(AstNode):
             allowed={"struct"},
             properties=[],
         ),  # enums are always hashable
-        # Emits a ostream operator for LCM types that only have primitive members.
-        "#cpp_display": NotationSpec(allowed={"struct"}, properties=[]),
+        # By default, types have a operator<< that prints a human-readable representation. On
+        # platforms where the `SKYMARSHAL_PRINTING_ENABLED` macro is NOT defined, the operator is
+        # defined, but does not print out a useful representation (it instead prints the constant
+        # string `"<FORMATTING DISABLED>"`).
+        #
+        # Types annotated as `#cpp_no_display` will have no operator<<. This annotation takes
+        # precedence over `#cpp_display_everywhere` and `SKYMARSHAL_PRINTING_ENABLED`. This is
+        # useful for types that define that operator elsewhere. If you are defining such an
+        # operator, make sure to respect `SKYMARSHAL_PRINTING_ENABLED`.
+        #
+        # A type annotated as `#cpp_display_everywhere` will have a useful human-readable
+        # representation regardless of `SKYMARSHAL_PRINTING_ENABLED`.
+        "#cpp_display_everywhere": NotationSpec(allowed={"struct"}, properties=[]),
+        "#cpp_no_display": NotationSpec(allowed={"struct"}, properties=[]),
     }
 
     def __init__(self, name, properties, lineno):

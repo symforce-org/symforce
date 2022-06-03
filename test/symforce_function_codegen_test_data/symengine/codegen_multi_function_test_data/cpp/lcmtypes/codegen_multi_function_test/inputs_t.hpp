@@ -9,6 +9,7 @@
 #ifndef __codegen_multi_function_test_inputs_t_hpp__
 #define __codegen_multi_function_test_inputs_t_hpp__
 
+#include <ostream>
 #include <array>
 #include "lcmtypes/codegen_multi_function_test/inputs_constants_t.hpp"
 #include "lcmtypes/codegen_multi_function_test/inputs_states_t.hpp"
@@ -138,6 +139,48 @@ class inputs_t
         // Comparison operators.
         inline bool operator==(const inputs_t& other) const;
         inline bool operator!=(const inputs_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const inputs_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "inputs_t(";
+            stream << "x=" << obj.x << ", ";
+            stream << "y=" << obj.y << ", ";
+            stream << "rot=<EIGEN_LCM TYPE eigen_lcm.Vector4d>" << ", ";
+            stream << "rot_vec=[";
+            for (size_t i = 0; i < obj.rot_vec.size(); ++i) {
+                stream << obj.rot_vec[i];
+                if (i + 1 < obj.rot_vec.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "scalar_vec=[";
+            for (size_t i = 0; i < obj.scalar_vec.size(); ++i) {
+                stream << obj.scalar_vec[i];
+                if (i + 1 < obj.scalar_vec.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "list_of_lists=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::eigen_lcm::Vector4d, 3 >, 3 >>" << ", ";
+            stream << "values_vec=[";
+            for (size_t i = 0; i < obj.values_vec.size(); ++i) {
+                stream << obj.values_vec[i];
+                if (i + 1 < obj.values_vec.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "values_vec_2D=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>" << ", ";
+            stream << "constants=" << obj.constants << ", ";
+            stream << "states=" << obj.states;
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 inputs_t::inputs_t(
