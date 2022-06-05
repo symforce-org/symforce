@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 from __future__ import annotations
+from abc import abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -37,28 +38,36 @@ class CodegenConfig:
     matrix_is_1d: bool = False
 
     @classmethod
+    @abstractmethod
     def backend_name(cls) -> str:
         """
         String name for the backend. This should match the directory name in codegen/backends
         and will be used to namespace by backend in generated code.
         """
-        raise NotImplementedError()
+        pass
 
     @classmethod
+    @abstractmethod
     def template_dir(cls) -> Path:
         """
         Directory for jinja templates.
         """
-        raise NotImplementedError()
+        pass
 
+    @abstractmethod
     def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
-        raise NotImplementedError()
+        """
+        Given a single symbolic function's filename, provide one or more Jinja templates to
+        render and the relative output paths where they should go.
+        """
+        pass
 
-    def printer(self) -> "sm.CodePrinter":
+    @abstractmethod
+    def printer(self) -> "sympy.CodePrinter":
         """
-        Return the code printer to use for this language.
+        Return an instance of the code printer to use for this language.
         """
-        raise NotImplementedError()
+        pass
 
     # TODO(hayk): Move this into code printer.
     @staticmethod
