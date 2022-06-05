@@ -342,8 +342,14 @@ def get_formatted_list(
             flattened_value = [value]
         elif issubclass(arg_cls, geo.Matrix):
             if isinstance(config, codegen_config.PythonConfig):
-                # TODO(nathan): Not sure this works for 2D matrices
-                formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+                # NOTE(hayk): Python codegen currently seems broken for matrix inputs, because we
+                # pass a 2D numpy array then index it linearly, which breaks since it returns a
+                # whole column. This modification fixes that, but is broken for vector inputs that
+                # are either a sequence or a 1D numpy array. Discuss and fix.
+                formatted_symbols = []
+                for j in range(value.shape[1]):
+                    for i in range(value.shape[0]):
+                        formatted_symbols.append(sm.Symbol(f"{key}[{i}, {j}]"))
             elif isinstance(config, codegen_config.CppConfig):
                 formatted_symbols = []
                 # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
