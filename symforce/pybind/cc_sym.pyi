@@ -57,20 +57,29 @@ class Factor:
         self,
         hessian_func: typing.Callable[[Values, typing.List[index_entry_t]], tuple],
         keys: typing.List[Key],
+        sparse: bool = False,
     ) -> None:
         """
-        Create directly from a (dense) hessian functor. This is the lowest-level constructor.
+        Create directly from a hessian functor. This is the lowest-level constructor.
 
         Args:
           keys: The set of input arguments, in order, accepted by func.
+          sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+        Precondition:
+          The jacobian and hessian returned by hessian_func have type scipy.sparse.csc_matrix if and only if sparse = True.
 
 
 
-        Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
+        Create directly from a hessian functor. This is the lowest-level constructor.
 
         Args:
           keys_to_func: The set of input arguments, in order, accepted by func.
           keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+          sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+        Precondition:
+          The jacobian and hessian returned by hessian_func have type scipy.sparse.csc_matrix if and only if sparse = True.
         """
     @typing.overload
     def __init__(
@@ -78,6 +87,7 @@ class Factor:
         hessian_func: typing.Callable[[Values, typing.List[index_entry_t]], tuple],
         keys_to_func: typing.List[Key],
         keys_to_optimize: typing.List[Key],
+        sparse: bool = False,
     ) -> None: ...
     def __repr__(self) -> str: ...
     def all_keys(self) -> typing.List[Key]:
@@ -93,6 +103,7 @@ class Factor:
     def jacobian(
         jacobian_func: typing.Callable[[Values, typing.List[index_entry_t]], tuple],
         keys: typing.List[Key],
+        sparse: bool = False,
     ) -> Factor:
         """
                 Create from a function that computes the jacobian. The hessian will be computed using the
@@ -102,6 +113,10 @@ class Factor:
 
                 Args:
                   keys: The set of input arguments, in order, accepted by func.
+                  sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+                Precondition:
+                  The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
 
 
 
@@ -113,6 +128,10 @@ class Factor:
         Args:
           keys_to_func: The set of input arguments, in order, accepted by func.
           keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+          sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+          Precondition:
+            The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
         """
     @staticmethod
     @typing.overload
@@ -120,6 +139,7 @@ class Factor:
         jacobian_func: typing.Callable[[Values, typing.List[index_entry_t]], tuple],
         keys_to_func: typing.List[Key],
         keys_to_optimize: typing.List[Key],
+        sparse: bool = False,
     ) -> Factor: ...
     def linearize(self, arg0: Values) -> tuple:
         """

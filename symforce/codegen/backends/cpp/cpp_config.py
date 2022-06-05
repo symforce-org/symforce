@@ -60,7 +60,7 @@ class CppConfig(CodegenConfig):
 
         return templates
 
-    def printer(self) -> "sm.CodePrinter":
+    def printer(self) -> "sympy.CodePrinter":
         # NOTE(hayk): Is there any benefit to this being lazy?
         from symforce.codegen.backends.cpp import cpp_code_printer
 

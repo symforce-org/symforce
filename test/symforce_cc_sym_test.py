@@ -6,6 +6,7 @@
 import dataclasses
 import math
 import numpy as np
+from scipy import sparse
 
 from symforce import cc_sym
 import sym
@@ -392,6 +393,32 @@ class SymforceCCSymTest(TestCase):
         rhs = [-cos * sin_2]
         return res, jacobian, hessian, rhs
 
+    @staticmethod
+    def sparse_pi_residual(
+        x: T.Scalar,
+    ) -> T.Tuple[T.List[T.Scalar], sparse.csc_matrix, sparse.csc_matrix, T.List[T.Scalar]]:
+        """
+        Same as pi_residual, but the jacobian and hessian are scipy.sparse.csc_matrix's
+        """
+        res, jacobian, hessian, rhs = SymforceCCSymTest.pi_residual(x)
+        return res, sparse.csc_matrix(jacobian), sparse.csc_matrix(hessian), rhs
+
+    dense_pi_hessian = lambda values, index_entries: SymforceCCSymTest.pi_residual(
+        values.at(index_entries[0])
+    )
+
+    dense_pi_jacobian = lambda values, index_entries: SymforceCCSymTest.pi_residual(
+        values.at(index_entries[0])
+    )[0:2]
+
+    sparse_pi_hessian = lambda values, index_entries: SymforceCCSymTest.sparse_pi_residual(
+        values.at(index_entries[0])
+    )
+
+    sparse_pi_jacobian = lambda values, index_entries: SymforceCCSymTest.sparse_pi_residual(
+        values.at(index_entries[0])
+    )[0:2]
+
     def test_factor(self) -> None:
         """
         Tests:
@@ -400,40 +427,56 @@ class SymforceCCSymTest(TestCase):
 
         pi_key = cc_sym.Key("3", 1, 4)
         pi_factor = cc_sym.Factor(
-            hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
-                values.at(index_entries[0])
-            ),
+            hessian_func=SymforceCCSymTest.dense_pi_hessian,
             keys=[pi_key],
         )
         pi_jacobian_factor = cc_sym.Factor.jacobian(
-            jacobian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
-                values.at(index_entries[0])
-            )[0:2],
+            jacobian_func=SymforceCCSymTest.dense_pi_jacobian,
             keys=[pi_key],
+        )
+
+        sparse_pi_factor = cc_sym.Factor(
+            hessian_func=SymforceCCSymTest.sparse_pi_hessian,
+            keys=[pi_key],
+            sparse=True,
+        )
+        sparse_pi_jacobian_factor = cc_sym.Factor.jacobian(
+            jacobian_func=SymforceCCSymTest.sparse_pi_jacobian, keys=[pi_key], sparse=True
         )
 
         with self.subTest(msg="Test that alternate Factor constructors can be called"):
             cc_sym.Factor(
-                hessian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
-                    values.at(index_entries[0])
-                ),
+                hessian_func=SymforceCCSymTest.dense_pi_hessian,
                 keys_to_func=[pi_key],
                 keys_to_optimize=[pi_key],
             )
 
             cc_sym.Factor.jacobian(
-                jacobian_func=lambda values, index_entries: SymforceCCSymTest.pi_residual(
-                    values.at(index_entries[0])
-                )[0:2],
+                jacobian_func=SymforceCCSymTest.dense_pi_jacobian,
                 keys_to_func=[pi_key],
                 keys_to_optimize=[pi_key],
+                sparse=True,
             )
 
-        with self.subTest(msg="Test that Factor.is_sparse is wrapped"):
-            self.assertFalse(pi_factor.is_sparse())
-            self.assertFalse(pi_jacobian_factor.is_sparse())
-            # TODO(brad): Add test of is_sparse for a factor which is sparse (once the
-            # creation of such factors is enabled).
+            cc_sym.Factor(
+                hessian_func=SymforceCCSymTest.sparse_pi_hessian,
+                keys_to_func=[pi_key],
+                keys_to_optimize=[pi_key],
+                sparse=True,
+            )
+
+            cc_sym.Factor.jacobian(
+                jacobian_func=SymforceCCSymTest.sparse_pi_jacobian,
+                keys_to_func=[pi_key],
+                keys_to_optimize=[pi_key],
+                sparse=True,
+            )
+
+        # Test that Factor.is_sparse is wrapped
+        self.assertFalse(pi_factor.is_sparse())
+        self.assertFalse(pi_jacobian_factor.is_sparse())
+        self.assertTrue(sparse_pi_factor.is_sparse())
+        self.assertTrue(sparse_pi_jacobian_factor.is_sparse())
 
         with self.subTest(msg="Test that Factor.linearized_factor/linearize are wrapped"):
             pi_values = cc_sym.Values()
@@ -441,10 +484,57 @@ class SymforceCCSymTest(TestCase):
             pi_values.set(pi_key, eval_value)
             self.assertIsInstance(pi_factor.linearized_factor(pi_values), linearized_dense_factor_t)
 
-            residual, jacobian = pi_factor.linearize(pi_values)
             target_residual, target_jacobian, *_ = SymforceCCSymTest.pi_residual(eval_value)
-            self.assertAlmostEqual(target_residual[0], residual[0])
-            self.assertAlmostEqual(target_jacobian[0], jacobian[0, 0])
+
+            for factor in [
+                pi_factor,
+                pi_jacobian_factor,
+                sparse_pi_factor,
+                sparse_pi_jacobian_factor,
+            ]:
+                residual, jacobian = factor.linearize(pi_values)
+                self.assertAlmostEqual(target_residual[0], residual[0])
+                self.assertAlmostEqual(target_jacobian[0], jacobian[0, 0])
+                if factor.is_sparse():
+                    self.assertIsInstance(jacobian, sparse.csc_matrix)
+                else:
+                    self.assertNotIsInstance(jacobian, sparse.csc_matrix)
+
+        with self.subTest(msg="Test error is raised if mismatch in sparsity of factor and matrix"):
+            pi_values = cc_sym.Values()
+            pi_values.set(pi_key, 3.0)
+
+            sparse_factor_dense_hessian = cc_sym.Factor(
+                hessian_func=SymforceCCSymTest.dense_pi_hessian,
+                keys=[pi_key],
+                sparse=True,
+            )
+            with self.assertRaises(ValueError):
+                sparse_factor_dense_hessian.linearize(pi_values)
+
+            dense_factor_sparse_hessian = cc_sym.Factor(
+                hessian_func=SymforceCCSymTest.sparse_pi_hessian,
+                keys=[pi_key],
+                sparse=False,
+            )
+            with self.assertRaises(ValueError):
+                dense_factor_sparse_hessian.linearize(pi_values)
+
+            sparse_factor_dense_jacobian = cc_sym.Factor.jacobian(
+                jacobian_func=SymforceCCSymTest.dense_pi_jacobian,
+                keys=[pi_key],
+                sparse=True,
+            )
+            with self.assertRaises(ValueError):
+                sparse_factor_dense_jacobian.linearize(pi_values)
+
+            dense_factor_sparse_jacobian = cc_sym.Factor.jacobian(
+                jacobian_func=SymforceCCSymTest.sparse_pi_jacobian,
+                keys=[pi_key],
+                sparse=False,
+            )
+            with self.assertRaises(ValueError):
+                dense_factor_sparse_jacobian.linearize(pi_values)
 
         with self.subTest(msg="Test that Factor.all_keys and optimized_keys are wrapped"):
             self.assertEqual(pi_factor.all_keys(), [pi_key])

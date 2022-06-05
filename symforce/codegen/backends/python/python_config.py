@@ -52,7 +52,7 @@ class PythonConfig(CodegenConfig):
             ("function/__init__.py.jinja", "__init__.py"),
         ]
 
-    def printer(self) -> "sm.CodePrinter":
+    def printer(self) -> "sympy.CodePrinter":
         from symforce.codegen.backends.python import python_code_printer
 
         return python_code_printer.PythonCodePrinter()
