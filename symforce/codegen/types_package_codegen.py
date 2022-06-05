@@ -160,7 +160,7 @@ def generate_types(
     if not using_external_templates:
         templates.render()
         lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, lcm_files, lcm_bindings_output_dir)
-        codegen_data.update(lcm_data)
+        codegen_data.update({key: str(val) for key, val in lcm_data.items()})
 
     return codegen_data
 
