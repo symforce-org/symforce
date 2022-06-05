@@ -2,88 +2,6 @@
 {# Utilities for Javascript code generation templates.                           #}
 {# ------------------------------------------------------------------------- #}
 
-{# Vector type of a given dimension
- #
- # Args:
- #     dim (int):
- #}
-{%- macro vector_type(dim) -%}
-Eigen::Matrix<Scalar, {{ dim }}, 1>
-{%- endmacro -%}
-
-{# Matrix type of a given dimension
- #
- # Args:
- #     rows (int):
- #     cols (int):
- #     is_input (bool): Is this an input argument or return value?
- #}
-{%- macro matrix_type(rows, cols, is_input) -%}
-    {%- if cols == 1 -%}
-        T.{%- if is_input -%}Sequence{%- else -%}List{%- endif -%}[float]
-    {%- else -%}
-        numpy.ndarray
-    {%- endif -%}
-{%- endmacro -%}
-
-{# ------------------------------------------------------------------------- #}
-
-{# Convert a class to the emitted string
- #
- # Args:
- #     T_or_value (type or Element):
- #     name (str): Name in case type is a generated struct
- #     is_input (bool): Is this an input argument or return value?
- #}
-{%- macro format_typename(T_or_value, name, is_input) %}
-    {%- set T = python_util.get_type(T_or_value) -%}
-    {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
-        float
-    {%- elif T.__name__ == 'NoneType' -%}
-        None
-    {%- elif issubclass(T, Matrix) -%}
-        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1], is_input) }}
-    {%- elif issubclass(T, Values) -%}
-        {#- TODO(aaron): We don't currently know where to import lcmtypes from or what they should be
-         # called, at some point we should fix this and do something like
-         # {{ spec.namespaces_dict[name] }}.{{ spec.typenames_dict[name] }}
-        -#}
-        T.Any
-    {%- elif is_sequence(T_or_value) -%}
-        {%- if is_input -%}
-            T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
-        {%- else -%}
-            T.List[float]
-        {%- endif -%}
-    {%- else -%}
-        {%- if "geo" in T.__module__ or "cam" in T.__module__ -%}
-            sym.
-        {%- endif -%}
-        {{- T.__name__ -}}
-    {%- endif -%}
-{% endmacro -%}
-
-{# ------------------------------------------------------------------------- #}
-
-{# Get the type of the object in the ouput Values with key given by spec.return_key
- #
- # Args:
- #     spec (Codegen):
- #}
-{%- macro get_return_type(spec) %}
-    {%- if spec.outputs.keys() | length == 1 -%}
-        {%- set name, type = spec.outputs.items() | first -%}
-        {{ format_typename(type, name, is_input=False) }}
-    {%- elif spec.outputs -%}
-        T.Tuple[
-        {%- for name, type in spec.outputs.items() -%}
-        {{ format_typename(type, name, is_input=False) }}{% if not loop.last %}, {% endif %}
-        {%- endfor -%}]
-    {%- else -%}
-        None
-    {%- endif -%}
-{% endmacro -%}
-
 {# ------------------------------------------------------------------------- #}
 
  {# Format function docstring
@@ -145,33 +63,35 @@ function {{ camelcase_to_snakecase(spec.name) }}(
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
             {% set rows = type.shape[0] %}
             {% set cols = type.shape[1] %}
-    _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
+    let _{{ name }} = [...Array({{ rows }})].map(e => Array({{ cols }}));
             {% set ns = namespace(iter=0) %}
             {% for i in range(rows) %}
                 {% for j in range(cols) %}
-    _{{ name }}[{{ i }}, {{ j }}] = {{ terms[ns.iter][1] }}
+    _{{ name }}[{{ i }}][{{ j }}] = {{ terms[ns.iter][1] }};
                     {% set ns.iter = ns.iter + 1 %}
                 {% endfor %}
             {% endfor %}
         {% elif not is_symbolic(type) %}
             {% set dims = ops.StorageOps.storage_dim(type) %}
-    let _{{name}} = Array({{ dims }});
+    let _{{name}} = new Array({{ dims }});
             {% for i in range(dims) %}
     _{{ name }}[{{ i }}] = {{ terms[i][1] }};
             {% endfor %}
-
         {% else %}
     const _{{name}} = {{ terms[0][1] }};
         {% endif %}
+
     {% endfor %}
-    return
-    {%- for name, type in spec.outputs.items() %}
+    return {
+    {% for name, type in spec.outputs.items() %}
         {% set T = python_util.get_type(type) %}
         {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
- _{{name}}
+      {{ name }}: _{{name}}
         {%- else %}
- sym.{{T.__name__}}.from_storage(_{{name}})
-        {%- endif %}
-        {%- if not loop.last %}, {% endif %}
-    {%- endfor -%}
+      {{ name }}: sym.{{T.__name__}}.from_storage(_{{name}})
+        {% endif %}
+        {% if not loop.last %}, {% endif %}
+
+    {% endfor %}
+    };
 {% endmacro %}

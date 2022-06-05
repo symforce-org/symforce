@@ -1,9 +1,11 @@
+# ----------------------------------------------------------------------------
+# SymForce - Copyright 2022, Skydio, Inc.
+# This source code is under the Apache 2.0 license found in the LICENSE file.
+# ----------------------------------------------------------------------------
+
 from sympy.printing.jscode import JavascriptCodePrinter as SympyJsCodePrinter
 
 from symforce import typing as T
-
-# Everything in this file is SymPy, not SymEngine (even when SymForce is on the SymEngine backend)
-import sympy
 
 
 class JavascriptCodePrinter(SympyJsCodePrinter):

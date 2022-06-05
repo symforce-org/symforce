@@ -2,6 +2,7 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
+
 from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,7 +32,6 @@ class JavascriptConfig(CodegenConfig):
     use_eigen_types: bool = True
     # NOTE(hayk): Add JS autoformatter
     autoformat: bool = False
-    matrix_is_1d: bool = True
 
     @classmethod
     def backend_name(cls) -> str:
@@ -50,3 +50,9 @@ class JavascriptConfig(CodegenConfig):
         from symforce.codegen.printers import javascript_code_printer
 
         return javascript_code_printer.JavascriptCodePrinter()
+
+    @staticmethod
+    def format_matrix_accessor(key: str, i: int, j: int = None) -> str:
+        if j is None:
+            return f"{key}[{i}]"
+        return f"{key}[{i}][{j}]"
