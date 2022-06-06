@@ -267,6 +267,7 @@ endif()
 # the lcm-gen executable and symengine.
 
 if(SYMFORCE_GENERATE_MANIFEST)
+  find_package(spdlog REQUIRED)
   function(generate_manifest)
     get_target_property(eigen_include_dirs ${SYMFORCE_EIGEN_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(spdlog_include_dirs spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
