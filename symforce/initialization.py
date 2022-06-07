@@ -32,6 +32,7 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     override_solve(sympy_module)
     override_count_ops(sympy_module)
     override_matrix_symbol(sympy_module)
+    add_derivatives(sympy_module)
 
 
 def override_symbol_new(sympy_module: T.Any) -> None:
@@ -409,3 +410,23 @@ def override_matrix_symbol(sympy_module: T.Type) -> None:
 
         DataBuffer.__sympy_module__ = sympy_module
         sympy_module.DataBuffer = DataBuffer
+
+
+def add_derivatives(sympy_module: T.Type) -> None:
+    """
+    Add derivatives for floor, sign, and mod
+
+    Only necessary on sympy
+    """
+    if sympy_module.__name__ == "sympy":
+        # Hack in some key derivatives that sympy doesn't do. For all these cases the derivatives
+        # here are correct except at the discrete switching point, which is correct for our
+        # numerical purposes.
+        setattr(sympy_module.floor, "_eval_derivative", lambda s, v: sympy_module.S.Zero)
+        setattr(sympy_module.sign, "_eval_derivative", lambda s, v: sympy_module.S.Zero)
+
+        def mod_derivative(self: T.Any, x: T.Any) -> T.Any:
+            p, q = self.args
+            return self._eval_rewrite_as_floor(p, q).diff(x)  # pylint: disable=protected-access
+
+        setattr(sympy_module.Mod, "_eval_derivative", mod_derivative)

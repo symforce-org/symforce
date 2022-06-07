@@ -152,13 +152,6 @@ def _use_sympy() -> None:
     _set_backend(sympy_py)
     sympy_py.init_printing()
 
-    # Hack in some key derivatives that sympy doesn't do. For all these
-    # cases the derivative is zero except at the discrete switching point,
-    # and assuming zero is correct for our numerical purposes.
-    setattr(sympy.floor, "_eval_derivative", lambda s, v: sympy.S.Zero)
-    setattr(sympy.sign, "_eval_derivative", lambda s, v: sympy.S.Zero)
-    setattr(sympy.Mod, "_eval_derivative", lambda s, v: sympy.S.Zero)
-
 
 def set_symengine_eval_on_sympify(eval_on_sympy: bool = True) -> None:
     """
