@@ -43,20 +43,8 @@ class _Manifest:
         return [Path(s).resolve() for s in cls._manifest[key]]
 
 
-def eigen_include_dirs() -> T.List[Path]:
-    return _Manifest.get_entries("eigen_include_dirs")
-
-
-def spdlog_include_dirs() -> T.List[Path]:
-    return _Manifest.get_entries("spdlog_include_dirs")
-
-
 def symforce_dir() -> Path:
     return Path(__file__).parent.parent
-
-
-def catch2_include_dirs() -> T.List[Path]:
-    return _Manifest.get_entries("catch2_include_dirs")
 
 
 def symenginepy_install_dir() -> Path:
