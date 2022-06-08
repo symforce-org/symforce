@@ -377,9 +377,9 @@ class Matrix(Storage):
         [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]] -> Matrix35 with elements equal to given blocks
         """
         # Sum rows of matrices in the first column
-        rows = sum([mat_row[0].shape[0] for mat_row in array])
+        rows = sum(mat_row[0].shape[0] for mat_row in array)
         # Sum columns of matrices in the first row
-        cols = sum([mat.shape[1] for mat in array[0]])
+        cols = sum(mat.shape[1] for mat in array[0])
 
         # Check for size consistency
         for mat_row in array:
@@ -799,7 +799,7 @@ class Matrix(Storage):
         for col in columns:
             # assert that each column is a vector
             assert col.shape == columns[0].shape
-            assert sum([dim > 1 for dim in col.shape]) <= 1
+            assert sum(dim > 1 for dim in col.shape) <= 1
 
         return cls([col.to_flat_list() for col in columns]).T
 

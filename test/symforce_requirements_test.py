@@ -9,6 +9,7 @@ import sys
 
 from symforce.test_util import TestCase
 from symforce import python_util
+from symforce import typing as T
 
 SYMFORCE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,6 +18,20 @@ class SymforceRequirementsTest(TestCase):
     """
     Tests pip requirements
     """
+
+    # Pass the --upgrade flag to piptools?
+    _PIPTOOLS_UPGRADE = False
+
+    @staticmethod
+    def main(*args: T.Any, **kwargs: T.Any) -> None:
+        """
+        Call this to run all tests in scope.
+        """
+        if "--piptools_upgrade" in sys.argv:
+            SymforceRequirementsTest._PIPTOOLS_UPGRADE = True
+            sys.argv.remove("--piptools_upgrade")
+
+        TestCase.main(*args, **kwargs)
 
     def test_requirements(self) -> None:
         output_dir = Path(self.make_output_dir("sf_requirements_test_"))
@@ -43,6 +58,8 @@ class SymforceRequirementsTest(TestCase):
 
             output_requirements_file.write_text(requirements_contents)
 
+        maybe_piptools_upgrade = ["--upgrade"] if self._PIPTOOLS_UPGRADE else []
+
         python_util.execute_subprocess(
             [
                 sys.executable,
@@ -54,7 +71,8 @@ class SymforceRequirementsTest(TestCase):
                 "--allow-unsafe",
                 "--extra=dev",
                 "--extra=_setup",
-            ],
+            ]
+            + maybe_piptools_upgrade,
             cwd=SYMFORCE_DIR,
             env=dict(
                 os.environ,
@@ -73,4 +91,4 @@ class SymforceRequirementsTest(TestCase):
 
 
 if __name__ == "__main__":
-    TestCase.main()
+    SymforceRequirementsTest.main()

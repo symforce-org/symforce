@@ -391,7 +391,7 @@ def add_custom_methods(sympy_module: T.Type) -> None:
         Precondition:
             vals has at least one element
         """
-        return sum([i * val for i, val in enumerate(argmax_onehot(vals))])
+        return sum(i * val for i, val in enumerate(argmax_onehot(vals)))
 
     from symforce import logic
 

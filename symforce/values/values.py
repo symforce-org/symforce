@@ -272,7 +272,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Dimension of the underlying storage
         """
-        return sum([ops.StorageOps.storage_dim(v) for v in self.values()])
+        return sum(ops.StorageOps.storage_dim(v) for v in self.values())
 
     def to_storage(self) -> T.List[T.Any]:
         """
@@ -394,7 +394,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Sum of the dimensions of the embedded manifold of each element
         """
-        return sum([ops.LieGroupOps.tangent_dim(v) for v in self.values()])
+        return sum(ops.LieGroupOps.tangent_dim(v) for v in self.values())
 
     def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Values:
         """
