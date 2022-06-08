@@ -16,8 +16,14 @@
 
 using namespace sym::Keys;
 
+/**
+ * Create a `sym::Factor` for the reprojection residual, attached to the given camera and point
+ * variables.  It's also attached to fixed entries in the Values for the pixel measurement and the
+ * constant EPSILON.
+ */
 sym::Factord MakeFactor(int camera, int point, int pixel) {
   return sym::Factord::Hessian(sym::SnavelyReprojectionFactor<double>,
+                               /* all_keys = */
                                {
                                    sym::Key::WithSuper(CAM_T_WORLD, camera),
                                    sym::Key::WithSuper(INTRINSICS, camera),
@@ -33,6 +39,9 @@ sym::Factord MakeFactor(int camera, int point, int pixel) {
                                });
 }
 
+/**
+ * A struct to represent the problem definition
+ */
 struct Problem {
   std::vector<sym::Factord> factors;
   sym::Valuesd values;
@@ -102,14 +111,23 @@ Problem ReadProblem(const std::string& filename) {
   return {std::move(factors), std::move(values), num_cameras, num_points, num_observations};
 }
 
+/**
+ * Example usage: `bundle_adjustment_in_the_large_example data/problem-21-11315-pre.txt`
+ */
 int main(int argc, char** argv) {
   sym::internal::SetLogLevel("info");
 
   SYM_ASSERT(argc == 2);
+
+  // Read the problem from disk, and create the Values and factors
   const auto problem = ReadProblem(argv[1]);
 
+  // Create a copy of the Values - we'll optimize this one in place
   sym::Valuesd optimized_values = problem.values;
+
+  // Optimize
   sym::Optimizerd optimizer{sym::DefaultOptimizerParams(), std::move(problem.factors)};
   const auto stats = optimizer.Optimize(&optimized_values);
+
   spdlog::info("Finished in {} iterations", stats.iterations.size());
 }

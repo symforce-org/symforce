@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 """
-Demonstrates solving a 3D triangulation problem with SymForce. A robot moving
+Demonstrates solving a 3D localization problem with SymForce. A robot moving
 in 3D performs scan matching and gets relative translation constraints to landmarks
 in the environment. It also has odometry constraints between its poses. The goal is
 to estimate the trajectory of the robot given known landmarks and noisy measurements.
@@ -368,7 +368,7 @@ def generate(output_dir: Path) -> None:
 
     values = build_values(NUM_POSES)[0]
     template_util.render_template(
-        template_path=Path(__file__).parent / "measurements.cc.jinja",
+        template_path=Path(__file__).parent / "templates" / "measurements.cc.jinja",
         data=dict(
             body_t_landmark_measurements=values.attr.body_t_landmark_measurements,
             odometry_relative_pose_measurements=values.attr.odometry_relative_pose_measurements,
@@ -379,7 +379,7 @@ def generate(output_dir: Path) -> None:
     )
 
     template_util.render_template(
-        template_path=Path(__file__).parent / "measurements.h.jinja",
+        template_path=Path(__file__).parent / "templates" / "measurements.h.jinja",
         data={},
         output_path=output_dir / "measurements.h",
         template_dir=Path(__file__).parent,

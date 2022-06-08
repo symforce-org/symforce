@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 """
-Demonstrates solving a 2D triangulation problem with SymForce. The goal is for a robot
+Demonstrates solving a 2D localization problem with SymForce. The goal is for a robot
 in a 2D plane to compute its trajectory given distance measurements from wheel odometry
 and relative bearing angle measurements to known landmarks in the environment.
 """
@@ -22,7 +22,7 @@ def bearing_residual(
     pose: geo.Pose2, landmark: geo.V2, angle: T.Scalar, epsilon: T.Scalar
 ) -> geo.V1:
     """
-    Residual from a relative bearing mesurement of a 2D pose to a landmark.
+    Residual from a relative bearing measurement of a 2D pose to a landmark.
     """
     t_body = pose.inverse() * landmark
     predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
@@ -108,9 +108,9 @@ def main() -> None:
 
     # Plot the result
     # TODO(hayk): mypy gives the below error, but a relative import also doesn't work.
-    # Skipping analyzing "symforce.examples.robot_2d_triangulation.plotting":
+    # Skipping analyzing "symforce.examples.robot_2d_localization.plotting":
     #     found module but no type hints or library stubs
-    from symforce.examples.robot_2d_triangulation.plotting import plot_solution
+    from symforce.examples.robot_2d_localization.plotting import plot_solution
 
     plot_solution(optimizer, result)
 
