@@ -23,6 +23,10 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     Args:
         sympy_module (module):
     """
+
+    if getattr(sympy_module, "_MODIFIED_BY_SYMFORCE", False):
+        return
+
     override_symbol_new(sympy_module)
     override_simplify(sympy_module)
     override_limit(sympy_module)
@@ -33,6 +37,8 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     override_count_ops(sympy_module)
     override_matrix_symbol(sympy_module)
     add_derivatives(sympy_module)
+
+    setattr(sympy_module, "_MODIFIED_BY_SYMFORCE", True)
 
 
 def override_symbol_new(sympy_module: T.Any) -> None:
