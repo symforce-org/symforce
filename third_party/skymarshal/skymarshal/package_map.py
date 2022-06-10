@@ -71,6 +71,7 @@ def parse_lcmtypes(
     verbose=False,  # type: bool
     print_debug_tokens=False,  # type: bool
     cache_parser=False,  # type: bool
+    allow_unknown_notations=False,  # type: bool
 ):
     # type: (...) -> T.Dict[str, syntax_tree.Package]
     """
@@ -96,7 +97,11 @@ def parse_lcmtypes(
             if verbose:
                 print(path)
             packages = parser.lcmparse(
-                src, verbose=verbose, cache=cache_parser, debug_src_path=path
+                src,
+                verbose=verbose,
+                cache=cache_parser,
+                debug_src_path=path,
+                allow_unknown_notations=allow_unknown_notations,
             )
 
             # Cache the raw package list for this path.
