@@ -3,4 +3,6 @@
 import setuptools
 
 if __name__ == "__main__":
-    setuptools.setup()
+    setuptools.setup(
+        version="0.4.0",
+    )

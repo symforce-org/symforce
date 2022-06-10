@@ -64,9 +64,15 @@ option(SYMFORCE_BUILD_STATIC_LIBRARIES
   OFF
 )
 
-find_program(SYMFORCE_DEFAULT_PYTHON python3 NO_CACHE)
-set(SYMFORCE_PYTHON "${SYMFORCE_DEFAULT_PYTHON}" CACHE STRING "Python executable to use")
-
+set(SYMFORCE_PYTHON_OVERRIDE "" CACHE STRING
+  "Python executable to use - if empty (the default), find python in the environment"
+)
+if(SYMFORCE_PYTHON_OVERRIDE STREQUAL "")
+  find_program(SYMFORCE_DEFAULT_PYTHON python3 NO_CACHE)
+  set(SYMFORCE_PYTHON ${SYMFORCE_DEFAULT_PYTHON})
+else()
+  set(SYMFORCE_PYTHON ${SYMFORCE_PYTHON_OVERRIDE})
+endif()
 
 set(SYMFORCE_SYMENGINE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/symengine_install CACHE STRING
   "Directory to install symengine"
@@ -85,6 +91,11 @@ set(SYMFORCE_EIGEN_TARGET "Eigen3::Eigen" CACHE STRING
 # ==============================================================================
 # Setup
 # ==============================================================================
+
+# If we're cross-compiling macOS arm64 wheels, set the architecture appropriately
+if("$ENV{CIBW_ARCHS_MACOS}" STREQUAL "arm64")
+  set(CMAKE_OSX_ARCHITECTURES arm64)
+endif()
 
 if(SYMFORCE_BUILD_STATIC_LIBRARIES)
   set(SYMFORCE_LIBRARY_TYPE STATIC)
@@ -318,6 +329,8 @@ if(SYMFORCE_BUILD_SYMENGINE)
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                -DBUILD_TESTS=OFF
                -DBUILD_BENCHMARKS=OFF
+               -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+               -DCMAKE_POLICY_DEFAULT_CMP0074=NEW
   )
 
   # ------------------------------------------------------------------------------
@@ -327,16 +340,21 @@ if(SYMFORCE_BUILD_SYMENGINE)
     DEPENDS symengine
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/third_party/symenginepy
     CONFIGURE_COMMAND ""
+    # TODO(aaron): This depends on SYMFORCE_PYTHON, which can change between builds (e.g. when
+    # running `python -m build` multiple times on the same build directory), currently if you're
+    # doing that you need to clean this manually
     BUILD_COMMAND ${SYMFORCE_PYTHON} ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
         --verbose
         build_ext
         --build-type=Release
         --symengine-dir ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}/lib/
+        --define CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
     INSTALL_COMMAND env ${SYMENGINEPY_INSTALL_ENV} ${SYMFORCE_PYTHON}
         ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
         --verbose
         install
         --prefix ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}
+        --define CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
   )
 
   # Rebuild symengine[py] on changed files
