@@ -681,7 +681,7 @@ def generate_lcm_types(
     )
 
     # Autoformat generated python files
-    format_util.format_py_dir(str(python_types_dir))
+    format_util.format_py_dir(python_types_dir)
 
     return result
 
