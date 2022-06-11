@@ -262,6 +262,7 @@ def main() -> None:
 from pathlib import Path
 from symforce.codegen import Codegen, CodegenConfig, CppConfig, values_codegen, template_util
 import re
+import shutil
 import textwrap
 
 
@@ -323,7 +324,7 @@ def build_codegen_object(num_poses: int, config: CodegenConfig = None) -> Codege
     return linearization_func
 
 
-def generate_matching_residual_code(output_dir: Path) -> None:
+def generate_matching_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
     """
     Generate C++ code for the matching residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -336,10 +337,19 @@ def generate_matching_residual_code(output_dir: Path) -> None:
     codegen_with_linearization = codegen.with_linearization(which_args=["world_T_body"])
 
     # Generate the function and print the code
-    codegen_with_linearization.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    generated_paths = codegen_with_linearization.generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )
+    if print_code:
+        print(generated_paths.generated_files[0].read_text())
+
+    # generate_function writes to a new temporary directory if output_dir is None. Delete the
+    # temporary directory.
+    if output_dir is None:
+        shutil.rmtree(generated_paths.output_dir)
 
 
-def generate_odometry_residual_code(output_dir: Path) -> None:
+def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
     """
     Generate C++ code for the odometry residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -353,7 +363,16 @@ def generate_odometry_residual_code(output_dir: Path) -> None:
     codegen_with_linearization = codegen.with_linearization(which_args=["world_T_a", "world_T_b"])
 
     # Generate the function and print the code
-    codegen_with_linearization.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    generated_paths = codegen_with_linearization.generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )
+    if print_code:
+        print(generated_paths.generated_files[0].read_text())
+
+    # generate_function writes to a new temporary directory if output_dir is None. Delete the
+    # temporary directory.
+    if output_dir is None:
+        shutil.rmtree(generated_paths.output_dir)
 
 
 def generate(output_dir: Path) -> None:
@@ -390,5 +409,5 @@ if __name__ == "__main__":
     main()
 
     # Uncomment this to print generated C++ code
-    # generate_matching_residual_code()
-    # generate_odometry_residual_code()
+    # generate_matching_residual_code(print_code=True)
+    # generate_odometry_residual_code(print_code=True)
