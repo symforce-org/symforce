@@ -69,12 +69,12 @@ from . import initialization
 
 
 def _set_backend(sympy_module: ModuleType) -> None:
-    # Make symforce-specific modifications to the sympy API
-    initialization.modify_symbolic_api(sympy_module)
-
     # Set this as the default backend
     global sympy  # pylint: disable=global-statement
     sympy = sympy_module
+
+    # Make symforce-specific modifications to the sympy API
+    initialization.modify_symbolic_api(sympy_module)
 
 
 def _import_symengine_from_build() -> ModuleType:

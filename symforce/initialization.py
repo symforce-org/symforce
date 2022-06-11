@@ -33,6 +33,7 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     override_count_ops(sympy_module)
     override_matrix_symbol(sympy_module)
     add_derivatives(sympy_module)
+    attach_symforce_modules(sympy_module)
 
 
 def override_symbol_new(sympy_module: T.Any) -> None:
@@ -430,3 +431,47 @@ def add_derivatives(sympy_module: T.Type) -> None:
             return self._eval_rewrite_as_floor(p, q).diff(x)  # pylint: disable=protected-access
 
         setattr(sympy_module.Mod, "_eval_derivative", mod_derivative)
+
+
+def attach_symforce_modules(sympy_module: T.Type) -> None:
+    """
+    Add everything in the geo and cam modules to symforce.sympy
+    """
+
+    # Purge geo and cam from modules, since they may refer to other sympy
+    allowlist = {
+        "symforce.typing",
+        "symforce._version",
+        "symforce.logic",
+        "symforce.initialization",
+        "symforce._sympy_count_ops",
+    }
+
+    for module_name in list(sys.modules):
+        if module_name.startswith("symforce.") and module_name not in allowlist:
+            del sys.modules[module_name]
+
+    # Similarly, purge from the symforce module itself
+    import symforce
+
+    if hasattr(symforce, "geo"):
+        del symforce.geo
+    if hasattr(symforce, "cam"):
+        del symforce.cam
+
+    # Now, reload them
+    from symforce import geo
+    from symforce import cam
+
+    # Attach everything in geo and cam to symforce.sympy
+    for symforce_module in (geo, cam):
+        for var_name in dir(symforce_module):
+            # Except private things
+            if var_name.startswith("_"):
+                continue
+
+            # And geo.Matrix
+            if var_name == "Matrix":
+                continue
+
+            setattr(sympy_module, var_name, getattr(symforce_module, var_name))
