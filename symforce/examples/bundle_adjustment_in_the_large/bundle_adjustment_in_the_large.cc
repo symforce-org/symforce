@@ -5,9 +5,10 @@
 
 #include <fstream>
 
+#include <spdlog/spdlog.h>
+
 #include <sym/pose3.h>
 #include <symforce/opt/factor.h>
-#include <symforce/opt/internal/logging_configure.h>
 #include <symforce/opt/optimizer.h>
 #include <symforce/opt/values.h>
 
@@ -115,7 +116,7 @@ Problem ReadProblem(const std::string& filename) {
  * Example usage: `bundle_adjustment_in_the_large_example data/problem-21-11315-pre.txt`
  */
 int main(int argc, char** argv) {
-  sym::internal::SetLogLevel("info");
+  spdlog::set_level(spdlog::level::info);
 
   SYM_ASSERT(argc == 2);
 
