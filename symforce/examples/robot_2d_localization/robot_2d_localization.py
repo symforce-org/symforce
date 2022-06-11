@@ -119,9 +119,11 @@ def main() -> None:
 # (Optional) Generate C++ functions for residuals with on-manifold jacobians
 # -----------------------------------------------------------------------------
 from symforce.codegen import Codegen, CppConfig
+from pathlib import Path
+import shutil
 
 
-def generate_bearing_residual_code() -> None:
+def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
     """
     Generate C++ code for the bearing residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -130,19 +132,29 @@ def generate_bearing_residual_code() -> None:
     codegen = Codegen.function(bearing_residual, config=CppConfig())
 
     # Generate the function and print the code
-    metadata = codegen.generate_function()
-    print(metadata.generated_files[0].read_text())
+    metadata = codegen.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    if print_code:
+        print(metadata.generated_files[0].read_text())
+
+    if output_dir is None:
+        shutil.rmtree(metadata.output_dir)
 
     # Create a Codegen object that computes a linearization from the residual Codegen object,
     # by introspecting and symbolically differentiating the given arguments
     codegen_with_linearization = codegen.with_linearization(which_args=["pose"])
 
     # Generate the function and print the code
-    metadata = codegen_with_linearization.generate_function()
-    print(metadata.generated_files[0].read_text())
+    metadata = codegen_with_linearization.generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )
+    if print_code:
+        print(metadata.generated_files[0].read_text())
+
+    if output_dir is None:
+        shutil.rmtree(metadata.output_dir)
 
 
-def generate_odometry_residual_code() -> None:
+def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
     """
     Generate C++ code for the odometry residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -151,21 +163,31 @@ def generate_odometry_residual_code() -> None:
     codegen = Codegen.function(odometry_residual, config=CppConfig())
 
     # Generate the function and print the code
-    metadata = codegen.generate_function()
-    print(metadata.generated_files[0].read_text())
+    metadata = codegen.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    if print_code:
+        print(metadata.generated_files[0].read_text())
+
+    if output_dir is None:
+        shutil.rmtree(metadata.output_dir)
 
     # Create a Codegen object that computes a linearization from the residual Codegen object,
     # by introspecting and symbolically differentiating the given arguments
     codegen_with_linearization = codegen.with_linearization(which_args=["pose_a", "pose_b"])
 
     # Generate the function and print the code
-    metadata = codegen_with_linearization.generate_function()
-    print(metadata.generated_files[0].read_text())
+    metadata = codegen_with_linearization.generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )
+    if print_code:
+        print(metadata.generated_files[0].read_text())
+
+    if output_dir is None:
+        shutil.rmtree(metadata.output_dir)
 
 
 if __name__ == "__main__":
     main()
 
     # Uncomment this to print generated C++ code
-    # generate_bearing_residual_code()
-    # generate_odometry_residual_code()
+    # generate_bearing_residual_code(print_code=True)
+    # generate_odometry_residual_code(print_code=True)
