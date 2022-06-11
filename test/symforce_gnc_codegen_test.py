@@ -14,7 +14,7 @@ from symforce import typing as T
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 

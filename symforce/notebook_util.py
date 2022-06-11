@@ -30,7 +30,7 @@ def display(*args: T.Any) -> None:
     """
     Display the given expressions in latex, or print if not an expression.
     """
-    if symforce.get_backend() == "sympy":
+    if symforce.get_symbolic_api() == "sympy":
         IPython.display.display(*args)
         return
 

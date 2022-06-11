@@ -26,7 +26,7 @@ from symforce.test_util import TestCase, symengine_only
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
@@ -100,7 +100,7 @@ class SymforceGenCodegenTest(TestCase):
         )
 
         # Test against checked-in geo package (only on SymEngine)
-        if symforce.get_backend() == "symengine":
+        if symforce.get_symbolic_api() == "symengine":
             self.compare_or_update_directory(
                 actual_dir=os.path.join(output_dir, "sym"),
                 expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "sym"),

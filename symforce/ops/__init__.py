@@ -34,8 +34,8 @@ class ScalarExpr(abc.ABC):
     """
     Metaclass for scalar expressions
 
-    DataBuffer is a subclass of sm.Expr in both backends, but we do not want it to be registered
-    under ScalarLieGroupOps.
+    DataBuffer is a subclass of sm.Expr but we do not want it to be registered under
+    ScalarLieGroupOps.
     """
 
     @abc.abstractmethod

@@ -93,7 +93,7 @@ def override_symbol_new(sympy_module: T.Any) -> None:
 
 def override_simplify(sympy_module: T.Type) -> None:
     """
-    Override simplify so that we can use it with the symengine backend
+    Override simplify so that we can use it with symengine.
 
     Args:
         sympy_module (module):
@@ -112,7 +112,7 @@ def override_simplify(sympy_module: T.Type) -> None:
 
 def override_limit(sympy_module: T.Type) -> None:
     """
-    Override limit so that we can use it with the symengine backend
+    Override limit so that we can use it with symengine.
 
     Args:
         sympy_module (module):
@@ -250,7 +250,7 @@ def override_subs(sympy_module: T.Type) -> None:
             self, _get_subs_dict(*args, **kwargs), **kwargs
         )
     else:
-        raise NotImplementedError(f"Unknown backend: '{sympy_module.__name__}'")
+        raise NotImplementedError(f"Unknown symbolic API: '{sympy_module.__name__}'")
 
 
 def override_solve(sympy_module: T.Type) -> None:
@@ -274,7 +274,7 @@ def override_solve(sympy_module: T.Type) -> None:
                 return []
             else:
                 raise NotImplementedError(
-                    f"sm.solve currently only supports FiniteSet and EmptySet results on the SymEngine backend, got {type(solution)} instead"
+                    f"sm.solve currently only supports FiniteSet and EmptySet results on SymEngine, got {type(solution)} instead"
                 )
 
         sympy_module.solve = solve
@@ -282,7 +282,7 @@ def override_solve(sympy_module: T.Type) -> None:
         # This one is fine as is
         return
     else:
-        raise NotImplementedError(f"Unknown backend: '{sympy_module.__name__}'")
+        raise NotImplementedError(f"Unknown symbolic API: '{sympy_module.__name__}'")
 
 
 def override_count_ops(sympy_module: T.Type) -> None:

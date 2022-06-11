@@ -307,7 +307,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             v_clamped = v.clamp_norm(10)
             self.assertStorageNear(v_clamped, v)
 
-        if symforce.get_backend() == "sympy":
+        if symforce.get_symbolic_api() == "sympy":
             with self.subTest("epsilon handling"):
 
                 def scalar_clamp_norm(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:

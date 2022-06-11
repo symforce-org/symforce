@@ -240,8 +240,8 @@ def perform_cse(
             yield sm.Symbol(f"_tmp{i}")
 
     if cse_optimizations is not None:
-        if symforce.get_backend() == "symengine":
-            raise ValueError("cse_optimizations is not supported on the symengine backend")
+        if symforce.get_symbolic_api() == "symengine":
+            raise ValueError("cse_optimizations is not supported on symengine")
 
         temps, flat_simplified_outputs = sm.cse(
             flat_output_exprs, symbols=tmp_symbols(), optimizations=cse_optimizations

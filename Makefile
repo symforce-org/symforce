@@ -86,16 +86,16 @@ TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
 GEN_FILES=test/*codegen*.py
 
 test_symengine:
-	$(TEST_ENV) SYMFORCE_BACKEND=symengine $(PYTHON) $(TEST_CMD)
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) $(TEST_CMD)
 
 test_sympy:
-	$(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) $(TEST_CMD)
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) $(TEST_CMD)
 
 test: test_symengine test_sympy
 
 # Generic target to run a SymEngine codegen test with --update
 update_%:
-	$(TEST_ENV) SYMFORCE_BACKEND=symengine $(PYTHON) test/$*.py --update
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) test/$*.py --update
 
 # All SymForce codegen tests, formatted as update_my_codegen_test targets
 GEN_FILES_UPDATE_TARGETS=$(shell \
@@ -106,7 +106,7 @@ test_update: $(GEN_FILES_UPDATE_TARGETS)
 
 # Generic target to run a SymPy codegen test with --update --run_slow_tests
 sympy_update_%:
-	$(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) test/$*.py --update --run_slow_tests
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) test/$*.py --update --run_slow_tests
 
 # All SymForce codegen tests, formatted as sympy_update_my_codegen_test targets
 GEN_FILES_SYMPY_UPDATE_TARGETS=$(shell \

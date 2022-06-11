@@ -61,18 +61,18 @@ def set_log_level(log_level: str) -> None:
 set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "WARNING"))
 
 # -------------------------------------------------------------------------------------------------
-# Symbolic backend configuration
+# Symbolic API configuration
 # -------------------------------------------------------------------------------------------------
 sympy: T.Any = None
 
 from . import initialization
 
 
-def _set_backend(sympy_module: ModuleType) -> None:
+def _set_symbolic_api(sympy_module: ModuleType) -> None:
     # Make symforce-specific modifications to the sympy API
     initialization.modify_symbolic_api(sympy_module)
 
-    # Set this as the default backend
+    # Set this as the default symbolic API
     global sympy  # pylint: disable=global-statement
     sympy = sympy_module
 
@@ -143,13 +143,13 @@ def _use_symengine() -> None:
         logger.critical("Commanded to use symengine, but failed to import.")
         raise
 
-    _set_backend(symengine)
+    _set_symbolic_api(symengine)
 
 
 def _use_sympy() -> None:
     import sympy as sympy_py
 
-    _set_backend(sympy_py)
+    _set_symbolic_api(sympy_py)
     sympy_py.init_printing()
 
 
@@ -171,54 +171,54 @@ def set_symengine_eval_on_sympify(eval_on_sympy: bool = True) -> None:
         logger.debug("set_symengine_fast_sympify has no effect when not using symengine")
 
 
-def set_backend(backend: str) -> None:
+def set_symbolic_api(name: str) -> None:
     """
-    Set the symbolic backend for symforce. The sympy backend is the default and pure python,
-    whereas the symengine backend is C++ and requires building the symengine library. It can
+    Set the symbolic API for symforce. The sympy API is the default and pure python,
+    whereas the symengine API is C++ and requires building the symengine library. It can
     be 100-200 times faster for many operations, but is less fully featured.
 
     The default is symengine if available else sympy, but can be set by one of:
 
-        1) The SYMFORCE_BACKEND environment variable
+        1) The SYMFORCE_SYMBOLIC_API environment variable
         2) Calling this function before any other symforce imports
 
     Args:
-        backend (str): {sympy, symengine}
+        name (str): {sympy, symengine}
     """
     # TODO(hayk): Could do a better job of checking what's imported and raising an error
     # if this isn't the first thing imported/called from symforce.
 
-    if sympy and backend == sympy.__package__:
-        logger.debug(f'already on backend "{backend}"')
+    if sympy and name == sympy.__package__:
+        logger.debug(f'already on symbolic API "{name}"')
         return
     else:
-        logger.debug(f'backend: "{backend}"')
+        logger.debug(f'symbolic API: "{name}"')
 
-    if backend == "sympy":
+    if name == "sympy":
         _use_sympy()
-    elif backend == "symengine":
+    elif name == "symengine":
         _use_symengine()
     else:
-        raise NotImplementedError(f'Unknown backend: "{backend}"')
+        raise NotImplementedError(f'Unknown symbolic API: "{name}"')
 
 
 # Set default to symengine if available, else sympy
-if "SYMFORCE_BACKEND" in os.environ:
-    set_backend(os.environ["SYMFORCE_BACKEND"])
+if "SYMFORCE_SYMBOLIC_API" in os.environ:
+    set_symbolic_api(os.environ["SYMFORCE_SYMBOLIC_API"])
 else:
     try:
         symengine = _import_symengine_from_build()
 
-        logger.debug("No SYMFORCE_BACKEND set, found and using symengine.")
-        set_backend("symengine")
+        logger.debug("No SYMFORCE_SYMBOLIC_API set, found and using symengine.")
+        set_symbolic_api("symengine")
     except ImportError:
-        logger.debug("No SYMFORCE_BACKEND set, no symengine found, using sympy.")
-        set_backend("sympy")
+        logger.debug("No SYMFORCE_SYMBOLIC_API set, no symengine found, using sympy.")
+        set_symbolic_api("sympy")
 
 
-def get_backend() -> str:
+def get_symbolic_api() -> str:
     """
-    Return the current backend as a string.
+    Return the current symbolic API as a string.
 
     Returns:
         str:
