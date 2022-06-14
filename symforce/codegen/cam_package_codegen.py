@@ -257,7 +257,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
     if isinstance(config, PythonConfig):
         logger.info(f'Creating Python package at: "{cam_package_dir}"')
-        template_dir = pathlib.Path(template_util.PYTHON_TEMPLATE_DIR)
+        template_dir = config.template_dir()
 
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
@@ -310,7 +310,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
     elif isinstance(config, CppConfig):
         logger.info(f'Creating C++ cam package at: "{cam_package_dir}"')
-        template_dir = pathlib.Path(template_util.CPP_TEMPLATE_DIR, "cam_package")
+        template_dir = config.template_dir() / "cam_package"
 
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
@@ -331,9 +331,8 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 (".", "ops/CLASS/lie_group_ops.h"),
                 (".", "ops/CLASS/lie_group_ops.cc"),
             ):
-                template_path = pathlib.Path(
-                    template_util.CPP_TEMPLATE_DIR, base_dir, relative_path + ".jinja"
-                )
+                template_path = config.template_dir() / base_dir / (relative_path + ".jinja")
+
                 output_path = cam_package_dir / relative_path.replace(
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )

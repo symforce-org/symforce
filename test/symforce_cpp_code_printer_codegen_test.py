@@ -7,17 +7,13 @@ import os
 
 import symforce
 
-from symforce import typing as T
-from symforce.test_util import TestCase, sympy_only
-from symforce.values import Values
-
 from symforce import codegen
-from symforce.codegen import codegen_util
 from symforce import sympy as sm
+from symforce.test_util import TestCase, sympy_only
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
@@ -27,7 +23,7 @@ class SymforceCppCodePrinterTest(TestCase):
     """
 
     def test_max_min(self) -> None:
-        printer = codegen_util.get_code_printer(codegen.CppConfig())
+        printer = codegen.CppConfig().printer()
 
         a = sm.Symbol("a")
         b = sm.Symbol("b")

@@ -17,7 +17,7 @@ class SymforceLcmCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_lcm_codegen_test")
 
         template_util.render_template(
-            os.path.join(template_util.LCM_TEMPLATE_DIR, "symforce_types.lcm.jinja"),
+            template_util.LCM_TEMPLATE_DIR / "symforce_types.lcm.jinja",
             data=lcm_symforce_types_data(),
             output_path=os.path.join(output_dir, "symforce_types.lcm"),
         )

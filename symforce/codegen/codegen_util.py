@@ -23,7 +23,7 @@ from symforce import geo
 from symforce.values import Values, IndexEntry
 from symforce import sympy as sm
 from symforce import typing as T
-from symforce.codegen import printers, format_util
+from symforce.codegen import format_util
 from symforce.codegen import codegen_config
 from symforce import python_util
 from symforce import _sympy_count_ops
@@ -178,7 +178,7 @@ def print_code(
     )
 
     # Get printer
-    printer = get_code_printer(config)
+    printer = config.printer()
 
     # Print code
     intermediate_terms = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
@@ -240,8 +240,8 @@ def perform_cse(
             yield sm.Symbol(f"_tmp{i}")
 
     if cse_optimizations is not None:
-        if symforce.get_backend() == "symengine":
-            raise ValueError("cse_optimizations is not supported on the symengine backend")
+        if symforce.get_symbolic_api() == "symengine":
+            raise ValueError("cse_optimizations is not supported on symengine")
 
         temps, flat_simplified_outputs = sm.cse(
             flat_output_exprs, symbols=tmp_symbols(), optimizations=cse_optimizations
@@ -341,20 +341,19 @@ def get_formatted_list(
             formatted_symbols = [sm.Symbol(key)]
             flattened_value = [value]
         elif issubclass(arg_cls, geo.Matrix):
-            if isinstance(config, codegen_config.PythonConfig):
-                # TODO(nathan): Not sure this works for 2D matrices
+            if config.matrix_is_1d:
+                # TODO(nathan): Not sure this works for 2D matrices. Get rid of this.
                 formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
-            elif isinstance(config, codegen_config.CppConfig):
-                formatted_symbols = []
+            else:
                 # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
                 # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
                 # changed to, say, row major, the below for loops would have to be swapped to
                 # reflect that.
+                formatted_symbols = []
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
                         formatted_symbols.append(sm.Symbol(f"{key}({i}, {j})"))
-            else:
-                raise NotImplementedError()
+
             flattened_value = ops.StorageOps.to_storage(value)
 
         elif issubclass(arg_cls, Values):
@@ -459,19 +458,18 @@ def _get_scalar_keys_recursive(
                 )
             )
     elif issubclass(datatype, geo.Matrix) or not use_data:
+        # TODO(hayk): Fix this in follow-up.
         # TODO(nathan): I don't think this deals with 2D matrices correctly
-        if isinstance(config, codegen_config.PythonConfig) and config.use_eigen_types:
+        if config.matrix_is_1d and config.use_eigen_types:
             vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
         else:
             vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
-        if isinstance(config, codegen_config.PythonConfig):
-            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
-        elif isinstance(config, codegen_config.CppConfig):
-            vec.extend(sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(index_value.storage_dim))
-        else:
-            raise NotImplementedError()
+        vec.extend(
+            sm.Symbol(config.format_data_accessor(prefix=prefix, index=i))
+            for i in range(index_value.storage_dim)
+        )
 
     assert len(vec) == len(set(vec)), "Non-unique keys:\n{}".format(
         [symbol for symbol in vec if vec.count(symbol) > 1]
@@ -492,26 +490,6 @@ def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]
         )
 
     return symbolic_args
-
-
-def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
-    """
-    Pick a code printer for the given mode.
-    """
-    # TODO(hayk): Consider symengine printer if this becomes slow.
-
-    if isinstance(config, codegen_config.PythonConfig):
-        printer: sm.printing.codeprinter.CodePrinter = printers.PythonCodePrinter()
-
-    elif isinstance(config, codegen_config.CppConfig):
-        if config.support_complex:
-            printer = printers.ComplexCppCodePrinter()
-        else:
-            printer = printers.CppCodePrinter()
-    else:
-        raise NotImplementedError(f"Unknown config type: {config}")
-
-    return printer
 
 
 def _load_generated_package_internal(name: str, path: Path) -> T.Tuple[T.Any, T.List[str]]:

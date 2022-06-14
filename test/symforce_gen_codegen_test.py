@@ -23,11 +23,10 @@ from symforce.codegen import slam_factors_codegen
 from symforce.codegen import sym_util_package_codegen
 from symforce.codegen import template_util
 from symforce.test_util import TestCase, symengine_only
-from symforce import path_util
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
@@ -87,9 +86,10 @@ class SymforceGenCodegenTest(TestCase):
         """
         output_dir = self.make_output_dir("sf_gen_codegen_test_")
 
-        cam_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
+        config = codegen.PythonConfig()
+        cam_package_codegen.generate(config=config, output_dir=output_dir)
         template_util.render_template(
-            template_path=os.path.join(template_util.PYTHON_TEMPLATE_DIR, "setup.py.jinja"),
+            template_path=config.template_dir() / "setup.py.jinja",
             output_path=os.path.join(output_dir, "setup.py"),
             data=dict(
                 package_name="symforce-sym",
@@ -100,7 +100,7 @@ class SymforceGenCodegenTest(TestCase):
         )
 
         # Test against checked-in geo package (only on SymEngine)
-        if symforce.get_backend() == "symengine":
+        if symforce.get_symbolic_api() == "symengine":
             self.compare_or_update_directory(
                 actual_dir=os.path.join(output_dir, "sym"),
                 expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "sym"),
@@ -140,6 +140,7 @@ class SymforceGenCodegenTest(TestCase):
         """
         Test C++ code generation
         """
+        config = codegen.CppConfig()
         output_dir = self.make_output_dir("sf_gen_codegen_test_")
 
         # Prior factors, between factors, and SLAM factors for C++.
@@ -147,11 +148,11 @@ class SymforceGenCodegenTest(TestCase):
         slam_factors_codegen.generate(os.path.join(output_dir, "sym"))
 
         # Generate typedefs.h
-        sym_util_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
+        sym_util_package_codegen.generate(config=config, output_dir=output_dir)
 
         # Generate cam package, geo package, and tests
         # This calls geo_package_codegen.generate internally
-        cam_package_codegen.generate(config=codegen.CppConfig(), output_dir=output_dir)
+        cam_package_codegen.generate(config=config, output_dir=output_dir)
 
         # Check against existing generated package (only on SymEngine)
         self.compare_or_update_directory(

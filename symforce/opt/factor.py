@@ -14,6 +14,7 @@ from symforce import geo
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import codegen_config
+from symforce.codegen.backends.python.python_config import PythonConfig
 from symforce import python_util
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
@@ -64,7 +65,7 @@ class Factor:
         # call `__init__()`, and can instead call `__new__()` + `_initialize()` and pass its own
         # codegen object constructed using the default codegen object constructor.
         if config is None:
-            config = codegen_config.PythonConfig(autoformat=False)
+            config = PythonConfig(autoformat=False)
         self._initialize(
             keys=keys,
             codegen_obj=Codegen.function(func=residual, config=config, **kwargs),
@@ -105,7 +106,7 @@ class Factor:
                 numeric factor. See `Codegen.__init__()` for details.
         """
         if config is None:
-            config = codegen_config.PythonConfig(autoformat=False)
+            config = PythonConfig(autoformat=False)
         instance = cls.__new__(cls)
         instance._initialize(
             keys=keys,
@@ -219,7 +220,7 @@ class Factor:
                     + " this factor."
                 )
 
-        if not isinstance(self.codegen.config, codegen_config.PythonConfig):
+        if not isinstance(self.codegen.config, PythonConfig):
             raise NotImplementedError(
                 "We currently only support generating and then loading python factors."
             )

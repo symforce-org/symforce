@@ -32,7 +32,7 @@ from symforce.values import Values
 
 SYMFORCE_DIR = Path(__file__).parent.parent
 TEST_DATA_DIR = (
-    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_backend()
+    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_symbolic_api()
 )
 
 # Test function

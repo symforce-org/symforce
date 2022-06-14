@@ -145,7 +145,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
     if isinstance(config, PythonConfig):
         logger.info(f'Creating Python package at: "{package_dir}"')
-        template_dir = Path(template_util.PYTHON_TEMPLATE_DIR)
+        template_dir = config.template_dir()
 
         # Build up templates for each type
 
@@ -192,7 +192,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         sym_util_package_codegen.generate(config, output_dir=output_dir)
 
         logger.info(f'Creating C++ package at: "{package_dir}"')
-        template_dir = Path(template_util.CPP_TEMPLATE_DIR, "geo_package")
+        template_dir = config.template_dir()
 
         # Build up templates for each type
         for cls in DEFAULT_GEO_TYPES:
@@ -210,14 +210,14 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 (".", "ops/CLASS/lie_group_ops.h"),
                 (".", "ops/CLASS/lie_group_ops.cc"),
             ):
-                template_path = Path(
-                    template_util.CPP_TEMPLATE_DIR, base_dir, relative_path + ".jinja"
-                )
+                template_path = template_dir / base_dir / f"{relative_path}.jinja"
                 output_path = package_dir / relative_path.replace("CLASS", cls.__name__.lower())
                 templates.add(template_path, output_path, data)
 
         # Render non geo type specific templates
-        for template_name in python_util.files_in_dir(str(template_dir / "ops"), relative=True):
+        for template_name in python_util.files_in_dir(
+            template_dir / "geo_package" / "ops", relative=True
+        ):
             if "CLASS" in template_name:
                 continue
 
@@ -225,7 +225,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 continue
 
             templates.add(
-                template_dir / "ops" / template_name,
+                template_dir / "geo_package" / "ops" / template_name,
                 package_dir / "ops" / template_name[: -len(".jinja")],
                 dict(Codegen.common_data()),
             )
@@ -233,7 +233,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         # Test example
         for name in ("geo_package_cpp_test.cc",):
             templates.add(
-                template_dir / ".." / "tests" / (name + ".jinja"),
+                template_dir / "tests" / (name + ".jinja"),
                 Path(output_dir, "tests", name),
                 dict(
                     Codegen.common_data(),
@@ -256,7 +256,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
     # LCM type_t
     templates.add(
-        Path(template_util.LCM_TEMPLATE_DIR, "symforce_types.lcm.jinja"),
+        template_util.LCM_TEMPLATE_DIR / "symforce_types.lcm.jinja",
         package_dir / ".." / "lcmtypes" / "lcmtypes" / "symforce_types.lcm",
         lcm_types_codegen.lcm_symforce_types_data(),
     )

@@ -29,7 +29,7 @@ from symforce.codegen import codegen_config
 from symforce.codegen import types_package_codegen
 from symforce.type_helpers import symbolic_inputs
 
-CURRENT_DIR = os.path.dirname(__file__)
+CURRENT_DIR = Path(__file__).parent
 
 
 class LinearizationMode(enum.Enum):
@@ -256,7 +256,7 @@ class Codegen:
         data["DataBuffer"] = sm.DataBuffer
         data["Values"] = Values
         data["pathlib"] = pathlib
-        data["path_to_codegen"] = CURRENT_DIR
+        data["path_to_codegen"] = str(CURRENT_DIR)
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util
@@ -295,6 +295,12 @@ class Codegen:
             sparse_mat_data=self.sparse_mat_data,
             config=self.config,
         )
+
+    def total_ops(self) -> int:
+        """
+        The number of symbolic ops in the expression.
+        """
+        return self.print_code_results.total_ops
 
     def generate_function(
         self,
@@ -393,56 +399,23 @@ class Codegen:
         self.namespace = namespace
 
         template_data = dict(self.common_data(), spec=self)
+        template_dir = self.config.template_dir()
 
-        # Generate the function
-        if isinstance(self.config, codegen_config.PythonConfig):
-            if skip_directory_nesting:
-                python_function_dir = output_dir
-            else:
-                python_function_dir = output_dir / "python" / "symforce" / namespace
-
-            logger.info(f'Creating python function "{self.name}" at "{python_function_dir}"')
-
-            templates.add(
-                Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "FUNCTION.py.jinja",
-                python_function_dir / f"{generated_file_name}.py",
-                template_data,
-            )
-            templates.add(
-                Path(template_util.PYTHON_TEMPLATE_DIR) / "function" / "__init__.py.jinja",
-                python_function_dir / "__init__.py",
-                template_data,
-            )
-
-            out_function_dir = python_function_dir
-        elif isinstance(self.config, codegen_config.CppConfig):
-            if skip_directory_nesting:
-                cpp_function_dir = output_dir
-            else:
-                cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
-
-            logger.info(
-                f'Creating C++ function "{python_util.snakecase_to_camelcase(self.name)}" at "{cpp_function_dir}"'
-            )
-
-            templates.add(
-                Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.h.jinja",
-                cpp_function_dir / f"{generated_file_name}.h",
-                template_data,
-            )
-
-            if self.config.explicit_template_instantiation_types is not None:
-                templates.add(
-                    Path(template_util.CPP_TEMPLATE_DIR) / "function" / "FUNCTION.cc.jinja",
-                    cpp_function_dir / f"{generated_file_name}.cc",
-                    template_data,
-                )
-
-            out_function_dir = cpp_function_dir
+        backend_name = self.config.backend_name()
+        if skip_directory_nesting:
+            out_function_dir = output_dir
         else:
-            raise NotImplementedError(f'Unknown config type: "{self.config}"')
+            out_function_dir = output_dir / backend_name / "symforce" / namespace
 
+        logger.info(f'Creating {backend_name} function from "{self.name}" at "{out_function_dir}"')
+
+        # Get templates to render
+        for source, dest in self.config.templates_to_render(generated_file_name):
+            templates.add(template_dir / source, out_function_dir / dest, template_data)
+
+        # Render
         templates.render(autoformat=self.config.autoformat)
+
         lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data["lcm_type_dir"],
             lcm_files=types_codegen_data["lcm_files"],

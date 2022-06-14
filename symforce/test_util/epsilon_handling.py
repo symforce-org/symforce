@@ -43,8 +43,8 @@ def is_value_with_epsilon_correct(
     """
 
     # Converting between SymPy and SymEngine breaks substitution afterwards, so we require
-    # running with the SymPy backend
-    assert symforce.get_backend() == "sympy"
+    # running with SymPy.
+    assert symforce.get_symbolic_api() == "sympy"
 
     # Create symbols
     x = sm.Symbol("x", real=True)
@@ -115,8 +115,8 @@ def is_derivative_with_epsilon_correct(
     """
 
     # Converting between SymPy and SymEngine breaks substitution afterwards, so we require
-    # running with the SymPy backend
-    assert symforce.get_backend() == "sympy"
+    # running with SymPy.
+    assert symforce.get_symbolic_api() == "sympy"
 
     # Create symbols
     x = sm.Symbol("x", real=True)

@@ -21,8 +21,8 @@ from symforce import logger
 from symforce import sympy as sm
 from symforce import typing as T
 
-if symforce.get_backend() != "symengine":
-    logger.warning("The 3D Localization example is very slow on the sympy backend")
+if symforce.get_symbolic_api() != "symengine":
+    logger.warning("The 3D Localization example is very slow on sympy. Use symengine.")
 
 NUM_POSES = 5
 NUM_LANDMARKS = 20

@@ -24,7 +24,7 @@ class TestCase(SymforceTestCaseMixin):
     """
 
     # Set by the --run_slow_tests flag to indicate that we should run all tests even
-    # if we're on the SymPy backend
+    # if we're on SymPy.
     _RUN_SLOW_TESTS = False
 
     @staticmethod
@@ -84,32 +84,29 @@ class TestCase(SymforceTestCaseMixin):
 
 def sympy_only(func: T.Callable) -> T.Callable:
     """
-    Decorator to mark a test to only run on the SymPy backend, and skip otherwise
+    Decorator to mark a test to only run on SymPy, and skip otherwise.
     """
-    backend = symforce.get_backend()
-    if backend != "sympy":
-        return unittest.skip("This test only runs on the SymPy backend")(func)
+    if symforce.get_symbolic_api() != "sympy":
+        return unittest.skip("This test only runs on SymPy symbolic API.")(func)
     else:
         return func
 
 
 def symengine_only(func: T.Callable) -> T.Callable:
     """
-    Decorator to mark a test to only run on the SymEngine backend, and skip otherwise
+    Decorator to mark a test to only run on the SymEngine, and skip otherwise.
     """
-    backend = symforce.get_backend()
-    if backend != "symengine":
-        return unittest.skip("This test only runs on the SymEngine backend")(func)
+    if symforce.get_symbolic_api() != "symengine":
+        return unittest.skip("This test only runs on the SymEngine symbolic API")(func)
     else:
         return func
 
 
 def expected_failure_on_sympy(func: T.Callable) -> T.Callable:
     """
-    Decorator to mark a test to be expected to fail only on the SymPy backend.
+    Decorator to mark a test to be expected to fail only on SymPy..
     """
-    backend = symforce.get_backend()
-    if backend == "sympy":
+    if symforce.get_symbolic_api() == "sympy":
         return unittest.expectedFailure(func)
     else:
         return func
@@ -117,11 +114,10 @@ def expected_failure_on_sympy(func: T.Callable) -> T.Callable:
 
 def slow_on_sympy(func: T.Callable) -> T.Callable:
     """
-    Decorator to mark a test as slow on the sympy backend.  Will be skipped unless passed the
+    Decorator to mark a test as slow on sympy..  Will be skipped unless passed the
     --run_slow_tests flag
     """
-    backend = symforce.get_backend()
-    if backend == "sympy" and not TestCase.should_run_slow_tests():
-        return unittest.skip("This test is too slow on the SymPy backend")(func)
+    if symforce.get_symbolic_api() == "sympy" and not TestCase.should_run_slow_tests():
+        return unittest.skip("This test is too slow on SymPy.")(func)
     else:
         return func

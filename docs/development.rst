@@ -92,14 +92,14 @@ Templates
 *************************************************
 Much of the core functionality of SymForce is in generating code using the `Jinja <https://jinja.palletsprojects.com/en/2.11.x/>`_ template language. It's relatively simple and easy to use - you pass it a template file in any language and a python dictionary of data, and it spits out the rendered code.
 
-For example template files, see ``symforce/codegen/cpp_templates``.
+For example template files, see ``symforce/codegen/backends/cpp/templates``.
 
 *************************************************
-Symbolic Backends
+Symbolic API
 *************************************************
-SymForce uses the `SymPy <https://www.sympy.org/en/index.html>`_ API, but supports two backend implementations of it. The SymPy backend is pure Python, whereas the `SymEngine <https://github.com/symengine/symengine>`_ backend is wrapped C++. It can be 100-200 times faster for many operations, but is less fully featured and requires a C++ build.
+SymForce uses the `SymPy <https://www.sympy.org/en/index.html>`_ API, but supports two implementations of it. The SymPy implementation is pure Python, whereas the `SymEngine <https://github.com/symengine/symengine>`_ implementation is wrapped C++. It can be 100-200 times faster for many operations, but is less fully featured and requires a C++ build.
 
-To set the backend, you can either use :func:`symforce.set_backend()` before any other imports, or use the ``SYMFORCE_BACKEND`` environment variable with the options ``sympy`` or ``symengine``. By default SymEngine will be used if found, otherwise SymPy.
+To set the symbolic API, you can either use :func:`symforce.set_symbolic_api()` before any other imports, or use the ``SYMFORCE_SYMBOLIC_API`` environment variable with the options ``sympy`` or ``symengine``. By default SymEngine will be used if found, otherwise SymPy.
 
 *************************************************
 Building wheels

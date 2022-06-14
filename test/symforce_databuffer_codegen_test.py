@@ -19,7 +19,7 @@ from symforce.opt.optimizer import Optimizer
 CURRENT_DIR = Path(__file__).parent
 SYMFORCE_DIR = CURRENT_DIR.parent
 TEST_DATA_DIR = SYMFORCE_DIR.joinpath(
-    "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
