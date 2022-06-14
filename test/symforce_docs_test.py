@@ -21,11 +21,21 @@ class SymforceDocsTest(TestCase):
 
     @slow_on_sympy
     def test_make_docs(self) -> None:
-        try:
-            python_util.execute_subprocess(["make", "docs"], cwd=SYMFORCE_DIR)
-        except subprocess.CalledProcessError as exc:
-            logger.error(exc)
-            self.assertTrue(False, "Docs generation failed")
+        # This test is occasionally flaky (the jupyter kernel randomly becomes unresponsive?), so
+        # retry a couple times
+        RETRIES = 3
+
+        success = False
+        for _ in range(RETRIES):
+            try:
+                python_util.execute_subprocess(["make", "docs"], cwd=SYMFORCE_DIR)
+            except subprocess.CalledProcessError as exc:
+                logger.error(exc)
+            else:
+                success = True
+                break
+
+        self.assertTrue(success, "Docs generation failed")
 
 
 if __name__ == "__main__":
