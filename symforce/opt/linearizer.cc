@@ -15,9 +15,10 @@ namespace sym {
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType>
-Linearizer<ScalarType>::Linearizer(const std::vector<Factor<Scalar>>& factors,
+Linearizer<ScalarType>::Linearizer(const std::string& name,
+                                   const std::vector<Factor<Scalar>>& factors,
                                    const std::vector<Key>& key_order)
-    : factors_(&factors), dense_linearized_factors_(), sparse_linearized_factors_() {
+    : name_(name), factors_(&factors), dense_linearized_factors_(), sparse_linearized_factors_() {
   if (key_order.empty()) {
     keys_ = ComputeKeysToOptimize(factors);
   } else {
@@ -140,7 +141,7 @@ void Linearizer<ScalarType>::InitializeStorageAndIndices() {
     dense_factor_update_helpers_.push_back(
         internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedDenseFactor,
                                       linearization_dense_factor_helper_t>(
-            factor, state_index_, combined_residual_offset));
+            factor, state_index_, name_, combined_residual_offset));
   }
 
   // This will put all the sparse factors at the end of the combined residual, which may not be
@@ -150,7 +151,7 @@ void Linearizer<ScalarType>::InitializeStorageAndIndices() {
     sparse_factor_update_helpers_.push_back(
         internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedSparseFactor,
                                       linearization_sparse_factor_helper_t>(
-            factor, state_index_, combined_residual_offset));
+            factor, state_index_, name_, combined_residual_offset));
   }
 
   // Sanity check

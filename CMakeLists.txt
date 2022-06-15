@@ -114,6 +114,10 @@ if(SYMFORCE_BUILD_CC_SYM
   endif()
 endif()
 
+if(SYMFORCE_BUILD_TESTS AND NOT SYMFORCE_BUILD_EXAMPLES)
+  message(FATAL_ERROR "Attempting to build tests without building examples, which is not supported")
+endif()
+
 # ==============================================================================
 # Third Party Dependencies (needed for build)
 # ==============================================================================
