@@ -26,7 +26,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       debug_stats_(debug_stats),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : keys),
       index_(),
-      linearizer_(factors_, keys_),
+      linearizer_(name_, factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -43,7 +43,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
       debug_stats_(debug_stats),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : keys),
       index_(),
-      linearizer_(factors_, keys_),
+      linearizer_(name_, factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -59,7 +59,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       debug_stats_(debug_stats),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
-      linearizer_(factors_, keys_),
+      linearizer_(name_, factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -75,7 +75,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
       debug_stats_(debug_stats),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
-      linearizer_(factors_, keys_),
+      linearizer_(name_, factors_, keys_),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
 
 // ----------------------------------------------------------------------------

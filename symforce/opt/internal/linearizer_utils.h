@@ -4,6 +4,8 @@
  * ---------------------------------------------------------------------------- */
 
 #include <Eigen/Sparse>
+#include <fmt/ranges.h>
+#include <spdlog/spdlog.h>
 
 #include <lcmtypes/sym/linearization_dense_factor_helper_t.hpp>
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
@@ -195,6 +197,7 @@ void ComputeKeyHelperSparseMap(
 template <typename Scalar, typename LinearizedFactorT, typename FactorHelperT>
 FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
                                   const std::unordered_map<key_t, index_entry_t>& state_index,
+                                  const std::string& linearizer_name,
                                   int& combined_residual_offset) {
   FactorHelperT factor_helper;
 
@@ -222,6 +225,19 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
 
   // Increment offset into the combined residual
   combined_residual_offset += factor_helper.residual_dim;
+
+  // Warn if this factor touches no optimized keys
+  if (factor_helper.key_helpers.empty()) {
+    std::vector<key_t> input_keys;
+    for (const auto& entry : factor.index.entries) {
+      input_keys.push_back(entry.key);
+    }
+
+    spdlog::warn(
+        "LM<{}>: Optimizing a factor that touches no optimized keys! Input keys for the factor "
+        "are: {}",
+        linearizer_name, input_keys);
+  }
 
   return factor_helper;
 }
