@@ -310,7 +310,7 @@ def add_custom_methods(sympy_module: T.Type) -> None:
         return func
 
     # Should match C++ default epsilon in epsilon.h
-    sympy_module.default_epsilon = 10 * sys.float_info.epsilon
+    sympy_module.numeric_epsilon = 10 * sys.float_info.epsilon
 
     # Create a symbolic epsilon to encourage consistent use
     sympy_module.epsilon = sympy_module.Symbol("epsilon")

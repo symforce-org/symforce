@@ -619,7 +619,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         # Make sure they match
         diff = values.to_numerical().local_coordinates(
-            expected_numerical_values, epsilon=sm.default_epsilon
+            expected_numerical_values, epsilon=sm.numeric_epsilon
         )
         self.assertLess(geo.M(diff).norm(), 1e-10)
 

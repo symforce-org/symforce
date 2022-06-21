@@ -79,7 +79,7 @@ def main() -> None:
         landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
         distances=[1.7, 1.4],
         angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
-        epsilon=sm.default_epsilon,
+        epsilon=sm.numeric_epsilon,
     )
 
     # Create factors

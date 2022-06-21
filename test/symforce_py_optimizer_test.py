@@ -57,7 +57,7 @@ class SymforcePyOptimizerTest(TestCase):
         optimizer = Optimizer(factors=factors, optimized_keys=xs)
 
         # Create initial values
-        initial_values = Values(epsilon=sm.default_epsilon)
+        initial_values = Values(epsilon=sm.numeric_epsilon)
         for i in range(num_samples):
             initial_values[xs[i]] = geo.Rot3.from_yaw_pitch_roll(yaw=0.0, pitch=0.1 * i, roll=0.0)
         for i in range(num_samples):

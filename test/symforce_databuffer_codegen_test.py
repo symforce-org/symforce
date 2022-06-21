@@ -108,7 +108,7 @@ class SymforceDataBufferCodegenTest(TestCase):
 
         factors = [Factor(keys=["x", "left_bound", "buffer"], residual=buffer_residual)]
         optimizer = Optimizer(factors=factors, optimized_keys=["x"])
-        initial_values = Values(epsilon=sm.default_epsilon)
+        initial_values = Values(epsilon=sm.numeric_epsilon)
         initial_values["left_bound"] = -2
         initial_values["buffer"] = np.array([-2, -1, 0, 1, 2])
         initial_values["x"] = 1.5

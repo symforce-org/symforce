@@ -37,7 +37,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.V3(1, 2, 3),
             desired=geo.V3(1, 2, 3),
             information_diag=[1, 1, 1],
-            epsilon=sm.default_epsilon,
+            epsilon=sm.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_zero = ops.StorageOps.subs(
@@ -48,7 +48,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.V3(1, 2, 3),
             desired=geo.V3(4, 5, 6),
             information_diag=[1, 4, 9],
-            epsilon=sm.default_epsilon,
+            epsilon=sm.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_nonzero = ops.StorageOps.subs(
@@ -90,7 +90,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
             desired=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
             information_diag=[1, 1, 1],
-            epsilon=sm.default_epsilon,
+            epsilon=sm.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_zero = ops.StorageOps.subs(
@@ -101,7 +101,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
             desired=geo.Rot3.from_angle_axis(0.6, geo.V3(0, 0, 1).normalized()),
             information_diag=[1, 4, 9],
-            epsilon=sm.default_epsilon,
+            epsilon=sm.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_nonzero = ops.StorageOps.subs(
@@ -146,7 +146,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.Rot3.from_angle_axis(-sm.pi, geo.V3(0, 0, 1).normalized()),
             desired=geo.Rot3.from_angle_axis(sm.pi, geo.V3(0, 0, 1).normalized()),
             information_diag=[1, 1, 1],
-            epsilon=sm.default_epsilon,
+            epsilon=sm.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block = PriorValueObjective.residual_at_timestep(*inputs.values())

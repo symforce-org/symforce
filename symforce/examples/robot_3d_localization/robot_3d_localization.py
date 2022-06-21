@@ -159,7 +159,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
             ]
         )
         gt_world_T_body.append(
-            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sm.default_epsilon)
+            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sm.numeric_epsilon)
         )
 
     # Set the initial guess either to ground truth or identity
@@ -207,7 +207,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
         list(m) for m in values["body_t_landmark_measurements"]
     )
 
-    values["epsilon"] = sm.default_epsilon
+    values["epsilon"] = sm.numeric_epsilon
 
     return values, num_landmarks
 

@@ -268,7 +268,7 @@ initial_values = Values(
     landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
     distances=[1.7, 1.4],
     angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
-    epsilon=sm.default_epsilon,
+    epsilon=sm.numeric_epsilon,
 )
 ```
 
