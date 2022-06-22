@@ -35,7 +35,7 @@ class Pose3_SE3(Pose3):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3_SE3:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Pose3_SE3:
         R_tangent = (v[0], v[1], v[2])
         t_tangent_vector = Vector3(v[3], v[4], v[5])
 
@@ -53,7 +53,7 @@ class Pose3_SE3(Pose3):
 
         return cls(R, V * t_tangent_vector)
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         R_tangent = self.R.to_tangent(epsilon=epsilon)
         R_tangent_vector = Vector3(R_tangent)
         theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon)
@@ -91,10 +91,10 @@ class Pose3_SE3(Pose3):
             [[tangent_D_storage_R, Matrix.zeros(3, 3)], [Matrix.zeros(3, 4), tangent_D_storage_t]]
         )
 
-    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3_SE3:
+    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Pose3_SE3:
         return LieGroup.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b: Pose3_SE3, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Pose3_SE3, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         return LieGroup.local_coordinates(self, b, epsilon)
 
     # -------------------------------------------------------------------------

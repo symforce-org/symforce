@@ -79,14 +79,14 @@ class Rot3(LieGroup):
         return 3
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Rot3:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Rot3:
         vm = Matrix(v)
         theta_sq = vm.squared_norm()
         theta = sm.sqrt(theta_sq + epsilon ** 2)
         assert theta != 0, "Trying to divide by zero, provide epsilon!"
         return cls(Quaternion(xyz=sm.sin(theta / 2) / theta * vm, w=sm.cos(theta / 2)))
 
-    def logmap_acos_clamp_max(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def logmap_acos_clamp_max(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         """
         Implementation of logmap that uses epsilon with the Min function to
         avoid the singularity in the sqrt at w == 1
@@ -101,7 +101,7 @@ class Rot3(LieGroup):
         tangent = 2 * xyz_w_positive / norm * sm.acos(w_safe)
         return tangent.to_storage()
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         return self.logmap_acos_clamp_max(epsilon=epsilon)
 
     @classmethod
@@ -179,7 +179,7 @@ class Rot3(LieGroup):
         )
 
     @classmethod
-    def from_rotation_matrix(cls, R: Matrix33, epsilon: T.Scalar = 0) -> Rot3:
+    def from_rotation_matrix(cls, R: Matrix33, epsilon: T.Scalar = sm.epsilon()) -> Rot3:
         """
         Construct from a rotation matrix.
         """
@@ -282,7 +282,9 @@ class Rot3(LieGroup):
             q += from_rotation_matrix_qi_not_0(R, i, use_branch[i])
         return cls(q)
 
-    def to_yaw_pitch_roll(self, epsilon: T.Scalar = 0) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
+    def to_yaw_pitch_roll(
+        self, epsilon: T.Scalar = sm.epsilon()
+    ) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
         """
         Compute the yaw, pitch, and roll Euler angles in radians of this rotation
 
@@ -325,7 +327,9 @@ class Rot3(LieGroup):
         return cls(Quaternion(xyz=axis * sm.sin(angle / 2), w=sm.cos(angle / 2)))
 
     @classmethod
-    def from_two_unit_vectors(cls, a: Vector3, b: Vector3, epsilon: T.Scalar = 0) -> Rot3:
+    def from_two_unit_vectors(
+        cls, a: Vector3, b: Vector3, epsilon: T.Scalar = sm.epsilon()
+    ) -> Rot3:
         """
         Return a rotation that transforms a to b. Both inputs are three-vectors that
         are expected to be normalized.
@@ -349,7 +353,7 @@ class Rot3(LieGroup):
             )
         )
 
-    def angle_between(self, other: Rot3, epsilon: T.Scalar = 0) -> T.Scalar:
+    def angle_between(self, other: Rot3, epsilon: T.Scalar = sm.epsilon()) -> T.Scalar:
         """
         Return the angle between this rotation and the other in radians.
         """

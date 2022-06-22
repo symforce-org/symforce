@@ -51,7 +51,7 @@ class Camera:
         )
 
     def pixel_from_camera_point(
-        self, point: geo.V3, epsilon: T.Scalar = 0
+        self, point: geo.V3, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
@@ -65,7 +65,7 @@ class Camera:
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = 0, normalize: bool = False
+        self, pixel: geo.V2, epsilon: T.Scalar = sm.epsilon(), normalize: bool = False
     ) -> T.Tuple[geo.V3, T.Scalar]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.

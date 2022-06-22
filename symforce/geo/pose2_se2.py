@@ -36,7 +36,7 @@ class Pose2_SE2(Pose2):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Pose2_SE2:
         theta = v[0]
         R = Rot2.from_tangent([theta], epsilon=epsilon)
 
@@ -48,7 +48,7 @@ class Pose2_SE2(Pose2):
         t = Vector2(a * v[1] - b * v[2], b * v[1] + a * v[2])
         return cls(R, t)
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         # This uses atan2, so the resulting theta is between -pi and pi
         theta = self.R.to_tangent(epsilon=epsilon)[0]
 
@@ -83,10 +83,10 @@ class Pose2_SE2(Pose2):
             [[tangent_D_storage_R, Matrix.zeros(1, 2)], [Matrix.zeros(2, 2), tangent_D_storage_t]]
         )
 
-    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
+    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Pose2_SE2:
         return LieGroup.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         return LieGroup.local_coordinates(self, b, epsilon)
 
     # -------------------------------------------------------------------------

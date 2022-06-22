@@ -312,23 +312,24 @@ def add_custom_methods(sympy_module: T.Type) -> None:
     # Should match C++ default epsilon in epsilon.h
     sympy_module.numeric_epsilon = 10 * sys.float_info.epsilon
 
-    # Create a symbolic epsilon to encourage consistent use
-    sympy_module.epsilon = sympy_module.Symbol("epsilon")
-
     # Save original functions to reference in wrappers
     original_atan2 = sympy_module.atan2
 
     @register
-    def atan2(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
+    def epsilon() -> T.Scalar:
+        return 0
+
+    @register
+    def atan2(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
         return original_atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
 
     @register
-    def asin_safe(x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
+    def asin_safe(x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
         x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
         return sympy_module.asin(x_safe)
 
     @register
-    def acos_safe(x: T.Scalar, epsilon: T.Scalar = 0) -> T.Scalar:
+    def acos_safe(x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
         x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
         return sympy_module.acos(x_safe)
 

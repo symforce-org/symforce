@@ -19,7 +19,7 @@ class LinearCameraCal(CameraCal):
     NUM_DISTORTION_COEFFS = 0
 
     @staticmethod
-    def project(point: geo.V3, epsilon: T.Scalar = 0) -> T.Tuple[geo.V2, T.Scalar]:
+    def project(point: geo.V3, epsilon: T.Scalar = sm.epsilon()) -> T.Tuple[geo.V2, T.Scalar]:
         """
         Linearly project the 3D point by dividing by the depth.
 
@@ -60,13 +60,13 @@ class LinearCameraCal(CameraCal):
         )
 
     def pixel_from_camera_point(
-        self, point: geo.V3, epsilon: T.Scalar = 0
+        self, point: geo.V3, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
         unit_depth, is_valid = LinearCameraCal.project(point, epsilon=epsilon)
         return self.pixel_from_unit_depth(unit_depth), is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = 0
+        self, pixel: geo.V2, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V3, T.Scalar]:
         unit_depth = self.unit_depth_from_pixel(pixel)
         camera_ray = geo.Vector3(unit_depth[0], unit_depth[1], 1)

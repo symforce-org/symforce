@@ -396,7 +396,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         return sum(ops.LieGroupOps.tangent_dim(v) for v in self.values())
 
-    def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Values:
+    def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Values:
         """
         Returns a Values object with the same structure as self, but by computing
         each element using the mapping from its corresponding tangent space vector
@@ -410,7 +410,7 @@ class Values(T.MutableMapping[str, T.Any]):
             inx += dim
         return updated_values
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         """
         Returns flat vector representing concatentated tangent spaces of each element.
         """
@@ -419,7 +419,7 @@ class Values(T.MutableMapping[str, T.Any]):
             vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
         return vec
 
-    def retract(self, vec: T.List[T.Scalar], epsilon: T.Scalar = 0) -> Values:
+    def retract(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Values:
         """
         Apply a pertubation vec in the concatenated tangent spaces of each element. Often used in
         optimization to update nonlinear values from an update step in the tangent space.
@@ -435,7 +435,7 @@ class Values(T.MutableMapping[str, T.Any]):
             inx += dim
         return retracted_values
 
-    def local_coordinates(self, b: Values, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Values, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         """
         Computes a pertubation in the combined tangent space around self to produce b. Often used
         in optimization to minimize the distance between two group elements.

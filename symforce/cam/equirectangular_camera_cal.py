@@ -20,7 +20,7 @@ class EquirectangularCameraCal(CameraCal):
     NUM_DISTORTION_COEFFS = 0
 
     def pixel_from_camera_point(
-        self, point: geo.V3, epsilon: T.Scalar = 0
+        self, point: geo.V3, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
         cam_xz_norm = geo.V2(point[0], point[2]).norm(epsilon)
         ud_x = sm.atan2(point[0], point[2], epsilon=epsilon)
@@ -35,7 +35,7 @@ class EquirectangularCameraCal(CameraCal):
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = 0
+        self, pixel: geo.V2, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V3, T.Scalar]:
         linear_camera_cal = LinearCameraCal(
             self.focal_length.to_flat_list(), self.principal_point.to_flat_list()

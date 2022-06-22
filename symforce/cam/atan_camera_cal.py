@@ -55,7 +55,7 @@ class ATANCameraCal(CameraCal):
         return ("focal_length", 2), ("principal_point", 2), ("omega", 1)
 
     def pixel_from_camera_point(
-        self, point: geo.V3, epsilon: T.Scalar = 0
+        self, point: geo.V3, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
 
         # Compute undistorted point in unit depth image plane
@@ -77,7 +77,7 @@ class ATANCameraCal(CameraCal):
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = 0
+        self, pixel: geo.V2, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V3, T.Scalar]:
 
         # Compute distorted unit depth coords

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from symforce import ops
 from symforce.ops.interfaces import LieGroup
+from symforce import sympy as sm
 from symforce import typing as T
 
 from .matrix import Matrix
@@ -106,14 +107,16 @@ class Pose3(LieGroup):
         return 6
 
     @classmethod
-    def from_tangent(cls: T.Type[Pose3T], v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3T:
+    def from_tangent(
+        cls: T.Type[Pose3T], v: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
+    ) -> Pose3T:
         R_tangent = (v[0], v[1], v[2])
         t_tangent_vector = Vector3(v[3], v[4], v[5])
 
         R = Rot3.from_tangent(R_tangent, epsilon=epsilon)
         return cls(R, t_tangent_vector)
 
-    def to_tangent(self: Pose3T, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self: Pose3T, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         R_tangent = Vector3(self.R.to_tangent(epsilon=epsilon))
         return R_tangent.col_join(self.t).to_flat_list()
 
@@ -141,13 +144,17 @@ class Pose3(LieGroup):
     # the Lie group as the product manifold of SO3 x R3 while leaving compose as normal
     # Pose3 composition.
 
-    def retract(self: Pose3T, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3T:
+    def retract(
+        self: Pose3T, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
+    ) -> Pose3T:
         return self.__class__(
             R=self.R.retract(vec[:3], epsilon=epsilon),
             t=ops.LieGroupOps.retract(self.t, vec[3:], epsilon=epsilon),
         )
 
-    def local_coordinates(self: Pose3T, b: Pose3T, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(
+        self: Pose3T, b: Pose3T, epsilon: T.Scalar = sm.epsilon()
+    ) -> T.List[T.Scalar]:
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon
         )

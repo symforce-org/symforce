@@ -64,7 +64,7 @@ class ScalarNoiseModel(NoiseModel):
         return unwhitened_residual.applyfunc(self.whiten_scalar)
 
     def whiten_norm(
-        self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar = 0
+        self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar = sm.epsilon()
     ) -> geo.Matrix.MatrixT:
         """
         Whiten the norm of the residual vector.
@@ -258,7 +258,10 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
     """
 
     def __init__(
-        self, delta: T.Scalar, scalar_information: T.Scalar, epsilon: T.Scalar = 0
+        self,
+        delta: T.Scalar,
+        scalar_information: T.Scalar,
+        epsilon: T.Scalar = sm.epsilon(),
     ) -> None:
         self.delta = delta
         self.scalar_information = scalar_information

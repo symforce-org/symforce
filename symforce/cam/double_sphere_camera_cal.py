@@ -77,7 +77,7 @@ class DoubleSphereCameraCal(CameraCal):
         return ("focal_length", 2), ("principal_point", 2), ("xi", 1), ("alpha", 1)
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = 0
+        self, point: geo.Matrix31, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
         # Pull out named scalar quantities
         x, y, z = point
@@ -135,7 +135,7 @@ class DoubleSphereCameraCal(CameraCal):
         return pixel, sm.logical_and(linear_is_valid, sphere_is_valid, unsafe=True)
 
     def camera_ray_from_pixel(
-        self, pixel: geo.Matrix21, epsilon: T.Scalar = 0
+        self, pixel: geo.Matrix21, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.V3, T.Scalar]:
         # Pull out named scalar quantities
         xi, alpha = self.distortion_coeffs

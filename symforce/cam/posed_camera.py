@@ -9,6 +9,7 @@ from .camera_cal import CameraCal
 from .camera import Camera
 
 from symforce import geo
+from symforce import sympy as sm
 from symforce import typing as T
 
 
@@ -34,7 +35,7 @@ class PosedCamera(Camera):
         )
 
     def pixel_from_global_point(
-        self, point: geo.Vector3, epsilon: T.Scalar = 0
+        self, point: geo.Vector3, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.Vector2, T.Scalar]:
         """
         Transforms the given point into the camera frame using the given camera pose and then
@@ -54,7 +55,7 @@ class PosedCamera(Camera):
         return pixel, is_valid
 
     def global_point_from_pixel(
-        self, pixel: geo.Vector2, range_to_point: T.Scalar, epsilon: T.Scalar = 0
+        self, pixel: geo.Vector2, range_to_point: T.Scalar, epsilon: T.Scalar = sm.epsilon()
     ) -> T.Tuple[geo.Vector3, T.Scalar]:
         """
         Computes a point written in the global frame along the ray passing through the center
@@ -80,7 +81,7 @@ class PosedCamera(Camera):
         pixel: geo.Vector2,
         inverse_range: T.Scalar,
         target_cam: PosedCamera,
-        epsilon: T.Scalar = 0,
+        epsilon: T.Scalar = sm.epsilon(),
     ) -> T.Tuple[geo.Vector2, T.Scalar]:
         """
         Project a pixel in this camera into another camera.

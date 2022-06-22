@@ -79,12 +79,12 @@ class Rot2(LieGroup):
         return 1
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Rot2:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Rot2:
         assert len(v) == 1
         theta = v[0]
         return Rot2(Complex(sm.cos(theta), sm.sin(theta)))
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
         return [sm.atan2(self.z.imag, self.z.real, epsilon=epsilon)]
 
     @classmethod
