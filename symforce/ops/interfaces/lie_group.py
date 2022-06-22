@@ -51,7 +51,7 @@ class LieGroup(Group):
         self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
     ) -> LieGroupT:
         """
-        Apply a tangent space pertubation vec to this. Often used in optimization
+        Apply a tangent space perturbation vec to this. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
         Implementation is simply `compose(this, from_tangent(vec))`.
@@ -63,11 +63,11 @@ class LieGroup(Group):
         self: LieGroupT, b: LieGroupT, epsilon: T.Scalar = sm.epsilon()
     ) -> T.List[T.Scalar]:
         """
-        Computes a tangent space pertubation around this to produce b. Often used in optimization
+        Computes a tangent space perturbation around this to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
         Implementation is simply `to_tangent(between(this, b))`.
-        Tangent space pertubation that conceptually represents "this - a".
+        Tangent space perturbation that conceptually represents "this - a".
         """
         return self.between(b).to_tangent(epsilon=epsilon)
 
