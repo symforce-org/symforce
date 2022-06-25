@@ -56,6 +56,11 @@ set(SYMFORCE_LCMTYPES_TARGET "" CACHE STRING
   "If SYMFORCE_LCMTYPES_EXTERNAL is on, this should be the name of a target we can depend on to get the already generated LCM types"
 )
 
+option(SYMFORCE_SKYMARSHAL_PRINTING
+  "Define SKYMARSHAL_PRINTING_ENABLED so that LCM types can be printed in C++"
+  ON
+)
+
 # ------------------------------------------------------------------------------
 # Misc
 
@@ -233,6 +238,10 @@ setup(
 )
     "
   )
+endif()
+
+if(SYMFORCE_SKYMARSHAL_PRINTING)
+  target_compile_definitions(symforce_lcmtypes_cpp INTERFACE SKYMARSHAL_PRINTING_ENABLED)
 endif()
 
 # ------------------------------------------------------------------------------
