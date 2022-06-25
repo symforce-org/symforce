@@ -5,7 +5,7 @@
 
 from symforce import ops
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
@@ -55,25 +55,25 @@ def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codeg
         Codegen.function(
             name="from_tangent",
             func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
-            input_types=[tangent_vec, sm.Symbol],
+            input_types=[tangent_vec, sf.Symbol],
             config=config,
             docstring=ops.LieGroupOps.from_tangent.__doc__,
         ),
         Codegen.function(
             func=ops.LieGroupOps.to_tangent,
-            input_types=[cls, sm.Symbol],
+            input_types=[cls, sf.Symbol],
             config=config,
             docstring=ops.LieGroupOps.to_tangent.__doc__,
         ),
         Codegen.function(
             func=ops.LieGroupOps.retract,
-            input_types=[cls, tangent_vec, sm.Symbol],
+            input_types=[cls, tangent_vec, sf.Symbol],
             config=config,
             docstring=ops.LieGroupOps.retract.__doc__,
         ),
         Codegen.function(
             func=ops.LieGroupOps.local_coordinates,
-            input_types=[cls, cls, sm.Symbol],
+            input_types=[cls, cls, sf.Symbol],
             config=config,
             docstring=ops.LieGroupOps.local_coordinates.__doc__,
         ),

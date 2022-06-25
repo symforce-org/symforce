@@ -12,7 +12,7 @@ import functools
 from symforce import geo
 from symforce import logger
 from symforce import python_util
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
@@ -101,7 +101,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             codegen_mul(geo.Rot3, geo.Vector3),
             Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config),
             Codegen.function(
-                func=functools.partial(geo.Rot3.random_from_uniform_samples, pi=sm.pi),
+                func=functools.partial(geo.Rot3.random_from_uniform_samples, pi=sf.pi),
                 name="random_from_uniform_samples",
                 config=config,
             ),

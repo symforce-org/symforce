@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.test_util import TestCase
 
@@ -16,34 +16,34 @@ class SympyOverridesTest(TestCase):
     def test_solve(self) -> None:
         """
         Tests:
-            sm.solve
+            sf.solve
         """
 
         # Two solutions to (x - 2) * (x + y) == 0
-        x, y = sm.symbols("x y")
-        solution = sm.solve((x - 2) * (x + y), x)
+        x, y = sf.symbols("x y")
+        solution = sf.solve((x - 2) * (x + y), x)
         self.assertIsInstance(solution, T.List)
         self.assertEqual(set(solution), {2, -y})
 
         # No solutions to 2 == 0
-        solution = sm.solve(2, x)
+        solution = sf.solve(2, x)
         self.assertIsInstance(solution, T.List)
         self.assertEqual(set(solution), set())
 
     def test_derivatives(self) -> None:
         """
         Tests:
-            sm.floor derivatives
-            sm.sign derivatives
-            sm.Mod derivatives
+            sf.floor derivatives
+            sf.sign derivatives
+            sf.Mod derivatives
         """
-        x, y = sm.symbols("x y")
+        x, y = sf.symbols("x y")
 
-        self.assertEqual(sm.floor(x).diff(x), 0)
-        self.assertEqual(sm.floor(x ** 2).diff(x), 0)
+        self.assertEqual(sf.floor(x).diff(x), 0)
+        self.assertEqual(sf.floor(x ** 2).diff(x), 0)
 
-        self.assertEqual(sm.sign(x).diff(x), 0)
-        self.assertEqual(sm.sign(x ** 2).diff(x), 0)
+        self.assertEqual(sf.sign(x).diff(x), 0)
+        self.assertEqual(sf.sign(x ** 2).diff(x), 0)
 
         def numerical_derivative(
             f: T.Callable[[T.Scalar], T.Scalar], x: T.Scalar, delta: float = 1e-8
@@ -52,13 +52,13 @@ class SympyOverridesTest(TestCase):
 
         for nx, ny in ((5, 2), (-5, 2), (5, -2), (-5, -2)):
             self.assertAlmostEqual(
-                float(sm.Mod(x, y).diff(x).subs({x: nx, y: ny})),
-                numerical_derivative(lambda _x: sm.Mod(x, y).subs({x: _x, y: ny}), nx),
+                float(sf.Mod(x, y).diff(x).subs({x: nx, y: ny})),
+                numerical_derivative(lambda _x: sf.Mod(x, y).subs({x: _x, y: ny}), nx),
             )
 
             self.assertAlmostEqual(
-                float(sm.Mod(x, y).diff(y).subs({x: nx, y: ny})),
-                numerical_derivative(lambda _y: sm.Mod(x, y).subs({x: nx, y: _y}), ny),
+                float(sf.Mod(x, y).diff(y).subs({x: nx, y: ny})),
+                numerical_derivative(lambda _y: sf.Mod(x, y).subs({x: nx, y: _y}), ny),
             )
 
 

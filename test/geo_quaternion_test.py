@@ -6,7 +6,7 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
 

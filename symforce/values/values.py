@@ -11,10 +11,9 @@ import copy
 import dataclasses
 import numpy as np
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import geo
-from symforce import initialization
 from symforce import ops
 from symforce import python_util
 
@@ -51,8 +50,8 @@ class Values(T.MutableMapping[str, T.Any]):
 
         # Create context manager helpers for .scope()
         self.__scopes__: T.List[str] = []
-        self.symbol_name_scoper = initialization.create_named_scope(sm.__scopes__)
-        self.key_scoper = initialization.create_named_scope(self.__scopes__)
+        self.symbol_name_scoper = sf.create_named_scope(sf.__scopes__)
+        self.key_scoper = sf.create_named_scope(self.__scopes__)
 
         # Fill with construction dict
         if _dict is not None:
@@ -161,9 +160,9 @@ class Values(T.MutableMapping[str, T.Any]):
                 entry = entry_helper(shape=value.shape)
             elif isinstance(value, geo.Matrix):
                 entry = entry_helper(shape=value.shape, datatype=geo.Matrix)
-            elif isinstance(value, sm.DataBuffer):
-                entry = entry_helper(shape=value.shape, datatype=sm.DataBuffer)
-            elif isinstance(value, (sm.Expr, sm.Symbol, int, float)):
+            elif isinstance(value, sf.DataBuffer):
+                entry = entry_helper(shape=value.shape, datatype=sf.DataBuffer)
+            elif isinstance(value, (sf.Expr, sf.Symbol, int, float)):
                 entry = entry_helper(datatype=T.Scalar)
             elif isinstance(value, (list, tuple)):
                 assert all(
@@ -319,9 +318,9 @@ class Values(T.MutableMapping[str, T.Any]):
             elif issubclass(datatype, T.Dataclass):
                 assert entry.item_index is not None
                 values[name] = datatype(**cls.from_storage_index(vec, entry.item_index))
-            elif issubclass(datatype, sm.DataBuffer):
+            elif issubclass(datatype, sf.DataBuffer):
                 assert entry.shape is not None
-                values[name] = sm.DataBuffer(name, entry.shape[0])
+                values[name] = sf.DataBuffer(name, entry.shape[0])
             else:
                 values[name] = ops.StorageOps.from_storage(datatype, vec)
 
@@ -339,7 +338,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Create a Values object with the same structure as self, where each element
         is a symbolic element with the given name prefix. Kwargs are forwarded
-        to sm.Symbol (for example, sympy assumptions).
+        to sf.Symbol (for example, sympy assumptions).
         """
         symbolic_values = Values()
         for k, v in self.items():
@@ -396,7 +395,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         return sum(ops.LieGroupOps.tangent_dim(v) for v in self.values())
 
-    def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Values:
+    def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Values:
         """
         Returns a Values object with the same structure as self, but by computing
         each element using the mapping from its corresponding tangent space vector
@@ -410,7 +409,7 @@ class Values(T.MutableMapping[str, T.Any]):
             inx += dim
         return updated_values
 
-    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         """
         Returns flat vector representing concatentated tangent spaces of each element.
         """
@@ -419,7 +418,7 @@ class Values(T.MutableMapping[str, T.Any]):
             vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
         return vec
 
-    def retract(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Values:
+    def retract(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Values:
         """
         Apply a pertubation vec in the concatenated tangent spaces of each element. Often used in
         optimization to update nonlinear values from an update step in the tangent space.
@@ -435,7 +434,7 @@ class Values(T.MutableMapping[str, T.Any]):
             inx += dim
         return retracted_values
 
-    def local_coordinates(self, b: Values, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Values, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         """
         Computes a pertubation in the combined tangent space around self to produce b. Often used
         in optimization to minimize the distance between two group elements.
@@ -553,8 +552,8 @@ class Values(T.MutableMapping[str, T.Any]):
             T.List[int]: The indices used to index into the key's value
         """
         # Prepend the key scopes if not the latest symbol scopes already
-        key_scope_is_subset = sm.__scopes__[-len(self.__scopes__) :] == self.__scopes__
-        if len(sm.__scopes__) > len(self.__scopes__) and key_scope_is_subset:
+        key_scope_is_subset = sf.__scopes__[-len(self.__scopes__) :] == self.__scopes__
+        if len(sf.__scopes__) > len(self.__scopes__) and key_scope_is_subset:
             full_key = key
         else:
             full_key = ".".join(self.__scopes__ + [key])
@@ -745,16 +744,16 @@ class Values(T.MutableMapping[str, T.Any]):
         prefix = ".".join(self.__scopes__) + "."
         return key[key.startswith(prefix) and len(prefix) :]
 
-    def add(self, value: T.Union[str, sm.Symbol], **kwargs: T.Any) -> None:
+    def add(self, value: T.Union[str, sf.Symbol], **kwargs: T.Any) -> None:
         """
         Add a symbol into the values using its given name, either a Symbol or a string.
-        Allows avoiding duplication of the sort `v['foo'] = sm.Symbol('foo')`.
+        Allows avoiding duplication of the sort `v['foo'] = sf.Symbol('foo')`.
 
         Args:
             value (Symbol or str):
         """
         if isinstance(value, str):
-            symbol = sm.Symbol(value, **kwargs)
+            symbol = sf.Symbol(value, **kwargs)
             self[self._remove_scope(symbol.name)] = symbol
         else:
             try:
@@ -789,7 +788,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Simplify each scalar element into a new instance.
         """
-        return self.from_storage(sm.simplify(sm.Matrix(self.to_storage())))
+        return self.from_storage(sf.simplify(sf.sympy.Matrix(self.to_storage())))
 
     @staticmethod
     def _apply_to_leaves(value: T.Any, func: T.Callable) -> T.Any:
@@ -847,7 +846,7 @@ class Values(T.MutableMapping[str, T.Any]):
                 return value.to_numpy()
 
             # Evaluate scalars
-            if isinstance(value, sm.Expr):
+            if isinstance(value, sf.Expr):
                 return float(value)
 
             return value

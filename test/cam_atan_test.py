@@ -7,7 +7,7 @@ import numpy as np
 
 from symforce import cam
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -30,7 +30,7 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         """
         Test that the omega property can be written to and read.
         """
-        omega, omega_alt = sm.symbols("omega omega_alt")
+        omega, omega_alt = sf.symbols("omega omega_alt")
         cal = cam.ATANCameraCal(focal_length=[0, 0], principal_point=[0, 0], omega=omega)
 
         self.assertEqual(omega, cal.omega)

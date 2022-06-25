@@ -12,7 +12,7 @@ from .camera_cal import CameraCal
 from symforce.cam.camera_util import compute_odd_polynomial_critical_point
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -60,7 +60,7 @@ class PolynomialCameraCal(CameraCal):
             self.critical_undistorted_radius = critical_undistorted_radius
         else:
             if any(
-                isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs
+                isinstance(c, sf.Expr) and not isinstance(c, sf.Number) for c in distortion_coeffs
             ):
                 raise ValueError(
                     "critical_undistorted_radius must be provided if the distortion_coeffs are not all numerical"
@@ -114,12 +114,12 @@ class PolynomialCameraCal(CameraCal):
         return total
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = sm.epsilon()
+        self, point: geo.Matrix31, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.Matrix21, T.Scalar]:
         p_img, project_is_valid = LinearCameraCal.project(point, epsilon)
 
         undistorted_radius = p_img.norm(epsilon)
-        distortion_is_valid = sm.is_positive(self.critical_undistorted_radius - undistorted_radius)
+        distortion_is_valid = sf.is_positive(self.critical_undistorted_radius - undistorted_radius)
         distorted_p_img = p_img * self._distortion_weight(undistorted_radius)
 
         linear_camera_cal = LinearCameraCal(
@@ -127,7 +127,7 @@ class PolynomialCameraCal(CameraCal):
         )
         uv = linear_camera_cal.pixel_from_unit_depth(distorted_p_img)
 
-        is_valid = sm.logical_and(project_is_valid, distortion_is_valid, unsafe=True)
+        is_valid = sf.logical_and(project_is_valid, distortion_is_valid, unsafe=True)
 
         return uv, is_valid
 
@@ -179,11 +179,11 @@ class PolynomialCameraCal(CameraCal):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> PolynomialCameraCal:
-        with sm.scope(name):
+        with sf.scope(name):
             return cls(
-                focal_length=sm.symbols("f_x f_y"),
-                principal_point=sm.symbols("c_x c_y"),
-                critical_undistorted_radius=sm.Symbol("radius_crit"),
+                focal_length=sf.symbols("f_x f_y"),
+                principal_point=sf.symbols("c_x c_y"),
+                critical_undistorted_radius=sf.Symbol("radius_crit"),
                 distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
                 .symbolic("C", **kwargs)
                 .to_flat_list(),

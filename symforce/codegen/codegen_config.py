@@ -24,7 +24,7 @@ class CodegenConfig:
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
-        cse_optimizations: Optimizations argument to pass to sm.cse
+        cse_optimizations: Optimizations argument to pass to sf.cse
         matrix_is_1d: Whether geo.Matrix symbols get formatted as 1D
     """
 

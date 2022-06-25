@@ -7,9 +7,10 @@ from __future__ import annotations
 
 import numpy as np
 
+import symforce
 from symforce import ops
 from symforce.ops.interfaces import Storage
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as _T  # We already have a Matrix.T which collides
 from symforce import python_util
 
@@ -156,13 +157,13 @@ class Matrix(Storage):
         instance = Storage.__new__(fixed_size_type)
 
         # Set the underlying sympy array
-        instance.mat = sm.Matrix(rows, cols, flat_list, **kwargs)
+        instance.mat = sf.sympy.Matrix(rows, cols, flat_list, **kwargs)
 
         return instance
 
     def __init__(self, *args: _T.Any, **kwargs: _T.Any) -> None:
         if _T.TYPE_CHECKING:
-            self.mat = sm.Matrix(*args, **kwargs)
+            self.mat = sf.sympy.Matrix(*args, **kwargs)
 
         assert self.__class__.SHAPE == self.mat.shape, "Inconsistent Matrix"
 
@@ -240,7 +241,7 @@ class Matrix(Storage):
         """
         Matrix of zeros.
         """
-        return cls([[sm.S.Zero] * cols for _ in range(rows)])
+        return cls([[sf.S.Zero] * cols for _ in range(rows)])
 
     @classmethod
     def one(cls: _T.Type[MatrixT]) -> MatrixT:
@@ -255,7 +256,7 @@ class Matrix(Storage):
         """
         Matrix of ones.
         """
-        return cls([[sm.S.One] * cols for _ in range(rows)])
+        return cls([[sf.S.One] * cols for _ in range(rows)])
 
     @classmethod
     def diag(cls, diagonal: _T.Sequence[_T.Scalar]) -> Matrix:
@@ -315,7 +316,7 @@ class Matrix(Storage):
             cols = rows
         mat = cls.zeros(rows, cols)
         for i in range(min(rows, cols)):
-            mat[i, i] = sm.S.One
+            mat[i, i] = sf.S.One
         return mat  # type: ignore
 
     def inv(self: MatrixT, method: str = "LU") -> MatrixT:
@@ -331,7 +332,7 @@ class Matrix(Storage):
 
         Args:
             name (str): Name prefix of the symbols
-            **kwargs (dict): Forwarded to `sm.Symbol`
+            **kwargs (dict): Forwarded to `sf.Symbol`
         """
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         rows, cols = cls.SHAPE  # pylint: disable=unpacking-non-sequence
@@ -346,17 +347,17 @@ class Matrix(Storage):
             symbols = []
             for r_i in range(rows):
                 _name = "{}{}".format(name, row_names[r_i])
-                symbols.append(sm.Symbol(_name, **kwargs))
+                symbols.append([sf.Symbol(_name, **kwargs)])
         else:
             symbols = []
             for r_i in range(rows):
                 col_symbols = []
                 for c_i in range(cols):
                     _name = "{}{}_{}".format(name, row_names[r_i], col_names[c_i])
-                    col_symbols.append(sm.Symbol(_name, **kwargs))
+                    col_symbols.append(sf.Symbol(_name, **kwargs))
                 symbols.append(col_symbols)
 
-        return cls(sm.Matrix(symbols))
+        return cls(sf.sympy.Matrix(symbols))
 
     def row_join(self, right: Matrix) -> Matrix:
         """
@@ -416,7 +417,7 @@ class Matrix(Storage):
 
         This overrides the sympy implementation because that clobbers the class type.
         """
-        return self.__class__(sm.simplify(self.mat, *args, **kwargs))
+        return self.__class__(sf.simplify(self.mat, *args, **kwargs))
 
     def limit(self, *args: _T.Any, **kwargs: _T.Any) -> Matrix:
         """
@@ -424,7 +425,7 @@ class Matrix(Storage):
 
         This overrides the sympy implementation because that clobbers the class type.
         """
-        return self.from_flat_list([sm.limit(e, *args, **kwargs) for e in self.to_flat_list()])
+        return self.from_flat_list([sf.limit(e, *args, **kwargs) for e in self.to_flat_list()])
 
     def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
         """
@@ -441,7 +442,9 @@ class Matrix(Storage):
             return jacobian_helpers.tangent_jacobians(self, [X])[0]
         else:
             # Compute jacobian wrt X storage
-            return Matrix([[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in self.mat])
+            return Matrix(
+                [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in iter(self.mat)]  # type: ignore[call-overload]  # fixed by python/typeshed#7817
+            )
 
     def diff(self, *args: _T.Tuple[_T.Scalar]) -> Matrix:
         """
@@ -510,7 +513,7 @@ class Matrix(Storage):
         """
         Norm of a vector (square root of magnitude).
         """
-        return sm.sqrt(self.squared_norm() + epsilon)
+        return sf.sqrt(self.squared_norm() + epsilon)
 
     def normalized(self: MatrixT, epsilon: _T.Scalar = 0) -> MatrixT:
         """
@@ -538,7 +541,7 @@ class Matrix(Storage):
         max_squared_norm = max_norm ** 2
 
         # This sqrt can be near 0, if max_norm can be exactly 0
-        return self * sm.Min(1, sm.sqrt(max_squared_norm / squared_norm))
+        return self * sf.Min(1, sf.sqrt(max_squared_norm / squared_norm))
 
     def multiply_elementwise(self: MatrixT, rhs: MatrixT) -> MatrixT:
         """
@@ -567,15 +570,17 @@ class Matrix(Storage):
         Get a scalar value or submatrix slice.
         """
         ret = self.mat.__getitem__(item)
-        if isinstance(ret, sm.Matrix):
+        if isinstance(ret, sf.sympy.Matrix):
             ret = self.__class__(ret)
         return ret
 
-    def __setitem__(self, key: _T.Any, value: _T.Union[_T.Scalar, Matrix, sm.Matrix]) -> None:
+    def __setitem__(
+        self, key: _T.Any, value: _T.Union[_T.Scalar, Matrix, sf.sympy.MutableDenseMatrix]
+    ) -> None:
         if isinstance(value, Matrix):
             value = value.mat
         ret = self.mat.__setitem__(key, value)
-        if isinstance(ret, sm.Matrix):
+        if isinstance(ret, sf.sympy.Matrix):
             ret = self.__class__(ret)
         return ret
 
@@ -620,15 +625,17 @@ class Matrix(Storage):
             return self.__class__(self.mat - right)
 
     @_T.overload
-    def __mul__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
+    def __mul__(
+        self, right: _T.Union[Matrix, sf.sympy.MutableDenseMatrix]
+    ) -> Matrix:  # pragma: no cover
         pass
 
     @_T.overload
-    def __mul__(self, right: _T.Union[Matrix, sm.Matrix]) -> Matrix:  # pragma: no cover
+    def __mul__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
     def __mul__(
-        self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]
+        self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sf.sympy.MutableDenseMatrix]
     ) -> _T.Union[MatrixT, Matrix]:
         """
         Multiply a matrix by a scalar or matrix
@@ -641,15 +648,17 @@ class Matrix(Storage):
             return self.__class__(self.mat * right)
 
     @_T.overload
-    def __rmul__(self: MatrixT, left: _T.Scalar) -> MatrixT:  # pragma: no cover
+    def __rmul__(
+        self, left: _T.Union[Matrix, sf.sympy.MutableDenseMatrix]
+    ) -> Matrix:  # pragma: no cover
         pass
 
     @_T.overload
-    def __rmul__(self, left: _T.Union[Matrix, sm.Matrix]) -> Matrix:  # pragma: no cover
+    def __rmul__(self: MatrixT, left: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
     def __rmul__(
-        self, left: _T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]
+        self, left: _T.Union[MatrixT, _T.Scalar, Matrix, sf.sympy.MutableDenseMatrix]
     ) -> _T.Union[MatrixT, Matrix]:
         """
         Left multiply a matrix by a scalar or matrix
@@ -662,25 +671,27 @@ class Matrix(Storage):
             return self.__class__(left * self.mat)
 
     @_T.overload
-    def __div__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
+    def __div__(
+        self, right: _T.Union[Matrix, sf.sympy.MutableDenseMatrix]
+    ) -> Matrix:  # pragma: no cover
         pass
 
     @_T.overload
-    def __div__(self, right: _T.Union[Matrix, sm.Matrix]) -> Matrix:  # pragma: no cover
+    def __div__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
     def __div__(
-        self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sm.Matrix]
+        self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sf.sympy.MutableDenseMatrix]
     ) -> _T.Union[MatrixT, Matrix]:
         """
         Divide a matrix by a scalar or a matrix (which takes the inverse).
         """
         if python_util.scalar_like(right):
-            return self.applyfunc(lambda x: x / sm.S(right))
+            return self.applyfunc(lambda x: x / sf.S(right))
         elif isinstance(right, Matrix):
             return self * right.inv()
         else:
-            return self.__class__(self.mat * _T.cast(sm.Matrix, right).inv())
+            return self.__class__(self.mat * _T.cast(sf.sympy.MutableDenseMatrix, right).inv())
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
         """
@@ -704,33 +715,61 @@ class Matrix(Storage):
                     AtA[i, j] = val if not lower_only else 0
         return AtA
 
-    def LU(self) -> _T.Tuple[Matrix, Matrix]:
+    def LU(
+        self,
+    ) -> _T.Union[_T.Tuple[Matrix, Matrix], _T.Tuple[Matrix, Matrix, _T.List[_T.Tuple[int, int]]]]:
         """
         LU matrix decomposition
         """
-        L, U = self.mat.LU()
-        return self.__class__(L), self.__class__(U)
+        if symforce.get_symbolic_api() == "sympy":
+            L, U, perm = self.mat.LUdecomposition()
+            return self.__class__(L), self.__class__(U), perm
+        elif symforce.get_symbolic_api() == "symengine":
+            L, U = self.mat.LU()  # type: ignore[attr-defined]
+            return self.__class__(L), self.__class__(U)
+        else:
+            raise symforce.InvalidSymbolicApiError(symforce.get_symbolic_api())
 
     def LDL(self) -> _T.Tuple[Matrix, Matrix]:
         """
         LDL matrix decomposition (stable cholesky)
         """
-        L, D = self.mat.LU()
+        if symforce.get_symbolic_api() == "sympy":
+            L, D = self.mat.LDLdecomposition()
+        elif symforce.get_symbolic_api() == "symengine":
+            L, D = self.mat.LDL()  # type: ignore[attr-defined]
+        else:
+            raise symforce.InvalidSymbolicApiError(symforce.get_symbolic_api())
         return self.__class__(L), self.__class__(D)
 
     def FFLU(self) -> _T.Tuple[Matrix, Matrix]:
         """
         Fraction-free LU matrix decomposition
         """
-        L, U = self.mat.FFLU()
-        return self.__class__(L), self.__class__(U)
+        if symforce.get_symbolic_api() == "sympy":
+            raise NotImplementedError(
+                "The FFLU decomposition does not exist on SymPy, use FFLDU instead"
+            )
+        elif symforce.get_symbolic_api() == "symengine":
+            L, U = self.mat.FFLU()  # type: ignore[attr-defined]
+            return self.__class__(L), self.__class__(U)
+        else:
+            raise symforce.InvalidSymbolicApiError(symforce.get_symbolic_api())
 
-    def FFLDU(self) -> _T.Tuple[Matrix, Matrix, Matrix]:
+    def FFLDU(
+        self,
+    ) -> _T.Union[_T.Tuple[Matrix, Matrix, Matrix], _T.Tuple[Matrix, Matrix, Matrix, Matrix]]:
         """
         Fraction-free LDU matrix decomposition
         """
-        L, D, U = self.mat.FFLDU()
-        return self.__class__(L), self.__class__(D), self.__class__(U)
+        if symforce.get_symbolic_api() == "sympy":
+            P, L, D, U = self.mat.LUdecompositionFF()
+            return self.__class__(P), self.__class__(L), self.__class__(D), self.__class__(U)
+        elif symforce.get_symbolic_api() == "symengine":
+            L, D, U = self.mat.FFLDU()  # type: ignore[attr-defined]
+            return self.__class__(L), self.__class__(D), self.__class__(U)
+        else:
+            raise symforce.InvalidSymbolicApiError(symforce.get_symbolic_api())
 
     def solve(self, b: Matrix, method: str = "LU") -> Matrix:
         """
@@ -745,7 +784,7 @@ class Matrix(Storage):
         """
         Returns 1 if a and b are parallel within epsilon, and 0 otherwise.
         """
-        return (1 - sm.sign(a.cross(b).norm() - epsilon)) / 2
+        return (1 - sf.sign(a.cross(b).norm() - epsilon)) / 2
 
     @staticmethod
     def skew_symmetric(a: Vector3) -> Matrix33:
@@ -770,7 +809,7 @@ class Matrix(Storage):
         """
         Convert to a flattened list
         """
-        return list(self.mat)
+        return list(iter(self.mat))  # type: ignore[call-overload]  # fixed by python/typeshed#7817
 
     @classmethod
     def from_flat_list(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
@@ -845,19 +884,19 @@ class Matrix(Storage):
 
         if ip is not None:
             plaintext_formatter = ip.display_formatter.formatters["text/plain"]
-            sympy_plaintext_formatter = plaintext_formatter.for_type(sm.Matrix)
+            sympy_plaintext_formatter = plaintext_formatter.for_type(sf.sympy.Matrix)
             if sympy_plaintext_formatter is not None:
                 plaintext_formatter.for_type(
                     Matrix, lambda arg, p, cycle: sympy_plaintext_formatter(arg.mat, p, cycle)
                 )
 
             png_formatter = ip.display_formatter.formatters["image/png"]
-            sympy_png_formatter = png_formatter.for_type(sm.Matrix)
+            sympy_png_formatter = png_formatter.for_type(sf.sympy.Matrix)
             if sympy_png_formatter is not None:
                 png_formatter.for_type(Matrix, lambda o: sympy_png_formatter(o.mat))
 
             latex_formatter = ip.display_formatter.formatters["text/latex"]
-            sympy_latex_formatter = latex_formatter.for_type(sm.Matrix)
+            sympy_latex_formatter = latex_formatter.for_type(sf.sympy.Matrix)
             if sympy_latex_formatter is not None:
                 latex_formatter.for_type(Matrix, lambda o: sympy_latex_formatter(o.mat))
 

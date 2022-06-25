@@ -5,7 +5,7 @@
 
 from symforce import geo
 import symforce.opt.noise_models as nm
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase, sympy_only, epsilon_handling
@@ -19,7 +19,7 @@ class NoiseModelTest(TestCase):
         # Check whitening function
         unwhitened_residual = geo.V3(1, 2, 3)
         whitened_residual = StorageOps.evalf(noise_model.whiten(unwhitened_residual))
-        self.assertEqual(StorageOps.evalf(sm.sqrt(weight) * unwhitened_residual), whitened_residual)
+        self.assertEqual(StorageOps.evalf(sf.sqrt(weight) * unwhitened_residual), whitened_residual)
 
         # Check overall cost
         self.assertEqual(
@@ -30,13 +30,13 @@ class NoiseModelTest(TestCase):
         # Check ops used for IsotropicNoiseModel.from_sigma; we should not get something like
         # x / sqrt(sigma^2)
         x = geo.V1.symbolic("x")
-        sigma = sm.Symbol("sigma")
+        sigma = sf.Symbol("sigma")
         model = nm.IsotropicNoiseModel.from_sigma(sigma)
         self.assertEqual(model.whiten(x), x / sigma)
 
         # Test other constructors
         noise_model_from_variance = nm.IsotropicNoiseModel.from_variance(1 / weight)
-        noise_model_from_sigma = nm.IsotropicNoiseModel.from_sigma(1 / sm.sqrt(weight))
+        noise_model_from_sigma = nm.IsotropicNoiseModel.from_sigma(1 / sf.sqrt(weight))
         self.assertEqual(
             StorageOps.evalf(noise_model_from_variance.whiten(unwhitened_residual)),
             whitened_residual,
@@ -53,7 +53,7 @@ class NoiseModelTest(TestCase):
         unwhitened_residual = geo.V3(4, 5, 6)
         whitened_residual = StorageOps.evalf(noise_model.whiten(unwhitened_residual))
         expected_whitened_residual = geo.M(
-            [sm.sqrt(w) * v for w, v in zip(weights, unwhitened_residual)]
+            [sf.sqrt(w) * v for w, v in zip(weights, unwhitened_residual)]
         )
         self.assertEqual(StorageOps.evalf(expected_whitened_residual), whitened_residual)
 
@@ -74,7 +74,7 @@ class NoiseModelTest(TestCase):
         # Test other constructors
         noise_model_from_variance = nm.DiagonalNoiseModel.from_variances([1 / w for w in weights])
         noise_model_from_sigma = nm.DiagonalNoiseModel.from_sigmas(
-            [1 / sm.sqrt(w) for w in weights]
+            [1 / sf.sqrt(w) for w in weights]
         )
         self.assertEqual(
             StorageOps.evalf(noise_model_from_variance.whiten(unwhitened_residual)),
@@ -89,7 +89,7 @@ class NoiseModelTest(TestCase):
         Tests the residual and jacobian values of the pseudo-huber noise model
         """
         delta = 10.0
-        scalar_information = sm.Symbol("scalar_information")
+        scalar_information = sf.Symbol("scalar_information")
         scalar_information_num = 3.0
         epsilon = 1.0e-8
         noise_model = nm.PseudoHuberNoiseModel(
@@ -152,7 +152,7 @@ class NoiseModelTest(TestCase):
         """
         Some simple tests on the Barron noise model.
         """
-        x = sm.Symbol("x")
+        x = sf.Symbol("x")
         x_matrix = geo.V1(x)
 
         alpha = 1.0
@@ -196,7 +196,7 @@ class NoiseModelTest(TestCase):
 
         # Test 4: the residual gradient w/ 0 weight should be 0 (and finite!)
         # Make all the params symbolic so they don't get removed.
-        alpha, delta, scalar_information, epsilon = sm.symbols("alpha, scale, weight, epsilon")
+        alpha, delta, scalar_information, epsilon = sf.symbols("alpha, scale, weight, epsilon")
         noise_model = nm.BarronNoiseModel(
             alpha, delta=delta, scalar_information=scalar_information, x_epsilon=epsilon
         )
@@ -229,7 +229,7 @@ class NoiseModelTest(TestCase):
 
             # SymPy fails to calculate the limits correctly here, so we provide the correct answers
             return epsilon_handling.is_epsilon_correct(
-                whiten_ratio, expected_value=0, expected_derivative=sm.sqrt(scalar_information)
+                whiten_ratio, expected_value=0, expected_derivative=sf.sqrt(scalar_information)
             )
 
         self.assertTrue(test_epsilon_at_alpha(1))

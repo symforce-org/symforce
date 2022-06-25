@@ -12,7 +12,7 @@ from pathlib import Path
 from symforce import codegen
 from symforce.codegen import values_codegen
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.values import Values
 
@@ -47,7 +47,7 @@ def snavely_reprojection_residual(
     # do that.
     point_cam = cam_T_world * point
 
-    p = geo.V2(point_cam[:2]) / sm.Max(-point_cam[2], epsilon)
+    p = geo.V2(point_cam[:2]) / sf.Max(-point_cam[2], epsilon)
 
     r = 1 + k1 * p.squared_norm() + k2 * p.squared_norm() ** 2
 

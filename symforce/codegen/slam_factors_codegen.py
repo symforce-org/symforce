@@ -18,7 +18,7 @@ import os
 from symforce import cam
 from symforce import codegen
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import python_util
 from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
@@ -165,7 +165,7 @@ def inverse_range_landmark_reprojection_error_residual(
     )
 
     whitened_residual = (
-        warp_is_valid * sm.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+        warp_is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
     )
 
     return whitened_residual
@@ -282,7 +282,7 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     )
 
     whitened_residual = (
-        is_valid * sm.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+        is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
     )
 
     return whitened_residual

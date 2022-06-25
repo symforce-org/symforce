@@ -39,7 +39,7 @@ check_format:
 # NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
 # See https://github.com/python/mypy/issues/8548
 # We don't need to run find on `symforce` because we know the whole thing is a package
-MYPY_COMMAND=$(PYTHON) -m mypy
+MYPY_COMMAND=$(PYTHON) -m mypy --show-error-code
 SYMFORCE_LCMTYPES_DIR ?= build/lcmtypes/python2.7
 check_types:
 	export SYMFORCE_LCMTYPES_DIR=$(SYMFORCE_LCMTYPES_DIR); \

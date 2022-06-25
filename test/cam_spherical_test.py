@@ -7,7 +7,7 @@ import numpy as np
 
 from symforce import cam
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -55,11 +55,11 @@ class CamSphericalTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         # by construction, projection should be valid for theta <= 1, invalid for theta > 1
         valid_point = geo.V3(1.0, 0.0, 1.0)
         _, is_valid = cal.pixel_from_camera_point(valid_point)
-        self.assertStorageNear(sm.S(is_valid).evalf(), 1.0)
+        self.assertStorageNear(sf.S(is_valid).evalf(), 1.0)
 
         invalid_point = geo.V3(1.0, 0.0, 0.0)
         _, is_valid = cal.pixel_from_camera_point(invalid_point)
-        self.assertStorageNear(sm.S(is_valid).evalf(), 0.0)
+        self.assertStorageNear(sf.S(is_valid).evalf(), 0.0)
 
 
 if __name__ == "__main__":

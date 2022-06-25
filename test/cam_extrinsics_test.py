@@ -7,7 +7,7 @@ import numpy as np
 
 from symforce import geo
 from symforce import cam
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.cam_test_mixin import CamTestMixin
 
@@ -129,19 +129,21 @@ class PosedCameraTest(CamTestMixin, TestCase):
         self.assertEqual(is_valid_warp_into_3, 0)
 
         # Check that we don't get NaNs when using symbolic inverse_range and nonzero epsilon
-        inverse_range = sm.Symbol("inv_range")
+        symbolic_inverse_range = sf.Symbol("inv_range")
         cam_1_ray = geo.V3(0.5, 1, 1)
         pixel_inf_1, _ = posed_cam_1.pixel_from_camera_point(cam_1_ray)
         pixel_inf_2, is_valid_inf = posed_cam_1.warp_pixel(
             pixel=pixel_inf_1,
-            inverse_range=inverse_range,
+            inverse_range=symbolic_inverse_range,
             target_cam=posed_cam_2,
             epsilon=self.EPSILON,
         )
         cam_2_ray = posed_cam_2.pose.R.inverse() * (posed_cam_1.pose.R * cam_1_ray)
         pixel_inf_2_rot_only, _ = posed_cam_2.pixel_from_camera_point(cam_2_ray)
-        self.assertEqual(is_valid_inf.subs(inverse_range, 0), 1)  # type: ignore
-        self.assertStorageNear(pixel_inf_2.subs(inverse_range, 0), pixel_inf_2_rot_only, places=4)
+        self.assertEqual(is_valid_inf.subs(symbolic_inverse_range, 0), 1)  # type: ignore
+        self.assertStorageNear(
+            pixel_inf_2.subs(symbolic_inverse_range, 0), pixel_inf_2_rot_only, places=4
+        )
 
         # Check that when inverse_range = 0 and epsilon = 0 we exactly recover rotation-only math
         pixel_inf_2_exact, is_valid_inf = posed_cam_1.warp_pixel(

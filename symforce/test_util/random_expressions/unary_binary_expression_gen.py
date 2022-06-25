@@ -9,7 +9,7 @@ import numpy as np
 
 from symforce import logger
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.test_util.random_expressions.op_probabilities import OpProbability
 from symforce.test_util.random_expressions.op_probabilities import DEFAULT_UNARY_OPS
@@ -184,7 +184,7 @@ class UnaryBinaryExpressionGen:
 
         return stack
 
-    def seq_to_expr(self, seq: T.Sequence[T.Union[str, T.Scalar]]) -> sm.Expr:
+    def seq_to_expr(self, seq: T.Sequence[T.Union[str, T.Scalar]]) -> sf.Expr:
         """
         Convert a prefix notation sequence into a sympy expression.
         """

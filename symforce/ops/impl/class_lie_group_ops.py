@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 from .class_group_ops import ClassGroupOps
@@ -41,6 +41,6 @@ class ClassLieGroupOps(ClassGroupOps):
 
     @staticmethod
     def local_coordinates(
-        a: T.Element, b: T.Element, epsilon: T.Scalar = sm.epsilon()
+        a: T.Element, b: T.Element, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
         return a.local_coordinates(b, epsilon)

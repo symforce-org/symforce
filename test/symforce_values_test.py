@@ -15,7 +15,7 @@ from symforce import logger
 from symforce import geo
 from symforce import cam
 from symforce import ops
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.python_util import InvalidKeyError
 from symforce.test_util import TestCase, slow_on_sympy
@@ -107,25 +107,25 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         logger.debug("v:\n" + string)
 
     def test_name_scope(self) -> None:
-        s = sm.Symbol("foo.blah")
+        s = sf.Symbol("foo.blah")
         self.assertEqual("foo.blah", s.name)
 
-        with sm.scope("hey"):
-            v = sm.Symbol("you")
-            with sm.scope("there"):
-                w = sm.Symbol("what")
+        with sf.scope("hey"):
+            v = sf.Symbol("you")
+            with sf.scope("there"):
+                w = sf.Symbol("what")
         self.assertEqual("hey.you", v.name)
         self.assertEqual("hey.there.what", w.name)
 
         with self.subTest(msg="Scopes are cleaned up correctly"):
             try:
-                with sm.scope("hey"):
+                with sf.scope("hey"):
                     raise Exception
             except:
                 pass
-            x = sm.Symbol("who")
+            x = sf.Symbol("who")
             self.assertEqual("who", x.name)
-        sm.__scopes__ = []
+        sf.__scopes__ = []
 
     def test_values(self) -> None:
         v = Values()
@@ -136,13 +136,13 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual([], v.keys_recursive())
         self.assertEqual([], v.values_recursive())
 
-        v["foo"] = sm.Symbol("foo")
-        v.add(sm.Symbol("bar"))
+        v["foo"] = sf.Symbol("foo")
+        v.add(sf.Symbol("bar"))
         self.assertEqual("foo", v["foo"].name)
         self.assertTrue("foo" in v.keys())
 
         # Add only works with strings and symbols
-        self.assertRaises(NameError, lambda: v.add(3))
+        self.assertRaises(NameError, lambda: v.add(3))  # type: ignore[arg-type]
 
         v["complex"] = geo.Complex.identity()
 
@@ -154,14 +154,14 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         # Test adding with scope
         with v.scope("states"):
-            v["x0"] = sm.Symbol("x0")
-            with sm.scope("vel"):
+            v["x0"] = sf.Symbol("x0")
+            with sf.scope("vel"):
                 v.add("v0")
                 v.add("v1")
             v.add("y0")
         self.assertEqual("states.x0", v["states.x0"].name)
 
-        self.assertEqual(v["states.x0"], sm.Symbol("states.x0"))
+        self.assertEqual(v["states.x0"], sf.Symbol("states.x0"))
 
         # Test getting flattened list of elements/keys
         vals = v.values_recursive()
@@ -206,8 +206,8 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
     def test_evalf(self) -> None:
         v = Values()
-        v["a"] = sm.S.One / 3
-        v["b"] = geo.Rot3.from_angle_axis(angle=sm.pi / 2, axis=geo.V3(1, 0, 0))
+        v["a"] = sf.S.One / 3
+        v["b"] = geo.Rot3.from_angle_axis(angle=sf.pi / 2, axis=geo.V3(1, 0, 0))
 
         v_evalf = v.evalf()
 
@@ -371,22 +371,22 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     def test_mixing_scopes(self) -> None:
         v1 = Values()
         v1.add("x")
-        with sm.scope("foo"):
+        with sf.scope("foo"):
             v1.add("x")
-        self.assertEqual(v1["foo.x"], sm.Symbol("foo.x"))
+        self.assertEqual(v1["foo.x"], sf.Symbol("foo.x"))
 
         v2 = Values()
 
-        v2.add(sm.Symbol("x"))
+        v2.add(sf.Symbol("x"))
 
-        with sm.scope("foo"):
+        with sf.scope("foo"):
             v2.add("x")
             with v2.scope("bar"):
                 v2.add("x")
 
         v2_expected = Values(
-            x=sm.Symbol("x"),
-            foo=Values(x=sm.Symbol("foo.x"), bar=Values(x=sm.Symbol("foo.bar.x"))),
+            x=sf.Symbol("x"),
+            foo=Values(x=sf.Symbol("foo.x"), bar=Values(x=sf.Symbol("foo.bar.x"))),
         )
 
         self.assertEqual(v2, v2_expected)
@@ -396,7 +396,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         Ensure `.from_tangent` works with native python types as keys.
         """
         keys = ["a", "b", "c", "d", "e"]
-        entries = [2, 1.2, sm.S(3.4), sm.Symbol("x"), 5 * sm.Symbol("x") ** -2]
+        entries = [2, 1.2, sf.S(3.4), sf.Symbol("x"), 5 * sf.Symbol("x") ** -2]
 
         v = Values()
         for key, entry in zip(keys, entries):
@@ -463,7 +463,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             Values.scalar_keys_recursive
         """
         with self.subTest(msg="Handles nested scalars"):
-            v = Values(base1=Values(base2=Values(val=sm.S(1))))
+            v = Values(base1=Values(base2=Values(val=sf.S(1))))
             self.assertEqual(["base1.base2.val"], v.scalar_keys_recursive())
 
         with self.subTest(msg="Gets keys for scalar components of non-scalar types"):
@@ -586,11 +586,11 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             Values.subs
         """
         with self.subTest(msg="Non-subbed entries should not be modified"):
-            v = Values(num=4, sym=sm.S("x"))
+            v = Values(num=4, sym=sf.S("x"))
             self.assertEqual(int, type(v.subs({"x": 3})["num"]))
 
         with self.subTest(msg="Subbing works, even with nested Values"):
-            v = Values(inner_v=Values(sym=sm.S("x")))
+            v = Values(inner_v=Values(sym=sf.S("x")))
             v_goal = Values(inner_v=Values(sym=3))
             self.assertEqual(v_goal, v.subs({"x": 3}))
 
@@ -601,11 +601,11 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         """
         values = Values(
             x=1.0,
-            y=sm.S(5.4),
-            z=sm.S.One,
-            foo=sm.sqrt(5),
-            R=geo.Rot3.from_yaw_pitch_roll(yaw=0.1, pitch=sm.S(3), roll=0),
-            sub_values=Values(hey=geo.Pose3.identity(), other=[sm.S(5.4), sm.sqrt(10)]),
+            y=sf.S(5.4),
+            z=sf.S.One,
+            foo=sf.sqrt(5),
+            R=geo.Rot3.from_yaw_pitch_roll(yaw=0.1, pitch=sf.S(3), roll=0),
+            sub_values=Values(hey=geo.Pose3.identity(), other=[sf.S(5.4), sf.sqrt(10)]),
         )
 
         expected_numerical_values = Values(
@@ -619,7 +619,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         # Make sure they match
         diff = values.to_numerical().local_coordinates(
-            expected_numerical_values, epsilon=sm.numeric_epsilon
+            expected_numerical_values, epsilon=sf.numeric_epsilon
         )
         self.assertLess(geo.M(diff).norm(), 1e-10)
 

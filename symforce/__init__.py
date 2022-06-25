@@ -64,21 +64,14 @@ set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "WARNING"))
 # -------------------------------------------------------------------------------------------------
 # Symbolic API configuration
 # -------------------------------------------------------------------------------------------------
-sympy: T.Any = None
-
-from . import initialization
 
 
-def _set_symbolic_api(sympy_module: ModuleType) -> None:
-    # Make symforce-specific modifications to the sympy API
-    initialization.modify_symbolic_api(sympy_module)
-
-    # Set this as the default symbolic API
-    global sympy  # pylint: disable=global-statement
-    sympy = sympy_module
+class InvalidSymbolicApiError(Exception):
+    def __init__(self, api: str):
+        super().__init__(f'Symbolic API is "{api}", must be one of ("sympy", "symengine")')
 
 
-def _import_symengine_from_build() -> ModuleType:
+def _find_symengine() -> ModuleType:
     """
     Attempts to import symengine from its location in the symforce build directory
 
@@ -136,40 +129,33 @@ def _import_symengine_from_build() -> ModuleType:
     return symengine
 
 
+_symbolic_api: T.Optional[str] = None
+_have_imported_symbolic = False
+
+
+def _set_symbolic_api(sympy_module: str) -> None:
+    # Set this as the default symbolic API
+    global _symbolic_api  # pylint: disable=global-statement
+    _symbolic_api = sympy_module
+
+
 def _use_symengine() -> None:
     try:
-        symengine = _import_symengine_from_build()
+        _find_symengine()
 
     except ImportError:
         logger.critical("Commanded to use symengine, but failed to import.")
         raise
 
-    _set_symbolic_api(symengine)
+    _set_symbolic_api("symengine")
 
 
 def _use_sympy() -> None:
-    import sympy as sympy_py
+    # Import just to make sure it's importable and fail here if it's not (as opposed to failing
+    # later)
+    import sympy as sympy_py  # pylint: disable=unused-import
 
-    _set_symbolic_api(sympy_py)
-    sympy_py.init_printing()
-
-
-def set_symengine_eval_on_sympify(eval_on_sympy: bool = True) -> None:
-    """
-    When using the symengine backed, set whether we should eval args when converting objects to
-    sympy.
-
-    By default, this is enabled since this is the implicit behavior with stock symengine.
-    Disabling eval results in more slightly ops, but greatly speeds up codegen time.
-    """
-    assert sympy is not None
-    if sympy.__package__ == "symengine":
-        import symengine.lib.symengine_wrapper as wrapper
-
-        wrapper.__EVAL_ON_SYMPY__ = eval_on_sympy
-
-    else:
-        logger.debug("set_symengine_fast_sympify has no effect when not using symengine")
+    _set_symbolic_api("sympy")
 
 
 def set_symbolic_api(name: str) -> None:
@@ -186,10 +172,14 @@ def set_symbolic_api(name: str) -> None:
     Args:
         name (str): {sympy, symengine}
     """
-    # TODO(hayk): Could do a better job of checking what's imported and raising an error
-    # if this isn't the first thing imported/called from symforce.
+    if _have_imported_symbolic and name != _symbolic_api:
+        raise ValueError(
+            "The symbolic API cannot be changed after `symforce.symbolic` has been imported.  "
+            "Import the top-level `symforce` module and call `symforce.set_symbolic_api` before "
+            "importing anything else!"
+        )
 
-    if sympy and name == sympy.__package__:
+    if _symbolic_api is not None and name == _symbolic_api:
         logger.debug(f'already on symbolic API "{name}"')
         return
     else:
@@ -208,7 +198,7 @@ if "SYMFORCE_SYMBOLIC_API" in os.environ:
     set_symbolic_api(os.environ["SYMFORCE_SYMBOLIC_API"])
 else:
     try:
-        symengine = _import_symengine_from_build()
+        _find_symengine()
 
         logger.debug("No SYMFORCE_SYMBOLIC_API set, found and using symengine.")
         set_symbolic_api("symengine")
@@ -224,8 +214,8 @@ def get_symbolic_api() -> str:
     Returns:
         str:
     """
-    assert sympy is not None
-    return sympy.__name__
+    assert _symbolic_api is not None
+    return _symbolic_api
 
 
 # NOTE(hayk): Remove this after they are present in a release or two.
@@ -239,3 +229,40 @@ def get_backend() -> str:
 def set_backend(name: str) -> None:
     warnings.warn("`set_backend` is deprecated use `set_symbolic_api`", FutureWarning)
     return set_symbolic_api(name)
+
+
+# --------------------------------------------------------------------------------
+# Default epsilon
+# --------------------------------------------------------------------------------
+
+
+class AlreadyUsedEpsilon(Exception):
+    """
+    Exception thrown on attempting to modify the default epsilon after it has been used elsewhere
+    """
+
+    pass
+
+
+_epsilon = 0.0
+_have_used_epsilon = False
+
+
+def set_epsilon(new_epsilon: T.Any) -> None:
+    """
+    Set the default epsilon for SymForce
+
+    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
+    Typically it should be set to some kind of Scalar, such as an int, float, or Symbol.  See
+    `symforce.symbolic.epsilon` for more information.
+
+    Args:
+        new_epsilon: The new default epsilon to use
+    """
+    if _have_used_epsilon:
+        raise AlreadyUsedEpsilon(
+            "Cannot set return value of epsilon after it has already been called."
+        )
+
+    global _epsilon  # pylint: disable=global-statement
+    _epsilon = new_epsilon

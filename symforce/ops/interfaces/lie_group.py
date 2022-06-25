@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import ops
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 from .group import Group
@@ -34,21 +34,21 @@ class LieGroup(Group):
 
     @classmethod
     def from_tangent(
-        cls: T.Type[LieGroupT], vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
+        cls: T.Type[LieGroupT], vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> LieGroupT:
         """
         Mapping from the tangent space vector about identity into a group element.
         """
         raise NotImplementedError()
 
-    def to_tangent(self: LieGroupT, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
+    def to_tangent(self: LieGroupT, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         """
         Mapping from this element to the tangent space vector about identity.
         """
         raise NotImplementedError()
 
     def retract(
-        self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
+        self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> LieGroupT:
         """
         Apply a tangent space perturbation vec to this. Often used in optimization
@@ -60,7 +60,7 @@ class LieGroup(Group):
         return self.compose(self.from_tangent(vec, epsilon=epsilon))
 
     def local_coordinates(
-        self: LieGroupT, b: LieGroupT, epsilon: T.Scalar = sm.epsilon()
+        self: LieGroupT, b: LieGroupT, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
         """
         Computes a tangent space perturbation around this to produce b. Often used in optimization

@@ -6,7 +6,7 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase

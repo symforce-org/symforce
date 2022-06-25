@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -55,7 +55,7 @@ def max_power_barrier(
         power: The power used to describe the curve of the error tails.
     """
     x_zero_error = x_nominal - dist_zero_to_nominal
-    return error_nominal * sm.Pow(sm.Max(0, x - x_zero_error) / dist_zero_to_nominal, power)
+    return error_nominal * sf.Pow(sf.Max(0, x - x_zero_error) / dist_zero_to_nominal, power)
 
 
 def max_linear_barrier(
@@ -180,7 +180,7 @@ def symmetric_power_barrier(
         power: The power used to describe the curve of the error tails.
     """
     return max_power_barrier(
-        x=sm.Abs(x),
+        x=sf.Abs(x),
         x_nominal=x_nominal,
         error_nominal=error_nominal,
         dist_zero_to_nominal=dist_zero_to_nominal,
@@ -346,4 +346,4 @@ def min_max_centering_power_barrier(
         dist_zero_to_nominal=x_nominal_upper - center,
         power=power,
     )
-    return sm.Max(bounding_barrier, centering_barrier)
+    return sf.Max(bounding_barrier, centering_barrier)

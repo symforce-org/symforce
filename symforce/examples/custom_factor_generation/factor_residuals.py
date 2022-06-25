@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import geo_factors_codegen
 
@@ -38,7 +38,7 @@ def custom_between_factor_residual(
     # Note: sqrt(weight) is safe and does not need to be pushed away from 0 by epsilon because
     # weight is a hyperparameter, so we don't need to differentiate with respect to weight or worry
     # about it being slightly negative.  Plus, adding epsilon would break the weight==0 case
-    sqrt_info = sm.sqrt(prior_weight) * geo.Matrix66.diag(
+    sqrt_info = sf.sqrt(prior_weight) * geo.Matrix66.diag(
         prior_sigmas.applyfunc(lambda s: 1 / (s + epsilon)).to_flat_list()
     )
 

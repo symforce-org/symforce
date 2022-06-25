@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.test_util import TestCase
 
@@ -16,38 +16,38 @@ class SympyLogicMethodsTest(TestCase):
     def test_is_positive(self) -> None:
         """
         Tests:
-            sm.is_positive
+            sf.is_positive
         """
-        self.assertEqual(sm.is_positive(0.1).evalf(), 1.0)
-        self.assertEqual(sm.is_positive(0.0).evalf(), 0.0)
-        self.assertEqual(sm.is_positive(-0.1).evalf(), 0.0)
+        self.assertEqual(sf.is_positive(0.1).evalf(), 1.0)
+        self.assertEqual(sf.is_positive(0.0).evalf(), 0.0)
+        self.assertEqual(sf.is_positive(-0.1).evalf(), 0.0)
 
     def test_is_negative(self) -> None:
         """
         Tests:
-            sm.is_negative
+            sf.is_negative
         """
-        self.assertEqual(sm.is_negative(0.1).evalf(), 0.0)
-        self.assertEqual(sm.is_negative(0.0).evalf(), 0.0)
-        self.assertEqual(sm.is_negative(-0.1).evalf(), 1.0)
+        self.assertEqual(sf.is_negative(0.1).evalf(), 0.0)
+        self.assertEqual(sf.is_negative(0.0).evalf(), 0.0)
+        self.assertEqual(sf.is_negative(-0.1).evalf(), 1.0)
 
     def test_is_nonnegative(self) -> None:
         """
         Tests:
-            sm.is_nonnegative
+            sf.is_nonnegative
         """
-        self.assertEqual(sm.is_nonnegative(0.1).evalf(), 1.0)
-        self.assertEqual(sm.is_nonnegative(0.0).evalf(), 1.0)
-        self.assertEqual(sm.is_nonnegative(-0.1).evalf(), 0.0)
+        self.assertEqual(sf.is_nonnegative(0.1).evalf(), 1.0)
+        self.assertEqual(sf.is_nonnegative(0.0).evalf(), 1.0)
+        self.assertEqual(sf.is_nonnegative(-0.1).evalf(), 0.0)
 
     def test_is_nonpositive(self) -> None:
         """
         Tests:
-            sm.is_nonpositive
+            sf.is_nonpositive
         """
-        self.assertEqual(sm.is_nonpositive(0.1).evalf(), 0.0)
-        self.assertEqual(sm.is_nonpositive(0.0).evalf(), 1.0)
-        self.assertEqual(sm.is_nonpositive(-0.1).evalf(), 1.0)
+        self.assertEqual(sf.is_nonpositive(0.1).evalf(), 0.0)
+        self.assertEqual(sf.is_nonpositive(0.0).evalf(), 1.0)
+        self.assertEqual(sf.is_nonpositive(-0.1).evalf(), 1.0)
 
     SCALARS_TO_CHECK = (-2, -1, -0.9, -0.1, 0.0, 0.1, 0.9, 1, 2)
     UNSAFE_SCALARS_TO_CHECK = (0.0, 1.0)
@@ -66,12 +66,12 @@ class SympyLogicMethodsTest(TestCase):
                 expected = self.bool_to_sym_bool(
                     self.sym_bool_to_bool(a) and self.sym_bool_to_bool(b)
                 )
-                self.assertEqual(float(sm.logical_and(a, b, unsafe)), float(expected))
+                self.assertEqual(float(sf.logical_and(a, b, unsafe)), float(expected))
 
     def test_logical_and(self) -> None:
         """
         Tests:
-            sm.logical_and
+            sf.logical_and
         """
         self.check_logical_and(self.SCALARS_TO_CHECK, False)
         self.check_logical_and(self.UNSAFE_SCALARS_TO_CHECK, True)
@@ -82,12 +82,12 @@ class SympyLogicMethodsTest(TestCase):
                 expected = self.bool_to_sym_bool(
                     self.sym_bool_to_bool(a) or self.sym_bool_to_bool(b)
                 )
-                self.assertEqual(float(sm.logical_or(a, b, unsafe)), float(expected))
+                self.assertEqual(float(sf.logical_or(a, b, unsafe)), float(expected))
 
     def test_logical_or(self) -> None:
         """
         Tests:
-            sm.logical_or
+            sf.logical_or
         """
         self.check_logical_or(self.SCALARS_TO_CHECK, False)
         self.check_logical_or(self.UNSAFE_SCALARS_TO_CHECK, True)
@@ -95,12 +95,12 @@ class SympyLogicMethodsTest(TestCase):
     def check_logical_not(self, scalars: T.Sequence[float], unsafe: bool) -> None:
         for a in scalars:
             expected = self.bool_to_sym_bool(not self.sym_bool_to_bool(a))
-            self.assertEqual(float(sm.logical_not(a, unsafe)), float(expected))
+            self.assertEqual(float(sf.logical_not(a, unsafe)), float(expected))
 
     def test_logical_not(self) -> None:
         """
         Tests:
-            sm.logical_not
+            sf.logical_not
         """
         self.check_logical_not(self.SCALARS_TO_CHECK, False)
         self.check_logical_not(self.UNSAFE_SCALARS_TO_CHECK, True)

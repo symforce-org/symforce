@@ -9,7 +9,7 @@ import unittest
 
 from symforce import geo
 from symforce import logger
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
@@ -100,7 +100,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             self.assertLieGroupNear(rot_transformed, rot)
 
         # Edge case where all components of quaternion are equal
-        *xyz, w = [sm.Rational(1, 2)] * 4
+        *xyz, w = [sf.Rational(1, 2)] * 4
         rot_equal = geo.Rot3(geo.Quaternion(xyz=geo.V3(*xyz), w=w)).to_rotation_matrix()
         self.assertStorageNear(
             rot_equal, geo.Rot3.from_rotation_matrix(rot_equal).to_rotation_matrix()
@@ -117,7 +117,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
 
         # 180 degree rotation about axis = [1, -1, 0]
-        rot_180_axis = geo.Rot3.from_angle_axis(sm.pi, geo.V3(1, -1, 0).normalized())
+        rot_180_axis = geo.Rot3.from_angle_axis(sf.pi, geo.V3(1, -1, 0).normalized())
         rot_180_axis_transformed = geo.Rot3.from_rotation_matrix(rot_180_axis.to_rotation_matrix())
         self.assertEqual(
             rot_180_axis.to_rotation_matrix(),
@@ -211,7 +211,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats
-            angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+            angles = np.array([sf.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
             self.assertStorageNear(np.mean(angles), np.pi / 2, places=1)

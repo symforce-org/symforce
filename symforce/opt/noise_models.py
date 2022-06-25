@@ -7,7 +7,7 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -64,7 +64,7 @@ class ScalarNoiseModel(NoiseModel):
         return unwhitened_residual.applyfunc(self.whiten_scalar)
 
     def whiten_norm(
-        self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar = sm.epsilon()
+        self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar = sf.epsilon()
     ) -> geo.Matrix.MatrixT:
         """
         Whiten the norm of the residual vector.
@@ -122,7 +122,7 @@ class IsotropicNoiseModel(ScalarNoiseModel):
             assert (
                 scalar_information is not None
             ), 'Either "scalar_information" or "scalar_sqrt_information" must be provided.'
-            self.scalar_sqrt_information = sm.sqrt(scalar_information)
+            self.scalar_sqrt_information = sf.sqrt(scalar_information)
 
     @classmethod
     def from_variance(cls, variance: T.Scalar) -> IsotropicNoiseModel:
@@ -169,7 +169,7 @@ class DiagonalNoiseModel(NoiseModel):
     """
     Noise model with diagonal weighting matrix. The cost used in the optimization is:
 
-        cost = 0.5 * unwhitened_residual.T * sm.diag(information_diag) * unwhitened_residual
+        cost = 0.5 * unwhitened_residual.T * sf.diag(information_diag) * unwhitened_residual
     where `information_diag` is a vector of scalars representing the relative importance of each
     element of the unwhitened residual.
 
@@ -177,7 +177,7 @@ class DiagonalNoiseModel(NoiseModel):
         cost = 0.5 * whitened_residual.T * whitened_residual
 
     Thus, the whitened residual is:
-        whitened_residual = sm.diag(sqrt_information_diag) * unwhitened_residual
+        whitened_residual = sf.diag(sqrt_information_diag) * unwhitened_residual
     where `sqrt_information_diag` is the element-wise square root of `information_diag`.
 
     Args:
@@ -202,7 +202,7 @@ class DiagonalNoiseModel(NoiseModel):
             assert (
                 information_diag is not None
             ), 'Either "information_diag" or "sqrt_information_diag" must be provided.'
-            self.sqrt_information_matrix = geo.Matrix.diag(information_diag).applyfunc(sm.sqrt)
+            self.sqrt_information_matrix = geo.Matrix.diag(information_diag).applyfunc(sf.sqrt)
 
     @classmethod
     def from_variances(cls, variances: T.Sequence[T.Scalar]) -> DiagonalNoiseModel:
@@ -261,7 +261,7 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
         self,
         delta: T.Scalar,
         scalar_information: T.Scalar,
-        epsilon: T.Scalar = sm.epsilon(),
+        epsilon: T.Scalar = sf.epsilon(),
     ) -> None:
         self.delta = delta
         self.scalar_information = scalar_information
@@ -274,7 +274,7 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
         Args:
             x: argument to return the cost for.
         """
-        return self.delta ** 2 * (sm.sqrt(1 + self.scalar_information * (x / self.delta) ** 2) - 1)
+        return self.delta ** 2 * (sf.sqrt(1 + self.scalar_information * (x / self.delta) ** 2) - 1)
 
     def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
         """
@@ -291,7 +291,7 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
         epsilon = self.epsilon
         if bounded_away_from_zero:
             epsilon = 0
-        return sm.sqrt(2 * self.pseudo_huber_error(x) + epsilon) - sm.sqrt(epsilon)
+        return sf.sqrt(2 * self.pseudo_huber_error(x) + epsilon) - sf.sqrt(epsilon)
 
 
 class BarronNoiseModel(ScalarNoiseModel):
@@ -376,8 +376,8 @@ class BarronNoiseModel(ScalarNoiseModel):
         Returns:
             Barron loss at value x
         """
-        b = sm.Abs(self.alpha - 2) + self.alpha_epsilon
-        d = self.alpha + (sm.sign_no_zero(self.alpha) * self.alpha_epsilon)
+        b = sf.Abs(self.alpha - 2) + self.alpha_epsilon
+        d = self.alpha + (sf.sign_no_zero(self.alpha) * self.alpha_epsilon)
         return (
             self.delta ** 2
             * (b / d)
@@ -396,4 +396,4 @@ class BarronNoiseModel(ScalarNoiseModel):
         x_epsilon = self.x_epsilon
         if bounded_away_from_zero:
             x_epsilon = 0
-        return sm.sqrt(2 * self.barron_error(x) + x_epsilon) - sm.sqrt(x_epsilon)
+        return sf.sqrt(2 * self.barron_error(x) + x_epsilon) - sf.sqrt(x_epsilon)

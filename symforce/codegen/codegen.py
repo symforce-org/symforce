@@ -15,7 +15,7 @@ from pathlib import Path
 import tempfile
 import textwrap
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import geo
 from symforce import jacobian_helpers
 from symforce import ops
@@ -109,7 +109,7 @@ class Codegen:
         # free_symbols because it's much faster to call once
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
-        assert sm.S(
+        assert sf.S(
             geo.Matrix(codegen_util.flat_symbols_from_values(outputs)).mat
         ).free_symbols.issubset(
             input_symbols
@@ -251,9 +251,9 @@ class Codegen:
         """
         data: T.Dict[str, T.Any] = {}
         data["ops"] = ops
-        data["Symbol"] = sm.Symbol
+        data["Symbol"] = sf.Symbol
         data["Matrix"] = geo.Matrix
-        data["DataBuffer"] = sm.DataBuffer
+        data["DataBuffer"] = sf.DataBuffer
         data["Values"] = Values
         data["pathlib"] = pathlib
         data["path_to_codegen"] = str(CURRENT_DIR)
@@ -263,7 +263,7 @@ class Codegen:
         data["lcm_type_t_include_dir"] = "<lcmtypes/sym/type_t.hpp>"
 
         def is_symbolic(T: T.Any) -> bool:
-            return isinstance(T, (sm.Expr, sm.Symbol))
+            return isinstance(T, (sf.Expr, sf.Symbol))
 
         data["is_symbolic"] = is_symbolic
         data["issubclass"] = issubclass

@@ -14,7 +14,7 @@ and relative bearing angle measurements to known landmarks in the environment.
 # Define residual functions
 # -----------------------------------------------------------------------------
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -25,8 +25,8 @@ def bearing_residual(
     Residual from a relative bearing measurement of a 2D pose to a landmark.
     """
     t_body = pose.inverse() * landmark
-    predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
-    return geo.V1(sm.wrap_angle(predicted_angle - angle))
+    predicted_angle = sf.atan2(t_body[1], t_body[0], epsilon=epsilon)
+    return geo.V1(sf.wrap_angle(predicted_angle - angle))
 
 
 def odometry_residual(
@@ -79,7 +79,7 @@ def main() -> None:
         landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
         distances=[1.7, 1.4],
         angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
-        epsilon=sm.numeric_epsilon,
+        epsilon=sf.numeric_epsilon,
     )
 
     # Create factors

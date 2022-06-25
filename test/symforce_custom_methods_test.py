@@ -8,7 +8,7 @@ import numpy as np
 
 from symforce import geo
 from symforce import typing as T
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 
 
@@ -26,20 +26,20 @@ class SymforceCustomMethodsTest(TestCase):
         """
 
         vals = [-100, 34, 34.1, 10]
-        self.assertEqual([0, 0, 1, 0], sm.argmax_onehot(vals))
-        self.assertEqual(2, sm.argmax(vals))
+        self.assertEqual([0, 0, 1, 0], sf.argmax_onehot(vals))
+        self.assertEqual(2, sf.argmax(vals))
 
         vals = [0]
-        self.assertEqual([1], sm.argmax_onehot(vals))
-        self.assertEqual(0, sm.argmax(vals))
+        self.assertEqual([1], sf.argmax_onehot(vals))
+        self.assertEqual(0, sf.argmax(vals))
 
         vals = [1.0, 1.0, 1.0]
-        self.assertEqual([1, 0, 0], sm.argmax_onehot(vals))
-        self.assertEqual(0, sm.argmax(vals))
+        self.assertEqual([1, 0, 0], sf.argmax_onehot(vals))
+        self.assertEqual(0, sf.argmax(vals))
 
         vals = [-10, 3.0, 2.0, 3.0]
-        self.assertEqual([0, 1, 0, 0], sm.argmax_onehot(vals))
-        self.assertEqual(1, sm.argmax(vals))
+        self.assertEqual([0, 1, 0, 0], sf.argmax_onehot(vals))
+        self.assertEqual(1, sf.argmax(vals))
 
     def test_arg_maxes_other_sequences(self) -> None:
         """
@@ -49,16 +49,16 @@ class SymforceCustomMethodsTest(TestCase):
         Check that the argmax functions work on non-list sequences
         """
         vals_range = range(5)
-        self.assertEqual([0, 0, 0, 0, 1], sm.argmax_onehot(vals_range))
-        self.assertEqual(4, sm.argmax(vals_range))
+        self.assertEqual([0, 0, 0, 0, 1], sf.argmax_onehot(vals_range))
+        self.assertEqual(4, sf.argmax(vals_range))
 
         vals_v3 = geo.V3(3.3, 3.31, -3.31)
-        self.assertEqual([0, 1, 0], sm.argmax_onehot(vals_v3))
-        self.assertEqual(1, sm.argmax(vals_v3))
+        self.assertEqual([0, 1, 0], sf.argmax_onehot(vals_v3))
+        self.assertEqual(1, sf.argmax(vals_v3))
 
         vals_arr = np.array([30, -32, 23, 23], dtype=T.Scalar)
-        self.assertEqual([1, 0, 0, 0], sm.argmax_onehot(vals_arr))
-        self.assertEqual(0, sm.argmax(vals_arr))
+        self.assertEqual([1, 0, 0, 0], sf.argmax_onehot(vals_arr))
+        self.assertEqual(0, sf.argmax(vals_arr))
 
 
 if __name__ == "__main__":

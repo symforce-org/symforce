@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import logger
 from symforce.python_util import get_type
@@ -54,7 +54,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def from_tangent(
-        a: T.ElementOrType, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
+        a: T.ElementOrType, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> T.Element:
         """
         Mapping from the tangent space approximation at identity into a group element of type a.
@@ -73,7 +73,7 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).from_tangent(a, vec, epsilon)
 
     @staticmethod
-    def to_tangent(a: T.Element, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
+    def to_tangent(a: T.Element, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         """
         Mapping from this element to the tangent space approximation at identity.
 
@@ -89,7 +89,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def retract(
-        a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()
+        a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> T.Element:
         """
         Apply a tangent space perturbation vec to the group element a. Often used in optimization
@@ -109,7 +109,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def local_coordinates(
-        a: T.Element, b: T.Element, epsilon: T.Scalar = sm.epsilon()
+        a: T.Element, b: T.Element, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
         """
         Computes a tangent space perturbation around a to produce b. Often used in optimization

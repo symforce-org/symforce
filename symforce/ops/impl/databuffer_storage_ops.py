@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 
 from symforce import typing as T
 
@@ -17,17 +17,17 @@ class DataBufferStorageOps:
     """
 
     @staticmethod
-    def storage_dim(a: sm.DataBuffer) -> int:
+    def storage_dim(a: sf.DataBuffer) -> int:
         return 0
 
     @staticmethod
-    def to_storage(a: sm.DataBuffer) -> T.List[sm.DataBuffer]:
+    def to_storage(a: sf.DataBuffer) -> T.List[sf.DataBuffer]:
         return []
 
     @staticmethod
-    def from_storage(a: sm.DataBuffer, elements: T.Sequence[sm.DataBuffer]) -> T.Element:
+    def from_storage(a: sf.DataBuffer, elements: T.Sequence[sf.DataBuffer]) -> T.Element:
         raise NotImplementedError("Cannot restore DataBuffer from storage")
 
     @staticmethod
-    def symbolic(a: sm.DataBuffer, name: str, **kwargs: T.Dict) -> sm.DataBuffer:
-        return sm.DataBuffer(name, sm.Symbol(name + "_dim"))
+    def symbolic(a: sf.DataBuffer, name: str, **kwargs: T.Dict) -> sf.DataBuffer:
+        return sf.DataBuffer(name, sf.Symbol(name + "_dim"))

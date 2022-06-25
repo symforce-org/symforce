@@ -7,7 +7,7 @@ import numpy as np
 
 from symforce import cam
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -51,13 +51,13 @@ class CamPolynomialTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             rotation = geo.Rot3.from_yaw_pitch_roll(np.rad2deg(theta), 0, valid_angle)
             p_cam = rotation * unit_z
             _, is_valid = cal.pixel_from_camera_point(p_cam)
-            self.assertStorageNear(sm.S(is_valid).evalf(), 1.0)
+            self.assertStorageNear(sf.S(is_valid).evalf(), 1.0)
 
         for theta in np.linspace(0, 2 * np.pi, 10):
             rotation = geo.Rot3.from_yaw_pitch_roll(np.rad2deg(theta), 0, invalid_angle)
             p_cam = rotation * unit_z
             _, is_valid = cal.pixel_from_camera_point(p_cam)
-            self.assertStorageNear(sm.S(is_valid).evalf(), 0.0)
+            self.assertStorageNear(sf.S(is_valid).evalf(), 0.0)
 
 
 if __name__ == "__main__":

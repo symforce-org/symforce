@@ -14,7 +14,7 @@ def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[ge
     Compute jacobians of expr, a Lie Group element which is a function of the Lie Group elements in
     args.  Jacobians are derivatives in the tangent space of expr with respect to changes in the
     tangent space of the arg, as opposed to jacobians of the storage of either which could be
-    trivially computed with geo.Matrix.jacobian or sm.Expr.diff
+    trivially computed with geo.Matrix.jacobian or sf.Expr.diff
 
     Args:
         expr: The final expression that should be differentiated

@@ -6,7 +6,7 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
 
@@ -44,7 +44,7 @@ class GeoComplexTest(GroupOpsTestMixin, TestCase):
         )
         self.assertEqual(-a, geo.Complex(-a.real, -a.imag))
         self.assertEqual(a / 5.0, geo.Complex(a.real / 5.0, a.imag / 5.0))
-        d = sm.Symbol("denom")
+        d = sf.Symbol("denom")
         self.assertEqual(a / d, geo.Complex(a.real / d, a.imag / d))
 
     def test_complex_operations_numeric(self) -> None:

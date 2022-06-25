@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import ops
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -73,23 +73,23 @@ class Storage:
         Substitute given values of each scalar element into a new instance.
         """
         # TODO(hayk): If this is slow, compute the subs dict once.
-        return self.from_storage([sm.S(s).subs(*args, **kwargs) for s in self.to_storage()])
+        return self.from_storage([sf.S(s).subs(*args, **kwargs) for s in self.to_storage()])
 
-    # TODO(hayk): Way to get sm.simplify to work on these types directly?
+    # TODO(hayk): Way to get sf.simplify to work on these types directly?
     def simplify(self: StorageT) -> StorageT:
         """
         Simplify each scalar element into a new instance.
         """
-        return self.from_storage(sm.simplify(sm.Matrix(self.to_storage())))
+        return self.from_storage(sf.simplify(sf.sympy.Matrix(self.to_storage())))
 
     @classmethod
     def symbolic(cls: T.Type[StorageT], name: str, **kwargs: T.Any) -> StorageT:
         """
         Construct a symbolic element with the given name prefix. Kwargs are forwarded
-        to sm.Symbol (for example, sympy assumptions).
+        to sf.Symbol (for example, sympy assumptions).
         """
         return cls.from_storage(
-            [sm.Symbol(f"{name}_{i}", **kwargs) for i in range(cls.storage_dim())]
+            [sf.Symbol(f"{name}_{i}", **kwargs) for i in range(cls.storage_dim())]
         )
 
     def evalf(self: StorageT) -> StorageT:

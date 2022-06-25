@@ -8,7 +8,7 @@ import logging
 
 from symforce import geo
 from symforce import logger
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -101,7 +101,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats
-            angles = np.array([sm.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+            angles = np.array([sf.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
 
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)

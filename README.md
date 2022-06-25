@@ -94,7 +94,7 @@ The robot's heading angle is defined counter-clockwise from the x-axis, and its 
 
 Import the augmented SymPy API and geometry module:
 ```python
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import geo
 ```
 

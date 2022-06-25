@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 import symforce
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 try:
@@ -15,13 +15,13 @@ except NameError:
 
 
 def _limit_and_simplify(
-    expr: sm.Expr, x: T.Scalar, value: T.Scalar, limit_direction: str
+    expr: sf.Expr, x: T.Scalar, value: T.Scalar, limit_direction: str
 ) -> T.Scalar:
-    return sm.simplify(expr.limit(x, value, limit_direction))
+    return sf.simplify(expr.limit(x, value, limit_direction))
 
 
 def is_value_with_epsilon_correct(
-    func: T.Callable[[T.Scalar, T.Scalar], sm.Expr],
+    func: T.Callable[[T.Scalar, T.Scalar], sf.Expr],
     singularity: T.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Callable[[T.Any], None] = _default_display_func,
@@ -47,8 +47,8 @@ def is_value_with_epsilon_correct(
     assert symforce.get_symbolic_api() == "sympy"
 
     # Create symbols
-    x = sm.Symbol("x", real=True)
-    epsilon = sm.Symbol("epsilon", positive=True)
+    x = sf.Symbol("x", real=True)
+    epsilon = sf.Symbol("epsilon", positive=True)
 
     is_correct = True
 
@@ -58,7 +58,7 @@ def is_value_with_epsilon_correct(
 
     # Sub in zero
     expr_eps_at_x_zero = expr_eps.subs(x, singularity)
-    if expr_eps_at_x_zero == sm.S.NaN:
+    if expr_eps_at_x_zero == sf.S.NaN:
         if display_func:
             display_func("Expressions (raw / eps):")
             display_func(expr_raw)
@@ -92,7 +92,7 @@ def is_value_with_epsilon_correct(
 
 
 def is_derivative_with_epsilon_correct(
-    func: T.Callable[[T.Scalar, T.Scalar], sm.Expr],
+    func: T.Callable[[T.Scalar, T.Scalar], sf.Expr],
     singularity: T.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Callable[[T.Any], None] = _default_display_func,
@@ -119,8 +119,8 @@ def is_derivative_with_epsilon_correct(
     assert symforce.get_symbolic_api() == "sympy"
 
     # Create symbols
-    x = sm.Symbol("x", real=True)
-    epsilon = sm.Symbol("epsilon", positive=True)
+    x = sf.Symbol("x", real=True)
+    epsilon = sf.Symbol("epsilon", positive=True)
 
     is_correct = True
 

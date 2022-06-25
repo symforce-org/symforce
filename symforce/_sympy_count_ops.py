@@ -21,7 +21,6 @@ Currently, the body of of count_ops is the body as found in sympy, modified only
 with those comments, formatting, and material changes to the implementation.
 """
 
-import sympy
 from sympy import sympify
 from sympy import Expr
 from sympy import Symbol
@@ -69,7 +68,7 @@ def _coeff_isneg(a: Basic) -> bool:
 
 
 @T.no_type_check
-def count_ops(expr: sympy.Expr, visual: bool = False) -> T.Union[Expr, int]:
+def count_ops(expr: T.Any, visual: bool = False) -> T.Union[Expr, int]:
     """
     Return a representation (integer or expression) of the operations in expr.
     Parameters

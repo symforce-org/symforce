@@ -9,7 +9,7 @@ from .camera_cal import CameraCal
 
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -48,12 +48,12 @@ class DoubleSphereCameraCal(CameraCal):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> DoubleSphereCameraCal:
-        with sm.scope(name):
+        with sf.scope(name):
             return cls(
-                focal_length=sm.symbols("f_x f_y"),
-                principal_point=sm.symbols("c_x c_y"),
-                xi=sm.Symbol("xi"),
-                alpha=sm.Symbol("alpha"),
+                focal_length=sf.symbols("f_x f_y"),
+                principal_point=sf.symbols("c_x c_y"),
+                xi=sf.Symbol("xi"),
+                alpha=sf.Symbol("alpha"),
             )
 
     @property
@@ -77,23 +77,23 @@ class DoubleSphereCameraCal(CameraCal):
         return ("focal_length", 2), ("principal_point", 2), ("xi", 1), ("alpha", 1)
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = sm.epsilon()
+        self, point: geo.Matrix31, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
         # Pull out named scalar quantities
         x, y, z = point
         xi, alpha = self.distortion_coeffs
 
         # -1 if alpha < 0.5 else 1
-        snz = sm.sign_no_zero(alpha - 0.5)
+        snz = sf.sign_no_zero(alpha - 0.5)
 
         # Protect for divide by zero
-        # alpha_safe = sm.Max(epsilon, sm.Min(alpha, 1 - epsilon))
+        # alpha_safe = sf.Max(epsilon, sf.Min(alpha, 1 - epsilon))
         alpha_safe = alpha - snz * epsilon
 
         # Follows equations (40) to (45)
 
-        d1 = sm.sqrt(x ** 2 + y ** 2 + z ** 2 + epsilon ** 2)
-        d2 = sm.sqrt(x ** 2 + y ** 2 + (xi * d1 + z) ** 2 + epsilon ** 2)
+        d1 = sf.sqrt(x ** 2 + y ** 2 + z ** 2 + epsilon ** 2)
+        d2 = sf.sqrt(x ** 2 + y ** 2 + (xi * d1 + z) ** 2 + epsilon ** 2)
 
         z_effective = alpha_safe * d2 + (1 - alpha_safe) * (xi * d1 + z)
 
@@ -112,30 +112,30 @@ class DoubleSphereCameraCal(CameraCal):
         # NOTE(aaron): w2 here is NOT equal to the w2 in the paper - we're pretty confident this
         # one is correct though (for all domains, including the domain in the paper)
         w2_discriminant = w1 ** 2 * xi ** 2 - xi ** 2 + 1
-        w2 = w1 ** 2 * xi - w1 * sm.sqrt(sm.Max(w2_discriminant, sm.sqrt(epsilon))) - xi
+        w2 = w1 ** 2 * xi - w1 * sf.sqrt(sf.Max(w2_discriminant, sf.sqrt(epsilon))) - xi
 
-        need_linear_constraint = sm.is_nonnegative(w2_discriminant)
+        need_linear_constraint = sf.is_nonnegative(w2_discriminant)
 
-        linear_is_valid = sm.logical_or(
-            sm.logical_not(need_linear_constraint, unsafe=True),
-            sm.is_nonnegative(z - w2 * d1),
+        linear_is_valid = sf.logical_or(
+            sf.logical_not(need_linear_constraint, unsafe=True),
+            sf.is_nonnegative(z - w2 * d1),
             unsafe=True,
         )
 
         # We also have the constraint that the unprojection from the second sphere to the first is
         # unique.  This is always satisfied for the domain in the paper, but we allow xi >= 1,
         # where this is not always satisfied
-        need_sphere_constraint = sm.is_nonnegative(xi - 1)
-        sphere_is_valid = sm.logical_or(
-            sm.logical_not(need_sphere_constraint, unsafe=True),
-            sm.is_nonnegative(z * xi + d1),
+        need_sphere_constraint = sf.is_nonnegative(xi - 1)
+        sphere_is_valid = sf.logical_or(
+            sf.logical_not(need_sphere_constraint, unsafe=True),
+            sf.is_nonnegative(z * xi + d1),
             unsafe=True,
         )
 
-        return pixel, sm.logical_and(linear_is_valid, sphere_is_valid, unsafe=True)
+        return pixel, sf.logical_and(linear_is_valid, sphere_is_valid, unsafe=True)
 
     def camera_ray_from_pixel(
-        self, pixel: geo.Matrix21, epsilon: T.Scalar = sm.epsilon()
+        self, pixel: geo.Matrix21, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.V3, T.Scalar]:
         # Pull out named scalar quantities
         xi, alpha = self.distortion_coeffs
@@ -149,18 +149,18 @@ class DoubleSphereCameraCal(CameraCal):
 
         # Compute m_z (eq 50)
         m_z_disciminant = 1 - (2 * alpha - 1) * r2
-        linear_is_valid = sm.is_nonnegative(m_z_disciminant)
+        linear_is_valid = sf.is_nonnegative(m_z_disciminant)
 
         # This denominator is not always positive so we push it away from 0, see:
         # https://www.wolframalpha.com/input/?i=Plot%5Balpha+*+Sqrt%5B1+-+%282+*+alpha+-+1%29+*+r%5E2%5D+%2B+1+-+alpha%2C+%7Balpha%2C+-2%2C+1%7D%2C+%7Br%2C+0%2C+10%7D%5D
-        m_z_denominator = alpha * sm.sqrt(sm.Max(m_z_disciminant, epsilon)) + 1 - alpha
-        m_z_denominator_safe = m_z_denominator + sm.sign_no_zero(m_z_denominator) * epsilon
+        m_z_denominator = alpha * sf.sqrt(sf.Max(m_z_disciminant, epsilon)) + 1 - alpha
+        m_z_denominator_safe = m_z_denominator + sf.sign_no_zero(m_z_denominator) * epsilon
         m_z = (1 - alpha ** 2 * r2) / m_z_denominator_safe
 
         # Compute the scalar multiplier on m (from eq 46)
         m_scale_denominator = m_z ** 2 + r2
         m_scale_denominator_safe = (
-            m_scale_denominator + sm.sign_no_zero(m_scale_denominator) * epsilon
+            m_scale_denominator + sf.sign_no_zero(m_scale_denominator) * epsilon
         )
 
         m_scale_discriminant = m_z ** 2 + (1 - xi ** 2) * r2
@@ -168,12 +168,12 @@ class DoubleSphereCameraCal(CameraCal):
         # NOTE(aaron): This additional check is always satisfied when xi is strictly between -1 and
         # 1, but we allow xi > 1, where this becomes necessary.  The xi > 1 domain better fits some
         # cameras than restricting xi strictly between -1 and 1.
-        sphere_is_valid = sm.is_nonnegative(m_scale_discriminant)
+        sphere_is_valid = sf.is_nonnegative(m_scale_discriminant)
 
         m_scale = (
-            m_z * xi + sm.sqrt(sm.Max(m_scale_discriminant, epsilon))
+            m_z * xi + sf.sqrt(sf.Max(m_scale_discriminant, epsilon))
         ) / m_scale_denominator_safe
 
         point = m_scale * geo.V3(m_xy[0], m_xy[1], m_z) - geo.V3(0, 0, xi)
 
-        return point, sm.logical_and(linear_is_valid, sphere_is_valid, unsafe=True)
+        return point, sf.logical_and(linear_is_valid, sphere_is_valid, unsafe=True)

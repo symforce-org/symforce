@@ -21,7 +21,7 @@ from symforce import geo
 from symforce import logger
 from symforce import ops
 from symforce import python_util
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import codegen
 from symforce.codegen import geo_package_codegen
@@ -53,8 +53,8 @@ def az_el_from_point(
     """
     cam_t_point = nav_T_cam.inverse() * nav_t_point
     x, y, z = cam_t_point.to_flat_list()
-    theta = sm.atan2(y, x, epsilon=epsilon)
-    phi = sm.pi / 2 - sm.acos(z / (cam_t_point.norm() + epsilon))
+    theta = sf.atan2(y, x, epsilon=epsilon)
+    phi = sf.pi / 2 - sf.acos(z / (cam_t_point.norm() + epsilon))
     return geo.V2(theta, phi)
 
 
@@ -69,7 +69,7 @@ class SymforceCodegenTest(TestCase):
         Create some example input/output values.
         """
         inputs = Values()
-        x, y = sm.symbols("x y")
+        x, y = sf.symbols("x y")
         inputs.add(x)
         inputs.add(y)
 
@@ -82,9 +82,9 @@ class SymforceCodegenTest(TestCase):
             geo.Rot3().symbolic("rot3"),
         ]
         inputs["scalar_vec"] = [
-            sm.Symbol("scalar1"),
-            sm.Symbol("scalar2"),
-            sm.Symbol("scalar3"),
+            sf.Symbol("scalar1"),
+            sf.Symbol("scalar2"),
+            sf.Symbol("scalar3"),
         ]
         inputs["list_of_lists"] = [
             ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec1"),
@@ -103,18 +103,18 @@ class SymforceCodegenTest(TestCase):
         ]
 
         # Scalar
-        inputs.add(sm.Symbol("constants.epsilon"))
+        inputs.add(sf.Symbol("constants.epsilon"))
 
         with inputs.scope("states"):
             # Array element, turns into std::array
             inputs["p"] = geo.V2.symbolic("p")
 
             # Vector element, turns into Eigen::Vector
-            # inputs.add(sm.Symbol('q(0)'))
+            # inputs.add(sf.Symbol('q(0)'))
 
         outputs = Values()
         outputs["foo"] = x ** 2 + inputs["rot"].q.w
-        outputs["bar"] = inputs.attr.constants.epsilon + sm.sin(inputs.attr.y) + x ** 2
+        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x ** 2
         # Test outputing lists of objects, scalars, and Values
         outputs["scalar_vec_out"] = ops.GroupOps.compose(inputs["scalar_vec"], inputs["scalar_vec"])
         outputs["values_vec_out"] = ops.GroupOps.compose(inputs["values_vec"], inputs["values_vec"])
@@ -205,7 +205,7 @@ class SymforceCodegenTest(TestCase):
             states,
         )
         self.assertStorageNear(foo, x ** 2 + rot.data[3])
-        self.assertStorageNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
+        self.assertStorageNear(bar, constants.epsilon + sf.sin(y) + x ** 2)
 
     def test_matrix_order_python(self) -> None:
         """
@@ -244,7 +244,7 @@ class SymforceCodegenTest(TestCase):
         """
         output_dir = self.make_output_dir("sf_test_sparse_output_python")
         namespace = "sparse_output_python"
-        x, y, z = sm.symbols("x y z")
+        x, y, z = sf.symbols("x y z")
 
         def matrix_output(x: T.Scalar, y: T.Scalar, z: T.Scalar) -> T.List[T.List[T.Scalar]]:
             return [[x, y], [0, z]]
@@ -351,7 +351,7 @@ class SymforceCodegenTest(TestCase):
     def test_cpp_nan(self) -> None:
         inputs = Values()
         inputs["R1"] = geo.Rot3.symbolic("R1")
-        inputs["e"] = sm.Symbol("e")
+        inputs["e"] = sf.Symbol("e")
         dist_to_identity = geo.M(
             inputs["R1"].local_coordinates(geo.Rot3.identity(), epsilon=inputs["e"])
         ).squared_norm()
@@ -491,8 +491,8 @@ class SymforceCodegenTest(TestCase):
             Codegen input/output names must be valid variable names
         """
         # Outputs have symbols not present in inputs
-        x = sm.Symbol("x")
-        y = sm.Symbol("y")
+        x = sf.Symbol("x")
+        y = sf.Symbol("y")
         inputs = Values(input=x)
         outputs = Values(output=x + y)
         self.assertRaises(
@@ -611,9 +611,9 @@ class SymforceCodegenTest(TestCase):
 
         inputs = Values(
             a=geo.Rot3.symbolic("a"),
-            b=sm.Symbol("b"),
+            b=sf.Symbol("b"),
             c=geo.V5.symbolic("c"),
-            d=Values(x=sm.Symbol("d0"), y=geo.V2.symbolic("d1")),
+            d=Values(x=sf.Symbol("d0"), y=geo.V2.symbolic("d1")),
         )
 
         outputs = Values(

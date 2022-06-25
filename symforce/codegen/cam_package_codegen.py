@@ -12,7 +12,7 @@ import collections
 from symforce import logger
 from symforce import geo
 from symforce import cam
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import python_util
 from symforce.codegen import Codegen
@@ -82,7 +82,7 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     try:
         camera_ray_from_pixel = Codegen.function(
             func=cls.camera_ray_from_pixel,
-            input_types=[cls, geo.V2, sm.Symbol],
+            input_types=[cls, geo.V2, sf.Symbol],
             config=config,
             output_names=["camera_ray", "is_valid"],
             return_key="camera_ray",
@@ -91,7 +91,7 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
 
         camera_ray_from_pixel_with_jacobians_codegen_func = Codegen.function(
             func=camera_ray_from_pixel_with_jacobians,
-            input_types=[cls, geo.V2, sm.Symbol],
+            input_types=[cls, geo.V2, sf.Symbol],
             config=config,
             output_names=["camera_ray", "is_valid", "point_D_cal", "point_D_pixel"],
             return_key="camera_ray",
@@ -105,7 +105,7 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     pixel_from_camera_point = Codegen.function(
         func=cls.pixel_from_camera_point,
         config=config,
-        input_types=[cls, geo.V3, sm.Symbol],
+        input_types=[cls, geo.V3, sf.Symbol],
         output_names=["pixel", "is_valid"],
         return_key="pixel",
         docstring=cam.CameraCal.pixel_from_camera_point.__doc__,
@@ -114,7 +114,7 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     pixel_from_camera_point_with_jacobians_codegen_func = Codegen.function(
         func=pixel_from_camera_point_with_jacobians,
         config=config,
-        input_types=[cls, geo.V3, sm.Symbol],
+        input_types=[cls, geo.V3, sf.Symbol],
         output_names=["pixel", "is_valid", "pixel_D_cal", "pixel_D_point"],
         return_key="pixel",
         docstring=pixel_from_camera_point_with_jacobians.__doc__,

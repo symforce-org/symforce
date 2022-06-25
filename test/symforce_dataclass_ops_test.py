@@ -6,7 +6,7 @@
 from dataclasses import dataclass, field
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 from symforce.test_util import TestCase
@@ -70,7 +70,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             storage = StorageOps.to_storage(instance)
             self.assertEqual(len(storage), 17)
             for x in storage:
-                self.assertIsInstance(x, sm.Symbol)
+                self.assertIsInstance(x, sf.Symbol)
                 self.assertTrue(x.name.startswith("instance"))
 
         with self.subTest("from_storage"):
@@ -78,7 +78,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(instance, instance2)
 
         with self.subTest("evalf"):
-            instance.x = sm.S(5)
+            instance.x = sf.S(5)
             instance.rot = geo.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
             instance.subtype.rot = instance.rot.inverse()
             instance.seq[0].rot = instance.rot * instance.rot
@@ -122,7 +122,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             storage = StorageOps.to_storage(instance)
             self.assertEqual(len(storage), expected_size)
             for x in storage:
-                self.assertIsInstance(x, sm.Symbol)
+                self.assertIsInstance(x, sf.Symbol)
                 self.assertTrue(x.name.startswith("instance"))
 
         with self.subTest("from_storage"):
@@ -130,7 +130,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(instance, instance2)
 
         with self.subTest("evalf"):
-            instance.x = sm.S(5)
+            instance.x = sf.S(5)
             instance.rot = geo.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
             instance.subtype.rot = instance.rot.inverse()
             for i in range(5):

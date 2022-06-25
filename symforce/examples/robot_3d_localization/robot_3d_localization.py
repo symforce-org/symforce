@@ -18,7 +18,7 @@ to estimate the trajectory of the robot given known landmarks and noisy measurem
 import symforce
 from symforce import geo
 from symforce import logger
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 if symforce.get_symbolic_api() != "symengine":
@@ -159,7 +159,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
             ]
         )
         gt_world_T_body.append(
-            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sm.numeric_epsilon)
+            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sf.numeric_epsilon)
         )
 
     # Set the initial guess either to ground truth or identity
@@ -207,7 +207,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
         list(m) for m in values["body_t_landmark_measurements"]
     )
 
-    values["epsilon"] = sm.numeric_epsilon
+    values["epsilon"] = sf.numeric_epsilon
 
     return values, num_landmarks
 
@@ -284,7 +284,7 @@ def build_codegen_object(num_poses: int, config: CodegenConfig = None) -> Codege
             else:
                 return geo.Matrix(*v.shape).symbolic(k)
         elif isinstance(v, float):
-            return sm.Symbol(k)
+            return sf.Symbol(k)
         else:
             assert False, k
 

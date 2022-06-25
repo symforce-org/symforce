@@ -8,7 +8,7 @@ import numpy as np
 
 from symforce import cc_sym
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
@@ -57,7 +57,7 @@ class SymforcePyOptimizerTest(TestCase):
         optimizer = Optimizer(factors=factors, optimized_keys=xs)
 
         # Create initial values
-        initial_values = Values(epsilon=sm.numeric_epsilon)
+        initial_values = Values(epsilon=sf.numeric_epsilon)
         for i in range(num_samples):
             initial_values[xs[i]] = geo.Rot3.from_yaw_pitch_roll(yaw=0.0, pitch=0.1 * i, roll=0.0)
         for i in range(num_samples):

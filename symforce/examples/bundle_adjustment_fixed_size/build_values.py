@@ -9,7 +9,7 @@ This file builds a Values with all symbols needed for the fixed-size example.
 from symforce import cam
 from symforce import geo
 from symforce.values import Values
-from symforce import sympy as sm
+import symforce.symbolic as sf
 
 
 def define_view(index: int) -> Values:
@@ -41,11 +41,11 @@ def define_feature_match(index: int, match_num: int) -> Values:
     values["target_coords"] = geo.V2.symbolic(f"target_coords_{index}{match_num}")
 
     # Weight of match
-    values["weight"] = sm.Symbol(f"weights_{index}{match_num}")
+    values["weight"] = sf.Symbol(f"weights_{index}{match_num}")
 
-    values["inverse_range_prior"] = sm.Symbol(f"inverse_range_priors_{index}{match_num}")
+    values["inverse_range_prior"] = sf.Symbol(f"inverse_range_priors_{index}{match_num}")
 
-    values["inverse_range_prior_sigma"] = sm.Symbol(
+    values["inverse_range_prior_sigma"] = sf.Symbol(
         f"inverse_range_prior_sigmas_{index}{match_num}"
     )
 
@@ -75,10 +75,10 @@ def define_objective_costs() -> Values:
     values = Values()
 
     # Robust cost function transition point for reprojection error [px]
-    values["reprojection_error_gnc_scale"] = sm.Symbol("reprojection_error_gnc_scale")
+    values["reprojection_error_gnc_scale"] = sf.Symbol("reprojection_error_gnc_scale")
 
     # Robust cost function mu convexity parameter
-    values["reprojection_error_gnc_mu"] = sm.Symbol("reprojection_error_gnc_mu")
+    values["reprojection_error_gnc_mu"] = sf.Symbol("reprojection_error_gnc_mu")
 
     return values
 
@@ -113,7 +113,7 @@ def build_values(num_views: int, num_landmarks: int) -> Values:
     # Define landmarks
     values["landmarks"] = []
     for i in range(num_landmarks):
-        values["landmarks"].append(sm.Symbol(f"source_inverse_ranges{i}"))
+        values["landmarks"].append(sf.Symbol(f"source_inverse_ranges{i}"))
 
     # Define correspondences variables from camera 0 to all others
     for v_i in range(num_views - 1):
@@ -124,6 +124,6 @@ def build_values(num_views: int, num_landmarks: int) -> Values:
 
     values["costs"] = define_objective_costs()
 
-    values["epsilon"] = sm.Symbol("epsilon")
+    values["epsilon"] = sf.Symbol("epsilon")
 
     return values

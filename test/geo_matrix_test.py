@@ -7,7 +7,7 @@ import numpy as np
 
 import symforce
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.test_util import TestCase, sympy_only, expected_failure_on_sympy, epsilon_handling
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -33,9 +33,9 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 1) Matrix32()  # Zero constructed Matrix32
         self.assertEqual(geo.M32(), geo.M([[0, 0], [0, 0], [0, 0]]))
 
-        # 2) Matrix(sm.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
-        self.assertIsInstance(geo.M(sm.Matrix([[1, 2], [3, 4]])), geo.M22)
-        self.assertEqual(geo.M(sm.Matrix([[1, 2], [3, 4]])), geo.M([[1, 2], [3, 4]]))
+        # 2) Matrix(sf.sympy.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
+        self.assertIsInstance(geo.M(sf.sympy.Matrix([[1, 2], [3, 4]])), geo.M22)
+        self.assertEqual(geo.M(sf.sympy.Matrix([[1, 2], [3, 4]])), geo.M([[1, 2], [3, 4]]))
 
         # 3A) Matrix([[1, 2], [3, 4]])  # Matrix22 with [1, 2, 3, 4] data
         self.assertIsInstance(geo.M([[1, 2], [3, 4]]), geo.M22)
@@ -151,7 +151,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # Check substitution with the whole matrix as a key
         num_vector = geo.V3(1, 2, -3.1)
         self.assertEqual(num_vector, sym_vector.subs(sym_vector, num_vector))
-        norm = sm.S(sym_vector.norm())
+        norm = sf.S(sym_vector.norm())
         self.assertStorageNear(num_vector.norm(), norm.subs(sym_vector, num_vector), places=9)
         self.assertStorageNear(num_vector.norm(), norm.subs({sym_vector: num_vector}), places=9)
         self.assertStorageNear(num_vector.norm(), norm.subs([(sym_vector, num_vector)]), places=9)
@@ -161,17 +161,17 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             places=9,
         )
 
-        x = sm.Symbol("x")
+        x = sf.Symbol("x")
         unsimple_matrix = geo.Matrix([x ** 2 - x, 0])
         simple_matrix = geo.Matrix([x * (x - 1), 0])
         self.assertEqual(unsimple_matrix.simplify(), simple_matrix)
 
-        y = sm.Symbol("y")
-        mat = geo.Matrix([x * y / (x + y), (x + y) / (x * y + 1), sm.sin(y) / y])
+        y = sf.Symbol("y")
+        mat = geo.Matrix([x * y / (x + y), (x + y) / (x * y + 1), sf.sin(y) / y])
         mat_lim_y_to_0 = geo.Matrix([0, x, 1])
         self.assertEqual(mat.limit(y, 0), mat_lim_y_to_0)
 
-        pi_mat = sm.pi * geo.M22.eye()
+        pi_mat = sf.pi * geo.M22.eye()
         pi_mat_num = geo.Matrix([[3.14159265, 0], [0, 3.14159265]])
         self.assertStorageNear(pi_mat, pi_mat_num)
 

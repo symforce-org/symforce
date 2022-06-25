@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce.python_util import get_type, scalar_like
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 from .ops import Ops
@@ -49,7 +49,7 @@ class StorageOps(Ops):
         Args:
             a:
             name: String prefix
-            kwargs: Additional arguments to pass to sm.Symbol (like assumptions)
+            kwargs: Additional arguments to pass to sf.Symbol (like assumptions)
 
         Returns:
             Storage:
@@ -74,9 +74,11 @@ class StorageOps(Ops):
     @staticmethod
     def subs(a: T.Element, *args: T.Any, **kwargs: T.Any) -> T.Element:
         return StorageOps.from_storage(
-            a, [sm.S(s).subs(*args, **kwargs) for s in StorageOps.to_storage(a)]
+            a, [sf.S(s).subs(*args, **kwargs) for s in StorageOps.to_storage(a)]
         )
 
     @staticmethod
     def simplify(a: T.Element) -> T.Element:
-        return StorageOps.from_storage(a, list(sm.simplify(sm.Matrix(StorageOps.to_storage(a)))))
+        return StorageOps.from_storage(
+            a, list(sf.simplify(sf.sympy.Matrix(StorageOps.to_storage(a))))
+        )

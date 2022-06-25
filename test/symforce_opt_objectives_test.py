@@ -6,7 +6,7 @@ import numpy as np
 
 from symforce.test_util import TestCase
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import geo
 from symforce import ops
 from symforce.values import Values
@@ -25,8 +25,8 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.V3.symbolic("actual"),
             desired=geo.V3.symbolic("desired"),
             information_diag=geo.V3.symbolic("cost").to_flat_list(),
-            epsilon=sm.Symbol("epsilon"),
-            cost_scaling=sm.Symbol("cost_scaling"),
+            epsilon=sf.Symbol("epsilon"),
+            cost_scaling=sf.Symbol("cost_scaling"),
         )
         symbolic_residual_block = PriorValueObjective.residual_at_timestep(
             *symbolic_inputs.values()
@@ -37,7 +37,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.V3(1, 2, 3),
             desired=geo.V3(1, 2, 3),
             information_diag=[1, 1, 1],
-            epsilon=sm.numeric_epsilon,
+            epsilon=sf.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_zero = ops.StorageOps.subs(
@@ -48,7 +48,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.V3(1, 2, 3),
             desired=geo.V3(4, 5, 6),
             information_diag=[1, 4, 9],
-            epsilon=sm.numeric_epsilon,
+            epsilon=sf.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_nonzero = ops.StorageOps.subs(
@@ -78,8 +78,8 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.Rot3.symbolic("actual"),
             desired=geo.Rot3.symbolic("desired"),
             information_diag=geo.V3.symbolic("cost").to_flat_list(),
-            epsilon=sm.Symbol("epsilon"),
-            cost_scaling=sm.Symbol("cost_scaling"),
+            epsilon=sf.Symbol("epsilon"),
+            cost_scaling=sf.Symbol("cost_scaling"),
         )
         symbolic_residual_block = PriorValueObjective.residual_at_timestep(
             *symbolic_inputs.values()
@@ -90,7 +90,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
             desired=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
             information_diag=[1, 1, 1],
-            epsilon=sm.numeric_epsilon,
+            epsilon=sf.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_zero = ops.StorageOps.subs(
@@ -101,7 +101,7 @@ class PriorValueObjectiveTest(TestCase):
             actual=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
             desired=geo.Rot3.from_angle_axis(0.6, geo.V3(0, 0, 1).normalized()),
             information_diag=[1, 4, 9],
-            epsilon=sm.numeric_epsilon,
+            epsilon=sf.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block_nonzero = ops.StorageOps.subs(
@@ -128,7 +128,7 @@ class PriorValueObjectiveTest(TestCase):
         unwhited_residual = geo.V3(des.local_coordinates(act))
         cost_scaling = symbolic_inputs["cost_scaling"]
         cost_mat = geo.M33.diag(
-            [sm.sqrt(cost_scaling * v) for v in symbolic_inputs["information_diag"]]
+            [sf.sqrt(cost_scaling * v) for v in symbolic_inputs["information_diag"]]
         )
         expected_jacobian_nonzero_residual = (cost_mat * unwhited_residual).jacobian(act)
 
@@ -143,10 +143,10 @@ class PriorValueObjectiveTest(TestCase):
 
     def test_epsilon_handling(self) -> None:
         inputs = Values(
-            actual=geo.Rot3.from_angle_axis(-sm.pi, geo.V3(0, 0, 1).normalized()),
-            desired=geo.Rot3.from_angle_axis(sm.pi, geo.V3(0, 0, 1).normalized()),
+            actual=geo.Rot3.from_angle_axis(-sf.pi, geo.V3(0, 0, 1).normalized()),
+            desired=geo.Rot3.from_angle_axis(sf.pi, geo.V3(0, 0, 1).normalized()),
             information_diag=[1, 1, 1],
-            epsilon=sm.numeric_epsilon,
+            epsilon=sf.numeric_epsilon,
             cost_scaling=1,
         )
         residual_block = PriorValueObjective.residual_at_timestep(*inputs.values())

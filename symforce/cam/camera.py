@@ -6,7 +6,7 @@
 from .camera_cal import CameraCal
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -51,7 +51,7 @@ class Camera:
         )
 
     def pixel_from_camera_point(
-        self, point: geo.V3, epsilon: T.Scalar = sm.epsilon()
+        self, point: geo.V3, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
@@ -65,7 +65,7 @@ class Camera:
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = sm.epsilon(), normalize: bool = False
+        self, pixel: geo.V2, epsilon: T.Scalar = sf.epsilon(), normalize: bool = False
     ) -> T.Tuple[geo.V3, T.Scalar]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
@@ -97,7 +97,7 @@ class Camera:
 
     def maybe_check_in_view(self, pixel: geo.V2) -> int:
         if self.image_size is None:
-            return sm.S.One
+            return sf.S.One
 
         return self.in_view(pixel, self.image_size)
 
@@ -106,9 +106,9 @@ class Camera:
         """
         Returns 1.0 if the pixel coords are in bounds of the image, 0.0 otherwise.
         """
-        return sm.Mul(
+        return sf.Mul(
             *[
-                sm.Max(0, sm.sign(bound - value - sm.S.One) * sm.sign(value))
+                sf.Max(0, sf.sign(bound - value - sf.S.One) * sf.sign(value))
                 for bound, value in zip(image_size.to_flat_list(), pixel.to_flat_list())
             ]
         )

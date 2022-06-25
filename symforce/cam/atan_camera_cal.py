@@ -9,7 +9,7 @@ from .camera_cal import CameraCal
 from .linear_camera_cal import LinearCameraCal
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -43,11 +43,11 @@ class ATANCameraCal(CameraCal):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> ATANCameraCal:
-        with sm.scope(name):
+        with sf.scope(name):
             return cls(
-                focal_length=sm.symbols("f_x f_y"),
-                principal_point=sm.symbols("c_x c_y"),
-                omega=sm.Symbol("omega"),
+                focal_length=sf.symbols("f_x f_y"),
+                principal_point=sf.symbols("c_x c_y"),
+                omega=sf.Symbol("omega"),
             )
 
     @classmethod
@@ -55,7 +55,7 @@ class ATANCameraCal(CameraCal):
         return ("focal_length", 2), ("principal_point", 2), ("omega", 1)
 
     def pixel_from_camera_point(
-        self, point: geo.V3, epsilon: T.Scalar = sm.epsilon()
+        self, point: geo.V3, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.V2, T.Scalar]:
 
         # Compute undistorted point in unit depth image plane
@@ -67,7 +67,7 @@ class ATANCameraCal(CameraCal):
         # Compute distortion weight
         omega = self.distortion_coeffs[0]
         undistorted_radius = unit_depth.norm(epsilon)
-        distortion_weight = sm.atan(2 * undistorted_radius * sm.tan(omega / 2.0)) / (
+        distortion_weight = sf.atan(2 * undistorted_radius * sf.tan(omega / 2.0)) / (
             undistorted_radius * omega
         )
 
@@ -77,7 +77,7 @@ class ATANCameraCal(CameraCal):
         return pixel, is_valid
 
     def camera_ray_from_pixel(
-        self, pixel: geo.V2, epsilon: T.Scalar = sm.epsilon()
+        self, pixel: geo.V2, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.V3, T.Scalar]:
 
         # Compute distorted unit depth coords
@@ -89,12 +89,12 @@ class ATANCameraCal(CameraCal):
         # Compute undistortion weight
         omega = self.distortion_coeffs[0]
         distorted_radius = distorted_unit_depth_coords.norm(epsilon)
-        undistortion_weight = sm.tan(distorted_radius * omega) / (
-            2 * distorted_radius * sm.tan(omega / 2.0)
+        undistortion_weight = sf.tan(distorted_radius * omega) / (
+            2 * distorted_radius * sf.tan(omega / 2.0)
         )
 
         # Apply weight and convert to camera ray
         unit_depth = undistortion_weight * distorted_unit_depth_coords
         camera_ray = geo.V3(unit_depth[0], unit_depth[1], 1)
-        is_valid = sm.Max(sm.sign(sm.pi / 2 - sm.Abs(distorted_radius * omega)), 0)
+        is_valid = sf.Max(sf.sign(sf.pi / 2 - sf.Abs(distorted_radius * omega)), 0)
         return camera_ray, is_valid

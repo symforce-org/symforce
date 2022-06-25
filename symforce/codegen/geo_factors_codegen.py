@@ -9,7 +9,7 @@ from symforce import geo
 from symforce import ops
 from symforce import python_util
 from symforce import typing as T
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.codegen import CppConfig
 from symforce.codegen import Codegen
 
@@ -122,7 +122,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
         tangent_dim = ops.LieGroupOps.tangent_dim(cls)
         between_codegen = Codegen.function(
             func=between_factor,
-            input_types=[cls, cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
+            input_types=[cls, cls, cls, geo.M(tangent_dim, tangent_dim), sf.Symbol],
             output_names=["res"],
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
@@ -131,7 +131,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
 
         prior_codegen = Codegen.function(
             func=prior_factor,
-            input_types=[cls, cls, geo.M(tangent_dim, tangent_dim), sm.Symbol],
+            input_types=[cls, cls, geo.M(tangent_dim, tangent_dim), sf.Symbol],
             output_names=["res"],
             config=CppConfig(),
             docstring=get_prior_docstring(),

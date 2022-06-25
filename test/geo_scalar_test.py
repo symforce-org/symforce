@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import ops
 from symforce import typing as T
 from symforce.test_util import TestCase
@@ -18,16 +18,16 @@ class GeoScalarTest(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> T.Scalar:
-        return sm.S(3.2)
+        return sf.S(3.2)
 
     def test_construction_by_type(self) -> None:
         """
         Check that we get correect sympy types out from scalar expressions of various forms.
         """
-        x, y = sm.symbols("x y")
-        for expr in (12, -1.3, sm.S(4), sm.S(12.5), x, x ** 2 + y):
-            for cls in (float, sm.Symbol):
-                expected = sm.S(expr)
+        x, y = sf.symbols("x y")
+        for expr in (12, -1.3, sf.S(4), sf.S(12.5), x, x ** 2 + y):
+            for cls in (float, sf.Symbol):
+                expected = sf.S(expr)
                 self.assertEqual(expected, ops.LieGroupOps.from_tangent(cls, [expr]))
                 self.assertEqual(expected, ops.StorageOps.from_storage(cls, [expr]))
 

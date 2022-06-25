@@ -18,8 +18,15 @@ from typing import *  # pylint: disable=wildcard-import,unused-wildcard-import
 if TYPE_CHECKING:
     import numpy as np
 
-# TODO(hayk): Try to make a basic type stub for sympy Expr.
-Scalar = float
+# TODO(hayk,aaron): Either make this a union of "Scalar types", or different typevars for numeric
+# and symbolic scalars or something
+if TYPE_CHECKING:
+    # Currently this can be any type, and doesn't even express that multiple Scalars in a signature
+    # are the same (which is usually or always the case).  However, making this a TypeVar with
+    # a loose enough bound is similarly annoying
+    Scalar = Any
+else:
+    Scalar = float
 
 # Alias for argument type of open, which typing does not seem to have.  We don't include int because
 # who uses that anyway, and bytes because some things in os.path don't support that

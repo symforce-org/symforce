@@ -8,7 +8,7 @@ import unittest
 
 from symforce import cam
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
@@ -49,7 +49,7 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         """
         Tests that the xi and alpha properties can be correctly read and written to.
         """
-        xi, alpha = sm.symbols("xi alpha")
+        xi, alpha = sf.symbols("xi alpha")
         cal = self._make_cal(xi=xi, alpha=alpha)
 
         with self.subTest(msg="Test getters"):
@@ -92,12 +92,12 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             with self.subTest(angle=angle, xi=xi, alpha=alpha):
                 point = point_from_angle(angle - self.EPS)
                 pixel, is_valid = cal.pixel_from_camera_point(point)
-                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 1.0)
+                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 1.0)
 
             with self.subTest(angle=angle, xi=xi, alpha=alpha):
                 point = point_from_angle(angle + self.EPS)
                 pixel, is_valid = cal.pixel_from_camera_point(point)
-                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 0.0)
+                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 0.0)
 
         # linear is_valid for trivial case
         check_forward_is_valid_on_boundary(0, 0, np.pi / 2)
@@ -137,12 +137,12 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             with self.subTest(radius=radius, xi=xi, alpha=alpha):
                 pixel = pixel_from_radius(radius - self.EPS)
                 point, is_valid = cal.camera_ray_from_pixel(pixel)
-                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 1.0)
+                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 1.0)
 
             with self.subTest(radius=radius, xi=xi, alpha=alpha):
                 pixel = pixel_from_radius(radius + self.EPS)
                 point, is_valid = cal.camera_ray_from_pixel(pixel)
-                self.assertEqual(T.cast(sm.Expr, is_valid).evalf(), 0.0)
+                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 0.0)
 
         # sphere is_valid for spheres far apart
         check_backward_is_valid_on_boundary(3, 0.7, 271.321813)

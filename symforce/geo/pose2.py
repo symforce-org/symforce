@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from symforce import ops
 from symforce.ops.interfaces.lie_group import LieGroup
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 from .matrix import Matrix
@@ -100,13 +100,13 @@ class Pose2(LieGroup):
         return 3
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Pose2:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2:
         theta = v[0]
         R = Rot2.from_tangent([theta], epsilon=epsilon)
         t = Vector2(v[1], v[2])
         return cls(R, t)
 
-    def to_tangent(self, epsilon: T.Scalar = sm.epsilon()) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         # This uses atan2, so the resulting theta is between -pi and pi
         theta = self.R.to_tangent(epsilon=epsilon)[0]
         return [theta, self.t[0], self.t[1]]
@@ -135,14 +135,14 @@ class Pose2(LieGroup):
     # the Lie group as the product manifold of SO3 x R3 while leaving compose as normal
     # Pose3 composition.
 
-    def retract(self: Pose2, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sm.epsilon()) -> Pose2:
+    def retract(self: Pose2, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2:
         return Pose2(
             R=self.R.retract(vec[:1], epsilon=epsilon),
             t=ops.LieGroupOps.retract(self.t, vec[1:], epsilon=epsilon),
         )
 
     def local_coordinates(
-        self: Pose2T, b: Pose2T, epsilon: T.Scalar = sm.epsilon()
+        self: Pose2T, b: Pose2T, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon

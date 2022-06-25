@@ -8,7 +8,7 @@ import string
 
 import symforce
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.codegen import values_codegen
 from symforce.test_util import TestCase
 from symforce.values import Values
@@ -37,7 +37,7 @@ class SymforceValuesCodegenTest(TestCase):
         # Add a bunch of symbols with similar names to stress test
         for i in range(1, 5):
             for letter in string.ascii_lowercase:
-                values[letter * i] = sm.Symbol(letter)
+                values[letter * i] = sf.Symbol(letter)
 
         values_codegen.generate_values_keys(values, output_dir)
 

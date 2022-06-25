@@ -6,7 +6,7 @@
 import numpy as np
 
 from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
 
@@ -30,7 +30,7 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
         """
         self.assertEqual(a * b, geo.DualQuaternion.compose(a, b))
         self.assertEqual(a / 5.0, geo.DualQuaternion(a.real_q / 5.0, a.inf_q / 5.0))
-        d = sm.Symbol("denom")
+        d = sf.Symbol("denom")
         self.assertEqual(a / d, geo.DualQuaternion(a.real_q / d, a.inf_q / d))
         self.assertEqual(a.squared_norm(), a.real_q.squared_norm() + a.inf_q.squared_norm())
         self.assertEqual(a.conj(), geo.DualQuaternion(a.real_q.conj(), a.inf_q.conj()))

@@ -8,7 +8,7 @@ from __future__ import annotations
 import numpy as np
 
 from symforce.ops.interfaces import Group
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -60,7 +60,7 @@ class Complex(Group):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> Complex:
-        return cls.from_storage([sm.Symbol(f"{name}_{v}", **kwargs) for v in ["re", "im"]])
+        return cls.from_storage([sf.Symbol(f"{name}_{v}", **kwargs) for v in ["re", "im"]])
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
@@ -176,9 +176,9 @@ class Complex(Group):
         return cls.unit_random_from_uniform_sample(u1, pi=np.pi)
 
     @classmethod
-    def unit_random_from_uniform_sample(cls, u1: T.Scalar, pi: T.Scalar = sm.pi) -> Complex:
+    def unit_random_from_uniform_sample(cls, u1: T.Scalar, pi: T.Scalar = sf.pi) -> Complex:
         """
         Generate a unit-norm random Complex number from a variable sampled uniformly on [0, 1]
         """
         theta = 2 * pi * u1
-        return Complex(sm.cos(theta), sm.sin(theta))
+        return Complex(sf.cos(theta), sf.sin(theta))

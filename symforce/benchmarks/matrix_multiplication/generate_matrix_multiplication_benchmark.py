@@ -12,7 +12,7 @@ import scipy.io
 from symforce import codegen
 from symforce import geo
 from symforce import python_util
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import template_util
 from symforce.test_util.random_expressions import unary_binary_expression_gen, op_probabilities
@@ -85,7 +85,7 @@ def generate_matrix(
     Generate functions for the given matrix sparsity pattern to compute A, B, and A^T B, in sparse
     and dense forms
     """
-    symbols = sm.symbols(f"x:{N_SYMBOLS}")
+    symbols = sf.symbols(f"x:{N_SYMBOLS}")
     gen = unary_binary_expression_gen.UnaryBinaryExpressionGen(
         unary_ops=[op_probabilities.OpProbability("neg", lambda x: -x, 3)],
         binary_ops=[
@@ -97,7 +97,7 @@ def generate_matrix(
         leaves=[-2, -1, 1, 2] + list(symbols),
     )
 
-    def compute_A(*symbols: T.List[sm.Symbol]) -> geo.Matrix:
+    def compute_A(*symbols: T.List[sf.Symbol]) -> geo.Matrix:
         exprs = gen.build_expr_vec(OPS_PER_ENTRY * matrix.nnz, matrix.nnz).to_flat_list()
         result = geo.Matrix(*matrix.shape)
 

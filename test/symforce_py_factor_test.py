@@ -9,7 +9,7 @@ import numpy as np
 
 from symforce import geo
 from symforce import ops
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.opt.factor import Factor, visualize_factors
 from symforce.opt.numeric_factor import NumericFactor
@@ -25,7 +25,7 @@ class SymforcePyFactorTest(TestCase):
 
     @staticmethod
     def create_chain(
-        keys: T.Sequence[str], value_type: T.Type[LieGroup], epsilon: T.Scalar = sm.numeric_epsilon
+        keys: T.Sequence[str], value_type: T.Type[LieGroup], epsilon: T.Scalar = sf.numeric_epsilon
     ) -> T.Iterator[Factor]:
         """
         Create a factor chain with betweens and priors of the given type.
