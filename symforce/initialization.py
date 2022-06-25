@@ -37,6 +37,7 @@ def modify_symbolic_api(sympy_module: T.Any) -> None:
     override_count_ops(sympy_module)
     override_matrix_symbol(sympy_module)
     add_derivatives(sympy_module)
+    add_epsilon_functions(sympy_module)
 
     setattr(sympy_module, "_MODIFIED_BY_SYMFORCE", True)
 
@@ -300,6 +301,66 @@ def override_count_ops(sympy_module: T.Type) -> None:
         sympy_module.count_ops = _sympy_count_ops.count_ops
 
 
+class AlreadyUsedEpsilon(Exception):
+    pass
+
+
+def add_epsilon_functions(sympy_module: T.Type) -> None:
+    """
+    Add sympy_module.epsilon() and associated functions.
+
+    Precondition: This function can be called on a given module only once.
+    """
+
+    EPSILON = 0.0
+    HAVE_USED_EPSILON = False
+
+    # Save original functions to reference in wrappers
+    original_atan2 = sympy_module.atan2
+
+    def add_custom_methods_with_epsilon(sympy_module: T.Type, default_epsilon: T.Scalar) -> None:
+        def atan2(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = default_epsilon) -> T.Scalar:
+            return original_atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
+
+        sympy_module.atan2 = atan2
+
+        def asin_safe(x: T.Scalar, epsilon: T.Scalar = default_epsilon) -> T.Scalar:
+            x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
+            return sympy_module.asin(x_safe)
+
+        sympy_module.asin_safe = asin_safe
+
+        def acos_safe(x: T.Scalar, epsilon: T.Scalar = default_epsilon) -> T.Scalar:
+            x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
+            return sympy_module.acos(x_safe)
+
+        sympy_module.acos_safe = acos_safe
+
+    add_custom_methods_with_epsilon(sympy_module, EPSILON)
+
+    def epsilon() -> T.Scalar:
+        nonlocal HAVE_USED_EPSILON
+        HAVE_USED_EPSILON = True
+        return EPSILON
+
+    sympy_module.epsilon = epsilon
+
+    def set_epsilon(new_epsilon: T.Scalar) -> None:
+        nonlocal HAVE_USED_EPSILON
+        if HAVE_USED_EPSILON:
+            raise AlreadyUsedEpsilon(
+                "Cannot set return value of epsilon after it has already been called."
+            )
+
+        # NOTE(brad): These must be redefined so they use new_epsilon
+        add_custom_methods_with_epsilon(sympy_module, default_epsilon=new_epsilon)
+
+        nonlocal EPSILON
+        EPSILON = new_epsilon
+
+    sympy_module.set_epsilon = set_epsilon
+
+
 def add_custom_methods(sympy_module: T.Type) -> None:
     """
     Add safe helper methods to the symbolic API.
@@ -311,27 +372,6 @@ def add_custom_methods(sympy_module: T.Type) -> None:
 
     # Should match C++ default epsilon in epsilon.h
     sympy_module.numeric_epsilon = 10 * sys.float_info.epsilon
-
-    # Save original functions to reference in wrappers
-    original_atan2 = sympy_module.atan2
-
-    @register
-    def epsilon() -> T.Scalar:
-        return 0
-
-    @register
-    def atan2(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
-        return original_atan2(y, x + (sympy_module.sign(x) + 0.5) * epsilon)
-
-    @register
-    def asin_safe(x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
-        x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
-        return sympy_module.asin(x_safe)
-
-    @register
-    def acos_safe(x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
-        x_safe = sympy_module.Max(-1 + epsilon, sympy_module.Min(1 - epsilon, x))
-        return sympy_module.acos(x_safe)
 
     @register
     def wrap_angle(x: T.Scalar) -> T.Scalar:
