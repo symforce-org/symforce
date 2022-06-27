@@ -152,7 +152,7 @@ docs_clean:
 
 docs_apidoc:
 	mkdir -p $(BUILD_DIR)
-	sphinx-apidoc --separate --module-first -o docs/api ./symforce
+	sphinx-apidoc --separate --module-first -o docs/api ./symforce ./symforce/sympy.py
 	sphinx-apidoc --separate --module-first -o docs/api-gen-py ./gen/python
 	doxygen docs/Doxyfile-cpp
 	doxygen docs/Doxyfile-gen-cpp
