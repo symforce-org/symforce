@@ -10,7 +10,6 @@ from pathlib import Path
 import uuid
 import logging
 
-from symforce import geo
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import codegen_config
@@ -20,6 +19,7 @@ from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
 from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
+import symforce.symbolic as sf
 from symforce import logger
 
 
@@ -54,9 +54,9 @@ class Factor:
     def __init__(
         self,
         keys: T.Sequence[str],
-        residual: T.Callable[..., geo.Matrix],
+        residual: T.Callable[..., sf.Matrix],
         config: codegen_config.CodegenConfig = None,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
         **kwargs: T.Any,
     ) -> None:
         # We use `_initialize()` to set `self.codegen` because we want the default constructor of
@@ -77,9 +77,9 @@ class Factor:
         cls,
         keys: T.Sequence[str],
         inputs: Values,
-        residual: geo.Matrix,
+        residual: sf.Matrix,
         config: codegen_config.CodegenConfig = None,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
         **kwargs: T.Any,
     ) -> Factor:
         """
@@ -121,7 +121,7 @@ class Factor:
         self,
         keys: T.Sequence[str],
         codegen_obj: Codegen,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
     ) -> None:
         """
         Initializes the Factor object from a codegen object
@@ -147,7 +147,7 @@ class Factor:
         self.codegen = codegen_obj
         self.custom_jacobian_func = custom_jacobian_func
         self.name = self.codegen.name
-        self.generated_jacobians: T.Dict[T.Tuple[str, ...], geo.Matrix] = {}
+        self.generated_jacobians: T.Dict[T.Tuple[str, ...], sf.Matrix] = {}
 
     def generate(
         self,

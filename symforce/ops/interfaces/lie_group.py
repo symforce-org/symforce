@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import ops
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .group import Group

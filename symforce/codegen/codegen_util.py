@@ -19,7 +19,6 @@ import sys
 
 import symforce
 from symforce import ops
-from symforce import geo
 from symforce.values import Values, IndexEntry
 import symforce.symbolic as sf
 from symforce import typing as T
@@ -67,13 +66,13 @@ class CSCFormat:
     nonzero_elements: T.List[T.Scalar]  # nonzero entries written in column-major order
 
     @staticmethod
-    def from_matrix(sparse_matrix: geo.Matrix) -> CSCFormat:
+    def from_matrix(sparse_matrix: sf.Matrix) -> CSCFormat:
         """
         Returns a dictionary with the metadata required to represent a matrix as a sparse matrix
         in CSC form.
 
         Args:
-            sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
+            sparse_matrix: A symbolic sf.Matrix where sparsity is given by exact zero equality.
         """
         kColPtrs = []
         kRowIndices = []
@@ -340,13 +339,13 @@ def get_formatted_list(
         elif isinstance(value, (sf.Expr, sf.Symbol)):
             formatted_symbols = [sf.Symbol(key)]
             flattened_value = [value]
-        elif issubclass(arg_cls, geo.Matrix):
+        elif issubclass(arg_cls, sf.Matrix):
             if config.matrix_is_1d:
                 # TODO(nathan): Not sure this works for 2D matrices. Get rid of this.
                 formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             else:
-                # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
-                # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
+                # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
+                # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
                 # changed to, say, row major, the below for loops would have to be swapped to
                 # reflect that.
                 formatted_symbols = []
@@ -457,7 +456,7 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}[{i}]", config=config, use_data=use_data
                 )
             )
-    elif issubclass(datatype, geo.Matrix) or not use_data:
+    elif issubclass(datatype, sf.Matrix) or not use_data:
         # TODO(hayk): Fix this in follow-up.
         # TODO(nathan): I don't think this deals with 2D matrices correctly
         if config.matrix_is_1d and config.use_eigen_types:

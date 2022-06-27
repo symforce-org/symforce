@@ -7,7 +7,6 @@ import numpy as np
 from symforce.test_util import TestCase
 
 import symforce.symbolic as sf
-from symforce import geo
 from symforce import ops
 from symforce.values import Values
 from symforce.opt.objectives import PriorValueObjective
@@ -22,9 +21,9 @@ class PriorValueObjectiveTest(TestCase):
     def test_vec3_cost(self) -> None:
         # Create symbolic objective
         symbolic_inputs = Values(
-            actual=geo.V3.symbolic("actual"),
-            desired=geo.V3.symbolic("desired"),
-            information_diag=geo.V3.symbolic("cost").to_flat_list(),
+            actual=sf.V3.symbolic("actual"),
+            desired=sf.V3.symbolic("desired"),
+            information_diag=sf.V3.symbolic("cost").to_flat_list(),
             epsilon=sf.Symbol("epsilon"),
             cost_scaling=sf.Symbol("cost_scaling"),
         )
@@ -34,8 +33,8 @@ class PriorValueObjectiveTest(TestCase):
 
         # Create numerical test cases
         zero_residual_inputs = Values(
-            actual=geo.V3(1, 2, 3),
-            desired=geo.V3(1, 2, 3),
+            actual=sf.V3(1, 2, 3),
+            desired=sf.V3(1, 2, 3),
             information_diag=[1, 1, 1],
             epsilon=sf.numeric_epsilon,
             cost_scaling=1,
@@ -45,8 +44,8 @@ class PriorValueObjectiveTest(TestCase):
         )
 
         nonzero_residual_inputs = Values(
-            actual=geo.V3(1, 2, 3),
-            desired=geo.V3(4, 5, 6),
+            actual=sf.V3(1, 2, 3),
+            desired=sf.V3(4, 5, 6),
             information_diag=[1, 4, 9],
             epsilon=sf.numeric_epsilon,
             cost_scaling=1,
@@ -62,22 +61,22 @@ class PriorValueObjectiveTest(TestCase):
         )
         self.assertStorageNear(
             residual_block_nonzero.residual,
-            geo.V3(-3, -6, -9),
+            sf.V3(-3, -6, -9),
         )
 
         # Check the jacobian does not change
         symbolic_jacobian = symbolic_residual_block.residual.jacobian(symbolic_inputs["actual"])
         jacobian_zero_residual = symbolic_jacobian.subs(symbolic_inputs, zero_residual_inputs)
         jacobian_nonzero_residual = symbolic_jacobian.subs(symbolic_inputs, nonzero_residual_inputs)
-        self.assertStorageNear(jacobian_zero_residual, geo.M33.eye())
-        self.assertStorageNear(jacobian_nonzero_residual, geo.M33.diag([1, 2, 3]))
+        self.assertStorageNear(jacobian_zero_residual, sf.M33.eye())
+        self.assertStorageNear(jacobian_nonzero_residual, sf.M33.diag([1, 2, 3]))
 
     def test_rot3_cost(self) -> None:
         # Create symbolic objective
         symbolic_inputs = Values(
-            actual=geo.Rot3.symbolic("actual"),
-            desired=geo.Rot3.symbolic("desired"),
-            information_diag=geo.V3.symbolic("cost").to_flat_list(),
+            actual=sf.Rot3.symbolic("actual"),
+            desired=sf.Rot3.symbolic("desired"),
+            information_diag=sf.V3.symbolic("cost").to_flat_list(),
             epsilon=sf.Symbol("epsilon"),
             cost_scaling=sf.Symbol("cost_scaling"),
         )
@@ -87,8 +86,8 @@ class PriorValueObjectiveTest(TestCase):
 
         # Create numerical test cases
         zero_residual_inputs = Values(
-            actual=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
-            desired=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
+            actual=sf.Rot3.from_angle_axis(0.5, sf.V3(0, 0, 1).normalized()),
+            desired=sf.Rot3.from_angle_axis(0.5, sf.V3(0, 0, 1).normalized()),
             information_diag=[1, 1, 1],
             epsilon=sf.numeric_epsilon,
             cost_scaling=1,
@@ -98,8 +97,8 @@ class PriorValueObjectiveTest(TestCase):
         )
 
         nonzero_residual_inputs = Values(
-            actual=geo.Rot3.from_angle_axis(0.5, geo.V3(0, 0, 1).normalized()),
-            desired=geo.Rot3.from_angle_axis(0.6, geo.V3(0, 0, 1).normalized()),
+            actual=sf.Rot3.from_angle_axis(0.5, sf.V3(0, 0, 1).normalized()),
+            desired=sf.Rot3.from_angle_axis(0.6, sf.V3(0, 0, 1).normalized()),
             information_diag=[1, 4, 9],
             epsilon=sf.numeric_epsilon,
             cost_scaling=1,
@@ -115,19 +114,19 @@ class PriorValueObjectiveTest(TestCase):
         )
         self.assertStorageNear(
             residual_block_nonzero.residual,
-            geo.V3(0.0, 0.0, -0.3),
+            sf.V3(0.0, 0.0, -0.3),
         )
 
         # Check the jacobian does not change
         symbolic_jacobian = symbolic_residual_block.residual.jacobian(symbolic_inputs["actual"])
         jacobian_zero_residual = symbolic_jacobian.subs(symbolic_inputs, zero_residual_inputs)
-        self.assertStorageNear(jacobian_zero_residual, geo.M33.eye())
+        self.assertStorageNear(jacobian_zero_residual, sf.M33.eye())
 
         act = symbolic_inputs["actual"]
         des = symbolic_inputs["desired"]
-        unwhited_residual = geo.V3(des.local_coordinates(act))
+        unwhited_residual = sf.V3(des.local_coordinates(act))
         cost_scaling = symbolic_inputs["cost_scaling"]
-        cost_mat = geo.M33.diag(
+        cost_mat = sf.M33.diag(
             [sf.sqrt(cost_scaling * v) for v in symbolic_inputs["information_diag"]]
         )
         expected_jacobian_nonzero_residual = (cost_mat * unwhited_residual).jacobian(act)
@@ -143,8 +142,8 @@ class PriorValueObjectiveTest(TestCase):
 
     def test_epsilon_handling(self) -> None:
         inputs = Values(
-            actual=geo.Rot3.from_angle_axis(-sf.pi, geo.V3(0, 0, 1).normalized()),
-            desired=geo.Rot3.from_angle_axis(sf.pi, geo.V3(0, 0, 1).normalized()),
+            actual=sf.Rot3.from_angle_axis(-sf.pi, sf.V3(0, 0, 1).normalized()),
+            desired=sf.Rot3.from_angle_axis(sf.pi, sf.V3(0, 0, 1).normalized()),
             information_diag=[1, 1, 1],
             epsilon=sf.numeric_epsilon,
             cost_scaling=1,

@@ -10,7 +10,7 @@ import numpy as np
 import symforce
 from symforce import ops
 from symforce.ops.interfaces import Storage
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as _T  # We already have a Matrix.T which collides
 from symforce import python_util
 
@@ -40,7 +40,7 @@ class Matrix(Storage):
     MatrixT = _T.TypeVar("MatrixT", bound="Matrix")
 
     # Static dimensions of this type. (-1, -1) means there is no size information, like if
-    # we are using geo.Matrix directly instead of geo.Matrix31.
+    # we are using sf.Matrix directly instead of sf.Matrix31.
     # Once a matrix is constructed it should be of a type where the .shape instance variable matches
     # this class variable as a strong internal consistency check.
     SHAPE = (-1, -1)
@@ -113,7 +113,7 @@ class Matrix(Storage):
         # constructor with (rows, cols) arguments.
         # NOTE(hayk): I've had to override several routines on Matrix that in their symengine
         # versions construct a result with __class__(rows, cols), which for a fixed size type fails
-        # here. We need it to fail because it's ambiguous in the case of geo.M21(10, 20) whether
+        # here. We need it to fail because it's ambiguous in the case of sf.M21(10, 20) whether
         # the args are values or sizes. So I've overriden several operator methods to first convert
         # to an sm.Matrix, do the operation, then convert back.
         elif len(args) == 2 and cls.SHAPE == (-1, -1):
@@ -271,8 +271,8 @@ class Matrix(Storage):
     # NOTE(aaron):  The following set of overloads is the correct signature for `eye`. However, when
     # I do this mypy thinks the signature is:
     #
-    #     Overload(def (rows: builtins.int) -> symforce.geo.matrix.Matrix, def (rows: builtins.int,
-    #     cols: builtins.int) -> symforce.geo.matrix.Matrix)
+    #     Overload(def (rows: builtins.int) -> symforce.sf.matrix.Matrix, def (rows: builtins.int,
+    #     cols: builtins.int) -> symforce.sf.matrix.Matrix)
     #
     # And I cannot figure out why for the life of me.  So instead we lie to the type checker, and
     # tell it we always return `cls`, even though we also support returning a superclass if called

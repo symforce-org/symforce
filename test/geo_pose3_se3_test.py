@@ -5,7 +5,6 @@
 
 import numpy as np
 
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import LieGroupOps
@@ -20,8 +19,8 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> geo.Pose3_SE3:
-        return geo.Pose3_SE3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
+    def element(cls) -> sf.Pose3_SE3:
+        return sf.Pose3_SE3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
 
     def test_lie_exponential(self) -> None:
         """
@@ -40,16 +39,16 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         # Take the matrix exponential (only supported with sympy)
         import sympy
 
-        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
+        hat_exp = sf.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Pose3_SE3.from_tangent(pertubation, epsilon=self.EPSILON)
+        expmap = sf.Pose3_SE3.from_tangent(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!
         self.assertStorageNear(hat_exp, matrix_expected, places=5)
 
-    def pose3_operations(self, a: geo.Pose3_SE3, b: geo.Pose3_SE3) -> None:
+    def pose3_operations(self, a: sf.Pose3_SE3, b: sf.Pose3_SE3) -> None:
         """
         Tests Pose3_SE3 operations
         """
@@ -61,13 +60,13 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         Tests (numeric):
             Pose3_SE3.__mul__
         """
-        R_a = geo.Rot3.random()
-        t_a = geo.V3(np.random.rand(3))
-        a = geo.Pose3_SE3(R_a, t_a)
+        R_a = sf.Rot3.random()
+        t_a = sf.V3(np.random.rand(3))
+        a = sf.Pose3_SE3(R_a, t_a)
 
-        R_b = geo.Rot3.random()
-        t_b = geo.V3(np.random.rand(3))
-        b = geo.Pose3_SE3(R_b, t_b)
+        R_b = sf.Rot3.random()
+        t_b = sf.V3(np.random.rand(3))
+        b = sf.Pose3_SE3(R_b, t_b)
 
         self.pose3_operations(a, b)
 
@@ -76,8 +75,8 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         Tests (symbolic):
             Pose3_SE3.__mul__
         """
-        a = geo.Pose3_SE3.symbolic("a")
-        b = geo.Pose3_SE3.symbolic("b")
+        a = sf.Pose3_SE3.symbolic("a")
+        b = sf.Pose3_SE3.symbolic("b")
         self.pose3_operations(a, b)
 
 

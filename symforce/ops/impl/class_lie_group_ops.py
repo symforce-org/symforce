@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .class_group_ops import ClassGroupOps

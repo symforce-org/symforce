@@ -6,8 +6,6 @@
 """
 This file builds a Values with all symbols needed for the fixed-size example.
 """
-from symforce import cam
-from symforce import geo
 from symforce.values import Values
 import symforce.symbolic as sf
 
@@ -17,8 +15,8 @@ def define_view(index: int) -> Values:
     Creates a symbolic pose + calibration representing a single image
     """
     values = Values()
-    values["calibration"] = geo.M(cam.LinearCameraCal.symbolic(f"cal{index}").to_storage())
-    values["pose"] = geo.Pose3.symbolic(f"pose{index}")
+    values["calibration"] = sf.M(sf.LinearCameraCal.symbolic(f"cal{index}").to_storage())
+    values["pose"] = sf.Pose3.symbolic(f"pose{index}")
     return values
 
 
@@ -35,10 +33,10 @@ def define_feature_match(index: int, match_num: int) -> Values:
     values = Values()
 
     # Source pixel coordinate (camera 0)
-    values["source_coords"] = geo.V2.symbolic(f"source_coords_{index}{match_num}")
+    values["source_coords"] = sf.V2.symbolic(f"source_coords_{index}{match_num}")
 
     # Target pixel coordinate (specified camera index)
-    values["target_coords"] = geo.V2.symbolic(f"target_coords_{index}{match_num}")
+    values["target_coords"] = sf.V2.symbolic(f"target_coords_{index}{match_num}")
 
     # Weight of match
     values["weight"] = sf.Symbol(f"weights_{index}{match_num}")
@@ -58,12 +56,12 @@ def define_pose_prior(source_cam_index: int, target_cam_index: int) -> Values:
     """
     values = Values()
 
-    values["target_T_src"] = geo.Pose3.symbolic(
+    values["target_T_src"] = sf.Pose3.symbolic(
         f"target_T_src_{source_cam_index}_{target_cam_index}"
     )
 
     # Square root information matrix of pose estimate [rad, rad, rad, m, m, m]
-    values["sqrt_info"] = geo.M66.symbolic(f"pose_sqrt_info_{source_cam_index}_{target_cam_index}")
+    values["sqrt_info"] = sf.M66.symbolic(f"pose_sqrt_info_{source_cam_index}_{target_cam_index}")
 
     return values
 

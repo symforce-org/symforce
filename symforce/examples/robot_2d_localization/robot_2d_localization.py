@@ -13,29 +13,26 @@ and relative bearing angle measurements to known landmarks in the environment.
 # -----------------------------------------------------------------------------
 # Define residual functions
 # -----------------------------------------------------------------------------
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 
 
-def bearing_residual(
-    pose: geo.Pose2, landmark: geo.V2, angle: T.Scalar, epsilon: T.Scalar
-) -> geo.V1:
+def bearing_residual(pose: sf.Pose2, landmark: sf.V2, angle: T.Scalar, epsilon: T.Scalar) -> sf.V1:
     """
     Residual from a relative bearing measurement of a 2D pose to a landmark.
     """
     t_body = pose.inverse() * landmark
     predicted_angle = sf.atan2(t_body[1], t_body[0], epsilon=epsilon)
-    return geo.V1(sf.wrap_angle(predicted_angle - angle))
+    return sf.V1(sf.wrap_angle(predicted_angle - angle))
 
 
 def odometry_residual(
-    pose_a: geo.Pose2, pose_b: geo.Pose2, dist: T.Scalar, epsilon: T.Scalar
-) -> geo.V1:
+    pose_a: sf.Pose2, pose_b: sf.Pose2, dist: T.Scalar, epsilon: T.Scalar
+) -> sf.V1:
     """
     Residual from the scalar distance between two poses.
     """
-    return geo.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
+    return sf.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
 
 
 # -----------------------------------------------------------------------------
@@ -75,8 +72,8 @@ def main() -> None:
     num_poses = 3
     num_landmarks = 3
     initial_values = Values(
-        poses=[geo.Pose2.identity()] * num_poses,
-        landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
+        poses=[sf.Pose2.identity()] * num_poses,
+        landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
         distances=[1.7, 1.4],
         angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
         epsilon=sf.numeric_epsilon,

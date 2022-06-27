@@ -6,8 +6,6 @@
 import numpy as np
 import unittest
 
-from symforce import cam
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import StorageOps
@@ -25,20 +23,20 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
     EPS = 1e-6
 
     @classmethod
-    def element(cls) -> cam.DoubleSphereCameraCal:
+    def element(cls) -> sf.DoubleSphereCameraCal:
         [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
         xi = np.random.uniform(low=-1.0, high=10.0)
         alpha = np.random.uniform(high=0.9, low=-10.0)
-        return cam.DoubleSphereCameraCal(
+        return sf.DoubleSphereCameraCal(
             focal_length=(f_x, f_y), principal_point=(c_x, c_y), xi=xi, alpha=alpha
         )
 
     @staticmethod
-    def _make_cal(xi: float, alpha: float) -> cam.DoubleSphereCameraCal:
+    def _make_cal(xi: float, alpha: float) -> sf.DoubleSphereCameraCal:
         focal_length = (800, 800)
         principal_point = (400, 400)
 
-        return cam.DoubleSphereCameraCal(
+        return sf.DoubleSphereCameraCal(
             focal_length=focal_length,
             principal_point=principal_point,
             xi=xi,
@@ -67,7 +65,7 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         Tests if strategically chosen points have valid projections
         """
 
-        def point_from_angle(angle: float) -> geo.V3:
+        def point_from_angle(angle: float) -> sf.V3:
             """
             Generate a point a given angle away from the optical axis, with random distance from
             origin and random rotation about the optical axis
@@ -75,9 +73,9 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             norm = np.random.uniform(0.1, 100)
 
             P = (
-                geo.Rot3.from_angle_axis(np.random.uniform(0, 2 * np.pi), geo.V3(0, 0, 1))
-                * geo.Rot3.from_angle_axis(angle=angle, axis=geo.V3(0, 1, 0))
-                * geo.V3(0, 0, norm)
+                sf.Rot3.from_angle_axis(np.random.uniform(0, 2 * np.pi), sf.V3(0, 0, 1))
+                * sf.Rot3.from_angle_axis(angle=angle, axis=sf.V3(0, 1, 0))
+                * sf.V3(0, 0, norm)
             )
 
             return P
@@ -119,13 +117,13 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         Test if strategically chosen pixels have valid backprojections
         """
 
-        def pixel_from_radius(radius: float) -> geo.V2:
+        def pixel_from_radius(radius: float) -> sf.V2:
             """
             Generate a pixel a given radius away from the principal point, at a random angle
             """
             return (
-                (geo.Rot2.from_tangent([np.random.uniform(0, 2 * np.pi)]) * geo.V2(radius, 0))
-            ) + geo.V2(400, 400)
+                (sf.Rot2.from_tangent([np.random.uniform(0, 2 * np.pi)]) * sf.V2(radius, 0))
+            ) + sf.V2(400, 400)
 
         def check_backward_is_valid_on_boundary(xi: float, alpha: float, radius: float) -> None:
             """

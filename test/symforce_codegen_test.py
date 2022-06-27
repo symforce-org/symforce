@@ -16,8 +16,6 @@ from pathlib import Path
 import unittest
 
 import symforce
-from symforce import cam
-from symforce import geo
 from symforce import logger
 from symforce import ops
 from symforce import python_util
@@ -37,25 +35,25 @@ TEST_DATA_DIR = (
 
 # Test function
 def az_el_from_point(
-    nav_T_cam: geo.Pose3, nav_t_point: geo.Vector3, epsilon: T.Scalar = 0
-) -> geo.Matrix:
+    nav_T_cam: sf.Pose3, nav_t_point: sf.Vector3, epsilon: T.Scalar = 0
+) -> sf.Matrix:
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.
 
     Args:
-        nav_T_cam (geo.Pose3): camera pose in the world
-        nav_t_point (geo.Matrix): nav point
+        nav_T_cam (sf.Pose3): camera pose in the world
+        nav_t_point (sf.Matrix): nav point
         epsilon (Scalar): small number to avoid singularities
 
     Returns:
-        geo.Matrix: (azimuth, elevation)
+        sf.Matrix: (azimuth, elevation)
     """
     cam_t_point = nav_T_cam.inverse() * nav_t_point
     x, y, z = cam_t_point.to_flat_list()
     theta = sf.atan2(y, x, epsilon=epsilon)
     phi = sf.pi / 2 - sf.acos(z / (cam_t_point.norm() + epsilon))
-    return geo.V2(theta, phi)
+    return sf.V2(theta, phi)
 
 
 class SymforceCodegenTest(TestCase):
@@ -73,13 +71,13 @@ class SymforceCodegenTest(TestCase):
         inputs.add(x)
         inputs.add(y)
 
-        inputs["rot"] = geo.Rot3().symbolic("rot")
+        inputs["rot"] = sf.Rot3().symbolic("rot")
 
         # Test lists of objects, scalars, and Values
         inputs["rot_vec"] = [
-            geo.Rot3().symbolic("rot1"),
-            geo.Rot3().symbolic("rot2"),
-            geo.Rot3().symbolic("rot3"),
+            sf.Rot3().symbolic("rot1"),
+            sf.Rot3().symbolic("rot2"),
+            sf.Rot3().symbolic("rot3"),
         ]
         inputs["scalar_vec"] = [
             sf.Symbol("scalar1"),
@@ -107,7 +105,7 @@ class SymforceCodegenTest(TestCase):
 
         with inputs.scope("states"):
             # Array element, turns into std::array
-            inputs["p"] = geo.V2.symbolic("p")
+            inputs["p"] = sf.V2.symbolic("p")
 
             # Vector element, turns into Eigen::Vector
             # inputs.add(sf.Symbol('q(0)'))
@@ -215,14 +213,14 @@ class SymforceCodegenTest(TestCase):
         Meant to catch particular matrix storage order related bugs.
         """
 
-        m23 = geo.M23(
+        m23 = sf.M23(
             [
                 [1, 2, 3],
                 [4, 5, 6],
             ]
         )
 
-        def matrix_order() -> geo.M23:
+        def matrix_order() -> sf.M23:
             return m23
 
         output_dir = self.make_output_dir("sf_test_matrix_order_python")
@@ -251,7 +249,7 @@ class SymforceCodegenTest(TestCase):
 
         codegen_data = codegen.Codegen(
             inputs=Values(x=x, y=y, z=z),
-            outputs=Values(out=geo.Matrix(matrix_output(x, y, z))),
+            outputs=Values(out=sf.Matrix(matrix_output(x, y, z))),
             name="sparse_output_func",
             config=codegen.PythonConfig(),
             sparse_matrices=["out"],
@@ -285,8 +283,8 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_numba_")
 
         # Create the specification
-        def numba_test_func(x: geo.V3) -> geo.V2:
-            return geo.V2(x[0, 0], x[1, 0])
+        def numba_test_func(x: sf.V3) -> sf.V2:
+            return sf.V2(x[0, 0], x[1, 0])
 
         numba_test_func_codegen = codegen.Codegen.function(
             func=numba_test_func, config=codegen.PythonConfig(use_numba=True)
@@ -350,10 +348,10 @@ class SymforceCodegenTest(TestCase):
 
     def test_cpp_nan(self) -> None:
         inputs = Values()
-        inputs["R1"] = geo.Rot3.symbolic("R1")
+        inputs["R1"] = sf.Rot3.symbolic("R1")
         inputs["e"] = sf.Symbol("e")
-        dist_to_identity = geo.M(
-            inputs["R1"].local_coordinates(geo.Rot3.identity(), epsilon=inputs["e"])
+        dist_to_identity = sf.M(
+            inputs["R1"].local_coordinates(sf.Rot3.identity(), epsilon=inputs["e"])
         ).squared_norm()
         dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
 
@@ -424,11 +422,11 @@ class SymforceCodegenTest(TestCase):
         # Start with a dense matrix
         dim = 100
         inputs = Values()
-        inputs["matrix_in"] = geo.Matrix(dim, dim).symbolic("mat")
+        inputs["matrix_in"] = sf.Matrix(dim, dim).symbolic("mat")
 
         # Output a sparse matrix
         outputs = Values()
-        outputs["matrix_out"] = geo.Matrix(dim, dim).zero()
+        outputs["matrix_out"] = sf.Matrix(dim, dim).zero()
         for i in range(dim):
             outputs["matrix_out"][i, i] = inputs["matrix_in"][i, i]
 
@@ -451,9 +449,9 @@ class SymforceCodegenTest(TestCase):
         # Function that generates both dense and sparse outputs
         multiple_outputs = Values()
         multiple_outputs["sparse_first"] = 2 * outputs["matrix_out"]
-        multiple_outputs["dense"] = 3 * geo.Matrix44.eye()
+        multiple_outputs["dense"] = 3 * sf.Matrix44.eye()
         multiple_outputs["sparse_second"] = 4 * outputs["matrix_out"]
-        multiple_outputs["result"] = geo.Matrix33().zero()
+        multiple_outputs["result"] = sf.Matrix33().zero()
 
         get_dense_and_sparse_func = codegen.Codegen(
             name="get_multiple_dense_and_sparse",
@@ -561,7 +559,7 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_")
 
         # Let's pick Pose3 compose
-        cls = geo.Pose3
+        cls = sf.Pose3
         codegen_function = codegen.Codegen.function(
             name="compose_" + cls.__name__.lower(),
             func=ops.GroupOps.compose,
@@ -610,16 +608,16 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_values_")
 
         inputs = Values(
-            a=geo.Rot3.symbolic("a"),
+            a=sf.Rot3.symbolic("a"),
             b=sf.Symbol("b"),
-            c=geo.V5.symbolic("c"),
-            d=Values(x=sf.Symbol("d0"), y=geo.V2.symbolic("d1")),
+            c=sf.V5.symbolic("c"),
+            d=Values(x=sf.Symbol("d0"), y=sf.V2.symbolic("d1")),
         )
 
         outputs = Values(
-            a_out=inputs.attr.a * geo.V3(0, 0, inputs.attr.b),
+            a_out=inputs.attr.a * sf.V3(0, 0, inputs.attr.b),
             b_out=inputs.attr.c.norm() + inputs.attr.b ** 2,
-            c_out=(inputs.attr.d.x * geo.V2(1, 1) + inputs.attr.d.y).T * geo.M22(((1, 2), (3, 4))),
+            c_out=(inputs.attr.d.x * sf.V2(1, 1) + inputs.attr.d.y).T * sf.M22(((1, 2), (3, 4))),
             d_out=Values(x=3, y=inputs.attr.a.q.w + inputs.attr.b),
         )
 
@@ -646,9 +644,7 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_multiple_outputs_")
 
         # Let's make a simple function with two outputs
-        def cross_and_distance(
-            a: geo.V3, b: geo.V3, epsilon: T.Scalar
-        ) -> T.Tuple[geo.V3, T.Scalar]:
+        def cross_and_distance(a: sf.V3, b: sf.V3, epsilon: T.Scalar) -> T.Tuple[sf.V3, T.Scalar]:
             return a.cross(b), (a - b).norm(epsilon=epsilon)
 
         codegen_function = codegen.Codegen.function(
@@ -776,8 +772,8 @@ class SymforceCodegenTest(TestCase):
             Returns the path to a temporary file containing this function.
             """
 
-            def matrix_order() -> geo.M23:
-                return geo.M23(
+            def matrix_order() -> sf.M23:
+                return sf.M23(
                     [
                         [1, 2, 3],
                         [4, 5, 6],
@@ -807,10 +803,10 @@ class SymforceCodegenTest(TestCase):
 
         @dataclass
         class TestDataclass1:
-            v1: geo.V3
+            v1: sf.V3
             v2: TestDataclass0
 
-        def test_function_dataclass(dataclass: TestDataclass1, x: T.Scalar) -> geo.V3:
+        def test_function_dataclass(dataclass: TestDataclass1, x: T.Scalar) -> sf.V3:
             return x * dataclass.v2.v0 * dataclass.v1
 
         dataclass_codegen = codegen.Codegen.function(
@@ -864,9 +860,9 @@ class SymforceCodegenTest(TestCase):
 
         @dataclass
         class MyDataclass:
-            rot: geo.Rot3
+            rot: sf.Rot3
 
-        sym_rot = geo.Rot3.symbolic("rot")
+        sym_rot = sf.Rot3.symbolic("rot")
         inputs = Values(my_dataclass=MyDataclass(rot=sym_rot))
         outputs = Values(rot=sym_rot)
 

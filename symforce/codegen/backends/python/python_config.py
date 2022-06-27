@@ -29,7 +29,7 @@ class PythonConfig(CodegenConfig):
                    on the first call and some overhead on subsequent calls, so it should not be
                    used for small functions or functions that are only called a handfull of
                    times.
-        matrix_is_1D: geo.Matrix symbols get formatted as a 1D array
+        matrix_is_1D: sf.Matrix symbols get formatted as a 1D array
     """
 
     doc_comment_line_prefix: str = ""

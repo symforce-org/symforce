@@ -16,7 +16,6 @@ to estimate the trajectory of the robot given known landmarks and noisy measurem
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce
-from symforce import geo
 from symforce import logger
 import symforce.symbolic as sf
 from symforce import typing as T
@@ -29,8 +28,8 @@ NUM_LANDMARKS = 20
 
 
 def matching_residual(
-    world_T_body: geo.Pose3, world_t_landmark: geo.V3, body_t_landmark: geo.V3, sigma: T.Scalar
-) -> geo.V3:
+    world_T_body: sf.Pose3, world_t_landmark: sf.V3, body_t_landmark: sf.V3, sigma: T.Scalar
+) -> sf.V3:
     """
     Residual from a relative translation mesurement of a 3D pose to a landmark.
 
@@ -45,12 +44,12 @@ def matching_residual(
 
 
 def odometry_residual(
-    world_T_a: geo.Pose3,
-    world_T_b: geo.Pose3,
-    a_T_b: geo.Pose3,
-    diagonal_sigmas: geo.V6,
+    world_T_a: sf.Pose3,
+    world_T_b: sf.Pose3,
+    a_T_b: sf.Pose3,
+    diagonal_sigmas: sf.V6,
     epsilon: T.Scalar,
-) -> geo.V6:
+) -> sf.V6:
     """
     Residual on the relative pose between two timesteps of the robot.
 
@@ -63,7 +62,7 @@ def odometry_residual(
     """
     a_T_b_predicted = world_T_a.inverse() * world_T_b
     tangent_error = a_T_b_predicted.local_coordinates(a_T_b, epsilon=epsilon)
-    return T.cast(geo.V6, geo.M.diag(diagonal_sigmas.to_flat_list()).inv() * geo.V6(tangent_error))
+    return T.cast(sf.V6, sf.M.diag(diagonal_sigmas.to_flat_list()).inv() * sf.V6(tangent_error))
 
 
 # -----------------------------------------------------------------------------
@@ -110,8 +109,8 @@ from symforce.values import Values
 import sym
 
 
-def build_residual(num_poses: int, num_landmarks: int, values: Values) -> geo.Matrix:
-    residuals: T.List[geo.Matrix] = []
+def build_residual(num_poses: int, num_landmarks: int, values: Values) -> sf.Matrix:
+    residuals: T.List[sf.Matrix] = []
     for i in range(num_poses):
         for j in range(num_landmarks):
             residuals.append(
@@ -134,7 +133,7 @@ def build_residual(num_poses: int, num_landmarks: int, values: Values) -> geo.Ma
             )
         )
 
-    return geo.Matrix.block_matrix([[residual] for residual in residuals])
+    return sf.Matrix.block_matrix([[residual] for residual in residuals])
 
 
 def build_values(num_poses: int) -> T.Tuple[Values, int]:
@@ -277,12 +276,12 @@ def build_codegen_object(num_poses: int, config: CodegenConfig = None) -> Codege
 
     def symbolic(k: str, v: T.Any) -> T.Any:
         if isinstance(v, sym.Pose3):
-            return geo.Pose3.symbolic(k)
+            return sf.Pose3.symbolic(k)
         elif isinstance(v, np.ndarray):
             if len(v.shape) == 1:
-                return geo.Matrix(v.shape[0], 1).symbolic(k)
+                return sf.Matrix(v.shape[0], 1).symbolic(k)
             else:
-                return geo.Matrix(*v.shape).symbolic(k)
+                return sf.Matrix(*v.shape).symbolic(k)
         elif isinstance(v, float):
             return sf.Symbol(k)
         else:

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from symforce.ops.interfaces import LieGroup
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .matrix import Matrix

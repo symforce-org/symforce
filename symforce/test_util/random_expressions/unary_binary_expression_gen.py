@@ -8,7 +8,6 @@ from __future__ import annotations
 import numpy as np
 
 from symforce import logger
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.test_util.random_expressions.op_probabilities import OpProbability
@@ -217,7 +216,7 @@ class UnaryBinaryExpressionGen:
         seq = self.build_tree_sequence(num_ops_target=num_ops_target)
         return self.seq_to_expr(seq)
 
-    def build_expr_vec(self, num_ops_target: int, num_exprs: int = None) -> geo.M:
+    def build_expr_vec(self, num_ops_target: int, num_exprs: int = None) -> sf.M:
         """
         Return a vector of expressions with the total given op target. If no num_exprs
         is provided, uses an approximate square root of the num_ops_target.
@@ -237,7 +236,7 @@ class UnaryBinaryExpressionGen:
                 print(e)
                 print("Skipping.")
 
-        return geo.M(exprs)
+        return sf.M(exprs)
 
     @classmethod
     def default(

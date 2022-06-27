@@ -71,8 +71,8 @@ pip install symforce
 
 Verify the installation in Python:
 ```python
->>> from symforce import geo
->>> geo.Rot3()
+>>> import symforce.symbolic as sf
+>>> sf.Rot3()
 ```
 
 This installs pre-compiled C++ components of SymForce on Linux and Mac using pip wheels, but does not include C++ headers. If you want to compile against C++ SymForce types (like `sym::Optimizer`), you currently need to <a href="#build-from-source">build from source</a>.
@@ -92,19 +92,18 @@ The robot's heading angle is defined counter-clockwise from the x-axis, and its 
 
 ## Explore the math
 
-Import the augmented SymPy API and geometry module:
+Import the SymForce symbolic API, which contains the augmented SymPy API, as well as geometry and camera types:
 ```python
 import symforce.symbolic as sf
-from symforce import geo
 ```
 
 Create a symbolic 2D pose and landmark location. Using symbolic variables lets us explore and build up the math in a pure form.
 ```python
-pose = geo.Pose2(
-    t=geo.V2.symbolic("t"),
-    R=geo.Rot2.symbolic("R")
+pose = sf.Pose2(
+    t=sf.V2.symbolic("t"),
+    R=sf.Rot2.symbolic("R")
 )
-landmark = geo.V2.symbolic("L")
+landmark = sf.V2.symbolic("L")
 ```
 
 Let's transform the landmark into the local frame of the robot.  We choose to represent poses as
@@ -127,7 +126,7 @@ landmark_body = pose.inverse() * landmark
 \end{bmatrix}
 $ -->
 
-You can see that `geo.Rot2` is represented internally by a complex number (𝑅𝑟𝑒, 𝑅𝑖𝑚) and we can study how it rotates the landmark 𝐿.
+You can see that `sf.Rot2` is represented internally by a complex number (𝑅𝑟𝑒, 𝑅𝑖𝑚) and we can study how it rotates the landmark 𝐿.
 
 For exploration purposes, let's take the jacobian of the body-frame landmark with respect to the tangent space of the `Pose2`, parameterized as (𝜃, 𝑥, 𝑦):
 
@@ -153,7 +152,7 @@ Note that even though the orientation is stored as a complex number, the tangent
 Now compute the relative bearing angle:
 
 ```python
-sm.atan2(landmark_body[1], landmark_body[0])
+sf.atan2(landmark_body[1], landmark_body[0])
 ```
 <img src="https://render.githubusercontent.com/render/math?math={atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-light-mode-only"
     width="500px" />
@@ -169,7 +168,7 @@ $ -->
 One important note is that `atan2` is singular at (0, 0). In SymForce we handle this by placing a symbol ϵ (epsilon) that preserves the value of an expression in the limit of ϵ → 0, but allows evaluating at runtime with a very small nonzero value. Functions with singularities accept an `epsilon` argument:
 
 ```python
-geo.V3.symbolic("x").norm(epsilon=sm.epsilon)
+sf.V3.symbolic("x").norm(epsilon=sf.epsilon())
 ```
 <img src="https://render.githubusercontent.com/render/math?math={\sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-light-mode-only"
     width="135px" />
@@ -192,22 +191,22 @@ The residual function comprises of two terms - one for the bearing measurements 
 from symforce import typing as T
 
 def bearing_residual(
-    pose: geo.Pose2, landmark: geo.V2, angle: T.Scalar, epsilon: T.Scalar
-) -> geo.V1:
+    pose: sf.Pose2, landmark: sf.V2, angle: T.Scalar, epsilon: T.Scalar
+) -> sf.V1:
     t_body = pose.inverse() * landmark
-    predicted_angle = sm.atan2(t_body[1], t_body[0], epsilon=epsilon)
-    return geo.V1(sm.wrap_angle(predicted_angle - angle))
+    predicted_angle = sf.atan2(t_body[1], t_body[0], epsilon=epsilon)
+    return sf.V1(sf.wrap_angle(predicted_angle - angle))
 ```
 
-This function takes in a pose and landmark variable and returns the error between the predicted bearing angle and a measured value. Note that we call `sm.wrap_angle` on the angle difference to prevent wraparound effects.
+This function takes in a pose and landmark variable and returns the error between the predicted bearing angle and a measured value. Note that we call `sf.wrap_angle` on the angle difference to prevent wraparound effects.
 
 The residual for distance traveled is even simpler:
 
 ```python
 def odometry_residual(
-    pose_a: geo.Pose2, pose_b: geo.Pose2, dist: T.Scalar, epsilon: T.Scalar
-) -> geo.V1:
-    return geo.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
+    pose_a: sf.Pose2, pose_b: sf.Pose2, dist: T.Scalar, epsilon: T.Scalar
+) -> sf.V1:
+    return sf.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
 ```
 
 Now we can create [`Factor`](https://symforce.org/api/symforce.opt.factor.html?highlight=factor#module-symforce.opt.factor) objects from the residual functions and a set of keys. The keys are named strings for the function arguments, which will be accessed by name from a [`Values`](https://symforce.org/api/symforce.values.values.html) class we later instantiate with numerical quantities.
@@ -264,11 +263,11 @@ import numpy as np
 from symforce.values import Values
 
 initial_values = Values(
-    poses=[geo.Pose2.identity()] * num_poses,
-    landmarks=[geo.V2(-2, 2), geo.V2(1, -3), geo.V2(5, 2)],
+    poses=[sf.Pose2.identity()] * num_poses,
+    landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
     distances=[1.7, 1.4],
     angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
-    epsilon=sm.numeric_epsilon,
+    epsilon=sf.numeric_epsilon,
 )
 ```
 
@@ -292,10 +291,9 @@ All of the code for this example can also be found in `symforce/examples/robot_2
 
 SymForce provides `sym` packages with runtime code for geometry and camera types that are generated from its symbolic `geo` and `cam` packages. As such, there are multiple versions of a class like `Pose3` and it can be a common source of confusion.
 
-The canonical symbolic class [`geo.Pose3`](https://symforce.org/api/symforce.geo.pose3.html) lives in the `symforce` package:
+The canonical symbolic class [`sf.Pose3`](https://symforce.org/api/symforce.sf.pose3.html) lives in the `symforce` package:
 ```python
-from symforce import geo
-geo.Pose3.identity()
+sf.Pose3.identity()
 ```
 
 The autogenerated Python runtime class [`sym.Pose3`](https://symforce.org/api-gen-py/sym.pose3.html?highlight=pose3#module-sym.pose3) lives in the `sym` package:
@@ -309,7 +307,7 @@ The autogenerated C++ runtime class [`sym::Pose3`](https://symforce.org/api-gen-
 sym::Pose3<double>::Identity()
 ```
 
-The matrix type for symbolic code is [`geo.Matrix`](https://symforce.org/api/symforce.geo.matrix.html?highlight=matrix#module-symforce.geo.matrix), for generated Python is [`numpy.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html), and for C++ is [`Eigen::Matrix`](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html).
+The matrix type for symbolic code is [`sf.Matrix`](https://symforce.org/api/symforce.sf.matrix.html?highlight=matrix#module-symforce.sf.matrix), for generated Python is [`numpy.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html), and for C++ is [`Eigen::Matrix`](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html).
 
 The symbolic classes can also handle numerical values, but will be dramatically slower than the generated classes. The symbolic classes must be used when defining functions for codegen and optimization. Generated functions always accept the runtime types.
 
@@ -524,7 +522,7 @@ However, each piece may also be used independently. The optimization machinery c
 
 
 <!-- $
-<span style="color:blue">TODO: I wanted to show `geo.V1(sm.atan2(landmark_body[1], landmark_body[0])).jacobian(pose.R)`, but you have to call `sm.simplify` to get the expression to -1, otherwise it's more complicated. All this is also showing up extraneously in the generated code. Discuss what to show.</span>
+<span style="color:blue">TODO: I wanted to show `sf.V1(sm.atan2(landmark_body[1], landmark_body[0])).jacobian(pose.R)`, but you have to call `sm.simplify` to get the expression to -1, otherwise it's more complicated. All this is also showing up extraneously in the generated code. Discuss what to show.</span>
 
 \frac{
     (-\frac{

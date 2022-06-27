@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 
@@ -18,20 +17,20 @@ class NoiseModel:
     """
 
     @abstractmethod
-    def whiten(self, unwhitened_residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
+    def whiten(self, unwhitened_residual: sf.Matrix.MatrixT) -> sf.Matrix.MatrixT:
         """
         Whiten the residual vector.
         """
         pass
 
     @staticmethod
-    def reduce(whitened_residual: geo.Matrix.MatrixT) -> T.Scalar:
+    def reduce(whitened_residual: sf.Matrix.MatrixT) -> T.Scalar:
         """
         Take the sum of squares of the residual.
         """
         return whitened_residual.squared_norm() / 2
 
-    def error(self, unwhitened_residual: geo.Matrix.MatrixT) -> T.Scalar:
+    def error(self, unwhitened_residual: sf.Matrix.MatrixT) -> T.Scalar:
         """
         Return a scalar error.
         """
@@ -57,15 +56,15 @@ class ScalarNoiseModel(NoiseModel):
         """
         pass
 
-    def whiten(self, unwhitened_residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
+    def whiten(self, unwhitened_residual: sf.Matrix.MatrixT) -> sf.Matrix.MatrixT:
         """
         Whiten the unwhitened residual vector by applying `whiten_scalar` to each element.
         """
         return unwhitened_residual.applyfunc(self.whiten_scalar)
 
     def whiten_norm(
-        self, residual: geo.Matrix.MatrixT, epsilon: T.Scalar = sf.epsilon()
-    ) -> geo.Matrix.MatrixT:
+        self, residual: sf.Matrix.MatrixT, epsilon: T.Scalar = sf.epsilon()
+    ) -> sf.Matrix.MatrixT:
         """
         Whiten the norm of the residual vector.
 
@@ -197,12 +196,12 @@ class DiagonalNoiseModel(NoiseModel):
     ) -> None:
         if sqrt_information_diag is not None:
             # User has given the square root information, so we can avoid taking the square root
-            self.sqrt_information_matrix = geo.Matrix.diag(sqrt_information_diag)
+            self.sqrt_information_matrix = sf.Matrix.diag(sqrt_information_diag)
         else:
             assert (
                 information_diag is not None
             ), 'Either "information_diag" or "sqrt_information_diag" must be provided.'
-            self.sqrt_information_matrix = geo.Matrix.diag(information_diag).applyfunc(sf.sqrt)
+            self.sqrt_information_matrix = sf.Matrix.diag(information_diag).applyfunc(sf.sqrt)
 
     @classmethod
     def from_variances(cls, variances: T.Sequence[T.Scalar]) -> DiagonalNoiseModel:
@@ -229,8 +228,8 @@ class DiagonalNoiseModel(NoiseModel):
         """
         return cls(sqrt_information_diag=[1 / s for s in standard_deviations])
 
-    def whiten(self, unwhitened_residual: geo.Matrix.MatrixT) -> geo.Matrix.MatrixT:
-        return T.cast(geo.Matrix.MatrixT, self.sqrt_information_matrix * unwhitened_residual)
+    def whiten(self, unwhitened_residual: sf.Matrix.MatrixT) -> sf.Matrix.MatrixT:
+        return T.cast(sf.Matrix.MatrixT, self.sqrt_information_matrix * unwhitened_residual)
 
 
 class PseudoHuberNoiseModel(ScalarNoiseModel):

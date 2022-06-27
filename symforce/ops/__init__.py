@@ -18,7 +18,7 @@ from .lie_group_ops import LieGroupOps
 # Register ops for scalars and sequences
 import abc
 import numpy as np
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 from symforce import python_util
 

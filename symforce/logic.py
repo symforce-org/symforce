@@ -8,7 +8,7 @@ Functions for dealing with logical operations represented by scalars
 """
 
 from symforce import typing as T
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 
 
 def is_positive(x: T.Scalar) -> T.Scalar:

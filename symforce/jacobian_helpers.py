@@ -3,18 +3,18 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import geo
 from symforce import typing as T
+import symforce.symbolic as sf
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
 
 
-def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[geo.Matrix]:
+def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[sf.Matrix]:
     """
     Compute jacobians of expr, a Lie Group element which is a function of the Lie Group elements in
     args.  Jacobians are derivatives in the tangent space of expr with respect to changes in the
     tangent space of the arg, as opposed to jacobians of the storage of either which could be
-    trivially computed with geo.Matrix.jacobian or sf.Expr.diff
+    trivially computed with sf.Matrix.jacobian or sf.Expr.diff
 
     Args:
         expr: The final expression that should be differentiated
@@ -29,7 +29,7 @@ def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[ge
 
 def tangent_jacobians_first_order(
     expr: T.Element, args: T.Sequence[T.Element]
-) -> T.List[geo.Matrix]:
+) -> T.List[sf.Matrix]:
     """
     An implementation of tangent_jacobians (so imagine tangent_jacobian's doc-string is cut and
     pasted here).
@@ -49,21 +49,21 @@ def tangent_jacobians_first_order(
     # returns expressions which require fewer ops after cse.
     jacobians = []
 
-    def infinitesimal_retract(a: T.Element, v: geo.Matrix) -> T.Element:
+    def infinitesimal_retract(a: T.Element, v: sf.Matrix) -> T.Element:
         """
         Returns a first order approximation to LieGroupOps.retract(v)
         """
         return StorageOps.from_storage(
             a,
-            (geo.M(StorageOps.to_storage(a)) + LieGroupOps.storage_D_tangent(a) * v).to_storage(),
+            (sf.M(StorageOps.to_storage(a)) + LieGroupOps.storage_D_tangent(a) * v).to_storage(),
         )
 
-    def infinitesimal_local_coordinates(a: T.Element, b: T.Element) -> geo.Matrix:
+    def infinitesimal_local_coordinates(a: T.Element, b: T.Element) -> sf.Matrix:
         """
         Returns a first order (in b - a) approximation to LieGroupOps.local_coordinates(a, b)
         """
         return LieGroupOps.tangent_D_storage(a) * (
-            geo.M(StorageOps.to_storage(b)) - geo.M(StorageOps.to_storage(a))
+            sf.M(StorageOps.to_storage(b)) - sf.M(StorageOps.to_storage(a))
         )
 
     def safe_subs(expr: T.Element, old: T.Element, new: T.Element) -> T.Element:
@@ -72,12 +72,12 @@ def tangent_jacobians_first_order(
         components of new contain symbols in old that we are replacing.
         """
         intermediate = StorageOps.from_storage(
-            old, geo.M(StorageOps.storage_dim(old), 1).symbolic("intermediate").to_flat_list()
+            old, sf.M(StorageOps.storage_dim(old), 1).symbolic("intermediate").to_flat_list()
         )
         return expr.subs(old, intermediate).subs(intermediate, new)
 
     for arg in args:
-        xi = geo.M(LieGroupOps.tangent_dim(arg), 1).symbolic("xi")
+        xi = sf.M(LieGroupOps.tangent_dim(arg), 1).symbolic("xi")
         arg_perturbed = infinitesimal_retract(arg, xi)
 
         expr_perturbed = safe_subs(expr, arg, arg_perturbed)
@@ -90,9 +90,7 @@ def tangent_jacobians_first_order(
     return jacobians
 
 
-def tangent_jacobians_chain_rule(
-    expr: T.Element, args: T.Sequence[T.Element]
-) -> T.List[geo.Matrix]:
+def tangent_jacobians_chain_rule(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[sf.Matrix]:
     """
     An implementation of tangent_jacobians (so imagine tangent_jacobian's doc-string is cut and
     pasted here).
@@ -111,7 +109,7 @@ def tangent_jacobians_chain_rule(
 
     # Compute jacobians in the space of the storage, then chain rule on the left and right sides
     # to get jacobian wrt the tangent space of both the arg and the result
-    expr_storage = geo.M(StorageOps.to_storage(expr))
+    expr_storage = sf.M(StorageOps.to_storage(expr))
     expr_tangent_D_storage = LieGroupOps.tangent_D_storage(expr)
 
     for arg in args:

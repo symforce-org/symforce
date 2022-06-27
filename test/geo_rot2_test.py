@@ -6,7 +6,6 @@
 import numpy as np
 import logging
 
-from symforce import geo
 from symforce import logger
 import symforce.symbolic as sf
 from symforce.ops import LieGroupOps
@@ -21,32 +20,32 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> geo.Rot2:
-        return geo.Rot2.from_tangent([1.3])
+    def element(cls) -> sf.Rot2:
+        return sf.Rot2.from_tangent([1.3])
 
     def test_default_construct(self) -> None:
         """
         Tests:
             Rot2.__init__
         """
-        self.assertEqual(geo.Rot2(), geo.Rot2.identity())
+        self.assertEqual(sf.Rot2(), sf.Rot2.identity())
 
     def test_symbolic_constructor(self) -> None:
         """
         Tests:
             Rot2.symbolic
         """
-        rot = geo.Rot2.symbolic("rot")
-        comp = geo.Complex.symbolic("rot")
-        self.assertEqual(rot, geo.Rot2(comp))
+        rot = sf.Rot2.symbolic("rot")
+        comp = sf.Complex.symbolic("rot")
+        self.assertEqual(rot, sf.Rot2(comp))
 
     def test_angle_constructor(self) -> None:
         """
         Tests:
             Rot2.from_angle
         """
-        rot1 = geo.Rot2.from_angle(1.5)
-        rot2 = geo.Rot2.from_tangent([1.5])
+        rot1 = sf.Rot2.from_angle(1.5)
+        rot2 = sf.Rot2.from_tangent([1.5])
         self.assertEqual(rot1, rot2)
 
     def test_lie_exponential(self) -> None:
@@ -66,10 +65,10 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         # Take the matrix exponential (only supported with sympy)
         import sympy
 
-        hat_exp = geo.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
+        hat_exp = sf.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = geo.Rot2.from_tangent(pertubation, epsilon=self.EPSILON)
+        expmap = sf.Rot2.from_tangent(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_rotation_matrix()
 
         # They should match!
@@ -84,11 +83,11 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         random_elements = []
         random_from_uniform_sample_elements = []
         for _ in range(200):
-            random_element = geo.Rot2.random()
+            random_element = sf.Rot2.random()
             random_elements.append(random_element)
 
             u1 = np.random.uniform(low=0.0, high=1.0)
-            rand_uniform_sample_element = geo.Rot2.random_from_uniform_sample(u1)
+            rand_uniform_sample_element = sf.Rot2.random_from_uniform_sample(u1)
             random_from_uniform_sample_elements.append(rand_uniform_sample_element)
 
             # Check unit norm
@@ -97,7 +96,7 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
 
         for elements in [random_elements, random_from_uniform_sample_elements]:
             # Rotate a point through
-            P = geo.V2(0, 1)
+            P = sf.V2(0, 1)
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats

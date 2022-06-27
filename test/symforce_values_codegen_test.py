@@ -7,7 +7,6 @@ import os
 import string
 
 import symforce
-from symforce import geo
 import symforce.symbolic as sf
 from symforce.codegen import values_codegen
 from symforce.test_util import TestCase
@@ -28,11 +27,11 @@ class SymforceValuesCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_values_codegen_test")
 
         values = Values()
-        values["foo"] = geo.V3()
+        values["foo"] = sf.V3()
         values["foo2"] = 1.0
-        values["foo_bar"] = geo.Rot3()
-        values["foo_bar2"] = geo.Rot2()
-        values["foo_baz"] = geo.M22()
+        values["foo_bar"] = sf.Rot3()
+        values["foo_bar2"] = sf.Rot2()
+        values["foo_baz"] = sf.M22()
 
         # Add a bunch of symbols with similar names to stress test
         for i in range(1, 5):

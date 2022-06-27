@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 from symforce import ops
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import Codegen
@@ -50,7 +49,7 @@ def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codeg
     """
     Create func spec arguments for lie group ops on the given class.
     """
-    tangent_vec = geo.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
+    tangent_vec = sf.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
     return [
         Codegen.function(
             name="from_tangent",

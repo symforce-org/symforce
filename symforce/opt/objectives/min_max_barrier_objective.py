@@ -6,10 +6,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from symforce import geo
 from symforce.opt import objective, noise_models, barrier_functions
 from symforce.opt.residual_block import ResidualBlock
 from symforce import typing as T
+import symforce.symbolic as sf
 
 
 class MinMaxBarrierObjective(objective.TimestepObjective):
@@ -40,11 +40,11 @@ class MinMaxBarrierObjective(objective.TimestepObjective):
                 function but before applying the cost scaling.
         """
 
-        unwhitened_residual: geo.Matrix
+        unwhitened_residual: sf.Matrix
 
     @staticmethod
     def residual_at_timestep(
-        vector: geo.Matrix,
+        vector: sf.Matrix,
         params: MinMaxBarrierObjective.Params,
         power: T.Scalar = 1,
         cost_scaling: T.Scalar = 1,

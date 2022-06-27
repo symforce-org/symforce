@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import geo
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.test_util import TestCase
 from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
@@ -16,10 +16,10 @@ class GeoSequenceTest(StorageOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> T.List[geo.Rot3]:
+    def element(cls) -> T.List[sf.Rot3]:
         element = []
-        element.append(geo.Rot3())
-        element.append(geo.Rot3.from_yaw_pitch_roll(1.0, 0, 0))
+        element.append(sf.Rot3())
+        element.append(sf.Rot3.from_yaw_pitch_roll(1.0, 0, 0))
         return element
 
 

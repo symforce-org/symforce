@@ -5,7 +5,6 @@
 
 import numpy as np
 
-from symforce import geo
 import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
@@ -18,8 +17,8 @@ class GeoComplexTest(GroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> geo.Complex:
-        return geo.Complex(-3.2, 2.8)
+    def element(cls) -> sf.Complex:
+        return sf.Complex(-3.2, 2.8)
 
     def test_complex_constructors(self) -> None:
         """
@@ -27,25 +26,25 @@ class GeoComplexTest(GroupOpsTestMixin, TestCase):
             Complex.zero
             Complex.symbolic
         """
-        zero = geo.Complex.zero()
-        self.assertEqual(zero, geo.Complex(0, 0))
+        zero = sf.Complex.zero()
+        self.assertEqual(zero, sf.Complex(0, 0))
 
-        a = geo.Complex.symbolic("a")
-        b = geo.Complex.symbolic("b")
-        self.assertEqual(a * b, geo.Complex.compose(a, b))
+        a = sf.Complex.symbolic("a")
+        b = sf.Complex.symbolic("b")
+        self.assertEqual(a * b, sf.Complex.compose(a, b))
 
-    def complex_operations(self, a: geo.Complex, b: geo.Complex) -> None:
+    def complex_operations(self, a: sf.Complex, b: sf.Complex) -> None:
         """
         Runs tests on complex operations
         """
-        self.assertEqual(a + b, geo.Complex(a.real + b.real, a.imag + b.imag))
+        self.assertEqual(a + b, sf.Complex(a.real + b.real, a.imag + b.imag))
         self.assertEqual(
-            a * b, geo.Complex(a.real * b.real - a.imag * b.imag, a.real * b.imag + a.imag * b.real)
+            a * b, sf.Complex(a.real * b.real - a.imag * b.imag, a.real * b.imag + a.imag * b.real)
         )
-        self.assertEqual(-a, geo.Complex(-a.real, -a.imag))
-        self.assertEqual(a / 5.0, geo.Complex(a.real / 5.0, a.imag / 5.0))
+        self.assertEqual(-a, sf.Complex(-a.real, -a.imag))
+        self.assertEqual(a / 5.0, sf.Complex(a.real / 5.0, a.imag / 5.0))
         d = sf.Symbol("denom")
-        self.assertEqual(a / d, geo.Complex(a.real / d, a.imag / d))
+        self.assertEqual(a / d, sf.Complex(a.real / d, a.imag / d))
 
     def test_complex_operations_numeric(self) -> None:
         """
@@ -55,8 +54,8 @@ class GeoComplexTest(GroupOpsTestMixin, TestCase):
             Complex.__neg__
             Complex.__truediv__ or Complex.__div__
         """
-        a = geo.Complex.random_uniform(-1, 1)
-        b = geo.Complex.random_uniform(-1, 1)
+        a = sf.Complex.random_uniform(-1, 1)
+        b = sf.Complex.random_uniform(-1, 1)
         self.complex_operations(a, b)
 
     def test_complex_operations_symbolic(self) -> None:
@@ -67,8 +66,8 @@ class GeoComplexTest(GroupOpsTestMixin, TestCase):
             Complex.__neg__
             Complex.__truediv__ or Complex.__div__
         """
-        a = geo.Complex.symbolic("a")
-        b = geo.Complex.symbolic("b")
+        a = sf.Complex.symbolic("a")
+        b = sf.Complex.symbolic("b")
         self.complex_operations(a, b)
 
 

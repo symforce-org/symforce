@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce.python_util import get_type, scalar_like
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .ops import Ops

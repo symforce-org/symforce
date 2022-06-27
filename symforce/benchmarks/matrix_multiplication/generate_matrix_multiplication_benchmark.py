@@ -10,7 +10,6 @@ from pathlib import Path
 import scipy.io
 
 from symforce import codegen
-from symforce import geo
 from symforce import python_util
 import symforce.symbolic as sf
 from symforce import typing as T
@@ -97,9 +96,9 @@ def generate_matrix(
         leaves=[-2, -1, 1, 2] + list(symbols),
     )
 
-    def compute_A(*symbols: T.List[sf.Symbol]) -> geo.Matrix:
+    def compute_A(*symbols: T.List[sf.Symbol]) -> sf.Matrix:
         exprs = gen.build_expr_vec(OPS_PER_ENTRY * matrix.nnz, matrix.nnz).to_flat_list()
-        result = geo.Matrix(*matrix.shape)
+        result = sf.Matrix(*matrix.shape)
 
         for i in range(matrix.shape[0]):
             for j in range(matrix.shape[1]):

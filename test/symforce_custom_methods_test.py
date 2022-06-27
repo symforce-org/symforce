@@ -6,7 +6,6 @@
 import unittest
 import numpy as np
 
-from symforce import geo
 from symforce import typing as T
 import symforce.symbolic as sf
 from symforce.test_util import TestCase
@@ -52,7 +51,7 @@ class SymforceCustomMethodsTest(TestCase):
         self.assertEqual([0, 0, 0, 0, 1], sf.argmax_onehot(vals_range))
         self.assertEqual(4, sf.argmax(vals_range))
 
-        vals_v3 = geo.V3(3.3, 3.31, -3.31)
+        vals_v3 = sf.V3(3.3, 3.31, -3.31)
         self.assertEqual([0, 1, 0], sf.argmax_onehot(vals_v3))
         self.assertEqual(1, sf.argmax(vals_v3))
 

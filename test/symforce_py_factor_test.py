@@ -7,7 +7,6 @@ import functools
 from pathlib import Path
 import numpy as np
 
-from symforce import geo
 from symforce import ops
 import symforce.symbolic as sf
 from symforce import typing as T
@@ -53,7 +52,7 @@ class SymforcePyFactorTest(TestCase):
         num_samples = 5
         xs = [f"x{i}" for i in range(num_samples)]
 
-        factors = list(self.create_chain(keys=xs, value_type=geo.Rot3))
+        factors = list(self.create_chain(keys=xs, value_type=sf.Rot3))
 
         self.assertEqual(len(factors), 2 * num_samples - 1)
 
@@ -61,17 +60,17 @@ class SymforcePyFactorTest(TestCase):
         self.assertEqual(set(first_between.keys), {"x0", "x1"})
         self.assertEqual(first_between.name, "between")
         self.assertEqual(
-            first_between.codegen.inputs, Values(x=geo.Rot3.symbolic("x"), y=geo.Rot3.symbolic("y"))
+            first_between.codegen.inputs, Values(x=sf.Rot3.symbolic("x"), y=sf.Rot3.symbolic("y"))
         )
 
     def test_generate_and_read(self) -> None:
         """
         Tests factor code generation and loading of previously generated factors
         """
-        inputs = Values(a=geo.V3.zero(), b=geo.V3.zero())
+        inputs = Values(a=sf.V3.zero(), b=sf.V3.zero())
         optimized_keys = ["a"]
 
-        def between(a: geo.V3, b: geo.V3) -> geo.V3:
+        def between(a: sf.V3, b: sf.V3) -> sf.V3:
             return a - b
 
         # Generate a new factor
@@ -106,7 +105,7 @@ class SymforcePyFactorTest(TestCase):
         num_samples = 3
         xs = [f"x{i}" for i in range(num_samples)]
 
-        factors = list(self.create_chain(keys=xs, value_type=geo.Rot3))
+        factors = list(self.create_chain(keys=xs, value_type=sf.Rot3))
 
         dot_graph = visualize_factors(factors)
 

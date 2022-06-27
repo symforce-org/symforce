@@ -11,19 +11,18 @@ from pathlib import Path
 
 from symforce import codegen
 from symforce.codegen import values_codegen
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.values import Values
 
 
 def snavely_reprojection_residual(
-    cam_T_world: geo.Pose3,
-    intrinsics: geo.V3,
-    point: geo.V3,
-    pixel: geo.V2,
+    cam_T_world: sf.Pose3,
+    intrinsics: sf.V3,
+    point: sf.V3,
+    pixel: sf.V2,
     epsilon: T.Scalar,
-) -> geo.V2:
+) -> sf.V2:
     """
     Reprojection residual for the camera model used in the Bundle-Adjustment-in-the-Large dataset, a
     polynomial camera with two distortion coefficients, cx == cy == 0, and fx == fy
@@ -42,12 +41,12 @@ def snavely_reprojection_residual(
     focal_length, k1, k2 = intrinsics
 
     # Here we're writing the projection ourselves because this isn't a camera model provided by
-    # SymForce.  For cameras in `symforce.cam` we could just create a `cam.PosedCamera` and call
-    # `camera.pixel_from_global_point` instead, or we could create a subclass of `cam.CameraCal` and
+    # SymForce.  For cameras in `symforce.cam` we could just create a `sf.PosedCamera` and call
+    # `camera.pixel_from_global_point` instead, or we could create a subclass of `sf.CameraCal` and
     # do that.
     point_cam = cam_T_world * point
 
-    p = geo.V2(point_cam[:2]) / sf.Max(-point_cam[2], epsilon)
+    p = sf.V2(point_cam[:2]) / sf.Max(-point_cam[2], epsilon)
 
     r = 1 + k1 * p.squared_norm() + k2 * p.squared_norm() ** 2
 
@@ -72,10 +71,10 @@ def generate(output_dir: Path) -> None:
     # Make a `Values` with variables used in the C++ problem, and generate C++ Keys for them (see
     # `gen/keys.h`)
     values = Values(
-        cam_T_world=geo.Pose3(),
-        intrinsics=geo.V3(),
-        point=geo.V3(),
-        pixel=geo.V2(),
+        cam_T_world=sf.Pose3(),
+        intrinsics=sf.V3(),
+        point=sf.V3(),
+        pixel=sf.V2(),
         epsilon=T.Scalar(),
     )
 

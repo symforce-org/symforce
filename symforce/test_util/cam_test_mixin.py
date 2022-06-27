@@ -5,10 +5,10 @@
 
 import numpy as np
 
-from symforce import geo
 from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
+import symforce.symbolic as sf
 
 if T.TYPE_CHECKING:
     _Base = TestCase
@@ -44,14 +44,14 @@ class CamTestMixin(_Base):
         # Check that we can project a point in 3D into the image and back
         for _ in range(10):
             cam_cal = self.element()
-            point = geo.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
+            point = sf.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
 
             pixel, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
 
             camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
             if abs(StorageOps.evalf(is_valid_forward_proj) - 1) < self.EPSILON:
-                self.assertTrue(geo.Matrix.are_parallel(point, camera_ray, epsilon=self.EPSILON))
+                self.assertTrue(sf.Matrix.are_parallel(point, camera_ray, epsilon=self.EPSILON))
                 self.assertStorageNear(is_valid_back_proj, 1)
             else:
                 self.assertStorageNear(is_valid_forward_proj, 0)
@@ -72,7 +72,7 @@ class CamTestMixin(_Base):
 
             # Try to generate pixels over a range that includes both valid and invalid pixel coordinates
             cx, cy = cam_cal.principal_point
-            pixel = geo.V2(
+            pixel = sf.V2(
                 np.random.uniform(low=-0.5 * cx, high=2.5 * cx),
                 np.random.uniform(low=-0.5 * cy, high=2.5 * cy),
             )

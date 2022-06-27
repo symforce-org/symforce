@@ -12,10 +12,9 @@ import pickle
 from pathlib import Path
 
 from symforce import logger
-from symforce import geo
-from symforce import cam
 from symforce import ops
 import symforce.symbolic as sf
+import symforce.internal.symbolic as sf_internal
 from symforce import typing as T
 from symforce.python_util import InvalidKeyError
 from symforce.test_util import TestCase, slow_on_sympy
@@ -35,8 +34,8 @@ class MySubDataclass:
 @dataclass
 class MyDataclass:
     x: T.Scalar
-    v: geo.V3
-    r: geo.Rot3
+    v: sf.V3
+    r: sf.Rot3
     sub: T.Sequence[MySubDataclass]
 
 
@@ -52,14 +51,14 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     def element(cls) -> Values:
         v = Values()
         v["float"] = 3.0
-        v["rot3"] = geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist())
-        v["pose3"] = geo.Pose3.from_tangent(np.random.normal(size=(6,)).tolist())
+        v["rot3"] = sf.Rot3.from_tangent(np.random.normal(size=(3,)).tolist())
+        v["pose3"] = sf.Pose3.from_tangent(np.random.normal(size=(6,)).tolist())
         other_values = copy.deepcopy(v)
         v["values"] = other_values
         v["vec_values"] = [other_values, other_values]
         v["vec_rot3"] = [
-            geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist()),
-            geo.Rot3.from_tangent(np.random.normal(size=(3,)).tolist()),
+            sf.Rot3.from_tangent(np.random.normal(size=(3,)).tolist()),
+            sf.Rot3.from_tangent(np.random.normal(size=(3,)).tolist()),
         ]
         return v
 
@@ -125,7 +124,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 pass
             x = sf.Symbol("who")
             self.assertEqual("who", x.name)
-        sf.__scopes__ = []
+        sf_internal.__scopes__ = []
 
     def test_values(self) -> None:
         v = Values()
@@ -144,13 +143,13 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         # Add only works with strings and symbols
         self.assertRaises(NameError, lambda: v.add(3))  # type: ignore[arg-type]
 
-        v["complex"] = geo.Complex.identity()
+        v["complex"] = sf.Complex.identity()
 
         v["other"] = Values(blah=3)
-        v["rot"] = geo.Rot2.identity()
-        self.assertEqual(geo.Rot2(), v["rot"])
+        v["rot"] = sf.Rot2.identity()
+        self.assertEqual(sf.Rot2(), v["rot"])
 
-        v["mat"] = geo.Matrix([[1, 2], [3, 4]])
+        v["mat"] = sf.Matrix([[1, 2], [3, 4]])
 
         # Test adding with scope
         with v.scope("states"):
@@ -207,7 +206,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
     def test_evalf(self) -> None:
         v = Values()
         v["a"] = sf.S.One / 3
-        v["b"] = geo.Rot3.from_angle_axis(angle=sf.pi / 2, axis=geo.V3(1, 0, 0))
+        v["b"] = sf.Rot3.from_angle_axis(angle=sf.pi / 2, axis=sf.V3(1, 0, 0))
 
         v_evalf = v.evalf()
 
@@ -467,7 +466,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(["base1.base2.val"], v.scalar_keys_recursive())
 
         with self.subTest(msg="Gets keys for scalar components of non-scalar types"):
-            keys = Values(rot=geo.Rot3.identity()).scalar_keys_recursive()
+            keys = Values(rot=sf.Rot3.identity()).scalar_keys_recursive()
             self.assertEqual(["rot[0]", "rot[1]", "rot[2]", "rot[3]"], keys)
 
         with self.subTest(msg="Gets keys for scalar components of an ndarray"):
@@ -479,9 +478,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(["array[0]"], keys)
 
         with self.subTest(msg="Gets keys for scalar components of non-scalar types in lists"):
-            keys = Values(
-                rot_list=[geo.Rot3.identity(), geo.Rot3.identity()]
-            ).scalar_keys_recursive()
+            keys = Values(rot_list=[sf.Rot3.identity(), sf.Rot3.identity()]).scalar_keys_recursive()
             self.assertEqual(
                 [f"rot_list[{i}][{j}]" for i, j in itertools.product(range(2), range(4))], keys
             )
@@ -526,7 +523,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         # something their constructors will be happy with
         with v_cam.scope("CameraCals"):
             [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
-            for c in cam.CameraCal.__subclasses__():
+            for c in sf.CameraCal.__subclasses__():
                 v_cam[c.__name__] = c.from_distortion_coeffs(
                     focal_length=(f_x, f_y),
                     principal_point=(c_x, c_y),
@@ -541,20 +538,20 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v_geo = Values()
         with v_geo.scope("geo_types"):
             for geo_type in [
-                geo.Rot2,
-                geo.Rot3,
-                geo.Pose2,
-                geo.Pose3,
-                geo.Complex,
-                geo.Quaternion,
-                geo.DualQuaternion,
+                sf.Rot2,
+                sf.Rot3,
+                sf.Pose2,
+                sf.Pose3,
+                sf.Complex,
+                sf.Quaternion,
+                sf.DualQuaternion,
             ]:
                 v_geo[geo_type.__name__] = ops.GroupOps.identity(geo_type)
 
         self.assertEqual(v_geo, Values.from_storage_index(v_geo.to_storage(), v_geo.index()))
 
         with self.subTest(msg="Values can handle dynamic matrix types"):
-            v = Values(dynamic_mat=geo.Matrix.ones(14, 14))
+            v = Values(dynamic_mat=sf.Matrix.ones(14, 14))
             self.assertEqual(v, Values.from_storage_index(v.to_storage(), v.index()))
 
     @slow_on_sympy
@@ -567,7 +564,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             Values.__eq__
         """
         values45 = Values(i=4, j=5)
-        vector45 = geo.V2(4, 5)
+        vector45 = sf.V2(4, 5)
         with self.subTest(msg="Should not equal when different type despite same storage"):
             self.assertNotEqual(values45, vector45)
 
@@ -604,8 +601,8 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             y=sf.S(5.4),
             z=sf.S.One,
             foo=sf.sqrt(5),
-            R=geo.Rot3.from_yaw_pitch_roll(yaw=0.1, pitch=sf.S(3), roll=0),
-            sub_values=Values(hey=geo.Pose3.identity(), other=[sf.S(5.4), sf.sqrt(10)]),
+            R=sf.Rot3.from_yaw_pitch_roll(yaw=0.1, pitch=sf.S(3), roll=0),
+            sub_values=Values(hey=sf.Pose3.identity(), other=[sf.S(5.4), sf.sqrt(10)]),
         )
 
         expected_numerical_values = Values(
@@ -621,7 +618,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         diff = values.to_numerical().local_coordinates(
             expected_numerical_values, epsilon=sf.numeric_epsilon
         )
-        self.assertLess(geo.M(diff).norm(), 1e-10)
+        self.assertLess(sf.M(diff).norm(), 1e-10)
 
 
 class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
@@ -634,8 +631,8 @@ class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
         v = SymforceValuesTest.element()
         v["data"] = MyDataclass(
             x=0,
-            v=geo.V3(np.random.normal(size=(3,))),
-            r=geo.Rot3.random(),
+            v=sf.V3(np.random.normal(size=(3,))),
+            r=sf.Rot3.random(),
             sub=[
                 MySubDataclass(a=1, b=[[i * j for i in range(3)] for j in range(2)])
                 for _ in range(5)

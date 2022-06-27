@@ -6,11 +6,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from symforce import geo
 from symforce.ops import LieGroupOps
 from symforce.opt import objective
 from symforce.opt.residual_block import ResidualBlock
 from symforce import typing as T
+import symforce.symbolic as sf
 from symforce.opt import noise_models
 
 
@@ -22,7 +22,7 @@ class PriorValueObjective(objective.TimestepObjective):
             unwhitened_residual: The tangent-space error between `actual` and `desired`.
         """
 
-        unwhitened_residual: geo.Matrix
+        unwhitened_residual: sf.Matrix
 
     @staticmethod
     def residual_at_timestep(
@@ -42,14 +42,14 @@ class PriorValueObjective(objective.TimestepObjective):
                 have on `actual`.
             information_diag: List of scalars defining how each element of the tangent-space vector
                 representing the transform between `actual` and `desired` is weighted. For example,
-                if `actual` and `desired` are 3D positions represented by geo.V3 objects,
+                if `actual` and `desired` are 3D positions represented by sf.V3 objects,
                 the first, second, and third elements of `information_diag` represent how the x, y,
                 and z errors are weighted.
             epsilon: A small number used to avoid singularities.
             cost_scaling: Optional scaling parameter. Corresponds to multiplying the cost in the
                 overall optimization problem by a constant.
         """
-        unwhitened_residual = geo.Matrix(LieGroupOps.local_coordinates(desired, actual, epsilon))
+        unwhitened_residual = sf.Matrix(LieGroupOps.local_coordinates(desired, actual, epsilon))
         noise_model = noise_models.DiagonalNoiseModel(
             information_diag=[cost_scaling * c for c in information_diag]
         )

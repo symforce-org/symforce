@@ -10,8 +10,6 @@ import textwrap
 import collections
 
 from symforce import logger
-from symforce import geo
-from symforce import cam
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import python_util
@@ -24,21 +22,21 @@ from symforce.codegen.ops_codegen_util import make_group_ops_funcs
 from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
 # Default cam types to generate
-DEFAULT_CAM_TYPES = cam.CameraCal.__subclasses__()
+DEFAULT_CAM_TYPES = sf.CameraCal.__subclasses__()
 
 
 def camera_cal_class_names() -> T.List[str]:
     """
     Returns a sorted list of the CameraCal subclass names.
     """
-    class_names = [cam_cal_cls.__name__ for cam_cal_cls in cam.CameraCal.__subclasses__()]
+    class_names = [cam_cal_cls.__name__ for cam_cal_cls in sf.CameraCal.__subclasses__()]
     class_names.sort()
     return class_names
 
 
 def pixel_from_camera_point_with_jacobians(
-    self: cam.CameraCal, point: geo.V3, epsilon: T.Scalar
-) -> T.Tuple[geo.V2, T.Scalar, geo.M, geo.M]:
+    self: sf.CameraCal, point: sf.V3, epsilon: T.Scalar
+) -> T.Tuple[sf.V2, T.Scalar, sf.M, sf.M]:
     """
     Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -56,8 +54,8 @@ def pixel_from_camera_point_with_jacobians(
 
 
 def camera_ray_from_pixel_with_jacobians(
-    self: cam.CameraCal, pixel: geo.V2, epsilon: T.Scalar
-) -> T.Tuple[geo.V3, T.Scalar, geo.M, geo.M]:
+    self: sf.CameraCal, pixel: sf.V2, epsilon: T.Scalar
+) -> T.Tuple[sf.V3, T.Scalar, sf.M, sf.M]:
     """
     Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -82,16 +80,16 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     try:
         camera_ray_from_pixel = Codegen.function(
             func=cls.camera_ray_from_pixel,
-            input_types=[cls, geo.V2, sf.Symbol],
+            input_types=[cls, sf.V2, sf.Symbol],
             config=config,
             output_names=["camera_ray", "is_valid"],
             return_key="camera_ray",
-            docstring=cam.CameraCal.camera_ray_from_pixel.__doc__,
+            docstring=sf.CameraCal.camera_ray_from_pixel.__doc__,
         )
 
         camera_ray_from_pixel_with_jacobians_codegen_func = Codegen.function(
             func=camera_ray_from_pixel_with_jacobians,
-            input_types=[cls, geo.V2, sf.Symbol],
+            input_types=[cls, sf.V2, sf.Symbol],
             config=config,
             output_names=["camera_ray", "is_valid", "point_D_cal", "point_D_pixel"],
             return_key="camera_ray",
@@ -105,16 +103,16 @@ def make_camera_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     pixel_from_camera_point = Codegen.function(
         func=cls.pixel_from_camera_point,
         config=config,
-        input_types=[cls, geo.V3, sf.Symbol],
+        input_types=[cls, sf.V3, sf.Symbol],
         output_names=["pixel", "is_valid"],
         return_key="pixel",
-        docstring=cam.CameraCal.pixel_from_camera_point.__doc__,
+        docstring=sf.CameraCal.pixel_from_camera_point.__doc__,
     )
 
     pixel_from_camera_point_with_jacobians_codegen_func = Codegen.function(
         func=pixel_from_camera_point_with_jacobians,
         config=config,
-        input_types=[cls, geo.V3, sf.Symbol],
+        input_types=[cls, sf.V3, sf.Symbol],
         output_names=["pixel", "is_valid", "pixel_D_cal", "pixel_D_point"],
         return_key="pixel",
         docstring=pixel_from_camera_point_with_jacobians.__doc__,
@@ -190,37 +188,37 @@ def class_template_data(
 
 def camera_data() -> T.Dict[str, T.Any]:
     functions_to_doc = [
-        cam.Camera.pixel_from_camera_point,
-        cam.Camera.camera_ray_from_pixel,
-        cam.Camera.maybe_check_in_view,
-        cam.Camera.in_view,
+        sf.Camera.pixel_from_camera_point,
+        sf.Camera.camera_ray_from_pixel,
+        sf.Camera.maybe_check_in_view,
+        sf.Camera.in_view,
     ]
-    return class_template_data(cam.Camera, functions_to_doc)
+    return class_template_data(sf.Camera, functions_to_doc)
 
 
 def posed_camera_data() -> T.Dict[str, T.Any]:
     functions_to_doc = [
-        cam.PosedCamera.pixel_from_global_point,
-        cam.PosedCamera.global_point_from_pixel,
-        cam.PosedCamera.warp_pixel,
+        sf.PosedCamera.pixel_from_global_point,
+        sf.PosedCamera.global_point_from_pixel,
+        sf.PosedCamera.warp_pixel,
     ]
-    return class_template_data(cam.PosedCamera, functions_to_doc)
+    return class_template_data(sf.PosedCamera, functions_to_doc)
 
 
 _DISTORTION_COEFF_VALS: T.Dict[str, T.Dict[str, T.Any]] = {
-    cam.ATANCameraCal.__name__: {"omega": 0.5},
-    cam.DoubleSphereCameraCal.__name__: {"xi": 5.1, "alpha": -6.2},
-    cam.PolynomialCameraCal.__name__: {
+    sf.ATANCameraCal.__name__: {"omega": 0.5},
+    sf.DoubleSphereCameraCal.__name__: {"xi": 5.1, "alpha": -6.2},
+    sf.PolynomialCameraCal.__name__: {
         "critical_undistorted_radius": np.pi / 3,
         "distortion_coeffs": [0.035, -0.025, 0.0070],
     },
-    cam.SphericalCameraCal.__name__: {
+    sf.SphericalCameraCal.__name__: {
         "critical_theta": np.pi,
         "distortion_coeffs": [0.035, -0.025, 0.0070, -0.0015],
     },
 }
 
-CamCls = T.TypeVar("CamCls", bound=cam.CameraCal)
+CamCls = T.TypeVar("CamCls", bound=sf.CameraCal)
 
 
 def cam_cal_from_points(
@@ -354,7 +352,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
             def supports_camera_ray_from_pixel(cls: T.Type) -> bool:
                 try:
-                    cls.symbolic("C").camera_ray_from_pixel(geo.V2())
+                    cls.symbolic("C").camera_ray_from_pixel(sf.V2())
                 except NotImplementedError:
                     return False
                 else:

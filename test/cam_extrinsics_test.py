@@ -5,8 +5,6 @@
 
 import numpy as np
 
-from symforce import geo
-from symforce import cam
 import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.cam_test_mixin import CamTestMixin
@@ -18,9 +16,9 @@ class CameraTest(CamTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> cam.Camera:
-        return cam.Camera(
-            calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
+    def element(cls) -> sf.Camera:
+        return sf.Camera(
+            calibration=sf.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
             image_size=(640, 480),
         )
 
@@ -35,12 +33,12 @@ class CameraTest(CamTestMixin, TestCase):
         assert camera.image_size is not None
 
         # Check that is_valid is set to 0 when point is outside FOV
-        point_in_FOV = geo.V3(0, 0, 1)
+        point_in_FOV = sf.V3(0, 0, 1)
         pixel_in_FOV, point_in_FOV_valid = camera.pixel_from_camera_point(point_in_FOV)
         self.assertTrue(point_in_FOV_valid == 1)
         self.assertTrue(camera.in_view(pixel_in_FOV, camera.image_size) == 1)
 
-        point_outside_FOV = geo.V3(100, 0, 1)
+        point_outside_FOV = sf.V3(100, 0, 1)
         pixel_outside_FOV, point_outside_FOV_valid = camera.pixel_from_camera_point(
             point_outside_FOV
         )
@@ -54,12 +52,10 @@ class PosedCameraTest(CamTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> cam.PosedCamera:
-        return cam.PosedCamera(
-            pose=geo.Pose3(
-                R=geo.Rot3.from_yaw_pitch_roll(0.0, np.pi / 2.0, 0.0), t=geo.V3(0, 0, 100)
-            ),
-            calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
+    def element(cls) -> sf.PosedCamera:
+        return sf.PosedCamera(
+            pose=sf.Pose3(R=sf.Rot3.from_yaw_pitch_roll(0.0, np.pi / 2.0, 0.0), t=sf.V3(0, 0, 100)),
+            calibration=sf.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
             image_size=(640, 480),
         )
 
@@ -74,7 +70,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
         # Transform some points to pixel coordinates and back
         for _ in range(100):
             global_point = (
-                geo.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,))) + posed_cam.pose.t
+                sf.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,))) + posed_cam.pose.t
             )
             range_to_point = (global_point - posed_cam.pose.t).norm(epsilon=1e-9)
             pixel, is_valid = posed_cam.pixel_from_global_point(global_point)
@@ -86,7 +82,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
                 self.assertStorageNear(global_point, global_point_reprojected)
 
             # Transform pixel to global coordinates and back
-            pixel = geo.V2(np.random.uniform(low=0, high=1000, size=(2,)))
+            pixel = sf.V2(np.random.uniform(low=0, high=1000, size=(2,)))
             global_point, _ = posed_cam.global_point_from_pixel(pixel, range_to_point=1)
             pixel_reprojected, _ = posed_cam.pixel_from_global_point(global_point)
             self.assertStorageNear(pixel, pixel_reprojected)
@@ -97,19 +93,19 @@ class PosedCameraTest(CamTestMixin, TestCase):
             PosedCamera.warp_pixel
         """
         # Create two cameras whose optical axes intersect
-        posed_cam_1 = cam.PosedCamera(
-            pose=geo.Pose3(
-                R=geo.Rot3.from_yaw_pitch_roll(0.0, np.pi / 2.0, 0.0), t=geo.V3(0.0, 2.0, 0.0)
+        posed_cam_1 = sf.PosedCamera(
+            pose=sf.Pose3(
+                R=sf.Rot3.from_yaw_pitch_roll(0.0, np.pi / 2.0, 0.0), t=sf.V3(0.0, 2.0, 0.0)
             ),
-            calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
+            calibration=sf.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
         )
-        posed_cam_2 = cam.PosedCamera(
-            pose=geo.Pose3(
-                R=geo.Rot3.from_yaw_pitch_roll(0.0, 0.0, -np.pi / 2.0), t=geo.V3(2.0, 0.0, 0.0)
+        posed_cam_2 = sf.PosedCamera(
+            pose=sf.Pose3(
+                R=sf.Rot3.from_yaw_pitch_roll(0.0, 0.0, -np.pi / 2.0), t=sf.V3(2.0, 0.0, 0.0)
             ),
-            calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
+            calibration=sf.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
         )
-        point_on_optical_axes = geo.V3(2.0, 2.0, 0.0)
+        point_on_optical_axes = sf.V3(2.0, 2.0, 0.0)
         inverse_range = 0.5
         pixel_1, _ = posed_cam_1.pixel_from_global_point(point_on_optical_axes)
         pixel_2, is_valid_warp_into_2 = posed_cam_1.warp_pixel(
@@ -119,9 +115,9 @@ class PosedCameraTest(CamTestMixin, TestCase):
         self.assertStorageNear(pixel_1, pixel_2)
 
         # Try with a camera posed such that the point is invalid
-        posed_cam_3 = cam.PosedCamera(
-            pose=geo.Pose3(R=geo.Rot3(), t=geo.V3(0.0, 0.0, 1.0)),
-            calibration=cam.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
+        posed_cam_3 = sf.PosedCamera(
+            pose=sf.Pose3(R=sf.Rot3(), t=sf.V3(0.0, 0.0, 1.0)),
+            calibration=sf.LinearCameraCal(focal_length=(440, 400), principal_point=(320, 240)),
         )
         _, is_valid_warp_into_3 = posed_cam_1.warp_pixel(
             pixel=pixel_1, inverse_range=inverse_range, target_cam=posed_cam_3
@@ -130,7 +126,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
 
         # Check that we don't get NaNs when using symbolic inverse_range and nonzero epsilon
         symbolic_inverse_range = sf.Symbol("inv_range")
-        cam_1_ray = geo.V3(0.5, 1, 1)
+        cam_1_ray = sf.V3(0.5, 1, 1)
         pixel_inf_1, _ = posed_cam_1.pixel_from_camera_point(cam_1_ray)
         pixel_inf_2, is_valid_inf = posed_cam_1.warp_pixel(
             pixel=pixel_inf_1,

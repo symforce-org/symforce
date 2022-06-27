@@ -6,7 +6,7 @@
 from .camera_cal import CameraCal
 
 from symforce import geo
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 

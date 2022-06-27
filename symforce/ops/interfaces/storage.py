@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import ops
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -103,7 +103,7 @@ class Storage:
         Hash this object in immutable form, by combining all their scalar hashes.
 
         NOTE(hayk, nathan): This is somewhat dangerous because we don't always guarantee
-        that Storage objects are immutable (e.g. geo.Matrix). If you add this object as
+        that Storage objects are immutable (e.g. sf.Matrix). If you add this object as
         a key to a dict, modify it, and access the dict, it will show up as another key
         because it breaks the abstraction that an object will maintain the same hash over
         its lifetime.

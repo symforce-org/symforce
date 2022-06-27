@@ -18,7 +18,7 @@ import subprocess
 import dataclasses
 
 from symforce import logger
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 

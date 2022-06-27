@@ -11,9 +11,9 @@ import copy
 import dataclasses
 import numpy as np
 
-import symforce.symbolic as sf
-from symforce import typing as T
 from symforce import geo
+import symforce.internal.symbolic as sf
+from symforce import typing as T
 from symforce import ops
 from symforce import python_util
 

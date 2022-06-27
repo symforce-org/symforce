@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import typing as T
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 
 from .abstract_vector_lie_group_ops import AbstractVectorLieGroupOps
 

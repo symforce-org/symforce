@@ -7,8 +7,8 @@ import unittest
 import numpy as np
 
 from symforce import typing as T
-from symforce import geo
 from symforce import ops
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
@@ -25,9 +25,9 @@ class LieGroupNdarrayTest(LieGroupOpsTestMixin, TestCase):
 
     def test_storage_order_matches_geo_matrix(self) -> None:
         """
-        Test that the storage order of ndarrays matches that of geo.Matrix
+        Test that the storage order of ndarrays matches that of sf.Matrix
         """
-        m = geo.M33()
+        m = sf.M33()
         a = np.zeros((3, 3))
 
         i = 0.0

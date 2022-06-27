@@ -6,7 +6,7 @@
 from symforce import geo
 from symforce import ops
 from symforce.ops.interfaces import Storage
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import type_helpers
 from symforce import typing as T
 

@@ -5,7 +5,6 @@
 
 import numpy as np
 
-from symforce import geo
 import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.test_util.group_ops_test_mixin import GroupOpsTestMixin
@@ -18,22 +17,22 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> geo.DualQuaternion:
-        return geo.DualQuaternion(
-            real_q=geo.Quaternion(xyz=geo.V3(0.1, -0.3, 1.3), w=3.2),
-            inf_q=geo.Quaternion(xyz=geo.V3(1.2, 0.3, 0.7), w=0.1),
+    def element(cls) -> sf.DualQuaternion:
+        return sf.DualQuaternion(
+            real_q=sf.Quaternion(xyz=sf.V3(0.1, -0.3, 1.3), w=3.2),
+            inf_q=sf.Quaternion(xyz=sf.V3(1.2, 0.3, 0.7), w=0.1),
         )
 
-    def dual_quaternion_operations(self, a: geo.DualQuaternion, b: geo.DualQuaternion) -> None:
+    def dual_quaternion_operations(self, a: sf.DualQuaternion, b: sf.DualQuaternion) -> None:
         """
         Tests dual quaternion operations
         """
-        self.assertEqual(a * b, geo.DualQuaternion.compose(a, b))
-        self.assertEqual(a / 5.0, geo.DualQuaternion(a.real_q / 5.0, a.inf_q / 5.0))
+        self.assertEqual(a * b, sf.DualQuaternion.compose(a, b))
+        self.assertEqual(a / 5.0, sf.DualQuaternion(a.real_q / 5.0, a.inf_q / 5.0))
         d = sf.Symbol("denom")
-        self.assertEqual(a / d, geo.DualQuaternion(a.real_q / d, a.inf_q / d))
+        self.assertEqual(a / d, sf.DualQuaternion(a.real_q / d, a.inf_q / d))
         self.assertEqual(a.squared_norm(), a.real_q.squared_norm() + a.inf_q.squared_norm())
-        self.assertEqual(a.conj(), geo.DualQuaternion(a.real_q.conj(), a.inf_q.conj()))
+        self.assertEqual(a.conj(), sf.DualQuaternion(a.real_q.conj(), a.inf_q.conj()))
 
     def test_dual_quaternion_operations_numeric(self) -> None:
         """
@@ -43,12 +42,12 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
             DualQuaternion.squared_norm
             DualQuaternion.conj
         """
-        a_real = geo.Quaternion.unit_random()
-        a_inf = geo.Quaternion.unit_random()
-        b_real = geo.Quaternion.unit_random()
-        b_inf = geo.Quaternion.unit_random()
-        a = geo.DualQuaternion(a_real, a_inf)
-        b = geo.DualQuaternion(b_real, b_inf)
+        a_real = sf.Quaternion.unit_random()
+        a_inf = sf.Quaternion.unit_random()
+        b_real = sf.Quaternion.unit_random()
+        b_inf = sf.Quaternion.unit_random()
+        a = sf.DualQuaternion(a_real, a_inf)
+        b = sf.DualQuaternion(b_real, b_inf)
         self.dual_quaternion_operations(a, b)
 
     def test_dual_quaternion_operations_symbolic(self) -> None:
@@ -59,8 +58,8 @@ class GeoDualQuaternionTest(GroupOpsTestMixin, TestCase):
             DualQuaternion.squared_norm
             DualQuaternion.conj
         """
-        a = geo.DualQuaternion.symbolic("a")
-        b = geo.DualQuaternion.symbolic("b")
+        a = sf.DualQuaternion.symbolic("a")
+        b = sf.DualQuaternion.symbolic("b")
         self.dual_quaternion_operations(a, b)
 
 

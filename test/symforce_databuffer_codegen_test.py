@@ -10,7 +10,6 @@ from symforce import codegen
 import symforce.symbolic as sf
 from symforce.codegen import codegen_util
 from symforce.values import Values
-from symforce import geo
 from symforce.test_util import TestCase
 from symforce import typing as T
 from symforce.opt.factor import Factor
@@ -97,14 +96,14 @@ class SymforceDataBufferCodegenTest(TestCase):
 
         # sample residual function that's a simple linear interpolation of the databuffer
         # assume that the scale = 1 for convenience
-        def buffer_residual(x: T.Scalar, left_bound: T.Scalar, buffer: sf.DataBuffer) -> geo.V1:
+        def buffer_residual(x: T.Scalar, left_bound: T.Scalar, buffer: sf.DataBuffer) -> sf.V1:
             shifted_x = x - left_bound
             lower_idx = sf.floor(shifted_x)
             upper_idx = lower_idx + 1
 
             a1 = shifted_x - sf.floor(shifted_x)
             a0 = 1 - a1
-            return geo.V1(a0 * buffer[lower_idx] + a1 * buffer[upper_idx])
+            return sf.V1(a0 * buffer[lower_idx] + a1 * buffer[upper_idx])
 
         factors = [Factor(keys=["x", "left_bound", "buffer"], residual=buffer_residual)]
         optimizer = Optimizer(factors=factors, optimized_keys=["x"])

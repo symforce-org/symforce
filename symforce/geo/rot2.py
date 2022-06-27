@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from symforce.ops.interfaces.lie_group import LieGroup
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .complex import Complex

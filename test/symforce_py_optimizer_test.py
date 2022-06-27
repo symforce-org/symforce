@@ -7,7 +7,6 @@ import functools
 import numpy as np
 
 from symforce import cc_sym
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.opt.factor import Factor
@@ -37,16 +36,16 @@ class SymforcePyOptimizerTest(TestCase):
 
         ### Between factors
 
-        def between(x: geo.Rot3, y: geo.Rot3, epsilon: T.Scalar) -> geo.V3:
-            return geo.V3(x.local_coordinates(y, epsilon=epsilon))
+        def between(x: sf.Rot3, y: sf.Rot3, epsilon: T.Scalar) -> sf.V3:
+            return sf.V3(x.local_coordinates(y, epsilon=epsilon))
 
         for i in range(num_samples - 1):
             factors.append(Factor(keys=[xs[i], xs[i + 1], "epsilon"], residual=between))
 
         ### Prior factors
 
-        def prior_residual(x: geo.Rot3, epsilon: T.Scalar, x_prior: geo.Rot3) -> geo.V3:
-            return geo.V3(x.local_coordinates(x_prior, epsilon=epsilon))
+        def prior_residual(x: sf.Rot3, epsilon: T.Scalar, x_prior: sf.Rot3) -> sf.V3:
+            return sf.V3(x.local_coordinates(x_prior, epsilon=epsilon))
 
         for i in range(num_samples):
             factors.append(
@@ -59,9 +58,9 @@ class SymforcePyOptimizerTest(TestCase):
         # Create initial values
         initial_values = Values(epsilon=sf.numeric_epsilon)
         for i in range(num_samples):
-            initial_values[xs[i]] = geo.Rot3.from_yaw_pitch_roll(yaw=0.0, pitch=0.1 * i, roll=0.0)
+            initial_values[xs[i]] = sf.Rot3.from_yaw_pitch_roll(yaw=0.0, pitch=0.1 * i, roll=0.0)
         for i in range(num_samples):
-            initial_values[x_priors[i]] = geo.Rot3.from_yaw_pitch_roll(roll=0.1 * i)
+            initial_values[x_priors[i]] = sf.Rot3.from_yaw_pitch_roll(roll=0.1 * i)
 
         result = optimizer.optimize(initial_values)
 

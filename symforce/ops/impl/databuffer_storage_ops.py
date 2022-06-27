@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import symforce.symbolic as sf
+import symforce.internal.symbolic as sf
 
 from symforce import typing as T
 

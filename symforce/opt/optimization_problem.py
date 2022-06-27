@@ -6,7 +6,6 @@
 import itertools
 import re
 
-from symforce import geo
 from symforce import logger
 from symforce import ops
 from symforce import typing as T
@@ -16,6 +15,7 @@ from symforce.codegen.backends.python.python_config import PythonConfig
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.opt.sub_problem import SubProblem
+import symforce.symbolic as sf
 from symforce.values import Values
 
 
@@ -175,7 +175,7 @@ class OptimizationProblem:
                 re.sub(leading_trailing_dots_and_brackets_regex, "", s),
             )
 
-        def compute_jacobians(keys: T.Iterable[str]) -> geo.Matrix:
+        def compute_jacobians(keys: T.Iterable[str]) -> sf.Matrix:
             """
             Functor that computes the jacobians of the residual with respect to a set of keys
 
@@ -189,7 +189,7 @@ class OptimizationProblem:
                 )
                 for residual_key, residual_block in self.residual_blocks.items_recursive()
             ]
-            return geo.Matrix.block_matrix(jacobians)
+            return sf.Matrix.block_matrix(jacobians)
 
         return [
             Factor.from_inputs_and_residual(
@@ -200,7 +200,7 @@ class OptimizationProblem:
                         for key, value in inputs.items_recursive()
                     }
                 ),
-                residual=geo.M(self.residuals.to_storage()),
+                residual=sf.M(self.residuals.to_storage()),
                 config=config,
                 custom_jacobian_func=compute_jacobians,
                 name=name,

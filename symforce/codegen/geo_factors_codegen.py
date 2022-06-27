@@ -5,7 +5,6 @@
 
 import os
 
-from symforce import geo
 from symforce import ops
 from symforce import python_util
 from symforce import typing as T
@@ -13,7 +12,7 @@ import symforce.symbolic as sf
 from symforce.codegen import CppConfig
 from symforce.codegen import Codegen
 
-TYPES = (geo.Rot2, geo.Rot3, geo.V3, geo.Pose2, geo.Pose3)
+TYPES = (sf.Rot2, sf.Rot3, sf.V3, sf.Pose2, sf.Pose3)
 
 
 def get_between_factor_docstring(between_argument_name: str) -> str:
@@ -54,8 +53,8 @@ def get_prior_docstring() -> str:
 
 
 def between_factor(
-    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0
-) -> geo.Matrix:
+    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: sf.Matrix, epsilon: T.Scalar = 0
+) -> sf.Matrix:
     assert type(a) == type(b) == type(a_T_b)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
 
@@ -65,14 +64,14 @@ def between_factor(
     )
 
     # Apply noise model
-    residual = sqrt_info * geo.M(tangent_error)
+    residual = sqrt_info * sf.M(tangent_error)
 
     return residual
 
 
 def prior_factor(
-    value: T.Element, prior: T.Element, sqrt_info: geo.Matrix, epsilon: T.Scalar = 0
-) -> geo.Matrix:
+    value: T.Element, prior: T.Element, sqrt_info: sf.Matrix, epsilon: T.Scalar = 0
+) -> sf.Matrix:
     assert type(value) == type(prior)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
 
@@ -80,7 +79,7 @@ def prior_factor(
     tangent_error = ops.LieGroupOps.local_coordinates(prior, value, epsilon=epsilon)
 
     # Apply noise model
-    residual = sqrt_info * geo.M(tangent_error)
+    residual = sqrt_info * sf.M(tangent_error)
 
     return residual
 
@@ -122,7 +121,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
         tangent_dim = ops.LieGroupOps.tangent_dim(cls)
         between_codegen = Codegen.function(
             func=between_factor,
-            input_types=[cls, cls, cls, geo.M(tangent_dim, tangent_dim), sf.Symbol],
+            input_types=[cls, cls, cls, sf.M(tangent_dim, tangent_dim), sf.Symbol],
             output_names=["res"],
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
@@ -131,7 +130,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
 
         prior_codegen = Codegen.function(
             func=prior_factor,
-            input_types=[cls, cls, geo.M(tangent_dim, tangent_dim), sf.Symbol],
+            input_types=[cls, cls, sf.M(tangent_dim, tangent_dim), sf.Symbol],
             output_names=["res"],
             config=CppConfig(),
             docstring=get_prior_docstring(),
@@ -151,8 +150,8 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     """
 
     def between_factor_pose3_rotation(
-        a: geo.Pose3, b: geo.Pose3, a_R_b: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0
-    ) -> geo.Matrix:
+        a: sf.Pose3, b: sf.Pose3, a_R_b: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: T.Scalar = 0
+    ) -> sf.Matrix:
         # NOTE(aaron): This should be equivalent to between_factor(a.R, b.R, a_R_b), but we write it
         # this way for explicitness and symmetry with between_factor_pose3_position, where the two
         # are not equivalent
@@ -160,15 +159,15 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
             a_R_b, ops.LieGroupOps.between(a, b).R, epsilon=epsilon
         )
 
-        return sqrt_info * geo.M(tangent_error)
+        return sqrt_info * sf.M(tangent_error)
 
     def between_factor_pose3_position(
-        a: geo.Pose3,
-        b: geo.Pose3,
-        a_t_b: geo.Vector3,
-        sqrt_info: geo.Matrix33,
+        a: sf.Pose3,
+        b: sf.Pose3,
+        a_t_b: sf.Vector3,
+        sqrt_info: sf.Matrix33,
         epsilon: T.Scalar = 0,
-    ) -> geo.Matrix:
+    ) -> sf.Matrix:
         # NOTE(aaron): This is NOT the same as between_factor(a.t, b.t, a_t_b, sqrt_info, epsilon)
         # between_factor(a.t, b.t, a_t_b) would be penalizing the difference in the global frame
         # (and expecting a_t_b to be in the global frame), we want to penalize the position
@@ -177,15 +176,15 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
             a_t_b, ops.LieGroupOps.between(a, b).t, epsilon=epsilon
         )
 
-        return sqrt_info * geo.M(tangent_error)
+        return sqrt_info * sf.M(tangent_error)
 
     def between_factor_pose3_translation_norm(
-        a: geo.Pose3,
-        b: geo.Pose3,
+        a: sf.Pose3,
+        b: sf.Pose3,
         translation_norm: T.Scalar,
-        sqrt_info: geo.Matrix11,
+        sqrt_info: sf.Matrix11,
         epsilon: T.Scalar = 0,
-    ) -> geo.Matrix:
+    ) -> sf.Matrix:
         """
         Residual that penalizes the difference between translation_norm and (a.t - b.t).norm().
 
@@ -194,16 +193,16 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
                     this is just 1/sigma.
         """
         error = translation_norm - (a.t - b.t).norm(epsilon)
-        return sqrt_info * geo.M([error])
+        return sqrt_info * sf.M([error])
 
     def prior_factor_pose3_rotation(
-        value: geo.Pose3, prior: geo.Rot3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0
-    ) -> geo.Matrix:
+        value: sf.Pose3, prior: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: T.Scalar = 0
+    ) -> sf.Matrix:
         return prior_factor(value.R, prior, sqrt_info, epsilon)
 
     def prior_factor_pose3_position(
-        value: geo.Pose3, prior: geo.Vector3, sqrt_info: geo.Matrix33, epsilon: T.Scalar = 0
-    ) -> geo.Matrix:
+        value: sf.Pose3, prior: sf.Vector3, sqrt_info: sf.Matrix33, epsilon: T.Scalar = 0
+    ) -> sf.Matrix:
         return prior_factor(value.t, prior, sqrt_info, epsilon)
 
     between_rotation_codegen = Codegen.function(

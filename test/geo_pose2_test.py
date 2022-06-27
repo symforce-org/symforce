@@ -5,7 +5,6 @@
 
 import numpy as np
 
-from symforce import geo
 import symforce.symbolic as sf
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
@@ -21,10 +20,10 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
     MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS = False
 
     @classmethod
-    def element(cls) -> geo.Pose2:
-        return geo.Pose2.from_tangent([5.3, 1.2, -0.2])
+    def element(cls) -> sf.Pose2:
+        return sf.Pose2.from_tangent([5.3, 1.2, -0.2])
 
-    def pose2_operations(self, a: geo.Pose2, b: geo.Pose2) -> None:
+    def pose2_operations(self, a: sf.Pose2, b: sf.Pose2) -> None:
         """
         Tests Pose2 operations
         """
@@ -36,13 +35,13 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         Tests:
             Pose2.__mul__
         """
-        R_a = geo.Rot2.random()
-        t_a = geo.V2(np.random.rand(2))
-        a = geo.Pose2(R_a, t_a)
+        R_a = sf.Rot2.random()
+        t_a = sf.V2(np.random.rand(2))
+        a = sf.Pose2(R_a, t_a)
 
-        R_b = geo.Rot2.random()
-        t_b = geo.V2(np.random.rand(2))
-        b = geo.Pose2(R_b, t_b)
+        R_b = sf.Rot2.random()
+        t_b = sf.V2(np.random.rand(2))
+        b = sf.Pose2(R_b, t_b)
 
         self.pose2_operations(a, b)
 
@@ -51,8 +50,8 @@ class GeoPose2Test(LieGroupOpsTestMixin, TestCase):
         Tests:
             Pose2.__mul__
         """
-        a = geo.Pose2.symbolic("a")
-        b = geo.Pose2.symbolic("b")
+        a = sf.Pose2.symbolic("a")
+        b = sf.Pose2.symbolic("b")
         self.pose2_operations(a, b)
 
     def test_translation_rotation_independence(self) -> None:

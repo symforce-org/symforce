@@ -21,7 +21,6 @@ import sympy as sympy_py
 sympy_py.init_printing()
 
 import symforce
-from symforce import geo
 import symforce.symbolic as sf
 from symforce import typing as T
 
@@ -36,7 +35,7 @@ def display(*args: T.Any) -> None:
 
     converted_args = []
     for arg in args:
-        if isinstance(arg, geo.Matrix):
+        if isinstance(arg, sf.Matrix):
             converted_args.append(arg.mat)
         else:
             converted_args.append(arg)
