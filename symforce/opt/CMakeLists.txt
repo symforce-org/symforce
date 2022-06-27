@@ -35,7 +35,7 @@ endif()
 # ------------------------------------------------------------------------------
 # spdlog
 
-find_package(spdlog QUIET)
+find_package(spdlog 1.9.0 QUIET)
 if (NOT spdlog_FOUND)
   message(STATUS "spdlog not found, adding with FetchContent")
   function(add_spdlog)
@@ -45,7 +45,7 @@ if (NOT spdlog_FOUND)
     FetchContent_Declare(
       spdlog
       GIT_REPOSITORY https://github.com/gabime/spdlog
-      GIT_TAG eb3220622e73a4889eee355ffa37972b3cac3df5 # release 1.9.2
+      GIT_TAG v1.9.2
       GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(spdlog)
