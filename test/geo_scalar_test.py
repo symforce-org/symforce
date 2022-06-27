@@ -17,7 +17,7 @@ class GeoScalarTest(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> T.Scalar:
+    def element(cls) -> sf.Scalar:
         return sf.S(3.2)
 
     def test_construction_by_type(self) -> None:

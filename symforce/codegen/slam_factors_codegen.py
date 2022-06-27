@@ -23,11 +23,11 @@ from symforce.opt.noise_models import BarronNoiseModel
 
 
 def inverse_range_landmark_prior_residual(
-    landmark_inverse_range: T.Scalar,
-    inverse_range_prior: T.Scalar,
-    weight: T.Scalar,
-    sigma: T.Scalar,
-    epsilon: T.Scalar,
+    landmark_inverse_range: sf.Scalar,
+    inverse_range_prior: sf.Scalar,
+    weight: sf.Scalar,
+    sigma: sf.Scalar,
+    epsilon: sf.Scalar,
 ) -> sf.Vector1:
     """
     Factor representing a Gaussian prior on the inverse range of a landmark
@@ -52,12 +52,12 @@ def reprojection_delta(
     source_calibration_storage: sf.Matrix,
     target_pose: sf.Pose3,
     target_calibration_storage: sf.Matrix,
-    source_inverse_range: T.Scalar,
+    source_inverse_range: sf.Scalar,
     source_pixel: sf.Vector2,
     target_pixel: sf.Vector2,
-    epsilon: T.Scalar,
+    epsilon: sf.Scalar,
     camera_model_class: T.Type[sf.CameraCal],
-) -> T.Tuple[sf.Vector2, T.Scalar]:
+) -> T.Tuple[sf.Vector2, sf.Scalar]:
     """
     Reprojects the landmark into the target camera and returns the delta from the correspondence to
     the reprojection.
@@ -104,13 +104,13 @@ def inverse_range_landmark_reprojection_error_residual(
     source_calibration_storage: sf.Matrix,
     target_pose: sf.Pose3,
     target_calibration_storage: sf.Matrix,
-    source_inverse_range: T.Scalar,
+    source_inverse_range: sf.Scalar,
     source_pixel: sf.Vector2,
     target_pixel: sf.Vector2,
-    weight: T.Scalar,
-    gnc_mu: T.Scalar,
-    gnc_scale: T.Scalar,
-    epsilon: T.Scalar,
+    weight: sf.Scalar,
+    gnc_mu: sf.Scalar,
+    gnc_scale: sf.Scalar,
+    epsilon: sf.Scalar,
     camera_model_class: T.Type[sf.CameraCal],
 ) -> sf.Vector2:
     """
@@ -173,12 +173,12 @@ def ray_reprojection_delta(
     source_pose: sf.Pose3,
     target_pose: sf.Pose3,
     target_calibration_storage: sf.Matrix,
-    source_inverse_range: T.Scalar,
+    source_inverse_range: sf.Scalar,
     p_camera_source: sf.Vector3,
     target_pixel: sf.Vector2,
-    epsilon: T.Scalar,
+    epsilon: sf.Scalar,
     target_camera_model_class: T.Type[sf.CameraCal],
-) -> T.Tuple[sf.Vector2, T.Scalar]:
+) -> T.Tuple[sf.Vector2, sf.Scalar]:
     """
     Reprojects the landmark ray into the target camera and returns the delta between the
     correspondence and the reprojection.
@@ -223,13 +223,13 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     source_pose: sf.Pose3,
     target_pose: sf.Pose3,
     target_calibration_storage: sf.Matrix,
-    source_inverse_range: T.Scalar,
+    source_inverse_range: sf.Scalar,
     p_camera_source: sf.Vector3,
     target_pixel: sf.Vector2,
-    weight: T.Scalar,
-    gnc_mu: T.Scalar,
-    gnc_scale: T.Scalar,
-    epsilon: T.Scalar,
+    weight: sf.Scalar,
+    gnc_mu: sf.Scalar,
+    gnc_scale: sf.Scalar,
+    epsilon: sf.Scalar,
     target_camera_model_class: T.Type[sf.CameraCal],
 ) -> sf.Vector2:
     """
@@ -327,13 +327,13 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                     sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Pose3,
                     sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
+                    sf.Scalar,
                     sf.Vector2,
                     sf.Vector2,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
                 ],
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
@@ -350,10 +350,10 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                     sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Pose3,
                     sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
+                    sf.Scalar,
                     sf.Vector2,
                     sf.Vector2,
-                    T.Scalar,
+                    sf.Scalar,
                 ],
                 output_names=["reprojection_delta", "is_valid"],
             ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
@@ -371,13 +371,13 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                     sf.Pose3,
                     sf.Pose3,
                     sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
+                    sf.Scalar,
                     sf.Vector3,
                     sf.Vector2,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
                 ],
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
@@ -393,10 +393,10 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                     sf.Pose3,
                     sf.Pose3,
                     sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
+                    sf.Scalar,
                     sf.Vector3,
                     sf.Vector2,
-                    T.Scalar,
+                    sf.Scalar,
                 ],
                 output_names=["reprojection_delta", "is_valid"],
             ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)

@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import symforce.symbolic as sf
-from symforce import typing as T
 from symforce.codegen import geo_factors_codegen
 
 
@@ -12,9 +11,9 @@ def custom_between_factor_residual(
     nav_T_src: sf.Pose3,
     nav_T_target: sf.Pose3,
     target_T_src_prior: sf.Pose3,
-    prior_weight: T.Scalar,
+    prior_weight: sf.Scalar,
     prior_sigmas: sf.Vector6,
-    epsilon: T.Scalar,
+    epsilon: sf.Scalar,
 ) -> sf.Vector6:
     """
     Return the 6dof residual on the relative pose between the given two views. Compares

@@ -7,39 +7,38 @@
 Functions for dealing with logical operations represented by scalars
 """
 
-from symforce import typing as T
 import symforce.internal.symbolic as sf
 
 
-def is_positive(x: T.Scalar) -> T.Scalar:
+def is_positive(x: sf.Scalar) -> sf.Scalar:
     """
     Returns 1 if x is positive, 0 otherwise
     """
     return sf.Max(sf.sign(x), 0)
 
 
-def is_negative(x: T.Scalar) -> T.Scalar:
+def is_negative(x: sf.Scalar) -> sf.Scalar:
     """
     Returns 1 if x is negative, 0 otherwise
     """
     return sf.Max(sf.sign(-x), 0)
 
 
-def is_nonnegative(x: T.Scalar) -> T.Scalar:
+def is_nonnegative(x: sf.Scalar) -> sf.Scalar:
     """
     Returns 1 if x is >= 0, 0 if x is negative
     """
     return 1 - sf.Max(sf.sign(-x), 0)
 
 
-def is_nonpositive(x: T.Scalar) -> T.Scalar:
+def is_nonpositive(x: sf.Scalar) -> sf.Scalar:
     """
     Returns 1 if x is <= 0, 0 if x is positive
     """
     return 1 - sf.Max(sf.sign(x), 0)
 
 
-def logical_and(a: T.Scalar, b: T.Scalar, unsafe: bool = False) -> T.Scalar:
+def logical_and(a: sf.Scalar, b: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
     Logical and of two Scalars
 
@@ -55,7 +54,7 @@ def logical_and(a: T.Scalar, b: T.Scalar, unsafe: bool = False) -> T.Scalar:
         return sf.Max(sf.sign(a) + sf.sign(b), 1) - 1
 
 
-def logical_or(a: T.Scalar, b: T.Scalar, unsafe: bool = False) -> T.Scalar:
+def logical_or(a: sf.Scalar, b: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
     Logical or of two Scalars
 
@@ -71,7 +70,7 @@ def logical_or(a: T.Scalar, b: T.Scalar, unsafe: bool = False) -> T.Scalar:
         return sf.Max(sf.sign(a), sf.sign(b), 0)
 
 
-def logical_not(a: T.Scalar, unsafe: bool = False) -> T.Scalar:
+def logical_not(a: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
     Logical not of a Scalar
 

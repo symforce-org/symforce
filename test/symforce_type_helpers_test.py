@@ -40,7 +40,7 @@ class SymforceTypeHelpersTest(TestCase):
             c: "Pose3",
             d: "Vector3",
             e: "LinearCameraCal",
-            f: "T.Scalar",
+            f: "sf.Scalar",
             g: "sf.Pose3",
             h: "sf.Vector3",
             i: "sf.LinearCameraCal",

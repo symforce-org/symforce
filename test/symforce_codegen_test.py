@@ -35,7 +35,7 @@ TEST_DATA_DIR = (
 
 # Test function
 def az_el_from_point(
-    nav_T_cam: sf.Pose3, nav_t_point: sf.Vector3, epsilon: T.Scalar = 0
+    nav_T_cam: sf.Pose3, nav_t_point: sf.Vector3, epsilon: sf.Scalar = 0
 ) -> sf.Matrix:
     """
     Transform a nav point into azimuth / elevation angles in the
@@ -244,7 +244,7 @@ class SymforceCodegenTest(TestCase):
         namespace = "sparse_output_python"
         x, y, z = sf.symbols("x y z")
 
-        def matrix_output(x: T.Scalar, y: T.Scalar, z: T.Scalar) -> T.List[T.List[T.Scalar]]:
+        def matrix_output(x: sf.Scalar, y: sf.Scalar, z: sf.Scalar) -> T.List[T.List[sf.Scalar]]:
             return [[x, y], [0, z]]
 
         codegen_data = codegen.Codegen(
@@ -519,7 +519,7 @@ class SymforceCodegenTest(TestCase):
             Codegen.function should assert on trying to deduce the name from a lambda
         """
 
-        def my_function(x: T.Scalar, y: T.Scalar) -> T.Scalar:
+        def my_function(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
             return x
 
         self.assertEqual(
@@ -545,7 +545,7 @@ class SymforceCodegenTest(TestCase):
             AssertionError,
             codegen.Codegen.function,
             func=lambda x: x,
-            input_types=[T.Scalar],
+            input_types=[sf.Scalar],
             config=codegen.CppConfig(),
         )
 
@@ -644,7 +644,7 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_multiple_outputs_")
 
         # Let's make a simple function with two outputs
-        def cross_and_distance(a: sf.V3, b: sf.V3, epsilon: T.Scalar) -> T.Tuple[sf.V3, T.Scalar]:
+        def cross_and_distance(a: sf.V3, b: sf.V3, epsilon: sf.Scalar) -> T.Tuple[sf.V3, sf.Scalar]:
             return a.cross(b), (a - b).norm(epsilon=epsilon)
 
         codegen_function = codegen.Codegen.function(
@@ -799,14 +799,14 @@ class SymforceCodegenTest(TestCase):
     def test_function_with_dataclass(self) -> None:
         @dataclass
         class TestDataclass0:
-            v0: T.Scalar
+            v0: sf.Scalar
 
         @dataclass
         class TestDataclass1:
             v1: sf.V3
             v2: TestDataclass0
 
-        def test_function_dataclass(dataclass: TestDataclass1, x: T.Scalar) -> sf.V3:
+        def test_function_dataclass(dataclass: TestDataclass1, x: sf.Scalar) -> sf.V3:
             return x * dataclass.v2.v0 * dataclass.v1
 
         dataclass_codegen = codegen.Codegen.function(

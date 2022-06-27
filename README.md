@@ -188,10 +188,8 @@ We will model this problem as a factor graph and solve it with nonlinear least-s
 The residual function comprises of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
 
 ```python
-from symforce import typing as T
-
 def bearing_residual(
-    pose: sf.Pose2, landmark: sf.V2, angle: T.Scalar, epsilon: T.Scalar
+    pose: sf.Pose2, landmark: sf.V2, angle: sf.Scalar, epsilon: sf.Scalar
 ) -> sf.V1:
     t_body = pose.inverse() * landmark
     predicted_angle = sf.atan2(t_body[1], t_body[0], epsilon=epsilon)
@@ -204,7 +202,7 @@ The residual for distance traveled is even simpler:
 
 ```python
 def odometry_residual(
-    pose_a: sf.Pose2, pose_b: sf.Pose2, dist: T.Scalar, epsilon: T.Scalar
+    pose_a: sf.Pose2, pose_b: sf.Pose2, dist: sf.Scalar, epsilon: sf.Scalar
 ) -> sf.V1:
     return sf.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
 ```

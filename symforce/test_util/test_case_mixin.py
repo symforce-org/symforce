@@ -26,7 +26,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
     Mixin for SymForce tests, adds useful helpers for code generation
     """
 
-    LieGroupOpsType = T.Union[interfaces.LieGroup, T.Scalar]
+    LieGroupOpsType = T.Union[interfaces.LieGroup, sf.Scalar]
 
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing

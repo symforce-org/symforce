@@ -305,7 +305,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         if symforce.get_symbolic_api() == "sympy":
             with self.subTest("epsilon handling"):
 
-                def scalar_clamp_norm(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+                def scalar_clamp_norm(x: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
                     return sf.V3(0, 0, x).clamp_norm(2, epsilon)[2, 0]
 
                 # TODO: Also test the derivative

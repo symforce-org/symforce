@@ -4,16 +4,15 @@
 # ----------------------------------------------------------------------------
 
 import symforce.symbolic as sf
-from symforce import typing as T
 
 
 def max_power_barrier(
-    x: T.Scalar,
-    x_nominal: T.Scalar,
-    error_nominal: T.Scalar,
-    dist_zero_to_nominal: T.Scalar,
-    power: T.Scalar,
-) -> T.Scalar:
+    x: sf.Scalar,
+    x_nominal: sf.Scalar,
+    error_nominal: sf.Scalar,
+    dist_zero_to_nominal: sf.Scalar,
+    power: sf.Scalar,
+) -> sf.Scalar:
     """
     A one-sided, non-symmetric scalar barrier function. The barrier passes through the points
     (x_nominal, error_nominal) and (x_nominal - dist_zero_to_nominal, 0) with a curve of the
@@ -59,8 +58,8 @@ def max_power_barrier(
 
 
 def max_linear_barrier(
-    x: T.Scalar, x_nominal: T.Scalar, error_nominal: T.Scalar, dist_zero_to_nominal: T.Scalar
-) -> T.Scalar:
+    x: sf.Scalar, x_nominal: sf.Scalar, error_nominal: sf.Scalar, dist_zero_to_nominal: sf.Scalar
+) -> sf.Scalar:
     """
     Applies "max_power_barrier" with power = 1.  When applied to a residual of a least-squares
     problem, this produces a quadratic cost in the optimization problem because
@@ -76,12 +75,12 @@ def max_linear_barrier(
 
 
 def min_power_barrier(
-    x: T.Scalar,
-    x_nominal: T.Scalar,
-    error_nominal: T.Scalar,
-    dist_zero_to_nominal: T.Scalar,
-    power: T.Scalar,
-) -> T.Scalar:
+    x: sf.Scalar,
+    x_nominal: sf.Scalar,
+    error_nominal: sf.Scalar,
+    dist_zero_to_nominal: sf.Scalar,
+    power: sf.Scalar,
+) -> sf.Scalar:
     """
     A one-sided, non-symmetric scalar barrier function. The barrier passes through the points
     (x_nominal, error_nominal) and (x_nominal + dist_zero_to_nominal, 0) with a curve of the
@@ -117,8 +116,8 @@ def min_power_barrier(
 
 
 def min_linear_barrier(
-    x: T.Scalar, x_nominal: T.Scalar, error_nominal: T.Scalar, dist_zero_to_nominal: T.Scalar
-) -> T.Scalar:
+    x: sf.Scalar, x_nominal: sf.Scalar, error_nominal: sf.Scalar, dist_zero_to_nominal: sf.Scalar
+) -> sf.Scalar:
     """
     Applies "min_power_barrier" with power = 1.  When applied to a residual of a least-squares
     problem, this produces a quadratic cost in the optimization problem because
@@ -134,12 +133,12 @@ def min_linear_barrier(
 
 
 def symmetric_power_barrier(
-    x: T.Scalar,
-    x_nominal: T.Scalar,
-    error_nominal: T.Scalar,
-    dist_zero_to_nominal: T.Scalar,
-    power: T.Scalar,
-) -> T.Scalar:
+    x: sf.Scalar,
+    x_nominal: sf.Scalar,
+    error_nominal: sf.Scalar,
+    dist_zero_to_nominal: sf.Scalar,
+    power: sf.Scalar,
+) -> sf.Scalar:
     """
     A symmetric barrier cenetered around x = 0, meaning the error at -x is equal to the error at x.
     The barrier passes through the points (x_nominal, error_nominal) and
@@ -189,13 +188,13 @@ def symmetric_power_barrier(
 
 
 def min_max_power_barrier(
-    x: T.Scalar,
-    x_nominal_lower: T.Scalar,
-    x_nominal_upper: T.Scalar,
-    error_nominal: T.Scalar,
-    dist_zero_to_nominal: T.Scalar,
-    power: T.Scalar,
-) -> T.Scalar:
+    x: sf.Scalar,
+    x_nominal_lower: sf.Scalar,
+    x_nominal_upper: sf.Scalar,
+    error_nominal: sf.Scalar,
+    dist_zero_to_nominal: sf.Scalar,
+    power: sf.Scalar,
+) -> sf.Scalar:
     """
     A symmetric barrier centered between x_nominal_lower and x_nominal_upper. See
     symmetric_power_barrier for a detailed description of the barrier function.
@@ -237,12 +236,12 @@ def min_max_power_barrier(
 
 
 def min_max_linear_barrier(
-    x: T.Scalar,
-    x_nominal_lower: T.Scalar,
-    x_nominal_upper: T.Scalar,
-    error_nominal: T.Scalar,
-    dist_zero_to_nominal: T.Scalar,
-) -> T.Scalar:
+    x: sf.Scalar,
+    x_nominal_lower: sf.Scalar,
+    x_nominal_upper: sf.Scalar,
+    error_nominal: sf.Scalar,
+    dist_zero_to_nominal: sf.Scalar,
+) -> sf.Scalar:
     """
     Applies "min_max_power_barrier" with power = 1. When applied to a residual of a least-squares
     problem, this produces a quadratic cost in the optimization problem because
@@ -259,14 +258,14 @@ def min_max_linear_barrier(
 
 
 def min_max_centering_power_barrier(
-    x: T.Scalar,
-    x_nominal_lower: T.Scalar,
-    x_nominal_upper: T.Scalar,
-    error_nominal: T.Scalar,
-    dist_zero_to_nominal: T.Scalar,
-    power: T.Scalar,
-    centering_scale: T.Scalar,
-) -> T.Scalar:
+    x: sf.Scalar,
+    x_nominal_lower: sf.Scalar,
+    x_nominal_upper: sf.Scalar,
+    error_nominal: sf.Scalar,
+    dist_zero_to_nominal: sf.Scalar,
+    power: sf.Scalar,
+    centering_scale: sf.Scalar,
+) -> sf.Scalar:
     """
     This barrier is the maximum of two power barriers which we call the "bounding" barrier
     and the "centering" barrier. Both barriers are centered between x_nominal_lower and

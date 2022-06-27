@@ -18,7 +18,7 @@ TEST_DATA_DIR = os.path.join(
 )
 
 
-def barron_factor(x: sf.Matrix51, y: sf.Matrix51, mu: T.Scalar, eps: T.Scalar) -> sf.Matrix51:
+def barron_factor(x: sf.Matrix51, y: sf.Matrix51, mu: sf.Scalar, eps: sf.Scalar) -> sf.Matrix51:
     # Transform mu, which ranges from 0->1, to alpha in the Barron noise model,
     # by alpha=2-1/(1-mu)
     # This transformation means alpha will range from 1 to -inf, so that

@@ -15,17 +15,17 @@ except NameError:
 
 
 def _limit_and_simplify(
-    expr: sf.Expr, x: T.Scalar, value: T.Scalar, limit_direction: str
-) -> T.Scalar:
+    expr: sf.Expr, x: sf.Scalar, value: sf.Scalar, limit_direction: str
+) -> sf.Scalar:
     return sf.simplify(expr.limit(x, value, limit_direction))
 
 
 def is_value_with_epsilon_correct(
-    func: T.Callable[[T.Scalar, T.Scalar], sf.Expr],
-    singularity: T.Scalar = 0,
+    func: T.Callable[[sf.Scalar, sf.Scalar], sf.Expr],
+    singularity: sf.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Callable[[T.Any], None] = _default_display_func,
-    expected_value: T.Scalar = None,
+    expected_value: sf.Scalar = None,
 ) -> bool:
     """
     Check epsilon handling for the value of a function that accepts a single value and an epsilon.
@@ -92,11 +92,11 @@ def is_value_with_epsilon_correct(
 
 
 def is_derivative_with_epsilon_correct(
-    func: T.Callable[[T.Scalar, T.Scalar], sf.Expr],
-    singularity: T.Scalar = 0,
+    func: T.Callable[[sf.Scalar, sf.Scalar], sf.Expr],
+    singularity: sf.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Callable[[T.Any], None] = _default_display_func,
-    expected_derivative: T.Scalar = None,
+    expected_derivative: sf.Scalar = None,
 ) -> bool:
     """
     Check epsilon handling for the derivative of a function that accepts a single value and an
@@ -153,12 +153,12 @@ def is_derivative_with_epsilon_correct(
 
 
 def is_epsilon_correct(
-    func: T.Callable[[T.Scalar, T.Scalar], T.Scalar],
-    singularity: T.Scalar = 0,
+    func: T.Callable[[sf.Scalar, sf.Scalar], sf.Scalar],
+    singularity: sf.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Callable[[T.Any], None] = _default_display_func,
-    expected_value: T.Scalar = None,
-    expected_derivative: T.Scalar = None,
+    expected_value: sf.Scalar = None,
+    expected_derivative: sf.Scalar = None,
 ) -> bool:
     """
     Check epsilon handling for a function that accepts a single value and an epsilon.

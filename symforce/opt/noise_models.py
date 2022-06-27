@@ -24,13 +24,13 @@ class NoiseModel:
         pass
 
     @staticmethod
-    def reduce(whitened_residual: sf.Matrix.MatrixT) -> T.Scalar:
+    def reduce(whitened_residual: sf.Matrix.MatrixT) -> sf.Scalar:
         """
         Take the sum of squares of the residual.
         """
         return whitened_residual.squared_norm() / 2
 
-    def error(self, unwhitened_residual: sf.Matrix.MatrixT) -> T.Scalar:
+    def error(self, unwhitened_residual: sf.Matrix.MatrixT) -> sf.Scalar:
         """
         Return a scalar error.
         """
@@ -46,7 +46,7 @@ class ScalarNoiseModel(NoiseModel):
     """
 
     @abstractmethod
-    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+    def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
         A scalar-valued whitening function which is applied to each element of the unwhitened
         residual.
@@ -63,7 +63,7 @@ class ScalarNoiseModel(NoiseModel):
         return unwhitened_residual.applyfunc(self.whiten_scalar)
 
     def whiten_norm(
-        self, residual: sf.Matrix.MatrixT, epsilon: T.Scalar = sf.epsilon()
+        self, residual: sf.Matrix.MatrixT, epsilon: sf.Scalar = sf.epsilon()
     ) -> sf.Matrix.MatrixT:
         """
         Whiten the norm of the residual vector.
@@ -111,8 +111,8 @@ class IsotropicNoiseModel(ScalarNoiseModel):
 
     def __init__(
         self,
-        scalar_information: T.Optional[T.Scalar] = None,
-        scalar_sqrt_information: T.Optional[T.Scalar] = None,
+        scalar_information: T.Optional[sf.Scalar] = None,
+        scalar_sqrt_information: T.Optional[sf.Scalar] = None,
     ) -> None:
         if scalar_sqrt_information is not None:
             # User has given the square root information, so we can avoid taking the square root
@@ -124,7 +124,7 @@ class IsotropicNoiseModel(ScalarNoiseModel):
             self.scalar_sqrt_information = sf.sqrt(scalar_information)
 
     @classmethod
-    def from_variance(cls, variance: T.Scalar) -> IsotropicNoiseModel:
+    def from_variance(cls, variance: sf.Scalar) -> IsotropicNoiseModel:
         """
         Returns an IsotropicNoiseModel given a variance. Typically used when we treat the residual
         as a random variable with known variance, and wish to weight its cost according to the
@@ -137,7 +137,7 @@ class IsotropicNoiseModel(ScalarNoiseModel):
         return cls(scalar_information=1 / variance)
 
     @classmethod
-    def from_sigma(cls, standard_deviation: T.Scalar) -> IsotropicNoiseModel:
+    def from_sigma(cls, standard_deviation: sf.Scalar) -> IsotropicNoiseModel:
         """
         Returns an IsotropicNoiseModel given a standard deviation. Typically used when we treat the
         residual as a random variable with known standard deviation, and wish to weight its cost
@@ -149,7 +149,7 @@ class IsotropicNoiseModel(ScalarNoiseModel):
         """
         return IsotropicNoiseModel(scalar_sqrt_information=1 / standard_deviation)
 
-    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+    def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
         Multiplies a single element of the unwhitened residual by `sqrt(information)` so
         that the least-squares cost associated with the element is scaled by `information`.
@@ -191,8 +191,8 @@ class DiagonalNoiseModel(NoiseModel):
 
     def __init__(
         self,
-        information_diag: T.Optional[T.Sequence[T.Scalar]] = None,
-        sqrt_information_diag: T.Optional[T.Sequence[T.Scalar]] = None,
+        information_diag: T.Optional[T.Sequence[sf.Scalar]] = None,
+        sqrt_information_diag: T.Optional[T.Sequence[sf.Scalar]] = None,
     ) -> None:
         if sqrt_information_diag is not None:
             # User has given the square root information, so we can avoid taking the square root
@@ -204,7 +204,7 @@ class DiagonalNoiseModel(NoiseModel):
             self.sqrt_information_matrix = sf.Matrix.diag(information_diag).applyfunc(sf.sqrt)
 
     @classmethod
-    def from_variances(cls, variances: T.Sequence[T.Scalar]) -> DiagonalNoiseModel:
+    def from_variances(cls, variances: T.Sequence[sf.Scalar]) -> DiagonalNoiseModel:
         """
         Returns an DiagonalNoiseModel given a list of variances of each element of the unwhitened
         residual. Typically used when we treat the unwhitened residual as a sequence of independent
@@ -216,7 +216,7 @@ class DiagonalNoiseModel(NoiseModel):
         return cls(information_diag=[1 / v for v in variances])
 
     @classmethod
-    def from_sigmas(cls, standard_deviations: T.Sequence[T.Scalar]) -> DiagonalNoiseModel:
+    def from_sigmas(cls, standard_deviations: T.Sequence[sf.Scalar]) -> DiagonalNoiseModel:
         """
         Returns an DiagonalNoiseModel given a list of standard deviations of each element of the
         unwhitened residual. Typically used when we treat the unwhitened residual as a sequence of
@@ -258,15 +258,15 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
 
     def __init__(
         self,
-        delta: T.Scalar,
-        scalar_information: T.Scalar,
-        epsilon: T.Scalar = sf.epsilon(),
+        delta: sf.Scalar,
+        scalar_information: sf.Scalar,
+        epsilon: sf.Scalar = sf.epsilon(),
     ) -> None:
         self.delta = delta
         self.scalar_information = scalar_information
         self.epsilon = epsilon
 
-    def pseudo_huber_error(self, x: T.Scalar) -> T.Scalar:
+    def pseudo_huber_error(self, x: sf.Scalar) -> sf.Scalar:
         """
         Return the pseudo-huber cost function error for the argument x.
 
@@ -275,7 +275,7 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
         """
         return self.delta ** 2 * (sf.sqrt(1 + self.scalar_information * (x / self.delta) ** 2) - 1)
 
-    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+    def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
         Applies a whitening function to a single element of the unwhitened residual such that the
         cost associated with the element in the least-sqaures cost function is the Pseudo-Huber
@@ -336,11 +336,11 @@ class BarronNoiseModel(ScalarNoiseModel):
 
     def __init__(
         self,
-        alpha: T.Scalar,
-        scalar_information: T.Scalar,
-        x_epsilon: T.Scalar,
-        delta: T.Scalar = 1,
-        alpha_epsilon: T.Scalar = None,
+        alpha: sf.Scalar,
+        scalar_information: sf.Scalar,
+        x_epsilon: sf.Scalar,
+        delta: sf.Scalar = 1,
+        alpha_epsilon: sf.Scalar = None,
     ) -> None:
         self.alpha = alpha
         self.delta = delta
@@ -349,7 +349,7 @@ class BarronNoiseModel(ScalarNoiseModel):
         self.alpha_epsilon = x_epsilon if alpha_epsilon is None else alpha_epsilon
 
     @staticmethod
-    def compute_alpha_from_mu(mu: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+    def compute_alpha_from_mu(mu: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
         """
         Transform mu, which ranges from 0->1, to alpha by alpha=2-1/(1-mu). This transformation
         means alpha will range from 1 to -inf, so that the noise model starts as a pseudo-huber and
@@ -360,12 +360,12 @@ class BarronNoiseModel(ScalarNoiseModel):
             epsilon: small value to avoid numerical instability
 
         Returns:
-            T.Scalar: alpha for use in the BarronNoiseModel construction
+            sf.Scalar: alpha for use in the BarronNoiseModel construction
         """
         alpha = 2 - 1 / (1 - mu + epsilon)
         return alpha
 
-    def barron_error(self, x: T.Scalar) -> T.Scalar:
+    def barron_error(self, x: sf.Scalar) -> sf.Scalar:
         """
         Return the barron cost function error for the argument x.
 
@@ -383,7 +383,7 @@ class BarronNoiseModel(ScalarNoiseModel):
             * (((self.scalar_information * (x / self.delta) ** 2) / b + 1) ** (d / 2) - 1)
         )
 
-    def whiten_scalar(self, x: T.Scalar, bounded_away_from_zero: bool = False) -> T.Scalar:
+    def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
         Applies a whitening function to a single element of the unwhitened residual such that the
         cost associated with the element in the least-sqaures cost function is the Barron loss

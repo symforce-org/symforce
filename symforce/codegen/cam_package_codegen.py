@@ -35,8 +35,8 @@ def camera_cal_class_names() -> T.List[str]:
 
 
 def pixel_from_camera_point_with_jacobians(
-    self: sf.CameraCal, point: sf.V3, epsilon: T.Scalar
-) -> T.Tuple[sf.V2, T.Scalar, sf.M, sf.M]:
+    self: sf.CameraCal, point: sf.V3, epsilon: sf.Scalar
+) -> T.Tuple[sf.V2, sf.Scalar, sf.M, sf.M]:
     """
     Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -54,8 +54,8 @@ def pixel_from_camera_point_with_jacobians(
 
 
 def camera_ray_from_pixel_with_jacobians(
-    self: sf.CameraCal, pixel: sf.V2, epsilon: T.Scalar
-) -> T.Tuple[sf.V3, T.Scalar, sf.M, sf.M]:
+    self: sf.CameraCal, pixel: sf.V2, epsilon: sf.Scalar
+) -> T.Tuple[sf.V3, sf.Scalar, sf.M, sf.M]:
     """
     Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -223,8 +223,8 @@ CamCls = T.TypeVar("CamCls", bound=sf.CameraCal)
 
 def cam_cal_from_points(
     cam_cls: T.Type[CamCls],
-    focal_length: T.Sequence[T.Scalar],
-    principal_point: T.Sequence[T.Scalar],
+    focal_length: T.Sequence[sf.Scalar],
+    principal_point: T.Sequence[sf.Scalar],
 ) -> CamCls:
     """
     Returns an instance of cam_cls with given focal_length and prinicpal_point.

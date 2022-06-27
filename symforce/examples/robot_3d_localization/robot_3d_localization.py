@@ -28,7 +28,7 @@ NUM_LANDMARKS = 20
 
 
 def matching_residual(
-    world_T_body: sf.Pose3, world_t_landmark: sf.V3, body_t_landmark: sf.V3, sigma: T.Scalar
+    world_T_body: sf.Pose3, world_t_landmark: sf.V3, body_t_landmark: sf.V3, sigma: sf.Scalar
 ) -> sf.V3:
     """
     Residual from a relative translation mesurement of a 3D pose to a landmark.
@@ -48,7 +48,7 @@ def odometry_residual(
     world_T_b: sf.Pose3,
     a_T_b: sf.Pose3,
     diagonal_sigmas: sf.V6,
-    epsilon: T.Scalar,
+    epsilon: sf.Scalar,
 ) -> sf.V6:
     """
     Residual on the relative pose between two timesteps of the robot.

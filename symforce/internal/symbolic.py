@@ -250,9 +250,6 @@ else:
     raise symforce.InvalidSymbolicApiError(symforce.get_symbolic_api())
 
 
-from symforce.logic import *  # pylint: disable=wildcard-import
-
-
 # --------------------------------------------------------------------------------
 # Default epsilon
 # --------------------------------------------------------------------------------
@@ -268,7 +265,7 @@ def epsilon() -> T.Any:
 
     Library functions that require an epsilon argument should use a function signature like:
 
-        def foo(x: sf.Scalar, epsilon: sf.Scalar = sf.epsilon()) -> sf.Scalar:
+        def foo(x: Scalar, epsilon: Scalar = sf.epsilon()) -> Scalar:
             ...
 
     This makes it easy to configure entire expressions that make extensive use of epsilon to either
@@ -346,12 +343,27 @@ elif sympy.__package__ == "sympy":
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
 
+
+# --------------------------------------------------------------------------------
+# Typing
+# --------------------------------------------------------------------------------
+
+from symforce.typing import Scalar
+
+
+# --------------------------------------------------------------------------------
+# Logic functions
+# --------------------------------------------------------------------------------
+
+from symforce.logic import *  # pylint: disable=wildcard-import
+
+
 # --------------------------------------------------------------------------------
 # Additional custom functions
 # --------------------------------------------------------------------------------
 
 
-def wrap_angle(x: T.Scalar) -> T.Scalar:
+def wrap_angle(x: Scalar) -> Scalar:
     """
     Wrap an angle to the interval [-pi, pi).  Commonly used to compute the shortest signed
     distance between two angles.
@@ -361,7 +373,7 @@ def wrap_angle(x: T.Scalar) -> T.Scalar:
     return Mod(x + pi, 2 * pi) - pi
 
 
-def angle_diff(x: T.Scalar, y: T.Scalar) -> T.Scalar:
+def angle_diff(x: Scalar, y: Scalar) -> Scalar:
     """
     Return the difference x - y, but wrapped into [-pi, pi); i.e. the angle `diff` closest to 0
     such that x = y + diff (mod 2pi).
@@ -371,21 +383,21 @@ def angle_diff(x: T.Scalar, y: T.Scalar) -> T.Scalar:
     return wrap_angle(x - y)
 
 
-def sign_no_zero(x: T.Scalar) -> T.Scalar:
+def sign_no_zero(x: Scalar) -> Scalar:
     """
     Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.
     """
     return 2 * Min(sign(x), 0) + 1
 
 
-def copysign_no_zero(x: T.Scalar, y: T.Scalar) -> T.Scalar:
+def copysign_no_zero(x: Scalar, y: Scalar) -> Scalar:
     """
     Returns a value with the magnitude of x and sign of y. If y is zero, returns positive x.
     """
     return Abs(x) * sign_no_zero(y)
 
 
-def argmax_onehot(vals: T.Iterable[T.Scalar]) -> T.List[T.Scalar]:
+def argmax_onehot(vals: T.Iterable[Scalar]) -> T.List[Scalar]:
     """
     Returns a list l such that l[i] = 1.0 if i is the smallest index such that
     vals[i] equals Max(*vals). l[i] = 0.0 otherwise.
@@ -409,9 +421,9 @@ def argmax_onehot(vals: T.Iterable[T.Scalar]) -> T.List[T.Scalar]:
     return results
 
 
-def argmax(vals: T.Iterable[T.Scalar]) -> T.Scalar:
+def argmax(vals: T.Iterable[Scalar]) -> Scalar:
     """
-    Returns i (as a T.Scalar) such that i is the smallest index such that
+    Returns i (as a Scalar) such that i is the smallest index such that
     vals[i] equals Max(*vals).
 
     Precondition:
@@ -420,16 +432,16 @@ def argmax(vals: T.Iterable[T.Scalar]) -> T.Scalar:
     return sum(i * val for i, val in enumerate(argmax_onehot(vals)))
 
 
-def atan2(y: T.Scalar, x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
+def atan2(y: Scalar, x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
     return sympy.atan2(y, x + (sign(x) + 0.5) * epsilon)
 
 
-def asin_safe(x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
+def asin_safe(x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
     x_safe = Max(-1 + epsilon, Min(1 - epsilon, x))
     return sympy.asin(x_safe)
 
 
-def acos_safe(x: T.Scalar, epsilon: T.Scalar = epsilon()) -> T.Scalar:
+def acos_safe(x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
     x_safe = Max(-1 + epsilon, Min(1 - epsilon, x))
     return sympy.acos(x_safe)
 
@@ -459,7 +471,7 @@ def set_eval_on_sympify(eval_on_sympy: bool = True) -> None:
 if sympy.__package__ == "symengine":
     import sympy as _sympy_py
 
-    def simplify(*args: T.Any, **kwargs: T.Any) -> T.Scalar:
+    def simplify(*args: T.Any, **kwargs: T.Any) -> Scalar:
         logger.warning("Converting to sympy to use .simplify")
         return sympy.S(_sympy_py.simplify(_sympy_py.S(*args), **kwargs))
 
@@ -478,7 +490,7 @@ if sympy.__package__ == "symengine":
 
     def limit(
         e: T.Any, z: T.Any, z0: T.Any, dir: str = "+"  # pylint: disable=redefined-builtin
-    ) -> T.Scalar:
+    ) -> Scalar:
         logger.warning("Converting to sympy to use .limit")
         return sympy.S(_sympy_py.limit(_sympy_py.S(e), _sympy_py.S(z), _sympy_py.S(z0), dir=dir))
 
@@ -493,7 +505,7 @@ else:
 
 if sympy.__package__ == "symengine":
     # Unfortunately this already doesn't have a docstring or argument list in symengine
-    def solve(*args: T.Any, **kwargs: T.Any) -> T.List[T.Scalar]:
+    def solve(*args: T.Any, **kwargs: T.Any) -> T.List[Scalar]:
         solution = sympy.solve(*args, **kwargs)
         from symengine.lib.symengine_wrapper import EmptySet as _EmptySet
 

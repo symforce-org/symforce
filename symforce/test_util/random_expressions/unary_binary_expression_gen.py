@@ -49,7 +49,7 @@ class UnaryBinaryExpressionGen:
         self,
         unary_ops: T.Sequence[OpProbability],
         binary_ops: T.Sequence[OpProbability],
-        leaves: T.Sequence[T.Scalar],
+        leaves: T.Sequence[sf.Scalar],
     ):
         self.unary_ops = unary_ops
         self.binary_ops = binary_ops
@@ -183,14 +183,14 @@ class UnaryBinaryExpressionGen:
 
         return stack
 
-    def seq_to_expr(self, seq: T.Sequence[T.Union[str, T.Scalar]]) -> sf.Expr:
+    def seq_to_expr(self, seq: T.Sequence[T.Union[str, sf.Scalar]]) -> sf.Expr:
         """
         Convert a prefix notation sequence into a sympy expression.
         """
 
         def _seq_to_expr(
-            seq: T.Sequence[T.Union[str, T.Scalar]]
-        ) -> T.Tuple[T.Scalar, T.Sequence[T.Union[str, T.Scalar]]]:
+            seq: T.Sequence[T.Union[str, sf.Scalar]]
+        ) -> T.Tuple[sf.Scalar, T.Sequence[T.Union[str, sf.Scalar]]]:
             assert len(seq) > 0
             t = seq[0]
             if t in self.ops_dict:
@@ -202,14 +202,14 @@ class UnaryBinaryExpressionGen:
                     args.append(i1)
                 return op.func(*args), l1
             elif t in self.leaves:
-                return T.cast(T.Scalar, t), seq[1:]
+                return T.cast(sf.Scalar, t), seq[1:]
             else:
                 assert f"Unknown: {t}"
                 return 0, []  # Just for mypy..
 
         return _seq_to_expr(seq)[0]
 
-    def build_expr(self, num_ops_target: int) -> T.Scalar:
+    def build_expr(self, num_ops_target: int) -> sf.Scalar:
         """
         Return an expression with the given op target.
         """
@@ -228,7 +228,7 @@ class UnaryBinaryExpressionGen:
             num_exprs = max(1, int(np.sqrt(num_ops_target)))
         target_per_expr = int(num_ops_target / num_exprs)
 
-        exprs: T.List[T.Scalar] = []
+        exprs: T.List[sf.Scalar] = []
         while len(exprs) < num_exprs:
             try:
                 exprs.append(self.build_expr(target_per_expr))
@@ -243,7 +243,7 @@ class UnaryBinaryExpressionGen:
         cls,
         unary_ops: T.Sequence[OpProbability] = DEFAULT_UNARY_OPS,
         binary_ops: T.Sequence[OpProbability] = DEFAULT_BINARY_OPS,
-        leaves: T.Sequence[T.Scalar] = DEFAULT_LEAVES,
+        leaves: T.Sequence[sf.Scalar] = DEFAULT_LEAVES,
     ) -> UnaryBinaryExpressionGen:
         """
         Construct with a reasonable default op distribution.

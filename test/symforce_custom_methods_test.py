@@ -55,7 +55,7 @@ class SymforceCustomMethodsTest(TestCase):
         self.assertEqual([0, 1, 0], sf.argmax_onehot(vals_v3))
         self.assertEqual(1, sf.argmax(vals_v3))
 
-        vals_arr = np.array([30, -32, 23, 23], dtype=T.Scalar)
+        vals_arr = np.array([30, -32, 23, 23], dtype=sf.Scalar)
         self.assertEqual([1, 0, 0, 0], sf.argmax_onehot(vals_arr))
         self.assertEqual(0, sf.argmax(vals_arr))
 

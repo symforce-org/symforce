@@ -57,7 +57,7 @@ class SympyLogicMethodsTest(TestCase):
         return a > 0
 
     @staticmethod
-    def bool_to_sym_bool(a: bool) -> T.Scalar:
+    def bool_to_sym_bool(a: bool) -> sf.Scalar:
         return 1 if a else 0
 
     def check_logical_and(self, scalars: T.Sequence[float], unsafe: bool) -> None:

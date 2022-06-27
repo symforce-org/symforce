@@ -36,7 +36,7 @@ class SymforcePyOptimizerTest(TestCase):
 
         ### Between factors
 
-        def between(x: sf.Rot3, y: sf.Rot3, epsilon: T.Scalar) -> sf.V3:
+        def between(x: sf.Rot3, y: sf.Rot3, epsilon: sf.Scalar) -> sf.V3:
             return sf.V3(x.local_coordinates(y, epsilon=epsilon))
 
         for i in range(num_samples - 1):
@@ -44,7 +44,7 @@ class SymforcePyOptimizerTest(TestCase):
 
         ### Prior factors
 
-        def prior_residual(x: sf.Rot3, epsilon: T.Scalar, x_prior: sf.Rot3) -> sf.V3:
+        def prior_residual(x: sf.Rot3, epsilon: sf.Scalar, x_prior: sf.Rot3) -> sf.V3:
             return sf.V3(x.local_coordinates(x_prior, epsilon=epsilon))
 
         for i in range(num_samples):

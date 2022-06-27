@@ -24,7 +24,7 @@ class SymforcePyFactorTest(TestCase):
 
     @staticmethod
     def create_chain(
-        keys: T.Sequence[str], value_type: T.Type[LieGroup], epsilon: T.Scalar = sf.numeric_epsilon
+        keys: T.Sequence[str], value_type: T.Type[LieGroup], epsilon: sf.Scalar = sf.numeric_epsilon
     ) -> T.Iterator[Factor]:
         """
         Create a factor chain with betweens and priors of the given type.

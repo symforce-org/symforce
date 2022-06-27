@@ -96,7 +96,7 @@ class SymforceDataBufferCodegenTest(TestCase):
 
         # sample residual function that's a simple linear interpolation of the databuffer
         # assume that the scale = 1 for convenience
-        def buffer_residual(x: T.Scalar, left_bound: T.Scalar, buffer: sf.DataBuffer) -> sf.V1:
+        def buffer_residual(x: sf.Scalar, left_bound: sf.Scalar, buffer: sf.DataBuffer) -> sf.V1:
             shifted_x = x - left_bound
             lower_idx = sf.floor(shifted_x)
             upper_idx = lower_idx + 1

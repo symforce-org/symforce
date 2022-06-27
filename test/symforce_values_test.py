@@ -27,13 +27,13 @@ import sym
 
 @dataclass
 class MySubDataclass:
-    a: T.Scalar
-    b: T.Sequence[T.Sequence[T.Scalar]]
+    a: sf.Scalar
+    b: T.Sequence[T.Sequence[sf.Scalar]]
 
 
 @dataclass
 class MyDataclass:
-    x: T.Scalar
+    x: sf.Scalar
     v: sf.V3
     r: sf.Rot3
     sub: T.Sequence[MySubDataclass]

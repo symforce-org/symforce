@@ -8,7 +8,6 @@ from dataclasses import dataclass
 
 from symforce.opt import objective, noise_models, barrier_functions
 from symforce.opt.residual_block import ResidualBlock
-from symforce import typing as T
 import symforce.symbolic as sf
 
 
@@ -23,9 +22,9 @@ class NormBarrierObjective(objective.TimestepObjective):
                 be a positive number.
         """
 
-        norm_nominal: T.Scalar
-        error_nominal: T.Scalar
-        dist_zero_to_nominal: T.Scalar
+        norm_nominal: sf.Scalar
+        error_nominal: sf.Scalar
+        dist_zero_to_nominal: sf.Scalar
 
     @dataclass
     class ExtraValues:
@@ -41,9 +40,9 @@ class NormBarrierObjective(objective.TimestepObjective):
     def residual_at_timestep(
         vector: sf.Matrix,
         params: NormBarrierObjective.Params,
-        epsilon: T.Scalar,
-        cost_scaling: T.Scalar = 1,
-        power: T.Scalar = 1,
+        epsilon: sf.Scalar,
+        cost_scaling: sf.Scalar = 1,
+        power: sf.Scalar = 1,
     ) -> ResidualBlock:
         """
         Returns the residual block for the given timestep, where the residual is computed by

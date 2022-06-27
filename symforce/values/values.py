@@ -163,7 +163,7 @@ class Values(T.MutableMapping[str, T.Any]):
             elif isinstance(value, sf.DataBuffer):
                 entry = entry_helper(shape=value.shape, datatype=sf.DataBuffer)
             elif isinstance(value, (sf.Expr, sf.Symbol, int, float)):
-                entry = entry_helper(datatype=T.Scalar)
+                entry = entry_helper(datatype=sf.Scalar)
             elif isinstance(value, (list, tuple)):
                 assert all(
                     type(v) == type(value[0])  # pylint: disable=unidiomatic-typecheck
@@ -281,7 +281,7 @@ class Values(T.MutableMapping[str, T.Any]):
 
     @classmethod
     def from_storage_index(
-        cls, vector_values: T.Sequence[T.Scalar], indices: T.Mapping[str, IndexEntry]
+        cls, vector_values: T.Sequence[sf.Scalar], indices: T.Mapping[str, IndexEntry]
     ) -> Values:
         """
         Takes a vectorized values and corresponding indices and reconstructs the original form.
@@ -296,7 +296,7 @@ class Values(T.MutableMapping[str, T.Any]):
             vec = vector_values[entry.offset : entry.offset + entry.storage_dim]
 
             datatype = entry.datatype()
-            if issubclass(datatype, T.Scalar):
+            if issubclass(datatype, sf.Scalar):
                 values[name] = vec[0]
             elif issubclass(datatype, Values):
                 assert entry.item_index is not None
@@ -326,7 +326,7 @@ class Values(T.MutableMapping[str, T.Any]):
 
         return values
 
-    def from_storage(self, elements: T.List[T.Scalar]) -> Values:
+    def from_storage(self, elements: T.List[sf.Scalar]) -> Values:
         """
         Create a Values object with the same structure as self but constructed
         from a flat list representation. Opposite of `.to_storage()`.
@@ -395,7 +395,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         return sum(ops.LieGroupOps.tangent_dim(v) for v in self.values())
 
-    def from_tangent(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Values:
+    def from_tangent(self, vec: T.List[sf.Scalar], epsilon: sf.Scalar = sf.epsilon()) -> Values:
         """
         Returns a Values object with the same structure as self, but by computing
         each element using the mapping from its corresponding tangent space vector
@@ -409,7 +409,7 @@ class Values(T.MutableMapping[str, T.Any]):
             inx += dim
         return updated_values
 
-    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: sf.Scalar = sf.epsilon()) -> T.List[sf.Scalar]:
         """
         Returns flat vector representing concatentated tangent spaces of each element.
         """
@@ -418,7 +418,7 @@ class Values(T.MutableMapping[str, T.Any]):
             vec.extend(ops.LieGroupOps.to_tangent(v, epsilon))
         return vec
 
-    def retract(self, vec: T.List[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Values:
+    def retract(self, vec: T.List[sf.Scalar], epsilon: sf.Scalar = sf.epsilon()) -> Values:
         """
         Apply a pertubation vec in the concatenated tangent spaces of each element. Often used in
         optimization to update nonlinear values from an update step in the tangent space.
@@ -434,7 +434,7 @@ class Values(T.MutableMapping[str, T.Any]):
             inx += dim
         return retracted_values
 
-    def local_coordinates(self, b: Values, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Values, epsilon: sf.Scalar = sf.epsilon()) -> T.List[sf.Scalar]:
         """
         Computes a pertubation in the combined tangent space around self to produce b. Often used
         in optimization to minimize the distance between two group elements.

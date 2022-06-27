@@ -23,7 +23,7 @@ class SubProblem(ABC):
         class MySubProblem(SubProblem):
             @dataclass
             class Inputs:
-                x: T.Scalar
+                x: sf.Scalar
                 pose: sf.Pose3
                 objective_params: MyObjective.Params
 

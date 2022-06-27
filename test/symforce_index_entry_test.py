@@ -31,7 +31,7 @@ class IndexEntryTest(TestCase):
         entry_helper = lambda dtype: IndexEntry(offset=0, storage_dim=0, stored_datatype=dtype)
 
         with self.subTest("datatype correctly returns common StorageOps types"):
-            for datatype in [int, sf.Rot3, sf.V2, T.Scalar]:
+            for datatype in [int, sf.Rot3, sf.V2, sf.Scalar]:
                 self.assertEqual(datatype, entry_helper(datatype).datatype())
 
         with self.subTest("datatype can handle nested classes"):

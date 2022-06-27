@@ -21,7 +21,7 @@ class LieGroupNdarrayTest(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> np.ndarray:
-        return np.array([[1, 2, 3], [4, 5, 6]], dtype=T.Scalar)
+        return np.array([[1, 2, 3], [4, 5, 6]], dtype=sf.Scalar)
 
     def test_storage_order_matches_geo_matrix(self) -> None:
         """

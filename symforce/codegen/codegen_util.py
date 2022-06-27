@@ -63,7 +63,7 @@ class CSCFormat:
     kNumNonZero: int  # Number of nonzero entries
     kColPtrs: T.List[int]  # nonzero_elements[kColPtrs[col]] is the first nonzero entry of col
     kRowIndices: T.List[int]  # row indices of nonzero entries written in column-major order
-    nonzero_elements: T.List[T.Scalar]  # nonzero entries written in column-major order
+    nonzero_elements: T.List[sf.Scalar]  # nonzero entries written in column-major order
 
     @staticmethod
     def from_matrix(sparse_matrix: sf.Matrix) -> CSCFormat:
@@ -308,7 +308,7 @@ def format_symbols(
 
 def get_formatted_list(
     values: Values, config: codegen_config.CodegenConfig, format_as_inputs: bool
-) -> T.Tuple[T.List[T.List[T.Union[sf.Symbol, sf.DataBuffer]]], T.List[T.List[T.Scalar]]]:
+) -> T.Tuple[T.List[T.List[T.Union[sf.Symbol, sf.DataBuffer]]], T.List[T.List[sf.Scalar]]]:
     """
     Returns a nested list of formatted symbols, as well as a nested list of the corresponding
     original scalar values. For use in generated functions.
@@ -432,7 +432,7 @@ def _get_scalar_keys_recursive(
     """
     vec = []
     datatype = index_value.datatype()
-    if issubclass(datatype, T.Scalar):
+    if issubclass(datatype, sf.Scalar):
         # Element is a scalar, no need to access subvalues
         vec.append(sf.Symbol(prefix))
     elif issubclass(datatype, Values):
@@ -477,7 +477,7 @@ def _get_scalar_keys_recursive(
     return vec
 
 
-def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]]:
+def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[sf.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions for sparse matrices.
     """

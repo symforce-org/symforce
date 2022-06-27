@@ -35,7 +35,7 @@ class SymforceGenCodegenTest(TestCase):
 
     def generate_cam_example_function(self, output_dir: str) -> None:
         def pixel_to_ray_and_back(
-            pixel: sf.Vector2, cam: sf.LinearCameraCal, epsilon: T.Scalar = 0
+            pixel: sf.Vector2, cam: sf.LinearCameraCal, epsilon: sf.Scalar = 0
         ) -> sf.Vector2:
             """
             Transform a given pixel into a ray and project the ray back to

@@ -53,7 +53,7 @@ def get_prior_docstring() -> str:
 
 
 def between_factor(
-    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: sf.Matrix, epsilon: T.Scalar = 0
+    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = 0
 ) -> sf.Matrix:
     assert type(a) == type(b) == type(a_T_b)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
@@ -70,7 +70,7 @@ def between_factor(
 
 
 def prior_factor(
-    value: T.Element, prior: T.Element, sqrt_info: sf.Matrix, epsilon: T.Scalar = 0
+    value: T.Element, prior: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = 0
 ) -> sf.Matrix:
     assert type(value) == type(prior)  # pylint: disable=unidiomatic-typecheck
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
@@ -150,7 +150,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     """
 
     def between_factor_pose3_rotation(
-        a: sf.Pose3, b: sf.Pose3, a_R_b: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: T.Scalar = 0
+        a: sf.Pose3, b: sf.Pose3, a_R_b: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: sf.Scalar = 0
     ) -> sf.Matrix:
         # NOTE(aaron): This should be equivalent to between_factor(a.R, b.R, a_R_b), but we write it
         # this way for explicitness and symmetry with between_factor_pose3_position, where the two
@@ -166,7 +166,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         b: sf.Pose3,
         a_t_b: sf.Vector3,
         sqrt_info: sf.Matrix33,
-        epsilon: T.Scalar = 0,
+        epsilon: sf.Scalar = 0,
     ) -> sf.Matrix:
         # NOTE(aaron): This is NOT the same as between_factor(a.t, b.t, a_t_b, sqrt_info, epsilon)
         # between_factor(a.t, b.t, a_t_b) would be penalizing the difference in the global frame
@@ -181,9 +181,9 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     def between_factor_pose3_translation_norm(
         a: sf.Pose3,
         b: sf.Pose3,
-        translation_norm: T.Scalar,
+        translation_norm: sf.Scalar,
         sqrt_info: sf.Matrix11,
-        epsilon: T.Scalar = 0,
+        epsilon: sf.Scalar = 0,
     ) -> sf.Matrix:
         """
         Residual that penalizes the difference between translation_norm and (a.t - b.t).norm().
@@ -196,12 +196,12 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         return sqrt_info * sf.M([error])
 
     def prior_factor_pose3_rotation(
-        value: sf.Pose3, prior: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: T.Scalar = 0
+        value: sf.Pose3, prior: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: sf.Scalar = 0
     ) -> sf.Matrix:
         return prior_factor(value.R, prior, sqrt_info, epsilon)
 
     def prior_factor_pose3_position(
-        value: sf.Pose3, prior: sf.Vector3, sqrt_info: sf.Matrix33, epsilon: T.Scalar = 0
+        value: sf.Pose3, prior: sf.Vector3, sqrt_info: sf.Matrix33, epsilon: sf.Scalar = 0
     ) -> sf.Matrix:
         return prior_factor(value.t, prior, sqrt_info, epsilon)
 

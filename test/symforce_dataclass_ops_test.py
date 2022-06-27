@@ -21,16 +21,16 @@ class TestSubType:
 @dataclass
 class TestDynamicSizeType:
     rot: sf.Rot3
-    x: T.Scalar
+    x: sf.Scalar
     subtype: TestSubType
     seq: T.Sequence[T.Sequence[TestSubType]]
-    optional: T.Optional[T.Scalar] = None
+    optional: T.Optional[sf.Scalar] = None
 
 
 @dataclass
 class TestFixedSizeType:
     rot: sf.Rot3
-    x: T.Scalar
+    x: sf.Scalar
     subtype: TestSubType
     seq: T.Sequence[TestSubType] = field(metadata={"length": 2})
 

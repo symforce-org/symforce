@@ -28,9 +28,9 @@ class PriorValueObjective(objective.TimestepObjective):
     def residual_at_timestep(
         actual: T.Element,
         desired: T.Element,
-        information_diag: T.Sequence[T.Scalar],
-        epsilon: T.Scalar,
-        cost_scaling: T.Scalar = 1,
+        information_diag: T.Sequence[sf.Scalar],
+        epsilon: sf.Scalar,
+        cost_scaling: sf.Scalar = 1,
     ) -> ResidualBlock:
         """
         Returns the residual block for the given timestep, where the residual is computed as the

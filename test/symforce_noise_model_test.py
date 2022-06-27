@@ -139,7 +139,7 @@ class NoiseModelTest(TestCase):
         delta = 10
         scalar_information = 2
 
-        def whiten_ratio(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+        def whiten_ratio(x: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
             noise_model = nm.PseudoHuberNoiseModel(
                 delta=delta, scalar_information=scalar_information, epsilon=epsilon
             )
@@ -215,8 +215,8 @@ class NoiseModelTest(TestCase):
         delta = 10
         scalar_information = 2
 
-        def test_epsilon_at_alpha(alpha: T.Scalar) -> bool:
-            def whiten_ratio(x: T.Scalar, epsilon: T.Scalar) -> T.Scalar:
+        def test_epsilon_at_alpha(alpha: sf.Scalar) -> bool:
+            def whiten_ratio(x: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
                 noise_model = nm.BarronNoiseModel(
                     alpha=alpha,
                     delta=delta,

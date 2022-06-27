@@ -12,7 +12,6 @@ from pathlib import Path
 from symforce import codegen
 from symforce.codegen import values_codegen
 import symforce.symbolic as sf
-from symforce import typing as T
 from symforce.values import Values
 
 
@@ -21,7 +20,7 @@ def snavely_reprojection_residual(
     intrinsics: sf.V3,
     point: sf.V3,
     pixel: sf.V2,
-    epsilon: T.Scalar,
+    epsilon: sf.Scalar,
 ) -> sf.V2:
     """
     Reprojection residual for the camera model used in the Bundle-Adjustment-in-the-Large dataset, a
@@ -75,7 +74,7 @@ def generate(output_dir: Path) -> None:
         intrinsics=sf.V3(),
         point=sf.V3(),
         pixel=sf.V2(),
-        epsilon=T.Scalar(),
+        epsilon=sf.Scalar(),
     )
 
     values_codegen.generate_values_keys(values, output_dir, skip_directory_nesting=True)
