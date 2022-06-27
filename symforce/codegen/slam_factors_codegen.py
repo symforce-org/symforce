@@ -324,9 +324,9 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 config=config,
                 input_types=[
                     sf.Pose3,
-                    sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Pose3,
-                    sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Scalar,
                     sf.Vector2,
                     sf.Vector2,
@@ -347,9 +347,9 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 config=config,
                 input_types=[
                     sf.Pose3,
-                    sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Pose3,
-                    sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Scalar,
                     sf.Vector2,
                     sf.Vector2,
@@ -370,7 +370,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 input_types=[
                     sf.Pose3,
                     sf.Pose3,
-                    sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Scalar,
                     sf.Vector3,
                     sf.Vector2,
@@ -392,7 +392,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 input_types=[
                     sf.Pose3,
                     sf.Pose3,
-                    sf.fixed_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
                     sf.Scalar,
                     sf.Vector3,
                     sf.Vector2,

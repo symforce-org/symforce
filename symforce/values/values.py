@@ -311,7 +311,7 @@ class Values(T.MutableMapping[str, T.Any]):
                 # not accept asserting on the length of the tuple, so writing to an intermediate
                 # tuple is a work around.
                 (rows, cols) = entry.shape
-                values[name] = geo.matrix.fixed_type_from_shape((rows, cols)).from_storage(vec)
+                values[name] = geo.matrix.matrix_type_from_shape((rows, cols)).from_storage(vec)
             elif issubclass(datatype, (list, tuple)):
                 assert entry.item_index is not None
                 values[name] = datatype(cls.from_storage_index(vec, entry.item_index).values())

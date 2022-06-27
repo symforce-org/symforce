@@ -151,7 +151,7 @@ class Matrix(Storage):
             raise AssertionError(f"Unknown {cls} constructor for: {args}")
 
         # Get the proper fixed size child class
-        fixed_size_type = fixed_type_from_shape((rows, cols))
+        fixed_size_type = matrix_type_from_shape((rows, cols))
 
         # Build object
         instance = Storage.__new__(fixed_size_type)
@@ -202,7 +202,7 @@ class Matrix(Storage):
     def from_storage(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         rows, cols = cls.SHAPE
-        return fixed_type_from_shape((cols, rows))(vec).transpose()
+        return matrix_type_from_shape((cols, rows))(vec).transpose()
 
     def to_storage(self) -> _T.List[_T.Scalar]:
         return list(self.mat.transpose())
@@ -1112,7 +1112,7 @@ DIMS_TO_FIXED_TYPE: _T.Dict[_T.Tuple[int, int], type] = {
 }
 
 
-def fixed_type_from_shape(shape: _T.Tuple[int, int]) -> _T.Type[Matrix]:
+def matrix_type_from_shape(shape: _T.Tuple[int, int]) -> _T.Type[Matrix]:
     """
     Return a fixed size matrix type (like Matrix32) given a shape. Either use the statically
     defined ones or dynamically create a new one if not available.

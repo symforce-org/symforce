@@ -89,7 +89,7 @@ class ResidualBlockWithCustomJacobian(ResidualBlock):
                 residual_input_jacobian = self.residual.jacobian(input_element)
                 if (
                     residual_input_jacobian
-                    != sf.fixed_type_from_shape(residual_input_jacobian.shape).zero()
+                    != sf.matrix_type_from_shape(residual_input_jacobian.shape).zero()
                 ):
                     residual_name = residual_name or str(self)
 
