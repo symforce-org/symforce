@@ -25,3 +25,6 @@ available as well as `symforce.symbolic.sympy`.
 from symforce.internal.symbolic import *
 from symforce.geo import *
 from symforce.cam import *
+
+# This doesn't change the runtime behavior, but tells Sphinx to document everything in here
+__all__ = list(globals().keys())
