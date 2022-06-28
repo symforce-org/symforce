@@ -28,8 +28,6 @@ available as well as `symforce.symbolic.sympy`.
 # pylint: disable=ungrouped-imports
 
 import contextlib
-import sys
-
 import symforce
 from symforce import typing as T
 from symforce import logger
@@ -255,8 +253,7 @@ else:
 # --------------------------------------------------------------------------------
 
 
-# Should match C++ default epsilon in epsilon.h
-numeric_epsilon = 10 * sys.float_info.epsilon
+from symforce import numeric_epsilon
 
 
 def epsilon() -> T.Any:

@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from types import ModuleType
 import typing as T
 import os
+import sys
 import warnings
 
 # -------------------------------------------------------------------------------------------------
@@ -50,8 +51,6 @@ def set_log_level(log_level: str) -> None:
     logger.setLevel(getattr(logging, log_level.upper()))
 
     # Only do this if already imported, in case users don't want to use any C++ binaries
-    import sys
-
     if "cc_sym" in sys.modules:
         import cc_sym
 
@@ -80,8 +79,6 @@ def _find_symengine() -> ModuleType:
 
     Returns the imported symengine module
     """
-    import sys
-
     if "symengine" in sys.modules:
         return sys.modules["symengine"]
 
@@ -235,6 +232,9 @@ def set_backend(name: str) -> None:
 # Default epsilon
 # --------------------------------------------------------------------------------
 
+# Should match C++ default epsilon in epsilon.h
+numeric_epsilon = 10 * sys.float_info.epsilon
+
 
 class AlreadyUsedEpsilon(Exception):
     """
@@ -248,7 +248,7 @@ _epsilon = 0.0
 _have_used_epsilon = False
 
 
-def set_epsilon(new_epsilon: T.Any) -> None:
+def _set_epsilon(new_epsilon: T.Any) -> None:
     """
     Set the default epsilon for SymForce
 
@@ -266,3 +266,46 @@ def set_epsilon(new_epsilon: T.Any) -> None:
 
     global _epsilon  # pylint: disable=global-statement
     _epsilon = new_epsilon
+
+
+def set_epsilon_to_symbol(name: str = "epsilon") -> None:
+    """
+    Set the default epsilon for Symforce to a Symbol.
+
+    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
+    See `symforce.symbolic.epsilon` for more information.
+
+    Args:
+        name: The name of the symbol for the new default epsilon to use
+    """
+    if get_symbolic_api() == "sympy":
+        import sympy
+    elif get_symbolic_api() == "symengine":
+        sympy = _find_symengine()
+    else:
+        raise InvalidSymbolicApiError(get_symbolic_api())
+
+    _set_epsilon(sympy.Symbol(name))
+
+
+def set_epsilon_to_number(value: T.Any = numeric_epsilon) -> None:
+    """
+    Set the default epsilon for Symforce to a number.
+
+    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
+    See `symforce.symbolic.epsilon` for more information.
+
+    Args:
+        value: The new default epsilon to use
+    """
+    _set_epsilon(value)
+
+
+def set_epsilon_to_zero() -> None:
+    """
+    Set the default epsilon for Symforce to zero.
+
+    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
+    See `symforce.symbolic.epsilon` for more information.
+    """
+    _set_epsilon(0.0)
