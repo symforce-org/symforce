@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include <Eigen/Dense>
@@ -246,7 +247,27 @@ void AddValuesWrapper(pybind11::module_ module) {
               epsilon: Small constant to avoid singularities (do not use zero)
            )")
       .def("get_lcm_type", &sym::Valuesd::GetLcmType, "Serialize to LCM.")
-      .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); });
+      .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); })
+      .def(py::pickle(
+          [](const sym::Valuesd& values) {  //  __getstate__
+            const sym::values_t lcm_values = values.GetLcmType();
+            const auto encoded_size = lcm_values.getEncodedSize();
+            std::vector<char> buffer(encoded_size);
+            const auto encoded_bytes = lcm_values.encode(buffer.data(), 0, encoded_size);
+            if (encoded_bytes < 0) {
+              throw std::runtime_error("An error occured while encoded a Values object.");
+            }
+            return py::bytes(buffer.data(), encoded_bytes);
+          },
+          [](py::bytes state) {  // __setstate__
+            const std::string buffer = state.cast<std::string>();
+            sym::values_t lcm_values;
+            const auto decoded_bytes = lcm_values.decode(buffer.data(), 0, buffer.size());
+            if (decoded_bytes < 0) {
+              throw std::runtime_error("An error occured while decoding a Values object.");
+            }
+            return sym::Valuesd(lcm_values);
+          }));
   RegisterTypeWithValues<double>(values_class);
   RegisterTypeWithValues<sym::Rot2d>(values_class);
   RegisterTypeWithValues<sym::Rot3d>(values_class);

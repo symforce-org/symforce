@@ -6,6 +6,7 @@
 import dataclasses
 import math
 import numpy as np
+import pickle
 from scipy import sparse
 
 from symforce import cc_sym
@@ -95,6 +96,16 @@ class SymforceCCSymTest(TestCase):
 
         with self.subTest(msg="cc_sym.Key.get_lcm_type returns a key_t"):
             self.assertIsInstance(cc_sym.Key("a").get_lcm_type(), key_t)
+
+        with self.subTest(msg="cc_sym.Key is pickleable"):
+            for key in [
+                cc_sym.Key("a"),
+                cc_sym.Key("a", 1),
+                cc_sym.Key("a", 1, 2),
+                cc_sym.Key("a", cc_sym.Key.INVALID_SUB, 2),
+            ]:
+                key_dumps = pickle.dumps(key)
+                self.assertEqual(key, pickle.loads(key_dumps))
 
     def test_values(self) -> None:
         """
@@ -365,6 +376,18 @@ class SymforceCCSymTest(TestCase):
             self.assertTrue(v_copy.has(a))
             self.assertEqual(v_copy.at(a), v.at(a))
 
+        with self.subTest(msg="Can pickle Values"):
+            v = cc_sym.Values()
+            keys = []
+            for i, tp in enumerate(supported_types):
+                v.set(cc_sym.Key("x", i), instantiate_type(tp))
+                keys.append(cc_sym.Key("x", i))
+
+            pickled_v = pickle.loads(pickle.dumps(v))
+
+            for key in keys:
+                self.assertEqual(v.at(key), pickled_v.at(key))
+
     @staticmethod
     def pi_residual(
         x: T.Scalar,
@@ -540,6 +563,43 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(pi_factor.all_keys(), [pi_key])
             self.assertEqual(pi_factor.optimized_keys(), [pi_key])
 
+    @staticmethod
+    def compare_linearizations(lin1: cc_sym.Linearization, lin2: cc_sym.Linearization) -> bool:
+        return (
+            (lin1.residual == lin2.residual).all()
+            and (lin1.hessian_lower.toarray() == lin2.hessian_lower.toarray()).all()
+            and (lin1.jacobian.toarray() == lin2.jacobian.toarray()).all()
+            and (lin1.rhs == lin2.rhs).all()
+            and lin1.is_initialized() == lin2.is_initialized()
+        )
+
+    @staticmethod
+    def compare_optimization_stats(
+        stats1: cc_sym.OptimizationStats, stats2: cc_sym.OptimizationStats
+    ) -> bool:
+
+        TVar = T.TypeVar("TVar")
+
+        # NOTE(brad): Exists to make mypy happy
+        def unwrap(option: T.Optional[TVar]) -> TVar:
+            assert option is not None
+            return option
+
+        if (stats1.best_linearization is None) ^ (stats2.best_linearization is None):
+            return False
+        return (
+            stats1.iterations == stats2.iterations
+            and stats1.best_index == stats2.best_index
+            and stats1.early_exited == stats2.early_exited
+            and (
+                stats1.best_linearization is None
+                and stats2.best_linearization is None
+                or SymforceCCSymTest.compare_linearizations(
+                    unwrap(stats1.best_linearization), unwrap(stats2.best_linearization)
+                )
+            )
+        )
+
     def test_optimization_stats(self) -> None:
         """
         Tests:
@@ -567,6 +627,26 @@ class SymforceCCSymTest(TestCase):
         with self.subTest(msg="get_lcm_type is wrapped"):
             stats = cc_sym.OptimizationStats()
             self.assertIsInstance(stats.get_lcm_type(), optimization_stats_t)
+
+        with self.subTest(msg="Can pickle cc_sym.OptimizationStats"):
+
+            stats = cc_sym.OptimizationStats()
+            stats.iterations = [optimization_iteration_t(iteration=i) for i in range(4)]
+            stats.best_index = 1
+            stats.early_exited = True
+            stats.best_linearization = None
+
+            self.assertTrue(
+                self.compare_optimization_stats(stats, pickle.loads(pickle.dumps(stats)))
+            )
+
+            linearization = cc_sym.Linearization()
+            linearization.residual = np.array([1, 2, 3])
+            stats.best_linearization = linearization
+
+            self.assertTrue(
+                self.compare_optimization_stats(stats, pickle.loads(pickle.dumps(stats)))
+            )
 
     def test_optimizer(self) -> None:
         """
@@ -694,6 +774,28 @@ class SymforceCCSymTest(TestCase):
             self.assertIsInstance(lin.error(), T.Scalar)
             self.assertIsInstance(lin.linear_error(x_update=np.array([0.01])), T.Scalar)
             lin.linear_error(np.array([0.01]))
+
+        with self.subTest(msg="cc_sym.Linearization is pickleable"):
+
+            linearization = cc_sym.Linearization()
+            linearization.residual = np.array([1, 2, 3])
+            linearization.jacobian = sparse.csc_matrix([[1, 2], [3, 4], [5, 6]])
+            linearization.hessian_lower = sparse.csc_matrix([[35, 0], [44, 56]])
+            linearization.rhs = np.array([22, 28])
+
+            self.assertTrue(
+                self.compare_linearizations(
+                    linearization, pickle.loads(pickle.dumps(linearization))
+                )
+            )
+
+            linearization.set_initialized(True)
+
+            self.assertTrue(
+                self.compare_linearizations(
+                    linearization, pickle.loads(pickle.dumps(linearization))
+                )
+            )
 
         with self.subTest(msg="Optimizer.compute_all_covariances has been wrapped"):
             values = cc_sym.Values()

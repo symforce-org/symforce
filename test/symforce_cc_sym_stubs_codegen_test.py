@@ -50,6 +50,13 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             r"(def at\([^)]*\) ->) object", r"\1 typing.Any", self.cc_sym_stubgen_output()
         )
 
+        # Change type of OptimizationStats.best_linearization to be Optional[Linearization]
+        stubgen_output = re.sub(
+            "def best_linearization\(self\) -> object",
+            "def best_linearization(self) -> typing.Optional[Linearization]",
+            stubgen_output,
+        )
+
         @dataclass
         class TypeStubParts:
             lcm_include_type_names: T.List[str]
