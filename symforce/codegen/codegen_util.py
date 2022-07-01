@@ -340,18 +340,16 @@ def get_formatted_list(
             formatted_symbols = [sf.Symbol(key)]
             flattened_value = [value]
         elif issubclass(arg_cls, sf.Matrix):
-            if config.matrix_is_1d:
-                # TODO(nathan): Not sure this works for 2D matrices. Get rid of this.
-                formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
-            else:
-                # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
-                # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
-                # changed to, say, row major, the below for loops would have to be swapped to
-                # reflect that.
-                formatted_symbols = []
-                for j in range(value.shape[1]):
-                    for i in range(value.shape[0]):
-                        formatted_symbols.append(sf.Symbol(f"{key}({i}, {j})"))
+            # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
+            # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
+            # changed to, say, row major, the below for loops would have to be swapped to
+            # reflect that.
+            formatted_symbols = []
+            for j in range(value.shape[1]):
+                for i in range(value.shape[0]):
+                    formatted_symbols.append(
+                        sf.Symbol(config.format_matrix_accessor(key, i, j, shape=value.shape))
+                    )
 
             flattened_value = ops.StorageOps.to_storage(value)
 
@@ -457,9 +455,7 @@ def _get_scalar_keys_recursive(
                 )
             )
     elif issubclass(datatype, sf.Matrix) or not use_data:
-        # TODO(hayk): Fix this in follow-up.
-        # TODO(nathan): I don't think this deals with 2D matrices correctly
-        if config.matrix_is_1d and config.use_eigen_types:
+        if config.use_eigen_types:
             vec.extend(sf.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
         else:
             vec.extend(sf.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
