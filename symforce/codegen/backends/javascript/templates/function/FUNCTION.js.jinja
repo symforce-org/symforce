@@ -1,0 +1,11 @@
+{# ------------------------------------------------------------------------- #}
+{# Function codegen template for Javascript                                  #}
+{# ------------------------------------------------------------------------- #}
+{%- import "../util/util.jinja" as util with context -%}
+
+{% if spec.docstring %}
+{{ util.print_docstring(spec.docstring) }}
+{% endif %}
+{{ util.function_declaration(spec) -}} {
+{{ util.expr_code(spec) }}
+}

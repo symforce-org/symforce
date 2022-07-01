@@ -1,0 +1,97 @@
+{# ------------------------------------------------------------------------- #}
+{# Utilities for Javascript code generation templates.                           #}
+{# ------------------------------------------------------------------------- #}
+
+{# ------------------------------------------------------------------------- #}
+
+ {# Format function docstring
+ #
+ # Args:
+ #     docstring (str):
+ #}
+{% macro print_docstring(docstring) %}
+{%- if docstring %}
+
+/*
+{%- for line in docstring.split('\n') %}
+*{{ ' {}'.format(line).rstrip() }}
+{% endfor -%}
+*/
+{%- endif -%}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate function declaration
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro function_declaration(spec) -%}
+function {{ camelcase_to_snakecase(spec.name) }}(
+    {%- for name in spec.inputs.keys() -%}
+    {{ name }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%})
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro expr_code(spec) %}
+    // Total ops: {{ spec.print_code_results.total_ops }}
+
+    // Input arrays
+    {% for name, type in spec.inputs.items() %}
+        {% set T = python_util.get_type(type) %}
+        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
+    _{{ name }} = {{ name }}.data
+        {% endif %}
+    {% endfor %}
+
+    // Intermediate terms ({{ spec.print_code_results.intermediate_terms | length }})
+    {% for lhs, rhs in spec.print_code_results.intermediate_terms %}
+    const {{ lhs }} = {{ rhs }};
+    {% endfor %}
+
+    // Output terms ({{ spec.outputs.items() | length }})
+    {% for name, type, terms in spec.print_code_results.dense_terms %}
+        {%- set T = python_util.get_type(type) -%}
+        {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
+            {% set rows = type.shape[0] %}
+            {% set cols = type.shape[1] %}
+    let _{{ name }} = [...Array({{ rows }})].map(e => Array({{ cols }}));
+            {% set ns = namespace(iter=0) %}
+            {% for i in range(rows) %}
+                {% for j in range(cols) %}
+    _{{ name }}[{{ i }}][{{ j }}] = {{ terms[ns.iter][1] }};
+                    {% set ns.iter = ns.iter + 1 %}
+                {% endfor %}
+            {% endfor %}
+        {% elif not is_symbolic(type) %}
+            {% set dims = ops.StorageOps.storage_dim(type) %}
+    let _{{name}} = new Array({{ dims }});
+            {% for i in range(dims) %}
+    _{{ name }}[{{ i }}] = {{ terms[i][1] }};
+            {% endfor %}
+        {% else %}
+    const _{{name}} = {{ terms[0][1] }};
+        {% endif %}
+
+    {% endfor %}
+    return {
+    {% for name, type in spec.outputs.items() %}
+        {% set T = python_util.get_type(type) %}
+        {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
+      {{ name }}: _{{name}}
+        {%- else %}
+      {{ name }}: sym.{{T.__name__}}.from_storage(_{{name}})
+        {% endif %}
+        {% if not loop.last %}, {% endif %}
+
+    {% endfor %}
+    };
+{% endmacro %}

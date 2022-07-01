@@ -11,4 +11,5 @@ from .codegen import Codegen, LinearizationMode, GeneratedPaths
 from .codegen_config import CodegenConfig
 
 from .backends.cpp.cpp_config import CppConfig
+from .backends.javascript.javascript_config import JavascriptConfig
 from .backends.python.python_config import PythonConfig
