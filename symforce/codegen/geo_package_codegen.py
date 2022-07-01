@@ -225,7 +225,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
             templates.add(
                 template_dir / "geo_package" / "ops" / template_name,
-                package_dir / "geo_package" / "ops" / template_name[: -len(".jinja")],
+                package_dir / "ops" / template_name[: -len(".jinja")],
                 dict(Codegen.common_data()),
             )
 

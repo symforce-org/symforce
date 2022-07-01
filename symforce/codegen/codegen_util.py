@@ -345,10 +345,10 @@ def get_formatted_list(
                 # decide whether to use 1D or 2D indexing, depending on the language.
                 formatted_symbols = []
                 for i in range(value.shape[0]):
-                    formatted_symbols.append(sm.Symbol(config.format_matrix_accessor(key, i, None)))
+                    formatted_symbols.append(sf.Symbol(config.format_matrix_accessor(key, i, None)))
             else:
-                # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
-                # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
+                # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
+                # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
                 # changed to, say, row major, the below for loops would have to be swapped to
                 # reflect that.
                 formatted_symbols = []

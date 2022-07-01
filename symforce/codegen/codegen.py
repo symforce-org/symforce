@@ -22,7 +22,6 @@ from symforce import logger
 from symforce import python_util
 from symforce import typing as T
 from symforce.values import Values
-from symforce import codegen
 from symforce.codegen import template_util
 from symforce.codegen import codegen_util
 from symforce.codegen import codegen_config

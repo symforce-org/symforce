@@ -47,6 +47,8 @@ class FileType(enum.Enum):
             return FileType.LCM
         elif extension == "Makefile":
             return FileType.MAKEFILE
+        elif extension == "ts":
+            return FileType.TYPESCRIPT
         elif extension == "js":
             return FileType.JAVASCRIPT
         else:
