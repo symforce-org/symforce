@@ -9,6 +9,7 @@
 #ifndef __codegen_multi_function_test_inputs_constants_t_hpp__
 #define __codegen_multi_function_test_inputs_constants_t_hpp__
 
+#include <ostream>
 
 namespace codegen_multi_function_test
 {
@@ -89,6 +90,18 @@ class inputs_constants_t
         // Comparison operators.
         inline bool operator==(const inputs_constants_t& other) const;
         inline bool operator!=(const inputs_constants_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const inputs_constants_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "inputs_constants_t(";
+            stream << "epsilon=" << obj.epsilon;
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 inputs_constants_t::inputs_constants_t(

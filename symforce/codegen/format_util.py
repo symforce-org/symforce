@@ -57,7 +57,7 @@ def format_pyi(file_contents: str) -> str:
     return black.format_str(file_contents, mode=mode)
 
 
-def format_py_dir(dirname: str) -> None:
+def format_py_dir(dirname: T.Openable) -> None:
     """
     Autoformat python files in a directory (recursively) in-place
     """

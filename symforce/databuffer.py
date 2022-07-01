@@ -11,10 +11,9 @@ import sympy
 
 class DataBuffer(sympy.MatrixSymbol):
     """
-    Custom class for when using the sympy backend to make MatrixSymbol consistent with
-    symforce's custom 1-D Databuffer symengine
-    We want to force Databuffers to be 1-D since otherwise CSE will (rightfully) treat each index
-    as a separate expression.
+    Custom class to make sympy's MatrixSymbol consistent with symengine, where we have a custom
+    1-D Databuffer. We want to force Databuffers to be 1-D since otherwise CSE will (rightfully)
+    treat each index as a separate expression.
     """
 
     # HACK(harrison): needed to get around the flast that DataBuffer needs to be called from

@@ -178,9 +178,28 @@ class Notation(AstNode):
             allowed={"struct"},
             properties=[],
         ),  # enums are always hashable
-        # Emits a ostream operator for LCM types that only have primitive members.
-        "#cpp_display": NotationSpec(allowed={"struct"}, properties=[]),
+        # By default, types have a operator<< that prints a human-readable representation. On
+        # platforms where the `SKYMARSHAL_PRINTING_ENABLED` macro is NOT defined, the operator is
+        # defined, but does not print out a useful representation (it instead prints the constant
+        # string `"<FORMATTING DISABLED>"`).
+        #
+        # Types annotated as `#cpp_no_display` will have no operator<<. This annotation takes
+        # precedence over `#cpp_display_everywhere` and `SKYMARSHAL_PRINTING_ENABLED`. This is
+        # useful for types that define that operator elsewhere. If you are defining such an
+        # operator, make sure to respect `SKYMARSHAL_PRINTING_ENABLED`.
+        #
+        # A type annotated as `#cpp_display_everywhere` will have a useful human-readable
+        # representation regardless of `SKYMARSHAL_PRINTING_ENABLED`.
+        "#cpp_display_everywhere": NotationSpec(allowed={"struct"}, properties=[]),
+        "#cpp_no_display": NotationSpec(allowed={"struct"}, properties=[]),
     }
+
+    # If allow_unknown_notations is true, then any notation that doesn't match a NOTATION_SPECS
+    # prings a warning, and is allowed to have any properties, though those properties are not
+    # parsed.
+    # If allow_unknown_notations is false, then any notation that does not match a NOTATION_SPECS
+    # entry will raise a KeyError.
+    allow_unknown_notations = False
 
     def __init__(self, name, properties, lineno):
         super(Notation, self).__init__()
@@ -188,26 +207,35 @@ class Notation(AstNode):
         self.raw_properties = properties
         self.lineno = lineno
 
-        if name not in self.NOTATION_SPECS:
-            raise KeyError("Unknown notation: {}".format(name))
+        self.spec = None
+        try:
+            self.spec = self.NOTATION_SPECS[name]
+        except KeyError:
+            if self.allow_unknown_notations:
+                print("Warning: Unknown notation: {}".format(name))
+            else:
+                raise KeyError("Unknown notation: {}".format(name))
 
-        self.spec = self.NOTATION_SPECS[name]
+        # Only check properties if this is a known notation.
+        if self.spec is not None:
+            provided_props = set(self.raw_properties.keys())
+            allowed_props = {prop.name for prop in self.spec.properties}
 
-        provided_props = set(self.raw_properties.keys())
-        allowed_props = {prop.name for prop in self.spec.properties}
+            unknown_props = provided_props - allowed_props
+            if unknown_props:
+                raise KeyError(
+                    "Unknown properties for notation {}: {}".format(name, sorted(unknown_props))
+                )
 
-        unknown_props = provided_props - allowed_props
-        if unknown_props:
-            raise KeyError(
-                "Unknown properties for notation {}: {}".format(name, sorted(unknown_props))
-            )
-
-        # parse the property values
-        self.properties = {
-            prop: self.parse_property(prop, value) for prop, value in self.raw_properties.items()
-        }
+            # Parse the property values
+            self.properties = {
+                prop: self.parse_property(prop, value)
+                for prop, value in self.raw_properties.items()
+            }
 
     def parse_property(self, prop_name, raw_value):
+        if self.spec is None:
+            return
         [prop_spec] = [spec for spec in self.spec.properties if spec.name == prop_name]
         if prop_spec.type == "string":
             if '"' not in raw_value:
@@ -233,10 +261,10 @@ class Notation(AstNode):
             raise AssertionError("unhandled prop_spec.type: {}".format(prop_spec.type))
 
     def allowed_on_enum(self):
-        return "enum" in self.spec.allowed
+        return self.spec is None or "enum" in self.spec.allowed
 
     def allowed_on_struct(self):
-        return "struct" in self.spec.allowed
+        return self.spec is None or "struct" in self.spec.allowed
 
     def __repr__(self):
         properties = ", ".join(

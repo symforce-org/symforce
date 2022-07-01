@@ -23,8 +23,8 @@ class SubProblem(ABC):
         class MySubProblem(SubProblem):
             @dataclass
             class Inputs:
-                x: T.Scalar
-                pose: geo.Pose3
+                x: sf.Scalar
+                pose: sf.Pose3
                 objective_params: MyObjective.Params
 
             # Optional, but helpful for type checking

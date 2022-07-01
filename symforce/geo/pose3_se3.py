@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from symforce.ops.interfaces.lie_group import LieGroup
 from symforce import typing as T
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 
 from .matrix import Matrix
 from .matrix import Matrix14
@@ -35,7 +35,7 @@ class Pose3_SE3(Pose3):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3_SE3:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose3_SE3:
         R_tangent = (v[0], v[1], v[2])
         t_tangent_vector = Vector3(v[3], v[4], v[5])
 
@@ -43,20 +43,20 @@ class Pose3_SE3(Pose3):
         R_hat = Rot3.hat(R_tangent)
         R_hat_sq = R_hat * R_hat
         R_tangent_vector = Vector3(R_tangent)
-        theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon ** 2)
+        theta = sf.sqrt(R_tangent_vector.squared_norm() + epsilon ** 2)
 
         V = (
             Matrix.eye(3)
-            + (1 - sm.cos(theta)) / (theta ** 2) * R_hat
-            + (theta - sm.sin(theta)) / (theta ** 3) * R_hat_sq
+            + (1 - sf.cos(theta)) / (theta ** 2) * R_hat
+            + (theta - sf.sin(theta)) / (theta ** 3) * R_hat_sq
         )
 
         return cls(R, V * t_tangent_vector)
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         R_tangent = self.R.to_tangent(epsilon=epsilon)
         R_tangent_vector = Vector3(R_tangent)
-        theta = sm.sqrt(R_tangent_vector.squared_norm() + epsilon)
+        theta = sf.sqrt(R_tangent_vector.squared_norm() + epsilon)
         R_hat = Rot3.hat(R_tangent)
 
         half_theta = 0.5 * theta
@@ -64,7 +64,7 @@ class Pose3_SE3(Pose3):
         V_inv = (
             Matrix.eye(3)
             - 0.5 * R_hat
-            + (1 - theta * sm.cos(half_theta) / (2 * sm.sin(half_theta)))
+            + (1 - theta * sf.cos(half_theta) / (2 * sf.sin(half_theta)))
             / (theta * theta)
             * (R_hat * R_hat)
         )
@@ -91,10 +91,10 @@ class Pose3_SE3(Pose3):
             [[tangent_D_storage_R, Matrix.zeros(3, 3)], [Matrix.zeros(3, 4), tangent_D_storage_t]]
         )
 
-    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose3_SE3:
+    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose3_SE3:
         return LieGroup.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b: Pose3_SE3, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Pose3_SE3, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         return LieGroup.local_coordinates(self, b, epsilon)
 
     # -------------------------------------------------------------------------

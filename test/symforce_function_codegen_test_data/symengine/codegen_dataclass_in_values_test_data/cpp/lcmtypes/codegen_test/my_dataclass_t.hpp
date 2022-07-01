@@ -9,6 +9,7 @@
 #ifndef __codegen_test_my_dataclass_t_hpp__
 #define __codegen_test_my_dataclass_t_hpp__
 
+#include <ostream>
 #include "lcmtypes/eigen_lcm/Vector4d.hpp"
 
 namespace codegen_test
@@ -101,6 +102,18 @@ class my_dataclass_t
         // Comparison operators.
         inline bool operator==(const my_dataclass_t& other) const;
         inline bool operator!=(const my_dataclass_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const my_dataclass_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "my_dataclass_t(";
+            stream << "rot=<EIGEN_LCM TYPE eigen_lcm.Vector4d>";
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 my_dataclass_t::my_dataclass_t(

@@ -105,6 +105,7 @@ disable=raw-checker-failed,
         unnecessary-pass,
         unspecified-encoding,
         wrong-import-position,
+        unnecessary-lambda-assignment,
 
         # These have some false positives and mypy seems to handle them much better
         abstract-method,

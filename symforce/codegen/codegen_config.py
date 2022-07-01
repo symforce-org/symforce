@@ -2,17 +2,18 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-from __future__ import annotations
 from abc import abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
+from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
 
 CURRENT_DIR = Path(__file__).parent
 
 
-@dataclass
+# TODO(hayk): Address this type ignore, which comes from having abstract methods on a dataclass.
+@dataclass  # type: ignore
 class CodegenConfig:
     """
     Base class for backend-specific arguments for code generation.
@@ -23,7 +24,8 @@ class CodegenConfig:
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
-        cse_optimizations: Optimizations argument to pass to sm.cse
+        cse_optimizations: Optimizations argument to pass to sf.cse
+        matrix_is_1d: Whether sf.Matrix symbols get formatted as 1D
     """
 
     doc_comment_line_prefix: str
@@ -33,6 +35,8 @@ class CodegenConfig:
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None
+    # TODO(hayk): Remove this parameter (by making everything 2D?)
+    matrix_is_1d: bool = False
 
     @classmethod
     @abstractmethod
@@ -60,7 +64,7 @@ class CodegenConfig:
         pass
 
     @abstractmethod
-    def printer(self) -> "sympy.CodePrinter":
+    def printer(self) -> CodePrinter:
         """
         Return an instance of the code printer to use for this language.
         """

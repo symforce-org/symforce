@@ -56,6 +56,11 @@ set(SYMFORCE_LCMTYPES_TARGET "" CACHE STRING
   "If SYMFORCE_LCMTYPES_EXTERNAL is on, this should be the name of a target we can depend on to get the already generated LCM types"
 )
 
+option(SYMFORCE_SKYMARSHAL_PRINTING
+  "Define SKYMARSHAL_PRINTING_ENABLED so that LCM types can be printed in C++"
+  ON
+)
+
 # ------------------------------------------------------------------------------
 # Misc
 
@@ -64,9 +69,15 @@ option(SYMFORCE_BUILD_STATIC_LIBRARIES
   OFF
 )
 
-find_program(SYMFORCE_DEFAULT_PYTHON python3 NO_CACHE)
-set(SYMFORCE_PYTHON "${SYMFORCE_DEFAULT_PYTHON}" CACHE STRING "Python executable to use")
-
+set(SYMFORCE_PYTHON_OVERRIDE "" CACHE STRING
+  "Python executable to use - if empty (the default), find python in the environment"
+)
+if(SYMFORCE_PYTHON_OVERRIDE STREQUAL "")
+  find_program(SYMFORCE_DEFAULT_PYTHON python3 NO_CACHE)
+  set(SYMFORCE_PYTHON ${SYMFORCE_DEFAULT_PYTHON})
+else()
+  set(SYMFORCE_PYTHON ${SYMFORCE_PYTHON_OVERRIDE})
+endif()
 
 set(SYMFORCE_SYMENGINE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/symengine_install CACHE STRING
   "Directory to install symengine"
@@ -86,6 +97,11 @@ set(SYMFORCE_EIGEN_TARGET "Eigen3::Eigen" CACHE STRING
 # Setup
 # ==============================================================================
 
+# If we're cross-compiling macOS arm64 wheels, set the architecture appropriately
+if("$ENV{CIBW_ARCHS_MACOS}" STREQUAL "arm64")
+  set(CMAKE_OSX_ARCHITECTURES arm64)
+endif()
+
 if(SYMFORCE_BUILD_STATIC_LIBRARIES)
   set(SYMFORCE_LIBRARY_TYPE STATIC)
 else()
@@ -101,6 +117,10 @@ if(SYMFORCE_BUILD_CC_SYM
       "Attempting to build targets that depend on symforce_opt, without building symforce_opt"
     )
   endif()
+endif()
+
+if(SYMFORCE_BUILD_TESTS AND NOT SYMFORCE_BUILD_EXAMPLES)
+  message(FATAL_ERROR "Attempting to build tests without building examples, which is not supported")
 endif()
 
 # ==============================================================================
@@ -180,14 +200,27 @@ else()
     LANGUAGES python
   )
 
+  # Install eigen_lcm headers.  Probably only want this when SYMFORCE_USE_EXTERNAL_LCM==OFF, but not
+  # sure
+  # TODO(aaron): Move this into skymarshal when we move eigen_lcm into skymarshal
+  install(DIRECTORY third_party/eigen_lcm/lcmtypes/eigen_lcm_lcm/cpp/ DESTINATION include)
+
   add_custom_target(symforce_eigen_lcm_py ALL DEPENDS eigen_lcm_py)
 
   # Get SymForce version
   execute_process(
     COMMAND ${SYMFORCE_PYTHON} -c "from _version import version; print(version, end='')"
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/symforce
+    RESULT_VARIABLE STATUS
     OUTPUT_VARIABLE SYMFORCE_VERSION
+    ERROR_VARIABLE SYMFORCE_VERSION_STDERR
   )
+  if(STATUS AND NOT STATUS EQUAL 0)
+    message(FATAL_ERROR
+      "Failed getting symforce version with exit code ${STATUS} and output ${SYMFORCE_VERSION}, stderr ${SYMFORCE_VERSION_STDERR}"
+    )
+  endif()
+
   file(WRITE
     ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/setup.py
     "
@@ -205,6 +238,10 @@ setup(
 )
     "
   )
+endif()
+
+if(SYMFORCE_SKYMARSHAL_PRINTING)
+  target_compile_definitions(symforce_lcmtypes_cpp INTERFACE SKYMARSHAL_PRINTING_ENABLED)
 endif()
 
 # ------------------------------------------------------------------------------
@@ -268,24 +305,23 @@ endif()
 
 if(SYMFORCE_GENERATE_MANIFEST)
   function(generate_manifest)
-    get_target_property(eigen_include_dirs ${SYMFORCE_EIGEN_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(spdlog_include_dirs spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
-
-    if (SYMFORCE_BUILD_TESTS)
-      get_target_property(catch2_include_dirs symforce_catch2 INTERFACE_INCLUDE_DIRECTORIES)
-    endif()
-
     execute_process(
       COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_manifest.py
-                                --eigen_include_dirs "${eigen_include_dirs}"
-                                --spdlog_include_dirs "${spdlog_include_dirs}"
-                                --catch2_include_dirs "${catch2_include_dirs}"
                                 --symenginepy_install_dir "${SYMFORCE_SYMENGINE_INSTALL_PREFIX}"
                                 --cc_sym_install_dir "${SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH}"
                                 --binary_output_dir "${CMAKE_BINARY_DIR}"
                                 # TODO(aaron): Put this somewhere smarter
                                 --manifest_path ${CMAKE_CURRENT_SOURCE_DIR}/build/manifest.json
+      RESULT_VARIABLE STATUS
+      OUTPUT_VARIABLE GENERATE_MANIFEST_OUTPUT
+      ERROR_VARIABLE GENERATE_MANIFEST_OUTPUT
     )
+
+    if(STATUS AND NOT STATUS EQUAL 0)
+      message(FATAL_ERROR
+        "Failed generating manifest with exit code ${STATUS} and output ${GENERATE_MANIFEST_OUTPUT}"
+      )
+    endif()
   endfunction()
 
   generate_manifest()
@@ -306,6 +342,8 @@ if(SYMFORCE_BUILD_SYMENGINE)
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                -DBUILD_TESTS=OFF
                -DBUILD_BENCHMARKS=OFF
+               -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+               -DCMAKE_POLICY_DEFAULT_CMP0074=NEW
   )
 
   # ------------------------------------------------------------------------------
@@ -315,16 +353,21 @@ if(SYMFORCE_BUILD_SYMENGINE)
     DEPENDS symengine
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/third_party/symenginepy
     CONFIGURE_COMMAND ""
+    # TODO(aaron): This depends on SYMFORCE_PYTHON, which can change between builds (e.g. when
+    # running `python -m build` multiple times on the same build directory), currently if you're
+    # doing that you need to clean this manually
     BUILD_COMMAND ${SYMFORCE_PYTHON} ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
         --verbose
         build_ext
         --build-type=Release
         --symengine-dir ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}/lib/
+        --define CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
     INSTALL_COMMAND env ${SYMENGINEPY_INSTALL_ENV} ${SYMFORCE_PYTHON}
         ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
         --verbose
         install
         --prefix ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}
+        --define CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
   )
 
   # Rebuild symengine[py] on changed files

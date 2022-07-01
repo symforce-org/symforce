@@ -15,10 +15,10 @@ import unittest
 from symforce import logger
 from symforce import python_util
 from symforce import typing as T
-from symforce import geo
 from symforce.ops import interfaces
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
+import symforce.symbolic as sf
 
 
 class SymforceTestCaseMixin(unittest.TestCase):
@@ -26,7 +26,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
     Mixin for SymForce tests, adds useful helpers for code generation
     """
 
-    LieGroupOpsType = T.Union[interfaces.LieGroup, T.Scalar]
+    LieGroupOpsType = T.Union[interfaces.LieGroup, sf.Scalar]
 
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing
@@ -88,7 +88,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         # Compute the tangent space pertubation around `actual` that produces `desired`
         local_coordinates = LieGroupOps.local_coordinates(actual, desired, epsilon=epsilon)
         # Compute the identity tangent space pertubation to compare against
-        identity = geo.Matrix.zeros(LieGroupOps.tangent_dim(actual), 1)
+        identity = sf.Matrix.zeros(LieGroupOps.tangent_dim(actual), 1)
         return np.testing.assert_almost_equal(
             actual=StorageOps.evalf(local_coordinates),
             desired=StorageOps.to_storage(identity),

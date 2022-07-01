@@ -8,7 +8,7 @@ from __future__ import annotations
 import numpy as np
 
 from symforce.ops.interfaces import Group
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .matrix import Vector3
@@ -71,7 +71,7 @@ class Quaternion(Group):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> Quaternion:
-        return cls.from_storage([sm.Symbol(f"{name}_{v}", **kwargs) for v in ["x", "y", "z", "w"]])
+        return cls.from_storage([sf.Symbol(f"{name}_{v}", **kwargs) for v in ["x", "y", "z", "w"]])
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
@@ -137,7 +137,7 @@ class Quaternion(Group):
         Returns:
             Quaternion:
         """
-        denom = sm.S.One / scalar
+        denom = sf.S.One / scalar
         return self.__class__(xyz=self.xyz * denom, w=self.w * denom)
 
     __truediv__ = __div__
@@ -180,7 +180,7 @@ class Quaternion(Group):
 
     @classmethod
     def unit_random_from_uniform_samples(
-        cls, u1: T.Scalar, u2: T.Scalar, u3: T.Scalar, pi: T.Scalar = sm.pi
+        cls, u1: T.Scalar, u2: T.Scalar, u3: T.Scalar, pi: T.Scalar = sf.pi
     ) -> Quaternion:
         """
         Generate a random unit quaternion from three variables uniformly sampled in [0, 1].
@@ -188,12 +188,12 @@ class Quaternion(Group):
         Reference:
             http://planning.cs.uiuc.edu/node198.html
         """
-        w = sm.sqrt(u1) * sm.cos(2 * pi * u3)
+        w = sf.sqrt(u1) * sf.cos(2 * pi * u3)
         return Quaternion(
             xyz=Vector3(
-                sm.sqrt(1 - u1) * sm.sin(2 * pi * u2),
-                sm.sqrt(1 - u1) * sm.cos(2 * pi * u2),
-                sm.sqrt(u1) * sm.sin(2 * pi * u3),
+                sf.sqrt(1 - u1) * sf.sin(2 * pi * u2),
+                sf.sqrt(1 - u1) * sf.cos(2 * pi * u2),
+                sf.sqrt(u1) * sf.sin(2 * pi * u3),
             ),
             w=w,
         )

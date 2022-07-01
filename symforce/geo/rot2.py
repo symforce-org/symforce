@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from symforce.ops.interfaces.lie_group import LieGroup
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .complex import Complex
@@ -79,13 +79,13 @@ class Rot2(LieGroup):
         return 1
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Rot2:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Rot2:
         assert len(v) == 1
         theta = v[0]
-        return Rot2(Complex(sm.cos(theta), sm.sin(theta)))
+        return Rot2(Complex(sf.cos(theta), sf.sin(theta)))
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
-        return [sm.atan2(self.z.imag, self.z.real, epsilon=epsilon)]
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
+        return [sf.atan2(self.z.imag, self.z.real, epsilon=epsilon)]
 
     @classmethod
     def hat(cls, vec: T.Sequence[T.Scalar]) -> Matrix22:
@@ -151,7 +151,7 @@ class Rot2(LieGroup):
         return Rot2(Complex.unit_random())
 
     @classmethod
-    def random_from_uniform_sample(cls, u1: T.Scalar, pi: T.Scalar = sm.pi) -> Rot2:
+    def random_from_uniform_sample(cls, u1: T.Scalar, pi: T.Scalar = sf.pi) -> Rot2:
         """
         Generate a random element of SO2 from a variable uniformly sampled on [0, 1].
         """

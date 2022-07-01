@@ -5,7 +5,7 @@
 
 import sym
 from symforce import codegen
-from symforce import geo
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
@@ -20,8 +20,8 @@ class GeneratedResidualCacheTest(TestCase):
 
     def example_index_keys_and_residual(self) -> T.Tuple[SimilarityIndex, T.Set[str], T.Callable]:
         index = SimilarityIndex(
-            inputs=Values(rot=geo.Rot3.symbolic("a")),
-            outputs=Values(out=geo.Rot3.symbolic("a").inverse()),
+            inputs=Values(rot=sf.Rot3.symbolic("a")),
+            outputs=Values(out=sf.Rot3.symbolic("a").inverse()),
             config=codegen.PythonConfig(),
             return_key="out",
             sparse_matrices=[],

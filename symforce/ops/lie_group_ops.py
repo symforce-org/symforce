@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 from symforce import logger
 from symforce.python_util import get_type
@@ -53,7 +54,7 @@ class LieGroupOps(GroupOps):
 
     @staticmethod
     def from_tangent(
-        a: T.ElementOrType, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0
+        a: T.ElementOrType, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> T.Element:
         """
         Mapping from the tangent space approximation at identity into a group element of type a.
@@ -63,7 +64,7 @@ class LieGroupOps(GroupOps):
 
         Args:
             a:
-            vec: Tangent space pertubation
+            vec: Tangent space perturbation
             epsilon: Small number to avoid singularity
 
         Returns:
@@ -72,7 +73,7 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).from_tangent(a, vec, epsilon)
 
     @staticmethod
-    def to_tangent(a: T.Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(a: T.Element, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         """
         Mapping from this element to the tangent space approximation at identity.
 
@@ -81,15 +82,17 @@ class LieGroupOps(GroupOps):
             epsilon: Small number to avoid singularity
 
         Returns:
-            list: Tangent space pertubation around identity that approximates a.
+            list: Tangent space perturbation around identity that approximates a.
         """
         type_a = get_type(a)
         return LieGroupOps.implementation(type_a).to_tangent(a, epsilon)
 
     @staticmethod
-    def retract(a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> T.Element:
+    def retract(
+        a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
+    ) -> T.Element:
         """
-        Apply a tangent space pertubation vec to the group element a. Often used in optimization
+        Apply a tangent space perturbation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
         Implementation is simply `compose(a, from_tangent(vec))`.
@@ -105,9 +108,11 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).retract(a, vec, epsilon)
 
     @staticmethod
-    def local_coordinates(a: T.Element, b: T.Element, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(
+        a: T.Element, b: T.Element, epsilon: T.Scalar = sf.epsilon()
+    ) -> T.List[T.Scalar]:
         """
-        Computes a tangent space pertubation around a to produce b. Often used in optimization
+        Computes a tangent space perturbation around a to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
         Implementation is simply `to_tangent(between(a, b))`.
@@ -118,7 +123,7 @@ class LieGroupOps(GroupOps):
             epsilon: Small number to avoid singularity
 
         Returns:
-            list: Tangent space pertubation that conceptually represents "b - a"
+            list: Tangent space perturbation that conceptually represents "b - a"
         """
         return LieGroupOps.implementation(get_type(a)).local_coordinates(a, b, epsilon)
 

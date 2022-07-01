@@ -6,15 +6,17 @@
 import itertools
 import re
 
-from symforce import geo
+from symforce import logger
 from symforce import ops
+from symforce import typing as T
+from symforce.codegen import codegen_config
+from symforce.codegen.backends.cpp.cpp_config import CppConfig
+from symforce.codegen.backends.python.python_config import PythonConfig
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.opt.sub_problem import SubProblem
-from symforce import typing as T
+import symforce.symbolic as sf
 from symforce.values import Values
-from symforce.codegen import codegen_config
-from symforce import logger
 
 
 class OptimizationProblem:
@@ -107,7 +109,7 @@ class OptimizationProblem:
         namespace: str,
         name: str,
         sparse_linearization: bool = False,
-        config: codegen_config.CppConfig = None,
+        config: CppConfig = None,
     ) -> None:
         """
         Generate everything needed to optimize `problem` in C++. This currently assumes there is
@@ -122,7 +124,7 @@ class OptimizationProblem:
                 factor.
         """
         if config is None:
-            config = codegen_config.CppConfig()
+            config = CppConfig()
 
         # Generate the C++ code for the residual linearization function
         factors = self.make_symbolic_factors(name=name, config=config)
@@ -155,7 +157,7 @@ class OptimizationProblem:
             config: Language the factors will be generated in when `.generate()` is called.
         """
         if config is None:
-            config = codegen_config.PythonConfig()
+            config = PythonConfig()
 
         inputs = self.inputs.dataclasses_to_values()
 
@@ -173,7 +175,7 @@ class OptimizationProblem:
                 re.sub(leading_trailing_dots_and_brackets_regex, "", s),
             )
 
-        def compute_jacobians(keys: T.Iterable[str]) -> geo.Matrix:
+        def compute_jacobians(keys: T.Iterable[str]) -> sf.Matrix:
             """
             Functor that computes the jacobians of the residual with respect to a set of keys
 
@@ -187,7 +189,7 @@ class OptimizationProblem:
                 )
                 for residual_key, residual_block in self.residual_blocks.items_recursive()
             ]
-            return geo.Matrix.block_matrix(jacobians)
+            return sf.Matrix.block_matrix(jacobians)
 
         return [
             Factor.from_inputs_and_residual(
@@ -198,7 +200,7 @@ class OptimizationProblem:
                         for key, value in inputs.items_recursive()
                     }
                 ),
-                residual=geo.M(self.residuals.to_storage()),
+                residual=sf.M(self.residuals.to_storage()),
                 config=config,
                 custom_jacobian_func=compute_jacobians,
                 name=name,
@@ -222,7 +224,7 @@ class OptimizationProblem:
             optimized_keys = self.optimized_keys()
         numeric_factors = []
         # we temp generate the factors, so skip formating to save time
-        config = codegen_config.PythonConfig(autoformat=False)
+        config = PythonConfig(autoformat=False)
         for factor in self.make_symbolic_factors(name, config=config):
             factor_optimized_keys = [
                 opt_key for opt_key in optimized_keys if opt_key in factor.keys

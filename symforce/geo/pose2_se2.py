@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from symforce.ops.interfaces.lie_group import LieGroup
 from symforce import typing as T
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 
 from .matrix import Matrix
 from .matrix import Matrix13
@@ -36,27 +36,27 @@ class Pose2_SE2(Pose2):
     # -------------------------------------------------------------------------
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2_SE2:
         theta = v[0]
         R = Rot2.from_tangent([theta], epsilon=epsilon)
 
-        a = (R.z.imag + epsilon * sm.sign_no_zero(R.z.imag)) / (
-            theta + epsilon * sm.sign_no_zero(theta)
+        a = (R.z.imag + epsilon * sf.sign_no_zero(R.z.imag)) / (
+            theta + epsilon * sf.sign_no_zero(theta)
         )
-        b = (1 - R.z.real) / (theta + epsilon * sm.sign_no_zero(theta))
+        b = (1 - R.z.real) / (theta + epsilon * sf.sign_no_zero(theta))
 
         t = Vector2(a * v[1] - b * v[2], b * v[1] + a * v[2])
         return cls(R, t)
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         # This uses atan2, so the resulting theta is between -pi and pi
         theta = self.R.to_tangent(epsilon=epsilon)[0]
 
-        halftheta = 0.5 * (theta + sm.sign_no_zero(theta) * epsilon)
+        halftheta = 0.5 * (theta + sf.sign_no_zero(theta) * epsilon)
         a = (
             halftheta
             * (1 + self.R.z.real)
-            / (self.R.z.imag + sm.sign_no_zero(self.R.z.imag) * epsilon)
+            / (self.R.z.imag + sf.sign_no_zero(self.R.z.imag) * epsilon)
         )
 
         V_inv = Matrix([[a, halftheta], [-halftheta, a]])
@@ -83,10 +83,10 @@ class Pose2_SE2(Pose2):
             [[tangent_D_storage_R, Matrix.zeros(1, 2)], [Matrix.zeros(2, 2), tangent_D_storage_t]]
         )
 
-    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Pose2_SE2:
+    def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2_SE2:
         return LieGroup.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         return LieGroup.local_coordinates(self, b, epsilon)
 
     # -------------------------------------------------------------------------

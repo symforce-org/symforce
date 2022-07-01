@@ -8,13 +8,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 
-from symforce import geo
 from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt.sub_problem import SubProblem
 from symforce.opt.residual_block import ResidualBlock, ResidualBlockWithCustomJacobian
 from symforce.opt.optimization_problem import OptimizationProblem
 from symforce.python_util import AttrDict
+import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.values import Values
 
@@ -33,8 +33,8 @@ class SymforceOptimizationProblemTest(TestCase):
         class WrongCustomJacobianSubProblem(SubProblem):
             @dataclass
             class Inputs:
-                v: geo.V3
-                v0: geo.V3
+                v: sf.V3
+                v0: sf.V3
 
             inputs: WrongCustomJacobianSubProblem.Inputs
 
@@ -68,9 +68,9 @@ class SymforceOptimizationProblemTest(TestCase):
         class CustomJacobianSubProblem(SubProblem):
             @dataclass
             class Inputs:
-                v: geo.V3
-                v0: geo.V3
-                a: geo.V1
+                v: sf.V3
+                v0: sf.V3
+                a: sf.V1
 
             inputs: CustomJacobianSubProblem.Inputs
 
@@ -79,7 +79,7 @@ class SymforceOptimizationProblemTest(TestCase):
                 residual_blocks["residual"] = ResidualBlockWithCustomJacobian(
                     residual=10 * (self.inputs.v - self.inputs.v0),
                     extra_values=None,
-                    custom_jacobians={self.inputs.v: 5 * geo.Matrix.eye(3, 3)},
+                    custom_jacobians={self.inputs.v: 5 * sf.Matrix.eye(3, 3)},
                 )
                 residual_blocks["residual_a"] = ResidualBlock(
                     residual=self.inputs.a,
@@ -136,21 +136,21 @@ class SymforceOptimizationProblemTest(TestCase):
         class CustomSubProblem(SubProblem):
             @dataclass
             class Inputs:
-                rot: geo.Rot3
-                rot0: geo.Rot3
+                rot: sf.Rot3
+                rot0: sf.Rot3
 
             inputs: CustomSubProblem.Inputs
 
             def build_residuals(self) -> Values:
                 residual_blocks = Values()
                 residual_blocks["residual"] = ResidualBlock(
-                    residual=geo.V1(self.inputs.rot.angle_between(self.inputs.rot0)),
+                    residual=sf.V1(self.inputs.rot.angle_between(self.inputs.rot0)),
                     extra_values=None,
                 )
                 return residual_blocks
 
             def optimized_values(self) -> T.List[T.Any]:
-                return [geo.V4(self.inputs.rot.to_storage())]
+                return [sf.V4(self.inputs.rot.to_storage())]
 
         custom_subproblem = CustomSubProblem()
         r = Values(custom_jacobian_subproblem=custom_subproblem.build_residuals())

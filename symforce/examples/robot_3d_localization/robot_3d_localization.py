@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 """
-Demonstrates solving a 3D triangulation problem with SymForce. A robot moving
+Demonstrates solving a 3D localization problem with SymForce. A robot moving
 in 3D performs scan matching and gets relative translation constraints to landmarks
 in the environment. It also has odometry constraints between its poses. The goal is
 to estimate the trajectory of the robot given known landmarks and noisy measurements.
@@ -16,21 +16,20 @@ to estimate the trajectory of the robot given known landmarks and noisy measurem
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce
-from symforce import geo
 from symforce import logger
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
-if symforce.get_backend() != "symengine":
-    logger.warning("The 3D Localization example is very slow on the sympy backend")
+if symforce.get_symbolic_api() != "symengine":
+    logger.warning("The 3D Localization example is very slow on sympy. Use symengine.")
 
 NUM_POSES = 5
 NUM_LANDMARKS = 20
 
 
 def matching_residual(
-    world_T_body: geo.Pose3, world_t_landmark: geo.V3, body_t_landmark: geo.V3, sigma: T.Scalar
-) -> geo.V3:
+    world_T_body: sf.Pose3, world_t_landmark: sf.V3, body_t_landmark: sf.V3, sigma: sf.Scalar
+) -> sf.V3:
     """
     Residual from a relative translation mesurement of a 3D pose to a landmark.
 
@@ -45,12 +44,12 @@ def matching_residual(
 
 
 def odometry_residual(
-    world_T_a: geo.Pose3,
-    world_T_b: geo.Pose3,
-    a_T_b: geo.Pose3,
-    diagonal_sigmas: geo.V6,
-    epsilon: T.Scalar,
-) -> geo.V6:
+    world_T_a: sf.Pose3,
+    world_T_b: sf.Pose3,
+    a_T_b: sf.Pose3,
+    diagonal_sigmas: sf.V6,
+    epsilon: sf.Scalar,
+) -> sf.V6:
     """
     Residual on the relative pose between two timesteps of the robot.
 
@@ -63,7 +62,7 @@ def odometry_residual(
     """
     a_T_b_predicted = world_T_a.inverse() * world_T_b
     tangent_error = a_T_b_predicted.local_coordinates(a_T_b, epsilon=epsilon)
-    return T.cast(geo.V6, geo.M.diag(diagonal_sigmas.to_flat_list()).inv() * geo.V6(tangent_error))
+    return T.cast(sf.V6, sf.M.diag(diagonal_sigmas.to_flat_list()).inv() * sf.V6(tangent_error))
 
 
 # -----------------------------------------------------------------------------
@@ -110,8 +109,8 @@ from symforce.values import Values
 import sym
 
 
-def build_residual(num_poses: int, num_landmarks: int, values: Values) -> geo.Matrix:
-    residuals: T.List[geo.Matrix] = []
+def build_residual(num_poses: int, num_landmarks: int, values: Values) -> sf.Matrix:
+    residuals: T.List[sf.Matrix] = []
     for i in range(num_poses):
         for j in range(num_landmarks):
             residuals.append(
@@ -134,7 +133,7 @@ def build_residual(num_poses: int, num_landmarks: int, values: Values) -> geo.Ma
             )
         )
 
-    return geo.Matrix.block_matrix([[residual] for residual in residuals])
+    return sf.Matrix.block_matrix([[residual] for residual in residuals])
 
 
 def build_values(num_poses: int) -> T.Tuple[Values, int]:
@@ -159,7 +158,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
             ]
         )
         gt_world_T_body.append(
-            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sm.default_epsilon)
+            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sf.numeric_epsilon)
         )
 
     # Set the initial guess either to ground truth or identity
@@ -207,7 +206,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
         list(m) for m in values["body_t_landmark_measurements"]
     )
 
-    values["epsilon"] = sm.default_epsilon
+    values["epsilon"] = sf.numeric_epsilon
 
     return values, num_landmarks
 
@@ -262,6 +261,7 @@ def main() -> None:
 from pathlib import Path
 from symforce.codegen import Codegen, CodegenConfig, CppConfig, values_codegen, template_util
 import re
+import shutil
 import textwrap
 
 
@@ -276,14 +276,14 @@ def build_codegen_object(num_poses: int, config: CodegenConfig = None) -> Codege
 
     def symbolic(k: str, v: T.Any) -> T.Any:
         if isinstance(v, sym.Pose3):
-            return geo.Pose3.symbolic(k)
+            return sf.Pose3.symbolic(k)
         elif isinstance(v, np.ndarray):
             if len(v.shape) == 1:
-                return geo.Matrix(v.shape[0], 1).symbolic(k)
+                return sf.Matrix(v.shape[0], 1).symbolic(k)
             else:
-                return geo.Matrix(*v.shape).symbolic(k)
+                return sf.Matrix(*v.shape).symbolic(k)
         elif isinstance(v, float):
-            return sm.Symbol(k)
+            return sf.Symbol(k)
         else:
             assert False, k
 
@@ -323,7 +323,7 @@ def build_codegen_object(num_poses: int, config: CodegenConfig = None) -> Codege
     return linearization_func
 
 
-def generate_matching_residual_code(output_dir: Path) -> None:
+def generate_matching_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
     """
     Generate C++ code for the matching residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -336,10 +336,19 @@ def generate_matching_residual_code(output_dir: Path) -> None:
     codegen_with_linearization = codegen.with_linearization(which_args=["world_T_body"])
 
     # Generate the function and print the code
-    codegen_with_linearization.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    generated_paths = codegen_with_linearization.generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )
+    if print_code:
+        print(generated_paths.generated_files[0].read_text())
+
+    # generate_function writes to a new temporary directory if output_dir is None. Delete the
+    # temporary directory.
+    if output_dir is None:
+        shutil.rmtree(generated_paths.output_dir)
 
 
-def generate_odometry_residual_code(output_dir: Path) -> None:
+def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
     """
     Generate C++ code for the odometry residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -353,7 +362,16 @@ def generate_odometry_residual_code(output_dir: Path) -> None:
     codegen_with_linearization = codegen.with_linearization(which_args=["world_T_a", "world_T_b"])
 
     # Generate the function and print the code
-    codegen_with_linearization.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    generated_paths = codegen_with_linearization.generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )
+    if print_code:
+        print(generated_paths.generated_files[0].read_text())
+
+    # generate_function writes to a new temporary directory if output_dir is None. Delete the
+    # temporary directory.
+    if output_dir is None:
+        shutil.rmtree(generated_paths.output_dir)
 
 
 def generate(output_dir: Path) -> None:
@@ -368,7 +386,7 @@ def generate(output_dir: Path) -> None:
 
     values = build_values(NUM_POSES)[0]
     template_util.render_template(
-        template_path=Path(__file__).parent / "measurements.cc.jinja",
+        template_path=Path(__file__).parent / "templates" / "measurements.cc.jinja",
         data=dict(
             body_t_landmark_measurements=values.attr.body_t_landmark_measurements,
             odometry_relative_pose_measurements=values.attr.odometry_relative_pose_measurements,
@@ -379,7 +397,7 @@ def generate(output_dir: Path) -> None:
     )
 
     template_util.render_template(
-        template_path=Path(__file__).parent / "measurements.h.jinja",
+        template_path=Path(__file__).parent / "templates" / "measurements.h.jinja",
         data={},
         output_path=output_dir / "measurements.h",
         template_dir=Path(__file__).parent,
@@ -390,5 +408,5 @@ if __name__ == "__main__":
     main()
 
     # Uncomment this to print generated C++ code
-    # generate_matching_residual_code()
-    # generate_odometry_residual_code()
+    # generate_matching_residual_code(print_code=True)
+    # generate_odometry_residual_code(print_code=True)

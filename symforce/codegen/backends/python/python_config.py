@@ -2,9 +2,9 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
+from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
 from symforce.codegen.codegen_config import CodegenConfig
@@ -23,19 +23,20 @@ class PythonConfig(CodegenConfig):
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
-        cse_optimizations: Optimizations argument to pass to sm.cse
+        cse_optimizations: Optimizations argument to pass to sf.cse
         use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly
                    speed up functions by compiling them to machine code, but has large overhead
                    on the first call and some overhead on subsequent calls, so it should not be
                    used for small functions or functions that are only called a handfull of
                    times.
-        matrix_is_1D: geo.Matrix symbols get formatted as a 1D array
+        matrix_is_1D: sf.Matrix symbols get formatted as a 1D array
     """
 
     doc_comment_line_prefix: str = ""
     line_length: int = 100
     use_eigen_types: bool = True
     use_numba: bool = False
+    matrix_is_1d: bool = True
 
     @classmethod
     def backend_name(cls) -> str:
@@ -51,13 +52,13 @@ class PythonConfig(CodegenConfig):
             ("function/__init__.py.jinja", "__init__.py"),
         ]
 
-    def printer(self) -> "sympy.CodePrinter":
-        from symforce.codegen.backends.python import python_code_printer
-
-        return python_code_printer.PythonCodePrinter()
-
     @staticmethod
     def format_matrix_accessor(key: str, i: int, j: int = None) -> str:
         if j is None:
             return f"{key}[{i}]"
         return f"{key}[{i}, {j}]"
+
+    def printer(self) -> CodePrinter:
+        from symforce.codegen.backends.python import python_code_printer
+
+        return python_code_printer.PythonCodePrinter()

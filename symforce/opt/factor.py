@@ -10,15 +10,16 @@ from pathlib import Path
 import uuid
 import logging
 
-from symforce import geo
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import codegen_config
+from symforce.codegen.backends.python.python_config import PythonConfig
 from symforce import python_util
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
 from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
+import symforce.symbolic as sf
 from symforce import logger
 
 
@@ -53,9 +54,9 @@ class Factor:
     def __init__(
         self,
         keys: T.Sequence[str],
-        residual: T.Callable[..., geo.Matrix],
+        residual: T.Callable[..., sf.Matrix],
         config: codegen_config.CodegenConfig = None,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
         **kwargs: T.Any,
     ) -> None:
         # We use `_initialize()` to set `self.codegen` because we want the default constructor of
@@ -64,7 +65,7 @@ class Factor:
         # call `__init__()`, and can instead call `__new__()` + `_initialize()` and pass its own
         # codegen object constructed using the default codegen object constructor.
         if config is None:
-            config = codegen_config.PythonConfig(autoformat=False)
+            config = PythonConfig(autoformat=False)
         self._initialize(
             keys=keys,
             codegen_obj=Codegen.function(func=residual, config=config, **kwargs),
@@ -76,9 +77,9 @@ class Factor:
         cls,
         keys: T.Sequence[str],
         inputs: Values,
-        residual: geo.Matrix,
+        residual: sf.Matrix,
         config: codegen_config.CodegenConfig = None,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
         **kwargs: T.Any,
     ) -> Factor:
         """
@@ -105,7 +106,7 @@ class Factor:
                 numeric factor. See `Codegen.__init__()` for details.
         """
         if config is None:
-            config = codegen_config.PythonConfig(autoformat=False)
+            config = PythonConfig(autoformat=False)
         instance = cls.__new__(cls)
         instance._initialize(
             keys=keys,
@@ -120,7 +121,7 @@ class Factor:
         self,
         keys: T.Sequence[str],
         codegen_obj: Codegen,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], geo.Matrix] = None,
+        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
     ) -> None:
         """
         Initializes the Factor object from a codegen object
@@ -146,7 +147,7 @@ class Factor:
         self.codegen = codegen_obj
         self.custom_jacobian_func = custom_jacobian_func
         self.name = self.codegen.name
-        self.generated_jacobians: T.Dict[T.Tuple[str, ...], geo.Matrix] = {}
+        self.generated_jacobians: T.Dict[T.Tuple[str, ...], sf.Matrix] = {}
 
     def generate(
         self,
@@ -219,7 +220,7 @@ class Factor:
                     + " this factor."
                 )
 
-        if not isinstance(self.codegen.config, codegen_config.PythonConfig):
+        if not isinstance(self.codegen.config, PythonConfig):
             raise NotImplementedError(
                 "We currently only support generating and then loading python factors."
             )

@@ -2,9 +2,9 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
+from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
 from symforce.codegen.codegen_config import CodegenConfig
@@ -22,7 +22,7 @@ class CppConfig(CodegenConfig):
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
-        cse_optimizations: Optimizations argument to pass to sm.cse
+        cse_optimizations: Optimizations argument to pass to sf.cse
         support_complex: Generate code that can work with std::complex or with regular float types
         force_no_inline: Mark generated functions as `__attribute__((noinline))`
         zero_initialization_sparsity_threshold: Threshold between 0 and 1 for the sparsity below
@@ -60,7 +60,7 @@ class CppConfig(CodegenConfig):
 
         return templates
 
-    def printer(self) -> "sympy.CodePrinter":
+    def printer(self) -> CodePrinter:
         # NOTE(hayk): Is there any benefit to this being lazy?
         from symforce.codegen.backends.cpp import cpp_code_printer
 

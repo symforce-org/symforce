@@ -9,7 +9,7 @@
 #ifndef __{{lcmtype.underscored}}_hpp__
 #define __{{lcmtype.underscored}}_hpp__
 
-{% if lcmtype.cpp_display %}
+{% if not lcmtype.cpp_no_display %}
 #include <ostream>
 {% endif %}
 {{lcmtype.includes()}}
@@ -128,15 +128,47 @@ class {{lcmtype.name}}
         inline bool operator==(const {{lcmtype.name}}& other) const;
         inline bool operator!=(const {{lcmtype.name}}& other) const;
 {% endif %}
-{% if lcmtype.cpp_display %}
+{% if not lcmtype.cpp_no_display %}
+
+{%- macro comma(last) %}
+    {%- if not last %} << ", "{% endif %}
+{%- endmacro %}
 
         // Ability to print to standard streams as well as the fmt library.
         friend std::ostream& operator<<(std::ostream& stream, const {{lcmtype.name}}& obj) {
+{% if not lcmtype.cpp_display_everywhere %}
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+{% endif %}
             stream << "{{lcmtype.name}}(";
-            {% for member in lcmtype.members %}
-              stream << "{{member.name}}=" << obj.{{member.name}}{% if not loop.last %} << ", "{% endif %};
-            {% endfor %}
+{% for member in lcmtype.members %}
+    {% if is_array_member(member) %}
+        {% if member.dims | length == 1 %}
+            stream << "{{member.name}}=[";
+            for (size_t i = 0; i < obj.{{member.name}}.size(); ++i) {
+                stream << obj.{{member.name}}[i];
+                if (i + 1 < obj.{{member.name}}.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]"{{comma(loop.last)}};
+        {% else %}
+            {# Multidimensional arrays will require some complicated stuff #}
+            stream << "{{member.name}}=<MULTIDIMENSIONAL ARRAY {{ array_type_str(member) }}>"{{ comma(loop.last) }};
+        {% endif %}
+    {% elif "eigen_lcm" in member.type_ref.full_name %}
+            {# We currently don't have operator<< for eigen_lcm types, or a way to regenerate the
+             # bindings :) #}
+            stream << "{{member.name}}=<EIGEN_LCM TYPE {{ member.type_ref.full_name }}>"{{ comma(loop.last) }};
+    {% else %}
+            stream << "{{member.name}}=" << obj.{{member.name}}{{ comma(loop.last) }};
+    {% endif %}
+{% endfor %}
             stream << ")";
+{% if not lcmtype.cpp_display_everywhere %}
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+{% endif %}
             return stream;
         }
 {% endif %}

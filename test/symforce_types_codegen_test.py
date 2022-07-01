@@ -7,8 +7,7 @@ import copy
 import os
 from pathlib import Path
 
-from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import types_package_codegen
 from symforce.codegen import codegen_util
@@ -27,14 +26,14 @@ class SymforceTypesCodegenTest(TestCase):
         Create some example input/output values.
         """
         inputs = Values()
-        x, y = sm.symbols("x y")
+        x, y = sf.symbols("x y")
         inputs.add(x)
         inputs.add(y)
 
-        inputs["rot"] = geo.Rot3().symbolic("rot")
+        inputs["rot"] = sf.Rot3().symbolic("rot")
 
         # Scalar
-        inputs.add(sm.Symbol("constants.epsilon"))
+        inputs.add(sf.Symbol("constants.epsilon"))
 
         # Vector
         sub_values = copy.deepcopy(inputs)
@@ -42,11 +41,11 @@ class SymforceTypesCodegenTest(TestCase):
 
         with inputs.scope("states"):
             # Array element, turns into std::array
-            inputs["p"] = geo.V2.symbolic("p")
+            inputs["p"] = sf.V2.symbolic("p")
 
         outputs = Values()
         outputs["foo"] = x ** 2 + inputs["rot"].q.w
-        outputs["bar"] = inputs.attr.constants.epsilon + sm.sin(inputs.attr.y) + x ** 2
+        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x ** 2
 
         return inputs, outputs
 
@@ -202,15 +201,15 @@ class SymforceTypesCodegenTest(TestCase):
 
         with inputs.scope("one"):
             inputs.add("id")
-            inputs["R"] = geo.Rot3().symbolic("rot")
+            inputs["R"] = sf.Rot3().symbolic("rot")
 
         with inputs.scope("two"):
             inputs.add("id")
-            inputs["R"] = geo.Rot3().symbolic("rot")
+            inputs["R"] = sf.Rot3().symbolic("rot")
 
         outputs = Values()
         outputs.add("id")
-        outputs["R"] = geo.Rot3().symbolic("rot")
+        outputs["R"] = sf.Rot3().symbolic("rot")
 
         shared_types = {"input.one": "rot_t", "input.two": "rot_t", "output": "rot_t"}
 
@@ -239,7 +238,7 @@ class SymforceTypesCodegenTest(TestCase):
 
         rot = rot_t()
         rot.id = 1
-        rot.R.data = geo.Rot3.identity().to_storage()
+        rot.R.data = sf.Rot3.identity().to_storage()
 
         inp = input_t()
         inp.foo = 1.2

@@ -97,6 +97,8 @@ class FileType(enum.Enum):
             return format_util.format_py(file_contents)
         elif self == FileType.PYTHON_INTERFACE:
             return format_util.format_pyi(file_contents)
+        elif self == FileType.LCM:
+            return file_contents
         else:
             raise NotImplementedError(f"Unknown autoformatter for {self}")
 

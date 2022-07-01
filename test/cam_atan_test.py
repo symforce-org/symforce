@@ -5,9 +5,7 @@
 
 import numpy as np
 
-from symforce import cam
-from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -21,17 +19,17 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> cam.ATANCameraCal:
+    def element(cls) -> sf.ATANCameraCal:
         [f_x, f_y, c_x, c_y] = np.random.uniform(low=0.0, high=1000.0, size=(4,))
         omega = np.random.uniform(low=0.1, high=0.8)
-        return cam.ATANCameraCal(focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega)
+        return sf.ATANCameraCal(focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega)
 
     def test_omega_property(self) -> None:
         """
         Test that the omega property can be written to and read.
         """
-        omega, omega_alt = sm.symbols("omega omega_alt")
-        cal = cam.ATANCameraCal(focal_length=[0, 0], principal_point=[0, 0], omega=omega)
+        omega, omega_alt = sf.symbols("omega omega_alt")
+        cal = sf.ATANCameraCal(focal_length=[0, 0], principal_point=[0, 0], omega=omega)
 
         self.assertEqual(omega, cal.omega)
 
@@ -45,7 +43,7 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         """
         for _ in range(10):
             cam_cal = self.element()
-            point = geo.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
+            point = sf.V3(np.random.uniform(low=-1.0, high=1.0, size=(3,)))
             pixel, is_valid_forward_proj = cam_cal.pixel_from_camera_point(point)
 
             # Points behind the camera should be invalid
@@ -56,7 +54,7 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
 
             _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
-            linear_camera_cal = cam.LinearCameraCal(
+            linear_camera_cal = sf.LinearCameraCal(
                 cam_cal.focal_length.to_flat_list(), cam_cal.principal_point.to_flat_list()
             )
             distorted_unit_depth_coords = linear_camera_cal.unit_depth_from_pixel(pixel)
@@ -71,12 +69,12 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         Tests if specific invalid points are correctly labeled as invalid
         """
         invalid_points = [
-            geo.V3(0, 0, -1),
-            geo.V3(0, 0, -1e-9),
-            geo.V3(0, 0, -1000),
-            geo.V3(1, 1, -1),
-            geo.V3(-1, -1, -1),
-            geo.V3(1000, 1000, -1000),
+            sf.V3(0, 0, -1),
+            sf.V3(0, 0, -1e-9),
+            sf.V3(0, 0, -1000),
+            sf.V3(1, 1, -1),
+            sf.V3(-1, -1, -1),
+            sf.V3(1000, 1000, -1000),
         ]
         for point in invalid_points:
             for _ in range(10):
@@ -91,16 +89,14 @@ class CamATANTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         f_x, f_y = (380, 380)
         c_x, c_y = (320, 240)
         omega = 0.35
-        cam_cal = cam.ATANCameraCal(
-            focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega
-        )
+        cam_cal = sf.ATANCameraCal(focal_length=(f_x, f_y), principal_point=(c_x, c_y), omega=omega)
         invalid_pixels = [
-            geo.V2(f_x * (np.pi / 2.0 + 1e-6) / omega + c_x, 0),
-            geo.V2(0, f_y * (np.pi / 2.0 + 1e-6) / omega + c_y),
-            geo.V2(f_x * (-np.pi / 2.0 - 1e-6) / omega + c_x, 0),
-            geo.V2(0, f_y * (-np.pi / 2.0 - 1e-6) / omega + c_y),
-            geo.V2(10000, 10000),
-            geo.V2(-10000, -10000),
+            sf.V2(f_x * (np.pi / 2.0 + 1e-6) / omega + c_x, 0),
+            sf.V2(0, f_y * (np.pi / 2.0 + 1e-6) / omega + c_y),
+            sf.V2(f_x * (-np.pi / 2.0 - 1e-6) / omega + c_x, 0),
+            sf.V2(0, f_y * (-np.pi / 2.0 - 1e-6) / omega + c_y),
+            sf.V2(10000, 10000),
+            sf.V2(-10000, -10000),
         ]
         for pixel in invalid_pixels:
             _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)

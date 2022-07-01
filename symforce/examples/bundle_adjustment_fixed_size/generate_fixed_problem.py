@@ -6,10 +6,9 @@
 import re
 import textwrap
 
-from symforce import cam
-from symforce import geo
 from symforce import codegen
 from symforce import logger
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.values import Values
 
@@ -70,7 +69,7 @@ class FixedBundleAdjustmentProblem:
         flat_keys = {key: re.sub(r"[\.\[\]]+", "_", key) for key in self.values.keys_recursive()}
 
         inputs = Values(**{flat_keys[key]: value for key, value in self.values.items_recursive()})
-        outputs = Values(residual=geo.M(self.residual.to_storage()))
+        outputs = Values(residual=sf.M(self.residual.to_storage()))
 
         linearization_func = codegen.Codegen(
             inputs=inputs,
@@ -157,7 +156,7 @@ class FixedBundleAdjustmentProblem:
                         self.values["costs"]["reprojection_error_gnc_mu"],
                         self.values["costs"]["reprojection_error_gnc_scale"],
                         self.values["epsilon"],
-                        cam.LinearCameraCal,
+                        sf.LinearCameraCal,
                     )
                 )
 

@@ -39,7 +39,7 @@ check_format:
 # NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
 # See https://github.com/python/mypy/issues/8548
 # We don't need to run find on `symforce` because we know the whole thing is a package
-MYPY_COMMAND=$(PYTHON) -m mypy
+MYPY_COMMAND=$(PYTHON) -m mypy --show-error-code
 SYMFORCE_LCMTYPES_DIR ?= build/lcmtypes/python2.7
 check_types:
 	export SYMFORCE_LCMTYPES_DIR=$(SYMFORCE_LCMTYPES_DIR); \
@@ -86,16 +86,16 @@ TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
 GEN_FILES=test/*codegen*.py
 
 test_symengine:
-	$(TEST_ENV) SYMFORCE_BACKEND=symengine $(PYTHON) $(TEST_CMD)
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) $(TEST_CMD)
 
 test_sympy:
-	$(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) $(TEST_CMD)
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) $(TEST_CMD)
 
 test: test_symengine test_sympy
 
 # Generic target to run a SymEngine codegen test with --update
 update_%:
-	$(TEST_ENV) SYMFORCE_BACKEND=symengine $(PYTHON) test/$*.py --update
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) test/$*.py --update
 
 # All SymForce codegen tests, formatted as update_my_codegen_test targets
 GEN_FILES_UPDATE_TARGETS=$(shell \
@@ -106,7 +106,7 @@ test_update: $(GEN_FILES_UPDATE_TARGETS)
 
 # Generic target to run a SymPy codegen test with --update --run_slow_tests
 sympy_update_%:
-	$(TEST_ENV) SYMFORCE_BACKEND=sympy $(PYTHON) test/$*.py --update --run_slow_tests
+	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) test/$*.py --update --run_slow_tests
 
 # All SymForce codegen tests, formatted as sympy_update_my_codegen_test targets
 GEN_FILES_SYMPY_UPDATE_TARGETS=$(shell \
@@ -152,7 +152,7 @@ docs_clean:
 
 docs_apidoc:
 	mkdir -p $(BUILD_DIR)
-	sphinx-apidoc --separate --module-first -o docs/api ./symforce
+	sphinx-apidoc --separate --module-first -o docs/api ./symforce ./symforce/sympy.py
 	sphinx-apidoc --separate --module-first -o docs/api-gen-py ./gen/python
 	doxygen docs/Doxyfile-cpp
 	doxygen docs/Doxyfile-gen-cpp
@@ -168,7 +168,7 @@ PY_EXTENSION_MODULE_PATH?=$(BUILD_DIR)/pybind
 
 docs_html: docs_apidoc
 	export PYTHONPATH=$(PY_EXTENSION_MODULE_PATH):$(PYTHONPATH); \
-	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j $$(nproc)
+	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j auto
 	mkdir $(DOCS_DIR)/docs
 	ln -s ../_static $(DOCS_DIR)/docs/static
 

@@ -27,7 +27,7 @@ class IndexEntry:
         storage_dim:
             The length of `StorageOps.to_storage(v[key])`
         shape:
-            If datatype() is np.ndarray or geo.Matrix, it's the shape of `v[key]`.
+            If datatype() is np.ndarray or sf.Matrix, it's the shape of `v[key]`.
             Otherwise, it's None
         item_index:
             `v[key].index()` if datatype() is Values,
@@ -66,13 +66,13 @@ class IndexEntry:
 
         Precondition:
             The datatype stored must have had its module loaded (i.e., if the stored datatype is
-            geo.rot3, symforce.geo must have been imported).
+            sf.rot3, symforce.geo must have been imported).
             The datatype must also be accesible from the module (dynamically created types do not
-            do this. For example, the geo.Matrix types with more than 10 rows or columns)
+            do this. For example, the sf.Matrix types with more than 10 rows or columns)
         """
         assert "<locals>" not in self._qualname.split("."), (
             f"Datatype {self._qualname} must be accesible from the module: dynamically created"
-            + " types do not do this. For example, the geo.Matrix types with more than 10 rows or"
+            + " types do not do this. For example, the sf.Matrix types with more than 10 rows or"
             + " or columns."
         )
         return python_util.getattr_recursive(sys.modules[self._module], self._qualname.split("."))

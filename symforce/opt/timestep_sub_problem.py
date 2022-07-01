@@ -40,8 +40,8 @@ class TimestepSubProblem(SubProblem):
 
             @dataclass
             class Inputs:
-                my_timestepped_field: T.Sequence[T.Scalar] = field(metadata={"timestepped": True})
-                my_sequence_field: T.Sequence[T.Scalar] = field(metadata={"length": 3})
+                my_timestepped_field: T.Sequence[sf.Scalar] = field(metadata={"timestepped": True})
+                my_sequence_field: T.Sequence[sf.Scalar] = field(metadata={"length": 3})
 
         Any remaining fields of unknown size will cause an exception.
         """

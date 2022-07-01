@@ -15,22 +15,20 @@ a pixel in the target camera.
 import functools
 import os
 
-from symforce import cam
 from symforce import codegen
-from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import python_util
 from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
 
 
 def inverse_range_landmark_prior_residual(
-    landmark_inverse_range: T.Scalar,
-    inverse_range_prior: T.Scalar,
-    weight: T.Scalar,
-    sigma: T.Scalar,
-    epsilon: T.Scalar,
-) -> geo.Vector1:
+    landmark_inverse_range: sf.Scalar,
+    inverse_range_prior: sf.Scalar,
+    weight: sf.Scalar,
+    sigma: sf.Scalar,
+    epsilon: sf.Scalar,
+) -> sf.Vector1:
     """
     Factor representing a Gaussian prior on the inverse range of a landmark
 
@@ -46,20 +44,20 @@ def inverse_range_landmark_prior_residual(
     """
     prior_diff = landmark_inverse_range - inverse_range_prior
     prior_whitened_diff = weight * prior_diff / (sigma + epsilon)
-    return geo.V1(prior_whitened_diff)
+    return sf.V1(prior_whitened_diff)
 
 
 def reprojection_delta(
-    source_pose: geo.Pose3,
-    source_calibration_storage: geo.Matrix,
-    target_pose: geo.Pose3,
-    target_calibration_storage: geo.Matrix,
-    source_inverse_range: T.Scalar,
-    source_pixel: geo.Vector2,
-    target_pixel: geo.Vector2,
-    epsilon: T.Scalar,
-    camera_model_class: T.Type[cam.CameraCal],
-) -> T.Tuple[geo.Vector2, T.Scalar]:
+    source_pose: sf.Pose3,
+    source_calibration_storage: sf.Matrix,
+    target_pose: sf.Pose3,
+    target_calibration_storage: sf.Matrix,
+    source_inverse_range: sf.Scalar,
+    source_pixel: sf.Vector2,
+    target_pixel: sf.Vector2,
+    epsilon: sf.Scalar,
+    camera_model_class: T.Type[sf.CameraCal],
+) -> T.Tuple[sf.Vector2, sf.Scalar]:
     """
     Reprojects the landmark into the target camera and returns the delta from the correspondence to
     the reprojection.
@@ -87,8 +85,8 @@ def reprojection_delta(
     target_calibration = camera_model_class.from_storage(target_calibration_storage.to_flat_list())
 
     # Warp source coords into target
-    source_cam = cam.PosedCamera(pose=source_pose, calibration=source_calibration)
-    target_cam = cam.PosedCamera(pose=target_pose, calibration=target_calibration)
+    source_cam = sf.PosedCamera(pose=source_pose, calibration=source_calibration)
+    target_cam = sf.PosedCamera(pose=target_pose, calibration=target_calibration)
 
     target_pixel_warped, warp_is_valid = source_cam.warp_pixel(
         pixel=source_pixel,
@@ -102,19 +100,19 @@ def reprojection_delta(
 
 
 def inverse_range_landmark_reprojection_error_residual(
-    source_pose: geo.Pose3,
-    source_calibration_storage: geo.Matrix,
-    target_pose: geo.Pose3,
-    target_calibration_storage: geo.Matrix,
-    source_inverse_range: T.Scalar,
-    source_pixel: geo.Vector2,
-    target_pixel: geo.Vector2,
-    weight: T.Scalar,
-    gnc_mu: T.Scalar,
-    gnc_scale: T.Scalar,
-    epsilon: T.Scalar,
-    camera_model_class: T.Type[cam.CameraCal],
-) -> geo.Vector2:
+    source_pose: sf.Pose3,
+    source_calibration_storage: sf.Matrix,
+    target_pose: sf.Pose3,
+    target_calibration_storage: sf.Matrix,
+    source_inverse_range: sf.Scalar,
+    source_pixel: sf.Vector2,
+    target_pixel: sf.Vector2,
+    weight: sf.Scalar,
+    gnc_mu: sf.Scalar,
+    gnc_scale: sf.Scalar,
+    epsilon: sf.Scalar,
+    camera_model_class: T.Type[sf.CameraCal],
+) -> sf.Vector2:
     """
     Return the 2dof residual of reprojecting the landmark into the target camera and comparing
     against the correspondence in the target camera.
@@ -165,22 +163,22 @@ def inverse_range_landmark_reprojection_error_residual(
     )
 
     whitened_residual = (
-        warp_is_valid * sm.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+        warp_is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
     )
 
     return whitened_residual
 
 
 def ray_reprojection_delta(
-    source_pose: geo.Pose3,
-    target_pose: geo.Pose3,
-    target_calibration_storage: geo.Matrix,
-    source_inverse_range: T.Scalar,
-    p_camera_source: geo.Vector3,
-    target_pixel: geo.Vector2,
-    epsilon: T.Scalar,
-    target_camera_model_class: T.Type[cam.CameraCal],
-) -> T.Tuple[geo.Vector2, T.Scalar]:
+    source_pose: sf.Pose3,
+    target_pose: sf.Pose3,
+    target_calibration_storage: sf.Matrix,
+    source_inverse_range: sf.Scalar,
+    p_camera_source: sf.Vector3,
+    target_pixel: sf.Vector2,
+    epsilon: sf.Scalar,
+    target_camera_model_class: T.Type[sf.CameraCal],
+) -> T.Tuple[sf.Vector2, sf.Scalar]:
     """
     Reprojects the landmark ray into the target camera and returns the delta between the
     correspondence and the reprojection.
@@ -222,18 +220,18 @@ def ray_reprojection_delta(
 
 
 def inverse_range_landmark_ray_reprojection_error_residual(
-    source_pose: geo.Pose3,
-    target_pose: geo.Pose3,
-    target_calibration_storage: geo.Matrix,
-    source_inverse_range: T.Scalar,
-    p_camera_source: geo.Vector3,
-    target_pixel: geo.Vector2,
-    weight: T.Scalar,
-    gnc_mu: T.Scalar,
-    gnc_scale: T.Scalar,
-    epsilon: T.Scalar,
-    target_camera_model_class: T.Type[cam.CameraCal],
-) -> geo.Vector2:
+    source_pose: sf.Pose3,
+    target_pose: sf.Pose3,
+    target_calibration_storage: sf.Matrix,
+    source_inverse_range: sf.Scalar,
+    p_camera_source: sf.Vector3,
+    target_pixel: sf.Vector2,
+    weight: sf.Scalar,
+    gnc_mu: sf.Scalar,
+    gnc_scale: sf.Scalar,
+    epsilon: sf.Scalar,
+    target_camera_model_class: T.Type[sf.CameraCal],
+) -> sf.Vector2:
     """
     Return the 2dof residual of reprojecting the landmark ray into the target spherical camera and comparing
     it against the correspondence.
@@ -282,7 +280,7 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     )
 
     whitened_residual = (
-        is_valid * sm.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+        is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
     )
 
     return whitened_residual
@@ -304,7 +302,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
         config = codegen.CppConfig()
 
     # Default cam types to generate
-    cam_types = cam.CameraCal.__subclasses__()
+    cam_types = sf.CameraCal.__subclasses__()
 
     codegen.Codegen.function(
         func=inverse_range_landmark_prior_residual, config=config
@@ -325,17 +323,17 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 name=f"inverse_range_landmark_{cam_type_name}_reprojection_error_residual",
                 config=config,
                 input_types=[
-                    geo.Pose3,
-                    geo.matrix.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    geo.Pose3,
-                    geo.matrix.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
-                    geo.Vector2,
-                    geo.Vector2,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
+                    sf.Pose3,
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.Pose3,
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.Scalar,
+                    sf.Vector2,
+                    sf.Vector2,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
                 ],
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
@@ -348,14 +346,14 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 name=f"{cam_type_name}_reprojection_delta",
                 config=config,
                 input_types=[
-                    geo.Pose3,
-                    geo.matrix.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    geo.Pose3,
-                    geo.matrix.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
-                    geo.Vector2,
-                    geo.Vector2,
-                    T.Scalar,
+                    sf.Pose3,
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.Pose3,
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.Scalar,
+                    sf.Vector2,
+                    sf.Vector2,
+                    sf.Scalar,
                 ],
                 output_names=["reprojection_delta", "is_valid"],
             ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
@@ -370,16 +368,16 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 name=f"inverse_range_landmark_{cam_type_name}_reprojection_error_residual",
                 config=config,
                 input_types=[
-                    geo.Pose3,
-                    geo.Pose3,
-                    geo.matrix.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
-                    geo.Vector3,
-                    geo.Vector2,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
-                    T.Scalar,
+                    sf.Pose3,
+                    sf.Pose3,
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.Scalar,
+                    sf.Vector3,
+                    sf.Vector2,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
+                    sf.Scalar,
                 ],
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
@@ -392,13 +390,13 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                 name=f"{cam_type_name}_reprojection_delta",
                 config=config,
                 input_types=[
-                    geo.Pose3,
-                    geo.Pose3,
-                    geo.matrix.fixed_type_from_shape((cam_type.storage_dim(), 1)),
-                    T.Scalar,
-                    geo.Vector3,
-                    geo.Vector2,
-                    T.Scalar,
+                    sf.Pose3,
+                    sf.Pose3,
+                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    sf.Scalar,
+                    sf.Vector3,
+                    sf.Vector2,
+                    sf.Scalar,
                 ],
                 output_names=["reprojection_delta", "is_valid"],
             ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)

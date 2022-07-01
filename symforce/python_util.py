@@ -18,7 +18,7 @@ import subprocess
 import dataclasses
 
 from symforce import logger
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -208,12 +208,12 @@ def scalar_like(a: T.Any) -> bool:
     if issubclass(a_type, SCALAR_TYPES):
         return True
 
-    is_expr = issubclass(a_type, sm.Expr)
+    is_expr = issubclass(a_type, sf.Expr)
     if not is_expr:
         return False
 
     # It is an expr, check that it's not a matrix
-    is_matrix = issubclass(a_type, sm.MatrixBase) or (hasattr(a, "is_Matrix") and a.is_Matrix)
+    is_matrix = issubclass(a_type, sf.sympy.MatrixBase) or (hasattr(a, "is_Matrix") and a.is_Matrix)
     return not is_matrix
 
 

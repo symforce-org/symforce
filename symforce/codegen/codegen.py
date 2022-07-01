@@ -15,8 +15,7 @@ from pathlib import Path
 import tempfile
 import textwrap
 
-from symforce import sympy as sm
-from symforce import geo
+import symforce.symbolic as sf
 from symforce import jacobian_helpers
 from symforce import ops
 from symforce import logger
@@ -43,7 +42,7 @@ class LinearizationMode(enum.Enum):
 
     # Compute a full linearization for the output with respect to the given input arguments.  This
     # includes the jacobian, hessian (computed as J^T J with only the lower triangle filled out),
-    # and rhs (J^T b).  In this mode, the original function must return a vector (a geo.Matrix with
+    # and rhs (J^T b).  In this mode, the original function must return a vector (a sf.Matrix with
     # one column).
     FULL_LINEARIZATION = "full_linearization"
 
@@ -110,8 +109,8 @@ class Codegen:
         # free_symbols because it's much faster to call once
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
-        assert sm.S(
-            geo.Matrix(codegen_util.flat_symbols_from_values(outputs)).mat
+        assert sf.S(
+            sf.Matrix(codegen_util.flat_symbols_from_values(outputs)).mat
         ).free_symbols.issubset(
             input_symbols
         ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
@@ -144,7 +143,7 @@ class Codegen:
         self.sparse_mat_data: T.Dict[str, codegen_util.CSCFormat] = {}
         if sparse_matrices is not None:
             assert all(key in outputs for key in sparse_matrices)
-            assert all(isinstance(outputs[key], geo.Matrix) for key in sparse_matrices)
+            assert all(isinstance(outputs[key], sf.Matrix) for key in sparse_matrices)
             for key in sparse_matrices:
                 self.sparse_mat_data[key] = codegen_util.CSCFormat.from_matrix(outputs[key])
 
@@ -180,7 +179,7 @@ class Codegen:
                 `func` has type annotations, `input_types` can be deduced from those.  Note that
                 if the type annotation doesn't match what you want the arguments to be, you need
                 to specify manually, for instance a function add(x: T.Any, y: T.Any) -> T.Any that
-                you want to use to generate add(x: geo.Matrix33, y: geo.Matrix33) -> geo.Matrix33
+                you want to use to generate add(x: sf.Matrix33, y: sf.Matrix33) -> sf.Matrix33
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; if not provided, will be deduced from the
                 function name.  Must be provided if `func` is a lambda
@@ -223,7 +222,7 @@ class Codegen:
         outputs = Values()
         for output_name, output in zip(output_names, output_terms):
             if isinstance(output, (list, tuple)):
-                output = geo.Matrix(output)
+                output = sf.Matrix(output)
             outputs[output_name] = output
 
         # Pull docstring out of function if not provided
@@ -252,9 +251,9 @@ class Codegen:
         """
         data: T.Dict[str, T.Any] = {}
         data["ops"] = ops
-        data["Symbol"] = sm.Symbol
-        data["Matrix"] = geo.Matrix
-        data["DataBuffer"] = sm.DataBuffer
+        data["Symbol"] = sf.Symbol
+        data["Matrix"] = sf.Matrix
+        data["DataBuffer"] = sf.DataBuffer
         data["Values"] = Values
         data["pathlib"] = pathlib
         data["path_to_codegen"] = str(CURRENT_DIR)
@@ -264,13 +263,13 @@ class Codegen:
         data["lcm_type_t_include_dir"] = "<lcmtypes/sym/type_t.hpp>"
 
         def is_symbolic(T: T.Any) -> bool:
-            return isinstance(T, (sm.Expr, sm.Symbol))
+            return isinstance(T, (sf.Expr, sf.Symbol))
 
         data["is_symbolic"] = is_symbolic
         data["issubclass"] = issubclass
         data["is_sequence"] = lambda arg: isinstance(arg, (list, tuple))
 
-        def should_set_zero(mat: geo.Matrix, zero_initialization_sparsity_threshold: float) -> bool:
+        def should_set_zero(mat: sf.Matrix, zero_initialization_sparsity_threshold: float) -> bool:
             """
             Returns True if we should set a dense matrix to 0 and then only set nonzero elements,
             instead of setting all elements individually (including elements that are 0)
@@ -296,6 +295,12 @@ class Codegen:
             sparse_mat_data=self.sparse_mat_data,
             config=self.config,
         )
+
+    def total_ops(self) -> int:
+        """
+        The number of symbolic ops in the expression.
+        """
+        return self.print_code_results.total_ops
 
     def generate_function(
         self,
@@ -521,7 +526,7 @@ class Codegen:
         name: str = None,
         linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
         sparse_linearization: bool = False,
-        custom_jacobian: geo.Matrix = None,
+        custom_jacobian: sf.Matrix = None,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
@@ -580,7 +585,7 @@ class Codegen:
         if custom_jacobian is not None:
             jacobian = custom_jacobian
         else:
-            jacobian = geo.Matrix.block_matrix(
+            jacobian = sf.Matrix.block_matrix(
                 [jacobian_helpers.tangent_jacobians(result, input_args)]
             )
 
@@ -605,7 +610,7 @@ class Codegen:
 
         if linearization_mode == LinearizationMode.FULL_LINEARIZATION:
             assert (
-                isinstance(result, geo.Matrix) and result.cols == 1
+                isinstance(result, sf.Matrix) and result.cols == 1
             ), f"The output must be a vector (the residual), got {result} instead"
 
             hessian = jacobian.compute_AtA(lower_only=True)

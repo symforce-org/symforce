@@ -9,6 +9,7 @@
 #ifndef __codegen_multi_function_test_outputs_1_t_hpp__
 #define __codegen_multi_function_test_outputs_1_t_hpp__
 
+#include <ostream>
 #include <array>
 #include "lcmtypes/codegen_multi_function_test/values_vec_t.hpp"
 
@@ -115,6 +116,36 @@ class outputs_1_t
         // Comparison operators.
         inline bool operator==(const outputs_1_t& other) const;
         inline bool operator!=(const outputs_1_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const outputs_1_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "outputs_1_t(";
+            stream << "foo=" << obj.foo << ", ";
+            stream << "bar=" << obj.bar << ", ";
+            stream << "scalar_vec_out=[";
+            for (size_t i = 0; i < obj.scalar_vec_out.size(); ++i) {
+                stream << obj.scalar_vec_out[i];
+                if (i + 1 < obj.scalar_vec_out.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "values_vec_out=[";
+            for (size_t i = 0; i < obj.values_vec_out.size(); ++i) {
+                stream << obj.values_vec_out[i];
+                if (i + 1 < obj.values_vec_out.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "values_vec_2D_out=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>";
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 outputs_1_t::outputs_1_t(

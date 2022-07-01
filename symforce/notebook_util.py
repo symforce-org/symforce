@@ -21,8 +21,7 @@ import sympy as sympy_py
 sympy_py.init_printing()
 
 import symforce
-from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 
@@ -30,13 +29,13 @@ def display(*args: T.Any) -> None:
     """
     Display the given expressions in latex, or print if not an expression.
     """
-    if symforce.get_backend() == "sympy":
+    if symforce.get_symbolic_api() == "sympy":
         IPython.display.display(*args)
         return
 
     converted_args = []
     for arg in args:
-        if isinstance(arg, geo.Matrix):
+        if isinstance(arg, sf.Matrix):
             converted_args.append(arg.mat)
         else:
             converted_args.append(arg)
@@ -81,7 +80,7 @@ def display_code_file(path: T.Openable, language: str) -> None:
     display_code(code, language)
 
 
-def print_expression_tree(expr: sm.Expr) -> None:
+def print_expression_tree(expr: sf.Expr) -> None:
     """
     Print a SymPy expression tree, ignoring node attributes
     """

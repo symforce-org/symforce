@@ -47,11 +47,6 @@ std::ostream& operator<<(std::ostream& os, const sym::Key& key) {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const sym::key_t& key) {
-  os << sym::Key(key);
-  return os;
-}
-
 }  // namespace sym
 
 namespace std {

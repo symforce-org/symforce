@@ -6,10 +6,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from symforce import geo
 from symforce.opt import objective, noise_models, barrier_functions
 from symforce.opt.residual_block import ResidualBlock
-from symforce import typing as T
+import symforce.symbolic as sf
 
 
 class NormBarrierObjective(objective.TimestepObjective):
@@ -23,9 +22,9 @@ class NormBarrierObjective(objective.TimestepObjective):
                 be a positive number.
         """
 
-        norm_nominal: T.Scalar
-        error_nominal: T.Scalar
-        dist_zero_to_nominal: T.Scalar
+        norm_nominal: sf.Scalar
+        error_nominal: sf.Scalar
+        dist_zero_to_nominal: sf.Scalar
 
     @dataclass
     class ExtraValues:
@@ -35,15 +34,15 @@ class NormBarrierObjective(objective.TimestepObjective):
                 cost scaling.
         """
 
-        unwhitened_residual: geo.V1
+        unwhitened_residual: sf.V1
 
     @staticmethod
     def residual_at_timestep(
-        vector: geo.Matrix,
+        vector: sf.Matrix,
         params: NormBarrierObjective.Params,
-        epsilon: T.Scalar,
-        cost_scaling: T.Scalar = 1,
-        power: T.Scalar = 1,
+        epsilon: sf.Scalar,
+        cost_scaling: sf.Scalar = 1,
+        power: sf.Scalar = 1,
     ) -> ResidualBlock:
         """
         Returns the residual block for the given timestep, where the residual is computed by
@@ -59,7 +58,7 @@ class NormBarrierObjective(objective.TimestepObjective):
             cost_scaling: Optional scaling parameter. Corresponds to multiplying the cost in the
                 overall optimization problem by a constant.
         """
-        unwhitened_residual = geo.V1(
+        unwhitened_residual = sf.V1(
             barrier_functions.max_power_barrier(
                 x=vector.norm(epsilon),
                 x_nominal=params.norm_nominal,

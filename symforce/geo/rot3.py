@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from symforce.ops.interfaces import LieGroup
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 from .matrix import Matrix
@@ -79,14 +79,14 @@ class Rot3(LieGroup):
         return 3
 
     @classmethod
-    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = 0) -> Rot3:
+    def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Rot3:
         vm = Matrix(v)
         theta_sq = vm.squared_norm()
-        theta = sm.sqrt(theta_sq + epsilon ** 2)
+        theta = sf.sqrt(theta_sq + epsilon ** 2)
         assert theta != 0, "Trying to divide by zero, provide epsilon!"
-        return cls(Quaternion(xyz=sm.sin(theta / 2) / theta * vm, w=sm.cos(theta / 2)))
+        return cls(Quaternion(xyz=sf.sin(theta / 2) / theta * vm, w=sf.cos(theta / 2)))
 
-    def logmap_acos_clamp_max(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def logmap_acos_clamp_max(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         """
         Implementation of logmap that uses epsilon with the Min function to
         avoid the singularity in the sqrt at w == 1
@@ -94,14 +94,14 @@ class Rot3(LieGroup):
         Also flips the sign of the quaternion of w is negative, which makes sure
         that the resulting tangent vector has norm <= pi
         """
-        w_positive = sm.Abs(self.q.w)
-        w_safe = sm.Min(1 - epsilon, w_positive)
-        xyz_w_positive = self.q.xyz * sm.sign_no_zero(self.q.w)
-        norm = sm.sqrt(1 - w_safe ** 2)
-        tangent = 2 * xyz_w_positive / norm * sm.acos(w_safe)
+        w_positive = sf.Abs(self.q.w)
+        w_safe = sf.Min(1 - epsilon, w_positive)
+        xyz_w_positive = self.q.xyz * sf.sign_no_zero(self.q.w)
+        norm = sf.sqrt(1 - w_safe ** 2)
+        tangent = 2 * xyz_w_positive / norm * sf.acos(w_safe)
         return tangent.to_storage()
 
-    def to_tangent(self, epsilon: T.Scalar = 0) -> T.List[T.Scalar]:
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
         return self.logmap_acos_clamp_max(epsilon=epsilon)
 
     @classmethod
@@ -113,7 +113,7 @@ class Rot3(LieGroup):
         Note: generated from symforce/notebooks/storage_D_tangent.ipynb
         """
         return (
-            sm.S.One
+            sf.S.One
             / 2
             * Matrix(
                 [
@@ -179,7 +179,7 @@ class Rot3(LieGroup):
         )
 
     @classmethod
-    def from_rotation_matrix(cls, R: Matrix33, epsilon: T.Scalar = 0) -> Rot3:
+    def from_rotation_matrix(cls, R: Matrix33, epsilon: T.Scalar = sf.epsilon()) -> Rot3:
         """
         Construct from a rotation matrix.
         """
@@ -231,7 +231,7 @@ class Rot3(LieGroup):
             # abs_2w is |2w| = |2cos(theta/2)|.
             # We add not(valid_input) to ensure abs_2w is non-zero to avoid dividing by zero
             # in the case where we wish to return the zero quaternion
-            abs_2w = sm.sqrt(sm.Max(1 + R[0, 0] + R[1, 1] + R[2, 2], 0)) + sm.logical_not(
+            abs_2w = sf.sqrt(sf.Max(1 + R[0, 0] + R[1, 1] + R[2, 2], 0)) + sf.logical_not(
                 valid_input, unsafe=True
             )
             w = abs_2w / 2
@@ -257,7 +257,7 @@ class Rot3(LieGroup):
             # abs_2q_i = |2q_i| = |2sin(theta/2)a_i| where a is the axis of rotation
             # We add not(valid_input) to ensure abs_2q_i is non-zero to avoid dividing by zero
             # in the case where we wish to return the zero quaternion
-            abs_2q_i = sm.sqrt(sm.Max(1 + R[i, i] - R[j, j] - R[k, k], 0)) + sm.logical_not(
+            abs_2q_i = sf.sqrt(sf.Max(1 + R[i, i] - R[j, j] - R[k, k], 0)) + sf.logical_not(
                 valid_input, unsafe=True
             )
             components[i] = abs_2q_i / 2
@@ -276,13 +276,15 @@ class Rot3(LieGroup):
         # So max(R00, R11, R22, R00 + R11 + R22) = max(x^2, y^2, z^2, w^2)
         # x^2 + y^2 + z^2 + w^2 = 1  =>  max(x^2, y^2, z^2, w^2) >= 1/4
         # This is all to say that if use_branch[i] = 1, then it's safe to use q_i's expression
-        use_branch = sm.argmax_onehot([R[0, 0], R[1, 1], R[2, 2], R[0, 0] + R[1, 1] + R[2, 2]])
+        use_branch = sf.argmax_onehot([R[0, 0], R[1, 1], R[2, 2], R[0, 0] + R[1, 1] + R[2, 2]])
         q = from_rotation_matrix_w_not_0(R, use_branch[3])
         for i in range(0, 3):
             q += from_rotation_matrix_qi_not_0(R, i, use_branch[i])
         return cls(q)
 
-    def to_yaw_pitch_roll(self, epsilon: T.Scalar = 0) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
+    def to_yaw_pitch_roll(
+        self, epsilon: T.Scalar = sf.epsilon()
+    ) -> T.Tuple[T.Scalar, T.Scalar, T.Scalar]:
         """
         Compute the yaw, pitch, and roll Euler angles in radians of this rotation
 
@@ -291,13 +293,13 @@ class Rot3(LieGroup):
             Scalar: Pitch angle [radians]
             Scalar: Roll angle [radians]
         """
-        y = sm.atan2(
+        y = sf.atan2(
             2 * self.q.x * self.q.y + 2 * self.q.w * self.q.z,
             self.q.x * self.q.x + self.q.w * self.q.w - self.q.z * self.q.z - self.q.y * self.q.y,
             epsilon,
         )
-        p = -sm.asin_safe(2 * self.q.x * self.q.z - 2 * self.q.w * self.q.y, epsilon)
-        r = sm.atan2(
+        p = -sf.asin_safe(2 * self.q.x * self.q.z - 2 * self.q.w * self.q.y, epsilon)
+        r = sf.atan2(
             2 * self.q.y * self.q.z + 2 * self.q.w * self.q.x,
             self.q.z * self.q.z - self.q.y * self.q.y - self.q.x * self.q.x + self.q.w * self.q.w,
             epsilon,
@@ -322,10 +324,12 @@ class Rot3(LieGroup):
         """
         Construct from an angle in radians and a (normalized) axis as a 3-vector.
         """
-        return cls(Quaternion(xyz=axis * sm.sin(angle / 2), w=sm.cos(angle / 2)))
+        return cls(Quaternion(xyz=axis * sf.sin(angle / 2), w=sf.cos(angle / 2)))
 
     @classmethod
-    def from_two_unit_vectors(cls, a: Vector3, b: Vector3, epsilon: T.Scalar = 0) -> Rot3:
+    def from_two_unit_vectors(
+        cls, a: Vector3, b: Vector3, epsilon: T.Scalar = sf.epsilon()
+    ) -> Rot3:
         """
         Return a rotation that transforms a to b. Both inputs are three-vectors that
         are expected to be normalized.
@@ -333,15 +337,15 @@ class Rot3(LieGroup):
         Reference:
             http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
         """
-        one, two = sm.S(1), sm.S(2)
+        one, two = sf.S(1), sf.S(2)
 
         # If a.dot(b) == -1, it's a degenerate case and we need to return a 180 rotation
         # about a *different* axis. We select either the unit X or unit Y axis.
-        is_valid = (sm.sign(sm.Abs(a.dot(b) + one) - epsilon) + one) / two
+        is_valid = (sf.sign(sf.Abs(a.dot(b) + one) - epsilon) + one) / two
         is_x_vec = V3.are_parallel(a, V3(one, 0, 0), epsilon)
         non_parallel_vec = is_x_vec * V3(0, one, 0) + (one - is_x_vec) * V3(one, 0, 0)
 
-        m = sm.sqrt(two + two * a.dot(b) + epsilon)
+        m = sf.sqrt(two + two * a.dot(b) + epsilon)
         return cls(
             Quaternion(
                 xyz=is_valid * a.cross(b) / m + (one - is_valid) * non_parallel_vec,
@@ -349,7 +353,7 @@ class Rot3(LieGroup):
             )
         )
 
-    def angle_between(self, other: Rot3, epsilon: T.Scalar = 0) -> T.Scalar:
+    def angle_between(self, other: Rot3, epsilon: T.Scalar = sf.epsilon()) -> T.Scalar:
         """
         Return the angle between this rotation and the other in radians.
         """
@@ -364,7 +368,7 @@ class Rot3(LieGroup):
 
     @classmethod
     def random_from_uniform_samples(
-        cls, u1: T.Scalar, u2: T.Scalar, u3: T.Scalar, pi: T.Scalar = sm.pi
+        cls, u1: T.Scalar, u2: T.Scalar, u3: T.Scalar, pi: T.Scalar = sf.pi
     ) -> Rot3:
         """
         Generate a random element of SO3 from three variables uniformly sampled in [0, 1].

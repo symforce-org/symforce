@@ -16,12 +16,10 @@ from pathlib import Path
 import unittest
 
 import symforce
-from symforce import cam
-from symforce import geo
 from symforce import logger
 from symforce import ops
 from symforce import python_util
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import codegen
 from symforce.codegen import geo_package_codegen
@@ -32,30 +30,30 @@ from symforce.values import Values
 
 SYMFORCE_DIR = Path(__file__).parent.parent
 TEST_DATA_DIR = (
-    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_backend()
+    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_symbolic_api()
 )
 
 # Test function
 def az_el_from_point(
-    nav_T_cam: geo.Pose3, nav_t_point: geo.Vector3, epsilon: T.Scalar = 0
-) -> geo.Matrix:
+    nav_T_cam: sf.Pose3, nav_t_point: sf.Vector3, epsilon: sf.Scalar = 0
+) -> sf.Matrix:
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.
 
     Args:
-        nav_T_cam (geo.Pose3): camera pose in the world
-        nav_t_point (geo.Matrix): nav point
+        nav_T_cam (sf.Pose3): camera pose in the world
+        nav_t_point (sf.Matrix): nav point
         epsilon (Scalar): small number to avoid singularities
 
     Returns:
-        geo.Matrix: (azimuth, elevation)
+        sf.Matrix: (azimuth, elevation)
     """
     cam_t_point = nav_T_cam.inverse() * nav_t_point
     x, y, z = cam_t_point.to_flat_list()
-    theta = sm.atan2(y, x, epsilon=epsilon)
-    phi = sm.pi / 2 - sm.acos(z / (cam_t_point.norm() + epsilon))
-    return geo.V2(theta, phi)
+    theta = sf.atan2(y, x, epsilon=epsilon)
+    phi = sf.pi / 2 - sf.acos(z / (cam_t_point.norm() + epsilon))
+    return sf.V2(theta, phi)
 
 
 class SymforceCodegenTest(TestCase):
@@ -69,22 +67,22 @@ class SymforceCodegenTest(TestCase):
         Create some example input/output values.
         """
         inputs = Values()
-        x, y = sm.symbols("x y")
+        x, y = sf.symbols("x y")
         inputs.add(x)
         inputs.add(y)
 
-        inputs["rot"] = geo.Rot3().symbolic("rot")
+        inputs["rot"] = sf.Rot3().symbolic("rot")
 
         # Test lists of objects, scalars, and Values
         inputs["rot_vec"] = [
-            geo.Rot3().symbolic("rot1"),
-            geo.Rot3().symbolic("rot2"),
-            geo.Rot3().symbolic("rot3"),
+            sf.Rot3().symbolic("rot1"),
+            sf.Rot3().symbolic("rot2"),
+            sf.Rot3().symbolic("rot3"),
         ]
         inputs["scalar_vec"] = [
-            sm.Symbol("scalar1"),
-            sm.Symbol("scalar2"),
-            sm.Symbol("scalar3"),
+            sf.Symbol("scalar1"),
+            sf.Symbol("scalar2"),
+            sf.Symbol("scalar3"),
         ]
         inputs["list_of_lists"] = [
             ops.StorageOps.symbolic(inputs["rot_vec"], "rot_vec1"),
@@ -103,18 +101,18 @@ class SymforceCodegenTest(TestCase):
         ]
 
         # Scalar
-        inputs.add(sm.Symbol("constants.epsilon"))
+        inputs.add(sf.Symbol("constants.epsilon"))
 
         with inputs.scope("states"):
             # Array element, turns into std::array
-            inputs["p"] = geo.V2.symbolic("p")
+            inputs["p"] = sf.V2.symbolic("p")
 
             # Vector element, turns into Eigen::Vector
-            # inputs.add(sm.Symbol('q(0)'))
+            # inputs.add(sf.Symbol('q(0)'))
 
         outputs = Values()
         outputs["foo"] = x ** 2 + inputs["rot"].q.w
-        outputs["bar"] = inputs.attr.constants.epsilon + sm.sin(inputs.attr.y) + x ** 2
+        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x ** 2
         # Test outputing lists of objects, scalars, and Values
         outputs["scalar_vec_out"] = ops.GroupOps.compose(inputs["scalar_vec"], inputs["scalar_vec"])
         outputs["values_vec_out"] = ops.GroupOps.compose(inputs["values_vec"], inputs["values_vec"])
@@ -205,7 +203,7 @@ class SymforceCodegenTest(TestCase):
             states,
         )
         self.assertStorageNear(foo, x ** 2 + rot.data[3])
-        self.assertStorageNear(bar, constants.epsilon + sm.sin(y) + x ** 2)
+        self.assertStorageNear(bar, constants.epsilon + sf.sin(y) + x ** 2)
 
     def test_matrix_order_python(self) -> None:
         """
@@ -215,14 +213,14 @@ class SymforceCodegenTest(TestCase):
         Meant to catch particular matrix storage order related bugs.
         """
 
-        m23 = geo.M23(
+        m23 = sf.M23(
             [
                 [1, 2, 3],
                 [4, 5, 6],
             ]
         )
 
-        def matrix_order() -> geo.M23:
+        def matrix_order() -> sf.M23:
             return m23
 
         output_dir = self.make_output_dir("sf_test_matrix_order_python")
@@ -244,14 +242,14 @@ class SymforceCodegenTest(TestCase):
         """
         output_dir = self.make_output_dir("sf_test_sparse_output_python")
         namespace = "sparse_output_python"
-        x, y, z = sm.symbols("x y z")
+        x, y, z = sf.symbols("x y z")
 
-        def matrix_output(x: T.Scalar, y: T.Scalar, z: T.Scalar) -> T.List[T.List[T.Scalar]]:
+        def matrix_output(x: sf.Scalar, y: sf.Scalar, z: sf.Scalar) -> T.List[T.List[sf.Scalar]]:
             return [[x, y], [0, z]]
 
         codegen_data = codegen.Codegen(
             inputs=Values(x=x, y=y, z=z),
-            outputs=Values(out=geo.Matrix(matrix_output(x, y, z))),
+            outputs=Values(out=sf.Matrix(matrix_output(x, y, z))),
             name="sparse_output_func",
             config=codegen.PythonConfig(),
             sparse_matrices=["out"],
@@ -285,8 +283,8 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_numba_")
 
         # Create the specification
-        def numba_test_func(x: geo.V3) -> geo.V2:
-            return geo.V2(x[0, 0], x[1, 0])
+        def numba_test_func(x: sf.V3) -> sf.V2:
+            return sf.V2(x[0, 0], x[1, 0])
 
         numba_test_func_codegen = codegen.Codegen.function(
             func=numba_test_func, config=codegen.PythonConfig(use_numba=True)
@@ -350,10 +348,10 @@ class SymforceCodegenTest(TestCase):
 
     def test_cpp_nan(self) -> None:
         inputs = Values()
-        inputs["R1"] = geo.Rot3.symbolic("R1")
-        inputs["e"] = sm.Symbol("e")
-        dist_to_identity = geo.M(
-            inputs["R1"].local_coordinates(geo.Rot3.identity(), epsilon=inputs["e"])
+        inputs["R1"] = sf.Rot3.symbolic("R1")
+        inputs["e"] = sf.Symbol("e")
+        dist_to_identity = sf.M(
+            inputs["R1"].local_coordinates(sf.Rot3.identity(), epsilon=inputs["e"])
         ).squared_norm()
         dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
 
@@ -424,11 +422,11 @@ class SymforceCodegenTest(TestCase):
         # Start with a dense matrix
         dim = 100
         inputs = Values()
-        inputs["matrix_in"] = geo.Matrix(dim, dim).symbolic("mat")
+        inputs["matrix_in"] = sf.Matrix(dim, dim).symbolic("mat")
 
         # Output a sparse matrix
         outputs = Values()
-        outputs["matrix_out"] = geo.Matrix(dim, dim).zero()
+        outputs["matrix_out"] = sf.Matrix(dim, dim).zero()
         for i in range(dim):
             outputs["matrix_out"][i, i] = inputs["matrix_in"][i, i]
 
@@ -451,9 +449,9 @@ class SymforceCodegenTest(TestCase):
         # Function that generates both dense and sparse outputs
         multiple_outputs = Values()
         multiple_outputs["sparse_first"] = 2 * outputs["matrix_out"]
-        multiple_outputs["dense"] = 3 * geo.Matrix44.eye()
+        multiple_outputs["dense"] = 3 * sf.Matrix44.eye()
         multiple_outputs["sparse_second"] = 4 * outputs["matrix_out"]
-        multiple_outputs["result"] = geo.Matrix33().zero()
+        multiple_outputs["result"] = sf.Matrix33().zero()
 
         get_dense_and_sparse_func = codegen.Codegen(
             name="get_multiple_dense_and_sparse",
@@ -491,8 +489,8 @@ class SymforceCodegenTest(TestCase):
             Codegen input/output names must be valid variable names
         """
         # Outputs have symbols not present in inputs
-        x = sm.Symbol("x")
-        y = sm.Symbol("y")
+        x = sf.Symbol("x")
+        y = sf.Symbol("y")
         inputs = Values(input=x)
         outputs = Values(output=x + y)
         self.assertRaises(
@@ -521,7 +519,7 @@ class SymforceCodegenTest(TestCase):
             Codegen.function should assert on trying to deduce the name from a lambda
         """
 
-        def my_function(x: T.Scalar, y: T.Scalar) -> T.Scalar:
+        def my_function(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
             return x
 
         self.assertEqual(
@@ -547,7 +545,7 @@ class SymforceCodegenTest(TestCase):
             AssertionError,
             codegen.Codegen.function,
             func=lambda x: x,
-            input_types=[T.Scalar],
+            input_types=[sf.Scalar],
             config=codegen.CppConfig(),
         )
 
@@ -561,7 +559,7 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_")
 
         # Let's pick Pose3 compose
-        cls = geo.Pose3
+        cls = sf.Pose3
         codegen_function = codegen.Codegen.function(
             name="compose_" + cls.__name__.lower(),
             func=ops.GroupOps.compose,
@@ -610,16 +608,16 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_values_")
 
         inputs = Values(
-            a=geo.Rot3.symbolic("a"),
-            b=sm.Symbol("b"),
-            c=geo.V5.symbolic("c"),
-            d=Values(x=sm.Symbol("d0"), y=geo.V2.symbolic("d1")),
+            a=sf.Rot3.symbolic("a"),
+            b=sf.Symbol("b"),
+            c=sf.V5.symbolic("c"),
+            d=Values(x=sf.Symbol("d0"), y=sf.V2.symbolic("d1")),
         )
 
         outputs = Values(
-            a_out=inputs.attr.a * geo.V3(0, 0, inputs.attr.b),
+            a_out=inputs.attr.a * sf.V3(0, 0, inputs.attr.b),
             b_out=inputs.attr.c.norm() + inputs.attr.b ** 2,
-            c_out=(inputs.attr.d.x * geo.V2(1, 1) + inputs.attr.d.y).T * geo.M22(((1, 2), (3, 4))),
+            c_out=(inputs.attr.d.x * sf.V2(1, 1) + inputs.attr.d.y).T * sf.M22(((1, 2), (3, 4))),
             d_out=Values(x=3, y=inputs.attr.a.q.w + inputs.attr.b),
         )
 
@@ -646,9 +644,7 @@ class SymforceCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_codegen_with_jacobians_multiple_outputs_")
 
         # Let's make a simple function with two outputs
-        def cross_and_distance(
-            a: geo.V3, b: geo.V3, epsilon: T.Scalar
-        ) -> T.Tuple[geo.V3, T.Scalar]:
+        def cross_and_distance(a: sf.V3, b: sf.V3, epsilon: sf.Scalar) -> T.Tuple[sf.V3, sf.Scalar]:
             return a.cross(b), (a - b).norm(epsilon=epsilon)
 
         codegen_function = codegen.Codegen.function(
@@ -776,8 +772,8 @@ class SymforceCodegenTest(TestCase):
             Returns the path to a temporary file containing this function.
             """
 
-            def matrix_order() -> geo.M23:
-                return geo.M23(
+            def matrix_order() -> sf.M23:
+                return sf.M23(
                     [
                         [1, 2, 3],
                         [4, 5, 6],
@@ -803,14 +799,14 @@ class SymforceCodegenTest(TestCase):
     def test_function_with_dataclass(self) -> None:
         @dataclass
         class TestDataclass0:
-            v0: T.Scalar
+            v0: sf.Scalar
 
         @dataclass
         class TestDataclass1:
-            v1: geo.V3
+            v1: sf.V3
             v2: TestDataclass0
 
-        def test_function_dataclass(dataclass: TestDataclass1, x: T.Scalar) -> geo.V3:
+        def test_function_dataclass(dataclass: TestDataclass1, x: sf.Scalar) -> sf.V3:
             return x * dataclass.v2.v0 * dataclass.v1
 
         dataclass_codegen = codegen.Codegen.function(
@@ -864,9 +860,9 @@ class SymforceCodegenTest(TestCase):
 
         @dataclass
         class MyDataclass:
-            rot: geo.Rot3
+            rot: sf.Rot3
 
-        sym_rot = geo.Rot3.symbolic("rot")
+        sym_rot = sf.Rot3.symbolic("rot")
         inputs = Values(my_dataclass=MyDataclass(rot=sym_rot))
         outputs = Values(rot=sym_rot)
 

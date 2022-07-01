@@ -5,9 +5,9 @@
 
 from dataclasses import dataclass, field
 
-from symforce import geo
 from symforce import jacobian_helpers
 from symforce import typing as T
+import symforce.symbolic as sf
 
 
 @dataclass
@@ -17,7 +17,7 @@ class ResidualBlock:
     optimization, but are intended to be additional outputs used for debugging or other purposes.
     """
 
-    residual: geo.Matrix
+    residual: sf.Matrix
     extra_values: T.Optional[T.Dataclass] = None
 
     def compute_jacobians(
@@ -25,7 +25,7 @@ class ResidualBlock:
         inputs: T.Sequence[T.Element],
         residual_name: str = None,
         key_names: T.Sequence[str] = None,
-    ) -> T.Sequence[geo.Matrix]:
+    ) -> T.Sequence[sf.Matrix]:
         """
         Compute the jacobians of this residual block with respect to a sequence of inputs
 
@@ -55,14 +55,14 @@ class ResidualBlockWithCustomJacobian(ResidualBlock):
     respect to each of those inputs.
     """
 
-    custom_jacobians: T.Dict[T.Element, geo.Matrix] = field(default_factory=dict)
+    custom_jacobians: T.Dict[T.Element, sf.Matrix] = field(default_factory=dict)
 
     def compute_jacobians(
         self,
         inputs: T.Sequence[T.Element],
         residual_name: str = None,
         key_names: T.Sequence[str] = None,
-    ) -> T.Sequence[geo.Matrix]:
+    ) -> T.Sequence[sf.Matrix]:
         """
         Compute the jacobians of this residual block with respect to a sequence of inputs
 
@@ -89,7 +89,7 @@ class ResidualBlockWithCustomJacobian(ResidualBlock):
                 residual_input_jacobian = self.residual.jacobian(input_element)
                 if (
                     residual_input_jacobian
-                    != geo.fixed_type_from_shape(residual_input_jacobian.shape).zero()
+                    != sf.matrix_type_from_shape(residual_input_jacobian.shape).zero()
                 ):
                     residual_name = residual_name or str(self)
 

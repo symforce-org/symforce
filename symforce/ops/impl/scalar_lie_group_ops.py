@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import typing as T
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 
 from .abstract_vector_lie_group_ops import AbstractVectorLieGroupOps
 
@@ -21,8 +21,8 @@ class ScalarLieGroupOps(AbstractVectorLieGroupOps):
     @staticmethod
     def from_storage(a: T.Any, elements: T.Sequence[T.Scalar]) -> T.ScalarElement:
         assert len(elements) == 1, "Scalar needs one element."
-        return sm.S(elements[0])
+        return sf.S(elements[0])
 
     @staticmethod
     def symbolic(a: T.Any, name: str, **kwargs: T.Dict) -> T.ScalarElement:
-        return sm.Symbol(name, **kwargs)
+        return sf.Symbol(name, **kwargs)

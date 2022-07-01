@@ -605,17 +605,12 @@ class CppStruct(StructBuilder, CppBase):
         code(0, "")
 
     @property
-    def cpp_display(self):
-        has_cpp = any(notation.name == "#cpp_display" for notation in self.struct.notations)
-        if not has_cpp:
-            return False
-        if self.has_complex_members():
-            raise TypeError(
-                "#cpp_display notation is not supported on structs that have complex members: {}".format(
-                    self.full_name
-                )
-            )
-        return True
+    def cpp_display_everywhere(self):
+        return any(notation.name == "#cpp_display_everywhere" for notation in self.struct.notations)
+
+    @property
+    def cpp_no_display(self):
+        return any(notation.name == "#cpp_no_display" for notation in self.struct.notations)
 
 
 class SkymarshalCpp(SkymarshalLanguage):
@@ -667,7 +662,14 @@ class SkymarshalCpp(SkymarshalLanguage):
         for package in packages:
             for struct in package.struct_definitions:
                 cppclass = CppStruct(package, struct, args)  # type: T.Union[CppStruct, CppEnum]
-                file_map[cppclass.fullpath] = render("lcmtype.hpp.template", lcmtype=cppclass)
+                file_map[cppclass.fullpath] = render(
+                    "lcmtype.hpp.template",
+                    lcmtype=cppclass,
+                    is_array_member=lambda member: isinstance(member, ArrayMember),
+                    array_type_str=lambda member: get_array_type(
+                        member, map_to_cpptype(member.type_ref)
+                    ),
+                )
             for enum in package.enum_definitions:
                 cppclass = CppEnum(package, enum, args)
                 file_map[cppclass.fullpath] = render("enumtype.hpp.template", enumtype=cppclass)

@@ -307,7 +307,7 @@ def p_error(token):
 PARSER = None
 
 
-def lcmparse(src, verbose=True, cache=False, debug_src_path=None):
+def lcmparse(src, verbose=True, cache=False, debug_src_path=None, allow_unknown_notations=False):
     """Parse an LCM definition source into a list of packages"""
     global PARSER  # pylint: disable=global-statement
     lexer.lineno = 1  # reset the line number on repeat calls to lcmgen
@@ -325,6 +325,8 @@ def lcmparse(src, verbose=True, cache=False, debug_src_path=None):
 
     if cache:
         PARSER = parser
+
+    syntax_tree.Notation.allow_unknown_notations = allow_unknown_notations
 
     try:
         packages = parser.parse(src)

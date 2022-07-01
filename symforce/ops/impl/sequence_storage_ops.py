@@ -11,7 +11,7 @@ from symforce import typing as T
 class SequenceStorageOps:
     @staticmethod
     def storage_dim(a: T.SequenceElement) -> int:
-        return sum([StorageOps.storage_dim(v) for v in a])
+        return sum(StorageOps.storage_dim(v) for v in a)
 
     @staticmethod
     def to_storage(a: T.SequenceElement) -> T.List[T.Scalar]:

@@ -7,6 +7,7 @@
 file(GLOB_RECURSE SYMFORCE_EXAMPLES_SOURCES CONFIGURE_DEPENDS
   bundle_adjustment/*.cc
   bundle_adjustment_fixed_size/*.cc
+  robot_2d_localization/**.cc
   robot_3d_localization/**.cc
 )
 file(GLOB_RECURSE SYMFORCE_EXAMPLES_HEADERS CONFIGURE_DEPENDS **/*.h **/*.tcc)

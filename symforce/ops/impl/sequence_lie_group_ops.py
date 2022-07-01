@@ -19,7 +19,7 @@ if T.TYPE_CHECKING:
 class SequenceLieGroupOps(SequenceGroupOps):
     @staticmethod
     def tangent_dim(a: T.SequenceElement) -> int:
-        return sum([LieGroupOps.tangent_dim(v) for v in a])
+        return sum(LieGroupOps.tangent_dim(v) for v in a)
 
     @staticmethod
     def from_tangent(

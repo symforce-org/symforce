@@ -3,20 +3,18 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import geo
-from symforce import sympy as sm
-from symforce import typing as T
+import symforce.symbolic as sf
 from symforce.codegen import geo_factors_codegen
 
 
 def custom_between_factor_residual(
-    nav_T_src: geo.Pose3,
-    nav_T_target: geo.Pose3,
-    target_T_src_prior: geo.Pose3,
-    prior_weight: T.Scalar,
-    prior_sigmas: geo.Vector6,
-    epsilon: T.Scalar,
-) -> geo.Vector6:
+    nav_T_src: sf.Pose3,
+    nav_T_target: sf.Pose3,
+    target_T_src_prior: sf.Pose3,
+    prior_weight: sf.Scalar,
+    prior_sigmas: sf.Vector6,
+    epsilon: sf.Scalar,
+) -> sf.Vector6:
     """
     Return the 6dof residual on the relative pose between the given two views. Compares
     the relative pose between the optimized poses to the relative pose between the priors.
@@ -38,11 +36,11 @@ def custom_between_factor_residual(
     # Note: sqrt(weight) is safe and does not need to be pushed away from 0 by epsilon because
     # weight is a hyperparameter, so we don't need to differentiate with respect to weight or worry
     # about it being slightly negative.  Plus, adding epsilon would break the weight==0 case
-    sqrt_info = sm.sqrt(prior_weight) * geo.Matrix66.diag(
+    sqrt_info = sf.sqrt(prior_weight) * sf.Matrix66.diag(
         prior_sigmas.applyfunc(lambda s: 1 / (s + epsilon)).to_flat_list()
     )
 
-    return geo.Vector6(
+    return sf.Vector6(
         geo_factors_codegen.between_factor(
             nav_T_target, nav_T_src, target_T_src_prior, sqrt_info, epsilon
         )

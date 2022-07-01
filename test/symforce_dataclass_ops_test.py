@@ -5,8 +5,7 @@
 
 from dataclasses import dataclass, field
 
-from symforce import geo
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 
 from symforce.test_util import TestCase
@@ -16,22 +15,22 @@ from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 @dataclass
 class TestSubType:
-    rot: geo.Rot3
+    rot: sf.Rot3
 
 
 @dataclass
 class TestDynamicSizeType:
-    rot: geo.Rot3
-    x: T.Scalar
+    rot: sf.Rot3
+    x: sf.Scalar
     subtype: TestSubType
     seq: T.Sequence[T.Sequence[TestSubType]]
-    optional: T.Optional[T.Scalar] = None
+    optional: T.Optional[sf.Scalar] = None
 
 
 @dataclass
 class TestFixedSizeType:
-    rot: geo.Rot3
-    x: T.Scalar
+    rot: sf.Rot3
+    x: sf.Scalar
     subtype: TestSubType
     seq: T.Sequence[TestSubType] = field(metadata={"length": 2})
 
@@ -44,11 +43,11 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
     @classmethod
     def element(cls) -> T.Dataclass:
         element = TestDynamicSizeType(
-            rot=geo.Rot3.identity(),
+            rot=sf.Rot3.identity(),
             x=1.0,
-            subtype=TestSubType(rot=geo.Rot3.from_yaw_pitch_roll(1.0, 2.0, 3.0)),
+            subtype=TestSubType(rot=sf.Rot3.from_yaw_pitch_roll(1.0, 2.0, 3.0)),
             seq=[
-                [TestSubType(rot=geo.Rot3.from_yaw_pitch_roll(0.1, 0.2, 0.3)) for _ in range(3)]
+                [TestSubType(rot=sf.Rot3.from_yaw_pitch_roll(0.1, 0.2, 0.3)) for _ in range(3)]
                 for _ in range(5)
             ],
         )
@@ -70,7 +69,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             storage = StorageOps.to_storage(instance)
             self.assertEqual(len(storage), 17)
             for x in storage:
-                self.assertIsInstance(x, sm.Symbol)
+                self.assertIsInstance(x, sf.Symbol)
                 self.assertTrue(x.name.startswith("instance"))
 
         with self.subTest("from_storage"):
@@ -78,8 +77,8 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(instance, instance2)
 
         with self.subTest("evalf"):
-            instance.x = sm.S(5)
-            instance.rot = geo.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
+            instance.x = sf.S(5)
+            instance.rot = sf.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
             instance.subtype.rot = instance.rot.inverse()
             instance.seq[0].rot = instance.rot * instance.rot
             instance.seq[1].rot = instance.rot * instance.rot
@@ -110,7 +109,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
 
         expected_size = 1 + (
             2 + len(empty_instance.seq) * len(empty_instance.seq[0])
-        ) * StorageOps.storage_dim(geo.Rot3)
+        ) * StorageOps.storage_dim(sf.Rot3)
 
         with self.subTest("storage dim"):
             self.assertEqual(StorageOps.storage_dim(empty_instance), expected_size)
@@ -122,7 +121,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             storage = StorageOps.to_storage(instance)
             self.assertEqual(len(storage), expected_size)
             for x in storage:
-                self.assertIsInstance(x, sm.Symbol)
+                self.assertIsInstance(x, sf.Symbol)
                 self.assertTrue(x.name.startswith("instance"))
 
         with self.subTest("from_storage"):
@@ -130,8 +129,8 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(instance, instance2)
 
         with self.subTest("evalf"):
-            instance.x = sm.S(5)
-            instance.rot = geo.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
+            instance.x = sf.S(5)
+            instance.rot = sf.Rot3.from_yaw_pitch_roll(instance.x, 0, 0)
             instance.subtype.rot = instance.rot.inverse()
             for i in range(5):
                 for j in range(3):

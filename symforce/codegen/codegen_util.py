@@ -19,9 +19,8 @@ import sys
 
 import symforce
 from symforce import ops
-from symforce import geo
 from symforce.values import Values, IndexEntry
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import format_util
 from symforce.codegen import codegen_config
@@ -30,14 +29,14 @@ from symforce import _sympy_count_ops
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
-T_terms = T.Sequence[T.Tuple[sm.Symbol, sm.Expr]]
+T_terms = T.Sequence[T.Tuple[sf.Symbol, sf.Expr]]
 T_nested_terms = T.Sequence[T_terms]
 T_terms_printed = T.Sequence[T.Tuple[str, str]]
 
 
 class DenseAndSparseOutputTerms(T.NamedTuple):
-    dense: T.List[T.List[sm.Expr]]
-    sparse: T.List[T.List[sm.Expr]]
+    dense: T.List[T.List[sf.Expr]]
+    sparse: T.List[T.List[sf.Expr]]
 
 
 class OutputWithTerms(T.NamedTuple):
@@ -64,16 +63,16 @@ class CSCFormat:
     kNumNonZero: int  # Number of nonzero entries
     kColPtrs: T.List[int]  # nonzero_elements[kColPtrs[col]] is the first nonzero entry of col
     kRowIndices: T.List[int]  # row indices of nonzero entries written in column-major order
-    nonzero_elements: T.List[T.Scalar]  # nonzero entries written in column-major order
+    nonzero_elements: T.List[sf.Scalar]  # nonzero entries written in column-major order
 
     @staticmethod
-    def from_matrix(sparse_matrix: geo.Matrix) -> CSCFormat:
+    def from_matrix(sparse_matrix: sf.Matrix) -> CSCFormat:
         """
         Returns a dictionary with the metadata required to represent a matrix as a sparse matrix
         in CSC form.
 
         Args:
-            sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
+            sparse_matrix: A symbolic sf.Matrix where sparsity is given by exact zero equality.
         """
         kColPtrs = []
         kRowIndices = []
@@ -166,7 +165,7 @@ def print_code(
     dense_outputs_formatted = simpify_nested_lists(dense_outputs_formatted)
     sparse_outputs_formatted = simpify_nested_lists(sparse_outputs_formatted)
 
-    def count_ops(expr: sm.Expr) -> int:
+    def count_ops(expr: T.Any) -> int:
         op_count = _sympy_count_ops.count_ops(expr)
         assert isinstance(op_count, int)
         return op_count
@@ -224,7 +223,7 @@ def perform_cse(
 
     Args:
         output_exprs: expressions on which to perform cse
-        cse_optimizations: optimizations to be forwarded to sm.cse
+        cse_optimizations: optimizations to be forwarded to sf.cse
 
     Returns:
         T_terms: Temporary variables holding the common sub-expressions found within output_exprs
@@ -235,19 +234,19 @@ def perform_cse(
         x for storage in (output_exprs.dense + output_exprs.sparse) for x in storage
     ]
 
-    def tmp_symbols() -> T.Iterable[str]:
+    def tmp_symbols() -> T.Iterable[sf.Symbol]:
         for i in itertools.count():
-            yield sm.Symbol(f"_tmp{i}")
+            yield sf.Symbol(f"_tmp{i}")
 
     if cse_optimizations is not None:
-        if symforce.get_backend() == "symengine":
-            raise ValueError("cse_optimizations is not supported on the symengine backend")
+        if symforce.get_symbolic_api() == "symengine":
+            raise ValueError("cse_optimizations is not supported on symengine")
 
-        temps, flat_simplified_outputs = sm.cse(
+        temps, flat_simplified_outputs = sf.cse(
             flat_output_exprs, symbols=tmp_symbols(), optimizations=cse_optimizations
         )
     else:
-        temps, flat_simplified_outputs = sm.cse(flat_output_exprs, symbols=tmp_symbols())
+        temps, flat_simplified_outputs = sf.cse(flat_output_exprs, symbols=tmp_symbols())
 
     # Unflatten output of CSE
     simplified_outputs = DenseAndSparseOutputTerms(dense=[], sparse=[])
@@ -309,7 +308,7 @@ def format_symbols(
 
 def get_formatted_list(
     values: Values, config: codegen_config.CodegenConfig, format_as_inputs: bool
-) -> T.Tuple[T.List[T.List[T.Union[sm.Symbol, sm.DataBuffer]]], T.List[T.List[T.Scalar]]]:
+) -> T.Tuple[T.List[T.List[T.Union[sf.Symbol, sf.DataBuffer]]], T.List[T.List[sf.Scalar]]]:
     """
     Returns a nested list of formatted symbols, as well as a nested list of the corresponding
     original scalar values. For use in generated functions.
@@ -334,13 +333,13 @@ def get_formatted_list(
         # For each item in the given Values object, we construct a list of symbols used
         # to access the scalar elements of the object. These symbols will later be matched up
         # with the flattened Values object symbols.
-        if issubclass(arg_cls, sm.DataBuffer):
-            formatted_symbols = [sm.DataBuffer(key, value.shape[0])]
+        if issubclass(arg_cls, sf.DataBuffer):
+            formatted_symbols = [sf.DataBuffer(key, value.shape[0])]
             flattened_value = [value]
-        elif isinstance(value, (sm.Expr, sm.Symbol)):
-            formatted_symbols = [sm.Symbol(key)]
+        elif isinstance(value, (sf.Expr, sf.Symbol)):
+            formatted_symbols = [sf.Symbol(key)]
             flattened_value = [value]
-        elif issubclass(arg_cls, geo.Matrix):
+        elif issubclass(arg_cls, sf.Matrix):
             if value.shape[1] == 1:
                 # Pass in None as the second index for 1D matrices, so the per-backend config can
                 # decide whether to use 1D or 2D indexing, depending on the language.
@@ -356,7 +355,7 @@ def get_formatted_list(
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
                         formatted_symbols.append(
-                            sm.Symbol(config.format_matrix_accessor(key, i, j))
+                            sf.Symbol(config.format_matrix_accessor(key, i, j))
                         )
 
             flattened_value = ops.StorageOps.to_storage(value)
@@ -408,11 +407,11 @@ def get_formatted_list(
                 # For readability, we will store the data of geo/cam objects in a temp vector named "_key"
                 # where "key" is the name of the given input variable (can be "self" for member functions accessing
                 # object data)
-                formatted_symbols = [sm.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sf.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
             else:
                 # For geo/cam objects being output, we can't access "data" directly, so in the
                 # jinja template we will construct a new object from a vector
-                formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             flattened_value = ops.StorageOps.to_storage(value)
 
         flattened_formatted_symbolic_values.append(formatted_symbols)
@@ -422,7 +421,7 @@ def get_formatted_list(
 
 def _get_scalar_keys_recursive(
     index_value: IndexEntry, prefix: str, config: codegen_config.CodegenConfig, use_data: bool
-) -> T.List[sm.Symbol]:
+) -> T.List[sf.Symbol]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
 
@@ -438,9 +437,9 @@ def _get_scalar_keys_recursive(
     """
     vec = []
     datatype = index_value.datatype()
-    if issubclass(datatype, T.Scalar):
+    if issubclass(datatype, sf.Scalar):
         # Element is a scalar, no need to access subvalues
-        vec.append(sm.Symbol(prefix))
+        vec.append(sf.Symbol(prefix))
     elif issubclass(datatype, Values):
         assert index_value.item_index is not None
         # Recursively add subitems using "." to access subvalues
@@ -450,8 +449,8 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}.{name}", config=config, use_data=False
                 )
             )
-    elif issubclass(datatype, sm.DataBuffer):
-        vec.append(sm.DataBuffer(prefix))
+    elif issubclass(datatype, sf.DataBuffer):
+        vec.append(sf.DataBuffer(prefix))
     elif issubclass(datatype, (list, tuple)):
         assert index_value.item_index is not None
         # Assume all elements of list are same type as first element
@@ -462,16 +461,17 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}[{i}]", config=config, use_data=use_data
                 )
             )
-    elif issubclass(datatype, geo.Matrix) or not use_data:
+    elif issubclass(datatype, sf.Matrix) or not use_data:
+        # TODO(hayk): Fix this in follow-up.
         # TODO(nathan): I don't think this deals with 2D matrices correctly
-        if isinstance(config, codegen_config.PythonConfig) and config.use_eigen_types:
-            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
+        if config.matrix_is_1d and config.use_eigen_types:
+            vec.extend(sf.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
         else:
-            vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
+            vec.extend(sf.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
         vec.extend(
-            sm.Symbol(config.format_data_accessor(prefix=prefix, index=i))
+            sf.Symbol(config.format_data_accessor(prefix=prefix, index=i))
             for i in range(index_value.storage_dim)
         )
 
@@ -482,7 +482,7 @@ def _get_scalar_keys_recursive(
     return vec
 
 
-def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]]:
+def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[sf.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions for sparse matrices.
     """
@@ -490,7 +490,7 @@ def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]
     # Each element of sparse_outputs is a list of the nonzero terms in the sparse matrix
     for key, sparse_matrix_data in sparse_outputs.items():
         symbolic_args.append(
-            [sm.Symbol(f"{key}_value_ptr[{i}]") for i in range(len(sparse_matrix_data))]
+            [sf.Symbol(f"{key}_value_ptr[{i}]") for i in range(len(sparse_matrix_data))]
         )
 
     return symbolic_args
@@ -663,7 +663,7 @@ def generate_lcm_types(
     )
 
     # Autoformat generated python files
-    format_util.format_py_dir(str(python_types_dir))
+    format_util.format_py_dir(python_types_dir)
 
     return result
 
@@ -676,6 +676,6 @@ def flat_symbols_from_values(values: Values) -> T.List[T.Any]:
     symbols_list = values.to_storage()
 
     for v in values.values_recursive():
-        if isinstance(v, sm.DataBuffer):
+        if isinstance(v, sf.DataBuffer):
             symbols_list.append(v)
     return symbols_list

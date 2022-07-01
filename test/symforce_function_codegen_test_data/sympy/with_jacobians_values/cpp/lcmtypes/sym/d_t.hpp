@@ -9,6 +9,7 @@
 #ifndef __sym_d_t_hpp__
 #define __sym_d_t_hpp__
 
+#include <ostream>
 #include "lcmtypes/eigen_lcm/Vector2d.hpp"
 
 namespace sym
@@ -104,6 +105,19 @@ class d_t
         // Comparison operators.
         inline bool operator==(const d_t& other) const;
         inline bool operator!=(const d_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const d_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "d_t(";
+            stream << "x=" << obj.x << ", ";
+            stream << "y=<EIGEN_LCM TYPE eigen_lcm.Vector2d>";
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 d_t::d_t(

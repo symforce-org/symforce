@@ -39,6 +39,7 @@ struct valuesf_t {
 // Storage for the linearization of a factor
 // ------------------------------------------------------------------------------------------------
 
+#cpp_no_display
 struct linearized_dense_factor_t {
   // Index containing keys of this factor and their offsets within the factor residual/jacobian
   index_t index;
@@ -51,6 +52,7 @@ struct linearized_dense_factor_t {
 };
 
 // Same as linearized_dense_factor_t but for floats.
+#cpp_no_display
 struct linearized_dense_factorf_t {
   index_t index;
 

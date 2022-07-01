@@ -12,7 +12,7 @@ from .camera_cal import CameraCal
 from symforce.cam.camera_util import compute_odd_polynomial_critical_point
 from symforce.cam.linear_camera_cal import LinearCameraCal
 from symforce import geo
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -75,7 +75,7 @@ class SphericalCameraCal(CameraCal):
             self.critical_theta = critical_theta
         else:
             if any(
-                isinstance(c, sm.Expr) and not isinstance(c, sm.Number) for c in distortion_coeffs
+                isinstance(c, sf.Expr) and not isinstance(c, sf.Number) for c in distortion_coeffs
             ):
                 raise ValueError(
                     "critical_theta must be provided if the distortion_coeffs are not all numerical"
@@ -143,11 +143,11 @@ class SphericalCameraCal(CameraCal):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> SphericalCameraCal:
-        with sm.scope(name):
+        with sf.scope(name):
             return cls(
-                focal_length=sm.symbols("f_x f_y"),
-                principal_point=sm.symbols("c_x c_y"),
-                critical_theta=sm.Symbol("theta_crit"),
+                focal_length=sf.symbols("f_x f_y"),
+                principal_point=sf.symbols("c_x c_y"),
+                critical_theta=sf.Symbol("theta_crit"),
                 distortion_coeffs=geo.Matrix(cls.NUM_DISTORTION_COEFFS, 1)
                 .symbolic("C", **kwargs)
                 .to_flat_list(),
@@ -172,7 +172,7 @@ class SphericalCameraCal(CameraCal):
             self.distortion_coeffs.to_flat_list(), max_theta
         )
 
-    def _radial_distortion(self, theta: sm.Symbol) -> sm.Symbol:
+    def _radial_distortion(self, theta: sf.Symbol) -> sf.Symbol:
         """
         Compute the radius in the unit-depth plane from the angle theta with the camera z-axis
         """
@@ -186,16 +186,16 @@ class SphericalCameraCal(CameraCal):
         return acc
 
     def pixel_from_camera_point(
-        self, point: geo.Matrix31, epsilon: T.Scalar = 0
+        self, point: geo.Matrix31, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.Matrix21, T.Scalar]:
 
         # compute theta
         xy_norm = point[:2, :].norm(epsilon)
-        theta = sm.atan2(xy_norm, point[2])
-        is_valid = sm.Max(sm.sign(self.critical_theta - theta), 0)
+        theta = sf.atan2(xy_norm, point[2])
+        is_valid = sf.Max(sf.sign(self.critical_theta - theta), 0)
 
         # clamp theta to critical_theta
-        theta = sm.Min(theta, self.critical_theta - epsilon)
+        theta = sf.Min(theta, self.critical_theta - epsilon)
 
         # compute image plane coordinate
         r = self._radial_distortion(theta)

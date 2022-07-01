@@ -7,18 +7,18 @@ import os
 
 import symforce
 from symforce import codegen
-from symforce import geo
 from symforce.opt.noise_models import BarronNoiseModel
 from symforce.test_util import TestCase
 from symforce import typing as T
+import symforce.symbolic as sf
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
-def barron_factor(x: geo.Matrix51, y: geo.Matrix51, mu: T.Scalar, eps: T.Scalar) -> geo.Matrix51:
+def barron_factor(x: sf.Matrix51, y: sf.Matrix51, mu: sf.Scalar, eps: sf.Scalar) -> sf.Matrix51:
     # Transform mu, which ranges from 0->1, to alpha in the Barron noise model,
     # by alpha=2-1/(1-mu)
     # This transformation means alpha will range from 1 to -inf, so that

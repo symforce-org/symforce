@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce.test_util import TestCase, symengine_only
-from symforce import sympy as sm
+import symforce.symbolic as sf
 
 
 class SymEngineMatrixHashTest(TestCase):
@@ -12,11 +12,11 @@ class SymEngineMatrixHashTest(TestCase):
     def test_matrix_hash(self) -> None:
         """
         Tests:
-            sm.Matrix.__hash__
+            sf.sympy.Matrix.__hash__
         """
-        hash1 = hash(sm.Matrix([[0, 1], [2, 3]]))
-        hash2 = hash(sm.Matrix([[0, 1], [2, 4]]))
-        hash3 = hash(sm.Matrix([[0, 1, 2, 3]]))
+        hash1 = hash(sf.sympy.Matrix([[0, 1], [2, 3]]))
+        hash2 = hash(sf.sympy.Matrix([[0, 1], [2, 4]]))
+        hash3 = hash(sf.sympy.Matrix([[0, 1, 2, 3]]))
 
         self.assertNotEqual(hash1, 0)
         self.assertNotEqual(hash2, 0)

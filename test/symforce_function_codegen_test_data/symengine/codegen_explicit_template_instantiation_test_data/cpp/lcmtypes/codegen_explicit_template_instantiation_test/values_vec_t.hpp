@@ -9,6 +9,7 @@
 #ifndef __codegen_explicit_template_instantiation_test_values_vec_t_hpp__
 #define __codegen_explicit_template_instantiation_test_values_vec_t_hpp__
 
+#include <ostream>
 #include <array>
 #include "lcmtypes/eigen_lcm/Vector4d.hpp"
 
@@ -119,6 +120,37 @@ class values_vec_t
         // Comparison operators.
         inline bool operator==(const values_vec_t& other) const;
         inline bool operator!=(const values_vec_t& other) const;
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& stream, const values_vec_t& obj) {
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+            stream << "values_vec_t(";
+            stream << "x=" << obj.x << ", ";
+            stream << "y=" << obj.y << ", ";
+            stream << "rot=<EIGEN_LCM TYPE eigen_lcm.Vector4d>" << ", ";
+            stream << "rot_vec=[";
+            for (size_t i = 0; i < obj.rot_vec.size(); ++i) {
+                stream << obj.rot_vec[i];
+                if (i + 1 < obj.rot_vec.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "scalar_vec=[";
+            for (size_t i = 0; i < obj.scalar_vec.size(); ++i) {
+                stream << obj.scalar_vec[i];
+                if (i + 1 < obj.scalar_vec.size()) {
+                    stream << ", ";
+                }
+            }
+            stream << "]" << ", ";
+            stream << "list_of_lists=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::eigen_lcm::Vector4d, 3 >, 3 >>";
+            stream << ")";
+#else
+            stream << "<FORMATTING DISABLED>";
+#endif
+            return stream;
+        }
 };
 
 values_vec_t::values_vec_t(

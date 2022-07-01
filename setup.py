@@ -6,17 +6,32 @@
 import multiprocessing
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import typing as T
 
+import distutils.util
 from setuptools import Extension
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
+from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 SOURCE_DIR = Path(__file__).resolve().parent
+
+
+def symforce_version() -> str:
+    """
+    Fetch the current symforce version from _version.py
+
+    We can't import the version here, so we have to do some text parsing
+    """
+    version_file_contents = (Path(__file__).parent / "symforce" / "_version.py").read_text()
+    version_match = re.search(r'^version = "(.+)"$', version_file_contents, flags=re.MULTILINE)
+    assert version_match is not None
+    return version_match.group(1)
 
 
 class CMakeExtension(Extension):
@@ -48,6 +63,7 @@ class CMakeBuild(build_ext):
 
         cmake_args = [
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={build_directory}",
+            "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-rpath,'$ORIGIN/../..'",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
         ]
 
@@ -64,7 +80,7 @@ class CMakeBuild(build_ext):
         # Assuming Makefiles
         build_args += ["--", f"-j{multiprocessing.cpu_count()}"]
 
-        self.build_args = build_args
+        self.build_args = build_args  # pylint: disable=attribute-defined-outside-init
 
         env = os.environ.copy()
         env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
@@ -89,11 +105,68 @@ class CMakeBuild(build_ext):
 
     def move_output(self, ext: CMakeExtension) -> None:
         build_temp = Path(self.build_temp).resolve()
+        extension_source_paths = {"cc_sym": build_temp / "pybind" / self.get_ext_filename("cc_sym")}
+
+        build_temp = Path(self.build_temp).resolve()
         dest_path = Path(self.get_ext_fullpath(ext.name)).resolve()  # type: ignore[attr-defined]
-        source_path = build_temp / "pybind" / self.get_ext_filename(ext.name)  # type: ignore[attr-defined]
         dest_directory = dest_path.parents[0]
         dest_directory.mkdir(parents=True, exist_ok=True)
-        self.copy_file(source_path, dest_path)
+        self.copy_file(extension_source_paths[ext.name], dest_path)  # type: ignore[attr-defined]
+
+
+class SymForceEggInfo(egg_info):
+    """
+    Custom Egg info, that optionally rewrites local dependencies (that are stored in the symforce
+    repo) to package dependencies
+    """
+
+    user_options = egg_info.user_options + [
+        (
+            "rewrite-local-dependencies=",
+            None,
+            "Rewrite in-repo Python dependencies from `package @ file:` to `package==version`.  Can"
+            " also be provided as the environment variable SYMFORCE_REWRITE_LOCAL_DEPENDENCIES",
+        )
+    ]
+
+    def initialize_options(self) -> None:
+        super().initialize_options()
+        self.rewrite_local_dependencies = False  # pylint: disable=attribute-defined-outside-init
+
+    def finalize_options(self) -> None:
+        super().finalize_options()
+
+        if not isinstance(self.rewrite_local_dependencies, bool):
+            self.rewrite_local_dependencies = (  # pylint: disable=attribute-defined-outside-init
+                bool(distutils.util.strtobool(self.rewrite_local_dependencies))
+            )
+
+        if "SYMFORCE_REWRITE_LOCAL_DEPENDENCIES" in os.environ:
+            self.rewrite_local_dependencies = (  # pylint: disable=attribute-defined-outside-init
+                bool(distutils.util.strtobool(os.environ["SYMFORCE_REWRITE_LOCAL_DEPENDENCIES"]))
+            )
+
+    def run(self) -> None:
+        # Rewrite dependencies from the local `file:` versions to generic pinned package versions.
+        # This is what we want when e.g. building wheels for PyPI, where those local dependencies
+        # are hosted as their own PyPI packages.  We can't just decide whether to do this e.g. based
+        # on whether we're building a wheel, since `pip install .` also builds a wheel to install.
+        if self.rewrite_local_dependencies:
+
+            def filter_local(s: str) -> str:
+                if "@" in s:
+                    s = f"{s.split('@')[0]}=={symforce_version()}"
+                return s
+
+            self.distribution.install_requires = [  # type: ignore[attr-defined]
+                filter_local(requirement) for requirement in self.distribution.install_requires  # type: ignore[attr-defined]
+            ]
+            self.distribution.extras_require = {  # type: ignore[attr-defined]
+                k: [filter_local(requirement) for requirement in v]
+                for k, v in self.distribution.extras_require.items()  # type: ignore[attr-defined]
+            }
+
+        super().run()
 
 
 class InstallWithExtras(install):
@@ -108,21 +181,28 @@ class InstallWithExtras(install):
     def run(self) -> None:
         super().run()
 
+        build_ext_obj = self.distribution.get_command_obj("build_ext")  # type: ignore[attr-defined]
         build_dir = Path(self.distribution.get_command_obj("build_ext").build_temp)  # type: ignore[attr-defined]
 
         # Install symengine
-        # TODO(aaron): This is pretty jank, but it works in the nominal case
-        subprocess.run(
-            [
-                sys.executable,
-                str(SOURCE_DIR / "third_party" / "symenginepy" / "setup.py"),
-                "install",
-                f"--prefix={self.prefix}",
-            ],
-            # TODO(aaron): This seems pretty brittle, but the only way I could get symenginepy to
-            # install was to run this from the same directory we do during the build
-            cwd=build_dir / "symenginepy-prefix" / "src" / "symenginepy-build",
-            check=True,
+        # NOTE(aaron): We add symenginepy as a package down below, and the only remaining thing we
+        # need is the compiled symengine_wrapper.so, which we move into place here.  This doesn't
+        # include the additional Cython sources that symenginepy includes in their distributions,
+        # but I'm honestly not sure why they include them or why you'd need them.
+        self.copy_file(
+            build_dir
+            / "symengine_install"
+            / "lib"
+            / f"python{sys.version_info.major}.{sys.version_info.minor}"
+            / "site-packages"
+            / "symengine"
+            / "lib"
+            / build_ext_obj.get_ext_filename("symengine_wrapper"),
+            Path.cwd()
+            / self.install_platlib  # type: ignore[attr-defined]
+            / "symengine"
+            / "lib"
+            / build_ext_obj.get_ext_filename("symengine_wrapper"),
         )
 
         # Configure with install prefix
@@ -134,42 +214,16 @@ class InstallWithExtras(install):
 
         # Install other libraries needed for cc_sym.so
         subprocess.run(
-            [
-                "cmake",
-                "--build",
-                ".",
-                "--target",
-                "install",
-            ],
+            ["cmake", "--build", ".", "--target", "install"],
             cwd=build_dir,
             check=True,
         )
 
-        # Install lcmtypes - this might be super jank
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "lcmtypes/python2.7",
-                f"--prefix={self.prefix}",
-            ],
-            # TODO(aaron): This seems pretty brittle, but the only way I could get symenginepy to
-            # install was to run this from the same directory we do during the build
-            cwd=build_dir,
-            check=True,
+        # Install lcmtypes - this is kinda jank
+        self.copy_tree(
+            str(build_dir / "lcmtypes" / "python2.7" / "lcmtypes"),
+            str(Path.cwd() / self.install_platlib / "lcmtypes"),  # type: ignore[attr-defined]
         )
-
-
-def symforce_version() -> str:
-    # We can't import the version here, so we have to do some text parsing
-    import re
-
-    version_file_contents = (Path(__file__).parent / "symforce" / "_version.py").read_text()
-    version_match = re.search(r'^version = "(.+)"$', version_file_contents, flags=re.MULTILINE)
-    assert version_match is not None
-    return version_match.group(1)
 
 
 setup_requirements = [
@@ -197,7 +251,9 @@ docs_requirements = [
     "breathe",
 ]
 
-cmdclass: T.Dict[str, T.Any] = dict(build_ext=CMakeBuild, install=InstallWithExtras)
+cmdclass: T.Dict[str, T.Any] = dict(
+    build_ext=CMakeBuild, install=InstallWithExtras, egg_info=SymForceEggInfo
+)
 
 
 def symforce_data_files() -> T.List[str]:
@@ -211,8 +267,46 @@ def symforce_data_files() -> T.List[str]:
     return (
         files_with_pattern("*.jinja")
         + files_with_pattern("*.mtx")
-        + ["test_util/random_expressions/README"]
+        + ["test_util/random_expressions/README", ".clang-format"]
     )
+
+
+def symforce_rev() -> str:
+    """
+    Get the current git sha, falling back to `main`.  Only used for images in the README, where it
+    isn't super important that this is very robust
+    """
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"], check=True, text=True, stdout=subprocess.PIPE
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return "main"
+
+
+def fixed_readme() -> str:
+    """
+    Fix things in the README for PyPI
+    """
+    readme = Path("README.md").read_text()
+
+    # Replace relative links with absolute, so images appear correctly on PyPI
+    readme = readme.replace(
+        "docs/static/images/",
+        f"https://raw.githubusercontent.com/symforce-org/symforce/{symforce_rev()}/docs/static/images/",
+    )
+
+    # Remove the DARK_MODE_ONLY tags
+    # See https://stackoverflow.com/a/1732454/2791611
+    readme = re.sub(
+        r"<!--\s*DARK_MODE_ONLY\s*-->((?!DARK_MODE_ONLY).)*<!--\s*/DARK_MODE_ONLY\s*-->",
+        "",
+        readme,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+
+    return readme
 
 
 setup(
@@ -224,7 +318,7 @@ setup(
     keywords="python computer-vision cpp robotics optimization structure-from-motion motion-planning code-generation slam autonomous-vehicles symbolic-computation",
     license="Apache 2.0",
     license_file="LICENSE",
-    long_description=Path("README.md").read_text(),
+    long_description=fixed_readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/symforce-org/symforce",
     project_urls={
@@ -258,9 +352,13 @@ setup(
     # Minimum Python version
     python_requires=">=3.8",
     # Find all packages in the directory
-    packages=find_packages(),
+    packages=find_packages() + find_packages(where="third_party/symenginepy"),
     package_data={
         "symforce": symforce_data_files(),
+    },
+    package_dir={
+        "symforce": "symforce",
+        "symengine": "third_party/symenginepy/symengine",
     },
     # Override the extension builder with our cmake class
     cmdclass=cmdclass,

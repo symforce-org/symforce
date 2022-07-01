@@ -8,11 +8,9 @@ import os
 import sys
 
 import symforce
-from symforce import cam
-from symforce import geo
 from symforce import ops
 from symforce import python_util
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce import codegen
 from symforce.codegen import cam_package_codegen
@@ -26,7 +24,7 @@ from symforce.test_util import TestCase, symengine_only
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
@@ -37,8 +35,8 @@ class SymforceGenCodegenTest(TestCase):
 
     def generate_cam_example_function(self, output_dir: str) -> None:
         def pixel_to_ray_and_back(
-            pixel: geo.Vector2, cam: cam.LinearCameraCal, epsilon: T.Scalar = 0
-        ) -> geo.Vector2:
+            pixel: sf.Vector2, cam: sf.LinearCameraCal, epsilon: sf.Scalar = 0
+        ) -> sf.Vector2:
             """
             Transform a given pixel into a ray and project the ray back to
             pixel coordinates. Input and output should match.
@@ -100,7 +98,7 @@ class SymforceGenCodegenTest(TestCase):
         )
 
         # Test against checked-in geo package (only on SymEngine)
-        if symforce.get_backend() == "symengine":
+        if symforce.get_symbolic_api() == "symengine":
             self.compare_or_update_directory(
                 actual_dir=os.path.join(output_dir, "sym"),
                 expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "sym"),

@@ -1,0 +1,44 @@
+---
+# Defaults
+BasedOnStyle:  Google
+
+ColumnLimit:     100
+
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+DerivePointerAlignment: false
+
+---
+Language:        Cpp
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<ConciseArgs>'        # Special case for third-party libraries that look like stdlib
+    Priority:        2
+
+  - Regex:           '^<[a-z_]*>'            # C++ standard library <builtin_lib>
+    Priority:        1
+
+  - Regex:           '^<(linux|sys)/.*>'     # Linux and system headers
+    Priority:        1
+
+    # C standard library, taken from https://en.wikipedia.org/wiki/C_POSIX_library
+  - Regex:           '^<(aio|arpa/inet|assert|complex|cpio|ctype|dirent|dlfcn|errno|fcntl|fenv|float|fmtmsg|fnmatch|ftw|glob|grp|iconv|inttypes|iso646|langinfo|libgen|limits|locale|math|monetary|mqueue|ndbm|net/if|netdb|netinet/in|netinet/tcp|nl_types|poll|pthread|pwd|regex|sched|search|semaphore|setjmp|signal|spawn|stdarg|stdbool|stddef|stdint|stdio|stdlib|string|strings|stropts|syslog|tar|termios|tgmath|time|trace|ulimit|unistd|utime|utmpx|wchar|wctype|wordexp)\.h>'
+    Priority:        1
+
+  - Regex:           '^<lcmtypes/'          # Includes to lcmtypes generated files
+    Priority:        3
+
+  - Regex:           '^<(symforce|sym)/'    # SymForce includes
+    Priority:        4
+
+  - Regex:           '^<'                   # Everything else with <>
+    Priority:        2
+
+  - Regex:           '.*'                   # Everything else
+    Priority:        5
+
+---

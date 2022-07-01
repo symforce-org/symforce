@@ -398,7 +398,7 @@ _{{ lhs }} = {{ rhs }};
  #     spec (Codegen):
  #}
 {% macro expr_code(spec, scalar_type="Scalar") -%}
-    // Total ops: {{ spec.print_code_results.total_ops }}
+    // Total ops: {{ spec.total_ops() }}
 
     // Input arrays
     {% for name, type in spec.inputs.items() %}

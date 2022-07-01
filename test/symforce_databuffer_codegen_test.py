@@ -7,10 +7,9 @@ from pathlib import Path
 
 import symforce
 from symforce import codegen
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce.codegen import codegen_util
 from symforce.values import Values
-from symforce import geo
 from symforce.test_util import TestCase
 from symforce import typing as T
 from symforce.opt.factor import Factor
@@ -19,7 +18,7 @@ from symforce.opt.optimizer import Optimizer
 CURRENT_DIR = Path(__file__).parent
 SYMFORCE_DIR = CURRENT_DIR.parent
 TEST_DATA_DIR = SYMFORCE_DIR.joinpath(
-    "test", "symforce_function_codegen_test_data", symforce.get_backend()
+    "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 
 
@@ -29,9 +28,9 @@ class SymforceDataBufferCodegenTest(TestCase):
     """
 
     def gen_code(self, output_dir: str) -> None:
-        a, b = sm.symbols("a b")
+        a, b = sf.symbols("a b")
         # make sure Databuffer works with whatever namestring works for symbol
-        buffer = sm.DataBuffer("foo.Buffer")
+        buffer = sf.DataBuffer("foo.Buffer")
         result = buffer[(a + b) * (b - a)] + buffer[b * b - a * a] + (a + b)
 
         inputs = Values()
@@ -97,18 +96,18 @@ class SymforceDataBufferCodegenTest(TestCase):
 
         # sample residual function that's a simple linear interpolation of the databuffer
         # assume that the scale = 1 for convenience
-        def buffer_residual(x: T.Scalar, left_bound: T.Scalar, buffer: sm.DataBuffer) -> geo.V1:
+        def buffer_residual(x: sf.Scalar, left_bound: sf.Scalar, buffer: sf.DataBuffer) -> sf.V1:
             shifted_x = x - left_bound
-            lower_idx = sm.floor(shifted_x)
+            lower_idx = sf.floor(shifted_x)
             upper_idx = lower_idx + 1
 
-            a1 = shifted_x - sm.floor(shifted_x)
+            a1 = shifted_x - sf.floor(shifted_x)
             a0 = 1 - a1
-            return geo.V1(a0 * buffer[lower_idx] + a1 * buffer[upper_idx])
+            return sf.V1(a0 * buffer[lower_idx] + a1 * buffer[upper_idx])
 
         factors = [Factor(keys=["x", "left_bound", "buffer"], residual=buffer_residual)]
         optimizer = Optimizer(factors=factors, optimized_keys=["x"])
-        initial_values = Values(epsilon=sm.default_epsilon)
+        initial_values = Values(epsilon=sf.numeric_epsilon)
         initial_values["left_bound"] = -2
         initial_values["buffer"] = np.array([-2, -1, 0, 1, 2])
         initial_values["x"] = 1.5

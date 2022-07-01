@@ -43,7 +43,8 @@ class Linearizer {
    *                factor keys. If not provided, it is computed from all keys for all
    *                factors using a default ordering.
    */
-  Linearizer(const std::vector<Factor<Scalar>>& factors, const std::vector<Key>& key_order = {});
+  Linearizer(const std::string& name, const std::vector<Factor<Scalar>>& factors,
+             const std::vector<Key>& key_order = {});
 
   /**
    * Update linearization at a new evaluation point. Returns the total residual dimension M.
@@ -154,6 +155,9 @@ class Linearizer {
 
   bool initialized_{false};
 
+  // The name of this linearizer to be used for printing debug information.
+  std::string name_;
+
   // Pointer to the nonlinear factors
   const std::vector<Factor<Scalar>>* factors_;
 
@@ -178,9 +182,11 @@ class Linearizer {
 template <typename Scalar>
 Linearization<Scalar> Linearize(const std::vector<Factor<Scalar>>& factors,
                                 const Values<Scalar>& values,
-                                const std::vector<Key>& keys_to_optimize = {}) {
+                                const std::vector<Key>& keys_to_optimize = {},
+                                const std::string& linearizer_name = "Linearizer") {
   Linearization<Scalar> linearization;
-  Linearizer<Scalar>(factors, keys_to_optimize).Relinearize(values, &linearization);
+  Linearizer<Scalar>(linearizer_name, factors, keys_to_optimize)
+      .Relinearize(values, &linearization);
   return linearization;
 }
 

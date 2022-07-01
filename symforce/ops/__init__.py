@@ -18,7 +18,7 @@ from .lie_group_ops import LieGroupOps
 # Register ops for scalars and sequences
 import abc
 import numpy as np
-from symforce import sympy as sm
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 from symforce import python_util
 
@@ -34,8 +34,8 @@ class ScalarExpr(abc.ABC):
     """
     Metaclass for scalar expressions
 
-    DataBuffer is a subclass of sm.Expr in both backends, but we do not want it to be registered
-    under ScalarLieGroupOps.
+    DataBuffer is a subclass of sf.Expr but we do not want it to be registered under
+    ScalarLieGroupOps.
     """
 
     @abc.abstractmethod
@@ -44,9 +44,9 @@ class ScalarExpr(abc.ABC):
 
     @classmethod
     def __subclasshook__(cls, subclass: T.Type) -> bool:
-        if issubclass(subclass, sm.DataBuffer):
+        if issubclass(subclass, sf.DataBuffer):
             return False
-        return issubclass(subclass, sm.Expr) and isinstance(subclass, type)
+        return issubclass(subclass, sf.Expr) and isinstance(subclass, type)
 
 
 for scalar_type in python_util.SCALAR_TYPES:
@@ -74,4 +74,4 @@ LieGroupOps.register(sym.Rot3, ClassLieGroupOps)
 LieGroupOps.register(sym.Pose2, ClassLieGroupOps)
 LieGroupOps.register(sym.Pose3, ClassLieGroupOps)
 
-StorageOps.register(sm.DataBuffer, DataBufferStorageOps)
+StorageOps.register(sf.DataBuffer, DataBufferStorageOps)

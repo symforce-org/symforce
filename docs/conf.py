@@ -59,6 +59,10 @@ extensions = [
     "myst_parser",
 ]
 
+# This doesn't seem to fix things, but would be good to fix - currently you have to manually write
+# anchor links in html
+myst_heading_anchors = 3
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

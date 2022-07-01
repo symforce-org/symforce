@@ -9,10 +9,9 @@ import textwrap
 import collections
 import functools
 
-from symforce import geo
 from symforce import logger
 from symforce import python_util
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
@@ -25,7 +24,7 @@ from symforce.codegen.ops_codegen_util import make_group_ops_funcs
 from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
 # Default geo types to generate
-DEFAULT_GEO_TYPES = (geo.Rot2, geo.Pose2, geo.Rot3, geo.Pose3)
+DEFAULT_GEO_TYPES = (sf.Rot2, sf.Pose2, sf.Rot3, sf.Pose3)
 
 
 def geo_class_common_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
@@ -57,10 +56,10 @@ def _matrix_type_aliases() -> T.Dict[T.Type, T.Dict[str, str]]:
     the generated code of type datatype.
     """
     return {
-        geo.Rot2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
-        geo.Rot3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
-        geo.Pose2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
-        geo.Pose3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
+        sf.Rot2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
+        sf.Rot3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
+        sf.Pose2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
+        sf.Pose3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
     }
 
 
@@ -73,10 +72,10 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         config (CodegenConfig): Specifies the target language of the codegened functions.
     """
 
-    def pose2_inverse_compose(self: geo.Pose2, point: geo.Vector2) -> geo.Vector2:
+    def pose2_inverse_compose(self: sf.Pose2, point: sf.Vector2) -> sf.Vector2:
         return self.inverse() * point
 
-    def pose3_inverse_compose(self: geo.Pose3, point: geo.Vector3) -> geo.Vector3:
+    def pose3_inverse_compose(self: sf.Pose3, point: sf.Vector3) -> sf.Vector3:
         return self.inverse() * point
 
     def codegen_mul(group: T.Type, multiplicand_type: T.Type) -> Codegen:
@@ -92,33 +91,33 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         )
 
     return {
-        geo.Rot2: [
-            codegen_mul(geo.Rot2, geo.Vector2),
-            Codegen.function(func=geo.Rot2.from_angle, config=config),
-            Codegen.function(func=geo.Rot2.to_rotation_matrix, config=config),
+        sf.Rot2: [
+            codegen_mul(sf.Rot2, sf.Vector2),
+            Codegen.function(func=sf.Rot2.from_angle, config=config),
+            Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
         ],
-        geo.Rot3: [
-            codegen_mul(geo.Rot3, geo.Vector3),
-            Codegen.function(func=geo.Rot3.to_rotation_matrix, config=config),
+        sf.Rot3: [
+            codegen_mul(sf.Rot3, sf.Vector3),
+            Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
             Codegen.function(
-                func=functools.partial(geo.Rot3.random_from_uniform_samples, pi=sm.pi),
+                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
                 name="random_from_uniform_samples",
                 config=config,
             ),
-            Codegen.function(func=geo.Rot3.from_yaw_pitch_roll, config=config),
+            Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
             Codegen.function(
-                func=lambda ypr: geo.Rot3.from_yaw_pitch_roll(*ypr),
-                input_types=[geo.V3],
+                func=lambda ypr: sf.Rot3.from_yaw_pitch_roll(*ypr),
+                input_types=[sf.V3],
                 name="from_yaw_pitch_roll",
                 config=config,
             ),
         ],
-        geo.Pose2: [
-            codegen_mul(geo.Pose2, geo.Vector2),
+        sf.Pose2: [
+            codegen_mul(sf.Pose2, sf.Vector2),
             Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),
         ],
-        geo.Pose3: [
-            codegen_mul(geo.Pose3, geo.Vector3),
+        sf.Pose3: [
+            codegen_mul(sf.Pose3, sf.Vector3),
             Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
         ],
     }
