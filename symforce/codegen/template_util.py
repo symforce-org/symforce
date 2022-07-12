@@ -130,11 +130,13 @@ def add_preamble(source: str, name: Path, comment_prefix: str) -> str:
 
 
 @functools.lru_cache
-def jinja_env(template_dir: T.Openable) -> RelEnvironment:
+def jinja_env(template_dir: T.Openable, search_paths: T.Iterable[T.Openable] = ()) -> RelEnvironment:
     """
     Helper function to cache the Jinja environment, which enables caching of loaded templates
     """
-    loader = jinja2.FileSystemLoader(os.fspath(template_dir))
+    all_search_paths = [os.fspath(template_dir)]
+    all_search_paths.extend(search_paths)
+    loader = jinja2.FileSystemLoader(searchpath=all_search_paths)
     env = RelEnvironment(
         loader=loader,
         trim_blocks=True,
@@ -151,9 +153,10 @@ def render_template(
     output_path: T.Optional[T.Openable] = None,
     template_dir: T.Openable = CURRENT_DIR,
     autoformat: bool = True,
+    search_paths: T.Iterable[T.Openable] = ()
 ) -> str:
     """
-    Boiler plate to render template. Returns the rendered string and optionally writes to file.
+    Boilerplate to render template. Returns the rendered string and optionally writes to file.
 
     Args:
         template_path: file path of the template to render
@@ -161,6 +164,7 @@ def render_template(
         output_path: If provided, writes to file
         template_dir: Base directory where templates are found, defaults to symforce/codegen
         autoformat: Run a code formatter on the generated code
+        search_paths: Additional directories jinja should search when resolving imports.
     """
     logger.debug(f"Template  IN <-- {template_path}")
     if output_path:
@@ -176,7 +180,7 @@ def render_template(
 
     filetype = FileType.from_template_path(Path(template_name))
 
-    template = jinja_env(template_dir).get_template(os.fspath(template_name))
+    template = jinja_env(template_dir, search_paths=search_paths).get_template(os.fspath(template_name))
     rendered_str = add_preamble(
         str(template.render(**data)), template_name, comment_prefix=filetype.comment_prefix()
     )
@@ -217,11 +221,14 @@ class TemplateList:
             self.TemplateListEntry(template_path=template_path, output_path=output_path, data=data)
         )
 
-    def render(self, autoformat: bool = True) -> None:
+    def render(self, autoformat: bool = True, template_dir: T.Openable = CURRENT_DIR,
+               search_paths: T.Iterable[T.Openable] = ()) -> None:
         for entry in self.items:
             render_template(
                 template_path=entry.template_path,
                 output_path=entry.output_path,
                 data=entry.data,
                 autoformat=autoformat,
+                template_dir=template_dir,
+                search_paths=search_paths,
             )
