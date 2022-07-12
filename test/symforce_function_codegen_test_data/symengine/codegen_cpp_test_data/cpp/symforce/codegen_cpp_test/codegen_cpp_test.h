@@ -29,6 +29,7 @@ namespace codegen_cpp_test {
  *     values_vec: list
  *     values_vec_2D: list
  *     constants: Values
+ *     big_matrix: Matrix55
  *     states: Values
  *
  * Outputs:
@@ -45,9 +46,9 @@ void CodegenCppTest(
     const std::array<std::array<sym::Rot3<Scalar>, 3>, 3>& list_of_lists,
     const std::array<codegen_cpp_test::values_vec_t, 3>& values_vec,
     const std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>& values_vec_2D,
-    const codegen_cpp_test::constants_t& constants, const codegen_cpp_test::states_t& states,
-    Scalar* const foo = nullptr, Scalar* const bar = nullptr,
-    std::array<Scalar, 3>* const scalar_vec_out = nullptr,
+    const codegen_cpp_test::constants_t& constants, const Eigen::Matrix<Scalar, 5, 5>& big_matrix,
+    const codegen_cpp_test::states_t& states, Scalar* const foo = nullptr,
+    Scalar* const bar = nullptr, std::array<Scalar, 3>* const scalar_vec_out = nullptr,
     std::array<codegen_cpp_test::values_vec_t, 3>* const values_vec_out = nullptr,
     std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>* const values_vec_2D_out =
         nullptr) {

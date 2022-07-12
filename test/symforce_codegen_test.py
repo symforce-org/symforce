@@ -103,6 +103,9 @@ class SymforceCodegenTest(TestCase):
         # Scalar
         inputs.add(sf.Symbol("constants.epsilon"))
 
+        # Add matrix with large storage dim
+        inputs["big_matrix"] = sf.M55.symbolic("big_matrix")
+
         with inputs.scope("states"):
             # Array element, turns into std::array
             inputs["p"] = sf.V2.symbolic("p")
@@ -188,6 +191,8 @@ class SymforceCodegenTest(TestCase):
         constants = constants_t()
         constants.epsilon = 1e-8
 
+        big_matrix = np.zeros((5, 5))
+
         gen_module = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
         # TODO(nathan): Split this test into several different functions
         (foo, bar, scalar_vec_out, values_vec_out, values_vec_2D_out) = gen_module.python_function(
@@ -200,6 +205,7 @@ class SymforceCodegenTest(TestCase):
             values_vec,
             values_vec_2D,
             constants,
+            big_matrix,
             states,
         )
         self.assertStorageNear(foo, x ** 2 + rot.data[3])
