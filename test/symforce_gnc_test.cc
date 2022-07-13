@@ -3,11 +3,11 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <symforce/opt/gnc_optimizer.h>
 
-#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
 
 sym::optimizer_params_t DefaultLmParams() {

@@ -3,6 +3,8 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <sym/factors/between_factor_pose3.h>
@@ -10,8 +12,6 @@
 #include <sym/factors/prior_factor_pose3.h>
 #include <sym/factors/prior_factor_rot3.h>
 #include <symforce/opt/optimizer.h>
-
-#include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {
   sym::optimizer_params_t params{};

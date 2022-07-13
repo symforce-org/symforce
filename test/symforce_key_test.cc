@@ -5,9 +5,9 @@
 
 #include <sstream>
 
-#include <symforce/opt/key.h>
+#include <catch2/catch_test_macros.hpp>
 
-#include "catch.hpp"
+#include <symforce/opt/key.h>
 
 TEST_CASE("Key prints correctly", "[key]") {
   const sym::Key key1('l', -1820881232627931286, 209745344626);

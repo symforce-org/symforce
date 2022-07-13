@@ -4,6 +4,8 @@
  * ---------------------------------------------------------------------------- */
 
 #include <Eigen/Dense>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <lcmtypes/codegen_cpp_test/constants_t.hpp>
 #include <lcmtypes/codegen_cpp_test/states_t.hpp>
@@ -11,8 +13,6 @@
 
 #include <sym/rot3.h>
 #include <symforce/codegen_cpp_test/codegen_cpp_test.h>
-
-#include "catch.hpp"
 
 TEST_CASE("Generated C++ compiles", "[codegen_cpp_test]") {
   double x = 2.0;

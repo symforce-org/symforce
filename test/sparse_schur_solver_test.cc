@@ -7,6 +7,7 @@
 #undef EIGEN_MPL2_ONLY
 
 #include <fstream>
+#include <random>
 
 // Required by MetisSupport
 #include <iostream>
@@ -15,12 +16,12 @@
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <symforce/opt/cholesky/sparse_cholesky_solver.h>
 #include <symforce/opt/sparse_schur_solver.h>
 #include <symforce/opt/tic_toc.h>
-
-#include "catch.hpp"
 
 // Include factorization methods which are very slow
 static constexpr const bool kIncludeSlowTests = false;

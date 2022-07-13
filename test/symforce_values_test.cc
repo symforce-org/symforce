@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -20,8 +22,6 @@
 #include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 #include <symforce/opt/values.h>
-
-#include "catch.hpp"
 
 TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   using Scalar = TestType;

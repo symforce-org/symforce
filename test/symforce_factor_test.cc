@@ -7,6 +7,9 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -15,8 +18,6 @@
 
 #include <symforce/opt/factor.h>
 #include <symforce/opt/key.h>
-
-#include "catch.hpp"
 
 TEST_CASE("Test jacobian constructors", "[factors]") {
   spdlog::info("*** TestJacobianConstructors() ***");

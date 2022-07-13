@@ -5,7 +5,7 @@
 
 #include "symforce_function_codegen_test_data/sympy/heaviside.h"
 
-#include "catch.hpp"
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Generated heaviside function is correct", "[heaviside]") {
   CHECK(cpp_code_printer_test::Heaviside<double>(-1) == 0);

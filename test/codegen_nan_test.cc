@@ -5,12 +5,11 @@
 
 #include <math.h>
 
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <sym/rot3.h>
 #include <symforce/codegen_nan_test/identity_dist_jacobian.h>
-
-#include "catch.hpp"
 
 TEST_CASE("Codegen function does not generate NaN", "[codegen_nan_test]") {
   spdlog::info("*** Testing codegen function for NaNs ***");

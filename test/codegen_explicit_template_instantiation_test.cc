@@ -4,14 +4,13 @@
  * ---------------------------------------------------------------------------- */
 
 #include <Eigen/Dense>
+#include <catch2/catch_test_macros.hpp>
 
 #include <lcmtypes/codegen_explicit_template_instantiation_test/constants_t.hpp>
 #include <lcmtypes/codegen_explicit_template_instantiation_test/states_t.hpp>
 #include <lcmtypes/codegen_explicit_template_instantiation_test/values_vec_t.hpp>
 
 #include <symforce/codegen_explicit_template_instantiation_test/codegen_explicit_template_instantiation_test.h>
-
-#include "catch.hpp"
 
 template <typename Scalar>
 void ExplicitTemplateInstantiationTestHelper() {

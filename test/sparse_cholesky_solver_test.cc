@@ -13,12 +13,11 @@
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
+#include <catch2/catch_test_macros.hpp>
 
 #include <sym/ops/storage_ops.h>
 #include <symforce/opt/cholesky/sparse_cholesky_solver.h>
 #include <symforce/opt/tic_toc.h>
-
-#include "catch.hpp"
 
 using SparseMatrix = Eigen::SparseMatrix<double>;
 using DenseVector = Eigen::VectorXd;

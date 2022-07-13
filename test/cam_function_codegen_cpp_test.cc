@@ -15,13 +15,14 @@
  */
 
 #include <Eigen/Dense>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
 // TODO(nathan): We just test linear camera for now, but could/should test other types in the future
 #include <sym/linear_camera_cal.h>
 
-#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/cam_function_codegen_test/pixel_to_ray_and_back.h"
 
 TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCameraCal<double>,

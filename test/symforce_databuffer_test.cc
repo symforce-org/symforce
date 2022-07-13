@@ -5,9 +5,11 @@
 
 #include <cmath>
 
-#include <symforce/buffer_test/buffer_func.h>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
-#include "catch.hpp"
+#include <symforce/buffer_test/buffer_func.h>
 
 static constexpr int N_BUFFER = 4;
 

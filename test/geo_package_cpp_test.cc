@@ -18,6 +18,8 @@
 #include <iostream>
 #include <limits>
 
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -28,7 +30,6 @@
 #include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 
-#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_pose2.h"
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_pose3.h"
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_rot2.h"
