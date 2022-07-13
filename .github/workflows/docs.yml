@@ -1,0 +1,62 @@
+name: docs
+
+on:
+  push:
+    branches:
+     - 'main'
+     - 'bradley/auto_deploy_docs_2'
+
+jobs:
+  update-docs:
+    if: github.repository == 'symforce-org/symforce'
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      #- name: Install build dependencies
+      #  run: |
+      #    sudo apt-get update
+      #    sudo apt-get install -y \
+      #      build-essential \
+      #      doxygen \
+      #      libgmp-dev \
+      #      pandoc
+
+      #- name: Install python dependencies
+      #  run: pip install -r dev_requirements.txt
+
+      #- name: Run cmake build
+      #  run: |
+      #    cmake -B build \
+      #      -DSYMFORCE_BUILD_OPT=ON \
+      #      -DSYMFORCE_BUILD_CC_SYM=ON \
+      #      -DSYMFORCE_BUILD_EXAMPLES=OFF \
+      #      -DSYMFORCE_BUILD_TESTS=OFF \
+      #      -DSYMFORCE_BUILD_SYMENGINE=ON \
+      #      -DSYMFORCE_GENERATE_MANIFEST=ON \
+      #      -DSYMFORCE_BUILD_BENCHMARKS=OFF
+      #    cmake --build build -j $(nproc)
+
+      #- name: Build docs
+      #  run: |
+      #    pip install build/lcmtypes/python2.7
+      #    make docs
+
+      - name: temporary-for-debugging
+        run: |
+          mkdir -p build/docs
+          touch test.txt
+          echo "the documentation" > build/docs/test.txt
+
+      - name: Deploy docs
+        uses: cpina/github-action-push-to-another-repository@v1.5
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DOCUMENTATION_DEPLOY_KEY }}
+        with:
+          source-directory: build/docs
+          destination-github-username: 'symforce-org'
+          destination-repository-name: 'symforce-org.github.io'
+          user-email: bradley.solliday@skydio.com
+          commit-message: Regenerate docs from $GITHUB_REF
+          target-branch: bradley/test-doc-deploy
