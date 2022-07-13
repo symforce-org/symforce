@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test-on-ubuntu:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+        python: [python3.8, python3.9, python3.10]
+        compiler: [
+          {C: gcc-5, CXX: g++-5, repos: [
+            '"deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"',
+            '"deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"',
+          ]},
+          {C: gcc-11, CXX: g++-11, repos: ['"ppa:ubuntu-toolchain-r/test"']}]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # - Installing software-properties-common adds add-apt-repository
+      - name: Update install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common curl
+
+      # - Adding matrix.compiler.repos is needed to have compiler available on all ubuntu versions
+      # - Installing g++-x also installs gcc-x
+      - name: Install C and CXX compilers
+        run: |
+          for repo in ${{ join(matrix.compiler.repos, ' ') }}
+          do
+            sudo add-apt-repository -y "$repo"
+          done
+          sudo apt-get install -y ${{ matrix.compiler.CXX }}
+
+      # - ppa:deadsnakes/ppa is needed to have python3.x-dev available on all ubuntu versions
+      # - python3.x-dev is used instead of python3.x because the -dev version includes python header
+      # files needed to compile C extension modules
+      - name: Install python
+        run: |
+          sudo add-apt-repository -y ppa:deadsnakes/ppa
+          sudo apt-get install -y ${{ matrix.python }}-dev ${{ matrix.python }}-distutils
+          curl https://bootstrap.pypa.io/get-pip.py | ${{ matrix.python }}
+          pip install --upgrade setuptools
+
+      - name: Install general build dependencies
+        run: |
+            sudo apt-get install -y \
+              doxygen \
+              libgmp-dev \
+              pandoc
+
+      - name: Install build dependencies for SymForce benchmarks
+        run: |
+            sudo apt-get install -y \
+              libboost-dev \
+              libboost-serialization-dev \
+              libboost-system-dev \
+              libboost-filesystem-dev \
+              libboost-thread-dev \
+              libboost-program-options-dev \
+              libboost-date-time-dev \
+              libboost-timer-dev \
+              libboost-chrono-dev \
+              libboost-regex-dev \
+              libgoogle-glog-dev \
+              libeigen3-dev
+
+      - name: Install python dependencies
+        run: pip install -r dev_requirements.txt
+
+      - name: Run cmake build
+        run: |
+          cmake -B build \
+            -D CMAKE_C_COMPILER=${{ matrix.compiler.C }} \
+            -D CMAKE_CXX_COMPILER=${{ matrix.compiler.CXX }} \
+            -D SYMFORCE_PYTHON_OVERRIDE=${{ matrix.python }} \
+            -D SYMFORCE_BUILD_BENCHMARKS=ON
+          cmake --build build -j $(nproc)
+
+      - name: Run C++ tests
+        run: |
+          cd build
+          ctest
+
+      # - lcmtypes need to be available for tests
+      # - Exact contents of dev_requirements.txt depend on python version. Need to update file to
+      # match current python version to avoid failure of corresponding gen test. symforce needs
+      # to be on the PYTHONPATH to run gen test in this manner.
+      # - The Makefile uses the python version stored in env var PYTHON
+      - name: Run python tests
+        env:
+          PYTHON: ${{ matrix.python }}
+        run: |
+          pip install build/lcmtypes/python2.7
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          ${{ matrix.python }} test/symforce_requirements_test.py --update
+          make -j2 test

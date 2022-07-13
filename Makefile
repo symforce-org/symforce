@@ -50,6 +50,7 @@ check_types:
 		-o -path ./.eggs \
 		-o -path ./gen/python/setup.py \
 		-o -path ./test/symforce_function_codegen_test_data \
+		-o -path ./gen/python/build \
 		\) -prune -o -name "*.py" -print) \
 		--exclude "symforce/examples/.*/gen/python2\.7/lcmtypes"
 	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/sympy \
