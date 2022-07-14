@@ -29,14 +29,12 @@ class PythonConfig(CodegenConfig):
                    on the first call and some overhead on subsequent calls, so it should not be
                    used for small functions or functions that are only called a handfull of
                    times.
-        matrix_is_1D: sf.Matrix symbols get formatted as a 1D array
     """
 
     doc_comment_line_prefix: str = ""
     line_length: int = 100
     use_eigen_types: bool = True
     use_numba: bool = False
-    matrix_is_1d: bool = True
 
     @classmethod
     def backend_name(cls) -> str:
@@ -56,3 +54,9 @@ class PythonConfig(CodegenConfig):
         from symforce.codegen.backends.python import python_code_printer
 
         return python_code_printer.PythonCodePrinter()
+
+    @staticmethod
+    def format_matrix_accessor(key: str, i: int, j: int = None) -> str:
+        if j is None:
+            return f"{key}[{i}]"
+        return f"{key}[{i}, {j}]"

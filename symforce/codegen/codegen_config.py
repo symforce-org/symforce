@@ -25,7 +25,6 @@ class CodegenConfig:
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         cse_optimizations: Optimizations argument to pass to sf.cse
-        matrix_is_1d: Whether sf.Matrix symbols get formatted as 1D
     """
 
     doc_comment_line_prefix: str
@@ -35,8 +34,6 @@ class CodegenConfig:
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None
-    # TODO(hayk): Remove this parameter (by making everything 2D?)
-    matrix_is_1d: bool = False
 
     @classmethod
     @abstractmethod
@@ -77,3 +74,12 @@ class CodegenConfig:
         Format data for accessing a data array in code.
         """
         return f"{prefix}.data[{index}]"
+
+    @staticmethod
+    @abstractmethod
+    def format_matrix_accessor(key: str, i: int, j: int = None) -> str:
+        """
+        Format accessor for 2D matrices. If j is None, it is a 1D vector type, which for some
+        languages is accessed with 2D indices and in some with 1D.
+        """
+        pass
