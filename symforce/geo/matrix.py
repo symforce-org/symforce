@@ -446,7 +446,7 @@ class Matrix(Storage):
                 [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in iter(self.mat)]  # type: ignore[call-overload]  # fixed by python/typeshed#7817
             )
 
-    def diff(self, *args: _T.Tuple[_T.Scalar]) -> Matrix:
+    def diff(self, *args: _T.Scalar) -> Matrix:
         """
         Differentiate wrt a scalar.
         """
