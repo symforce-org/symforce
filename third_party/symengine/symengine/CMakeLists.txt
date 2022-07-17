@@ -80,6 +80,7 @@ set(SRC
     symengine_rcp.cpp
     visitor.cpp
     test_visitors.cpp
+    symforce/factor_coefs.cpp
 )
 
 if ("${SYMENGINE_INTEGER_CLASS}" STREQUAL "BOOSTMP")
@@ -194,6 +195,7 @@ set(HEADERS
     type_codes.inc
     visitor.h
     test_visitors.h
+    symforce/factor_coefs.h
 )
 
 include(GNUInstallDirs)

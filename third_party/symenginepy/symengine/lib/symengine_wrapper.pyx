@@ -5495,6 +5495,9 @@ def count_ops(*exprs):
     _flattened_vec(vec, exprs)
     return symengine.count_ops(vec)
 
+def factor_coefs(Basic b):
+    return c2py(symengine.factor_coefs(b.thisptr))
+
 
 # Turn on nice stacktraces:
 symengine.print_stack_on_segfault()

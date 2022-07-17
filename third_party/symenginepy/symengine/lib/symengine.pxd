@@ -1111,6 +1111,9 @@ cdef extern from "<symengine/printers.h>" namespace "SymEngine":
     string ccode(const Basic &x) nogil except +
     string latex(const Basic &x) nogil except +
 
+cdef extern from "<symengine/symforce/factor_coefs.h>" namespace "SymEngine":
+    cdef rcp_const_basic factor_coefs(rcp_const_basic &b) nogil
+
 ## Defined in 'symengine/cwrapper.cpp'
 cdef struct CRCPBasic:
     rcp_const_basic m

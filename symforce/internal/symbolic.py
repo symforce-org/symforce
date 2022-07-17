@@ -106,6 +106,7 @@ if not T.TYPE_CHECKING and symforce.get_symbolic_api() == "symengine":
         erfc,
         exp,
         expand,
+        factor_coefs,
         floor,
         gamma,
         init_printing,
