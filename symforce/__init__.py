@@ -309,3 +309,5 @@ def set_epsilon_to_zero() -> None:
     See `symforce.symbolic.epsilon` for more information.
     """
     _set_epsilon(0.0)
+
+factor_coefs = False
