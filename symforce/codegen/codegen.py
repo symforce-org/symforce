@@ -398,8 +398,9 @@ class Codegen:
         self.namespace = namespace
 
         template_data = dict(self.common_data(), spec=self)
-        template_dir = self.config.template_dir()
+        self.config.update_template_data(data=template_data)
 
+        template_dir = self.config.template_dir()
         backend_name = self.config.backend_name()
         if skip_directory_nesting:
             out_function_dir = output_dir

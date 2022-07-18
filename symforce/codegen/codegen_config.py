@@ -77,3 +77,25 @@ class CodegenConfig:
         Format data for accessing a data array in code.
         """
         return f"{prefix}.data[{index}]"
+
+    # TODO: Move this into code printer.
+    @staticmethod
+    def format_matrix_subscript_accessor(key: str, i: int, j: int) -> str:
+        """
+        Format accessing a matrix element (i, j) in code.
+        Args:
+            key (str): Name of the variable being accessed.
+            i (int): Row
+            j (int): Column
+        """
+        return f"{key}({i}, {j})"
+
+    def update_template_data(self, data: T.Dict[str, T.Any]) -> None:
+        """
+        Derived classes may override this to customize the "template data" dict. This dict
+        is passed to jinja at code-generation time.
+
+        Args:
+            data: Dict passed by Codegen. The function should modify this in-place.
+        """
+        pass

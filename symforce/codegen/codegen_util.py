@@ -351,7 +351,8 @@ def get_formatted_list(
                 formatted_symbols = []
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
-                        formatted_symbols.append(sf.Symbol(f"{key}({i}, {j})"))
+                        formatted_subscript = config.format_matrix_subscript_accessor(key=key, i=i, j=j)
+                        formatted_symbols.append(sf.Symbol(formatted_subscript))
 
             flattened_value = ops.StorageOps.to_storage(value)
 
