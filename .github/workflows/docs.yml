@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - 'main'
+     - 'bradley/auto_deploy_docs_2'
 
 jobs:
   update-docs:
@@ -52,4 +53,4 @@ jobs:
           destination-repository-name: 'symforce-org.github.io'
           user-email: bradley.solliday@skydio.com
           commit-message: Regenerate docs from $GITHUB_REF
-          target-branch: main
+          target-branch: bradley/test-doc-deploy
