@@ -19,12 +19,12 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <symforce/opt/tic_toc.h>
 #include <symforce/opt/util.h>
-
-#include "catch.hpp"
 
 using namespace sym;
 

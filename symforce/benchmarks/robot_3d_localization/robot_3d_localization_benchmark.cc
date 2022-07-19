@@ -18,6 +18,8 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <sym/rot3.h>
@@ -35,7 +37,6 @@
 
 #include "./robot_3d_localization_ceres.h"
 #include "./robot_3d_localization_gtsam.h"
-#include "catch.hpp"
 
 using namespace robot_3d_localization;
 

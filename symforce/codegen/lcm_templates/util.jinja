@@ -9,7 +9,23 @@
 
 {# ------------------------------------------------------------------------- #}
 
-{# Retruns declaration of an eigen lcm type
+{# Returns the right size of eigen lcm type to use
+ #
+ # third_party/eigen_lcm/lcmtypes/eigen_lcm.lcm only supports up to Cector8, so for anything
+ # larger we use VectorX (Note that VectorX won't work with storage ops at present)
+ #
+ # Args:
+ #      dim (int): storage dimension
+#}
+{%- macro eigen_lcm_dim(dim) -%}
+{%- if dim <= 8 -%}
+{{- dim -}}
+{%- else -%}
+X
+{%- endif -%}
+{%- endmacro -%}
+
+{# Returns declaration of an eigen lcm type
  #
  # Args:
  #     scalar_type (str): double or float
@@ -17,9 +33,9 @@
  #}
 {%- macro eigen_lcm_type(scalar_type, dim) -%}
 {%- if scalar_type == "float" -%}
-eigen_lcm.Vector{{ dim }}f
+eigen_lcm.Vector{{- eigen_lcm_dim(dim) -}}f
 {%- else -%}
-eigen_lcm.Vector{{ dim }}d
+eigen_lcm.Vector{{- eigen_lcm_dim(dim) -}}d
 {%- endif -%}
 {%- endmacro -%}
 

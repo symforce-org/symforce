@@ -16,7 +16,7 @@ add_library(
   ${SYMFORCE_TEST_SOURCES}
   ${SYMFORCE_TEST_HEADERS}
 )
-target_link_libraries(symforce_test symforce_catch2 symforce_gen symforce_opt)
+target_link_libraries(symforce_test Catch2::Catch2WithMain symforce_gen symforce_opt)
 target_include_directories(symforce_test
   INTERFACE symforce_function_codegen_test_data/symengine/cam_function_codegen_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_multi_function_test_data/cpp

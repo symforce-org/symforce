@@ -162,17 +162,28 @@ if(SYMFORCE_EIGEN_TARGET STREQUAL "Eigen3::Eigen")
   endif()
 endif()
 
-# TODO(aaron): This goes away when we upgrade to Catch2 v3
-add_library(
-  symforce_catch2
-  ${SYMFORCE_LIBRARY_TYPE}
-  EXCLUDE_FROM_ALL  # Only build this if something needs it
-  third_party/catch2/src/catch_amalgamated.cpp test/catch_main.cc
-)
-target_include_directories(
-  symforce_catch2
-  PUBLIC third_party/catch2/include
-)
+# ------------------------------------------------------------------------------
+# catch2
+
+if(SYMFORCE_BUILD_BENCHMARKS OR SYMFORCE_BUILD_TESTS)
+  find_package(Catch2 3.0.0 QUIET)
+  if(NOT Catch2_FOUND)
+    message(STATUS "Catch2 not found, adding with FetchContent")
+    function(add_catch)
+      FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG b9853b4b356b83bb580c746c3a1f11101f9af54f  # v3.0.0-preview3
+      )
+
+      FetchContent_MakeAvailable(Catch2)
+    endfunction()
+
+    add_catch()
+  else()
+    message(STATUS "Catch2 found at ${Catch2_DIR}")
+  endif()
+endif()
 
 # ==============================================================================
 # SymForce Targets

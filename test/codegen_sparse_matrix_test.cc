@@ -7,13 +7,12 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <symforce/codegen_sparse_matrix_test/get_diagonal_sparse.h>
 #include <symforce/codegen_sparse_matrix_test/get_multiple_dense_and_sparse.h>
 #include <symforce/codegen_sparse_matrix_test/update_sparse_mat.h>
-
-#include "catch.hpp"
 
 const int DIM = 100;
 

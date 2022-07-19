@@ -17,6 +17,10 @@
 #include <random>
 
 #include <Eigen/Dense>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/generators/catch_generators_range.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -33,8 +37,6 @@
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
 #include <sym/util/epsilon.h>
-
-#include "catch.hpp"
 
 template <typename T>
 T CalFromData(std::initializer_list<typename T::Scalar> data) {

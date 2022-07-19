@@ -211,11 +211,6 @@ and is licensed as described in symforce/opt/cholesky/LICENSE
 SymForce bundles several third party libraries, with documentation of
 licensing and modifications as follows:
 
-### Catch2: C++ Unit testing framework
-
-- Included unmodified in third_party/catch2
-- Licensed under the BSL-1.0 License
-
 ### SymEngine: C++ symbolic manipulation library
 
 - Included with modifications in third_party/symengine

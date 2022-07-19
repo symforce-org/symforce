@@ -5,10 +5,10 @@
 
 #include <iostream>
 
+#include <catch2/catch_test_macros.hpp>
+
 #include <sym/factors/between_factor_rot3.h>
 #include <symforce/opt/util.h>
-
-#include "catch.hpp"
 
 TEST_CASE("Test zero residual for a noiseless between factor", "[between_factors]") {
   const double sigma = 1.0;

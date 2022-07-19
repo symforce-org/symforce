@@ -114,7 +114,7 @@ function(add_matrix_multiplication_benchmark matrix_name)
 
     target_link_libraries(
         matrix_multiplication_benchmark_${matrix_name}
-        symforce_catch2
+        Catch2::Catch2WithMain
         symforce_gen
         symforce_opt
     )
@@ -142,7 +142,7 @@ find_package(Sophus REQUIRED)
 target_link_libraries(
     inverse_compose_jacobian_benchmark
     gtsam
-    symforce_catch2
+    Catch2::Catch2WithMain
     symforce_gen
     symforce_opt
 )
@@ -162,7 +162,7 @@ add_executable(
 target_link_libraries(
     robot_3d_localization_benchmark
     gtsam
-    symforce_catch2
+    Catch2::Catch2WithMain
     symforce_gen
     symforce_opt
     symforce_examples

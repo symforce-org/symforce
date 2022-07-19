@@ -3,6 +3,9 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
+
 #include <lcmtypes/codegen_multi_function_test/inputs_constants_t.hpp>
 #include <lcmtypes/codegen_multi_function_test/inputs_states_t.hpp>
 #include <lcmtypes/codegen_multi_function_test/inputs_t.hpp>
@@ -12,8 +15,6 @@
 #include <sym/rot3.h>
 #include <symforce/codegen_multi_function_test/codegen_multi_function_test1.h>
 #include <symforce/codegen_multi_function_test/codegen_multi_function_test2.h>
-
-#include "catch.hpp"
 
 template <typename T>
 void FillChunkOfValues(T& values) {

@@ -3,11 +3,11 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <symforce/opt/levenberg_marquardt_solver.h>
-
-#include "catch.hpp"
 
 /**
  * Test that Gauss Newton converges to the exact result for a linear residual where the solution is

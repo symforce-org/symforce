@@ -29,6 +29,7 @@ namespace codegen_explicit_template_instantiation_test {
  *     values_vec: list
  *     values_vec_2D: list
  *     constants: Values
+ *     big_matrix: Matrix55
  *     states: Values
  *
  * Outputs:
@@ -47,6 +48,7 @@ void CodegenExplicitTemplateInstantiationTest(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
+    const Eigen::Matrix<Scalar, 5, 5>& big_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states,
     Scalar* const foo = nullptr, Scalar* const bar = nullptr,
     std::array<Scalar, 3>* const scalar_vec_out = nullptr,
@@ -751,6 +753,7 @@ extern template void CodegenExplicitTemplateInstantiationTest<double>(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
+    const Eigen::Matrix<double, 5, 5>& big_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states, double* const foo,
     double* const bar, std::array<double, 3>* const scalar_vec_out,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const values_vec_out,
@@ -765,6 +768,7 @@ extern template void CodegenExplicitTemplateInstantiationTest<float>(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
+    const Eigen::Matrix<float, 5, 5>& big_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states, float* const foo,
     float* const bar, std::array<float, 3>* const scalar_vec_out,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const values_vec_out,
