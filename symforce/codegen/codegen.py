@@ -608,9 +608,21 @@ class Codegen:
         outputs["jacobian"] = jacobian
 
         if linearization_mode == LinearizationMode.FULL_LINEARIZATION:
-            assert (
-                isinstance(result, sf.Matrix) and result.cols == 1
-            ), f"The output must be a vector (the residual), got {result} instead"
+            result_is_vector = isinstance(result, sf.Matrix) and result.cols == 1
+            if not result_is_vector:
+                common_msg = (
+                    "The output of a factor must be a column vector representing the residual "
+                    f'(of shape Nx1).  For factor "{self.name}", '
+                )
+                if python_util.scalar_like(result):
+                    raise ValueError(
+                        common_msg + "got a scalar expression instead.  Did you mean to wrap it in "
+                        "`sf.V1(expr)`?"
+                    )
+                if isinstance(result, sf.Matrix):
+                    raise ValueError(common_msg + f"got a matrix of shape {result.shape} instead")
+
+                raise ValueError(common_msg + f"got an object of type {type(result)} instead")
 
             hessian = jacobian.compute_AtA(lower_only=True)
             outputs["hessian"] = hessian
