@@ -223,7 +223,7 @@ int64_t {{lcmtype.name}}::getHash()
 {% else %}
 constexpr int64_t {{lcmtype.name}}::getHash()
 {
-    return _computeHash(NULL);
+    return static_cast<int64_t>(_computeHash(NULL));
 }
 {% endif %}
 

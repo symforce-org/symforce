@@ -150,7 +150,7 @@ int d_out_t::getEncodedSize() const
 
 constexpr int64_t d_out_t::getHash()
 {
-    return _computeHash(NULL);
+    return static_cast<int64_t>(_computeHash(NULL));
 }
 
 constexpr d_out_t::type_name_array_t* d_out_t::getTypeNameArrayPtr() {

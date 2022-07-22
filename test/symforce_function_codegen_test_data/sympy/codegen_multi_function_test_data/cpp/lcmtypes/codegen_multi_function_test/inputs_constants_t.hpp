@@ -144,7 +144,7 @@ int inputs_constants_t::getEncodedSize() const
 
 constexpr int64_t inputs_constants_t::getHash()
 {
-    return _computeHash(NULL);
+    return static_cast<int64_t>(_computeHash(NULL));
 }
 
 constexpr inputs_constants_t::type_name_array_t* inputs_constants_t::getTypeNameArrayPtr() {
