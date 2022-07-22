@@ -47,13 +47,8 @@ jobs:
           rm -rf build/docs/.doctrees
           rm build/docs/.buildinfo
 
-      - name: Adding in .nojekyll and CNAME
-        run: |
-          touch build/docs/.nojekyll
-          echo "symforce.org" > build/docs/CNAME
-
       - name: Deploy docs
-        uses: cpina/github-action-push-to-another-repository@v1.5
+        uses: symforce-org/github-action-push-to-another-repository@10a3e9ec247be83fedd82f7bb7c3ed1f7218528e
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DOCUMENTATION_DEPLOY_KEY }}
         with:
@@ -63,3 +58,4 @@ jobs:
           user-email: bradley.solliday@skydio.com
           commit-message: Regenerate docs from ${{ github.sha }}
           target-branch: main
+          destination-patterns-to-preserve: 'CNAME .nojekyll downloads'
