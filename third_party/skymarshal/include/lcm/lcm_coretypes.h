@@ -19,8 +19,7 @@
 
 #define SKYDIO_DISABLE_LCM_FORCE_INLINE 1
 #if defined(SKYDIO_DISABLE_LCM_FORCE_INLINE)
-// #define SKYDIO_LCM_INLINE_PREFIX __attribute__((unused))
-#define SKYDIO_LCM_INLINE_PREFIX
+#define SKYDIO_LCM_INLINE_PREFIX __attribute__((unused))
 #else
 #define SKYDIO_LCM_INLINE_PREFIX __attribute__((unused, always_inline))
 #endif
