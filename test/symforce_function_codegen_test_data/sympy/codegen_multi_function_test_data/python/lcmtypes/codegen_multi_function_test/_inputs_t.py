@@ -12,9 +12,10 @@ from lcmtypes.codegen_multi_function_test._inputs_constants_t import inputs_cons
 from lcmtypes.codegen_multi_function_test._inputs_states_t import inputs_states_t
 from lcmtypes.codegen_multi_function_test._values_vec_t import values_vec_t
 from lcmtypes.eigen_lcm._Vector4d import Vector4d
+from lcmtypes.eigen_lcm._VectorXd import VectorXd
 
 class inputs_t(object):
-    __slots__ = ["x", "y", "rot", "rot_vec", "scalar_vec", "list_of_lists", "values_vec", "values_vec_2D", "constants", "states"]  # type: T.List[str]
+    __slots__ = ["x", "y", "rot", "rot_vec", "scalar_vec", "list_of_lists", "values_vec", "values_vec_2D", "constants", "big_matrix", "states"]  # type: T.List[str]
 
     def __init__(
         self,
@@ -27,6 +28,7 @@ class inputs_t(object):
         values_vec=None,  # type: T.List[values_vec_t]
         values_vec_2D=None,  # type: T.List[T.List[values_vec_t]]
         constants=None,  # type: inputs_constants_t
+        big_matrix=None,  # type: VectorXd
         states=None,  # type: inputs_states_t
         _skip_initialize=False,  # type: bool
     ):
@@ -43,6 +45,7 @@ class inputs_t(object):
         self.values_vec = [ values_vec_t._default() for dim0 in range(3) ] if values_vec is None else values_vec  # type: T.List[values_vec_t]
         self.values_vec_2D = [ [ values_vec_t._default() for dim1 in range(1) ] for dim0 in range(2) ] if values_vec_2D is None else values_vec_2D  # type: T.List[T.List[values_vec_t]]
         self.constants = inputs_constants_t._default() if constants is None else constants  # type: inputs_constants_t
+        self.big_matrix = VectorXd._default() if big_matrix is None else big_matrix  # type: VectorXd
         self.states = inputs_states_t._default() if states is None else states  # type: inputs_states_t
 
     @staticmethod
@@ -78,6 +81,7 @@ class inputs_t(object):
             (self.values_vec==other.values_vec) and
             (self.values_vec_2D==other.values_vec_2D) and
             (self.constants==other.constants) and
+            (self.big_matrix==other.big_matrix) and
             (self.states==other.states)
         )
     # Disallow hashing for python struct lcmtypes.
@@ -130,6 +134,11 @@ class inputs_t(object):
         else:
             assert self.constants._get_hash_recursive([]) == inputs_constants_t._get_hash_recursive([])
         self.constants._encode_one(buf)
+        if hasattr(self.big_matrix, '_get_packed_fingerprint'):
+            assert self.big_matrix._get_packed_fingerprint() == VectorXd._get_packed_fingerprint()
+        else:
+            assert self.big_matrix._get_hash_recursive([]) == VectorXd._get_hash_recursive([])
+        self.big_matrix._encode_one(buf)
         if hasattr(self.states, '_get_packed_fingerprint'):
             assert self.states._get_packed_fingerprint() == inputs_states_t._get_packed_fingerprint()
         else:
@@ -177,6 +186,7 @@ class inputs_t(object):
             for i1 in range(1):
                 self.values_vec_2D[i0].append(values_vec_t._decode_one(buf))
         self.constants = inputs_constants_t._decode_one(buf)
+        self.big_matrix = VectorXd._decode_one(buf)
         self.states = inputs_states_t._decode_one(buf)
         return self
 
@@ -185,7 +195,7 @@ class inputs_t(object):
         # type: (T.List[T.Type]) -> int
         if inputs_t in parents: return 0
         newparents = parents + [inputs_t]
-        tmphash = (0x9c920d836f45c850+ Vector4d._get_hash_recursive(newparents)+ Vector4d._get_hash_recursive(newparents)+ Vector4d._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ inputs_constants_t._get_hash_recursive(newparents)+ inputs_states_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xadf229d823991ada+ Vector4d._get_hash_recursive(newparents)+ Vector4d._get_hash_recursive(newparents)+ Vector4d._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ inputs_constants_t._get_hash_recursive(newparents)+ VectorXd._get_hash_recursive(newparents)+ inputs_states_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
 
