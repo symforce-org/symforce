@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - 'main'
   pull_request:
     types: [opened, synchronize]
 
@@ -14,8 +17,8 @@ jobs:
         python: [python3.8, python3.9, python3.10]
         compiler: [
           {C: gcc-5, CXX: g++-5, repos: [
-            '"deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"',
-            '"deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"',
+            '"deb http://us.archive.ubuntu.com/ubuntu/ xenial main"',
+            '"deb http://us.archive.ubuntu.com/ubuntu/ xenial universe"',
           ]},
           {C: gcc-11, CXX: g++-11, repos: ['"ppa:ubuntu-toolchain-r/test"']}]
     steps:
