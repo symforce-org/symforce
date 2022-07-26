@@ -111,6 +111,12 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
                 name="from_yaw_pitch_roll",
                 config=config,
             ),
+            Codegen.function(
+                func=lambda self: sf.V3(self.to_yaw_pitch_roll()),
+                input_types=[sf.Rot3],
+                name="to_yaw_pitch_roll",
+                config=config,
+            ),
         ],
         sf.Pose2: [
             codegen_mul(sf.Pose2, sf.Vector2),

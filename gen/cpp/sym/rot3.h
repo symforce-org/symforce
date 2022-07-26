@@ -91,13 +91,6 @@ class Rot3 {
     return Rot3(Eigen::Quaternion<Scalar>(mat));
   }
 
-  // Euler angles
-  // TODO(hayk): Could codegen this.
-
-  Vector3 ToYawPitchRoll() const {
-    return ToRotationMatrix().eulerAngles(2, 1, 0);
-  }
-
   // Generate a random element in SO3
   template <typename Generator>
   static Rot3 Random(Generator& gen) {
@@ -136,6 +129,8 @@ class Rot3 {
                                             const Scalar roll);
 
   static sym::Rot3<Scalar> FromYawPitchRoll(const Vector3& ypr);
+
+  Vector3 ToYawPitchRoll() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept
