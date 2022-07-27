@@ -148,7 +148,8 @@ def jinja_env(template_dir: T.Openable) -> RelEnvironment:
 def render_template(
     template_path: T.Openable,
     data: T.Dict[str, T.Any],
-    template_dir: T.Openable = None,
+    *,
+    template_dir: T.Openable,
     output_path: T.Optional[T.Openable] = None,
     autoformat: bool = True,
 ) -> str:
@@ -158,13 +159,10 @@ def render_template(
     Args:
         template_path: file path of the template to render
         data: dictionary of inputs for template
-        template_dir: Base directory where templates are found, defaults to symforce/codegen
+        template_dir: Base directory where templates are found
         output_path: If provided, writes to file
         autoformat: Run a code formatter on the generated code
     """
-    if template_dir is None:
-        template_dir = CURRENT_DIR
-
     if not isinstance(template_path, Path):
         template_path = Path(template_path)
 
@@ -212,16 +210,25 @@ class TemplateList:
         "TemplateListEntry", ["template_path", "output_path", "data", "template_dir"]
     )
 
-    def __init__(self) -> None:
+    def __init__(self, template_dir: T.Openable = None) -> None:
         self.items: T.List = []
+        self.common_template_dir = template_dir
 
     def add(
         self,
         template_path: T.Openable,
         data: T.Dict[str, T.Any],
+        *,
         template_dir: T.Openable = None,
         output_path: T.Openable = None,
     ) -> None:
+        if template_dir is None:
+            if self.common_template_dir is None:
+                raise ValueError(
+                    "Argument template_dir must be supplied if the TemplateList was not initialized with a template_dir"
+                )
+            template_dir = self.common_template_dir
+
         self.items.append(
             self.TemplateListEntry(
                 template_path=template_path,

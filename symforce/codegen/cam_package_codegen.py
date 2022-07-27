@@ -251,11 +251,11 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
     # Subdirectory for everything we'll generate
     cam_package_dir = pathlib.Path(output_dir, "sym")
-    templates = template_util.TemplateList()
+    template_dir = config.template_dir()
+    templates = template_util.TemplateList(template_dir)
 
     if isinstance(config, PythonConfig):
         logger.info(f'Creating Python package at: "{cam_package_dir}"')
-        template_dir = config.template_dir()
 
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
@@ -278,7 +278,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 output_path = cam_package_dir / relative_path.replace(
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )
-                templates.add(template_path, data, template_dir, output_path)
+                templates.add(template_path, data, output_path=output_path)
 
         # Package init
         # NOTE(brad): We already do this in geo_package_codegen.py. We need it there in case we
@@ -291,7 +291,6 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 Codegen.common_data(),
                 all_types=list(geo_package_codegen.DEFAULT_GEO_TYPES) + list(DEFAULT_CAM_TYPES),
             ),
-            template_dir=template_dir,
             output_path=cam_package_dir / "__init__.py",
         )
 
@@ -305,7 +304,6 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                     cam_cal_from_points=cam_cal_from_points,
                     _DISTORTION_COEFF_VALS=_DISTORTION_COEFF_VALS,
                 ),
-                template_dir=template_dir,
             )
 
     elif isinstance(config, CppConfig):
@@ -335,20 +333,18 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 output_path = cam_package_dir / relative_path.replace(
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )
-                templates.add(template_path, data, template_dir, output_path)
+                templates.add(template_path, data, output_path=output_path)
 
         # Add Camera and PosedCamera
         templates.add(
             template_path=pathlib.Path("cam_package", "camera.h.jinja"),
             output_path=cam_package_dir / "camera.h",
             data=camera_data(),
-            template_dir=template_dir,
         )
         templates.add(
             template_path=pathlib.Path("cam_package") / "posed_camera.h.jinja",
             output_path=cam_package_dir / "posed_camera.h",
             data=posed_camera_data(),
-            template_dir=template_dir,
         )
 
         # Test example
@@ -383,7 +379,6 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                         if supports_camera_ray_from_pixel(cls)
                     ],
                 ),
-                template_dir=template_dir,
             )
     else:
         raise NotImplementedError(f'Unknown config type: "{config}"')
