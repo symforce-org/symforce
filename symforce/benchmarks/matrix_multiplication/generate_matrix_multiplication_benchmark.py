@@ -188,7 +188,8 @@ def generate_matrix(
         _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     template_util.render_template(
-        template_path=Path(__file__).parent / "matrix_multiplication_benchmark.cc.jinja",
+        template_dir=Path(__file__).parent,
+        template_path="matrix_multiplication_benchmark.cc.jinja",
         data=dict(
             matrix_name=matrix_name,
             matrix_name_camel=python_util.snakecase_to_camelcase(matrix_name),
@@ -200,7 +201,6 @@ def generate_matrix(
             cant_allocate_on_stack=cant_allocate_on_stack,
         ),
         output_path=output_dir / f"matrix_multiplication_benchmark_{matrix_name}.cc",
-        template_dir=Path(__file__).parent,
     )
 
 

@@ -51,7 +51,8 @@ def generate_values_keys(
         cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
 
     template_util.render_template(
-        template_path=config.template_dir() / "keys.h.jinja",
+        template_dir=config.template_dir(),
+        template_path="keys.h.jinja",
         data=dict(Codegen.common_data(), namespace=namespace, vars=vars_to_generate),
         output_path=cpp_function_dir / generated_file_name,
     )

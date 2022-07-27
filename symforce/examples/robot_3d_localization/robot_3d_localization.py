@@ -386,21 +386,21 @@ def generate(output_dir: Path) -> None:
 
     values = build_values(NUM_POSES)[0]
     template_util.render_template(
-        template_path=Path(__file__).parent / "templates" / "measurements.cc.jinja",
+        template_dir=Path(__file__).parent / "templates",
+        template_path="measurements.cc.jinja",
         data=dict(
             body_t_landmark_measurements=values.attr.body_t_landmark_measurements,
             odometry_relative_pose_measurements=values.attr.odometry_relative_pose_measurements,
             landmarks=values.attr.world_t_landmark,
         ),
         output_path=output_dir / "measurements.cc",
-        template_dir=Path(__file__).parent,
     )
 
     template_util.render_template(
-        template_path=Path(__file__).parent / "templates" / "measurements.h.jinja",
+        template_dir=Path(__file__).parent / "templates",
+        template_path="measurements.h.jinja",
         data={},
         output_path=output_dir / "measurements.h",
-        template_dir=Path(__file__).parent,
     )
 
 

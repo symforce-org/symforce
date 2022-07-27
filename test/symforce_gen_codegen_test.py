@@ -87,7 +87,8 @@ class SymforceGenCodegenTest(TestCase):
         config = codegen.PythonConfig()
         cam_package_codegen.generate(config=config, output_dir=output_dir)
         template_util.render_template(
-            template_path=config.template_dir() / "setup.py.jinja",
+            template_dir=config.template_dir(),
+            template_path="setup.py.jinja",
             output_path=os.path.join(output_dir, "setup.py"),
             data=dict(
                 package_name="symforce-sym",

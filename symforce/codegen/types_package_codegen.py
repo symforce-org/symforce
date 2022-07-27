@@ -94,20 +94,20 @@ def generate_types(
     lcm_files = []
     if len(types_to_generate) > 0:
         logger.info(f'Creating LCM type at: "{lcm_type_dir}"')
-        lcm_template = template_util.LCM_TEMPLATE_DIR / "types.lcm.jinja"
 
         # Type definition
         lcm_file_name = f"{file_name}.lcm"
         lcm_files.append(lcm_file_name)
         templates.add(
-            lcm_template,
-            os.path.join(lcm_type_dir, lcm_file_name),
-            dict(
+            template_path="types.lcm.jinja",
+            output_path=os.path.join(lcm_type_dir, lcm_file_name),
+            data=dict(
                 data,
                 types_to_generate=types_to_generate,
                 types_util=types_util,
                 use_eigen_types=use_eigen_types,
             ),
+            template_dir=template_util.LCM_TEMPLATE_DIR,
         )
 
     # Save input args for handy reference

@@ -67,7 +67,8 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         pybind_dir = path_util.symforce_dir() / "symforce" / "pybind"
 
         template_util.render_template(
-            template_path=str(pybind_dir / "cc_sym.pyi.jinja"),
+            template_dir=pybind_dir,
+            template_path="cc_sym.pyi.jinja",
             data={
                 "spec": TypeStubParts(
                     lcm_include_type_names=[
@@ -97,7 +98,6 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                 )
             },
             output_path=str(output_dir / "cc_sym.pyi"),
-            template_dir=str(pybind_dir),
         )
 
         self.compare_or_update_file(

@@ -31,25 +31,28 @@ def generate(config: codegen.CodegenConfig, output_dir: str = None) -> str:
     if isinstance(config, codegen.CppConfig):
         template_dir = config.template_dir()
         templates.add(
-            template_path=template_dir / "typedefs.h.jinja",
+            template_path="typedefs.h.jinja",
             output_path=os.path.join(package_dir, "typedefs.h"),
             data={},
+            template_dir=template_dir,
         )
 
         templates.add(
-            template_path=template_dir / "type_ops.h.jinja",
+            template_path="type_ops.h.jinja",
             output_path=os.path.join(package_dir, "type_ops.h"),
             data=dict(
                 python_util=python_util,
                 camera_cal_class_names=cam_package_codegen.camera_cal_class_names(),
             ),
+            template_dir=template_dir,
         )
 
         for filename in ("epsilon.h", "epsilon.cc"):
             templates.add(
-                template_path=template_dir / f"{filename}.jinja",
+                template_path=f"{filename}.jinja",
                 output_path=os.path.join(package_dir, filename),
                 data={},
+                template_dir=template_dir,
             )
     else:
         # sym/util is currently C++ only

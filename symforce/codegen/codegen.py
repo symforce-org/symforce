@@ -355,7 +355,7 @@ class Codegen:
         if generated_file_name is None:
             generated_file_name = self.name
 
-        # List of (template_path, output_path, data)
+        # List of (template_path, output_path, data, template_dir)
         templates = template_util.TemplateList()
 
         # Output types
@@ -410,7 +410,7 @@ class Codegen:
 
         # Get templates to render
         for source, dest in self.config.templates_to_render(generated_file_name):
-            templates.add(template_dir / source, out_function_dir / dest, template_data)
+            templates.add(source, out_function_dir / dest, template_data, template_dir)
 
         # Render
         templates.render(autoformat=self.config.autoformat)

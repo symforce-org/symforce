@@ -149,7 +149,7 @@ def render_template(
     template_path: T.Openable,
     data: T.Dict[str, T.Any],
     output_path: T.Optional[T.Openable] = None,
-    template_dir: T.Openable = CURRENT_DIR,
+    template_dir: T.Openable = None,
     autoformat: bool = True,
 ) -> str:
     """
@@ -162,9 +162,8 @@ def render_template(
         template_dir: Base directory where templates are found, defaults to symforce/codegen
         autoformat: Run a code formatter on the generated code
     """
-    logger.debug(f"Template  IN <-- {template_path}")
-    if output_path:
-        logger.debug(f"Template OUT --> {output_path}")
+    if template_dir is None:
+        template_dir = CURRENT_DIR
 
     if not isinstance(template_path, Path):
         template_path = Path(template_path)
@@ -172,18 +171,24 @@ def render_template(
     if not isinstance(template_dir, Path):
         template_dir = Path(template_dir)
 
-    template_name = template_path.resolve().relative_to(template_dir.resolve())
+    logger.debug(f"Template  IN <-- {template_dir / template_path}")
+    if output_path:
+        logger.debug(f"Template OUT --> {output_path}")
 
-    filetype = FileType.from_template_path(Path(template_name))
+    filetype = FileType.from_template_path(Path(template_path))
 
-    template = jinja_env(template_dir).get_template(os.fspath(template_name))
+    template = jinja_env(template_dir).get_template(os.fspath(template_path))
     rendered_str = add_preamble(
-        str(template.render(**data)), template_name, comment_prefix=filetype.comment_prefix()
+        str(template.render(**data)),
+        template_path,
+        comment_prefix=filetype.comment_prefix(),
     )
 
     if autoformat:
         rendered_str = filetype.autoformat(
-            file_contents=rendered_str, template_name=template_name, output_path=output_path
+            file_contents=rendered_str,
+            template_name=template_path,
+            output_path=output_path,
         )
 
     if output_path:
@@ -204,17 +209,26 @@ class TemplateList:
     """
 
     TemplateListEntry = collections.namedtuple(
-        "TemplateListEntry", ["template_path", "output_path", "data"]
+        "TemplateListEntry", ["template_path", "output_path", "data", "template_dir"]
     )
 
     def __init__(self) -> None:
         self.items: T.List = []
 
     def add(
-        self, template_path: T.Openable, output_path: T.Openable, data: T.Dict[str, T.Any]
+        self,
+        template_path: T.Openable,
+        output_path: T.Openable,
+        data: T.Dict[str, T.Any],
+        template_dir: T.Openable = None,
     ) -> None:
         self.items.append(
-            self.TemplateListEntry(template_path=template_path, output_path=output_path, data=data)
+            self.TemplateListEntry(
+                template_path=template_path,
+                output_path=output_path,
+                data=data,
+                template_dir=template_dir,
+            )
         )
 
     def render(self, autoformat: bool = True) -> None:
@@ -223,5 +237,6 @@ class TemplateList:
                 template_path=entry.template_path,
                 output_path=entry.output_path,
                 data=entry.data,
+                template_dir=entry.template_dir,
                 autoformat=autoformat,
             )
