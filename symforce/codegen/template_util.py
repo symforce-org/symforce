@@ -148,8 +148,8 @@ def jinja_env(template_dir: T.Openable) -> RelEnvironment:
 def render_template(
     template_path: T.Openable,
     data: T.Dict[str, T.Any],
-    output_path: T.Optional[T.Openable] = None,
     template_dir: T.Openable = None,
+    output_path: T.Optional[T.Openable] = None,
     autoformat: bool = True,
 ) -> str:
     """
@@ -158,8 +158,8 @@ def render_template(
     Args:
         template_path: file path of the template to render
         data: dictionary of inputs for template
-        output_path: If provided, writes to file
         template_dir: Base directory where templates are found, defaults to symforce/codegen
+        output_path: If provided, writes to file
         autoformat: Run a code formatter on the generated code
     """
     if template_dir is None:
@@ -218,9 +218,9 @@ class TemplateList:
     def add(
         self,
         template_path: T.Openable,
-        output_path: T.Openable,
         data: T.Dict[str, T.Any],
         template_dir: T.Openable = None,
+        output_path: T.Openable = None,
     ) -> None:
         self.items.append(
             self.TemplateListEntry(
@@ -231,12 +231,16 @@ class TemplateList:
             )
         )
 
-    def render(self, autoformat: bool = True) -> None:
+    def render(self, autoformat: bool = True) -> T.List[str]:
+        rendered_templates = []
         for entry in self.items:
-            render_template(
-                template_path=entry.template_path,
-                output_path=entry.output_path,
-                data=entry.data,
-                template_dir=entry.template_dir,
-                autoformat=autoformat,
+            rendered_templates.append(
+                render_template(
+                    template_path=entry.template_path,
+                    output_path=entry.output_path,
+                    data=entry.data,
+                    template_dir=entry.template_dir,
+                    autoformat=autoformat,
+                )
             )
+        return rendered_templates
