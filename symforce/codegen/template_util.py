@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import collections
+import dataclasses
 import enum
 import functools
 import jinja2
@@ -202,13 +202,16 @@ def render_template(
 
 class TemplateList:
     """
-    Helper class to keep a list of (template_path, output_path, data) and render
-    all templates in one go.
+    Helper class to keep a list of (template_path, output_path, template_dir, data)
+    and render all templates in one go.
     """
 
-    TemplateListEntry = collections.namedtuple(
-        "TemplateListEntry", ["template_path", "output_path", "data", "template_dir"]
-    )
+    @dataclasses.dataclass
+    class TemplateListEntry:
+        template_path: T.Openable
+        data: T.Dict[str, T.Any]
+        template_dir: T.Openable
+        output_path: T.Optional[T.Openable]
 
     def __init__(self, template_dir: T.Openable = None) -> None:
         self.items: T.List = []
