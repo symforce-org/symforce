@@ -29,13 +29,19 @@ def format_cpp(file_contents: str, filename: str) -> str:
     Returns:
         formatted_file_contents (str): The contents of the file after formatting
     """
-    formatted_file_contents = T.cast(
-        str,
-        python_util.execute_subprocess(
-            ["clang-format", f"-assume-filename={filename}"],
-            stdin_data=file_contents,
-            log_stdout=False,
-        ),
+    try:
+        import clang_format  # type: ignore[import]
+
+        clang_format_path = str(
+            pathlib.Path(clang_format.__file__).parent / "data" / "bin" / "clang-format"
+        )
+    except ImportError:
+        clang_format_path = "clang-format"
+
+    formatted_file_contents = python_util.execute_subprocess(
+        [clang_format_path, f"-assume-filename={filename}"],
+        stdin_data=file_contents,
+        log_stdout=False,
     )
 
     return formatted_file_contents

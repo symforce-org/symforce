@@ -586,6 +586,10 @@ def load_generated_lcmtype(
     Returns:
         The Python LCM type
     """
+    # We need to import the lcmtypes package first so that sys.path is set up correctly, since this
+    # is a namespace package
+    import lcmtypes  # pylint: disable=unused-import
+
     return getattr(
         load_generated_package(
             f"lcmtypes.{package}._{type_name}",
