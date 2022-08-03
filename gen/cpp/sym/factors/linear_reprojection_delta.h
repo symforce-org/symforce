@@ -45,7 +45,7 @@ void LinearReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                              const Eigen::Matrix<Scalar, 2, 1>& target_pixel, const Scalar epsilon,
                              Eigen::Matrix<Scalar, 2, 1>* const reprojection_delta = nullptr,
                              Scalar* const is_valid = nullptr) {
-  // Total ops: 123
+  // Total ops: 122
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();
@@ -91,7 +91,7 @@ void LinearReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                         source_inverse_range * (_source_pose[5] - _target_pose[5]);
   const Scalar _tmp27 =
       _tmp15 * (_tmp0 + _tmp1) + _tmp22 * (_tmp16 + _tmp18) + _tmp26 * (_tmp24 - _tmp25);
-  const Scalar _tmp28 = Scalar(1.0) / (std::max<Scalar>(epsilon, std::fabs(_tmp27)));
+  const Scalar _tmp28 = Scalar(1.0) / (std::max<Scalar>(_tmp27, epsilon));
   const Scalar _tmp29 = -2 * std::pow(_target_pose[2], Scalar(2));
   const Scalar _tmp30 = _target_pose[2] * _tmp17;
   const Scalar _tmp31 = _target_pose[0] * _tmp23;

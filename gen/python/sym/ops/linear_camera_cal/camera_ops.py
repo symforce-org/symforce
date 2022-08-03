@@ -67,13 +67,13 @@ class CameraOps(object):
             is_valid: 1 if the operation is within bounds else 0
         """
 
-        # Total ops: 11
+        # Total ops: 10
 
         # Input arrays
         _self = self.data
 
         # Intermediate terms (1)
-        _tmp0 = max(epsilon, abs(point[2])) ** (-1)
+        _tmp0 = max(epsilon, point[2]) ** (-1)
 
         # Output terms
         _pixel = [0.0] * 2
@@ -95,46 +95,43 @@ class CameraOps(object):
             pixel_D_point: Derivative of pixel with respect to point
         """
 
-        # Total ops: 26
+        # Total ops: 24
 
         # Input arrays
         _self = self.data
 
-        # Intermediate terms (7)
-        _tmp0 = abs(point[2])
-        _tmp1 = max(_tmp0, epsilon)
-        _tmp2 = _tmp1 ** (-1)
-        _tmp3 = _self[0] * _tmp2
-        _tmp4 = _self[1] * _tmp2
-        _tmp5 = 0.0 if point[2] == 0 else math.copysign(1, point[2])
-        _tmp6 = (
+        # Intermediate terms (5)
+        _tmp0 = max(epsilon, point[2])
+        _tmp1 = _tmp0 ** (-1)
+        _tmp2 = _self[0] * _tmp1
+        _tmp3 = _self[1] * _tmp1
+        _tmp4 = (
             (1.0 / 2.0)
-            * _tmp5
-            * ((0.0 if _tmp0 - epsilon == 0 else math.copysign(1, _tmp0 - epsilon)) + 1)
-            / _tmp1 ** 2
+            * ((0.0 if -epsilon + point[2] == 0 else math.copysign(1, -epsilon + point[2])) + 1)
+            / _tmp0 ** 2
         )
 
         # Output terms
         _pixel = [0.0] * 2
-        _pixel[0] = _self[2] + _tmp3 * point[0]
-        _pixel[1] = _self[3] + _tmp4 * point[1]
-        _is_valid = max(0, _tmp5)
+        _pixel[0] = _self[2] + _tmp2 * point[0]
+        _pixel[1] = _self[3] + _tmp3 * point[1]
+        _is_valid = max(0, (0.0 if point[2] == 0 else math.copysign(1, point[2])))
         _pixel_D_cal = numpy.zeros((2, 4))
-        _pixel_D_cal[0, 0] = _tmp2 * point[0]
+        _pixel_D_cal[0, 0] = _tmp1 * point[0]
         _pixel_D_cal[1, 0] = 0
         _pixel_D_cal[0, 1] = 0
-        _pixel_D_cal[1, 1] = _tmp2 * point[1]
+        _pixel_D_cal[1, 1] = _tmp1 * point[1]
         _pixel_D_cal[0, 2] = 1
         _pixel_D_cal[1, 2] = 0
         _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 3] = 1
         _pixel_D_point = numpy.zeros((2, 3))
-        _pixel_D_point[0, 0] = _tmp3
+        _pixel_D_point[0, 0] = _tmp2
         _pixel_D_point[1, 0] = 0
         _pixel_D_point[0, 1] = 0
-        _pixel_D_point[1, 1] = _tmp4
-        _pixel_D_point[0, 2] = -_self[0] * _tmp6 * point[0]
-        _pixel_D_point[1, 2] = -_self[1] * _tmp6 * point[1]
+        _pixel_D_point[1, 1] = _tmp3
+        _pixel_D_point[0, 2] = -_self[0] * _tmp4 * point[0]
+        _pixel_D_point[1, 2] = -_self[1] * _tmp4 * point[1]
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point
 
     @staticmethod

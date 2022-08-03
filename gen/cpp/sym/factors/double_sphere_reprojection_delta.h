@@ -46,7 +46,7 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                                    const Scalar epsilon,
                                    Eigen::Matrix<Scalar, 2, 1>* const reprojection_delta = nullptr,
                                    Scalar* const is_valid = nullptr) {
-  // Total ops: 245
+  // Total ops: 244
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();
@@ -135,9 +135,8 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp57 = _tmp49 + _tmp56 * target_calibration_storage(4, 0);
   const Scalar _tmp58 =
       Scalar(1.0) /
-      (std::max<Scalar>(epsilon,
-                        std::fabs(_tmp2 * std::sqrt(Scalar(_tmp55 + std::pow(_tmp57, Scalar(2)))) +
-                                  _tmp57 * (_tmp3 + 1))));
+      (std::max<Scalar>(epsilon, _tmp2 * std::sqrt(Scalar(_tmp55 + std::pow(_tmp57, Scalar(2)))) +
+                                     _tmp57 * (_tmp3 + 1)));
   const Scalar _tmp59 = std::pow(target_calibration_storage(4, 0), Scalar(2));
   const Scalar _tmp60 = (Scalar(1) / Scalar(2)) * _tmp1 + _tmp3 + 1;
   const Scalar _tmp61 = _tmp0 + _tmp2;
