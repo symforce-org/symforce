@@ -6,7 +6,11 @@
 import dataclasses
 
 from symforce.ops import StorageOps
-from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
+from symforce.python_util import (
+    get_type,
+    get_sequence_from_dataclass_sequence_field,
+    maybe_tuples_of_types_from_annotation,
+)
 from symforce import typing as T
 
 
@@ -42,6 +46,11 @@ class DataclassStorageOps:
                         field, field_type
                     )
                     count += StorageOps.storage_dim(sequence_instance)
+                elif (
+                    sequence_types := maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    count += StorageOps.storage_dim(sequence_types)
                 else:
                     count += StorageOps.storage_dim(field_type)
             return count
@@ -73,6 +82,14 @@ class DataclassStorageOps:
                     storage_dim = StorageOps.storage_dim(sequence_instance)
                     constructed_fields[field.name] = StorageOps.from_storage(
                         sequence_instance, elements[offset : offset + storage_dim]
+                    )
+                elif (
+                    sequence_types := maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    storage_dim = StorageOps.storage_dim(sequence_types)
+                    constructed_fields[field.name] = StorageOps.from_storage(
+                        sequence_types, elements[offset : offset + storage_dim]
                     )
                 else:
                     storage_dim = StorageOps.storage_dim(field_type)
@@ -116,6 +133,13 @@ class DataclassStorageOps:
                         )
                         constructed_fields[field.name] = StorageOps.symbolic(
                             sequence_instance, f"{name_prefix}{field.name}", **kwargs
+                        )
+                    elif (
+                        sequence_types := maybe_tuples_of_types_from_annotation(field_type)
+                    ) is not None:
+                        # It's a Tuple of known size
+                        constructed_fields[field.name] = StorageOps.symbolic(
+                            sequence_types, f"{name_prefix}{field.name}", **kwargs
                         )
                     else:
                         constructed_fields[field.name] = StorageOps.symbolic(

@@ -332,6 +332,41 @@ def get_sequence_from_dataclass_sequence_field(
     return [arg_type] * length
 
 
+def maybe_tuples_of_types_from_annotation(
+    annotation: T.Union[T.Type, T.Any], return_annotation_if_not_tuple: bool = False
+) -> T.Optional[T.Union[T.Tuple[T.Union[T.Tuple, T.Type]], T.Any]]:
+    """
+    Attempt to construct a tuple of types from an annotation of the form T.Tuple[A, B, C] of any
+    fixed length, recursively.
+
+    If this is not possible, because the annotation is not a T.Tuple, returns:
+
+    1) The annotation itself, if return_annotation_if_not_tuple is True
+    2) None, otherwise
+
+    If the annotation is a T.Tuple, but is of unknown length, returns None
+    """
+    origin = T.get_origin(annotation)
+    if not isinstance(origin, type) or not issubclass(origin, T.cast(T.Type, T.Tuple)):
+        if return_annotation_if_not_tuple:
+            return annotation
+        else:
+            return None
+
+    args = T.get_args(annotation)
+
+    if Ellipsis in args:
+        if return_annotation_if_not_tuple:
+            raise ValueError()
+        else:
+            return None
+
+    return tuple(
+        maybe_tuples_of_types_from_annotation(arg, return_annotation_if_not_tuple=True)
+        for arg in args
+    )
+
+
 class AttrDict(dict):
     """
     A simple attr-dict, i.e. a dictinary whose keys are also accessible directly as fields

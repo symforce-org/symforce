@@ -6,7 +6,11 @@
 import dataclasses
 
 from symforce.ops import GroupOps
-from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
+from symforce.python_util import (
+    get_type,
+    get_sequence_from_dataclass_sequence_field,
+    maybe_tuples_of_types_from_annotation,
+)
 from symforce import typing as T
 
 from .dataclass_storage_ops import DataclassStorageOps
@@ -25,6 +29,11 @@ class DataclassGroupOps(DataclassStorageOps):
                         field, field_type
                     )
                     constructed_fields[field.name] = GroupOps.identity(sequence_instance)
+                elif (
+                    sequence_types := maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    constructed_fields[field.name] = GroupOps.identity(sequence_types)
                 else:
                     constructed_fields[field.name] = GroupOps.identity(field_type)
             return a(**constructed_fields)

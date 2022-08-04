@@ -8,7 +8,11 @@ import dataclasses
 
 from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
-from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
+from symforce.python_util import (
+    get_type,
+    get_sequence_from_dataclass_sequence_field,
+    maybe_tuples_of_types_from_annotation,
+)
 from symforce import typing as T
 
 from .dataclass_group_ops import DataclassGroupOps
@@ -30,6 +34,11 @@ class DataclassLieGroupOps(DataclassGroupOps):
                         field, field_type
                     )
                     count += LieGroupOps.tangent_dim(sequence_instance)
+                elif (
+                    sequence_types := maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    count += LieGroupOps.tangent_dim(sequence_types)
                 else:
                     count += LieGroupOps.tangent_dim(field_type)
             return count
@@ -56,6 +65,14 @@ class DataclassLieGroupOps(DataclassGroupOps):
                     tangent_dim = LieGroupOps.tangent_dim(sequence_instance)
                     constructed_fields[field.name] = LieGroupOps.from_tangent(
                         sequence_instance, vec[offset : offset + tangent_dim]
+                    )
+                elif (
+                    sequence_types := maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    tangent_dim = LieGroupOps.tangent_dim(sequence_types)
+                    constructed_fields[field.name] = LieGroupOps.from_tangent(
+                        sequence_types, vec[offset : offset + tangent_dim], epsilon
                     )
                 else:
                     tangent_dim = LieGroupOps.tangent_dim(field_type)
