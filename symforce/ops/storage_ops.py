@@ -73,8 +73,9 @@ class StorageOps(Ops):
 
     @staticmethod
     def subs(a: T.Element, *args: T.Any, **kwargs: T.Any) -> T.Element:
+        # We convert to a Matrix here so that we can call `.subs` once, which is faster
         return StorageOps.from_storage(
-            a, [sf.S(s).subs(*args, **kwargs) for s in StorageOps.to_storage(a)]
+            a, list(iter(sf.sympy.Matrix(StorageOps.to_storage(a)).subs(*args, **kwargs)))
         )
 
     @staticmethod

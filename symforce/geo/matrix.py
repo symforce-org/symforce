@@ -695,7 +695,7 @@ class Matrix(Storage):
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
         """
-        Compute a symmetric product A.transpose() * A faster by respecting symmetry of the output.
+        Compute a symmetric product A.transpose() * A
 
         Args:
             lower_only (bool): If given, only fill the lower half and set upper to zero
@@ -704,15 +704,12 @@ class Matrix(Storage):
             (Matrix(N, N)): Symmetric matrix AtA = self.transpose() * self
 
         """
-        N = self.cols
-        AtA = Matrix(N, N)
-        for i in range(N):
-            row = self[:, i]
-            for j in range(i, N):
-                val = row.dot(self[:, j])
-                AtA[j, i] = val
-                if i != j:
-                    AtA[i, j] = val if not lower_only else 0
+        AtA = self.T * self
+        if lower_only:
+            for i in range(self.cols):
+                for j in range(i + 1, self.cols):
+                    AtA[i, j] = 0
+
         return AtA
 
     def LU(

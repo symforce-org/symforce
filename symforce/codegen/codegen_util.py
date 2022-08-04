@@ -284,23 +284,33 @@ def format_symbols(
         )
     )
 
-    intermediate_terms_formatted = [
-        (lhs, ops.StorageOps.subs(rhs, input_subs, dont_flatten_args=True))
-        for lhs, rhs in intermediate_terms
-    ]
+    intermediate_terms_formatted = list(
+        zip(
+            (lhs for lhs, _ in intermediate_terms),
+            ops.StorageOps.subs(
+                [rhs for _, rhs in intermediate_terms], input_subs, dont_flatten_args=True
+            ),
+        )
+    )
 
     dense_output_lhs_formatted, _ = get_formatted_list(
         dense_outputs, config, format_as_inputs=False
     )
     dense_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
-        for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
+        list(zip(lhs_formatted, subbed_storage))
+        for lhs_formatted, subbed_storage in zip(
+            dense_output_lhs_formatted,
+            ops.StorageOps.subs(output_terms.dense, input_subs, dont_flatten_args=True),
+        )
     ]
 
     sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs)
     sparse_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
-        for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
+        list(zip(lhs_formatted, subbed_storage))
+        for lhs_formatted, subbed_storage in zip(
+            sparse_output_lhs_formatted,
+            ops.StorageOps.subs(output_terms.sparse, input_subs, dont_flatten_args=True),
+        )
     ]
 
     return intermediate_terms_formatted, dense_output_terms_formatted, sparse_output_terms_formatted

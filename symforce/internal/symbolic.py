@@ -628,6 +628,11 @@ def _get_subs_dict(*args: T.Any, dont_flatten_args: bool = False, **kwargs: T.An
             subs_pairs = list(args[0].items())
         else:
             subs_pairs = args[0]
+    else:
+        raise ValueError(
+            "subs must be passed either two positional arguments (a key-value pair), or a dict of "
+            f"key-value pairs.  Instead, got {args}"
+        )
 
     assert isinstance(subs_pairs, T.Sequence)
     return _flatten_storage_type_subs(subs_pairs)
