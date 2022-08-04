@@ -89,8 +89,8 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
   const Scalar _tmp11 = std::sqrt(Scalar(
       std::pow(c(0, 0), Scalar(2)) + std::pow(c(1, 0), Scalar(2)) + std::pow(c(2, 0), Scalar(2)) +
       std::pow(c(3, 0), Scalar(2)) + std::pow(c(4, 0), Scalar(2))));
-  const Scalar _tmp12 = d.x + d.y[1];
-  const Scalar _tmp13 = d.x + d.y[0];
+  const Scalar _tmp12 = d.x + d.y.data[1];
+  const Scalar _tmp13 = d.x + d.y.data[0];
   const Scalar _tmp14 = _a[3] * _tmp2;
   const Scalar _tmp15 = 2 * _a[0] * _a[1];
   const Scalar _tmp16 = std::pow(_a[2], Scalar(2));

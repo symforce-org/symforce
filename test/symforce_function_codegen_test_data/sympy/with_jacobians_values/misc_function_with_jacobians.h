@@ -111,8 +111,8 @@ void MiscFunctionWithJacobians(const sym::Rot3<Scalar>& a, const Scalar b,
   if (c_out != nullptr) {
     Eigen::Matrix<Scalar, 1, 2>& _c_out = (*c_out);
 
-    _c_out(0, 0) = 4 * d.x + d.y[0] + 3 * d.y[1];
-    _c_out(0, 1) = 6 * d.x + 2 * d.y[0] + 4 * d.y[1];
+    _c_out(0, 0) = 4 * d.x + d.y.data[0] + 3 * d.y.data[1];
+    _c_out(0, 1) = 6 * d.x + 2 * d.y.data[0] + 4 * d.y.data[1];
   }
 
   if (d_out != nullptr) {
