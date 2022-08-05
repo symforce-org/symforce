@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce.ops import GroupOps
-from symforce.python_util import get_type
+from symforce.typing_util import get_type
 from symforce import typing as T
 
 from .sequence_storage_ops import SequenceStorageOps

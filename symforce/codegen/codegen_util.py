@@ -24,7 +24,7 @@ import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import format_util
 from symforce.codegen import codegen_config
-from symforce import python_util
+from symforce import typing_util
 from symforce import _sympy_count_ops
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
@@ -337,7 +337,7 @@ def get_formatted_list(
     flattened_formatted_symbolic_values = []
     flattened_original_values = []
     for key, value in values.items():
-        arg_cls = python_util.get_type(value)
+        arg_cls = typing_util.get_type(value)
         storage_dim = ops.StorageOps.storage_dim(value)
 
         # For each item in the given Values object, we construct a list of symbols used

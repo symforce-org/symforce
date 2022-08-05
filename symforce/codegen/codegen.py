@@ -20,6 +20,7 @@ from symforce import jacobian_helpers
 from symforce import ops
 from symforce import logger
 from symforce import python_util
+from symforce import typing_util
 from symforce import typing as T
 from symforce.values import Values
 from symforce.codegen import template_util
@@ -259,6 +260,7 @@ class Codegen:
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util
+        data["typing_util"] = typing_util
         data["lcm_type_t_include_dir"] = "<lcmtypes/sym/type_t.hpp>"
 
         def is_symbolic(T: T.Any) -> bool:
@@ -446,10 +448,10 @@ class Codegen:
         input_names = [name for name, arg in inputs.items() if name != "self"]
 
         def nice_typename(arg: T.Any) -> str:
-            if python_util.scalar_like(arg):
+            if typing_util.scalar_like(arg):
                 return "Scalar"
             else:
-                return python_util.get_type(arg).__name__
+                return typing_util.get_type(arg).__name__
 
         input_types = [nice_typename(arg) for name, arg in inputs.items() if name != "self"]
         output_types = [nice_typename(arg) for arg in outputs.values()]
@@ -619,7 +621,7 @@ class Codegen:
                     "The output of a factor must be a column vector representing the residual "
                     f'(of shape Nx1).  For factor "{self.name}", '
                 )
-                if python_util.scalar_like(result):
+                if typing_util.scalar_like(result):
                     raise ValueError(
                         common_msg + "got a scalar expression instead.  Did you mean to wrap it in "
                         "`sf.V1(expr)`?"

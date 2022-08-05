@@ -34,7 +34,7 @@
  #       type is defined_class
  #}
 {%- macro format_typename(T_or_value, name, is_input, defined_class = None) %}
-    {%- set T = python_util.get_type(T_or_value) -%}
+    {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'DataBuffer' -%}
         numpy.ndarray
     {%- elif T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
@@ -143,7 +143,7 @@ def {{ function_name_and_args(spec) }}:
 
     # Input arrays
     {% for name, type in spec.inputs.items() %}
-        {% set T = python_util.get_type(type) %}
+        {% set T = typing_util.get_type(type) %}
         {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
     _{{ name }} = {{ name }}.data
         {% endif %}
@@ -157,7 +157,7 @@ def {{ function_name_and_args(spec) }}:
     # Output terms
     {# Render all non-sparse terms -#}
     {% for name, type, terms in spec.print_code_results.dense_terms %}
-        {%- set T = python_util.get_type(type) -%}
+        {%- set T = typing_util.get_type(type) -%}
         {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
             {% set rows = type.shape[0] %}
             {% set cols = type.shape[1] %}
@@ -203,7 +203,7 @@ def {{ function_name_and_args(spec) }}:
     {% endfor %}
     return
     {%- for name, type in spec.outputs.items() %}
-        {% set T = python_util.get_type(type) %}
+        {% set T = typing_util.get_type(type) %}
         {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
  _{{name}}
         {%- else %}

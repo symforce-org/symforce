@@ -37,7 +37,7 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
  #     name (str): Optional name in case type is a generated struct
  #}
 {%- macro format_typename(T_or_value, name, scalar_type="Scalar") %}
-    {%- set T = python_util.get_type(T_or_value) -%}
+    {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) or T.__name__ == 'float' -%}
         {%- if issubclass(T, DataBuffer) -%}
             {{ scalar_type }}* const
@@ -106,7 +106,7 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
  #     name (str):
  #}
 {%- macro format_input_arg(T_or_value, name, scalar_type="Scalar") %}
-    {%- set T = python_util.get_type(T_or_value) -%}
+    {%- set T = typing_util.get_type(T_or_value) -%}
     {% if T == Symbol or T == DataBuffer-%}
         {#- Scalar type is just const -#}
         const {{ format_typename(T_or_value, "", scalar_type) }} {{ name }}
@@ -320,9 +320,9 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
  #     spec (Codegen):
  #}
 {% macro format_output_dense(name, type, terms, spec, scalar_type="Scalar") -%}
-{% set T = python_util.get_type(type) %}
+{% set T = typing_util.get_type(type) %}
 {% if (issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type)) %}
-    {% set T_return = python_util.get_type(type) %}
+    {% set T_return = typing_util.get_type(type) %}
     {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
         {# Create a new object to return #}
 {{ format_typename(type, name, scalar_type) }} _{{ name }};
@@ -402,7 +402,7 @@ _{{ lhs }} = {{ rhs }};
 
     // Input arrays
     {% for name, type in spec.inputs.items() %}
-        {% set T = python_util.get_type(type) %}
+        {% set T = typing_util.get_type(type) %}
         {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
             {% if name == "self" %}
     const {{ vector_type(ops.StorageOps.storage_dim(type), scalar_type) }}& _{{ name }} = Data();
@@ -421,7 +421,7 @@ _{{ lhs }} = {{ rhs }};
     {{ format_outputs_dense_and_sparse(spec, scalar_type) | trim }}
     {# Populate the output vectors with the generated expressions #}
     {% for name, type in spec.outputs.items() %}
-        {% set T_return = python_util.get_type(type) %}
+        {% set T_return = typing_util.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
 
             {% if name in spec.sparse_mat_data %}

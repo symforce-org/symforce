@@ -580,12 +580,12 @@ def _flatten_storage_type_subs(
     new_subs_dict = {}
     # Import these lazily, since initialization.py is imported from symforce/__init__.py
     from symforce import ops  # pylint: disable=cyclic-import
-    from symforce import python_util  # pylint: disable=cyclic-import
+    from symforce import typing_util  # pylint: disable=cyclic-import
 
     for key, value in subs_pairs:
 
-        if python_util.scalar_like(key):
-            assert python_util.scalar_like(value)
+        if typing_util.scalar_like(key):
+            assert typing_util.scalar_like(value)
             new_subs_dict[key] = value
             continue
 

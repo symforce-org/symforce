@@ -16,6 +16,7 @@ import symforce.internal.symbolic as sf
 from symforce import typing as T
 from symforce import ops
 from symforce import python_util
+from symforce import typing_util
 
 from .attr_accessor import AttrAccessor
 from .index_entry import IndexEntry
@@ -257,7 +258,7 @@ class Values(T.MutableMapping[str, T.Any]):
         flat_scalar_keys: T.List[str] = []
         for key, value in self.items_recursive():
             storage_dim = ops.StorageOps.storage_dim(value)
-            if python_util.scalar_like(value):
+            if typing_util.scalar_like(value):
                 flat_scalar_keys.append(key)
             else:
                 flat_scalar_keys.extend(f"{key}[{i}]" for i in range(storage_dim))

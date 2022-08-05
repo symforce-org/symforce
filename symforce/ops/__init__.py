@@ -20,7 +20,7 @@ import abc
 import numpy as np
 import symforce.internal.symbolic as sf
 from symforce import typing as T
-from symforce import python_util
+from symforce import typing_util
 
 from .impl.scalar_lie_group_ops import ScalarLieGroupOps
 from .impl.sequence_lie_group_ops import SequenceLieGroupOps
@@ -49,7 +49,7 @@ class ScalarExpr(abc.ABC):
         return issubclass(subclass, sf.Expr) and isinstance(subclass, type)
 
 
-for scalar_type in python_util.SCALAR_TYPES:
+for scalar_type in typing_util.SCALAR_TYPES:
     LieGroupOps.register(scalar_type, ScalarLieGroupOps)
 
 LieGroupOps.register(ScalarExpr, ScalarLieGroupOps)

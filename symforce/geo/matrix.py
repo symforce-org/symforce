@@ -12,7 +12,7 @@ from symforce import ops
 from symforce.ops.interfaces import Storage
 import symforce.internal.symbolic as sf
 from symforce import typing as _T  # We already have a Matrix.T which collides
-from symforce import python_util
+from symforce import typing_util
 
 
 class Matrix(Storage):
@@ -606,7 +606,7 @@ class Matrix(Storage):
         """
         Add a scalar or matrix to this matrix.
         """
-        if python_util.scalar_like(right):
+        if typing_util.scalar_like(right):
             return self.applyfunc(lambda x: x + right)
         elif isinstance(right, Matrix):
             return self.__class__(self.mat + right.mat)
@@ -617,7 +617,7 @@ class Matrix(Storage):
         """
         Subtract a scalar or matrix from this matrix.
         """
-        if python_util.scalar_like(right):
+        if typing_util.scalar_like(right):
             return self.applyfunc(lambda x: x - right)
         elif isinstance(right, Matrix):
             return self.__class__(self.mat - right.mat)
@@ -640,7 +640,7 @@ class Matrix(Storage):
         """
         Multiply a matrix by a scalar or matrix
         """
-        if python_util.scalar_like(right):
+        if typing_util.scalar_like(right):
             return self.applyfunc(lambda x: x * right)
         elif isinstance(right, Matrix):
             return self.__class__(self.mat * right.mat)
@@ -663,7 +663,7 @@ class Matrix(Storage):
         """
         Left multiply a matrix by a scalar or matrix
         """
-        if python_util.scalar_like(left):
+        if typing_util.scalar_like(left):
             return self.applyfunc(lambda x: left * x)
         elif isinstance(left, Matrix):
             return self.__class__(left.mat * self.mat)
@@ -686,7 +686,7 @@ class Matrix(Storage):
         """
         Divide a matrix by a scalar or a matrix (which takes the inverse).
         """
-        if python_util.scalar_like(right):
+        if typing_util.scalar_like(right):
             return self.applyfunc(lambda x: x / sf.S(right))
         elif isinstance(right, Matrix):
             return self * right.inv()

@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce.ops import StorageOps
-from symforce.python_util import get_type
+from symforce.typing_util import get_type
 from symforce import typing as T
 
 
