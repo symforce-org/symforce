@@ -15,6 +15,8 @@ from pathlib import Path
 import tempfile
 import textwrap
 
+import symforce
+
 import symforce.symbolic as sf
 from symforce import jacobian_helpers
 from symforce import ops
@@ -665,6 +667,10 @@ class Codegen:
             if sparse_linearization
             else None
         )
+
+        if symforce.factor_coefs:
+            outputs = outputs.from_storage([sf.factor_coefs(x) for x in outputs.to_storage()])
+
         return Codegen(
             name=name,
             inputs=self.inputs,
