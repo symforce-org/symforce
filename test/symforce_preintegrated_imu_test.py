@@ -24,7 +24,7 @@ class SymforcePreintegratedImuTest(TestCase):
 
     @symengine_only
     def test_gen_python(self) -> None:
-        assert symforce.get_backend() == "symengine"
+        assert symforce.get_symbolic_api() == "symengine"
 
         # Generate code
         output_dir = Path(self.make_output_dir("sf_imu_preintegration_test_"))
@@ -37,7 +37,7 @@ class SymforcePreintegratedImuTest(TestCase):
 
     @symengine_only
     def test_gen_cpp(self) -> None:
-        assert symforce.get_backend() == "symengine"
+        assert symforce.get_symbolic_api() == "symengine"
 
         # Generate code
         output_dir = Path(self.make_output_dir("sf_imu_preintegration_test_"))
