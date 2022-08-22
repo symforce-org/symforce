@@ -104,3 +104,9 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           ${{ matrix.python }} test/symforce_requirements_test.py --update
           make -j2 test
+
+      - name: Upload Generated Docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: build/docs
