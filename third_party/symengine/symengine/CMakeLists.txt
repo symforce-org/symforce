@@ -213,6 +213,8 @@ include_directories(BEFORE ${symengine_SOURCE_DIR})
 
 add_library(symengine ${SRC})
 
+add_executable(debug symforce/debug.cc)
+target_link_libraries(debug symengine)
 
 if (WITH_COTIRE)
     # throws if CMAKE_VERSION < 2.8.12
