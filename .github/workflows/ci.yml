@@ -108,5 +108,5 @@ jobs:
       - name: Upload Generated Docs
         uses: actions/upload-artifact@v3
         with:
-          name: docs ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.compiler }}
+          name: docs ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.compiler.C }}
           path: build/docs
