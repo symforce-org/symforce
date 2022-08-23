@@ -11,9 +11,6 @@ import typing as T  # pylint: disable=unused-import
 import sym  # pylint: disable=unused-import
 
 
-import codegen_python_test
-
-
 # pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 
 
