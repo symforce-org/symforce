@@ -37,14 +37,14 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
                            Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                            Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                            Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 102
+  // Total ops: 105
 
   // Input arrays
 
   // Intermediate terms (42)
-  const Scalar _tmp0 = -a(1, 0) - a_T_b(1, 0) + b(1, 0);
-  const Scalar _tmp1 = -a(2, 0) - a_T_b(2, 0) + b(2, 0);
-  const Scalar _tmp2 = -a(0, 0) - a_T_b(0, 0) + b(0, 0);
+  const Scalar _tmp0 = a(1, 0) + a_T_b(1, 0) - b(1, 0);
+  const Scalar _tmp1 = a(2, 0) + a_T_b(2, 0) - b(2, 0);
+  const Scalar _tmp2 = a(0, 0) + a_T_b(0, 0) - b(0, 0);
   const Scalar _tmp3 = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0);
   const Scalar _tmp4 = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0);
   const Scalar _tmp5 = _tmp0 * sqrt_info(2, 1) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 0);
@@ -75,23 +75,23 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
   const Scalar _tmp30 = std::pow(sqrt_info(2, 2), Scalar(2));
   const Scalar _tmp31 = std::pow(sqrt_info(1, 2), Scalar(2));
   const Scalar _tmp32 = _tmp29 + _tmp30 + _tmp31;
-  const Scalar _tmp33 = _tmp5 * sqrt_info(2, 0);
-  const Scalar _tmp34 = _tmp3 * sqrt_info(0, 0);
-  const Scalar _tmp35 = _tmp4 * sqrt_info(1, 0);
-  const Scalar _tmp36 = _tmp5 * sqrt_info(2, 1);
-  const Scalar _tmp37 = _tmp3 * sqrt_info(0, 1);
-  const Scalar _tmp38 = _tmp4 * sqrt_info(1, 1);
-  const Scalar _tmp39 = _tmp5 * sqrt_info(2, 2);
-  const Scalar _tmp40 = _tmp3 * sqrt_info(0, 2);
-  const Scalar _tmp41 = _tmp4 * sqrt_info(1, 2);
+  const Scalar _tmp33 = _tmp3 * sqrt_info(0, 0);
+  const Scalar _tmp34 = _tmp4 * sqrt_info(1, 0);
+  const Scalar _tmp35 = _tmp5 * sqrt_info(2, 0);
+  const Scalar _tmp36 = _tmp3 * sqrt_info(0, 1);
+  const Scalar _tmp37 = _tmp4 * sqrt_info(1, 1);
+  const Scalar _tmp38 = _tmp5 * sqrt_info(2, 1);
+  const Scalar _tmp39 = _tmp3 * sqrt_info(0, 2);
+  const Scalar _tmp40 = _tmp4 * sqrt_info(1, 2);
+  const Scalar _tmp41 = _tmp5 * sqrt_info(2, 2);
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp3;
-    _res(1, 0) = _tmp4;
-    _res(2, 0) = _tmp5;
+    _res(0, 0) = -_tmp3;
+    _res(1, 0) = -_tmp4;
+    _res(2, 0) = -_tmp5;
   }
 
   if (jacobian != nullptr) {
@@ -161,12 +161,12 @@ void BetweenFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& a,
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 6, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = -_tmp33 - _tmp34 - _tmp35;
-    _rhs(1, 0) = -_tmp36 - _tmp37 - _tmp38;
-    _rhs(2, 0) = -_tmp39 - _tmp40 - _tmp41;
-    _rhs(3, 0) = _tmp33 + _tmp34 + _tmp35;
-    _rhs(4, 0) = _tmp36 + _tmp37 + _tmp38;
-    _rhs(5, 0) = _tmp39 + _tmp40 + _tmp41;
+    _rhs(0, 0) = _tmp33 + _tmp34 + _tmp35;
+    _rhs(1, 0) = _tmp36 + _tmp37 + _tmp38;
+    _rhs(2, 0) = _tmp39 + _tmp40 + _tmp41;
+    _rhs(3, 0) = -_tmp33 - _tmp34 - _tmp35;
+    _rhs(4, 0) = -_tmp36 - _tmp37 - _tmp38;
+    _rhs(5, 0) = -_tmp39 - _tmp40 - _tmp41;
   }
 }  // NOLINT(readability/fn_size)
 

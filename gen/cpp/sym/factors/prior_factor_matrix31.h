@@ -35,25 +35,25 @@ void PriorFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& value,
                          Eigen::Matrix<Scalar, 3, 3>* const jacobian = nullptr,
                          Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                          Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 63
+  // Total ops: 69
 
   // Input arrays
 
   // Intermediate terms (6)
-  const Scalar _tmp0 = -prior(1, 0) + value(1, 0);
-  const Scalar _tmp1 = -prior(2, 0) + value(2, 0);
-  const Scalar _tmp2 = -prior(0, 0) + value(0, 0);
-  const Scalar _tmp3 = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0);
-  const Scalar _tmp4 = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0);
-  const Scalar _tmp5 = _tmp0 * sqrt_info(2, 1) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 0);
+  const Scalar _tmp0 = prior(2, 0) - value(2, 0);
+  const Scalar _tmp1 = prior(1, 0) - value(1, 0);
+  const Scalar _tmp2 = prior(0, 0) - value(0, 0);
+  const Scalar _tmp3 = _tmp0 * sqrt_info(0, 2) + _tmp1 * sqrt_info(0, 1) + _tmp2 * sqrt_info(0, 0);
+  const Scalar _tmp4 = _tmp0 * sqrt_info(1, 2) + _tmp1 * sqrt_info(1, 1) + _tmp2 * sqrt_info(1, 0);
+  const Scalar _tmp5 = _tmp0 * sqrt_info(2, 2) + _tmp1 * sqrt_info(2, 1) + _tmp2 * sqrt_info(2, 0);
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp3;
-    _res(1, 0) = _tmp4;
-    _res(2, 0) = _tmp5;
+    _res(0, 0) = -_tmp3;
+    _res(1, 0) = -_tmp4;
+    _res(2, 0) = -_tmp5;
   }
 
   if (jacobian != nullptr) {
@@ -93,9 +93,9 @@ void PriorFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& value,
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp3 * sqrt_info(0, 0) + _tmp4 * sqrt_info(1, 0) + _tmp5 * sqrt_info(2, 0);
-    _rhs(1, 0) = _tmp3 * sqrt_info(0, 1) + _tmp4 * sqrt_info(1, 1) + _tmp5 * sqrt_info(2, 1);
-    _rhs(2, 0) = _tmp3 * sqrt_info(0, 2) + _tmp4 * sqrt_info(1, 2) + _tmp5 * sqrt_info(2, 2);
+    _rhs(0, 0) = -_tmp3 * sqrt_info(0, 0) - _tmp4 * sqrt_info(1, 0) - _tmp5 * sqrt_info(2, 0);
+    _rhs(1, 0) = -_tmp3 * sqrt_info(0, 1) - _tmp4 * sqrt_info(1, 1) - _tmp5 * sqrt_info(2, 1);
+    _rhs(2, 0) = -_tmp3 * sqrt_info(0, 2) - _tmp4 * sqrt_info(1, 2) - _tmp5 * sqrt_info(2, 2);
   }
 }  // NOLINT(readability/fn_size)
 

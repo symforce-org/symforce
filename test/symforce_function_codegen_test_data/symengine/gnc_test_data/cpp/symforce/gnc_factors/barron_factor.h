@@ -34,66 +34,68 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
                   Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
                   Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
                   Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
-  // Total ops: 105
+  // Total ops: 114
 
   // Input arrays
 
   // Intermediate terms (45)
-  const Scalar _tmp0 = -std::sqrt(eps);
+  const Scalar _tmp0 = std::sqrt(eps);
   const Scalar _tmp1 = x(0, 0) - y(0, 0);
   const Scalar _tmp2 = std::pow(_tmp1, Scalar(2));
-  const Scalar _tmp3 = Scalar(1.0) / (eps - mu + 1);
+  const Scalar _tmp3 = Scalar(1.0) / (-eps + mu - 1);
   const Scalar _tmp4 = eps + std::fabs(_tmp3);
   const Scalar _tmp5 = Scalar(1.0) / (_tmp4);
   const Scalar _tmp6 = _tmp2 * _tmp5 + 1;
-  const Scalar _tmp7 = 2 - _tmp3;
-  const Scalar _tmp8 = _tmp7 + eps * (2 * std::min<Scalar>(0, (((_tmp7) > 0) - ((_tmp7) < 0))) + 1);
+  const Scalar _tmp7 = _tmp3 + 2;
+  const Scalar _tmp8 =
+      _tmp7 +
+      2 * eps * (std::min<Scalar>(0, (((_tmp7) > 0) - ((_tmp7) < 0))) + Scalar(1) / Scalar(2));
   const Scalar _tmp9 = (Scalar(1) / Scalar(2)) * _tmp8;
   const Scalar _tmp10 = 2 * _tmp4 / _tmp8;
   const Scalar _tmp11 = _tmp10 * (std::pow(_tmp6, _tmp9) - 1) + eps;
   const Scalar _tmp12 = std::sqrt(_tmp11);
-  const Scalar _tmp13 = _tmp0 + _tmp12;
+  const Scalar _tmp13 = _tmp0 - _tmp12;
   const Scalar _tmp14 = x(1, 0) - y(1, 0);
   const Scalar _tmp15 = std::pow(_tmp14, Scalar(2));
   const Scalar _tmp16 = _tmp15 * _tmp5 + 1;
   const Scalar _tmp17 = _tmp10 * (std::pow(_tmp16, _tmp9) - 1) + eps;
   const Scalar _tmp18 = std::sqrt(_tmp17);
-  const Scalar _tmp19 = _tmp0 + _tmp18;
+  const Scalar _tmp19 = _tmp0 - _tmp18;
   const Scalar _tmp20 = x(2, 0) - y(2, 0);
   const Scalar _tmp21 = std::pow(_tmp20, Scalar(2));
   const Scalar _tmp22 = _tmp21 * _tmp5 + 1;
   const Scalar _tmp23 = _tmp10 * (std::pow(_tmp22, _tmp9) - 1) + eps;
   const Scalar _tmp24 = std::sqrt(_tmp23);
-  const Scalar _tmp25 = _tmp0 + _tmp24;
+  const Scalar _tmp25 = _tmp0 - _tmp24;
   const Scalar _tmp26 = x(3, 0) - y(3, 0);
   const Scalar _tmp27 = std::pow(_tmp26, Scalar(2));
   const Scalar _tmp28 = _tmp27 * _tmp5 + 1;
   const Scalar _tmp29 = _tmp10 * (std::pow(_tmp28, _tmp9) - 1) + eps;
   const Scalar _tmp30 = std::sqrt(_tmp29);
-  const Scalar _tmp31 = _tmp0 + _tmp30;
+  const Scalar _tmp31 = _tmp0 - _tmp30;
   const Scalar _tmp32 = x(4, 0) - y(4, 0);
   const Scalar _tmp33 = std::pow(_tmp32, Scalar(2));
   const Scalar _tmp34 = _tmp33 * _tmp5 + 1;
   const Scalar _tmp35 = _tmp10 * (std::pow(_tmp34, _tmp9) - 1) + eps;
   const Scalar _tmp36 = std::sqrt(_tmp35);
-  const Scalar _tmp37 = _tmp0 + _tmp36;
-  const Scalar _tmp38 = _tmp9 - 1;
-  const Scalar _tmp39 = _tmp1 * std::pow(_tmp6, _tmp38) / _tmp12;
-  const Scalar _tmp40 = _tmp14 * std::pow(_tmp16, _tmp38) / _tmp18;
-  const Scalar _tmp41 = _tmp20 * std::pow(_tmp22, _tmp38) / _tmp24;
-  const Scalar _tmp42 = _tmp26 * std::pow(_tmp28, _tmp38) / _tmp30;
-  const Scalar _tmp43 = _tmp32 * std::pow(_tmp34, _tmp38) / _tmp36;
-  const Scalar _tmp44 = _tmp8 - 2;
+  const Scalar _tmp37 = _tmp0 - _tmp36;
+  const Scalar _tmp38 = _tmp8 - 2;
+  const Scalar _tmp39 = (Scalar(1) / Scalar(2)) * _tmp38;
+  const Scalar _tmp40 = _tmp1 * std::pow(_tmp6, _tmp39) / _tmp12;
+  const Scalar _tmp41 = _tmp14 * std::pow(_tmp16, _tmp39) / _tmp18;
+  const Scalar _tmp42 = _tmp20 * std::pow(_tmp22, _tmp39) / _tmp24;
+  const Scalar _tmp43 = _tmp26 * std::pow(_tmp28, _tmp39) / _tmp30;
+  const Scalar _tmp44 = _tmp32 * std::pow(_tmp34, _tmp39) / _tmp36;
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 5, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp13;
-    _res(1, 0) = _tmp19;
-    _res(2, 0) = _tmp25;
-    _res(3, 0) = _tmp31;
-    _res(4, 0) = _tmp37;
+    _res(0, 0) = -_tmp13;
+    _res(1, 0) = -_tmp19;
+    _res(2, 0) = -_tmp25;
+    _res(3, 0) = -_tmp31;
+    _res(4, 0) = -_tmp37;
   }
 
   if (jacobian != nullptr) {
@@ -101,11 +103,11 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
 
     _jacobian.setZero();
 
-    _jacobian(0, 0) = _tmp39;
-    _jacobian(1, 1) = _tmp40;
-    _jacobian(2, 2) = _tmp41;
-    _jacobian(3, 3) = _tmp42;
-    _jacobian(4, 4) = _tmp43;
+    _jacobian(0, 0) = _tmp40;
+    _jacobian(1, 1) = _tmp41;
+    _jacobian(2, 2) = _tmp42;
+    _jacobian(3, 3) = _tmp43;
+    _jacobian(4, 4) = _tmp44;
   }
 
   if (hessian != nullptr) {
@@ -113,21 +115,21 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
 
     _hessian.setZero();
 
-    _hessian(0, 0) = _tmp2 * std::pow(_tmp6, _tmp44) / _tmp11;
-    _hessian(1, 1) = _tmp15 * std::pow(_tmp16, _tmp44) / _tmp17;
-    _hessian(2, 2) = _tmp21 * std::pow(_tmp22, _tmp44) / _tmp23;
-    _hessian(3, 3) = _tmp27 * std::pow(_tmp28, _tmp44) / _tmp29;
-    _hessian(4, 4) = _tmp33 * std::pow(_tmp34, _tmp44) / _tmp35;
+    _hessian(0, 0) = _tmp2 * std::pow(_tmp6, _tmp38) / _tmp11;
+    _hessian(1, 1) = _tmp15 * std::pow(_tmp16, _tmp38) / _tmp17;
+    _hessian(2, 2) = _tmp21 * std::pow(_tmp22, _tmp38) / _tmp23;
+    _hessian(3, 3) = _tmp27 * std::pow(_tmp28, _tmp38) / _tmp29;
+    _hessian(4, 4) = _tmp33 * std::pow(_tmp34, _tmp38) / _tmp35;
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 5, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp13 * _tmp39;
-    _rhs(1, 0) = _tmp19 * _tmp40;
-    _rhs(2, 0) = _tmp25 * _tmp41;
-    _rhs(3, 0) = _tmp31 * _tmp42;
-    _rhs(4, 0) = _tmp37 * _tmp43;
+    _rhs(0, 0) = -_tmp13 * _tmp40;
+    _rhs(1, 0) = -_tmp19 * _tmp41;
+    _rhs(2, 0) = -_tmp25 * _tmp42;
+    _rhs(3, 0) = -_tmp31 * _tmp43;
+    _rhs(4, 0) = -_tmp37 * _tmp44;
   }
 }  // NOLINT(readability/fn_size)
 

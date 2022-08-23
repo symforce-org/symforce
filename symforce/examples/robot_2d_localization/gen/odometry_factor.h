@@ -25,20 +25,20 @@ void OdometryFactor(const sym::Pose2<Scalar>& pose_a, const sym::Pose2<Scalar>& 
                     Eigen::Matrix<Scalar, 1, 6>* const jacobian = nullptr,
                     Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                     Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 25
+  // Total ops: 26
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _pose_a = pose_a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _pose_b = pose_b.Data();
 
   // Intermediate terms (17)
-  const Scalar _tmp0 = -_pose_a[3] + _pose_b[3];
+  const Scalar _tmp0 = _pose_a[3] - _pose_b[3];
   const Scalar _tmp1 = std::pow(_tmp0, Scalar(2));
-  const Scalar _tmp2 = -_pose_a[2] + _pose_b[2];
+  const Scalar _tmp2 = _pose_a[2] - _pose_b[2];
   const Scalar _tmp3 = std::pow(_tmp2, Scalar(2));
   const Scalar _tmp4 = _tmp1 + _tmp3 + epsilon;
   const Scalar _tmp5 = std::sqrt(_tmp4);
-  const Scalar _tmp6 = _tmp5 - dist;
+  const Scalar _tmp6 = -_tmp5 + dist;
   const Scalar _tmp7 = Scalar(1.0) / (_tmp5);
   const Scalar _tmp8 = _tmp2 * _tmp7;
   const Scalar _tmp9 = _tmp0 * _tmp7;
@@ -54,18 +54,18 @@ void OdometryFactor(const sym::Pose2<Scalar>& pose_a, const sym::Pose2<Scalar>& 
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 1, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp6;
+    _res(0, 0) = -_tmp6;
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 1, 6>& _jacobian = (*jacobian);
 
     _jacobian(0, 0) = 0;
-    _jacobian(0, 1) = -_tmp8;
-    _jacobian(0, 2) = -_tmp9;
+    _jacobian(0, 1) = _tmp8;
+    _jacobian(0, 2) = _tmp9;
     _jacobian(0, 3) = 0;
-    _jacobian(0, 4) = _tmp8;
-    _jacobian(0, 5) = _tmp9;
+    _jacobian(0, 4) = -_tmp8;
+    _jacobian(0, 5) = -_tmp9;
   }
 
   if (hessian != nullptr) {
