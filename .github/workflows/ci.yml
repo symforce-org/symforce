@@ -105,6 +105,10 @@ jobs:
           ${{ matrix.python }} test/symforce_requirements_test.py --update
           make -j2 test
 
+      # Upload the docs as an artifact
+      # To view, download the `docs` artifact from the build and matrix entry you're interested in
+      # (probably any is good, assuming they all pass)
+      # Unzip to a directory and run `npx http-server` in that directory
       - name: Upload Generated Docs
         uses: actions/upload-artifact@v3
         with:
