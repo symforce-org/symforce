@@ -575,6 +575,7 @@ class Codegen:
         # Ensure the previous codegen has one output
         assert len(list(self.outputs.keys())) == 1
         result_name, result = list(self.outputs.items())[0]
+        result = ops.StorageOps.from_storage(result, [sf.factor_coefs(x) for x in ops.StorageOps.to_storage(result)])
 
         # Get docstring
         docstring_lines = self.docstring.rstrip().split("\n")
@@ -591,8 +592,10 @@ class Codegen:
         if custom_jacobian is not None:
             jacobian = custom_jacobian
         else:
+            sub_jacobians = jacobian_helpers.tangent_jacobians(result, input_args)
+            factored_sub_jacobians = [ops.StorageOps.from_storage(J, [sf.factor_coefs(x) for x in ops.StorageOps.to_storage(J)]) for J in sub_jacobians]
             jacobian = sf.Matrix.block_matrix(
-                [jacobian_helpers.tangent_jacobians(result, input_args)]
+                [factored_sub_jacobians]
             )
 
         docstring_args = [
