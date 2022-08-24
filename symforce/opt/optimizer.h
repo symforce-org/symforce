@@ -229,6 +229,11 @@ class Optimizer {
    */
   void UpdateParams(const optimizer_params_t& params);
 
+  /**
+   * Get the params used by the nonlinear solver
+   */
+  const optimizer_params_t& Params() const;
+
  protected:
   /**
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations

@@ -190,6 +190,11 @@ void Optimizer<ScalarType, NonlinearSolverType>::UpdateParams(const optimizer_pa
   nonlinear_solver_.UpdateParams(params);
 }
 
+template <typename ScalarType, typename NonlinearSolverType>
+const optimizer_params_t& Optimizer<ScalarType, NonlinearSolverType>::Params() const {
+  return nonlinear_solver_.Params();
+}
+
 // ----------------------------------------------------------------------------
 // Protected methods
 // ----------------------------------------------------------------------------
