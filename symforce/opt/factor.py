@@ -131,16 +131,16 @@ class Factor:
             codegen_obj: Codegen object used to generate the numerical factor.
             custom_jacobian_func: Custom jacobian function as described in `__init__`.
         """
-        if len(keys) != len(codegen_obj.inputs.keys_recursive()):
-            raise ValueError(
-                "There must be a key for each input to the residual. Expected"
-                + f" {len(codegen_obj.inputs.keys_recursive())} keys but got {len(keys)} keys."
-            )
-
         if len(codegen_obj.inputs.keys()) != len(codegen_obj.inputs.keys_recursive()):
             raise ValueError(
                 "Only flat inputs are currently supported (i.e. inputs should not"
                 + " contain nested Values objects or Dataclasses or Sequences."
+            )
+
+        if len(keys) != len(codegen_obj.inputs.keys_recursive()):
+            raise ValueError(
+                "There must be a key for each input to the residual. Expected"
+                + f" {len(codegen_obj.inputs.keys_recursive())} keys but got {len(keys)} keys."
             )
 
         self.keys = keys
