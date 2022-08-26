@@ -121,10 +121,12 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         sf.Pose2: [
             codegen_mul(sf.Pose2, sf.Vector2),
             Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),
+            Codegen.function(func=sf.Pose2.to_homogenous_matrix, config=config),
         ],
         sf.Pose3: [
             codegen_mul(sf.Pose3, sf.Vector3),
             Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
+            Codegen.function(func=sf.Pose3.to_homogenous_matrix, config=config),
         ],
     }
 

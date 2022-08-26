@@ -91,6 +91,10 @@ class Pose2 {
     return Pose2(Rot2<Scalar>::Random(gen), sym::StorageOps<Vector2>::Random(gen));
   }
 
+  Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry> ToTransform() const {
+    return Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
@@ -98,6 +102,8 @@ class Pose2 {
   Vector2 Compose(const Vector2& right) const;
 
   Vector2 InverseCompose(const Vector2& point) const;
+
+  Eigen::Matrix<Scalar, 3, 3> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept

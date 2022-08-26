@@ -96,6 +96,10 @@ class Pose3 {
     return Pose3(rot3, vec3);
   }
 
+  Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry> ToTransform() const {
+    return Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
@@ -103,6 +107,8 @@ class Pose3 {
   Vector3 Compose(const Vector3& right) const;
 
   Vector3 InverseCompose(const Vector3& point) const;
+
+  Eigen::Matrix<Scalar, 4, 4> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept

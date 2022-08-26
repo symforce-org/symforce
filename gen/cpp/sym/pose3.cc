@@ -103,6 +103,49 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
   return _res;
 }
 
+template <typename Scalar>
+Eigen::Matrix<Scalar, 4, 4> sym::Pose3<Scalar>::ToHomogenousMatrix() const {
+  // Total ops: 28
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (11)
+  const Scalar _tmp0 = -2 * std::pow(_self[1], Scalar(2));
+  const Scalar _tmp1 = 1 - 2 * std::pow(_self[2], Scalar(2));
+  const Scalar _tmp2 = 2 * _self[2] * _self[3];
+  const Scalar _tmp3 = 2 * _self[1];
+  const Scalar _tmp4 = _self[0] * _tmp3;
+  const Scalar _tmp5 = 2 * _self[0];
+  const Scalar _tmp6 = _self[2] * _tmp5;
+  const Scalar _tmp7 = _self[3] * _tmp3;
+  const Scalar _tmp8 = -2 * std::pow(_self[0], Scalar(2));
+  const Scalar _tmp9 = _self[3] * _tmp5;
+  const Scalar _tmp10 = _self[2] * _tmp3;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 4> _res;
+
+  _res(0, 0) = _tmp0 + _tmp1;
+  _res(1, 0) = _tmp2 + _tmp4;
+  _res(2, 0) = _tmp6 - _tmp7;
+  _res(3, 0) = 0;
+  _res(0, 1) = -_tmp2 + _tmp4;
+  _res(1, 1) = _tmp1 + _tmp8;
+  _res(2, 1) = _tmp10 + _tmp9;
+  _res(3, 1) = 0;
+  _res(0, 2) = _tmp6 + _tmp7;
+  _res(1, 2) = _tmp10 - _tmp9;
+  _res(2, 2) = _tmp0 + _tmp8 + 1;
+  _res(3, 2) = 0;
+  _res(0, 3) = _self[4];
+  _res(1, 3) = _self[5];
+  _res(2, 3) = _self[6];
+  _res(3, 3) = 1;
+
+  return _res;
+}
+
 // Explicit instantiation
 template class sym::Pose3<double>;
 template class sym::Pose3<float>;

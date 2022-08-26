@@ -25,3 +25,7 @@
   static Pose2 Random(Generator& gen) {
     return Pose2(Rot2<Scalar>::Random(gen), sym::StorageOps<Vector2>::Random(gen));
   }
+
+  Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry> ToTransform() const {
+    return Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
+  }

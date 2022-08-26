@@ -66,6 +66,31 @@ Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::InverseCompose(
   return _res;
 }
 
+template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 3> sym::Pose2<Scalar>::ToHomogenousMatrix() const {
+  // Total ops: 1
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 3, 3> _res;
+
+  _res(0, 0) = _self[0];
+  _res(1, 0) = _self[1];
+  _res(2, 0) = 0;
+  _res(0, 1) = -_self[1];
+  _res(1, 1) = _self[0];
+  _res(2, 1) = 0;
+  _res(0, 2) = _self[2];
+  _res(1, 2) = _self[3];
+  _res(2, 2) = 1;
+
+  return _res;
+}
+
 // Explicit instantiation
 template class sym::Pose2<double>;
 template class sym::Pose2<float>;
