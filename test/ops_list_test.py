@@ -18,7 +18,7 @@ class LieGroupListTest(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> T.List:
-        return [1, 2]
+        return [1.0, 2.0]
 
 
 if __name__ == "__main__":
