@@ -350,9 +350,12 @@ def get_formatted_list(
             formatted_symbols = [sf.Symbol(key)]
             flattened_value = [value]
         elif issubclass(arg_cls, sf.Matrix):
-            if config.matrix_is_1d:
-                # TODO(nathan): Not sure this works for 2D matrices. Get rid of this.
-                formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+            if value.shape[1] == 1:
+                # Pass in None as the second index for 1D matrices, so the per-backend config can
+                # decide whether to use 1D or 2D indexing, depending on the language.
+                formatted_symbols = []
+                for i in range(value.shape[0]):
+                    formatted_symbols.append(sf.Symbol(config.format_matrix_accessor(key, i, None)))
             else:
                 # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
                 # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
@@ -361,7 +364,9 @@ def get_formatted_list(
                 formatted_symbols = []
                 for j in range(value.shape[1]):
                     for i in range(value.shape[0]):
-                        formatted_symbols.append(sf.Symbol(f"{key}({i}, {j})"))
+                        formatted_symbols.append(
+                            sf.Symbol(config.format_matrix_accessor(key, i, j))
+                        )
 
             flattened_value = ops.StorageOps.to_storage(value)
 

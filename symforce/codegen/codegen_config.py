@@ -77,3 +77,12 @@ class CodegenConfig:
         Format data for accessing a data array in code.
         """
         return f"{prefix}.data[{index}]"
+
+    @staticmethod
+    @abstractmethod
+    def format_matrix_accessor(key: str, i: int, j: int = None) -> str:
+        """
+        Format accessor for 2D matrices. If j is None, it is a 1D vector type, which for some
+        languages is accessed with 2D indices and in some with 1D.
+        """
+        pass

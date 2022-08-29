@@ -72,3 +72,9 @@ class CppConfig(CodegenConfig):
     @staticmethod
     def format_data_accessor(prefix: str, index: int) -> str:
         return f"{prefix}.Data()[{index}]"
+
+    @staticmethod
+    def format_matrix_accessor(key: str, i: int, j: int = None) -> str:
+        if j is None:
+            return f"{key}({i}, {0})"
+        return f"{key}({i}, {j})"
