@@ -25,6 +25,15 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
     def element(cls) -> sf.Pose3:
         return sf.Pose3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
 
+    def test_pose3_accessors(self) -> None:
+        """
+        Tests additional accessors
+        """
+        element = self.element()
+
+        self.assertEqual(element.R, element.rotation())
+        self.assertEqual(element.t, element.position())
+
     def pose3_operations(self, a: sf.Pose3, b: sf.Pose3) -> None:
         """
         Tests Pose3 operations

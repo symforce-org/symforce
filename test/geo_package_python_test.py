@@ -213,6 +213,10 @@ class GeoPackageTest(unittest.TestCase):
         vector_as_element = geo_class(t=vector.tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
+        # Test position/rotation accessors
+        np.testing.assert_equal(element.position(), element.t)
+        self.assertEqual(element.rotation(), element.R)
+
     def test_storage_ops_Rot3(self):
         # type: () -> None
         """
@@ -392,6 +396,10 @@ class GeoPackageTest(unittest.TestCase):
         vector = np.random.normal(size=3)
         vector_as_element = geo_class(t=vector.tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
+
+        # Test position/rotation accessors
+        np.testing.assert_equal(element.position(), element.t)
+        self.assertEqual(element.rotation(), element.R)
 
 
 if __name__ == "__main__":

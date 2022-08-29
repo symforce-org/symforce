@@ -126,6 +126,10 @@ class GeoPackageTest(unittest.TestCase):
         {% else %}
         vector_as_element = geo_class(t=vector.tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
+
+        # Test position/rotation accessors
+        np.testing.assert_equal(element.position(), element.t)
+        self.assertEqual(element.rotation(), element.R)
         {% endif %}
 
     {% endfor %}

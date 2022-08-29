@@ -21,6 +21,22 @@
         # type: () -> np.ndarray
         return np.array(self.data[4:7])
 
+    @property
+    def R(self):
+        # type: () -> Rot3
+        """
+        Accessor for the rotation component, equivalent to self.rotation()
+        """
+        return self.rotation()
+
+    @property
+    def t(self):
+        # type: () -> np.ndarray
+        """
+        Accessor for the position component, equivalent to self.position()
+        """
+        return self.position()
+
     def _apply_to_vector(self, v):
         # type: (np.ndarray) -> np.ndarray
         v_reshaped = np.reshape(v, (3,))
