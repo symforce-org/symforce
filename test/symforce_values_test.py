@@ -505,6 +505,11 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         self.assertEqual(v_tuple["pair"], v_after["pair"])
 
+        x = sf.Symbol("x")
+        v_tuple["pair"] = (x, x ** 2)
+        v_after = Values.from_storage_index(v_tuple.to_storage(), v_tuple.index())
+        self.assertEqual(v_tuple["pair"], v_after["pair"])
+
     def test_from_storage_index(self) -> None:
         """
         Tests:
