@@ -602,6 +602,10 @@ def _flatten_storage_type_subs(
         else:
             error_msg = f"value type {type(value)} is not an instance of key type {type(key)}"
             assert isinstance(value, type(key)) or isinstance(key, type(value)), error_msg
+            if len(new_keys) != len(new_values):
+                raise ValueError(
+                    f"number of keys ({len(new_keys)}) do not match number of values ({len(new_values)})"
+                )
             for new_key, new_value in zip(new_keys, new_values):
                 new_subs_dict[new_key] = new_value
     return new_subs_dict
