@@ -387,7 +387,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
     set(git_stampfile ${CMAKE_CURRENT_BINARY_DIR}/${project_name}.stamp)
     set(git_check_rulename ${project_name}_check_git_clean)
     add_custom_target(${git_check_rulename}
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
+      COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
                   --path_to_check ${PROJECT_SOURCE_DIR}/third_party/${project_name}
                   --stamp_file ${git_stampfile}
                   --cmake_stampdir="${cmake_stampdir}"
