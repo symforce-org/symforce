@@ -1,23 +1,18 @@
 # aclint: py2 py3
 # mypy: allow-untyped-defs
 from __future__ import absolute_import
-import typing as T
 
 import argparse  # pylint: disable=unused-import
 import copy
 import os
+import typing as T
 
-from six.moves import range  # pylint: disable=redefined-builtin
 import six
-
+from six.moves import range  # pylint: disable=redefined-builtin
 from skymarshal import syntax_tree
-from skymarshal.emit_helpers import BaseBuilder
-from skymarshal.emit_helpers import Code
-from skymarshal.emit_helpers import EnumBuilder
-from skymarshal.emit_helpers import render
-from skymarshal.emit_helpers import StructBuilder
-from skymarshal.syntax_tree import ArrayMember
+from skymarshal.emit_helpers import BaseBuilder, Code, EnumBuilder, StructBuilder, render
 from skymarshal.language_plugin import SkymarshalLanguage
+from skymarshal.syntax_tree import ArrayMember
 
 TYPE_MAP = {
     "string": "std::string",

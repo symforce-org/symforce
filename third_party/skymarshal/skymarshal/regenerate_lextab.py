@@ -14,7 +14,6 @@ import types
 import typing as T
 from enum import Enum
 
-
 # try to get build workspace dir if it exists, otherwise just use paths relative to this file
 if os.environ.get("SKYMARSHAL_TEST"):
     SKYMARSHAL_DIR = os.path.dirname(__file__)

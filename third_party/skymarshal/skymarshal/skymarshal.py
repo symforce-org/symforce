@@ -3,15 +3,13 @@
 """
 Parse lcm defintion files and generate bindings in different languages.
 """
-from __future__ import print_function
-from __future__ import absolute_import
-
-import typing as T
+from __future__ import absolute_import, print_function
 
 import argparse
-import six
 import os
+import typing as T
 
+import six
 from skymarshal.language_plugin import SkymarshalLanguage  # pylint: disable=unused-import
 from skymarshal.package_map import parse_lcmtypes
 
