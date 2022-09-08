@@ -163,6 +163,8 @@ class Factor:
             optimized_keys: Keys which we compute the linearization of the residual with respect to.
             output_dir: Where the generated linearization function will be output.
             namespace: Namespace of the generated linearization function.
+            sparse_linearization: Whether the generated linearization function should use sparse
+                matricies for the jacobian and hessian approximation
 
         Returns:
             Dict containing locations where the code was generated (e.g. "output_dir" and
@@ -199,6 +201,7 @@ class Factor:
         optimized_keys: T.Sequence[str],
         output_dir: T.Openable = None,
         namespace: str = None,
+        sparse_linearization: bool = False,
     ) -> NumericFactor:
         """
         Constructs a NumericFactor from this Factor, including generating a linearization
@@ -208,6 +211,8 @@ class Factor:
             optimized_keys: Keys which we compute the linearization of the residual with respect to.
             output_dir: Where the generated linearization function will be output
             namespace: Namespace of the generated linearization function
+            sparse_linearization: Whether the generated linearization function should use sparse
+                matricies for the jacobian and hessian approximation
         """
         if namespace is None:
             namespace = f"sym_{uuid.uuid4().hex}"
@@ -239,7 +244,7 @@ class Factor:
             )
 
         # Compute the linearization of the residual and generate code
-        output_data = self.generate(optimized_keys, output_dir, namespace)
+        output_data = self.generate(optimized_keys, output_dir, namespace, sparse_linearization)
 
         # Load the generated function
         numeric_factor = NumericFactor.from_file_python(
