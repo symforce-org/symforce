@@ -121,7 +121,12 @@ def _find_symengine() -> ModuleType:
     # For mypy: https://github.com/python/typeshed/issues/2793
     assert isinstance(spec.loader, importlib.abc.Loader)
 
-    spec.loader.exec_module(symengine)
+    try:
+        spec.loader.exec_module(symengine)
+    except:  # pylint: disable=bare-except
+        # If executing the module fails for any reason, it shouldn't be in `sys.modules`
+        del sys.modules["symengine"]
+        raise
 
     return symengine
 
