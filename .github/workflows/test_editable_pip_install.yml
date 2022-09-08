@@ -1,0 +1,68 @@
+name: Test Editable Pip Install
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  editable_install:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, macos-latest]
+        pip_version: [22.2.2]
+        setuptools_version: [65.3.0]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: install dev_requirements.txt
+        run: python3 -m pip install -r dev_requirements.txt
+
+      - name: Upgrade versions
+        run: |
+          python3 -m pip install pip==${{ matrix.pip_version }}
+          python3 -m pip install setuptools==${{ matrix.setuptools_version }}
+
+      - name: editable install
+        run: python3 -m pip install -e .
+
+      - name: Set expected install locations for ubuntu
+        if: ${{ matrix.os == 'ubuntu-20.04' }}
+        run: |
+          echo CC_SYM_LOCATION=/home/runner/work/symforce/symforce/cc_sym.cpython-38-x86_64-linux-gnu.so >> $GITHUB_ENV
+          echo SYM_LOCATION=/home/runner/.local/lib/python3.8/site-packages/sym/__init__.py >> $GITHUB_ENV
+          echo SKYMARSHAL_LOCATION=/home/runner/.local/lib/python3.8/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
+          echo SYMENGINE_LOCATION=/home/runner/work/symforce/symforce/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
+          echo SF_SYMPY_LOCATION=/home/runner/work/symforce/symforce/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
+
+      - name: Set expected install locations for macos
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          echo CC_SYM_LOCATION=/Users/runner/work/symforce/symforce/cc_sym.cpython-310-darwin.so >> $GITHUB_ENV
+          echo SYM_LOCATION=/usr/local/lib/python3.10/site-packages/sym/__init__.py >> $GITHUB_ENV
+          echo SKYMARSHAL_LOCATION=/usr/local/lib/python3.10/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
+          echo SYMENGINE_LOCATION=/usr/local/lib/python3.10/site-packages/symengine/__init__.py >> $GITHUB_ENV
+          echo SF_SYMPY_LOCATION=/usr/local/lib/python3.10/site-packages/symengine/__init__.py >> $GITHUB_ENV
+
+      - name: Test cc_sym is installed in expected location
+        run: python3 -c "import cc_sym; assert cc_sym.__file__ == '$CC_SYM_LOCATION'"
+
+      - name: Test sym is installed in expected location
+        run: python3 -c "import sym; assert sym.__file__ == '$SYM_LOCATION'"
+
+      - name: Test skymarshal is installed in expected location
+        run: python3 -c "import skymarshal; assert skymarshal.__file__ == '$SKYMARSHAL_LOCATION'"
+
+      - name: Test symengine is installed in expected location
+        run: python3 -c "import symengine; assert symengine.__file__ == '$SYMENGINE_LOCATION'"
+
+      - name: Test symforce.symbolic.sympy returns a package from the expected location
+        run: python3 -c "import symforce.symbolic as sf; assert sf.sympy.__file__ == '$SF_SYMPY_LOCATION'"
+
+      - name: Check that symengine is default SymForce backend
+        run: python3 -c 'import symforce; assert(symforce.get_symbolic_api() == "symengine")'

@@ -119,7 +119,7 @@ struct sym_type_caster {
         py::module_::import("sym").attr(handle_sym_type_name<T>::name.text).attr("from_storage");
     py::object result = from_storage(list);
     result.inc_ref();
-    return result;
+    return std::move(result);
   }
 };
 
