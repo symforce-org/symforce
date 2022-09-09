@@ -387,6 +387,7 @@ setup(
             "coverage",
             "jinja2~=3.0.3",
             "mypy==0.910",
+            "numba",
             "pip-tools",
             "pybind11-stubgen",
             "pylint",
