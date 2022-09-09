@@ -63,11 +63,12 @@ find_package(tl-optional QUIET)
 if (NOT tl_optional_FOUND)
   message(STATUS "tl::optional not found, adding with FetchContent")
   function(add_tl_optional)
-    set(OPTIONAL_ENABLE_TESTS OFF CACHE INTERNAL "tl::optional shouldn't build tests")
+    set(OPTIONAL_BUILD_TESTS OFF CACHE INTERNAL "tl::optional shouldn't build tests")
     FetchContent_Declare(
       tl_optional
       GIT_REPOSITORY https://github.com/TartanLlama/optional
-      GIT_TAG v1.0.0
+      # NOTE: This pulls in TartanLlama/optional#45, which is not yet in any tagged releases.
+      GIT_TAG c28fcf74d207fc667c4ed3dbae4c251ea551c8c1
       GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(tl_optional)
