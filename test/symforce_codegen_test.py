@@ -241,6 +241,29 @@ class SymforceCodegenTest(TestCase):
         self.assertEqual(pkg.matrix_order().shape, m23.SHAPE)
         self.assertStorageNear(pkg.matrix_order(), m23)
 
+    def test_matrix_accessor_python(self) -> None:
+        """
+        Tests that matrices and vectors can be indexed properly.
+        """
+
+        def left_multiply(m: sf.M22, v: sf.V2) -> sf.V2:
+            return T.cast(sf.V2, m * v)
+
+        output_dir = self.make_output_dir("sf_test_matrix_accessor_python")
+        namespace = "test_accessor"
+        generated_files = codegen.Codegen.function(
+            func=left_multiply, config=codegen.PythonConfig()
+        ).generate_function(namespace=namespace, output_dir=output_dir)
+
+        pkg = codegen_util.load_generated_package(namespace, generated_files.function_dir)
+
+        # NOTE(brad): If matrix indexing is incorrect (for example,
+        # we use m[3] instead of m[1, 1], or v[1, 0] instead of v[1]), then the
+        # function will raise an exception.
+        m = np.random.random((2, 2))
+        v = np.random.random(2)
+        pkg.left_multiply(m, v)
+
     def test_sparse_output_python(self) -> None:
         """
         Tests that sparse matrices are correctly generated in python when sparse_matrices

@@ -59,71 +59,71 @@ void CodegenCppTest(
 
   // Intermediate terms (66)
   const Scalar _tmp0 = std::pow(x, Scalar(2));
-  const Scalar _tmp1 = 2 * values_vec[0].rot[3];
-  const Scalar _tmp2 = 2 * values_vec[0].rot_vec[0][3];
-  const Scalar _tmp3 = 2 * values_vec[0].rot_vec[1][3];
-  const Scalar _tmp4 = 2 * values_vec[0].rot_vec[2][3];
-  const Scalar _tmp5 = 2 * values_vec[0].list_of_lists[0][0][3];
-  const Scalar _tmp6 = 2 * values_vec[0].list_of_lists[0][1][3];
-  const Scalar _tmp7 = 2 * values_vec[0].list_of_lists[0][2][3];
-  const Scalar _tmp8 = 2 * values_vec[0].list_of_lists[1][0][3];
-  const Scalar _tmp9 = 2 * values_vec[0].list_of_lists[1][1][3];
-  const Scalar _tmp10 = 2 * values_vec[0].list_of_lists[1][2][3];
-  const Scalar _tmp11 = 2 * values_vec[0].list_of_lists[2][0][3];
-  const Scalar _tmp12 = 2 * values_vec[0].list_of_lists[2][1][3];
-  const Scalar _tmp13 = 2 * values_vec[0].list_of_lists[2][2][3];
-  const Scalar _tmp14 = 2 * values_vec[1].rot[3];
-  const Scalar _tmp15 = 2 * values_vec[1].rot_vec[0][3];
-  const Scalar _tmp16 = 2 * values_vec[1].rot_vec[1][3];
-  const Scalar _tmp17 = 2 * values_vec[1].rot_vec[2][3];
-  const Scalar _tmp18 = 2 * values_vec[1].list_of_lists[0][0][3];
-  const Scalar _tmp19 = 2 * values_vec[1].list_of_lists[0][1][3];
-  const Scalar _tmp20 = 2 * values_vec[1].list_of_lists[0][2][3];
-  const Scalar _tmp21 = 2 * values_vec[1].list_of_lists[1][0][3];
-  const Scalar _tmp22 = 2 * values_vec[1].list_of_lists[1][1][3];
-  const Scalar _tmp23 = 2 * values_vec[1].list_of_lists[1][2][3];
-  const Scalar _tmp24 = 2 * values_vec[1].list_of_lists[2][0][3];
-  const Scalar _tmp25 = 2 * values_vec[1].list_of_lists[2][1][3];
-  const Scalar _tmp26 = 2 * values_vec[1].list_of_lists[2][2][3];
-  const Scalar _tmp27 = 2 * values_vec[2].rot[3];
-  const Scalar _tmp28 = 2 * values_vec[2].rot_vec[0][3];
-  const Scalar _tmp29 = 2 * values_vec[2].rot_vec[1][3];
-  const Scalar _tmp30 = 2 * values_vec[2].rot_vec[2][3];
-  const Scalar _tmp31 = 2 * values_vec[2].list_of_lists[0][0][3];
-  const Scalar _tmp32 = 2 * values_vec[2].list_of_lists[0][1][3];
-  const Scalar _tmp33 = 2 * values_vec[2].list_of_lists[0][2][3];
-  const Scalar _tmp34 = 2 * values_vec[2].list_of_lists[1][0][3];
-  const Scalar _tmp35 = 2 * values_vec[2].list_of_lists[1][1][3];
-  const Scalar _tmp36 = 2 * values_vec[2].list_of_lists[1][2][3];
-  const Scalar _tmp37 = 2 * values_vec[2].list_of_lists[2][0][3];
-  const Scalar _tmp38 = 2 * values_vec[2].list_of_lists[2][1][3];
-  const Scalar _tmp39 = 2 * values_vec[2].list_of_lists[2][2][3];
-  const Scalar _tmp40 = 2 * values_vec_2D[0][0].rot[3];
-  const Scalar _tmp41 = 2 * values_vec_2D[0][0].rot_vec[0][3];
-  const Scalar _tmp42 = 2 * values_vec_2D[0][0].rot_vec[1][3];
-  const Scalar _tmp43 = 2 * values_vec_2D[0][0].rot_vec[2][3];
-  const Scalar _tmp44 = 2 * values_vec_2D[0][0].list_of_lists[0][0][3];
-  const Scalar _tmp45 = 2 * values_vec_2D[0][0].list_of_lists[0][1][3];
-  const Scalar _tmp46 = 2 * values_vec_2D[0][0].list_of_lists[0][2][3];
-  const Scalar _tmp47 = 2 * values_vec_2D[0][0].list_of_lists[1][0][3];
-  const Scalar _tmp48 = 2 * values_vec_2D[0][0].list_of_lists[1][1][3];
-  const Scalar _tmp49 = 2 * values_vec_2D[0][0].list_of_lists[1][2][3];
-  const Scalar _tmp50 = 2 * values_vec_2D[0][0].list_of_lists[2][0][3];
-  const Scalar _tmp51 = 2 * values_vec_2D[0][0].list_of_lists[2][1][3];
-  const Scalar _tmp52 = 2 * values_vec_2D[0][0].list_of_lists[2][2][3];
-  const Scalar _tmp53 = 2 * values_vec_2D[1][0].rot[3];
-  const Scalar _tmp54 = 2 * values_vec_2D[1][0].rot_vec[0][3];
-  const Scalar _tmp55 = 2 * values_vec_2D[1][0].rot_vec[1][3];
-  const Scalar _tmp56 = 2 * values_vec_2D[1][0].rot_vec[2][3];
-  const Scalar _tmp57 = 2 * values_vec_2D[1][0].list_of_lists[0][0][3];
-  const Scalar _tmp58 = 2 * values_vec_2D[1][0].list_of_lists[0][1][3];
-  const Scalar _tmp59 = 2 * values_vec_2D[1][0].list_of_lists[0][2][3];
-  const Scalar _tmp60 = 2 * values_vec_2D[1][0].list_of_lists[1][0][3];
-  const Scalar _tmp61 = 2 * values_vec_2D[1][0].list_of_lists[1][1][3];
-  const Scalar _tmp62 = 2 * values_vec_2D[1][0].list_of_lists[1][2][3];
-  const Scalar _tmp63 = 2 * values_vec_2D[1][0].list_of_lists[2][0][3];
-  const Scalar _tmp64 = 2 * values_vec_2D[1][0].list_of_lists[2][1][3];
-  const Scalar _tmp65 = 2 * values_vec_2D[1][0].list_of_lists[2][2][3];
+  const Scalar _tmp1 = 2 * values_vec[0].rot.data()[3];
+  const Scalar _tmp2 = 2 * values_vec[0].rot_vec[0].data()[3];
+  const Scalar _tmp3 = 2 * values_vec[0].rot_vec[1].data()[3];
+  const Scalar _tmp4 = 2 * values_vec[0].rot_vec[2].data()[3];
+  const Scalar _tmp5 = 2 * values_vec[0].list_of_lists[0][0].data()[3];
+  const Scalar _tmp6 = 2 * values_vec[0].list_of_lists[0][1].data()[3];
+  const Scalar _tmp7 = 2 * values_vec[0].list_of_lists[0][2].data()[3];
+  const Scalar _tmp8 = 2 * values_vec[0].list_of_lists[1][0].data()[3];
+  const Scalar _tmp9 = 2 * values_vec[0].list_of_lists[1][1].data()[3];
+  const Scalar _tmp10 = 2 * values_vec[0].list_of_lists[1][2].data()[3];
+  const Scalar _tmp11 = 2 * values_vec[0].list_of_lists[2][0].data()[3];
+  const Scalar _tmp12 = 2 * values_vec[0].list_of_lists[2][1].data()[3];
+  const Scalar _tmp13 = 2 * values_vec[0].list_of_lists[2][2].data()[3];
+  const Scalar _tmp14 = 2 * values_vec[1].rot.data()[3];
+  const Scalar _tmp15 = 2 * values_vec[1].rot_vec[0].data()[3];
+  const Scalar _tmp16 = 2 * values_vec[1].rot_vec[1].data()[3];
+  const Scalar _tmp17 = 2 * values_vec[1].rot_vec[2].data()[3];
+  const Scalar _tmp18 = 2 * values_vec[1].list_of_lists[0][0].data()[3];
+  const Scalar _tmp19 = 2 * values_vec[1].list_of_lists[0][1].data()[3];
+  const Scalar _tmp20 = 2 * values_vec[1].list_of_lists[0][2].data()[3];
+  const Scalar _tmp21 = 2 * values_vec[1].list_of_lists[1][0].data()[3];
+  const Scalar _tmp22 = 2 * values_vec[1].list_of_lists[1][1].data()[3];
+  const Scalar _tmp23 = 2 * values_vec[1].list_of_lists[1][2].data()[3];
+  const Scalar _tmp24 = 2 * values_vec[1].list_of_lists[2][0].data()[3];
+  const Scalar _tmp25 = 2 * values_vec[1].list_of_lists[2][1].data()[3];
+  const Scalar _tmp26 = 2 * values_vec[1].list_of_lists[2][2].data()[3];
+  const Scalar _tmp27 = 2 * values_vec[2].rot.data()[3];
+  const Scalar _tmp28 = 2 * values_vec[2].rot_vec[0].data()[3];
+  const Scalar _tmp29 = 2 * values_vec[2].rot_vec[1].data()[3];
+  const Scalar _tmp30 = 2 * values_vec[2].rot_vec[2].data()[3];
+  const Scalar _tmp31 = 2 * values_vec[2].list_of_lists[0][0].data()[3];
+  const Scalar _tmp32 = 2 * values_vec[2].list_of_lists[0][1].data()[3];
+  const Scalar _tmp33 = 2 * values_vec[2].list_of_lists[0][2].data()[3];
+  const Scalar _tmp34 = 2 * values_vec[2].list_of_lists[1][0].data()[3];
+  const Scalar _tmp35 = 2 * values_vec[2].list_of_lists[1][1].data()[3];
+  const Scalar _tmp36 = 2 * values_vec[2].list_of_lists[1][2].data()[3];
+  const Scalar _tmp37 = 2 * values_vec[2].list_of_lists[2][0].data()[3];
+  const Scalar _tmp38 = 2 * values_vec[2].list_of_lists[2][1].data()[3];
+  const Scalar _tmp39 = 2 * values_vec[2].list_of_lists[2][2].data()[3];
+  const Scalar _tmp40 = 2 * values_vec_2D[0][0].rot.data()[3];
+  const Scalar _tmp41 = 2 * values_vec_2D[0][0].rot_vec[0].data()[3];
+  const Scalar _tmp42 = 2 * values_vec_2D[0][0].rot_vec[1].data()[3];
+  const Scalar _tmp43 = 2 * values_vec_2D[0][0].rot_vec[2].data()[3];
+  const Scalar _tmp44 = 2 * values_vec_2D[0][0].list_of_lists[0][0].data()[3];
+  const Scalar _tmp45 = 2 * values_vec_2D[0][0].list_of_lists[0][1].data()[3];
+  const Scalar _tmp46 = 2 * values_vec_2D[0][0].list_of_lists[0][2].data()[3];
+  const Scalar _tmp47 = 2 * values_vec_2D[0][0].list_of_lists[1][0].data()[3];
+  const Scalar _tmp48 = 2 * values_vec_2D[0][0].list_of_lists[1][1].data()[3];
+  const Scalar _tmp49 = 2 * values_vec_2D[0][0].list_of_lists[1][2].data()[3];
+  const Scalar _tmp50 = 2 * values_vec_2D[0][0].list_of_lists[2][0].data()[3];
+  const Scalar _tmp51 = 2 * values_vec_2D[0][0].list_of_lists[2][1].data()[3];
+  const Scalar _tmp52 = 2 * values_vec_2D[0][0].list_of_lists[2][2].data()[3];
+  const Scalar _tmp53 = 2 * values_vec_2D[1][0].rot.data()[3];
+  const Scalar _tmp54 = 2 * values_vec_2D[1][0].rot_vec[0].data()[3];
+  const Scalar _tmp55 = 2 * values_vec_2D[1][0].rot_vec[1].data()[3];
+  const Scalar _tmp56 = 2 * values_vec_2D[1][0].rot_vec[2].data()[3];
+  const Scalar _tmp57 = 2 * values_vec_2D[1][0].list_of_lists[0][0].data()[3];
+  const Scalar _tmp58 = 2 * values_vec_2D[1][0].list_of_lists[0][1].data()[3];
+  const Scalar _tmp59 = 2 * values_vec_2D[1][0].list_of_lists[0][2].data()[3];
+  const Scalar _tmp60 = 2 * values_vec_2D[1][0].list_of_lists[1][0].data()[3];
+  const Scalar _tmp61 = 2 * values_vec_2D[1][0].list_of_lists[1][1].data()[3];
+  const Scalar _tmp62 = 2 * values_vec_2D[1][0].list_of_lists[1][2].data()[3];
+  const Scalar _tmp63 = 2 * values_vec_2D[1][0].list_of_lists[2][0].data()[3];
+  const Scalar _tmp64 = 2 * values_vec_2D[1][0].list_of_lists[2][1].data()[3];
+  const Scalar _tmp65 = 2 * values_vec_2D[1][0].list_of_lists[2][2].data()[3];
 
   // Output terms (5)
   if (foo != nullptr) {
@@ -151,316 +151,409 @@ void CodegenCppTest(
 
     _values_vec_out[0].x = 2 * values_vec[0].x;
     _values_vec_out[0].y = 2 * values_vec[0].y;
-    _values_vec_out[0].rot[0] = _tmp1 * values_vec[0].rot[0];
-    _values_vec_out[0].rot[1] = _tmp1 * values_vec[0].rot[1];
-    _values_vec_out[0].rot[2] = _tmp1 * values_vec[0].rot[2];
-    _values_vec_out[0].rot[3] =
-        -std::pow(values_vec[0].rot[0], Scalar(2)) - std::pow(values_vec[0].rot[1], Scalar(2)) -
-        std::pow(values_vec[0].rot[2], Scalar(2)) + std::pow(values_vec[0].rot[3], Scalar(2));
-    _values_vec_out[0].rot_vec[0][0] = _tmp2 * values_vec[0].rot_vec[0][0];
-    _values_vec_out[0].rot_vec[0][1] = _tmp2 * values_vec[0].rot_vec[0][1];
-    _values_vec_out[0].rot_vec[0][2] = _tmp2 * values_vec[0].rot_vec[0][2];
-    _values_vec_out[0].rot_vec[0][3] = -std::pow(values_vec[0].rot_vec[0][0], Scalar(2)) -
-                                       std::pow(values_vec[0].rot_vec[0][1], Scalar(2)) -
-                                       std::pow(values_vec[0].rot_vec[0][2], Scalar(2)) +
-                                       std::pow(values_vec[0].rot_vec[0][3], Scalar(2));
-    _values_vec_out[0].rot_vec[1][0] = _tmp3 * values_vec[0].rot_vec[1][0];
-    _values_vec_out[0].rot_vec[1][1] = _tmp3 * values_vec[0].rot_vec[1][1];
-    _values_vec_out[0].rot_vec[1][2] = _tmp3 * values_vec[0].rot_vec[1][2];
-    _values_vec_out[0].rot_vec[1][3] = -std::pow(values_vec[0].rot_vec[1][0], Scalar(2)) -
-                                       std::pow(values_vec[0].rot_vec[1][1], Scalar(2)) -
-                                       std::pow(values_vec[0].rot_vec[1][2], Scalar(2)) +
-                                       std::pow(values_vec[0].rot_vec[1][3], Scalar(2));
-    _values_vec_out[0].rot_vec[2][0] = _tmp4 * values_vec[0].rot_vec[2][0];
-    _values_vec_out[0].rot_vec[2][1] = _tmp4 * values_vec[0].rot_vec[2][1];
-    _values_vec_out[0].rot_vec[2][2] = _tmp4 * values_vec[0].rot_vec[2][2];
-    _values_vec_out[0].rot_vec[2][3] = -std::pow(values_vec[0].rot_vec[2][0], Scalar(2)) -
-                                       std::pow(values_vec[0].rot_vec[2][1], Scalar(2)) -
-                                       std::pow(values_vec[0].rot_vec[2][2], Scalar(2)) +
-                                       std::pow(values_vec[0].rot_vec[2][3], Scalar(2));
+    _values_vec_out[0].rot.data()[0] = _tmp1 * values_vec[0].rot.data()[0];
+    _values_vec_out[0].rot.data()[1] = _tmp1 * values_vec[0].rot.data()[1];
+    _values_vec_out[0].rot.data()[2] = _tmp1 * values_vec[0].rot.data()[2];
+    _values_vec_out[0].rot.data()[3] = -std::pow(values_vec[0].rot.data()[0], Scalar(2)) -
+                                       std::pow(values_vec[0].rot.data()[1], Scalar(2)) -
+                                       std::pow(values_vec[0].rot.data()[2], Scalar(2)) +
+                                       std::pow(values_vec[0].rot.data()[3], Scalar(2));
+    _values_vec_out[0].rot_vec[0].data()[0] = _tmp2 * values_vec[0].rot_vec[0].data()[0];
+    _values_vec_out[0].rot_vec[0].data()[1] = _tmp2 * values_vec[0].rot_vec[0].data()[1];
+    _values_vec_out[0].rot_vec[0].data()[2] = _tmp2 * values_vec[0].rot_vec[0].data()[2];
+    _values_vec_out[0].rot_vec[0].data()[3] =
+        -std::pow(values_vec[0].rot_vec[0].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].rot_vec[0].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].rot_vec[0].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].rot_vec[0].data()[3], Scalar(2));
+    _values_vec_out[0].rot_vec[1].data()[0] = _tmp3 * values_vec[0].rot_vec[1].data()[0];
+    _values_vec_out[0].rot_vec[1].data()[1] = _tmp3 * values_vec[0].rot_vec[1].data()[1];
+    _values_vec_out[0].rot_vec[1].data()[2] = _tmp3 * values_vec[0].rot_vec[1].data()[2];
+    _values_vec_out[0].rot_vec[1].data()[3] =
+        -std::pow(values_vec[0].rot_vec[1].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].rot_vec[1].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].rot_vec[1].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].rot_vec[1].data()[3], Scalar(2));
+    _values_vec_out[0].rot_vec[2].data()[0] = _tmp4 * values_vec[0].rot_vec[2].data()[0];
+    _values_vec_out[0].rot_vec[2].data()[1] = _tmp4 * values_vec[0].rot_vec[2].data()[1];
+    _values_vec_out[0].rot_vec[2].data()[2] = _tmp4 * values_vec[0].rot_vec[2].data()[2];
+    _values_vec_out[0].rot_vec[2].data()[3] =
+        -std::pow(values_vec[0].rot_vec[2].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].rot_vec[2].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].rot_vec[2].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].rot_vec[2].data()[3], Scalar(2));
     _values_vec_out[0].scalar_vec[0] = 2 * values_vec[0].scalar_vec[0];
     _values_vec_out[0].scalar_vec[1] = 2 * values_vec[0].scalar_vec[1];
     _values_vec_out[0].scalar_vec[2] = 2 * values_vec[0].scalar_vec[2];
-    _values_vec_out[0].list_of_lists[0][0][0] = _tmp5 * values_vec[0].list_of_lists[0][0][0];
-    _values_vec_out[0].list_of_lists[0][0][1] = _tmp5 * values_vec[0].list_of_lists[0][0][1];
-    _values_vec_out[0].list_of_lists[0][0][2] = _tmp5 * values_vec[0].list_of_lists[0][0][2];
-    _values_vec_out[0].list_of_lists[0][0][3] =
-        -std::pow(values_vec[0].list_of_lists[0][0][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[0][0][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[0][0][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[0][0][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[0][1][0] = _tmp6 * values_vec[0].list_of_lists[0][1][0];
-    _values_vec_out[0].list_of_lists[0][1][1] = _tmp6 * values_vec[0].list_of_lists[0][1][1];
-    _values_vec_out[0].list_of_lists[0][1][2] = _tmp6 * values_vec[0].list_of_lists[0][1][2];
-    _values_vec_out[0].list_of_lists[0][1][3] =
-        -std::pow(values_vec[0].list_of_lists[0][1][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[0][1][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[0][1][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[0][1][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[0][2][0] = _tmp7 * values_vec[0].list_of_lists[0][2][0];
-    _values_vec_out[0].list_of_lists[0][2][1] = _tmp7 * values_vec[0].list_of_lists[0][2][1];
-    _values_vec_out[0].list_of_lists[0][2][2] = _tmp7 * values_vec[0].list_of_lists[0][2][2];
-    _values_vec_out[0].list_of_lists[0][2][3] =
-        -std::pow(values_vec[0].list_of_lists[0][2][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[0][2][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[0][2][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[0][2][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[1][0][0] = _tmp8 * values_vec[0].list_of_lists[1][0][0];
-    _values_vec_out[0].list_of_lists[1][0][1] = _tmp8 * values_vec[0].list_of_lists[1][0][1];
-    _values_vec_out[0].list_of_lists[1][0][2] = _tmp8 * values_vec[0].list_of_lists[1][0][2];
-    _values_vec_out[0].list_of_lists[1][0][3] =
-        -std::pow(values_vec[0].list_of_lists[1][0][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[1][0][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[1][0][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[1][0][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[1][1][0] = _tmp9 * values_vec[0].list_of_lists[1][1][0];
-    _values_vec_out[0].list_of_lists[1][1][1] = _tmp9 * values_vec[0].list_of_lists[1][1][1];
-    _values_vec_out[0].list_of_lists[1][1][2] = _tmp9 * values_vec[0].list_of_lists[1][1][2];
-    _values_vec_out[0].list_of_lists[1][1][3] =
-        -std::pow(values_vec[0].list_of_lists[1][1][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[1][1][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[1][1][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[1][1][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[1][2][0] = _tmp10 * values_vec[0].list_of_lists[1][2][0];
-    _values_vec_out[0].list_of_lists[1][2][1] = _tmp10 * values_vec[0].list_of_lists[1][2][1];
-    _values_vec_out[0].list_of_lists[1][2][2] = _tmp10 * values_vec[0].list_of_lists[1][2][2];
-    _values_vec_out[0].list_of_lists[1][2][3] =
-        -std::pow(values_vec[0].list_of_lists[1][2][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[1][2][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[1][2][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[1][2][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[2][0][0] = _tmp11 * values_vec[0].list_of_lists[2][0][0];
-    _values_vec_out[0].list_of_lists[2][0][1] = _tmp11 * values_vec[0].list_of_lists[2][0][1];
-    _values_vec_out[0].list_of_lists[2][0][2] = _tmp11 * values_vec[0].list_of_lists[2][0][2];
-    _values_vec_out[0].list_of_lists[2][0][3] =
-        -std::pow(values_vec[0].list_of_lists[2][0][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[2][0][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[2][0][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[2][0][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[2][1][0] = _tmp12 * values_vec[0].list_of_lists[2][1][0];
-    _values_vec_out[0].list_of_lists[2][1][1] = _tmp12 * values_vec[0].list_of_lists[2][1][1];
-    _values_vec_out[0].list_of_lists[2][1][2] = _tmp12 * values_vec[0].list_of_lists[2][1][2];
-    _values_vec_out[0].list_of_lists[2][1][3] =
-        -std::pow(values_vec[0].list_of_lists[2][1][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[2][1][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[2][1][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[2][1][3], Scalar(2));
-    _values_vec_out[0].list_of_lists[2][2][0] = _tmp13 * values_vec[0].list_of_lists[2][2][0];
-    _values_vec_out[0].list_of_lists[2][2][1] = _tmp13 * values_vec[0].list_of_lists[2][2][1];
-    _values_vec_out[0].list_of_lists[2][2][2] = _tmp13 * values_vec[0].list_of_lists[2][2][2];
-    _values_vec_out[0].list_of_lists[2][2][3] =
-        -std::pow(values_vec[0].list_of_lists[2][2][0], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[2][2][1], Scalar(2)) -
-        std::pow(values_vec[0].list_of_lists[2][2][2], Scalar(2)) +
-        std::pow(values_vec[0].list_of_lists[2][2][3], Scalar(2));
+    _values_vec_out[0].list_of_lists[0][0].data()[0] =
+        _tmp5 * values_vec[0].list_of_lists[0][0].data()[0];
+    _values_vec_out[0].list_of_lists[0][0].data()[1] =
+        _tmp5 * values_vec[0].list_of_lists[0][0].data()[1];
+    _values_vec_out[0].list_of_lists[0][0].data()[2] =
+        _tmp5 * values_vec[0].list_of_lists[0][0].data()[2];
+    _values_vec_out[0].list_of_lists[0][0].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[0][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[0][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[0][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[0][0].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[0][1].data()[0] =
+        _tmp6 * values_vec[0].list_of_lists[0][1].data()[0];
+    _values_vec_out[0].list_of_lists[0][1].data()[1] =
+        _tmp6 * values_vec[0].list_of_lists[0][1].data()[1];
+    _values_vec_out[0].list_of_lists[0][1].data()[2] =
+        _tmp6 * values_vec[0].list_of_lists[0][1].data()[2];
+    _values_vec_out[0].list_of_lists[0][1].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[0][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[0][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[0][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[0][1].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[0][2].data()[0] =
+        _tmp7 * values_vec[0].list_of_lists[0][2].data()[0];
+    _values_vec_out[0].list_of_lists[0][2].data()[1] =
+        _tmp7 * values_vec[0].list_of_lists[0][2].data()[1];
+    _values_vec_out[0].list_of_lists[0][2].data()[2] =
+        _tmp7 * values_vec[0].list_of_lists[0][2].data()[2];
+    _values_vec_out[0].list_of_lists[0][2].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[0][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[0][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[0][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[0][2].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[1][0].data()[0] =
+        _tmp8 * values_vec[0].list_of_lists[1][0].data()[0];
+    _values_vec_out[0].list_of_lists[1][0].data()[1] =
+        _tmp8 * values_vec[0].list_of_lists[1][0].data()[1];
+    _values_vec_out[0].list_of_lists[1][0].data()[2] =
+        _tmp8 * values_vec[0].list_of_lists[1][0].data()[2];
+    _values_vec_out[0].list_of_lists[1][0].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[1][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[1][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[1][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[1][0].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[1][1].data()[0] =
+        _tmp9 * values_vec[0].list_of_lists[1][1].data()[0];
+    _values_vec_out[0].list_of_lists[1][1].data()[1] =
+        _tmp9 * values_vec[0].list_of_lists[1][1].data()[1];
+    _values_vec_out[0].list_of_lists[1][1].data()[2] =
+        _tmp9 * values_vec[0].list_of_lists[1][1].data()[2];
+    _values_vec_out[0].list_of_lists[1][1].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[1][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[1][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[1][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[1][1].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[1][2].data()[0] =
+        _tmp10 * values_vec[0].list_of_lists[1][2].data()[0];
+    _values_vec_out[0].list_of_lists[1][2].data()[1] =
+        _tmp10 * values_vec[0].list_of_lists[1][2].data()[1];
+    _values_vec_out[0].list_of_lists[1][2].data()[2] =
+        _tmp10 * values_vec[0].list_of_lists[1][2].data()[2];
+    _values_vec_out[0].list_of_lists[1][2].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[1][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[1][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[1][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[1][2].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[2][0].data()[0] =
+        _tmp11 * values_vec[0].list_of_lists[2][0].data()[0];
+    _values_vec_out[0].list_of_lists[2][0].data()[1] =
+        _tmp11 * values_vec[0].list_of_lists[2][0].data()[1];
+    _values_vec_out[0].list_of_lists[2][0].data()[2] =
+        _tmp11 * values_vec[0].list_of_lists[2][0].data()[2];
+    _values_vec_out[0].list_of_lists[2][0].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[2][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[2][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[2][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[2][0].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[2][1].data()[0] =
+        _tmp12 * values_vec[0].list_of_lists[2][1].data()[0];
+    _values_vec_out[0].list_of_lists[2][1].data()[1] =
+        _tmp12 * values_vec[0].list_of_lists[2][1].data()[1];
+    _values_vec_out[0].list_of_lists[2][1].data()[2] =
+        _tmp12 * values_vec[0].list_of_lists[2][1].data()[2];
+    _values_vec_out[0].list_of_lists[2][1].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[2][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[2][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[2][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[2][1].data()[3], Scalar(2));
+    _values_vec_out[0].list_of_lists[2][2].data()[0] =
+        _tmp13 * values_vec[0].list_of_lists[2][2].data()[0];
+    _values_vec_out[0].list_of_lists[2][2].data()[1] =
+        _tmp13 * values_vec[0].list_of_lists[2][2].data()[1];
+    _values_vec_out[0].list_of_lists[2][2].data()[2] =
+        _tmp13 * values_vec[0].list_of_lists[2][2].data()[2];
+    _values_vec_out[0].list_of_lists[2][2].data()[3] =
+        -std::pow(values_vec[0].list_of_lists[2][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[2][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[0].list_of_lists[2][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[0].list_of_lists[2][2].data()[3], Scalar(2));
     _values_vec_out[1].x = 2 * values_vec[1].x;
     _values_vec_out[1].y = 2 * values_vec[1].y;
-    _values_vec_out[1].rot[0] = _tmp14 * values_vec[1].rot[0];
-    _values_vec_out[1].rot[1] = _tmp14 * values_vec[1].rot[1];
-    _values_vec_out[1].rot[2] = _tmp14 * values_vec[1].rot[2];
-    _values_vec_out[1].rot[3] =
-        -std::pow(values_vec[1].rot[0], Scalar(2)) - std::pow(values_vec[1].rot[1], Scalar(2)) -
-        std::pow(values_vec[1].rot[2], Scalar(2)) + std::pow(values_vec[1].rot[3], Scalar(2));
-    _values_vec_out[1].rot_vec[0][0] = _tmp15 * values_vec[1].rot_vec[0][0];
-    _values_vec_out[1].rot_vec[0][1] = _tmp15 * values_vec[1].rot_vec[0][1];
-    _values_vec_out[1].rot_vec[0][2] = _tmp15 * values_vec[1].rot_vec[0][2];
-    _values_vec_out[1].rot_vec[0][3] = -std::pow(values_vec[1].rot_vec[0][0], Scalar(2)) -
-                                       std::pow(values_vec[1].rot_vec[0][1], Scalar(2)) -
-                                       std::pow(values_vec[1].rot_vec[0][2], Scalar(2)) +
-                                       std::pow(values_vec[1].rot_vec[0][3], Scalar(2));
-    _values_vec_out[1].rot_vec[1][0] = _tmp16 * values_vec[1].rot_vec[1][0];
-    _values_vec_out[1].rot_vec[1][1] = _tmp16 * values_vec[1].rot_vec[1][1];
-    _values_vec_out[1].rot_vec[1][2] = _tmp16 * values_vec[1].rot_vec[1][2];
-    _values_vec_out[1].rot_vec[1][3] = -std::pow(values_vec[1].rot_vec[1][0], Scalar(2)) -
-                                       std::pow(values_vec[1].rot_vec[1][1], Scalar(2)) -
-                                       std::pow(values_vec[1].rot_vec[1][2], Scalar(2)) +
-                                       std::pow(values_vec[1].rot_vec[1][3], Scalar(2));
-    _values_vec_out[1].rot_vec[2][0] = _tmp17 * values_vec[1].rot_vec[2][0];
-    _values_vec_out[1].rot_vec[2][1] = _tmp17 * values_vec[1].rot_vec[2][1];
-    _values_vec_out[1].rot_vec[2][2] = _tmp17 * values_vec[1].rot_vec[2][2];
-    _values_vec_out[1].rot_vec[2][3] = -std::pow(values_vec[1].rot_vec[2][0], Scalar(2)) -
-                                       std::pow(values_vec[1].rot_vec[2][1], Scalar(2)) -
-                                       std::pow(values_vec[1].rot_vec[2][2], Scalar(2)) +
-                                       std::pow(values_vec[1].rot_vec[2][3], Scalar(2));
+    _values_vec_out[1].rot.data()[0] = _tmp14 * values_vec[1].rot.data()[0];
+    _values_vec_out[1].rot.data()[1] = _tmp14 * values_vec[1].rot.data()[1];
+    _values_vec_out[1].rot.data()[2] = _tmp14 * values_vec[1].rot.data()[2];
+    _values_vec_out[1].rot.data()[3] = -std::pow(values_vec[1].rot.data()[0], Scalar(2)) -
+                                       std::pow(values_vec[1].rot.data()[1], Scalar(2)) -
+                                       std::pow(values_vec[1].rot.data()[2], Scalar(2)) +
+                                       std::pow(values_vec[1].rot.data()[3], Scalar(2));
+    _values_vec_out[1].rot_vec[0].data()[0] = _tmp15 * values_vec[1].rot_vec[0].data()[0];
+    _values_vec_out[1].rot_vec[0].data()[1] = _tmp15 * values_vec[1].rot_vec[0].data()[1];
+    _values_vec_out[1].rot_vec[0].data()[2] = _tmp15 * values_vec[1].rot_vec[0].data()[2];
+    _values_vec_out[1].rot_vec[0].data()[3] =
+        -std::pow(values_vec[1].rot_vec[0].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].rot_vec[0].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].rot_vec[0].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].rot_vec[0].data()[3], Scalar(2));
+    _values_vec_out[1].rot_vec[1].data()[0] = _tmp16 * values_vec[1].rot_vec[1].data()[0];
+    _values_vec_out[1].rot_vec[1].data()[1] = _tmp16 * values_vec[1].rot_vec[1].data()[1];
+    _values_vec_out[1].rot_vec[1].data()[2] = _tmp16 * values_vec[1].rot_vec[1].data()[2];
+    _values_vec_out[1].rot_vec[1].data()[3] =
+        -std::pow(values_vec[1].rot_vec[1].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].rot_vec[1].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].rot_vec[1].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].rot_vec[1].data()[3], Scalar(2));
+    _values_vec_out[1].rot_vec[2].data()[0] = _tmp17 * values_vec[1].rot_vec[2].data()[0];
+    _values_vec_out[1].rot_vec[2].data()[1] = _tmp17 * values_vec[1].rot_vec[2].data()[1];
+    _values_vec_out[1].rot_vec[2].data()[2] = _tmp17 * values_vec[1].rot_vec[2].data()[2];
+    _values_vec_out[1].rot_vec[2].data()[3] =
+        -std::pow(values_vec[1].rot_vec[2].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].rot_vec[2].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].rot_vec[2].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].rot_vec[2].data()[3], Scalar(2));
     _values_vec_out[1].scalar_vec[0] = 2 * values_vec[1].scalar_vec[0];
     _values_vec_out[1].scalar_vec[1] = 2 * values_vec[1].scalar_vec[1];
     _values_vec_out[1].scalar_vec[2] = 2 * values_vec[1].scalar_vec[2];
-    _values_vec_out[1].list_of_lists[0][0][0] = _tmp18 * values_vec[1].list_of_lists[0][0][0];
-    _values_vec_out[1].list_of_lists[0][0][1] = _tmp18 * values_vec[1].list_of_lists[0][0][1];
-    _values_vec_out[1].list_of_lists[0][0][2] = _tmp18 * values_vec[1].list_of_lists[0][0][2];
-    _values_vec_out[1].list_of_lists[0][0][3] =
-        -std::pow(values_vec[1].list_of_lists[0][0][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[0][0][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[0][0][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[0][0][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[0][1][0] = _tmp19 * values_vec[1].list_of_lists[0][1][0];
-    _values_vec_out[1].list_of_lists[0][1][1] = _tmp19 * values_vec[1].list_of_lists[0][1][1];
-    _values_vec_out[1].list_of_lists[0][1][2] = _tmp19 * values_vec[1].list_of_lists[0][1][2];
-    _values_vec_out[1].list_of_lists[0][1][3] =
-        -std::pow(values_vec[1].list_of_lists[0][1][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[0][1][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[0][1][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[0][1][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[0][2][0] = _tmp20 * values_vec[1].list_of_lists[0][2][0];
-    _values_vec_out[1].list_of_lists[0][2][1] = _tmp20 * values_vec[1].list_of_lists[0][2][1];
-    _values_vec_out[1].list_of_lists[0][2][2] = _tmp20 * values_vec[1].list_of_lists[0][2][2];
-    _values_vec_out[1].list_of_lists[0][2][3] =
-        -std::pow(values_vec[1].list_of_lists[0][2][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[0][2][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[0][2][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[0][2][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[1][0][0] = _tmp21 * values_vec[1].list_of_lists[1][0][0];
-    _values_vec_out[1].list_of_lists[1][0][1] = _tmp21 * values_vec[1].list_of_lists[1][0][1];
-    _values_vec_out[1].list_of_lists[1][0][2] = _tmp21 * values_vec[1].list_of_lists[1][0][2];
-    _values_vec_out[1].list_of_lists[1][0][3] =
-        -std::pow(values_vec[1].list_of_lists[1][0][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[1][0][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[1][0][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[1][0][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[1][1][0] = _tmp22 * values_vec[1].list_of_lists[1][1][0];
-    _values_vec_out[1].list_of_lists[1][1][1] = _tmp22 * values_vec[1].list_of_lists[1][1][1];
-    _values_vec_out[1].list_of_lists[1][1][2] = _tmp22 * values_vec[1].list_of_lists[1][1][2];
-    _values_vec_out[1].list_of_lists[1][1][3] =
-        -std::pow(values_vec[1].list_of_lists[1][1][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[1][1][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[1][1][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[1][1][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[1][2][0] = _tmp23 * values_vec[1].list_of_lists[1][2][0];
-    _values_vec_out[1].list_of_lists[1][2][1] = _tmp23 * values_vec[1].list_of_lists[1][2][1];
-    _values_vec_out[1].list_of_lists[1][2][2] = _tmp23 * values_vec[1].list_of_lists[1][2][2];
-    _values_vec_out[1].list_of_lists[1][2][3] =
-        -std::pow(values_vec[1].list_of_lists[1][2][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[1][2][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[1][2][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[1][2][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[2][0][0] = _tmp24 * values_vec[1].list_of_lists[2][0][0];
-    _values_vec_out[1].list_of_lists[2][0][1] = _tmp24 * values_vec[1].list_of_lists[2][0][1];
-    _values_vec_out[1].list_of_lists[2][0][2] = _tmp24 * values_vec[1].list_of_lists[2][0][2];
-    _values_vec_out[1].list_of_lists[2][0][3] =
-        -std::pow(values_vec[1].list_of_lists[2][0][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[2][0][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[2][0][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[2][0][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[2][1][0] = _tmp25 * values_vec[1].list_of_lists[2][1][0];
-    _values_vec_out[1].list_of_lists[2][1][1] = _tmp25 * values_vec[1].list_of_lists[2][1][1];
-    _values_vec_out[1].list_of_lists[2][1][2] = _tmp25 * values_vec[1].list_of_lists[2][1][2];
-    _values_vec_out[1].list_of_lists[2][1][3] =
-        -std::pow(values_vec[1].list_of_lists[2][1][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[2][1][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[2][1][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[2][1][3], Scalar(2));
-    _values_vec_out[1].list_of_lists[2][2][0] = _tmp26 * values_vec[1].list_of_lists[2][2][0];
-    _values_vec_out[1].list_of_lists[2][2][1] = _tmp26 * values_vec[1].list_of_lists[2][2][1];
-    _values_vec_out[1].list_of_lists[2][2][2] = _tmp26 * values_vec[1].list_of_lists[2][2][2];
-    _values_vec_out[1].list_of_lists[2][2][3] =
-        -std::pow(values_vec[1].list_of_lists[2][2][0], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[2][2][1], Scalar(2)) -
-        std::pow(values_vec[1].list_of_lists[2][2][2], Scalar(2)) +
-        std::pow(values_vec[1].list_of_lists[2][2][3], Scalar(2));
+    _values_vec_out[1].list_of_lists[0][0].data()[0] =
+        _tmp18 * values_vec[1].list_of_lists[0][0].data()[0];
+    _values_vec_out[1].list_of_lists[0][0].data()[1] =
+        _tmp18 * values_vec[1].list_of_lists[0][0].data()[1];
+    _values_vec_out[1].list_of_lists[0][0].data()[2] =
+        _tmp18 * values_vec[1].list_of_lists[0][0].data()[2];
+    _values_vec_out[1].list_of_lists[0][0].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[0][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[0][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[0][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[0][0].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[0][1].data()[0] =
+        _tmp19 * values_vec[1].list_of_lists[0][1].data()[0];
+    _values_vec_out[1].list_of_lists[0][1].data()[1] =
+        _tmp19 * values_vec[1].list_of_lists[0][1].data()[1];
+    _values_vec_out[1].list_of_lists[0][1].data()[2] =
+        _tmp19 * values_vec[1].list_of_lists[0][1].data()[2];
+    _values_vec_out[1].list_of_lists[0][1].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[0][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[0][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[0][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[0][1].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[0][2].data()[0] =
+        _tmp20 * values_vec[1].list_of_lists[0][2].data()[0];
+    _values_vec_out[1].list_of_lists[0][2].data()[1] =
+        _tmp20 * values_vec[1].list_of_lists[0][2].data()[1];
+    _values_vec_out[1].list_of_lists[0][2].data()[2] =
+        _tmp20 * values_vec[1].list_of_lists[0][2].data()[2];
+    _values_vec_out[1].list_of_lists[0][2].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[0][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[0][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[0][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[0][2].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[1][0].data()[0] =
+        _tmp21 * values_vec[1].list_of_lists[1][0].data()[0];
+    _values_vec_out[1].list_of_lists[1][0].data()[1] =
+        _tmp21 * values_vec[1].list_of_lists[1][0].data()[1];
+    _values_vec_out[1].list_of_lists[1][0].data()[2] =
+        _tmp21 * values_vec[1].list_of_lists[1][0].data()[2];
+    _values_vec_out[1].list_of_lists[1][0].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[1][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[1][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[1][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[1][0].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[1][1].data()[0] =
+        _tmp22 * values_vec[1].list_of_lists[1][1].data()[0];
+    _values_vec_out[1].list_of_lists[1][1].data()[1] =
+        _tmp22 * values_vec[1].list_of_lists[1][1].data()[1];
+    _values_vec_out[1].list_of_lists[1][1].data()[2] =
+        _tmp22 * values_vec[1].list_of_lists[1][1].data()[2];
+    _values_vec_out[1].list_of_lists[1][1].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[1][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[1][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[1][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[1][1].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[1][2].data()[0] =
+        _tmp23 * values_vec[1].list_of_lists[1][2].data()[0];
+    _values_vec_out[1].list_of_lists[1][2].data()[1] =
+        _tmp23 * values_vec[1].list_of_lists[1][2].data()[1];
+    _values_vec_out[1].list_of_lists[1][2].data()[2] =
+        _tmp23 * values_vec[1].list_of_lists[1][2].data()[2];
+    _values_vec_out[1].list_of_lists[1][2].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[1][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[1][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[1][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[1][2].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[2][0].data()[0] =
+        _tmp24 * values_vec[1].list_of_lists[2][0].data()[0];
+    _values_vec_out[1].list_of_lists[2][0].data()[1] =
+        _tmp24 * values_vec[1].list_of_lists[2][0].data()[1];
+    _values_vec_out[1].list_of_lists[2][0].data()[2] =
+        _tmp24 * values_vec[1].list_of_lists[2][0].data()[2];
+    _values_vec_out[1].list_of_lists[2][0].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[2][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[2][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[2][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[2][0].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[2][1].data()[0] =
+        _tmp25 * values_vec[1].list_of_lists[2][1].data()[0];
+    _values_vec_out[1].list_of_lists[2][1].data()[1] =
+        _tmp25 * values_vec[1].list_of_lists[2][1].data()[1];
+    _values_vec_out[1].list_of_lists[2][1].data()[2] =
+        _tmp25 * values_vec[1].list_of_lists[2][1].data()[2];
+    _values_vec_out[1].list_of_lists[2][1].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[2][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[2][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[2][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[2][1].data()[3], Scalar(2));
+    _values_vec_out[1].list_of_lists[2][2].data()[0] =
+        _tmp26 * values_vec[1].list_of_lists[2][2].data()[0];
+    _values_vec_out[1].list_of_lists[2][2].data()[1] =
+        _tmp26 * values_vec[1].list_of_lists[2][2].data()[1];
+    _values_vec_out[1].list_of_lists[2][2].data()[2] =
+        _tmp26 * values_vec[1].list_of_lists[2][2].data()[2];
+    _values_vec_out[1].list_of_lists[2][2].data()[3] =
+        -std::pow(values_vec[1].list_of_lists[2][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[2][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[1].list_of_lists[2][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[1].list_of_lists[2][2].data()[3], Scalar(2));
     _values_vec_out[2].x = 2 * values_vec[2].x;
     _values_vec_out[2].y = 2 * values_vec[2].y;
-    _values_vec_out[2].rot[0] = _tmp27 * values_vec[2].rot[0];
-    _values_vec_out[2].rot[1] = _tmp27 * values_vec[2].rot[1];
-    _values_vec_out[2].rot[2] = _tmp27 * values_vec[2].rot[2];
-    _values_vec_out[2].rot[3] =
-        -std::pow(values_vec[2].rot[0], Scalar(2)) - std::pow(values_vec[2].rot[1], Scalar(2)) -
-        std::pow(values_vec[2].rot[2], Scalar(2)) + std::pow(values_vec[2].rot[3], Scalar(2));
-    _values_vec_out[2].rot_vec[0][0] = _tmp28 * values_vec[2].rot_vec[0][0];
-    _values_vec_out[2].rot_vec[0][1] = _tmp28 * values_vec[2].rot_vec[0][1];
-    _values_vec_out[2].rot_vec[0][2] = _tmp28 * values_vec[2].rot_vec[0][2];
-    _values_vec_out[2].rot_vec[0][3] = -std::pow(values_vec[2].rot_vec[0][0], Scalar(2)) -
-                                       std::pow(values_vec[2].rot_vec[0][1], Scalar(2)) -
-                                       std::pow(values_vec[2].rot_vec[0][2], Scalar(2)) +
-                                       std::pow(values_vec[2].rot_vec[0][3], Scalar(2));
-    _values_vec_out[2].rot_vec[1][0] = _tmp29 * values_vec[2].rot_vec[1][0];
-    _values_vec_out[2].rot_vec[1][1] = _tmp29 * values_vec[2].rot_vec[1][1];
-    _values_vec_out[2].rot_vec[1][2] = _tmp29 * values_vec[2].rot_vec[1][2];
-    _values_vec_out[2].rot_vec[1][3] = -std::pow(values_vec[2].rot_vec[1][0], Scalar(2)) -
-                                       std::pow(values_vec[2].rot_vec[1][1], Scalar(2)) -
-                                       std::pow(values_vec[2].rot_vec[1][2], Scalar(2)) +
-                                       std::pow(values_vec[2].rot_vec[1][3], Scalar(2));
-    _values_vec_out[2].rot_vec[2][0] = _tmp30 * values_vec[2].rot_vec[2][0];
-    _values_vec_out[2].rot_vec[2][1] = _tmp30 * values_vec[2].rot_vec[2][1];
-    _values_vec_out[2].rot_vec[2][2] = _tmp30 * values_vec[2].rot_vec[2][2];
-    _values_vec_out[2].rot_vec[2][3] = -std::pow(values_vec[2].rot_vec[2][0], Scalar(2)) -
-                                       std::pow(values_vec[2].rot_vec[2][1], Scalar(2)) -
-                                       std::pow(values_vec[2].rot_vec[2][2], Scalar(2)) +
-                                       std::pow(values_vec[2].rot_vec[2][3], Scalar(2));
+    _values_vec_out[2].rot.data()[0] = _tmp27 * values_vec[2].rot.data()[0];
+    _values_vec_out[2].rot.data()[1] = _tmp27 * values_vec[2].rot.data()[1];
+    _values_vec_out[2].rot.data()[2] = _tmp27 * values_vec[2].rot.data()[2];
+    _values_vec_out[2].rot.data()[3] = -std::pow(values_vec[2].rot.data()[0], Scalar(2)) -
+                                       std::pow(values_vec[2].rot.data()[1], Scalar(2)) -
+                                       std::pow(values_vec[2].rot.data()[2], Scalar(2)) +
+                                       std::pow(values_vec[2].rot.data()[3], Scalar(2));
+    _values_vec_out[2].rot_vec[0].data()[0] = _tmp28 * values_vec[2].rot_vec[0].data()[0];
+    _values_vec_out[2].rot_vec[0].data()[1] = _tmp28 * values_vec[2].rot_vec[0].data()[1];
+    _values_vec_out[2].rot_vec[0].data()[2] = _tmp28 * values_vec[2].rot_vec[0].data()[2];
+    _values_vec_out[2].rot_vec[0].data()[3] =
+        -std::pow(values_vec[2].rot_vec[0].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].rot_vec[0].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].rot_vec[0].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].rot_vec[0].data()[3], Scalar(2));
+    _values_vec_out[2].rot_vec[1].data()[0] = _tmp29 * values_vec[2].rot_vec[1].data()[0];
+    _values_vec_out[2].rot_vec[1].data()[1] = _tmp29 * values_vec[2].rot_vec[1].data()[1];
+    _values_vec_out[2].rot_vec[1].data()[2] = _tmp29 * values_vec[2].rot_vec[1].data()[2];
+    _values_vec_out[2].rot_vec[1].data()[3] =
+        -std::pow(values_vec[2].rot_vec[1].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].rot_vec[1].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].rot_vec[1].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].rot_vec[1].data()[3], Scalar(2));
+    _values_vec_out[2].rot_vec[2].data()[0] = _tmp30 * values_vec[2].rot_vec[2].data()[0];
+    _values_vec_out[2].rot_vec[2].data()[1] = _tmp30 * values_vec[2].rot_vec[2].data()[1];
+    _values_vec_out[2].rot_vec[2].data()[2] = _tmp30 * values_vec[2].rot_vec[2].data()[2];
+    _values_vec_out[2].rot_vec[2].data()[3] =
+        -std::pow(values_vec[2].rot_vec[2].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].rot_vec[2].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].rot_vec[2].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].rot_vec[2].data()[3], Scalar(2));
     _values_vec_out[2].scalar_vec[0] = 2 * values_vec[2].scalar_vec[0];
     _values_vec_out[2].scalar_vec[1] = 2 * values_vec[2].scalar_vec[1];
     _values_vec_out[2].scalar_vec[2] = 2 * values_vec[2].scalar_vec[2];
-    _values_vec_out[2].list_of_lists[0][0][0] = _tmp31 * values_vec[2].list_of_lists[0][0][0];
-    _values_vec_out[2].list_of_lists[0][0][1] = _tmp31 * values_vec[2].list_of_lists[0][0][1];
-    _values_vec_out[2].list_of_lists[0][0][2] = _tmp31 * values_vec[2].list_of_lists[0][0][2];
-    _values_vec_out[2].list_of_lists[0][0][3] =
-        -std::pow(values_vec[2].list_of_lists[0][0][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[0][0][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[0][0][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[0][0][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[0][1][0] = _tmp32 * values_vec[2].list_of_lists[0][1][0];
-    _values_vec_out[2].list_of_lists[0][1][1] = _tmp32 * values_vec[2].list_of_lists[0][1][1];
-    _values_vec_out[2].list_of_lists[0][1][2] = _tmp32 * values_vec[2].list_of_lists[0][1][2];
-    _values_vec_out[2].list_of_lists[0][1][3] =
-        -std::pow(values_vec[2].list_of_lists[0][1][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[0][1][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[0][1][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[0][1][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[0][2][0] = _tmp33 * values_vec[2].list_of_lists[0][2][0];
-    _values_vec_out[2].list_of_lists[0][2][1] = _tmp33 * values_vec[2].list_of_lists[0][2][1];
-    _values_vec_out[2].list_of_lists[0][2][2] = _tmp33 * values_vec[2].list_of_lists[0][2][2];
-    _values_vec_out[2].list_of_lists[0][2][3] =
-        -std::pow(values_vec[2].list_of_lists[0][2][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[0][2][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[0][2][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[0][2][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[1][0][0] = _tmp34 * values_vec[2].list_of_lists[1][0][0];
-    _values_vec_out[2].list_of_lists[1][0][1] = _tmp34 * values_vec[2].list_of_lists[1][0][1];
-    _values_vec_out[2].list_of_lists[1][0][2] = _tmp34 * values_vec[2].list_of_lists[1][0][2];
-    _values_vec_out[2].list_of_lists[1][0][3] =
-        -std::pow(values_vec[2].list_of_lists[1][0][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[1][0][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[1][0][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[1][0][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[1][1][0] = _tmp35 * values_vec[2].list_of_lists[1][1][0];
-    _values_vec_out[2].list_of_lists[1][1][1] = _tmp35 * values_vec[2].list_of_lists[1][1][1];
-    _values_vec_out[2].list_of_lists[1][1][2] = _tmp35 * values_vec[2].list_of_lists[1][1][2];
-    _values_vec_out[2].list_of_lists[1][1][3] =
-        -std::pow(values_vec[2].list_of_lists[1][1][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[1][1][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[1][1][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[1][1][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[1][2][0] = _tmp36 * values_vec[2].list_of_lists[1][2][0];
-    _values_vec_out[2].list_of_lists[1][2][1] = _tmp36 * values_vec[2].list_of_lists[1][2][1];
-    _values_vec_out[2].list_of_lists[1][2][2] = _tmp36 * values_vec[2].list_of_lists[1][2][2];
-    _values_vec_out[2].list_of_lists[1][2][3] =
-        -std::pow(values_vec[2].list_of_lists[1][2][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[1][2][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[1][2][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[1][2][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[2][0][0] = _tmp37 * values_vec[2].list_of_lists[2][0][0];
-    _values_vec_out[2].list_of_lists[2][0][1] = _tmp37 * values_vec[2].list_of_lists[2][0][1];
-    _values_vec_out[2].list_of_lists[2][0][2] = _tmp37 * values_vec[2].list_of_lists[2][0][2];
-    _values_vec_out[2].list_of_lists[2][0][3] =
-        -std::pow(values_vec[2].list_of_lists[2][0][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[2][0][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[2][0][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[2][0][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[2][1][0] = _tmp38 * values_vec[2].list_of_lists[2][1][0];
-    _values_vec_out[2].list_of_lists[2][1][1] = _tmp38 * values_vec[2].list_of_lists[2][1][1];
-    _values_vec_out[2].list_of_lists[2][1][2] = _tmp38 * values_vec[2].list_of_lists[2][1][2];
-    _values_vec_out[2].list_of_lists[2][1][3] =
-        -std::pow(values_vec[2].list_of_lists[2][1][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[2][1][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[2][1][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[2][1][3], Scalar(2));
-    _values_vec_out[2].list_of_lists[2][2][0] = _tmp39 * values_vec[2].list_of_lists[2][2][0];
-    _values_vec_out[2].list_of_lists[2][2][1] = _tmp39 * values_vec[2].list_of_lists[2][2][1];
-    _values_vec_out[2].list_of_lists[2][2][2] = _tmp39 * values_vec[2].list_of_lists[2][2][2];
-    _values_vec_out[2].list_of_lists[2][2][3] =
-        -std::pow(values_vec[2].list_of_lists[2][2][0], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[2][2][1], Scalar(2)) -
-        std::pow(values_vec[2].list_of_lists[2][2][2], Scalar(2)) +
-        std::pow(values_vec[2].list_of_lists[2][2][3], Scalar(2));
+    _values_vec_out[2].list_of_lists[0][0].data()[0] =
+        _tmp31 * values_vec[2].list_of_lists[0][0].data()[0];
+    _values_vec_out[2].list_of_lists[0][0].data()[1] =
+        _tmp31 * values_vec[2].list_of_lists[0][0].data()[1];
+    _values_vec_out[2].list_of_lists[0][0].data()[2] =
+        _tmp31 * values_vec[2].list_of_lists[0][0].data()[2];
+    _values_vec_out[2].list_of_lists[0][0].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[0][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[0][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[0][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[0][0].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[0][1].data()[0] =
+        _tmp32 * values_vec[2].list_of_lists[0][1].data()[0];
+    _values_vec_out[2].list_of_lists[0][1].data()[1] =
+        _tmp32 * values_vec[2].list_of_lists[0][1].data()[1];
+    _values_vec_out[2].list_of_lists[0][1].data()[2] =
+        _tmp32 * values_vec[2].list_of_lists[0][1].data()[2];
+    _values_vec_out[2].list_of_lists[0][1].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[0][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[0][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[0][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[0][1].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[0][2].data()[0] =
+        _tmp33 * values_vec[2].list_of_lists[0][2].data()[0];
+    _values_vec_out[2].list_of_lists[0][2].data()[1] =
+        _tmp33 * values_vec[2].list_of_lists[0][2].data()[1];
+    _values_vec_out[2].list_of_lists[0][2].data()[2] =
+        _tmp33 * values_vec[2].list_of_lists[0][2].data()[2];
+    _values_vec_out[2].list_of_lists[0][2].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[0][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[0][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[0][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[0][2].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[1][0].data()[0] =
+        _tmp34 * values_vec[2].list_of_lists[1][0].data()[0];
+    _values_vec_out[2].list_of_lists[1][0].data()[1] =
+        _tmp34 * values_vec[2].list_of_lists[1][0].data()[1];
+    _values_vec_out[2].list_of_lists[1][0].data()[2] =
+        _tmp34 * values_vec[2].list_of_lists[1][0].data()[2];
+    _values_vec_out[2].list_of_lists[1][0].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[1][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[1][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[1][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[1][0].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[1][1].data()[0] =
+        _tmp35 * values_vec[2].list_of_lists[1][1].data()[0];
+    _values_vec_out[2].list_of_lists[1][1].data()[1] =
+        _tmp35 * values_vec[2].list_of_lists[1][1].data()[1];
+    _values_vec_out[2].list_of_lists[1][1].data()[2] =
+        _tmp35 * values_vec[2].list_of_lists[1][1].data()[2];
+    _values_vec_out[2].list_of_lists[1][1].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[1][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[1][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[1][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[1][1].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[1][2].data()[0] =
+        _tmp36 * values_vec[2].list_of_lists[1][2].data()[0];
+    _values_vec_out[2].list_of_lists[1][2].data()[1] =
+        _tmp36 * values_vec[2].list_of_lists[1][2].data()[1];
+    _values_vec_out[2].list_of_lists[1][2].data()[2] =
+        _tmp36 * values_vec[2].list_of_lists[1][2].data()[2];
+    _values_vec_out[2].list_of_lists[1][2].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[1][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[1][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[1][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[1][2].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[2][0].data()[0] =
+        _tmp37 * values_vec[2].list_of_lists[2][0].data()[0];
+    _values_vec_out[2].list_of_lists[2][0].data()[1] =
+        _tmp37 * values_vec[2].list_of_lists[2][0].data()[1];
+    _values_vec_out[2].list_of_lists[2][0].data()[2] =
+        _tmp37 * values_vec[2].list_of_lists[2][0].data()[2];
+    _values_vec_out[2].list_of_lists[2][0].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[2][0].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[2][0].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[2][0].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[2][0].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[2][1].data()[0] =
+        _tmp38 * values_vec[2].list_of_lists[2][1].data()[0];
+    _values_vec_out[2].list_of_lists[2][1].data()[1] =
+        _tmp38 * values_vec[2].list_of_lists[2][1].data()[1];
+    _values_vec_out[2].list_of_lists[2][1].data()[2] =
+        _tmp38 * values_vec[2].list_of_lists[2][1].data()[2];
+    _values_vec_out[2].list_of_lists[2][1].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[2][1].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[2][1].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[2][1].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[2][1].data()[3], Scalar(2));
+    _values_vec_out[2].list_of_lists[2][2].data()[0] =
+        _tmp39 * values_vec[2].list_of_lists[2][2].data()[0];
+    _values_vec_out[2].list_of_lists[2][2].data()[1] =
+        _tmp39 * values_vec[2].list_of_lists[2][2].data()[1];
+    _values_vec_out[2].list_of_lists[2][2].data()[2] =
+        _tmp39 * values_vec[2].list_of_lists[2][2].data()[2];
+    _values_vec_out[2].list_of_lists[2][2].data()[3] =
+        -std::pow(values_vec[2].list_of_lists[2][2].data()[0], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[2][2].data()[1], Scalar(2)) -
+        std::pow(values_vec[2].list_of_lists[2][2].data()[2], Scalar(2)) +
+        std::pow(values_vec[2].list_of_lists[2][2].data()[3], Scalar(2));
   }
 
   if (values_vec_2D_out != nullptr) {
@@ -469,274 +562,294 @@ void CodegenCppTest(
 
     _values_vec_2D_out[0][0].x = 2 * values_vec_2D[0][0].x;
     _values_vec_2D_out[0][0].y = 2 * values_vec_2D[0][0].y;
-    _values_vec_2D_out[0][0].rot[0] = _tmp40 * values_vec_2D[0][0].rot[0];
-    _values_vec_2D_out[0][0].rot[1] = _tmp40 * values_vec_2D[0][0].rot[1];
-    _values_vec_2D_out[0][0].rot[2] = _tmp40 * values_vec_2D[0][0].rot[2];
-    _values_vec_2D_out[0][0].rot[3] = -std::pow(values_vec_2D[0][0].rot[0], Scalar(2)) -
-                                      std::pow(values_vec_2D[0][0].rot[1], Scalar(2)) -
-                                      std::pow(values_vec_2D[0][0].rot[2], Scalar(2)) +
-                                      std::pow(values_vec_2D[0][0].rot[3], Scalar(2));
-    _values_vec_2D_out[0][0].rot_vec[0][0] = _tmp41 * values_vec_2D[0][0].rot_vec[0][0];
-    _values_vec_2D_out[0][0].rot_vec[0][1] = _tmp41 * values_vec_2D[0][0].rot_vec[0][1];
-    _values_vec_2D_out[0][0].rot_vec[0][2] = _tmp41 * values_vec_2D[0][0].rot_vec[0][2];
-    _values_vec_2D_out[0][0].rot_vec[0][3] =
-        -std::pow(values_vec_2D[0][0].rot_vec[0][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].rot_vec[0][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].rot_vec[0][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].rot_vec[0][3], Scalar(2));
-    _values_vec_2D_out[0][0].rot_vec[1][0] = _tmp42 * values_vec_2D[0][0].rot_vec[1][0];
-    _values_vec_2D_out[0][0].rot_vec[1][1] = _tmp42 * values_vec_2D[0][0].rot_vec[1][1];
-    _values_vec_2D_out[0][0].rot_vec[1][2] = _tmp42 * values_vec_2D[0][0].rot_vec[1][2];
-    _values_vec_2D_out[0][0].rot_vec[1][3] =
-        -std::pow(values_vec_2D[0][0].rot_vec[1][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].rot_vec[1][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].rot_vec[1][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].rot_vec[1][3], Scalar(2));
-    _values_vec_2D_out[0][0].rot_vec[2][0] = _tmp43 * values_vec_2D[0][0].rot_vec[2][0];
-    _values_vec_2D_out[0][0].rot_vec[2][1] = _tmp43 * values_vec_2D[0][0].rot_vec[2][1];
-    _values_vec_2D_out[0][0].rot_vec[2][2] = _tmp43 * values_vec_2D[0][0].rot_vec[2][2];
-    _values_vec_2D_out[0][0].rot_vec[2][3] =
-        -std::pow(values_vec_2D[0][0].rot_vec[2][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].rot_vec[2][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].rot_vec[2][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].rot_vec[2][3], Scalar(2));
+    _values_vec_2D_out[0][0].rot.data()[0] = _tmp40 * values_vec_2D[0][0].rot.data()[0];
+    _values_vec_2D_out[0][0].rot.data()[1] = _tmp40 * values_vec_2D[0][0].rot.data()[1];
+    _values_vec_2D_out[0][0].rot.data()[2] = _tmp40 * values_vec_2D[0][0].rot.data()[2];
+    _values_vec_2D_out[0][0].rot.data()[3] =
+        -std::pow(values_vec_2D[0][0].rot.data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot.data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot.data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].rot.data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].rot_vec[0].data()[0] =
+        _tmp41 * values_vec_2D[0][0].rot_vec[0].data()[0];
+    _values_vec_2D_out[0][0].rot_vec[0].data()[1] =
+        _tmp41 * values_vec_2D[0][0].rot_vec[0].data()[1];
+    _values_vec_2D_out[0][0].rot_vec[0].data()[2] =
+        _tmp41 * values_vec_2D[0][0].rot_vec[0].data()[2];
+    _values_vec_2D_out[0][0].rot_vec[0].data()[3] =
+        -std::pow(values_vec_2D[0][0].rot_vec[0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot_vec[0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot_vec[0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].rot_vec[0].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].rot_vec[1].data()[0] =
+        _tmp42 * values_vec_2D[0][0].rot_vec[1].data()[0];
+    _values_vec_2D_out[0][0].rot_vec[1].data()[1] =
+        _tmp42 * values_vec_2D[0][0].rot_vec[1].data()[1];
+    _values_vec_2D_out[0][0].rot_vec[1].data()[2] =
+        _tmp42 * values_vec_2D[0][0].rot_vec[1].data()[2];
+    _values_vec_2D_out[0][0].rot_vec[1].data()[3] =
+        -std::pow(values_vec_2D[0][0].rot_vec[1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot_vec[1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot_vec[1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].rot_vec[1].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].rot_vec[2].data()[0] =
+        _tmp43 * values_vec_2D[0][0].rot_vec[2].data()[0];
+    _values_vec_2D_out[0][0].rot_vec[2].data()[1] =
+        _tmp43 * values_vec_2D[0][0].rot_vec[2].data()[1];
+    _values_vec_2D_out[0][0].rot_vec[2].data()[2] =
+        _tmp43 * values_vec_2D[0][0].rot_vec[2].data()[2];
+    _values_vec_2D_out[0][0].rot_vec[2].data()[3] =
+        -std::pow(values_vec_2D[0][0].rot_vec[2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot_vec[2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].rot_vec[2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].rot_vec[2].data()[3], Scalar(2));
     _values_vec_2D_out[0][0].scalar_vec[0] = 2 * values_vec_2D[0][0].scalar_vec[0];
     _values_vec_2D_out[0][0].scalar_vec[1] = 2 * values_vec_2D[0][0].scalar_vec[1];
     _values_vec_2D_out[0][0].scalar_vec[2] = 2 * values_vec_2D[0][0].scalar_vec[2];
-    _values_vec_2D_out[0][0].list_of_lists[0][0][0] =
-        _tmp44 * values_vec_2D[0][0].list_of_lists[0][0][0];
-    _values_vec_2D_out[0][0].list_of_lists[0][0][1] =
-        _tmp44 * values_vec_2D[0][0].list_of_lists[0][0][1];
-    _values_vec_2D_out[0][0].list_of_lists[0][0][2] =
-        _tmp44 * values_vec_2D[0][0].list_of_lists[0][0][2];
-    _values_vec_2D_out[0][0].list_of_lists[0][0][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[0][0][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[0][0][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[0][0][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[0][0][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[0][1][0] =
-        _tmp45 * values_vec_2D[0][0].list_of_lists[0][1][0];
-    _values_vec_2D_out[0][0].list_of_lists[0][1][1] =
-        _tmp45 * values_vec_2D[0][0].list_of_lists[0][1][1];
-    _values_vec_2D_out[0][0].list_of_lists[0][1][2] =
-        _tmp45 * values_vec_2D[0][0].list_of_lists[0][1][2];
-    _values_vec_2D_out[0][0].list_of_lists[0][1][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[0][1][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[0][1][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[0][1][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[0][1][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[0][2][0] =
-        _tmp46 * values_vec_2D[0][0].list_of_lists[0][2][0];
-    _values_vec_2D_out[0][0].list_of_lists[0][2][1] =
-        _tmp46 * values_vec_2D[0][0].list_of_lists[0][2][1];
-    _values_vec_2D_out[0][0].list_of_lists[0][2][2] =
-        _tmp46 * values_vec_2D[0][0].list_of_lists[0][2][2];
-    _values_vec_2D_out[0][0].list_of_lists[0][2][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[0][2][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[0][2][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[0][2][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[0][2][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[1][0][0] =
-        _tmp47 * values_vec_2D[0][0].list_of_lists[1][0][0];
-    _values_vec_2D_out[0][0].list_of_lists[1][0][1] =
-        _tmp47 * values_vec_2D[0][0].list_of_lists[1][0][1];
-    _values_vec_2D_out[0][0].list_of_lists[1][0][2] =
-        _tmp47 * values_vec_2D[0][0].list_of_lists[1][0][2];
-    _values_vec_2D_out[0][0].list_of_lists[1][0][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[1][0][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[1][0][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[1][0][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[1][0][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[1][1][0] =
-        _tmp48 * values_vec_2D[0][0].list_of_lists[1][1][0];
-    _values_vec_2D_out[0][0].list_of_lists[1][1][1] =
-        _tmp48 * values_vec_2D[0][0].list_of_lists[1][1][1];
-    _values_vec_2D_out[0][0].list_of_lists[1][1][2] =
-        _tmp48 * values_vec_2D[0][0].list_of_lists[1][1][2];
-    _values_vec_2D_out[0][0].list_of_lists[1][1][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[1][1][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[1][1][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[1][1][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[1][1][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[1][2][0] =
-        _tmp49 * values_vec_2D[0][0].list_of_lists[1][2][0];
-    _values_vec_2D_out[0][0].list_of_lists[1][2][1] =
-        _tmp49 * values_vec_2D[0][0].list_of_lists[1][2][1];
-    _values_vec_2D_out[0][0].list_of_lists[1][2][2] =
-        _tmp49 * values_vec_2D[0][0].list_of_lists[1][2][2];
-    _values_vec_2D_out[0][0].list_of_lists[1][2][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[1][2][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[1][2][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[1][2][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[1][2][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[2][0][0] =
-        _tmp50 * values_vec_2D[0][0].list_of_lists[2][0][0];
-    _values_vec_2D_out[0][0].list_of_lists[2][0][1] =
-        _tmp50 * values_vec_2D[0][0].list_of_lists[2][0][1];
-    _values_vec_2D_out[0][0].list_of_lists[2][0][2] =
-        _tmp50 * values_vec_2D[0][0].list_of_lists[2][0][2];
-    _values_vec_2D_out[0][0].list_of_lists[2][0][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[2][0][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[2][0][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[2][0][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[2][0][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[2][1][0] =
-        _tmp51 * values_vec_2D[0][0].list_of_lists[2][1][0];
-    _values_vec_2D_out[0][0].list_of_lists[2][1][1] =
-        _tmp51 * values_vec_2D[0][0].list_of_lists[2][1][1];
-    _values_vec_2D_out[0][0].list_of_lists[2][1][2] =
-        _tmp51 * values_vec_2D[0][0].list_of_lists[2][1][2];
-    _values_vec_2D_out[0][0].list_of_lists[2][1][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[2][1][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[2][1][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[2][1][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[2][1][3], Scalar(2));
-    _values_vec_2D_out[0][0].list_of_lists[2][2][0] =
-        _tmp52 * values_vec_2D[0][0].list_of_lists[2][2][0];
-    _values_vec_2D_out[0][0].list_of_lists[2][2][1] =
-        _tmp52 * values_vec_2D[0][0].list_of_lists[2][2][1];
-    _values_vec_2D_out[0][0].list_of_lists[2][2][2] =
-        _tmp52 * values_vec_2D[0][0].list_of_lists[2][2][2];
-    _values_vec_2D_out[0][0].list_of_lists[2][2][3] =
-        -std::pow(values_vec_2D[0][0].list_of_lists[2][2][0], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[2][2][1], Scalar(2)) -
-        std::pow(values_vec_2D[0][0].list_of_lists[2][2][2], Scalar(2)) +
-        std::pow(values_vec_2D[0][0].list_of_lists[2][2][3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[0][0].data()[0] =
+        _tmp44 * values_vec_2D[0][0].list_of_lists[0][0].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[0][0].data()[1] =
+        _tmp44 * values_vec_2D[0][0].list_of_lists[0][0].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[0][0].data()[2] =
+        _tmp44 * values_vec_2D[0][0].list_of_lists[0][0].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[0][0].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[0][0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[0][0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[0][0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[0][0].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[0][1].data()[0] =
+        _tmp45 * values_vec_2D[0][0].list_of_lists[0][1].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[0][1].data()[1] =
+        _tmp45 * values_vec_2D[0][0].list_of_lists[0][1].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[0][1].data()[2] =
+        _tmp45 * values_vec_2D[0][0].list_of_lists[0][1].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[0][1].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[0][1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[0][1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[0][1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[0][1].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[0][2].data()[0] =
+        _tmp46 * values_vec_2D[0][0].list_of_lists[0][2].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[0][2].data()[1] =
+        _tmp46 * values_vec_2D[0][0].list_of_lists[0][2].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[0][2].data()[2] =
+        _tmp46 * values_vec_2D[0][0].list_of_lists[0][2].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[0][2].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[0][2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[0][2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[0][2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[0][2].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[1][0].data()[0] =
+        _tmp47 * values_vec_2D[0][0].list_of_lists[1][0].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[1][0].data()[1] =
+        _tmp47 * values_vec_2D[0][0].list_of_lists[1][0].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[1][0].data()[2] =
+        _tmp47 * values_vec_2D[0][0].list_of_lists[1][0].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[1][0].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[1][0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[1][0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[1][0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[1][0].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[1][1].data()[0] =
+        _tmp48 * values_vec_2D[0][0].list_of_lists[1][1].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[1][1].data()[1] =
+        _tmp48 * values_vec_2D[0][0].list_of_lists[1][1].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[1][1].data()[2] =
+        _tmp48 * values_vec_2D[0][0].list_of_lists[1][1].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[1][1].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[1][1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[1][1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[1][1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[1][1].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[1][2].data()[0] =
+        _tmp49 * values_vec_2D[0][0].list_of_lists[1][2].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[1][2].data()[1] =
+        _tmp49 * values_vec_2D[0][0].list_of_lists[1][2].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[1][2].data()[2] =
+        _tmp49 * values_vec_2D[0][0].list_of_lists[1][2].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[1][2].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[1][2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[1][2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[1][2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[1][2].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[2][0].data()[0] =
+        _tmp50 * values_vec_2D[0][0].list_of_lists[2][0].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[2][0].data()[1] =
+        _tmp50 * values_vec_2D[0][0].list_of_lists[2][0].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[2][0].data()[2] =
+        _tmp50 * values_vec_2D[0][0].list_of_lists[2][0].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[2][0].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[2][0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[2][0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[2][0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[2][0].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[2][1].data()[0] =
+        _tmp51 * values_vec_2D[0][0].list_of_lists[2][1].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[2][1].data()[1] =
+        _tmp51 * values_vec_2D[0][0].list_of_lists[2][1].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[2][1].data()[2] =
+        _tmp51 * values_vec_2D[0][0].list_of_lists[2][1].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[2][1].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[2][1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[2][1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[2][1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[2][1].data()[3], Scalar(2));
+    _values_vec_2D_out[0][0].list_of_lists[2][2].data()[0] =
+        _tmp52 * values_vec_2D[0][0].list_of_lists[2][2].data()[0];
+    _values_vec_2D_out[0][0].list_of_lists[2][2].data()[1] =
+        _tmp52 * values_vec_2D[0][0].list_of_lists[2][2].data()[1];
+    _values_vec_2D_out[0][0].list_of_lists[2][2].data()[2] =
+        _tmp52 * values_vec_2D[0][0].list_of_lists[2][2].data()[2];
+    _values_vec_2D_out[0][0].list_of_lists[2][2].data()[3] =
+        -std::pow(values_vec_2D[0][0].list_of_lists[2][2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[2][2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[0][0].list_of_lists[2][2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[0][0].list_of_lists[2][2].data()[3], Scalar(2));
     _values_vec_2D_out[1][0].x = 2 * values_vec_2D[1][0].x;
     _values_vec_2D_out[1][0].y = 2 * values_vec_2D[1][0].y;
-    _values_vec_2D_out[1][0].rot[0] = _tmp53 * values_vec_2D[1][0].rot[0];
-    _values_vec_2D_out[1][0].rot[1] = _tmp53 * values_vec_2D[1][0].rot[1];
-    _values_vec_2D_out[1][0].rot[2] = _tmp53 * values_vec_2D[1][0].rot[2];
-    _values_vec_2D_out[1][0].rot[3] = -std::pow(values_vec_2D[1][0].rot[0], Scalar(2)) -
-                                      std::pow(values_vec_2D[1][0].rot[1], Scalar(2)) -
-                                      std::pow(values_vec_2D[1][0].rot[2], Scalar(2)) +
-                                      std::pow(values_vec_2D[1][0].rot[3], Scalar(2));
-    _values_vec_2D_out[1][0].rot_vec[0][0] = _tmp54 * values_vec_2D[1][0].rot_vec[0][0];
-    _values_vec_2D_out[1][0].rot_vec[0][1] = _tmp54 * values_vec_2D[1][0].rot_vec[0][1];
-    _values_vec_2D_out[1][0].rot_vec[0][2] = _tmp54 * values_vec_2D[1][0].rot_vec[0][2];
-    _values_vec_2D_out[1][0].rot_vec[0][3] =
-        -std::pow(values_vec_2D[1][0].rot_vec[0][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].rot_vec[0][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].rot_vec[0][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].rot_vec[0][3], Scalar(2));
-    _values_vec_2D_out[1][0].rot_vec[1][0] = _tmp55 * values_vec_2D[1][0].rot_vec[1][0];
-    _values_vec_2D_out[1][0].rot_vec[1][1] = _tmp55 * values_vec_2D[1][0].rot_vec[1][1];
-    _values_vec_2D_out[1][0].rot_vec[1][2] = _tmp55 * values_vec_2D[1][0].rot_vec[1][2];
-    _values_vec_2D_out[1][0].rot_vec[1][3] =
-        -std::pow(values_vec_2D[1][0].rot_vec[1][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].rot_vec[1][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].rot_vec[1][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].rot_vec[1][3], Scalar(2));
-    _values_vec_2D_out[1][0].rot_vec[2][0] = _tmp56 * values_vec_2D[1][0].rot_vec[2][0];
-    _values_vec_2D_out[1][0].rot_vec[2][1] = _tmp56 * values_vec_2D[1][0].rot_vec[2][1];
-    _values_vec_2D_out[1][0].rot_vec[2][2] = _tmp56 * values_vec_2D[1][0].rot_vec[2][2];
-    _values_vec_2D_out[1][0].rot_vec[2][3] =
-        -std::pow(values_vec_2D[1][0].rot_vec[2][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].rot_vec[2][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].rot_vec[2][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].rot_vec[2][3], Scalar(2));
+    _values_vec_2D_out[1][0].rot.data()[0] = _tmp53 * values_vec_2D[1][0].rot.data()[0];
+    _values_vec_2D_out[1][0].rot.data()[1] = _tmp53 * values_vec_2D[1][0].rot.data()[1];
+    _values_vec_2D_out[1][0].rot.data()[2] = _tmp53 * values_vec_2D[1][0].rot.data()[2];
+    _values_vec_2D_out[1][0].rot.data()[3] =
+        -std::pow(values_vec_2D[1][0].rot.data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot.data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot.data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].rot.data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].rot_vec[0].data()[0] =
+        _tmp54 * values_vec_2D[1][0].rot_vec[0].data()[0];
+    _values_vec_2D_out[1][0].rot_vec[0].data()[1] =
+        _tmp54 * values_vec_2D[1][0].rot_vec[0].data()[1];
+    _values_vec_2D_out[1][0].rot_vec[0].data()[2] =
+        _tmp54 * values_vec_2D[1][0].rot_vec[0].data()[2];
+    _values_vec_2D_out[1][0].rot_vec[0].data()[3] =
+        -std::pow(values_vec_2D[1][0].rot_vec[0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot_vec[0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot_vec[0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].rot_vec[0].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].rot_vec[1].data()[0] =
+        _tmp55 * values_vec_2D[1][0].rot_vec[1].data()[0];
+    _values_vec_2D_out[1][0].rot_vec[1].data()[1] =
+        _tmp55 * values_vec_2D[1][0].rot_vec[1].data()[1];
+    _values_vec_2D_out[1][0].rot_vec[1].data()[2] =
+        _tmp55 * values_vec_2D[1][0].rot_vec[1].data()[2];
+    _values_vec_2D_out[1][0].rot_vec[1].data()[3] =
+        -std::pow(values_vec_2D[1][0].rot_vec[1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot_vec[1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot_vec[1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].rot_vec[1].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].rot_vec[2].data()[0] =
+        _tmp56 * values_vec_2D[1][0].rot_vec[2].data()[0];
+    _values_vec_2D_out[1][0].rot_vec[2].data()[1] =
+        _tmp56 * values_vec_2D[1][0].rot_vec[2].data()[1];
+    _values_vec_2D_out[1][0].rot_vec[2].data()[2] =
+        _tmp56 * values_vec_2D[1][0].rot_vec[2].data()[2];
+    _values_vec_2D_out[1][0].rot_vec[2].data()[3] =
+        -std::pow(values_vec_2D[1][0].rot_vec[2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot_vec[2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].rot_vec[2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].rot_vec[2].data()[3], Scalar(2));
     _values_vec_2D_out[1][0].scalar_vec[0] = 2 * values_vec_2D[1][0].scalar_vec[0];
     _values_vec_2D_out[1][0].scalar_vec[1] = 2 * values_vec_2D[1][0].scalar_vec[1];
     _values_vec_2D_out[1][0].scalar_vec[2] = 2 * values_vec_2D[1][0].scalar_vec[2];
-    _values_vec_2D_out[1][0].list_of_lists[0][0][0] =
-        _tmp57 * values_vec_2D[1][0].list_of_lists[0][0][0];
-    _values_vec_2D_out[1][0].list_of_lists[0][0][1] =
-        _tmp57 * values_vec_2D[1][0].list_of_lists[0][0][1];
-    _values_vec_2D_out[1][0].list_of_lists[0][0][2] =
-        _tmp57 * values_vec_2D[1][0].list_of_lists[0][0][2];
-    _values_vec_2D_out[1][0].list_of_lists[0][0][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[0][0][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[0][0][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[0][0][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[0][0][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[0][1][0] =
-        _tmp58 * values_vec_2D[1][0].list_of_lists[0][1][0];
-    _values_vec_2D_out[1][0].list_of_lists[0][1][1] =
-        _tmp58 * values_vec_2D[1][0].list_of_lists[0][1][1];
-    _values_vec_2D_out[1][0].list_of_lists[0][1][2] =
-        _tmp58 * values_vec_2D[1][0].list_of_lists[0][1][2];
-    _values_vec_2D_out[1][0].list_of_lists[0][1][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[0][1][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[0][1][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[0][1][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[0][1][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[0][2][0] =
-        _tmp59 * values_vec_2D[1][0].list_of_lists[0][2][0];
-    _values_vec_2D_out[1][0].list_of_lists[0][2][1] =
-        _tmp59 * values_vec_2D[1][0].list_of_lists[0][2][1];
-    _values_vec_2D_out[1][0].list_of_lists[0][2][2] =
-        _tmp59 * values_vec_2D[1][0].list_of_lists[0][2][2];
-    _values_vec_2D_out[1][0].list_of_lists[0][2][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[0][2][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[0][2][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[0][2][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[0][2][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[1][0][0] =
-        _tmp60 * values_vec_2D[1][0].list_of_lists[1][0][0];
-    _values_vec_2D_out[1][0].list_of_lists[1][0][1] =
-        _tmp60 * values_vec_2D[1][0].list_of_lists[1][0][1];
-    _values_vec_2D_out[1][0].list_of_lists[1][0][2] =
-        _tmp60 * values_vec_2D[1][0].list_of_lists[1][0][2];
-    _values_vec_2D_out[1][0].list_of_lists[1][0][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[1][0][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[1][0][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[1][0][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[1][0][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[1][1][0] =
-        _tmp61 * values_vec_2D[1][0].list_of_lists[1][1][0];
-    _values_vec_2D_out[1][0].list_of_lists[1][1][1] =
-        _tmp61 * values_vec_2D[1][0].list_of_lists[1][1][1];
-    _values_vec_2D_out[1][0].list_of_lists[1][1][2] =
-        _tmp61 * values_vec_2D[1][0].list_of_lists[1][1][2];
-    _values_vec_2D_out[1][0].list_of_lists[1][1][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[1][1][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[1][1][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[1][1][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[1][1][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[1][2][0] =
-        _tmp62 * values_vec_2D[1][0].list_of_lists[1][2][0];
-    _values_vec_2D_out[1][0].list_of_lists[1][2][1] =
-        _tmp62 * values_vec_2D[1][0].list_of_lists[1][2][1];
-    _values_vec_2D_out[1][0].list_of_lists[1][2][2] =
-        _tmp62 * values_vec_2D[1][0].list_of_lists[1][2][2];
-    _values_vec_2D_out[1][0].list_of_lists[1][2][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[1][2][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[1][2][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[1][2][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[1][2][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[2][0][0] =
-        _tmp63 * values_vec_2D[1][0].list_of_lists[2][0][0];
-    _values_vec_2D_out[1][0].list_of_lists[2][0][1] =
-        _tmp63 * values_vec_2D[1][0].list_of_lists[2][0][1];
-    _values_vec_2D_out[1][0].list_of_lists[2][0][2] =
-        _tmp63 * values_vec_2D[1][0].list_of_lists[2][0][2];
-    _values_vec_2D_out[1][0].list_of_lists[2][0][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[2][0][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[2][0][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[2][0][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[2][0][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[2][1][0] =
-        _tmp64 * values_vec_2D[1][0].list_of_lists[2][1][0];
-    _values_vec_2D_out[1][0].list_of_lists[2][1][1] =
-        _tmp64 * values_vec_2D[1][0].list_of_lists[2][1][1];
-    _values_vec_2D_out[1][0].list_of_lists[2][1][2] =
-        _tmp64 * values_vec_2D[1][0].list_of_lists[2][1][2];
-    _values_vec_2D_out[1][0].list_of_lists[2][1][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[2][1][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[2][1][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[2][1][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[2][1][3], Scalar(2));
-    _values_vec_2D_out[1][0].list_of_lists[2][2][0] =
-        _tmp65 * values_vec_2D[1][0].list_of_lists[2][2][0];
-    _values_vec_2D_out[1][0].list_of_lists[2][2][1] =
-        _tmp65 * values_vec_2D[1][0].list_of_lists[2][2][1];
-    _values_vec_2D_out[1][0].list_of_lists[2][2][2] =
-        _tmp65 * values_vec_2D[1][0].list_of_lists[2][2][2];
-    _values_vec_2D_out[1][0].list_of_lists[2][2][3] =
-        -std::pow(values_vec_2D[1][0].list_of_lists[2][2][0], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[2][2][1], Scalar(2)) -
-        std::pow(values_vec_2D[1][0].list_of_lists[2][2][2], Scalar(2)) +
-        std::pow(values_vec_2D[1][0].list_of_lists[2][2][3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[0][0].data()[0] =
+        _tmp57 * values_vec_2D[1][0].list_of_lists[0][0].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[0][0].data()[1] =
+        _tmp57 * values_vec_2D[1][0].list_of_lists[0][0].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[0][0].data()[2] =
+        _tmp57 * values_vec_2D[1][0].list_of_lists[0][0].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[0][0].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[0][0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[0][0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[0][0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[0][0].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[0][1].data()[0] =
+        _tmp58 * values_vec_2D[1][0].list_of_lists[0][1].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[0][1].data()[1] =
+        _tmp58 * values_vec_2D[1][0].list_of_lists[0][1].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[0][1].data()[2] =
+        _tmp58 * values_vec_2D[1][0].list_of_lists[0][1].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[0][1].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[0][1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[0][1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[0][1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[0][1].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[0][2].data()[0] =
+        _tmp59 * values_vec_2D[1][0].list_of_lists[0][2].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[0][2].data()[1] =
+        _tmp59 * values_vec_2D[1][0].list_of_lists[0][2].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[0][2].data()[2] =
+        _tmp59 * values_vec_2D[1][0].list_of_lists[0][2].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[0][2].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[0][2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[0][2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[0][2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[0][2].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[1][0].data()[0] =
+        _tmp60 * values_vec_2D[1][0].list_of_lists[1][0].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[1][0].data()[1] =
+        _tmp60 * values_vec_2D[1][0].list_of_lists[1][0].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[1][0].data()[2] =
+        _tmp60 * values_vec_2D[1][0].list_of_lists[1][0].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[1][0].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[1][0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[1][0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[1][0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[1][0].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[1][1].data()[0] =
+        _tmp61 * values_vec_2D[1][0].list_of_lists[1][1].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[1][1].data()[1] =
+        _tmp61 * values_vec_2D[1][0].list_of_lists[1][1].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[1][1].data()[2] =
+        _tmp61 * values_vec_2D[1][0].list_of_lists[1][1].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[1][1].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[1][1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[1][1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[1][1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[1][1].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[1][2].data()[0] =
+        _tmp62 * values_vec_2D[1][0].list_of_lists[1][2].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[1][2].data()[1] =
+        _tmp62 * values_vec_2D[1][0].list_of_lists[1][2].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[1][2].data()[2] =
+        _tmp62 * values_vec_2D[1][0].list_of_lists[1][2].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[1][2].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[1][2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[1][2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[1][2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[1][2].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[2][0].data()[0] =
+        _tmp63 * values_vec_2D[1][0].list_of_lists[2][0].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[2][0].data()[1] =
+        _tmp63 * values_vec_2D[1][0].list_of_lists[2][0].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[2][0].data()[2] =
+        _tmp63 * values_vec_2D[1][0].list_of_lists[2][0].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[2][0].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[2][0].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[2][0].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[2][0].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[2][0].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[2][1].data()[0] =
+        _tmp64 * values_vec_2D[1][0].list_of_lists[2][1].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[2][1].data()[1] =
+        _tmp64 * values_vec_2D[1][0].list_of_lists[2][1].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[2][1].data()[2] =
+        _tmp64 * values_vec_2D[1][0].list_of_lists[2][1].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[2][1].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[2][1].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[2][1].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[2][1].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[2][1].data()[3], Scalar(2));
+    _values_vec_2D_out[1][0].list_of_lists[2][2].data()[0] =
+        _tmp65 * values_vec_2D[1][0].list_of_lists[2][2].data()[0];
+    _values_vec_2D_out[1][0].list_of_lists[2][2].data()[1] =
+        _tmp65 * values_vec_2D[1][0].list_of_lists[2][2].data()[1];
+    _values_vec_2D_out[1][0].list_of_lists[2][2].data()[2] =
+        _tmp65 * values_vec_2D[1][0].list_of_lists[2][2].data()[2];
+    _values_vec_2D_out[1][0].list_of_lists[2][2].data()[3] =
+        -std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[0], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[1], Scalar(2)) -
+        std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[2], Scalar(2)) +
+        std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[3], Scalar(2));
   }
 }  // NOLINT(readability/fn_size)
 

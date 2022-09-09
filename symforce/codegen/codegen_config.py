@@ -25,7 +25,6 @@ class CodegenConfig:
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         cse_optimizations: Optimizations argument to pass to sf.cse
-        matrix_is_1d: Whether sf.Matrix symbols get formatted as 1D
     """
 
     doc_comment_line_prefix: str
@@ -35,8 +34,6 @@ class CodegenConfig:
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None
-    # TODO(hayk): Remove this parameter (by making everything 2D?)
-    matrix_is_1d: bool = False
 
     @classmethod
     @abstractmethod
@@ -77,3 +74,28 @@ class CodegenConfig:
         Format data for accessing a data array in code.
         """
         return f"{prefix}.data[{index}]"
+
+    @staticmethod
+    def _assert_indices_in_bounds(row: int, col: int, shape: T.Tuple[int, int]) -> None:
+        if row < 0 or shape[0] <= row:
+            raise IndexError(f"Row index {row} is out of bounds (size {shape[0]})")
+        if col < 0 or shape[1] <= col:
+            raise IndexError(f"Column index {col} is out of bounds (size {shape[1]})")
+
+    @abstractmethod
+    def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
+        """
+        Format accessor for 2D matrices.
+        Raises an index exception if either of the following is false:
+            0 <= i < shape[0]
+            0 <= j < shape[1]
+        """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def format_eigen_lcm_accessor(key: str, i: int) -> str:
+        """
+        Format accessor for eigen_lcm types.
+        """
+        pass

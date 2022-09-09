@@ -72,3 +72,14 @@ class CppConfig(CodegenConfig):
     @staticmethod
     def format_data_accessor(prefix: str, index: int) -> str:
         return f"{prefix}.Data()[{index}]"
+
+    def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
+        CppConfig._assert_indices_in_bounds(i, j, shape)
+        return f"{key}({i}, {j})"
+
+    @staticmethod
+    def format_eigen_lcm_accessor(key: str, i: int) -> str:
+        """
+        Format accessor for eigen_lcm types.
+        """
+        return f"{key}.data()[{i}]"
