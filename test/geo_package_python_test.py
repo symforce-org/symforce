@@ -95,17 +95,17 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim).tolist()
+        perturbation = np.random.rand(tangent_dim, 1)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
 
         identity = geo_class.identity()
-        recovered_identity = value.retract([-x for x in recovered_perturbation])
+        recovered_identity = value.retract(-recovered_perturbation)
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
 
     def test_custom_methods_Rot2(self):
         # type: () -> None
@@ -117,7 +117,7 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         vector = np.random.normal(size=2)
         matrix = element.to_rotation_matrix()
@@ -185,17 +185,17 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim).tolist()
+        perturbation = np.random.rand(tangent_dim, 1)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
 
         identity = geo_class.identity()
-        recovered_identity = value.retract([-x for x in recovered_perturbation])
+        recovered_identity = value.retract(-recovered_perturbation)
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
 
     def test_custom_methods_Pose2(self):
         # type: () -> None
@@ -207,7 +207,7 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         vector = np.random.normal(size=2)
         vector_as_element = geo_class(t=vector.tolist())
@@ -279,17 +279,17 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim).tolist()
+        perturbation = np.random.rand(tangent_dim, 1)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
 
         identity = geo_class.identity()
-        recovered_identity = value.retract([-x for x in recovered_perturbation])
+        recovered_identity = value.retract(-recovered_perturbation)
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
 
     def test_custom_methods_Rot3(self):
         # type: () -> None
@@ -301,7 +301,7 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         vector = np.random.normal(size=3)
         matrix = element.to_rotation_matrix()
@@ -369,17 +369,17 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim).tolist()
+        perturbation = np.random.rand(tangent_dim, 1)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
 
         identity = geo_class.identity()
-        recovered_identity = value.retract([-x for x in recovered_perturbation])
+        recovered_identity = value.retract(-recovered_perturbation)
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
 
     def test_custom_methods_Pose3(self):
         # type: () -> None
@@ -391,7 +391,7 @@ class GeoPackageTest(unittest.TestCase):
         print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
-        element = geo_class.from_tangent(np.random.normal(size=tangent_dim).tolist())
+        element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         vector = np.random.normal(size=3)
         vector_as_element = geo_class(t=vector.tolist())

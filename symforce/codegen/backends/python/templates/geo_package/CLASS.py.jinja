@@ -100,7 +100,7 @@ class {{ cls.__name__ }}(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
+        # type: (np.ndarray, float) -> {{ cls.__name__ }}
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -110,11 +110,11 @@ class {{ cls.__name__ }}(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> np.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
+        # type: (np.ndarray, float) -> {{ cls.__name__ }}
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -124,7 +124,7 @@ class {{ cls.__name__ }}(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: ({{ cls.__name__ }}, float) -> T.List[float]
+        # type: ({{ cls.__name__ }}, float) -> np.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
     {% endif %}
 

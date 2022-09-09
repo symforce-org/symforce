@@ -15,7 +15,7 @@ import sym  # pylint: disable=unused-import
 
 
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
-    # type: (sym.Pose3, T.Sequence[float], float) -> T.List[float]
+    # type: (sym.Pose3, numpy.ndarray, float) -> numpy.ndarray
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.
@@ -33,6 +33,8 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
 
     # Input arrays
     _nav_T_cam = nav_T_cam.data
+    if len(nav_t_point.shape) == 1:
+        nav_t_point = nav_t_point.reshape((3, 1))
 
     # Intermediate terms (23)
     _tmp0 = 2 * _nav_T_cam[3]
@@ -48,9 +50,9 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
         -_nav_T_cam[4] * _tmp2
         - _nav_T_cam[5] * _tmp8
         - _nav_T_cam[6] * _tmp5
-        + _tmp2 * nav_t_point[0]
-        + _tmp5 * nav_t_point[2]
-        + _tmp8 * nav_t_point[1]
+        + _tmp2 * nav_t_point[0, 0]
+        + _tmp5 * nav_t_point[2, 0]
+        + _tmp8 * nav_t_point[1, 0]
     )
     _tmp10 = _nav_T_cam[0] * _tmp4 + _tmp1
     _tmp11 = _nav_T_cam[1] * _tmp0
@@ -61,11 +63,11 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
     _tmp16 = -_tmp15 - _tmp7
     _tmp17 = _nav_T_cam[4] * _tmp16
     _tmp18 = (
-        _tmp10 * nav_t_point[1]
-        + _tmp12 * nav_t_point[2]
+        _tmp10 * nav_t_point[1, 0]
+        + _tmp12 * nav_t_point[2, 0]
         - _tmp13
         - _tmp14
-        + _tmp16 * nav_t_point[0]
+        + _tmp16 * nav_t_point[0, 0]
         - _tmp17
     )
     _tmp19 = 2 * _nav_T_cam[0] * _nav_T_cam[2] + _tmp11
@@ -75,24 +77,24 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
         -_nav_T_cam[4] * _tmp19
         - _nav_T_cam[5] * _tmp20
         - _nav_T_cam[6] * _tmp21
-        + _tmp19 * nav_t_point[0]
-        + _tmp20 * nav_t_point[1]
-        + _tmp21 * nav_t_point[2]
+        + _tmp19 * nav_t_point[0, 0]
+        + _tmp20 * nav_t_point[1, 0]
+        + _tmp21 * nav_t_point[2, 0]
     )
 
     # Output terms
-    _res = [0.0] * 2
-    _res[0] = math.atan2(
+    _res = numpy.zeros((2, 1))
+    _res[0, 0] = math.atan2(
         _tmp9,
-        _tmp10 * nav_t_point[1]
-        + _tmp12 * nav_t_point[2]
+        _tmp10 * nav_t_point[1, 0]
+        + _tmp12 * nav_t_point[2, 0]
         - _tmp13
         - _tmp14
-        + _tmp16 * nav_t_point[0]
+        + _tmp16 * nav_t_point[0, 0]
         - _tmp17
         + epsilon * ((0.0 if _tmp18 == 0 else math.copysign(1, _tmp18)) + 0.5),
     )
-    _res[1] = (
+    _res[1, 0] = (
         -math.acos(_tmp22 / (epsilon + math.sqrt(_tmp18 ** 2 + _tmp22 ** 2 + _tmp9 ** 2)))
         + (1.0 / 2.0) * math.pi
     )

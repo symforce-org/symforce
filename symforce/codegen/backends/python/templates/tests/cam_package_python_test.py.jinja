@@ -40,8 +40,8 @@ class CamPackageTest(unittest.TestCase):
             sym.{{ cls.__name__ }}, focal_length=focal_length, principal_point=principal_point
         )
 
-        self.assertEqual(focal_length, cam_cal.focal_length())
-        self.assertEqual(principal_point, cam_cal.principal_point())
+        np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
+        np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
 
     def test_storage_ops_{{ cls.__name__ }}(self):
         # type: () -> None
@@ -85,7 +85,7 @@ class CamPackageTest(unittest.TestCase):
         {% set symbolic_tangent = ops.LieGroupOps.to_tangent(symbolic_cam_cal, epsilon=epsilon) %}
         np.testing.assert_allclose(
             tangent,
-            {{ symbolic_tangent | map("float") | list }}
+            np.array([{{ symbolic_tangent | map("float") | list }}]).T
         )
 
         # Test from_tangent is correct
@@ -110,7 +110,7 @@ class CamPackageTest(unittest.TestCase):
         # Test local_coordinates is correct
         np.testing.assert_allclose(
             second_cam_cal.local_coordinates(cam_cal, epsilon={{ epsilon }}),
-            {{ ops.LieGroupOps.local_coordinates(second_symbolic_cam_cal, symbolic_cam_cal, epsilon=epsilon) | map("float") | list }}
+            np.array([{{ ops.LieGroupOps.local_coordinates(second_symbolic_cam_cal, symbolic_cam_cal, epsilon=epsilon) | map("float") | list }}]).T
         )
 
     def test_pixel_from_camera_point_{{ cls.__name__ }}(self):
@@ -124,16 +124,16 @@ class CamPackageTest(unittest.TestCase):
         {% set is_valid = pre_eval_is_valid.evalf() %}
 
         cam_cal = sym.{{ cls.__name__ }}.from_storage({{ symbolic_cam_cal.to_storage() | map("float") | list }})
-        point = {{ point.to_storage() | map("float") | list }}
+        point = np.array({{ point.to_storage() | map("float") | list }})
 
         pixel, is_valid = cam_cal.pixel_from_camera_point(point=point, epsilon={{ epsilon }})
 
-        np.testing.assert_allclose(pixel, {{ pixel.to_storage() | map("float") | map("round", 14) | list }})
+        np.testing.assert_allclose(pixel, np.array([{{ pixel.to_storage() | map("float") | map("round", 14) | list }}]).T)
         self.assertEqual(is_valid, {{ is_valid | float }})
 
         j_pixel, j_is_valid, pixel_D_cal, pixel_D_point = cam_cal.pixel_from_camera_point_with_jacobians(point=point, epsilon={{ epsilon }})
 
-        np.testing.assert_allclose(j_pixel, {{ pixel.to_storage() | map("float") | map("round", 14) | list }})
+        np.testing.assert_allclose(j_pixel, np.array([{{ pixel.to_storage() | map("float") | map("round", 14) | list }}]).T)
         self.assertEqual(j_is_valid, {{ is_valid | float }})
         self.assertEqual(pixel_D_cal.shape, (2, {{ symbolic_cam_cal.parameters() | length }}))
         self.assertEqual(pixel_D_point.shape, (2, 3))
@@ -150,16 +150,16 @@ class CamPackageTest(unittest.TestCase):
         {% set is_valid = pre_eval_is_valid.evalf() %}
 
         cam_cal = sym.{{ cls.__name__ }}.from_storage({{ symbolic_cam_cal.to_storage() | map("float") | list }})
-        pixel = {{ pixel.to_storage() | map("float") | list }}
+        pixel = np.array({{ pixel.to_storage() | map("float") | list }})
 
         ray, is_valid = cam_cal.camera_ray_from_pixel(pixel=pixel, epsilon={{ epsilon }})
 
-        np.testing.assert_allclose(ray, {{ ray.to_storage() | map("float") | list }})
+        np.testing.assert_allclose(ray, np.array([{{ ray.to_storage() | map("float") | list }}]).T)
         self.assertEqual(is_valid, {{ is_valid | float }})
 
         j_ray, j_is_valid, point_D_cal, point_D_pixel = cam_cal.camera_ray_from_pixel_with_jacobians(pixel=pixel, epsilon={{ epsilon }})
 
-        np.testing.assert_allclose(j_ray, {{ ray.to_storage() | map("float") | list }})
+        np.testing.assert_allclose(j_ray, np.array([{{ ray.to_storage() | map("float") | list }}]).T)
         self.assertEqual(j_is_valid, {{ is_valid | float }})
         self.assertEqual(point_D_cal.shape, (3, {{ symbolic_cam_cal.parameters() | length }}))
         self.assertEqual(point_D_pixel.shape, (3, 2))

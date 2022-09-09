@@ -7,23 +7,6 @@
 {# Utilities for Python code generation templates.                           #}
 {# ------------------------------------------------------------------------- #}
 
-{# Matrix type of a given dimension
- #
- # Args:
- #     rows (int):
- #     cols (int):
- #     is_input (bool): Is this an input argument or return value?
- #}
-{%- macro matrix_type(rows, cols, is_input) -%}
-    {%- if cols == 1 -%}
-        T.{%- if is_input -%}Sequence{%- else -%}List{%- endif -%}[float]
-    {%- else -%}
-        numpy.ndarray
-    {%- endif -%}
-{%- endmacro -%}
-
-{# ------------------------------------------------------------------------- #}
-
 {# Convert a class to the emitted string
  #
  # Args:
@@ -42,7 +25,7 @@
     {%- elif T.__name__ == 'NoneType' -%}
         None
     {%- elif issubclass(T, Matrix) -%}
-        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1], is_input) }}
+        numpy.ndarray
     {%- elif issubclass(T, Values) -%}
         {#- TODO(aaron): We don't currently know where to import lcmtypes from or what they should be
          # called, at some point we should fix this and do something like
@@ -144,7 +127,19 @@ def {{ function_name_and_args(spec) }}:
     # Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = typing_util.get_type(type) %}
-        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
+        {% if issubclass(T, Matrix) %}
+            {% if spec.config.reshape_vectors and (T.SHAPE[0] == 1 or T.SHAPE[1] == 1) %}
+                {% if spec.config.use_numba %}
+                {# NOTE(brad): Numba will complain if we reshape name inside of a conditional #}
+    if not ({{ name }}.shape == {{ T.SHAPE }} or {{ name }}.shape == ({{ T.SHAPE | max }},)):
+        raise IndexError("{{ name }} is expected to have shape {{ T.SHAPE }} or ({{ T.SHAPE | max }},)")
+    {{ name }} = {{ name }}.reshape({{ T.SHAPE }})
+                {% else %}
+    if len({{ name }}.shape) == 1:
+        {{ name }} = {{ name }}.reshape({{ T.SHAPE }})
+                {% endif %}
+            {% endif %}
+        {% elif not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
     _{{ name }} = {{ name }}.data
         {% endif %}
     {% endfor %}
@@ -158,7 +153,7 @@ def {{ function_name_and_args(spec) }}:
     {# Render all non-sparse terms -#}
     {% for name, type, terms in spec.print_code_results.dense_terms %}
         {%- set T = typing_util.get_type(type) -%}
-        {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
+        {% if issubclass(T, Matrix) %}
             {% set rows = type.shape[0] %}
             {% set cols = type.shape[1] %}
     _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))

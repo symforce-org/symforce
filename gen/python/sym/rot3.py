@@ -81,9 +81,9 @@ class Rot3(object):
         # type: (float, float, float) -> Rot3
 
         return (
-            Rot3.from_tangent([0, 0, yaw])
-            * Rot3.from_tangent([0, pitch, 0])
-            * Rot3.from_tangent([roll, 0, 0])
+            Rot3.from_tangent(np.array([0, 0, yaw]))
+            * Rot3.from_tangent(np.array([0, pitch, 0]))
+            * Rot3.from_tangent(np.array([roll, 0, 0]))
         )
 
     def to_yaw_pitch_roll(self):
@@ -158,7 +158,7 @@ class Rot3(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> Rot3
+        # type: (np.ndarray, float) -> Rot3
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -168,11 +168,11 @@ class Rot3(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> np.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> Rot3
+        # type: (np.ndarray, float) -> Rot3
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -182,7 +182,7 @@ class Rot3(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Rot3, float) -> T.List[float]
+        # type: (Rot3, float) -> np.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
     # --------------------------------------------------------------------------

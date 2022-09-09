@@ -73,9 +73,9 @@
         {# TODO(aaron, ryan): codegen this #}
 
         return (
-            Rot3.from_tangent( [0, 0, yaw])
-            * Rot3.from_tangent( [0, pitch, 0])
-            * Rot3.from_tangent( [roll, 0, 0])
+            Rot3.from_tangent(np.array([0, 0, yaw]))
+            * Rot3.from_tangent(np.array([0, pitch, 0]))
+            * Rot3.from_tangent(np.array([roll, 0, 0]))
         )
 
     def to_yaw_pitch_roll(self):

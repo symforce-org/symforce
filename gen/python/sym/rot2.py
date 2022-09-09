@@ -111,7 +111,7 @@ class Rot2(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> Rot2
+        # type: (np.ndarray, float) -> Rot2
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -121,11 +121,11 @@ class Rot2(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> np.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> Rot2
+        # type: (np.ndarray, float) -> Rot2
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -135,7 +135,7 @@ class Rot2(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Rot2, float) -> T.List[float]
+        # type: (Rot2, float) -> np.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
     # --------------------------------------------------------------------------

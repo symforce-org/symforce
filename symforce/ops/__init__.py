@@ -67,11 +67,11 @@ LieGroupOps.register(type(None), NoneTypeLieGroupOps)
 # TODO(hayk): Are these okay here or where can we put them? In theory we could just have this
 # be automatic that if the given type has the methods that it gets registered automatically.
 import sym
-from .impl.class_lie_group_ops import ClassLieGroupOps
+from .impl.sym_class_lie_group_ops import SymClassLieGroupOps
 
-LieGroupOps.register(sym.Rot2, ClassLieGroupOps)
-LieGroupOps.register(sym.Rot3, ClassLieGroupOps)
-LieGroupOps.register(sym.Pose2, ClassLieGroupOps)
-LieGroupOps.register(sym.Pose3, ClassLieGroupOps)
+LieGroupOps.register(sym.Rot2, SymClassLieGroupOps)
+LieGroupOps.register(sym.Rot3, SymClassLieGroupOps)
+LieGroupOps.register(sym.Pose2, SymClassLieGroupOps)
+LieGroupOps.register(sym.Pose3, SymClassLieGroupOps)
 
 StorageOps.register(sf.DataBuffer, DataBufferStorageOps)

@@ -157,9 +157,7 @@ def build_values(num_poses: int) -> T.Tuple[Values, int]:
                 5 * np.sin(t * np.pi / 1.8),
             ]
         )
-        gt_world_T_body.append(
-            sym.Pose3.from_tangent(list(tangent_vec), epsilon=sf.numeric_epsilon)
-        )
+        gt_world_T_body.append(sym.Pose3.from_tangent(tangent_vec, epsilon=sf.numeric_epsilon))
 
     # Set the initial guess either to ground truth or identity
     use_gt_poses = False

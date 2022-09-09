@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import functools
 import importlib.util
 import logging
+from numba.core.errors import TypingError
 import numpy as np
 from scipy import sparse
 import sys
@@ -241,28 +242,221 @@ class SymforceCodegenTest(TestCase):
         self.assertEqual(pkg.matrix_order().shape, m23.SHAPE)
         self.assertStorageNear(pkg.matrix_order(), m23)
 
-    def test_matrix_accessor_python(self) -> None:
+    def test_matrix_indexing_python(self) -> None:
         """
-        Tests that matrices and vectors can be indexed properly.
+        Tests that matrices are indexed into correctly.
         """
 
-        def left_multiply(m: sf.M22, v: sf.V2) -> sf.V2:
-            return T.cast(sf.V2, m * v)
+        def pass_matrices(
+            row: sf.M14, col: sf.M41, mat: sf.M22
+        ) -> T.Tuple[sf.Matrix, sf.Matrix, sf.Matrix]:
+            return row, col, mat
 
-        output_dir = self.make_output_dir("sf_test_matrix_accessor_python")
-        namespace = "test_accessor"
-        generated_files = codegen.Codegen.function(
-            func=left_multiply, config=codegen.PythonConfig()
-        ).generate_function(namespace=namespace, output_dir=output_dir)
+        @functools.lru_cache
+        def gen_pass_matrices(use_numba: bool, reshape_vectors: bool) -> T.Any:
+            output_dir = self.make_output_dir(
+                f"sf_test_matrix_indexing_python{'_use_numba' if use_numba else ''}{'_reshape_vectors' if reshape_vectors else ''}"
+            )
+            namespace = "test_indexing"
+            generated_files = codegen.Codegen.function(
+                func=pass_matrices,
+                config=codegen.PythonConfig(use_numba=use_numba, reshape_vectors=reshape_vectors),
+                output_names=["row_out", "col_out", "mat_out"],
+            ).generate_function(namespace=namespace, output_dir=output_dir)
 
-        pkg = codegen_util.load_generated_package(namespace, generated_files.function_dir)
+            pkg = codegen_util.load_generated_package(namespace, generated_files.function_dir)
 
-        # NOTE(brad): If matrix indexing is incorrect (for example,
-        # we use m[3] instead of m[1, 1], or v[1, 0] instead of v[1]), then the
-        # function will raise an exception.
-        m = np.random.random((2, 2))
-        v = np.random.random(2)
-        pkg.left_multiply(m, v)
+            return pkg.pass_matrices
+
+        def assert_config_works(
+            use_numba: bool,
+            reshape_vectors: bool,
+            row_shape: T.Tuple[int, ...],
+            col_shape: T.Tuple[int, ...],
+            mat_shape: T.Tuple[int, ...],
+            expected_exception: T.Any = None,
+        ) -> None:
+            row = np.random.random(row_shape)
+            col = np.random.random(col_shape)
+            mat = np.random.random(mat_shape)
+
+            generated_pass_matrices = gen_pass_matrices(use_numba, reshape_vectors)
+
+            if expected_exception is not None:
+                with self.assertRaises(expected_exception):
+                    generated_pass_matrices(row, col, mat)
+            else:
+                row_out, col_out, mat_out = generated_pass_matrices(row, col, mat)
+                np.testing.assert_array_equal(row.reshape((1, 4)), row_out)
+                np.testing.assert_array_equal(col.reshape((4, 1)), col_out)
+                np.testing.assert_array_equal(mat.reshape((2, 2)), mat_out)
+
+        # NOTE(brad): To make the linter happy, as these tuples have variable length.
+        row_shape: T.Tuple[int, ...]
+        col_shape: T.Tuple[int, ...]
+        mat_shape: T.Tuple[int, ...]
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (1, 4)
+        col_shape = (4, 1)
+        mat_shape = (2, 2)
+
+        for use_numba in [False, True]:
+            for reshape_vectors in [False, True]:
+                with self.subTest(
+                    msg="2d vectors & matrices with correct shape work & return 2d vectors"
+                    + f" [{use_numba=}] [{reshape_vectors=}]"
+                ):
+                    assert_config_works(use_numba, reshape_vectors, row_shape, col_shape, mat_shape)
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (1, 4)
+        col_shape = (4, 1)
+        mat_shape = (4,)
+
+        for reshape_vectors in [False, True]:
+            use_numba = False
+            with self.subTest(
+                "1d matrices are not accepted" + f" [{use_numba=}] [{reshape_vectors=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+                )
+
+        for reshape_vectors in [False, True]:
+            use_numba = True
+            with self.subTest(
+                "1d matrices are not accepted" + f" [{use_numba=}] [{reshape_vectors=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, TypingError
+                )
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (2, 2)
+        col_shape = (4, 1)
+        mat_shape = (2, 2)
+
+        for use_numba, reshape_vectors in [(False, False), (False, True), (True, True)]:
+            with self.subTest(
+                "2d row vectors of the wrong shape are not accepted"
+                + f" [{use_numba=}] [{reshape_vectors=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+                )
+
+        # NOTE(Brad): Currently if use_numba=True and reshape_vectors=False, the generated function
+        # will silently produce garbage results. This is because numba allows you to index into ndarrays
+        # with bad indices. Only caught with reshape_vectors=True because we explicitly check for it.
+        # Caught with use_numba=False because ordinarily ndarrays will throw if you use bad indices.
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (1, 4)
+        col_shape = (2, 2)
+        mat_shape = (2, 2)
+
+        for use_numba, reshape_vectors in [(False, False), (False, True), (True, True)]:
+            with self.subTest(
+                "2d col vectors of the wrong shape are not accepted"
+                + f" [{use_numba=}] [{reshape_vectors=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+                )
+
+        # NOTE(Brad): Currently if use_numba=True and reshape_vectors=False, the generated function
+        # will silently produce garbage results. This is because numba allows you to index into ndarrays
+        # with bad indices. Only caught with reshape_vectors=True because we explicitly check for it.
+        # Caught with use_numba=False because ordinarily ndarrays will throw if you use bad indices.
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (1, 4)
+        col_shape = (4, 1)
+        mat_shape = (4, 1)
+
+        for reshape_vectors in [False, True]:
+            use_numba = False
+            with self.subTest(
+                "2d matrices of the wrong shape are not accepted"
+                + f" [{use_numba=}] [{reshape_vectors=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+                )
+
+        # NOTE(Brad): Current if use_numba=True, the generated function will silently produce garbage
+        # results. This is because numba allows you to index into ndarrays with bad indices.
+        # Caught with use_numba=False because ordinarily ndarrays will throw if you use bad indices.
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (4,)
+        col_shape = (4, 1)
+        mat_shape = (2, 2)
+
+        for use_numba in [False, True]:
+            reshape_vectors = True
+            with self.subTest(
+                msg="if reshape_vectors=True, 1d row vectors are accepted & returned as 2d vectors"
+                + f" [{use_numba=}]"
+            ):
+                assert_config_works(use_numba, reshape_vectors, row_shape, col_shape, mat_shape)
+
+        use_numba = False
+        reshape_vectors = False
+        with self.subTest(
+            msg="if reshape_vectors=False, 1d row vectors are rejected" + f" [{use_numba=}]"
+        ):
+            assert_config_works(
+                use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+            )
+
+        use_numba = True
+        reshape_vectors = False
+        with self.subTest(
+            msg="if reshape_vectors=False, 1d row vectors are rejected" + f" [{use_numba=}]"
+        ):
+            assert_config_works(
+                use_numba, reshape_vectors, row_shape, col_shape, mat_shape, TypingError
+            )
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (1, 4)
+        col_shape = (4,)
+        mat_shape = (2, 2)
+
+        for use_numba in [False, True]:
+            reshape_vectors = True
+            with self.subTest(
+                msg="if reshape_vectors=True, 1d col vectors are accepted & returned as 2d vectors"
+                + f" [{use_numba=}]"
+            ):
+                assert_config_works(use_numba, reshape_vectors, row_shape, col_shape, mat_shape)
+
+        use_numba = False
+        reshape_vectors = False
+        with self.subTest(
+            msg="if reshape_vectors=False, 1d col vectors are rejected" + f" [{use_numba=}]"
+        ):
+            assert_config_works(
+                use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+            )
+
+        use_numba = True
+        reshape_vectors = False
+        with self.subTest(
+            msg="if reshape_vectors=False, 1d col vectors are rejected" + f" [{use_numba=}]"
+        ):
+            assert_config_works(
+                use_numba, reshape_vectors, row_shape, col_shape, mat_shape, TypingError
+            )
 
     def test_sparse_output_python(self) -> None:
         """
@@ -331,7 +525,7 @@ class SymforceCodegenTest(TestCase):
 
         x = np.array([1, 2, 3])
         y = gen_module.numba_test_func(x)
-        self.assertTrue((y == np.array([1, 2])).all())
+        self.assertTrue((y == np.array([[1, 2]]).T).all())
         self.assertTrue(hasattr(gen_module.numba_test_func, "__numba__"))
 
     # -------------------------------------------------------------------------

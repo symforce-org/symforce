@@ -18,26 +18,28 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (T.Sequence[float], float) -> sym.ATANCameraCal
+        # type: (numpy.ndarray, float) -> sym.ATANCameraCal
 
         # Total ops: 0
 
         # Input arrays
+        if len(vec.shape) == 1:
+            vec = vec.reshape((5, 1))
 
         # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 5
-        _res[0] = vec[0]
-        _res[1] = vec[1]
-        _res[2] = vec[2]
-        _res[3] = vec[3]
-        _res[4] = vec[4]
+        _res[0] = vec[0, 0]
+        _res[1] = vec[1, 0]
+        _res[2] = vec[2, 0]
+        _res[3] = vec[3, 0]
+        _res[4] = vec[4, 0]
         return sym.ATANCameraCal.from_storage(_res)
 
     @staticmethod
     def to_tangent(a, epsilon):
-        # type: (sym.ATANCameraCal, float) -> T.List[float]
+        # type: (sym.ATANCameraCal, float) -> numpy.ndarray
 
         # Total ops: 0
 
@@ -47,37 +49,39 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 5
-        _res[0] = _a[0]
-        _res[1] = _a[1]
-        _res[2] = _a[2]
-        _res[3] = _a[3]
-        _res[4] = _a[4]
+        _res = numpy.zeros((5, 1))
+        _res[0, 0] = _a[0]
+        _res[1, 0] = _a[1]
+        _res[2, 0] = _a[2]
+        _res[3, 0] = _a[3]
+        _res[4, 0] = _a[4]
         return _res
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.ATANCameraCal, T.Sequence[float], float) -> sym.ATANCameraCal
+        # type: (sym.ATANCameraCal, numpy.ndarray, float) -> sym.ATANCameraCal
 
         # Total ops: 5
 
         # Input arrays
         _a = a.data
+        if len(vec.shape) == 1:
+            vec = vec.reshape((5, 1))
 
         # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 5
-        _res[0] = _a[0] + vec[0]
-        _res[1] = _a[1] + vec[1]
-        _res[2] = _a[2] + vec[2]
-        _res[3] = _a[3] + vec[3]
-        _res[4] = _a[4] + vec[4]
+        _res[0] = _a[0] + vec[0, 0]
+        _res[1] = _a[1] + vec[1, 0]
+        _res[2] = _a[2] + vec[2, 0]
+        _res[3] = _a[3] + vec[3, 0]
+        _res[4] = _a[4] + vec[4, 0]
         return sym.ATANCameraCal.from_storage(_res)
 
     @staticmethod
     def local_coordinates(a, b, epsilon):
-        # type: (sym.ATANCameraCal, sym.ATANCameraCal, float) -> T.List[float]
+        # type: (sym.ATANCameraCal, sym.ATANCameraCal, float) -> numpy.ndarray
 
         # Total ops: 5
 
@@ -88,10 +92,10 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 5
-        _res[0] = -_a[0] + _b[0]
-        _res[1] = -_a[1] + _b[1]
-        _res[2] = -_a[2] + _b[2]
-        _res[3] = -_a[3] + _b[3]
-        _res[4] = -_a[4] + _b[4]
+        _res = numpy.zeros((5, 1))
+        _res[0, 0] = -_a[0] + _b[0]
+        _res[1, 0] = -_a[1] + _b[1]
+        _res[2, 0] = -_a[2] + _b[2]
+        _res[3, 0] = -_a[3] + _b[3]
+        _res[4, 0] = -_a[4] + _b[4]
         return _res

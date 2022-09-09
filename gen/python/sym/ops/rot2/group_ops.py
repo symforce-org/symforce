@@ -87,7 +87,7 @@ class GroupOps(object):
 
     @staticmethod
     def inverse_with_jacobian(a):
-        # type: (sym.Rot2) -> T.Tuple[sym.Rot2, T.List[float]]
+        # type: (sym.Rot2) -> T.Tuple[sym.Rot2, numpy.ndarray]
 
         # Total ops: 5
 
@@ -100,13 +100,13 @@ class GroupOps(object):
         _res = [0.0] * 2
         _res[0] = _a[0]
         _res[1] = -_a[1]
-        _res_D_a = [0.0] * 1
-        _res_D_a[0] = -_a[0] ** 2 - _a[1] ** 2
+        _res_D_a = numpy.zeros((1, 1))
+        _res_D_a[0, 0] = -_a[0] ** 2 - _a[1] ** 2
         return sym.Rot2.from_storage(_res), _res_D_a
 
     @staticmethod
     def compose_with_jacobians(a, b):
-        # type: (sym.Rot2, sym.Rot2) -> T.Tuple[sym.Rot2, T.List[float], T.List[float]]
+        # type: (sym.Rot2, sym.Rot2) -> T.Tuple[sym.Rot2, numpy.ndarray, numpy.ndarray]
 
         # Total ops: 11
 
@@ -125,15 +125,15 @@ class GroupOps(object):
         _res = [0.0] * 2
         _res[0] = _tmp0
         _res[1] = _tmp3
-        _res_D_a = [0.0] * 1
-        _res_D_a[0] = _tmp4
-        _res_D_b = [0.0] * 1
-        _res_D_b[0] = _tmp4
+        _res_D_a = numpy.zeros((1, 1))
+        _res_D_a[0, 0] = _tmp4
+        _res_D_b = numpy.zeros((1, 1))
+        _res_D_b[0, 0] = _tmp4
         return sym.Rot2.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(a, b):
-        # type: (sym.Rot2, sym.Rot2) -> T.Tuple[sym.Rot2, T.List[float], T.List[float]]
+        # type: (sym.Rot2, sym.Rot2) -> T.Tuple[sym.Rot2, numpy.ndarray, numpy.ndarray]
 
         # Total ops: 15
 
@@ -153,8 +153,8 @@ class GroupOps(object):
         _res = [0.0] * 2
         _res[0] = _tmp2
         _res[1] = _tmp5
-        _res_D_a = [0.0] * 1
-        _res_D_a[0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5 ** 2
-        _res_D_b = [0.0] * 1
-        _res_D_b[0] = _tmp2 ** 2 - _tmp5 * (-_tmp3 + _tmp4)
+        _res_D_a = numpy.zeros((1, 1))
+        _res_D_a[0, 0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5 ** 2
+        _res_D_b = numpy.zeros((1, 1))
+        _res_D_b[0, 0] = _tmp2 ** 2 - _tmp5 * (-_tmp3 + _tmp4)
         return sym.Rot2.from_storage(_res), _res_D_a, _res_D_b

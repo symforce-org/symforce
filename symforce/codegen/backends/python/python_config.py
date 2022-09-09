@@ -29,12 +29,15 @@ class PythonConfig(CodegenConfig):
                    on the first call and some overhead on subsequent calls, so it should not be
                    used for small functions or functions that are only called a handfull of
                    times.
+        reshape_vectors: Allow rank 1 ndarrays to be passed in for row and column vectors by
+                         automatically reshaping the input.
     """
 
     doc_comment_line_prefix: str = ""
     line_length: int = 100
     use_eigen_types: bool = True
     use_numba: bool = False
+    reshape_vectors: bool = True
 
     @classmethod
     def backend_name(cls) -> str:
@@ -57,8 +60,6 @@ class PythonConfig(CodegenConfig):
 
     def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
         PythonConfig._assert_indices_in_bounds(i, j, shape)
-        if shape[1] == 1:
-            return f"{key}[{i}]"
         return f"{key}[{i}, {j}]"
 
     @staticmethod

@@ -71,7 +71,7 @@ class PolynomialCameraCal(object):
     # --------------------------------------------------------------------------
 
     def focal_length(self):
-        # type: (PolynomialCameraCal) -> T.List[float]
+        # type: (PolynomialCameraCal) -> numpy.ndarray
         """
         Return the focal length.
         """
@@ -79,7 +79,7 @@ class PolynomialCameraCal(object):
         return ops.CameraOps.focal_length(self)
 
     def principal_point(self):
-        # type: (PolynomialCameraCal) -> T.List[float]
+        # type: (PolynomialCameraCal) -> numpy.ndarray
         """
         Return the principal point.
         """
@@ -87,7 +87,7 @@ class PolynomialCameraCal(object):
         return ops.CameraOps.principal_point(self)
 
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (PolynomialCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float]
+        # type: (PolynomialCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -99,7 +99,7 @@ class PolynomialCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (PolynomialCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float, numpy.ndarray, numpy.ndarray]
+        # type: (PolynomialCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -153,7 +153,7 @@ class PolynomialCameraCal(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> PolynomialCameraCal
+        # type: (numpy.ndarray, float) -> PolynomialCameraCal
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -163,11 +163,11 @@ class PolynomialCameraCal(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> numpy.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> PolynomialCameraCal
+        # type: (numpy.ndarray, float) -> PolynomialCameraCal
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -177,7 +177,7 @@ class PolynomialCameraCal(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: (PolynomialCameraCal, float) -> T.List[float]
+        # type: (PolynomialCameraCal, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
     # --------------------------------------------------------------------------
