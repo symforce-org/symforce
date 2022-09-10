@@ -119,12 +119,12 @@ class GeoPackageTest(unittest.TestCase):
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         {% set dim = cls.__name__[-1] %}
-        vector = np.random.normal(size={{ dim }})
+        vector = np.random.normal(size=({{ dim }}, 1))
         {% if "Rot" in cls.__name__ %}
         matrix = element.to_rotation_matrix()
         np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
         {% else %}
-        vector_as_element = geo_class(t=vector.tolist())
+        vector_as_element = geo_class(t=vector.flatten().tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
         # Test position/rotation accessors

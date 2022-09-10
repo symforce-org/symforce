@@ -119,7 +119,7 @@ class GeoPackageTest(unittest.TestCase):
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
-        vector = np.random.normal(size=2)
+        vector = np.random.normal(size=(2, 1))
         matrix = element.to_rotation_matrix()
         np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
 
@@ -209,8 +209,8 @@ class GeoPackageTest(unittest.TestCase):
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
-        vector = np.random.normal(size=2)
-        vector_as_element = geo_class(t=vector.tolist())
+        vector = np.random.normal(size=(2, 1))
+        vector_as_element = geo_class(t=vector.flatten().tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
         # Test position/rotation accessors
@@ -303,7 +303,7 @@ class GeoPackageTest(unittest.TestCase):
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
-        vector = np.random.normal(size=3)
+        vector = np.random.normal(size=(3, 1))
         matrix = element.to_rotation_matrix()
         np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
 
@@ -393,8 +393,8 @@ class GeoPackageTest(unittest.TestCase):
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
-        vector = np.random.normal(size=3)
-        vector_as_element = geo_class(t=vector.tolist())
+        vector = np.random.normal(size=(3, 1))
+        vector_as_element = geo_class(t=vector.flatten().tolist())
         np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
 
         # Test position/rotation accessors

@@ -53,14 +53,6 @@ class Pose2(object):
 
         self.data = rotation.to_storage() + list(position)
 
-    def rotation(self):
-        # type: () -> Rot2
-        return Rot2.from_storage(self.data[0:2])
-
-    def position(self):
-        # type: () -> numpy.ndarray
-        return numpy.array(self.data[2:4])
-
     @property
     def R(self):
         # type: () -> Rot2
@@ -80,6 +72,44 @@ class Pose2(object):
     # --------------------------------------------------------------------------
     # Custom generated methods
     # --------------------------------------------------------------------------
+
+    def rotation(self):
+        # type: (Pose2) -> Rot2
+        """
+        Returns the rotational component of this pose.
+        """
+
+        # Total ops: 0
+
+        # Input arrays
+        _self = self.data
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = [0.0] * 2
+        _res[0] = _self[0]
+        _res[1] = _self[1]
+        return Rot2.from_storage(_res)
+
+    def position(self):
+        # type: (Pose2) -> numpy.ndarray
+        """
+        Returns the positional component of this pose.
+        """
+
+        # Total ops: 0
+
+        # Input arrays
+        _self = self.data
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = numpy.zeros((2, 1))
+        _res[0, 0] = _self[2]
+        _res[1, 0] = _self[3]
+        return _res
 
     def compose_with_point(self, right):
         # type: (Pose2, numpy.ndarray) -> numpy.ndarray

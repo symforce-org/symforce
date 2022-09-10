@@ -13,14 +13,6 @@
 
         self.data = rotation.to_storage() + list(position)
 
-    def rotation(self):
-        # type: () -> Rot3
-        return Rot3.from_storage(self.data[0:4])
-
-    def position(self):
-        # type: () -> numpy.ndarray
-        return numpy.array(self.data[4:7])
-
     @property
     def R(self):
         # type: () -> Rot3

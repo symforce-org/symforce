@@ -59,7 +59,7 @@ class {{ cls.__name__ }}(object):
     # --------------------------------------------------------------------------
 
     {% for spec in specs["CameraOps"] %}
-    {{ util.function_declaration(spec, defined_class=cls) }}
+    {{ util.function_declaration(spec, is_method=True, available_classes=[cls]) }}
         {{ util.print_docstring(spec.docstring) | indent(8) }}
 
         return ops.CameraOps.{{ util.function_name_and_args(spec) }}

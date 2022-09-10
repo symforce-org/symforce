@@ -77,14 +77,6 @@ class Pose2 {
     data_.template tail<2>() = position;
   }
 
-  Rot2<Scalar> Rotation() const {
-    return Rot2<Scalar>(data_.template head<2>());
-  }
-
-  Vector2 Position() const {
-    return data_.template tail<2>();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose2 Random(Generator& gen) {
@@ -98,6 +90,10 @@ class Pose2 {
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
+
+  sym::Rot2<Scalar> Rotation() const;
+
+  Vector2 Position() const;
 
   Vector2 ComposeWithPoint(const Vector2& right) const;
 

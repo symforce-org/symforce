@@ -7,8 +7,10 @@ import numpy
 import typing as T
 
 {# If a pose type, include the necessary rotation type. #}
-{% if cls.__name__.startswith('Pose') %}
-from .rot{{ cls.__name__[-1] }} import Rot{{ cls.__name__[-1] }}
+{% if imported_classes is defined %}
+    {% for imported_cls in imported_classes %}
+from .{{ camelcase_to_snakecase(imported_cls.__name__ )}} import {{ imported_cls.__name__ }}
+    {% endfor %}
 {% endif -%}
 
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
@@ -47,10 +49,14 @@ class {{ cls.__name__ }}(object):
     {% endif %}
 
     {% for spec in custom_generated_methods %}
-    {{ util.function_declaration(spec, defined_class=cls) | indent(4)}}
+        {% set available_classes = [cls] %}
+        {% if imported_classes is defined %}
+            {% set available_classes = available_classes + imported_classes %}
+        {% endif %}
+    {{ util.function_declaration(spec, is_method=True, available_classes=available_classes) | indent(4)}}
         {{ util.print_docstring(spec.docstring) | indent(8) }}
 
-        {{ util.expr_code(spec, defined_class=cls) | indent(4) }}
+        {{ util.expr_code(spec, available_classes=available_classes) | indent(4) }}
 
     {% endfor %}
 

@@ -124,6 +124,24 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             ),
         )
 
+    def pose_getter_methods(pose_type: T.Type) -> T.List[Codegen]:
+        def rotation(self: T.Any) -> T.Any:
+            """
+            Returns the rotational component of this pose.
+            """
+            return self.R
+
+        def position(self: T.Any) -> T.Any:
+            """
+            Returns the positional component of this pose.
+            """
+            return self.t
+
+        return [
+            Codegen.function(func=rotation, input_types=[pose_type], config=config),
+            Codegen.function(func=position, input_types=[pose_type], config=config),
+        ]
+
     return {
         sf.Rot2: [
             codegen_mul(sf.Rot2, sf.Vector2),
@@ -131,12 +149,14 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
         ],
         sf.Rot3: rot3_functions,
-        sf.Pose2: [
+        sf.Pose2: pose_getter_methods(sf.Pose2)
+        + [
             codegen_mul(sf.Pose2, sf.Vector2),
             Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),
             Codegen.function(func=sf.Pose2.to_homogenous_matrix, config=config),
         ],
-        sf.Pose3: [
+        sf.Pose3: pose_getter_methods(sf.Pose3)
+        + [
             codegen_mul(sf.Pose3, sf.Vector3),
             Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
             Codegen.function(func=sf.Pose3.to_homogenous_matrix, config=config),
@@ -173,6 +193,10 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
             data = geo_class_common_data(cls, config)
             data["matrix_type_aliases"] = matrix_type_aliases[cls]
             data["custom_generated_methods"] = custom_generated_methods[cls]
+            if cls == sf.Pose2:
+                data["imported_classes"] = [sf.Rot2]
+            elif cls == sf.Pose3:
+                data["imported_classes"] = [sf.Rot3]
 
             for base_dir, relative_path in (
                 ("geo_package", "CLASS.py"),

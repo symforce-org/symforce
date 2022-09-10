@@ -13,10 +13,10 @@
  #     T_or_value (type or Element):
  #     name (str): Name in case type is a generated struct
  #     is_input (bool): Is this an input argument or return value?
- #     defined_class (Optional[type]): Do not prefix the emitted string with sym. if
- #       type is defined_class
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{%- macro format_typename(T_or_value, name, is_input, defined_class = None) %}
+{%- macro format_typename(T_or_value, name, is_input, available_classes = []) %}
     {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'DataBuffer' -%}
         numpy.ndarray
@@ -39,7 +39,7 @@
             T.List[float]
         {%- endif -%}
     {%- else -%}
-        {%- if T != defined_class and ("geo" in T.__module__ or "cam" in T.__module__) -%}
+        {%- if T not in available_classes and ("geo" in T.__module__ or "cam" in T.__module__) -%}
             sym.
         {%- endif -%}
         {{- T.__name__ -}}
@@ -52,17 +52,17 @@
  #
  # Args:
  #     spec (Codegen):
- #     defined_class (Optional[type]): Do not prefix the emitted string with sym. if
- #       type is defined_class
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{%- macro get_return_type(spec, defined_class = None) %}
+{%- macro get_return_type(spec, available_classes = []) %}
     {%- if spec.outputs.keys() | length == 1 -%}
         {%- set name, type = spec.outputs.items() | first -%}
-        {{ format_typename(type, name, is_input=False, defined_class=defined_class) }}
+        {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}
     {%- elif spec.outputs -%}
         T.Tuple[
         {%- for name, type in spec.outputs.items() -%}
-        {{ format_typename(type, name, is_input=False, defined_class=defined_class) }}{% if not loop.last %}, {% endif %}
+        {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
         {%- endfor -%}]
     {%- else -%}
         None
@@ -103,18 +103,19 @@
  #
  # Args:
  #     spec (Codegen):
- #     defined_class (Optional[type]): If function is a method of a class, set
- #       defined_class to the class
+ #     is_method (bool): True if function is a method of a class,
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{%- macro function_declaration(spec, defined_class = None) -%}
-{%- if defined_class is not none and "self" not in spec.inputs -%}
+{%- macro function_declaration(spec, is_method = False, available_classes = []) -%}
+{%- if is_method and "self" not in spec.inputs -%}
 @staticmethod
 {% endif %}
 def {{ function_name_and_args(spec) }}:
     # type: (
     {%- for name, type in spec.inputs.items() -%}
-    {{ format_typename(type, name, is_input=True, defined_class=defined_class) }}{% if not loop.last %}, {% endif %}
-    {%- endfor -%}) -> {{ get_return_type(spec, defined_class=defined_class) }}
+    {{ format_typename(type, name, is_input=True, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}) -> {{ get_return_type(spec, available_classes=available_classes) }}
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -123,10 +124,10 @@ def {{ function_name_and_args(spec) }}:
  #
  # Args:
  #     spec (Codegen):
- #     defined_class (Optional[type]): If function is a method of a class, set
- #       defined_class to the class
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{% macro expr_code(spec, defined_class = None) %}
+{% macro expr_code(spec, available_classes = []) %}
     # Total ops: {{ spec.print_code_results.total_ops }}
 
     # Input arrays
@@ -207,7 +208,7 @@ def {{ function_name_and_args(spec) }}:
         {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
  _{{name}}
         {%- else -%}
-            {%- if T == defined_class %}
+            {%- if T in available_classes %}
  {{T.__name__}}.from_storage(_{{name}})
             {% else %}
  sym.{{T.__name__}}.from_storage(_{{name}})

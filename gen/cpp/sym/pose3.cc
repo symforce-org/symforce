@@ -27,6 +27,45 @@ std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
+sym::Rot3<Scalar> sym::Pose3<Scalar>::Rotation() const {
+  // Total ops: 0
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = _self[0];
+  _res[1] = _self[1];
+  _res[2] = _self[2];
+  _res[3] = _self[3];
+
+  return sym::Rot3<Scalar>(_res);
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Position() const {
+  // Total ops: 0
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 3, 1> _res;
+
+  _res(0, 0) = _self[4];
+  _res(1, 0) = _self[5];
+  _res(2, 0) = _self[6];
+
+  return _res;
+}
+
+template <typename Scalar>
 Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
   // Total ops: 46

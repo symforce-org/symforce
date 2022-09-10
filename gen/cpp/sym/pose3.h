@@ -77,14 +77,6 @@ class Pose3 {
     data_.template tail<3>() = position;
   }
 
-  Rot3<Scalar> Rotation() const {
-    return Rot3<Scalar>(data_.template head<4>());
-  }
-
-  Vector3 Position() const {
-    return data_.template tail<3>();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose3 Random(Generator& gen) {
@@ -103,6 +95,10 @@ class Pose3 {
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
+
+  sym::Rot3<Scalar> Rotation() const;
+
+  Vector3 Position() const;
 
   Vector3 ComposeWithPoint(const Vector3& right) const;
 
