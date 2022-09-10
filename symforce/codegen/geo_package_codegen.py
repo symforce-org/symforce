@@ -85,9 +85,43 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         """
         return Codegen.function(
             func=group.__mul__,
-            name="compose",
+            name="compose_with_point",
             input_types=[group, multiplicand_type],
             config=config,
+        )
+
+    rot3_functions = [
+        codegen_mul(sf.Rot3, sf.Vector3),
+        Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
+        Codegen.function(
+            func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
+            name="random_from_uniform_samples",
+            config=config,
+        ),
+        Codegen.function(
+            func=lambda self: sf.V3(self.to_yaw_pitch_roll()),
+            input_types=[sf.Rot3],
+            name="to_yaw_pitch_roll",
+            config=config,
+        ),
+        Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
+    ]
+
+    # TODO(brad): We don't currently generate this in python because python (unlike C++)
+    # has no function overloading, and we already generate a from_yaw_pitch_roll which
+    # instead takes yaw, pitch, and roll as seperate arguments. Figure out how to allow
+    # this overload to better achieve parity between C++ and python.
+    if isinstance(config, PythonConfig):
+        pass
+        # rot3_functions.insert(2, Codegen.function(func=sf.Rot3.from_rotation_matrix, config=config))
+    else:
+        rot3_functions.append(
+            Codegen.function(
+                func=lambda ypr: sf.Rot3.from_yaw_pitch_roll(*ypr),
+                input_types=[sf.V3],
+                name="from_yaw_pitch_roll",
+                config=config,
+            ),
         )
 
     return {
@@ -96,28 +130,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             Codegen.function(func=sf.Rot2.from_angle, config=config),
             Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
         ],
-        sf.Rot3: [
-            codegen_mul(sf.Rot3, sf.Vector3),
-            Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
-            Codegen.function(
-                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
-                name="random_from_uniform_samples",
-                config=config,
-            ),
-            Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
-            Codegen.function(
-                func=lambda ypr: sf.Rot3.from_yaw_pitch_roll(*ypr),
-                input_types=[sf.V3],
-                name="from_yaw_pitch_roll",
-                config=config,
-            ),
-            Codegen.function(
-                func=lambda self: sf.V3(self.to_yaw_pitch_roll()),
-                input_types=[sf.Rot3],
-                name="to_yaw_pitch_roll",
-                config=config,
-            ),
-        ],
+        sf.Rot3: rot3_functions,
         sf.Pose2: [
             codegen_mul(sf.Pose2, sf.Vector2),
             Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),

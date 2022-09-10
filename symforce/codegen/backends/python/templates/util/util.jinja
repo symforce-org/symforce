@@ -107,6 +107,9 @@
  #       defined_class to the class
  #}
 {%- macro function_declaration(spec, defined_class = None) -%}
+{%- if defined_class is not none and "self" not in spec.inputs -%}
+@staticmethod
+{% endif %}
 def {{ function_name_and_args(spec) }}:
     # type: (
     {%- for name, type in spec.inputs.items() -%}
@@ -120,8 +123,10 @@ def {{ function_name_and_args(spec) }}:
  #
  # Args:
  #     spec (Codegen):
+ #     defined_class (Optional[type]): If function is a method of a class, set
+ #       defined_class to the class
  #}
-{% macro expr_code(spec) %}
+{% macro expr_code(spec, defined_class = None) %}
     # Total ops: {{ spec.print_code_results.total_ops }}
 
     # Input arrays
@@ -201,8 +206,12 @@ def {{ function_name_and_args(spec) }}:
         {% set T = typing_util.get_type(type) %}
         {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
  _{{name}}
-        {%- else %}
+        {%- else -%}
+            {%- if T == defined_class %}
+ {{T.__name__}}.from_storage(_{{name}})
+            {% else %}
  sym.{{T.__name__}}.from_storage(_{{name}})
+            {%- endif -%}
         {%- endif %}
         {%- if not loop.last %}, {% endif %}
     {%- endfor -%}

@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Rot3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::Compose(
+Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
   // Total ops: 43
 
@@ -122,6 +122,31 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1, c
 }
 
 template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ToYawPitchRoll() const {
+  // Total ops: 27
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+  // Intermediate terms (5)
+  const Scalar _tmp0 = 2 * _self[0];
+  const Scalar _tmp1 = 2 * _self[2];
+  const Scalar _tmp2 = std::pow(_self[2], Scalar(2));
+  const Scalar _tmp3 = std::pow(_self[0], Scalar(2));
+  const Scalar _tmp4 = -std::pow(_self[1], Scalar(2)) + std::pow(_self[3], Scalar(2));
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 3, 1> _res;
+
+  _res(0, 0) = std::atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4);
+  _res(1, 0) = -std::asin(std::max<Scalar>(
+      Scalar(-1.0), std::min<Scalar>(Scalar(1.0), -2 * _self[1] * _self[3] + _self[2] * _tmp0)));
+  _res(2, 0) = std::atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4);
+
+  return _res;
+}
+
+template <typename Scalar>
 sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
                                                       const Scalar roll) {
   // Total ops: 25
@@ -184,31 +209,6 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Eigen::Matrix<Scalar
   _res[3] = _tmp1 * _tmp12 + _tmp11 * _tmp7;
 
   return sym::Rot3<Scalar>(_res);
-}
-
-template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ToYawPitchRoll() const {
-  // Total ops: 27
-
-  // Input arrays
-  const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
-
-  // Intermediate terms (5)
-  const Scalar _tmp0 = 2 * _self[0];
-  const Scalar _tmp1 = 2 * _self[2];
-  const Scalar _tmp2 = std::pow(_self[2], Scalar(2));
-  const Scalar _tmp3 = std::pow(_self[0], Scalar(2));
-  const Scalar _tmp4 = -std::pow(_self[1], Scalar(2)) + std::pow(_self[3], Scalar(2));
-
-  // Output terms (1)
-  Eigen::Matrix<Scalar, 3, 1> _res;
-
-  _res(0, 0) = std::atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4);
-  _res(1, 0) = -std::asin(std::max<Scalar>(
-      Scalar(-1.0), std::min<Scalar>(Scalar(1.0), -2 * _self[1] * _self[3] + _self[2] * _tmp0)));
-  _res(2, 0) = std::atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4);
-
-  return _res;
 }
 
 // Explicit instantiation

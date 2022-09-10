@@ -99,7 +99,7 @@ class Pose2 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  Vector2 Compose(const Vector2& right) const;
+  Vector2 ComposeWithPoint(const Vector2& right) const;
 
   Vector2 InverseCompose(const Vector2& point) const;
 
@@ -135,6 +135,10 @@ class Pose2 {
 
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
+  }
+
+  Vector2 Compose(const Vector2& point) const {
+    return ComposeWithPoint(point);
   }
 
   Self Between(const Self& b) const {

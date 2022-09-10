@@ -4,7 +4,8 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-import numpy as np
+import math
+import numpy
 import typing as T
 
 from .ops import rot3 as ops
@@ -36,31 +37,14 @@ class Rot3(object):
             assert len(q) == self.storage_dim()
             self.data = list(q)
 
-    def to_rotation_matrix(self):
-        # type: () -> np.ndarray
-        x, y, z, w = self.data
-
-        return np.array(
-            [
-                [1 - 2 * y ** 2 - 2 * z ** 2, 2 * x * y - 2 * z * w, 2 * x * z + 2 * y * w],
-                [2 * x * y + 2 * z * w, 1 - 2 * x ** 2 - 2 * z ** 2, 2 * y * z - 2 * x * w],
-                [2 * x * z - 2 * y * w, 2 * y * z + 2 * x * w, 1 - 2 * x ** 2 - 2 * y ** 2],
-            ]
-        )
-
-    def _apply_to_vector(self, v):
-        # type: (np.ndarray) -> np.ndarray
-        v_reshaped = np.reshape(v, (3, 1))
-        return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
-
     @classmethod
     def from_rotation_matrix(cls, R, epsilon=0.0):
-        # type: (np.ndarray, float) -> Rot3
+        # type: (numpy.ndarray, float) -> Rot3
         assert R.shape == (3, 3)
-        w = np.sqrt(max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
-        x = np.sqrt(max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
-        y = np.sqrt(max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
-        z = np.sqrt(max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
+        w = numpy.sqrt(max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
+        x = numpy.sqrt(max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
+        y = numpy.sqrt(max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
+        z = numpy.sqrt(max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
 
         x = abs(x)
         if (R[2, 1] - R[1, 2]) < 0:
@@ -76,25 +60,183 @@ class Rot3(object):
 
         return Rot3.from_storage([x, y, z, w])
 
-    @classmethod
-    def from_yaw_pitch_roll(cls, yaw, pitch, roll):
-        # type: (float, float, float) -> Rot3
+    # --------------------------------------------------------------------------
+    # Custom generated methods
+    # --------------------------------------------------------------------------
 
-        return (
-            Rot3.from_tangent(np.array([0, 0, yaw]))
-            * Rot3.from_tangent(np.array([0, pitch, 0]))
-            * Rot3.from_tangent(np.array([roll, 0, 0]))
+    def compose_with_point(self, right):
+        # type: (Rot3, numpy.ndarray) -> numpy.ndarray
+        """
+        Left-multiplication. Either rotation concatenation or point transform.
+        """
+
+        # Total ops: 43
+
+        # Input arrays
+        _self = self.data
+        if len(right.shape) == 1:
+            right = right.reshape((3, 1))
+
+        # Intermediate terms (11)
+        _tmp0 = 2 * _self[0]
+        _tmp1 = _self[1] * _tmp0
+        _tmp2 = 2 * _self[2]
+        _tmp3 = _self[3] * _tmp2
+        _tmp4 = 2 * _self[1] * _self[3]
+        _tmp5 = _self[2] * _tmp0
+        _tmp6 = -2 * _self[1] ** 2
+        _tmp7 = 1 - 2 * _self[2] ** 2
+        _tmp8 = _self[3] * _tmp0
+        _tmp9 = _self[1] * _tmp2
+        _tmp10 = -2 * _self[0] ** 2
+
+        # Output terms
+        _res = numpy.zeros((3, 1))
+        _res[0, 0] = (
+            right[0, 0] * (_tmp6 + _tmp7)
+            + right[1, 0] * (_tmp1 - _tmp3)
+            + right[2, 0] * (_tmp4 + _tmp5)
         )
+        _res[1, 0] = (
+            right[0, 0] * (_tmp1 + _tmp3)
+            + right[1, 0] * (_tmp10 + _tmp7)
+            + right[2, 0] * (-_tmp8 + _tmp9)
+        )
+        _res[2, 0] = (
+            right[0, 0] * (-_tmp4 + _tmp5)
+            + right[1, 0] * (_tmp8 + _tmp9)
+            + right[2, 0] * (_tmp10 + _tmp6 + 1)
+        )
+        return _res
+
+    def to_rotation_matrix(self):
+        # type: (Rot3) -> numpy.ndarray
+        """
+        Converts to a rotation matrix
+        """
+
+        # Total ops: 28
+
+        # Input arrays
+        _self = self.data
+
+        # Intermediate terms (11)
+        _tmp0 = -2 * _self[1] ** 2
+        _tmp1 = 1 - 2 * _self[2] ** 2
+        _tmp2 = 2 * _self[0]
+        _tmp3 = _self[1] * _tmp2
+        _tmp4 = 2 * _self[2]
+        _tmp5 = _self[3] * _tmp4
+        _tmp6 = 2 * _self[1] * _self[3]
+        _tmp7 = _self[2] * _tmp2
+        _tmp8 = -2 * _self[0] ** 2
+        _tmp9 = _self[3] * _tmp2
+        _tmp10 = _self[1] * _tmp4
+
+        # Output terms
+        _res = numpy.zeros((3, 3))
+        _res[0, 0] = _tmp0 + _tmp1
+        _res[1, 0] = _tmp3 + _tmp5
+        _res[2, 0] = -_tmp6 + _tmp7
+        _res[0, 1] = _tmp3 - _tmp5
+        _res[1, 1] = _tmp1 + _tmp8
+        _res[2, 1] = _tmp10 + _tmp9
+        _res[0, 2] = _tmp6 + _tmp7
+        _res[1, 2] = _tmp10 - _tmp9
+        _res[2, 2] = _tmp0 + _tmp8 + 1
+        return _res
+
+    @staticmethod
+    def random_from_uniform_samples(u1, u2, u3):
+        # type: (float, float, float) -> Rot3
+        """
+        Generate a random element of SO3 from three variables uniformly sampled in [0, 1].
+        """
+
+        # Total ops: 14
+
+        # Input arrays
+
+        # Intermediate terms (5)
+        _tmp0 = math.sqrt(1 - u1)
+        _tmp1 = 2 * math.pi
+        _tmp2 = _tmp1 * u2
+        _tmp3 = math.sqrt(u1)
+        _tmp4 = _tmp1 * u3
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = _tmp0 * math.sin(_tmp2)
+        _res[1] = _tmp0 * math.cos(_tmp2)
+        _res[2] = _tmp3 * math.sin(_tmp4)
+        _res[3] = _tmp3 * math.cos(_tmp4)
+        return Rot3.from_storage(_res)
 
     def to_yaw_pitch_roll(self):
-        # type: () -> T.Tuple[float, float, float]
-        x, y, z, w = self.data
-        yaw = np.arctan2(2 * x * y + 2 * w * z, x * x + w * w - z * z - y * y)
-        pitch = -np.arcsin(2 * x * z - 2 * w * y)
-        roll = np.arctan2(2 * y * z + 2 * w * x, z * z - y * y - x * x + w * w)
-        return yaw, pitch, roll
+        # type: (Rot3) -> numpy.ndarray
+        """
+        This function was autogenerated from a symbolic function. Do not modify by hand.
 
-    # TODO more rotation helpers
+        Symbolic function: <lambda>
+
+        Args:
+
+        Outputs:
+            res: Matrix31
+        """
+
+        # Total ops: 27
+
+        # Input arrays
+        _self = self.data
+
+        # Intermediate terms (5)
+        _tmp0 = 2 * _self[0]
+        _tmp1 = 2 * _self[2]
+        _tmp2 = _self[2] ** 2
+        _tmp3 = _self[0] ** 2
+        _tmp4 = -_self[1] ** 2 + _self[3] ** 2
+
+        # Output terms
+        _res = numpy.zeros((3, 1))
+        _res[0, 0] = math.atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4)
+        _res[1, 0] = -math.asin(max(-1.0, min(1.0, -2 * _self[1] * _self[3] + _self[2] * _tmp0)))
+        _res[2, 0] = math.atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4)
+        return _res
+
+    @staticmethod
+    def from_yaw_pitch_roll(yaw, pitch, roll):
+        # type: (float, float, float) -> Rot3
+        """
+        Construct from yaw, pitch, and roll Euler angles in radians
+        """
+
+        # Total ops: 25
+
+        # Input arrays
+
+        # Intermediate terms (13)
+        _tmp0 = (1.0 / 2.0) * pitch
+        _tmp1 = math.sin(_tmp0)
+        _tmp2 = (1.0 / 2.0) * yaw
+        _tmp3 = math.sin(_tmp2)
+        _tmp4 = (1.0 / 2.0) * roll
+        _tmp5 = math.cos(_tmp4)
+        _tmp6 = _tmp3 * _tmp5
+        _tmp7 = math.cos(_tmp0)
+        _tmp8 = math.sin(_tmp4)
+        _tmp9 = math.cos(_tmp2)
+        _tmp10 = _tmp8 * _tmp9
+        _tmp11 = _tmp3 * _tmp8
+        _tmp12 = _tmp5 * _tmp9
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = -_tmp1 * _tmp6 + _tmp10 * _tmp7
+        _res[1] = _tmp1 * _tmp12 + _tmp11 * _tmp7
+        _res[2] = -_tmp1 * _tmp10 + _tmp6 * _tmp7
+        _res[3] = _tmp1 * _tmp11 + _tmp12 * _tmp7
+        return Rot3.from_storage(_res)
 
     # --------------------------------------------------------------------------
     # StorageOps concept
@@ -158,7 +300,7 @@ class Rot3(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (np.ndarray, float) -> Rot3
+        # type: (numpy.ndarray, float) -> Rot3
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -168,11 +310,11 @@ class Rot3(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> np.ndarray
+        # type: (float) -> numpy.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (np.ndarray, float) -> Rot3
+        # type: (numpy.ndarray, float) -> Rot3
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -182,7 +324,7 @@ class Rot3(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Rot3, float) -> np.ndarray
+        # type: (Rot3, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
     # --------------------------------------------------------------------------
@@ -202,14 +344,14 @@ class Rot3(object):
 
     @T.overload
     def __mul__(self, other):  # pragma: no cover
-        # type: (np.ndarray) -> np.ndarray
+        # type: (numpy.ndarray) -> numpy.ndarray
         pass
 
     def __mul__(self, other):
-        # type: (T.Union[Rot3, np.ndarray]) -> T.Union[Rot3, np.ndarray]
+        # type: (T.Union[Rot3, numpy.ndarray]) -> T.Union[Rot3, numpy.ndarray]
         if isinstance(other, Rot3):
             return self.compose(other)
-        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
-            return self._apply_to_vector(other)
+        elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
+            return self.compose_with_point(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

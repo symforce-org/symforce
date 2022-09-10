@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Rot2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::Compose(
+Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 2, 1>& right) const {
   // Total ops: 6
 

@@ -13,45 +13,15 @@
             assert len(q) == self.storage_dim()
             self.data = list(q)
 
-    def to_rotation_matrix(self):
-        # type: () -> np.ndarray
-        {# TODO(aaron): codegen this #}
-        x, y, z, w = self.data
-
-        return np.array(
-            [
-                [
-                    1 - 2 * y ** 2 - 2 * z ** 2,
-                    2 * x * y - 2 * z * w,
-                    2 * x * z + 2 * y * w
-                ],
-                [
-                    2 * x * y + 2 * z * w,
-                    1 - 2 * x ** 2 - 2 * z ** 2,
-                    2 * y * z - 2 * x * w
-                ],
-                [
-                    2 * x * z - 2 * y * w,
-                    2 * y * z + 2 * x * w,
-                    1 - 2 * x ** 2 - 2 * y ** 2
-                ]
-            ]
-        )
-
-    def _apply_to_vector(self, v):
-        # type: (np.ndarray) -> np.ndarray
-        v_reshaped = np.reshape(v, (3, 1))
-        return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
-
     @classmethod
     def from_rotation_matrix(cls, R, epsilon=0.0):
-        # type: (np.ndarray, float) -> Rot3
+        # type: (numpy.ndarray, float) -> Rot3
         {# TODO(aaron, ryan): codegen this #}
         assert R.shape == (3, 3)
-        w = np.sqrt(max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
-        x = np.sqrt(max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
-        y = np.sqrt(max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
-        z = np.sqrt(max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
+        w = numpy.sqrt(max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
+        x = numpy.sqrt(max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
+        y = numpy.sqrt(max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
+        z = numpy.sqrt(max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
 
         x = abs(x)
         if (R[2, 1] - R[1, 2]) < 0:
@@ -66,31 +36,3 @@
             z = -z
 
         return Rot3.from_storage([x, y, z, w])
-
-    @classmethod
-    def from_yaw_pitch_roll(cls, yaw, pitch, roll):
-        # type: (float, float, float) -> Rot3
-        {# TODO(aaron, ryan): codegen this #}
-
-        return (
-            Rot3.from_tangent(np.array([0, 0, yaw]))
-            * Rot3.from_tangent(np.array([0, pitch, 0]))
-            * Rot3.from_tangent(np.array([roll, 0, 0]))
-        )
-
-    def to_yaw_pitch_roll(self):
-        # type: () -> T.Tuple[float, float, float]
-        {# TODO(aaron, ryan): codegen this #}
-        x, y, z, w = self.data
-        yaw = np.arctan2(
-            2 * x * y + 2 * w * z,
-            x * x + w * w - z * z - y * y
-        )
-        pitch = -np.arcsin(2 * x * z - 2 * w * y)
-        roll = np.arctan2(
-            2 * y * z + 2 * w * x,
-            z * z - y * y - x * x + w * w
-        )
-        return yaw, pitch, roll
-
-    # TODO more rotation helpers

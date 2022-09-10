@@ -4,7 +4,8 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-import numpy as np
+import math
+import numpy
 import typing as T
 
 from .ops import rot2 as ops
@@ -36,18 +37,72 @@ class Rot2(object):
             assert len(z) == self.storage_dim()
             self.data = list(z)
 
+    # --------------------------------------------------------------------------
+    # Custom generated methods
+    # --------------------------------------------------------------------------
+
+    def compose_with_point(self, right):
+        # type: (Rot2, numpy.ndarray) -> numpy.ndarray
+        """
+        Left-multiplication. Either rotation concatenation or point transform.
+        """
+
+        # Total ops: 6
+
+        # Input arrays
+        _self = self.data
+        if len(right.shape) == 1:
+            right = right.reshape((2, 1))
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = numpy.zeros((2, 1))
+        _res[0, 0] = _self[0] * right[0, 0] - _self[1] * right[1, 0]
+        _res[1, 0] = _self[0] * right[1, 0] + _self[1] * right[0, 0]
+        return _res
+
+    @staticmethod
+    def from_angle(theta):
+        # type: (float) -> Rot2
+        """
+        Create a Rot2 from an angle `theta` in radians
+
+        This is equivalent to from_tangent([theta])
+        """
+
+        # Total ops: 2
+
+        # Input arrays
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = [0.0] * 2
+        _res[0] = math.cos(theta)
+        _res[1] = math.sin(theta)
+        return Rot2.from_storage(_res)
+
     def to_rotation_matrix(self):
-        # type: () -> np.ndarray
-        real, imag = self.data
+        # type: (Rot2) -> numpy.ndarray
+        """
+        A matrix representation of this element in the Euclidean space that contains it.
+        """
 
-        return np.array([[real, -imag], [imag, real]])
+        # Total ops: 1
 
-    def _apply_to_vector(self, v):
-        # type: (np.ndarray) -> np.ndarray
-        v_reshaped = np.reshape(v, (2, 1))
-        return np.reshape(np.matmul(self.to_rotation_matrix(), v_reshaped), v.shape)
+        # Input arrays
+        _self = self.data
 
-    # TODO rotation helpers
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = numpy.zeros((2, 2))
+        _res[0, 0] = _self[0]
+        _res[1, 0] = _self[1]
+        _res[0, 1] = -_self[1]
+        _res[1, 1] = _self[0]
+        return _res
 
     # --------------------------------------------------------------------------
     # StorageOps concept
@@ -111,7 +166,7 @@ class Rot2(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (np.ndarray, float) -> Rot2
+        # type: (numpy.ndarray, float) -> Rot2
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -121,11 +176,11 @@ class Rot2(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> np.ndarray
+        # type: (float) -> numpy.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (np.ndarray, float) -> Rot2
+        # type: (numpy.ndarray, float) -> Rot2
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -135,7 +190,7 @@ class Rot2(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Rot2, float) -> np.ndarray
+        # type: (Rot2, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
     # --------------------------------------------------------------------------
@@ -155,14 +210,14 @@ class Rot2(object):
 
     @T.overload
     def __mul__(self, other):  # pragma: no cover
-        # type: (np.ndarray) -> np.ndarray
+        # type: (numpy.ndarray) -> numpy.ndarray
         pass
 
     def __mul__(self, other):
-        # type: (T.Union[Rot2, np.ndarray]) -> T.Union[Rot2, np.ndarray]
+        # type: (T.Union[Rot2, numpy.ndarray]) -> T.Union[Rot2, numpy.ndarray]
         if isinstance(other, Rot2):
             return self.compose(other)
-        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
-            return self._apply_to_vector(other)
+        elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
+            return self.compose_with_point(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

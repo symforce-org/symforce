@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Pose2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::Compose(
+Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 2, 1>& right) const {
   // Total ops: 8
 

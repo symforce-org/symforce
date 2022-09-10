@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Compose(
+Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
   // Total ops: 46
 
