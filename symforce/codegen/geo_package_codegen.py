@@ -180,7 +180,11 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         # Package init
         templates.add(
             template_path=Path("geo_package", "__init__.py.jinja"),
-            data=dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
+            data=dict(
+                Codegen.common_data(),
+                all_types=DEFAULT_GEO_TYPES,
+                numeric_epsilon=sf.numeric_epsilon,
+            ),
             output_path=package_dir / "__init__.py",
         )
 

@@ -17,3 +17,5 @@ from .double_sphere_camera_cal import DoubleSphereCameraCal
 from .equirectangular_camera_cal import EquirectangularCameraCal
 from .polynomial_camera_cal import PolynomialCameraCal
 from .spherical_camera_cal import SphericalCameraCal
+
+epsilon = 2.220446049250313e-15
