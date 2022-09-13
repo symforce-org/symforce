@@ -5,6 +5,7 @@
 
 import os
 import subprocess
+import sys
 
 from symforce import logger
 from symforce import python_util
@@ -28,7 +29,9 @@ class SymforceDocsTest(TestCase):
         success = False
         for _ in range(RETRIES):
             try:
-                python_util.execute_subprocess(["make", "docs"], cwd=SYMFORCE_DIR)
+                python_util.execute_subprocess(
+                    ["make", "docs"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+                )
             except subprocess.CalledProcessError as exc:
                 logger.error(exc)
             else:

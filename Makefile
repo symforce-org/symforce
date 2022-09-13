@@ -13,9 +13,6 @@ CPP_FORMAT=clang-format
 # Build documentation, run tests, measure coverage, show in browser
 all: clean docs coverage coverage_open docs_open
 
-# Install all needed packages
-all_reqs: reqs test_reqs docs_reqs
-
 FIND_CPP_FILES_TO_FORMAT=find . \
 	-not -path "*/lcmtypes/*" \
 	-and -not -path "./third_party/*" \
@@ -80,23 +77,9 @@ clean: docs_clean coverage_clean
 # Tests
 # -----------------------------------------------------------------------------
 
-TEST_ENV=SYMFORCE_LOGLEVEL=WARNING
-TEST_CMD=-m unittest discover -s test/ -p *_test.py -v
-
-# Python files which generate code
-GEN_FILES=test/*codegen*.py
-
-test_symengine:
-	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) $(TEST_CMD)
-
-test_sympy:
-	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) $(TEST_CMD)
-
-test: test_symengine test_sympy
-
 # Generic target to run a SymEngine codegen test with --update
 update_%:
-	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) test/$*.py --update
+	SYMFORCE_SYMBOLIC_API=symengine $(PYTHON) test/$*.py --update
 
 # All SymForce codegen tests, formatted as update_my_codegen_test targets
 GEN_FILES_UPDATE_TARGETS=$(shell \
@@ -107,7 +90,7 @@ test_update: $(GEN_FILES_UPDATE_TARGETS)
 
 # Generic target to run a SymPy codegen test with --update --run_slow_tests
 sympy_update_%:
-	$(TEST_ENV) SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) test/$*.py --update --run_slow_tests
+	SYMFORCE_SYMBOLIC_API=sympy $(PYTHON) test/$*.py --update --run_slow_tests
 
 # All SymForce codegen tests, formatted as sympy_update_my_codegen_test targets
 GEN_FILES_SYMPY_UPDATE_TARGETS=$(shell \
@@ -119,7 +102,7 @@ test_update_sympy: $(GEN_FILES_SYMPY_UPDATE_TARGETS)
 # Target to regenerate all code
 test_update_all: test_update test_update_sympy
 
-.PHONY: test_reqs test_symengine test_sympy test update_% sympy_update_% test_update test_update_all
+.PHONY: update_% sympy_update_% test_update test_update_sympy test_update_all
 
 # -----------------------------------------------------------------------------
 # Test coverage
@@ -129,8 +112,10 @@ COVERAGE_DIR=$(BUILD_DIR)/coverage
 coverage_clean:
 	rm -rf $(COVERAGE_DIR)
 
+# NOTE(aaron): This is currently broken, since we can't run all our tests with `unittest discover`
 coverage_run:
-	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce,gen $(TEST_CMD)
+	$(TEST_ENV) $(PYTHON) -m coverage run --source=symforce,gen \
+		-m unittest discover -s test/ -p *_test.py -v
 
 coverage_html:
 	$(PYTHON) -m coverage html -d $(COVERAGE_DIR) && echo "Coverage report at $(COVERAGE_DIR)/index.html"
@@ -178,4 +163,4 @@ docs: docs_clean docs_html
 docs_open: docs
 	xdg-open $(DOCS_DIR)/index.html
 
-.PHONY: docs_reqs docs_clean docs_apidoc docs_html docs docs_open
+.PHONY: docs_clean docs_apidoc docs_html docs docs_open
