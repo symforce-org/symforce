@@ -150,8 +150,8 @@ TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::
   vec.resize(storage_dim);
   sym::StorageOps<T>::ToStorage(value, vec.data());
   CHECK(vec.size() > 0);
-  CHECK(vec.size() == storage_dim);
-  for (int i = 0; i < vec.size(); ++i) {
+  CHECK(static_cast<int>(vec.size()) == storage_dim);
+  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
     CHECK(vec[i] == value.Data()[i]);
   }
 
@@ -207,8 +207,8 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", sym::Vector1<doub
   std::vector<Scalar> vec;
   vec.resize(storage_dim);
   sym::StorageOps<T>::ToStorage(value, vec.data());
-  CHECK(vec.size() == storage_dim);
-  for (int i = 0; i < vec.size(); ++i) {
+  CHECK(static_cast<int>(vec.size()) == storage_dim);
+  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
     CHECK(vec[i] == value[i]);
   }
 
@@ -433,7 +433,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
   // due to epsilon doesn't extend too far away from 0
   {
     TangentVec small_perturbation = TangentVec::Zero();
-    for (size_t i = 0; i < sym::LieGroupOps<T>::TangentDim(); i++) {
+    for (int i = 0; i < sym::LieGroupOps<T>::TangentDim(); i++) {
       small_perturbation(i) = std::sqrt(epsilon);
       const T value = sym::LieGroupOps<T>::FromTangent(small_perturbation, epsilon);
       const TangentVec recovered_perturbation = sym::LieGroupOps<T>::ToTangent(value, epsilon);

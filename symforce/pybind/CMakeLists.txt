@@ -32,6 +32,8 @@ pybind11_add_module(
   sym_type_casters.cc
 )
 
+target_compile_options(cc_sym PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
+
 if(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH)
   set_target_properties(cc_sym PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH}

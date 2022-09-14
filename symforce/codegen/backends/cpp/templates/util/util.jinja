@@ -400,10 +400,17 @@ _{{ lhs }} = {{ rhs }};
 {% macro expr_code(spec, scalar_type="Scalar") -%}
     // Total ops: {{ spec.total_ops() }}
 
+    {% if spec.unused_arguments %}
+    // Unused inputs
+    {% for arg in spec.unused_arguments %}
+    (void){{ arg }};
+    {% endfor %}
+
+    {% endif %}
     // Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = typing_util.get_type(type) %}
-        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
+        {% if name not in spec.unused_arguments and not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
             {% if name == "self" %}
     const {{ vector_type(ops.StorageOps.storage_dim(type), scalar_type) }}& _{{ name }} = Data();
             {% else %}

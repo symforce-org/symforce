@@ -40,6 +40,9 @@ void BetweenFactorPose3Position(const sym::Pose3<Scalar>& a, const sym::Pose3<Sc
                                 Eigen::Matrix<Scalar, 12, 1>* const rhs = nullptr) {
   // Total ops: 553
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();

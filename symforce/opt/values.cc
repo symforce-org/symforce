@@ -200,7 +200,7 @@ template <typename Scalar>
 void Values<Scalar>::Update(const index_t& index_this, const index_t& index_other,
                             const Values<Scalar>& other) {
   SYM_ASSERT(index_this.entries.size() == index_other.entries.size());
-  for (int i = 0; i < index_this.entries.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(index_this.entries.size()); ++i) {
     const index_entry_t& entry_this = index_this.entries[i];
     const index_entry_t& entry_other = index_other.entries[i];
     SYM_ASSERT(entry_this.storage_dim == entry_other.storage_dim);

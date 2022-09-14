@@ -146,7 +146,7 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::LinearCameraCal<dou
 
   std::array<Scalar, storage_dim> arr;
   cam_cal.ToStorage(arr.data());
-  for (int i = 0; i < arr.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(arr.size()); ++i) {
     CHECK(arr[i] == cam_cal.Data()[i]);
   }
 
@@ -260,7 +260,6 @@ TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::LinearCameraCal<do
 
   using Scalar = typename T::Scalar;
   const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
-  const Scalar tolerance = 10.0 * epsilon;  // For checking approx. equality
 
   spdlog::info("*** Testing Camera class with calibration: {} ***", cam_cal);
 

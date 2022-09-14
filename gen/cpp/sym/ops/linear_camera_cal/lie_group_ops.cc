@@ -17,6 +17,9 @@ sym::LinearCameraCal<Scalar> LieGroupOps<LinearCameraCal<Scalar>>::FromTangent(
     const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -38,6 +41,9 @@ LieGroupOps<LinearCameraCal<Scalar>>::ToTangent(const sym::LinearCameraCal<Scala
                                                 const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -58,6 +64,9 @@ template <typename Scalar>
 sym::LinearCameraCal<Scalar> LieGroupOps<LinearCameraCal<Scalar>>::Retract(
     const sym::LinearCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 4
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -81,6 +90,9 @@ LieGroupOps<LinearCameraCal<Scalar>>::LocalCoordinates(const sym::LinearCameraCa
                                                        const sym::LinearCameraCal<Scalar>& b,
                                                        const Scalar epsilon) {
   // Total ops: 4
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

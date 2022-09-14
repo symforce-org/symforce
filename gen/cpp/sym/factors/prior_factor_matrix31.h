@@ -37,6 +37,9 @@ void PriorFactorMatrix31(const Eigen::Matrix<Scalar, 3, 1>& value,
                          Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
   // Total ops: 63
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (6)

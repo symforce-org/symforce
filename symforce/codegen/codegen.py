@@ -105,13 +105,13 @@ class Codegen:
         inputs = inputs.dataclasses_to_values()
         outputs = outputs.dataclasses_to_values()
 
-        # All symbols in outputs must be present in inputs.  Convert to Matrix before calling
-        # free_symbols because it's much faster to call once
+        self.inputs = inputs
+        self.outputs = outputs
+
+        # All symbols in outputs must be present in inputs
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
-        assert sf.S(
-            sf.Matrix(codegen_util.flat_symbols_from_values(outputs)).mat
-        ).free_symbols.issubset(
+        assert self.output_symbols.issubset(
             input_symbols
         ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
 
@@ -129,9 +129,6 @@ class Codegen:
 
         # Outputs must not have same variable names/keys as inputs
         assert all(key not in list(outputs.keys()) for key in inputs.keys())
-
-        self.inputs = inputs
-        self.outputs = outputs
 
         self.config = config
 
@@ -156,6 +153,16 @@ class Codegen:
         self.namespaces_dict: T.Optional[T.Dict[str, str]] = None
         self.unique_namespaces: T.Optional[T.Set[str]] = None
         self.namespace: T.Optional[str] = None
+
+    @functools.cached_property
+    def output_symbols(self) -> T.Set[sf.Symbol]:
+        """
+        The set of free symbols in the output
+
+        Cached, because this is somewhat expensive to compute for large outputs
+        """
+        # Convert to Matrix before calling free_symbols because it's much faster to call once
+        return sf.S(sf.Matrix(codegen_util.flat_symbols_from_values(self.outputs)).mat).free_symbols
 
     @classmethod
     def function(
@@ -296,6 +303,18 @@ class Codegen:
             sparse_mat_data=self.sparse_mat_data,
             config=self.config,
         )
+
+    @functools.cached_property
+    def unused_arguments(self) -> T.List[str]:
+        """
+        The names of any inputs that do not appear in any outputs
+        """
+        results = []
+        for input_name, input_value in self.inputs.items():
+            input_symbols = set(ops.StorageOps.to_storage(input_value))
+            if not input_symbols.intersection(self.output_symbols):
+                results.append(input_name)
+        return results
 
     def total_ops(self) -> int:
         """

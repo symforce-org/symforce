@@ -17,6 +17,9 @@ sym::DoubleSphereCameraCal<Scalar> LieGroupOps<DoubleSphereCameraCal<Scalar>>::F
     const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -40,6 +43,9 @@ LieGroupOps<DoubleSphereCameraCal<Scalar>>::ToTangent(const sym::DoubleSphereCam
                                                       const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _a = a.Data();
 
@@ -62,6 +68,9 @@ template <typename Scalar>
 sym::DoubleSphereCameraCal<Scalar> LieGroupOps<DoubleSphereCameraCal<Scalar>>::Retract(
     const sym::DoubleSphereCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 6
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _a = a.Data();
@@ -87,6 +96,9 @@ LieGroupOps<DoubleSphereCameraCal<Scalar>>::LocalCoordinates(
     const sym::DoubleSphereCameraCal<Scalar>& a, const sym::DoubleSphereCameraCal<Scalar>& b,
     const Scalar epsilon) {
   // Total ops: 6
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 6, 1>& _a = a.Data();

@@ -239,7 +239,7 @@ class Optimizer {
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations
    * or converged
    */
-  void IterateToConvergence(Values<Scalar>* values, size_t num_iterations,
+  void IterateToConvergence(Values<Scalar>* values, int num_iterations,
                             bool populate_best_linearization, OptimizationStats<Scalar>* stats);
 
   /**

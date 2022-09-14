@@ -128,6 +128,7 @@ add_library(
   ${SYMFORCE_CHOLESKY_SOURCES}
   ${SYMFORCE_CHOLESKY_HEADERS}
 )
+target_compile_options(symforce_cholesky PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 target_link_libraries(symforce_cholesky metis ${SYMFORCE_EIGEN_TARGET})
 target_include_directories(symforce_cholesky PUBLIC ../..)
 
@@ -142,6 +143,7 @@ add_library(
   ${SYMFORCE_OPT_SOURCES}
   ${SYMFORCE_OPT_HEADERS}
 )
+target_compile_options(symforce_opt PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 target_link_libraries(symforce_opt
   symforce_gen
   symforce_cholesky

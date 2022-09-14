@@ -91,12 +91,10 @@ CoordsToStorageMap CoordsToStorageOffset(const Eigen::SparseMatrix<Scalar>& mat)
 }
 
 template <typename Scalar>
-void ComputeKeyHelperSparseColOffsets(
-    const typename Factor<Scalar>::LinearizedDenseFactor& linearized_factor,
-    const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
-    const CoordsToStorageMap& hessian_row_col_to_storage_offset,
-    linearization_dense_factor_helper_t& factor_helper) {
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
+void ComputeKeyHelperSparseColOffsets(const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
+                                      const CoordsToStorageMap& hessian_row_col_to_storage_offset,
+                                      linearization_dense_factor_helper_t& factor_helper) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
@@ -148,7 +146,7 @@ void ComputeKeyHelperSparseMap(
   // We're computing this in UpdateFromSparseOnesFactorIntoTripletLists too...
   std::vector<int> key_for_factor_offset;
   // Reserve?
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); key_i++) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); key_i++) {
     for (int key_offset = 0; key_offset < factor_helper.key_helpers[key_i].tangent_dim;
          key_offset++) {
       key_for_factor_offset.push_back(key_i);
@@ -204,7 +202,7 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
   factor_helper.residual_dim = factor.residual.rows();
   factor_helper.combined_residual_offset = combined_residual_offset;
 
-  for (int key_i = 0; key_i < factor.index.entries.size(); ++key_i) {
+  for (int key_i = 0; key_i < static_cast<int>(factor.index.entries.size()); ++key_i) {
     const index_entry_t& entry = factor.index.entries[key_i];
 
     const bool key_is_optimized = state_index.count(entry.key) > 0;

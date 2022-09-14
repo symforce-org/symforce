@@ -34,15 +34,23 @@ struct LieGroupOps<Eigen::Matrix<ScalarType, Rows, Cols>> : public internal::Lie
 
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
   static T FromTangent(const TangentVec& vec, const Scalar epsilon) {
+    (void)epsilon; // unused
+
     return Eigen::Map<const T>(vec.data(), Rows, Cols);
   }
   static TangentVec ToTangent(const T& a, const Scalar epsilon) {
+    (void)epsilon; // unused
+
     return Eigen::Map<const TangentVec>(a.data(), a.size());
   }
   static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon) {
+    (void)epsilon; // unused
+
     return a + Eigen::Map<const T>(vec.data(), a.rows(), a.cols());
   }
   static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon) {
+    (void)epsilon; // unused
+
     return (Eigen::Map<const TangentVec>(b.data(), b.size()) -
             Eigen::Map<const TangentVec>(a.data(), a.size()));
   }

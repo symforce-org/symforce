@@ -16,8 +16,13 @@ add_library(
   ${SYMFORCE_TEST_SOURCES}
   ${SYMFORCE_TEST_HEADERS}
 )
+target_compile_options(symforce_test PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 target_link_libraries(symforce_test Catch2::Catch2WithMain symforce_gen symforce_opt)
+
+# TODO(aaron): Marking these all as system, so we don't warn inside them.  Ideally we'd maybe warn
+# in generated code, just not LCM bindings?
 target_include_directories(symforce_test
+  SYSTEM
   INTERFACE symforce_function_codegen_test_data/symengine/cam_function_codegen_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_multi_function_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_nan_test_data/cpp

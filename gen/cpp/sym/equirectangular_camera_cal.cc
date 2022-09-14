@@ -143,6 +143,9 @@ Eigen::Matrix<Scalar, 3, 1> EquirectangularCameraCal<Scalar>::CameraRayFromPixel
     const Eigen::Matrix<Scalar, 2, 1>& pixel, const Scalar epsilon, Scalar* const is_valid) const {
   // Total ops: 19
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
@@ -176,6 +179,9 @@ Eigen::Matrix<Scalar, 3, 1> EquirectangularCameraCal<Scalar>::CameraRayFromPixel
     Eigen::Matrix<Scalar, 3, 4>* const point_D_cal,
     Eigen::Matrix<Scalar, 3, 2>* const point_D_pixel) const {
   // Total ops: 44
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();

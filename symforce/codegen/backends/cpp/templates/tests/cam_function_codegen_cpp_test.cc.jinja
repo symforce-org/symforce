@@ -29,7 +29,6 @@ TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCamer
   using T = TestType;
   using Scalar = typename T::Scalar;
   Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
-  Scalar tolerance = 10.0 * epsilon; // For assessing approximate equality
 
   Eigen::Matrix<Scalar, sym::StorageOps<T>::StorageDim(), 1> data;
   std::mt19937 gen(42);
@@ -39,8 +38,6 @@ TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCamer
   }
   T cam(data);
   spdlog::info("*** Testing generated function with {} ***", cam);
-
-  int is_valid;
 
   Eigen::Matrix<Scalar, 2, 1> pixel;
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);

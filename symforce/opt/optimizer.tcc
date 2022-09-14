@@ -201,8 +201,8 @@ const optimizer_params_t& Optimizer<ScalarType, NonlinearSolverType>::Params() c
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
-    Values<Scalar>* const values, const size_t num_iterations,
-    const bool populate_best_linearization, OptimizationStats<Scalar>* const stats) {
+    Values<Scalar>* const values, const int num_iterations, const bool populate_best_linearization,
+    OptimizationStats<Scalar>* const stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name_);
   bool optimization_early_exited = false;
 

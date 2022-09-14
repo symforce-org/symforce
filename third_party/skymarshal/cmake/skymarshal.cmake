@@ -60,7 +60,8 @@ function(add_cpp_bindings
   endforeach()
 
   add_library(${target_name}_cpp INTERFACE ${generated_files})
-  target_include_directories(${target_name}_cpp INTERFACE ${bindings_dir}/cpp)
+  # TODO(aaron): Should these be system includes?  They do have warnings
+  target_include_directories(${target_name}_cpp SYSTEM INTERFACE ${bindings_dir}/cpp)
   target_link_libraries(${target_name}_cpp INTERFACE skymarshal_core)
 
   set(${generated_files_outvar} ${generated_files} PARENT_SCOPE)

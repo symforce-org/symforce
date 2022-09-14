@@ -17,6 +17,9 @@ sym::ATANCameraCal<Scalar> LieGroupOps<ATANCameraCal<Scalar>>::FromTangent(const
                                                                            const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -39,6 +42,9 @@ LieGroupOps<ATANCameraCal<Scalar>>::ToTangent(const sym::ATANCameraCal<Scalar>& 
                                               const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _a = a.Data();
 
@@ -60,6 +66,9 @@ template <typename Scalar>
 sym::ATANCameraCal<Scalar> LieGroupOps<ATANCameraCal<Scalar>>::Retract(
     const sym::ATANCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 5
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _a = a.Data();
@@ -84,6 +93,9 @@ LieGroupOps<ATANCameraCal<Scalar>>::LocalCoordinates(const sym::ATANCameraCal<Sc
                                                      const sym::ATANCameraCal<Scalar>& b,
                                                      const Scalar epsilon) {
   // Total ops: 5
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 5, 1>& _a = a.Data();
