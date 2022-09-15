@@ -12,3 +12,4 @@ from .codegen_config import CodegenConfig
 
 from .backends.cpp.cpp_config import CppConfig
 from .backends.python.python_config import PythonConfig
+from .backends.typescript.typescript_config import TypescriptConfig
