@@ -966,6 +966,18 @@ class Matrix62(Matrix):
     SHAPE = (6, 2)
 
 
+class Matrix72(Matrix):
+    SHAPE = (7, 2)
+
+
+class Matrix82(Matrix):
+    SHAPE = (8, 2)
+
+
+class Matrix92(Matrix):
+    SHAPE = (9, 2)
+
+
 class Matrix13(Matrix):
     SHAPE = (1, 3)
 
@@ -988,6 +1000,18 @@ class Matrix53(Matrix):
 
 class Matrix63(Matrix):
     SHAPE = (6, 3)
+
+
+class Matrix73(Matrix):
+    SHAPE = (7, 3)
+
+
+class Matrix83(Matrix):
+    SHAPE = (8, 3)
+
+
+class Matrix93(Matrix):
+    SHAPE = (9, 3)
 
 
 class Matrix14(Matrix):
@@ -1014,6 +1038,18 @@ class Matrix64(Matrix):
     SHAPE = (6, 4)
 
 
+class Matrix74(Matrix):
+    SHAPE = (7, 4)
+
+
+class Matrix84(Matrix):
+    SHAPE = (8, 4)
+
+
+class Matrix94(Matrix):
+    SHAPE = (9, 4)
+
+
 class Matrix15(Matrix):
     SHAPE = (1, 5)
 
@@ -1036,6 +1072,18 @@ class Matrix55(Matrix):
 
 class Matrix65(Matrix):
     SHAPE = (6, 5)
+
+
+class Matrix75(Matrix):
+    SHAPE = (7, 5)
+
+
+class Matrix85(Matrix):
+    SHAPE = (8, 5)
+
+
+class Matrix95(Matrix):
+    SHAPE = (9, 5)
 
 
 class Matrix16(Matrix):
@@ -1062,51 +1110,132 @@ class Matrix66(Matrix):
     SHAPE = (6, 6)
 
 
+class Matrix76(Matrix):
+    SHAPE = (7, 6)
+
+
+class Matrix86(Matrix):
+    SHAPE = (8, 6)
+
+
+class Matrix96(Matrix):
+    SHAPE = (9, 6)
+
+
+class Matrix17(Matrix):
+    SHAPE = (1, 7)
+
+
+class Matrix27(Matrix):
+    SHAPE = (2, 7)
+
+
+class Matrix37(Matrix):
+    SHAPE = (3, 7)
+
+
+class Matrix47(Matrix):
+    SHAPE = (4, 7)
+
+
+class Matrix57(Matrix):
+    SHAPE = (5, 7)
+
+
+class Matrix67(Matrix):
+    SHAPE = (6, 7)
+
+
+class Matrix77(Matrix):
+    SHAPE = (7, 7)
+
+
+class Matrix87(Matrix):
+    SHAPE = (8, 7)
+
+
+class Matrix97(Matrix):
+    SHAPE = (9, 7)
+
+
+class Matrix18(Matrix):
+    SHAPE = (1, 8)
+
+
+class Matrix28(Matrix):
+    SHAPE = (2, 8)
+
+
+class Matrix38(Matrix):
+    SHAPE = (3, 8)
+
+
+class Matrix48(Matrix):
+    SHAPE = (4, 8)
+
+
+class Matrix58(Matrix):
+    SHAPE = (5, 8)
+
+
+class Matrix68(Matrix):
+    SHAPE = (6, 8)
+
+
+class Matrix78(Matrix):
+    SHAPE = (7, 8)
+
+
+class Matrix88(Matrix):
+    SHAPE = (8, 8)
+
+
+class Matrix98(Matrix):
+    SHAPE = (9, 8)
+
+
+class Matrix19(Matrix):
+    SHAPE = (1, 9)
+
+
+class Matrix29(Matrix):
+    SHAPE = (2, 9)
+
+
+class Matrix39(Matrix):
+    SHAPE = (3, 9)
+
+
+class Matrix49(Matrix):
+    SHAPE = (4, 9)
+
+
+class Matrix59(Matrix):
+    SHAPE = (5, 9)
+
+
+class Matrix69(Matrix):
+    SHAPE = (6, 9)
+
+
+class Matrix79(Matrix):
+    SHAPE = (7, 9)
+
+
+class Matrix89(Matrix):
+    SHAPE = (8, 9)
+
+
+class Matrix99(Matrix):
+    SHAPE = (9, 9)
+
+
 # Dictionary of shapes to static types.
-DIMS_TO_FIXED_TYPE: _T.Dict[_T.Tuple[int, int], type] = {
-    m.SHAPE: m
-    for m in (
-        Matrix11,
-        Matrix12,
-        Matrix13,
-        Matrix14,
-        Matrix15,
-        Matrix16,
-        Matrix21,
-        Matrix22,
-        Matrix23,
-        Matrix24,
-        Matrix25,
-        Matrix26,
-        Matrix31,
-        Matrix32,
-        Matrix33,
-        Matrix34,
-        Matrix35,
-        Matrix36,
-        Matrix41,
-        Matrix42,
-        Matrix43,
-        Matrix44,
-        Matrix45,
-        Matrix46,
-        Matrix51,
-        Matrix52,
-        Matrix53,
-        Matrix54,
-        Matrix55,
-        Matrix56,
-        Matrix61,
-        Matrix62,
-        Matrix63,
-        Matrix64,
-        Matrix65,
-        Matrix66,
-        Matrix71,
-        Matrix81,
-        Matrix91,
-    )
-}
+DIMS_TO_FIXED_TYPE: _T.Dict[_T.Tuple[int, int], type] = {}
+for rows in range(1, 10):
+    for cols in range(1, 10):
+        m = vars()[f"Matrix{rows}{cols}"]
+        DIMS_TO_FIXED_TYPE[m.SHAPE] = m
 
 
 def matrix_type_from_shape(shape: _T.Tuple[int, int]) -> _T.Type[Matrix]:
@@ -1160,30 +1289,72 @@ M32 = Matrix32
 M42 = Matrix42
 M52 = Matrix52
 M62 = Matrix62
+M72 = Matrix72
+M82 = Matrix82
+M92 = Matrix92
 M13 = Matrix13
 M23 = Matrix23
 M33 = Matrix33
 M43 = Matrix43
 M53 = Matrix53
 M63 = Matrix63
+M73 = Matrix73
+M83 = Matrix83
+M93 = Matrix93
 M14 = Matrix14
 M24 = Matrix24
 M34 = Matrix34
 M44 = Matrix44
 M54 = Matrix54
 M64 = Matrix64
+M74 = Matrix74
+M84 = Matrix84
+M94 = Matrix94
 M15 = Matrix15
 M25 = Matrix25
 M35 = Matrix35
 M45 = Matrix45
 M55 = Matrix55
 M65 = Matrix65
+M75 = Matrix75
+M85 = Matrix85
+M95 = Matrix95
 M16 = Matrix16
 M26 = Matrix26
 M36 = Matrix36
 M46 = Matrix46
 M56 = Matrix56
 M66 = Matrix66
+M76 = Matrix76
+M86 = Matrix86
+M96 = Matrix96
+M17 = Matrix17
+M27 = Matrix27
+M37 = Matrix37
+M47 = Matrix47
+M57 = Matrix57
+M67 = Matrix67
+M77 = Matrix77
+M87 = Matrix87
+M97 = Matrix97
+M18 = Matrix18
+M28 = Matrix28
+M38 = Matrix38
+M48 = Matrix48
+M58 = Matrix58
+M68 = Matrix68
+M78 = Matrix78
+M88 = Matrix88
+M98 = Matrix98
+M19 = Matrix19
+M29 = Matrix29
+M39 = Matrix39
+M49 = Matrix49
+M59 = Matrix59
+M69 = Matrix69
+M79 = Matrix79
+M89 = Matrix89
+M99 = Matrix99
 
 
 # Identity convenience names
@@ -1193,6 +1364,9 @@ I3 = I33 = M33.eye
 I4 = I44 = M44.eye
 I5 = I55 = M55.eye
 I6 = I66 = M66.eye
+I7 = I77 = M77.eye
+I8 = I88 = M88.eye
+I9 = I99 = M99.eye
 
 
 # Register printing for ipython

@@ -25,7 +25,7 @@ namespace sym {
 *     x4: Scalar
 *
 * Outputs:
-*     result: Matrix7_7
+*     result: Matrix77
 */
 template <typename Scalar>
 __attribute__((noinline))
