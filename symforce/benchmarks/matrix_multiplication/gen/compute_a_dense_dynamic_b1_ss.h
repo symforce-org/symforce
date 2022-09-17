@@ -25,7 +25,7 @@ namespace sym {
 *     x4: Scalar
 *
 * Outputs:
-*     result: Matrix7_7
+*     result: Matrix77
 */
 template <typename Scalar>
 Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> ComputeADenseDynamicB1Ss(const Scalar x0, const Scalar x1, const Scalar x2, const Scalar x3, const Scalar x4) {
