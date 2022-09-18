@@ -70,7 +70,7 @@ class CppConfig(CodegenConfig):
         return templates
 
     def printer(self) -> CodePrinter:
-        kwargs = {'override_methods': self.override_methods}
+        kwargs: T.Mapping[str, T.Any] = {"override_methods": self.override_methods}
 
         if self.support_complex:
             return cpp_code_printer.ComplexCppCodePrinter(**kwargs)
