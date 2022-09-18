@@ -4,10 +4,12 @@
 # ----------------------------------------------------------------------------
 from dataclasses import dataclass
 from pathlib import Path
+import sympy
 from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
 from symforce.codegen.codegen_config import CodegenConfig
+from symforce.codegen.backends.cpp import cpp_code_printer
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -41,6 +43,7 @@ class CppConfig(CodegenConfig):
     force_no_inline: bool = False
     zero_initialization_sparsity_threshold: float = 0.5
     explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
+    override_methods: T.Optional[T.Dict[sympy.Function, str]] = None
 
     @classmethod
     def backend_name(cls) -> str:
@@ -61,13 +64,12 @@ class CppConfig(CodegenConfig):
         return templates
 
     def printer(self) -> CodePrinter:
-        # NOTE(hayk): Is there any benefit to this being lazy?
-        from symforce.codegen.backends.cpp import cpp_code_printer
+        kwargs = {'override_methods': self.override_methods}
 
         if self.support_complex:
-            return cpp_code_printer.ComplexCppCodePrinter()
-        else:
-            return cpp_code_printer.CppCodePrinter()
+            return cpp_code_printer.ComplexCppCodePrinter(**kwargs)
+
+        return cpp_code_printer.CppCodePrinter(**kwargs)
 
     @staticmethod
     def format_data_accessor(prefix: str, index: int) -> str:

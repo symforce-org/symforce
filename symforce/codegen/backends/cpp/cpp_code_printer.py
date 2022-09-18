@@ -16,12 +16,30 @@ class CppCodePrinter(CXX11CodePrinter):
     behavior for codegen compatibility and efficiency.
     """
 
-    def __init__(self, settings: T.Dict[str, T.Any] = None) -> None:
+    def __init__(
+        self,
+        settings: T.Optional[T.Dict[str, T.Any]] = None,
+        override_methods: T.Optional[T.Dict[sympy.Function, str]] = None,
+    ) -> None:
         settings = dict(
             settings or {},
             math_macros={key: f"Scalar({macro})" for key, macro in get_math_macros().items()},
         )
         super().__init__(settings)
+
+        self.override_methods = override_methods or {}
+        for (expr, name) in self.override_methods.items():
+            self._set_override_methods(expr, name)
+
+    @classmethod
+    def _set_override_methods(cls, expr: sympy.Function, name: str) -> None:
+        method_name = f"_print_{str(expr)}"
+
+        def _print_expr(cls: CppCodePrinter, expr: sympy.Expr) -> str:
+            expr_string = ",".join(map(cls._print, expr.args))
+            return f"{name}({expr_string})"
+
+        setattr(cls, method_name, _print_expr)
 
     def _print_Rational(self, expr: sympy.Rational) -> str:
         """
