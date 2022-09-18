@@ -34,6 +34,11 @@ class CppConfig(CodegenConfig):
         explicit_template_instantiation_types: Explicity instantiates templated functions in a `.cc`
             file for each given type. This allows the generated function to be compiled in its own
             translation unit. Useful for large functions which take a long time to compile.
+        override_methods: Add special function overrides in dictionary with symforce function keys
+            (e.g. sf.sin) and a string for the new method (e.g. fast_math::sin_lut), note that this bypasses
+            the default namespace (so std:: won't be added in front automatically)
+        extra_imports: Add extra imports to the file if you use custom overrides for some functions
+            (i.e. add fast_math.h)
     """
 
     doc_comment_line_prefix: str = " * "
@@ -44,6 +49,7 @@ class CppConfig(CodegenConfig):
     zero_initialization_sparsity_threshold: float = 0.5
     explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
     override_methods: T.Optional[T.Dict[sympy.Function, str]] = None
+    extra_imports: T.Optional[T.List[str]] = None
 
     @classmethod
     def backend_name(cls) -> str:
