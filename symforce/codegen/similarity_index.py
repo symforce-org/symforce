@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import dataclasses
 
+from symforce import codegen
+from symforce import typing as T
 from symforce.codegen import codegen_config
 from symforce.values import Values
-from symforce import typing as T
-from symforce import codegen
 
 
 @dataclasses.dataclass

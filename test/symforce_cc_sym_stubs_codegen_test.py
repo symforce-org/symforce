@@ -3,16 +3,16 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from pathlib import Path
-from dataclasses import dataclass
-import subprocess
-import re
 import os
+import re
+import subprocess
+from dataclasses import dataclass
+from pathlib import Path
 
+from symforce import path_util
+from symforce import typing as T
 from symforce.codegen import template_util
 from symforce.test_util import TestCase
-from symforce import typing as T
-from symforce import path_util
 
 
 class SymforceCCSymStubsCodegenTest(TestCase):
@@ -72,9 +72,9 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             data={
                 "spec": TypeStubParts(
                     lcm_include_type_names=[
-                        "key_t",
                         "index_entry_t",
                         "index_t",
+                        "key_t",
                         "linearized_dense_factor_t",
                         "optimization_iteration_t",
                         "optimization_stats_t",
@@ -82,15 +82,15 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                         "values_t",
                     ],
                     sym_include_type_names=[
-                        "Rot2",
-                        "Rot3",
-                        "Pose2",
-                        "Pose3",
                         "ATANCameraCal",
                         "DoubleSphereCameraCal",
                         "EquirectangularCameraCal",
                         "LinearCameraCal",
                         "PolynomialCameraCal",
+                        "Pose2",
+                        "Pose3",
+                        "Rot2",
+                        "Rot3",
                         "SphericalCameraCal",
                     ],
                     third_party_includes=["import scipy"],

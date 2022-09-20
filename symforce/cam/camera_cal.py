@@ -3,12 +3,12 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import symforce.internal.symbolic as sf
 from symforce import geo
 from symforce import ops
-from symforce.ops.interfaces import Storage
-import symforce.internal.symbolic as sf
 from symforce import type_helpers
 from symforce import typing as T
+from symforce.ops.interfaces import Storage
 
 
 class CameraCal(Storage):

@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import difflib
-import numpy as np
 import logging
 import os
 import re
@@ -12,13 +11,15 @@ import sys
 import tempfile
 import unittest
 
+import numpy as np
+
+import symforce.symbolic as sf
 from symforce import logger
 from symforce import python_util
 from symforce import typing as T
-from symforce.ops import interfaces
-from symforce.ops import StorageOps
 from symforce.ops import LieGroupOps
-import symforce.symbolic as sf
+from symforce.ops import StorageOps
+from symforce.ops import interfaces
 
 
 class SymforceTestCaseMixin(unittest.TestCase):

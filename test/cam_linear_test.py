@@ -7,8 +7,8 @@ import numpy as np
 
 import symforce.symbolic as sf
 from symforce.test_util import TestCase
-from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.test_util.cam_cal_test_mixin import CamCalTestMixin
+from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
 class CamLinearTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):

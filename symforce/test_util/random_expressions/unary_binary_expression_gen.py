@@ -7,13 +7,13 @@ from __future__ import annotations
 
 import numpy as np
 
-from symforce import logger
 import symforce.symbolic as sf
+from symforce import logger
 from symforce import typing as T
-from symforce.test_util.random_expressions.op_probabilities import OpProbability
-from symforce.test_util.random_expressions.op_probabilities import DEFAULT_UNARY_OPS
 from symforce.test_util.random_expressions.op_probabilities import DEFAULT_BINARY_OPS
 from symforce.test_util.random_expressions.op_probabilities import DEFAULT_LEAVES
+from symforce.test_util.random_expressions.op_probabilities import DEFAULT_UNARY_OPS
+from symforce.test_util.random_expressions.op_probabilities import OpProbability
 
 # Import numba if installed.  This is not required, but significantly speeds up generate_D
 try:

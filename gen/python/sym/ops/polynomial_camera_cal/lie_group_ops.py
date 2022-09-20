@@ -5,8 +5,9 @@
 # -----------------------------------------------------------------------------
 
 import math
-import numpy
 import typing as T
+
+import numpy
 
 import sym  # pylint: disable=unused-import
 

@@ -3,8 +3,9 @@
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
 import math
-import numpy
 import typing as T
+
+import numpy
 
 {# If a pose type, include the necessary rotation type. #}
 {% if imported_classes is defined %}
@@ -13,6 +14,7 @@ from .{{ camelcase_to_snakecase(imported_cls.__name__ )}} import {{ imported_cls
     {% endfor %}
 {% endif -%}
 
+# isort: split
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
 
 

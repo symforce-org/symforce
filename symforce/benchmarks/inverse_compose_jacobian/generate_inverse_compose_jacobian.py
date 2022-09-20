@@ -5,8 +5,8 @@
 
 from pathlib import Path
 
-from symforce import codegen
 import symforce.symbolic as sf
+from symforce import codegen
 
 
 def generate(output_dir: Path) -> None:

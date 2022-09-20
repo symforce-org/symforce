@@ -4,11 +4,11 @@
 # ----------------------------------------------------------------------------
 from dataclasses import dataclass
 from pathlib import Path
+
 from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
 from symforce.codegen.codegen_config import CodegenConfig
-
 
 CURRENT_DIR = Path(__file__).parent
 

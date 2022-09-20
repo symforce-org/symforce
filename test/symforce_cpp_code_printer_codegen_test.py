@@ -6,10 +6,10 @@
 import os
 
 import symforce
-
-from symforce import codegen
 import symforce.symbolic as sf
-from symforce.test_util import TestCase, sympy_only
+from symforce import codegen
+from symforce.test_util import TestCase
+from symforce.test_util import sympy_only
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(

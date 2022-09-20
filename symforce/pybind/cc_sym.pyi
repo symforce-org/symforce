@@ -4,27 +4,29 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-from lcmtypes.sym._key_t import key_t
+import scipy
+
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
+from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
 
-from sym import Rot2
-from sym import Rot3
-from sym import Pose2
-from sym import Pose3
 from sym import ATANCameraCal
 from sym import DoubleSphereCameraCal
 from sym import EquirectangularCameraCal
 from sym import LinearCameraCal
 from sym import PolynomialCameraCal
+from sym import Pose2
+from sym import Pose3
+from sym import Rot2
+from sym import Rot3
 from sym import SphericalCameraCal
 
-import scipy
+# isort: off
 
 """This module wraps many of the C++ optimization classes."""
 from __future__ import annotations

@@ -5,25 +5,25 @@
 
 import dataclasses
 import math
-import numpy as np
 import pickle
+
+import numpy as np
 from scipy import sparse
 
-from symforce import cc_sym
-import sym
-
-from symforce import typing as T
-from symforce.test_util import TestCase
-from symforce.opt import optimizer
-
-from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
+from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
+
+import sym
+from symforce import cc_sym
+from symforce import typing as T
+from symforce.opt import optimizer
+from symforce.test_util import TestCase
 
 
 class SymforceCCSymTest(TestCase):

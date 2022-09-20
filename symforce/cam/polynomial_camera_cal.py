@@ -7,13 +7,13 @@ from __future__ import annotations
 
 import math
 
-from .camera_cal import CameraCal
-
+import symforce.internal.symbolic as sf
+from symforce import geo
+from symforce import typing as T
 from symforce.cam.camera_util import compute_odd_polynomial_critical_point
 from symforce.cam.linear_camera_cal import LinearCameraCal
-from symforce import geo
-import symforce.internal.symbolic as sf
-from symforce import typing as T
+
+from .camera_cal import CameraCal
 
 
 class PolynomialCameraCal(CameraCal):

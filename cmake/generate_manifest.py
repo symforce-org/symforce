@@ -18,9 +18,9 @@ and Python users who need the information in the manifest should get it from the
 import argparse
 import enum
 import json
-from pathlib import Path
 import re
 import typing as T
+from pathlib import Path
 
 
 class AllowedCount(enum.Enum):

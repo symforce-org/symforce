@@ -8,6 +8,7 @@ General python typing-related utilities
 """
 
 import dataclasses
+
 import numpy as np
 
 import symforce.internal.symbolic as sf

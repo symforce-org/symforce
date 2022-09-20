@@ -6,9 +6,9 @@
 import dataclasses
 
 from symforce import ops
-from symforce.opt.sub_problem import SubProblem
 from symforce import typing as T
 from symforce import typing_util
+from symforce.opt.sub_problem import SubProblem
 
 
 class TimestepSubProblem(SubProblem):

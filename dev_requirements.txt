@@ -94,7 +94,9 @@ ipython==8.4.0
 ipython-genutils==0.2.0
     # via symforce (setup.py)
 isort==5.10.1
-    # via pylint
+    # via
+    #   pylint
+    #   symforce (setup.py)
 jedi==0.18.1
     # via ipython
 jinja2==3.0.3

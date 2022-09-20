@@ -9,13 +9,14 @@ import collections
 import contextlib
 import copy
 import dataclasses
+
 import numpy as np
 
-from symforce import geo
 import symforce.internal.symbolic as sf
-from symforce import typing as T
+from symforce import geo
 from symforce import ops
 from symforce import python_util
+from symforce import typing as T
 from symforce import typing_util
 
 from .attr_accessor import AttrAccessor

@@ -6,7 +6,8 @@
 from pathlib import Path
 
 from symforce.examples.bundle_adjustment_in_the_large.bundle_adjustment_in_the_large import generate
-from symforce.test_util import TestCase, sympy_only
+from symforce.test_util import TestCase
+from symforce.test_util import sympy_only
 
 SYMFORCE_DIR = Path(__file__).parent.parent
 

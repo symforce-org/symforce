@@ -3,13 +3,14 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import logging
 import multiprocessing
-import numpy as np
 import os
 import random
 import sys
 import unittest
-import logging
+
+import numpy as np
 
 import symforce
 from symforce import logger

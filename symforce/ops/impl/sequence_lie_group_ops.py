@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-from symforce.ops import StorageOps
-from symforce.ops import LieGroupOps
-from symforce.typing_util import get_type
 from symforce import typing as T
+from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
+from symforce.typing_util import get_type
 
 from .sequence_group_ops import SequenceGroupOps
 

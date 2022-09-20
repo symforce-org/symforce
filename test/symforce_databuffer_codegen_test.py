@@ -2,18 +2,19 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
-import numpy as np
 from pathlib import Path
 
+import numpy as np
+
 import symforce
-from symforce import codegen
 import symforce.symbolic as sf
-from symforce.codegen import codegen_util
-from symforce.values import Values
-from symforce.test_util import TestCase
+from symforce import codegen
 from symforce import typing as T
+from symforce.codegen import codegen_util
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
+from symforce.test_util import TestCase
+from symforce.values import Values
 
 CURRENT_DIR = Path(__file__).parent
 SYMFORCE_DIR = CURRENT_DIR.parent

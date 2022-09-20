@@ -9,9 +9,9 @@ Symbolic factor and codegen for the Bundle-Adjustment-in-the-Large problem
 
 from pathlib import Path
 
+import symforce.symbolic as sf
 from symforce import codegen
 from symforce.codegen import values_codegen
-import symforce.symbolic as sf
 from symforce.values import Values
 
 

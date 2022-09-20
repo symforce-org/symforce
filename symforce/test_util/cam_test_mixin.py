@@ -5,10 +5,10 @@
 
 import numpy as np
 
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
-import symforce.symbolic as sf
 
 if T.TYPE_CHECKING:
     _Base = TestCase

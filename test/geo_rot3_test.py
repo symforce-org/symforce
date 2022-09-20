@@ -4,11 +4,12 @@
 # ----------------------------------------------------------------------------
 
 import logging
-import numpy as np
 import unittest
 
-from symforce import logger
+import numpy as np
+
 import symforce.symbolic as sf
+from symforce import logger
 from symforce import typing as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
@@ -221,8 +222,8 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
 
             # Plot the sphere to show uniform distribution
             if logger.level == logging.DEBUG and self.verbose:
-                from mpl_toolkits.mplot3d import Axes3D
                 import matplotlib.pyplot as plt
+                from mpl_toolkits.mplot3d import Axes3D
 
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection="3d")

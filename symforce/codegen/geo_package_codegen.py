@@ -3,15 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from pathlib import Path
-import tempfile
-import textwrap
 import collections
 import functools
+import tempfile
+import textwrap
+from pathlib import Path
 
+import symforce.symbolic as sf
 from symforce import logger
 from symforce import python_util
-import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig

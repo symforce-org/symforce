@@ -4,12 +4,12 @@
 # ----------------------------------------------------------------------------
 
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from symforce.test_util import TestCase
 from symforce import python_util
 from symforce import typing as T
+from symforce.test_util import TestCase
 
 SYMFORCE_DIR = Path(__file__).resolve().parent.parent
 

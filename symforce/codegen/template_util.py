@@ -8,11 +8,12 @@ from __future__ import annotations
 import dataclasses
 import enum
 import functools
+import os
+import textwrap
+from pathlib import Path
+
 import jinja2
 import jinja2.ext
-import os
-from pathlib import Path
-import textwrap
 
 from symforce import logger
 from symforce import typing as T

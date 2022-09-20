@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from .camera_cal import CameraCal
-
-from symforce.cam.linear_camera_cal import LinearCameraCal
-from symforce import geo
 import symforce.internal.symbolic as sf
+from symforce import geo
 from symforce import typing as T
+from symforce.cam.linear_camera_cal import LinearCameraCal
+
+from .camera_cal import CameraCal
 
 
 class DoubleSphereCameraCal(CameraCal):

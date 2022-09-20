@@ -5,8 +5,8 @@
 
 import os
 
-from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
 from symforce.codegen import template_util
+from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
 from symforce.test_util import TestCase
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))

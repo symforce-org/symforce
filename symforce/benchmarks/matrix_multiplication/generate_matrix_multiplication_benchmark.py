@@ -4,17 +4,19 @@
 # ----------------------------------------------------------------------------
 
 import dataclasses
-import numpy as np
 import os
 from pathlib import Path
+
+import numpy as np
 import scipy.io
 
+import symforce.symbolic as sf
 from symforce import codegen
 from symforce import python_util
-import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import template_util
-from symforce.test_util.random_expressions import unary_binary_expression_gen, op_probabilities
+from symforce.test_util.random_expressions import op_probabilities
+from symforce.test_util.random_expressions import unary_binary_expression_gen
 from symforce.values import Values
 
 # Parameters controlling the randomly generated expressions

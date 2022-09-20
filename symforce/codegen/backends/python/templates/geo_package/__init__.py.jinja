@@ -5,7 +5,7 @@
 """
 Python runtime geometry package.
 """
-{% for cls in all_types %}
+{% for cls in all_types | sort(attribute="__name__") %}
 from .{{ camelcase_to_snakecase(cls.__name__) }} import {{ cls.__name__ }}
 {% endfor %}
 

@@ -6,8 +6,8 @@
 from __future__ import annotations
 
 import symforce.internal.symbolic as sf
-from symforce import typing as T
 from symforce import logger
+from symforce import typing as T
 from symforce.typing_util import get_type
 
 from .group_ops import GroupOps

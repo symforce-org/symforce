@@ -5,10 +5,13 @@
 # -----------------------------------------------------------------------------
 
 import math
-import numpy
 import typing as T
 
+import numpy
+
 from .rot3 import Rot3
+
+# isort: split
 from .ops import pose3 as ops
 
 

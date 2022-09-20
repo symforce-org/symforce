@@ -4,14 +4,16 @@
 # ----------------------------------------------------------------------------
 
 import inspect
+
+import symforce.symbolic as sf
 from symforce import geo
+from symforce import typing as T
 from symforce.cam import LinearCameraCal
-from symforce.geo import Pose3, Vector3
+from symforce.geo import Pose3
+from symforce.geo import Vector3
 from symforce.test_util import TestCase
 from symforce.type_helpers import deduce_input_types
-from symforce import typing as T
 from symforce.typing import Scalar
-import symforce.symbolic as sf
 
 
 class SymforceTypeHelpersTest(TestCase):

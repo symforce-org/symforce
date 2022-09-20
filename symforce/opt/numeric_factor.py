@@ -4,13 +4,14 @@
 # ----------------------------------------------------------------------------
 from __future__ import annotations
 
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 from symforce import cc_sym
 from symforce import typing as T
-from symforce.values import Values
 from symforce.codegen import codegen_util
+from symforce.values import Values
 
 
 class NumericFactor:

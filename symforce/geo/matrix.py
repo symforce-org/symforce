@@ -8,11 +8,11 @@ from __future__ import annotations
 import numpy as np
 
 import symforce
-from symforce import ops
-from symforce.ops.interfaces import Storage
 import symforce.internal.symbolic as sf
+from symforce import ops
 from symforce import typing as _T  # We already have a Matrix.T which collides
 from symforce import typing_util
+from symforce.ops.interfaces import Storage
 
 
 class Matrix(Storage):

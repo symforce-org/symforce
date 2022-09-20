@@ -3,11 +3,12 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
+import symforce.symbolic as sf
 from symforce import jacobian_helpers
 from symforce import typing as T
-import symforce.symbolic as sf
 
 
 @dataclass

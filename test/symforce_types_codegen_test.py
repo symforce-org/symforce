@@ -9,8 +9,8 @@ from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.codegen import types_package_codegen
 from symforce.codegen import codegen_util
+from symforce.codegen import types_package_codegen
 from symforce.test_util import TestCase
 from symforce.values import Values
 

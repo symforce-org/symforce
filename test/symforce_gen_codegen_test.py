@@ -3,17 +3,18 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import numpy as np
 import math
 import os
 import sys
 
+import numpy as np
+
 import symforce
+import symforce.symbolic as sf
+from symforce import codegen
 from symforce import ops
 from symforce import python_util
-import symforce.symbolic as sf
 from symforce import typing as T
-from symforce import codegen
 from symforce.codegen import cam_package_codegen
 from symforce.codegen import codegen_util
 from symforce.codegen import geo_factors_codegen
@@ -21,7 +22,8 @@ from symforce.codegen import geo_package_codegen
 from symforce.codegen import slam_factors_codegen
 from symforce.codegen import sym_util_package_codegen
 from symforce.codegen import template_util
-from symforce.test_util import TestCase, symengine_only
+from symforce.test_util import TestCase
+from symforce.test_util import symengine_only
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(

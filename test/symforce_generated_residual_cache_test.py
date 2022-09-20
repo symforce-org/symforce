@@ -4,8 +4,8 @@
 # ----------------------------------------------------------------------------
 
 import sym
-from symforce import codegen
 import symforce.symbolic as sf
+from symforce import codegen
 from symforce import typing as T
 from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache

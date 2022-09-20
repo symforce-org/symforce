@@ -16,8 +16,8 @@ to estimate the trajectory of the robot given known landmarks and noisy measurem
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce
-from symforce import logger
 import symforce.symbolic as sf
+from symforce import logger
 from symforce import typing as T
 
 if symforce.get_symbolic_api() != "symengine":
@@ -104,9 +104,10 @@ def build_factors(num_poses: int, num_landmarks: int) -> T.Iterator[Factor]:
 # Instantiate, optimize, and visualize
 # -----------------------------------------------------------------------------
 import numpy as np
+
+import sym
 from symforce.opt.optimizer import Optimizer
 from symforce.values import Values
-import sym
 
 
 def build_residual(num_poses: int, num_landmarks: int, values: Values) -> sf.Matrix:
@@ -253,14 +254,20 @@ def main() -> None:
     plot_solution(optimizer, result, animated=False)
 
 
+import re
+import shutil
+import textwrap
+
 # -----------------------------------------------------------------------------
 # (Optional) Generate C++ functions for residuals with on-manifold jacobians
 # -----------------------------------------------------------------------------
 from pathlib import Path
-from symforce.codegen import Codegen, CodegenConfig, CppConfig, values_codegen, template_util
-import re
-import shutil
-import textwrap
+
+from symforce.codegen import Codegen
+from symforce.codegen import CodegenConfig
+from symforce.codegen import CppConfig
+from symforce.codegen import template_util
+from symforce.codegen import values_codegen
 
 
 def build_codegen_object(num_poses: int, config: CodegenConfig = None) -> Codegen:

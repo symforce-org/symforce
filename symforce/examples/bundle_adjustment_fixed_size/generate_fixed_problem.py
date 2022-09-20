@@ -6,18 +6,16 @@
 import re
 import textwrap
 
+import symforce.symbolic as sf
 from symforce import codegen
 from symforce import logger
-import symforce.symbolic as sf
 from symforce import typing as T
+from symforce.codegen import geo_factors_codegen
+from symforce.codegen.slam_factors_codegen import inverse_range_landmark_prior_residual
+from symforce.codegen.slam_factors_codegen import inverse_range_landmark_reprojection_error_residual
 from symforce.values import Values
 
 from .build_values import build_values
-from symforce.codegen import geo_factors_codegen
-from symforce.codegen.slam_factors_codegen import (
-    inverse_range_landmark_prior_residual,
-    inverse_range_landmark_reprojection_error_residual,
-)
 
 
 class FixedBundleAdjustmentProblem:

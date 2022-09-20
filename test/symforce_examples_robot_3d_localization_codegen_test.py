@@ -6,7 +6,8 @@
 from pathlib import Path
 
 from symforce.examples.robot_3d_localization.robot_3d_localization import generate
-from symforce.test_util import TestCase, symengine_only
+from symforce.test_util import TestCase
+from symforce.test_util import symengine_only
 
 SYMFORCE_DIR = Path(__file__).parent.parent
 

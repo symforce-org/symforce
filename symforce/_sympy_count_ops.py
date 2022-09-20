@@ -21,13 +21,13 @@ Currently, the body of of count_ops is the body as found in sympy, modified only
 with those comments, formatting, and material changes to the implementation.
 """
 
-from sympy import sympify
-from sympy import Expr
-from sympy import Symbol
-from sympy import S
+from sympy import Add
 from sympy import Basic
 from sympy import Derivative
-from sympy import Add
+from sympy import Expr
+from sympy import S
+from sympy import Symbol
+from sympy import sympify
 from sympy.core.function import UndefinedFunction
 from sympy.core.operations import LatticeOp
 from sympy.utilities.iterables import iterable
@@ -120,10 +120,11 @@ def count_ops(expr: T.Any, visual: bool = False) -> T.Union[Expr, int]:
     >>> count_ops({x: sin(x), x + 2: y + 1}, visual=True)
     2*ADD + SIN
     """
-    from sympy import Integral, Sum
+    from sympy import Integral
+    from sympy import Sum
     from sympy.core.relational import Relational
-    from sympy.simplify.radsimp import fraction
     from sympy.logic.boolalg import BooleanFunction
+    from sympy.simplify.radsimp import fraction
     from sympy.utilities.misc import func_name
 
     expr = sympify(expr)

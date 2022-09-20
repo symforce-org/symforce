@@ -5,12 +5,12 @@
 
 import os
 
+import symforce.symbolic as sf
 from symforce import ops
 from symforce import python_util
 from symforce import typing as T
-import symforce.symbolic as sf
-from symforce.codegen import CppConfig
 from symforce.codegen import Codegen
+from symforce.codegen import CppConfig
 
 TYPES = (sf.Rot2, sf.Rot3, sf.V3, sf.Pose2, sf.Pose3)
 

@@ -3,12 +3,12 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import symforce.internal.symbolic as sf
+from symforce import geo
+from symforce import typing as T
+
 from .camera_cal import CameraCal
 from .linear_camera_cal import LinearCameraCal
-
-from symforce import geo
-import symforce.internal.symbolic as sf
-from symforce import typing as T
 
 
 class EquirectangularCameraCal(CameraCal):

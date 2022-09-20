@@ -3,9 +3,9 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from .abstract_storage_ops import AbstractStorageOps
-
 from symforce import typing as T
+
+from .abstract_storage_ops import AbstractStorageOps
 
 ElementT = T.TypeVar("ElementT")
 ElementOrTypeT = T.Union[ElementT, T.Type[ElementT]]

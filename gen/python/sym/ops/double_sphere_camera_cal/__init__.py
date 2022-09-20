@@ -4,6 +4,6 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+from .camera_ops import CameraOps
 from .group_ops import GroupOps
 from .lie_group_ops import LieGroupOps
-from .camera_ops import CameraOps

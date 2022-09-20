@@ -4,19 +4,20 @@
 # ----------------------------------------------------------------------------
 
 import functools
+
 import numpy as np
 
-from symforce import cc_sym
+from lcmtypes.sym._index_entry_t import index_entry_t
+from lcmtypes.sym._key_t import key_t
+from lcmtypes.sym._type_t import type_t
+
 import symforce.symbolic as sf
+from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
 from symforce.test_util import TestCase
 from symforce.values import Values
-
-from lcmtypes.sym._index_entry_t import index_entry_t
-from lcmtypes.sym._key_t import key_t
-from lcmtypes.sym._type_t import type_t
 
 
 class SymforcePyOptimizerTest(TestCase):

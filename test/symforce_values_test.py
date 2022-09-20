@@ -4,25 +4,26 @@
 # ----------------------------------------------------------------------------
 
 import copy
-from dataclasses import dataclass
-import numpy as np
 import itertools
-import unittest
 import pickle
+import unittest
+from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
+
+import sym
+import symforce.internal.symbolic as sf_internal
+import symforce.symbolic as sf
 from symforce import logger
 from symforce import ops
-import symforce.symbolic as sf
-import symforce.internal.symbolic as sf_internal
 from symforce import typing as T
 from symforce.python_util import InvalidKeyError
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase
+from symforce.test_util import slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
 from symforce.values import Values
-
-import sym
 
 
 @dataclass

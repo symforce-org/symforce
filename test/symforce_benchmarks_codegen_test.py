@@ -5,10 +5,10 @@
 
 from pathlib import Path
 
-from symforce.test_util import TestCase, sympy_only
 from symforce.benchmarks.inverse_compose_jacobian import generate_inverse_compose_jacobian
 from symforce.benchmarks.matrix_multiplication import generate_matrix_multiplication_benchmark
-
+from symforce.test_util import TestCase
+from symforce.test_util import sympy_only
 
 BENCHMARKS_DIR = Path(__file__).parent.parent / "symforce" / "benchmarks"
 

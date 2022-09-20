@@ -13,19 +13,21 @@ import dataclasses
 import importlib.abc
 import importlib.util
 import itertools
-from pathlib import Path
-import sympy
 import sys
+from pathlib import Path
+
+import sympy
 
 import symforce
-from symforce import ops
-from symforce.values import Values, IndexEntry
 import symforce.symbolic as sf
-from symforce import typing as T
-from symforce.codegen import format_util
-from symforce.codegen import codegen_config
-from symforce import typing_util
 from symforce import _sympy_count_ops
+from symforce import ops
+from symforce import typing as T
+from symforce import typing_util
+from symforce.codegen import codegen_config
+from symforce.codegen import format_util
+from symforce.values import IndexEntry
+from symforce.values import Values
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
@@ -649,8 +651,8 @@ def generate_lcm_types(
         return result
 
     from skymarshal import skymarshal
-    from skymarshal.emit_python import SkymarshalPython
     from skymarshal.emit_cpp import SkymarshalCpp
+    from skymarshal.emit_python import SkymarshalPython
 
     skymarshal.main(
         [SkymarshalPython, SkymarshalCpp],

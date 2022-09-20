@@ -5,18 +5,17 @@
 
 from __future__ import annotations
 
-from symforce.ops.interfaces.lie_group import LieGroup
-from symforce import typing as T
 import symforce.internal.symbolic as sf
+from symforce import typing as T
+from symforce.ops.interfaces.lie_group import LieGroup
 
 from .matrix import Matrix
 from .matrix import Matrix13
 from .matrix import Matrix21
 from .matrix import Matrix33
 from .matrix import Vector2
-from .rot2 import Rot2
-
 from .pose2 import Pose2
+from .rot2 import Rot2
 
 
 class Pose2_SE2(Pose2):

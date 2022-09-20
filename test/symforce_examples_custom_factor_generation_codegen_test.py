@@ -6,7 +6,8 @@
 import os
 
 from symforce.examples.custom_factor_generation import generate_factors
-from symforce.test_util import TestCase, symengine_only
+from symforce.test_util import TestCase
+from symforce.test_util import symengine_only
 from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
 
 CURRENT_DIR = os.path.dirname(__file__)

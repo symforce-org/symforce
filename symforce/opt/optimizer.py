@@ -13,11 +13,11 @@ from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
 
+from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
-from symforce import cc_sym
 
 
 class Optimizer:

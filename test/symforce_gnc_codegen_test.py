@@ -6,11 +6,11 @@
 import os
 
 import symforce
+import symforce.symbolic as sf
 from symforce import codegen
+from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
 from symforce.test_util import TestCase
-from symforce import typing as T
-import symforce.symbolic as sf
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DATA_DIR = os.path.join(

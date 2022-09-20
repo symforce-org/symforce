@@ -3,16 +3,17 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import numpy as np
+import collections
 import pathlib
 import tempfile
 import textwrap
-import collections
 
-from symforce import logger
+import numpy as np
+
 import symforce.symbolic as sf
-from symforce import typing as T
+from symforce import logger
 from symforce import python_util
+from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
 from symforce.codegen import CppConfig

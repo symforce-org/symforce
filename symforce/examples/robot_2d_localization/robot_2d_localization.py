@@ -65,6 +65,7 @@ def build_factors(num_poses: int, num_landmarks: int) -> T.Iterator[Factor]:
 # Instantiate, optimize, and visualize
 # -----------------------------------------------------------------------------
 import numpy as np
+
 from symforce.opt.optimizer import Optimizer
 from symforce.values import Values
 
@@ -114,12 +115,14 @@ def main() -> None:
     plot_solution(optimizer, result)
 
 
+import shutil
+from pathlib import Path
+
 # -----------------------------------------------------------------------------
 # (Optional) Generate C++ functions for residuals with on-manifold jacobians
 # -----------------------------------------------------------------------------
-from symforce.codegen import Codegen, CppConfig
-from pathlib import Path
-import shutil
+from symforce.codegen import Codegen
+from symforce.codegen import CppConfig
 
 
 def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = False) -> None:

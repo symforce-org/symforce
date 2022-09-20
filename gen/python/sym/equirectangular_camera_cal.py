@@ -4,8 +4,9 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-import numpy
 import typing as T
+
+import numpy
 
 from .ops import equirectangular_camera_cal as ops
 

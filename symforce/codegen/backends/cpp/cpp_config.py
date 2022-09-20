@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 from dataclasses import dataclass
 from pathlib import Path
+
 from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T

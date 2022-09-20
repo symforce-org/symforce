@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from symforce.ops.interfaces import Group
 import symforce.internal.symbolic as sf
 from symforce import typing as T
+from symforce.ops.interfaces import Group
 
 from .matrix import Vector3
 

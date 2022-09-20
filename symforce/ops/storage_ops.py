@@ -3,9 +3,10 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce.typing_util import get_type, scalar_like
 import symforce.internal.symbolic as sf
 from symforce import typing as T
+from symforce.typing_util import get_type
+from symforce.typing_util import scalar_like
 
 from .ops import Ops
 

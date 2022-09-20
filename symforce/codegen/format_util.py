@@ -3,10 +3,11 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import black
 import copy
 import os
 import pathlib
+
+import black
 
 from symforce import python_util
 from symforce import typing as T

@@ -3,8 +3,9 @@
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
 {%- import "../util/util.jinja" as util with context -%}
-import numpy
 import typing as T
+
+import numpy
 
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
 

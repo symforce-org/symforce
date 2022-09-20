@@ -8,18 +8,19 @@ Helper script to run all of the benchmarks, and put timing results into a direct
 See README files in each directory for a description of each benchmark
 """
 
-import argh
-from dataclasses import dataclass
-from pathlib import Path
 import pickle
 import subprocess
+from dataclasses import dataclass
+from pathlib import Path
 
-from symforce.benchmarks.matrix_multiplication.generate_matrix_multiplication_benchmark import (
-    get_matrices,
-)
+import argh
+
 from symforce import logger
 from symforce import path_util
 from symforce import typing as T
+from symforce.benchmarks.matrix_multiplication.generate_matrix_multiplication_benchmark import (
+    get_matrices,
+)
 
 CONFIG = {
     "inverse_compose_jacobian": {

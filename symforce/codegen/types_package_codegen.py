@@ -4,15 +4,17 @@
 # ----------------------------------------------------------------------------
 
 import os
-import numpy as np
 import tempfile
+
+import numpy as np
 
 import symforce.symbolic as sf
 from symforce import logger
 from symforce import typing as T
-from symforce.values import Values, IndexEntry
-from symforce.codegen import template_util
 from symforce.codegen import codegen_util
+from symforce.codegen import template_util
+from symforce.values import IndexEntry
+from symforce.values import Values
 
 
 def generate_types(

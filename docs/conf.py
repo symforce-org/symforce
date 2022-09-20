@@ -17,8 +17,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import typing as T
 import sys
+import typing as T
 
 # Add symforce to python path
 package_path = os.path.abspath("..")

@@ -5,11 +5,11 @@
 # -----------------------------------------------------------------------------
 
 import math  # pylint: disable=unused-import
-import numpy  # pylint: disable=unused-import
 import typing as T  # pylint: disable=unused-import
 
-import sym  # pylint: disable=unused-import
+import numpy  # pylint: disable=unused-import
 
+import sym  # pylint: disable=unused-import
 
 # pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 

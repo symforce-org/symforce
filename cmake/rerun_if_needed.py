@@ -12,15 +12,15 @@ stamp file
 For builds not in a git repo, we just run the command every time.
 """
 from __future__ import print_function
+
 import argparse
 import errno
 import os
-from pathlib import Path
 import subprocess
 import tempfile
 import typing as T
-
 from contextlib import contextmanager
+from pathlib import Path
 
 
 @contextmanager

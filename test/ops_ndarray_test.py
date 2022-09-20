@@ -4,11 +4,12 @@
 # ----------------------------------------------------------------------------
 
 import unittest
+
 import numpy as np
 
-from symforce import typing as T
-from symforce import ops
 import symforce.symbolic as sf
+from symforce import ops
+from symforce import typing as T
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 

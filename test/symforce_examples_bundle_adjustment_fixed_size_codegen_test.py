@@ -8,7 +8,8 @@ import os
 from symforce.examples.bundle_adjustment_fixed_size.generate_fixed_problem import (
     FixedBundleAdjustmentProblem,
 )
-from symforce.test_util import TestCase, symengine_only
+from symforce.test_util import TestCase
+from symforce.test_util import symengine_only
 
 CURRENT_DIR = os.path.dirname(__file__)
 SYMFORCE_DIR = os.path.join(CURRENT_DIR, "..")

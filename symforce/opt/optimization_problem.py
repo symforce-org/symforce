@@ -6,6 +6,7 @@
 import itertools
 import re
 
+import symforce.symbolic as sf
 from symforce import logger
 from symforce import ops
 from symforce import typing as T
@@ -15,7 +16,6 @@ from symforce.codegen.backends.python.python_config import PythonConfig
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.opt.sub_problem import SubProblem
-import symforce.symbolic as sf
 from symforce.values import Values
 
 

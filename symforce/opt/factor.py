@@ -5,22 +5,23 @@
 from __future__ import annotations
 
 import dataclasses
-import graphviz
-from pathlib import Path
-import uuid
 import logging
+import uuid
+from pathlib import Path
 
+import graphviz
+
+import symforce.symbolic as sf
+from symforce import logger
+from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import codegen_config
 from symforce.codegen.backends.python.python_config import PythonConfig
-from symforce import python_util
-from symforce.opt.numeric_factor import NumericFactor
-from symforce.values import Values
 from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
-import symforce.symbolic as sf
-from symforce import logger
+from symforce.opt.numeric_factor import NumericFactor
+from symforce.values import Values
 
 
 class Factor:

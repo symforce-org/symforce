@@ -5,15 +5,15 @@
 
 from __future__ import annotations
 
-from symforce.ops.interfaces import LieGroup
 import symforce.internal.symbolic as sf
 from symforce import typing as T
+from symforce.ops.interfaces import LieGroup
 
+from .matrix import V3
 from .matrix import Matrix
 from .matrix import Matrix33
 from .matrix import Matrix34
 from .matrix import Matrix43
-from .matrix import V3
 from .matrix import Vector3
 from .matrix import Vector4
 from .quaternion import Quaternion

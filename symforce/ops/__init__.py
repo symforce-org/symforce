@@ -11,23 +11,28 @@ assumes that the group is reals under addition.
 This is the recommended API for using these concepts, rather than calling directly on a type.
 """
 
-from .storage_ops import StorageOps
+import abc
+
+import numpy as np
+
 from .group_ops import GroupOps
 from .lie_group_ops import LieGroupOps
+from .storage_ops import StorageOps
 
-# Register ops for scalars and sequences
-import abc
-import numpy as np
+# isort: split
+
 import symforce.internal.symbolic as sf
 from symforce import typing as T
 from symforce import typing_util
 
-from .impl.scalar_lie_group_ops import ScalarLieGroupOps
-from .impl.sequence_lie_group_ops import SequenceLieGroupOps
 from .impl.array_lie_group_ops import ArrayLieGroupOps
+from .impl.databuffer_storage_ops import DataBufferStorageOps
 from .impl.dataclass_lie_group_ops import DataclassLieGroupOps
 from .impl.nonetype_lie_group_ops import NoneTypeLieGroupOps
-from .impl.databuffer_storage_ops import DataBufferStorageOps
+
+# Register ops for scalars and sequences
+from .impl.scalar_lie_group_ops import ScalarLieGroupOps
+from .impl.sequence_lie_group_ops import SequenceLieGroupOps
 
 
 class ScalarExpr(abc.ABC):
@@ -67,6 +72,7 @@ LieGroupOps.register(type(None), NoneTypeLieGroupOps)
 # TODO(hayk): Are these okay here or where can we put them? In theory we could just have this
 # be automatic that if the given type has the methods that it gets registered automatically.
 import sym
+
 from .impl.sym_class_lie_group_ops import SymClassLieGroupOps
 
 LieGroupOps.register(sym.Rot2, SymClassLieGroupOps)

@@ -5,8 +5,8 @@
 
 import sys
 
-from symforce.test_util import TestCase
 from symforce import typing as T
+from symforce.test_util import TestCase
 
 
 def clear_symforce() -> None:

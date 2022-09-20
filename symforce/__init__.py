@@ -8,23 +8,24 @@ Initialization configuration for symforce, as minimal as possible.
 """
 from __future__ import absolute_import
 
-from types import ModuleType
-import typing as T
 import os
 import sys
+import typing as T
 import warnings
+from types import ModuleType
 
 # -------------------------------------------------------------------------------------------------
 # Version
 # -------------------------------------------------------------------------------------------------
 
+# isort: split
 from ._version import version as __version__
-
 
 # -------------------------------------------------------------------------------------------------
 # Logging configuration
 # -------------------------------------------------------------------------------------------------
 
+# isort: split
 import logging
 
 # Create a logger with this print format

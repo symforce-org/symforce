@@ -6,15 +6,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import numpy as np
 
+import symforce.symbolic as sf
 from symforce import cc_sym
 from symforce import typing as T
-from symforce.opt.sub_problem import SubProblem
-from symforce.opt.residual_block import ResidualBlock, ResidualBlockWithCustomJacobian
 from symforce.opt.optimization_problem import OptimizationProblem
+from symforce.opt.residual_block import ResidualBlock
+from symforce.opt.residual_block import ResidualBlockWithCustomJacobian
+from symforce.opt.sub_problem import SubProblem
 from symforce.python_util import AttrDict
-import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.values import Values
 

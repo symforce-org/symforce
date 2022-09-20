@@ -18,11 +18,10 @@ The design of these concepts is similar to those in GTSAM and Sophus:
 from .complex import Complex
 from .dual_quaternion import DualQuaternion
 from .matrix import *  # pylint: disable=wildcard-import
-from .quaternion import Quaternion
-
 from .pose2 import Pose2
 from .pose2_se2 import Pose2_SE2
 from .pose3 import Pose3
 from .pose3_se3 import Pose3_SE3
+from .quaternion import Quaternion
 from .rot2 import Rot2
 from .rot3 import Rot3

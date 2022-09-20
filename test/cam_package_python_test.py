@@ -14,6 +14,7 @@ import typing as T
 import unittest
 
 import numpy as np
+
 import sym
 
 

@@ -21,15 +21,22 @@ FIND_CPP_FILES_TO_FORMAT=find . \
 	-and -not -path "./symforce/benchmarks/matrix_multiplication/gen/*" \
 	-regextype posix-extended -regex ".*\.(h|cc|tcc)"
 
-# Format using black and clang-format
-BLACK_CMD=$(PYTHON) -m black --line-length 100 . --exclude "third_party/.*|build/.*|\.eggs/.*"
+# Format using black, isort, and clang-format
+BLACK_CMD=$(PYTHON) -m black . --exclude "third_party/.*|build/.*|\.eggs/.*"
+ISORT_CMD=$(PYTHON) -m isort \
+	--skip-glob="**/third_party" \
+	--extend-skip-glob="**/build" \
+	--extend-skip-glob="**/.eggs" \
+	.
 format:
 	$(BLACK_CMD)
+	$(ISORT_CMD)
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) -i
 
 # Check formatting using black and clang-format - print diff, do not modify files
 check_format:
 	$(BLACK_CMD) --check --diff
+	$(ISORT_CMD) --check --diff
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) --dry-run -Werror
 
 # Check type hints using mypy

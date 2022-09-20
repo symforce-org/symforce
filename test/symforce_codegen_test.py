@@ -4,29 +4,32 @@
 # ----------------------------------------------------------------------------
 
 import copy
-from dataclasses import dataclass
 import functools
 import importlib.util
 import logging
-from numba.core.errors import TypingError
-import numpy as np
-from scipy import sparse
-import sys
 import os
-from pathlib import Path
+import sys
 import unittest
+from dataclasses import dataclass
+from pathlib import Path
+
+import numpy as np
+from numba.core.errors import TypingError
+from scipy import sparse
 
 import symforce
+import symforce.symbolic as sf
+from symforce import codegen
 from symforce import logger
 from symforce import ops
 from symforce import python_util
-import symforce.symbolic as sf
 from symforce import typing as T
-from symforce import codegen
-from symforce.codegen import geo_package_codegen
 from symforce.codegen import codegen_util
+from symforce.codegen import geo_package_codegen
 from symforce.codegen import template_util
-from symforce.test_util import TestCase, slow_on_sympy, symengine_only
+from symforce.test_util import TestCase
+from symforce.test_util import slow_on_sympy
+from symforce.test_util import symengine_only
 from symforce.values import Values
 
 SYMFORCE_DIR = Path(__file__).parent.parent

@@ -6,10 +6,10 @@ from __future__ import annotations
 
 import dataclasses
 
-from symforce.ops import StorageOps
-from symforce.ops import LieGroupOps
 from symforce import typing as T
 from symforce import typing_util
+from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
 
 from .dataclass_group_ops import DataclassGroupOps
 

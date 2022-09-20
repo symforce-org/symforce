@@ -3,11 +3,13 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 from symforce import typing as T
-from symforce.codegen import Codegen, CppConfig, template_util
+from symforce.codegen import Codegen
+from symforce.codegen import CppConfig
+from symforce.codegen import template_util
 from symforce.values import generated_key_selection
 from symforce.values.values import Values
 

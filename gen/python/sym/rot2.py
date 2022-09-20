@@ -5,9 +5,11 @@
 # -----------------------------------------------------------------------------
 
 import math
-import numpy
 import typing as T
 
+import numpy
+
+# isort: split
 from .ops import rot2 as ops
 
 

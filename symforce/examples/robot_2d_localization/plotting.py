@@ -4,9 +4,9 @@
 # ----------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import animation
 from matplotlib.widgets import Slider
-import numpy as np
 
 import sym
 from symforce.opt.optimizer import Optimizer

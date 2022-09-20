@@ -5,9 +5,9 @@
 
 import dataclasses
 
-from symforce.ops import GroupOps
 from symforce import typing as T
 from symforce import typing_util
+from symforce.ops import GroupOps
 
 from .dataclass_storage_ops import DataclassStorageOps
 

@@ -5,14 +5,16 @@
 
 import functools
 from pathlib import Path
+
 import numpy as np
 
-from symforce import ops
 import symforce.symbolic as sf
+from symforce import ops
 from symforce import typing as T
-from symforce.opt.factor import Factor, visualize_factors
-from symforce.opt.numeric_factor import NumericFactor
 from symforce.ops.interfaces import LieGroup
+from symforce.opt.factor import Factor
+from symforce.opt.factor import visualize_factors
+from symforce.opt.numeric_factor import NumericFactor
 from symforce.test_util import TestCase
 from symforce.values import Values
 

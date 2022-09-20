@@ -4,8 +4,8 @@
 # ----------------------------------------------------------------------------
 
 import json
-from pathlib import Path
 import typing as T
+from pathlib import Path
 
 
 class MissingManifestException(RuntimeError):

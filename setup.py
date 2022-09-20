@@ -3,15 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import distutils.util
 import multiprocessing
 import os
-from pathlib import Path
 import re
 import subprocess
 import sys
 import typing as T
+from pathlib import Path
 
-import distutils.util
 from setuptools import Extension
 from setuptools import find_packages
 from setuptools import setup
@@ -385,6 +385,7 @@ setup(
             "argh",
             "black[jupyter]==21.12b0",
             "coverage",
+            "isort",
             "jinja2~=3.0.3",
             "mypy==0.910",
             "numba",

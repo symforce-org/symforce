@@ -3,13 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
 import symforce.symbolic as sf
 from symforce import typing as T
-
+from symforce.ops import GroupOps
+from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
 from symforce.test_util import TestCase
-from symforce.ops import StorageOps, GroupOps, LieGroupOps
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
