@@ -65,11 +65,14 @@ class SymforceCppCodePrinterTest(TestCase):
             return sf.sin(x) + sf.cos(x)
 
         codegen_config = codegen.CppConfig(
-            override_methods={sf.sympy.sin: 'fast_math::sin'}, extra_imports=["custom_function_replacement_header.h"]
+            override_methods={sf.sympy.sin: "fast_math::sin"},
+            extra_imports=["custom_function_replacement_header.h"],
         )
         codegen_function = codegen.Codegen.function(func=test_expression, config=codegen_config)
 
-        codegen_data = codegen_function.generate_function(output_dir=output_dir, namespace="cpp_code_printer_test")
+        codegen_data = codegen_function.generate_function(
+            output_dir=output_dir, namespace="cpp_code_printer_test"
+        )
 
         # Compare
         expected = os.path.join(TEST_DATA_DIR, "custom_function_replacement.h")
