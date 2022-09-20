@@ -62,7 +62,7 @@ class SymforceCppCodePrinterTest(TestCase):
 
         # Simple test expression with one function that should be overwritten
         def test_expression(x: sf.Symbol) -> sf.Expr:
-            return sf.sin(x) + sf.cos(x)
+            return sf.sin(x)
 
         codegen_config = codegen.CppConfig(
             override_methods={sf.sympy.sin: "fast_math::sin"},

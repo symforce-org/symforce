@@ -25,7 +25,7 @@ namespace cpp_code_printer_test {
  */
 template <typename Scalar>
 Scalar TestExpression(const Scalar x) {
-  // Total ops: 3
+  // Total ops: 1
 
   // Input arrays
 
@@ -34,7 +34,7 @@ Scalar TestExpression(const Scalar x) {
   // Output terms (1)
   Scalar _res;
 
-  _res = fast_math::sin(x) + std::cos(x);
+  _res = fast_math::sin(x);
 
   return _res;
 }  // NOLINT(readability/fn_size)

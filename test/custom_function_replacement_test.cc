@@ -10,6 +10,6 @@
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Generated function with function replacement is correct", "[custom_func_replacement]") {
-  CHECK(cpp_code_printer_test::TestExpression<double>(0) == 2.0);
-  CHECK(cpp_code_printer_test::TestExpression<double>(M_PI) == 0.0);
+  const double x = 0.1; // Test value
+  CHECK(cpp_code_printer_test::TestExpression<double>(x) == std::sin(x));
 }
