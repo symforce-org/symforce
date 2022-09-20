@@ -6,7 +6,7 @@ namespace fast_math {
 
 template <typename Scalar>
 Scalar sin(const Scalar x) {
-    return std::sin(x);
+  return std::sin(x);
 }
 
 }  // namespace fast_math
