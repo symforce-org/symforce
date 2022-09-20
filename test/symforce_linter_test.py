@@ -5,6 +5,8 @@
 
 import os
 import subprocess
+import sys
+import unittest
 
 from symforce import logger
 from symforce import python_util
@@ -20,9 +22,18 @@ class SymforceLinterTest(TestCase):
     """
 
     @slow_on_sympy
+    @unittest.skipIf(
+        sys.version_info[:3] >= (3, 10, 7),
+        """
+        Mypy fails on Python 3.10.7 because of this bug, which has a fix that is not released yet:
+        https://github.com/python/mypy/issues/13627
+        """,
+    )
     def test_linter(self) -> None:
         try:
-            python_util.execute_subprocess(["make", "lint"], cwd=SYMFORCE_DIR)
+            python_util.execute_subprocess(
+                ["make", "lint"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+            )
         except subprocess.CalledProcessError as exc:
             logger.error(exc)
             self.assertTrue(False, "Linter Failed.")

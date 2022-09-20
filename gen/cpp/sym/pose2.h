@@ -77,27 +77,29 @@ class Pose2 {
     data_.template tail<2>() = position;
   }
 
-  Rot2<Scalar> Rotation() const {
-    return Rot2<Scalar>(data_.template head<2>());
-  }
-
-  Vector2 Position() const {
-    return data_.template tail<2>();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose2 Random(Generator& gen) {
     return Pose2(Rot2<Scalar>::Random(gen), sym::StorageOps<Vector2>::Random(gen));
   }
 
+  Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry> ToTransform() const {
+    return Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  Vector2 Compose(const Vector2& right) const;
+  sym::Rot2<Scalar> Rotation() const;
+
+  Vector2 Position() const;
+
+  Vector2 ComposeWithPoint(const Vector2& right) const;
 
   Vector2 InverseCompose(const Vector2& point) const;
+
+  Eigen::Matrix<Scalar, 3, 3> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept
@@ -129,6 +131,10 @@ class Pose2 {
 
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
+  }
+
+  Vector2 Compose(const Vector2& point) const {
+    return ComposeWithPoint(point);
   }
 
   Self Between(const Self& b) const {

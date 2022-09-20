@@ -77,14 +77,6 @@ class Pose3 {
     data_.template tail<3>() = position;
   }
 
-  Rot3<Scalar> Rotation() const {
-    return Rot3<Scalar>(data_.template head<4>());
-  }
-
-  Vector3 Position() const {
-    return data_.template tail<3>();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose3 Random(Generator& gen) {
@@ -96,13 +88,23 @@ class Pose3 {
     return Pose3(rot3, vec3);
   }
 
+  Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry> ToTransform() const {
+    return Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  Vector3 Compose(const Vector3& right) const;
+  sym::Rot3<Scalar> Rotation() const;
+
+  Vector3 Position() const;
+
+  Vector3 ComposeWithPoint(const Vector3& right) const;
 
   Vector3 InverseCompose(const Vector3& point) const;
+
+  Eigen::Matrix<Scalar, 4, 4> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept
@@ -134,6 +136,10 @@ class Pose3 {
 
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
+  }
+
+  Vector3 Compose(const Vector3& point) const {
+    return ComposeWithPoint(point);
   }
 
   Self Between(const Self& b) const {

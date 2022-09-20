@@ -27,7 +27,46 @@ std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Compose(
+sym::Rot3<Scalar> sym::Pose3<Scalar>::Rotation() const {
+  // Total ops: 0
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = _self[0];
+  _res[1] = _self[1];
+  _res[2] = _self[2];
+  _res[3] = _self[3];
+
+  return sym::Rot3<Scalar>(_res);
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Position() const {
+  // Total ops: 0
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 3, 1> _res;
+
+  _res(0, 0) = _self[4];
+  _res(1, 0) = _self[5];
+  _res(2, 0) = _self[6];
+
+  return _res;
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
   // Total ops: 46
 
@@ -99,6 +138,49 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
                _tmp13 * point(1, 0) + _tmp16 * point(2, 0);
   _res(2, 0) = -_self[4] * _tmp18 - _self[5] * _tmp19 - _self[6] * _tmp17 + _tmp17 * point(2, 0) +
                _tmp18 * point(0, 0) + _tmp19 * point(1, 0);
+
+  return _res;
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 4, 4> sym::Pose3<Scalar>::ToHomogenousMatrix() const {
+  // Total ops: 28
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
+
+  // Intermediate terms (11)
+  const Scalar _tmp0 = -2 * std::pow(_self[1], Scalar(2));
+  const Scalar _tmp1 = 1 - 2 * std::pow(_self[2], Scalar(2));
+  const Scalar _tmp2 = 2 * _self[2] * _self[3];
+  const Scalar _tmp3 = 2 * _self[1];
+  const Scalar _tmp4 = _self[0] * _tmp3;
+  const Scalar _tmp5 = 2 * _self[0];
+  const Scalar _tmp6 = _self[2] * _tmp5;
+  const Scalar _tmp7 = _self[3] * _tmp3;
+  const Scalar _tmp8 = -2 * std::pow(_self[0], Scalar(2));
+  const Scalar _tmp9 = _self[3] * _tmp5;
+  const Scalar _tmp10 = _self[2] * _tmp3;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 4> _res;
+
+  _res(0, 0) = _tmp0 + _tmp1;
+  _res(1, 0) = _tmp2 + _tmp4;
+  _res(2, 0) = _tmp6 - _tmp7;
+  _res(3, 0) = 0;
+  _res(0, 1) = -_tmp2 + _tmp4;
+  _res(1, 1) = _tmp1 + _tmp8;
+  _res(2, 1) = _tmp10 + _tmp9;
+  _res(3, 1) = 0;
+  _res(0, 2) = _tmp6 + _tmp7;
+  _res(1, 2) = _tmp10 - _tmp9;
+  _res(2, 2) = _tmp0 + _tmp8 + 1;
+  _res(3, 2) = 0;
+  _res(0, 3) = _self[4];
+  _res(1, 3) = _self[5];
+  _res(2, 3) = _self[6];
+  _res(3, 3) = 1;
 
   return _res;
 }

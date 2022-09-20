@@ -505,6 +505,11 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         self.assertEqual(v_tuple["pair"], v_after["pair"])
 
+        x = sf.Symbol("x")
+        v_tuple["pair"] = (x, x ** 2)
+        v_after = Values.from_storage_index(v_tuple.to_storage(), v_tuple.index())
+        self.assertEqual(v_tuple["pair"], v_after["pair"])
+
     def test_from_storage_index(self) -> None:
         """
         Tests:
@@ -614,11 +619,19 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             sub_values=Values(hey=sym.Pose3.identity(), other=[5.4, np.sqrt(10)]),
         )
 
+        numeric_values = values.to_numerical()
+
         # Make sure they match
-        diff = values.to_numerical().local_coordinates(
+        diff = numeric_values.local_coordinates(
             expected_numerical_values, epsilon=sf.numeric_epsilon
         )
         self.assertLess(sf.M(diff).norm(), 1e-10)
+
+        # to and from tangent also work
+        tangent = np.random.rand(numeric_values.tangent_dim()).tolist()
+        exponent = numeric_values.from_tangent(tangent, epsilon=sf.numeric_epsilon)
+        recovered_tangent = exponent.to_tangent(epsilon=sf.numeric_epsilon)
+        self.assertLess((sf.M(recovered_tangent) - sf.M(tangent)).norm(), 10 * sf.numeric_epsilon)
 
 
 class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):

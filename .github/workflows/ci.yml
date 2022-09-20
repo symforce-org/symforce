@@ -86,21 +86,23 @@ jobs:
             -D SYMFORCE_BUILD_BENCHMARKS=ON
           cmake --build build -j $(nproc)
 
-      - name: Run C++ tests
-        run: |
-          cd build
-          ctest
-
       # - lcmtypes need to be available for tests
       # - Exact contents of dev_requirements.txt depend on python version. Need to update file to
       # match current python version to avoid failure of corresponding gen test. symforce needs
       # to be on the PYTHONPATH to run gen test in this manner.
-      # - The Makefile uses the python version stored in env var PYTHON
-      - name: Run python tests
-        env:
-          PYTHON: ${{ matrix.python }}
+      - name: Run tests
         run: |
           pip install build/lcmtypes/python2.7
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           ${{ matrix.python }} test/symforce_requirements_test.py --update
-          make -j2 test
+          ctest --test-dir build -j $(nproc) --output-on-failure
+
+      # Upload the docs as an artifact
+      # To view, download the `docs` artifact from the build and matrix entry you're interested in
+      # (probably any is good, assuming they all pass)
+      # Unzip to a directory and run `npx http-server` in that directory
+      - name: Upload Generated Docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.compiler.C }}
+          path: build/docs

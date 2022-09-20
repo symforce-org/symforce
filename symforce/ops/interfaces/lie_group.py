@@ -51,11 +51,11 @@ class LieGroup(Group):
         self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> LieGroupT:
         """
-        Apply a tangent space perturbation vec to this. Often used in optimization
+        Apply a tangent space perturbation vec to self. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
-        Implementation is simply `compose(this, from_tangent(vec))`.
-        Conceptually represents "this + vec".
+        Implementation is simply `compose(self, from_tangent(vec))`.
+        Conceptually represents "self + vec" if self is a vector.
         """
         return self.compose(self.from_tangent(vec, epsilon=epsilon))
 
@@ -63,11 +63,11 @@ class LieGroup(Group):
         self: LieGroupT, b: LieGroupT, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
         """
-        Computes a tangent space perturbation around this to produce b. Often used in optimization
+        Computes a tangent space perturbation around self to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
-        Implementation is simply `to_tangent(between(this, b))`.
-        Tangent space perturbation that conceptually represents "this - a".
+        Implementation is simply `to_tangent(between(self, b))`.
+        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
         """
         return self.between(b).to_tangent(epsilon=epsilon)
 

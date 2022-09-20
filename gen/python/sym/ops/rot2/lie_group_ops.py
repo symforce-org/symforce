@@ -18,23 +18,25 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (T.Sequence[float], float) -> sym.Rot2
+        # type: (numpy.ndarray, float) -> sym.Rot2
 
         # Total ops: 2
 
         # Input arrays
+        if len(vec.shape) == 1:
+            vec = vec.reshape((1, 1))
 
         # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 2
-        _res[0] = math.cos(vec[0])
-        _res[1] = math.sin(vec[0])
+        _res[0] = math.cos(vec[0, 0])
+        _res[1] = math.sin(vec[0, 0])
         return sym.Rot2.from_storage(_res)
 
     @staticmethod
     def to_tangent(a, epsilon):
-        # type: (sym.Rot2, float) -> T.List[float]
+        # type: (sym.Rot2, float) -> numpy.ndarray
 
         # Total ops: 5
 
@@ -44,24 +46,26 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 1
-        _res[0] = math.atan2(
+        _res = numpy.zeros((1, 1))
+        _res[0, 0] = math.atan2(
             _a[1], _a[0] + epsilon * ((0.0 if _a[0] == 0 else math.copysign(1, _a[0])) + 0.5)
         )
         return _res
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.Rot2, T.Sequence[float], float) -> sym.Rot2
+        # type: (sym.Rot2, numpy.ndarray, float) -> sym.Rot2
 
         # Total ops: 8
 
         # Input arrays
         _a = a.data
+        if len(vec.shape) == 1:
+            vec = vec.reshape((1, 1))
 
         # Intermediate terms (2)
-        _tmp0 = math.sin(vec[0])
-        _tmp1 = math.cos(vec[0])
+        _tmp0 = math.sin(vec[0, 0])
+        _tmp1 = math.cos(vec[0, 0])
 
         # Output terms
         _res = [0.0] * 2
@@ -71,7 +75,7 @@ class LieGroupOps(object):
 
     @staticmethod
     def local_coordinates(a, b, epsilon):
-        # type: (sym.Rot2, sym.Rot2, float) -> T.List[float]
+        # type: (sym.Rot2, sym.Rot2, float) -> numpy.ndarray
 
         # Total ops: 11
 
@@ -83,8 +87,8 @@ class LieGroupOps(object):
         _tmp0 = _a[0] * _b[0] + _a[1] * _b[1]
 
         # Output terms
-        _res = [0.0] * 1
-        _res[0] = math.atan2(
+        _res = numpy.zeros((1, 1))
+        _res[0, 0] = math.atan2(
             _a[0] * _b[1] - _a[1] * _b[0],
             _tmp0 + epsilon * ((0.0 if _tmp0 == 0 else math.copysign(1, _tmp0)) + 0.5),
         )

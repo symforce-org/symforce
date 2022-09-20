@@ -18,27 +18,29 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (T.Sequence[float], float) -> sym.DoubleSphereCameraCal
+        # type: (numpy.ndarray, float) -> sym.DoubleSphereCameraCal
 
         # Total ops: 0
 
         # Input arrays
+        if len(vec.shape) == 1:
+            vec = vec.reshape((6, 1))
 
         # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 6
-        _res[0] = vec[0]
-        _res[1] = vec[1]
-        _res[2] = vec[2]
-        _res[3] = vec[3]
-        _res[4] = vec[4]
-        _res[5] = vec[5]
+        _res[0] = vec[0, 0]
+        _res[1] = vec[1, 0]
+        _res[2] = vec[2, 0]
+        _res[3] = vec[3, 0]
+        _res[4] = vec[4, 0]
+        _res[5] = vec[5, 0]
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
     def to_tangent(a, epsilon):
-        # type: (sym.DoubleSphereCameraCal, float) -> T.List[float]
+        # type: (sym.DoubleSphereCameraCal, float) -> numpy.ndarray
 
         # Total ops: 0
 
@@ -48,39 +50,41 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = _a[0]
-        _res[1] = _a[1]
-        _res[2] = _a[2]
-        _res[3] = _a[3]
-        _res[4] = _a[4]
-        _res[5] = _a[5]
+        _res = numpy.zeros((6, 1))
+        _res[0, 0] = _a[0]
+        _res[1, 0] = _a[1]
+        _res[2, 0] = _a[2]
+        _res[3, 0] = _a[3]
+        _res[4, 0] = _a[4]
+        _res[5, 0] = _a[5]
         return _res
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.DoubleSphereCameraCal, T.Sequence[float], float) -> sym.DoubleSphereCameraCal
+        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> sym.DoubleSphereCameraCal
 
         # Total ops: 6
 
         # Input arrays
         _a = a.data
+        if len(vec.shape) == 1:
+            vec = vec.reshape((6, 1))
 
         # Intermediate terms (0)
 
         # Output terms
         _res = [0.0] * 6
-        _res[0] = _a[0] + vec[0]
-        _res[1] = _a[1] + vec[1]
-        _res[2] = _a[2] + vec[2]
-        _res[3] = _a[3] + vec[3]
-        _res[4] = _a[4] + vec[4]
-        _res[5] = _a[5] + vec[5]
+        _res[0] = _a[0] + vec[0, 0]
+        _res[1] = _a[1] + vec[1, 0]
+        _res[2] = _a[2] + vec[2, 0]
+        _res[3] = _a[3] + vec[3, 0]
+        _res[4] = _a[4] + vec[4, 0]
+        _res[5] = _a[5] + vec[5, 0]
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
     def local_coordinates(a, b, epsilon):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal, float) -> T.List[float]
+        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal, float) -> numpy.ndarray
 
         # Total ops: 6
 
@@ -91,11 +95,11 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = -_a[0] + _b[0]
-        _res[1] = -_a[1] + _b[1]
-        _res[2] = -_a[2] + _b[2]
-        _res[3] = -_a[3] + _b[3]
-        _res[4] = -_a[4] + _b[4]
-        _res[5] = -_a[5] + _b[5]
+        _res = numpy.zeros((6, 1))
+        _res[0, 0] = -_a[0] + _b[0]
+        _res[1, 0] = -_a[1] + _b[1]
+        _res[2, 0] = -_a[2] + _b[2]
+        _res[3, 0] = -_a[3] + _b[3]
+        _res[4, 0] = -_a[4] + _b[4]
+        _res[5, 0] = -_a[5] + _b[5]
         return _res

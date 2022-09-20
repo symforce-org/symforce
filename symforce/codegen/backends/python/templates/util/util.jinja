@@ -7,33 +7,16 @@
 {# Utilities for Python code generation templates.                           #}
 {# ------------------------------------------------------------------------- #}
 
-{# Matrix type of a given dimension
- #
- # Args:
- #     rows (int):
- #     cols (int):
- #     is_input (bool): Is this an input argument or return value?
- #}
-{%- macro matrix_type(rows, cols, is_input) -%}
-    {%- if cols == 1 -%}
-        T.{%- if is_input -%}Sequence{%- else -%}List{%- endif -%}[float]
-    {%- else -%}
-        numpy.ndarray
-    {%- endif -%}
-{%- endmacro -%}
-
-{# ------------------------------------------------------------------------- #}
-
 {# Convert a class to the emitted string
  #
  # Args:
  #     T_or_value (type or Element):
  #     name (str): Name in case type is a generated struct
  #     is_input (bool): Is this an input argument or return value?
- #     defined_class (Optional[type]): Do not prefix the emitted string with sym. if
- #       type is defined_class
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{%- macro format_typename(T_or_value, name, is_input, defined_class = None) %}
+{%- macro format_typename(T_or_value, name, is_input, available_classes = []) %}
     {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'DataBuffer' -%}
         numpy.ndarray
@@ -42,7 +25,7 @@
     {%- elif T.__name__ == 'NoneType' -%}
         None
     {%- elif issubclass(T, Matrix) -%}
-        {{ matrix_type(T_or_value.shape[0], T_or_value.shape[1], is_input) }}
+        numpy.ndarray
     {%- elif issubclass(T, Values) -%}
         {#- TODO(aaron): We don't currently know where to import lcmtypes from or what they should be
          # called, at some point we should fix this and do something like
@@ -56,7 +39,7 @@
             T.List[float]
         {%- endif -%}
     {%- else -%}
-        {%- if T != defined_class and ("geo" in T.__module__ or "cam" in T.__module__) -%}
+        {%- if T not in available_classes and ("geo" in T.__module__ or "cam" in T.__module__) -%}
             sym.
         {%- endif -%}
         {{- T.__name__ -}}
@@ -69,17 +52,17 @@
  #
  # Args:
  #     spec (Codegen):
- #     defined_class (Optional[type]): Do not prefix the emitted string with sym. if
- #       type is defined_class
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{%- macro get_return_type(spec, defined_class = None) %}
+{%- macro get_return_type(spec, available_classes = []) %}
     {%- if spec.outputs.keys() | length == 1 -%}
         {%- set name, type = spec.outputs.items() | first -%}
-        {{ format_typename(type, name, is_input=False, defined_class=defined_class) }}
+        {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}
     {%- elif spec.outputs -%}
         T.Tuple[
         {%- for name, type in spec.outputs.items() -%}
-        {{ format_typename(type, name, is_input=False, defined_class=defined_class) }}{% if not loop.last %}, {% endif %}
+        {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
         {%- endfor -%}]
     {%- else -%}
         None
@@ -120,15 +103,19 @@
  #
  # Args:
  #     spec (Codegen):
- #     defined_class (Optional[type]): If function is a method of a class, set
- #       defined_class to the class
+ #     is_method (bool): True if function is a method of a class,
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{%- macro function_declaration(spec, defined_class = None) -%}
+{%- macro function_declaration(spec, is_method = False, available_classes = []) -%}
+{%- if is_method and "self" not in spec.inputs -%}
+@staticmethod
+{% endif %}
 def {{ function_name_and_args(spec) }}:
     # type: (
     {%- for name, type in spec.inputs.items() -%}
-    {{ format_typename(type, name, is_input=True, defined_class=defined_class) }}{% if not loop.last %}, {% endif %}
-    {%- endfor -%}) -> {{ get_return_type(spec, defined_class=defined_class) }}
+    {{ format_typename(type, name, is_input=True, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}) -> {{ get_return_type(spec, available_classes=available_classes) }}
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
@@ -137,14 +124,28 @@ def {{ function_name_and_args(spec) }}:
  #
  # Args:
  #     spec (Codegen):
+ #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
-{% macro expr_code(spec) %}
+{% macro expr_code(spec, available_classes = []) %}
     # Total ops: {{ spec.print_code_results.total_ops }}
 
     # Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = typing_util.get_type(type) %}
-        {% if not issubclass(T, Values) and not issubclass(T, Matrix) and not is_symbolic(type) and not is_sequence(type) %}
+        {% if issubclass(T, Matrix) %}
+            {% if spec.config.reshape_vectors and (T.SHAPE[0] == 1 or T.SHAPE[1] == 1) %}
+                {% if spec.config.use_numba %}
+                {# NOTE(brad): Numba will complain if we reshape name inside of a conditional #}
+    if not ({{ name }}.shape == {{ T.SHAPE }} or {{ name }}.shape == ({{ T.SHAPE | max }},)):
+        raise IndexError("{{ name }} is expected to have shape {{ T.SHAPE }} or ({{ T.SHAPE | max }},)")
+    {{ name }} = {{ name }}.reshape({{ T.SHAPE }})
+                {% else %}
+    if len({{ name }}.shape) == 1:
+        {{ name }} = {{ name }}.reshape({{ T.SHAPE }})
+                {% endif %}
+            {% endif %}
+        {% elif not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
     _{{ name }} = {{ name }}.data
         {% endif %}
     {% endfor %}
@@ -158,7 +159,7 @@ def {{ function_name_and_args(spec) }}:
     {# Render all non-sparse terms -#}
     {% for name, type, terms in spec.print_code_results.dense_terms %}
         {%- set T = typing_util.get_type(type) -%}
-        {% if issubclass(T, Matrix) and type.shape[1] > 1 %}
+        {% if issubclass(T, Matrix) %}
             {% set rows = type.shape[0] %}
             {% set cols = type.shape[1] %}
     _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
@@ -206,8 +207,12 @@ def {{ function_name_and_args(spec) }}:
         {% set T = typing_util.get_type(type) %}
         {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
  _{{name}}
-        {%- else %}
+        {%- else -%}
+            {%- if T in available_classes %}
+ {{T.__name__}}.from_storage(_{{name}})
+            {% else %}
  sym.{{T.__name__}}.from_storage(_{{name}})
+            {%- endif -%}
         {%- endif %}
         {%- if not loop.last %}, {% endif %}
     {%- endfor -%}

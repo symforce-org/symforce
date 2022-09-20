@@ -18,7 +18,7 @@ class CameraOps(object):
 
     @staticmethod
     def focal_length(self):
-        # type: (sym.SphericalCameraCal) -> T.List[float]
+        # type: (sym.SphericalCameraCal) -> numpy.ndarray
         """
         Return the focal length.
         """
@@ -31,14 +31,14 @@ class CameraOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _focal_length = [0.0] * 2
-        _focal_length[0] = _self[0]
-        _focal_length[1] = _self[1]
+        _focal_length = numpy.zeros((2, 1))
+        _focal_length[0, 0] = _self[0]
+        _focal_length[1, 0] = _self[1]
         return _focal_length
 
     @staticmethod
     def principal_point(self):
-        # type: (sym.SphericalCameraCal) -> T.List[float]
+        # type: (sym.SphericalCameraCal) -> numpy.ndarray
         """
         Return the principal point.
         """
@@ -51,14 +51,14 @@ class CameraOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _principal_point = [0.0] * 2
-        _principal_point[0] = _self[2]
-        _principal_point[1] = _self[3]
+        _principal_point = numpy.zeros((2, 1))
+        _principal_point[0, 0] = _self[2]
+        _principal_point[1, 0] = _self[3]
         return _principal_point
 
     @staticmethod
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (sym.SphericalCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float]
+        # type: (sym.SphericalCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -71,10 +71,12 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
+        if len(point.shape) == 1:
+            point = point.reshape((3, 1))
 
         # Intermediate terms (4)
-        _tmp0 = math.sqrt(epsilon + point[0] ** 2 + point[1] ** 2)
-        _tmp1 = math.atan2(_tmp0, point[2])
+        _tmp0 = math.sqrt(epsilon + point[0, 0] ** 2 + point[1, 0] ** 2)
+        _tmp1 = math.atan2(_tmp0, point[2, 0])
         _tmp2 = min(_tmp1, _self[4] - epsilon)
         _tmp3 = (
             _self[5] * _tmp2 ** 3
@@ -85,15 +87,15 @@ class CameraOps(object):
         ) / _tmp0
 
         # Output terms
-        _pixel = [0.0] * 2
-        _pixel[0] = _self[0] * _tmp3 * point[0] + _self[2]
-        _pixel[1] = _self[1] * _tmp3 * point[1] + _self[3]
+        _pixel = numpy.zeros((2, 1))
+        _pixel[0, 0] = _self[0] * _tmp3 * point[0, 0] + _self[2]
+        _pixel[1, 0] = _self[1] * _tmp3 * point[1, 0] + _self[3]
         _is_valid = max(0, (0.0 if _self[4] - _tmp1 == 0 else math.copysign(1, _self[4] - _tmp1)))
         return _pixel, _is_valid
 
     @staticmethod
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (sym.SphericalCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float, numpy.ndarray, numpy.ndarray]
+        # type: (sym.SphericalCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -108,14 +110,16 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
+        if len(point.shape) == 1:
+            point = point.reshape((3, 1))
 
         # Intermediate terms (40)
         _tmp0 = -epsilon
-        _tmp1 = point[1] ** 2
-        _tmp2 = point[0] ** 2
+        _tmp1 = point[1, 0] ** 2
+        _tmp2 = point[0, 0] ** 2
         _tmp3 = _tmp1 + _tmp2 + epsilon
         _tmp4 = math.sqrt(_tmp3)
-        _tmp5 = math.atan2(_tmp4, point[2])
+        _tmp5 = math.atan2(_tmp4, point[2, 0])
         _tmp6 = min(_tmp5, _self[4] + _tmp0)
         _tmp7 = _tmp6 ** 5
         _tmp8 = _tmp6 ** 7
@@ -124,19 +128,19 @@ class CameraOps(object):
         _tmp11 = _self[5] * _tmp10 + _self[6] * _tmp7 + _self[7] * _tmp8 + _self[8] * _tmp9 + _tmp6
         _tmp12 = _tmp4 ** (-1)
         _tmp13 = _tmp11 * _tmp12
-        _tmp14 = _tmp13 * point[0]
-        _tmp15 = _tmp13 * point[1]
+        _tmp14 = _tmp13 * point[0, 0]
+        _tmp15 = _tmp13 * point[1, 0]
         _tmp16 = _self[4] - _tmp5
-        _tmp17 = _self[0] * point[0]
+        _tmp17 = _self[0] * point[0, 0]
         _tmp18 = _tmp12 * _tmp17
-        _tmp19 = _self[1] * point[1]
+        _tmp19 = _self[1] * point[1, 0]
         _tmp20 = _tmp12 * _tmp19
         _tmp21 = _tmp12 * _tmp9
         _tmp22 = (9.0 / 2.0) * _self[8] * _tmp6 ** 8
         _tmp23 = ((0.0 if _tmp0 + _tmp16 == 0 else math.copysign(1, _tmp0 + _tmp16)) + 1) / (
-            _tmp3 + point[2] ** 2
+            _tmp3 + point[2, 0] ** 2
         )
-        _tmp24 = _tmp12 * point[2]
+        _tmp24 = _tmp12 * point[2, 0]
         _tmp25 = _tmp23 * _tmp24
         _tmp26 = _tmp22 * _tmp25
         _tmp27 = (5.0 / 2.0) * _self[6] * _tmp6 ** 4
@@ -148,19 +152,19 @@ class CameraOps(object):
         _tmp33 = (1.0 / 2.0) * _tmp23
         _tmp34 = _tmp24 * _tmp33
         _tmp35 = (
-            _tmp26 * point[0]
-            + _tmp28 * point[0]
-            + _tmp30 * point[0]
-            + _tmp32 * point[0]
-            + _tmp34 * point[0]
+            _tmp26 * point[0, 0]
+            + _tmp28 * point[0, 0]
+            + _tmp30 * point[0, 0]
+            + _tmp32 * point[0, 0]
+            + _tmp34 * point[0, 0]
         )
         _tmp36 = _tmp11 / _tmp3 ** (3.0 / 2.0)
         _tmp37 = (
-            _tmp26 * point[1]
-            + _tmp28 * point[1]
-            + _tmp30 * point[1]
-            + _tmp32 * point[1]
-            + _tmp34 * point[1]
+            _tmp26 * point[1, 0]
+            + _tmp28 * point[1, 0]
+            + _tmp30 * point[1, 0]
+            + _tmp32 * point[1, 0]
+            + _tmp34 * point[1, 0]
         )
         _tmp38 = _tmp23 * _tmp4
         _tmp39 = _tmp12 * (
@@ -168,9 +172,9 @@ class CameraOps(object):
         )
 
         # Output terms
-        _pixel = [0.0] * 2
-        _pixel[0] = _self[0] * _tmp14 + _self[2]
-        _pixel[1] = _self[1] * _tmp15 + _self[3]
+        _pixel = numpy.zeros((2, 1))
+        _pixel[0, 0] = _self[0] * _tmp14 + _self[2]
+        _pixel[1, 0] = _self[1] * _tmp15 + _self[3]
         _is_valid = max(0, (0.0 if _tmp16 == 0 else math.copysign(1, _tmp16)))
         _pixel_D_cal = numpy.zeros((2, 8))
         _pixel_D_cal[0, 0] = _tmp14
@@ -191,8 +195,8 @@ class CameraOps(object):
         _pixel_D_cal[1, 7] = _tmp19 * _tmp21
         _pixel_D_point = numpy.zeros((2, 3))
         _pixel_D_point[0, 0] = _self[0] * _tmp13 - _self[0] * _tmp2 * _tmp36 + _tmp18 * _tmp35
-        _pixel_D_point[1, 0] = -_tmp19 * _tmp36 * point[0] + _tmp20 * _tmp35
-        _pixel_D_point[0, 1] = -_tmp17 * _tmp36 * point[1] + _tmp18 * _tmp37
+        _pixel_D_point[1, 0] = -_tmp19 * _tmp36 * point[0, 0] + _tmp20 * _tmp35
+        _pixel_D_point[0, 1] = -_tmp17 * _tmp36 * point[1, 0] + _tmp18 * _tmp37
         _pixel_D_point[1, 1] = -_self[1] * _tmp1 * _tmp36 + _self[1] * _tmp13 + _tmp20 * _tmp37
         _pixel_D_point[0, 2] = _tmp17 * _tmp39
         _pixel_D_point[1, 2] = _tmp19 * _tmp39

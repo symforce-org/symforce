@@ -53,7 +53,7 @@ class LinearCameraCal(object):
     # --------------------------------------------------------------------------
 
     def focal_length(self):
-        # type: (LinearCameraCal) -> T.List[float]
+        # type: (LinearCameraCal) -> numpy.ndarray
         """
         Return the focal length.
         """
@@ -61,7 +61,7 @@ class LinearCameraCal(object):
         return ops.CameraOps.focal_length(self)
 
     def principal_point(self):
-        # type: (LinearCameraCal) -> T.List[float]
+        # type: (LinearCameraCal) -> numpy.ndarray
         """
         Return the principal point.
         """
@@ -69,7 +69,7 @@ class LinearCameraCal(object):
         return ops.CameraOps.principal_point(self)
 
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (LinearCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float]
+        # type: (LinearCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -81,7 +81,7 @@ class LinearCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (LinearCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float, numpy.ndarray, numpy.ndarray]
+        # type: (LinearCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -95,7 +95,7 @@ class LinearCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point_with_jacobians(self, point, epsilon)
 
     def camera_ray_from_pixel(self, pixel, epsilon):
-        # type: (LinearCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float]
+        # type: (LinearCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -109,7 +109,7 @@ class LinearCameraCal(object):
         return ops.CameraOps.camera_ray_from_pixel(self, pixel, epsilon)
 
     def camera_ray_from_pixel_with_jacobians(self, pixel, epsilon):
-        # type: (LinearCameraCal, T.Sequence[float], float) -> T.Tuple[T.List[float], float, numpy.ndarray, numpy.ndarray]
+        # type: (LinearCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -163,7 +163,7 @@ class LinearCameraCal(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> LinearCameraCal
+        # type: (numpy.ndarray, float) -> LinearCameraCal
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -173,11 +173,11 @@ class LinearCameraCal(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> numpy.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> LinearCameraCal
+        # type: (numpy.ndarray, float) -> LinearCameraCal
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -187,7 +187,7 @@ class LinearCameraCal(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: (LinearCameraCal, float) -> T.List[float]
+        # type: (LinearCameraCal, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
     # --------------------------------------------------------------------------

@@ -118,19 +118,19 @@ class Rot3 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  Vector3 Compose(const Vector3& right) const;
+  Vector3 ComposeWithPoint(const Vector3& right) const;
 
   Eigen::Matrix<Scalar, 3, 3> ToRotationMatrix() const;
 
   static sym::Rot3<Scalar> RandomFromUniformSamples(const Scalar u1, const Scalar u2,
                                                     const Scalar u3);
 
+  Vector3 ToYawPitchRoll() const;
+
   static sym::Rot3<Scalar> FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
                                             const Scalar roll);
 
   static sym::Rot3<Scalar> FromYawPitchRoll(const Vector3& ypr);
-
-  Vector3 ToYawPitchRoll() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept
@@ -162,6 +162,10 @@ class Rot3 {
 
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
+  }
+
+  Vector3 Compose(const Vector3& point) const {
+    return ComposeWithPoint(point);
   }
 
   Self Between(const Self& b) const {

@@ -22,7 +22,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(SYMFORCE_BUILD_OPT "Build symforce_opt and related targets for optimization" ON)
 option(SYMFORCE_BUILD_CC_SYM "Build cc_sym and related targets for python wrapping" ON)
 option(SYMFORCE_BUILD_EXAMPLES "Build the examples" ON)
-option(SYMFORCE_BUILD_TESTS "Build the tests" ON)
+option(SYMFORCE_BUILD_TESTS "Build and run the tests" ON)
+option(SYMFORCE_ADD_PYTHON_TESTS "Include the Python tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
 option(SYMFORCE_GENERATE_MANIFEST "Generate build manifest" ON)
 option(SYMFORCE_BUILD_BENCHMARKS "Generate examples for alternative libraries" OFF)
@@ -387,10 +388,10 @@ if(SYMFORCE_BUILD_SYMENGINE)
     set(git_stampfile ${CMAKE_CURRENT_BINARY_DIR}/${project_name}.stamp)
     set(git_check_rulename ${project_name}_check_git_clean)
     add_custom_target(${git_check_rulename}
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
+      COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
                   --path_to_check ${PROJECT_SOURCE_DIR}/third_party/${project_name}
                   --stamp_file ${git_stampfile}
-                  --command_to_run "rm -rf ${cmake_stampdir}"
+                  --cmake_stampdir="${cmake_stampdir}"
       )
 
     add_dependencies(${project_name} ${git_check_rulename})

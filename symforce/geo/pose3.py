@@ -54,6 +54,22 @@ class Pose3(LieGroup):
         assert isinstance(self.t, Vector3)
         assert self.t.shape == (3, 1), self.t.shape
 
+    def rotation(self) -> Rot3:
+        """
+        Accessor for the rotation component
+
+        Does not make a copy.  Also accessible as `self.R`
+        """
+        return self.R
+
+    def position(self) -> Vector3:
+        """
+        Accessor for the position component
+
+        Does not make a copy.  Also accessible as `self.t`
+        """
+        return self.t
+
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
     # -------------------------------------------------------------------------

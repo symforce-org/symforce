@@ -12,14 +12,6 @@
     data_.template tail<3>() = position;
   }
 
-  Rot3<Scalar> Rotation() const {
-      return Rot3<Scalar>(data_.template head<4>());
-  }
-
-  Vector3 Position() const {
-      return data_.template tail<3>();
-  }
-
   // Generate a random element, with normally distributed position
   template <typename Generator>
   static Pose3 Random(Generator& gen) {
@@ -29,4 +21,8 @@
     const auto rot3 = Rot3<Scalar>::Random(gen);
     const auto vec3 = sym::StorageOps<Vector3>::Random(gen);
     return Pose3(rot3, vec3);
+  }
+
+  Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry> ToTransform() const {
+    return Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
   }

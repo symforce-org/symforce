@@ -1,14 +1,11 @@
 # aclint: py2 py3
 # mypy: allow-untyped-defs
-from __future__ import print_function
-from __future__ import absolute_import
-import typing as T
+from __future__ import absolute_import, print_function
 
 import os
+import typing as T
 
-from skymarshal import parser
-from skymarshal import syntax_tree
-from skymarshal import tokenizer
+from skymarshal import parser, syntax_tree, tokenizer
 
 # Path -> packages map of things we already parsed.
 FILE_CACHE = dict()  # type: T.Dict[str, T.Any]

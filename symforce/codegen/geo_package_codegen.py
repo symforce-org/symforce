@@ -85,10 +85,62 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         """
         return Codegen.function(
             func=group.__mul__,
-            name="compose",
+            name="compose_with_point",
             input_types=[group, multiplicand_type],
             config=config,
         )
+
+    rot3_functions = [
+        codegen_mul(sf.Rot3, sf.Vector3),
+        Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
+        Codegen.function(
+            func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
+            name="random_from_uniform_samples",
+            config=config,
+        ),
+        Codegen.function(
+            func=lambda self: sf.V3(self.to_yaw_pitch_roll()),
+            input_types=[sf.Rot3],
+            name="to_yaw_pitch_roll",
+            config=config,
+        ),
+        Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
+    ]
+
+    # TODO(brad): We don't currently generate this in python because python (unlike C++)
+    # has no function overloading, and we already generate a from_yaw_pitch_roll which
+    # instead takes yaw, pitch, and roll as seperate arguments. Figure out how to allow
+    # this overload to better achieve parity between C++ and python.
+    if isinstance(config, PythonConfig):
+        pass
+        # rot3_functions.insert(2, Codegen.function(func=sf.Rot3.from_rotation_matrix, config=config))
+    else:
+        rot3_functions.append(
+            Codegen.function(
+                func=lambda ypr: sf.Rot3.from_yaw_pitch_roll(*ypr),
+                input_types=[sf.V3],
+                name="from_yaw_pitch_roll",
+                config=config,
+            ),
+        )
+
+    def pose_getter_methods(pose_type: T.Type) -> T.List[Codegen]:
+        def rotation(self: T.Any) -> T.Any:
+            """
+            Returns the rotational component of this pose.
+            """
+            return self.R
+
+        def position(self: T.Any) -> T.Any:
+            """
+            Returns the positional component of this pose.
+            """
+            return self.t
+
+        return [
+            Codegen.function(func=rotation, input_types=[pose_type], config=config),
+            Codegen.function(func=position, input_types=[pose_type], config=config),
+        ]
 
     return {
         sf.Rot2: [
@@ -96,35 +148,18 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             Codegen.function(func=sf.Rot2.from_angle, config=config),
             Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
         ],
-        sf.Rot3: [
-            codegen_mul(sf.Rot3, sf.Vector3),
-            Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
-            Codegen.function(
-                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
-                name="random_from_uniform_samples",
-                config=config,
-            ),
-            Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
-            Codegen.function(
-                func=lambda ypr: sf.Rot3.from_yaw_pitch_roll(*ypr),
-                input_types=[sf.V3],
-                name="from_yaw_pitch_roll",
-                config=config,
-            ),
-            Codegen.function(
-                func=lambda self: sf.V3(self.to_yaw_pitch_roll()),
-                input_types=[sf.Rot3],
-                name="to_yaw_pitch_roll",
-                config=config,
-            ),
-        ],
-        sf.Pose2: [
+        sf.Rot3: rot3_functions,
+        sf.Pose2: pose_getter_methods(sf.Pose2)
+        + [
             codegen_mul(sf.Pose2, sf.Vector2),
             Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),
+            Codegen.function(func=sf.Pose2.to_homogenous_matrix, config=config),
         ],
-        sf.Pose3: [
+        sf.Pose3: pose_getter_methods(sf.Pose3)
+        + [
             codegen_mul(sf.Pose3, sf.Vector3),
             Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
+            Codegen.function(func=sf.Pose3.to_homogenous_matrix, config=config),
         ],
     }
 
@@ -158,6 +193,10 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
             data = geo_class_common_data(cls, config)
             data["matrix_type_aliases"] = matrix_type_aliases[cls]
             data["custom_generated_methods"] = custom_generated_methods[cls]
+            if cls == sf.Pose2:
+                data["imported_classes"] = [sf.Rot2]
+            elif cls == sf.Pose3:
+                data["imported_classes"] = [sf.Rot3]
 
             for base_dir, relative_path in (
                 ("geo_package", "CLASS.py"),
@@ -178,7 +217,11 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         # Package init
         templates.add(
             template_path=Path("geo_package", "__init__.py.jinja"),
-            data=dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
+            data=dict(
+                Codegen.common_data(),
+                all_types=DEFAULT_GEO_TYPES,
+                numeric_epsilon=sf.numeric_epsilon,
+            ),
             output_path=package_dir / "__init__.py",
         )
 

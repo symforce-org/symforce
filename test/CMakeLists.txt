@@ -32,7 +32,7 @@ target_compile_definitions(
 )
 
 # ------------------------------------------------------------------------------
-# C++ tests
+# Tests
 
 add_library(symforce_tests_metadata INTERFACE)
 file(GLOB SYMFORCE_TEST_CC_SOURCES CONFIGURE_DEPENDS *_test.cc)
@@ -58,6 +58,21 @@ foreach(SOURCE_FILE ${SYMFORCE_TEST_CC_SOURCES})
 
   add_test(${TEST_NAME} ${CMAKE_BINARY_DIR}/bin/${BINARY_NAME})
 endforeach()
+
+if(SYMFORCE_ADD_PYTHON_TESTS)
+  file(GLOB SYMFORCE_TEST_PY_SOURCES CONFIGURE_DEPENDS *_test.py)
+  foreach(SOURCE_FILE ${SYMFORCE_TEST_PY_SOURCES})
+    get_filename_component(TEST_NAME ${SOURCE_FILE} NAME_WE)
+
+    add_test(NAME symengine_${TEST_NAME}
+      COMMAND ${CMAKE_COMMAND} -E env SYMFORCE_LOGLEVEL=WARNING SYMFORCE_SYMBOLIC_API=symengine ${SYMFORCE_PYTHON} ${SOURCE_FILE}
+    )
+
+    add_test(NAME sympy_${TEST_NAME}
+      COMMAND ${CMAKE_COMMAND} -E env SYMFORCE_LOGLEVEL=WARNING SYMFORCE_SYMBOLIC_API=sympy ${SYMFORCE_PYTHON} ${SOURCE_FILE}
+    )
+  endforeach()
+endif()
 
 get_directory_property(have_parent_scope PARENT_DIRECTORY)
 if(have_parent_scope)

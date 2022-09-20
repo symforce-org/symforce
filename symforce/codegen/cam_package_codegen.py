@@ -290,6 +290,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
             data=dict(
                 Codegen.common_data(),
                 all_types=list(geo_package_codegen.DEFAULT_GEO_TYPES) + list(DEFAULT_CAM_TYPES),
+                numeric_epsilon=sf.numeric_epsilon,
             ),
             output_path=cam_package_dir / "__init__.py",
         )

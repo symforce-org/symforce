@@ -8,15 +8,13 @@
 # lot of precendent for that, though.
 
 from __future__ import absolute_import
+
+import argparse  # pylint: disable=unused-import
 import os
 import typing as T
-import argparse  # pylint: disable=unused-import
 
 from skymarshal import syntax_tree  # pylint: disable=unused-import
-from skymarshal.emit_helpers import BaseBuilder
-from skymarshal.emit_helpers import EnumBuilder
-from skymarshal.emit_helpers import StructBuilder
-from skymarshal.emit_helpers import TemplateRenderer
+from skymarshal.emit_helpers import BaseBuilder, EnumBuilder, StructBuilder, TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage
 
 # pylint: disable=too-many-instance-attributes

@@ -82,7 +82,12 @@ class {{ cls.__name__ }} {
   // --------------------------------------------------------------------------
 
   {% endif %}
+  {% set compose_with_point = namespace(defined=false) %}
   {% for spec in custom_generated_methods %}
+    {% if spec.name == "compose_with_point" %}
+      {% set compose_with_point.defined = true %}
+      {% set compose_with_point.dimension = typing_util.get_type(spec.inputs["right"]).SHAPE[0] %}
+    {% endif %}
   {{ python_util.str_replace_all(util.method_declaration(spec, is_declaration=True), matrix_type_aliases) }};
 
   {% endfor %}
@@ -117,6 +122,12 @@ class {{ cls.__name__ }} {
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
   }
+
+  {% if compose_with_point.defined %}
+  Vector{{ compose_with_point.dimension }} Compose(const Vector{{ compose_with_point.dimension }}& point) const {
+    return ComposeWithPoint(point);
+  }
+  {% endif %}
 
   Self Between(const Self& b) const {
     return GroupOps<Self>::Between(*this, b);

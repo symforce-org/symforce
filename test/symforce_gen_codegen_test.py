@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import numpy as np
 import math
 import os
 import sys
@@ -126,7 +127,7 @@ class SymforceGenCodegenTest(TestCase):
         geo_pkg = codegen_util.load_generated_package("sym", os.path.join(output_dir, "sym"))
 
         # Test something basic from the hot loaded package
-        rot = geo_pkg.Rot3.from_tangent([math.pi / 2, 0, 0])
+        rot = geo_pkg.Rot3.from_tangent(np.array([math.pi / 2, 0, 0]))
         rot_inv = rot.inverse()
         identity_expected = rot * rot_inv
         identity_actual = geo_pkg.Rot3.identity()

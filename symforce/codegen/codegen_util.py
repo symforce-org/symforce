@@ -19,25 +19,24 @@ import sys
 
 import symforce
 from symforce import ops
-from symforce import geo
 from symforce.values import Values, IndexEntry
-from symforce import sympy as sm
+import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.codegen import printers, format_util
+from symforce.codegen import format_util
 from symforce.codegen import codegen_config
-from symforce import python_util
+from symforce import typing_util
 from symforce import _sympy_count_ops
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
-T_terms = T.Sequence[T.Tuple[sm.Symbol, sm.Expr]]
+T_terms = T.Sequence[T.Tuple[sf.Symbol, sf.Expr]]
 T_nested_terms = T.Sequence[T_terms]
 T_terms_printed = T.Sequence[T.Tuple[str, str]]
 
 
 class DenseAndSparseOutputTerms(T.NamedTuple):
-    dense: T.List[T.List[sm.Expr]]
-    sparse: T.List[T.List[sm.Expr]]
+    dense: T.List[T.List[sf.Expr]]
+    sparse: T.List[T.List[sf.Expr]]
 
 
 class OutputWithTerms(T.NamedTuple):
@@ -64,16 +63,16 @@ class CSCFormat:
     kNumNonZero: int  # Number of nonzero entries
     kColPtrs: T.List[int]  # nonzero_elements[kColPtrs[col]] is the first nonzero entry of col
     kRowIndices: T.List[int]  # row indices of nonzero entries written in column-major order
-    nonzero_elements: T.List[T.Scalar]  # nonzero entries written in column-major order
+    nonzero_elements: T.List[sf.Scalar]  # nonzero entries written in column-major order
 
     @staticmethod
-    def from_matrix(sparse_matrix: geo.Matrix) -> CSCFormat:
+    def from_matrix(sparse_matrix: sf.Matrix) -> CSCFormat:
         """
         Returns a dictionary with the metadata required to represent a matrix as a sparse matrix
         in CSC form.
 
         Args:
-            sparse_matrix: A symbolic geo.Matrix where sparsity is given by exact zero equality.
+            sparse_matrix: A symbolic sf.Matrix where sparsity is given by exact zero equality.
         """
         kColPtrs = []
         kRowIndices = []
@@ -166,7 +165,7 @@ def print_code(
     dense_outputs_formatted = simpify_nested_lists(dense_outputs_formatted)
     sparse_outputs_formatted = simpify_nested_lists(sparse_outputs_formatted)
 
-    def count_ops(expr: sm.Expr) -> int:
+    def count_ops(expr: T.Any) -> int:
         op_count = _sympy_count_ops.count_ops(expr)
         assert isinstance(op_count, int)
         return op_count
@@ -178,7 +177,7 @@ def print_code(
     )
 
     # Get printer
-    printer = get_code_printer(config)
+    printer = config.printer()
 
     # Print code
     intermediate_terms = [(str(var), printer.doprint(t)) for var, t in temps_formatted]
@@ -224,7 +223,7 @@ def perform_cse(
 
     Args:
         output_exprs: expressions on which to perform cse
-        cse_optimizations: optimizations to be forwarded to sm.cse
+        cse_optimizations: optimizations to be forwarded to sf.cse
 
     Returns:
         T_terms: Temporary variables holding the common sub-expressions found within output_exprs
@@ -235,19 +234,19 @@ def perform_cse(
         x for storage in (output_exprs.dense + output_exprs.sparse) for x in storage
     ]
 
-    def tmp_symbols() -> T.Iterable[str]:
+    def tmp_symbols() -> T.Iterable[sf.Symbol]:
         for i in itertools.count():
-            yield sm.Symbol(f"_tmp{i}")
+            yield sf.Symbol(f"_tmp{i}")
 
     if cse_optimizations is not None:
-        if symforce.get_backend() == "symengine":
-            raise ValueError("cse_optimizations is not supported on the symengine backend")
+        if symforce.get_symbolic_api() == "symengine":
+            raise ValueError("cse_optimizations is not supported on symengine")
 
-        temps, flat_simplified_outputs = sm.cse(
+        temps, flat_simplified_outputs = sf.cse(
             flat_output_exprs, symbols=tmp_symbols(), optimizations=cse_optimizations
         )
     else:
-        temps, flat_simplified_outputs = sm.cse(flat_output_exprs, symbols=tmp_symbols())
+        temps, flat_simplified_outputs = sf.cse(flat_output_exprs, symbols=tmp_symbols())
 
     # Unflatten output of CSE
     simplified_outputs = DenseAndSparseOutputTerms(dense=[], sparse=[])
@@ -285,23 +284,33 @@ def format_symbols(
         )
     )
 
-    intermediate_terms_formatted = [
-        (lhs, ops.StorageOps.subs(rhs, input_subs, dont_flatten_args=True))
-        for lhs, rhs in intermediate_terms
-    ]
+    intermediate_terms_formatted = list(
+        zip(
+            (lhs for lhs, _ in intermediate_terms),
+            ops.StorageOps.subs(
+                [rhs for _, rhs in intermediate_terms], input_subs, dont_flatten_args=True
+            ),
+        )
+    )
 
     dense_output_lhs_formatted, _ = get_formatted_list(
         dense_outputs, config, format_as_inputs=False
     )
     dense_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
-        for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
+        list(zip(lhs_formatted, subbed_storage))
+        for lhs_formatted, subbed_storage in zip(
+            dense_output_lhs_formatted,
+            ops.StorageOps.subs(output_terms.dense, input_subs, dont_flatten_args=True),
+        )
     ]
 
     sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs)
     sparse_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
-        for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
+        list(zip(lhs_formatted, subbed_storage))
+        for lhs_formatted, subbed_storage in zip(
+            sparse_output_lhs_formatted,
+            ops.StorageOps.subs(output_terms.sparse, input_subs, dont_flatten_args=True),
+        )
     ]
 
     return intermediate_terms_formatted, dense_output_terms_formatted, sparse_output_terms_formatted
@@ -309,7 +318,7 @@ def format_symbols(
 
 def get_formatted_list(
     values: Values, config: codegen_config.CodegenConfig, format_as_inputs: bool
-) -> T.Tuple[T.List[T.List[T.Union[sm.Symbol, sm.DataBuffer]]], T.List[T.List[T.Scalar]]]:
+) -> T.Tuple[T.List[T.List[T.Union[sf.Symbol, sf.DataBuffer]]], T.List[T.List[sf.Scalar]]]:
     """
     Returns a nested list of formatted symbols, as well as a nested list of the corresponding
     original scalar values. For use in generated functions.
@@ -328,40 +337,30 @@ def get_formatted_list(
     flattened_formatted_symbolic_values = []
     flattened_original_values = []
     for key, value in values.items():
-        arg_cls = python_util.get_type(value)
+        arg_cls = typing_util.get_type(value)
         storage_dim = ops.StorageOps.storage_dim(value)
 
         # For each item in the given Values object, we construct a list of symbols used
         # to access the scalar elements of the object. These symbols will later be matched up
         # with the flattened Values object symbols.
-        if issubclass(arg_cls, sm.DataBuffer):
-            formatted_symbols = [sm.DataBuffer(key, value.shape[0])]
+        if issubclass(arg_cls, sf.DataBuffer):
+            formatted_symbols = [sf.DataBuffer(key, value.shape[0])]
             flattened_value = [value]
-        elif isinstance(value, (sm.Expr, sm.Symbol)):
-            formatted_symbols = [sm.Symbol(key)]
+        elif isinstance(value, (sf.Expr, sf.Symbol)):
+            formatted_symbols = [sf.Symbol(key)]
             flattened_value = [value]
-        elif issubclass(arg_cls, geo.Matrix):
-            if isinstance(config, codegen_config.PythonConfig):
-                # NOTE(hayk): Python codegen currently seems broken for matrix inputs, because we
-                # pass a 2D numpy array then index it linearly, which breaks since it returns a
-                # whole column. This modification fixes that, but is broken for vector inputs that
-                # are either a sequence or a 1D numpy array. Discuss and fix.
-                formatted_symbols = []
-                for j in range(value.shape[1]):
-                    for i in range(value.shape[0]):
-                        formatted_symbols.append(sm.Symbol(f"{key}[{i}, {j}]"))
-            elif isinstance(config, codegen_config.CppConfig):
-                formatted_symbols = []
-                # NOTE(brad): The order of the symbols must match the storage order of geo.Matrix
-                # (as returned by geo.Matrix.to_storage). Hence, if there storage order were
-                # changed to, say, row major, the below for loops would have to be swapped to
-                # reflect that.
-                formatted_symbols = []
-                for j in range(value.shape[1]):
-                    for i in range(value.shape[0]):
-                        formatted_symbols.append(sm.Symbol(f"{key}({i}, {j})"))
-            else:
-                raise NotImplementedError()
+        elif issubclass(arg_cls, sf.Matrix):
+            # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
+            # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
+            # changed to, say, row major, the below for loops would have to be swapped to
+            # reflect that.
+            formatted_symbols = []
+            for j in range(value.shape[1]):
+                for i in range(value.shape[0]):
+                    formatted_symbols.append(
+                        sf.Symbol(config.format_matrix_accessor(key, i, j, shape=value.shape))
+                    )
+
             flattened_value = ops.StorageOps.to_storage(value)
 
         elif issubclass(arg_cls, Values):
@@ -411,11 +410,11 @@ def get_formatted_list(
                 # For readability, we will store the data of geo/cam objects in a temp vector named "_key"
                 # where "key" is the name of the given input variable (can be "self" for member functions accessing
                 # object data)
-                formatted_symbols = [sm.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sf.Symbol(f"_{key}[{j}]") for j in range(storage_dim)]
             else:
                 # For geo/cam objects being output, we can't access "data" directly, so in the
                 # jinja template we will construct a new object from a vector
-                formatted_symbols = [sm.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
+                formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             flattened_value = ops.StorageOps.to_storage(value)
 
         flattened_formatted_symbolic_values.append(formatted_symbols)
@@ -425,7 +424,7 @@ def get_formatted_list(
 
 def _get_scalar_keys_recursive(
     index_value: IndexEntry, prefix: str, config: codegen_config.CodegenConfig, use_data: bool
-) -> T.List[sm.Symbol]:
+) -> T.List[sf.Symbol]:
     """
     Returns a vector of keys, recursing on Values or List objects to get sub-elements.
 
@@ -441,9 +440,9 @@ def _get_scalar_keys_recursive(
     """
     vec = []
     datatype = index_value.datatype()
-    if issubclass(datatype, T.Scalar):
+    if issubclass(datatype, sf.Scalar):
         # Element is a scalar, no need to access subvalues
-        vec.append(sm.Symbol(prefix))
+        vec.append(sf.Symbol(prefix))
     elif issubclass(datatype, Values):
         assert index_value.item_index is not None
         # Recursively add subitems using "." to access subvalues
@@ -453,8 +452,8 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}.{name}", config=config, use_data=False
                 )
             )
-    elif issubclass(datatype, sm.DataBuffer):
-        vec.append(sm.DataBuffer(prefix))
+    elif issubclass(datatype, sf.DataBuffer):
+        vec.append(sf.DataBuffer(prefix))
     elif issubclass(datatype, (list, tuple)):
         assert index_value.item_index is not None
         # Assume all elements of list are same type as first element
@@ -465,20 +464,20 @@ def _get_scalar_keys_recursive(
                     sub_index_val, prefix=f"{prefix}[{i}]", config=config, use_data=use_data
                 )
             )
-    elif issubclass(datatype, geo.Matrix) or not use_data:
-        # TODO(nathan): I don't think this deals with 2D matrices correctly
-        if isinstance(config, codegen_config.PythonConfig) and config.use_eigen_types:
-            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
+    elif issubclass(datatype, sf.Matrix) or not use_data:
+        if config.use_eigen_types:
+            vec.extend(
+                sf.Symbol(config.format_eigen_lcm_accessor(prefix, i))
+                for i in range(index_value.storage_dim)
+            )
         else:
-            vec.extend(sm.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
+            vec.extend(sf.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
         # We have a geo/cam or other object that uses "data" to store a flat vector of scalars.
-        if isinstance(config, codegen_config.PythonConfig):
-            vec.extend(sm.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
-        elif isinstance(config, codegen_config.CppConfig):
-            vec.extend(sm.Symbol(f"{prefix}.Data()[{i}]") for i in range(index_value.storage_dim))
-        else:
-            raise NotImplementedError()
+        vec.extend(
+            sf.Symbol(config.format_data_accessor(prefix=prefix, index=i))
+            for i in range(index_value.storage_dim)
+        )
 
     assert len(vec) == len(set(vec)), "Non-unique keys:\n{}".format(
         [symbol for symbol in vec if vec.count(symbol) > 1]
@@ -487,7 +486,7 @@ def _get_scalar_keys_recursive(
     return vec
 
 
-def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]]:
+def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[sf.Scalar]]:
     """
     Returns a nested list of symbols for use in generated functions for sparse matrices.
     """
@@ -495,30 +494,10 @@ def get_formatted_sparse_list(sparse_outputs: Values) -> T.List[T.List[T.Scalar]
     # Each element of sparse_outputs is a list of the nonzero terms in the sparse matrix
     for key, sparse_matrix_data in sparse_outputs.items():
         symbolic_args.append(
-            [sm.Symbol(f"{key}_value_ptr[{i}]") for i in range(len(sparse_matrix_data))]
+            [sf.Symbol(f"{key}_value_ptr[{i}]") for i in range(len(sparse_matrix_data))]
         )
 
     return symbolic_args
-
-
-def get_code_printer(config: codegen_config.CodegenConfig) -> "sm.CodePrinter":
-    """
-    Pick a code printer for the given mode.
-    """
-    # TODO(hayk): Consider symengine printer if this becomes slow.
-
-    if isinstance(config, codegen_config.PythonConfig):
-        printer: sm.printing.codeprinter.CodePrinter = printers.PythonCodePrinter()
-
-    elif isinstance(config, codegen_config.CppConfig):
-        if config.support_complex:
-            printer = printers.ComplexCppCodePrinter()
-        else:
-            printer = printers.CppCodePrinter()
-    else:
-        raise NotImplementedError(f"Unknown config type: {config}")
-
-    return printer
 
 
 def _load_generated_package_internal(name: str, path: Path) -> T.Tuple[T.Any, T.List[str]]:
@@ -616,6 +595,10 @@ def load_generated_lcmtype(
     Returns:
         The Python LCM type
     """
+    # We need to import the lcmtypes package first so that sys.path is set up correctly, since this
+    # is a namespace package
+    import lcmtypes  # pylint: disable=unused-import
+
     return getattr(
         load_generated_package(
             f"lcmtypes.{package}._{type_name}",
@@ -688,7 +671,7 @@ def generate_lcm_types(
     )
 
     # Autoformat generated python files
-    format_util.format_py_dir(str(python_types_dir))
+    format_util.format_py_dir(python_types_dir)
 
     return result
 
@@ -701,6 +684,6 @@ def flat_symbols_from_values(values: Values) -> T.List[T.Any]:
     symbols_list = values.to_storage()
 
     for v in values.values_recursive():
-        if isinstance(v, sm.DataBuffer):
+        if isinstance(v, sf.DataBuffer):
             symbols_list.append(v)
     return symbols_list

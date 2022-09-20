@@ -1,9 +1,10 @@
 # aclint: py2 py3
 # mypy: allow-untyped-defs
 from __future__ import absolute_import
-import argparse  # pylint: disable=unused-import
 
+import argparse  # pylint: disable=unused-import
 import typing as T
+
 from skymarshal import syntax_tree  # pylint: disable=unused-import
 
 

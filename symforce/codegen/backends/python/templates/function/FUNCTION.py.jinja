@@ -18,11 +18,6 @@ import typing as T  # pylint: disable=unused-import
 import sym  # pylint: disable=unused-import
 
 
-{% for namespace in spec.unique_namespaces %}
-import {{ namespace }}
-{% endfor %}
-
-
 # pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 
 

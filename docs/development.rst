@@ -28,8 +28,6 @@ SymForce also has a top level Makefile which is not used by the build, but provi
 level commands for development:
 
 +----------------------------------------------+--------------------------+
-| Run Python tests                             | ``make test``            |
-+----------------------------------------------+--------------------------+
 | Run tests which update (most) generated code | ``make test_update``     |
 +----------------------------------------------+--------------------------+
 | Run tests which update all generated code    | ``make test_update_all`` |
@@ -71,10 +69,10 @@ Testing and Coverage
 SymForce is heavily tested, targeting close to 100% code coverage.
 Tests live in ``test`` and use `unittest <https://docs.python.org/2/library/unittest.html>`_. Additionally, `coverage.py <https://coverage.readthedocs.io/en/coverage-5.0.4/>`_ is used to run tests while measuring code coverage. The generated coverage report also provides a great view into what methods need to be tested and what code is potentially unused.
 
-| Run all tests: ``make test``
-| Run all tests and open the coverage report: ``make coverage_open``
 | Run a specific test: ``python test/symforce_codegen_test.py``
 | Run with debug level output: ``SYMFORCE_LOGLEVEL=DEBUG python test/symforce_codegen_test.py``
+| Run all Python and C++ tests after building with cmake: ``cd build; ctest``
+| Run all Python tests, without a cmake build (tests cannot be run in the same interpreter): ``ls test/*_test.py | xargs -n1 -P $(nproc) python``
 
 When debugging a specific test, the use of `ipdb <https://pypi.org/project/ipdb/>`_ is highly recommended, as is reproducing the most minimal example of the issue in a notebook.
 

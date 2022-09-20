@@ -18,7 +18,7 @@ class LieGroupTupleTest(LieGroupOpsTestMixin, TestCase):
 
     @classmethod
     def element(cls) -> T.Tuple:
-        return (1, 2)
+        return (1.0, 2.0)
 
 
 if __name__ == "__main__":
