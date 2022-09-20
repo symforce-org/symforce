@@ -17,6 +17,9 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::FromTangent(const TangentVec& vec,
                                                          const Scalar epsilon) {
   // Total ops: 2
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -52,6 +55,9 @@ template <typename Scalar>
 sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
                                                      const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 8
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();

@@ -116,7 +116,7 @@ void Values<Scalar>::SetInternal(const index_entry_t& entry, const T& value) {
   static_assert(std::is_same<Scalar, typename StorageOps<T>::Scalar>::value,
                 "Calling Values.Set on mismatched scalar type.");
   SYM_ASSERT((entry.type == StorageOps<T>::TypeEnum()));
-  SYM_ASSERT((entry.offset + entry.storage_dim <= data_.size()));
+  SYM_ASSERT((entry.offset + entry.storage_dim <= static_cast<int>(data_.size())));
   StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }
 

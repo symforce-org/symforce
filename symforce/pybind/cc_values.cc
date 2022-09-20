@@ -135,7 +135,7 @@ struct RegisterMatricesHelper<0, M> {
 
 template <>
 struct RegisterMatricesHelper<0, 1> {
-  static void Register(py::class_<sym::Valuesd> cls) {}
+  static void Register(py::class_<sym::Valuesd> /* cls */) {}
 };
 
 /**
@@ -222,7 +222,7 @@ void AddValuesWrapper(pybind11::module_ module) {
           "retract",
           [](sym::Valuesd& v, const sym::index_t& index, const std::vector<double>& delta,
              const double epsilon) {
-            if (index.tangent_dim != delta.size()) {
+            if (index.tangent_dim != static_cast<int>(delta.size())) {
               throw std::runtime_error(
                   fmt::format("The length of delta [{}] must match index.tangent_dim [{}]",
                               delta.size(), index.tangent_dim));

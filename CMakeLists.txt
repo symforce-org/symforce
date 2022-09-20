@@ -70,6 +70,10 @@ option(SYMFORCE_BUILD_STATIC_LIBRARIES
   OFF
 )
 
+set(SYMFORCE_COMPILE_OPTIONS -Wall;-Wextra;-Werror CACHE STRING
+  "Extra flags to pass to the compiler; defaults to enabling warnings"
+)
+
 set(SYMFORCE_PYTHON_OVERRIDE "" CACHE STRING
   "Python executable to use - if empty (the default), find python in the environment"
 )
@@ -267,6 +271,7 @@ add_library(
   ${SYMFORCE_GEN_SOURCES}
   ${SYMFORCE_GEN_HEADERS}
 )
+target_compile_options(symforce_gen PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 target_link_libraries(symforce_gen ${SYMFORCE_EIGEN_TARGET} symforce_lcmtypes_cpp)
 target_include_directories(
   symforce_gen

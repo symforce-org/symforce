@@ -5,7 +5,7 @@
 
 #include <symforce/examples/robot_3d_localization/run_fixed_size.h>
 
-int main(int argc, char** argv) {
+int main() {
   // This SYM_ASSERTs on failure instead of CHECK, since it isn't a test
   robot_3d_localization::RunFixed();
 }

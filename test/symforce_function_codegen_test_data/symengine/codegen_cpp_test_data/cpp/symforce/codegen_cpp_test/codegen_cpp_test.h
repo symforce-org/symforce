@@ -54,6 +54,12 @@ void CodegenCppTest(
         nullptr) {
   // Total ops: 748
 
+  // Unused inputs
+  (void)rot_vec;
+  (void)list_of_lists;
+  (void)big_matrix;
+  (void)states;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _rot = rot.Data();
 

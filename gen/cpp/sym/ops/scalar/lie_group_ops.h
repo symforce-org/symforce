@@ -27,15 +27,23 @@ struct LieGroupOps : public internal::LieGroupOpsBase<T, T> {
   }
   using TangentVec = Eigen::Matrix<T, 1, 1>;
   static T FromTangent(const TangentVec& vec, const T epsilon) {
+    (void)epsilon;  // unused
+
     return vec[0];
   }
   static TangentVec ToTangent(const T& a, const T epsilon) {
+    (void)epsilon;  // unused
+
     return TangentVec::Constant(a);
   }
   static T Retract(const T& a, const TangentVec& vec, const T epsilon) {
+    (void)epsilon;  // unused
+
     return a + vec[0];
   }
   static TangentVec LocalCoordinates(const T& a, const T& b, const T epsilon) {
+    (void)epsilon;  // unused
+
     return TangentVec::Constant(b - a);
   }
 };

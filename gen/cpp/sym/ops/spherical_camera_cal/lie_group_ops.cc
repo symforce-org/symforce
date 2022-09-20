@@ -17,6 +17,9 @@ sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::FromTan
     const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -43,6 +46,9 @@ LieGroupOps<SphericalCameraCal<Scalar>>::ToTangent(const sym::SphericalCameraCal
                                                    const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
 
@@ -68,6 +74,9 @@ template <typename Scalar>
 sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::Retract(
     const sym::SphericalCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 9
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
@@ -96,6 +105,9 @@ LieGroupOps<SphericalCameraCal<Scalar>>::LocalCoordinates(const sym::SphericalCa
                                                           const sym::SphericalCameraCal<Scalar>& b,
                                                           const Scalar epsilon) {
   // Total ops: 9
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();

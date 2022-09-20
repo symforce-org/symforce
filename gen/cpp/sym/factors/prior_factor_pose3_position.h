@@ -39,6 +39,9 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
                               Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
   // Total ops: 63
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _value = value.Data();
 

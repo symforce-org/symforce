@@ -17,6 +17,9 @@ sym::PolynomialCameraCal<Scalar> LieGroupOps<PolynomialCameraCal<Scalar>>::FromT
     const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -42,6 +45,9 @@ LieGroupOps<PolynomialCameraCal<Scalar>>::ToTangent(const sym::PolynomialCameraC
                                                     const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _a = a.Data();
 
@@ -66,6 +72,9 @@ template <typename Scalar>
 sym::PolynomialCameraCal<Scalar> LieGroupOps<PolynomialCameraCal<Scalar>>::Retract(
     const sym::PolynomialCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 8
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _a = a.Data();
@@ -93,6 +102,9 @@ LieGroupOps<PolynomialCameraCal<Scalar>>::LocalCoordinates(
     const sym::PolynomialCameraCal<Scalar>& a, const sym::PolynomialCameraCal<Scalar>& b,
     const Scalar epsilon) {
   // Total ops: 8
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _a = a.Data();

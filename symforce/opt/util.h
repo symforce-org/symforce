@@ -20,7 +20,7 @@ namespace internal {
  */
 template <typename T>
 struct TangentDimHelper {
-  static int32_t TangentDim(const T& x) {
+  static int32_t TangentDim(const T& /* x */) {
     return sym::LieGroupOps<T>::TangentDim();
   }
 };
@@ -114,7 +114,7 @@ auto NumericalDerivative(const F f, const X& x,
 
   JacobianMat J = JacobianMat::Zero(internal::TangentDimHelper<Y>::TangentDim(f0),
                                     internal::TangentDimHelper<X>::TangentDim(x));
-  for (size_t i = 0; i < internal::TangentDimHelper<X>::TangentDim(x); i++) {
+  for (int i = 0; i < internal::TangentDimHelper<X>::TangentDim(x); i++) {
     dx(i) = delta;
     const typename sym::LieGroupOps<Y>::TangentVec y_plus = sym::LieGroupOps<Y>::LocalCoordinates(
         f0, f(sym::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);

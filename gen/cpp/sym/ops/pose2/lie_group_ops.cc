@@ -17,6 +17,9 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::FromTangent(const TangentVec& vec
                                                            const Scalar epsilon) {
   // Total ops: 2
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -57,6 +60,9 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>&
                                                        const TangentVec& vec,
                                                        const Scalar epsilon) {
   // Total ops: 10
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

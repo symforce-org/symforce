@@ -148,13 +148,17 @@ void Linearization(
     Eigen::Matrix<Scalar, 26, 1>* const rhs = nullptr) {
   // Total ops: 10336
 
+  // Unused inputs
+  (void)priors_0_0_target_T_src;
+  (void)priors_0_0_sqrt_info;
+  (void)priors_1_1_target_T_src;
+  (void)priors_1_1_sqrt_info;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _views_0_pose = views_0_pose.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _views_1_pose = views_1_pose.Data();
-  const Eigen::Matrix<Scalar, 7, 1>& _priors_0_0_target_T_src = priors_0_0_target_T_src.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _priors_0_1_target_T_src = priors_0_1_target_T_src.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _priors_1_0_target_T_src = priors_1_0_target_T_src.Data();
-  const Eigen::Matrix<Scalar, 7, 1>& _priors_1_1_target_T_src = priors_1_1_target_T_src.Data();
 
   // Intermediate terms (2287)
   const Scalar _tmp0 = 2 * _views_0_pose[2];

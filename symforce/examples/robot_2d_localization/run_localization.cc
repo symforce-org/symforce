@@ -63,8 +63,8 @@ void RunLocalization() {
   values.Set({'d', 1}, 1.4);
   const std::array<std::array<double, 3>, 3> angles = {
       {{55, 245, -35}, {95, 220, -20}, {125, 220, -20}}};
-  for (int i = 0; i < angles.size(); ++i) {
-    for (int j = 0; j < angles[0].size(); ++j) {
+  for (int i = 0; i < static_cast<int>(angles.size()); ++i) {
+    for (int j = 0; j < static_cast<int>(angles[0].size()); ++j) {
       values.Set({'a', i, j}, angles[i][j] * M_PI / 180);
     }
   }

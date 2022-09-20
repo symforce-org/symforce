@@ -75,7 +75,7 @@ class GncOptimizer : public BaseOptimizerType {
 
     // Iterate.
     BaseOptimizer::Optimize(values, num_iterations, populate_best_linearization, stats);
-    while (stats->iterations.size() < num_iterations) {
+    while (static_cast<int>(stats->iterations.size()) < num_iterations) {
       // NOTE(aaron): We shouldn't be here unless the optimization early exited (i.e. we had
       // iterations left)
       SYM_ASSERT(stats->early_exited);

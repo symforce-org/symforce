@@ -17,6 +17,9 @@ sym::EquirectangularCameraCal<Scalar> LieGroupOps<EquirectangularCameraCal<Scala
     const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
 
   // Intermediate terms (0)
@@ -38,6 +41,9 @@ LieGroupOps<EquirectangularCameraCal<Scalar>>::ToTangent(
     const sym::EquirectangularCameraCal<Scalar>& a, const Scalar epsilon) {
   // Total ops: 0
 
+  // Unused inputs
+  (void)epsilon;
+
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
 
@@ -58,6 +64,9 @@ template <typename Scalar>
 sym::EquirectangularCameraCal<Scalar> LieGroupOps<EquirectangularCameraCal<Scalar>>::Retract(
     const sym::EquirectangularCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
   // Total ops: 4
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -81,6 +90,9 @@ LieGroupOps<EquirectangularCameraCal<Scalar>>::LocalCoordinates(
     const sym::EquirectangularCameraCal<Scalar>& a, const sym::EquirectangularCameraCal<Scalar>& b,
     const Scalar epsilon) {
   // Total ops: 4
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();

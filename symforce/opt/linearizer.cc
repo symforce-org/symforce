@@ -182,14 +182,12 @@ void Linearizer<ScalarType>::InitializeStorageAndIndices() {
       internal::CoordsToStorageOffset(linearization_ones_.hessian_lower);
 
   // Use the hash map to mark sparse storage offsets for every row of each key block of each factor
-  for (int i = 0; i < dense_linearized_factors_.size(); ++i) {
-    const LinearizedDenseFactor& linearized_factor = dense_linearized_factors_[i];
+  for (int i = 0; i < static_cast<int>(dense_linearized_factors_.size()); ++i) {
     linearization_dense_factor_helper_t& factor_helper = dense_factor_update_helpers_[i];
     internal::ComputeKeyHelperSparseColOffsets<Scalar>(
-        linearized_factor, jacobian_row_col_to_storage_offset, hessian_row_col_to_storage_offset,
-        factor_helper);
+        jacobian_row_col_to_storage_offset, hessian_row_col_to_storage_offset, factor_helper);
   }
-  for (int i = 0; i < sparse_linearized_factors_.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(sparse_linearized_factors_.size()); ++i) {
     const LinearizedSparseFactor& linearized_factor = sparse_linearized_factors_[i];
     linearization_sparse_factor_helper_t& factor_helper = sparse_factor_update_helpers_[i];
     internal::ComputeKeyHelperSparseMap<Scalar>(linearized_factor,
@@ -268,7 +266,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
                                   factor_helper.residual_dim) = linearized_factor.residual;
 
   // For each key
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     const linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     // Fill in jacobian block, column by column
@@ -304,7 +302,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
       const std::vector<int32_t>& col_starts = key_helper.hessian_storage_col_starts[key_j];
 
       if (key_helper_j.combined_offset < key_helper.combined_offset) {
-        for (int32_t col_j = 0; col_j < col_starts.size(); ++col_j) {
+        for (int32_t col_j = 0; col_j < static_cast<int32_t>(col_starts.size()); ++col_j) {
           Eigen::Map<VectorX<Scalar>>(linearization->hessian_lower.valuePtr() + col_starts[col_j],
                                       key_helper.tangent_dim) +=
               linearized_factor.hessian.block(key_helper.factor_offset,
@@ -312,7 +310,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
                                               key_helper.tangent_dim, 1);
         }
       } else {
-        for (int32_t col_i = 0; col_i < col_starts.size(); ++col_i) {
+        for (int32_t col_i = 0; col_i < static_cast<int32_t>(col_starts.size()); ++col_i) {
           Eigen::Map<VectorX<Scalar>>(linearization->hessian_lower.valuePtr() + col_starts[col_i],
                                       key_helper_j.tangent_dim) +=
               linearized_factor.hessian
@@ -339,7 +337,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
                                   factor_helper.residual_dim) = linearized_factor.residual;
 
   // Add contribution from right-hand-side
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     const linearization_sparse_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     linearization->rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
@@ -347,15 +345,17 @@ void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
   }
 
   // Fill out jacobian
-  SYM_ASSERT(factor_helper.jacobian_index_map.size() == linearized_factor.jacobian.nonZeros());
-  for (int i = 0; i < factor_helper.jacobian_index_map.size(); i++) {
+  SYM_ASSERT(factor_helper.jacobian_index_map.size() ==
+             static_cast<size_t>(linearized_factor.jacobian.nonZeros()));
+  for (int i = 0; i < static_cast<int>(factor_helper.jacobian_index_map.size()); i++) {
     linearization->jacobian.valuePtr()[factor_helper.jacobian_index_map[i]] =
         linearized_factor.jacobian.valuePtr()[i];
   }
 
   // Fill out hessian
-  SYM_ASSERT(factor_helper.hessian_index_map.size() == linearized_factor.hessian.nonZeros());
-  for (int i = 0; i < factor_helper.hessian_index_map.size(); i++) {
+  SYM_ASSERT(factor_helper.hessian_index_map.size() ==
+             static_cast<size_t>(linearized_factor.hessian.nonZeros()));
+  for (int i = 0; i < static_cast<int>(factor_helper.hessian_index_map.size()); i++) {
     linearization->hessian_lower.valuePtr()[factor_helper.hessian_index_map[i]] +=
         linearized_factor.hessian.valuePtr()[i];
   }
@@ -378,7 +378,7 @@ void Linearizer<ScalarType>::UpdatePatternFromDenseFactorIntoTripletLists(
       };
 
   // For each key
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     const linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     // Fill in jacobian block
@@ -417,7 +417,7 @@ void Linearizer<ScalarType>::UpdatePatternFromSparseFactorIntoTripletLists(
     std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const {
   std::vector<int> key_for_factor_offset;
   // key_for_factor_offset.reserve();
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); key_i++) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); key_i++) {
     for (int key_offset = 0; key_offset < factor_helper.key_helpers[key_i].tangent_dim;
          key_offset++) {
       key_for_factor_offset.push_back(key_i);
@@ -502,11 +502,11 @@ void Linearizer<ScalarType>::BuildCombinedProblemSparse(
       .setZero();
 
   // Update each factor using precomputed index helpers
-  for (int i = 0; i < dense_linearized_factors.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(dense_linearized_factors.size()); ++i) {
     UpdateFromLinearizedDenseFactorIntoSparse(dense_linearized_factors[i],
                                               dense_factor_update_helpers_[i], linearization);
   }
-  for (int i = 0; i < sparse_linearized_factors.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(sparse_linearized_factors.size()); ++i) {
     UpdateFromLinearizedSparseFactorIntoSparse(sparse_linearized_factors[i],
                                                sparse_factor_update_helpers_[i], linearization);
   }
@@ -521,11 +521,11 @@ void Linearizer<ScalarType>::BuildCombinedProblemSparsityPattern(
   std::vector<Eigen::Triplet<Scalar>> hessian_lower_triplets;
 
   // Update each factor using precomputed index helpers
-  for (int i = 0; i < dense_factor_update_helpers_.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(dense_factor_update_helpers_.size()); ++i) {
     UpdatePatternFromDenseFactorIntoTripletLists(dense_factor_update_helpers_[i],
                                                  &jacobian_triplets, &hessian_lower_triplets);
   }
-  for (int i = 0; i < sparse_linearized_factors_.size(); i++) {
+  for (int i = 0; i < static_cast<int>(sparse_linearized_factors_.size()); i++) {
     UpdatePatternFromSparseFactorIntoTripletLists(sparse_linearized_factors_[i],
                                                   sparse_factor_update_helpers_[i],
                                                   &jacobian_triplets, &hessian_lower_triplets);

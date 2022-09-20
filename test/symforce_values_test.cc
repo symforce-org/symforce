@@ -27,7 +27,6 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   using Scalar = TestType;
 
   spdlog::info("*** Testing Values<{}> ***", typeid(Scalar).name());
-  const Scalar epsilon = 1e-9;
 
   sym::Values<Scalar> v;
   CHECK(v.Keys().size() == 0);
@@ -90,13 +89,13 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   // Right now since we removed a scalar the data array is one longer than the actual storage dim
   CHECK(v.NumEntries() == 7);
   const sym::index_t index_1 = v.CreateIndex(v.Keys());
-  CHECK(v.Data().size() == index_1.storage_dim + 1);
+  CHECK(static_cast<int>(v.Data().size()) == index_1.storage_dim + 1);
   CHECK(index_1.tangent_dim == index_1.storage_dim - 1);
 
   // Cleanup to get rid of the empty space from the scalar
-  size_t num_cleaned = v.Cleanup();
+  v.Cleanup();
   CHECK(v.NumEntries() == 7);
-  CHECK(v.Data().size() == index_1.storage_dim);
+  CHECK(static_cast<int>(v.Data().size()) == index_1.storage_dim);
   const sym::index_t index_2 = v.CreateIndex(v.Keys());
   CHECK(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
   CHECK(Scalar(4.2) == v.template At<Scalar>({'f', 1}));
