@@ -59,3 +59,9 @@ class GeneratedResidualCache:
         self._dict[
             _GRCKey(index=copy.deepcopy(index), optimized_keys=tuple(sorted(optimized_keys)))
         ] = residual
+
+    def __len__(self) -> int:
+        """
+        Returns the number of entries in the cache
+        """
+        return len(self._dict)

@@ -89,6 +89,9 @@ class SymforcePyOptimizerTest(TestCase):
         )
         self.assertNotEqual(index_entry.key, key_t())
 
+        # Check that the factor cache has the expected number of entries
+        self.assertEqual(len(Factor._generated_residual_cache), 2)
+
         index_entry2 = optimizer.linearization_index_entry("x1")
         self.assertEqual(index_entry, index_entry2)
 

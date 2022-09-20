@@ -233,8 +233,10 @@ class Factor:
         # If we have already generated a factor of the same form, load the previously generated
         # factor.
         similarity_index = SimilarityIndex.from_codegen(self.codegen)
+        codegen_keys = list(self.codegen.inputs.keys())
+        codegen_optimized_keys = [codegen_keys[self.keys.index(key)] for key in optimized_keys]
         cached_residual = Factor._generated_residual_cache.get_residual(
-            similarity_index, optimized_keys
+            similarity_index, codegen_optimized_keys
         )
         if cached_residual is not None:
             return NumericFactor(
@@ -256,7 +258,7 @@ class Factor:
         )
 
         Factor._generated_residual_cache.cache_residual(
-            similarity_index, optimized_keys, numeric_factor.linearization_function
+            similarity_index, codegen_optimized_keys, numeric_factor.linearization_function
         )
 
         if output_dir is None and logger.level != logging.DEBUG:
