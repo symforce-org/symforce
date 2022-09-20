@@ -36,7 +36,9 @@ class CppConfig(CodegenConfig):
             translation unit. Useful for large functions which take a long time to compile.
         override_methods: Add special function overrides in dictionary with symforce function keys
             (e.g. sf.sin) and a string for the new method (e.g. fast_math::sin_lut), note that this bypasses
-            the default namespace (so std:: won't be added in front automatically)
+            the default namespace (so std:: won't be added in front automatically). Note that the keys here
+            need to be sympy keys, not symengine (i.e sympy.sin NOT sf.sin with symengine backend). Symengine to
+            sympy conversion does not work for Function types
         extra_imports: Add extra imports to the file if you use custom overrides for some functions
             (i.e. add fast_math.h). Note that these are only added on a call to `generate_function`, i.e.
             you can't define custom functions in e.g. the geo package using this

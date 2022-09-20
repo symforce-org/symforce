@@ -5,6 +5,7 @@
 
 import os
 
+import sympy
 import symforce
 
 from symforce import codegen
@@ -65,7 +66,7 @@ class SymforceCppCodePrinterTest(TestCase):
             return sf.sin(x)
 
         codegen_config = codegen.CppConfig(
-            override_methods={sf.sympy.sin: "fast_math::sin"},
+            override_methods={sympy.sin: "fast_math::sin"},
             extra_imports=["custom_function_replacement_header.h"],
         )
         codegen_function = codegen.Codegen.function(func=test_expression, config=codegen_config)
