@@ -38,7 +38,8 @@ class CppConfig(CodegenConfig):
             (e.g. sf.sin) and a string for the new method (e.g. fast_math::sin_lut), note that this bypasses
             the default namespace (so std:: won't be added in front automatically)
         extra_imports: Add extra imports to the file if you use custom overrides for some functions
-            (i.e. add fast_math.h)
+            (i.e. add fast_math.h). Note that these are only added on a call to `generate_function`, i.e.
+            you can't define custom functions in e.g. the geo package using this
     """
 
     doc_comment_line_prefix: str = " * "

@@ -36,7 +36,7 @@ class CppCodePrinter(CXX11CodePrinter):
         method_name = f"_print_{str(expr)}"
 
         def _print_expr(cls: CppCodePrinter, expr: sympy.Expr) -> str:
-            expr_string = ",".join(map(cls._print, expr.args))
+            expr_string = ", ".join(map(cls._print, expr.args))
             return f"{name}({expr_string})"
 
         setattr(cls, method_name, _print_expr)
