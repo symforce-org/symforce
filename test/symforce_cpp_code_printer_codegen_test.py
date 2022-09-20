@@ -57,6 +57,25 @@ class SymforceCppCodePrinterTest(TestCase):
         output_function = heaviside_codegen_data.function_dir / "heaviside.h"
         self.compare_or_update_file(expected_code_file, output_function)
 
+    def test_custom_function_replacement(self) -> None:
+        output_dir = self.make_output_dir("sf_custom_function_replacement_test_")
+
+        # Simple test expression with one function that should be overwritten
+        def test_expression(x: sf.Symbol) -> sf.Expr:
+            return sf.sin(x) + sf.cos(x)
+
+        codegen_config = codegen.CppConfig(
+            override_methods={sf.sympy.sin: 'fast_math::sin'}, extra_imports=["custom_function_replacement_header.h"]
+        )
+        codegen_function = codegen.Codegen.function(func=test_expression, config=codegen_config)
+
+        codegen_data = codegen_function.generate_function(output_dir=output_dir, namespace="cpp_code_printer_test")
+
+        # Compare
+        expected = os.path.join(TEST_DATA_DIR, "custom_function_replacement.h")
+        output = codegen_data.function_dir / "test_expression.h"
+        self.compare_or_update_file(expected, output)
+
 
 if __name__ == "__main__":
     TestCase.main()
