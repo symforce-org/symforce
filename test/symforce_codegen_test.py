@@ -18,6 +18,9 @@ from numba.core.errors import TypingError
 from scipy import sparse
 
 import symforce
+
+symforce.set_epsilon_to_symbol()
+
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import logger
@@ -719,22 +722,20 @@ class SymforceCodegenTest(TestCase):
         y = sf.Symbol("y")
         inputs = Values(input=x)
         outputs = Values(output=x + y)
-        self.assertRaises(
-            AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
-        )
+        self.assertRaises(ValueError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test")
 
         # Inputs have non-unique symbols
         inputs = Values(in_x=x, in_y=x)
         outputs = Values(out_x=x)
         self.assertRaises(
-            AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
+            AssertionError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test"
         )
 
         # Inputs and outputs have non-unique keys
         inputs = Values(x=x)
         outputs = Values(x=x)
         self.assertRaises(
-            AssertionError, codegen.Codegen, "test", inputs, outputs, codegen.CppConfig()
+            AssertionError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test"
         )
 
     def test_name_deduction(self) -> None:

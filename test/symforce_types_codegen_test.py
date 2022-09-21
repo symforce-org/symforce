@@ -7,6 +7,10 @@ import copy
 import os
 from pathlib import Path
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
 import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen import codegen_util

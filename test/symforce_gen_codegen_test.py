@@ -10,6 +10,9 @@ import sys
 import numpy as np
 
 import symforce
+
+symforce.set_epsilon_to_symbol()
+
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import ops

@@ -24,6 +24,7 @@ class CppConfig(CodegenConfig):
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         cse_optimizations: Optimizations argument to pass to sf.cse
+        zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
         support_complex: Generate code that can work with std::complex or with regular float types
         force_no_inline: Mark generated functions as `__attribute__((noinline))`
         zero_initialization_sparsity_threshold: Threshold between 0 and 1 for the sparsity below

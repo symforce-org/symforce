@@ -191,7 +191,7 @@ class SphericalCameraCal(CameraCal):
 
         # compute theta
         xy_norm = point[:2, :].norm(epsilon)
-        theta = sf.atan2(xy_norm, point[2])
+        theta = sf.atan2(xy_norm, point[2], epsilon=0)
         is_valid = sf.Max(sf.sign(self.critical_theta - theta), 0)
 
         # clamp theta to critical_theta

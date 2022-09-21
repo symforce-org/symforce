@@ -5,6 +5,10 @@
 
 from pathlib import Path
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
 from symforce.benchmarks.inverse_compose_jacobian import generate_inverse_compose_jacobian
 from symforce.benchmarks.matrix_multiplication import generate_matrix_multiplication_benchmark
 from symforce.test_util import TestCase

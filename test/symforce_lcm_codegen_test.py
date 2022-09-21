@@ -5,6 +5,10 @@
 
 import os
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
 from symforce.codegen import template_util
 from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
 from symforce.test_util import TestCase

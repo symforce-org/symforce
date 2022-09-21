@@ -202,7 +202,7 @@ class Rot3(object):
         # Output terms
         _res = numpy.zeros((3, 1))
         _res[0, 0] = math.atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4)
-        _res[1, 0] = -math.asin(max(-1.0, min(1.0, -2 * _self[1] * _self[3] + _self[2] * _tmp0)))
+        _res[1, 0] = -math.asin(max(-1, min(1, -2 * _self[1] * _self[3] + _self[2] * _tmp0)))
         _res[2, 0] = math.atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4)
         return _res
 

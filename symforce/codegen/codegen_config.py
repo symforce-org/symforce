@@ -4,6 +4,8 @@
 # ----------------------------------------------------------------------------
 from abc import abstractmethod
 from dataclasses import dataclass
+from dataclasses import field
+from enum import Enum
 from pathlib import Path
 
 from sympy.printing.codeprinter import CodePrinter
@@ -11,6 +13,21 @@ from sympy.printing.codeprinter import CodePrinter
 from symforce import typing as T
 
 CURRENT_DIR = Path(__file__).parent
+
+
+class ZeroEpsilonBehavior(Enum):
+    """
+    Options for what to do when attempting to generate code with the default epsilon set to 0
+    """
+
+    FAIL = 0
+    WARN = 1
+    ALLOW = 2
+
+
+# Default for new codegen configs - this lets you modify the default for all configs, e.g. for all
+# codegen tests
+DEFAULT_ZERO_EPSILON_BEHAVIOR = ZeroEpsilonBehavior.WARN
 
 
 # TODO(hayk): Address this type ignore, which comes from having abstract methods on a dataclass.
@@ -26,6 +43,7 @@ class CodegenConfig:
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         cse_optimizations: Optimizations argument to pass to sf.cse
+        zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
     """
 
     doc_comment_line_prefix: str
@@ -35,6 +53,9 @@ class CodegenConfig:
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None
+    zero_epsilon_behavior: ZeroEpsilonBehavior = field(
+        default_factory=lambda: DEFAULT_ZERO_EPSILON_BEHAVIOR
+    )
 
     @classmethod
     @abstractmethod

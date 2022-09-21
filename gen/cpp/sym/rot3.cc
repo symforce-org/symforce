@@ -139,8 +139,8 @@ Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ToYawPitchRoll() const {
   Eigen::Matrix<Scalar, 3, 1> _res;
 
   _res(0, 0) = std::atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4);
-  _res(1, 0) = -std::asin(std::max<Scalar>(
-      Scalar(-1.0), std::min<Scalar>(Scalar(1.0), -2 * _self[1] * _self[3] + _self[2] * _tmp0)));
+  _res(1, 0) = -std::asin(
+      std::max<Scalar>(-1, std::min<Scalar>(1, -2 * _self[1] * _self[3] + _self[2] * _tmp0)));
   _res(2, 0) = std::atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4);
 
   return _res;

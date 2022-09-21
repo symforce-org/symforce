@@ -315,3 +315,18 @@ def set_epsilon_to_zero() -> None:
     See `symforce.symbolic.epsilon` for more information.
     """
     _set_epsilon(0.0)
+
+
+def set_epsilon_to_invalid() -> None:
+    """
+    Set the default epsilon for SymForce to `None`.  Should not be used to actually create
+    expressions or generate code.
+
+    This is useful if you've forgotten to pass an epsilon somewhere, but are not sure where - using
+    this epsilon in an expression should throw a `TypeError` near the location where you forgot to
+    pass an epsilon.
+
+    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
+    See `symforce.symbolic.epsilon` for more information.
+    """
+    _set_epsilon(None)

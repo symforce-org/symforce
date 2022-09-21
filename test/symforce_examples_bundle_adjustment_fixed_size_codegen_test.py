@@ -5,6 +5,10 @@
 
 import os
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
 from symforce.examples.bundle_adjustment_fixed_size.generate_fixed_problem import (
     FixedBundleAdjustmentProblem,
 )

@@ -17,6 +17,7 @@ import symforce.symbolic as sf
 from symforce import logger
 from symforce import python_util
 from symforce import typing as T
+from symforce.codegen import codegen_config
 from symforce.ops import LieGroupOps
 from symforce.ops import StorageOps
 from symforce.ops import interfaces
@@ -147,6 +148,11 @@ class SymforceTestCaseMixin(unittest.TestCase):
         mode is on)
         """
         super().setUp()
+
+        # Set to fail on default epsilon == 0
+        codegen_config.DEFAULT_ZERO_EPSILON_BEHAVIOR = codegen_config.ZeroEpsilonBehavior.FAIL
+
+        # Storage for temporary output directories
         self.output_dirs: T.List[str] = []
 
     def tearDown(self) -> None:

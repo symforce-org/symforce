@@ -99,7 +99,9 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             config=config,
         ),
         Codegen.function(
-            func=lambda self: sf.V3(self.to_yaw_pitch_roll()),
+            # TODO(aaron): We currently can't generate custom methods with defaults - fix this, and
+            # pass epsilon as an argument with a default
+            func=lambda self: sf.V3(self.to_yaw_pitch_roll(epsilon=0)),
             input_types=[sf.Rot3],
             name="to_yaw_pitch_roll",
             config=config,

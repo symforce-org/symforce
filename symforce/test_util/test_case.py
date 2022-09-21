@@ -48,8 +48,11 @@ class TestCase(SymforceTestCaseMixin):
 
     def setUp(self) -> None:
         super().setUp()
+
+        # Set random seeds
         np.random.seed(42)
         random.seed(42)
+
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 

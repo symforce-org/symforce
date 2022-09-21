@@ -7,6 +7,9 @@ import os
 import string
 
 import symforce
+
+symforce.set_epsilon_to_symbol()
+
 import symforce.symbolic as sf
 from symforce.codegen import values_codegen
 from symforce.test_util import TestCase

@@ -5,6 +5,10 @@
 
 from pathlib import Path
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
 from symforce.examples.robot_2d_localization import robot_2d_localization
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only

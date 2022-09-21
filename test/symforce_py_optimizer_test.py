@@ -7,6 +7,10 @@ import functools
 
 import numpy as np
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._type_t import type_t

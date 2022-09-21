@@ -95,6 +95,39 @@ class Codegen:
             docstring: The docstring to be used with the generated function
         """
 
+        if sf.epsilon() == 0:
+            warning_message = """
+                Generating code with epsilon set to 0 - This is dangerous!  You may get NaNs, Infs,
+                or numerically unstable results from calling generated functions near singularities.
+
+                In order to safely generate code, you should set epsilon to either a symbol
+                (recommended) or a small numerical value like `sf.numeric_epsilon`.  You should do
+                this before importing any other code from symforce, e.g. with
+
+                    import symforce
+                    symforce.set_epsilon_to_symbol()
+
+                or
+
+                    import symforce
+                    symforce.set_epsilon_to_number()
+
+                For more information on use of epsilon to prevent singularities, take a look at the
+                Epsilon Tutorial: https://symforce.org/tutorials/epsilon_tutorial.html
+                """
+            warning_message = textwrap.indent(textwrap.dedent(warning_message), "    ")
+
+            if config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.FAIL:
+                raise ValueError(warning_message)
+            elif config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.WARN:
+                logger.warning(warning_message)
+            elif config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.ALLOW:
+                pass
+            else:
+                raise ValueError(
+                    f"Invalid config.zero_epsilon_behavior: {config.zero_epsilon_behavior}"
+                )
+
         self.name = name
 
         # Inputs and outputs must be Values objects
@@ -111,9 +144,42 @@ class Codegen:
         # All symbols in outputs must be present in inputs
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
-        assert self.output_symbols.issubset(
-            input_symbols
-        ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
+        if not self.output_symbols.issubset(input_symbols):
+            missing_outputs = self.output_symbols - input_symbols
+            error_msg = textwrap.dedent(
+                f"""
+                A symbol in the output expression is missing from inputs
+
+                Inputs:
+                {input_symbols}
+
+                Missing symbols:
+                {self.output_symbols - input_symbols}
+                """
+            )
+
+            if sf.epsilon() in missing_outputs:
+                error_msg += textwrap.dedent(
+                    f"""
+                    One of the missing symbols is `{sf.epsilon()}`, which is the default epsilon -
+                    this typically means you called a function that requires an epsilon without
+                    passing a value.  You need to either pass 0 for epsilon if you'd like to use 0,
+                    pass through the symbol you're using for epsilon if it's not `{sf.epsilon()}`,
+                    or add `{sf.epsilon()}` as an input to your generated function.  You would do
+                    this either by adding an argument `{sf.epsilon()}: sf.Scalar` if using a
+                    symbolic function, or setting `inputs["{sf.epsilon()}"] = sf.Symbol("{sf.epsilon()}")`
+                    if using `inputs` and `outputs` `Values`.
+
+                    If you aren't sure where you may have forgotten to pass an epsilon, setting
+                    epsilon to invalid may be helpful. You should do this before importing any other
+                    code from symforce, e.g. with
+
+                        import symforce
+                        symforce.set_epsilon_to_invalid()
+                    """
+                )
+
+            raise ValueError(error_msg)
 
         # Names given by keys in inputs/outputs must be valid variable names
         # TODO(aaron): Also check recursively

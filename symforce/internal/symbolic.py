@@ -271,7 +271,7 @@ def epsilon() -> T.Any:
     in the SymForce docs here: https://symforce.org/tutorials/epsilon_tutorial.html
 
     For purely numerical code that just needs a good default numerical epsilon, see
-    `symforce.symbolic.numerical_epsilon`.
+    `symforce.symbolic.numeric_epsilon`.
 
     Returns: The current default epsilon.  This is typically some kind of "Scalar", like a float or
              a Symbol.
