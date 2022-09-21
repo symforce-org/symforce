@@ -31,15 +31,14 @@ class CppCodePrinter(CXX11CodePrinter):
         for (expr, name) in self.override_methods.items():
             self._set_override_methods(expr, name)
 
-    @classmethod
-    def _set_override_methods(cls, expr: sympy.Function, name: str) -> None:
+    def _set_override_methods(self, expr: sympy.Function, name: str) -> None:
         method_name = f"_print_{str(expr)}"
 
-        def _print_expr(cls: CppCodePrinter, expr: sympy.Expr) -> str:
-            expr_string = ", ".join(map(cls._print, expr.args))
+        def _print_expr(expr: sympy.Expr) -> str:
+            expr_string = ", ".join(map(self._print, expr.args))
             return f"{name}({expr_string})"
 
-        setattr(cls, method_name, _print_expr)
+        setattr(self, method_name, _print_expr)
 
     def _print_Rational(self, expr: sympy.Rational) -> str:
         """

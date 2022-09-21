@@ -5,8 +5,6 @@
 
 #include "symforce_function_codegen_test_data/sympy/custom_function_replacement.h"
 
-#include <math.h>
-
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Generated function with function replacement is correct", "[custom_func_replacement]") {
