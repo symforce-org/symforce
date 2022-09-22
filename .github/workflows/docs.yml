@@ -23,7 +23,7 @@ jobs:
             pandoc
 
       - name: Install python dependencies
-        run: pip install -r dev_requirements.txt
+        run: pip install -r dev_requirements_$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")').txt
 
       - name: Run cmake build
         run: |

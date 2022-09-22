@@ -36,8 +36,9 @@ class SymforceRequirementsTest(TestCase):
     def test_requirements(self) -> None:
         output_dir = Path(self.make_output_dir("sf_requirements_test_"))
 
-        output_requirements_file = output_dir / "dev_requirements.txt"
-        symforce_requirements_file = SYMFORCE_DIR / "dev_requirements.txt"
+        requirements_name = f"dev_requirements_{sys.version_info.major}{sys.version_info.minor}.txt"
+        output_requirements_file = output_dir / requirements_name
+        symforce_requirements_file = SYMFORCE_DIR / requirements_name
 
         local_requirements_map = {
             f"skymarshal @ file://localhost/{SYMFORCE_DIR}/third_party/skymarshal": "file:./third_party/skymarshal",
@@ -76,7 +77,7 @@ class SymforceRequirementsTest(TestCase):
             cwd=SYMFORCE_DIR,
             env=dict(
                 os.environ,
-                # Compile command to put in the header of dev_requirements.txt
+                # Compile command to put in the header of dev_requirements_XY.txt
                 CUSTOM_COMPILE_COMMAND="python test/symforce_requirements_test.py --update",
             ),
         )

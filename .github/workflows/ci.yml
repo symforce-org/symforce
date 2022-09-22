@@ -75,7 +75,7 @@ jobs:
               libeigen3-dev
 
       - name: Install python dependencies
-        run: pip install -r dev_requirements.txt
+        run: pip install -r dev_requirements_$(${{ matrix.python }} -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")').txt
 
       - name: Run cmake build
         run: |
@@ -87,14 +87,11 @@ jobs:
           cmake --build build -j $(nproc)
 
       # - lcmtypes need to be available for tests
-      # - Exact contents of dev_requirements.txt depend on python version. Need to update file to
-      # match current python version to avoid failure of corresponding gen test. symforce needs
-      # to be on the PYTHONPATH to run gen test in this manner.
+      # - symforce needs to be on the PYTHONPATH to run tests in this manner.
       - name: Run tests
         run: |
           pip install build/lcmtypes/python2.7
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          ${{ matrix.python }} test/symforce_requirements_test.py --update
           ctest --test-dir build -j $(nproc) || true
           ctest --test-dir build -j $(nproc) --rerun-failed --output-on-failure
 
