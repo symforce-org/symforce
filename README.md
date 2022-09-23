@@ -565,7 +565,7 @@ pip install -e .
 
 This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described <a href="#build-with-cmake">below</a>.
 
-`pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+`pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements_XY.txt` (where `X` and `Y` are the major and minor versions of your python; e.g. `dev_requirements_38.txt` for python3.8).
 
 ## Build with CMake
 
@@ -574,8 +574,9 @@ SymForce into your Python environment, so you'll need to add it to your PYTHONPA
 
 Install python requirements:
 ```bash
-pip install -r dev_requirements.txt
+pip install -r dev_requirements_38.txt
 ```
+(or `dev_requirements_39.txt`/`dev_requirements_310.txt` for python3.9 and python3.10, respectively).
 
 Build SymForce (requires C++14 or later):
 ```bash
