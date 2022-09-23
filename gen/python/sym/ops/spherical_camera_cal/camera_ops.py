@@ -127,7 +127,7 @@ class CameraOps(object):
         _tmp9 = _tmp6 ** 9
         _tmp10 = _tmp6 ** 3
         _tmp11 = _self[5] * _tmp10 + _self[6] * _tmp7 + _self[7] * _tmp8 + _self[8] * _tmp9 + _tmp6
-        _tmp12 = _tmp4 ** (-1)
+        _tmp12 = 1 / _tmp4
         _tmp13 = _tmp11 * _tmp12
         _tmp14 = _tmp13 * point[0, 0]
         _tmp15 = _tmp13 * point[1, 0]

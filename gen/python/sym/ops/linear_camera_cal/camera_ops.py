@@ -76,7 +76,7 @@ class CameraOps(object):
             point = point.reshape((3, 1))
 
         # Intermediate terms (1)
-        _tmp0 = max(epsilon, point[2, 0]) ** (-1)
+        _tmp0 = 1 / max(epsilon, point[2, 0])
 
         # Output terms
         _pixel = numpy.zeros((2, 1))
@@ -107,7 +107,7 @@ class CameraOps(object):
 
         # Intermediate terms (5)
         _tmp0 = max(epsilon, point[2, 0])
-        _tmp1 = _tmp0 ** (-1)
+        _tmp1 = 1 / _tmp0
         _tmp2 = _self[0] * _tmp1
         _tmp3 = _self[1] * _tmp1
         _tmp4 = (
@@ -194,9 +194,9 @@ class CameraOps(object):
 
         # Intermediate terms (4)
         _tmp0 = -_self[2] + pixel[0, 0]
-        _tmp1 = _self[0] ** (-1)
+        _tmp1 = 1 / _self[0]
         _tmp2 = -_self[3] + pixel[1, 0]
-        _tmp3 = _self[1] ** (-1)
+        _tmp3 = 1 / _self[1]
 
         # Output terms
         _camera_ray = numpy.zeros((3, 1))

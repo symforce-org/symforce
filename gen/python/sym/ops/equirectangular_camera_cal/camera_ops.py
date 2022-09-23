@@ -219,11 +219,11 @@ class CameraOps(object):
 
         # Intermediate terms (21)
         _tmp0 = -_self[3] + pixel[1, 0]
-        _tmp1 = _self[1] ** (-1)
+        _tmp1 = 1 / _self[1]
         _tmp2 = _tmp0 * _tmp1
         _tmp3 = math.cos(_tmp2)
         _tmp4 = -_self[2] + pixel[0, 0]
-        _tmp5 = _self[0] ** (-1)
+        _tmp5 = 1 / _self[0]
         _tmp6 = _tmp4 * _tmp5
         _tmp7 = math.sin(_tmp6)
         _tmp8 = _tmp3 * _tmp7

@@ -373,7 +373,7 @@ setup(
         "numpy",
         "scipy",
         f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
-        "sympy~=1.10.0",
+        "sympy~=1.11.1",
         f"symforce-sym @ file://localhost/{SOURCE_DIR}/gen/python",
     ],
     setup_requires=setup_requirements,

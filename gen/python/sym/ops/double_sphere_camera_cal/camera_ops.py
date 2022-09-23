@@ -83,7 +83,7 @@ class CameraOps(object):
         _tmp4 = 2 * _tmp3
         _tmp5 = _self[5] - epsilon * (_tmp4 + 1)
         _tmp6 = -_tmp5
-        _tmp7 = max(epsilon, _tmp2 * (_tmp6 + 1) + _tmp5 * math.sqrt(_tmp0 + _tmp2 ** 2)) ** (-1)
+        _tmp7 = 1 / max(epsilon, _tmp2 * (_tmp6 + 1) + _tmp5 * math.sqrt(_tmp0 + _tmp2 ** 2))
         _tmp8 = _tmp3 + _tmp5
         _tmp9 = (1.0 / 2.0) * _tmp4 + _tmp6 + 1
         _tmp10 = _self[4] ** 2
@@ -173,7 +173,7 @@ class CameraOps(object):
         _tmp8 = _tmp7 + 1
         _tmp9 = _tmp2 * _tmp8 + _tmp3 * _tmp6
         _tmp10 = max(_tmp9, epsilon)
-        _tmp11 = _tmp10 ** (-1)
+        _tmp11 = 1 / _tmp10
         _tmp12 = _tmp11 * point[0, 0]
         _tmp13 = _tmp11 * point[1, 0]
         _tmp14 = _self[4] * point[2, 0]
@@ -195,7 +195,7 @@ class CameraOps(object):
         _tmp26 = -_tmp2 + _tmp3
         _tmp27 = _tmp20 * _tmp23
         _tmp28 = _tmp23 * _tmp25
-        _tmp29 = _tmp1 ** (-1)
+        _tmp29 = 1 / _tmp1
         _tmp30 = _self[4] * _tmp29
         _tmp31 = _tmp30 * _tmp8
         _tmp32 = 2 * point[0, 0]
@@ -339,7 +339,7 @@ class CameraOps(object):
 
         # Intermediate terms (111)
         _tmp0 = -_self[2] + pixel[0, 0]
-        _tmp1 = _self[0] ** (-1)
+        _tmp1 = 1 / _self[0]
         _tmp2 = -_self[3] + pixel[1, 0]
         _tmp3 = _tmp2 ** 2
         _tmp4 = _self[1] ** (-2)
@@ -363,8 +363,8 @@ class CameraOps(object):
         _tmp20 = _tmp19 + epsilon * (
             2 * min(0, (0.0 if _tmp19 == 0 else math.copysign(1, _tmp19))) + 1
         )
-        _tmp21 = _tmp20 ** (-1)
-        _tmp22 = _tmp16 ** (-1)
+        _tmp21 = 1 / _tmp20
+        _tmp22 = 1 / _tmp16
         _tmp23 = _tmp22 * _tmp9
         _tmp24 = 1 - _self[4] ** 2
         _tmp25 = _tmp18 + _tmp24 * _tmp7
@@ -372,7 +372,7 @@ class CameraOps(object):
         _tmp27 = _self[4] * _tmp23 + _tmp26
         _tmp28 = _tmp21 * _tmp27
         _tmp29 = _tmp1 * _tmp28
-        _tmp30 = _self[1] ** (-1)
+        _tmp30 = 1 / _self[1]
         _tmp31 = _tmp28 * _tmp30
         _tmp32 = _tmp0 * _tmp6
         _tmp33 = _tmp28 * _tmp32

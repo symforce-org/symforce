@@ -582,6 +582,9 @@ def _flatten_storage_type_subs(
     from symforce import typing_util  # pylint: disable=cyclic-import
 
     for key, value in subs_pairs:
+        if key is None:
+            # Sympy seems to support None keys and do nothing with them
+            continue
 
         if typing_util.scalar_like(key):
             assert typing_util.scalar_like(value)
