@@ -11,4 +11,4 @@ The minimal steps to support a new backend are:
  5. Add your backend's extensions to `FileType` in `symforce/codegen/template_util.py`, filling out relevant methods there.
  6. Add tests to `test/symforce_codegen_test.py`.
 
-This will result in being able to generate functions for your backend that deal with scalars and arrays, but the `sym` geometry and camera classes. To implement those, follow the examples in `geo_package_codegen` and `cam_package_codegen`.
+This will result in being able to generate functions for your backend that deal with scalars and arrays, but not the `sym` geometry and camera classes. To implement those, follow the examples in `geo_package_codegen` and `cam_package_codegen`.

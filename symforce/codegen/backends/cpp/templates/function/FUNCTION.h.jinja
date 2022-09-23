@@ -11,6 +11,11 @@
 #include <complex>
 {% endif %}
 
+{% if spec.config.extra_imports %}
+{% for extra_import in spec.config.extra_imports %}
+#include "{{ extra_import }}" // User-defined extra import
+{% endfor %}
+{% endif %}
 {# Conditional? #}
 #include <Eigen/Dense>
 {% if spec.sparse_mat_data.__len__() > 0 -%}

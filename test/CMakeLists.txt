@@ -10,6 +10,7 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
 
 file(GLOB_RECURSE SYMFORCE_TEST_SOURCES CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.cc)
 file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.hpp)
+file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS include/*.h)
 add_library(
   symforce_test
   ${SYMFORCE_LIBRARY_TYPE}
@@ -29,6 +30,7 @@ target_include_directories(symforce_test
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_sparse_matrix_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/symengine/codegen_cpp_test_data/cpp
   INTERFACE symforce_function_codegen_test_data/sympy/databuffer_codegen_test_data/cpp
+  INTERFACE include
   PUBLIC symforce_function_codegen_test_data/symengine/codegen_explicit_template_instantiation_test_data/cpp
 )
 target_compile_definitions(

@@ -8,6 +8,7 @@ from pathlib import Path
 from sympy.printing.codeprinter import CodePrinter
 
 from symforce import typing as T
+from symforce.codegen.backends.python import python_code_printer
 from symforce.codegen.codegen_config import CodegenConfig
 
 CURRENT_DIR = Path(__file__).parent
@@ -55,8 +56,6 @@ class PythonConfig(CodegenConfig):
         ]
 
     def printer(self) -> CodePrinter:
-        from symforce.codegen.backends.python import python_code_printer
-
         return python_code_printer.PythonCodePrinter()
 
     def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
