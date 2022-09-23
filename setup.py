@@ -227,7 +227,7 @@ class InstallWithExtras(install):
 
 
 setup_requirements = [
-    "setuptools",
+    "setuptools>=64.0.0",
     "wheel",
     "pip",
     "cmake>=3.17",

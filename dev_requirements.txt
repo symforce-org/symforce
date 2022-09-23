@@ -376,7 +376,7 @@ pip==22.1.2
     # via
     #   pip-tools
     #   symforce (setup.py)
-setuptools==62.3.2
+setuptools==65.3.0
     # via
     #   astroid
     #   ipython
