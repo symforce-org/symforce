@@ -72,7 +72,7 @@ struct lcm_type_caster {
         py::module_::import(module_path.c_str()).attr(LCMType::getTypeName());
     py::object result = lcm_py_type.attr("decode")(msg_bytes);
     result.inc_ref();
-    return result;
+    return std::move(result);
   }
 };
 
