@@ -6,6 +6,9 @@
 #
 --index-url https://pypi.python.org/simple
 
+# Create a requirement incompatible with python < 3.8
+symforce_requires_python_38_or_higher___your_python_version_is_incompatible; python_version < '3.8'
+
 alabaster==0.7.12
     # via sphinx
 argh==0.26.2

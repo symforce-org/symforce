@@ -5,6 +5,7 @@
 
 import os
 import sys
+import textwrap
 from pathlib import Path
 
 from symforce import python_util
@@ -85,6 +86,19 @@ class SymforceRequirementsTest(TestCase):
         requirements_contents = output_requirements_file.read_text()
         for key, value in local_requirements_map.items():
             requirements_contents = requirements_contents.replace(key, value)
+
+        # Inject the python version requirement
+        sentinel = "--index-url https://pypi.python.org/simple\n"
+        version_requirement = textwrap.dedent(
+            """
+            # Create a requirement incompatible with python < 3.8
+            symforce_requires_python_38_or_higher___your_python_version_is_incompatible; python_version < '3.8'
+            """
+        )
+        requirements_contents = requirements_contents.replace(
+            sentinel, sentinel + version_requirement
+        )
+
         output_requirements_file.write_text(requirements_contents)
 
         self.compare_or_update_file(symforce_requirements_file, output_requirements_file)
