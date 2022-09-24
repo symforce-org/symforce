@@ -65,10 +65,7 @@ option(SYMFORCE_SKYMARSHAL_PRINTING
 # ------------------------------------------------------------------------------
 # Misc
 
-option(SYMFORCE_BUILD_STATIC_LIBRARIES
-  "Build libraries as static (symforce_cholesky is always built as shared)"
-  OFF
-)
+option(SYMFORCE_BUILD_STATIC_LIBRARIES "Build libraries as static" OFF)
 
 set(SYMFORCE_COMPILE_OPTIONS -Wall;-Wextra;-Werror CACHE STRING
   "Extra flags to pass to the compiler; defaults to enabling warnings"

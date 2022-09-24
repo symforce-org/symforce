@@ -231,8 +231,7 @@ class InstallWithExtras(install):
     """
     Custom install step that:
         1) Installs symenginepy so it can be imported
-        2) Installs additional shared libraries needed by cc_sym (e.g. libsymforce_cholesky,
-           libmetis)
+        2) Installs additional shared libraries needed by cc_sym (e.g. libmetis)
         3) Installs lcmtypes python package
     """
 

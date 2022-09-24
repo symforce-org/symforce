@@ -120,12 +120,11 @@ add_metis()
 # ------------------------------------------------------------------------------
 # symforce_cholesky
 
-# NOTE(hayk): For licensing reasons keep this as a shared library and do not link statically
 file(GLOB SYMFORCE_CHOLESKY_SOURCES CONFIGURE_DEPENDS cholesky/*.cc)
 file(GLOB SYMFORCE_CHOLESKY_HEADERS CONFIGURE_DEPENDS cholesky/*.h cholesky/*.tcc)
 add_library(
   symforce_cholesky
-  SHARED
+  ${SYMFORCE_LIBRARY_TYPE}
   ${SYMFORCE_CHOLESKY_SOURCES}
   ${SYMFORCE_CHOLESKY_HEADERS}
 )

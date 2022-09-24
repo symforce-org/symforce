@@ -204,7 +204,8 @@
 
 Code in symforce/opt/cholesky is adapted from LDL/SuiteSparse and its
 corresponding implementation in the SparseCholesky module of the Eigen library,
-and is licensed as described in symforce/opt/cholesky/LICENSE
+and is licensed under the MPL2 license as described in
+symforce/opt/cholesky/LICENSE
 
 # Third Party Code
 
