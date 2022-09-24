@@ -543,6 +543,8 @@ To learn more, visit the SymForce tutorials [here](https://symforce.org/#guides)
 
 # Build from Source
 
+For best results, you should build from the [latest tagged release](https://github.com/symforce-org/symforce/releases/latest).  You can also build from `main`, or from another branch, but everything is less guaranteed to work.
+
 SymForce requires Python 3.8 or later. The build is currently tested on Linux and macOS, SymForce on Windows is untested (see [#145](https://github.com/symforce-org/symforce/issues/145)).  We strongly suggest creating a virtual python environment.
 
 Install the `gmp` package with one of:
