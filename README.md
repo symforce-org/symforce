@@ -565,9 +565,9 @@ pip install -e .
 
 This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described <a href="#build-with-cmake">below</a>.
 
-If using the system python on a Debian system with a setuptools version before `64.0.0`, the editable install will not be placed in the correct location. Instead, either upgrade setuptools to a newer version or use a virtual environment.
-
 `pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+
+_Note: Editable installs as root with the system python on Ubuntu (and other Debian derivatives) are broken on `setuptools<64.0.0`.  This is a [bug in Debian](https://ffy00.github.io/blog/02-python-debian-and-the-install-locations/), not something in SymForce that we can fix.  If this is your situation, either use a virtual environment, upgrade setuptools to a version `>=64.0.0`, or use a different installation method._
 
 ## Build with CMake
 
