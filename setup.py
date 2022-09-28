@@ -17,6 +17,7 @@ from setuptools import Extension
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
+from setuptools.command.develop import develop
 from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
@@ -42,6 +43,30 @@ class CMakeExtension(Extension):
 
     def __init__(self, name: str):
         Extension.__init__(self, name, sources=[])
+
+
+class PatchDevelop(develop):
+    """
+    develop is the legacy command (pre setuptools==64.0.0, which implemented
+    the pep 660 hook build_editable) to build a package in editable mode.
+
+    This will be used by setuptools < 64.0.0, and not be used by
+    setuptools >= 64.0.0 during a normal `pip install -e .` run (of course,
+    you could still run `python setup.py develop` to run it with any version
+    of setuptools).
+    """
+
+    def run(self) -> None:  # type: ignore[override]
+        # NOTE(brad): In setuptools 64.0.0, the editable_mode field of the
+        # build_ext was added and is set to True during a pep 660 editable
+        # install.
+        # Since we want to use this field in our CMakeBuild extension of
+        # build_ext to identify if we're performing an editable install
+        # regardless of whether we're building with develop or build_editable,
+        # (both before and after version 64.0.0), we patch develop to add this
+        # field to build_ext and set it to True.
+        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[attr-defined]
+        super().run()
 
 
 class CMakeBuild(build_ext):
@@ -309,7 +334,10 @@ docs_requirements = [
 ]
 
 cmdclass: T.Dict[str, T.Any] = dict(
-    build_ext=CMakeBuild, install=InstallWithExtras, egg_info=SymForceEggInfo
+    build_ext=CMakeBuild,
+    install=InstallWithExtras,
+    egg_info=SymForceEggInfo,
+    develop=PatchDevelop,
 )
 
 
