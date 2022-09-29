@@ -563,6 +563,13 @@ If you just want to build and install SymForce without repeatedly modifying the 
 pip install .
 ```
 
+Verify the installation:
+```python
+>>> import symforce
+>>> symforce.get_symbolic_api()
+"symengine"
+```
+
 If you're modifying the SymForce Python sources, you can do an [editable install](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) instead.  This will let you modify the Python components of SymForce without reinstalling.  If you're going to repeatedly modify the C++ sources, you should instead build with CMake directly as described <a href="#build-with-cmake">below</a>.  From the symforce directory:
 ```bash
 pip install -e .
