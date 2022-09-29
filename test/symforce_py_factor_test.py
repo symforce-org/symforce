@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 
 import functools
+import unittest
 from pathlib import Path
 
 import numpy as np
@@ -103,6 +104,40 @@ class SymforcePyFactorTest(TestCase):
         # Check that we can call the loaded function
         residual, _, _, _ = loaded_factor.linearize(inputs)
         self.assertStorageNear(residual, np.zeros((3,)))
+
+    @unittest.expectedFailure
+    def test_custom_jacobians(self) -> None:
+        """
+        Tests factors with custom jacobians
+
+        These currently break the cache: https://github.com/symforce-org/symforce/issues/234
+
+        TODO(aaron): Make this pass
+        """
+        inputs = Values(a=sf.V3.zero(), b=sf.V3.zero())
+        optimized_keys = ["a"]
+
+        def between(a: sf.V3, b: sf.V3) -> sf.V3:
+            return a - b
+
+        numeric_factor = Factor(
+            keys=inputs.keys_recursive(),
+            residual=between,
+        ).to_numeric_factor(optimized_keys=optimized_keys)
+
+        residual, jacobian, _, _ = numeric_factor.linearize(inputs)
+        self.assertStorageNear(residual, np.zeros((3,)))
+        self.assertStorageNear(jacobian, np.eye(3))
+
+        numeric_factor = Factor(
+            keys=inputs.keys_recursive(),
+            residual=between,
+            custom_jacobian_func=lambda args: sf.M33(),
+        ).to_numeric_factor(optimized_keys=optimized_keys)
+
+        residual, jacobian, _, _ = numeric_factor.linearize(inputs)
+        self.assertStorageNear(residual, np.zeros((3,)))
+        self.assertStorageNear(jacobian, np.zeros((3, 3)))
 
     def test_visualize(self) -> None:
         """
