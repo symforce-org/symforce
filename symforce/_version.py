@@ -3,4 +3,4 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-version = "0.5.0"
+version = "0.6.0"
