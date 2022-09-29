@@ -585,7 +585,11 @@ cmake ..
 make -j $(nproc)
 ```
 
-You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce and `lcmtypes/python2.7` within the build directory) to your PYTHONPATH in order to use them.
+You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce and `lcmtypes/python2.7` within the build directory) to your PYTHONPATH in order to use them, for example:
+
+```bash
+export PYTHONPATH="$PYTHONPATH:/path/to/symforce:/path/to/symforce/build/lcmtypes/python2.7:/path/to/symforce/gen/python:/path/to/symforce/third_party/skymarshal"
+```
 
 # License
 
