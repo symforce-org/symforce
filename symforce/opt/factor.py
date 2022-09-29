@@ -213,11 +213,8 @@ class Factor:
             output_dir: Where the generated linearization function will be output
             namespace: Namespace of the generated linearization function
             sparse_linearization: Whether the generated linearization function should use sparse
-                matricies for the jacobian and hessian approximation
+                matrices for the jacobian and hessian approximation
         """
-        if namespace is None:
-            namespace = f"sym_{uuid.uuid4().hex}"
-
         for opt_key in optimized_keys:
             if opt_key not in self.keys:
                 raise ValueError(
@@ -236,15 +233,30 @@ class Factor:
         similarity_index = SimilarityIndex.from_codegen(self.codegen)
         codegen_keys = list(self.codegen.inputs.keys())
         codegen_optimized_keys = [codegen_keys[self.keys.index(key)] for key in optimized_keys]
-        cached_residual = Factor._generated_residual_cache.get_residual(
-            similarity_index, codegen_optimized_keys
+        # NOTE(aaron): This should contain all of the information required to both generate the
+        # residual, and cause any side effects of that.  Basically, this means all information
+        # used to construct this Factor plus the arguments to this function
+        cache_key = (
+            similarity_index,
+            codegen_optimized_keys,
+            output_dir,
+            namespace,
+            sparse_linearization,
         )
+        cached_residual = Factor._generated_residual_cache.get_residual(*cache_key)
         if cached_residual is not None:
             return NumericFactor(
                 keys=self.keys,
                 optimized_keys=optimized_keys,
                 linearization_function=cached_residual,
             )
+
+        # NOTE(aaron): We do this after checking the cache, otherwise we'd get 0 cache hits.  I
+        # _think_ this is correct, since the interface of to_numeric_factor doesn't specify the
+        # namespace if the user passes None, so you want to get the same namespace as when it was
+        # cached
+        if namespace is None:
+            namespace = f"sym_{uuid.uuid4().hex}"
 
         # Compute the linearization of the residual and generate code
         output_data = self.generate(optimized_keys, output_dir, namespace, sparse_linearization)
@@ -259,7 +271,7 @@ class Factor:
         )
 
         Factor._generated_residual_cache.cache_residual(
-            similarity_index, codegen_optimized_keys, numeric_factor.linearization_function
+            *cache_key, numeric_factor.linearization_function
         )
 
         if output_dir is None and logger.level != logging.DEBUG:
