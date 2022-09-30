@@ -560,14 +560,19 @@ If you encounter build issues, please file an [issue](https://github.com/symforc
 
 ## Build with pip
 
-The recommended way to build and install SymForce if you only plan on making Python changes is with pip.  From the symforce directory:
+If you just want to build and install SymForce without repeatedly modifying the source, the recommended way to do this is with pip.  From the symforce directory:
+```bash
+pip install .
+```
+
+If you're modifying the SymForce Python sources, you can do an [editable install](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) instead.  This will let you modify the Python components of SymForce without reinstalling.  If you're going to repeatedly modify the C++ sources, you should instead build with CMake directly as described <a href="#build-with-cmake">below</a>.  From the symforce directory:
 ```bash
 pip install -e .
 ```
 
-This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described <a href="#build-with-cmake">below</a>.
+You should then [verify your installation](#verify-your-installation).
 
-`pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+___Note:___ `pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
 
 _Note: Editable installs as root with the system python on Ubuntu (and other Debian derivatives) are broken on `setuptools<64.0.0`.  This is a [bug in Debian](https://ffy00.github.io/blog/02-python-debian-and-the-install-locations/), not something in SymForce that we can fix.  If this is your situation, either use a virtual environment, upgrade setuptools to a version `>=64.0.0`, or use a different installation method._
 
@@ -589,7 +594,21 @@ cmake ..
 make -j $(nproc)
 ```
 
-You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce and `lcmtypes/python2.7` within the build directory) to your PYTHONPATH in order to use them.
+You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce and `lcmtypes/python2.7` within the build directory) to your PYTHONPATH in order to use them, for example:
+
+```bash
+export PYTHONPATH="$PYTHONPATH:/path/to/symforce:/path/to/symforce/build/lcmtypes/python2.7:/path/to/symforce/gen/python:/path/to/symforce/third_party/skymarshal"
+```
+
+## Verify your installation:
+```python
+>>> import symforce
+>>> symforce.get_symbolic_api()
+'symengine'
+>>> from symforce import cc_sym
+```
+
+If you see `'sympy'` here instead of `'symengine'`, or can't import `cc_sym`, your installation is probably broken and you should submit an [issue](https://github.com/symforce-org/symforce/issues).
 
 # License
 
