@@ -22,6 +22,13 @@ class Pose2_SE2(Pose2):
     """
     Group of two-dimensional rigid body transformations - SE(2).
 
+    There is no generated runtime analogue of this class in the `sym` package, which means you
+    cannot use it as an input or output of generated functions or as a variable in an optimized
+    Values.  This is intentional - in general, you should use the Pose2 class instead of this one,
+    because the generated expressions will be significantly more efficient.  If you are sure that
+    you need the different behavior of this class, it's here for reference or for use in symbolic
+    expressions.
+
     The storage space is a complex (real, imag) for rotation followed by a position (x, y).
 
     The tangent space is one angle for rotation followed by two elements for translation in the

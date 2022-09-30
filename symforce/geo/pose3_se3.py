@@ -22,6 +22,13 @@ class Pose3_SE3(Pose3):
     """
     Group of three-dimensional rigid body transformations - SE(3).
 
+    There is no generated runtime analogue of this class in the `sym` package, which means you
+    cannot use it as an input or output of generated functions or as a variable in an optimized
+    Values.  This is intentional - in general, you should use the Pose3 class instead of this one,
+    because the generated expressions will be significantly more efficient.  If you are sure that
+    you need the different behavior of this class, it's here for reference or for use in symbolic
+    expressions.
+
     The storage is a quaternion (x, y, z, w) for rotation followed by position (x, y, z).
 
     The tangent space is 3 elements for rotation followed by 3 elements for translation in the
