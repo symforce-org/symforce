@@ -600,6 +600,13 @@ You'll then need to add SymForce (along with `gen/python` and `third_party/skyma
 export PYTHONPATH="$PYTHONPATH:/path/to/symforce:/path/to/symforce/build/lcmtypes/python2.7:/path/to/symforce/gen/python:/path/to/symforce/third_party/skymarshal"
 ```
 
+If you want to install SymForce to use its C++ libraries in another CMake project, you can do that with:
+```bash
+make install
+```
+
+SymForce does not currently integrate with CMake's `find_package` (see #209), so if you do this you currently need to add its libraries as link dependencies in your CMake project manually.
+
 ## Verify your installation:
 ```python
 >>> import symforce
