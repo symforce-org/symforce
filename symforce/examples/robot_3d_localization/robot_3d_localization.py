@@ -13,9 +13,15 @@ to estimate the trajectory of the robot given known landmarks and noisy measurem
 # pylint: disable=ungrouped-imports
 
 # -----------------------------------------------------------------------------
-# Define residual functions
+# Set the default epsilon to a symbol
 # -----------------------------------------------------------------------------
 import symforce
+
+symforce.set_epsilon_to_symbol()
+
+# -----------------------------------------------------------------------------
+# Define residual functions
+# -----------------------------------------------------------------------------
 import symforce.symbolic as sf
 from symforce import logger
 from symforce import typing as T

@@ -11,6 +11,13 @@ and relative bearing angle measurements to known landmarks in the environment.
 # pylint: disable=ungrouped-imports
 
 # -----------------------------------------------------------------------------
+# Set the default epsilon to a symbol
+# -----------------------------------------------------------------------------
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
+# -----------------------------------------------------------------------------
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce.symbolic as sf
