@@ -90,6 +90,9 @@ template <>
 struct type_caster<sym::optimization_iteration_t>
     : public lcm_type_caster<sym::optimization_iteration_t> {};
 template <>
+struct type_caster<sym::sparse_matrix_structure_t>
+    : public lcm_type_caster<sym::sparse_matrix_structure_t> {};
+template <>
 struct type_caster<sym::optimization_stats_t> : public lcm_type_caster<sym::optimization_stats_t> {
 };
 template <>

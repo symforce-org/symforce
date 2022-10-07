@@ -27,6 +27,12 @@ void AddOptimizationStatsWrapper(pybind11::module_ module) {
       .def_readwrite("early_exited", &sym::OptimizationStatsd::early_exited,
                      "Did the optimization early exit? (either because it converged, or because it "
                      "could not find a good step).")
+      .def_readwrite("jacobian_sparsity", &sym::OptimizationStatsd::jacobian_sparsity,
+                     "Sparsity pattern of the problem jacobian (filled out if debug_stats=True)")
+      .def_readwrite("linear_solver_ordering", &sym::OptimizationStatsd::linear_solver_ordering,
+                     "Ordering used by the linear solver (filled out if debug_stats=True)")
+      .def_readwrite("cholesky_factor_sparsity", &sym::OptimizationStatsd::cholesky_factor_sparsity,
+                     "Sparsity pattern of the cholesky factor L (filled out if debug_stats=True)")
       .def_property(
           "best_linearization",
           /* getter */

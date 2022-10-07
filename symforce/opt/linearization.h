@@ -54,6 +54,16 @@ struct Linearization {
     return 0.5 * linear_residual_new.squaredNorm();
   }
 
+  Eigen::Map<const VectorX<typename MatrixType::StorageIndex>> JacobianColumnPointersMap() const {
+    return Eigen::Map<const VectorX<typename MatrixType::StorageIndex>>(jacobian.outerIndexPtr(),
+                                                                        jacobian.outerSize());
+  }
+
+  Eigen::Map<const VectorX<typename MatrixType::StorageIndex>> JacobianRowIndicesMap() const {
+    return Eigen::Map<const VectorX<typename MatrixType::StorageIndex>>(jacobian.innerIndexPtr(),
+                                                                        jacobian.nonZeros());
+  }
+
   Eigen::Map<const VectorX<Scalar>> JacobianValuesMap() const {
     return Eigen::Map<const VectorX<Scalar>>(jacobian.valuePtr(), jacobian.nonZeros());
   }

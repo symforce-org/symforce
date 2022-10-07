@@ -13,6 +13,7 @@ from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
+from lcmtypes.sym._sparse_matrix_structure_t import sparse_matrix_structure_t
 from lcmtypes.sym._values_t import values_t
 
 from sym import ATANCameraCal
@@ -295,6 +296,18 @@ class OptimizationStats:
     def best_linearization(self, arg1: Linearization) -> None:
         pass
     @property
+    def cholesky_factor_sparsity(self) -> sparse_matrix_structure_t:
+        """
+        Sparsity pattern of the cholesky factor L (filled out if debug_stats=True)
+
+        :type: sparse_matrix_structure_t
+        """
+    @cholesky_factor_sparsity.setter
+    def cholesky_factor_sparsity(self, arg0: sparse_matrix_structure_t) -> None:
+        """
+        Sparsity pattern of the cholesky factor L (filled out if debug_stats=True)
+        """
+    @property
     def early_exited(self) -> bool:
         """
         Did the optimization early exit? (either because it converged, or because it could not find a good step).
@@ -314,6 +327,30 @@ class OptimizationStats:
     @iterations.setter
     def iterations(self, arg0: typing.List[optimization_iteration_t]) -> None:
         pass
+    @property
+    def jacobian_sparsity(self) -> sparse_matrix_structure_t:
+        """
+        Sparsity pattern of the problem jacobian (filled out if debug_stats=True)
+
+        :type: sparse_matrix_structure_t
+        """
+    @jacobian_sparsity.setter
+    def jacobian_sparsity(self, arg0: sparse_matrix_structure_t) -> None:
+        """
+        Sparsity pattern of the problem jacobian (filled out if debug_stats=True)
+        """
+    @property
+    def linear_solver_ordering(self) -> typing.Any:
+        """
+        Ordering used by the linear solver (filled out if debug_stats=True)
+
+        :type: typing.Any
+        """
+    @linear_solver_ordering.setter
+    def linear_solver_ordering(self, arg0: typing.Any) -> None:
+        """
+        Ordering used by the linear solver (filled out if debug_stats=True)
+        """
     pass
 
 class Optimizer:

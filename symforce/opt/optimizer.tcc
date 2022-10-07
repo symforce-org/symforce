@@ -103,13 +103,11 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* const 
     num_iterations = nonlinear_solver_.Params().iterations;
   }
 
-  stats->iterations.reserve(num_iterations);
-
   Initialize(*values);
 
   // Clear state for this run
   nonlinear_solver_.Reset(*values);
-  stats->iterations.clear();
+  stats->Reset(num_iterations);
   IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
 }
 
@@ -226,6 +224,12 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
       // becomes invalid
       stats->best_linearization = nonlinear_solver_.GetBestLinearization();
     }
+  }
+
+  if (debug_stats_) {
+    const auto& linearization = nonlinear_solver_.GetBestLinearization();
+    stats->jacobian_sparsity = {linearization.JacobianRowIndicesMap(),
+                                linearization.JacobianColumnPointersMap()};
   }
 
   stats->early_exited = optimization_early_exited;

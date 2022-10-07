@@ -45,10 +45,13 @@ class SymforceCCSymStubsCodegenTest(TestCase):
     def test_generate_cc_sym_stubs(self) -> None:
         output_dir = Path(self.make_output_dir("sf_cc_sym_stubs_codegen_test"))
 
+        stubgen_output = self.cc_sym_stubgen_output()
+
         # Change return type of Values.at to be Any rather than object
-        stubgen_output = re.sub(
-            r"(def at\([^)]*\) ->) object", r"\1 typing.Any", self.cc_sym_stubgen_output()
-        )
+        stubgen_output = re.sub(r"(def at\([^)]*\) ->) object", r"\1 typing.Any", stubgen_output)
+
+        # Change eigen return types to Any
+        stubgen_output = re.sub("Eigen::Matrix<int, -1, 1, 0, -1, 1>", "typing.Any", stubgen_output)
 
         # Change type of OptimizationStats.best_linearization to be Optional[Linearization]
         stubgen_output = re.sub(
@@ -79,6 +82,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                         "optimization_iteration_t",
                         "optimization_stats_t",
                         "optimizer_params_t",
+                        "sparse_matrix_structure_t",
                         "values_t",
                     ],
                     sym_include_type_names=[

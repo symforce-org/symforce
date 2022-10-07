@@ -27,8 +27,27 @@ struct OptimizationStats {
 
   optional<Linearization<Scalar>> best_linearization{};
 
+  sparse_matrix_structure_t jacobian_sparsity;
+  Eigen::VectorXi linear_solver_ordering;
+  sparse_matrix_structure_t cholesky_factor_sparsity;
+
   optimization_stats_t GetLcmType() const {
-    return optimization_stats_t(iterations, best_index, early_exited);
+    return optimization_stats_t(iterations, best_index, early_exited, jacobian_sparsity,
+                                linear_solver_ordering, cholesky_factor_sparsity);
+  }
+
+  // Reset the optimization stats
+  // Does _not_ cause reallocation, except for things in debug stats
+  void Reset(const size_t num_iterations) {
+    iterations.reserve(num_iterations);
+    iterations.clear();
+
+    best_index = {};
+    early_exited = {};
+    best_linearization = {};
+    jacobian_sparsity = {};
+    linear_solver_ordering = {};
+    cholesky_factor_sparsity = {};
   }
 };
 

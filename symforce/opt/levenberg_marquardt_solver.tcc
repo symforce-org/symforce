@@ -192,6 +192,17 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   {
     SYM_TIME_SCOPE("LM<{}>: SparseFactorize", id_);
     linear_solver_.Factorize(H_damped_);
+
+    // NOTE(aaron): This has to happen after the first factorize, since L_inner is not filled out
+    // by ComputeSymbolicSparsity
+    if (debug_stats && stats->linear_solver_ordering.size() == 0) {
+      stats->linear_solver_ordering = linear_solver_.Permutation().indices();
+      stats->cholesky_factor_sparsity = {
+          Eigen::Map<const VectorX<typename LinearSolverType::MatrixType::StorageIndex>>(
+              linear_solver_.L().innerIndexPtr(), linear_solver_.L().nonZeros()),
+          Eigen::Map<const VectorX<typename LinearSolverType::MatrixType::StorageIndex>>(
+              linear_solver_.L().outerIndexPtr(), linear_solver_.L().outerSize())};
+    }
   }
 
   {

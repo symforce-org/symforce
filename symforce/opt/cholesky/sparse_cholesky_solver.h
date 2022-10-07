@@ -98,6 +98,26 @@ class SparseCholeskySolver {
   template <typename Rhs>
   void SolveInPlace(Eigen::MatrixBase<Rhs>* const b) const;
 
+  const CholMatrixType& L() const {
+    SYM_ASSERT(IsInitialized());
+    return L_;
+  }
+
+  const VectorType& D() const {
+    SYM_ASSERT(IsInitialized());
+    return D_;
+  }
+
+  const PermutationMatrixType& Permutation() const {
+    SYM_ASSERT(IsInitialized());
+    return permutation_;
+  }
+
+  const PermutationMatrixType& InversePermutation() const {
+    SYM_ASSERT(IsInitialized());
+    return inv_permutation_;
+  }
+
  protected:
   // Whether we have computed a symbolic sparsity and
   // are ready to factorize/solve.

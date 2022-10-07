@@ -205,6 +205,18 @@ struct optimization_iteration_t {
   eigen_lcm.VectorXf jacobian_values;
 }
 
+// The structure of a sparse matrix in CSC format, not including the numerical values
+// For a description of the format, see
+// https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_column_(CSC_or_CCS)
+// In the comments below, assume an M x N matrix with nnz nonzeros
+struct sparse_matrix_structure_t {
+  // The row for each nonzero entry in the matrix
+  eigen_lcm.VectorXi row_indices; // size nnz
+
+  // The index into row_indices (and the values) of the start of each column
+  eigen_lcm.VectorXi column_pointers; // size N
+}
+
 // Debug stats for a full optimization run
 struct optimization_stats_t {
   optimization_iteration_t iterations[];
@@ -215,4 +227,13 @@ struct optimization_stats_t {
   // Did the optimization early exit? (either because it converged, or because it could not find a
   // good step)
   boolean early_exited;
+
+  // The sparsity pattern of the jacobian, filled out if debug_stats=true
+  sparse_matrix_structure_t jacobian_sparsity;
+
+  // The ordering used for the linear solver, filled out if debug_stats=true
+  eigen_lcm.VectorXi linear_solver_ordering;
+
+  // The sparsity pattern of the cholesky factor L, filled out if debug_stats=true
+  sparse_matrix_structure_t cholesky_factor_sparsity;
 }
