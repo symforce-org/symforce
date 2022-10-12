@@ -18,10 +18,37 @@ import symforce
 symforce.set_epsilon_to_symbol()
 
 # -----------------------------------------------------------------------------
+# Create initial Values
+# -----------------------------------------------------------------------------
+import numpy as np
+
+from symforce import typing as T
+from symforce.values import Values
+
+
+def build_initial_values() -> T.Tuple[Values, int, int]:
+    """
+    Creates a Values with numerical values for the constants in the problem, and initial guesses
+    for the optimized variables
+    """
+    num_poses = 3
+    num_landmarks = 3
+
+    initial_values = Values(
+        poses=[sf.Pose2.identity()] * num_poses,
+        landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
+        distances=[1.7, 1.4],
+        angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
+        epsilon=sf.numeric_epsilon,
+    )
+
+    return initial_values, num_poses, num_landmarks
+
+
+# -----------------------------------------------------------------------------
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce.symbolic as sf
-from symforce import typing as T
 
 
 def bearing_residual(
@@ -71,23 +98,12 @@ def build_factors(num_poses: int, num_landmarks: int) -> T.Iterator[Factor]:
 # -----------------------------------------------------------------------------
 # Instantiate, optimize, and visualize
 # -----------------------------------------------------------------------------
-import numpy as np
-
 from symforce.opt.optimizer import Optimizer
-from symforce.values import Values
 
 
 def main() -> None:
     # Create a problem setup and initial guess
-    num_poses = 3
-    num_landmarks = 3
-    initial_values = Values(
-        poses=[sf.Pose2.identity()] * num_poses,
-        landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
-        distances=[1.7, 1.4],
-        angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
-        epsilon=sf.numeric_epsilon,
-    )
+    initial_values, num_poses, num_landmarks = build_initial_values()
 
     # Create factors
     factors = build_factors(num_poses=num_poses, num_landmarks=num_landmarks)

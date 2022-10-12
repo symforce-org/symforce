@@ -20,11 +20,92 @@ import symforce
 symforce.set_epsilon_to_symbol()
 
 # -----------------------------------------------------------------------------
+# Create initial Values
+# -----------------------------------------------------------------------------
+import numpy as np
+
+from symforce import typing as T
+from symforce.values import Values
+
+
+def build_values(num_poses: int) -> T.Tuple[Values, int]:
+    np.random.seed(42)
+
+    # Create a problem setup and initial guess
+    values = Values()
+
+    # Create sample ground-truth poses
+    gt_world_T_body = []
+    for i in range(num_poses):
+        # Pick a nonlinear shape of motion to make it interesting
+        t = i / num_poses
+        tangent_vec = np.array(
+            [
+                -1 * t,
+                -2 * t,
+                -3 * t,
+                8 * np.sin(t * np.pi / 1.3),
+                9 * np.sin(t * np.pi / 2),
+                5 * np.sin(t * np.pi / 1.8),
+            ]
+        )
+        gt_world_T_body.append(sym.Pose3.from_tangent(tangent_vec, epsilon=sf.numeric_epsilon))
+
+    # Set the initial guess either to ground truth or identity
+    use_gt_poses = False
+    if use_gt_poses:
+        values["world_T_body"] = gt_world_T_body
+    else:
+        values["world_T_body"] = [sym.Pose3.identity() for _ in range(num_poses)]
+
+    # Set landmark locations
+    values["world_t_landmark"] = [
+        np.random.uniform(low=0.0, high=10.0, size=3) for _ in range(NUM_LANDMARKS)
+    ]
+    num_landmarks = len(values["world_t_landmark"])
+
+    # Set odometry measurements
+    values["odometry_diagonal_sigmas"] = np.array([0.05, 0.05, 0.05, 0.2, 0.2, 0.2])
+    values["odometry_relative_pose_measurements"] = []
+    for i in range(num_poses - 1):
+        # Get ground truth
+        gt_relative_pose = gt_world_T_body[i].inverse() * gt_world_T_body[i + 1]
+
+        # Perturb
+        tangent_perturbation = np.random.normal(size=6) * values["odometry_diagonal_sigmas"]
+        relative_pose_meas = gt_relative_pose.retract(tangent_perturbation)
+
+        values["odometry_relative_pose_measurements"].append(relative_pose_meas)
+
+    # Set landmark measurements
+    values["matching_sigma"] = 0.1
+    values["body_t_landmark_measurements"] = np.zeros((num_poses, num_landmarks, 3))
+    for i in range(num_poses):
+        for j in range(num_landmarks):
+            # Get ground truth
+            gt_body_t_landmark = gt_world_T_body[i].inverse() * values["world_t_landmark"][j]
+
+            # Perturb
+            perturbation = np.random.normal(scale=values["matching_sigma"], size=3)
+            body_t_landmark_meas = gt_body_t_landmark + perturbation
+
+            values["body_t_landmark_measurements"][i, j, :] = body_t_landmark_meas
+
+    # Turn first two axes into python lists so they are individual keys, not part of a tensor
+    values["body_t_landmark_measurements"] = list(
+        list(m) for m in values["body_t_landmark_measurements"]
+    )
+
+    values["epsilon"] = sf.numeric_epsilon
+
+    return values, num_landmarks
+
+
+# -----------------------------------------------------------------------------
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce.symbolic as sf
 from symforce import logger
-from symforce import typing as T
 
 if symforce.get_symbolic_api() != "symengine":
     logger.warning("The 3D Localization example is very slow on sympy. Use symengine.")
@@ -109,11 +190,8 @@ def build_factors(num_poses: int, num_landmarks: int) -> T.Iterator[Factor]:
 # -----------------------------------------------------------------------------
 # Instantiate, optimize, and visualize
 # -----------------------------------------------------------------------------
-import numpy as np
-
 import sym
 from symforce.opt.optimizer import Optimizer
-from symforce.values import Values
 
 
 def build_residual(num_poses: int, num_landmarks: int, values: Values) -> sf.Matrix:
@@ -141,79 +219,6 @@ def build_residual(num_poses: int, num_landmarks: int, values: Values) -> sf.Mat
         )
 
     return sf.Matrix.block_matrix([[residual] for residual in residuals])
-
-
-def build_values(num_poses: int) -> T.Tuple[Values, int]:
-    np.random.seed(42)
-
-    # Create a problem setup and initial guess
-    values = Values()
-
-    # Create sample ground-truth poses
-    gt_world_T_body = []
-    for i in range(num_poses):
-        # Pick a nonlinear shape of motion to make it interesting
-        t = i / num_poses
-        tangent_vec = np.array(
-            [
-                -1 * t,
-                -2 * t,
-                -3 * t,
-                8 * np.sin(t * np.pi / 1.3),
-                9 * np.sin(t * np.pi / 2),
-                5 * np.sin(t * np.pi / 1.8),
-            ]
-        )
-        gt_world_T_body.append(sym.Pose3.from_tangent(tangent_vec, epsilon=sf.numeric_epsilon))
-
-    # Set the initial guess either to ground truth or identity
-    use_gt_poses = False
-    if use_gt_poses:
-        values["world_T_body"] = gt_world_T_body
-    else:
-        values["world_T_body"] = [sym.Pose3.identity() for _ in range(num_poses)]
-
-    # Set landmark locations
-    values["world_t_landmark"] = [
-        np.random.uniform(low=0.0, high=10.0, size=3) for _ in range(NUM_LANDMARKS)
-    ]
-    num_landmarks = len(values["world_t_landmark"])
-
-    # Set odometry measurements
-    values["odometry_diagonal_sigmas"] = np.array([0.05, 0.05, 0.05, 0.2, 0.2, 0.2])
-    values["odometry_relative_pose_measurements"] = []
-    for i in range(num_poses - 1):
-        # Get ground truth
-        gt_relative_pose = gt_world_T_body[i].inverse() * gt_world_T_body[i + 1]
-
-        # Perturb
-        tangent_perturbation = np.random.normal(size=6) * values["odometry_diagonal_sigmas"]
-        relative_pose_meas = gt_relative_pose.retract(tangent_perturbation)
-
-        values["odometry_relative_pose_measurements"].append(relative_pose_meas)
-
-    # Set landmark measurements
-    values["matching_sigma"] = 0.1
-    values["body_t_landmark_measurements"] = np.zeros((num_poses, num_landmarks, 3))
-    for i in range(num_poses):
-        for j in range(num_landmarks):
-            # Get ground truth
-            gt_body_t_landmark = gt_world_T_body[i].inverse() * values["world_t_landmark"][j]
-
-            # Perturb
-            perturbation = np.random.normal(scale=values["matching_sigma"], size=3)
-            body_t_landmark_meas = gt_body_t_landmark + perturbation
-
-            values["body_t_landmark_measurements"][i, j, :] = body_t_landmark_meas
-
-    # Turn first two axes into python lists so they are individual keys, not part of a tensor
-    values["body_t_landmark_measurements"] = list(
-        list(m) for m in values["body_t_landmark_measurements"]
-    )
-
-    values["epsilon"] = sf.numeric_epsilon
-
-    return values, num_landmarks
 
 
 def main() -> None:

@@ -186,7 +186,25 @@ See the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html)
 
 We will model this problem as a factor graph and solve it with nonlinear least-squares.
 
-The residual function comprises of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
+First, we will instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
+
+```python
+import numpy as np
+from symforce.values import Values
+
+num_poses = 3
+num_landmarks = 3
+
+initial_values = Values(
+    poses=[sf.Pose2.identity()] * num_poses,
+    landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
+    distances=[1.7, 1.4],
+    angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
+    epsilon=sf.numeric_epsilon,
+)
+```
+
+Next, we can set up the factors connecting our variables.  The residual function comprises of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
 
 ```python
 def bearing_residual(
@@ -212,9 +230,6 @@ Now we can create [`Factor`](https://symforce.org/api/symforce.opt.factor.html?h
 
 ```python
 from symforce.opt.factor import Factor
-
-num_poses = 3
-num_landmarks = 3
 
 factors = []
 
@@ -252,21 +267,6 @@ optimizer = Optimizer(
     optimized_keys=[f"poses[{i}]" for i in range(num_poses)],
     # So that we save more information about each iteration, to visualize later:
     debug_stats=True,
-)
-```
-
-Now we need to instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
-
-```python
-import numpy as np
-from symforce.values import Values
-
-initial_values = Values(
-    poses=[sf.Pose2.identity()] * num_poses,
-    landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
-    distances=[1.7, 1.4],
-    angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
-    epsilon=sf.numeric_epsilon,
 )
 ```
 
