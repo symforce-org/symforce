@@ -38,6 +38,8 @@ jobs:
           echo SYM_LOCATION=/home/runner/.local/lib/python3.8/site-packages/sym/__init__.py >> $GITHUB_ENV
           echo SKYMARSHAL_LOCATION=/home/runner/.local/lib/python3.8/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
           echo SYMENGINE_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
+          echo LCMTYPES_SYM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/sym/__init__.py >> $GITHUB_ENV
+          echo LCMTYPES_EIGENLCM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/eigen_lcm/__init__.py >> $GITHUB_ENV
           echo SF_SYMPY_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
 
       - name: Set expected install locations for macos
@@ -47,6 +49,8 @@ jobs:
           echo SYM_LOCATION=/usr/local/lib/python3.10/site-packages/sym/__init__.py >> $GITHUB_ENV
           echo SKYMARSHAL_LOCATION=/usr/local/lib/python3.10/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
           echo SYMENGINE_LOCATION=/usr/local/lib/python3.10/site-packages/symengine/__init__.py >> $GITHUB_ENV
+          echo LCMTYPES_SYM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/sym/__init__.py >> $GITHUB_ENV
+          echo LCMTYPES_EIGENLCM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/eigen_lcm/__init__.py >> $GITHUB_ENV
           echo SF_SYMPY_LOCATION=/usr/local/lib/python3.10/site-packages/symengine/__init__.py >> $GITHUB_ENV
 
       - name: Test cc_sym is installed in expected location
@@ -60,6 +64,12 @@ jobs:
 
       - name: Test symengine is installed in expected location
         run: python3 -c "import symengine; assert symengine.__file__ == '$SYMENGINE_LOCATION', symengine.__file__"
+
+      - name: Test lcmtypes.sym is installed in the expected location
+        run: python3 -c "import lcmtypes.sym; assert lcmtypes.sym.__file__ == '$LCMTYPES_SYM_LOCATION', lcmtypes.sym.__file__"
+
+      - name: Test lcmtypes.eigen_lcm is installed in the expected location
+        run: python3 -c "import lcmtypes.eigen_lcm; assert lcmtypes.eigen_lcm.__file__ == '$LCMTYPES_EIGENLCM_LOCATION', lcmtypes.eigen_lcm.__file__"
 
       - name: Test symforce.symbolic.sympy returns a package from the expected location
         run: python3 -c "import symforce.symbolic as sf; assert sf.sympy.__file__ == '$SF_SYMPY_LOCATION', sf.sympy.__file__"

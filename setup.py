@@ -187,6 +187,22 @@ class CMakeBuild(build_ext):
             self.move_output(ext)
 
     def move_output(self, ext: CMakeExtension) -> None:
+        if ext.name == "lcmtypes":  # type: ignore[attr-defined]
+            build_temp_path = Path(self.build_temp)
+            dest_path_dir = Path(self.get_ext_fullpath(ext.name)).resolve().parent  # type: ignore[attr-defined]
+            if self.inplace:
+                # NOTE(brad): If building in-place, place package in lcmtypes_build dir to avoid
+                # collision with existing lcmtypes directory. Happens in editable installs.
+                dest_path = dest_path_dir / "lcmtypes_build" / "lcmtypes"
+            else:
+                dest_path = dest_path_dir / "lcmtypes"
+
+            self.copy_tree(
+                str(build_temp_path / "lcmtypes" / "python2.7" / "lcmtypes"),
+                str(dest_path),
+            )
+            return
+
         build_temp = Path(self.build_temp).resolve()
         extension_source_paths = {"cc_sym": build_temp / "pybind" / self.get_ext_filename("cc_sym")}
 
@@ -299,12 +315,6 @@ class InstallWithExtras(install):
             ["cmake", "--build", ".", "--target", "install"],
             cwd=build_dir,
             check=True,
-        )
-
-        # Install lcmtypes - this is kinda jank
-        self.copy_tree(
-            str(build_dir / "lcmtypes" / "python2.7" / "lcmtypes"),
-            str(Path.cwd() / self.install_platlib / "lcmtypes"),  # type: ignore[attr-defined]
         )
 
 
@@ -444,11 +454,12 @@ setup(
     package_dir={
         "symforce": "symforce",
         "symengine": "third_party/symenginepy/symengine",
+        "lcmtypes": "lcmtypes_build/lcmtypes",
     },
     # Override the extension builder with our cmake class
     cmdclass=cmdclass,
     # Build C++ extension module
-    ext_modules=[CMakeExtension("cc_sym")],
+    ext_modules=[CMakeExtension("cc_sym"), CMakeExtension("lcmtypes")],
     # Barebones packages needed to run symforce
     install_requires=[
         "black",
