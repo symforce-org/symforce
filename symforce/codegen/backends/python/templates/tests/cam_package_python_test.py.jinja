@@ -44,6 +44,16 @@ class CamPackageTest(unittest.TestCase):
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
 
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.{{ cls.__name__ }},
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point()
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
+
     def test_storage_ops_{{ cls.__name__ }}(self):
         # type: () -> None
         cam_cal = self.cam_cal_from_points(

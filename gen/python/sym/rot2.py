@@ -32,11 +32,23 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     def __init__(self, z=None):
-        # type: (T.Sequence[float]) -> None
+        # type: (T.Union[T.Sequence[float], numpy.ndarray]) -> None
         if z is None:
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
-            assert len(z) == self.storage_dim()
+            if isinstance(z, numpy.ndarray):
+                if z.shape in [(2, 1), (1, 2)]:
+                    z = z.flatten()
+                elif z.shape != (2,):
+                    raise IndexError(
+                        "Expected z to be a vector of length 2; instead had shape {}".format(
+                            z.shape
+                        )
+                    )
+            elif len(z) != 2:
+                raise IndexError(
+                    "Expected z to be a sequence of length 2, was instead length {}.".format(len(z))
+                )
             self.data = list(z)
 
     # --------------------------------------------------------------------------

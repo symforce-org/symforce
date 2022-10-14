@@ -37,12 +37,7 @@ class {{ cls.__name__ }}(object):
         self.data = []
         {% for arg, size in storage_order %}
         {% if size != 1 %}
-        if len({{ arg }}) != {{ size }}:
-            raise ValueError(
-                "Expected {{ arg }} to be a sequence of length {{ size }}, was instead length {}.".format(
-                    len({{ arg }})
-                )
-            )
+        {{ util.flatten_if_ndarray(arg, size) | indent(width=8) }}
         {% endif %}
         {% endfor %}
 

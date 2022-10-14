@@ -57,6 +57,16 @@ class CamPackageTest(unittest.TestCase):
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
 
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.LinearCameraCal,
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point(),
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
+
     def test_storage_ops_LinearCameraCal(self):
         # type: () -> None
         cam_cal = self.cam_cal_from_points(
@@ -171,6 +181,16 @@ class CamPackageTest(unittest.TestCase):
 
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
+
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.ATANCameraCal,
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point(),
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
 
     def test_storage_ops_ATANCameraCal(self):
         # type: () -> None
@@ -289,6 +309,16 @@ class CamPackageTest(unittest.TestCase):
 
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
+
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.DoubleSphereCameraCal,
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point(),
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
 
     def test_storage_ops_DoubleSphereCameraCal(self):
         # type: () -> None
@@ -410,6 +440,16 @@ class CamPackageTest(unittest.TestCase):
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
 
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.EquirectangularCameraCal,
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point(),
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
+
     def test_storage_ops_EquirectangularCameraCal(self):
         # type: () -> None
         cam_cal = self.cam_cal_from_points(
@@ -529,6 +569,16 @@ class CamPackageTest(unittest.TestCase):
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
 
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.PolynomialCameraCal,
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point(),
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
+
     def test_storage_ops_PolynomialCameraCal(self):
         # type: () -> None
         cam_cal = self.cam_cal_from_points(
@@ -626,6 +676,16 @@ class CamPackageTest(unittest.TestCase):
 
         np.testing.assert_array_equal(np.array([focal_length]).T, cam_cal.focal_length())
         np.testing.assert_array_equal(np.array([principal_point]).T, cam_cal.principal_point())
+
+        with self.subTest("Getters are compatible with the constructor"):
+            new_cam_cal = self.cam_cal_from_points(
+                sym.SphericalCameraCal,
+                focal_length=cam_cal.focal_length(),
+                principal_point=cam_cal.principal_point(),
+            )
+            self.assertEqual(cam_cal.data, new_cam_cal.data)
+            for x in new_cam_cal.data:
+                self.assertIsInstance(x, float)
 
     def test_storage_ops_SphericalCameraCal(self):
         # type: () -> None
