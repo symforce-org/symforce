@@ -33,8 +33,14 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
 
     # Input arrays
     _nav_T_cam = nav_T_cam.data
-    if len(nav_t_point.shape) == 1:
+    if nav_t_point.shape == (3,):
         nav_t_point = nav_t_point.reshape((3, 1))
+    elif nav_t_point.shape != (3, 1):
+        raise IndexError(
+            "nav_t_point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                nav_t_point.shape
+            )
+        )
 
     # Intermediate terms (23)
     _tmp0 = 2 * _nav_T_cam[3]

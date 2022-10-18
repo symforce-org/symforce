@@ -72,8 +72,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (4)
         _tmp0 = math.sqrt(epsilon + point[0, 0] ** 2 + point[1, 0] ** 2)
@@ -111,8 +117,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (40)
         _tmp0 = -epsilon

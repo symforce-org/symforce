@@ -140,8 +140,14 @@ class Pose3(object):
 
         # Input arrays
         _self = self.data
-        if len(right.shape) == 1:
+        if right.shape == (3,):
             right = right.reshape((3, 1))
+        elif right.shape != (3, 1):
+            raise IndexError(
+                "right is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    right.shape
+                )
+            )
 
         # Intermediate terms (11)
         _tmp0 = 2 * _self[2]
@@ -196,8 +202,14 @@ class Pose3(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (20)
         _tmp0 = 2 * _self[2]

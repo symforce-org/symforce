@@ -24,8 +24,14 @@ class LieGroupOps(object):
         # Total ops: 0
 
         # Input arrays
-        if len(vec.shape) == 1:
+        if vec.shape == (8,):
             vec = vec.reshape((8, 1))
+        elif vec.shape != (8, 1):
+            raise IndexError(
+                "vec is expected to have shape (8, 1) or (8,); instead had shape {}".format(
+                    vec.shape
+                )
+            )
 
         # Intermediate terms (0)
 
@@ -72,8 +78,14 @@ class LieGroupOps(object):
 
         # Input arrays
         _a = a.data
-        if len(vec.shape) == 1:
+        if vec.shape == (8,):
             vec = vec.reshape((8, 1))
+        elif vec.shape != (8, 1):
+            raise IndexError(
+                "vec is expected to have shape (8, 1) or (8,); instead had shape {}".format(
+                    vec.shape
+                )
+            )
 
         # Intermediate terms (0)
 
