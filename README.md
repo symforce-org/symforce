@@ -186,7 +186,17 @@ See the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html)
 
 We will model this problem as a factor graph and solve it with nonlinear least-squares.
 
-First, we will instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
+First, we need to tell SymForce to use a nonzero epsilon to prevent singularities.  This isn't necessary when playing around with symbolic expressions like we were above, but it's important now that we want to numerically evaluate some results.  For more information, check out the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html) - for now, all you need to do is this:
+
+```python
+import symforce
+symforce.set_epsilon_to_symbol()
+```
+
+This needs to be done before other parts of symforce are imported - if you're following along in a
+notebook you should add this at the top and restart the kernel.
+
+Now that epsilon is set up, we will instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
 
 ```python
 import numpy as np
