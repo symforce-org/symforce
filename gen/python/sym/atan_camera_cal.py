@@ -93,7 +93,7 @@ class ATANCameraCal(object):
         return ops.CameraOps.principal_point(self)
 
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (ATANCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -105,7 +105,7 @@ class ATANCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (ATANCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -119,7 +119,7 @@ class ATANCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point_with_jacobians(self, point, epsilon)
 
     def camera_ray_from_pixel(self, pixel, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (ATANCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -133,7 +133,7 @@ class ATANCameraCal(object):
         return ops.CameraOps.camera_ray_from_pixel(self, pixel, epsilon)
 
     def camera_ray_from_pixel_with_jacobians(self, pixel, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (ATANCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 

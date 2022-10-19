@@ -15,7 +15,7 @@ import sym  # pylint: disable=unused-import
 
 
 def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
-    # type: (sym.Pose3, numpy.ndarray, float) -> numpy.ndarray
+    # type: (sym.Pose3, T.Union[T.Sequence[float], numpy.ndarray], float) -> numpy.ndarray
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.
@@ -33,7 +33,15 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
 
     # Input arrays
     _nav_T_cam = nav_T_cam.data
-    if nav_t_point.shape == (3,):
+    if not isinstance(nav_t_point, numpy.ndarray):
+        if len(nav_t_point) != 3:
+            raise IndexError(
+                "nav_t_point is expected to have length 3; instead had length {}".format(
+                    len(nav_t_point)
+                )
+            )
+        nav_t_point = numpy.array(nav_t_point).reshape((3, 1))
+    elif nav_t_point.shape == (3,):
         nav_t_point = nav_t_point.reshape((3, 1))
     elif nav_t_point.shape != (3, 1):
         raise IndexError(

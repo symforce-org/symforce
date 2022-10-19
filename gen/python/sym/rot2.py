@@ -56,7 +56,7 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     def compose_with_point(self, right):
-        # type: (Rot2, numpy.ndarray) -> numpy.ndarray
+        # type: (Rot2, T.Union[T.Sequence[float], numpy.ndarray]) -> numpy.ndarray
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -65,7 +65,13 @@ class Rot2(object):
 
         # Input arrays
         _self = self.data
-        if right.shape == (2,):
+        if not isinstance(right, numpy.ndarray):
+            if len(right) != 2:
+                raise IndexError(
+                    "right is expected to have length 2; instead had length {}".format(len(right))
+                )
+            right = numpy.array(right).reshape((2, 1))
+        elif right.shape == (2,):
             right = right.reshape((2, 1))
         elif right.shape != (2, 1):
             raise IndexError(

@@ -59,7 +59,7 @@ class CameraOps(object):
 
     @staticmethod
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (sym.DoubleSphereCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -72,7 +72,13 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if point.shape == (3,):
+        if not isinstance(point, numpy.ndarray):
+            if len(point) != 3:
+                raise IndexError(
+                    "point is expected to have length 3; instead had length {}".format(len(point))
+                )
+            point = numpy.array(point).reshape((3, 1))
+        elif point.shape == (3,):
             point = point.reshape((3, 1))
         elif point.shape != (3, 1):
             raise IndexError(
@@ -149,7 +155,7 @@ class CameraOps(object):
 
     @staticmethod
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (sym.DoubleSphereCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -164,7 +170,13 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if point.shape == (3,):
+        if not isinstance(point, numpy.ndarray):
+            if len(point) != 3:
+                raise IndexError(
+                    "point is expected to have length 3; instead had length {}".format(len(point))
+                )
+            point = numpy.array(point).reshape((3, 1))
+        elif point.shape == (3,):
             point = point.reshape((3, 1))
         elif point.shape != (3, 1):
             raise IndexError(
@@ -284,7 +296,7 @@ class CameraOps(object):
 
     @staticmethod
     def camera_ray_from_pixel(self, pixel, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (sym.DoubleSphereCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -299,7 +311,13 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if pixel.shape == (2,):
+        if not isinstance(pixel, numpy.ndarray):
+            if len(pixel) != 2:
+                raise IndexError(
+                    "pixel is expected to have length 2; instead had length {}".format(len(pixel))
+                )
+            pixel = numpy.array(pixel).reshape((2, 1))
+        elif pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
         elif pixel.shape != (2, 1):
             raise IndexError(
@@ -337,7 +355,7 @@ class CameraOps(object):
 
     @staticmethod
     def camera_ray_from_pixel_with_jacobians(self, pixel, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (sym.DoubleSphereCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -352,7 +370,13 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if pixel.shape == (2,):
+        if not isinstance(pixel, numpy.ndarray):
+            if len(pixel) != 2:
+                raise IndexError(
+                    "pixel is expected to have length 2; instead had length {}".format(len(pixel))
+                )
+            pixel = numpy.array(pixel).reshape((2, 1))
+        elif pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
         elif pixel.shape != (2, 1):
             raise IndexError(

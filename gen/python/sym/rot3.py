@@ -79,7 +79,7 @@ class Rot3(object):
     # --------------------------------------------------------------------------
 
     def compose_with_point(self, right):
-        # type: (Rot3, numpy.ndarray) -> numpy.ndarray
+        # type: (Rot3, T.Union[T.Sequence[float], numpy.ndarray]) -> numpy.ndarray
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -88,7 +88,13 @@ class Rot3(object):
 
         # Input arrays
         _self = self.data
-        if right.shape == (3,):
+        if not isinstance(right, numpy.ndarray):
+            if len(right) != 3:
+                raise IndexError(
+                    "right is expected to have length 3; instead had length {}".format(len(right))
+                )
+            right = numpy.array(right).reshape((3, 1))
+        elif right.shape == (3,):
             right = right.reshape((3, 1))
         elif right.shape != (3, 1):
             raise IndexError(

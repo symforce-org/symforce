@@ -19,12 +19,18 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.DoubleSphereCameraCal
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.DoubleSphereCameraCal
 
         # Total ops: 0
 
         # Input arrays
-        if vec.shape == (6,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 6:
+                raise IndexError(
+                    "vec is expected to have length 6; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((6, 1))
+        elif vec.shape == (6,):
             vec = vec.reshape((6, 1))
         elif vec.shape != (6, 1):
             raise IndexError(
@@ -68,13 +74,19 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> sym.DoubleSphereCameraCal
+        # type: (sym.DoubleSphereCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.DoubleSphereCameraCal
 
         # Total ops: 6
 
         # Input arrays
         _a = a.data
-        if vec.shape == (6,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 6:
+                raise IndexError(
+                    "vec is expected to have length 6; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((6, 1))
+        elif vec.shape == (6,):
             vec = vec.reshape((6, 1))
         elif vec.shape != (6, 1):
             raise IndexError(

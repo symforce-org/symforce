@@ -15,8 +15,9 @@
  #     is_input (bool): Is this an input argument or return value?
  #     available_classes (T.List[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
+ #     sequence_vecs (bool): Can a sequence be a vector?
  #}
-{%- macro format_typename(T_or_value, name, is_input, available_classes = []) %}
+{%- macro format_typename(T_or_value, name, is_input, available_classes = [], sequence_vecs=False) %}
     {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'DataBuffer' -%}
         numpy.ndarray
@@ -25,7 +26,11 @@
     {%- elif T.__name__ == 'NoneType' -%}
         None
     {%- elif issubclass(T, Matrix) -%}
+        {%- if sequence_vecs and is_input and (T.SHAPE | min) == 1 -%}
+        T.Union[T.Sequence[float], numpy.ndarray]
+        {%- else -%}
         numpy.ndarray
+        {%- endif -%}
     {%- elif issubclass(T, Values) -%}
         {#- TODO(aaron): We don't currently know where to import lcmtypes from or what they should be
          # called, at some point we should fix this and do something like
@@ -34,7 +39,7 @@
         T.Any
     {%- elif is_sequence(T_or_value) -%}
         {%- if is_input -%}
-            T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
+            T.Sequence[{{ format_typename(T_or_value[0], name, is_input, available_classes) }}]
         {%- else -%}
             T.List[float]
         {%- endif -%}
@@ -111,10 +116,12 @@
 {%- if is_method and "self" not in spec.inputs -%}
 @staticmethod
 {% endif %}
+{# Only accept list as vector inputs if not numba and we reshape vecs into ndarrays #}
+{% set sequence_vecs = spec.config.reshape_vectors and not spec.config.use_numba %}
 def {{ function_name_and_args(spec) }}:
     # type: (
     {%- for name, type in spec.inputs.items() -%}
-    {{ format_typename(type, name, is_input=True, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
+    {{ format_typename(type, name, is_input=True, available_classes=available_classes, sequence_vecs=sequence_vecs) }}{% if not loop.last %}, {% endif %}
     {%- endfor -%}) -> {{ get_return_type(spec, available_classes=available_classes) }}
 {%- endmacro -%}
 
@@ -139,17 +146,24 @@ def {{ function_name_and_args(spec) }}:
  #}
 {% macro check_size_and_reshape(name, shape, use_numba) %}
 {% if 1 in shape %}
+    {% set size = shape | max %}
     {% if use_numba %}
     {# NOTE(brad): Numba will complain if we reshape name inside of a conditional #}
-if not ({{ name }}.shape == {{ shape }} or {{ name }}.shape == ({{ shape | max }},)):
-    raise IndexError("{{ name }} is expected to have shape {{ shape }} or ({{ shape | max }},)")
+if not ({{ name }}.shape == {{ shape }} or {{ name }}.shape == ({{ size }},)):
+    raise IndexError("{{ name }} is expected to have shape {{ shape }} or ({{ size }},)")
 {{ name }} = {{ name }}.reshape({{ shape }})
     {% else %}
-if {{ name }}.shape == ({{ shape | max }},):
+if not isinstance({{ name }}, numpy.ndarray):
+    if len({{ name }}) != {{ size }}:
+        raise IndexError(
+            "{{ name }} is expected to have length {{ size }}; instead had length {}".format(len({{ name }}))
+        )
+    {{ name }} = numpy.array({{ name }}).reshape({{ shape }})
+elif {{ name }}.shape == ({{ size }},):
     {{ name }} = {{ name }}.reshape({{ shape }})
 elif {{ name }}.shape != {{ shape }}:
     raise IndexError(
-        "{{ name }} is expected to have shape {{ shape }} or ({{ shape | max }},); instead had shape {}".format(
+        "{{ name }} is expected to have shape {{ shape }} or ({{ size }},); instead had shape {}".format(
             {{ name }}.shape
         )
     )

@@ -19,12 +19,18 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.Pose2
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.Pose2
 
         # Total ops: 2
 
         # Input arrays
-        if vec.shape == (3,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 3:
+                raise IndexError(
+                    "vec is expected to have length 3; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((3, 1))
+        elif vec.shape == (3,):
             vec = vec.reshape((3, 1))
         elif vec.shape != (3, 1):
             raise IndexError(
@@ -65,13 +71,19 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.Pose2, numpy.ndarray, float) -> sym.Pose2
+        # type: (sym.Pose2, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.Pose2
 
         # Total ops: 10
 
         # Input arrays
         _a = a.data
-        if vec.shape == (3,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 3:
+                raise IndexError(
+                    "vec is expected to have length 3; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((3, 1))
+        elif vec.shape == (3,):
             vec = vec.reshape((3, 1))
         elif vec.shape != (3, 1):
             raise IndexError(

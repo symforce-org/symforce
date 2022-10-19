@@ -19,12 +19,18 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.ATANCameraCal
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.ATANCameraCal
 
         # Total ops: 0
 
         # Input arrays
-        if vec.shape == (5,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 5:
+                raise IndexError(
+                    "vec is expected to have length 5; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((5, 1))
+        elif vec.shape == (5,):
             vec = vec.reshape((5, 1))
         elif vec.shape != (5, 1):
             raise IndexError(
@@ -66,13 +72,19 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.ATANCameraCal, numpy.ndarray, float) -> sym.ATANCameraCal
+        # type: (sym.ATANCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.ATANCameraCal
 
         # Total ops: 5
 
         # Input arrays
         _a = a.data
-        if vec.shape == (5,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 5:
+                raise IndexError(
+                    "vec is expected to have length 5; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((5, 1))
+        elif vec.shape == (5,):
             vec = vec.reshape((5, 1))
         elif vec.shape != (5, 1):
             raise IndexError(

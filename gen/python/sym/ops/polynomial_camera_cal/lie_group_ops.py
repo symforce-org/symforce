@@ -19,12 +19,18 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.PolynomialCameraCal
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.PolynomialCameraCal
 
         # Total ops: 0
 
         # Input arrays
-        if vec.shape == (8,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 8:
+                raise IndexError(
+                    "vec is expected to have length 8; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((8, 1))
+        elif vec.shape == (8,):
             vec = vec.reshape((8, 1))
         elif vec.shape != (8, 1):
             raise IndexError(
@@ -72,13 +78,19 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.PolynomialCameraCal, numpy.ndarray, float) -> sym.PolynomialCameraCal
+        # type: (sym.PolynomialCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.PolynomialCameraCal
 
         # Total ops: 8
 
         # Input arrays
         _a = a.data
-        if vec.shape == (8,):
+        if not isinstance(vec, numpy.ndarray):
+            if len(vec) != 8:
+                raise IndexError(
+                    "vec is expected to have length 8; instead had length {}".format(len(vec))
+                )
+            vec = numpy.array(vec).reshape((8, 1))
+        elif vec.shape == (8,):
             vec = vec.reshape((8, 1))
         elif vec.shape != (8, 1):
             raise IndexError(
