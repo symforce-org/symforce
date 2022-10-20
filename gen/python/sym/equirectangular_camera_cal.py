@@ -182,13 +182,7 @@ class EquirectangularCameraCal(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> EquirectangularCameraCal
-        if len(vec) != cls.tangent_dim():
-            raise ValueError(
-                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
-                    len(vec), cls.tangent_dim()
-                )
-            )
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> EquirectangularCameraCal
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
@@ -196,13 +190,7 @@ class EquirectangularCameraCal(object):
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> EquirectangularCameraCal
-        if len(vec) != self.tangent_dim():
-            raise ValueError(
-                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
-                    len(vec), self.tangent_dim()
-                )
-            )
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> EquirectangularCameraCal
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
