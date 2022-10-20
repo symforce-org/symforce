@@ -184,9 +184,15 @@ See the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html)
 
 ## Build an optimization problem
 
-We will model this problem as a factor graph and solve it with nonlinear least-squares.
+We will model this problem as a factor graph and solve it with nonlinear least-squares. Specifically, we'll solve for the poses which minimize:
 
-First, we will instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
+- the error between the predicted bearing angles (given the poses and landmarks) and the measured bearing angles, and
+- the error between the predicted distance traveled (given the poses) and the measured distance traveled.
+
+
+First, we'll organize all of the relevant variables &mdash; the poses we wish to optimize, the given measurements, and the numeric constant epsilon &mdash; in a [`Values`](https://symforce.org/tutorials/values_tutorial.html) (a dictionary-like object expected by the optimizer). Even though we don't yet know the optimized pose values, we need to provide an initial guess, so we'll just set them to the identity element.
+
+It's worth pointing out that the keys of a Values object have no pre-defined meaning, and we can set them as we please.
 
 ```python
 import numpy as np
@@ -204,7 +210,7 @@ initial_values = Values(
 )
 ```
 
-Next, we can set up the factors connecting our variables.  The residual function comprises of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
+Next, we can set up the factors connecting our variables.  The residual function is composed of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
 
 ```python
 def bearing_residual(
@@ -226,7 +232,7 @@ def odometry_residual(
     return sf.V1((pose_b.t - pose_a.t).norm(epsilon=epsilon) - dist)
 ```
 
-Now we can create [`Factor`](https://symforce.org/api/symforce.opt.factor.html?highlight=factor#module-symforce.opt.factor) objects from the residual functions and a set of keys. The keys are named strings for the function arguments, which will be accessed by name from a [`Values`](https://symforce.org/api/symforce.values.values.html) class we later instantiate with numerical quantities.
+Now we can create [`Factor`](https://symforce.org/api/symforce.opt.factor.html?highlight=factor#module-symforce.opt.factor) objects from the residual functions and a set of keys. The keys are named strings for the function arguments, and are used to index into the `initial_values` we created above.
 
 ```python
 from symforce.opt.factor import Factor
