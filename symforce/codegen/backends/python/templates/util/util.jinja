@@ -217,3 +217,27 @@ def {{ function_name_and_args(spec) }}:
         {%- if not loop.last %}, {% endif %}
     {%- endfor -%}
 {% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Macro to flatten an array if it's an ndarray and is a vector. Also, raises
+ # a ValueError if the length is not equal to size and the shape is not that of
+ # a vector.
+ #
+ # Args:
+ #     array (str): The name of an sequence that might be an ndarray we wish to flatten
+ #     size (int): The expected size of the array
+ #}
+{% macro flatten_if_ndarray(array, size) %}
+if isinstance({{ array }}, numpy.ndarray):
+    if {{ array }}.shape in [({{ size }}, 1), (1, {{ size }})]:
+        {{ array }} = {{ array }}.flatten()
+    elif {{ array }}.shape != ({{ size }},):
+        raise IndexError("Expected {{ array }} to be a vector of length {{ size }}; instead had shape {}".format({{ array }}.shape))
+elif len({{ array }}) != {{ size }}:
+    raise IndexError(
+        "Expected {{ array }} to be a sequence of length {{ size }}, was instead length {}.".format(
+            len({{ array }})
+        )
+    )
+{%- endmacro %}

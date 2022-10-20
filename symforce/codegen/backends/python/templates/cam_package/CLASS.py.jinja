@@ -33,16 +33,11 @@ class {{ cls.__name__ }}(object):
         {{ arg }}{% if not loop.last %}, {% endif %}
         {% endfor %}
     ):
-        # type: ({% for arg, size in storage_order %}{%if size == 1 %}float{% else %}T.Sequence[float]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}) -> None
+        # type: ({% for arg, size in storage_order %}{%if size == 1 %}float{% else %}T.Union[T.Sequence[float], numpy.ndarray]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}) -> None
         self.data = []
         {% for arg, size in storage_order %}
         {% if size != 1 %}
-        if len({{ arg }}) != {{ size }}:
-            raise ValueError(
-                "Expected {{ arg }} to be a sequence of length {{ size }}, was instead length {}.".format(
-                    len({{ arg }})
-                )
-            )
+        {{ util.flatten_if_ndarray(arg, size) | indent(width=8) }}
         {% endif %}
         {% endfor %}
 

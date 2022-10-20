@@ -32,11 +32,23 @@ class Rot3(object):
     # --------------------------------------------------------------------------
 
     def __init__(self, q=None):
-        # type: (T.Sequence[float]) -> None
+        # type: (T.Union[T.Sequence[float], numpy.ndarray]) -> None
         if q is None:
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
-            assert len(q) == self.storage_dim()
+            if isinstance(q, numpy.ndarray):
+                if q.shape in [(4, 1), (1, 4)]:
+                    q = q.flatten()
+                elif q.shape != (4,):
+                    raise IndexError(
+                        "Expected q to be a vector of length 4; instead had shape {}".format(
+                            q.shape
+                        )
+                    )
+            elif len(q) != 4:
+                raise IndexError(
+                    "Expected q to be a sequence of length 4, was instead length {}.".format(len(q))
+                )
             self.data = list(q)
 
     @classmethod

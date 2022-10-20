@@ -124,6 +124,21 @@ class GeoPackageTest(unittest.TestCase):
         matrix = element.to_rotation_matrix()
         np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
 
+        # Test constructor handles column vectors correctly
+        col_data = np.random.normal(size=(geo_class.storage_dim(), 1))
+        rot = geo_class(col_data)
+        expected_data = col_data.flatten().tolist()
+        self.assertEqual(expected_data, rot.data)
+        for x in rot.data:
+            # NOTE(brad): One failure mode is for x to not be a float but an ndarray.
+            # This isn't caught by the above because [np.array([1.0])] == [1.0]
+            # evaluates to True.
+            self.assertIsInstance(x, float)
+
+        # Test constructor raises a IndexError if input is too large
+        with self.assertRaises(IndexError):
+            geo_class([1, 2, 3, 4, 5, 6])
+
     def test_storage_ops_Pose2(self):
         # type: () -> None
         """
@@ -218,6 +233,30 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_equal(element.position(), element.t)
         self.assertEqual(element.rotation(), element.R)
 
+        # Test position/rotation accessors are compatible with Constructor
+        element_copy = geo_class(t=element.t, R=element.R)
+        self.assertEqual(element.data, element_copy.data)
+        for x in element_copy.data:
+            # NOTE(brad): One failure mode is for x to not be a float but an ndarray.
+            # This isn't caught by the above because [np.array([1.0])] == [1.0]
+            # evaluates to True.
+            self.assertIsInstance(x, float)
+
+        # Test constructor handles column vectors correctly.
+        column_t = np.expand_dims(np.array(element.t).flatten(), axis=1)
+        column_element = geo_class(t=column_t, R=element.R)
+        self.assertEqual(element.data, column_element.data)
+        for x in column_element.data:
+            self.assertIsInstance(x, float)
+
+        # Test constructor raises a IndexError if input t is too large
+        with self.assertRaises(IndexError):
+            geo_class(t=[1, 2, 3, 4, 5, 6])
+
+        # Test constructor raises a ValueError if a non Rot is passed for R
+        with self.assertRaises(ValueError):
+            geo_class(R=4)  # type: ignore[arg-type]
+
     def test_storage_ops_Rot3(self):
         # type: () -> None
         """
@@ -307,6 +346,21 @@ class GeoPackageTest(unittest.TestCase):
         vector = np.random.normal(size=(3, 1))
         matrix = element.to_rotation_matrix()
         np.testing.assert_almost_equal(np.matmul(matrix, vector), element * vector)
+
+        # Test constructor handles column vectors correctly
+        col_data = np.random.normal(size=(geo_class.storage_dim(), 1))
+        rot = geo_class(col_data)
+        expected_data = col_data.flatten().tolist()
+        self.assertEqual(expected_data, rot.data)
+        for x in rot.data:
+            # NOTE(brad): One failure mode is for x to not be a float but an ndarray.
+            # This isn't caught by the above because [np.array([1.0])] == [1.0]
+            # evaluates to True.
+            self.assertIsInstance(x, float)
+
+        # Test constructor raises a IndexError if input is too large
+        with self.assertRaises(IndexError):
+            geo_class([1, 2, 3, 4, 5, 6])
 
     def test_storage_ops_Pose3(self):
         # type: () -> None
@@ -401,6 +455,30 @@ class GeoPackageTest(unittest.TestCase):
         # Test position/rotation accessors
         np.testing.assert_equal(element.position(), element.t)
         self.assertEqual(element.rotation(), element.R)
+
+        # Test position/rotation accessors are compatible with Constructor
+        element_copy = geo_class(t=element.t, R=element.R)
+        self.assertEqual(element.data, element_copy.data)
+        for x in element_copy.data:
+            # NOTE(brad): One failure mode is for x to not be a float but an ndarray.
+            # This isn't caught by the above because [np.array([1.0])] == [1.0]
+            # evaluates to True.
+            self.assertIsInstance(x, float)
+
+        # Test constructor handles column vectors correctly.
+        column_t = np.expand_dims(np.array(element.t).flatten(), axis=1)
+        column_element = geo_class(t=column_t, R=element.R)
+        self.assertEqual(element.data, column_element.data)
+        for x in column_element.data:
+            self.assertIsInstance(x, float)
+
+        # Test constructor raises a IndexError if input t is too large
+        with self.assertRaises(IndexError):
+            geo_class(t=[1, 2, 3, 4, 5, 6])
+
+        # Test constructor raises a ValueError if a non Rot is passed for R
+        with self.assertRaises(ValueError):
+            geo_class(R=4)  # type: ignore[arg-type]
 
 
 if __name__ == "__main__":

@@ -49,12 +49,25 @@ class Pose3(object):
     # --------------------------------------------------------------------------
 
     def __init__(self, R=None, t=None):
-        # type: (Rot3, T.Sequence[float]) -> None
+        # type: (Rot3, T.Union[T.Sequence[float], numpy.ndarray]) -> None
         rotation = R if R is not None else Rot3()
-        position = t if t is not None else [0.0, 0.0, 0.0]
-        assert isinstance(rotation, Rot3)
+        if t is None:
+            t = [0.0, 0.0, 0.0]
+        if isinstance(t, numpy.ndarray):
+            if t.shape in [(3, 1), (1, 3)]:
+                t = t.flatten()
+            elif t.shape != (3,):
+                raise IndexError(
+                    "Expected t to be a vector of length 3; instead had shape {}".format(t.shape)
+                )
+        elif len(t) != 3:
+            raise IndexError(
+                "Expected t to be a sequence of length 3, was instead length {}.".format(len(t))
+            )
+        if not isinstance(rotation, Rot3):
+            raise ValueError("arg R has type {}; type {} expected".format(type(R), Rot3))
 
-        self.data = rotation.to_storage() + list(position)
+        self.data = rotation.to_storage() + list(t)
 
     @property
     def R(self):

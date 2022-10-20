@@ -31,16 +31,34 @@ class ATANCameraCal(object):
         data = []  # type: T.List[float]
 
     def __init__(self, focal_length, principal_point, omega):
-        # type: (T.Sequence[float], T.Sequence[float], float) -> None
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], T.Union[T.Sequence[float], numpy.ndarray], float) -> None
         self.data = []
-        if len(focal_length) != 2:
-            raise ValueError(
+        if isinstance(focal_length, numpy.ndarray):
+            if focal_length.shape in [(2, 1), (1, 2)]:
+                focal_length = focal_length.flatten()
+            elif focal_length.shape != (2,):
+                raise IndexError(
+                    "Expected focal_length to be a vector of length 2; instead had shape {}".format(
+                        focal_length.shape
+                    )
+                )
+        elif len(focal_length) != 2:
+            raise IndexError(
                 "Expected focal_length to be a sequence of length 2, was instead length {}.".format(
                     len(focal_length)
                 )
             )
-        if len(principal_point) != 2:
-            raise ValueError(
+        if isinstance(principal_point, numpy.ndarray):
+            if principal_point.shape in [(2, 1), (1, 2)]:
+                principal_point = principal_point.flatten()
+            elif principal_point.shape != (2,):
+                raise IndexError(
+                    "Expected principal_point to be a vector of length 2; instead had shape {}".format(
+                        principal_point.shape
+                    )
+                )
+        elif len(principal_point) != 2:
+            raise IndexError(
                 "Expected principal_point to be a sequence of length 2, was instead length {}.".format(
                     len(principal_point)
                 )
