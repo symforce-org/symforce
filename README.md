@@ -6,6 +6,9 @@
 ![SymForce](docs/static/images/symforce_banner_dark.png#gh-dark-mode-only)
 <!-- /DARK_MODE_ONLY -->
 
+| 📣 We are open for internships!  If you are interested in contributing to SymForce, visit the program page [here](https://github.com/symforce-org/symforce/discussions/242) to learn more.  |
+|-----------------------------------------|
+
 <p align="center">
 <a href="https://github.com/symforce-org/symforce/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI status" src="https://github.com/symforce-org/symforce/actions/workflows/ci.yml/badge.svg" /></a>
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
@@ -49,6 +52,8 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
  + Highly performant, modular, tested, and extensible code
 
 ### Read the paper: <a href="https://arxiv.org/abs/2204.07889">https://arxiv.org/abs/2204.07889</a>
+
+### And watch the video: <a href="https://youtu.be/QO_ltJRNj0o">https://youtu.be/QO_ltJRNj0o</a>
 
 SymForce was published to [RSS 2022](https://roboticsconference.org/). Please cite it as follows:
 
