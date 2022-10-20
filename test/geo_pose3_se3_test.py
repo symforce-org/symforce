@@ -19,8 +19,8 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> sf.Pose3_SE3:
-        return sf.Pose3_SE3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
+    def element(cls) -> sf.unsupported.Pose3_SE3:
+        return sf.unsupported.Pose3_SE3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
 
     def test_lie_exponential(self) -> None:
         """
@@ -42,13 +42,13 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = sf.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = sf.Pose3_SE3.from_tangent(pertubation, epsilon=self.EPSILON)
+        expmap = sf.unsupported.Pose3_SE3.from_tangent(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!
         self.assertStorageNear(hat_exp, matrix_expected, places=5)
 
-    def pose3_operations(self, a: sf.Pose3_SE3, b: sf.Pose3_SE3) -> None:
+    def pose3_operations(self, a: sf.unsupported.Pose3_SE3, b: sf.unsupported.Pose3_SE3) -> None:
         """
         Tests Pose3_SE3 operations
         """
@@ -62,11 +62,11 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         """
         R_a = sf.Rot3.random()
         t_a = sf.V3(np.random.rand(3))
-        a = sf.Pose3_SE3(R_a, t_a)
+        a = sf.unsupported.Pose3_SE3(R_a, t_a)
 
         R_b = sf.Rot3.random()
         t_b = sf.V3(np.random.rand(3))
-        b = sf.Pose3_SE3(R_b, t_b)
+        b = sf.unsupported.Pose3_SE3(R_b, t_b)
 
         self.pose3_operations(a, b)
 
@@ -75,8 +75,8 @@ class GeoPose3SE3Test(LieGroupOpsTestMixin, TestCase):
         Tests (symbolic):
             Pose3_SE3.__mul__
         """
-        a = sf.Pose3_SE3.symbolic("a")
-        b = sf.Pose3_SE3.symbolic("b")
+        a = sf.unsupported.Pose3_SE3.symbolic("a")
+        b = sf.unsupported.Pose3_SE3.symbolic("b")
         self.pose3_operations(a, b)
 
 

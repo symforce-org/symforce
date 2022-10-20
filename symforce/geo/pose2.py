@@ -25,16 +25,20 @@ class Pose2(LieGroup):
     The tangent space is one angle for rotation followed by two elements for translation in the
     non-rotated frame.
 
-    For Lie group enthusiasts: This class is on the PRODUCT manifold, if you really really want
-    SE(2) you should use Pose2_SE2.  On this class, the group operations (e.g. compose and between)
-    operate as you'd expect for a Pose or SE(2), but the manifold operations (e.g. retract and
-    local_coordinates) operate on the product manifold SO(2) x R2.  This means that:
+    For Lie group enthusiasts: This class is on the PRODUCT manifold.  On this class, the group
+    operations (e.g. compose and between) operate as you'd expect for a Pose or SE(2), but the
+    manifold operations (e.g. retract and local_coordinates) operate on the product manifold
+    SO(2) x R2.  This means that:
 
       - retract(a, vec) != compose(a, from_tangent(vec))
 
       - local_coordinates(a, b) != to_tangent(between(a, b))
 
       - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
+
+    If you need a type that has these properties in symbolic expressions, you should use Pose2_SE2.
+    There is no runtime equivalent of Pose2_SE2, see the docstring on that class for more
+    information.
     """
 
     Pose2T = T.TypeVar("Pose2T", bound="Pose2")

@@ -9,13 +9,13 @@ import symforce.internal.symbolic as sf
 from symforce import typing as T
 from symforce.ops.interfaces.lie_group import LieGroup
 
-from .matrix import Matrix
-from .matrix import Matrix14
-from .matrix import Matrix31
-from .matrix import Matrix44
-from .matrix import Vector3
-from .pose3 import Pose3
-from .rot3 import Rot3
+from ..matrix import Matrix
+from ..matrix import Matrix14
+from ..matrix import Matrix31
+from ..matrix import Matrix44
+from ..matrix import Vector3
+from ..pose3 import Pose3
+from ..rot3 import Rot3
 
 
 class Pose3_SE3(Pose3):
