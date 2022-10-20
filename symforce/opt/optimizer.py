@@ -82,6 +82,8 @@ class Optimizer:
 
         Mirrors the optimizer_params_t LCM type, see documentation there for information on each
         parameter
+
+        Note: For the Python optimizer, verbose defaults to True
         """
 
         verbose: bool = True

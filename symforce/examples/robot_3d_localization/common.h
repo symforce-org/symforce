@@ -25,7 +25,6 @@ inline sym::optimizer_params_t RobotLocalizationOptimizerParams() {
   sym::optimizer_params_t params = sym::DefaultOptimizerParams();
   params.initial_lambda = 1e4;
   params.lambda_down_factor = 1 / 2.;
-  params.verbose = false;
   return params;
 }
 

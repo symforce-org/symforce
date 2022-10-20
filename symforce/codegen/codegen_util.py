@@ -670,6 +670,7 @@ def generate_lcm_types(
             "--cpp-include",
             lcm_include_dir,
         ],
+        print_generated=False,
     )
 
     # Autoformat generated python files

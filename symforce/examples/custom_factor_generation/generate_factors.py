@@ -16,7 +16,7 @@ def generate(output_dir: str) -> None:
     This is called from symforce/test/symforce_examples_custom_factor_generation_codegen_test.py to
     actually generate the factor
     """
-    logger.info("Generating factors")
+    logger.debug("Generating factors")
     namespace = "custom_factor_generation"
 
     codegen.Codegen.function(

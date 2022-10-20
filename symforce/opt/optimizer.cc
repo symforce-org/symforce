@@ -6,7 +6,7 @@
 #include "./optimizer.h"
 
 sym::optimizer_params_t sym::DefaultOptimizerParams() {
-  const bool verbose = true;
+  const bool verbose = false;
   const double initial_lambda = 1.0;
   const double lambda_up_factor = 4.0;
   const double lambda_down_factor = 1 / 4.0;

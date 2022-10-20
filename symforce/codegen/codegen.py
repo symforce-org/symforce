@@ -493,7 +493,7 @@ class Codegen:
         else:
             out_function_dir = output_dir / backend_name / "symforce" / namespace
 
-        logger.info(f'Creating {backend_name} function from "{self.name}" at "{out_function_dir}"')
+        logger.debug(f'Creating {backend_name} function from "{self.name}" at "{out_function_dir}"')
 
         # Get templates to render
         for source, dest in self.config.templates_to_render(generated_file_name):

@@ -20,6 +20,7 @@ import numpy as np
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import sym
+from symforce import logger
 
 
 class GeoPackageTest(unittest.TestCase):
@@ -42,7 +43,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Rot2
-        print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
         self.assertEqual(len(value.data), geo_class.storage_dim())
@@ -67,7 +68,7 @@ class GeoPackageTest(unittest.TestCase):
         """
         geo_class = sym.Rot2
         group_ops = sym.ops.rot2.GroupOps
-        print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
 
@@ -90,7 +91,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Rot2
-        print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         self.assertTrue(tangent_dim > 0)
@@ -115,7 +116,7 @@ class GeoPackageTest(unittest.TestCase):
             sym.Rot2 custom methods
         """
         geo_class = sym.Rot2
-        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
@@ -147,7 +148,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Pose2
-        print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
         self.assertEqual(len(value.data), geo_class.storage_dim())
@@ -172,7 +173,7 @@ class GeoPackageTest(unittest.TestCase):
         """
         geo_class = sym.Pose2
         group_ops = sym.ops.pose2.GroupOps
-        print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
 
@@ -195,7 +196,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Pose2
-        print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         self.assertTrue(tangent_dim > 0)
@@ -220,7 +221,7 @@ class GeoPackageTest(unittest.TestCase):
             sym.Pose2 custom methods
         """
         geo_class = sym.Pose2
-        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
@@ -265,7 +266,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Rot3
-        print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
         self.assertEqual(len(value.data), geo_class.storage_dim())
@@ -290,7 +291,7 @@ class GeoPackageTest(unittest.TestCase):
         """
         geo_class = sym.Rot3
         group_ops = sym.ops.rot3.GroupOps
-        print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
 
@@ -313,7 +314,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Rot3
-        print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         self.assertTrue(tangent_dim > 0)
@@ -338,7 +339,7 @@ class GeoPackageTest(unittest.TestCase):
             sym.Rot3 custom methods
         """
         geo_class = sym.Rot3
-        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
@@ -370,7 +371,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Pose3
-        print("*** Testing StorageOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing StorageOps: " + geo_class.__name__ + " ***")
 
         value = geo_class()
         self.assertEqual(len(value.data), geo_class.storage_dim())
@@ -395,7 +396,7 @@ class GeoPackageTest(unittest.TestCase):
         """
         geo_class = sym.Pose3
         group_ops = sym.ops.pose3.GroupOps
-        print("*** Testing GroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing GroupOps: " + geo_class.__name__ + " ***")
 
         identity = geo_class()
 
@@ -418,7 +419,7 @@ class GeoPackageTest(unittest.TestCase):
         """
 
         geo_class = sym.Pose3
-        print("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing LieGroupOps: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         self.assertTrue(tangent_dim > 0)
@@ -443,7 +444,7 @@ class GeoPackageTest(unittest.TestCase):
             sym.Pose3 custom methods
         """
         geo_class = sym.Pose3
-        print("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
+        logger.debug("*** Testing Custom Methods: " + geo_class.__name__ + " ***")
 
         tangent_dim = geo_class.tangent_dim()
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))

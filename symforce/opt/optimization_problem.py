@@ -135,7 +135,7 @@ class OptimizationProblem:
                 namespace=namespace,
                 sparse_linearization=sparse_linearization,
             )
-            logger.info(
+            logger.debug(
                 "Generated function `{}` in directory `{}`".format(
                     output_data["name"], output_data["function_dir"]
                 )

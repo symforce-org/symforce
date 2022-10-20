@@ -126,7 +126,7 @@ class SymforceGenCodegenTest(TestCase):
 
             # Run generated example / test from disk in a standalone process
             current_python = sys.executable
-            python_util.execute_subprocess([current_python, generated_code_file])
+            python_util.execute_subprocess([current_python, generated_code_file], log_stdout=False)
 
         # Also hot load package directly in to this process
         geo_pkg = codegen_util.load_generated_package("sym", os.path.join(output_dir, "sym"))

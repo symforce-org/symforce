@@ -256,7 +256,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
     templates = template_util.TemplateList(template_dir)
 
     if isinstance(config, PythonConfig):
-        logger.info(f'Creating Python package at: "{cam_package_dir}"')
+        logger.debug(f'Creating Python package at: "{cam_package_dir}"')
 
         # First generate the geo package as it's a dependency of the cam package
         from symforce.codegen import geo_package_codegen
@@ -309,7 +309,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
             )
 
     elif isinstance(config, CppConfig):
-        logger.info(f'Creating C++ cam package at: "{cam_package_dir}"')
+        logger.debug(f'Creating C++ cam package at: "{cam_package_dir}"')
         template_dir = config.template_dir()
 
         # First generate the geo package as it's a dependency of the cam package

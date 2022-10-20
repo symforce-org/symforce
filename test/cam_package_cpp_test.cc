@@ -138,7 +138,7 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::LinearCameraCal<dou
 
   using Scalar = typename T::Scalar;
 
-  spdlog::info("*** Testing StorageOps: {} ***", cam_cal);
+  spdlog::debug("*** Testing StorageOps: {} ***", cam_cal);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(cam_cal.Data().rows() == storage_dim);
@@ -167,7 +167,7 @@ TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", sym::LinearCameraCal<doubl
   using T = TestType;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing GroupOps: {} ***", identity);
+  spdlog::debug("*** Testing GroupOps: {} ***", identity);
 
   using SelfJacobian = typename sym::GroupOps<T>::SelfJacobian;
 
@@ -198,7 +198,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", sym::LinearCameraCal<d
   using T = TestType;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
+  spdlog::debug("*** Testing LieGroupOps: {} ***", identity);
 
   CHECK(sym::LieGroupOps<T>::TangentDim() == sym::LieGroupOps<T>::TangentVec::RowsAtCompileTime);
 
@@ -228,7 +228,7 @@ TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::LinearCam
   const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
   const Scalar tolerance = 10.0 * epsilon;  // For checking approx. equality
 
-  spdlog::info("*** Testing projection model: {} ***", cam_cal);
+  spdlog::debug("*** Testing projection model: {} ***", cam_cal);
 
   std::mt19937 gen(42);
   // Generate pixels around principal point
@@ -261,7 +261,7 @@ TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::LinearCameraCal<do
   using Scalar = typename T::Scalar;
   const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
 
-  spdlog::info("*** Testing Camera class with calibration: {} ***", cam_cal);
+  spdlog::debug("*** Testing Camera class with calibration: {} ***", cam_cal);
 
   // Assume the principal point is at the center of the image
   Eigen::Matrix<int, 2, 1> image_size;
@@ -316,7 +316,7 @@ TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", sym::LinearCameraC
   // For assessing approximate equality
   const Scalar tolerance = 50.0 * epsilon;
 
-  spdlog::info("*** Testing PosedCamera class with calibration: {} ***", cam_cal);
+  spdlog::debug("*** Testing PosedCamera class with calibration: {} ***", cam_cal);
 
   std::mt19937 gen(42);
   // Generate pixels around principal point

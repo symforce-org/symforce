@@ -56,8 +56,8 @@ class SpdlogConfigurator {
   }
 
   void SetLogLevelFromEnvironment() const {
-    // Default log level to warning
-    spdlog::set_level(spdlog::level::warn);
+    // Default log level to info
+    spdlog::set_level(spdlog::level::info);
 
     // This is not an owning pointer - it points to the actual location of the string for this
     // environment variable in the process address space.  And this is thread safe, assuming no one

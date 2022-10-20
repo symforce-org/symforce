@@ -51,7 +51,7 @@ class FixedBundleAdjustmentProblem:
         Generates functions from symbolic expressions
         """
 
-        logger.info("Generating linearization function for fixed-size problem")
+        logger.debug("Generating linearization function for fixed-size problem")
 
         linearization_func = self._build_codegen_object()
 
@@ -62,7 +62,7 @@ class FixedBundleAdjustmentProblem:
         """
         Create Codegen object for the linearization function
         """
-        logger.info("Building linearization function")
+        logger.debug("Building linearization function")
 
         flat_keys = {key: re.sub(r"[\.\[\]]+", "_", key) for key in self.values.keys_recursive()}
 

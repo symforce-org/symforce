@@ -17,7 +17,7 @@
 const int DIM = 100;
 
 TEST_CASE("Sparse Matrix codegen works", "[codegen_sparse_matrix]") {
-  spdlog::info("*** Testing sparse matrix codegen function ***");
+  spdlog::debug("*** Testing sparse matrix codegen function ***");
 
   // Create and return sparse matrix
   Eigen::Matrix<double, DIM, DIM> dense_mat = Eigen::Matrix<double, DIM, DIM>::Identity();

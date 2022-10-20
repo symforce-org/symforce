@@ -17,6 +17,7 @@ from lcmtypes.sym._type_t import type_t
 
 import symforce.symbolic as sf
 from symforce import cc_sym
+from symforce import logger
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
@@ -69,10 +70,10 @@ class SymforcePyOptimizerTest(TestCase):
 
         result = optimizer.optimize(initial_values)
 
-        print(f"Initial values: {result.initial_values}")
-        print(f"Optimized values: {result.optimized_values}")
-        print(f"Num iterations: {len(result.iteration_stats)}")
-        print(f"Final error: {result.error()}")
+        logger.debug(f"Initial values: {result.initial_values}")
+        logger.debug(f"Optimized values: {result.optimized_values}")
+        logger.debug(f"Num iterations: {len(result.iteration_stats)}")
+        logger.debug(f"Final error: {result.error()}")
 
         # Check values
         self.assertEqual(len(result.iteration_stats), 7)

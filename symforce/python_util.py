@@ -58,7 +58,7 @@ def execute_subprocess(
         stdin_data_encoded = bytes()
 
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
-    logger.info(f"Subprocess: {cmd_str}")
+    logger.debug(f"Subprocess: {cmd_str}")
 
     with subprocess.Popen(
         cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
@@ -69,7 +69,7 @@ def execute_subprocess(
     going_to_log_to_err = return_code != 0 and log_stdout_to_error_on_error
 
     stdout_decoded = stdout.decode("utf-8")
-    if log_stdout and not going_to_log_to_err:
+    if stdout_decoded and log_stdout and not going_to_log_to_err:
         logger.info(stdout_decoded)
 
     if going_to_log_to_err:

@@ -37,7 +37,7 @@ TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCamer
     data[i] = cam_dist(gen);
   }
   T cam(data);
-  spdlog::info("*** Testing generated function with {} ***", cam);
+  spdlog::debug("*** Testing generated function with {} ***", cam);
 
   Eigen::Matrix<Scalar, 2, 1> pixel;
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);

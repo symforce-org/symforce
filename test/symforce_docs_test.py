@@ -31,7 +31,10 @@ class SymforceDocsTest(TestCase):
         for _ in range(RETRIES):
             try:
                 python_util.execute_subprocess(
-                    ["make", "docs"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+                    ["make", "docs"],
+                    cwd=SYMFORCE_DIR,
+                    env=dict(os.environ, PYTHON=sys.executable),
+                    log_stdout=False,
                 )
             except subprocess.CalledProcessError as exc:
                 logger.error(exc)

@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <Eigen/Dense>
+#include <spdlog/spdlog.h>
 
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 
@@ -47,7 +48,8 @@ void RunLocalization() {
         ));
   }
 
-  const auto params = sym::DefaultOptimizerParams();
+  auto params = sym::DefaultOptimizerParams();
+  params.verbose = true;
   sym::Optimizer<double> optimizer(params, factors, sym::kDefaultEpsilon<double>);
 
   sym::Values<double> values;
@@ -73,7 +75,7 @@ void RunLocalization() {
   // Optimize!
   const auto stats = optimizer.Optimize(&values);
 
-  std::cout << "Optimized values:" << values << std::endl;
+  spdlog::debug("Optimized values: {}", values);
 
   // Check output
   const auto& iteration_stats = stats.iterations;

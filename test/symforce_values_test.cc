@@ -26,7 +26,7 @@
 TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   using Scalar = TestType;
 
-  spdlog::info("*** Testing Values<{}> ***", typeid(Scalar).name());
+  spdlog::debug("*** Testing Values<{}> ***", typeid(Scalar).name());
 
   sym::Values<Scalar> v;
   CHECK(v.Keys().size() == 0);
@@ -120,7 +120,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
 
   // Print
-  spdlog::info("v: {}", v);
+  spdlog::debug("v: {}", v);
 
   // Clear
   v.RemoveAll();
@@ -165,7 +165,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test Retract and LocalCoordinates of camera cals", "
 }
 
 TEST_CASE("Test IndexEntryAt", "[values]") {
-  spdlog::info("*** Testing Values IndexEntryAt ***");
+  spdlog::debug("*** Testing Values IndexEntryAt ***");
 
   sym::Valuesd values;
   const sym::Key k1 = sym::Key('k', 1);
@@ -201,7 +201,7 @@ TEST_CASE("Test IndexEntryAt", "[values]") {
 }
 
 TEST_CASE("Test implicit construction", "[values]") {
-  spdlog::info("*** Testing Values Implicit Construction ***");
+  spdlog::debug("*** Testing Values Implicit Construction ***");
 
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -210,11 +210,11 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
-  spdlog::info(values);
+  spdlog::debug(values);
 }
 
 TEST_CASE("Test initializer list construction", "[values]") {
-  spdlog::info("*** Testing Values Initializer List Construction ***");
+  spdlog::debug("*** Testing Values Initializer List Construction ***");
 
   sym::Valuesd v1;
   v1.Set<double>('x', 1.0);
@@ -242,7 +242,7 @@ TEST_CASE("Test initializer list construction", "[values]") {
 }
 
 TEST_CASE("Test indexed update", "[values]") {
-  spdlog::info("*** Testing Values Indexed Update ***");
+  spdlog::debug("*** Testing Values Indexed Update ***");
 
   // Create some data
   sym::Valuesd values;
@@ -273,7 +273,7 @@ TEST_CASE("Test indexed update", "[values]") {
 }
 
 TEST_CASE("Test key update", "[values]") {
-  spdlog::info("*** Testing Values Key Update ***");
+  spdlog::debug("*** Testing Values Key Update ***");
 
   // Create some data
   sym::Valuesd values;
@@ -320,8 +320,8 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
   using T = TestType;
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
-  spdlog::info("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
-               typeid(T).name());
+  spdlog::debug("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
+                typeid(T).name());
   const Scalar epsilon = 1e-9;
 
   // Create a values object that stores an identity element, and an index for it

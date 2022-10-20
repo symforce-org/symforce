@@ -140,7 +140,7 @@ TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
-  spdlog::info("*** Testing StorageOps: {} ***", value);
+  spdlog::debug("*** Testing StorageOps: {} ***", value);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(value.Data().rows() == storage_dim);
@@ -169,7 +169,7 @@ TEMPLATE_TEST_CASE("Test Scalar storage ops", "[geo_package]", double, float) {
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
-  spdlog::info("*** Testing StorageOps: {} ***", value);
+  spdlog::debug("*** Testing StorageOps: {} ***", value);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(storage_dim == 1);
@@ -199,7 +199,7 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", sym::Vector1<doub
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value = T::Zero();
-  spdlog::info("*** Testing Matrix StorageOps: {} ***", value.transpose());
+  spdlog::debug("*** Testing Matrix StorageOps: {} ***", value.transpose());
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(storage_dim == T::RowsAtCompileTime);
@@ -236,7 +236,7 @@ TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", sym::Rot2<double>, sym::Ro
   using T = TestType;
 
   const T identity{};
-  spdlog::info("*** Testing GroupOps: {} ***", identity);
+  spdlog::debug("*** Testing GroupOps: {} ***", identity);
 
   // TODO(hayk): Make sym::StorageOps<T>::IsApprox that uses ToStorage to compare, then
   // get rid of the custom scalar version below.
@@ -250,7 +250,7 @@ TEMPLATE_TEST_CASE("Test Scalar group ops", "[geo_package]", double, float) {
   using T = TestType;
 
   const T identity{};
-  spdlog::info("*** Testing GroupOps: {} ***", identity);
+  spdlog::debug("*** Testing GroupOps: {} ***", identity);
 
   CHECK(identity == sym::GroupOps<T>::Identity());
   CHECK(identity == sym::GroupOps<T>::Compose(identity, identity));
@@ -268,7 +268,7 @@ TEMPLATE_TEST_CASE("Test Matrix group ops", "[geo_package]", sym::Vector1<double
   using T = TestType;
 
   const T identity = T::Zero();
-  spdlog::info("*** Testing Matrix GroupOps: {} ***", identity.transpose());
+  spdlog::debug("*** Testing Matrix GroupOps: {} ***", identity.transpose());
 
   CHECK(identity == sym::GroupOps<T>::Identity());
   CHECK(identity == sym::GroupOps<T>::Compose(identity, identity));
@@ -396,7 +396,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
   const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
+  spdlog::debug("*** Testing LieGroupOps: {} ***", identity);
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -488,7 +488,7 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", double, float) 
   const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
+  spdlog::debug("*** Testing LieGroupOps: {} ***", identity);
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -525,7 +525,7 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<do
   const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing Matrix LieGroupOps: {} ***", identity.transpose());
+  spdlog::debug("*** Testing Matrix LieGroupOps: {} ***", identity.transpose());
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);

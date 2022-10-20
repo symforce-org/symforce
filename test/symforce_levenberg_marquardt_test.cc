@@ -25,8 +25,8 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   std::mt19937 gen(12345);
   const sym::MatrixX<Scalar> J_MN = sym::Random<Eigen::Matrix<Scalar, M, N>>(gen);
 
-  spdlog::info("J_MN:\n{}", J_MN);
-  spdlog::info("J_MN^T * J_MN:\n{}", (J_MN.transpose() * J_MN).eval());
+  spdlog::debug("J_MN:\n{}", J_MN);
+  spdlog::debug("J_MN^T * J_MN:\n{}", (J_MN.transpose() * J_MN).eval());
 
   constexpr const Scalar kEpsilon = 1e-10;
 
@@ -60,9 +60,9 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   residual_func(values_init, &linearization);
   const sym::VectorX<Scalar> residual_init = linearization.residual;
   const Scalar error_init = 0.5 * residual_init.squaredNorm();
-  std::cerr << "values_init: " << values_init << std::endl;
-  std::cerr << "residual_init: " << residual_init.transpose() << std::endl;
-  std::cerr << "error_init: " << error_init << std::endl;
+  spdlog::debug("values_init: {}\n", values_init);
+  spdlog::debug("residual_init: {}\n", residual_init.transpose());
+  spdlog::debug("error_init: {}\n", error_init);
 
   solver.SetIndex(index);
   solver.Reset(values_init);
@@ -77,9 +77,9 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   const sym::VectorX<Scalar> residual_final =
       stats.iterations.back().residual.template cast<Scalar>();
   const Scalar error_final = 0.5 * residual_final.squaredNorm();
-  std::cerr << "values_final: " << solver.GetBestValues() << std::endl;
-  std::cerr << "residual_final: " << residual_final.transpose() << std::endl;
-  std::cerr << "error_final: " << error_final << std::endl;
+  spdlog::debug("values_final: {}\n", solver.GetBestValues());
+  spdlog::debug("residual_final: {}\n", residual_final.transpose());
+  spdlog::debug("error_final: {}\n", error_final);
 
   // Check initial error was high and final is zero
   CHECK(error_init > 10000.);

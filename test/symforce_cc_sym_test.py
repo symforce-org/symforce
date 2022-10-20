@@ -840,10 +840,12 @@ class SymforceCCSymTest(TestCase):
     def test_default_params_match(self) -> None:
         """
         Check that the default params in C++ and Python are the same
+
+        Except verbose, which defaults to False in C++ and True in Python
         """
         self.assertEqual(
             cc_sym.default_optimizer_params(),
-            optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params())),
+            optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params(verbose=False))),
         )
 
 

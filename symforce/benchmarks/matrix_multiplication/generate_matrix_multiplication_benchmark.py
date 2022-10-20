@@ -12,6 +12,7 @@ import scipy.io
 
 import symforce.symbolic as sf
 from symforce import codegen
+from symforce import logger
 from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import template_util
@@ -210,5 +211,5 @@ def generate(output_dir: Path) -> None:
     np.random.seed(42)
 
     for i, (matrix_name, _filename, matrix) in enumerate(get_matrices()):
-        print(f"Generating matrix {matrix_name}")
+        logger.debug(f"Generating matrix {matrix_name}")
         generate_matrix(output_dir, matrix_name, matrix, symforce_result_is_sparse=i > 2, i=i)

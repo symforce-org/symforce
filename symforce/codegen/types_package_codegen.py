@@ -95,7 +95,7 @@ def generate_types(
 
     lcm_files = []
     if len(types_to_generate) > 0:
-        logger.info(f'Creating LCM type at: "{lcm_type_dir}"')
+        logger.debug(f'Creating LCM type at: "{lcm_type_dir}"')
 
         # Type definition
         lcm_file_name = f"{file_name}.lcm"

@@ -187,7 +187,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
     custom_generated_methods = _custom_generated_methods(config)
 
     if isinstance(config, PythonConfig):
-        logger.info(f'Creating Python package at: "{package_dir}"')
+        logger.debug(f'Creating Python package at: "{package_dir}"')
 
         # Build up templates for each type
 
@@ -241,7 +241,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
 
         sym_util_package_codegen.generate(config, output_dir=output_dir)
 
-        logger.info(f'Creating C++ package at: "{package_dir}"')
+        logger.debug(f'Creating C++ package at: "{package_dir}"')
 
         # Build up templates for each type
         for cls in DEFAULT_GEO_TYPES:

@@ -116,8 +116,6 @@ Problem ReadProblem(const std::string& filename) {
  * Example usage: `bundle_adjustment_in_the_large_example data/problem-21-11315-pre.txt`
  */
 int main(int argc, char** argv) {
-  spdlog::set_level(spdlog::level::info);
-
   SYM_ASSERT(argc == 2);
 
   // Read the problem from disk, and create the Values and factors
@@ -127,7 +125,9 @@ int main(int argc, char** argv) {
   sym::Valuesd optimized_values = problem.values;
 
   // Optimize
-  sym::Optimizerd optimizer{sym::DefaultOptimizerParams(), std::move(problem.factors)};
+  auto params = sym::DefaultOptimizerParams();
+  params.verbose = true;
+  sym::Optimizerd optimizer{params, std::move(problem.factors)};
   const auto stats = optimizer.Optimize(&optimized_values);
 
   spdlog::info("Finished in {} iterations", stats.iterations.size());
