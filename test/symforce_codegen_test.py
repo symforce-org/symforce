@@ -318,6 +318,38 @@ class SymforceCodegenTest(TestCase):
 
         # ---------------------------------------------------------------------
 
+        row_shape = (1, 5)
+        col_shape = (4, 1)
+        mat_shape = (2, 2)
+
+        for use_numba in [False, True]:
+            reshape_vectors = True
+            with self.subTest(
+                msg="If reshape_vectors=True, row vectors which are too large raise IndexErrors"
+                + f" [{use_numba=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+                )
+
+        # ---------------------------------------------------------------------
+
+        row_shape = (1, 4)
+        col_shape = (5, 1)
+        mat_shape = (2, 2)
+
+        for use_numba in [False, True]:
+            reshape_vectors = True
+            with self.subTest(
+                msg="If reshape_vectors=True, column vectors which are too large raise IndexErrors"
+                + f" [{use_numba=}]"
+            ):
+                assert_config_works(
+                    use_numba, reshape_vectors, row_shape, col_shape, mat_shape, IndexError
+                )
+
+        # ---------------------------------------------------------------------
+
         row_shape = (1, 4)
         col_shape = (4, 1)
         mat_shape = (4,)

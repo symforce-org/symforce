@@ -65,8 +65,14 @@ class Rot2(object):
 
         # Input arrays
         _self = self.data
-        if len(right.shape) == 1:
+        if right.shape == (2,):
             right = right.reshape((2, 1))
+        elif right.shape != (2, 1):
+            raise IndexError(
+                "right is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    right.shape
+                )
+            )
 
         # Intermediate terms (0)
 

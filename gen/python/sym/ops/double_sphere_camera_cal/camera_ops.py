@@ -72,8 +72,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (13)
         _tmp0 = epsilon ** 2 + point[0, 0] ** 2 + point[1, 0] ** 2
@@ -158,8 +164,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (40)
         _tmp0 = epsilon ** 2 + point[0, 0] ** 2 + point[1, 0] ** 2
@@ -287,8 +299,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(pixel.shape) == 1:
+        if pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
+        elif pixel.shape != (2, 1):
+            raise IndexError(
+                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    pixel.shape
+                )
+            )
 
         # Intermediate terms (12)
         _tmp0 = -_self[2] + pixel[0, 0]
@@ -334,8 +352,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(pixel.shape) == 1:
+        if pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
+        elif pixel.shape != (2, 1):
+            raise IndexError(
+                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    pixel.shape
+                )
+            )
 
         # Intermediate terms (111)
         _tmp0 = -_self[2] + pixel[0, 0]

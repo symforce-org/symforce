@@ -72,8 +72,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (4)
         _tmp0 = max(epsilon, point[2, 0])
@@ -105,8 +111,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (46)
         _tmp0 = 0.5 * _self[4]
@@ -200,8 +212,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(pixel.shape) == 1:
+        if pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
+        elif pixel.shape != (2, 1):
+            raise IndexError(
+                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    pixel.shape
+                )
+            )
 
         # Intermediate terms (5)
         _tmp0 = -_self[2] + pixel[0, 0]
@@ -242,8 +260,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(pixel.shape) == 1:
+        if pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
+        elif pixel.shape != (2, 1):
+            raise IndexError(
+                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    pixel.shape
+                )
+            )
 
         # Intermediate terms (54)
         _tmp0 = -_self[2] + pixel[0, 0]

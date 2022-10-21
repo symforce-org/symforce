@@ -72,8 +72,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (1)
         _tmp0 = point[0, 0] ** 2 + point[2, 0] ** 2
@@ -113,8 +119,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(point.shape) == 1:
+        if point.shape == (3,):
             point = point.reshape((3, 1))
+        elif point.shape != (3, 1):
+            raise IndexError(
+                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    point.shape
+                )
+            )
 
         # Intermediate terms (10)
         _tmp0 = (
@@ -171,8 +183,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(pixel.shape) == 1:
+        if pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
+        elif pixel.shape != (2, 1):
+            raise IndexError(
+                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    pixel.shape
+                )
+            )
 
         # Intermediate terms (3)
         _tmp0 = (-_self[3] + pixel[1, 0]) / _self[1]
@@ -214,8 +232,14 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if len(pixel.shape) == 1:
+        if pixel.shape == (2,):
             pixel = pixel.reshape((2, 1))
+        elif pixel.shape != (2, 1):
+            raise IndexError(
+                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
+                    pixel.shape
+                )
+            )
 
         # Intermediate terms (21)
         _tmp0 = -_self[3] + pixel[1, 0]
