@@ -39,7 +39,7 @@ class Key {
 
   Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
 
-  Key() : Key(kInvalidLetter, kInvalidSub, kInvalidSuper) {}
+  Key() {}
 
   char Letter() const {
     return letter_;
@@ -93,9 +93,9 @@ class Key {
   };
 
  protected:
-  char letter_;
-  subscript_t sub_;
-  superscript_t super_;
+  char letter_{kInvalidLetter};
+  subscript_t sub_{kInvalidSub};
+  superscript_t super_{kInvalidSuper};
 };
 
 /**
