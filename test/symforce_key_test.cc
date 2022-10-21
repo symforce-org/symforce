@@ -17,3 +17,11 @@ TEST_CASE("Key prints correctly", "[key]") {
   ss << key1 << "\n" << key2 << "\n";
   CHECK(ss.str() == "l_n1820881232627931286_209745344626\nl_209745344626_n1947893602558886325\n");
 }
+
+TEST_CASE("Key is initialized with default constructor", "[key]") {
+  const sym::Key key{};
+
+  CHECK(key.Letter() == sym::Key::kInvalidLetter);
+  CHECK(key.Sub() == sym::Key::kInvalidSub);
+  CHECK(key.Super() == sym::Key::kInvalidSuper);
+}
