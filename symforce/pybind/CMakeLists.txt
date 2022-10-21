@@ -8,6 +8,9 @@ include(FetchContent)
 find_package(pybind11 QUIET)
 if (NOT pybind11_FOUND)
   message(STATUS "pybind11 not found, adding with FetchContent")
+  # NOTE(brad): Set PYTHON_EXECUTABLE to ensure pybind11 uses the same
+  # python as the rest of symforce.
+  set(PYTHON_EXECUTABLE ${SYMFORCE_PYTHON})
   FetchContent_Declare(
     pybind11
     GIT_REPOSITORY https://github.com/pybind/pybind11

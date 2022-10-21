@@ -168,14 +168,14 @@ endif()
 # catch2
 
 if(SYMFORCE_BUILD_BENCHMARKS OR SYMFORCE_BUILD_TESTS)
-  find_package(Catch2 3.0.0 QUIET)
+  find_package(Catch2 3 QUIET)
   if(NOT Catch2_FOUND)
     message(STATUS "Catch2 not found, adding with FetchContent")
     function(add_catch)
       FetchContent_Declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG b9853b4b356b83bb580c746c3a1f11101f9af54f  # v3.0.0-preview3
+        GIT_TAG 5df88da16e276f853cc0c45f4b570419be77dd43  # v3.1.1
       )
 
       FetchContent_MakeAvailable(Catch2)

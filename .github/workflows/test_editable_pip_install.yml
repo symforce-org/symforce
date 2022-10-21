@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-latest]
+        os: [ubuntu-22.04, ubuntu-20.04, macos-latest]
         pip_version: [22.2.2]
         setuptools_version: [65.3.0]
     steps:
@@ -28,15 +28,34 @@ jobs:
           python3 -m pip install pip==${{ matrix.pip_version }}
           python3 -m pip install setuptools==${{ matrix.setuptools_version }}
 
+      # NOTE(brad): There seems to be a bug in pip which prevents editable installation
+      # in user directories. Seems to be resolved in 22.3.0. An alternative which works
+      # for older pip versions is to instead run `pip install --no-use-pep517 -e .` See
+      # https://github.com/pypa/pip/issues/7953 for more info.
+      - name: Update pip
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: python3 -m pip install pip==22.3.0
+
       - name: editable install
         run: python3 -m pip install -e .
 
-      - name: Set expected install locations for ubuntu
+      - name: Set expected install locations for ubuntu focal
         if: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
           echo CC_SYM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/cc_sym.cpython-38-x86_64-linux-gnu.so >> $GITHUB_ENV
           echo SYM_LOCATION=/home/runner/.local/lib/python3.8/site-packages/sym/__init__.py >> $GITHUB_ENV
           echo SKYMARSHAL_LOCATION=/home/runner/.local/lib/python3.8/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
+          echo SYMENGINE_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
+          echo LCMTYPES_SYM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/sym/__init__.py >> $GITHUB_ENV
+          echo LCMTYPES_EIGENLCM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/eigen_lcm/__init__.py >> $GITHUB_ENV
+          echo SF_SYMPY_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
+
+      - name: Set expected install locations for ubuntu jammy
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          echo CC_SYM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/cc_sym.cpython-310-x86_64-linux-gnu.so >> $GITHUB_ENV
+          echo SYM_LOCATION=/home/runner/.local/lib/python3.10/site-packages/sym/__init__.py >> $GITHUB_ENV
+          echo SKYMARSHAL_LOCATION=/home/runner/.local/lib/python3.10/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
           echo SYMENGINE_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
           echo LCMTYPES_SYM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/sym/__init__.py >> $GITHUB_ENV
           echo LCMTYPES_EIGENLCM_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/eigen_lcm/__init__.py >> $GITHUB_ENV

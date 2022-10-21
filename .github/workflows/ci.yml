@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         python: [python3.8, python3.9, python3.10]
         compiler: [
           {C: gcc-5, CXX: g++-5, repos: [
@@ -21,6 +21,13 @@ jobs:
             '"deb http://us.archive.ubuntu.com/ubuntu/ xenial universe"',
           ]},
           {C: gcc-11, CXX: g++-11, repos: ['"ppa:ubuntu-toolchain-r/test"']}]
+        exclude:
+          - os: ubuntu-22.04
+            compiler: {
+              C: gcc-5, CXX: g++-5, repos: [
+                '"deb http://us.archive.ubuntu.com/ubuntu/ xenial main"',
+                '"deb http://us.archive.ubuntu.com/ubuntu/ xenial universe"',
+              ]}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -57,6 +64,14 @@ jobs:
               doxygen \
               libgmp-dev \
               pandoc
+
+      # NOTE(brad): libunwind-dev is a broken dependency of libgoogle-glog-dev, itself
+      # a dependency of ceres. Without this step on jammy, apt-get install libgoogle-glog-dev
+      # would fail. If this step could be removed and still have the build succeed, it should.
+      - name: Fix libunwind-dev install on jammy
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          sudo apt-get install -yf libunwind-dev
 
       - name: Install build dependencies for SymForce benchmarks
         run: |
