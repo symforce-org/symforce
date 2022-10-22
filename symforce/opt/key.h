@@ -93,9 +93,9 @@ class Key {
   };
 
  protected:
-  char letter_;
-  subscript_t sub_;
-  superscript_t super_;
+  char letter_{kInvalidLetter};
+  subscript_t sub_{kInvalidSub};
+  superscript_t super_{kInvalidSuper};
 };
 
 /**
