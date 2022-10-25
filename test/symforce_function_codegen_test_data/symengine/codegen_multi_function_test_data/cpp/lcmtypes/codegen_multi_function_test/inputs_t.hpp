@@ -74,12 +74,12 @@ class inputs_t
          *  equal to getEncodedSize().
          * @return The number of bytes encoded, or <0 on error.
          */
-        inline int encode(void *buf, int offset, int maxlen) const;
+        inline __lcm_buffer_size encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
 
         /**
          * Check how many bytes are required to encode this message.
          */
-        inline int getEncodedSize() const;
+        inline __lcm_buffer_size getEncodedSize() const;
 
         /**
          * Decode a message from binary form into this instance.
@@ -89,7 +89,7 @@ class inputs_t
          * @param maxlen The maximum number of bytes to read while decoding.
          * @return The number of bytes decoded, or <0 if an error occured.
          */
-        inline int decode(const void *buf, int offset, int maxlen);
+        inline __lcm_buffer_size decode(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen);
 
         /**
          * Retrieve the 64-bit fingerprint identifying the structure of the message.
@@ -114,9 +114,9 @@ class inputs_t
         inline static const char * getPackageName();
 
         // LCM support functions. Users should not call these
-        inline int _encodeNoHash(void *buf, int offset, int maxlen) const;
-        inline int _getEncodedSizeNoHash() const;
-        inline int _decodeNoHash(const void *buf, int offset, int maxlen);
+        inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
+        inline __lcm_buffer_size _getEncodedSizeNoHash() const;
+        inline __lcm_buffer_size _decodeNoHash(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen);
 #if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
         __attribute__((noinline))
 #endif
@@ -213,9 +213,9 @@ inputs_t::inputs_t(
     big_matrix(big_matrix_arg),
     states(states_arg) {}
 
-int inputs_t::encode(void *buf, int offset, int maxlen) const
+__lcm_buffer_size inputs_t::encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
 {
-    int pos = 0, tlen;
+    __lcm_buffer_size pos = 0, tlen;
     int64_t hash = (int64_t)getHash();
 
     tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
@@ -227,9 +227,9 @@ int inputs_t::encode(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int inputs_t::decode(const void *buf, int offset, int maxlen)
+__lcm_buffer_size inputs_t::decode(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen)
 {
-    int pos = 0, thislen;
+    __lcm_buffer_size pos = 0, thislen;
 
     int64_t msg_hash;
     thislen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &msg_hash, 1);
@@ -242,7 +242,7 @@ int inputs_t::decode(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int inputs_t::getEncodedSize() const
+__lcm_buffer_size inputs_t::getEncodedSize() const
 {
     return 8 + _getEncodedSizeNoHash();
 }
@@ -267,9 +267,9 @@ const char * inputs_t::getPackageName()
     return "codegen_multi_function_test";
 }
 
-int inputs_t::_encodeNoHash(void *buf, int offset, int maxlen) const
+__lcm_buffer_size inputs_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
 {
-    int pos = 0, tlen;
+    __lcm_buffer_size pos = 0, tlen;
 
     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->x, 1);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -280,7 +280,7 @@ int inputs_t::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = this->rot._encodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    for (int a0 = 0; a0 < 3; a0++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
         tlen = this->rot_vec[a0]._encodeNoHash(buf, offset + pos, maxlen - pos);
         if(tlen < 0) return tlen; else pos += tlen;
     }
@@ -288,20 +288,20 @@ int inputs_t::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->scalar_vec[0], 3);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    for (int a0 = 0; a0 < 3; a0++) {
-        for (int a1 = 0; a1 < 3; a1++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
+        for (__lcm_buffer_size a1 = 0; a1 < 3; a1++) {
             tlen = this->list_of_lists[a0][a1]._encodeNoHash(buf, offset + pos, maxlen - pos);
             if(tlen < 0) return tlen; else pos += tlen;
         }
     }
 
-    for (int a0 = 0; a0 < 3; a0++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
         tlen = this->values_vec[a0]._encodeNoHash(buf, offset + pos, maxlen - pos);
         if(tlen < 0) return tlen; else pos += tlen;
     }
 
-    for (int a0 = 0; a0 < 2; a0++) {
-        for (int a1 = 0; a1 < 1; a1++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 2; a0++) {
+        for (__lcm_buffer_size a1 = 0; a1 < 1; a1++) {
             tlen = this->values_vec_2D[a0][a1]._encodeNoHash(buf, offset + pos, maxlen - pos);
             if(tlen < 0) return tlen; else pos += tlen;
         }
@@ -319,9 +319,9 @@ int inputs_t::_encodeNoHash(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int inputs_t::_decodeNoHash(const void *buf, int offset, int maxlen)
+__lcm_buffer_size inputs_t::_decodeNoHash(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen)
 {
-    int pos = 0, tlen;
+    __lcm_buffer_size pos = 0, tlen;
 
     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->x, 1);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -332,7 +332,7 @@ int inputs_t::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = this->rot._decodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    for (int a0 = 0; a0 < 3; a0++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
         tlen = this->rot_vec[a0]._decodeNoHash(buf, offset + pos, maxlen - pos);
         if(tlen < 0) return tlen; else pos += tlen;
     }
@@ -340,20 +340,20 @@ int inputs_t::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->scalar_vec[0], 3);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    for (int a0 = 0; a0 < 3; a0++) {
-        for (int a1 = 0; a1 < 3; a1++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
+        for (__lcm_buffer_size a1 = 0; a1 < 3; a1++) {
             tlen = this->list_of_lists[a0][a1]._decodeNoHash(buf, offset + pos, maxlen - pos);
             if(tlen < 0) return tlen; else pos += tlen;
         }
     }
 
-    for (int a0 = 0; a0 < 3; a0++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
         tlen = this->values_vec[a0]._decodeNoHash(buf, offset + pos, maxlen - pos);
         if(tlen < 0) return tlen; else pos += tlen;
     }
 
-    for (int a0 = 0; a0 < 2; a0++) {
-        for (int a1 = 0; a1 < 1; a1++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 2; a0++) {
+        for (__lcm_buffer_size a1 = 0; a1 < 1; a1++) {
             tlen = this->values_vec_2D[a0][a1]._decodeNoHash(buf, offset + pos, maxlen - pos);
             if(tlen < 0) return tlen; else pos += tlen;
         }
@@ -371,26 +371,26 @@ int inputs_t::_decodeNoHash(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int inputs_t::_getEncodedSizeNoHash() const
+__lcm_buffer_size inputs_t::_getEncodedSizeNoHash() const
 {
-    int enc_size = 0;
+    __lcm_buffer_size enc_size = 0;
     enc_size += __double_encoded_array_size(NULL, 1);
     enc_size += __double_encoded_array_size(NULL, 1);
     enc_size += this->rot._getEncodedSizeNoHash();
-    for (int a0 = 0; a0 < 3; a0++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
         enc_size += this->rot_vec[a0]._getEncodedSizeNoHash();
     }
     enc_size += __double_encoded_array_size(NULL, 3);
-    for (int a0 = 0; a0 < 3; a0++) {
-        for (int a1 = 0; a1 < 3; a1++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
+        for (__lcm_buffer_size a1 = 0; a1 < 3; a1++) {
             enc_size += this->list_of_lists[a0][a1]._getEncodedSizeNoHash();
         }
     }
-    for (int a0 = 0; a0 < 3; a0++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 3; a0++) {
         enc_size += this->values_vec[a0]._getEncodedSizeNoHash();
     }
-    for (int a0 = 0; a0 < 2; a0++) {
-        for (int a1 = 0; a1 < 1; a1++) {
+    for (__lcm_buffer_size a0 = 0; a0 < 2; a0++) {
+        for (__lcm_buffer_size a1 = 0; a1 < 1; a1++) {
             enc_size += this->values_vec_2D[a0][a1]._getEncodedSizeNoHash();
         }
     }

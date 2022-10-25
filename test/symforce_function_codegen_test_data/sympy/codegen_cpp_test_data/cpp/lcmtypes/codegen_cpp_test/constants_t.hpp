@@ -38,12 +38,12 @@ class constants_t
          *  equal to getEncodedSize().
          * @return The number of bytes encoded, or <0 on error.
          */
-        inline int encode(void *buf, int offset, int maxlen) const;
+        inline __lcm_buffer_size encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
 
         /**
          * Check how many bytes are required to encode this message.
          */
-        inline int getEncodedSize() const;
+        inline __lcm_buffer_size getEncodedSize() const;
 
         /**
          * Decode a message from binary form into this instance.
@@ -53,7 +53,7 @@ class constants_t
          * @param maxlen The maximum number of bytes to read while decoding.
          * @return The number of bytes decoded, or <0 if an error occured.
          */
-        inline int decode(const void *buf, int offset, int maxlen);
+        inline __lcm_buffer_size decode(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen);
 
         /**
          * Retrieve the 64-bit fingerprint identifying the structure of the message.
@@ -78,9 +78,9 @@ class constants_t
         inline static const char * getPackageName();
 
         // LCM support functions. Users should not call these
-        inline int _encodeNoHash(void *buf, int offset, int maxlen) const;
-        inline int _getEncodedSizeNoHash() const;
-        inline int _decodeNoHash(const void *buf, int offset, int maxlen);
+        inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
+        inline __lcm_buffer_size _getEncodedSizeNoHash() const;
+        inline __lcm_buffer_size _decodeNoHash(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen);
         constexpr static uint64_t _computeHash(const __lcm_hash_ptr *)
         {
             uint64_t hash = 0x152f505c823f2cbcLL;
@@ -108,9 +108,9 @@ constants_t::constants_t(
     const double& epsilon_arg
 ) : epsilon(epsilon_arg) {}
 
-int constants_t::encode(void *buf, int offset, int maxlen) const
+__lcm_buffer_size constants_t::encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
 {
-    int pos = 0, tlen;
+    __lcm_buffer_size pos = 0, tlen;
     int64_t hash = (int64_t)getHash();
 
     tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
@@ -122,9 +122,9 @@ int constants_t::encode(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int constants_t::decode(const void *buf, int offset, int maxlen)
+__lcm_buffer_size constants_t::decode(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen)
 {
-    int pos = 0, thislen;
+    __lcm_buffer_size pos = 0, thislen;
 
     int64_t msg_hash;
     thislen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &msg_hash, 1);
@@ -137,7 +137,7 @@ int constants_t::decode(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int constants_t::getEncodedSize() const
+__lcm_buffer_size constants_t::getEncodedSize() const
 {
     return 8 + _getEncodedSizeNoHash();
 }
@@ -161,9 +161,9 @@ const char * constants_t::getPackageName()
     return "codegen_cpp_test";
 }
 
-int constants_t::_encodeNoHash(void *buf, int offset, int maxlen) const
+__lcm_buffer_size constants_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
 {
-    int pos = 0, tlen;
+    __lcm_buffer_size pos = 0, tlen;
 
     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->epsilon, 1);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -171,9 +171,9 @@ int constants_t::_encodeNoHash(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int constants_t::_decodeNoHash(const void *buf, int offset, int maxlen)
+__lcm_buffer_size constants_t::_decodeNoHash(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen)
 {
-    int pos = 0, tlen;
+    __lcm_buffer_size pos = 0, tlen;
 
     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->epsilon, 1);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -181,9 +181,9 @@ int constants_t::_decodeNoHash(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int constants_t::_getEncodedSizeNoHash() const
+__lcm_buffer_size constants_t::_getEncodedSizeNoHash() const
 {
-    int enc_size = 0;
+    __lcm_buffer_size enc_size = 0;
     enc_size += __double_encoded_array_size(NULL, 1);
     return enc_size;
 }

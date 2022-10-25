@@ -130,6 +130,14 @@ class CppBase(BaseBuilder):
             lines.append(" */")
             return "\n" + "\n".join(lines)
 
+    @property
+    def size_t(self):
+        # type: () -> str
+        """
+        The C++ type to use for buffer size variables
+        """
+        return "__lcm_buffer_size"
+
 
 class CppEnum(EnumBuilder, CppBase):
     """Helper class for converting an lcm enum into a C++ class file.
@@ -303,10 +311,11 @@ class CppStruct(StructBuilder, CppBase):
         return ",\n".join("{0}({0}_arg)".format(member.name) for member in self.members)
 
     def encode_recursive(self, code, member, depth, extra_indent):
+        # type: (Code, syntax_tree.Member, int, int) -> None
         indent = extra_indent + 1 + depth
         # primitive array
         if member.ndim == (depth + 1) and member.type_ref.is_non_string_primitive_type():
-            dim = member.dims[depth]
+            dim = member.dims[depth]  # type: ignore[attr-defined]
             code.start(
                 indent,
                 "tlen = __%s_encode_array(buf, offset + pos, maxlen - pos, &this->%s",
@@ -341,11 +350,12 @@ class CppStruct(StructBuilder, CppBase):
             code(indent, "if(tlen < 0) return tlen; else pos += tlen;")
             return
 
-        dim = member.dims[depth]
+        dim = member.dims[depth]  # type: ignore[attr-defined]
 
         code(
             indent,
-            "for (int a%d = 0; a%d < %s; a%d++) {",
+            "for (%s a%d = 0; a%d < %s; a%d++) {",
+            self.size_t,
             depth,
             depth,
             dim_size_access(dim),
@@ -428,7 +438,7 @@ class CppStruct(StructBuilder, CppBase):
             return "    return 0;"
 
         code = Code()
-        code(1, "int enc_size = 0;")
+        code(1, "{} enc_size = 0;".format(self.size_t))
         for member in self.members:
             self.encoded_size_member(code, member)
 
@@ -461,7 +471,8 @@ class CppStruct(StructBuilder, CppBase):
                 dim = member.dims[i]
                 code(
                     1 + i,
-                    "for (int a%d = 0; a%d < %s; a%d++) {",
+                    "for (%s a%d = 0; a%d < %s; a%d++) {",
+                    self.size_t,
                     i,
                     i,
                     dim_size_access(dim, member),
@@ -541,7 +552,8 @@ class CppStruct(StructBuilder, CppBase):
 
             code(
                 1 + depth,
-                "for (int a%d = 0; a%d < %s; a%d++) {",
+                "for (%s a%d = 0; a%d < %s; a%d++) {",
+                self.size_t,
                 depth,
                 depth,
                 dim_size_access(dim),
@@ -664,10 +676,13 @@ class SkymarshalCpp(SkymarshalLanguage):
                     array_type_str=lambda member: get_array_type(
                         member, map_to_cpptype(member.type_ref)
                     ),
+                    size_t=cppclass.size_t,
                 )
             for enum in package.enum_definitions:
                 cppclass = CppEnum(package, enum, args)
-                file_map[cppclass.fullpath] = render("enumtype.hpp.template", enumtype=cppclass)
+                file_map[cppclass.fullpath] = render(
+                    "enumtype.hpp.template", enumtype=cppclass, size_t=cppclass.size_t
+                )
 
             type_names = sorted(
                 type_definition.name for type_definition in six.itervalues(package.type_definitions)

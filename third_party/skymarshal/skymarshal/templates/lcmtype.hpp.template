@@ -51,12 +51,12 @@ class {{lcmtype.name}}
          *  equal to getEncodedSize().
          * @return The number of bytes encoded, or <0 on error.
          */
-        inline int encode(void *buf, int offset, int maxlen) const;
+        inline {{ size_t }} encode(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const;
 
         /**
          * Check how many bytes are required to encode this message.
          */
-        inline int getEncodedSize() const;
+        inline {{ size_t }} getEncodedSize() const;
 
         /**
          * Decode a message from binary form into this instance.
@@ -66,7 +66,7 @@ class {{lcmtype.name}}
          * @param maxlen The maximum number of bytes to read while decoding.
          * @return The number of bytes decoded, or <0 if an error occured.
          */
-        inline int decode(const void *buf, int offset, int maxlen);
+        inline {{ size_t }} decode(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen);
 
         /**
          * Retrieve the 64-bit fingerprint identifying the structure of the message.
@@ -95,9 +95,9 @@ class {{lcmtype.name}}
         inline static const char * getPackageName();
 
         // LCM support functions. Users should not call these
-        inline int _encodeNoHash(void *buf, int offset, int maxlen) const;
-        inline int _getEncodedSizeNoHash() const;
-        inline int _decodeNoHash(const void *buf, int offset, int maxlen);
+        inline {{ size_t }} _encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const;
+        inline {{ size_t }} _getEncodedSizeNoHash() const;
+        inline {{ size_t }} _decodeNoHash(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen);
 {% if lcmtype.has_complex_members() %}
 #if !defined(SKYDIO_DISABLE_LCM_NO_INLINE)
         __attribute__((noinline))
@@ -180,9 +180,9 @@ class {{lcmtype.name}}
 ) : {{lcmtype.initializers()|indent(4)}} {}
 {% endif %}
 
-int {{lcmtype.name}}::encode(void *buf, int offset, int maxlen) const
+{{ size_t }} {{lcmtype.name}}::encode(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const
 {
-    int pos = 0, tlen;
+    {{ size_t }} pos = 0, tlen;
     int64_t hash = (int64_t)getHash();
 
     tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
@@ -194,9 +194,9 @@ int {{lcmtype.name}}::encode(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int {{lcmtype.name}}::decode(const void *buf, int offset, int maxlen)
+{{ size_t }} {{lcmtype.name}}::decode(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen)
 {
-    int pos = 0, thislen;
+    {{ size_t }} pos = 0, thislen;
 
     int64_t msg_hash;
     thislen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &msg_hash, 1);
@@ -209,7 +209,7 @@ int {{lcmtype.name}}::decode(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int {{lcmtype.name}}::getEncodedSize() const
+{{ size_t }} {{lcmtype.name}}::getEncodedSize() const
 {
     return 8 + _getEncodedSizeNoHash();
 }
@@ -242,38 +242,38 @@ const char * {{lcmtype.name}}::getPackageName()
 }
 
 {% if lcmtype.members %}
-int {{lcmtype.name}}::_encodeNoHash(void *buf, int offset, int maxlen) const
+{{ size_t }} {{lcmtype.name}}::_encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const
 {
-    int pos = 0, tlen;
+    {{ size_t }} pos = 0, tlen;
 
 {{ lcmtype.encode_members() }}
 
     return pos;
 }
 {% else %}
-int {{lcmtype.name}}::_encodeNoHash(void *, int, int) const
+{{ size_t }} {{lcmtype.name}}::_encodeNoHash(void *, {{ size_t }}, {{ size_t }}) const
 {
     return 0;
 }
 {% endif %}
 
 {% if lcmtype.members %}
-int {{lcmtype.name}}::_decodeNoHash(const void *buf, int offset, int maxlen)
+{{ size_t }} {{lcmtype.name}}::_decodeNoHash(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen)
 {
-    int pos = 0, tlen;
+    {{ size_t }} pos = 0, tlen;
 
 {{ lcmtype.decode_members() }}
 
     return pos;
 }
 {% else %}
-int {{lcmtype.name}}::_decodeNoHash(const void *, int, int)
+{{ size_t }} {{lcmtype.name}}::_decodeNoHash(const void *, {{ size_t }}, {{ size_t }})
 {
     return 0;
 }
 {% endif %}
 
-int {{lcmtype.name}}::_getEncodedSizeNoHash() const
+{{ size_t }} {{lcmtype.name}}::_getEncodedSizeNoHash() const
 {
 {{ lcmtype.encoded_size() }}
 }
