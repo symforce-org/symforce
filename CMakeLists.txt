@@ -349,6 +349,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
 
   # ------------------------------------------------------------------------------
   # SymEngine
+  string(REPLACE ";" "$<SEMICOLON>" EXTERNAL_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
   include(ExternalProject)
   ExternalProject_Add(symengine
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/third_party/symengine
@@ -358,6 +359,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
                -DBUILD_BENCHMARKS=OFF
                -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
                -DCMAKE_POLICY_DEFAULT_CMP0074=NEW
+               -DCMAKE_PREFIX_PATH=${EXTERNAL_PREFIX_PATH}
   )
 
   # ------------------------------------------------------------------------------
