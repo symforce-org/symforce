@@ -129,6 +129,10 @@ class {{ cls.__name__ }}(object):
         # type: ({{ cls.__name__ }}, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
+    def interpolate(self, b, alpha, epsilon=1e-8):
+        # type: ({{ cls.__name__ }}, float, float) -> {{ cls.__name__ }}
+        return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
+
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------

@@ -114,3 +114,30 @@ class LieGroupOps(object):
         _res[1, 0] = -_a[2] + _b[2]
         _res[2, 0] = -_a[3] + _b[3]
         return _res
+
+    @staticmethod
+    def interpolate(a, b, alpha, epsilon):
+        # type: (sym.Pose2, sym.Pose2, float, float) -> sym.Pose2
+
+        # Total ops: 26
+
+        # Input arrays
+        _a = a.data
+        _b = b.data
+
+        # Intermediate terms (4)
+        _tmp0 = _a[0] * _b[0] + _a[1] * _b[1]
+        _tmp1 = alpha * math.atan2(
+            _a[0] * _b[1] - _a[1] * _b[0],
+            _tmp0 + epsilon * ((0.0 if _tmp0 == 0 else math.copysign(1, _tmp0)) + 0.5),
+        )
+        _tmp2 = math.sin(_tmp1)
+        _tmp3 = math.cos(_tmp1)
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = _a[0] * _tmp3 - _a[1] * _tmp2
+        _res[1] = _a[0] * _tmp2 + _a[1] * _tmp3
+        _res[2] = _a[2] + alpha * (-_a[2] + _b[2])
+        _res[3] = _a[3] + alpha * (-_a[3] + _b[3])
+        return sym.Pose2.from_storage(_res)

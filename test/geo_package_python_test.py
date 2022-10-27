@@ -109,6 +109,13 @@ class GeoPackageTest(unittest.TestCase):
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
 
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
+        )
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 1.0).to_storage(), value.to_storage()
+        )
+
     def test_custom_methods_Rot2(self):
         # type: () -> None
         """
@@ -213,6 +220,13 @@ class GeoPackageTest(unittest.TestCase):
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
+
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
+        )
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 1.0).to_storage(), value.to_storage()
+        )
 
     def test_custom_methods_Pose2(self):
         # type: () -> None
@@ -332,6 +346,13 @@ class GeoPackageTest(unittest.TestCase):
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
 
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
+        )
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 1.0).to_storage(), value.to_storage()
+        )
+
     def test_custom_methods_Rot3(self):
         # type: () -> None
         """
@@ -436,6 +457,13 @@ class GeoPackageTest(unittest.TestCase):
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
+
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
+        )
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 1.0).to_storage(), value.to_storage()
+        )
 
     def test_custom_methods_Pose3(self):
         # type: () -> None

@@ -394,6 +394,10 @@ class Pose3(object):
         # type: (Pose3, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
+    def interpolate(self, b, alpha, epsilon=1e-8):
+        # type: (Pose3, float, float) -> Pose3
+        return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
+
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------

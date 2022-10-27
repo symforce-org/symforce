@@ -56,6 +56,9 @@ struct LieGroupOps<Eigen::Matrix<ScalarType, Rows, Cols>>
     return (Eigen::Map<const TangentVec>(b.data(), b.size()) -
             Eigen::Map<const TangentVec>(a.data(), a.size()));
   }
+  static T Interpolate(const T& a, const T& b, const Scalar alpha, const Scalar epsilon) {
+    return Retract(a, alpha * LocalCoordinates(a, b, epsilon), epsilon);
+  }
 };
 
 }  // namespace sym

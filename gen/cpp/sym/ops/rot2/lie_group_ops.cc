@@ -96,6 +96,33 @@ typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::LocalC
   return _res;
 }
 
+template <typename Scalar>
+sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Interpolate(const sym::Rot2<Scalar>& a,
+                                                         const sym::Rot2<Scalar>& b,
+                                                         const Scalar alpha, const Scalar epsilon) {
+  // Total ops: 20
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 2, 1>& _b = b.Data();
+
+  // Intermediate terms (4)
+  const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
+  const Scalar _tmp1 =
+      alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
+                         _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+  const Scalar _tmp2 = std::cos(_tmp1);
+  const Scalar _tmp3 = std::sin(_tmp1);
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 2, 1> _res;
+
+  _res[0] = _a[0] * _tmp2 - _a[1] * _tmp3;
+  _res[1] = _a[0] * _tmp3 + _a[1] * _tmp2;
+
+  return sym::Rot2<Scalar>(_res);
+}
+
 }  // namespace sym
 
 // Explicit instantiation

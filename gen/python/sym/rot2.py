@@ -213,6 +213,10 @@ class Rot2(object):
         # type: (Rot2, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
+    def interpolate(self, b, alpha, epsilon=1e-8):
+        # type: (Rot2, float, float) -> Rot2
+        return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
+
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------

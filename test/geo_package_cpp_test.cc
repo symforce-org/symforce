@@ -424,6 +424,12 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
       sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
 
+  const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
+  CHECK(identity_interp.IsApprox(identity, std::sqrt(epsilon)));
+
+  const T value_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 1.0f, epsilon);
+  CHECK(value_interp.IsApprox(value, std::sqrt(epsilon)));
+
   SelfJacobian inverse_jacobian;
   sym::GroupOps<T>::InverseWithJacobian(identity, &inverse_jacobian);
   CHECK(inverse_jacobian.isApprox(-SelfJacobian::Identity(), epsilon));
@@ -509,6 +515,12 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", double, float) 
   const TangentVec pertubation_zero =
       sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+
+  const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
+  CHECK(fabs(identity_interp - identity) < std::sqrt(epsilon));
+
+  const T value_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 1.0f, epsilon);
+  CHECK(fabs(value_interp - value) < std::sqrt(epsilon));
 }
 
 TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<double>,
@@ -546,4 +558,10 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<do
   const TangentVec pertubation_zero =
       sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
   CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+
+  const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
+  CHECK(identity_interp.isApprox(identity, std::sqrt(epsilon)));
+
+  const T value_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 1.0f, epsilon);
+  CHECK(value_interp.isApprox(value, std::sqrt(epsilon)));
 }

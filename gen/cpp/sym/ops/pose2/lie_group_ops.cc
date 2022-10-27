@@ -105,6 +105,36 @@ typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::Loca
   return _res;
 }
 
+template <typename Scalar>
+sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Interpolate(const sym::Pose2<Scalar>& a,
+                                                           const sym::Pose2<Scalar>& b,
+                                                           const Scalar alpha,
+                                                           const Scalar epsilon) {
+  // Total ops: 26
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
+
+  // Intermediate terms (4)
+  const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
+  const Scalar _tmp1 =
+      alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
+                         _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+  const Scalar _tmp2 = std::sin(_tmp1);
+  const Scalar _tmp3 = std::cos(_tmp1);
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = _a[0] * _tmp3 - _a[1] * _tmp2;
+  _res[1] = _a[0] * _tmp2 + _a[1] * _tmp3;
+  _res[2] = _a[2] + alpha * (-_a[2] + _b[2]);
+  _res[3] = _a[3] + alpha * (-_a[3] + _b[3]);
+
+  return sym::Pose2<Scalar>(_res);
+}
+
 }  // namespace sym
 
 // Explicit instantiation

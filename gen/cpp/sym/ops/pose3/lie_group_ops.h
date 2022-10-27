@@ -39,6 +39,7 @@ struct LieGroupOps<Pose3<Scalar>> : public internal::LieGroupOpsBase<Pose3<Scala
   static TangentVec ToTangent(const T& a, const Scalar epsilon);
   static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon);
   static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
+  static T Interpolate(const T& a, const T& b, const Scalar alpha, const Scalar epsilon);
 };
 
 }  // namespace sym

@@ -190,6 +190,11 @@ class Pose3 {
     return LieGroupOps<Self>::LocalCoordinates(*this, b, epsilon);
   }
 
+  Self Interpolate(const Self b, const Scalar alpha,
+                   const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
+    return LieGroupOps<Self>::Interpolate(*this, b, alpha, epsilon);
+  }
+
   // --------------------------------------------------------------------------
   // General Helpers
   // --------------------------------------------------------------------------

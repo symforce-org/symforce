@@ -108,3 +108,23 @@ class LieGroupOps(object):
         _res[2, 0] = -_a[2] + _b[2]
         _res[3, 0] = -_a[3] + _b[3]
         return _res
+
+    @staticmethod
+    def interpolate(a, b, alpha, epsilon):
+        # type: (sym.LinearCameraCal, sym.LinearCameraCal, float, float) -> sym.LinearCameraCal
+
+        # Total ops: 12
+
+        # Input arrays
+        _a = a.data
+        _b = b.data
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = _a[0] + alpha * (-_a[0] + _b[0])
+        _res[1] = _a[1] + alpha * (-_a[1] + _b[1])
+        _res[2] = _a[2] + alpha * (-_a[2] + _b[2])
+        _res[3] = _a[3] + alpha * (-_a[3] + _b[3])
+        return sym.LinearCameraCal.from_storage(_res)

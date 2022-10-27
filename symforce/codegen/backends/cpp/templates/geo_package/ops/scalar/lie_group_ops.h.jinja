@@ -46,6 +46,9 @@ struct LieGroupOps : public internal::LieGroupOpsBase<T, T> {
 
     return TangentVec::Constant(b - a);
   }
+  static T Interpolate(const T& a, const T& b, const T alpha, const T epsilon) {
+    return Retract(a, alpha * LocalCoordinates(a, b, epsilon), epsilon);
+  }
 };
 
 }  // namespace scalar

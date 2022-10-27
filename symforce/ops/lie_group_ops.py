@@ -128,6 +128,30 @@ class LieGroupOps(GroupOps):
         return LieGroupOps.implementation(get_type(a)).local_coordinates(a, b, epsilon)
 
     @staticmethod
+    def interpolate(
+        a: T.Element, b: T.Element, alpha: T.Scalar, epsilon: T.Scalar = sf.epsilon()
+    ) -> T.List[T.Scalar]:
+        """
+        Interpolates between self and b.
+
+        Implementation is to take the perturbation between self and b in tangent space
+        (local_coordinates) and add a scaled version of that to self (retract).
+
+        Args:
+            a:
+            b:
+            alpha: ratio between a and b - 0 is a, 1 is b. Note that this variable
+                   is not clamped between 0 and 1 in this function.
+            epsilon: Small number to avoid singularity
+
+        Returns:
+            Element: Interpolated group element
+        """
+        return LieGroupOps.retract(
+            a, [c * alpha for c in LieGroupOps.local_coordinates(a, b, epsilon)], epsilon
+        )
+
+    @staticmethod
     def storage_D_tangent(a: T.Element) -> geo.Matrix:
         """
         Computes the jacobian of the storage space of an element with respect to the tangent space around

@@ -111,6 +111,32 @@ LieGroupOps<LinearCameraCal<Scalar>>::LocalCoordinates(const sym::LinearCameraCa
   return _res;
 }
 
+template <typename Scalar>
+sym::LinearCameraCal<Scalar> LieGroupOps<LinearCameraCal<Scalar>>::Interpolate(
+    const sym::LinearCameraCal<Scalar>& a, const sym::LinearCameraCal<Scalar>& b,
+    const Scalar alpha, const Scalar epsilon) {
+  // Total ops: 12
+
+  // Unused inputs
+  (void)epsilon;
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = _a[0] + alpha * (-_a[0] + _b[0]);
+  _res[1] = _a[1] + alpha * (-_a[1] + _b[1]);
+  _res[2] = _a[2] + alpha * (-_a[2] + _b[2]);
+  _res[3] = _a[3] + alpha * (-_a[3] + _b[3]);
+
+  return sym::LinearCameraCal<Scalar>(_res);
+}
+
 }  // namespace sym
 
 // Explicit instantiation

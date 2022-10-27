@@ -131,6 +131,37 @@ LieGroupOps<SphericalCameraCal<Scalar>>::LocalCoordinates(const sym::SphericalCa
   return _res;
 }
 
+template <typename Scalar>
+sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::Interpolate(
+    const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b,
+    const Scalar alpha, const Scalar epsilon) {
+  // Total ops: 27
+
+  // Unused inputs
+  (void)epsilon;
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 9, 1> _res;
+
+  _res[0] = _a[0] + alpha * (-_a[0] + _b[0]);
+  _res[1] = _a[1] + alpha * (-_a[1] + _b[1]);
+  _res[2] = _a[2] + alpha * (-_a[2] + _b[2]);
+  _res[3] = _a[3] + alpha * (-_a[3] + _b[3]);
+  _res[4] = _a[4] + alpha * (-_a[4] + _b[4]);
+  _res[5] = _a[5] + alpha * (-_a[5] + _b[5]);
+  _res[6] = _a[6] + alpha * (-_a[6] + _b[6]);
+  _res[7] = _a[7] + alpha * (-_a[7] + _b[7]);
+  _res[8] = _a[8] + alpha * (-_a[8] + _b[8]);
+
+  return sym::SphericalCameraCal<Scalar>(_res);
+}
+
 }  // namespace sym
 
 // Explicit instantiation

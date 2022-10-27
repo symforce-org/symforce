@@ -62,8 +62,7 @@ class Interpolator {
   explicit Interpolator(const Scalar epsilon = kDefaultEpsilon<Scalar>) : epsilon_(epsilon) {}
 
   T operator()(const T& a, const T& b, const Scalar t) {
-    return sym::LieGroupOps<T>::Retract(
-        a, t * sym::LieGroupOps<T>::LocalCoordinates(a, b, epsilon_), epsilon_);
+    return sym::LieGroupOps<T>::Interpolate(a, b, t, epsilon_);
   }
 
  private:

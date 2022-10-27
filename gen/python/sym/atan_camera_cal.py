@@ -214,6 +214,10 @@ class ATANCameraCal(object):
         # type: (ATANCameraCal, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
+    def interpolate(self, b, alpha, epsilon=1e-8):
+        # type: (ATANCameraCal, float, float) -> ATANCameraCal
+        return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
+
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------

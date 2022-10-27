@@ -76,4 +76,10 @@ def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codeg
             config=config,
             docstring=ops.LieGroupOps.local_coordinates.__doc__,
         ),
+        Codegen.function(
+            func=ops.LieGroupOps.interpolate,
+            input_types=[cls, cls, sf.Symbol, sf.Symbol],
+            config=config,
+            docstring=ops.LieGroupOps.interpolate.__doc__,
+        ),
     ]
