@@ -153,20 +153,7 @@ if not ({{ name }}.shape == {{ shape }} or {{ name }}.shape == ({{ size }},)):
     raise IndexError("{{ name }} is expected to have shape {{ shape }} or ({{ size }},)")
 {{ name }} = {{ name }}.reshape({{ shape }})
     {% else %}
-if not isinstance({{ name }}, numpy.ndarray):
-    if len({{ name }}) != {{ size }}:
-        raise IndexError(
-            "{{ name }} is expected to have length {{ size }}; instead had length {}".format(len({{ name }}))
-        )
-    {{ name }} = numpy.array({{ name }}).reshape({{ shape }})
-elif {{ name }}.shape == ({{ size }},):
-    {{ name }} = {{ name }}.reshape({{ shape }})
-elif {{ name }}.shape != {{ shape }}:
-    raise IndexError(
-        "{{ name }} is expected to have shape {{ shape }} or ({{ size }},); instead had shape {}".format(
-            {{ name }}.shape
-        )
-    )
+{{ name }} = check_size_and_reshape({{ name }}, "{{ name }}", {{ shape }})
     {% endif %}
 {% endif %}
 {% endmacro %}

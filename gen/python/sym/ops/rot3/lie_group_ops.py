@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class LieGroupOps(object):
@@ -24,20 +25,7 @@ class LieGroupOps(object):
         # Total ops: 15
 
         # Input arrays
-        if not isinstance(vec, numpy.ndarray):
-            if len(vec) != 3:
-                raise IndexError(
-                    "vec is expected to have length 3; instead had length {}".format(len(vec))
-                )
-            vec = numpy.array(vec).reshape((3, 1))
-        elif vec.shape == (3,):
-            vec = vec.reshape((3, 1))
-        elif vec.shape != (3, 1):
-            raise IndexError(
-                "vec is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (3, 1))
 
         # Intermediate terms (3)
         _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
@@ -85,20 +73,7 @@ class LieGroupOps(object):
 
         # Input arrays
         _a = a.data
-        if not isinstance(vec, numpy.ndarray):
-            if len(vec) != 3:
-                raise IndexError(
-                    "vec is expected to have length 3; instead had length {}".format(len(vec))
-                )
-            vec = numpy.array(vec).reshape((3, 1))
-        elif vec.shape == (3,):
-            vec = vec.reshape((3, 1))
-        elif vec.shape != (3, 1):
-            raise IndexError(
-                "vec is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (3, 1))
 
         # Intermediate terms (8)
         _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)

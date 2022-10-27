@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class LieGroupOps(object):
@@ -24,20 +25,7 @@ class LieGroupOps(object):
         # Total ops: 0
 
         # Input arrays
-        if not isinstance(vec, numpy.ndarray):
-            if len(vec) != 6:
-                raise IndexError(
-                    "vec is expected to have length 6; instead had length {}".format(len(vec))
-                )
-            vec = numpy.array(vec).reshape((6, 1))
-        elif vec.shape == (6,):
-            vec = vec.reshape((6, 1))
-        elif vec.shape != (6, 1):
-            raise IndexError(
-                "vec is expected to have shape (6, 1) or (6,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (6, 1))
 
         # Intermediate terms (0)
 
@@ -80,20 +68,7 @@ class LieGroupOps(object):
 
         # Input arrays
         _a = a.data
-        if not isinstance(vec, numpy.ndarray):
-            if len(vec) != 6:
-                raise IndexError(
-                    "vec is expected to have length 6; instead had length {}".format(len(vec))
-                )
-            vec = numpy.array(vec).reshape((6, 1))
-        elif vec.shape == (6,):
-            vec = vec.reshape((6, 1))
-        elif vec.shape != (6, 1):
-            raise IndexError(
-                "vec is expected to have shape (6, 1) or (6,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (6, 1))
 
         # Intermediate terms (0)
 

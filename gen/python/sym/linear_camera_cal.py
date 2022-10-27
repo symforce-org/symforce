@@ -9,6 +9,7 @@ import typing as T
 import numpy
 
 from .ops import linear_camera_cal as ops
+from .util import check_size_and_reshape
 
 
 class LinearCameraCal(object):

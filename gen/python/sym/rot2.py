@@ -9,6 +9,8 @@ import typing as T
 
 import numpy
 
+from .util import check_size_and_reshape
+
 # isort: split
 from .ops import rot2 as ops
 
@@ -65,20 +67,7 @@ class Rot2(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(right, numpy.ndarray):
-            if len(right) != 2:
-                raise IndexError(
-                    "right is expected to have length 2; instead had length {}".format(len(right))
-                )
-            right = numpy.array(right).reshape((2, 1))
-        elif right.shape == (2,):
-            right = right.reshape((2, 1))
-        elif right.shape != (2, 1):
-            raise IndexError(
-                "right is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    right.shape
-                )
-            )
+        right = check_size_and_reshape(right, "right", (2, 1))
 
         # Intermediate terms (0)
 

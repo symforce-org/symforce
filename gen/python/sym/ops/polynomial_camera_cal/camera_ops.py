@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class CameraOps(object):
@@ -72,20 +73,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(point, numpy.ndarray):
-            if len(point) != 3:
-                raise IndexError(
-                    "point is expected to have length 3; instead had length {}".format(len(point))
-                )
-            point = numpy.array(point).reshape((3, 1))
-        elif point.shape == (3,):
-            point = point.reshape((3, 1))
-        elif point.shape != (3, 1):
-            raise IndexError(
-                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (4)
         _tmp0 = max(epsilon, point[2, 0])
@@ -129,20 +117,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(point, numpy.ndarray):
-            if len(point) != 3:
-                raise IndexError(
-                    "point is expected to have length 3; instead had length {}".format(len(point))
-                )
-            point = numpy.array(point).reshape((3, 1))
-        elif point.shape == (3,):
-            point = point.reshape((3, 1))
-        elif point.shape != (3, 1):
-            raise IndexError(
-                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (35)
         _tmp0 = point[1, 0] ** 2

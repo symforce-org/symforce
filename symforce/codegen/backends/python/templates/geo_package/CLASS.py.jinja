@@ -13,6 +13,7 @@ import numpy
 from .{{ camelcase_to_snakecase(imported_cls.__name__ )}} import {{ imported_cls.__name__ }}
     {% endfor %}
 {% endif -%}
+from .util import check_size_and_reshape
 
 # isort: split
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops

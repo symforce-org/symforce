@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 from .rot2 import Rot2
+from .util import check_size_and_reshape
 
 # isort: split
 from .ops import pose2 as ops
@@ -147,20 +148,7 @@ class Pose2(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(right, numpy.ndarray):
-            if len(right) != 2:
-                raise IndexError(
-                    "right is expected to have length 2; instead had length {}".format(len(right))
-                )
-            right = numpy.array(right).reshape((2, 1))
-        elif right.shape == (2,):
-            right = right.reshape((2, 1))
-        elif right.shape != (2, 1):
-            raise IndexError(
-                "right is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    right.shape
-                )
-            )
+        right = check_size_and_reshape(right, "right", (2, 1))
 
         # Intermediate terms (0)
 
@@ -188,20 +176,7 @@ class Pose2(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(point, numpy.ndarray):
-            if len(point) != 2:
-                raise IndexError(
-                    "point is expected to have length 2; instead had length {}".format(len(point))
-                )
-            point = numpy.array(point).reshape((2, 1))
-        elif point.shape == (2,):
-            point = point.reshape((2, 1))
-        elif point.shape != (2, 1):
-            raise IndexError(
-                "point is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (2, 1))
 
         # Intermediate terms (0)
 

@@ -17,6 +17,9 @@ from scipy import sparse
 {% endif %}
 
 import sym  # pylint: disable=unused-import
+{% if not spec.config.use_numba %}
+from sym.util import check_size_and_reshape
+{% endif %}
 
 # pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 

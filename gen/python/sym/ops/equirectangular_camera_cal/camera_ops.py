@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class CameraOps(object):
@@ -72,20 +73,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(point, numpy.ndarray):
-            if len(point) != 3:
-                raise IndexError(
-                    "point is expected to have length 3; instead had length {}".format(len(point))
-                )
-            point = numpy.array(point).reshape((3, 1))
-        elif point.shape == (3,):
-            point = point.reshape((3, 1))
-        elif point.shape != (3, 1):
-            raise IndexError(
-                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (1)
         _tmp0 = point[0, 0] ** 2 + point[2, 0] ** 2
@@ -125,20 +113,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(point, numpy.ndarray):
-            if len(point) != 3:
-                raise IndexError(
-                    "point is expected to have length 3; instead had length {}".format(len(point))
-                )
-            point = numpy.array(point).reshape((3, 1))
-        elif point.shape == (3,):
-            point = point.reshape((3, 1))
-        elif point.shape != (3, 1):
-            raise IndexError(
-                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (10)
         _tmp0 = (
@@ -195,20 +170,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(pixel, numpy.ndarray):
-            if len(pixel) != 2:
-                raise IndexError(
-                    "pixel is expected to have length 2; instead had length {}".format(len(pixel))
-                )
-            pixel = numpy.array(pixel).reshape((2, 1))
-        elif pixel.shape == (2,):
-            pixel = pixel.reshape((2, 1))
-        elif pixel.shape != (2, 1):
-            raise IndexError(
-                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    pixel.shape
-                )
-            )
+        pixel = check_size_and_reshape(pixel, "pixel", (2, 1))
 
         # Intermediate terms (3)
         _tmp0 = (-_self[3] + pixel[1, 0]) / _self[1]
@@ -250,20 +212,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if not isinstance(pixel, numpy.ndarray):
-            if len(pixel) != 2:
-                raise IndexError(
-                    "pixel is expected to have length 2; instead had length {}".format(len(pixel))
-                )
-            pixel = numpy.array(pixel).reshape((2, 1))
-        elif pixel.shape == (2,):
-            pixel = pixel.reshape((2, 1))
-        elif pixel.shape != (2, 1):
-            raise IndexError(
-                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    pixel.shape
-                )
-            )
+        pixel = check_size_and_reshape(pixel, "pixel", (2, 1))
 
         # Intermediate terms (21)
         _tmp0 = -_self[3] + pixel[1, 0]

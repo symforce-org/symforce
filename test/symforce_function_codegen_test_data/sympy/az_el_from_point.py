@@ -10,6 +10,7 @@ import typing as T  # pylint: disable=unused-import
 import numpy  # pylint: disable=unused-import
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 # pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 
@@ -33,22 +34,7 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
 
     # Input arrays
     _nav_T_cam = nav_T_cam.data
-    if not isinstance(nav_t_point, numpy.ndarray):
-        if len(nav_t_point) != 3:
-            raise IndexError(
-                "nav_t_point is expected to have length 3; instead had length {}".format(
-                    len(nav_t_point)
-                )
-            )
-        nav_t_point = numpy.array(nav_t_point).reshape((3, 1))
-    elif nav_t_point.shape == (3,):
-        nav_t_point = nav_t_point.reshape((3, 1))
-    elif nav_t_point.shape != (3, 1):
-        raise IndexError(
-            "nav_t_point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                nav_t_point.shape
-            )
-        )
+    nav_t_point = check_size_and_reshape(nav_t_point, "nav_t_point", (3, 1))
 
     # Intermediate terms (23)
     _tmp0 = 2 * _nav_T_cam[3]

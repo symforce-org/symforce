@@ -8,7 +8,7 @@ import typing as T
 import numpy
 
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
-
+from .util import check_size_and_reshape
 
 class {{ cls.__name__ }}(object):
     {% if doc %}

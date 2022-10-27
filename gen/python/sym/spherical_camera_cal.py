@@ -9,6 +9,7 @@ import typing as T
 import numpy
 
 from .ops import spherical_camera_cal as ops
+from .util import check_size_and_reshape
 
 
 class SphericalCameraCal(object):
