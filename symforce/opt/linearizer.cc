@@ -25,13 +25,18 @@ Linearizer<ScalarType>::Linearizer(const std::string& name,
     keys_ = key_order;
   }
 
+  size_t num_sparse_factors = 0;
+  size_t num_dense_factors = 0;
   for (const auto& factor : *factors_) {
     if (factor.IsSparse()) {
-      sparse_linearized_factors_.emplace_back();
+      num_sparse_factors++;
     } else {
-      dense_linearized_factors_.emplace_back();
+      num_dense_factors++;
     }
   }
+      
+  sparse_linearized_factors_.resize(num_sparse_factors);
+  dense_linearized_factors.resize(num_dense_factors);
 }
 
 template <typename ScalarType>
