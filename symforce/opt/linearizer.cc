@@ -36,7 +36,7 @@ Linearizer<ScalarType>::Linearizer(const std::string& name,
   }
       
   sparse_linearized_factors_.resize(num_sparse_factors);
-  dense_linearized_factors.resize(num_dense_factors);
+  dense_linearized_factors_.resize(num_dense_factors);
 }
 
 template <typename ScalarType>
