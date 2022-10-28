@@ -72,6 +72,7 @@ class SymforceGenCodegenTest(TestCase):
                 config=codegen.CppConfig(),
             )
             tangent_D_storage_codegen.generate_function(
+                namespace="sym",
                 output_dir=output_dir,
                 generated_file_name="tangent_d_storage_" + cls.__name__.lower(),
             )

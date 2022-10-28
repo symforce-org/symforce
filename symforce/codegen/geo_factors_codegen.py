@@ -89,7 +89,7 @@ def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
     Return just the function code from a Codegen object.
     """
     # Codegen
-    data = codegen.generate_function()
+    data = codegen.generate_function(namespace="sym")
 
     # Read
     assert codegen.name is not None

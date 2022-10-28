@@ -157,7 +157,9 @@ def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = F
     codegen = Codegen.function(bearing_residual, config=CppConfig())
 
     # Generate the function and print the code
-    metadata = codegen.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    metadata = codegen.generate_function(
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
+    )
     if print_code:
         print(metadata.generated_files[0].read_text())
 
@@ -170,7 +172,7 @@ def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = F
 
     # Generate the function and print the code
     metadata = codegen_with_linearization.generate_function(
-        output_dir=output_dir, skip_directory_nesting=True
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
     )
     if print_code:
         print(metadata.generated_files[0].read_text())
@@ -188,7 +190,9 @@ def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = 
     codegen = Codegen.function(odometry_residual, config=CppConfig())
 
     # Generate the function and print the code
-    metadata = codegen.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    metadata = codegen.generate_function(
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
+    )
     if print_code:
         print(metadata.generated_files[0].read_text())
 
@@ -201,7 +205,7 @@ def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = 
 
     # Generate the function and print the code
     metadata = codegen_with_linearization.generate_function(
-        output_dir=output_dir, skip_directory_nesting=True
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
     )
     if print_code:
         print(metadata.generated_files[0].read_text())

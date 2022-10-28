@@ -307,7 +307,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
     codegen.Codegen.function(
         func=inverse_range_landmark_prior_residual, config=config
     ).with_linearization(which_args=["landmark_inverse_range"]).generate_function(
-        output_dir=factors_dir, skip_directory_nesting=True
+        namespace="sym", output_dir=factors_dir, skip_directory_nesting=True
     )
 
     for cam_type in cam_types:
@@ -338,7 +338,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
             ).generate_function(
-                output_dir=factors_dir, skip_directory_nesting=True
+                namespace="sym", output_dir=factors_dir, skip_directory_nesting=True
             )
 
             codegen.Codegen.function(
@@ -356,7 +356,9 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                     sf.Scalar,
                 ],
                 output_names=["reprojection_delta", "is_valid"],
-            ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
+            ).generate_function(
+                namespace="sym", output_dir=factors_dir, skip_directory_nesting=True
+            )
 
         except NotImplementedError:
             # Not all cameras implement backprojection
@@ -382,7 +384,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
             ).generate_function(
-                output_dir=factors_dir, skip_directory_nesting=True
+                namespace="sym", output_dir=factors_dir, skip_directory_nesting=True
             )
 
             codegen.Codegen.function(
@@ -399,4 +401,6 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
                     sf.Scalar,
                 ],
                 output_names=["reprojection_delta", "is_valid"],
-            ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
+            ).generate_function(
+                namespace="sym", output_dir=factors_dir, skip_directory_nesting=True
+            )

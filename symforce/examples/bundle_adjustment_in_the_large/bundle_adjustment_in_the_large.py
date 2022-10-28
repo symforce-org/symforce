@@ -65,7 +65,7 @@ def generate(output_dir: Path) -> None:
     # Generate the residual function (see `gen/snavely_reprojection_factor.h`)
     codegen.Codegen.function(snavely_reprojection_residual, codegen.CppConfig()).with_linearization(
         which_args=["cam_T_world", "intrinsics", "point"]
-    ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    ).generate_function(namespace="sym", output_dir=output_dir, skip_directory_nesting=True)
 
     # Make a `Values` with variables used in the C++ problem, and generate C++ Keys for them (see
     # `gen/keys.h`)

@@ -353,7 +353,7 @@ def generate_matching_residual_code(output_dir: Path = None, print_code: bool = 
 
     # Generate the function and print the code
     generated_paths = codegen_with_linearization.generate_function(
-        output_dir=output_dir, skip_directory_nesting=True
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
     )
     if print_code:
         print(generated_paths.generated_files[0].read_text())
@@ -379,7 +379,7 @@ def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = 
 
     # Generate the function and print the code
     generated_paths = codegen_with_linearization.generate_function(
-        output_dir=output_dir, skip_directory_nesting=True
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
     )
     if print_code:
         print(generated_paths.generated_files[0].read_text())

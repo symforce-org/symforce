@@ -128,7 +128,7 @@ def generate_matrix(
         name=f"compute_a_{matrix_name}",
         sparse_matrices=["result"],
         return_key="result",
-    ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    ).generate_function(namespace="sym", output_dir=output_dir, skip_directory_nesting=True)
 
     data = codegen.Codegen(
         inputs=Values(**{s.name: s for s in symbols}),
@@ -137,7 +137,7 @@ def generate_matrix(
         name=f"compute_b_{matrix_name}",
         sparse_matrices=["result"],
         return_key="result",
-    ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    ).generate_function(namespace="sym", output_dir=output_dir, skip_directory_nesting=True)
 
     compute_a_dense = codegen.Codegen(
         inputs=Values(**{s.name: s for s in symbols}),
@@ -147,11 +147,15 @@ def generate_matrix(
         return_key="result",
     )
 
-    data = compute_a_dense.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    data = compute_a_dense.generate_function(
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
+    )
 
     assert compute_a_dense.name is not None
     compute_a_dense.name = compute_a_dense.name.replace("_dense_", "_dense_dynamic_")
-    data = compute_a_dense.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    data = compute_a_dense.generate_function(
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
+    )
     _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     compute_b_dense = codegen.Codegen(
@@ -162,11 +166,15 @@ def generate_matrix(
         return_key="result",
     )
 
-    data = compute_b_dense.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    data = compute_b_dense.generate_function(
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
+    )
 
     assert compute_b_dense.name is not None
     compute_b_dense.name = compute_b_dense.name.replace("_dense_", "_dense_dynamic_")
-    data = compute_b_dense.generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    data = compute_b_dense.generate_function(
+        namespace="sym", output_dir=output_dir, skip_directory_nesting=True
+    )
     _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     data = codegen.Codegen(
@@ -176,7 +184,7 @@ def generate_matrix(
         name=f"compute_at_b_{matrix_name}",
         return_key="result",
         sparse_matrices=["result"] if symforce_result_is_sparse else [],
-    ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
+    ).generate_function(namespace="sym", output_dir=output_dir, skip_directory_nesting=True)
 
     # By default, Eigen will not allocate more than 128KB on the stack
     # https://eigen.tuxfamily.org/dox/TopicPreprocessorDirectives.html

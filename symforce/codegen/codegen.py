@@ -393,7 +393,7 @@ class Codegen:
         output_dir: T.Openable = None,
         lcm_bindings_output_dir: T.Openable = None,
         shared_types: T.Mapping[str, str] = None,
-        namespace: str = "sym",
+        namespace: str = "gen",
         generated_file_name: str = None,
         skip_directory_nesting: bool = False,
     ) -> GeneratedPaths:
