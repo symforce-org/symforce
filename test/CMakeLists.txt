@@ -41,7 +41,6 @@ target_compile_definitions(
 # ------------------------------------------------------------------------------
 # Tests
 
-add_library(symforce_tests_metadata INTERFACE)
 file(GLOB SYMFORCE_TEST_CC_SOURCES CONFIGURE_DEPENDS *_test.cc)
 set(SYMFORCE_CC_TEST_TARGETS "")
 foreach(SOURCE_FILE ${SYMFORCE_TEST_CC_SOURCES})
