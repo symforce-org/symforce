@@ -146,20 +146,19 @@ class CMakeBuild(build_ext):
             # in the symenginepy/symengine source directory. Everything is already there
             # except the compiled symengine_wrapper extension module, so we copy that there
             # as well.
+            symengine_wrapper = next(
+                build_temp_path.glob(
+                    f"symengine_install/**/lib/python{sys.version_info.major}.{sys.version_info.minor}/*-packages/symengine/lib/{self.get_ext_filename('symengine_wrapper')}"
+                ),
+                None,
+            )
             # NOTE(brad) For some reason that I don't fully understand, the symengine_wrapper
             # shared library is neither present in symengine_install nor needed in the source
             # directory on macos sometimes (for example, on the github actions macos runner).
-            # So, if the copy fails (due to the file not being present, we just move on).
-            try:
+            # So, if the file's not present, we just move on.
+            if symengine_wrapper:
                 self.copy_file(
-                    build_temp_path
-                    / "symengine_install"
-                    / "lib"
-                    / f"python{sys.version_info.major}.{sys.version_info.minor}"
-                    / "site-packages"
-                    / "symengine"
-                    / "lib"
-                    / self.get_ext_filename("symengine_wrapper"),
+                    symengine_wrapper,
                     SOURCE_DIR
                     / "third_party"
                     / "symenginepy"
@@ -167,8 +166,6 @@ class CMakeBuild(build_ext):
                     / "lib"
                     / self.get_ext_filename("symengine_wrapper"),
                 )
-            except distutils.errors.DistutilsFileError:
-                pass
 
             # NOTE(brad) By setting the RPATH of the generated binaries to include $ORIGIN,
             # we told all binaries they can expect to find any shared libraries in the same
