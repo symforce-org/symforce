@@ -188,7 +188,14 @@ def main() -> None:
 
     if need_to_run:
         for path in Path(args.cmake_stampdir).iterdir():
+            # This file is not recreated by cmake on rebuilds and is not a stamp
             if path.name.endswith("-source_dirinfo.txt"):
+                continue
+
+            # Newer versions of cmake create empty directories in here at configure time, but
+            # they're never populated afaict and are not used as stamps
+            # https://github.com/Kitware/CMake/blob/5fbac2bb24250eeeb64e2fb4868dcf976ee29d64/Modules/ExternalProject/mkdirs.cmake.in#L16-L19
+            if path.is_dir():
                 continue
 
             print(f"Removing: {path}")

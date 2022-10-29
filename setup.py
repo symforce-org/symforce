@@ -482,7 +482,9 @@ setup(
             "jinja2~=3.0.3",
             "mypy==0.910",
             "numba",
-            "pip-tools",
+            # Newer versions of pip-tools use `build`, which has some issues with venv on debian
+            # that we'll need to work around in CI
+            "pip-tools<6.7.0",
             "pybind11-stubgen",
             "pylint",
             "types-jinja2",
