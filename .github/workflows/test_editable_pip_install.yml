@@ -6,6 +6,7 @@ on:
       - 'main'
   pull_request:
     types: [opened, synchronize]
+  workflow_dispatch:
 
 jobs:
   editable_install:
