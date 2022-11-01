@@ -70,7 +70,7 @@ class SymforceDataBufferCodegenTest(TestCase):
         )
 
         # Also test that the generated python code runs
-        gen_module = codegen_util.load_generated_package(
+        buffer_func = codegen_util.load_generated_function(
             "buffer_func",
             py_codegen_data.function_dir,
         )
@@ -81,7 +81,7 @@ class SymforceDataBufferCodegenTest(TestCase):
         # 2 * buffer[b^2 - a^2] + (a+b)
         # 2 * buffer[3] + 3
         expected = 9
-        result_numeric = gen_module.buffer_func(buffer_numeric, a_numeric, b_numeric)
+        result_numeric = buffer_func(buffer_numeric, a_numeric, b_numeric)
 
         self.assertStorageNear(expected, result_numeric)
 

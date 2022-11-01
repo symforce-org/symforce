@@ -33,6 +33,8 @@ class PythonConfig(CodegenConfig):
                    times.
         reshape_vectors: Allow rank 1 ndarrays to be passed in for row and column vectors by
                          automatically reshaping the input.
+        namespace_package: Generate the package as a namespace package, meaning it can be split
+                           across multiple directories.
     """
 
     doc_comment_line_prefix: str = ""
@@ -40,6 +42,7 @@ class PythonConfig(CodegenConfig):
     use_eigen_types: bool = True
     use_numba: bool = False
     reshape_vectors: bool = True
+    namespace_package: bool = True
 
     @classmethod
     def backend_name(cls) -> str:
@@ -50,10 +53,11 @@ class PythonConfig(CodegenConfig):
         return CURRENT_DIR / "templates"
 
     def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
-        return [
-            ("function/FUNCTION.py.jinja", f"{generated_file_name}.py"),
-            ("function/__init__.py.jinja", "__init__.py"),
-        ]
+        templates = [("function/FUNCTION.py.jinja", f"{generated_file_name}.py")]
+        if self.namespace_package:
+            return templates + [("function/namespace_init.py.jinja", "__init__.py")]
+        else:
+            return templates + [("function/__init__.py.jinja", "__init__.py")]
 
     def printer(self) -> CodePrinter:
         return python_code_printer.PythonCodePrinter()

@@ -1,0 +1,16 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+{% if pkg_namespace == "sym" %}
+"""
+Python runtime geometry package.
+"""
+
+{% endif %}
+# Make package a namespace package by adding other portions to the __path__
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)  # type: ignore[has-type]
+# https://github.com/python/mypy/issues/1422
+{% if pkg_namespace == "sym" %}
+from ._init import *
+{% endif %}

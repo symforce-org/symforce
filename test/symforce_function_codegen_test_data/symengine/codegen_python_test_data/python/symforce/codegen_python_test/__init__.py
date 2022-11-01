@@ -3,5 +3,3 @@
 #     function/__init__.py.jinja
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
-
-from .python_function import python_function

@@ -484,7 +484,7 @@ class Codegen:
         # Namespace of this function + generated types
         self.namespace = namespace
 
-        template_data = dict(self.common_data(), spec=self)
+        template_data = dict(self.common_data(), spec=self, pkg_namespace=namespace)
         template_dir = self.config.template_dir()
 
         backend_name = self.config.backend_name()

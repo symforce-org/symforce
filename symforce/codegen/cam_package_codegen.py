@@ -293,7 +293,8 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
                 all_types=list(geo_package_codegen.DEFAULT_GEO_TYPES) + list(DEFAULT_CAM_TYPES),
                 numeric_epsilon=sf.numeric_epsilon,
             ),
-            output_path=cam_package_dir / "__init__.py",
+            output_path=cam_package_dir
+            / ("_init.py" if config.namespace_package else "__init__.py"),
         )
 
         for name in ("cam_package_python_test.py",):

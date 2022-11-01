@@ -75,10 +75,7 @@ class NumericFactor:
         """
         assert all(opt_key in keys for opt_key in optimized_keys)
         function_dir = Path(output_dir) / "python" / "symforce" / namespace
-        linearization_function = getattr(
-            codegen_util.load_generated_package(f"{namespace}.{name}", function_dir),
-            name,
-        )
+        linearization_function = codegen_util.load_generated_function(name, function_dir)
         return cls(
             keys=keys, optimized_keys=optimized_keys, linearization_function=linearization_function
         )
