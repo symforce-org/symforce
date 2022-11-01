@@ -4,14 +4,14 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-import math  # pylint: disable=unused-import
-import typing as T  # pylint: disable=unused-import
+# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument,unused-import
 
-import numpy  # pylint: disable=unused-import
+import math
+import typing as T
 
-import sym  # pylint: disable=unused-import
+import numpy
 
-# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
+import sym
 
 
 def buffer_func(buffer, a, b):

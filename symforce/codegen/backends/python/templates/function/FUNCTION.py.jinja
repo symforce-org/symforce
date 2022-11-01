@@ -4,21 +4,21 @@
  # ---------------------------------------------------------------------------- #}
 {%- import "../util/util.jinja" as util with context -%}
 
-import math  # pylint: disable=unused-import
-import typing as T  # pylint: disable=unused-import
+# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument,unused-import
+
+import math
+import typing as T
 
 {% if spec.config.use_numba %}
 import numba
 {% endif %}
-import numpy  # pylint: disable=unused-import
+import numpy
 {% set sparse_values = spec.print_code_results.sparse_terms | length %}
 {% if sparse_values != 0 %}
 from scipy import sparse
 {% endif %}
 
-import sym  # pylint: disable=unused-import
-
-# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
+import sym
 
 
 {% if spec.config.use_numba %}
