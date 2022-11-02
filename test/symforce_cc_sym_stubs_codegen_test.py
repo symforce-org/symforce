@@ -6,9 +6,12 @@
 import os
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+# Needed so sys.modules["cc_sym"] exists
+from symforce import cc_sym  # pylint: disable=unused-import
 from symforce import path_util
 from symforce import typing as T
 from symforce.codegen import template_util
@@ -24,7 +27,9 @@ class SymforceCCSymStubsCodegenTest(TestCase):
 
         subprocess.check_call(
             [
-                "pybind11-stubgen",
+                sys.executable,
+                "-m",
+                "pybind11_stubgen",
                 "--bare-numpy-ndarray",
                 "--no-setup-py",
                 "-o",
@@ -34,7 +39,10 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             env=dict(
                 os.environ,
                 PYTHONPATH=os.pathsep.join(
-                    [os.environ.get("PYTHONPATH", ""), os.fspath(path_util.cc_sym_install_dir())]
+                    [
+                        os.environ.get("PYTHONPATH", ""),
+                        str(Path(sys.modules["cc_sym"].__file__).parent),
+                    ]
                 ),
             ),
         )
