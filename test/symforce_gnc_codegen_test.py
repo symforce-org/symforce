@@ -3,21 +3,22 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
-
 import symforce
 
 symforce.set_epsilon_to_symbol()
 
 import symforce.symbolic as sf
 from symforce import codegen
+from symforce import path_util
 from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
 from symforce.test_util import TestCase
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
+TEST_DATA_DIR = (
+    path_util.symforce_data_root()
+    / "test"
+    / "symforce_function_codegen_test_data"
+    / symforce.get_symbolic_api()
 )
 
 
@@ -48,7 +49,7 @@ class SymGncCodegenTest(TestCase):
         ).generate_function(output_dir=output_dir, namespace=namespace)
 
         self.compare_or_update_directory(
-            actual_dir=output_dir, expected_dir=os.path.join(TEST_DATA_DIR, "gnc_test_data")
+            actual_dir=output_dir, expected_dir=TEST_DATA_DIR / "gnc_test_data"
         )
 
 

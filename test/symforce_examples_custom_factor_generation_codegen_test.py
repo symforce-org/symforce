@@ -3,19 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
-
 import symforce
 
 symforce.set_epsilon_to_symbol()
 
+from symforce import path_util
 from symforce.examples.custom_factor_generation import generate_factors
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only
 from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
-
-CURRENT_DIR = os.path.dirname(__file__)
-SYMFORCE_DIR = os.path.join(CURRENT_DIR, "..")
 
 BASE_DIRNAME = "symforce_custom_factor_generation_example"
 
@@ -29,8 +25,12 @@ class CustomFactorGenerationExampleCodegenTest(TestCase, SymforceTestCaseMixin):
 
         self.compare_or_update_directory(
             actual_dir=output_dir,
-            expected_dir=os.path.join(
-                SYMFORCE_DIR, "symforce", "examples", "custom_factor_generation", "gen"
+            expected_dir=(
+                path_util.symforce_data_root()
+                / "symforce"
+                / "examples"
+                / "custom_factor_generation"
+                / "gen"
             ),
         )
 

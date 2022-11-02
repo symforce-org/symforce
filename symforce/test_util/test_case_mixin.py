@@ -32,12 +32,21 @@ class SymforceTestCaseMixin(unittest.TestCase):
 
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing
-    UPDATE = False
+    _UPDATE = False
 
     KEEP_PATHS = [
         r".*/__pycache__/.*",
         r".*\.pyc",
     ]
+
+    @staticmethod
+    def should_update() -> bool:
+        # NOTE(aaron):  This needs to be accessible before main() is called, so we do it here
+        # instead.  This should also be called from main to make sure it runs at least once
+        if "--update" in sys.argv:
+            SymforceTestCaseMixin._UPDATE = True
+            sys.argv.remove("--update")
+        return SymforceTestCaseMixin._UPDATE
 
     def __init__(self, methodName: str = "runTest") -> None:
         super().__init__(methodName)
@@ -51,11 +60,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         """
         Call this to run all tests in scope.
         """
-        # Sneak through options to expose to tests
-        if "--update" in sys.argv:
-            SymforceTestCaseMixin.UPDATE = True
-            sys.argv.remove("--update")
-
+        SymforceTestCaseMixin.should_update()
         unittest.main(*args, **kwargs)
 
     @staticmethod
@@ -169,7 +174,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
         """
-        if SymforceTestCaseMixin.UPDATE:
+        if self.should_update():
             logger.debug(f'Updating data at: "{path}"')
 
             dirname = os.path.dirname(path)
@@ -219,7 +224,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         actual_paths = self._filtered_paths_in_dir(actual_dir)
         expected_paths = self._filtered_paths_in_dir(expected_dir)
 
-        if not SymforceTestCaseMixin.UPDATE:
+        if not self.should_update():
             # If checking, make sure all file paths are the same
             self.assertSequenceEqual(actual_paths, expected_paths)
         else:

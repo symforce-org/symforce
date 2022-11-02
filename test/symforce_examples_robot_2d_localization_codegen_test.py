@@ -9,11 +9,10 @@ import symforce
 
 symforce.set_epsilon_to_symbol()
 
+from symforce import path_util
 from symforce.examples.robot_2d_localization import robot_2d_localization
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only
-
-SYMFORCE_DIR = Path(__file__).parent.parent
 
 
 class Robot2DLocalizationCodegenTest(TestCase):
@@ -27,7 +26,13 @@ class Robot2DLocalizationCodegenTest(TestCase):
 
         self.compare_or_update_directory(
             actual_dir=output_dir,
-            expected_dir=SYMFORCE_DIR / "symforce" / "examples" / "robot_2d_localization" / "gen",
+            expected_dir=(
+                path_util.symforce_data_root()
+                / "symforce"
+                / "examples"
+                / "robot_2d_localization"
+                / "gen"
+            ),
         )
 
 

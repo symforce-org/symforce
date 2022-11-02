@@ -16,6 +16,7 @@ symforce.set_epsilon_to_symbol()
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import ops
+from symforce import path_util
 from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import cam_package_codegen
@@ -28,9 +29,9 @@ from symforce.codegen import template_util
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
+SYMFORCE_DIR = path_util.symforce_data_root()
+TEST_DATA_DIR = (
+    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_symbolic_api()
 )
 
 

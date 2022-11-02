@@ -67,10 +67,8 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             third_party_includes: T.List[str]
             cleaned_up_stubgen_output: str
 
-        pybind_dir = path_util.symforce_dir() / "symforce" / "pybind"
-
         template_util.render_template(
-            template_dir=pybind_dir,
+            template_dir=path_util.symforce_root() / "symforce" / "pybind",
             template_path="cc_sym.pyi.jinja",
             data={
                 "spec": TypeStubParts(
@@ -105,7 +103,8 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         )
 
         self.compare_or_update_file(
-            new_file=output_dir / "cc_sym.pyi", path=pybind_dir / "cc_sym.pyi"
+            new_file=output_dir / "cc_sym.pyi",
+            path=path_util.symforce_data_root() / "symforce" / "pybind" / "cc_sym.pyi",
         )
 
 

@@ -57,3 +57,25 @@ def cc_sym_install_dir() -> Path:
 
 def binary_output_dir() -> Path:
     return _Manifest.get_entry("binary_output_dir")
+
+
+def symforce_root() -> Path:
+    """
+    The root directory of the symforce project
+    """
+    return Path(__file__).parent.parent
+
+
+def symforce_data_root() -> Path:
+    """
+    The root directory of the symforce project, for use accessing data that might need to be updated
+    (such as generated files).  Most of the time this is the same as `symforce_root()`, but when
+    the `--update` flag is passed to a test, this is guaranteed to point to the _resolved_ version,
+    i.e. the actual symforce location on disk regardless of whether this path is a symlink.
+    """
+    from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
+
+    if SymforceTestCaseMixin.should_update():
+        return Path(__file__).resolve().parent.parent
+    else:
+        return symforce_root()

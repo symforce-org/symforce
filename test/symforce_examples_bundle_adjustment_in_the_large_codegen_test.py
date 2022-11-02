@@ -9,11 +9,10 @@ import symforce
 
 symforce.set_epsilon_to_symbol()
 
+from symforce import path_util
 from symforce.examples.bundle_adjustment_in_the_large.bundle_adjustment_in_the_large import generate
 from symforce.test_util import TestCase
 from symforce.test_util import sympy_only
-
-SYMFORCE_DIR = Path(__file__).parent.parent
 
 
 class BundleAdjustmentInTheLargeCodegenTest(TestCase):
@@ -31,11 +30,13 @@ class BundleAdjustmentInTheLargeCodegenTest(TestCase):
 
         self.compare_or_update_directory(
             actual_dir=output_dir,
-            expected_dir=SYMFORCE_DIR
-            / "symforce"
-            / "examples"
-            / "bundle_adjustment_in_the_large"
-            / "gen",
+            expected_dir=(
+                path_util.symforce_data_root()
+                / "symforce"
+                / "examples"
+                / "bundle_adjustment_in_the_large"
+                / "gen"
+            ),
         )
 
 

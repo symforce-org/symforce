@@ -25,6 +25,7 @@ import symforce.symbolic as sf
 from symforce import codegen
 from symforce import logger
 from symforce import ops
+from symforce import path_util
 from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import codegen_util
@@ -35,9 +36,11 @@ from symforce.test_util import slow_on_sympy
 from symforce.test_util import symengine_only
 from symforce.values import Values
 
-SYMFORCE_DIR = Path(__file__).parent.parent
 TEST_DATA_DIR = (
-    SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_symbolic_api()
+    path_util.symforce_data_root()
+    / "test"
+    / "symforce_function_codegen_test_data"
+    / symforce.get_symbolic_api()
 )
 
 # Test function

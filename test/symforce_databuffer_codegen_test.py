@@ -12,6 +12,7 @@ symforce.set_epsilon_to_symbol()
 
 import symforce.symbolic as sf
 from symforce import codegen
+from symforce import path_util
 from symforce import typing as T
 from symforce.codegen import codegen_util
 from symforce.opt.factor import Factor
@@ -19,9 +20,7 @@ from symforce.opt.optimizer import Optimizer
 from symforce.test_util import TestCase
 from symforce.values import Values
 
-CURRENT_DIR = Path(__file__).parent
-SYMFORCE_DIR = CURRENT_DIR.parent
-TEST_DATA_DIR = SYMFORCE_DIR.joinpath(
+TEST_DATA_DIR = path_util.symforce_data_root().joinpath(
     "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
 )
 

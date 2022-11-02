@@ -3,20 +3,16 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
-
 import symforce
 
 symforce.set_epsilon_to_symbol()
 
+from symforce import path_util
 from symforce.examples.bundle_adjustment_fixed_size.generate_fixed_problem import (
     FixedBundleAdjustmentProblem,
 )
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only
-
-CURRENT_DIR = os.path.dirname(__file__)
-SYMFORCE_DIR = os.path.join(CURRENT_DIR, "..")
 
 BASE_DIRNAME = "symforce_bundle_adjustment_example"
 
@@ -31,8 +27,12 @@ class BundleAdjustmentExampleCodegenTest(TestCase):
 
         self.compare_or_update_directory(
             actual_dir=output_dir,
-            expected_dir=os.path.join(
-                SYMFORCE_DIR, "symforce", "examples", "bundle_adjustment_fixed_size", "gen"
+            expected_dir=(
+                path_util.symforce_data_root()
+                / "symforce"
+                / "examples"
+                / "bundle_adjustment_fixed_size"
+                / "gen"
             ),
         )
 
