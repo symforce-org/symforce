@@ -52,6 +52,7 @@ foreach(SOURCE_FILE ${SYMFORCE_TEST_CC_SOURCES})
   set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME ${BINARY_NAME})
   set_target_properties(${TARGET_NAME} PROPERTIES TEST_NAME ${TEST_NAME})
   set_target_properties(${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+  target_compile_options(${TARGET_NAME} PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
   target_link_libraries(
     ${TARGET_NAME}
     symforce_gen

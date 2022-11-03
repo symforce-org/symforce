@@ -112,6 +112,10 @@ function(add_matrix_multiplication_benchmark matrix_name)
         matrix_multiplication/gen/matrix_multiplication_benchmark_${matrix_name}.cc
     )
 
+    target_compile_options(matrix_multiplication_benchmark_${matrix_name}
+        PRIVATE ${SYMFORCE_COMPILE_OPTIONS}
+    )
+
     target_link_libraries(
         matrix_multiplication_benchmark_${matrix_name}
         Catch2::Catch2WithMain
@@ -138,6 +142,8 @@ add_executable(
     inverse_compose_jacobian/inverse_compose_jacobian_benchmark.cc
 )
 
+target_compile_options(inverse_compose_jacobian_benchmark PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
+
 find_package(Sophus REQUIRED)
 target_link_libraries(
     inverse_compose_jacobian_benchmark
@@ -158,6 +164,8 @@ add_executable(
     robot_3d_localization_benchmark
     robot_3d_localization/robot_3d_localization_benchmark.cc
 )
+
+target_compile_options(robot_3d_localization_benchmark PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 
 target_link_libraries(
     robot_3d_localization_benchmark
