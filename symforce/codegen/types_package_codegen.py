@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +18,30 @@ from symforce.values import IndexEntry
 from symforce.values import Values
 
 
+@dataclass
+class TypesCodegenData:
+    # Save input args for handy reference
+    package_name: str
+    values_indices: T.Mapping[str, T.Dict[str, IndexEntry]]
+    shared_types: T.Optional[T.Mapping[str, str]]
+    scalar_type: str
+
+    # Save outputs and intermediates
+    output_dir: Path
+    lcm_type_dir: Path
+    lcm_bindings_output_dir: T.Optional[T.Openable]
+    lcm_files: T.List[str]
+    types_dict: T.Dict[str, T.Dict[str, T.Any]]
+
+    # Save mapping between names of types and their namespace/typename. This is used, e.g., to get
+    # the namespace of a type (whether internal or external) from the name of the variable when
+    # generating code.
+    typenames_dict: T.Dict[str, str]
+    namespaces_dict: T.Dict[str, str]
+
+    lcm_bindings_dirs: T.Optional[codegen_util.LcmBindingsDirs] = None
+
+
 def generate_types(
     package_name: str,
     file_name: str,
@@ -27,7 +52,7 @@ def generate_types(
     output_dir: T.Openable = None,
     lcm_bindings_output_dir: T.Openable = None,
     templates: template_util.TemplateList = None,
-) -> T.Dict[str, T.Any]:
+) -> TypesCodegenData:
     """
     Generates LCM types from the given values_indices, including the necessary subtypes
     and references to external LCM types.
@@ -115,38 +140,21 @@ def generate_types(
             template_dir=template_util.LCM_TEMPLATE_DIR,
         )
 
-    # Save input args for handy reference
-    codegen_data: T.Dict[str, T.Any] = {}
-    codegen_data["package_name"] = package_name
-    codegen_data["values_indices"] = values_indices
-    codegen_data["shared_types"] = shared_types
-    codegen_data["scalar_type"] = scalar_type
-
-    # Save outputs and intermediates
-    codegen_data["output_dir"] = output_dir
-    codegen_data["lcm_type_dir"] = lcm_type_dir
-    codegen_data["lcm_bindings_output_dir"] = lcm_bindings_output_dir
-    codegen_data["lcm_files"] = lcm_files
-    codegen_data["types_dict"] = types_dict
-
-    # Save mapping between names of types and their namespace/typename. This is used, e.g.,
-    # to get the namespace of a type (whether internal or external) from the name of the variable
-    # when generating code.
     # TODO(nathan): Not sure if all edge cases are caught in the following, could probably clean this up some
-    codegen_data["typenames_dict"] = {}  # Maps typenames to generated types
-    codegen_data["namespaces_dict"] = {}  # Maps typenames to namespaces
+    typenames_dict = {}  # Maps typenames to generated types
+    namespaces_dict = {}  # Maps typenames to namespaces
     for name in values_indices.keys():
         # Record namespace/typenames for top-level types. If the type is external, we get the
         # namespace and typename from shared_types.
         if shared_types is not None and name in shared_types:
-            codegen_data["typenames_dict"][name] = shared_types[name].split(".")[-1]
+            typenames_dict[name] = shared_types[name].split(".")[-1]
             if "." in shared_types[name]:
-                codegen_data["namespaces_dict"][name] = shared_types[name].split(".")[0]
+                namespaces_dict[name] = shared_types[name].split(".")[0]
             else:
-                codegen_data["namespaces_dict"][name] = package_name
+                namespaces_dict[name] = package_name
         else:
-            codegen_data["typenames_dict"][name] = f"{name}_t"
-            codegen_data["namespaces_dict"][name] = package_name
+            typenames_dict[name] = f"{name}_t"
+            namespaces_dict[name] = package_name
     for typename, data in types_dict.items():
         # Iterate through types in types_dict. If type is external, use the shared_types to
         # get the namespace.
@@ -156,16 +164,31 @@ def generate_types(
             if shared_types is not None and name in shared_types:
                 name = shared_types[name]
             if "." in name:
-                codegen_data["typenames_dict"][name] = name.split(".")[-1]
-                codegen_data["namespaces_dict"][name] = name.split(".")[0]
+                typenames_dict[name] = name.split(".")[-1]
+                namespaces_dict[name] = name.split(".")[0]
             else:
-                codegen_data["typenames_dict"][name] = f"{name}_t"
-                codegen_data["namespaces_dict"][name] = package_name
+                typenames_dict[name] = f"{name}_t"
+                namespaces_dict[name] = package_name
+
+    codegen_data = TypesCodegenData(
+        package_name=package_name,
+        values_indices=values_indices,
+        shared_types=shared_types,
+        scalar_type=scalar_type,
+        output_dir=output_dir,
+        lcm_type_dir=lcm_type_dir,
+        lcm_bindings_output_dir=lcm_bindings_output_dir,
+        lcm_files=lcm_files,
+        types_dict=types_dict,
+        typenames_dict=typenames_dict,
+        namespaces_dict=namespaces_dict,
+    )
 
     if not using_external_templates:
         templates.render()
-        lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, lcm_files, lcm_bindings_output_dir)
-        codegen_data.update(lcm_data)
+        codegen_data.lcm_bindings_dirs = codegen_util.generate_lcm_types(
+            lcm_type_dir, lcm_files, lcm_bindings_output_dir
+        )
 
     return codegen_data
 

@@ -315,7 +315,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
 
     # Codegen for LCM type_t
     codegen_util.generate_lcm_types(
-        str(package_dir / ".." / "lcmtypes" / "lcmtypes"), ["symforce_types.lcm"]
+        package_dir / ".." / "lcmtypes" / "lcmtypes", ["symforce_types.lcm"]
     )
 
     return output_dir

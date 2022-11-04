@@ -658,9 +658,15 @@ def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
     return obj
 
 
+@dataclasses.dataclass
+class LcmBindingsDirs:
+    python_types_dir: Path
+    cpp_types_dir: Path
+
+
 def generate_lcm_types(
     lcm_type_dir: T.Openable, lcm_files: T.Sequence[str], lcm_output_dir: T.Openable = None
-) -> T.Dict[str, Path]:
+) -> LcmBindingsDirs:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.
 
@@ -679,7 +685,7 @@ def generate_lcm_types(
     cpp_types_dir = lcm_output_dir / "cpp" / "lcmtypes"
     lcm_include_dir = "lcmtypes"
 
-    result = {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}
+    result = LcmBindingsDirs(python_types_dir=python_types_dir, cpp_types_dir=cpp_types_dir)
 
     # TODO(brad, aaron): Do something reasonable with lcm_files other than returning early
     # If no LCM files provided, do nothing

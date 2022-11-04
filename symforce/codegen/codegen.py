@@ -475,9 +475,9 @@ class Codegen:
         )
 
         # Maps typenames to generated types
-        self.typenames_dict = types_codegen_data["typenames_dict"]
+        self.typenames_dict = types_codegen_data.typenames_dict
         # Maps typenames to namespaces
-        self.namespaces_dict = types_codegen_data["namespaces_dict"]
+        self.namespaces_dict = types_codegen_data.namespaces_dict
         assert self.namespaces_dict is not None
         self.unique_namespaces = set(self.namespaces_dict.values())
 
@@ -508,17 +508,17 @@ class Codegen:
         templates.render(autoformat=self.config.autoformat)
 
         lcm_data = codegen_util.generate_lcm_types(
-            lcm_type_dir=types_codegen_data["lcm_type_dir"],
-            lcm_files=types_codegen_data["lcm_files"],
-            lcm_output_dir=types_codegen_data["lcm_bindings_output_dir"],
+            lcm_type_dir=types_codegen_data.lcm_type_dir,
+            lcm_files=types_codegen_data.lcm_files,
+            lcm_output_dir=types_codegen_data.lcm_bindings_output_dir,
         )
 
         return GeneratedPaths(
             output_dir=output_dir,
-            lcm_type_dir=Path(types_codegen_data["lcm_type_dir"]),
+            lcm_type_dir=types_codegen_data.lcm_type_dir,
             function_dir=out_function_dir,
-            python_types_dir=lcm_data["python_types_dir"],
-            cpp_types_dir=lcm_data["cpp_types_dir"],
+            python_types_dir=lcm_data.python_types_dir,
+            cpp_types_dir=lcm_data.cpp_types_dir,
             generated_files=[Path(v.output_path) for v in templates.items],
         )
 
