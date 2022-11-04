@@ -216,6 +216,12 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
             data={},
         )
 
+        templates.add(
+            template_path=Path("util.py.jinja"),
+            output_path=package_dir / "util.py",
+            data={},
+        )
+
         # Package init
         if config.namespace_package:
             templates.add(

@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class LieGroupOps(object):
@@ -19,19 +20,12 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.Rot3
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.Rot3
 
         # Total ops: 15
 
         # Input arrays
-        if vec.shape == (3,):
-            vec = vec.reshape((3, 1))
-        elif vec.shape != (3, 1):
-            raise IndexError(
-                "vec is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (3, 1))
 
         # Intermediate terms (3)
         _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
@@ -73,20 +67,13 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.Rot3, numpy.ndarray, float) -> sym.Rot3
+        # type: (sym.Rot3, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.Rot3
 
         # Total ops: 44
 
         # Input arrays
         _a = a.data
-        if vec.shape == (3,):
-            vec = vec.reshape((3, 1))
-        elif vec.shape != (3, 1):
-            raise IndexError(
-                "vec is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (3, 1))
 
         # Intermediate terms (8)
         _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)

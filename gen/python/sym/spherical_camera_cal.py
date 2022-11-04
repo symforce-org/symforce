@@ -9,6 +9,7 @@ import typing as T
 import numpy
 
 from .ops import spherical_camera_cal as ops
+from .util import check_size_and_reshape
 
 
 class SphericalCameraCal(object):
@@ -130,7 +131,7 @@ class SphericalCameraCal(object):
         return ops.CameraOps.principal_point(self)
 
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (SphericalCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (SphericalCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -142,7 +143,7 @@ class SphericalCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (SphericalCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (SphericalCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -196,13 +197,7 @@ class SphericalCameraCal(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> SphericalCameraCal
-        if len(vec) != cls.tangent_dim():
-            raise ValueError(
-                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
-                    len(vec), cls.tangent_dim()
-                )
-            )
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> SphericalCameraCal
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
@@ -210,13 +205,7 @@ class SphericalCameraCal(object):
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> SphericalCameraCal
-        if len(vec) != self.tangent_dim():
-            raise ValueError(
-                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
-                    len(vec), self.tangent_dim()
-                )
-            )
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> SphericalCameraCal
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):

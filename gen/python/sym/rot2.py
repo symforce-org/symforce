@@ -9,6 +9,8 @@ import typing as T
 
 import numpy
 
+from .util import check_size_and_reshape
+
 # isort: split
 from .ops import rot2 as ops
 
@@ -56,7 +58,7 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     def compose_with_point(self, right):
-        # type: (Rot2, numpy.ndarray) -> numpy.ndarray
+        # type: (Rot2, T.Union[T.Sequence[float], numpy.ndarray]) -> numpy.ndarray
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -65,14 +67,7 @@ class Rot2(object):
 
         # Input arrays
         _self = self.data
-        if right.shape == (2,):
-            right = right.reshape((2, 1))
-        elif right.shape != (2, 1):
-            raise IndexError(
-                "right is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    right.shape
-                )
-            )
+        right = check_size_and_reshape(right, "right", (2, 1))
 
         # Intermediate terms (0)
 
@@ -186,13 +181,7 @@ class Rot2(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Rot2
-        if len(vec) != cls.tangent_dim():
-            raise ValueError(
-                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
-                    len(vec), cls.tangent_dim()
-                )
-            )
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> Rot2
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
@@ -200,13 +189,7 @@ class Rot2(object):
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Rot2
-        if len(vec) != self.tangent_dim():
-            raise ValueError(
-                "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
-                    len(vec), self.tangent_dim()
-                )
-            )
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> Rot2
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
@@ -237,11 +220,23 @@ class Rot2(object):
         # type: (numpy.ndarray) -> numpy.ndarray
         pass
 
+    @T.overload
+    def __mul__(self, other):  # pragma: no cover
+        # type: (T.Sequence[float]) -> numpy.ndarray
+        pass
+
     def __mul__(self, other):
-        # type: (T.Union[Rot2, numpy.ndarray]) -> T.Union[Rot2, numpy.ndarray]
+        # type: (T.Union[Rot2, T.Sequence[float], numpy.ndarray]) -> T.Union[Rot2, numpy.ndarray]
         if isinstance(other, Rot2):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
             return self.compose_with_point(other).reshape(other.shape)
+        elif (
+            hasattr(self, "compose_with_point")
+            and hasattr(other, "__len__")
+            and hasattr(other, "__getitem__")
+            and not isinstance(other, str)
+        ):
+            return self.compose_with_point(other)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

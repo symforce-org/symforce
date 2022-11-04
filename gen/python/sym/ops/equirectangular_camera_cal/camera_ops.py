@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class CameraOps(object):
@@ -59,7 +60,7 @@ class CameraOps(object):
 
     @staticmethod
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (sym.EquirectangularCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (sym.EquirectangularCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -72,14 +73,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if point.shape == (3,):
-            point = point.reshape((3, 1))
-        elif point.shape != (3, 1):
-            raise IndexError(
-                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (1)
         _tmp0 = point[0, 0] ** 2 + point[2, 0] ** 2
@@ -104,7 +98,7 @@ class CameraOps(object):
 
     @staticmethod
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (sym.EquirectangularCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (sym.EquirectangularCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -119,14 +113,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if point.shape == (3,):
-            point = point.reshape((3, 1))
-        elif point.shape != (3, 1):
-            raise IndexError(
-                "point is expected to have shape (3, 1) or (3,); instead had shape {}".format(
-                    point.shape
-                )
-            )
+        point = check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (10)
         _tmp0 = (
@@ -168,7 +155,7 @@ class CameraOps(object):
 
     @staticmethod
     def camera_ray_from_pixel(self, pixel, epsilon):
-        # type: (sym.EquirectangularCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+        # type: (sym.EquirectangularCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -183,14 +170,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if pixel.shape == (2,):
-            pixel = pixel.reshape((2, 1))
-        elif pixel.shape != (2, 1):
-            raise IndexError(
-                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    pixel.shape
-                )
-            )
+        pixel = check_size_and_reshape(pixel, "pixel", (2, 1))
 
         # Intermediate terms (3)
         _tmp0 = (-_self[3] + pixel[1, 0]) / _self[1]
@@ -217,7 +197,7 @@ class CameraOps(object):
 
     @staticmethod
     def camera_ray_from_pixel_with_jacobians(self, pixel, epsilon):
-        # type: (sym.EquirectangularCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (sym.EquirectangularCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -232,14 +212,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        if pixel.shape == (2,):
-            pixel = pixel.reshape((2, 1))
-        elif pixel.shape != (2, 1):
-            raise IndexError(
-                "pixel is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    pixel.shape
-                )
-            )
+        pixel = check_size_and_reshape(pixel, "pixel", (2, 1))
 
         # Intermediate terms (21)
         _tmp0 = -_self[3] + pixel[1, 0]

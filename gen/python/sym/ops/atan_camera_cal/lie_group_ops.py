@@ -10,6 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 
 class LieGroupOps(object):
@@ -19,19 +20,12 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.ATANCameraCal
+        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.ATANCameraCal
 
         # Total ops: 0
 
         # Input arrays
-        if vec.shape == (5,):
-            vec = vec.reshape((5, 1))
-        elif vec.shape != (5, 1):
-            raise IndexError(
-                "vec is expected to have shape (5, 1) or (5,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (5, 1))
 
         # Intermediate terms (0)
 
@@ -66,20 +60,13 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.ATANCameraCal, numpy.ndarray, float) -> sym.ATANCameraCal
+        # type: (sym.ATANCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.ATANCameraCal
 
         # Total ops: 5
 
         # Input arrays
         _a = a.data
-        if vec.shape == (5,):
-            vec = vec.reshape((5, 1))
-        elif vec.shape != (5, 1):
-            raise IndexError(
-                "vec is expected to have shape (5, 1) or (5,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
+        vec = check_size_and_reshape(vec, "vec", (5, 1))
 
         # Intermediate terms (0)
 

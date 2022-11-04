@@ -10,6 +10,7 @@ import typing as T  # pylint: disable=unused-import
 import numpy  # pylint: disable=unused-import
 
 import sym  # pylint: disable=unused-import
+from sym.util import check_size_and_reshape
 
 # pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
 
