@@ -26,8 +26,12 @@
     {%- elif T.__name__ == 'NoneType' -%}
         None
     {%- elif issubclass(T, Matrix) -%}
-        {%- if sequence_vecs and is_input and (T.SHAPE | min) == 1 -%}
-        T.Union[T.Sequence[float], numpy.ndarray]
+        {%- if sequence_vecs and is_input -%}
+            {%- if (T.SHAPE | min) == 1 -%}
+        sym.util.VectorType
+            {%- else -%}
+        sym.util.MatrixType
+            {%- endif -%}
         {%- else -%}
         numpy.ndarray
         {%- endif -%}
@@ -135,9 +139,6 @@ def {{ function_name_and_args(spec) }}:
  # messages known at compile time. Similarly, the reshaping is always performed
  # because numba compatible code cannot reshape an array in a conditional.
  #
- # Prints nothing if shape is not of the form (1, N) or (N, 1). This is because
- # only row and column vectors might also be reasonably represented with (N,).
- #
  # Args:
  #     name (str): The name of the array to be checked and resized. Should be a user
  #       argument name, as it is used in the error message.
@@ -153,7 +154,14 @@ if not ({{ name }}.shape == {{ shape }} or {{ name }}.shape == ({{ size }},)):
     raise IndexError("{{ name }} is expected to have shape {{ shape }} or ({{ size }},)")
 {{ name }} = {{ name }}.reshape({{ shape }})
     {% else %}
-{{ name }} = check_size_and_reshape({{ name }}, "{{ name }}", {{ shape }})
+{{ name }} = sym.util.check_size_and_reshape({{ name }}, "{{ name }}", {{ shape }})
+    {% endif %}
+{% else %}
+    {% if use_numba %}
+if not {{ name }}.shape == {{ shape }}:
+    raise IndexError("{{ name }} is expected to have shape {{ shape }}")
+    {% else %}
+{{ name }} = sym.util.check_matrix_size_and_numpify({{ name }}, "{{ name }}", {{ shape }})
     {% endif %}
 {% endif %}
 {% endmacro %}

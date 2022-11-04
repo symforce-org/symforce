@@ -6,14 +6,16 @@ import typing as T
 
 import numpy
 
+VectorType = T.Union[T.Sequence[float], numpy.ndarray]
+MatrixType = T.Union[T.Sequence[T.Sequence[float]], numpy.ndarray]
 
 def check_size_and_reshape(array, name, expected_shape):
-    # type: (T.Union[T.Sequence[float], numpy.ndarray], str, T.Tuple[int, int]) -> numpy.ndarray
+    # type: (VectorType, str, T.Tuple[int, int]) -> numpy.ndarray
     if not isinstance(array, numpy.ndarray):
         expected_len = max(expected_shape)
         if len(array) != expected_len:
             raise IndexError(
-                "{} is expected to have length {}; instead had length{}".format(
+                "{} is expected to have length {}; instead had length {}".format(
                     name, expected_len, len(array)
                 )
             )
@@ -29,4 +31,18 @@ def check_size_and_reshape(array, name, expected_shape):
                 array.shape
             )
         )
+    return array
+
+def check_matrix_size_and_numpify(array, name, expected_shape):
+    # type: (MatrixType, str, T.Tuple[int, int]) -> numpy.ndarray
+    if not isinstance(array, numpy.ndarray):
+        array = numpy.array(array)
+
+    if array.shape != expected_shape:
+        raise IndexError(
+            "{} is expected to have shape {}; instead had shape {}".format(
+                name, expected_shape, array.shape
+            )
+        )
+
     return array

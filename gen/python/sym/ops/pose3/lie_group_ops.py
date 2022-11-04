@@ -10,7 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
-from sym.util import check_size_and_reshape
+import sym.util
 
 
 class LieGroupOps(object):
@@ -20,12 +20,12 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.Pose3
+        # type: (sym.util.VectorType, float) -> sym.Pose3
 
         # Total ops: 15
 
         # Input arrays
-        vec = check_size_and_reshape(vec, "vec", (6, 1))
+        vec = sym.util.check_size_and_reshape(vec, "vec", (6, 1))
 
         # Intermediate terms (3)
         _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
@@ -73,13 +73,13 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.Pose3, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.Pose3
+        # type: (sym.Pose3, sym.util.VectorType, float) -> sym.Pose3
 
         # Total ops: 47
 
         # Input arrays
         _a = a.data
-        vec = check_size_and_reshape(vec, "vec", (6, 1))
+        vec = sym.util.check_size_and_reshape(vec, "vec", (6, 1))
 
         # Intermediate terms (8)
         _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
