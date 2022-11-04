@@ -10,7 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
-from sym.util import check_size_and_reshape
+import sym.util
 
 
 class CameraOps(object):
@@ -60,7 +60,7 @@ class CameraOps(object):
 
     @staticmethod
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (sym.SphericalCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
+        # type: (sym.SphericalCameraCal, sym.util.VectorType, float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -73,7 +73,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        point = check_size_and_reshape(point, "point", (3, 1))
+        point = sym.util.check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (4)
         _tmp0 = math.sqrt(epsilon + point[0, 0] ** 2 + point[1, 0] ** 2)
@@ -96,7 +96,7 @@ class CameraOps(object):
 
     @staticmethod
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (sym.SphericalCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (sym.SphericalCameraCal, sym.util.VectorType, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -111,7 +111,7 @@ class CameraOps(object):
 
         # Input arrays
         _self = self.data
-        point = check_size_and_reshape(point, "point", (3, 1))
+        point = sym.util.check_size_and_reshape(point, "point", (3, 1))
 
         # Intermediate terms (40)
         _tmp0 = -epsilon

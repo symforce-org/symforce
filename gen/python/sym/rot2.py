@@ -9,7 +9,7 @@ import typing as T
 
 import numpy
 
-from .util import check_size_and_reshape
+import sym.util
 
 # isort: split
 from .ops import rot2 as ops
@@ -58,7 +58,7 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     def compose_with_point(self, right):
-        # type: (Rot2, T.Union[T.Sequence[float], numpy.ndarray]) -> numpy.ndarray
+        # type: (Rot2, sym.util.VectorType) -> numpy.ndarray
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -67,7 +67,7 @@ class Rot2(object):
 
         # Input arrays
         _self = self.data
-        right = check_size_and_reshape(right, "right", (2, 1))
+        right = sym.util.check_size_and_reshape(right, "right", (2, 1))
 
         # Intermediate terms (0)
 

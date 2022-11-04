@@ -10,7 +10,7 @@ import typing as T
 import numpy
 
 import sym  # pylint: disable=unused-import
-from sym.util import check_size_and_reshape
+import sym.util
 
 
 class LieGroupOps(object):
@@ -20,12 +20,12 @@ class LieGroupOps(object):
 
     @staticmethod
     def from_tangent(vec, epsilon):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.DoubleSphereCameraCal
+        # type: (sym.util.VectorType, float) -> sym.DoubleSphereCameraCal
 
         # Total ops: 0
 
         # Input arrays
-        vec = check_size_and_reshape(vec, "vec", (6, 1))
+        vec = sym.util.check_size_and_reshape(vec, "vec", (6, 1))
 
         # Intermediate terms (0)
 
@@ -62,13 +62,13 @@ class LieGroupOps(object):
 
     @staticmethod
     def retract(a, vec, epsilon):
-        # type: (sym.DoubleSphereCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> sym.DoubleSphereCameraCal
+        # type: (sym.DoubleSphereCameraCal, sym.util.VectorType, float) -> sym.DoubleSphereCameraCal
 
         # Total ops: 6
 
         # Input arrays
         _a = a.data
-        vec = check_size_and_reshape(vec, "vec", (6, 1))
+        vec = sym.util.check_size_and_reshape(vec, "vec", (6, 1))
 
         # Intermediate terms (0)
 

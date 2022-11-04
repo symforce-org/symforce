@@ -529,29 +529,53 @@ class SymforceCodegenTest(TestCase):
         # ---------------------------------------------------------------------
 
         with self.subTest(
-            msg="If reshape_vectors=True and use_numba=False, lists are accepted for vec args"
+            msg="If reshape_vectors=True and use_numba=False, lists are accepted for matrix args"
         ):
             generated_pass_matrices = gen_pass_matrices(use_numba=False, reshape_vectors=True)
 
-            row = [1, 2, 3, 4]
-            col = [5, 6, 7, 8]
-            mat = np.random.random((2, 2))
+            list_row = [1, 2, 3, 4]
+            list_col = [5, 6, 7, 8]
+            list_mat = [[9, 10], [11, 12]]
 
-            out_row, out_col, out_mat = generated_pass_matrices(row, col, mat)
+            out_row, out_col, out_mat = generated_pass_matrices(list_row, list_col, list_mat)
             self.assertEqual(out_row.shape, (1, 4))
-            np.testing.assert_array_equal(row, out_row.flatten())
+            np.testing.assert_array_equal(list_row, out_row.flatten())
             self.assertEqual(out_col.shape, (4, 1))
-            np.testing.assert_array_equal(col, out_col.flatten())
-            np.testing.assert_array_equal(mat, out_mat)
+            np.testing.assert_array_equal(list_col, out_col.flatten())
+            np.testing.assert_array_equal(list_mat, out_mat)
 
         # ---------------------------------------------------------------------
 
         with self.subTest(msg="IndexError is raised if a list vector arg is too long"):
             generated_pass_matrices = gen_pass_matrices(use_numba=False, reshape_vectors=True)
 
-            row = [1, 2, 3, 4, 5]
-            col = [5, 6, 7, 8]
+            list_row = [1, 2, 3, 4, 5]
+            list_col = [5, 6, 7, 8]
             mat = np.random.random((2, 2))
+
+            with self.assertRaises(IndexError):
+                generated_pass_matrices(list_row, list_col, mat)
+
+        # ---------------------------------------------------------------------
+
+        with self.subTest(msg="IndexError is raised if a nested list matrix arg is too big"):
+            generated_pass_matrices = gen_pass_matrices(use_numba=False, reshape_vectors=True)
+
+            list_row = [1, 2, 3, 4]
+            list_col = [5, 6, 7, 8]
+            list_mat = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+            with self.assertRaises(IndexError):
+                generated_pass_matrices(list_row, list_col, list_mat)
+
+        # ---------------------------------------------------------------------
+
+        with self.subTest(msg="IndexError is raised if matrix arg is too big [use_numba=True]"):
+            generated_pass_matrices = gen_pass_matrices(use_numba=True, reshape_vectors=True)
+
+            row = np.random.random((1, 4))
+            col = np.random.random((4, 1))
+            mat = np.random.random((3, 3))
 
             with self.assertRaises(IndexError):
                 generated_pass_matrices(row, col, mat)

@@ -8,8 +8,9 @@ import typing as T
 
 import numpy
 
+import sym.util
+
 from .ops import polynomial_camera_cal as ops
-from .util import check_size_and_reshape
 
 
 class PolynomialCameraCal(object):
@@ -116,7 +117,7 @@ class PolynomialCameraCal(object):
         return ops.CameraOps.principal_point(self)
 
     def pixel_from_camera_point(self, point, epsilon):
-        # type: (PolynomialCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float]
+        # type: (PolynomialCameraCal, sym.util.VectorType, float) -> T.Tuple[numpy.ndarray, float]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -128,7 +129,7 @@ class PolynomialCameraCal(object):
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
     def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (PolynomialCameraCal, T.Union[T.Sequence[float], numpy.ndarray], float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+        # type: (PolynomialCameraCal, sym.util.VectorType, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
