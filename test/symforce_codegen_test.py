@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
-from numba.core.errors import TypingError
 from scipy import sparse
 
 import symforce
@@ -248,10 +247,12 @@ class SymforceCodegenTest(TestCase):
         self.assertEqual(pkg.matrix_order().shape, m23.SHAPE)
         self.assertStorageNear(pkg.matrix_order(), m23)
 
+    @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
     def test_matrix_indexing_python(self) -> None:
         """
         Tests that matrices are indexed into correctly.
         """
+        from numba.core.errors import TypingError
 
         def pass_matrices(
             row: sf.M14, col: sf.M41, mat: sf.M22

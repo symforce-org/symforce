@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-        python: [python3.8, python3.9, python3.10]
+        python: [python3.8, python3.9, python3.10, python3.11]
         compiler: [
           {C: gcc-5, CXX: g++-5, repos: [
             '"deb http://us.archive.ubuntu.com/ubuntu/ xenial main"',
@@ -55,7 +55,10 @@ jobs:
       - name: Install python
         run: |
           sudo add-apt-repository -y ppa:deadsnakes/ppa
-          sudo apt-get install -y ${{ matrix.python }}-dev ${{ matrix.python }}-distutils
+          sudo apt-get install -y \
+            ${{ matrix.python }}-dev \
+            ${{ matrix.python }}-distutils \
+            ${{ matrix.python }}-venv
           curl https://bootstrap.pypa.io/get-pip.py | ${{ matrix.python }}
           pip install --upgrade setuptools
 

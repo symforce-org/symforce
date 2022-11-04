@@ -17,11 +17,11 @@ argh==0.26.2
     #   symforce (setup.py)
 astroid==2.12.12
     # via pylint
-asttokens==2.0.8
+asttokens==2.1.0
     # via stack-data
 attrs==22.1.0
     # via jsonschema
-babel==2.10.3
+babel==2.11.0
     # via sphinx
 backcall==0.2.0
     # via ipython
@@ -33,6 +33,8 @@ bleach==5.0.1
     # via nbconvert
 breathe==4.34.0
     # via symforce (setup.py)
+build==0.9.0
+    # via pip-tools
 certifi==2022.9.24
     # via requests
 charset-normalizer==2.1.1
@@ -44,9 +46,9 @@ click==8.0.4
     #   black
     #   pip-tools
     #   symforce (setup.py)
-cmake==3.24.1.1
+cmake==3.24.2
     # via symforce (setup.py)
-contourpy==1.0.5
+contourpy==1.0.6
     # via matplotlib
 coverage==6.5.0
     # via symforce (setup.py)
@@ -70,7 +72,7 @@ docutils==0.19
     #   sphinx
 entrypoints==0.4
     # via jupyter-client
-executing==1.1.1
+executing==1.2.0
     # via stack-data
 fastjsonschema==2.16.2
     # via nbformat
@@ -89,9 +91,9 @@ importlib-metadata==5.0.0
     #   sphinx
 importlib-resources==5.10.0
     # via jsonschema
-ipykernel==6.16.2
+ipykernel==6.17.0
     # via symforce (setup.py)
-ipython==8.5.0
+ipython==8.6.0
     # via
     #   black
     #   ipykernel
@@ -111,7 +113,7 @@ jinja2==3.0.3
     #   skymarshal
     #   sphinx
     #   symforce (setup.py)
-jsonschema==4.16.0
+jsonschema==4.17.0
     # via nbformat
 jupyter-client==7.4.4
     # via
@@ -128,8 +130,10 @@ kiwisolver==1.4.4
     # via matplotlib
 lazy-object-proxy==1.8.0
     # via astroid
-llvmlite==0.39.1
-    # via numba
+llvmlite==0.39.1 ; python_version < "3.11"
+    # via
+    #   numba
+    #   symforce (setup.py)
 markdown-it-py==2.1.0
     # via
     #   mdit-py-plugins
@@ -181,7 +185,7 @@ nest-asyncio==1.5.6
     #   ipykernel
     #   jupyter-client
     #   nbclient
-numba==0.56.3
+numba==0.56.3 ; python_version < "3.11"
     # via symforce (setup.py)
 numpy==1.23.4
     # via
@@ -195,6 +199,7 @@ numpy==1.23.4
     #   symforce-sym
 packaging==21.3
     # via
+    #   build
     #   ipykernel
     #   matplotlib
     #   nbconvert
@@ -208,14 +213,14 @@ parso==0.8.3
 pathspec==0.10.1
     # via black
 pep517==0.13.0
-    # via pip-tools
+    # via build
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pillow==9.2.0
+pillow==9.3.0
     # via matplotlib
-pip-tools==6.6.2
+pip-tools==6.9.0
     # via symforce (setup.py)
 pkgutil-resolve-name==1.3.10
     # via jsonschema
@@ -248,14 +253,14 @@ pyparsing==3.0.9
     # via
     #   matplotlib
     #   packaging
-pyrsistent==0.18.1
+pyrsistent==0.19.1
     # via jsonschema
 python-dateutil==2.8.2
     # via
     #   jupyter-client
     #   matplotlib
     #   pandas
-pytz==2022.5
+pytz==2022.6
     # via
     #   babel
     #   pandas
@@ -302,7 +307,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-stack-data==0.5.1
+stack-data==0.6.0
     # via ipython
 file:./gen/python
     # via symforce (setup.py)
@@ -319,6 +324,7 @@ toml==0.10.2
 tomli==1.2.3
     # via
     #   black
+    #   build
     #   pep517
     #   pylint
 tomlkit==0.11.6
