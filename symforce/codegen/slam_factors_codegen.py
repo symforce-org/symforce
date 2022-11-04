@@ -13,7 +13,7 @@ cameras that do not have backprojection, it instead operates on a ray in the sou
 a pixel in the target camera.
 """
 import functools
-import os
+from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import codegen
@@ -286,7 +286,7 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     return whitened_residual
 
 
-def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
+def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
     """
     Generate the SLAM package for the given language.
 
@@ -295,7 +295,7 @@ def generate(output_dir: str, config: codegen.CodegenConfig = None) -> None:
         config: CodegenConfig, defaults to the default C++ config
     """
     # Subdirectory for everything we'll generate
-    factors_dir = os.path.join(output_dir, "factors")
+    factors_dir = output_dir / "factors"
 
     # default config to CppConfig
     if config is None:

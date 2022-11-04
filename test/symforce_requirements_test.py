@@ -6,7 +6,6 @@
 import os
 import sys
 import textwrap
-from pathlib import Path
 
 from symforce import path_util
 from symforce import python_util
@@ -34,7 +33,7 @@ class SymforceRequirementsTest(TestCase):
         TestCase.main(*args, **kwargs)
 
     def test_requirements(self) -> None:
-        output_dir = Path(self.make_output_dir("sf_requirements_test_"))
+        output_dir = self.make_output_dir("sf_requirements_test_")
 
         output_requirements_file = output_dir / "dev_requirements.txt"
         symforce_requirements_file = path_util.symforce_root() / "dev_requirements.txt"

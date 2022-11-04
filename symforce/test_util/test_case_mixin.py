@@ -5,11 +5,11 @@
 
 import difflib
 import logging
-import os
 import re
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 import numpy as np
 
@@ -130,7 +130,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         else:
             return super().assertNotEqual(first, second, msg)
 
-    def make_output_dir(self, prefix: str, directory: str = "/tmp") -> str:
+    def make_output_dir(self, prefix: str, directory: Path = Path("/tmp")) -> Path:
         """
         Create a temporary output directory, which will be automatically removed (regardless of
         exceptions) on shutdown, unless logger.level is DEBUG
@@ -142,7 +142,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Returns:
             str: The absolute path to the created output directory
         """
-        output_dir = tempfile.mkdtemp(prefix=prefix, dir=directory)
+        output_dir = Path(tempfile.mkdtemp(prefix=prefix, dir=directory))
         logger.debug(f"Creating temp directory: {output_dir}")
         self.output_dirs.append(output_dir)
         return output_dir
@@ -158,7 +158,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         codegen_config.DEFAULT_ZERO_EPSILON_BEHAVIOR = codegen_config.ZeroEpsilonBehavior.FAIL
 
         # Storage for temporary output directories
-        self.output_dirs: T.List[str] = []
+        self.output_dirs: T.List[Path] = []
 
     def tearDown(self) -> None:
         """
@@ -174,19 +174,19 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
         """
+        path = Path(path)
+
         if self.should_update():
             logger.debug(f'Updating data at: "{path}"')
 
-            dirname = os.path.dirname(path)
-            if dirname and not os.path.exists(dirname):
-                os.makedirs(dirname)
+            dirname = path.parent
+            if dirname and not dirname.exists():
+                dirname.mkdir(parents=True)
 
-            with open(path, "w") as f:
-                f.write(data)
+            path.write_text(data)
         else:
             logger.debug(f'Comparing data at: "{path}"')
-            with open(path) as f:
-                expected_data = f.read()
+            expected_data = path.read_text()
 
             if data != expected_data:
                 diff = difflib.unified_diff(
@@ -200,9 +200,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
                 )
 
     def compare_or_update_file(self, path: T.Openable, new_file: T.Openable) -> None:
-        with open(new_file) as f:
-            code = f.read()
-        self.compare_or_update(path, code)
+        self.compare_or_update(path, Path(new_file).read_text())
 
     def _filtered_paths_in_dir(self, directory: T.Openable) -> T.List[str]:
         """
@@ -219,6 +217,9 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.
         """
+        actual_dir = Path(actual_dir)
+        expected_dir = Path(expected_dir)
+
         logger.debug(f'Comparing directories: actual="{actual_dir}", expected="{expected_dir}"')
 
         actual_paths = self._filtered_paths_in_dir(actual_dir)
@@ -230,9 +231,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         else:
             # If updating, remove any expected files not in actual
             for only_in_expected in set(expected_paths).difference(set(actual_paths)):
-                os.remove(os.path.join(expected_dir, only_in_expected))
+                (expected_dir / only_in_expected).unlink()
 
         for path in actual_paths:
-            self.compare_or_update_file(
-                os.path.join(expected_dir, path), os.path.join(actual_dir, path)
-            )
+            self.compare_or_update_file(expected_dir / path, actual_dir / path)

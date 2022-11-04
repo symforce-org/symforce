@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from pathlib import Path
-
 import symforce
 
 symforce.set_epsilon_to_symbol()
@@ -22,9 +20,7 @@ class BundleAdjustmentInTheLargeCodegenTest(TestCase):
 
     @sympy_only
     def test_generate(self) -> None:
-        output_dir = Path(
-            self.make_output_dir("sf_examples_bundle_adjustment_in_the_large_codegen_test")
-        )
+        output_dir = self.make_output_dir("sf_examples_bundle_adjustment_in_the_large_codegen_test")
 
         generate(output_dir)
 

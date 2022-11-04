@@ -83,24 +83,24 @@ class SymforceTypesCodegenTest(TestCase):
 
         # Check generated files
         for typename in expected_types:
-            python_gen_path = os.path.join(
-                codegen_data["python_types_dir"],
-                "lcmtypes",
-                codegen_data["package_name"],
-                f"_{typename}.py",
+            python_gen_path = (
+                codegen_data["python_types_dir"]
+                / "lcmtypes"
+                / codegen_data["package_name"]
+                / f"_{typename}.py"
             )
-            cpp_gen_path = os.path.join(
-                codegen_data["output_dir"],
-                "cpp",
-                "lcmtypes",
-                codegen_data["package_name"],
-                typename + ".hpp",
+            cpp_gen_path = (
+                codegen_data["output_dir"]
+                / "cpp"
+                / "lcmtypes"
+                / codegen_data["package_name"]
+                / (typename + ".hpp")
             )
 
             # If the typename has a module, it's assumed to be external and not generated.
             expecting_generated_type = "." not in typename
-            self.assertEqual(os.path.isfile(python_gen_path), expecting_generated_type)
-            self.assertEqual(os.path.isfile(cpp_gen_path), expecting_generated_type)
+            self.assertEqual(python_gen_path.is_file(), expecting_generated_type)
+            self.assertEqual(cpp_gen_path.is_file(), expecting_generated_type)
 
         return codegen_data
 

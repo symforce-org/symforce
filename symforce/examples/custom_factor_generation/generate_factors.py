@@ -5,11 +5,12 @@
 
 from symforce import codegen
 from symforce import logger
+from symforce import typing as T
 
 from .factor_residuals import custom_between_factor_residual
 
 
-def generate(output_dir: str) -> None:
+def generate(output_dir: T.Openable) -> None:
     """
     Generate the example custom_between_factor_residual factor
 

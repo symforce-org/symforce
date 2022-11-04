@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
-
 import sympy
 
 import symforce
@@ -13,12 +11,15 @@ symforce.set_epsilon_to_symbol()
 
 import symforce.symbolic as sf
 from symforce import codegen
+from symforce.path_util import symforce_data_root
 from symforce.test_util import TestCase
 from symforce.test_util import sympy_only
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
+TEST_DATA_DIR = (
+    symforce_data_root()
+    / "test"
+    / "symforce_function_codegen_test_data"
+    / symforce.get_symbolic_api()
 )
 
 
@@ -58,7 +59,7 @@ class SymforceCppCodePrinterTest(TestCase):
         )
 
         # Compare to expected
-        expected_code_file = os.path.join(TEST_DATA_DIR, "heaviside.h")
+        expected_code_file = TEST_DATA_DIR / "heaviside.h"
         output_function = heaviside_codegen_data.function_dir / "heaviside.h"
         self.compare_or_update_file(expected_code_file, output_function)
 
@@ -80,7 +81,7 @@ class SymforceCppCodePrinterTest(TestCase):
         )
 
         # Compare
-        expected = os.path.join(TEST_DATA_DIR, "custom_function_replacement.h")
+        expected = TEST_DATA_DIR / "custom_function_replacement.h"
         output = codegen_data.function_dir / "test_expression.h"
         self.compare_or_update_file(expected, output)
 

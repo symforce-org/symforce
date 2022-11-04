@@ -23,7 +23,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         """
         Returns the contents of the stub file produced by pybind11-stubgen on module cc_sym
         """
-        output_dir = Path(self.make_output_dir("sf_cc_sym_stubgen_output"))
+        output_dir = self.make_output_dir("sf_cc_sym_stubgen_output")
 
         subprocess.check_call(
             [
@@ -51,7 +51,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         return generated_file.read_text()
 
     def test_generate_cc_sym_stubs(self) -> None:
-        output_dir = Path(self.make_output_dir("sf_cc_sym_stubs_codegen_test"))
+        output_dir = self.make_output_dir("sf_cc_sym_stubs_codegen_test")
 
         stubgen_output = self.cc_sym_stubgen_output()
 

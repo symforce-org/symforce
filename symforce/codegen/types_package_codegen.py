@@ -3,8 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
 import tempfile
+from pathlib import Path
 
 import numpy as np
 
@@ -56,9 +56,12 @@ def generate_types(
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(prefix=f"sf_codegen_types_{package_name}_", dir="/tmp")
+        output_dir = Path(tempfile.mkdtemp(prefix=f"sf_codegen_types_{package_name}_", dir="/tmp"))
         logger.debug(f"Creating temp directory: {output_dir}")
-    lcm_type_dir = os.path.join(output_dir, "lcmtypes")
+    elif not isinstance(output_dir, Path):
+        output_dir = Path(output_dir)
+
+    lcm_type_dir = output_dir / "lcmtypes"
 
     using_external_templates = True
     if templates is None:
@@ -102,7 +105,7 @@ def generate_types(
         lcm_files.append(lcm_file_name)
         templates.add(
             template_path="types.lcm.jinja",
-            output_path=os.path.join(lcm_type_dir, lcm_file_name),
+            output_path=lcm_type_dir / lcm_file_name,
             data=dict(
                 data,
                 types_to_generate=types_to_generate,
@@ -162,7 +165,7 @@ def generate_types(
     if not using_external_templates:
         templates.render()
         lcm_data = codegen_util.generate_lcm_types(lcm_type_dir, lcm_files, lcm_bindings_output_dir)
-        codegen_data.update({key: str(val) for key, val in lcm_data.items()})
+        codegen_data.update(lcm_data)
 
     return codegen_data
 

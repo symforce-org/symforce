@@ -3,7 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
+from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import ops
@@ -94,8 +94,7 @@ def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
     # Read
     assert codegen.name is not None
     filename = "{}.h".format(codegen.name)
-    with open(os.path.join(data.function_dir, filename)) as f:
-        func_code = f.read()
+    func_code = (data.function_dir / filename).read_text()
 
     # Cleanup
     if cleanup:
@@ -246,7 +245,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
     files_dict[get_filename(prior_position_codegen)] = get_function_code(prior_position_codegen)
 
 
-def generate(output_dir: str) -> None:
+def generate(output_dir: Path) -> None:
     """
     Prior factors and between factors for C++.
     """
@@ -255,10 +254,9 @@ def generate(output_dir: str) -> None:
     get_pose3_extra_factors(files_dict)
 
     # Create output dir
-    factors_dir = os.path.join(output_dir, "factors")
-    os.makedirs(factors_dir)
+    factors_dir = output_dir / "factors"
+    factors_dir.mkdir(parents=True)
 
     # Write out
     for filename, code in files_dict.items():
-        with open(os.path.join(factors_dir, filename), "w") as f:
-            f.write(code)
+        (factors_dir / filename).write_text(code)

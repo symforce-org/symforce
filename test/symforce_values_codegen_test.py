@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import string
-from pathlib import Path
 
 import symforce
 
@@ -30,7 +29,7 @@ class SymforceValuesCodegenTest(TestCase):
     """
 
     def test_values_codegen(self) -> None:
-        output_dir = Path(self.make_output_dir("sf_values_codegen_test"))
+        output_dir = self.make_output_dir("sf_values_codegen_test")
 
         values = Values()
         values["foo"] = sf.V3()

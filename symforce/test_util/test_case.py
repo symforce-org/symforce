@@ -3,9 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import logging
-import multiprocessing
-import os
 import random
 import sys
 import unittest
@@ -13,8 +10,6 @@ import unittest
 import numpy as np
 
 import symforce
-from symforce import logger
-from symforce import python_util
 from symforce import typing as T
 from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
 
@@ -55,35 +50,6 @@ class TestCase(SymforceTestCaseMixin):
 
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
-
-    @staticmethod
-    def compile_and_run_cpp(
-        package_dir: str,
-        executable_names: T.Union[str, T.Sequence[str]],
-        make_args: T.Sequence[str] = tuple(),
-        env: T.Mapping[str, str] = None,
-    ) -> None:
-        """
-        Compile package using makefile in package_dir, then execute the executable with
-        name executable_name.
-        """
-
-        # Build package
-        make_cmd = ["make", "-C", package_dir, "-j{}".format(multiprocessing.cpu_count() - 1)]
-        if make_args:
-            make_cmd += make_args
-        if logger.level != logging.DEBUG:
-            make_cmd.append("--quiet")
-        python_util.execute_subprocess(make_cmd)
-
-        # Run executable(s)
-        if isinstance(executable_names, str):
-            # We just have one executable
-            python_util.execute_subprocess(os.path.join(package_dir, executable_names), env=env)
-        else:
-            # We have a list of executables
-            for name in executable_names:
-                python_util.execute_subprocess(os.path.join(package_dir, name), env=env)
 
 
 def sympy_only(func: T.Callable) -> T.Callable:

@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from pathlib import Path
-
 import symforce
 
 symforce.set_epsilon_to_symbol()
@@ -19,7 +17,7 @@ class Robot3DScanMatchingCodegenTest(TestCase):
     # This one is so impossibly slow on SymPy that we just disable it
     @symengine_only
     def test_generate(self) -> None:
-        output_dir = Path(self.make_output_dir("symforce_robot_3d_localization_example"))
+        output_dir = self.make_output_dir("symforce_robot_3d_localization_example")
 
         generate(output_dir)
 

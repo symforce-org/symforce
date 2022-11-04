@@ -30,7 +30,7 @@ class SymforceDataBufferCodegenTest(TestCase):
     Test databuffer codegen
     """
 
-    def gen_code(self, output_dir: str) -> None:
+    def gen_code(self, output_dir: Path) -> None:
         a, b = sf.symbols("a b")
         # make sure Databuffer works with whatever namestring works for symbol
         buffer = sf.DataBuffer("foo.Buffer")

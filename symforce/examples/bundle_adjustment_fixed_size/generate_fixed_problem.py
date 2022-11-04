@@ -46,7 +46,7 @@ class FixedBundleAdjustmentProblem:
         # Build residual
         self.residual = self._build_residual()
 
-    def generate(self, output_dir: str) -> None:
+    def generate(self, output_dir: T.Openable) -> None:
         """
         Generates functions from symbolic expressions
         """

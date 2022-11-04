@@ -7,7 +7,6 @@ import copy
 import functools
 import importlib.util
 import logging
-import os
 import sys
 import unittest
 from dataclasses import dataclass
@@ -163,14 +162,12 @@ class SymforceCodegenTest(TestCase):
             shared_types=shared_types, namespace=namespace, output_dir=output_dir
         )
         self.compare_or_update_directory(
-            actual_dir=output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data")
+            actual_dir=output_dir, expected_dir=TEST_DATA_DIR / (namespace + "_data")
         )
 
         geo_package_codegen.generate(config=codegen.PythonConfig(), output_dir=output_dir)
 
-        geo_pkg = codegen_util.load_generated_package(
-            "sym", os.path.join(output_dir, "sym", "__init__.py")
-        )
+        geo_pkg = codegen_util.load_generated_package("sym", output_dir / "sym" / "__init__.py")
         values_vec_t = codegen_util.load_generated_lcmtype(
             namespace, "values_vec_t", codegen_data.python_types_dir
         )
@@ -538,7 +535,7 @@ class SymforceCodegenTest(TestCase):
         az_el_codegen_data = az_el_codegen.generate_function(output_dir)
 
         # Compare to expected
-        expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.py")
+        expected_code_file = TEST_DATA_DIR / "az_el_from_point.py"
         output_function = az_el_codegen_data.function_dir / "az_el_from_point.py"
         self.compare_or_update_file(expected_code_file, output_function)
 
@@ -556,7 +553,7 @@ class SymforceCodegenTest(TestCase):
         numba_test_func_codegen_data = numba_test_func_codegen.generate_function(output_dir)
 
         # Compare to expected
-        expected_code_file = os.path.join(TEST_DATA_DIR, "numba_test_func.py")
+        expected_code_file = TEST_DATA_DIR / "numba_test_func.py"
         output_function = numba_test_func_codegen_data.function_dir / "numba_test_func.py"
         self.compare_or_update_file(expected_code_file, output_function)
 
@@ -594,8 +591,8 @@ class SymforceCodegenTest(TestCase):
         )
 
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir),
-            expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+            actual_dir=output_dir,
+            expected_dir=TEST_DATA_DIR / (namespace + "_data"),
         )
 
     def test_function_codegen_cpp(self) -> None:
@@ -606,7 +603,7 @@ class SymforceCodegenTest(TestCase):
         az_el_codegen_data = az_el_codegen.generate_function(output_dir=output_dir)
 
         # Compare to expected
-        expected_code_file = os.path.join(TEST_DATA_DIR, "az_el_from_point.h")
+        expected_code_file = TEST_DATA_DIR / "az_el_from_point.h"
         output_function = az_el_codegen_data.function_dir / "az_el_from_point.h"
         self.compare_or_update_file(expected_code_file, output_function)
 
@@ -633,7 +630,7 @@ class SymforceCodegenTest(TestCase):
         # Compare the function file
         self.compare_or_update_directory(
             actual_dir=codegen_data.output_dir,
-            expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data"),
+            expected_dir=TEST_DATA_DIR / (namespace + "_data"),
         )
 
     @slow_on_sympy
@@ -674,7 +671,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare the generated types
         self.compare_or_update_directory(
-            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data")
+            output_dir, expected_dir=TEST_DATA_DIR / (namespace + "_data")
         )
 
     @slow_on_sympy
@@ -743,7 +740,7 @@ class SymforceCodegenTest(TestCase):
 
         # Compare the function files
         self.compare_or_update_directory(
-            output_dir, expected_dir=os.path.join(TEST_DATA_DIR, namespace + "_data")
+            output_dir, expected_dir=TEST_DATA_DIR / (namespace + "_data")
         )
 
     def test_invalid_codegen_raises(self) -> None:
@@ -853,13 +850,11 @@ class SymforceCodegenTest(TestCase):
         for codegen_function in codegens.values():
             codegen_function.generate_function(output_dir=output_dir)
 
-        self.assertEqual(
-            len(os.listdir(os.path.join(output_dir, "cpp/symforce/sym"))), len(codegens)
-        )
+        self.assertEqual(len(list((output_dir / "cpp/symforce/sym").iterdir())), len(codegens))
 
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
-            expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians"),
+            actual_dir=output_dir / "cpp/symforce/sym",
+            expected_dir=TEST_DATA_DIR / "with_jacobians",
         )
 
     def test_with_jacobians_values(self) -> None:
@@ -1009,11 +1004,11 @@ class SymforceCodegenTest(TestCase):
 
                 curr_codegen.generate_function(output_dir=output_dir)
 
-        self.assertEqual(len(os.listdir(os.path.join(output_dir, "cpp/symforce/sym"))), len(specs))
+        self.assertEqual(len(list((output_dir / "cpp/symforce/sym").iterdir())), len(specs))
 
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
-            expected_dir=os.path.join(TEST_DATA_DIR, "with_jacobians_multiple_outputs"),
+            actual_dir=output_dir / "cpp/symforce/sym",
+            expected_dir=TEST_DATA_DIR / "with_jacobians_multiple_outputs",
         )
 
     def test_matrix_order_cpp(self) -> None:
@@ -1105,7 +1100,7 @@ class SymforceCodegenTest(TestCase):
             "values_vec_2D_out": "values_vec_t",
         }
         namespace = "codegen_explicit_template_instantiation_test"
-        output_dir = Path(self.make_output_dir("sf_codegen_cpp_"))
+        output_dir = self.make_output_dir("sf_codegen_cpp_")
         codegen_data = cpp_func.generate_function(
             shared_types=shared_types, namespace=namespace, output_dir=output_dir
         )
@@ -1128,7 +1123,7 @@ class SymforceCodegenTest(TestCase):
         inputs = Values(my_dataclass=MyDataclass(rot=sym_rot))
         outputs = Values(rot=sym_rot)
 
-        output_dir = Path(self.make_output_dir("sf_codegen_dataclass_"))
+        output_dir = self.make_output_dir("sf_codegen_dataclass_")
         name = "codegen_dataclass_in_values_test"
         namespace = "codegen_test"
 

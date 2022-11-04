@@ -5,7 +5,7 @@
 
 import copy
 import os
-import pathlib
+from pathlib import Path
 
 import black
 
@@ -34,7 +34,7 @@ def format_cpp(file_contents: str, filename: str) -> str:
         import clang_format  # type: ignore[import]
 
         clang_format_path = str(
-            pathlib.Path(clang_format.__file__).parent / "data" / "bin" / "clang-format"
+            Path(clang_format.__file__).parent / "data" / "bin" / "clang-format"
         )
     except ImportError:
         clang_format_path = "clang-format"
@@ -72,7 +72,7 @@ def format_py_dir(dirname: T.Openable) -> None:
         for filename in files:
             if filename.endswith(".py"):
                 black.format_file_in_place(
-                    pathlib.Path(os.path.join(dirname, root, filename)),
+                    Path(dirname) / root / filename,
                     fast=True,
                     mode=BLACK_FILE_MODE,
                     write_back=black.WriteBack.YES,

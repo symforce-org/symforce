@@ -166,7 +166,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     }
 
 
-def generate(config: CodegenConfig, output_dir: str = None) -> str:
+def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
     """
     Generate the geo package for the given language.
 
@@ -174,12 +174,12 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
     """
     # Create output directory if needed
     if output_dir is None:
-        output_dir = tempfile.mkdtemp(
-            prefix=f"sf_codegen_{type(config).__name__.lower()}_", dir="/tmp"
+        output_dir = Path(
+            tempfile.mkdtemp(prefix=f"sf_codegen_{type(config).__name__.lower()}_", dir="/tmp")
         )
         logger.debug(f"Creating temp directory: {output_dir}")
     # Subdirectory for everything we'll generate
-    package_dir = Path(output_dir, "sym")
+    package_dir = output_dir / "sym"
     template_dir = config.template_dir()
     templates = template_util.TemplateList(template_dir)
 
@@ -232,7 +232,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
             templates.add(
                 template_path=Path("tests", name + ".jinja"),
                 data=dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
-                output_path=Path(output_dir, "tests", name),
+                output_path=output_dir / "tests" / name,
             )
 
     elif isinstance(config, CppConfig):
@@ -283,7 +283,7 @@ def generate(config: CodegenConfig, output_dir: str = None) -> str:
         for name in ("geo_package_cpp_test.cc",):
             templates.add(
                 template_path=Path("tests", name + ".jinja"),
-                output_path=Path(output_dir, "tests", name),
+                output_path=output_dir / "tests" / name,
                 data=dict(
                     Codegen.common_data(),
                     all_types=DEFAULT_GEO_TYPES,

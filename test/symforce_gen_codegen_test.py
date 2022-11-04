@@ -6,6 +6,7 @@
 import math
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 
@@ -40,7 +41,7 @@ class SymforceGenCodegenTest(TestCase):
     Generate everything that goes into symforce/gen
     """
 
-    def generate_cam_example_function(self, output_dir: str) -> None:
+    def generate_cam_example_function(self, output_dir: Path) -> None:
         def pixel_to_ray_and_back(
             pixel: sf.Vector2, cam: sf.LinearCameraCal, epsilon: sf.Scalar = 0
         ) -> sf.Vector2:
@@ -59,13 +60,13 @@ class SymforceGenCodegenTest(TestCase):
 
         # Compare against the checked-in test data
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir, "cpp/symforce/cam_function_codegen_test"),
-            expected_dir=os.path.join(
-                TEST_DATA_DIR, "symforce_gen_codegen_test_data", "cam_function_codegen_test"
+            actual_dir=output_dir / "cpp/symforce/cam_function_codegen_test",
+            expected_dir=(
+                TEST_DATA_DIR / "symforce_gen_codegen_test_data" / "cam_function_codegen_test"
             ),
         )
 
-    def generate_tangent_d_storage_functions(self, output_dir: str) -> None:
+    def generate_tangent_d_storage_functions(self, output_dir: Path) -> None:
         for cls in geo_package_codegen.DEFAULT_GEO_TYPES:
             tangent_D_storage_codegen = codegen.Codegen.function(
                 func=ops.LieGroupOps.tangent_D_storage,
@@ -79,10 +80,8 @@ class SymforceGenCodegenTest(TestCase):
 
         # Compare against the checked-in test data
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir, "cpp/symforce/sym"),
-            expected_dir=os.path.join(
-                TEST_DATA_DIR, "symforce_gen_codegen_test_data", "tangent_d_storage"
-            ),
+            actual_dir=output_dir / "cpp/symforce/sym",
+            expected_dir=TEST_DATA_DIR / "symforce_gen_codegen_test_data" / "tangent_d_storage",
         )
 
     def test_gen_package_codegen_python(self) -> None:
@@ -96,7 +95,7 @@ class SymforceGenCodegenTest(TestCase):
         template_util.render_template(
             template_dir=config.template_dir(),
             template_path="setup.py.jinja",
-            output_path=os.path.join(output_dir, "setup.py"),
+            output_path=output_dir / "setup.py",
             data=dict(
                 package_name="symforce-sym",
                 version=symforce.__version__,
@@ -108,29 +107,28 @@ class SymforceGenCodegenTest(TestCase):
         # Test against checked-in geo package (only on SymEngine)
         if symforce.get_symbolic_api() == "symengine":
             self.compare_or_update_directory(
-                actual_dir=os.path.join(output_dir, "sym"),
-                expected_dir=os.path.join(SYMFORCE_DIR, "gen", "python", "sym"),
+                actual_dir=output_dir / "sym", expected_dir=SYMFORCE_DIR / "gen" / "python" / "sym"
             )
             self.compare_or_update_file(
-                new_file=os.path.join(output_dir, "setup.py"),
-                path=os.path.join(SYMFORCE_DIR, "gen", "python", "setup.py"),
+                new_file=output_dir / "setup.py", path=SYMFORCE_DIR / "gen" / "python" / "setup.py"
             )
 
         # Compare against the checked-in tests
         for test_name in ("cam_package_python_test.py", "geo_package_python_test.py"):
-            generated_code_file = os.path.join(output_dir, "tests", test_name)
+            generated_code_file = output_dir / "tests" / test_name
 
             self.compare_or_update_file(
-                path=os.path.join(SYMFORCE_DIR, "test", test_name),
-                new_file=generated_code_file,
+                path=SYMFORCE_DIR / "test" / test_name, new_file=generated_code_file
             )
 
             # Run generated example / test from disk in a standalone process
             current_python = sys.executable
-            python_util.execute_subprocess([current_python, generated_code_file], log_stdout=False)
+            python_util.execute_subprocess(
+                [current_python, str(generated_code_file)], log_stdout=False
+            )
 
         # Also hot load package directly in to this process
-        geo_pkg = codegen_util.load_generated_package("sym", os.path.join(output_dir, "sym"))
+        geo_pkg = codegen_util.load_generated_package("sym", output_dir / "sym")
 
         # Test something basic from the hot loaded package
         rot = geo_pkg.Rot3.from_tangent(np.array([math.pi / 2, 0, 0]))
@@ -150,8 +148,8 @@ class SymforceGenCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_gen_codegen_test_")
 
         # Prior factors, between factors, and SLAM factors for C++.
-        geo_factors_codegen.generate(os.path.join(output_dir, "sym"))
-        slam_factors_codegen.generate(os.path.join(output_dir, "sym"))
+        geo_factors_codegen.generate(output_dir / "sym")
+        slam_factors_codegen.generate(output_dir / "sym")
 
         # Generate typedefs.h
         sym_util_package_codegen.generate(config=config, output_dir=output_dir)
@@ -162,8 +160,7 @@ class SymforceGenCodegenTest(TestCase):
 
         # Check against existing generated package (only on SymEngine)
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir, "sym"),
-            expected_dir=os.path.join(SYMFORCE_DIR, "gen", "cpp", "sym"),
+            actual_dir=output_dir / "sym", expected_dir=SYMFORCE_DIR / "gen" / "cpp" / "sym"
         )
 
         # Generate functions for testing tangent_D_storage numerical derivatives
@@ -179,8 +176,7 @@ class SymforceGenCodegenTest(TestCase):
             "geo_package_cpp_test.cc",
         ):
             self.compare_or_update_file(
-                path=os.path.join(SYMFORCE_DIR, "test", test_name),
-                new_file=os.path.join(output_dir, "tests", test_name),
+                path=SYMFORCE_DIR / "test" / test_name, new_file=output_dir / "tests" / test_name
             )
 
 
