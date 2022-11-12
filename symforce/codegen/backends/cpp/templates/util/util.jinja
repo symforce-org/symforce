@@ -107,7 +107,7 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
  #}
 {%- macro format_input_arg(T_or_value, name, scalar_type="Scalar") %}
     {%- set T = typing_util.get_type(T_or_value) -%}
-    {% if T == Symbol or T == DataBuffer-%}
+    {% if T.__name__ == "Symbol" or T == DataBuffer-%}
         {#- Scalar type is just const -#}
         const {{ format_typename(T_or_value, "", scalar_type) }} {{ name }}
     {%- else -%}
