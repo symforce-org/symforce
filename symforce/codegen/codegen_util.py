@@ -419,8 +419,21 @@ def get_formatted_list(
                 formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             flattened_value = ops.StorageOps.to_storage(value)
 
+        if len(formatted_symbols) != len(flattened_value):
+            error_text = (
+                "Number of symbols does not match number of values. "
+                + "This can happen if a databuffer is included in a Values object used as an input "
+                + "to the codegen function (databuffers should be top-level arguments/inputs). "
+            )
+            # Only print matches if flattened_value isn't filled with expressions
+            if format_as_inputs:
+                matches = list(zip(formatted_symbols, flattened_value))
+                error_text += f"The following symbol/value pairs should match: {matches}"
+            raise ValueError(error_text)
+
         flattened_formatted_symbolic_values.append(formatted_symbols)
         flattened_original_values.append(flattened_value)
+
     return flattened_formatted_symbolic_values, flattened_original_values
 
 
