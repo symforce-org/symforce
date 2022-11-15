@@ -340,8 +340,10 @@ class Factor {
   // All keys required to evaluate the factor
   std::vector<Key> keys_;
 
-  // Index entries for the above keys, cached to avoid repeated unordered_map lookups
-  mutable std::vector<index_entry_t> index_entries_;
+  // Index entries for the above keys, cached to avoid repeated unordered_map lookups.
+  // Values ID are used to detect structure changes.
+  mutable std::pair<int64_t, std::vector<index_entry_t>> values_id_and_index_entries_{
+      Values<Scalar>::kInvalidId, {}};
 };
 
 // Shorthand instantiations

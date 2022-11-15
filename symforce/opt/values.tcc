@@ -104,6 +104,9 @@ bool Values<Scalar>::SetInternal(const Key& key, const T& value) {
       throw std::runtime_error("Calling Set on the wrong value type.");
     }
   }
+  if (is_new) {
+    structure_has_changed_ = true;
+  }
 
   // Save the value
   sym::StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
