@@ -693,6 +693,10 @@ class Matrix(Storage):
         else:
             return self.__class__(self.mat * _T.cast(sf.sympy.MutableDenseMatrix, right).inv())
 
+    def _symengine_(self) -> "symengine.Matrix":  # type: ignore[name-defined]
+        symengine = symforce._find_symengine()  # pylint: disable=protected-access
+        return symengine.S(self.mat)  # type: ignore[attr-defined]
+
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
         """
         Compute a symmetric product A.transpose() * A
