@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name="symforce-sym",
-    version="0.6.0",
+    version="0.7.0",
     description="generated numerical python package (installed by SymForce)",
     license_file="LICENSE",
     long_description="generated numerical python package (installed by SymForce)",
