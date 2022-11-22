@@ -5,9 +5,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <limits>
 #include <ostream>
-#include <stdint.h>
 
 #include <lcmtypes/sym/key_t.hpp>
 
@@ -23,8 +23,8 @@ namespace sym {
  */
 class Key {
  public:
-  using subscript_t = int64_t;
-  using superscript_t = int64_t;
+  using subscript_t = std::int64_t;
+  using superscript_t = std::int64_t;
 
   static constexpr char kInvalidLetter = static_cast<char>(0);
   static constexpr subscript_t kInvalidSub = std::numeric_limits<subscript_t>::min();
