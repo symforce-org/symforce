@@ -217,6 +217,12 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
         )
 
         # Package init
+        if config.namespace_package:
+            templates.add(
+                template_path=Path("function", "namespace_init.py.jinja"),
+                data=dict(pkg_namespace="sym"),
+                output_path=package_dir / "__init__.py",
+            )
         templates.add(
             template_path=Path("geo_package", "__init__.py.jinja"),
             data=dict(
@@ -224,7 +230,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 all_types=DEFAULT_GEO_TYPES,
                 numeric_epsilon=sf.numeric_epsilon,
             ),
-            output_path=package_dir / "__init__.py",
+            output_path=package_dir / ("_init.py" if config.namespace_package else "__init__.py"),
         )
 
         # Test example
