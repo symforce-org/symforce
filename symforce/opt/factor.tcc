@@ -10,11 +10,11 @@
 namespace sym {
 
 template <typename Scalar>
-Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys)
+Factor<Scalar>::Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys)
     : Factor(std::move(hessian_func), keys, keys) {}
 
 template <typename Scalar>
-Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+Factor<Scalar>::Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),

@@ -89,21 +89,17 @@ class Factor {
   using DenseJacobianFunc = JacobianFunc<MatrixX<Scalar>>;
   using SparseJacobianFunc = JacobianFunc<Eigen::SparseMatrix<Scalar>>;
 
+  template <typename MatrixType>
   using HessianFunc = std::function<void(const Values<Scalar>&,              // Input storage
                                          const std::vector<index_entry_t>&,  // Keys
                                          VectorX<Scalar>*,                   // Mx1 residual
-                                         MatrixX<Scalar>*,                   // MxN jacobian
-                                         MatrixX<Scalar>*,                   // NxN hessian
+                                         MatrixType*,                        // MxN jacobian
+                                         MatrixType*,                        // NxN hessian
                                          VectorX<Scalar>*                    // Nx1 right-hand side
                                          )>;
 
-  using SparseHessianFunc = std::function<void(const Values<Scalar>&,              // Input storage
-                                               const std::vector<index_entry_t>&,  // Keys
-                                               VectorX<Scalar>*,                   // Mx1 residual
-                                               Eigen::SparseMatrix<Scalar>*,       // MxN jacobian
-                                               Eigen::SparseMatrix<Scalar>*,       // NxN hessian
-                                               VectorX<Scalar>*  // Nx1 right-hand side
-                                               )>;
+  using DenseHessianFunc = HessianFunc<MatrixX<Scalar>>;
+  using SparseHessianFunc = HessianFunc<Eigen::SparseMatrix<Scalar>>;
 
   // ----------------------------------------------------------------------------------------------
   // Constructors
@@ -117,7 +113,7 @@ class Factor {
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
-  Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys);
+  Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys);
 
   /**
    * Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
@@ -127,7 +123,7 @@ class Factor {
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
    *                     be a subset of keys_to_func.
    */
-  Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+  Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize);
   Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func);
   Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
@@ -149,7 +145,7 @@ class Factor {
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
-  static Factor Jacobian(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys);
+  Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys);
 
   /**
    * Create from a function that computes the (dense) jacobian. The hessian will be computed using
@@ -162,9 +158,8 @@ class Factor {
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
    *                     be a subset of keys_to_func.
    */
-  static Factor Jacobian(const DenseJacobianFunc& jacobian_func,
-                         const std::vector<Key>& keys_to_func,
-                         const std::vector<Key>& keys_to_optimize);
+  Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
+         const std::vector<Key>& keys_to_optimize);
 
   /**
    * Create from a function that computes the (sparse) jacobian. The hessian will be computed using
@@ -175,7 +170,7 @@ class Factor {
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
-  static Factor Jacobian(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys);
+  Factor(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys);
 
   /**
    * Create from a function that computes the (sparse) jacobian. The hessian will be computed using
@@ -188,9 +183,8 @@ class Factor {
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
    *                     be a subset of keys_to_func.
    */
-  static Factor Jacobian(const SparseJacobianFunc& jacobian_func,
-                         const std::vector<Key>& keys_to_func,
-                         const std::vector<Key>& keys_to_optimize);
+  Factor(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
+         const std::vector<Key>& keys_to_optimize);
 
   /**
    * Create from a function that computes the jacobian. The hessian will be computed using the
@@ -330,7 +324,7 @@ class Factor {
   void FillLinearizedFactorIndex(const Values<Scalar>& values,
                                  LinearizedFactorT& linearized_factor) const;
 
-  HessianFunc hessian_func_;
+  DenseHessianFunc hessian_func_;
   SparseHessianFunc sparse_hessian_func_;
   bool is_sparse_;
 

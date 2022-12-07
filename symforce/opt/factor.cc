@@ -17,52 +17,42 @@
 namespace sym {
 
 template <typename Scalar, typename Matrix>
-Factor<Scalar> FactorFromJacobianFunc(
-    const typename Factor<Scalar>::template JacobianFunc<Matrix>& jacobian_func,
-    const std::vector<Key>& keys_to_func, const std::vector<Key>& keys_to_optimize) {
-  return Factor<Scalar>(
-      [jacobian_func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
-                      VectorX<Scalar>* residual, Matrix* jacobian, Matrix* hessian,
-                      VectorX<Scalar>* rhs) {
-        jacobian_func(values, keys_to_func, residual, jacobian);
+typename Factor<Scalar>::template HessianFunc<Matrix> HessianFuncFromJacobianFunc(
+    const typename Factor<Scalar>::template JacobianFunc<Matrix>& jacobian_func) {
+  return [jacobian_func](const Values<Scalar>& values,
+                         const std::vector<index_entry_t>& keys_to_func, VectorX<Scalar>* residual,
+                         Matrix* jacobian, Matrix* hessian, VectorX<Scalar>* rhs) {
+    jacobian_func(values, keys_to_func, residual, jacobian);
 
-        SYM_ASSERT(residual != nullptr);
-        if (jacobian == nullptr) {
-          SYM_ASSERT(hessian == nullptr);
-          SYM_ASSERT(rhs == nullptr);
-        } else {
-          SYM_ASSERT(residual->rows() == jacobian->rows());
-          internal::CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
-        }
-      },
-      keys_to_func, keys_to_optimize);
+    SYM_ASSERT(residual != nullptr);
+    if (jacobian == nullptr) {
+      SYM_ASSERT(hessian == nullptr);
+      SYM_ASSERT(rhs == nullptr);
+    } else {
+      SYM_ASSERT(residual->rows() == jacobian->rows());
+      internal::CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
+    }
+  };
 }
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const DenseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys_to_func,
-                                        const std::vector<Key>& keys_to_optimize) {
-  return FactorFromJacobianFunc<Scalar>(jacobian_func, keys_to_func, keys_to_optimize);
-}
+Factor<Scalar>::Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize)
+    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize) {}
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const DenseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys) {
-  return Jacobian(jacobian_func, keys, keys);
-}
+Factor<Scalar>::Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys)
+    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys) {}
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const SparseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys_to_func,
-                                        const std::vector<Key>& keys_to_optimize) {
-  return FactorFromJacobianFunc<Scalar>(jacobian_func, keys_to_func, keys_to_optimize);
-}
+Factor<Scalar>::Factor(const SparseJacobianFunc& jacobian_func,
+                       const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize)
+    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize) {}
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const SparseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys) {
-  return Jacobian(jacobian_func, keys, keys);
-}
+Factor<Scalar>::Factor(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys)
+    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys) {}
 
 template <typename Scalar>
 void Factor<Scalar>::Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual) const {

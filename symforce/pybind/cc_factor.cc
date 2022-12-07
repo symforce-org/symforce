@@ -113,11 +113,10 @@ template <typename... Keys>
 sym::Factord MakeJacobianFactor(PyJacobianFunc jacobian_func, const std::vector<Keys>&... keys,
                                 bool sparse) {
   if (sparse) {
-    return sym::Factord::Jacobian(
-        WrapPyJacobianFunc<Eigen::SparseMatrix<double>>(std::move(jacobian_func)), keys...);
+    return sym::Factord(WrapPyJacobianFunc<Eigen::SparseMatrix<double>>(std::move(jacobian_func)),
+                        keys...);
   } else {
-    return sym::Factord::Jacobian(WrapPyJacobianFunc<Eigen::MatrixXd>(std::move(jacobian_func)),
-                                  keys...);
+    return sym::Factord(WrapPyJacobianFunc<Eigen::MatrixXd>(std::move(jacobian_func)), keys...);
   }
 }
 
