@@ -25,6 +25,15 @@ class inputs_constants_t(object):
         self.epsilon = epsilon
 
     @staticmethod
+    def from_all_fields(
+        epsilon,  # type: float
+    ):
+        # type: (...) -> inputs_constants_t
+        return inputs_constants_t(
+            epsilon=epsilon,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

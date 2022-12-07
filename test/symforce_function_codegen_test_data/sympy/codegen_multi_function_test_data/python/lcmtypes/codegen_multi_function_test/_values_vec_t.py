@@ -36,6 +36,25 @@ class values_vec_t(object):
         self.list_of_lists = [ [ Vector4d._default() for dim1 in range(3) ] for dim0 in range(3) ] if list_of_lists is None else list_of_lists  # type: T.List[T.List[Vector4d]]
 
     @staticmethod
+    def from_all_fields(
+        x,  # type: float
+        y,  # type: float
+        rot,  # type: Vector4d
+        rot_vec,  # type: T.List[Vector4d]
+        scalar_vec,  # type: T.List[float]
+        list_of_lists,  # type: T.List[T.List[Vector4d]]
+    ):
+        # type: (...) -> values_vec_t
+        return values_vec_t(
+            x=x,
+            y=y,
+            rot=rot,
+            rot_vec=rot_vec,
+            scalar_vec=scalar_vec,
+            list_of_lists=list_of_lists,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

@@ -34,6 +34,23 @@ class outputs_1_t(object):
         self.values_vec_2D_out = [ [ values_vec_t._default() for dim1 in range(1) ] for dim0 in range(2) ] if values_vec_2D_out is None else values_vec_2D_out  # type: T.List[T.List[values_vec_t]]
 
     @staticmethod
+    def from_all_fields(
+        foo,  # type: float
+        bar,  # type: float
+        scalar_vec_out,  # type: T.List[float]
+        values_vec_out,  # type: T.List[values_vec_t]
+        values_vec_2D_out,  # type: T.List[T.List[values_vec_t]]
+    ):
+        # type: (...) -> outputs_1_t
+        return outputs_1_t(
+            foo=foo,
+            bar=bar,
+            scalar_vec_out=scalar_vec_out,
+            values_vec_out=values_vec_out,
+            values_vec_2D_out=values_vec_2D_out,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

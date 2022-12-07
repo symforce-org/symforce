@@ -28,6 +28,17 @@ class d_t(object):
         self.y = Vector2d._default() if y is None else y  # type: Vector2d
 
     @staticmethod
+    def from_all_fields(
+        x,  # type: float
+        y,  # type: Vector2d
+    ):
+        # type: (...) -> d_t
+        return d_t(
+            x=x,
+            y=y,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

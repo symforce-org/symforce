@@ -27,6 +27,17 @@ class d_out_t(object):
         self.y = y
 
     @staticmethod
+    def from_all_fields(
+        x,  # type: float
+        y,  # type: float
+    ):
+        # type: (...) -> d_out_t
+        return d_out_t(
+            x=x,
+            y=y,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

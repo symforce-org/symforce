@@ -26,6 +26,15 @@ class my_dataclass_t(object):
         self.rot = Vector4d._default() if rot is None else rot  # type: Vector4d
 
     @staticmethod
+    def from_all_fields(
+        rot,  # type: Vector4d
+    ):
+        # type: (...) -> my_dataclass_t
+        return my_dataclass_t(
+            rot=rot,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

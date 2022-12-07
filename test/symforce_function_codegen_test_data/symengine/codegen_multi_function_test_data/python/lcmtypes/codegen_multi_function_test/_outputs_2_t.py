@@ -25,6 +25,15 @@ class outputs_2_t(object):
         self.foo = foo
 
     @staticmethod
+    def from_all_fields(
+        foo,  # type: float
+    ):
+        # type: (...) -> outputs_2_t
+        return outputs_2_t(
+            foo=foo,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

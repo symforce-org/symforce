@@ -26,6 +26,15 @@ class inputs_states_t(object):
         self.p = Vector2d._default() if p is None else p  # type: Vector2d
 
     @staticmethod
+    def from_all_fields(
+        p,  # type: Vector2d
+    ):
+        # type: (...) -> inputs_states_t
+        return inputs_states_t(
+            p=p,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(

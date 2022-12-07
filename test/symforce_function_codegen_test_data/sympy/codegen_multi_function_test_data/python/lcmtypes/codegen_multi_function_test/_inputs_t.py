@@ -50,6 +50,35 @@ class inputs_t(object):
         self.states = inputs_states_t._default() if states is None else states  # type: inputs_states_t
 
     @staticmethod
+    def from_all_fields(
+        x,  # type: float
+        y,  # type: float
+        rot,  # type: Vector4d
+        rot_vec,  # type: T.List[Vector4d]
+        scalar_vec,  # type: T.List[float]
+        list_of_lists,  # type: T.List[T.List[Vector4d]]
+        values_vec,  # type: T.List[values_vec_t]
+        values_vec_2D,  # type: T.List[T.List[values_vec_t]]
+        constants,  # type: inputs_constants_t
+        big_matrix,  # type: VectorXd
+        states,  # type: inputs_states_t
+    ):
+        # type: (...) -> inputs_t
+        return inputs_t(
+            x=x,
+            y=y,
+            rot=rot,
+            rot_vec=rot_vec,
+            scalar_vec=scalar_vec,
+            list_of_lists=list_of_lists,
+            values_vec=values_vec,
+            values_vec_2D=values_vec_2D,
+            constants=constants,
+            big_matrix=big_matrix,
+            states=states,
+        )
+
+    @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]
         return dict(
