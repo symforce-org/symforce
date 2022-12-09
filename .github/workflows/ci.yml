@@ -17,19 +17,32 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
         python: [python3.8, python3.9, python3.10, python3.11]
-        compiler: [
-          {C: gcc-5, CXX: g++-5, repos: [
-            '"deb http://us.archive.ubuntu.com/ubuntu/ bionic main"',
-            '"deb http://us.archive.ubuntu.com/ubuntu/ bionic universe"',
-          ]},
-          {C: gcc-11, CXX: g++-11, repos: ['"ppa:ubuntu-toolchain-r/test"']}]
-        exclude:
+        compiler:
+          - C: gcc-11
+            CXX: g++-11
+            repos: ['"ppa:ubuntu-toolchain-r/test"']
+        include:
+          # gcc 5
+          - os: ubuntu-18.04
+            python: python3.8
+            compiler:
+              C: gcc-5
+              CXX: g++-5
+              repos: []
+          # Clang 7
+          - os: ubuntu-18.04
+            python: python3.8
+            compiler:
+              C: clang-7
+              CXX: clang++-7
+              repos: []
+          # Clang 14
           - os: ubuntu-22.04
-            compiler: {
-              C: gcc-5, CXX: g++-5, repos: [
-                '"deb http://us.archive.ubuntu.com/ubuntu/ bionic main"',
-                '"deb http://us.archive.ubuntu.com/ubuntu/ bionic universe"',
-              ]}
+            python: python3.10
+            compiler:
+              C: clang-14
+              CXX: clang++-14
+              repos: []
     steps:
       - name: Checkout
         uses: actions/checkout@v3
