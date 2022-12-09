@@ -60,7 +60,7 @@ def az_el_from_point(
     cam_t_point = nav_T_cam.inverse() * nav_t_point
     x, y, z = cam_t_point.to_flat_list()
     theta = sf.atan2(y, x, epsilon=epsilon)
-    phi = sf.pi / 2 - sf.acos(z / (cam_t_point.norm() + epsilon))
+    phi = sf.pi / 2 - sf.acos(z / cam_t_point.norm(epsilon=epsilon))
     return sf.V2(theta, phi)
 
 
@@ -874,7 +874,7 @@ class SymforceCodegenTest(TestCase):
 
         outputs = Values(
             a_out=inputs.attr.a * sf.V3(0, 0, inputs.attr.b),
-            b_out=inputs.attr.c.norm() + inputs.attr.b ** 2,
+            b_out=inputs.attr.c.norm(epsilon=0) + inputs.attr.b ** 2,
             c_out=(inputs.attr.d.x * sf.V2(1, 1) + inputs.attr.d.y).T * sf.M22(((1, 2), (3, 4))),
             d_out=Values(x=3, y=inputs.attr.a.q.w + inputs.attr.b),
         )

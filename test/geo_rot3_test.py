@@ -117,7 +117,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
 
         # 180 degree rotation about axis = [1, -1, 0]
-        rot_180_axis = sf.Rot3.from_angle_axis(sf.pi, sf.V3(1, -1, 0).normalized())
+        rot_180_axis = sf.Rot3.from_angle_axis(sf.pi, sf.V3(1, -1, 0).normalized(epsilon=0))
         rot_180_axis_transformed = sf.Rot3.from_rotation_matrix(rot_180_axis.to_rotation_matrix())
         self.assertEqual(
             rot_180_axis.to_rotation_matrix(),

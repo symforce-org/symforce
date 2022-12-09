@@ -69,9 +69,9 @@ Eigen::Matrix<Scalar, 2, 1> AzElFromPoint(const sym::Pose3<Scalar>& nav_T_cam,
 
   _res(0, 0) =
       std::atan2(_tmp11, _tmp18 + epsilon * ((((_tmp18) > 0) - ((_tmp18) < 0)) + Scalar(0.5)));
-  _res(1, 0) = -std::acos(_tmp22 / (epsilon + std::sqrt(Scalar(std::pow(_tmp11, Scalar(2)) +
-                                                               std::pow(_tmp18, Scalar(2)) +
-                                                               std::pow(_tmp22, Scalar(2)))))) +
+  _res(1, 0) = -std::acos(_tmp22 / std::sqrt(Scalar(std::pow(_tmp11, Scalar(2)) +
+                                                    std::pow(_tmp18, Scalar(2)) +
+                                                    std::pow(_tmp22, Scalar(2)) + epsilon))) +
                Scalar(M_PI_2);
 
   return _res;

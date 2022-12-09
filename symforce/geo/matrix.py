@@ -212,10 +212,10 @@ class Matrix(Storage):
         return cls.storage_dim()
 
     @classmethod
-    def from_tangent(cls, vec: _T.Sequence[_T.Scalar], epsilon: _T.Scalar = 0) -> Matrix:
+    def from_tangent(cls, vec: _T.Sequence[_T.Scalar], epsilon: _T.Scalar = sf.epsilon()) -> Matrix:
         return cls.from_storage(vec)
 
-    def to_tangent(self, epsilon: _T.Scalar = 0) -> _T.List[_T.Scalar]:
+    def to_tangent(self, epsilon: _T.Scalar = sf.epsilon()) -> _T.List[_T.Scalar]:
         return self.to_storage()
 
     def storage_D_tangent(self) -> Matrix:
@@ -509,19 +509,21 @@ class Matrix(Storage):
         self._assert_is_vector()
         return self.dot(self)
 
-    def norm(self, epsilon: _T.Scalar = 0) -> _T.Scalar:
+    def norm(self, epsilon: _T.Scalar = sf.epsilon()) -> _T.Scalar:
         """
         Norm of a vector (square root of magnitude).
         """
         return sf.sqrt(self.squared_norm() + epsilon)
 
-    def normalized(self: MatrixT, epsilon: _T.Scalar = 0) -> MatrixT:
+    def normalized(self: MatrixT, epsilon: _T.Scalar = sf.epsilon()) -> MatrixT:
         """
         Returns a unit vector in this direction (divide by norm).
         """
         return self / self.norm(epsilon=epsilon)
 
-    def clamp_norm(self: MatrixT, max_norm: _T.Scalar, epsilon: _T.Scalar = 0) -> MatrixT:
+    def clamp_norm(
+        self: MatrixT, max_norm: _T.Scalar, epsilon: _T.Scalar = sf.epsilon()
+    ) -> MatrixT:
         """
         Clamp a vector to the given norm in a safe/differentiable way.
 
@@ -781,11 +783,11 @@ class Matrix(Storage):
     __truediv__ = __div__
 
     @staticmethod
-    def are_parallel(a: Vector3, b: Vector3, epsilon: _T.Scalar) -> _T.Scalar:
+    def are_parallel(a: Vector3, b: Vector3, tolerance: _T.Scalar) -> _T.Scalar:
         """
-        Returns 1 if a and b are parallel within epsilon, and 0 otherwise.
+        Returns 1 if a and b are parallel within tolerance, and 0 otherwise.
         """
-        return (1 - sf.sign(a.cross(b).norm() - epsilon)) / 2
+        return (1 - sf.sign(a.cross(b).squared_norm() - tolerance ** 2)) / 2
 
     @staticmethod
     def skew_symmetric(a: Vector3) -> Matrix33:

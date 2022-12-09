@@ -357,7 +357,7 @@ class Rot3(LieGroup):
         """
         Return the angle between this rotation and the other in radians.
         """
-        return Matrix(self.local_coordinates(other, epsilon=epsilon)).norm()
+        return Matrix(self.local_coordinates(other, epsilon=epsilon)).norm(epsilon=epsilon)
 
     @classmethod
     def random(cls) -> Rot3:
