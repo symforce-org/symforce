@@ -10,11 +10,11 @@
 namespace sym {
 
 template <typename Scalar>
-Factor<Scalar>::Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys)
+Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys)
     : Factor(std::move(hessian_func), keys, keys) {}
 
 template <typename Scalar>
-Factor<Scalar>::Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),
@@ -23,12 +23,11 @@ Factor<Scalar>::Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& 
       keys_(keys_to_func) {}
 
 template <typename Scalar>
-Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func, const std::vector<Key>& keys)
+Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys)
     : Factor(std::move(sparse_hessian_func), keys, keys) {}
 
 template <typename Scalar>
-Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func,
-                       const std::vector<Key>& keys_to_func,
+Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(),
       sparse_hessian_func_(std::move(sparse_hessian_func)),
@@ -46,13 +45,13 @@ Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func,
 
 template <typename Scalar>
 template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& keys) {
-  return Jacobian(func, keys, keys);
+Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& keys) {
+  return Jacobian(std::forward<Functor>(func), keys, keys);
 }
 
 template <typename Scalar>
 template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& keys_to_func,
+Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& keys_to_func,
                                         const std::vector<Key>& keys_to_optimize) {
   using Traits = function_traits<Functor>;
 
@@ -90,8 +89,8 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(func, keys_to_func,
-                                                                       keys_to_optimize);
+  return internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(
+      std::forward<Functor>(func), keys_to_func, keys_to_optimize);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -104,13 +103,13 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
 
 template <typename Scalar>
 template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& keys) {
-  return Hessian(func, keys, keys);
+Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& keys) {
+  return Hessian(std::forward<Functor>(func), keys, keys);
 }
 
 template <typename Scalar>
 template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& keys_to_func,
+Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
                                        const std::vector<Key>& keys_to_optimize) {
   using Traits = function_traits<Functor>;
 
@@ -155,8 +154,8 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(func, keys_to_func,
-                                                                               keys_to_optimize);
+  return internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(
+      std::forward<Functor>(func), keys_to_func, keys_to_optimize);
 }
 
 // ----------------------------------------------------------------------------

@@ -113,7 +113,7 @@ class Factor {
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    */
-  Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys);
+  Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys);
 
   /**
    * Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
@@ -123,10 +123,10 @@ class Factor {
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
    *                     be a subset of keys_to_func.
    */
-  Factor(DenseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+  Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize);
-  Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func);
-  Factor(SparseHessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+  Factor(SparseHessianFunc hessian_func, const std::vector<Key>& keys_to_func);
+  Factor(SparseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize);
 
   /**
@@ -205,7 +205,7 @@ class Factor {
    * See `symforce_factor_test.cc` for many examples.
    */
   template <typename Functor>
-  static Factor Jacobian(Functor func, const std::vector<Key>& keys);
+  static Factor Jacobian(Functor&& func, const std::vector<Key>& keys);
 
   /**
    * Same as the above, but allows extra constant keys into the function which are not optimized.
@@ -217,7 +217,7 @@ class Factor {
    *                     be a subset of keys_to_func.
    */
   template <typename Functor>
-  static Factor Jacobian(Functor func, const std::vector<Key>& keys_to_func,
+  static Factor Jacobian(Functor&& func, const std::vector<Key>& keys_to_func,
                          const std::vector<Key>& keys_to_optimize);
 
   /**
@@ -236,7 +236,7 @@ class Factor {
    * See `symforce_factor_test.cc` for many examples.
    */
   template <typename Functor>
-  static Factor Hessian(Functor func, const std::vector<Key>& keys);
+  static Factor Hessian(Functor&& func, const std::vector<Key>& keys);
 
   /**
    * Same as the above, but allows extra constant keys into the function which are not optimized.
@@ -248,7 +248,7 @@ class Factor {
    *                     be a subset of keys_to_func.
    */
   template <typename Functor>
-  static Factor Hessian(Functor func, const std::vector<Key>& keys_to_func,
+  static Factor Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
                         const std::vector<Key>& keys_to_optimize);
 
   // ----------------------------------------------------------------------------------------------

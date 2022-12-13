@@ -78,6 +78,9 @@ struct function_traits<ReturnType(Args...)> {
 
 // Specialize for function pointers
 template <typename ReturnType, typename... Args>
+struct function_traits<ReturnType (&)(Args...)> : public function_traits<ReturnType(Args...)> {};
+
+template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType (*)(Args...)> : public function_traits<ReturnType(Args...)> {};
 
 // Specialize for member function pointers

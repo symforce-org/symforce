@@ -715,3 +715,114 @@ TEMPLATE_TEST_CASE("Test linearized values", "[factors]", double, float) {
   CHECK(residual.isApprox(linearized2.residual));
   CHECK(jacobian.isApprox(linearized2.jacobian));
 }
+
+template <typename Scalar>
+struct TestJacobianFunctor {
+  TestJacobianFunctor() = default;
+  TestJacobianFunctor(const TestJacobianFunctor&) {
+    copies++;
+  }
+
+  TestJacobianFunctor& operator=(const TestJacobianFunctor&) {
+    copies++;
+    return *this;
+  }
+
+  TestJacobianFunctor(TestJacobianFunctor&& rhs) {
+    rhs.is_moved = true;
+  }
+  TestJacobianFunctor& operator=(TestJacobianFunctor&& rhs) {
+    rhs.is_moved = true;
+    return *this;
+  }
+
+  void operator()(Scalar x, sym::Vector1<Scalar>* res, sym::Matrix11<Scalar>* jac) const {
+    (*res) << x;
+    (*jac) << 1;
+  }
+
+  bool is_moved{false};
+  static int copies;
+};
+
+template <typename Scalar>
+int TestJacobianFunctor<Scalar>::copies = 0;
+
+TEMPLATE_TEST_CASE("Test Jacobian functors has minimal copies", "[factors]", double, float) {
+  using Scalar = TestType;
+
+  sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'});
+  sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'}, {'x'});
+  CHECK(TestJacobianFunctor<Scalar>::copies == 0);
+
+  {
+    TestJacobianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Jacobian(std::move(f), {'x'});
+    CHECK(f.is_moved);                                // f should be moved
+    CHECK(TestJacobianFunctor<Scalar>::copies == 0);  // should not be copied
+  }
+
+  {
+    TestJacobianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Jacobian(f, {'x'});
+    CHECK(!f.is_moved);                               // f should not be moved
+    CHECK(TestJacobianFunctor<Scalar>::copies == 1);  // f should be copied once
+  }
+}
+
+template <typename Scalar>
+struct TestHessianFunctor {
+  TestHessianFunctor() = default;
+  TestHessianFunctor(const TestHessianFunctor&) {
+    copies++;
+  }
+
+  TestHessianFunctor& operator=(const TestHessianFunctor&) {
+    copies++;
+    return *this;
+  }
+
+  TestHessianFunctor(TestHessianFunctor&& rhs) {
+    rhs.is_moved = true;
+  }
+  TestHessianFunctor& operator=(TestHessianFunctor&& rhs) {
+    rhs.is_moved = true;
+    return *this;
+  }
+
+  void operator()(Scalar x, sym::Vector1<Scalar>* res, sym::Matrix11<Scalar>* jac,
+                  sym::Matrix11<Scalar>* hes, sym::Matrix11<Scalar>* rhs) const {
+    (*res) << x;
+    (*jac) << 1;
+    (*hes) << 1;
+    (*rhs) << 1;
+  }
+
+  bool is_moved{false};
+  static int copies;
+};
+
+template <typename Scalar>
+int TestHessianFunctor<Scalar>::copies = 0;
+
+TEMPLATE_TEST_CASE("Test Hessian functors has minimal copies", "[factors]", double, float) {
+  using Scalar = TestType;
+
+  sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'});
+  sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'}, {'x'});
+  CHECK(TestHessianFunctor<Scalar>::copies == 0);
+
+  {
+    TestHessianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Hessian(std::move(f), {'x'});
+    CHECK(f.is_moved);                               // f should be moved
+    CHECK(TestHessianFunctor<Scalar>::copies == 0);  // should not be copied
+  }
+
+  {
+    TestHessianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Hessian(f, {'x'});
+    CHECK(!f.is_moved);                              // f should not be moved
+    CHECK(TestHessianFunctor<Scalar>::copies == 1);  // f should be copied once
+  }
+}
