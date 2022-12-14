@@ -234,13 +234,16 @@ class Matrix(Storage):
         Matrix of zeros.
         """
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-        return cls.zeros(*cls.SHAPE)  # type: ignore
+        return cls.zeros(*cls.SHAPE)
 
     @classmethod
-    def zeros(cls, rows: int, cols: int) -> Matrix:  # pylint: disable=signature-differs
+    def zeros(cls: _T.Type[MatrixT], rows: int, cols: int) -> MatrixT:
         """
         Matrix of zeros.
         """
+        if cls._is_fixed_size() and cls.SHAPE != (rows, cols):
+            raise TypeError(f"Called zeros({rows=}, {cols=}) on matrix of shape {cls.SHAPE}")
+
         return cls([[sf.S.Zero] * cols for _ in range(rows)])
 
     @classmethod
@@ -249,20 +252,32 @@ class Matrix(Storage):
         Matrix of ones.
         """
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-        return cls.ones(*cls.SHAPE)  # type: ignore
+        return cls.ones(*cls.SHAPE)
 
     @classmethod
-    def ones(cls, rows: int, cols: int) -> Matrix:  # pylint: disable=signature-differs
+    def ones(cls: _T.Type[MatrixT], rows: int, cols: int) -> MatrixT:
         """
         Matrix of ones.
         """
+        if cls._is_fixed_size() and cls.SHAPE != (rows, cols):
+            raise TypeError(f"Called ones({rows=}, {cols=}) on matrix of shape {cls.SHAPE}")
+
         return cls([[sf.S.One] * cols for _ in range(rows)])
 
     @classmethod
-    def diag(cls, diagonal: _T.Sequence[_T.Scalar]) -> Matrix:
+    def diag(cls: _T.Type[MatrixT], diagonal: _T.Sequence[_T.Scalar]) -> MatrixT:
         """
         Construct a square matrix from the diagonal.
         """
+        if cls._is_fixed_size():
+            rows, cols = cls.SHAPE
+            if rows != cols:
+                raise TypeError(f"Cannot call .diag() on non-square shape {cls.SHAPE}")
+            if rows != len(diagonal):
+                raise ValueError(
+                    f"Cannot call .diag() with a diagonal of length {len(diagonal)} on a matrix of shape {cls.SHAPE}"
+                )
+
         mat = cls.zeros(len(diagonal), len(diagonal))
         for i, x in enumerate(diagonal):
             mat[i, i] = x
@@ -307,7 +322,7 @@ class Matrix(Storage):
         """
         if rows is None and cols is None:
             assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-            return cls.eye(*cls.SHAPE)  #  type: ignore
+            return cls.eye(*cls.SHAPE)
 
         if rows is None:
             raise ValueError("If cols is not None, rows must not be None")
@@ -317,7 +332,7 @@ class Matrix(Storage):
         mat = cls.zeros(rows, cols)
         for i in range(min(rows, cols)):
             mat[i, i] = sf.S.One
-        return mat  # type: ignore
+        return mat
 
     def inv(self: MatrixT, method: str = "LU") -> MatrixT:
         """
@@ -335,7 +350,7 @@ class Matrix(Storage):
             **kwargs (dict): Forwarded to `sf.Symbol`
         """
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-        rows, cols = cls.SHAPE  # pylint: disable=unpacking-non-sequence
+        rows, cols = cls.SHAPE
 
         row_names = [str(r_i) for r_i in range(rows)]
         col_names = [str(c_i) for c_i in range(cols)]
@@ -870,7 +885,7 @@ class Matrix(Storage):
         """
         Display self.mat in IPython, with SymPy's pretty printing
         """
-        display(self.mat)  # type: ignore # pylint: disable=undefined-variable # not defined outside of ipython
+        display(self.mat)  # type: ignore[name-defined] # pylint: disable=undefined-variable # not defined outside of ipython
 
     @staticmethod
     def init_printing() -> None:
@@ -881,7 +896,7 @@ class Matrix(Storage):
         """
         ip = None
         try:
-            ip = get_ipython()  # type: ignore # only exists in ipython
+            ip = get_ipython()  # type: ignore[name-defined] # only exists in ipython
         except NameError:
             pass
 
