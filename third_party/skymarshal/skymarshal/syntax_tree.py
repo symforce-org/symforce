@@ -171,6 +171,10 @@ class Notation(AstNode):
                     name="allow_negative_enums",
                     type="bool",
                 ),
+                NotationSpecProperty(
+                    name="add_unknown_enum_alias",
+                    type="bool",
+                ),
             ],
         ),
         "#hashable": NotationSpec(

@@ -97,6 +97,11 @@ class EnumType(object):
         if proto_typename is None:
             proto_typename = snakecase_to_camelcase(proto_filename_base)
 
+        # See if we should write an `UNKNOWN = 0;`` alias for 0.
+        self.add_unknown_enum_alias = enum.get_notation_property(
+            "#protobuf", "add_unknown_enum_alias"
+        )
+
         # enumerated cases
         self.cases = [EnumCase(case.int_value, case.name) for case in enum.cases]
         assert self.cases[0].int_value == 0, "Protobuf enums require that the first enum case be 0"
