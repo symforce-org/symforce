@@ -25,7 +25,6 @@ available as well as `symforce.symbolic.sympy`.
 
 # pylint: disable=unused-import
 # pylint: disable=unused-wildcard-import
-# pylint: disable=ungrouped-imports
 
 import contextlib
 

@@ -64,11 +64,11 @@ check_types:
 		-path "*/lcmtypes" -prune -false \
 		-o -name "*.py")
 
-# Run pylint on the symforce package
+# Run pylint on the symforce package, and tests
 # TODO(aaron): Also run on other python code in symforce.  Generated code will require a different
 # config since it is py6 and contains a lot of duplicate code
 pylint:
-	$(PYTHON) -m pylint symforce
+	$(PYTHON) -m pylint symforce test/*.py
 
 # Lint check for formatting and type hints
 # This needs pass before any merge.

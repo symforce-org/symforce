@@ -6,8 +6,6 @@
 import copy
 import functools
 import importlib.util
-import logging
-import sys
 import unittest
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,14 +19,11 @@ symforce.set_epsilon_to_symbol()
 
 import symforce.symbolic as sf
 from symforce import codegen
-from symforce import logger
 from symforce import ops
 from symforce import path_util
-from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import codegen_util
 from symforce.codegen import geo_package_codegen
-from symforce.codegen import template_util
 from symforce.test_util import TestCase
 from symforce.test_util import slow_on_sympy
 from symforce.test_util import symengine_only
@@ -201,7 +196,7 @@ class SymforceCodegenTest(TestCase):
 
         gen_module = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
         # TODO(nathan): Split this test into several different functions
-        (foo, bar, scalar_vec_out, values_vec_out, values_vec_2D_out) = gen_module.python_function(
+        (foo, bar, _, _, _) = gen_module.python_function(
             x,
             y,
             rot,
@@ -587,7 +582,7 @@ class SymforceCodegenTest(TestCase):
         }
         namespace = "codegen_cpp_test"
         output_dir = self.make_output_dir("sf_codegen_cpp_")
-        codegen_data = cpp_func.generate_function(
+        cpp_func.generate_function(
             shared_types=shared_types, namespace=namespace, output_dir=output_dir
         )
 
@@ -704,9 +699,7 @@ class SymforceCodegenTest(TestCase):
             config=codegen.CppConfig(),
             sparse_matrices=["matrix_out"],
         )
-        get_sparse_func_data = get_sparse_func.generate_function(
-            output_dir=output_dir, namespace=namespace
-        )
+        get_sparse_func.generate_function(output_dir=output_dir, namespace=namespace)
 
         # Function that generates both dense and sparse outputs
         multiple_outputs = Values()
@@ -723,21 +716,17 @@ class SymforceCodegenTest(TestCase):
             config=codegen.CppConfig(),
             sparse_matrices=["sparse_first", "sparse_second"],
         )
-        get_dense_and_sparse_func_data = get_dense_and_sparse_func.generate_function(
-            output_dir=output_dir, namespace=namespace
-        )
+        get_dense_and_sparse_func.generate_function(output_dir=output_dir, namespace=namespace)
 
         # Function that updates sparse matrix without copying
-        update_spase_func = codegen.Codegen(
+        update_sparse_func = codegen.Codegen(
             name="update_sparse_mat",
             inputs=inputs,
             outputs=Values(updated_mat=2 * outputs["matrix_out"]),
             config=codegen.CppConfig(),
             sparse_matrices=["updated_mat"],
         )
-        update_spase_func_data = update_spase_func.generate_function(
-            output_dir=output_dir, namespace=namespace
-        )
+        update_sparse_func.generate_function(output_dir=output_dir, namespace=namespace)
 
         # Compare the function files
         self.compare_or_update_directory(
@@ -918,7 +907,7 @@ class SymforceCodegenTest(TestCase):
         specs_first: T.List[T.Dict[str, T.Any]] = [
             # By default should return the value and have jacobians for the first output (cross) wrt
             # each input arg
-            dict(args=dict(), return_key="cross", outputs=5),
+            dict(args={}, return_key="cross", outputs=5),
             # All jacobians for first output, no value - should return distance and jacobians for
             # cross as output args
             dict(args=dict(include_results=False), return_key=None, outputs=4),
@@ -940,7 +929,7 @@ class SymforceCodegenTest(TestCase):
         specs_second: T.List[T.Dict[str, T.Any]] = [
             # Should return the value and have jacobians for the second output (distance) wrt each
             # input arg
-            dict(args=dict(), return_key="cross", outputs=5),
+            dict(args={}, return_key="cross", outputs=5),
             # All jacobians for second output, no value - should return cross, and jacobians for
             # distance as output args
             dict(args=dict(include_results=False), return_key="cross", outputs=4),
@@ -961,7 +950,7 @@ class SymforceCodegenTest(TestCase):
         # -------------------------------------------------------------------
         specs_both: T.List[T.Dict[str, T.Any]] = [
             # Should return the value and have jacobians for both outputs wrt each input arg
-            dict(args=dict(), return_key="cross", outputs=8),
+            dict(args={}, return_key="cross", outputs=8),
             # All jacobians for both outputs, no values - should return jacobians as output args
             dict(args=dict(include_results=False), return_key=None, outputs=6),
             # First jacobian for both outputs, no values - should return jacobians as output args
@@ -1064,8 +1053,8 @@ class SymforceCodegenTest(TestCase):
             v1: sf.V3
             v2: TestDataclass0
 
-        def test_function_dataclass(dataclass: TestDataclass1, x: sf.Scalar) -> sf.V3:
-            return x * dataclass.v2.v0 * dataclass.v1
+        def test_function_dataclass(d: TestDataclass1, x: sf.Scalar) -> sf.V3:
+            return x * d.v2.v0 * d.v1
 
         dataclass_codegen = codegen.Codegen.function(
             func=test_function_dataclass, config=codegen.PythonConfig()
@@ -1075,14 +1064,16 @@ class SymforceCodegenTest(TestCase):
             "test_function_dataclass", dataclass_codegen_data.function_dir
         )
 
-        dataclass_t = codegen_util.load_generated_lcmtype(
-            "sym", "dataclass_t", dataclass_codegen_data.python_types_dir
+        d = codegen_util.load_generated_lcmtype(
+            "sym", "d_t", dataclass_codegen_data.python_types_dir
         )()
-        dataclass_t.v1.data = np.zeros(3)
-        dataclass_t.v2.v0 = 1
+        d.v1.data = np.zeros(3)
+        d.v2.v0 = 1
 
         # make sure it runs
-        gen_module.test_function_dataclass(dataclass_t, 1)
+        result = gen_module.test_function_dataclass(d, 1)
+
+        self.assertEqual(result, np.zeros((3, 1)))
 
     @slow_on_sympy
     def test_function_explicit_template_instantiation(self) -> None:
@@ -1102,7 +1093,7 @@ class SymforceCodegenTest(TestCase):
         }
         namespace = "codegen_explicit_template_instantiation_test"
         output_dir = self.make_output_dir("sf_codegen_cpp_")
-        codegen_data = cpp_func.generate_function(
+        cpp_func.generate_function(
             shared_types=shared_types, namespace=namespace, output_dir=output_dir
         )
 

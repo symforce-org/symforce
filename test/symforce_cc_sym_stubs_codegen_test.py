@@ -63,7 +63,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
 
         # Change type of OptimizationStats.best_linearization to be Optional[Linearization]
         stubgen_output = re.sub(
-            "def best_linearization\(self\) -> object",
+            r"def best_linearization\(self\) -> object",
             "def best_linearization(self) -> typing.Optional[Linearization]",
             stubgen_output,
         )

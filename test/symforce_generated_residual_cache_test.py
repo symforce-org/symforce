@@ -18,9 +18,10 @@ class GeneratedResidualCacheTest(TestCase):
     Tests symforce.opt.generated_residual_cache.GeneratedResidualCache.
     """
 
-    def example_index_keys_and_residual(
-        self,
-    ) -> T.Tuple[SimilarityIndex, T.Set[str], T.Dict[str, T.Any], T.Callable]:
+    @staticmethod
+    def example_index_keys_and_residual() -> T.Tuple[
+        SimilarityIndex, T.Set[str], T.Dict[str, T.Any], T.Callable
+    ]:
         index = SimilarityIndex(
             inputs=Values(rot=sf.Rot3.symbolic("a")),
             outputs=Values(out=sf.Rot3.symbolic("a").inverse()),

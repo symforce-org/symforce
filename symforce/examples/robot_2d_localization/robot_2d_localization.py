@@ -8,7 +8,6 @@ Demonstrates solving a 2D localization problem with SymForce. The goal is for a 
 in a 2D plane to compute its trajectory given distance measurements from wheel odometry
 and relative bearing angle measurements to known landmarks in the environment.
 """
-# pylint: disable=ungrouped-imports
 
 # -----------------------------------------------------------------------------
 # Set the default epsilon to a symbol

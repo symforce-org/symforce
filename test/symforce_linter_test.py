@@ -37,7 +37,7 @@ class SymforceLinterTest(TestCase):
             )
         except subprocess.CalledProcessError as exc:
             logger.error(exc)
-            self.assertTrue(False, "Linter Failed.")
+            self.fail("Linter Failed.")
 
 
 if __name__ == "__main__":

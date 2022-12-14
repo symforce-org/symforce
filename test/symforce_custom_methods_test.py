@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import unittest
-
 import numpy as np
 
 import symforce.symbolic as sf

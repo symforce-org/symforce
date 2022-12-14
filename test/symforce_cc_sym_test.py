@@ -152,13 +152,15 @@ class SymforceCCSymTest(TestCase):
                 return tp.from_storage([0] * tp.storage_dim())
 
         for tp in supported_types:
-            with self.subTest(msg=f"Can set and retrieve {tp.__name__}"):
+            with self.subTest(
+                msg=f"Can set and retrieve {tp.__name__}"  # pylint: disable=no-member
+            ):
                 values = cc_sym.Values()
                 val: T.Any = instantiate_type(tp)
                 values.set(cc_sym.Key("v"), val)
                 self.assertEqual(values.at(cc_sym.Key("v")), val)
 
-        with self.subTest(msg=f"Can set and at 9x9 matrices and smaller"):
+        with self.subTest(msg="Can set and at 9x9 matrices and smaller"):
             values = cc_sym.Values()
             for rows in range(1, 10):
                 for cols in range(1, 10):
@@ -291,7 +293,9 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values.cleanup(), 1)
 
         for tp in supported_types:
-            with self.subTest(msg=f"Can call set as a function of index_entry_t and {tp.__name__}"):
+            with self.subTest(
+                msg=f"Can call set as a function of index_entry_t and {tp.__name__}"  # pylint: disable=no-member
+            ):
                 values = cc_sym.Values()
                 a = cc_sym.Key("a")
                 values.set(a, instantiate_type(tp))

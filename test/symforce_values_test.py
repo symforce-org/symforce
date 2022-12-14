@@ -6,7 +6,6 @@
 import copy
 import itertools
 import pickle
-import unittest
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -104,7 +103,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(len(v.keys()), 3)
 
         string = repr(v)
-        logger.debug("v:\n" + string)
+        logger.debug("v:\n%s", string)
 
     def test_name_scope(self) -> None:
         s = sf.Symbol("foo.blah")
@@ -118,10 +117,14 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual("hey.there.what", w.name)
 
         with self.subTest(msg="Scopes are cleaned up correctly"):
+
+            class TestException(Exception):
+                pass
+
             try:
                 with sf.scope("hey"):
-                    raise Exception
-            except:
+                    raise TestException()
+            except TestException:
                 pass
             x = sf.Symbol("who")
             self.assertEqual("who", x.name)
@@ -196,7 +199,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         del v["uhoh"]
 
         string = repr(v)
-        logger.debug("v:\n" + string)
+        logger.debug("v:\n%s", string)
 
         # Copy into other values and change element
         new_v = copy.deepcopy(v)
@@ -236,7 +239,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v = Values()
             for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
-                    v[invalid_key]
+                    _ = v[invalid_key]
 
     def test_setitem(self) -> None:
         """
@@ -366,7 +369,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v = Values()
             for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
-                    invalid_key in v
+                    _ = invalid_key in v
 
     def test_mixing_scopes(self) -> None:
         v1 = Values()

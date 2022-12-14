@@ -115,6 +115,9 @@ disable=raw-checker-failed,
         unsubscriptable-object,
         arguments-differ,
 
+        # isort handles this
+        ungrouped-imports,
+
         # Would be nice to drive these to 0
         arguments-renamed,
         consider-using-f-string,
@@ -329,12 +332,7 @@ attr-naming-style=snake_case
 #attr-rgx=
 
 # Bad variable names which should always be refused, separated by a comma.
-bad-names=foo,
-          bar,
-          baz,
-          toto,
-          tutu,
-          tata
+bad-names=
 
 # Bad variable names regexes, separated by a comma. If names match any regex,
 # they will always be refused
@@ -584,7 +582,7 @@ max-branches=12
 max-locals=15
 
 # Maximum number of parents for a class (see R0901).
-max-parents=7
+max-parents=8
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods=20

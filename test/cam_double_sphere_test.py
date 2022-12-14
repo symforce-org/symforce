@@ -3,13 +3,10 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import unittest
-
 import numpy as np
 
 import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.cam_cal_test_mixin import CamCalTestMixin
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -90,12 +87,12 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
 
             with self.subTest(angle=angle, xi=xi, alpha=alpha):
                 point = point_from_angle(angle - self.EPS)
-                pixel, is_valid = cal.pixel_from_camera_point(point)
+                _, is_valid = cal.pixel_from_camera_point(point)
                 self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 1.0)
 
             with self.subTest(angle=angle, xi=xi, alpha=alpha):
                 point = point_from_angle(angle + self.EPS)
-                pixel, is_valid = cal.pixel_from_camera_point(point)
+                _, is_valid = cal.pixel_from_camera_point(point)
                 self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 0.0)
 
         # linear is_valid for trivial case
@@ -135,12 +132,12 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
 
             with self.subTest(radius=radius, xi=xi, alpha=alpha):
                 pixel = pixel_from_radius(radius - self.EPS)
-                point, is_valid = cal.camera_ray_from_pixel(pixel)
+                _, is_valid = cal.camera_ray_from_pixel(pixel)
                 self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 1.0)
 
             with self.subTest(radius=radius, xi=xi, alpha=alpha):
                 pixel = pixel_from_radius(radius + self.EPS)
-                point, is_valid = cal.camera_ray_from_pixel(pixel)
+                _, is_valid = cal.camera_ray_from_pixel(pixel)
                 self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 0.0)
 
         # sphere is_valid for spheres far apart

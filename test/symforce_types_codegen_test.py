@@ -4,8 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import copy
-import os
-from pathlib import Path
 
 import symforce
 
@@ -192,7 +190,7 @@ class SymforceTypesCodegenTest(TestCase):
             "external.vec_t",
         )
 
-        codegen_data = self.types_codegen_helper(
+        self.types_codegen_helper(
             name="external",
             scalar_type="double",
             shared_types=shared_types,

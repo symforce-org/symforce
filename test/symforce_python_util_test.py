@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import unittest
-
 from symforce import python_util
 from symforce import typing as T
 from symforce.test_util import TestCase

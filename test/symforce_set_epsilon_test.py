@@ -36,9 +36,9 @@ class SymforceSetEpsilonTest(TestCase):
         # Since some code relies on the original module still being available in sys.modules, we
         # need to save and restore the original modules to keep from breaking other tests.
         cls.saved_modules = []
-        for module in sys.modules:
-            if module.startswith("symforce"):
-                cls.saved_modules.append((module, sys.modules[module]))
+        for module_name, module in sys.modules.items():
+            if module_name.startswith("symforce"):
+                cls.saved_modules.append((module_name, module))
 
     @classmethod
     def tearDownClass(cls) -> None:

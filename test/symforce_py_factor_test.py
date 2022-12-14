@@ -46,11 +46,9 @@ class SymforcePyFactorTest(TestCase):
 
         ### Prior factors
 
-        for i in range(len(keys)):
+        for key in keys:
             x_prior = ops.GroupOps.identity(value_type)
-            yield Factor(
-                keys=[keys[i]], name="prior", residual=functools.partial(between, y=x_prior)
-            )
+            yield Factor(keys=[key], name="prior", residual=functools.partial(between, y=x_prior))
 
     def test_basic(self) -> None:
         """

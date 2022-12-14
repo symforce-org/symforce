@@ -10,8 +10,6 @@ in the environment. It also has odometry constraints between its poses. The goal
 to estimate the trajectory of the robot given known landmarks and noisy measurements.
 """
 
-# pylint: disable=ungrouped-imports
-
 # -----------------------------------------------------------------------------
 # Set the default epsilon to a symbol
 # -----------------------------------------------------------------------------

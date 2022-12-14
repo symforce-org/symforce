@@ -98,7 +98,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
                 self.assertIsInstance(xf, float)
 
         with self.subTest("identity"):
-            identity = GroupOps.identity(TestFixedSizeType)
+            GroupOps.identity(TestFixedSizeType)
 
         with self.subTest("tangent_dim"):
             self.assertEqual(LieGroupOps.tangent_dim(TestFixedSizeType), 25)

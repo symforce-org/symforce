@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import math
-import os
 import sys
 from pathlib import Path
 
@@ -56,7 +55,7 @@ class SymforceGenCodegenTest(TestCase):
         # Create the specification
         namespace = "cam_function_codegen_test"
         my_func = codegen.Codegen.function(func=pixel_to_ray_and_back, config=codegen.CppConfig())
-        cpp_data = my_func.generate_function(output_dir=output_dir, namespace=namespace)
+        my_func.generate_function(output_dir=output_dir, namespace=namespace)
 
         # Compare against the checked-in test data
         self.compare_or_update_directory(
@@ -135,8 +134,8 @@ class SymforceGenCodegenTest(TestCase):
         rot_inv = rot.inverse()
         identity_expected = rot * rot_inv
         identity_actual = geo_pkg.Rot3.identity()
-        for i in range(len(identity_expected.data)):
-            self.assertAlmostEqual(identity_expected.data[i], identity_actual.data[i], places=7)
+        for i, expected_data in enumerate(identity_expected.data):
+            self.assertAlmostEqual(expected_data, identity_actual.data[i], places=7)
 
     # This is so slow on sympy that we disable it entirely
     @symengine_only
