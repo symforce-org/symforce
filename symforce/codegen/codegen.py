@@ -74,7 +74,7 @@ class Codegen:
         config: codegen_config.CodegenConfig,
         name: T.Optional[str] = None,
         return_key: T.Optional[str] = None,
-        sparse_matrices: T.List[str] = None,
+        sparse_matrices: T.Sequence[str] = None,
         docstring: str = None,
     ) -> None:
         """
@@ -239,6 +239,7 @@ class Codegen:
         input_types: T.Sequence[T.ElementOrType] = None,
         output_names: T.Sequence[str] = None,
         return_key: str = None,
+        sparse_matrices: T.Sequence[str] = None,
         docstring: str = None,
     ) -> Codegen:
         """
@@ -258,6 +259,7 @@ class Codegen:
                 function name.  Must be provided if `func` is a lambda
             output_names: Optional if only one object is returned by the function.
                 If multiple objects are returned, they must be named.
+            sparse_matrices: Outputs with this key will be returned as sparse matrices
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
             docstring: The docstring to be used with the generated function.  Default is to use the
@@ -314,6 +316,7 @@ class Codegen:
             outputs=outputs,
             config=config,
             return_key=return_key,
+            sparse_matrices=sparse_matrices,
             docstring=textwrap.dedent(docstring),
         )
 

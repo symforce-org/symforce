@@ -728,6 +728,14 @@ class SymforceCodegenTest(TestCase):
         )
         update_sparse_func.generate_function(output_dir=output_dir, namespace=namespace)
 
+        # Test the Codegen.function factory
+        def sparse_func(x: sf.V3) -> sf.M33:
+            return sf.M33.diag(x.to_flat_list())
+
+        codegen.Codegen.function(
+            sparse_func, config=codegen.CppConfig(), output_names=("M",), sparse_matrices=("M",)
+        ).generate_function(output_dir=output_dir, namespace=namespace)
+
         # Compare the function files
         self.compare_or_update_directory(
             output_dir, expected_dir=TEST_DATA_DIR / (namespace + "_data")
