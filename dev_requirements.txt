@@ -82,6 +82,8 @@ fonttools==4.38.0
     # via matplotlib
 graphviz==0.20.1
     # via symforce (setup.py)
+gtsam==4.1.1 ; python_version < "3.10"
+    # via symforce (setup.py)
 idna==3.4
     # via requests
 imagesize==1.4.1
@@ -192,6 +194,7 @@ numba==0.56.4 ; python_version < "3.11"
 numpy==1.23.5
     # via
     #   contourpy
+    #   gtsam
     #   matplotlib
     #   numba
     #   pandas
@@ -253,7 +256,9 @@ pygments==2.13.0
 pylint==2.15.9
     # via symforce (setup.py)
 pyparsing==3.0.9
-    # via matplotlib
+    # via
+    #   gtsam
+    #   matplotlib
 pyrsistent==0.19.2
     # via jsonschema
 python-dateutil==2.8.2

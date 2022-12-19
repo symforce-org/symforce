@@ -479,6 +479,7 @@ setup(
             "argh",
             "black[jupyter]==21.12b0",
             "coverage",
+            "gtsam ; python_version<'3.10'",
             "isort",
             "jinja2~=3.0.3",
             "mypy==0.910",
