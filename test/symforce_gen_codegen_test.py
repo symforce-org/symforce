@@ -26,6 +26,7 @@ from symforce.codegen import geo_package_codegen
 from symforce.codegen import slam_factors_codegen
 from symforce.codegen import sym_util_package_codegen
 from symforce.codegen import template_util
+from symforce.slam.imu_preintegration.generate import generate_manifold_imu_preintegration
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only
 
@@ -150,6 +151,10 @@ class SymforceGenCodegenTest(TestCase):
         # Prior factors, between factors, and SLAM factors for C++.
         geo_factors_codegen.generate(output_dir / "sym")
         slam_factors_codegen.generate(output_dir / "sym")
+        generate_manifold_imu_preintegration(
+            config=config,
+            output_dir=output_dir / "sym" / "factors" / "internal",
+        )
 
         # Generate typedefs.h
         sym_util_package_codegen.generate(config=config, output_dir=output_dir)
