@@ -423,6 +423,6 @@ class Pose3(object):
         if isinstance(other, Pose3):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
-            return self.compose_with_point(other).reshape(other.shape)
+            return getattr(self, "compose_with_point")(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))
