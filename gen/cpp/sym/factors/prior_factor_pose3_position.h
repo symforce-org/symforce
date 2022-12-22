@@ -37,7 +37,7 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
                               Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                               Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                               Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 63
+  // Total ops: 35
 
   // Unused inputs
   (void)epsilon;
@@ -45,41 +45,31 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _value = value.Data();
 
-  // Intermediate terms (6)
+  // Intermediate terms (5)
   const Scalar _tmp0 = _value[5] - prior(1, 0);
-  const Scalar _tmp1 = _value[4] - prior(0, 0);
-  const Scalar _tmp2 = _value[6] - prior(2, 0);
-  const Scalar _tmp3 = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 0) + _tmp2 * sqrt_info(0, 2);
-  const Scalar _tmp4 = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 0) + _tmp2 * sqrt_info(1, 2);
-  const Scalar _tmp5 = _tmp0 * sqrt_info(2, 1) + _tmp1 * sqrt_info(2, 0) + _tmp2 * sqrt_info(2, 2);
+  const Scalar _tmp1 = _value[6] - prior(2, 0);
+  const Scalar _tmp2 = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 2) +
+                       sqrt_info(0, 0) * (_value[4] - prior(0, 0));
+  const Scalar _tmp3 = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 2);
+  const Scalar _tmp4 = std::pow(sqrt_info(2, 2), Scalar(2));
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 3, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp3;
-    _res(1, 0) = _tmp4;
-    _res(2, 0) = _tmp5;
+    _res(0, 0) = _tmp2;
+    _res(1, 0) = _tmp3;
+    _res(2, 0) = _tmp1 * sqrt_info(2, 2);
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 3, 6>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = 0;
-    _jacobian(1, 0) = 0;
-    _jacobian(2, 0) = 0;
-    _jacobian(0, 1) = 0;
-    _jacobian(1, 1) = 0;
-    _jacobian(2, 1) = 0;
-    _jacobian(0, 2) = 0;
-    _jacobian(1, 2) = 0;
-    _jacobian(2, 2) = 0;
+    _jacobian.setZero();
+
     _jacobian(0, 3) = sqrt_info(0, 0);
-    _jacobian(1, 3) = sqrt_info(1, 0);
-    _jacobian(2, 3) = sqrt_info(2, 0);
     _jacobian(0, 4) = sqrt_info(0, 1);
     _jacobian(1, 4) = sqrt_info(1, 1);
-    _jacobian(2, 4) = sqrt_info(2, 1);
     _jacobian(0, 5) = sqrt_info(0, 2);
     _jacobian(1, 5) = sqrt_info(1, 2);
     _jacobian(2, 5) = sqrt_info(2, 2);
@@ -90,18 +80,13 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
 
     _hessian.setZero();
 
-    _hessian(3, 3) = std::pow(sqrt_info(0, 0), Scalar(2)) + std::pow(sqrt_info(1, 0), Scalar(2)) +
-                     std::pow(sqrt_info(2, 0), Scalar(2));
-    _hessian(4, 3) = sqrt_info(0, 0) * sqrt_info(0, 1) + sqrt_info(1, 0) * sqrt_info(1, 1) +
-                     sqrt_info(2, 0) * sqrt_info(2, 1);
-    _hessian(5, 3) = sqrt_info(0, 0) * sqrt_info(0, 2) + sqrt_info(1, 0) * sqrt_info(1, 2) +
-                     sqrt_info(2, 0) * sqrt_info(2, 2);
-    _hessian(4, 4) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2)) +
-                     std::pow(sqrt_info(2, 1), Scalar(2));
-    _hessian(5, 4) = sqrt_info(0, 1) * sqrt_info(0, 2) + sqrt_info(1, 1) * sqrt_info(1, 2) +
-                     sqrt_info(2, 1) * sqrt_info(2, 2);
-    _hessian(5, 5) = std::pow(sqrt_info(0, 2), Scalar(2)) + std::pow(sqrt_info(1, 2), Scalar(2)) +
-                     std::pow(sqrt_info(2, 2), Scalar(2));
+    _hessian(3, 3) = std::pow(sqrt_info(0, 0), Scalar(2));
+    _hessian(4, 3) = sqrt_info(0, 0) * sqrt_info(0, 1);
+    _hessian(5, 3) = sqrt_info(0, 0) * sqrt_info(0, 2);
+    _hessian(4, 4) = std::pow(sqrt_info(0, 1), Scalar(2)) + std::pow(sqrt_info(1, 1), Scalar(2));
+    _hessian(5, 4) = sqrt_info(0, 1) * sqrt_info(0, 2) + sqrt_info(1, 1) * sqrt_info(1, 2);
+    _hessian(5, 5) =
+        _tmp4 + std::pow(sqrt_info(0, 2), Scalar(2)) + std::pow(sqrt_info(1, 2), Scalar(2));
   }
 
   if (rhs != nullptr) {
@@ -110,9 +95,9 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
     _rhs(0, 0) = 0;
     _rhs(1, 0) = 0;
     _rhs(2, 0) = 0;
-    _rhs(3, 0) = _tmp3 * sqrt_info(0, 0) + _tmp4 * sqrt_info(1, 0) + _tmp5 * sqrt_info(2, 0);
-    _rhs(4, 0) = _tmp3 * sqrt_info(0, 1) + _tmp4 * sqrt_info(1, 1) + _tmp5 * sqrt_info(2, 1);
-    _rhs(5, 0) = _tmp3 * sqrt_info(0, 2) + _tmp4 * sqrt_info(1, 2) + _tmp5 * sqrt_info(2, 2);
+    _rhs(3, 0) = _tmp2 * sqrt_info(0, 0);
+    _rhs(4, 0) = _tmp2 * sqrt_info(0, 1) + _tmp3 * sqrt_info(1, 1);
+    _rhs(5, 0) = _tmp1 * _tmp4 + _tmp2 * sqrt_info(0, 2) + _tmp3 * sqrt_info(1, 2);
   }
 }  // NOLINT(readability/fn_size)
 

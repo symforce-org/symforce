@@ -64,7 +64,7 @@ def between_factor(
     )
 
     # Apply noise model
-    residual = sqrt_info * sf.M(tangent_error)
+    residual = sqrt_info.upper_triangular_mul(sf.M(tangent_error))
 
     return residual
 
@@ -79,7 +79,7 @@ def prior_factor(
     tangent_error = ops.LieGroupOps.local_coordinates(prior, value, epsilon=epsilon)
 
     # Apply noise model
-    residual = sqrt_info * sf.M(tangent_error)
+    residual = sqrt_info.upper_triangular_mul(sf.M(tangent_error))
 
     return residual
 
@@ -158,7 +158,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
             a_R_b, ops.LieGroupOps.between(a, b).R, epsilon=epsilon
         )
 
-        return sqrt_info * sf.M(tangent_error)
+        return sqrt_info.upper_triangular_mul(sf.M(tangent_error))
 
     def between_factor_pose3_position(
         a: sf.Pose3,
@@ -175,7 +175,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
             a_t_b, ops.LieGroupOps.between(a, b).t, epsilon=epsilon
         )
 
-        return sqrt_info * sf.M(tangent_error)
+        return sqrt_info.upper_triangular_mul(sf.M(tangent_error))
 
     def between_factor_pose3_translation_norm(
         a: sf.Pose3,

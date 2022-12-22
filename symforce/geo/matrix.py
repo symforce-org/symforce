@@ -664,6 +664,23 @@ class Matrix(Storage):
         else:
             return self.__class__(self.mat * right)
 
+    def upper_triangular_mul(self, v: Matrix) -> Matrix:
+        """
+        Returns self * v. Use to avoid expressions containing the zero-valued lower triangular
+        portion of ut.
+
+        Precondition: self is upper triangular, v is a vector (NOTE(brad): not essential, but
+            covers the use case I care about right now)
+        """
+        if self.shape[0] != self.shape[1]:
+            raise ValueError(f"self is not a square matrix; instead has shape {self.shape}")
+        if self.shape[1] != v.shape[0]:
+            raise ValueError(f"self {self.shape} and v {v.shape} have incompatible shapes")
+        if v.shape[1] != 1:
+            raise ValueError("currently, only multiplication with vectors is supported")
+
+        return Matrix([(self[k, k:] * v[k:, 0])[0] for k in range(v.shape[0])])
+
     @_T.overload
     def __rmul__(
         self, left: _T.Union[Matrix, sf.sympy.MutableDenseMatrix]
