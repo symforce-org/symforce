@@ -70,10 +70,10 @@ class Optimizer {
   using NonlinearSolver = NonlinearSolverType;
 
   /**
-   * Constructor that copies in factors and keys
+   * Base constructor
    */
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
-            const Scalar epsilon = 1e-9, std::string name = "sym::Optimize",
+            const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
             std::vector<Key> keys = {}, bool debug_stats = false, bool check_derivatives = false);
 
   /**
@@ -81,7 +81,7 @@ class Optimizer {
    */
   template <typename... NonlinearSolverArgs>
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
-            const Scalar epsilon, std::string name, std::vector<Key> keys, bool debug_stats,
+            const Scalar epsilon, const std::string& name, std::vector<Key> keys, bool debug_stats,
             bool check_derivatives, NonlinearSolverArgs&&... args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
