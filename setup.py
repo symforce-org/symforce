@@ -488,7 +488,7 @@ setup(
             # A dependency of numba, only required here because pip-tools does not automatically
             # propagate python_version to dependencies
             "llvmlite ; python_version < '3.11'",
-            "pip-tools",
+            "pip-tools<6.11",
             "pybind11-stubgen",
             "pylint",
             "types-jinja2",
