@@ -72,34 +72,17 @@ class Optimizer {
   /**
    * Constructor that copies in factors and keys
    */
-  Optimizer(const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
-            const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
-            const std::vector<Key>& keys = {}, bool debug_stats = false,
-            bool check_derivatives = false);
+  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
+            const Scalar epsilon = 1e-9, std::string name = "sym::Optimize",
+            std::vector<Key> keys = {}, bool debug_stats = false, bool check_derivatives = false);
 
   /**
    * Constructor that copies in factors and keys, with arguments for the nonlinear solver
    */
   template <typename... NonlinearSolverArgs>
-  Optimizer(const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
-            const Scalar epsilon, const std::string& name, const std::vector<Key>& keys,
-            bool debug_stats, bool check_derivatives, NonlinearSolverArgs&&... args);
-
-  /**
-   * Constructor with move constructors for factors and keys.
-   */
-  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>>&& factors,
-            const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
-            std::vector<Key>&& keys = {}, bool debug_stats = false, bool check_derivatives = false);
-
-  /**
-   * Constructor with move constructors for factors and keys, with arguments for the nonlinear
-   * solver
-   */
-  template <typename... NonlinearSolverArgs>
-  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>>&& factors,
-            const Scalar epsilon, const std::string& name, std::vector<Key>&& keys,
-            bool debug_stats, bool check_derivatives, NonlinearSolverArgs&&... args);
+  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
+            const Scalar epsilon, std::string name, std::vector<Key> keys, bool debug_stats,
+            bool check_derivatives, NonlinearSolverArgs&&... args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
   Optimizer(Optimizer&&) = delete;
