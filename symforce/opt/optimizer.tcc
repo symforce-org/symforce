@@ -20,7 +20,7 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
                                                       std::vector<Key> keys, bool debug_stats,
                                                       bool check_derivatives)
     : factors_(std::move(factors)),
-      name_(std::move(name)),
+      name_(name),
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
