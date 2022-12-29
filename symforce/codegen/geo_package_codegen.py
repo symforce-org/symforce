@@ -208,12 +208,15 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
             ):
                 template_path = Path(base_dir, relative_path + ".jinja")
                 output_path = package_dir / relative_path.replace("CLASS", cls.__name__.lower())
-                templates.add(template_path, data, output_path=output_path)
+                templates.add(
+                    template_path, data, config.render_template_config, output_path=output_path
+                )
 
         templates.add(
             template_path=Path("ops", "__init__.py.jinja"),
             output_path=package_dir / "ops" / "__init__.py",
             data={},
+            config=config.render_template_config,
         )
 
         # Package init
@@ -224,6 +227,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 all_types=DEFAULT_GEO_TYPES,
                 numeric_epsilon=sf.numeric_epsilon,
             ),
+            config=config.render_template_config,
             output_path=package_dir / "__init__.py",
         )
 
@@ -232,6 +236,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
             templates.add(
                 template_path=Path("tests", name + ".jinja"),
                 data=dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
+                config=config.render_template_config,
                 output_path=output_dir / "tests" / name,
             )
 
@@ -261,7 +266,9 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
             ):
                 template_path = Path(base_dir, f"{relative_path}.jinja")
                 output_path = package_dir / relative_path.replace("CLASS", cls.__name__.lower())
-                templates.add(template_path, data, output_path=output_path)
+                templates.add(
+                    template_path, data, config.render_template_config, output_path=output_path
+                )
 
         # Render non geo type specific templates
         for template_name in python_util.files_in_dir(
@@ -276,6 +283,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
             templates.add(
                 template_path=Path("geo_package", "ops", template_name),
                 data=dict(Codegen.common_data()),
+                config=config.render_template_config,
                 output_path=package_dir / "ops" / template_name[: -len(".jinja")],
             )
 
@@ -298,6 +306,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                         for scalar in data["scalar_types"]
                     ],
                 ),
+                config=config.render_template_config,
             )
 
     else:
@@ -307,6 +316,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
     templates.add(
         template_path="symforce_types.lcm.jinja",
         data=lcm_types_codegen.lcm_symforce_types_data(),
+        config=config.render_template_config,
         template_dir=template_util.LCM_TEMPLATE_DIR,
         output_path=package_dir / ".." / "lcmtypes" / "lcmtypes" / "symforce_types.lcm",
     )

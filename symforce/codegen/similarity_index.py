@@ -68,6 +68,9 @@ class SimilarityIndex:
                 tuple(self.outputs.to_storage()),
                 self.return_key,
                 self.sorted_sparse_matrices,
-                tuple(dataclasses.asdict(self.config).items()),
+                # Convert to key, value tuples recursively.  Unlike astuple, this has field names
+                dataclasses.asdict(
+                    self.config, dict_factory=T.cast(T.Callable[[T.List], T.Tuple], tuple)
+                ),
             )
         )

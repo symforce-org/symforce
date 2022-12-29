@@ -24,6 +24,7 @@ class PythonConfig(CodegenConfig):
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
+        custom_preamble: An optional string to be prepended on the front of the rendered template
         cse_optimizations: Optimizations argument to pass to sf.cse
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
         use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly

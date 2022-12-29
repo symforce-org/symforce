@@ -8,6 +8,7 @@ import symforce
 symforce.set_epsilon_to_symbol()
 
 from symforce import path_util
+from symforce.codegen import RenderTemplateConfig
 from symforce.codegen import template_util
 from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
 from symforce.test_util import TestCase
@@ -21,6 +22,7 @@ class SymforceLcmCodegenTest(TestCase):
             template_dir=template_util.LCM_TEMPLATE_DIR,
             template_path="symforce_types.lcm.jinja",
             data=lcm_symforce_types_data(),
+            config=RenderTemplateConfig(),
             output_path=output_dir / "symforce_types.lcm",
         )
 

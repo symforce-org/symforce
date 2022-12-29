@@ -17,6 +17,7 @@ from symforce.values.values import Values
 def generate_values_keys(
     values: Values,
     output_dir: T.Openable,
+    config: CppConfig,
     namespace: str = "sym",
     generated_file_name: str = "keys.h",
     excluded_keys: T.Set[generated_key_selection.GeneratedKey] = None,
@@ -28,6 +29,7 @@ def generate_values_keys(
     Args:
         values: Will generate an entry for each (recursive) key in the values
         output_dir: Directory in which to output the generated header
+        config: The CppConfig to use
         namespace: Namepace for the generated header
         generated_file_name: Filename of the generated header
         excluded_keys: Set of disallowed generated keys (for instance, if that key is used
@@ -35,7 +37,6 @@ def generate_values_keys(
         skip_directory_nesting: Generate the output file directly into output_dir instead of adding
                                 the usual directory structure inside output_dir
     """
-    config = CppConfig()
     if not isinstance(output_dir, Path):
         output_dir = Path(output_dir)
 
@@ -53,8 +54,9 @@ def generate_values_keys(
         cpp_function_dir = output_dir / "cpp" / "symforce" / namespace
 
     template_util.render_template(
-        template_dir=config.template_dir(),
         template_path="keys.h.jinja",
         data=dict(Codegen.common_data(), namespace=namespace, vars=vars_to_generate),
+        config=config.render_template_config,
+        template_dir=config.template_dir(),
         output_path=cpp_function_dir / generated_file_name,
     )

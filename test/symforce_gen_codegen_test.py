@@ -101,6 +101,7 @@ class SymforceGenCodegenTest(TestCase):
                 description="generated numerical python package",
                 long_description="generated numerical python package",
             ),
+            config=config.render_template_config,
         )
 
         # Test against checked-in geo package (only on SymEngine)

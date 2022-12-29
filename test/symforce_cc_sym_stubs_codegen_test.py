@@ -14,6 +14,7 @@ from pathlib import Path
 from symforce import cc_sym  # pylint: disable=unused-import
 from symforce import path_util
 from symforce import typing as T
+from symforce.codegen import RenderTemplateConfig
 from symforce.codegen import template_util
 from symforce.test_util import TestCase
 
@@ -107,6 +108,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                     cleaned_up_stubgen_output=stubgen_output,
                 )
             },
+            config=RenderTemplateConfig(),
             output_path=str(output_dir / "cc_sym.pyi"),
         )
 

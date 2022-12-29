@@ -14,6 +14,7 @@ from symforce import logger
 from symforce import typing as T
 from symforce.codegen import codegen_util
 from symforce.codegen import template_util
+from symforce.codegen.codegen_config import RenderTemplateConfig
 from symforce.values import IndexEntry
 from symforce.values import Values
 
@@ -130,14 +131,15 @@ def generate_types(
         lcm_files.append(lcm_file_name)
         templates.add(
             template_path="types.lcm.jinja",
-            output_path=lcm_type_dir / lcm_file_name,
             data=dict(
                 data,
                 types_to_generate=types_to_generate,
                 types_util=types_util,
                 use_eigen_types=use_eigen_types,
             ),
+            config=RenderTemplateConfig(),
             template_dir=template_util.LCM_TEMPLATE_DIR,
+            output_path=lcm_type_dir / lcm_file_name,
         )
 
     # TODO(nathan): Not sure if all edge cases are caught in the following, could probably clean this up some
