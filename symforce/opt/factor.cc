@@ -41,18 +41,10 @@ Factor<Scalar>::Factor(const DenseJacobianFunc& jacobian_func, const std::vector
     : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize) {}
 
 template <typename Scalar>
-Factor<Scalar>::Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys)
-    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys) {}
-
-template <typename Scalar>
 Factor<Scalar>::Factor(const SparseJacobianFunc& jacobian_func,
                        const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize) {}
-
-template <typename Scalar>
-Factor<Scalar>::Factor(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys)
-    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys) {}
 
 template <typename Scalar>
 void Factor<Scalar>::Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual) const {
