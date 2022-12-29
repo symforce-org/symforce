@@ -57,6 +57,12 @@ class GeneratedPaths:
     generated_files: T.List[Path]
 
 
+class InvalidNamespaceError(ValueError):
+    """
+    Exception class for attempting codegen with an invalid namespace
+    """
+
+
 class Codegen:
     """
     Class used for generating code from symbolic expressions or functions.
@@ -419,7 +425,8 @@ class Codegen:
             lcm_bindings_output_dir: Directory in which to output language-specific LCM bindings
             shared_types: Mapping between types defined as part of this codegen object (e.g. keys in
                 self.inputs that map to Values objects) and previously generated external types.
-            namespace: Namespace for the generated function and any generated types.
+            namespace: Namespace for the generated function and any generated types.  Must be a
+                       valid identifier, nested namespaces are not supported.
             generated_file_name: Stem for the filename into which the function is generated, with
                                  no file extension
             skip_directory_nesting: Generate the output file directly into output_dir instead of
@@ -428,6 +435,12 @@ class Codegen:
         assert (
             self.name is not None
         ), "Name should be set either at construction or by with_jacobians"
+
+        if not namespace.isidentifier():
+            raise InvalidNamespaceError(
+                f'Invalid namespace "{namespace}".  `namespace` must be a valid identifier (nested '
+                "namespaces are not supported)"
+            )
 
         if output_dir is None:
             output_dir = Path(tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp"))
