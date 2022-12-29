@@ -34,6 +34,7 @@ def generate(config: codegen.CodegenConfig, output_dir: Path = None) -> Path:
             template_path="typedefs.h.jinja",
             output_path=package_dir / "typedefs.h",
             data={},
+            config=config.render_template_config,
             template_dir=template_dir,
         )
 
@@ -44,6 +45,7 @@ def generate(config: codegen.CodegenConfig, output_dir: Path = None) -> Path:
                 python_util=python_util,
                 camera_cal_class_names=cam_package_codegen.camera_cal_class_names(),
             ),
+            config=config.render_template_config,
             template_dir=template_dir,
         )
 
@@ -52,6 +54,7 @@ def generate(config: codegen.CodegenConfig, output_dir: Path = None) -> Path:
                 template_path=f"{filename}.jinja",
                 output_path=package_dir / filename,
                 data={},
+                config=config.render_template_config,
                 template_dir=template_dir,
             )
     else:

@@ -279,7 +279,9 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 output_path = cam_package_dir / relative_path.replace(
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )
-                templates.add(template_path, data, output_path=output_path)
+                templates.add(
+                    template_path, data, config.render_template_config, output_path=output_path
+                )
 
         # Package init
         # NOTE(brad): We already do this in geo_package_codegen.py. We need it there in case we
@@ -293,6 +295,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 all_types=list(geo_package_codegen.DEFAULT_GEO_TYPES) + list(DEFAULT_CAM_TYPES),
                 numeric_epsilon=sf.numeric_epsilon,
             ),
+            config=config.render_template_config,
             output_path=cam_package_dir / "__init__.py",
         )
 
@@ -306,6 +309,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                     cam_cal_from_points=cam_cal_from_points,
                     _DISTORTION_COEFF_VALS=_DISTORTION_COEFF_VALS,
                 ),
+                config=config.render_template_config,
             )
 
     elif isinstance(config, CppConfig):
@@ -335,18 +339,22 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 output_path = cam_package_dir / relative_path.replace(
                     "CLASS", python_util.camelcase_to_snakecase(cls.__name__)
                 )
-                templates.add(template_path, data, output_path=output_path)
+                templates.add(
+                    template_path, data, config.render_template_config, output_path=output_path
+                )
 
         # Add Camera and PosedCamera
         templates.add(
             template_path=Path("cam_package", "camera.h.jinja"),
             output_path=cam_package_dir / "camera.h",
             data=camera_data(),
+            config=config.render_template_config,
         )
         templates.add(
             template_path=Path("cam_package") / "posed_camera.h.jinja",
             output_path=cam_package_dir / "posed_camera.h",
             data=posed_camera_data(),
+            config=config.render_template_config,
         )
 
         # Test example
@@ -381,6 +389,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                         if supports_camera_ray_from_pixel(cls)
                     ],
                 ),
+                config=config.render_template_config,
             )
     else:
         raise NotImplementedError(f'Unknown config type: "{config}"')

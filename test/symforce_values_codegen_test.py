@@ -11,6 +11,7 @@ symforce.set_epsilon_to_symbol()
 
 import symforce.symbolic as sf
 from symforce import path_util
+from symforce.codegen import CppConfig
 from symforce.codegen import values_codegen
 from symforce.test_util import TestCase
 from symforce.values import Values
@@ -43,7 +44,7 @@ class SymforceValuesCodegenTest(TestCase):
             for letter in string.ascii_lowercase:
                 values[letter * i] = sf.Symbol(letter)
 
-        values_codegen.generate_values_keys(values, output_dir)
+        values_codegen.generate_values_keys(values, output_dir, CppConfig())
 
         self.compare_or_update_directory(
             actual_dir=output_dir,

@@ -30,8 +30,22 @@ class ZeroEpsilonBehavior(Enum):
 DEFAULT_ZERO_EPSILON_BEHAVIOR = ZeroEpsilonBehavior.WARN
 
 
-# TODO(hayk): Address this type ignore, which comes from having abstract methods on a dataclass.
-@dataclass  # type: ignore
+@dataclass
+class RenderTemplateConfig:
+    """
+    Arguments to template_util.render_template
+
+    Args:
+        autoformat: Run a code formatter on the generated code
+        custom_preamble: An optional string to be prepended on the front of the rendered template
+    """
+
+    autoformat: bool = True
+    custom_preamble: str = ""
+
+
+# TODO(hayk): This type ignore is fixed by https://github.com/python/mypy/pull/13398 in mypy 0.981
+@dataclass  # type: ignore[misc]
 class CodegenConfig:
     """
     Base class for backend-specific arguments for code generation.
@@ -41,7 +55,8 @@ class CodegenConfig:
                                  block-style docstrings
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
-        autoformat: Run a code formatter on the generated code
+        render_template_config: Configuration for template rendering, see RenderTemplateConfig for
+                                more information
         cse_optimizations: Optimizations argument to pass to sf.cse
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
     """
@@ -49,7 +64,7 @@ class CodegenConfig:
     doc_comment_line_prefix: str
     line_length: int
     use_eigen_types: bool
-    autoformat: bool = True
+    render_template_config: RenderTemplateConfig = field(default_factory=RenderTemplateConfig)
     cse_optimizations: T.Optional[
         T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None

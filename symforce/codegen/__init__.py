@@ -14,3 +14,4 @@ from .codegen import GeneratedPaths
 from .codegen import InvalidNamespaceError
 from .codegen import LinearizationMode
 from .codegen_config import CodegenConfig
+from .codegen_config import RenderTemplateConfig

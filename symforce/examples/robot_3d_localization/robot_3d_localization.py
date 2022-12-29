@@ -275,6 +275,7 @@ from pathlib import Path
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
 from symforce.codegen import CppConfig
+from symforce.codegen import RenderTemplateConfig
 from symforce.codegen import template_util
 from symforce.codegen import values_codegen
 
@@ -392,7 +393,7 @@ def generate(output_dir: Path) -> None:
     generate_matching_residual_code(output_dir)
     generate_odometry_residual_code(output_dir)
     values_codegen.generate_values_keys(
-        build_values(NUM_POSES)[0], output_dir, skip_directory_nesting=True
+        build_values(NUM_POSES)[0], output_dir, config=CppConfig(), skip_directory_nesting=True
     )
     build_codegen_object(NUM_POSES).generate_function(
         output_dir, namespace="robot_3d_localization", skip_directory_nesting=True
@@ -407,6 +408,7 @@ def generate(output_dir: Path) -> None:
             odometry_relative_pose_measurements=values.attr.odometry_relative_pose_measurements,
             landmarks=values.attr.world_t_landmark,
         ),
+        config=RenderTemplateConfig(),
         output_path=output_dir / "measurements.cc",
     )
 
@@ -414,6 +416,7 @@ def generate(output_dir: Path) -> None:
         template_dir=Path(__file__).parent / "templates",
         template_path="measurements.h.jinja",
         data={},
+        config=RenderTemplateConfig(),
         output_path=output_dir / "measurements.h",
     )
 

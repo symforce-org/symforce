@@ -514,14 +514,15 @@ class Codegen:
         # Get templates to render
         for source, dest in self.config.templates_to_render(generated_file_name):
             templates.add(
-                source,
-                template_data,
+                template_path=source,
+                data=template_data,
+                config=self.config.render_template_config,
                 template_dir=template_dir,
                 output_path=out_function_dir / dest,
             )
 
         # Render
-        templates.render(autoformat=self.config.autoformat)
+        templates.render()
 
         lcm_data = codegen_util.generate_lcm_types(
             lcm_type_dir=types_codegen_data.lcm_type_dir,

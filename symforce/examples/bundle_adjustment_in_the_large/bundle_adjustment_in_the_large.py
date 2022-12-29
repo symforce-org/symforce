@@ -77,4 +77,6 @@ def generate(output_dir: Path) -> None:
         epsilon=sf.Scalar(),
     )
 
-    values_codegen.generate_values_keys(values, output_dir, skip_directory_nesting=True)
+    values_codegen.generate_values_keys(
+        values, output_dir, config=codegen.CppConfig(), skip_directory_nesting=True
+    )

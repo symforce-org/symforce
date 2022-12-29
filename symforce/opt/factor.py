@@ -66,7 +66,9 @@ class Factor:
         # call `__init__()`, and can instead call `__new__()` + `_initialize()` and pass its own
         # codegen object constructed using the default codegen object constructor.
         if config is None:
-            config = PythonConfig(autoformat=False)
+            config = PythonConfig(
+                render_template_config=codegen_config.RenderTemplateConfig(autoformat=False)
+            )
         self._initialize(
             keys=keys,
             codegen_obj=Codegen.function(func=residual, config=config, **kwargs),
@@ -107,7 +109,9 @@ class Factor:
                 numeric factor. See `Codegen.__init__()` for details.
         """
         if config is None:
-            config = PythonConfig(autoformat=False)
+            config = PythonConfig(
+                render_template_config=codegen_config.RenderTemplateConfig(autoformat=False)
+            )
         instance = cls.__new__(cls)
         instance._initialize(
             keys=keys,
