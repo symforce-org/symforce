@@ -259,7 +259,7 @@ class Factor {
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual.
    */
-  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual) const;
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual) const;
 
   /**
    * Evaluate the factor at the given linearization point and output just the
@@ -267,8 +267,8 @@ class Factor {
    *
    * This overload can only be called if IsSparse is false; otherwise, it will throw
    */
-  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual,
-                 MatrixX<ScalarType>* jacobian) const;
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
+                 MatrixX<Scalar>* jacobian) const;
 
   /**
    * Evaluate the factor at the given linearization point and output just the
@@ -276,8 +276,8 @@ class Factor {
    *
    * This overload can only be called if IsSparse is true; otherwise, it will throw
    */
-  void Linearize(const Values<Scalar>& values, VectorX<ScalarType>* residual,
-                 Eigen::SparseMatrix<ScalarType>* jacobian) const;
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
+                 Eigen::SparseMatrix<Scalar>* jacobian) const;
 
   /**
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
