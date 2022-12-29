@@ -131,8 +131,8 @@ const std::vector<Key>& Factor<Scalar>::AllKeys() const {
   return keys_;
 }
 
-template <typename ScalarType>
-void Factor<ScalarType>::EnsureIndexEntriesExist(const Values<Scalar>& values) const {
+template <typename Scalar>
+void Factor<Scalar>::EnsureIndexEntriesExist(const Values<Scalar>& values) const {
   const auto& cached_values_id = values_id_and_index_entries_.first;
   if (values.Id() == cached_values_id) {
     // If index is cached from the same Values
