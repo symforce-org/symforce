@@ -534,7 +534,7 @@ class Values:
         """
         Has zero keys.
         """
-    def get_lcm_type(self) -> values_t:
+    def get_lcm_type(self, sort_keys: bool = False) -> values_t:
         """
         Serialize to LCM.
         """
