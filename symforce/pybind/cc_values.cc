@@ -246,7 +246,8 @@ void AddValuesWrapper(pybind11::module_ module) {
               index: Ordered list of keys to include (MUST be valid for both this and others Values)
               epsilon: Small constant to avoid singularities (do not use zero)
            )")
-      .def("get_lcm_type", &sym::Valuesd::GetLcmType, "Serialize to LCM.")
+      .def("get_lcm_type", &sym::Valuesd::GetLcmType, py::arg("sort_keys") = false,
+           "Serialize to LCM.")
       .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); })
       .def(py::pickle(
           [](const sym::Valuesd& values) {  //  __getstate__

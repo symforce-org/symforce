@@ -180,16 +180,16 @@ index_entry_t Values<Scalar>::IndexEntryAt(const Key& key) const {
 }
 
 template <typename Scalar>
-void Values<Scalar>::FillLcmType(LcmType* msg) const {
+void Values<Scalar>::FillLcmType(LcmType* msg, bool sort_keys) const {
   SYM_ASSERT(msg != nullptr);
-  msg->index = CreateIndex(Keys());
+  msg->index = CreateIndex(Keys(sort_keys));
   msg->data = data_;
 }
 
 template <typename Scalar>
-typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType() const {
+typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType(bool sort_keys) const {
   LcmType msg;
-  FillLcmType(&msg);
+  FillLcmType(&msg, sort_keys);
   return msg;
 }
 

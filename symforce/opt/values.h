@@ -239,8 +239,8 @@ class Values {
   /**
    * Serialize to LCM.
    */
-  void FillLcmType(LcmType* msg) const;
-  LcmType GetLcmType() const;
+  void FillLcmType(LcmType* msg, bool sort_keys = false) const;
+  LcmType GetLcmType(bool sort_keys = false) const;
 
   /**
    * Unique ID of this Values instance, incremented whenever the structure of the Values is

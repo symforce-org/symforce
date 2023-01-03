@@ -109,7 +109,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.template At<Scalar>(sym::Key('f', 2)) == Scalar(15.6));
 
   // Pack to LCM
-  const typename sym::Values<Scalar>::LcmType msg = v.GetLcmType();
+  const typename sym::Values<Scalar>::LcmType msg = v.GetLcmType(true /*sort keys*/);
   CHECK(msg.index == index_2);
   CHECK(msg.data.size() == v.Data().size());
 
