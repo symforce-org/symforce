@@ -199,10 +199,10 @@ class Matrix(Storage):
         return cls.SHAPE[0] * cls.SHAPE[1]
 
     @classmethod
-    def from_storage(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
+    def from_storage(cls: _T.Type[MatrixT], vec: _T.Sequence[_T.Scalar]) -> MatrixT:
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
         rows, cols = cls.SHAPE
-        return matrix_type_from_shape((cols, rows))(vec).transpose()
+        return _T.cast(Matrix.MatrixT, matrix_type_from_shape((cols, rows))(vec).transpose())
 
     def to_storage(self) -> _T.List[_T.Scalar]:
         return list(self.mat.transpose())
@@ -212,7 +212,9 @@ class Matrix(Storage):
         return cls.storage_dim()
 
     @classmethod
-    def from_tangent(cls, vec: _T.Sequence[_T.Scalar], epsilon: _T.Scalar = sf.epsilon()) -> Matrix:
+    def from_tangent(
+        cls: _T.Type[MatrixT], vec: _T.Sequence[_T.Scalar], epsilon: _T.Scalar = sf.epsilon()
+    ) -> MatrixT:
         return cls.from_storage(vec)
 
     def to_tangent(self, epsilon: _T.Scalar = sf.epsilon()) -> _T.List[_T.Scalar]:

@@ -368,6 +368,14 @@ class Codegen:
 
         data["should_set_zero"] = should_set_zero
 
+        def raise_helper(msg: str) -> None:
+            """
+            Helper function to raise exceptions from jinja templates
+            """
+            raise Exception(msg)
+
+        data["raise"] = raise_helper
+
         return data
 
     @functools.cached_property
