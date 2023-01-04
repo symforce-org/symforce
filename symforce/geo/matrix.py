@@ -936,9 +936,44 @@ class Matrix11(Matrix):
 class Matrix21(Matrix):
     SHAPE = (2, 1)
 
+    @staticmethod
+    def unit_x() -> Vector2:
+        """
+        The unit vector [1, 0]
+        """
+        return Vector2(1, 0)
+
+    @staticmethod
+    def unit_y() -> Vector2:
+        """
+        The unit vector [0, 1]
+        """
+        return Vector2(0, 1)
+
 
 class Matrix31(Matrix):
     SHAPE = (3, 1)
+
+    @staticmethod
+    def unit_x() -> Vector3:
+        """
+        The unit vector [1, 0, 0]
+        """
+        return Vector3(1, 0, 0)
+
+    @staticmethod
+    def unit_y() -> Vector3:
+        """
+        The unit vector [0, 1, 0]
+        """
+        return Vector3(0, 1, 0)
+
+    @staticmethod
+    def unit_z() -> Vector3:
+        """
+        The unit vector [0, 0, 1]
+        """
+        return Vector3(0, 0, 1)
 
 
 class Matrix41(Matrix):
