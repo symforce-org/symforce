@@ -1,0 +1,28 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+{%- import "../util/util.jinja" as util with context -%}
+
+# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
+
+import math # pylint: disable=unused-import
+import typing as T
+
+import torch
+
+
+class TensorKwargs(T.TypedDict):
+    """
+    TypedDict representing args that will be passed to any torch.tensor calls
+    """
+    device: torch.device
+    dtype: torch.dtype
+
+
+{{ util.function_declaration(spec) }}
+    {% if spec.docstring %}
+    {{ util.print_docstring(spec.docstring) | indent(4) }}
+    {% endif %}
+
+    {{ util.expr_code(spec) }}
