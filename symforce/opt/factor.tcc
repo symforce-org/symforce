@@ -18,7 +18,6 @@ Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& ke
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),
-      is_sparse_(false),
       keys_to_optimize_(keys_to_optimize),
       keys_(keys_to_func) {}
 
@@ -31,7 +30,6 @@ Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(),
       sparse_hessian_func_(std::move(sparse_hessian_func)),
-      is_sparse_(true),
       keys_to_optimize_(keys_to_optimize),
       keys_(keys_to_func) {}
 

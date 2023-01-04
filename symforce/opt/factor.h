@@ -133,7 +133,7 @@ class Factor {
    * Does this factor use a sparse jacobian/hessian matrix?
    */
   bool IsSparse() const {
-    return is_sparse_;
+    return static_cast<bool>(sparse_hessian_func_);  // operator bool
   }
 
   /**
@@ -326,7 +326,6 @@ class Factor {
 
   DenseHessianFunc hessian_func_;
   SparseHessianFunc sparse_hessian_func_;
-  bool is_sparse_;
 
   // Keys to be optimized in this factor, which must match the column order of the jacobian.
   std::vector<Key> keys_to_optimize_;
