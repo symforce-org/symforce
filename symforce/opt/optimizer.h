@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <sym/util/epsilon.h>
+
 #include "./levenberg_marquardt_solver.h"
 #include "./linearizer.h"
 #include "./optimization_stats.h"
@@ -73,8 +75,9 @@ class Optimizer {
    * Base constructor
    */
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
-            const Scalar epsilon = 1e-9, const std::string& name = "sym::Optimize",
-            std::vector<Key> keys = {}, bool debug_stats = false, bool check_derivatives = false);
+            const Scalar epsilon = kDefaultEpsilon<Scalar>,
+            const std::string& name = "sym::Optimize", std::vector<Key> keys = {},
+            bool debug_stats = false, bool check_derivatives = false);
 
   /**
    * Constructor that copies in factors and keys, with arguments for the nonlinear solver
@@ -281,7 +284,8 @@ using Optimizerf = Optimizer<float>;
 template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
 OptimizationStats<Scalar> Optimize(const optimizer_params_t& params,
                                    const std::vector<Factor<Scalar>>& factors,
-                                   Values<Scalar>* values, const Scalar epsilon = 1e-9) {
+                                   Values<Scalar>* values,
+                                   const Scalar epsilon = kDefaultEpsilon<Scalar>) {
   Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, epsilon);
   return optimizer.Optimize(values);
 }

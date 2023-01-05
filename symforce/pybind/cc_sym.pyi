@@ -362,7 +362,7 @@ class Optimizer:
         self,
         params: optimizer_params_t,
         factors: typing.List[Factor],
-        epsilon: float = 1e-09,
+        epsilon: float = 2.220446049250313e-15,
         name: str = "sym::Optimize",
         keys: typing.List[Key] = [],
         debug_stats: bool = False,
@@ -1027,7 +1027,10 @@ def default_optimizer_params() -> optimizer_params_t:
     """
 
 def optimize(
-    params: optimizer_params_t, factors: typing.List[Factor], values: Values, epsilon: float = 1e-09
+    params: optimizer_params_t,
+    factors: typing.List[Factor],
+    values: Values,
+    epsilon: float = 2.220446049250313e-15,
 ) -> OptimizationStats:
     """
     Simple wrapper to make optimization one function call.
