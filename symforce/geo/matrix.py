@@ -74,6 +74,11 @@ class Matrix(Storage):
         # 2) Construct with another Matrix - this is easy
         elif len(args) == 1 and hasattr(args[0], "is_Matrix") and args[0].is_Matrix:
             rows, cols = args[0].shape
+            if cls._is_fixed_size():
+                assert cls.SHAPE == (
+                    rows,
+                    cols,
+                ), f"Inconsistent shape: expected shape {cls.SHAPE} but found shape {(rows, cols)}"
             flat_list = list(args[0])
 
         # 3) If there's one argument and it's an array, works for fixed or dynamic size.
@@ -478,10 +483,10 @@ class Matrix(Storage):
         """
         Matrix Transpose
         """
-        return self.__class__(self.mat.transpose())
+        return Matrix(self.mat.transpose())
 
     def reshape(self, rows: int, cols: int) -> Matrix:
-        return self.__class__(self.mat.reshape(rows, cols))
+        return Matrix(self.mat.reshape(rows, cols))
 
     def dot(self, other: Matrix) -> _T.Scalar:
         """
@@ -588,7 +593,7 @@ class Matrix(Storage):
         """
         ret = self.mat.__getitem__(item)
         if isinstance(ret, sf.sympy.Matrix):
-            ret = self.__class__(ret)
+            ret = Matrix(ret)
         return ret
 
     def __setitem__(
@@ -660,9 +665,9 @@ class Matrix(Storage):
         if typing_util.scalar_like(right):
             return self.applyfunc(lambda x: x * right)
         elif isinstance(right, Matrix):
-            return self.__class__(self.mat * right.mat)
+            return Matrix(self.mat * right.mat)
         else:
-            return self.__class__(self.mat * right)
+            return Matrix(self.mat * right)
 
     @_T.overload
     def __rmul__(

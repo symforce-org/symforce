@@ -37,6 +37,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 2) Matrix(sf.sympy.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
         self.assertIsInstance(sf.M(sf.sympy.Matrix([[1, 2], [3, 4]])), sf.M22)
         self.assertEqual(sf.M(sf.sympy.Matrix([[1, 2], [3, 4]])), sf.M([[1, 2], [3, 4]]))
+        self.assertRaises(AssertionError, lambda: sf.V3(sf.V2()))
 
         # 3A) Matrix([[1, 2], [3, 4]])  # Matrix22 with [1, 2, 3, 4] data
         self.assertIsInstance(sf.M([[1, 2], [3, 4]]), sf.M22)
