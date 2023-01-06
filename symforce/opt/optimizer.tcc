@@ -3,6 +3,7 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include "./assert.h"
 #include "./internal/covariance_utils.h"
 #include "./internal/derivative_checker.h"
 #include "./optimizer.h"
@@ -27,7 +28,10 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
       linearizer_(name_, factors_, keys_),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
+      linearize_func_(BuildLinearizeFunc(check_derivatives)) {
+  SYM_ASSERT(factors_.size() > 0);
+  SYM_ASSERT(keys_.size() > 0);
+}
 
 template <typename ScalarType, typename NonlinearSolverType>
 template <typename... NonlinearSolverArgs>
@@ -44,7 +48,10 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
       linearizer_(name_, factors_, keys_),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)) {}
+      linearize_func_(BuildLinearizeFunc(check_derivatives)) {
+  SYM_ASSERT(factors_.size() > 0);
+  SYM_ASSERT(keys_.size() > 0);
+}
 
 // ----------------------------------------------------------------------------
 // Public methods
