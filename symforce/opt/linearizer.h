@@ -85,8 +85,7 @@ class Linearizer {
   /**
    * Basic accessors.
    */
-  std::pair<const std::vector<LinearizedDenseFactor>&, const std::vector<LinearizedSparseFactor>&>
-  LinearizedFactors() const;
+  const std::vector<LinearizedSparseFactor>& LinearizedSparseFactors() const;
 
   const std::vector<Key>& Keys() const;
 
@@ -97,14 +96,7 @@ class Linearizer {
    * Allocate all factor storage and compute sparsity pattern. This does a lot of index
    * computation on the first linearization, such that repeated linearization can be fast.
    */
-  void InitializeStorageAndIndices();
-
-  /**
-   * Hashmap of keys to information about the key's offset in the full problem.
-   */
-  static std::unordered_map<key_t, index_entry_t> ComputeStateIndex(
-      const std::vector<LinearizedDenseFactor>& factors,
-      const std::vector<LinearizedSparseFactor>& sparse_factors, const std::vector<Key>& keys);
+  void BuildInitialLinearization(const Values<Scalar>& values);
 
   /**
    * Update the sparse combined problem linearization from a single factor.
@@ -122,11 +114,12 @@ class Linearizer {
    * Update the combined residual and rhs, along with triplet lists for the sparse matrices, from a
    * single factor
    */
-  void UpdatePatternFromDenseFactorIntoTripletLists(
+  void UpdateFromDenseFactorIntoTripletLists(
+      const LinearizedDenseFactor& linearized_factor,
       const linearization_dense_factor_helper_t& factor_helper,
       std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
       std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const;
-  void UpdatePatternFromSparseFactorIntoTripletLists(
+  void UpdateFromSparseFactorIntoTripletLists(
       const LinearizedSparseFactor& linearized_factor,
       const linearization_sparse_factor_helper_t& factor_helper,
       std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
@@ -137,22 +130,6 @@ class Linearizer {
    */
   void EnsureLinearizationHasCorrectSize(Linearization<Scalar>* const linearization) const;
 
-  /**
-   * Update the combined sparse problem linearization from linearized factors by directly
-   * updating the indices of the sparse storage.
-   */
-  void BuildCombinedProblemSparse(
-      const std::vector<LinearizedDenseFactor>& dense_linearized_factors,
-      const std::vector<LinearizedSparseFactor>& sparse_linearized_factors,
-      Linearization<Scalar>* const linearization) const;
-
-  /**
-   * Create the combined problem linearization sparsity pattern, assuming nonzeros in all locations
-   * for dense factors, and all existing locations in sparse factors.  This is done by creating the
-   * sparse matrices from triplet lists.
-   */
-  void BuildCombinedProblemSparsityPattern(Linearization<Scalar>* const linearization) const;
-
   bool initialized_{false};
 
   // The name of this linearizer to be used for printing debug information.
@@ -162,8 +139,10 @@ class Linearizer {
   const std::vector<Factor<Scalar>>* factors_;
 
   // Linearized factors - stores individual factor residuals, jacobians, etc
-  std::vector<LinearizedDenseFactor> dense_linearized_factors_;
-  std::vector<LinearizedSparseFactor> sparse_linearized_factors_;
+  std::vector<LinearizedDenseFactor> linearized_dense_factors_;  // one per Jacobian shape
+  std::vector<int> linearized_dense_factor_indices_;  // index into linearized_dense_factors_; one
+                                                      // per dense factor
+  std::vector<LinearizedSparseFactor> linearized_sparse_factors_;  // one per sparse factor
 
   // Keys that form the state vector
   std::vector<Key> keys_;
@@ -175,7 +154,10 @@ class Linearizer {
   std::vector<linearization_dense_factor_helper_t> dense_factor_update_helpers_;
   std::vector<linearization_sparse_factor_helper_t> sparse_factor_update_helpers_;
 
-  Linearization<Scalar> linearization_ones_;
+  // Numerical linearization from the very first linearization that is used to initialize new
+  // LevenbergMarquardtState::StateBlocks (at most 3 times) and isn't touched on each subsequent
+  // relinearization.
+  Linearization<Scalar> init_linearization_;
 };
 
 // Free function as an alternate way to call.
