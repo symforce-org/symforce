@@ -39,8 +39,8 @@ struct OptimizationStats {
   // Reset the optimization stats
   // Does _not_ cause reallocation, except for things in debug stats
   void Reset(const size_t num_iterations) {
-    iterations.reserve(num_iterations);
     iterations.clear();
+    iterations.reserve(num_iterations);
 
     best_index = {};
     early_exited = {};
