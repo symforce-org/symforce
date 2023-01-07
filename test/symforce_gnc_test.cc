@@ -67,7 +67,7 @@ TEST_CASE("Test GNC", "[gnc]") {
   sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(
       DefaultLmParams(), DefaultGncParams(), 'u', factors, kEpsilon, "sym::Optimize",
       /* keys */ std::vector<sym::Key>{}, /* debug_stats */ false,
-      /* check_derivatives */ true);
+      /* check_derivatives */ true, /* include_jacobians */ true);
 
   spdlog::debug("Initial x: {}", initial_values.At<sym::Vector5d>('x').transpose());
 

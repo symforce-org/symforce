@@ -77,7 +77,8 @@ class Optimizer {
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
             const Scalar epsilon = kDefaultEpsilon<Scalar>,
             const std::string& name = "sym::Optimize", std::vector<Key> keys = {},
-            bool debug_stats = false, bool check_derivatives = false);
+            bool debug_stats = false, bool check_derivatives = false,
+            bool include_jacobians = false);
 
   /**
    * Constructor that copies in factors and keys, with arguments for the nonlinear solver
@@ -85,7 +86,7 @@ class Optimizer {
   template <typename... NonlinearSolverArgs>
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
             const Scalar epsilon, const std::string& name, std::vector<Key> keys, bool debug_stats,
-            bool check_derivatives, NonlinearSolverArgs&&... args);
+            bool check_derivatives, bool include_jacobians, NonlinearSolverArgs&&... args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
   Optimizer(Optimizer&&) = delete;
@@ -254,6 +255,7 @@ class Optimizer {
 
   Scalar epsilon_;
   bool debug_stats_;
+  bool include_jacobians_;
 
   std::vector<Key> keys_;
   index_t index_;

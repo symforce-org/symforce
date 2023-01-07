@@ -171,7 +171,7 @@ class LevenbergMarquardtSolver {
 
   // Run one iteration of the optimization. Returns true if the optimization should early exit.
   bool Iterate(const LinearizeFunc& func, OptimizationStats<Scalar>* const stats,
-               const bool debug_stats = false);
+               const bool debug_stats = false, const bool include_jacobians = false);
 
   const Values<Scalar>& GetBestValues() const {
     SYM_ASSERT(state_.BestIsValid());
@@ -196,7 +196,8 @@ class LevenbergMarquardtSolver {
 
   void PopulateIterationStats(optimization_iteration_t* const iteration_stats,
                               const StateType& state, const Scalar new_error,
-                              const Scalar relative_reduction, const bool debug_stats) const;
+                              const Scalar relative_reduction, const bool debug_stats,
+                              const bool include_jacobians) const;
 
   void Update(const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
               Values<Scalar>* const updated_values) const;

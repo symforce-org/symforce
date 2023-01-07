@@ -44,7 +44,7 @@ class Linearizer {
    *                factors using a default ordering.
    */
   Linearizer(const std::string& name, const std::vector<Factor<Scalar>>& factors,
-             const std::vector<Key>& key_order = {});
+             const std::vector<Key>& key_order = {}, bool include_jacobians = false);
 
   /**
    * Update linearization at a new evaluation point. Returns the total residual dimension M.
@@ -137,6 +137,8 @@ class Linearizer {
 
   // Pointer to the nonlinear factors
   const std::vector<Factor<Scalar>>* factors_;
+
+  bool include_jacobians_;
 
   // Linearized factors - stores individual factor residuals, jacobians, etc
   std::vector<LinearizedDenseFactor> linearized_dense_factors_;  // one per Jacobian shape

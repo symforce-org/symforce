@@ -32,10 +32,11 @@ void AddOptimizerWrapper(pybind11::module_ module) {
                          "multiple times with different initial guesses, as long as the factors "
                          "remain constant and the structure of the Values is identical.")
       .def(py::init<const optimizer_params_t&, const std::vector<Factord>&, const double,
-                    const std::string&, const std::vector<Key>&, bool, bool>(),
+                    const std::string&, const std::vector<Key>&, bool, bool, bool>(),
            py::arg("params"), py::arg("factors"), py::arg("epsilon") = kDefaultEpsilond,
            py::arg("name") = "sym::Optimize", py::arg("keys") = std::vector<Key>(),
-           py::arg("debug_stats") = false, py::arg("check_derivatives") = false)
+           py::arg("debug_stats") = false, py::arg("check_derivatives") = false,
+           py::arg("include_jacobians") = false)
       .def("optimize", py::overload_cast<Valuesd*, int, bool>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations") = -1,
            py::arg("populate_best_linearization") = false, R"(

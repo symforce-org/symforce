@@ -684,7 +684,10 @@ class SymforceCCSymTest(TestCase):
             )
 
         make_opt = lambda: cc_sym.Optimizer(
-            params=cc_sym.default_optimizer_params(), factors=[pi_factor]
+            params=cc_sym.default_optimizer_params(),
+            factors=[pi_factor],
+            debug_stats=False,
+            include_jacobians=True,
         )
 
         with self.subTest(msg="Optimizer.factors has been wrapped"):

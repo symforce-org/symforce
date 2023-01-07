@@ -11,6 +11,7 @@
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "../factor.h"
+#include "../optional.h"
 #include "./hash_combine.h"
 
 namespace sym {
@@ -91,16 +92,20 @@ CoordsToStorageMap CoordsToStorageOffset(const Eigen::SparseMatrix<Scalar>& mat)
 }
 
 template <typename Scalar>
-void ComputeKeyHelperSparseColOffsets(const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
-                                      const CoordsToStorageMap& hessian_row_col_to_storage_offset,
-                                      linearization_dense_factor_helper_t& factor_helper) {
+void ComputeKeyHelperSparseColOffsets(
+    const optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
+    const CoordsToStorageMap& hessian_row_col_to_storage_offset,
+    linearization_dense_factor_helper_t& factor_helper) {
   for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
-    key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
-    for (int32_t col = 0; col < key_helper.tangent_dim; ++col) {
-      key_helper.jacobian_storage_col_starts[col] = jacobian_row_col_to_storage_offset.at(
-          std::make_pair(factor_helper.combined_residual_offset, key_helper.combined_offset + col));
+    if (jacobian_row_col_to_storage_offset.has_value()) {
+      key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
+      for (int32_t col = 0; col < key_helper.tangent_dim; ++col) {
+        key_helper.jacobian_storage_col_starts[col] =
+            jacobian_row_col_to_storage_offset->at(std::make_pair(
+                factor_helper.combined_residual_offset, key_helper.combined_offset + col));
+      }
     }
 
     key_helper.hessian_storage_col_starts.resize(key_i + 1);
@@ -140,7 +145,7 @@ void ComputeKeyHelperSparseColOffsets(const CoordsToStorageMap& jacobian_row_col
 template <typename Scalar>
 void ComputeKeyHelperSparseMap(
     const typename Factor<Scalar>::LinearizedSparseFactor& linearized_factor,
-    const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
+    const optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
     linearization_sparse_factor_helper_t& factor_helper) {
   // We're computing this in UpdateFromSparseOnesFactorIntoTripletLists too...
@@ -153,18 +158,20 @@ void ComputeKeyHelperSparseMap(
     }
   }
 
-  factor_helper.jacobian_index_map.reserve(linearized_factor.jacobian.nonZeros());
-  for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
-    for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
-                                                                outer_i);
-         it; ++it) {
-      const auto row = it.row();
-      const auto col = it.col();
+  if (jacobian_row_col_to_storage_offset.has_value()) {
+    factor_helper.jacobian_index_map.reserve(linearized_factor.jacobian.nonZeros());
+    for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
+      for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
+                                                                  outer_i);
+           it; ++it) {
+        const auto row = it.row();
+        const auto col = it.col();
 
-      const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
-      const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
-      factor_helper.jacobian_index_map.push_back(jacobian_row_col_to_storage_offset.at(
-          std::make_pair(row + factor_helper.combined_residual_offset, problem_col)));
+        const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
+        const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
+        factor_helper.jacobian_index_map.push_back(jacobian_row_col_to_storage_offset->at(
+            std::make_pair(row + factor_helper.combined_residual_offset, problem_col)));
+      }
     }
   }
 

@@ -71,8 +71,9 @@ class Optimizer:
         optimized_keys: A set of the keys to be optimized. Only required if symbolic factors are
             passed to the optimizer.
         params: Params for the optimizer
-        debug_stats: Whether the optimizer should record debuggins stats such as the optimized
+        debug_stats: Whether the optimizer should record debugging stats such as the optimized
             values, residual, jacobian, etc. computed at each iteration of the optimization.
+        include_jacobians: Whether the optimizer should compute jacobians (required for linear error)
     """
 
     @dataclass
@@ -141,6 +142,7 @@ class Optimizer:
         optimized_keys: T.Sequence[str] = None,
         params: Optimizer.Params = None,
         debug_stats: bool = False,
+        include_jacobians: bool = False,
     ):
 
         if optimized_keys is None:
@@ -199,6 +201,7 @@ class Optimizer:
             optimizer_params_t(**dataclasses.asdict(self.params)),
             [factor.cc_factor(self._cc_keys_map) for factor in numeric_factors],
             debug_stats=self.debug_stats,
+            include_jacobians=include_jacobians,
         )
 
     def _initialize(self, values: Values) -> None:

@@ -7,6 +7,7 @@
 
 #include "./assert.h"
 #include "./internal/linearizer_utils.h"
+#include "./optional.h"
 
 namespace sym {
 
@@ -17,8 +18,12 @@ namespace sym {
 template <typename ScalarType>
 Linearizer<ScalarType>::Linearizer(const std::string& name,
                                    const std::vector<Factor<Scalar>>& factors,
-                                   const std::vector<Key>& key_order)
-    : name_(name), factors_(&factors), linearized_dense_factors_(), linearized_sparse_factors_() {
+                                   const std::vector<Key>& key_order, const bool include_jacobians)
+    : name_(name),
+      factors_(&factors),
+      include_jacobians_(include_jacobians),
+      linearized_dense_factors_(),
+      linearized_sparse_factors_() {
   if (key_order.empty()) {
     keys_ = ComputeKeysToOptimize(factors);
   } else {
@@ -62,6 +67,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
     for (const auto& factor : *factors_) {
       if (factor.IsSparse()) {
         auto& linearized_sparse_factor = linearized_sparse_factors_.at(sparse_idx);
+        // TODO: Only compute factor Jacobians when include_jacobians_ is true.
         factor.Linearize(values, &linearized_sparse_factor);
 
         UpdateFromLinearizedSparseFactorIntoSparse(
@@ -72,6 +78,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
         // Use temporary with the right size to avoid allocating after initialization.
         auto& linearized_dense_factor =
             linearized_dense_factors_.at(linearized_dense_factor_indices_.at(dense_idx));
+        // TODO: Only compute factor Jacobians when include_jacobians_ is true.
         factor.Linearize(values, &linearized_dense_factor);
 
         UpdateFromLinearizedDenseFactorIntoSparse(
@@ -279,7 +286,9 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
   // Allocate storage of the rest of the combined linearization
   const int32_t M = combined_residual_offset;
   init_linearization_.residual.resize(M);
-  init_linearization_.jacobian.resize(M, N);
+  if (include_jacobians_) {
+    init_linearization_.jacobian.resize(M, N);
+  }
   init_linearization_.hessian_lower.resize(N, N);
 
   // Create the matrices
@@ -287,18 +296,25 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
     init_linearization_.residual(i) = residual[i];
   }
 
-  init_linearization_.jacobian.setFromTriplets(jacobian_triplets.begin(), jacobian_triplets.end());
+  if (include_jacobians_) {
+    init_linearization_.jacobian.setFromTriplets(jacobian_triplets.begin(),
+                                                 jacobian_triplets.end());
+    SYM_ASSERT(init_linearization_.jacobian.isCompressed());
+  }
+
   init_linearization_.hessian_lower.setFromTriplets(hessian_lower_triplets.begin(),
                                                     hessian_lower_triplets.end());
-  SYM_ASSERT(init_linearization_.jacobian.isCompressed());
   SYM_ASSERT(init_linearization_.hessian_lower.isCompressed());
 
   init_linearization_.SetInitialized();
 
   // Create a hash map from the sparse nonzero indices of the jacobian/hessian to their storage
   // offset within the sparse array.
-  const auto jacobian_row_col_to_storage_offset =
-      internal::CoordsToStorageOffset(init_linearization_.jacobian);
+  optional<internal::CoordsToStorageMap> jacobian_row_col_to_storage_offset{};
+  if (include_jacobians_) {
+    jacobian_row_col_to_storage_offset.emplace(
+        internal::CoordsToStorageOffset(init_linearization_.jacobian));
+  }
   const auto hessian_row_col_to_storage_offset =
       internal::CoordsToStorageOffset(init_linearization_.hessian_lower);
 
@@ -337,13 +353,15 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
   for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     const linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
-    // Fill in jacobian block, column by column
-    for (int col_block = 0; col_block < key_helper.tangent_dim; ++col_block) {
-      Eigen::Map<VectorX<Scalar>>(
-          linearization->jacobian.valuePtr() + key_helper.jacobian_storage_col_starts[col_block],
-          factor_helper.residual_dim) =
-          linearized_factor.jacobian.block(0, key_helper.factor_offset + col_block,
-                                           factor_helper.residual_dim, 1);
+    if (include_jacobians_) {
+      // Fill in jacobian block, column by column
+      for (int col_block = 0; col_block < key_helper.tangent_dim; ++col_block) {
+        Eigen::Map<VectorX<Scalar>>(
+            linearization->jacobian.valuePtr() + key_helper.jacobian_storage_col_starts[col_block],
+            factor_helper.residual_dim) =
+            linearized_factor.jacobian.block(0, key_helper.factor_offset + col_block,
+                                             factor_helper.residual_dim, 1);
+      }
     }
 
     // Add contribution from right-hand-side
@@ -413,11 +431,13 @@ void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
   }
 
   // Fill out jacobian
-  SYM_ASSERT(factor_helper.jacobian_index_map.size() ==
-             static_cast<size_t>(linearized_factor.jacobian.nonZeros()));
-  for (int i = 0; i < static_cast<int>(factor_helper.jacobian_index_map.size()); i++) {
-    linearization->jacobian.valuePtr()[factor_helper.jacobian_index_map[i]] =
-        linearized_factor.jacobian.valuePtr()[i];
+  if (include_jacobians_) {
+    SYM_ASSERT(factor_helper.jacobian_index_map.size() ==
+               static_cast<size_t>(linearized_factor.jacobian.nonZeros()));
+    for (int i = 0; i < static_cast<int>(factor_helper.jacobian_index_map.size()); i++) {
+      linearization->jacobian.valuePtr()[factor_helper.jacobian_index_map[i]] =
+          linearized_factor.jacobian.valuePtr()[i];
+    }
   }
 
   // Fill out hessian
@@ -453,11 +473,14 @@ void Linearizer<ScalarType>::UpdateFromDenseFactorIntoTripletLists(
     const linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
     // Fill in jacobian block
-    update_triplets_from_blocks(
-        factor_helper.residual_dim, key_helper.tangent_dim, factor_helper.combined_residual_offset,
-        key_helper.combined_offset, false, jacobian_triplets,
-        linearized_factor.jacobian.block(0, key_helper.factor_offset, factor_helper.residual_dim,
-                                         key_helper.tangent_dim));
+    if (include_jacobians_) {
+      update_triplets_from_blocks(
+          factor_helper.residual_dim, key_helper.tangent_dim,
+          factor_helper.combined_residual_offset, key_helper.combined_offset, false,
+          jacobian_triplets,
+          linearized_factor.jacobian.block(0, key_helper.factor_offset, factor_helper.residual_dim,
+                                           key_helper.tangent_dim));
+    }
 
     // Add contribution from diagonal hessian block
     update_triplets_from_blocks(
@@ -506,17 +529,19 @@ void Linearizer<ScalarType>::UpdateFromSparseFactorIntoTripletLists(
     }
   }
 
-  for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
-    for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
-                                                                outer_i);
-         it; ++it) {
-      const auto row = it.row();
-      const auto col = it.col();
+  if (include_jacobians_) {
+    for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
+      for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
+                                                                  outer_i);
+           it; ++it) {
+        const auto row = it.row();
+        const auto col = it.col();
 
-      const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
-      const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
-      jacobian_triplets->emplace_back(row + factor_helper.combined_residual_offset, problem_col,
-                                      it.value());
+        const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
+        const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
+        jacobian_triplets->emplace_back(row + factor_helper.combined_residual_offset, problem_col,
+                                        it.value());
+      }
     }
   }
 
@@ -555,7 +580,9 @@ void Linearizer<ScalarType>::EnsureLinearizationHasCorrectSize(
     // Allocate storage of combined linearization
     linearization->residual.resize(init_linearization_.residual.size());
     linearization->rhs.resize(init_linearization_.rhs.size());
-    linearization->jacobian = init_linearization_.jacobian;
+    if (include_jacobians_) {
+      linearization->jacobian = init_linearization_.jacobian;
+    }
     linearization->hessian_lower = init_linearization_.hessian_lower;
     SYM_ASSERT(linearization->jacobian.isCompressed());
     SYM_ASSERT(linearization->hessian_lower.isCompressed());
@@ -564,7 +591,9 @@ void Linearizer<ScalarType>::EnsureLinearizationHasCorrectSize(
     const int N = init_linearization_.rhs.size();
 
     SYM_ASSERT(linearization->residual.size() == M);
-    SYM_ASSERT(linearization->jacobian.rows() == M && linearization->jacobian.cols() == N);
+    if (include_jacobians_) {
+      SYM_ASSERT(linearization->jacobian.rows() == M && linearization->jacobian.cols() == N);
+    }
     SYM_ASSERT(linearization->hessian_lower.rows() == N &&
                linearization->hessian_lower.cols() == N);
     SYM_ASSERT(linearization->rhs.size() == N);

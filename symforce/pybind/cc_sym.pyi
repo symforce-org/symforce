@@ -367,6 +367,7 @@ class Optimizer:
         keys: typing.List[Key] = [],
         debug_stats: bool = False,
         check_derivatives: bool = False,
+        include_jacobians: bool = False,
     ) -> None: ...
     def compute_all_covariances(
         self, linearization: Linearization

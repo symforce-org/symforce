@@ -19,18 +19,22 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
                                                       std::vector<Factor<Scalar>> factors,
                                                       const Scalar epsilon, const std::string& name,
                                                       std::vector<Key> keys, bool debug_stats,
-                                                      bool check_derivatives)
+                                                      bool check_derivatives,
+                                                      bool include_jacobians)
     : factors_(std::move(factors)),
       name_(name),
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
+      include_jacobians_(include_jacobians),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
-      linearizer_(name_, factors_, keys_),
+      linearizer_(name_, factors_, keys_, include_jacobians),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {
   SYM_ASSERT(factors_.size() > 0);
   SYM_ASSERT(keys_.size() > 0);
+
+  SYM_ASSERT(!check_derivatives || include_jacobians);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -38,19 +42,22 @@ template <typename... NonlinearSolverArgs>
 Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
     const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const Scalar epsilon,
     const std::string& name, std::vector<Key> keys, bool debug_stats, bool check_derivatives,
-    NonlinearSolverArgs&&... nonlinear_solver_args)
+    bool include_jacobians, NonlinearSolverArgs&&... nonlinear_solver_args)
     : factors_(std::move(factors)),
       name_(name),
       nonlinear_solver_(params, name, epsilon,
                         std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
       epsilon_(epsilon),
       debug_stats_(debug_stats),
+      include_jacobians_(include_jacobians),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
-      linearizer_(name_, factors_, keys_),
+      linearizer_(name_, factors_, keys_, include_jacobians),
       linearize_func_(BuildLinearizeFunc(check_derivatives)) {
   SYM_ASSERT(factors_.size() > 0);
   SYM_ASSERT(keys_.size() > 0);
+
+  SYM_ASSERT(!check_derivatives || include_jacobians);
 }
 
 // ----------------------------------------------------------------------------
@@ -181,7 +188,8 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
 
   // Iterate
   for (int i = 0; i < num_iterations; i++) {
-    const bool should_early_exit = nonlinear_solver_.Iterate(linearize_func_, stats, debug_stats_);
+    const bool should_early_exit =
+        nonlinear_solver_.Iterate(linearize_func_, stats, debug_stats_, include_jacobians_);
     if (should_early_exit) {
       optimization_early_exited = true;
       break;

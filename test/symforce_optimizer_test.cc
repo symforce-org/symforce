@@ -152,7 +152,8 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   params.early_exit_min_reduction = 0.0001;
 
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimize", {},
-                                   /* debug_stats */ false, /* check_derivatives */ true);
+                                   /* debug_stats */ false, /* check_derivatives */ true,
+                                   /* include_jacobians */ true);
   const auto stats = optimizer.Optimize(&values);
 
   spdlog::debug("Optimized values: {}", values);
@@ -358,12 +359,12 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
  */
 TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
   sym::Optimizerd optimizer1(
-      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false,
+      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::MetisOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 
   sym::Optimizerd optimizer2(
-      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false,
+      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::NaturalOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 }
