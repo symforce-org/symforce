@@ -128,8 +128,11 @@ jobs:
           pip install build/lcmtypes/python2.7
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           ${{ matrix.python }} test/symforce_requirements_test.py --update
-          ctest --test-dir build -j $(nproc) || true
-          ctest --test-dir build -j $(nproc) --rerun-failed --output-on-failure
+          EXIT_CODE=0
+          ctest --test-dir build -j $(nproc) || EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            ctest --test-dir build -j $(nproc) --rerun-failed --output-on-failure
+          fi
 
       # Upload the docs as an artifact
       # To view, download the `docs` artifact from the build and matrix entry you're interested in
