@@ -75,8 +75,9 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(
-      std::forward<Functor>(func), keys_to_func, keys_to_optimize);
+  return Factor<Scalar>(
+      internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(std::forward<Functor>(func)),
+      keys_to_func, keys_to_optimize);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -134,8 +135,9 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& k
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(
-      std::forward<Functor>(func), keys_to_func, keys_to_optimize);
+  return Factor<Scalar>(internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(
+                            std::forward<Functor>(func)),
+                        keys_to_func, keys_to_optimize);
 }
 
 // ----------------------------------------------------------------------------
