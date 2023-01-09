@@ -130,13 +130,6 @@ class Factor {
          const std::vector<Key>& keys_to_optimize);
 
   /**
-   * Does this factor use a sparse jacobian/hessian matrix?
-   */
-  bool IsSparse() const {
-    return static_cast<bool>(sparse_hessian_func_);  // operator bool
-  }
-
-  /**
    * Create from a function that computes the (dense) jacobian. The hessian will be computed using
    * the Gauss Newton approximation:
    *    H   = J.T * J
@@ -306,6 +299,13 @@ class Factor {
   // ----------------------------------------------------------------------------------------------
   // Helpers
   // ----------------------------------------------------------------------------------------------
+
+  /**
+   * Does this factor use a sparse jacobian/hessian matrix?
+   */
+  bool IsSparse() const {
+    return static_cast<bool>(sparse_hessian_func_);  // operator bool
+  }
 
   /**
    * Get the optimized keys for this factor
