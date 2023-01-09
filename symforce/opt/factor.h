@@ -108,12 +108,12 @@ class Factor {
   Factor() = default;
 
   /**
-   * Create directly from a (sparse) hessian functor. This is the lowest-level constructor.
+   * Create directly from a (dense/sparse) hessian functor. This is the lowest-level constructor.
    *
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func.
+   *                     be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
    */
   Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize = {});
@@ -121,37 +121,18 @@ class Factor {
          const std::vector<Key>& keys_to_optimize = {});
 
   /**
-   * Does this factor use a sparse jacobian/hessian matrix?
-   */
-  bool IsSparse() const {
-    return static_cast<bool>(sparse_hessian_func_);  // operator bool
-  }
-
-  /**
-   * Create from a function that computes the (dense) jacobian. The hessian will be computed using
-   * the Gauss Newton approximation:
+   * Create from a function that computes the (dense/sparse) jacobian. The hessian will be computed
+   * using the Gauss Newton approximation:
    *    H   = J.T * J
    *    rhs = J.T * b
    *
    * Args:
    *   keys_to_func: The set of input arguments, in order, accepted by func.
    *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func.
+   *                     be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
    */
   Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize = {});
-
-  /**
-   * Create from a function that computes the (sparse) jacobian. The hessian will be computed using
-   * the Gauss Newton approximation:
-   *    H   = J.T * J
-   *    rhs = J.T * b
-   *
-   * Args:
-   *   keys_to_func: The set of input arguments, in order, accepted by func.
-   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func.
-   */
   Factor(const SparseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize = {});
 
@@ -167,16 +148,6 @@ class Factor {
   template <typename Functor>
   static Factor Jacobian(Functor&& func, const std::vector<Key>& keys_to_func,
                          const std::vector<Key>& keys_to_optimize = {});
-
-  /**
-   * Same as the above, but allows extra constant keys into the function which are not optimized.
-   * For example, to pass through epsilon.
-   *
-   * Args:
-   *   keys_to_func: The set of input arguments, in order, accepted by func.
-   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func.
-   */
   template <typename Functor>
   static Factor Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
                         const std::vector<Key>& keys_to_optimize = {});
@@ -236,6 +207,13 @@ class Factor {
   // ----------------------------------------------------------------------------------------------
   // Helpers
   // ----------------------------------------------------------------------------------------------
+
+  /**
+   * Does this factor use a sparse jacobian/hessian matrix?
+   */
+  bool IsSparse() const {
+    return static_cast<bool>(sparse_hessian_func_);  // operator bool
+  }
 
   /**
    * Get the optimized keys for this factor
