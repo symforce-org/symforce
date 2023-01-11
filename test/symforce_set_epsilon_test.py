@@ -65,14 +65,14 @@ class SymforceSetEpsilonTest(TestCase):
             self.assertEqual(0.0, sf.epsilon())
 
         clear_symforce()
-        with self.subTest(msg="Test function properly raises AlreadyUsedEpsilon exception"):
+        with self.subTest(
+            msg="Test function does not raise on setting epsilon to the current value"
+        ):
             import symforce
+            import symforce.symbolic as sf
 
-            with self.assertRaises(symforce.AlreadyUsedEpsilon):
-                import symforce.symbolic as sf
-
-                sf.epsilon()
-                symforce.set_epsilon_to_zero()
+            sf.epsilon()
+            symforce.set_epsilon_to_zero()
 
     def test_set_epsilon_to_symbol(self) -> None:
         """
