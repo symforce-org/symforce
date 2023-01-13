@@ -404,6 +404,37 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             with self.assertRaises(IndexError):
                 m22[:, :] = [[np.float64(1)], [np.float64(2)]]
 
+    def test_vector_methods(self) -> None:
+        """
+        Tests:
+            V2.x,y
+            V3.x,y,z
+            V2.unit_x,y
+            V3.unit_x,y,z
+        """
+        self.assertEqual(sf.V2.unit_x().x, 1)
+        self.assertEqual(sf.V2.unit_x().y, 0)
+        with self.assertRaises(AttributeError):
+            _ = sf.V2.unit_x().z  # type: ignore[attr-defined]  # pylint: disable=no-member
+
+        self.assertEqual(sf.V2.unit_y().x, 0)
+        self.assertEqual(sf.V2.unit_y().y, 1)
+
+        with self.assertRaises(AttributeError):
+            sf.V2.unit_z()  # type: ignore[attr-defined]  # pylint: disable=no-member
+
+        self.assertEqual(sf.V3.unit_x().x, 1)
+        self.assertEqual(sf.V3.unit_x().y, 0)
+        self.assertEqual(sf.V3.unit_x().z, 0)
+
+        self.assertEqual(sf.V3.unit_y().x, 0)
+        self.assertEqual(sf.V3.unit_y().y, 1)
+        self.assertEqual(sf.V3.unit_y().z, 0)
+
+        self.assertEqual(sf.V3.unit_z().x, 0)
+        self.assertEqual(sf.V3.unit_z().y, 0)
+        self.assertEqual(sf.V3.unit_z().z, 1)
+
 
 if __name__ == "__main__":
     TestCase.main()

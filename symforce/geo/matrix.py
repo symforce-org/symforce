@@ -955,6 +955,20 @@ class Matrix21(Matrix):
         """
         return Vector2(0, 1)
 
+    @property
+    def x(self) -> sf.Scalar:
+        """
+        The entry self[0, 0]
+        """
+        return self[0, 0]
+
+    @property
+    def y(self) -> sf.Scalar:
+        """
+        The entry self[1, 0]
+        """
+        return self[1, 0]
+
 
 class Matrix31(Matrix):
     SHAPE = (3, 1)
@@ -979,6 +993,27 @@ class Matrix31(Matrix):
         The unit vector [0, 0, 1]
         """
         return Vector3(0, 0, 1)
+
+    @property
+    def x(self) -> sf.Scalar:
+        """
+        The entry self[0, 0]
+        """
+        return self[0, 0]
+
+    @property
+    def y(self) -> sf.Scalar:
+        """
+        The entry self[1, 0]
+        """
+        return self[1, 0]
+
+    @property
+    def z(self) -> sf.Scalar:
+        """
+        The entry self[2, 0]
+        """
+        return self[2, 0]
 
 
 class Matrix41(Matrix):
