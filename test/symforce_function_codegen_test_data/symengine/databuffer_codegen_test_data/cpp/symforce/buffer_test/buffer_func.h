@@ -25,9 +25,6 @@ template <typename Scalar>
 Scalar BufferFunc(const Scalar* const buffer, const Scalar a, const Scalar b) {
   // Total ops: 8
 
-  // Unused inputs
-  (void)buffer;
-
   // Input arrays
 
   // Intermediate terms (1)

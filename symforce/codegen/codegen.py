@@ -394,7 +394,11 @@ class Codegen:
         """
         results = []
         for input_name, input_value in self.inputs.items():
-            input_symbols = set(ops.StorageOps.to_storage(input_value))
+            if isinstance(input_value, sf.DataBuffer):
+                # DataBuffers have no storage, so we look for their exact symbol
+                input_symbols = {input_value}
+            else:
+                input_symbols = set(ops.StorageOps.to_storage(input_value))
             if not input_symbols.intersection(self.output_symbols):
                 results.append(input_name)
         return results
