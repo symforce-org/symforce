@@ -55,12 +55,12 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((3, 1))
-        _res[0, 0] = math.atan2(
+        _res = numpy.zeros(3)
+        _res[0] = math.atan2(
             _a[1], _a[0] + epsilon * ((0.0 if _a[0] == 0 else math.copysign(1, _a[0])) + 0.5)
         )
-        _res[1, 0] = _a[2]
-        _res[2, 0] = _a[3]
+        _res[1] = _a[2]
+        _res[2] = _a[3]
         return _res
 
     @staticmethod
@@ -106,13 +106,13 @@ class LieGroupOps(object):
         _tmp0 = _a[0] * _b[0] + _a[1] * _b[1]
 
         # Output terms
-        _res = numpy.zeros((3, 1))
-        _res[0, 0] = math.atan2(
+        _res = numpy.zeros(3)
+        _res[0] = math.atan2(
             _a[0] * _b[1] - _a[1] * _b[0],
             _tmp0 + epsilon * ((0.0 if _tmp0 == 0 else math.copysign(1, _tmp0)) + 0.5),
         )
-        _res[1, 0] = -_a[2] + _b[2]
-        _res[2, 0] = -_a[3] + _b[3]
+        _res[1] = -_a[2] + _b[2]
+        _res[2] = -_a[3] + _b[3]
         return _res
 
     @staticmethod

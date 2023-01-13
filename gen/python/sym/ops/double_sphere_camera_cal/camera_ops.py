@@ -32,9 +32,9 @@ class CameraOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _focal_length = numpy.zeros((2, 1))
-        _focal_length[0, 0] = _self[0]
-        _focal_length[1, 0] = _self[1]
+        _focal_length = numpy.zeros(2)
+        _focal_length[0] = _self[0]
+        _focal_length[1] = _self[1]
         return _focal_length
 
     @staticmethod
@@ -52,9 +52,9 @@ class CameraOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _principal_point = numpy.zeros((2, 1))
-        _principal_point[0, 0] = _self[2]
-        _principal_point[1, 0] = _self[3]
+        _principal_point = numpy.zeros(2)
+        _principal_point[0] = _self[2]
+        _principal_point[1] = _self[3]
         return _principal_point
 
     @staticmethod
@@ -97,9 +97,9 @@ class CameraOps(object):
         _tmp12 = _tmp10 * _tmp11 - _tmp10 + 1
 
         # Output terms
-        _pixel = numpy.zeros((2, 1))
-        _pixel[0, 0] = _self[0] * _tmp7 * point[0, 0] + _self[2]
-        _pixel[1, 0] = _self[1] * _tmp7 * point[1, 0] + _self[3]
+        _pixel = numpy.zeros(2)
+        _pixel[0] = _self[0] * _tmp7 * point[0, 0] + _self[2]
+        _pixel[1] = _self[1] * _tmp7 * point[1, 0] + _self[3]
         _is_valid = max(
             0,
             min(
@@ -220,9 +220,9 @@ class CameraOps(object):
         _tmp39 = _tmp22 * _tmp38 + _tmp38 * _tmp8
 
         # Output terms
-        _pixel = numpy.zeros((2, 1))
-        _pixel[0, 0] = _self[0] * _tmp12 + _self[2]
-        _pixel[1, 0] = _self[1] * _tmp13 + _self[3]
+        _pixel = numpy.zeros(2)
+        _pixel[0] = _self[0] * _tmp12 + _self[2]
+        _pixel[1] = _self[1] * _tmp13 + _self[3]
         _is_valid = max(
             0,
             min(
@@ -325,10 +325,10 @@ class CameraOps(object):
         )
 
         # Output terms
-        _camera_ray = numpy.zeros((3, 1))
-        _camera_ray[0, 0] = _tmp0 * _tmp11 / _self[0]
-        _camera_ray[1, 0] = _tmp1 * _tmp11 / _self[1]
-        _camera_ray[2, 0] = -_self[4] + _tmp11 * _tmp9
+        _camera_ray = numpy.zeros(3)
+        _camera_ray[0] = _tmp0 * _tmp11 / _self[0]
+        _camera_ray[1] = _tmp1 * _tmp11 / _self[1]
+        _camera_ray[2] = -_self[4] + _tmp11 * _tmp9
         _is_valid = min(
             1 - max(0, -(0.0 if _tmp10 == 0 else math.copysign(1, _tmp10))),
             1 - max(0, -(0.0 if _tmp4 == 0 else math.copysign(1, _tmp4))),
@@ -483,10 +483,10 @@ class CameraOps(object):
         _tmp110 = _tmp46 * (_tmp107 + _tmp81)
 
         # Output terms
-        _camera_ray = numpy.zeros((3, 1))
-        _camera_ray[0, 0] = _tmp0 * _tmp29
-        _camera_ray[1, 0] = _tmp2 * _tmp31
-        _camera_ray[2, 0] = -_self[4] + _tmp23 * _tmp28
+        _camera_ray = numpy.zeros(3)
+        _camera_ray[0] = _tmp0 * _tmp29
+        _camera_ray[1] = _tmp2 * _tmp31
+        _camera_ray[2] = -_self[4] + _tmp23 * _tmp28
         _is_valid = min(
             1 - max(0, -(0.0 if _tmp13 == 0 else math.copysign(1, _tmp13))),
             1 - max(0, -(0.0 if _tmp25 == 0 else math.copysign(1, _tmp25))),

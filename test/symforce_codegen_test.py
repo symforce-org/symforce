@@ -262,7 +262,9 @@ class SymforceCodegenTest(TestCase):
             namespace = "test_indexing"
             generated_files = codegen.Codegen.function(
                 func=pass_matrices,
-                config=codegen.PythonConfig(use_numba=use_numba, reshape_vectors=reshape_vectors),
+                config=codegen.PythonConfig(
+                    use_numba=use_numba, reshape_vectors=reshape_vectors, return_2d_vectors=True
+                ),
                 output_names=["row_out", "col_out", "mat_out"],
             ).generate_function(namespace=namespace, output_dir=output_dir)
 
@@ -492,6 +494,45 @@ class SymforceCodegenTest(TestCase):
                 use_numba, reshape_vectors, row_shape, col_shape, mat_shape, TypingError
             )
 
+    def test_python_config_return_2d_vectors(self) -> None:
+        """
+        Tests that if PythonConfig.return_2d_vectors is True, then all matrix outputs are 2d ndarrays,
+        and that otherwise a 1d ndarray is used one of its columns or rows has length 1.
+        """
+
+        def get_row_col_mat() -> T.Tuple[sf.M14, sf.M41, sf.M22]:
+            return sf.M14.zero(), sf.M41.zero(), sf.M22.zero()
+
+        def generated_function(return_2d_vectors: bool) -> T.Any:
+            output_dir = self.make_output_dir(
+                f"sf_test_python_config_return_2d_vectors_{return_2d_vectors}"
+            )
+            namespace = f"python_config_return_2d_vectors_{return_2d_vectors}"
+
+            codegen_data = codegen.Codegen.function(
+                func=get_row_col_mat,
+                config=codegen.PythonConfig(return_2d_vectors=return_2d_vectors),
+                output_names=["row_out", "col_out", "mat_out"],
+            ).generate_function(namespace=namespace, output_dir=output_dir)
+
+            gen = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
+
+            return gen.get_row_col_mat
+
+        with self.subTest("All matrix outputs are 2d if return_2d_vectors=True"):
+            row, col, mat = generated_function(return_2d_vectors=True)()
+
+            self.assertEqual((1, 4), row.shape)
+            self.assertEqual((4, 1), col.shape)
+            self.assertEqual((2, 2), mat.shape)
+
+        with self.subTest("Only vector outputs are 1d if return_2d_vectors=False"):
+            row, col, mat = generated_function(return_2d_vectors=False)()
+
+            self.assertEqual((4,), row.shape)
+            self.assertEqual((4,), col.shape)
+            self.assertEqual((2, 2), mat.shape)
+
     def test_sparse_output_python(self) -> None:
         """
         Tests that sparse matrices are correctly generated in python when sparse_matrices
@@ -559,7 +600,7 @@ class SymforceCodegenTest(TestCase):
 
         x = np.array([1, 2, 3])
         y = gen_module.numba_test_func(x)
-        self.assertTrue((y == np.array([[1, 2]]).T).all())
+        self.assertTrue((y == np.array([1, 2])).all())
         self.assertTrue(hasattr(gen_module.numba_test_func, "__numba__"))
 
     # -------------------------------------------------------------------------
@@ -1090,7 +1131,7 @@ class SymforceCodegenTest(TestCase):
         # make sure it runs
         result = gen_module.test_function_dataclass(d, 1)
 
-        self.assertEqual(result, np.zeros((3, 1)))
+        self.assertEqual(result, np.zeros(3))
 
     @slow_on_sympy
     def test_function_explicit_template_instantiation(self) -> None:

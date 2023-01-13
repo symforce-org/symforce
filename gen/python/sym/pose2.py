@@ -126,9 +126,9 @@ class Pose2(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((2, 1))
-        _res[0, 0] = _self[2]
-        _res[1, 0] = _self[3]
+        _res = numpy.zeros(2)
+        _res[0] = _self[2]
+        _res[1] = _self[3]
         return _res
 
     def compose_with_point(self, right):
@@ -159,9 +159,9 @@ class Pose2(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((2, 1))
-        _res[0, 0] = _self[0] * right[0, 0] - _self[1] * right[1, 0] + _self[2]
-        _res[1, 0] = _self[0] * right[1, 0] + _self[1] * right[0, 0] + _self[3]
+        _res = numpy.zeros(2)
+        _res[0] = _self[0] * right[0, 0] - _self[1] * right[1, 0] + _self[2]
+        _res[1] = _self[0] * right[1, 0] + _self[1] * right[0, 0] + _self[3]
         return _res
 
     def inverse_compose(self, point):
@@ -194,14 +194,14 @@ class Pose2(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((2, 1))
-        _res[0, 0] = (
+        _res = numpy.zeros(2)
+        _res[0] = (
             -_self[0] * _self[2]
             + _self[0] * point[0, 0]
             - _self[1] * _self[3]
             + _self[1] * point[1, 0]
         )
-        _res[1, 0] = (
+        _res[1] = (
             -_self[0] * _self[3]
             + _self[0] * point[1, 0]
             + _self[1] * _self[2]

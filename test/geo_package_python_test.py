@@ -97,7 +97,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim, 1)
+        perturbation = np.random.rand(tangent_dim)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -107,7 +107,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
         np.testing.assert_almost_equal(
             identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
@@ -135,7 +135,7 @@ class GeoPackageTest(unittest.TestCase):
         # Test constructor handles column vectors correctly
         col_data = np.random.normal(size=(geo_class.storage_dim(), 1))
         rot = geo_class(col_data)
-        expected_data = col_data.flatten().tolist()
+        expected_data = col_data.ravel().tolist()
         self.assertEqual(expected_data, rot.data)
         for x in rot.data:
             # NOTE(brad): One failure mode is for x to not be a float but an ndarray.
@@ -209,7 +209,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim, 1)
+        perturbation = np.random.rand(tangent_dim)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -219,7 +219,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
         np.testing.assert_almost_equal(
             identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
@@ -241,8 +241,10 @@ class GeoPackageTest(unittest.TestCase):
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         vector = np.random.normal(size=(2, 1))
-        vector_as_element = geo_class(t=vector.flatten().tolist())
-        np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
+        vector_as_element = geo_class(t=vector.ravel().tolist())
+        np.testing.assert_almost_equal(
+            element * vector.ravel(), (element * vector_as_element).position()
+        )
 
         # Test position/rotation accessors
         np.testing.assert_equal(element.position(), element.t)
@@ -258,7 +260,7 @@ class GeoPackageTest(unittest.TestCase):
             self.assertIsInstance(x, float)
 
         # Test constructor handles column vectors correctly.
-        column_t = np.expand_dims(np.array(element.t).flatten(), axis=1)
+        column_t = np.expand_dims(np.array(element.t).ravel(), axis=1)
         column_element = geo_class(t=column_t, R=element.R)
         self.assertEqual(element.data, column_element.data)
         for x in column_element.data:
@@ -334,7 +336,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim, 1)
+        perturbation = np.random.rand(tangent_dim)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -344,7 +346,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
         np.testing.assert_almost_equal(
             identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
@@ -372,7 +374,7 @@ class GeoPackageTest(unittest.TestCase):
         # Test constructor handles column vectors correctly
         col_data = np.random.normal(size=(geo_class.storage_dim(), 1))
         rot = geo_class(col_data)
-        expected_data = col_data.flatten().tolist()
+        expected_data = col_data.ravel().tolist()
         self.assertEqual(expected_data, rot.data)
         for x in rot.data:
             # NOTE(brad): One failure mode is for x to not be a float but an ndarray.
@@ -446,7 +448,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertTrue(tangent_dim > 0)
         self.assertTrue(tangent_dim <= geo_class.storage_dim())
 
-        perturbation = np.random.rand(tangent_dim, 1)
+        perturbation = np.random.rand(tangent_dim)
         value = geo_class.from_tangent(perturbation)
         recovered_perturbation = geo_class.to_tangent(value)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
@@ -456,7 +458,7 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
 
         perturbation_zero = identity.local_coordinates(recovered_identity)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros((tangent_dim, 1)))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
         np.testing.assert_almost_equal(
             identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
@@ -478,8 +480,10 @@ class GeoPackageTest(unittest.TestCase):
         element = geo_class.from_tangent(np.random.normal(size=tangent_dim))
 
         vector = np.random.normal(size=(3, 1))
-        vector_as_element = geo_class(t=vector.flatten().tolist())
-        np.testing.assert_almost_equal(element * vector, (element * vector_as_element).position())
+        vector_as_element = geo_class(t=vector.ravel().tolist())
+        np.testing.assert_almost_equal(
+            element * vector.ravel(), (element * vector_as_element).position()
+        )
 
         # Test position/rotation accessors
         np.testing.assert_equal(element.position(), element.t)
@@ -495,7 +499,7 @@ class GeoPackageTest(unittest.TestCase):
             self.assertIsInstance(x, float)
 
         # Test constructor handles column vectors correctly.
-        column_t = np.expand_dims(np.array(element.t).flatten(), axis=1)
+        column_t = np.expand_dims(np.array(element.t).ravel(), axis=1)
         column_element = geo_class(t=column_t, R=element.R)
         self.assertEqual(element.data, column_element.data)
         for x in column_element.data:

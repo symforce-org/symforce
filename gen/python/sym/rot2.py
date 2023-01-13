@@ -77,9 +77,9 @@ class Rot2(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((2, 1))
-        _res[0, 0] = _self[0] * right[0, 0] - _self[1] * right[1, 0]
-        _res[1, 0] = _self[0] * right[1, 0] + _self[1] * right[0, 0]
+        _res = numpy.zeros(2)
+        _res[0] = _self[0] * right[0, 0] - _self[1] * right[1, 0]
+        _res[1] = _self[0] * right[1, 0] + _self[1] * right[0, 0]
         return _res
 
     @staticmethod

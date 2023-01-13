@@ -191,19 +191,27 @@ elif {{ name }}.shape != {{ shape }}:
     {% for name, type, terms in spec.print_code_results.dense_terms %}
         {%- set T = typing_util.get_type(type) -%}
         {% if issubclass(T, Matrix) %}
-            {% set rows = type.shape[0] %}
-            {% set cols = type.shape[1] %}
-    _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
-            {% set ns = namespace(iter=0) %}
-            {# NOTE(brad): The order of the terms is the storage order of geo.Matrix. If the
-            storage order of geo.Matrix is changed (i.e., from column major to row major), the
-            following for loops will have to be changed to match that order. #}
-            {% for j in range(cols) %}
-                {% for i in range(rows) %}
-    _{{ name }}[{{ i }}, {{ j }}] = {{ terms[ns.iter][1] }}
-                    {% set ns.iter = ns.iter + 1 %}
+            {% if not spec.config.return_2d_vectors and 1 == (type.shape | min) %}
+                {% set size = type.shape | max %}
+    _{{ name }} = numpy.zeros({{ size }})
+                {% for i in range(size) %}
+    _{{ name }}[{{ i }}] = {{ terms[i][1] }}
                 {% endfor %}
-            {% endfor %}
+            {% else %}
+                {% set rows = type.shape[0] %}
+                {% set cols = type.shape[1] %}
+    _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
+                {% set ns = namespace(iter=0) %}
+                {# NOTE(brad): The order of the terms is the storage order of geo.Matrix. If the
+                storage order of geo.Matrix is changed (i.e., from column major to row major), the
+                following for loops will have to be changed to match that order. #}
+                {% for j in range(cols) %}
+                    {% for i in range(rows) %}
+    _{{ name }}[{{ i }}, {{ j }}] = {{ terms[ns.iter][1] }}
+                        {% set ns.iter = ns.iter + 1 %}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
         {% elif not is_symbolic(type) %}
             {% set dims = ops.StorageOps.storage_dim(type) %}
     _{{name}} = [0.] * {{ dims }}

@@ -40,7 +40,7 @@ def numba_test_func(x):
     # Intermediate terms (0)
 
     # Output terms
-    _res = numpy.zeros((2, 1))
-    _res[0, 0] = x[0, 0]
-    _res[1, 0] = x[1, 0]
+    _res = numpy.zeros(2)
+    _res[0] = x[0, 0]
+    _res[1] = x[1, 0]
     return _res

@@ -160,7 +160,7 @@ def get_data_to_plot(v: Values) -> AttrDict:
     data.landmark_xy = np.array(v["landmarks"])
 
     # Pose positions
-    data.pose_xy = np.array([p.position().squeeze() for p in v["poses"]])
+    data.pose_xy = np.array([p.position() for p in v["poses"]])
 
     # Pose x/y axis vectors
     data.pose_x_axes = np.array([p.rotation() * np.array([1, 0]) for p in v["poses"]])

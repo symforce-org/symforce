@@ -89,8 +89,8 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
     )
 
     # Output terms
-    _res = numpy.zeros((2, 1))
-    _res[0, 0] = math.atan2(
+    _res = numpy.zeros(2)
+    _res[0] = math.atan2(
         _tmp9,
         _tmp10 * nav_t_point[1, 0]
         + _tmp12 * nav_t_point[2, 0]
@@ -100,7 +100,7 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
         - _tmp17
         + epsilon * ((0.0 if _tmp18 == 0 else math.copysign(1, _tmp18)) + 0.5),
     )
-    _res[1, 0] = (
+    _res[1] = (
         -math.acos(_tmp22 / math.sqrt(_tmp18 ** 2 + _tmp22 ** 2 + _tmp9 ** 2 + epsilon))
         + (1.0 / 2.0) * math.pi
     )

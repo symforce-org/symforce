@@ -111,18 +111,18 @@ class Rot3(object):
         _tmp10 = -2 * _self[0] ** 2
 
         # Output terms
-        _res = numpy.zeros((3, 1))
-        _res[0, 0] = (
+        _res = numpy.zeros(3)
+        _res[0] = (
             right[0, 0] * (_tmp6 + _tmp7)
             + right[1, 0] * (_tmp1 - _tmp3)
             + right[2, 0] * (_tmp4 + _tmp5)
         )
-        _res[1, 0] = (
+        _res[1] = (
             right[0, 0] * (_tmp1 + _tmp3)
             + right[1, 0] * (_tmp10 + _tmp7)
             + right[2, 0] * (-_tmp8 + _tmp9)
         )
-        _res[2, 0] = (
+        _res[2] = (
             right[0, 0] * (-_tmp4 + _tmp5)
             + right[1, 0] * (_tmp8 + _tmp9)
             + right[2, 0] * (_tmp10 + _tmp6 + 1)
@@ -218,10 +218,10 @@ class Rot3(object):
         _tmp4 = -_self[1] ** 2 + _self[3] ** 2
 
         # Output terms
-        _res = numpy.zeros((3, 1))
-        _res[0, 0] = math.atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4)
-        _res[1, 0] = -math.asin(max(-1, min(1, -2 * _self[1] * _self[3] + _self[2] * _tmp0)))
-        _res[2, 0] = math.atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4)
+        _res = numpy.zeros(3)
+        _res[0] = math.atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4)
+        _res[1] = -math.asin(max(-1, min(1, -2 * _self[1] * _self[3] + _self[2] * _tmp0)))
+        _res[2] = math.atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4)
         return _res
 
     @staticmethod

@@ -65,10 +65,10 @@ class LieGroupOps(object):
         )
 
         # Output terms
-        _res = numpy.zeros((3, 1))
-        _res[0, 0] = _a[0] * _tmp1
-        _res[1, 0] = _a[1] * _tmp1
-        _res[2, 0] = _a[2] * _tmp1
+        _res = numpy.zeros(3)
+        _res[0] = _a[0] * _tmp1
+        _res[1] = _a[1] * _tmp1
+        _res[2] = _a[2] * _tmp1
         return _res
 
     @staticmethod
@@ -127,10 +127,10 @@ class LieGroupOps(object):
         )
 
         # Output terms
-        _res = numpy.zeros((3, 1))
-        _res[0, 0] = _tmp2 * (-_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0])
-        _res[1, 0] = _tmp2 * (_a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1])
-        _res[2, 0] = _tmp2 * (-_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2])
+        _res = numpy.zeros(3)
+        _res[0] = _tmp2 * (-_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0])
+        _res[1] = _tmp2 * (_a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1])
+        _res[2] = _tmp2 * (-_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2])
         return _res
 
     @staticmethod

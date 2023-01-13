@@ -60,16 +60,16 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((9, 1))
-        _res[0, 0] = _a[0]
-        _res[1, 0] = _a[1]
-        _res[2, 0] = _a[2]
-        _res[3, 0] = _a[3]
-        _res[4, 0] = _a[4]
-        _res[5, 0] = _a[5]
-        _res[6, 0] = _a[6]
-        _res[7, 0] = _a[7]
-        _res[8, 0] = _a[8]
+        _res = numpy.zeros(9)
+        _res[0] = _a[0]
+        _res[1] = _a[1]
+        _res[2] = _a[2]
+        _res[3] = _a[3]
+        _res[4] = _a[4]
+        _res[5] = _a[5]
+        _res[6] = _a[6]
+        _res[7] = _a[7]
+        _res[8] = _a[8]
         return _res
 
     @staticmethod
@@ -117,16 +117,16 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros((9, 1))
-        _res[0, 0] = -_a[0] + _b[0]
-        _res[1, 0] = -_a[1] + _b[1]
-        _res[2, 0] = -_a[2] + _b[2]
-        _res[3, 0] = -_a[3] + _b[3]
-        _res[4, 0] = -_a[4] + _b[4]
-        _res[5, 0] = -_a[5] + _b[5]
-        _res[6, 0] = -_a[6] + _b[6]
-        _res[7, 0] = -_a[7] + _b[7]
-        _res[8, 0] = -_a[8] + _b[8]
+        _res = numpy.zeros(9)
+        _res[0] = -_a[0] + _b[0]
+        _res[1] = -_a[1] + _b[1]
+        _res[2] = -_a[2] + _b[2]
+        _res[3] = -_a[3] + _b[3]
+        _res[4] = -_a[4] + _b[4]
+        _res[5] = -_a[5] + _b[5]
+        _res[6] = -_a[6] + _b[6]
+        _res[7] = -_a[7] + _b[7]
+        _res[8] = -_a[8] + _b[8]
         return _res
 
     @staticmethod
