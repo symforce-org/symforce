@@ -7,7 +7,6 @@ from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import ops
-from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CppConfig
@@ -84,38 +83,10 @@ def prior_factor(
     return residual
 
 
-def get_function_code(codegen: Codegen, cleanup: bool = True) -> str:
+def generate_between_factors(types: T.Sequence[T.Type], output_dir: T.Openable) -> None:
     """
-    Return just the function code from a Codegen object.
+    Generates between factors for each type in types into output_dir.
     """
-    # Codegen
-    data = codegen.generate_function()
-
-    # Read
-    assert codegen.name is not None
-    filename = "{}.h".format(codegen.name)
-    func_code = (data.function_dir / filename).read_text()
-
-    # Cleanup
-    if cleanup:
-        python_util.remove_if_exists(data.output_dir)
-
-    return func_code
-
-
-def get_filename(codegen: Codegen) -> str:
-    """
-    Helper to get appropriate filename
-    """
-    assert codegen.name is not None
-    return codegen.name + ".h"
-
-
-def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
-    """
-    Compute
-    """
-    files_dict: T.Dict[str, str] = {}
     for cls in types:
         tangent_dim = ops.LieGroupOps.tangent_dim(cls)
         between_codegen = Codegen.function(
@@ -125,7 +96,7 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
         ).with_linearization(name=f"between_factor_{cls.__name__.lower()}", which_args=["a", "b"])
-        files_dict[get_filename(between_codegen)] = get_function_code(between_codegen)
+        between_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
         prior_codegen = Codegen.function(
             func=prior_factor,
@@ -134,14 +105,12 @@ def get_between_factors(types: T.Sequence[T.Type]) -> T.Dict[str, str]:
             config=CppConfig(),
             docstring=get_prior_docstring(),
         ).with_linearization(name=f"prior_factor_{cls.__name__.lower()}", which_args=["value"])
-        files_dict[get_filename(prior_codegen)] = get_function_code(prior_codegen)
-
-    return files_dict
+        prior_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
 
-def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
+def generate_pose3_extra_factors(output_dir: T.Openable) -> None:
     """
-    Generates factors specific to Poses which penalize individual components
+    Generates factors specific to Poses which penalize individual components into output_dir.
 
     This includes factors for only the position or rotation components of a Pose.  This can't be
     done by wrapping the other generated functions because we need jacobians with respect to the
@@ -210,6 +179,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_R_b"),
     ).with_linearization(name="between_factor_pose3_rotation", which_args=["a", "b"])
+    between_rotation_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
     between_position_codegen = Codegen.function(
         func=between_factor_pose3_position,
@@ -217,10 +187,12 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         config=CppConfig(),
         docstring=get_between_factor_docstring("a_t_b"),
     ).with_linearization(name="between_factor_pose3_position", which_args=["a", "b"])
+    between_position_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
     between_translation_norm_codegen = Codegen.function(
         func=between_factor_pose3_translation_norm, output_names=["res"], config=CppConfig()
     ).with_linearization(name="between_factor_pose3_translation_norm", which_args=["a", "b"])
+    between_translation_norm_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
     prior_rotation_codegen = Codegen.function(
         func=prior_factor_pose3_rotation,
@@ -228,6 +200,7 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         config=CppConfig(),
         docstring=get_prior_docstring(),
     ).with_linearization(name="prior_factor_pose3_rotation", which_args=["value"])
+    prior_rotation_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
     prior_position_codegen = Codegen.function(
         func=prior_factor_pose3_position,
@@ -235,28 +208,12 @@ def get_pose3_extra_factors(files_dict: T.Dict[str, str]) -> None:
         config=CppConfig(),
         docstring=get_prior_docstring(),
     ).with_linearization(name="prior_factor_pose3_position", which_args=["value"])
-
-    files_dict[get_filename(between_rotation_codegen)] = get_function_code(between_rotation_codegen)
-    files_dict[get_filename(between_position_codegen)] = get_function_code(between_position_codegen)
-    files_dict[get_filename(between_translation_norm_codegen)] = get_function_code(
-        between_translation_norm_codegen
-    )
-    files_dict[get_filename(prior_rotation_codegen)] = get_function_code(prior_rotation_codegen)
-    files_dict[get_filename(prior_position_codegen)] = get_function_code(prior_position_codegen)
+    prior_position_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
 
 def generate(output_dir: Path) -> None:
     """
     Prior factors and between factors for C++.
     """
-    # Compute code
-    files_dict = get_between_factors(types=TYPES)
-    get_pose3_extra_factors(files_dict)
-
-    # Create output dir
-    factors_dir = output_dir / "factors"
-    factors_dir.mkdir(parents=True)
-
-    # Write out
-    for filename, code in files_dict.items():
-        (factors_dir / filename).write_text(code)
+    generate_between_factors(types=TYPES, output_dir=output_dir / "factors")
+    generate_pose3_extra_factors(output_dir / "factors")
