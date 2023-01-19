@@ -475,6 +475,9 @@ class TsStruct(StructBuilder, TsBase):
                 # bail if we don't need to import the type
                 if member.type_ref.name in TS_DUPLICATE_TYPES:
                     continue
+                # don't import `byte` type if in a byte array, since those use `Uint8Array`s
+                elif member.is_byte_array:
+                    continue
                 primitive_includes.add(
                     TsInclude(
                         member=member, is_primitive=True, prefix=self.args.typescript_library_path
