@@ -10,27 +10,19 @@
 namespace sym {
 
 template <typename Scalar>
-Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys)
-    : Factor(std::move(hessian_func), keys, keys) {}
-
-template <typename Scalar>
 Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),
-      keys_to_optimize_(keys_to_optimize),
+      keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
       keys_(keys_to_func) {}
-
-template <typename Scalar>
-Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys)
-    : Factor(std::move(sparse_hessian_func), keys, keys) {}
 
 template <typename Scalar>
 Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(),
       sparse_hessian_func_(std::move(sparse_hessian_func)),
-      keys_to_optimize_(keys_to_optimize),
+      keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
       keys_(keys_to_func) {}
 
 // ------------------------------------------------------------------------------------------------
@@ -40,12 +32,6 @@ Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<
 // understand its input/output arguments, performs a series of static assertions, and dispatches
 // to the correct helper to be processed.
 // ------------------------------------------------------------------------------------------------
-
-template <typename Scalar>
-template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& keys) {
-  return Jacobian(std::forward<Functor>(func), keys, keys);
-}
 
 template <typename Scalar>
 template <typename Functor>
@@ -99,12 +85,6 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
 // understand its input/output arguments, performs a series of static assertions, and dispatches
 // to the correct helper to be processed.
 // ------------------------------------------------------------------------------------------------
-
-template <typename Scalar>
-template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& keys) {
-  return Hessian(std::forward<Functor>(func), keys, keys);
-}
 
 template <typename Scalar>
 template <typename Functor>
