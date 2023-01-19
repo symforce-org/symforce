@@ -55,7 +55,7 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
                 "JacobianMat (last argument) should be an Eigen::Matrix or Eigen::SparseMatrix");
 
   // Check sparse vs dense
-  constexpr bool is_sparse = !kIsEigenType<JacobianMat>;
+  constexpr bool is_sparse = kIsSparseEigenType<JacobianMat>;
 
   // Get dimensions
   constexpr int M = ResidualVec::RowsAtCompileTime;
@@ -113,8 +113,8 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& k
   static_assert(kIsEigenType<RhsVec>, "RhsVec (last argument) should be an Eigen::Matrix");
 
   // Check sparse vs dense
-  constexpr bool jacobian_is_sparse = !kIsEigenType<JacobianMat>;
-  constexpr bool hessian_is_sparse = !kIsEigenType<HessianMat>;
+  constexpr bool jacobian_is_sparse = kIsSparseEigenType<JacobianMat>;
+  constexpr bool hessian_is_sparse = kIsSparseEigenType<HessianMat>;
   static_assert(jacobian_is_sparse == hessian_is_sparse,
                 "Matrices cannot be mixed dense and sparse.");
 
