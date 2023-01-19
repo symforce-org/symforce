@@ -2,6 +2,7 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
+from __future__ import annotations
 
 from dataclasses import dataclass
 from dataclasses import field
@@ -20,6 +21,7 @@ class ResidualBlock:
 
     residual: sf.Matrix
     extra_values: T.Optional[T.Dataclass] = None
+    metadata: T.Optional[T.Dict[str, T.Any]] = None
 
     def compute_jacobians(
         self,
@@ -41,6 +43,16 @@ class ResidualBlock:
             Sequence of jacobians of the residual with respect to each entry in inputs
         """
         return jacobian_helpers.tangent_jacobians(self.residual, inputs)
+
+    def set_metadata(self, key: str, value: T.Any) -> ResidualBlock:
+        """
+        Sets a metadata field of the residual block and returns the residual block.
+        """
+        if self.metadata is None:
+            self.metadata = {key: value}
+        else:
+            self.metadata[key] = value
+        return self
 
 
 @dataclass
