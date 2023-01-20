@@ -63,6 +63,12 @@ class InvalidNamespaceError(ValueError):
     """
 
 
+class InvalidNameError(ValueError):
+    """
+    Exception class for attempting codegen with an invalid function name
+    """
+
+
 class Codegen:
     """
     Class used for generating code from symbolic expressions or functions.
@@ -447,6 +453,11 @@ class Codegen:
         assert (
             self.name is not None
         ), "Name should be set either at construction or by with_jacobians"
+
+        if not self.name.isidentifier():
+            raise InvalidNameError(
+                f'Invalid function name "{self.name}". `name` must be a valid identifier.'
+            )
 
         if not namespace.isidentifier():
             raise InvalidNamespaceError(

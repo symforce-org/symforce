@@ -788,6 +788,7 @@ class SymforceCodegenTest(TestCase):
             Codegen outputs must be a function of given inputs
             Codegen input/output names must be valid variable names
             Codegen namespace must be a valid identifier
+            Codegen name must be a valid identifier
         """
         # Outputs have symbols not present in inputs
         x = sf.Symbol("x")
@@ -817,6 +818,11 @@ class SymforceCodegenTest(TestCase):
             valid_codegen.generate_function(namespace="nested::namespace")
         with self.assertRaises(codegen.InvalidNamespaceError):
             valid_codegen.generate_function(namespace="non identifier namespace")
+
+        for invalid_name in ["my_func.blah", "my_func:blah", "1my_func", "my func"]:
+            with self.assertRaises(codegen.InvalidNameError):
+                valid_codegen.name = invalid_name
+                valid_codegen.generate_function()
 
     def test_name_deduction(self) -> None:
         """
