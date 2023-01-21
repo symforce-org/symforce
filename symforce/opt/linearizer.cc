@@ -8,6 +8,7 @@
 #include "./assert.h"
 #include "./internal/linearizer_utils.h"
 #include "./optional.h"
+#include "symforce/opt/factor.h"
 
 namespace sym {
 
@@ -64,11 +65,13 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
     // Evaluate the factors
     size_t sparse_idx{0};
     size_t dense_idx{0};
-    for (const auto& factor : *factors_) {
+    for (int i = 0; i < static_cast<int>(factors_->size()); i++) {
+      const auto& factor = (*factors_)[i];
+
       if (factor.IsSparse()) {
         auto& linearized_sparse_factor = linearized_sparse_factors_.at(sparse_idx);
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
-        factor.Linearize(values, &linearized_sparse_factor);
+        factor.Linearize(values, &linearized_sparse_factor, &factor_indices_[i]);
 
         UpdateFromLinearizedSparseFactorIntoSparse(
             linearized_sparse_factor, sparse_factor_update_helpers_.at(sparse_idx), linearization);
@@ -79,7 +82,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
         auto& linearized_dense_factor =
             linearized_dense_factors_.at(linearized_dense_factor_indices_.at(dense_idx));
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
-        factor.Linearize(values, &linearized_dense_factor);
+        factor.Linearize(values, &linearized_dense_factor, &factor_indices_[i]);
 
         UpdateFromLinearizedDenseFactorIntoSparse(
             linearized_dense_factor, dense_factor_update_helpers_.at(dense_idx), linearization);
@@ -188,19 +191,22 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       linearized_dense_factor_indices_by_dims;
   LinearizedDenseFactor linearized_dense_factor{};
   size_t sparse_idx{0};
+  factor_indices_.reserve(factors_->size());
   for (const auto& factor : *factors_) {
+    factor_indices_.push_back(values.CreateIndex(factor.AllKeys()).entries);
+
     for (const auto& key : factor.OptimizedKeys()) {
       keys_touched_by_factors.insert(key);
     }
 
     if (factor.IsSparse()) {
-      factor.Linearize(values, &linearized_sparse_factors_.at(sparse_idx));
+      factor.Linearize(values, &linearized_sparse_factors_.at(sparse_idx), &factor_indices_.back());
       ++sparse_idx;
     } else {
       linearized_dense_factor
           .index = {};  // Force the factor to populate its index to use in the factor helper
       SYM_ASSERT(linearized_dense_factor.index.storage_dim == 0);
-      factor.Linearize(values, &linearized_dense_factor);
+      factor.Linearize(values, &linearized_dense_factor, &factor_indices_.back());
 
       // Make sure a temporary of the right dimension is kept for relinearizations
       const std::pair<int, int> dims{linearized_dense_factor.jacobian.rows(),

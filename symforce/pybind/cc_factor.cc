@@ -207,9 +207,12 @@ void AddFactorWrapper(pybind11::module_ module) {
           },
           "Evaluate the factor at the given linearization point and output just the numerical "
           "values of the residual and jacobian.")
-      .def("linearized_factor",
-           py::overload_cast<const sym::Valuesd&>(&sym::Factord::Linearize, py::const_),
-           py::arg("values"), R"(
+      .def(
+          "linearized_factor",
+          [](const sym::Factord& factor, const sym::Valuesd& values) {
+            return factor.Linearize(values);
+          },
+          py::arg("values"), R"(
              Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
              contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
 

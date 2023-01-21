@@ -138,6 +138,10 @@ class Linearizer {
   // Pointer to the nonlinear factors
   const std::vector<Factor<Scalar>>* factors_;
 
+  // The index for each factor in the values.  Cached the first time we linearize, to avoid repeated
+  // unordered_map lookups
+  std::vector<std::vector<index_entry_t>> factor_indices_;
+
   bool include_jacobians_;
 
   // Linearized factors - stores individual factor residuals, jacobians, etc

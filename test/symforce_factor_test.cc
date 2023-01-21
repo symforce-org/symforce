@@ -826,3 +826,30 @@ TEMPLATE_TEST_CASE("Test Hessian functors has minimal copies", "[factors]", doub
     CHECK(TestHessianFunctor<Scalar>::copies == 1);  // f should be copied once
   }
 }
+
+TEMPLATE_TEST_CASE("Test factor maybe_index_entry_cache", "[factors]", double, float) {
+  using Scalar = TestType;
+
+  sym::Values<Scalar> values;
+  values.Set('x', Scalar(5));
+
+  const std::vector<sym::Factor<Scalar>> factors{
+      sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'}),
+      sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'})};
+
+  for (const auto& factor : factors) {
+    // Able to linearize without passing index_entry_cache
+    factor.Linearize(values);
+
+    // Able to linearize with index_entry_cache
+    std::vector<sym::index_entry_t> cache = values.CreateIndex({'x'}).entries;
+    factor.Linearize(values, &cache);
+
+    // Using the wrong size cache throws
+    cache.emplace_back();
+    CHECK_THROWS(factor.Linearize(values, &cache));
+
+    cache.clear();
+    CHECK_THROWS(factor.Linearize(values, &cache));
+  }
+}

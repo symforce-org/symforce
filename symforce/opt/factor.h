@@ -194,50 +194,92 @@ class Factor {
   /**
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual.
+   *
+   * Args:
+   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *         prevents repeated hash lookups.  Can be computed as
+   *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual) const;
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual and jacobian.
    *
    * This overload can only be called if IsSparse is false; otherwise, it will throw
+   *
+   * Args:
+   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *         prevents repeated hash lookups.  Can be computed as
+   *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
-                 MatrixX<Scalar>* jacobian) const;
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual and jacobian.
    *
    * This overload can only be called if IsSparse is true; otherwise, it will throw
+   *
+   * Args:
+   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *         prevents repeated hash lookups.  Can be computed as
+   *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
-                 Eigen::SparseMatrix<Scalar>* jacobian) const;
+                 Eigen::SparseMatrix<Scalar>* jacobian,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    *
    * This overload can only be called if IsSparse is false; otherwise, it will throw
+   *
+   * Args:
+   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *         prevents repeated hash lookups.  Can be computed as
+   *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  void Linearize(const Values<Scalar>& values, LinearizedDenseFactor* linearized_factor) const;
+  void Linearize(const Values<Scalar>& values, LinearizedDenseFactor* linearized_factor,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    *
    * This overload can only be called if IsSparse is false; otherwise, it will throw
+   *
+   * Args:
+   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *         prevents repeated hash lookups.  Can be computed as
+   *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  LinearizedDenseFactor Linearize(const Values<Scalar>& values) const;
+  LinearizedDenseFactor Linearize(
+      const Values<Scalar>& values,
+      const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    *
    * This overload can only be called if IsSparse is true; otherwise, it will throw
+   *
+   * Args:
+   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *         prevents repeated hash lookups.  Can be computed as
+   *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor* linearized_factor) const;
+  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor* linearized_factor,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   // ----------------------------------------------------------------------------------------------
   // Helpers
@@ -261,8 +303,6 @@ class Factor {
   const std::vector<Key>& AllKeys() const;
 
  private:
-  void EnsureIndexEntriesExist(const Values<Scalar>& values) const;
-
   template <typename LinearizedFactorT>
   void FillLinearizedFactorIndex(const Values<Scalar>& values,
                                  LinearizedFactorT& linearized_factor) const;
@@ -275,11 +315,6 @@ class Factor {
 
   // All keys required to evaluate the factor
   std::vector<Key> keys_;
-
-  // Index entries for the above keys, cached to avoid repeated unordered_map lookups.
-  // Values ID are used to detect structure changes.
-  mutable std::pair<int64_t, std::vector<index_entry_t>> values_id_and_index_entries_{
-      Values<Scalar>::kInvalidId, {}};
 };
 
 // Shorthand instantiations

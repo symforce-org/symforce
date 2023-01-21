@@ -36,8 +36,6 @@ class Values {
   // Expose the correct LCM type (values_t or valuesf_t)
   using LcmType = typename ValuesLcmTypeHelper<Scalar>::Type;
 
-  static constexpr int64_t kInvalidId = -1;
-
   /**
    * Default construct as empty.
    */
@@ -242,23 +240,9 @@ class Values {
   void FillLcmType(LcmType* msg, bool sort_keys = false) const;
   LcmType GetLcmType(bool sort_keys = false) const;
 
-  /**
-   * Unique ID of this Values instance, incremented whenever the structure of the Values is
-   * changed, eg. by adding or removing entries or calling Cleanup(). So the consumer of Values who
-   * cached its index_entry_t based on previous structure would know that the index needs to be
-   * updated.
-   *
-   * Should always be > 0.
-   */
-  int64_t Id() const;
-
  protected:
   MapType map_;
   ArrayType data_;
-
-  mutable int64_t unique_id_;
-  static std::atomic<int64_t> next_id;
-  mutable bool structure_has_changed_{true};
 
   template <typename T>
   bool SetInternal(const sym::Key& key, const T& value);

@@ -13,9 +13,6 @@
 namespace sym {
 
 template <typename Scalar>
-std::atomic<int64_t> Values<Scalar>::next_id(0);
-
-template <typename Scalar>
 Values<Scalar>::Values() {}
 
 template <typename Scalar>
@@ -61,7 +58,6 @@ void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& oth
       entry_this.offset = static_cast<int32_t>(data_.size());
       // extend end of data
       data_.insert(data_.end(), offset_other, offset_other + entry_other.storage_dim);
-      structure_has_changed_ = true;
     } else {
       std::copy_n(offset_other, entry_other.storage_dim, data_.begin() + it->second.offset);
     }
@@ -117,7 +113,6 @@ Values<NewScalar> Values<Scalar>::Cast() const {
 template <typename Scalar>
 bool Values<Scalar>::Remove(const Key& key) {
   size_t num_removed = map_.erase(key);
-  structure_has_changed_ = true;
   return static_cast<bool>(num_removed);
 }
 
@@ -125,7 +120,6 @@ template <typename Scalar>
 void Values<Scalar>::RemoveAll() {
   map_.clear();
   data_.clear();
-  structure_has_changed_ = true;
 }
 
 template <typename Scalar>
@@ -147,7 +141,6 @@ size_t Values<Scalar>::Cleanup() {
     map_[entry.key].offset = new_offset;
     new_offset += entry.storage_dim;
   }
-  structure_has_changed_ = true;
   return data_copy.size() - data_.size();
 }
 
@@ -191,16 +184,6 @@ typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType(bool sort_keys) cons
   LcmType msg;
   FillLcmType(&msg, sort_keys);
   return msg;
-}
-
-template <typename Scalar>
-int64_t Values<Scalar>::Id() const {
-  if (structure_has_changed_) {
-    unique_id_ = ++next_id;
-    structure_has_changed_ = false;
-  }
-  SYM_ASSERT(unique_id_ > 0);
-  return unique_id_;
 }
 
 template <typename Scalar>

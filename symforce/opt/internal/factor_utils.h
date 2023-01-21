@@ -70,8 +70,10 @@ struct JacobianFuncValuesExtractor {
   inline static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
                             const std::vector<index_entry_t>& keys, ResidualVec* residual,
                             JacobianMat* jacobian) {
+    constexpr auto num_inputs = function_traits<Functor>::num_arguments - 2;
+    SYM_ASSERT(keys.size() == num_inputs);
     InvokeAtRange(func, values, keys, residual, jacobian,
-                  typename RangeGenerator<function_traits<Functor>::num_arguments - 2>::Range());
+                  typename RangeGenerator<num_inputs>::Range());
   }
 };
 
@@ -267,8 +269,10 @@ struct HessianFuncValuesExtractor {
   inline static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
                             const std::vector<index_entry_t>& keys, ResidualVec* residual,
                             JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs) {
+    constexpr auto num_inputs = function_traits<Functor>::num_arguments - 4;
+    SYM_ASSERT(keys.size() == num_inputs);
     InvokeAtRange(func, values, keys, residual, jacobian, hessian, rhs,
-                  typename RangeGenerator<function_traits<Functor>::num_arguments - 4>::Range());
+                  typename RangeGenerator<num_inputs>::Range());
   }
 };
 
