@@ -100,6 +100,17 @@ class CSCFormat:
             nonzero_elements=nonzero_elements,
         )
 
+    def to_matrix(self) -> sf.Matrix:
+        """
+        Returns a dense matrix representing this CSC sparse matrix.
+        """
+        dense_matrix = sf.M.zeros(self.kRows, self.kCols)
+        for j in range(self.kCols):
+            end_inx = self.kColPtrs[j + 1] if j + 1 < self.kCols else self.kNumNonZero
+            for k in range(self.kColPtrs[j], end_inx):
+                dense_matrix[self.kRowIndices[k], j] = self.nonzero_elements[k]
+        return dense_matrix
+
 
 def print_code(
     inputs: Values,
