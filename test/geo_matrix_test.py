@@ -116,6 +116,12 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         mat = sf.Matrix([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
         self.assertEqual(mat, sf.Matrix.column_stack(vec1, vec2, vec3))
 
+        # Matrices uniquely allow vector storage
+        self.assertEqual(sf.M21.from_storage(sf.M12(3, 4)), sf.M21(3, 4))
+        self.assertEqual(sf.M21.from_storage(sf.M21(3, 4)), sf.M21(3, 4))
+        self.assertEqual(sf.M12.from_storage(sf.M12(3, 4)), sf.M12(3, 4))
+        self.assertEqual(sf.M12.from_storage(sf.M21(3, 4)), sf.M12(3, 4))
+
     def test_matrix_operations(self) -> None:
         """
         Tests:
@@ -403,6 +409,18 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
             with self.assertRaises(IndexError):
                 m22[:, :] = [[np.float64(1)], [np.float64(2)]]
+
+    def test_getitem(self) -> None:
+        """
+        Test:
+            Matrix.__getitem__
+        """
+        # NOTE(nathan): This differs from how a sympy matrix behaves, which would return a list
+        # object when sliced
+        m31 = sf.M31([1, 2, 3])
+        self.assertEqual(m31[0:2], sf.M21([1, 2]))
+        m13 = sf.M13([1, 2, 3])
+        self.assertEqual(m13[0:2], sf.M12([1, 2]))
 
     def test_vector_methods(self) -> None:
         """

@@ -76,9 +76,11 @@ class CameraCal(Storage):
     @classmethod
     def from_storage(cls: T.Type[CameraCalT], vec: T.Sequence[T.Scalar]) -> CameraCalT:
         assert len(vec) == cls.storage_dim()
-        return cls.from_distortion_coeffs(
-            focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:]
-        )
+        if cls.NUM_DISTORTION_COEFFS > 0:
+            return cls.from_distortion_coeffs(
+                focal_length=vec[0:2], principal_point=vec[2:4], distortion_coeffs=vec[4:]
+            )
+        return cls.from_distortion_coeffs(focal_length=vec[0:2], principal_point=vec[2:4])
 
     @classmethod
     def symbolic(cls: T.Type[CameraCalT], name: str, **kwargs: T.Any) -> CameraCalT:

@@ -204,8 +204,12 @@ class Matrix(Storage):
         return cls.SHAPE[0] * cls.SHAPE[1]
 
     @classmethod
-    def from_storage(cls: _T.Type[MatrixT], vec: _T.Sequence[_T.Scalar]) -> MatrixT:
+    def from_storage(
+        cls: _T.Type[MatrixT], vec: _T.Union[_T.Sequence[_T.Scalar], Matrix]
+    ) -> MatrixT:
         assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if isinstance(vec, Matrix):
+            vec = list(vec)
         rows, cols = cls.SHAPE
         return _T.cast(Matrix.MatrixT, matrix_type_from_shape((cols, rows))(vec).transpose())
 
@@ -591,11 +595,18 @@ class Matrix(Storage):
 
     def __getitem__(self, item: _T.Any) -> _T.Any:
         """
-        Get a scalar value or submatrix slice.
+        Get a scalar value or submatrix slice. Unlike sympy, for 1D matrices the submatrix slice is
+        returned as a 1D matrix instead of as a list.
         """
         ret = self.mat.__getitem__(item)
         if isinstance(ret, sf.sympy.Matrix):
-            ret = Matrix(ret)
+            return Matrix(ret)
+        if isinstance(ret, list):
+            if self.cols > 1:
+                # Original matrix is a row vector, return a row vector
+                return Matrix(1, len(ret), ret)
+            # Original matrix is a column vector, return a column vector
+            return Matrix(ret)
         return ret
 
     def __setitem__(
