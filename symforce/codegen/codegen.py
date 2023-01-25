@@ -269,8 +269,9 @@ class Codegen:
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; if not provided, will be deduced from the
                 function name.  Must be provided if `func` is a lambda
-            output_names: Optional if only one object is returned by the function.
-                If multiple objects are returned, they must be named.
+            output_names: Names to give to outputs returned from `func`.  If None (the default),
+                names will be chosen as f"res{i}" for functions that return multiple results, or
+                "res" for functions that return a single result
             sparse_matrices: Outputs with this key will be returned as sparse matrices
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
@@ -293,7 +294,8 @@ class Codegen:
         if isinstance(res, tuple):
             # Function returns multiple objects
             output_terms = res
-            assert output_names is not None, "Must give output_names for multiple outputs"
+            if output_names is None:
+                output_names = [f"res{i}" for i in range(len(res))]
             # If a return key is given, it must be valid (i.e. in output_names)
             if return_key is not None:
                 assert return_key in output_names, "Return key not found in named outputs"
