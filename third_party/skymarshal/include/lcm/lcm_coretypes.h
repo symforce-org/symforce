@@ -877,7 +877,6 @@ static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __double_encode_array(void *_b
     // TODO(abe): WTF are we doing this instead of shifting like we do for the rest of the types?
     // Justin's original commit messages and gerrit review don't shed any light, but think it
     // *might* have been performance related?
-    const uint64_t *unsigned_p = (uint64_t *) p;
     for (element = 0; element < elements; element++) {
 #if defined(SKYDIO_DISABLE_LCM_IMPROVED_ENDIAN_HINT)
         const uint8_t *bytes = (const uint8_t *) (p + element);
