@@ -10,6 +10,7 @@ Package for executable code generation from symbolic expressions.
 from .backends.cpp.cpp_config import CppConfig
 from .backends.python.python_config import PythonConfig
 from .codegen import Codegen
+from .codegen import CodeGenerationException
 from .codegen import GeneratedPaths
 from .codegen import InvalidNameError
 from .codegen import InvalidNamespaceError

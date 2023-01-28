@@ -69,6 +69,12 @@ class InvalidNameError(ValueError):
     """
 
 
+class CodeGenerationException(Exception):
+    """
+    Exception class for errors raised from templates during code generation
+    """
+
+
 class Codegen:
     """
     Class used for generating code from symbolic expressions or functions.
@@ -380,7 +386,7 @@ class Codegen:
             """
             Helper function to raise exceptions from jinja templates
             """
-            raise Exception(msg)
+            raise CodeGenerationException(msg)
 
         data["raise"] = raise_helper
 
