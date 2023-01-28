@@ -92,7 +92,7 @@ class values_vec_t
         /**
          * Returns "codegen_cpp_test"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
@@ -216,7 +216,7 @@ constexpr const char* values_vec_t::getTypeName()
     return *values_vec_t::getTypeNameArrayPtr();
 }
 
-const char * values_vec_t::getPackageName()
+constexpr const char * values_vec_t::getPackageName()
 {
     return "codegen_cpp_test";
 }

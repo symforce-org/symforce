@@ -76,7 +76,7 @@ class my_dataclass_t
         /**
          * Returns "codegen_test"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
@@ -169,7 +169,7 @@ constexpr const char* my_dataclass_t::getTypeName()
     return *my_dataclass_t::getTypeNameArrayPtr();
 }
 
-const char * my_dataclass_t::getPackageName()
+constexpr const char * my_dataclass_t::getPackageName()
 {
     return "codegen_test";
 }

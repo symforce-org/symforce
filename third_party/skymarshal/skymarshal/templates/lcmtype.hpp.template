@@ -92,7 +92,7 @@ class {{lcmtype.name}}
         /**
          * Returns "{{lcmtype.namespace}}"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline {{ size_t }} _encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const;
@@ -236,7 +236,7 @@ constexpr const char* {{lcmtype.name}}::getTypeName()
     return *{{lcmtype.name}}::getTypeNameArrayPtr();
 }
 
-const char * {{lcmtype.name}}::getPackageName()
+constexpr const char * {{lcmtype.name}}::getPackageName()
 {
     return "{{lcmtype.namespace}}";
 }

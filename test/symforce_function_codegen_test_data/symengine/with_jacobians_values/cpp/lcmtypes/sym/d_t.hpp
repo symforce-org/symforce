@@ -79,7 +79,7 @@ class d_t
         /**
          * Returns "sym"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
@@ -175,7 +175,7 @@ constexpr const char* d_t::getTypeName()
     return *d_t::getTypeNameArrayPtr();
 }
 
-const char * d_t::getPackageName()
+constexpr const char * d_t::getPackageName()
 {
     return "sym";
 }

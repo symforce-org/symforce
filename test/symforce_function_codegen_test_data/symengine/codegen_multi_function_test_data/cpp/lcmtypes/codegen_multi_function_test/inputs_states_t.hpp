@@ -76,7 +76,7 @@ class inputs_states_t
         /**
          * Returns "codegen_multi_function_test"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
@@ -169,7 +169,7 @@ constexpr const char* inputs_states_t::getTypeName()
     return *inputs_states_t::getTypeNameArrayPtr();
 }
 
-const char * inputs_states_t::getPackageName()
+constexpr const char * inputs_states_t::getPackageName()
 {
     return "codegen_multi_function_test";
 }

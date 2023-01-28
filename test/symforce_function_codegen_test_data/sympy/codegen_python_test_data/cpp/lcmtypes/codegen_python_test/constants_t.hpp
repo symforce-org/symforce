@@ -75,7 +75,7 @@ class constants_t
         /**
          * Returns "codegen_python_test"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
@@ -156,7 +156,7 @@ constexpr const char* constants_t::getTypeName()
     return *constants_t::getTypeNameArrayPtr();
 }
 
-const char * constants_t::getPackageName()
+constexpr const char * constants_t::getPackageName()
 {
     return "codegen_python_test";
 }

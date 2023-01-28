@@ -92,12 +92,12 @@ class {{enumtype.name}}
         /**
          * Returns "{{enumtype.name}}"
          */
-        inline static const char* getTypeName();
+        inline static constexpr const char* getTypeName();
 
         /**
          * Returns "{{enumtype.namespace}}"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline {{ size_t }} _encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const;
@@ -157,12 +157,12 @@ constexpr int64_t {{enumtype.name}}::getHash()
     return _computeHash(NULL);
 }
 
-const char* {{enumtype.name}}::getTypeName()
+constexpr const char* {{enumtype.name}}::getTypeName()
 {
     return "{{enumtype.name}}";
 }
 
-const char * {{enumtype.name}}::getPackageName()
+constexpr const char * {{enumtype.name}}::getPackageName()
 {
     return "{{enumtype.namespace}}";
 }

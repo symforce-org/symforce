@@ -75,7 +75,7 @@ class outputs_2_t
         /**
          * Returns "codegen_multi_function_test"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
         inline __lcm_buffer_size _encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const;
@@ -156,7 +156,7 @@ constexpr const char* outputs_2_t::getTypeName()
     return *outputs_2_t::getTypeNameArrayPtr();
 }
 
-const char * outputs_2_t::getPackageName()
+constexpr const char * outputs_2_t::getPackageName()
 {
     return "codegen_multi_function_test";
 }
