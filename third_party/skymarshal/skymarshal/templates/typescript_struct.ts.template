@@ -3,7 +3,7 @@
     Example: for num=2, you get [i0][i1]
 #}
 {%- macro chain_brackets(num) %}
-{% for i in range(num) %}[i{{i}}]{% endfor %}
+{% for i in range(num) %}[i{{i}}]!{% endfor %}
 {% endmacro -%}
 
 {#
@@ -271,12 +271,12 @@ import ReflectionMeta from "{{typescript_library_path}}/reflection";
 
 {# -- Define the lcm struct with decode methods -- #}
 export class {{struct_type.name}} extends LcmMsg {
-  ["constructor"]: typeof {{struct_type.name}};
+
   private static _hash = Long.fromString("{{struct_type.hash.int_value}}", true);
   private static _packed_fingerprint?: Long;
 
   /** @internal */
-  public static _get_packed_fingerprint(): Long {
+  public static override _get_packed_fingerprint(): Long {
     if ({{struct_type.name}}._packed_fingerprint === undefined) {
       {{struct_type.name}}._packed_fingerprint = {{struct_type.name}}._get_hash_recursive([]);
     }
@@ -284,7 +284,7 @@ export class {{struct_type.name}} extends LcmMsg {
   }
 
   /** @internal */
-  public static _get_hash_recursive(parents: any[]): Long {
+  public static override _get_hash_recursive(parents: any[]): Long {
     if (parents.indexOf({{struct_type.name}}) > -1) {
       return Long.fromNumber(0, true);
     }
@@ -299,7 +299,7 @@ export class {{struct_type.name}} extends LcmMsg {
   }
 
   /** @internal */
-  public static _reflection_meta: ReflectionMeta = {
+  public static override _reflection_meta: ReflectionMeta = {
 {% for member in struct_type.members %}
     {{member.name}}: {{member.type_reflection_dict}},
 {% endfor %}
@@ -315,7 +315,7 @@ export class {{struct_type.name}} extends LcmMsg {
   public {{member.name}}: {{member.type_declaration}};
 {% endfor %}
 
-  public decode(byte_array: Uint8Array): {{struct_type.name}} {
+  public override decode(byte_array: Uint8Array): {{struct_type.name}} {
     const decoder = new Decoder(new DataView(
       byte_array.buffer, byte_array.byteOffset, byte_array.byteLength
     ));
@@ -329,7 +329,7 @@ export class {{struct_type.name}} extends LcmMsg {
   }
 
   {# -- Generate decode, use indent to put it at right level -- #}
-  public decode_one(decoder: Decoder): {{struct_type.name}} {
+  public override decode_one(decoder: Decoder): {{struct_type.name}} {
 {% for member in struct_type.members -%}
   {{decode_member(member) | indent(2 * 2, true)}}
 {% endfor %}
@@ -345,7 +345,7 @@ export class {{struct_type.name}} extends LcmMsg {
     return total_size;
   }
 
-  public encode(): ArrayBuffer {
+  public override encode(): ArrayBuffer {
     const encoder = new Encoder(8 + this._get_encoded_size()); // hash + rest
     encoder.encode_hash({{struct_type.name}}._get_packed_fingerprint());
     this.encode_one(encoder);
@@ -353,7 +353,7 @@ export class {{struct_type.name}} extends LcmMsg {
     return encoder.view.buffer;
   }
 
-  public encode_one(encoder: Encoder): void {
+  public override encode_one(encoder: Encoder): void {
 {% for member in struct_type.members -%}
   {{encode_member(member) | indent(2 * 2, true)}}
 {% endfor %}
