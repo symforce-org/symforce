@@ -280,6 +280,23 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(sf.M12() * sf.M21(), sf.M11())
         self.assertEqual(sf.M21() * sf.M12(), sf.M22())
 
+    def test_lower_triangle(self) -> None:
+        """
+        Tests:
+            Matrix.lower_triangle
+        """
+        m11 = sf.M11(1)
+        self.assertEqual(m11, m11.lower_triangle())
+
+        m22 = sf.M22([[1, 2], [3, 4]])
+        self.assertEqual(sf.M22([[1, 0], [3, 4]]), m22.lower_triangle())
+
+        m33 = sf.Matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        self.assertEqual(sf.M33([[1, 0, 0], [4, 5, 0], [7, 8, 9]]), m33.lower_triangle())
+
+        self.assertRaises(ValueError, lambda: sf.M45().lower_triangle())
+        self.assertRaises(ValueError, lambda: sf.M54().lower_triangle())
+
     def test_row_col(self) -> None:
         """
         Tests:

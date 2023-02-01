@@ -487,6 +487,23 @@ class Matrix(Storage):
         """
         return Matrix(self.mat.transpose())
 
+    def lower_triangle(self: MatrixT) -> MatrixT:
+        """
+        Returns the lower triangle (including diagonal) of self
+
+        self must be square
+        """
+        rows, cols = self.shape
+        if rows != cols:
+            raise ValueError(
+                f"Attempted to take lower triangle of non-square matrix (found shape {self.shape})"
+            )
+
+        lt = self.__class__()
+        for k in range(rows):
+            lt[k, : k + 1] = self[k, : k + 1]
+        return lt
+
     def reshape(self, rows: int, cols: int) -> Matrix:
         return Matrix(self.mat.reshape(rows, cols))
 

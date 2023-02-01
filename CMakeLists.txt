@@ -280,6 +280,7 @@ install(DIRECTORY gen/cpp/ DESTINATION include FILES_MATCHING PATTERN "*.h" PATT
 
 if(SYMFORCE_BUILD_OPT)
   add_subdirectory(symforce/opt)
+  add_subdirectory(symforce/slam)
 endif()
 
 if(SYMFORCE_BUILD_CC_SYM)
