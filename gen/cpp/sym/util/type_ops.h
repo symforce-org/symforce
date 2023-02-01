@@ -24,6 +24,7 @@
 #include <sym/rot2.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
+#include <sym/unit3.h>
 #include <sym/util/typedefs.h>
 
 namespace sym {
@@ -55,6 +56,8 @@ static constexpr const bool kIsSparseEigenType =
         return func<sym::Pose2<Scalar>>(args...);                    \
       case type_t::POSE3:                                            \
         return func<sym::Pose3<Scalar>>(args...);                    \
+      case type_t::UNIT3:                                            \
+        return func<sym::Unit3<Scalar>>(args...);                    \
       case type_t::SCALAR:                                           \
         return func<Scalar>(args...);                                \
       case type_t::VECTOR1:                                          \

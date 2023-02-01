@@ -17,5 +17,6 @@ from .pose3 import Pose3
 from .rot2 import Rot2
 from .rot3 import Rot3
 from .spherical_camera_cal import SphericalCameraCal
+from .unit3 import Unit3
 
 epsilon = 2.220446049250313e-15

@@ -513,6 +513,87 @@ class GeoPackageTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             geo_class(R=4)  # type: ignore[arg-type]
 
+    def test_storage_ops_Unit3(self):
+        # type: () -> None
+        """
+        Tests:
+            sym.Unit3 StorageOps
+        """
+
+        geo_class = sym.Unit3
+        logger.debug("*** Testing StorageOps: %s ***", geo_class.__name__)
+
+        value = geo_class()
+        self.assertEqual(len(value.data), geo_class.storage_dim())
+
+        vec = value.to_storage()
+        self.assertTrue(len(vec) > 0)
+        self.assertEqual(len(vec), geo_class.storage_dim())
+        for i, element in enumerate(vec):
+            self.assertEqual(element, value.data[i])
+
+        value2 = geo_class.from_storage(vec)
+        self.assertEqual(value.data, value2.data)
+        vec[0] = 2.1
+        value3 = geo_class.from_storage(vec)
+        self.assertNotEqual(value.data, value3.data)
+
+    def test_group_ops_Unit3(self):
+        # type: () -> None
+        """
+        Tests:
+            sym.Unit3 GroupOps
+        """
+        geo_class = sym.Unit3
+        group_ops = sym.ops.unit3.GroupOps
+        logger.debug("*** Testing GroupOps: %s ***", geo_class.__name__)
+
+        identity = geo_class()
+
+        # TODO(Nathan): Consider reorganizing how the generated python geo package is structured so that
+        # each class doesn't have to use helper functions to call the underlying group_ops functions
+        # Example using the underlying group_ops implementation:
+        self.assertEqual(identity, group_ops.identity())
+
+        # Example using the helper functions:
+        self.assertEqual(identity, geo_class.identity())
+        self.assertEqual(identity, identity.compose(identity))
+        self.assertEqual(identity, identity.inverse())
+        self.assertEqual(identity, identity.between(identity))
+
+    def test_lie_group_ops_Unit3(self):
+        # type: () -> None
+        """
+        Tests:
+            sym.Unit3 LieGroupOps
+        """
+
+        geo_class = sym.Unit3
+        logger.debug("*** Testing LieGroupOps: %s ***", geo_class.__name__)
+
+        tangent_dim = geo_class.tangent_dim()
+        self.assertTrue(tangent_dim > 0)
+        self.assertTrue(tangent_dim <= geo_class.storage_dim())
+
+        perturbation = np.random.rand(tangent_dim)
+        value = geo_class.from_tangent(perturbation)
+        recovered_perturbation = geo_class.to_tangent(value)
+        np.testing.assert_almost_equal(perturbation, recovered_perturbation)
+
+        identity = geo_class.identity()
+        recovered_identity = value.retract(-recovered_perturbation)
+        np.testing.assert_almost_equal(recovered_identity.to_storage(), identity.to_storage())
+
+        perturbation_zero = identity.local_coordinates(recovered_identity)
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 0.0).to_storage(), identity.to_storage()
+        )
+        np.testing.assert_almost_equal(
+            identity.interpolate(value, 1.0).to_storage(), value.to_storage()
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

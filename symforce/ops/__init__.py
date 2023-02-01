@@ -79,5 +79,6 @@ LieGroupOps.register(sym.Rot2, SymClassLieGroupOps)
 LieGroupOps.register(sym.Rot3, SymClassLieGroupOps)
 LieGroupOps.register(sym.Pose2, SymClassLieGroupOps)
 LieGroupOps.register(sym.Pose3, SymClassLieGroupOps)
+LieGroupOps.register(sym.Unit3, SymClassLieGroupOps)
 
 StorageOps.register(sf.DataBuffer, DataBufferStorageOps)

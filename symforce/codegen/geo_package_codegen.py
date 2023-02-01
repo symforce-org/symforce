@@ -24,7 +24,7 @@ from symforce.codegen.ops_codegen_util import make_group_ops_funcs
 from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
 # Default geo types to generate
-DEFAULT_GEO_TYPES = (sf.Rot2, sf.Pose2, sf.Rot3, sf.Pose3)
+DEFAULT_GEO_TYPES = (sf.Rot2, sf.Pose2, sf.Rot3, sf.Pose3, sf.Unit3)
 
 
 def geo_class_common_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
@@ -60,6 +60,7 @@ def _matrix_type_aliases() -> T.Dict[T.Type, T.Dict[str, str]]:
         sf.Rot3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
         sf.Pose2: {"Eigen::Matrix<Scalar, 2, 1>": "Vector2"},
         sf.Pose3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
+        sf.Unit3: {"Eigen::Matrix<Scalar, 3, 1>": "Vector3"},
     }
 
 
@@ -163,6 +164,11 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
             Codegen.function(func=sf.Pose3.to_homogenous_matrix, config=config),
         ],
+        sf.Unit3: [
+            Codegen.function(func=sf.Unit3.from_vector, config=config),
+            Codegen.function(func=sf.Unit3.to_unit_vector, config=config),
+            Codegen.function(func=sf.Unit3.to_rotation, config=config),
+        ],
     }
 
 
@@ -193,11 +199,11 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
 
         for cls in DEFAULT_GEO_TYPES:
             data = geo_class_common_data(cls, config)
-            data["matrix_type_aliases"] = matrix_type_aliases[cls]
-            data["custom_generated_methods"] = custom_generated_methods[cls]
+            data["matrix_type_aliases"] = matrix_type_aliases.get(cls, {})
+            data["custom_generated_methods"] = custom_generated_methods.get(cls, {})
             if cls == sf.Pose2:
                 data["imported_classes"] = [sf.Rot2]
-            elif cls == sf.Pose3:
+            elif cls in (sf.Pose3, sf.Unit3):
                 data["imported_classes"] = [sf.Rot3]
 
             for base_dir, relative_path in (
@@ -251,8 +257,8 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
         # Build up templates for each type
         for cls in DEFAULT_GEO_TYPES:
             data = geo_class_common_data(cls, config)
-            data["matrix_type_aliases"] = matrix_type_aliases[cls]
-            data["custom_generated_methods"] = custom_generated_methods[cls]
+            data["matrix_type_aliases"] = matrix_type_aliases.get(cls, {})
+            data["custom_generated_methods"] = custom_generated_methods.get(cls, {})
 
             for base_dir, relative_path in (
                 ("geo_package", "CLASS.h"),

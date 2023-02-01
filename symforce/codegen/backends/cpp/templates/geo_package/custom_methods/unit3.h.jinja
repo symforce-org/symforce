@@ -1,0 +1,15 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+  {# Handwritten methods for Unit3 #}
+  Unit3(const Rot3<Scalar>& rotation) {
+    data_ = rotation.Data();
+  }
+
+  // Generate a random element in Unit3
+  template <typename Generator>
+  static Unit3 Random(Generator& gen) {
+    return FromVector(Rot3<Scalar>::Random(gen) * Vector3(0, 0, 1.0), kDefaultEpsilon<Scalar>);
+  }

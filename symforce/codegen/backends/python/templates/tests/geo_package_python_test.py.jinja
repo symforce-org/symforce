@@ -115,6 +115,9 @@ class GeoPackageTest(unittest.TestCase):
             identity.interpolate(value, 1.0).to_storage(), value.to_storage()
         )
 
+
+    {# Skip for Unit3 because the following tests are Rot/Pose specific #}
+    {% if "Rot" in cls.__name__ or "Pose" in cls.__name__ %}
     def test_custom_methods_{{ cls.__name__ }}(self):
         # type: () -> None
         """
@@ -147,6 +150,7 @@ class GeoPackageTest(unittest.TestCase):
         # Test constructor raises a IndexError if input is too large
         with self.assertRaises(IndexError):
             geo_class([1, 2, 3, 4, 5, 6])
+        {# Test specific to Pose type #}
         {% else %}
         vector_as_element = geo_class(t=vector.ravel().tolist())
         np.testing.assert_almost_equal(element * vector.ravel(), (element * vector_as_element).position())
@@ -180,6 +184,7 @@ class GeoPackageTest(unittest.TestCase):
             geo_class(R=4)  # type: ignore[arg-type]
         {% endif %}
 
+    {% endif %}
     {% endfor %}
 
 if __name__ == "__main__":

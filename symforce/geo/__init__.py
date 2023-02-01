@@ -24,3 +24,4 @@ from .pose3 import Pose3
 from .quaternion import Quaternion
 from .rot2 import Rot2
 from .rot3 import Rot3
+from .unit3 import Unit3

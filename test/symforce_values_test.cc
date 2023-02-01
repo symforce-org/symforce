@@ -19,6 +19,7 @@
 #include <sym/polynomial_camera_cal.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
+#include <sym/unit3.h>
 #include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 #include <symforce/opt/values.h>
@@ -210,6 +211,7 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
+  values.Set<sym::Unit3d>('R', sym::Unit3d::Identity());
   spdlog::debug(values);
 }
 
@@ -313,7 +315,7 @@ TEST_CASE("Test key update", "[values]") {
 }
 
 TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
-                           (sym::Rot2, sym::Pose2, sym::Rot3, sym::Pose3, sym::Vector1,
+                           (sym::Rot2, sym::Pose2, sym::Rot3, sym::Pose3, sym::Unit3, sym::Vector1,
                             sym::Vector3, sym::Vector9, sym::Matrix11, sym::Matrix33, sym::Matrix99,
                             sym::Matrix34),
                            (double, float)) {
@@ -322,7 +324,10 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
 
   spdlog::debug("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
                 typeid(T).name());
-  const Scalar epsilon = 1e-9;
+  constexpr Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
+  const Scalar tolerance = epsilon * 1000;
+  INFO(fmt::format("epsilon: {}\n", epsilon));
+  INFO(fmt::format("tolerance: {}\n", tolerance));
 
   // Create a values object that stores an identity element, and an index for it
   sym::Values<Scalar> v1;
@@ -337,16 +342,19 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
     const sym::Values<Scalar> v2 = v1;
 
     const T random_element = sym::StorageOps<T>::Random(gen);
+    INFO(fmt::format("random: {}\n", random_element));
     const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(random_element, epsilon);
+    INFO(fmt::format("tangent: {}\n", tangent_vec.transpose()));
 
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
     const T retracted_element = v1.template At<T>('x');
-    CHECK(sym::IsClose(random_element, retracted_element, 1e-6));
+    INFO(fmt::format("retract: {}\n", retracted_element));
+    CHECK(sym::IsClose(random_element, retracted_element, tolerance));
 
     // test local coordinates
     const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
-    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, 1e-6));
+    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, tolerance));
   }
 }
 

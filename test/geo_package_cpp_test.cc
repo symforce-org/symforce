@@ -27,6 +27,7 @@
 #include <sym/pose3.h>
 #include <sym/rot2.h>
 #include <sym/rot3.h>
+#include <sym/unit3.h>
 #include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 
@@ -34,6 +35,7 @@
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_pose3.h"
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_rot2.h"
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_rot3.h"
+#include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/tangent_d_storage/tangent_d_storage_unit3.h"
 
 TEST_CASE("Test Rot3", "[geo_package]") {
   // Make a random rotation
@@ -134,7 +136,7 @@ TEST_CASE("Test Rot2 and Pose2", "[geo_package]") {
 
 TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
                    sym::Pose2<double>, sym::Pose2<float>, sym::Rot3<double>, sym::Rot3<float>,
-                   sym::Pose3<double>, sym::Pose3<float>) {
+                   sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
 
   using Scalar = typename sym::StorageOps<T>::Scalar;
@@ -232,7 +234,7 @@ TEST_CASE("Test Matrix storage order is consistent with symbolic storage order")
 
 TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
                    sym::Pose2<double>, sym::Pose2<float>, sym::Rot3<double>, sym::Rot3<float>,
-                   sym::Pose3<double>, sym::Pose3<float>) {
+                   sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
 
   const T identity{};
@@ -385,7 +387,7 @@ struct TestIsClose<sym::Rot2<Scalar>> {
 
 TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
                    sym::Pose2<double>, sym::Pose2<float>, sym::Rot3<double>, sym::Rot3<float>,
-                   sym::Pose3<double>, sym::Pose3<float>) {
+                   sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
 
   using Scalar = typename sym::StorageOps<T>::Scalar;
