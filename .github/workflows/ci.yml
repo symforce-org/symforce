@@ -21,6 +21,15 @@ jobs:
           - C: gcc-11
             CXX: g++-11
             repos: ['"ppa:ubuntu-toolchain-r/test"']
+        exclude:
+          # NOTE(brad): No available pre-built wheel for lazy-object-proxy==1.9.0 for this
+          # combination. Local-build fails on pip 23.0.0, so we skip the test. Root cause of issue
+          # seems to come from https://github.com/pypa/pip/pull/11598, as
+          # sysconfig.get_paths(vars=vars, scheme="venv") gives the wrong paths. To build anyway,
+          # either modify pip to not take "venv" path, or just use pip 22.3.1 (version before this
+          # was added).
+          - os: ubuntu-18.04
+            python: python3.11
         include:
           # gcc 5
           - os: ubuntu-18.04

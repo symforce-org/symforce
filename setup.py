@@ -491,6 +491,8 @@ setup(
             "pip-tools<6.11",
             "pybind11-stubgen",
             "pylint",
+            # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
+            "lazy-object-proxy>=1.9.0",
             "types-jinja2",
             "types-pygments",
             "types-requests",
