@@ -69,6 +69,23 @@ class PyTorchCodePrinter(CodePrinter):
     and call some methods from that printer where desired.
     """
 
+    known_functions = _known_functions_torch
+    language = "Python"
+    _default_settings = dict(CodePrinter._default_settings, human=False)
+
+    def __init__(self, settings: T.Mapping[str, T.Any] = None):
+        if settings and settings.get("human", False):
+            raise ValueError("Setting `human=True` not supported for PyTorchCodePrinter")
+        super().__init__(settings)
+
+    def doprint(self, expr: sympy.Expr, assign_to: T.Any = None) -> str:
+        _, not_supported, result = super().doprint(expr, assign_to)
+        if not_supported:
+            raise NotImplementedError(
+                f"Tried to print the following unsupported expressions: {not_supported}"
+            )
+        return result
+
     def _format_code(self, lines: T.List[str]) -> T.List[str]:
         return lines
 
@@ -87,6 +104,9 @@ class PyTorchCodePrinter(CodePrinter):
     def _print_Rational(self, expr: sympy.Rational) -> str:
         # This is py3-only, need decimal points if we want py2
         return f"torch.tensor({expr.p}/{expr.q}, **tensor_kwargs)"
+
+    def _print_Float(self, flt: sympy.Float) -> str:
+        return f"torch.tensor({super()._print_Float(flt)}, **tensor_kwargs)"
 
     def _print_frac(self, expr: sympy.frac) -> str:
         return self._print_Mod(sympy.Mod(expr.args[0], 1))
@@ -147,7 +167,11 @@ class PyTorchCodePrinter(CodePrinter):
     # of CodePrinter. I don't know of any other way to resolve this issue other than to
     # to type ignore.
     def _print_Heaviside(self, expr: "sympy.Heaviside") -> str:  # type: ignore[override]
-        return f"torch.heaviside({self._print(expr)}, values=torch.tensor(1.0, **tensor_kwargs))"
+        return f"torch.heaviside({self._print(expr.args[0])}, values=torch.tensor(1.0, **tensor_kwargs))"
+
+    def _print_gamma(self, expr: sympy.functions.special.gamma_functions.gamma) -> str:
+        # PyTorch does not have the gamma function, this is the best we can do
+        return f"torch.lgamma({self._print(expr.args[0])}).exp()"
 
 
 for k in _known_functions_torch:

@@ -394,12 +394,18 @@ class Codegen:
 
     @functools.cached_property
     def print_code_results(self) -> codegen_util.PrintCodeResult:
-        return codegen_util.print_code(
-            inputs=self.inputs,
-            outputs=self.outputs,
-            sparse_mat_data=self.sparse_mat_data,
-            config=self.config,
-        )
+        try:
+            return codegen_util.print_code(
+                inputs=self.inputs,
+                outputs=self.outputs,
+                sparse_mat_data=self.sparse_mat_data,
+                config=self.config,
+            )
+        # Jinja catches some exception types from templates and swallows them or rewrites them - to
+        # avoid this we re-raise as `CodeGenerationException`
+        # See for example `jinja2/environment.py:466`
+        except (TypeError, LookupError, AttributeError) as ex:
+            raise CodeGenerationException("Exception printing code results, see above") from ex
 
     @functools.cached_property
     def unused_arguments(self) -> T.List[str]:

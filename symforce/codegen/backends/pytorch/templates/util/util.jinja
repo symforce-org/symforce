@@ -20,7 +20,7 @@
     {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'DataBuffer' -%}
         {{ raise('PyTorch backend does not support DataBuffers, got DataBuffer for "{}"'.format(name)) }}
-    {%- elif T.__name__ == 'Symbol' or is_symbolic(T_or_value) -%}
+    {%- elif T.__name__ == 'Symbol' or is_symbolic(T_or_value) or T.__name__ == "float" -%}
         torch.Tensor
     {%- elif T.__name__ == 'NoneType' -%}
         None
@@ -152,7 +152,7 @@ def {{ function_name_and_args(spec) }}:
     # Input arrays
     {% for name, type in spec.inputs.items() %}
         {% set T = typing_util.get_type(type) %}
-        {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
+        {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) and not T.__name__ == "float" %}
     _{{ name }} = {{ name }}.data
         {% endif %}
     {% endfor %}
@@ -193,7 +193,7 @@ def {{ function_name_and_args(spec) }}:
             {% else %}
     ], dim=-1)
             {% endif %}
-        {% elif not is_symbolic(type) %}
+        {% elif not (is_symbolic(type) or T.__name__ == "float") %}
             {{ raise('PyTorch backend does not support Sequence outputs, got output "{}" of type `{}`'.format(name, type)) }}
         {% else %}
     _{{name}} = {{ terms[0][1] }}
@@ -207,7 +207,7 @@ def {{ function_name_and_args(spec) }}:
     return
     {%- for name, type in spec.outputs.items() %}
         {% set T = typing_util.get_type(type) %}
-        {% if issubclass(T, Matrix) or is_symbolic(type) %}
+        {% if issubclass(T, Matrix) or is_symbolic(type) or T.__name__ == "float" %}
  _{{name}}
         {%- else -%}
             {{ raise('PyTorch backend only supports sf.Scalar and sf.Matrix outputs, got output "{}" of type `{}`'.format(name, T)) }}
