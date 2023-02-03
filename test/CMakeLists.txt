@@ -58,6 +58,7 @@ foreach(SOURCE_FILE ${SYMFORCE_TEST_CC_SOURCES})
     symforce_opt
     symforce_examples
     symforce_test
+    symforce_slam
   )
 
   list(APPEND SYMFORCE_CC_TEST_TARGETS ${TARGET_NAME})
