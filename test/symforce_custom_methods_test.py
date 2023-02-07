@@ -6,7 +6,6 @@
 import numpy as np
 
 import symforce.symbolic as sf
-from symforce import typing as T
 from symforce.test_util import TestCase
 
 

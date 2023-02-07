@@ -7,7 +7,6 @@ import numpy as np
 
 import symforce
 import symforce.symbolic as sf
-from symforce import typing as T
 from symforce.test_util import TestCase
 from symforce.test_util import epsilon_handling
 from symforce.test_util import expected_failure_on_sympy

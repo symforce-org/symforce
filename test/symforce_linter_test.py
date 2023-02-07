@@ -10,7 +10,6 @@ import unittest
 
 from symforce import logger
 from symforce import python_util
-from symforce import typing as T
 from symforce.test_util import TestCase
 from symforce.test_util import slow_on_sympy
 
@@ -26,7 +25,7 @@ class SymforceLinterTest(TestCase):
     @unittest.skipIf(
         sys.version_info[:3] >= (3, 10, 7),
         """
-        Mypy fails on Python 3.10.7 because of this bug, which has a fix that is not released yet:
+        Mypy fails on Python 3.10.7 because of this bug, which is fixed in mypy 0.981:
         https://github.com/python/mypy/issues/13627
         """,
     )

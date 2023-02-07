@@ -9,7 +9,6 @@ import sys
 
 from symforce import logger
 from symforce import python_util
-from symforce import typing as T
 from symforce.test_util import TestCase
 from symforce.test_util import slow_on_sympy
 

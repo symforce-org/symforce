@@ -10,7 +10,6 @@ symforce.set_epsilon_to_symbol()
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import path_util
-from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
 from symforce.test_util import TestCase
 

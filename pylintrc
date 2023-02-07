@@ -107,6 +107,7 @@ disable=raw-checker-failed,
         unspecified-encoding,
         wrong-import-position,
         unnecessary-lambda-assignment,
+        use-dict-literal,
 
         # These have some false positives and mypy seems to handle them much better
         abstract-method,
@@ -602,5 +603,5 @@ min-public-methods=2
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "BaseException, Exception".
-overgeneral-exceptions=BaseException,
-                       Exception
+overgeneral-exceptions=builtins.BaseException,
+                       builtins.Exception

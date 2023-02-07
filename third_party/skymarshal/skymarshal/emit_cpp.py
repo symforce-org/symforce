@@ -410,7 +410,7 @@ class CppStruct(StructBuilder, CppBase):
                     size_str = ("v_%s" if virtual else "this->%s") % member.name
                     code(
                         1,
-                        "tlen = __%s_encode_array(buf, offset + pos, maxlen - pos," " &%s, 1);",
+                        "tlen = __%s_encode_array(buf, offset + pos, maxlen - pos, &%s, 1);",
                         map_to_functype(member.type_ref),
                         size_str,
                     )
@@ -601,7 +601,7 @@ class CppStruct(StructBuilder, CppBase):
                 size_str = ("v_%s" if virtual else "this->%s") % member.name
                 code(
                     1,
-                    "tlen = __%s_decode_array(buf, offset + pos, maxlen - pos, &%s," " 1);",
+                    "tlen = __%s_decode_array(buf, offset + pos, maxlen - pos, &%s, 1);",
                     map_to_functype(member.type_ref),
                     size_str,
                 )

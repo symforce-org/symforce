@@ -78,7 +78,7 @@ lint: check_types check_format pylint
 clean: docs_clean coverage_clean
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all reqs format check_format check_types lint clean
+.PHONY: all reqs format check_format check_types pylint lint clean
 
 # -----------------------------------------------------------------------------
 # Tests

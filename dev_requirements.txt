@@ -15,7 +15,7 @@ argh==0.26.2
     # via
     #   skymarshal
     #   symforce (setup.py)
-astroid==2.12.13
+astroid==2.14.1
     # via pylint
 asttokens==2.2.1
     # via stack-data
@@ -252,7 +252,7 @@ pygments==2.13.0
     #   ipython
     #   nbconvert
     #   sphinx
-pylint==2.15.9
+pylint==2.16.0
     # via symforce (setup.py)
 pyparsing==3.0.9
     # via matplotlib

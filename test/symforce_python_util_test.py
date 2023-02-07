@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 from symforce import python_util
-from symforce import typing as T
 from symforce.test_util import TestCase
 
 

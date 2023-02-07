@@ -6,7 +6,6 @@
 import sys
 from pathlib import Path
 
-from symforce import typing as T
 from symforce.codegen import codegen_util
 from symforce.test_util import TestCase
 

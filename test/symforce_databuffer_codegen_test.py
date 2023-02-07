@@ -13,7 +13,6 @@ symforce.set_epsilon_to_symbol()
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import path_util
-from symforce import typing as T
 from symforce.codegen import codegen_util
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer

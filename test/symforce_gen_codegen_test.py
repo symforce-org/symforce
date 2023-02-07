@@ -18,7 +18,6 @@ from symforce import codegen
 from symforce import ops
 from symforce import path_util
 from symforce import python_util
-from symforce import typing as T
 from symforce.codegen import cam_package_codegen
 from symforce.codegen import codegen_util
 from symforce.codegen import geo_factors_codegen
