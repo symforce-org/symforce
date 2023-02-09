@@ -47,7 +47,7 @@ jobs:
         CIBW_BUILD: ${{ matrix.python-version }}-*
         CIBW_ARCHS_MACOS: ${{ matrix.arch }}
         CIBW_BUILD_FRONTEND: build
-        GMP_ROOT: /Users/runner/work/symforce/symforce/arm-homebrew/opt/gmp
+        GMP_ROOT: /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/arm-homebrew/opt/gmp
         CIBW_BEFORE_BUILD: ./.github/scripts/mac_install_gmp.sh
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
 
