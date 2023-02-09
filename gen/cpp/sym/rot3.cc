@@ -211,6 +211,40 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Eigen::Matrix<Scalar
   return sym::Rot3<Scalar>(_res);
 }
 
+template <typename Scalar>
+sym::Rot3<Scalar> sym::Rot3<Scalar>::FromTwoUnitVectors(const Eigen::Matrix<Scalar, 3, 1>& a,
+                                                        const Eigen::Matrix<Scalar, 3, 1>& b,
+                                                        const Scalar epsilon) {
+  // Total ops: 44
+
+  // Input arrays
+
+  // Intermediate terms (7)
+  const Scalar _tmp0 =
+      Scalar(1) / Scalar(2) - Scalar(1) / Scalar(2) *
+                                  (((std::pow(a(1, 0), Scalar(2)) + std::pow(a(2, 0), Scalar(2)) -
+                                     std::pow(epsilon, Scalar(2))) > 0) -
+                                   ((std::pow(a(1, 0), Scalar(2)) + std::pow(a(2, 0), Scalar(2)) -
+                                     std::pow(epsilon, Scalar(2))) < 0));
+  const Scalar _tmp1 = a(0, 0) * b(0, 0) + a(1, 0) * b(1, 0) + a(2, 0) * b(2, 0);
+  const Scalar _tmp2 =
+      (((-epsilon + std::fabs(_tmp1 + 1)) > 0) - ((-epsilon + std::fabs(_tmp1 + 1)) < 0)) + 1;
+  const Scalar _tmp3 = (Scalar(1) / Scalar(2)) * _tmp2;
+  const Scalar _tmp4 = 1 - _tmp3;
+  const Scalar _tmp5 = std::sqrt(Scalar(2 * _tmp1 + epsilon + 2));
+  const Scalar _tmp6 = _tmp3 / _tmp5;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = _tmp4 * (1 - _tmp0) + _tmp6 * (a(1, 0) * b(2, 0) - a(2, 0) * b(1, 0));
+  _res[1] = _tmp0 * _tmp4 + _tmp6 * (-a(0, 0) * b(2, 0) + a(2, 0) * b(0, 0));
+  _res[2] = _tmp6 * (a(0, 0) * b(1, 0) - a(1, 0) * b(0, 0));
+  _res[3] = (Scalar(1) / Scalar(4)) * _tmp2 * _tmp5;
+
+  return sym::Rot3<Scalar>(_res);
+}
+
 // Explicit instantiation
 template class sym::Rot3<double>;
 template class sym::Rot3<float>;

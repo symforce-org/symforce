@@ -258,6 +258,88 @@ class Rot3(object):
         _res[3] = _tmp1 * _tmp11 + _tmp12 * _tmp7
         return Rot3.from_storage(_res)
 
+    @staticmethod
+    def from_angle_axis(angle, axis):
+        # type: (float, numpy.ndarray) -> Rot3
+        """
+        Construct from an angle in radians and a (normalized) axis as a 3-vector.
+        """
+
+        # Total ops: 6
+
+        # Input arrays
+        if axis.shape == (3,):
+            axis = axis.reshape((3, 1))
+        elif axis.shape != (3, 1):
+            raise IndexError(
+                "axis is expected to have shape (3, 1) or (3,); instead had shape {}".format(
+                    axis.shape
+                )
+            )
+
+        # Intermediate terms (2)
+        _tmp0 = (1.0 / 2.0) * angle
+        _tmp1 = math.sin(_tmp0)
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = _tmp1 * axis[0, 0]
+        _res[1] = _tmp1 * axis[1, 0]
+        _res[2] = _tmp1 * axis[2, 0]
+        _res[3] = math.cos(_tmp0)
+        return Rot3.from_storage(_res)
+
+    @staticmethod
+    def from_two_unit_vectors(a, b, epsilon):
+        # type: (numpy.ndarray, numpy.ndarray, float) -> Rot3
+        """
+        Return a rotation that transforms a to b. Both inputs are three-vectors that
+        are expected to be normalized.
+
+        Reference:
+            http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
+        """
+
+        # Total ops: 44
+
+        # Input arrays
+        if a.shape == (3,):
+            a = a.reshape((3, 1))
+        elif a.shape != (3, 1):
+            raise IndexError(
+                "a is expected to have shape (3, 1) or (3,); instead had shape {}".format(a.shape)
+            )
+
+        if b.shape == (3,):
+            b = b.reshape((3, 1))
+        elif b.shape != (3, 1):
+            raise IndexError(
+                "b is expected to have shape (3, 1) or (3,); instead had shape {}".format(b.shape)
+            )
+
+        # Intermediate terms (7)
+        _tmp0 = 1.0 / 2.0 - 1.0 / 2.0 * (
+            0.0
+            if a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon ** 2 == 0
+            else math.copysign(1, a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon ** 2)
+        )
+        _tmp1 = a[0, 0] * b[0, 0] + a[1, 0] * b[1, 0] + a[2, 0] * b[2, 0]
+        _tmp2 = (
+            0.0 if -epsilon + abs(_tmp1 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp1 + 1))
+        ) + 1
+        _tmp3 = (1.0 / 2.0) * _tmp2
+        _tmp4 = 1 - _tmp3
+        _tmp5 = math.sqrt(2 * _tmp1 + epsilon + 2)
+        _tmp6 = _tmp3 / _tmp5
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = _tmp4 * (1 - _tmp0) + _tmp6 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0])
+        _res[1] = _tmp0 * _tmp4 + _tmp6 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0])
+        _res[2] = _tmp6 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0])
+        _res[3] = (1.0 / 4.0) * _tmp2 * _tmp5
+        return Rot3.from_storage(_res)
+
     # --------------------------------------------------------------------------
     # StorageOps concept
     # --------------------------------------------------------------------------

@@ -132,6 +132,9 @@ class Rot3 {
 
   static sym::Rot3<Scalar> FromYawPitchRoll(const Vector3& ypr);
 
+  static sym::Rot3<Scalar> FromTwoUnitVectors(const Vector3& a, const Vector3& b,
+                                              const Scalar epsilon);
+
   // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------
