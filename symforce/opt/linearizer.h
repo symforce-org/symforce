@@ -213,3 +213,7 @@ std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factor
 }  // namespace sym
 
 #include "./linearizer.tcc"
+
+// Explicit instantiation declaration
+extern template class sym::Linearizer<double>;
+extern template class sym::Linearizer<float>;
