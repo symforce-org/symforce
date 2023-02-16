@@ -337,3 +337,7 @@ std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factorf_
 
 // Template method implementations
 #include "./factor.tcc"
+
+// Explicit instantiation declarations
+extern template class sym::Factor<double>;
+extern template class sym::Factor<float>;

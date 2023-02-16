@@ -5,6 +5,9 @@
 
 #pragma once
 
+// Required by MetisSupport
+#include <iostream>
+
 #include <Eigen/Dense>
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
@@ -132,3 +135,7 @@ class SparseSchurSolver {
 }  // namespace sym
 
 #include "./sparse_schur_solver.tcc"
+
+// Explicit instantiation declaration
+extern template class sym::SparseSchurSolver<Eigen::SparseMatrix<double>>;
+extern template class sym::SparseSchurSolver<Eigen::SparseMatrix<float>>;

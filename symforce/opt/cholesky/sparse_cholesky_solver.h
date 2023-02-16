@@ -157,3 +157,9 @@ class SparseCholeskySolver {
 // Include implementation, yay templates.
 #define SYM_SPARSE_CHOLESKY_SOLVER_H
 #include "./sparse_cholesky_solver.tcc"
+
+// Explicit template instantiation declarations
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<double>, Eigen::Upper>;
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<double>, Eigen::Lower>;
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<float>, Eigen::Upper>;
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<float>, Eigen::Lower>;

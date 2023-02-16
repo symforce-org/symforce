@@ -275,3 +275,12 @@ std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v);
 
 // Template method implementations
 #include "./values.tcc"
+
+// Explicit instantiation declarations
+extern template class sym::Values<double>;
+extern template class sym::Values<float>;
+
+extern template sym::Values<double> sym::Values<double>::Cast<double>() const;
+extern template sym::Values<float> sym::Values<double>::Cast<float>() const;
+extern template sym::Values<double> sym::Values<float>::Cast<double>() const;
+extern template sym::Values<float> sym::Values<float>::Cast<float>() const;

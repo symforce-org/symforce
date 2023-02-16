@@ -83,3 +83,7 @@ using Linearizationd = Linearization<double>;
 using Linearizationf = Linearization<float>;
 
 }  // namespace sym
+
+// Explicit instantiation declarations
+extern template struct sym::Linearization<double>;
+extern template struct sym::Linearization<float>;

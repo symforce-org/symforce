@@ -124,3 +124,7 @@ class GncOptimizer : public BaseOptimizerType {
 };
 
 }  // namespace sym
+
+// Explicit instantiation declarations
+extern template class sym::GncOptimizer<sym::Optimizer<double>>;
+extern template class sym::GncOptimizer<sym::Optimizer<float>>;

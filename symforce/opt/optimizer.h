@@ -300,3 +300,7 @@ optimizer_params_t DefaultOptimizerParams();
 }  // namespace sym
 
 #include "./optimizer.tcc"
+
+// Explicit instantiation declaration
+extern template class sym::Optimizer<double>;
+extern template class sym::Optimizer<float>;
