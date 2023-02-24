@@ -482,8 +482,7 @@ setup(
             "isort",
             "jinja2~=3.0.3",
             "mypy==0.910",
-            # Not compatible with py3.11 yet:
-            # https://github.com/aaron-skydio/symforce/actions/runs/3348988114/jobs/5548593278
+            # Not compatible with py3.11 yet: https://github.com/numba/numba/issues/8304
             "numba ; python_version < '3.11'",
             # A dependency of numba, only required here because pip-tools does not automatically
             # propagate python_version to dependencies

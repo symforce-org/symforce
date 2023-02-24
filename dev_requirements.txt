@@ -9,13 +9,13 @@
 # Create a requirement incompatible with python < 3.8
 symforce_requires_python_38_or_higher___your_python_version_is_incompatible; python_version < '3.8'
 
-alabaster==0.7.12
+alabaster==0.7.13
     # via sphinx
-argh==0.26.2
+argh==0.28.1
     # via
     #   skymarshal
     #   symforce (setup.py)
-astroid==2.14.1
+astroid==2.14.2
     # via pylint
 asttokens==2.2.1
     # via stack-data
@@ -25,40 +25,40 @@ babel==2.11.0
     # via sphinx
 backcall==0.2.0
     # via ipython
-beautifulsoup4==4.11.1
+beautifulsoup4==4.11.2
     # via nbconvert
 black[jupyter]==21.12b0
     # via symforce (setup.py)
-bleach==5.0.1
+bleach==6.0.0
     # via nbconvert
 breathe==4.34.0
     # via symforce (setup.py)
-build==0.9.0
+build==0.10.0
     # via pip-tools
 certifi==2022.12.7
     # via requests
-charset-normalizer==2.1.1
+charset-normalizer==3.0.1
     # via requests
-clang-format==15.0.6
+clang-format==15.0.7
     # via symforce (setup.py)
 click==8.0.4
     # via
     #   black
     #   pip-tools
     #   symforce (setup.py)
-cmake==3.25.0
+cmake==3.25.2
     # via symforce (setup.py)
 comm==0.1.2
     # via ipykernel
-contourpy==1.0.6
+contourpy==1.0.7
     # via matplotlib
-coverage==7.0.1
+coverage==7.2.0
     # via symforce (setup.py)
 cycler==0.11.0
     # via matplotlib
-cython==0.29.32
+cython==0.29.33
     # via symforce (setup.py)
-debugpy==1.6.4
+debugpy==1.6.6
     # via ipykernel
 decorator==5.1.1
     # via ipython
@@ -72,8 +72,6 @@ docutils==0.19
     #   myst-parser
     #   nbsphinx
     #   sphinx
-entrypoints==0.4
-    # via jupyter-client
 executing==1.2.0
     # via stack-data
 fastjsonschema==2.16.2
@@ -86,22 +84,25 @@ idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==5.2.0
+importlib-metadata==6.0.0
     # via
+    #   jupyter-client
     #   nbconvert
     #   numba
     #   sphinx
-importlib-resources==5.10.1
-    # via jsonschema
-ipykernel==6.19.4
+importlib-resources==5.12.0
+    # via
+    #   jsonschema
+    #   matplotlib
+ipykernel==6.21.2
     # via symforce (setup.py)
-ipython==8.7.0
+ipython==8.10.0
     # via
     #   black
     #   ipykernel
 ipython-genutils==0.2.0
     # via symforce (setup.py)
-isort==5.11.4
+isort==5.12.0
     # via
     #   pylint
     #   symforce (setup.py)
@@ -117,12 +118,13 @@ jinja2==3.0.3
     #   symforce (setup.py)
 jsonschema==4.17.3
     # via nbformat
-jupyter-client==7.4.8
+jupyter-client==8.0.3
     # via
     #   ipykernel
     #   nbclient
-jupyter-core==5.1.1
+jupyter-core==5.2.0
     # via
+    #   ipykernel
     #   jupyter-client
     #   nbclient
     #   nbconvert
@@ -139,15 +141,15 @@ llvmlite==0.39.1 ; python_version < "3.11"
     # via
     #   numba
     #   symforce (setup.py)
-markdown-it-py==2.1.0
+markdown-it-py==2.2.0
     # via
     #   mdit-py-plugins
     #   myst-parser
-markupsafe==2.1.1
+markupsafe==2.1.2
     # via
     #   jinja2
     #   nbconvert
-matplotlib==3.6.2
+matplotlib==3.7.0
     # via symforce (setup.py)
 matplotlib-inline==0.1.6
     # via
@@ -155,17 +157,17 @@ matplotlib-inline==0.1.6
     #   ipython
 mccabe==0.7.0
     # via pylint
-mdit-py-plugins==0.3.3
+mdit-py-plugins==0.3.4
     # via myst-parser
 mdurl==0.1.2
     # via markdown-it-py
-mistune==2.0.4
+mistune==2.0.5
     # via nbconvert
 mpmath==1.2.1
     # via sympy
 mypy==0.910
     # via symforce (setup.py)
-mypy-extensions==0.4.3
+mypy-extensions==0.4.4
     # via
     #   black
     #   mypy
@@ -173,22 +175,20 @@ myst-parser==0.18.1
     # via symforce (setup.py)
 nbclient==0.7.2
     # via nbconvert
-nbconvert==7.2.7
+nbconvert==7.2.9
     # via nbsphinx
-nbformat==5.7.1
+nbformat==5.7.3
     # via
     #   nbclient
     #   nbconvert
     #   nbsphinx
     #   nbstripout
-nbsphinx==0.8.10
+nbsphinx==0.8.12
     # via symforce (setup.py)
 nbstripout==0.6.1
     # via symforce (setup.py)
 nest-asyncio==1.5.6
-    # via
-    #   ipykernel
-    #   jupyter-client
+    # via ipykernel
 numba==0.56.4 ; python_version < "3.11"
     # via symforce (setup.py)
 numpy==1.23.5
@@ -201,43 +201,41 @@ numpy==1.23.5
     #   skymarshal
     #   symforce (setup.py)
     #   symforce-sym
-packaging==22.0
+packaging==23.0
     # via
     #   build
     #   ipykernel
     #   matplotlib
     #   nbconvert
     #   sphinx
-pandas==1.5.2
+pandas==1.5.3
     # via symforce (setup.py)
 pandocfilters==1.5.0
     # via nbconvert
 parso==0.8.3
     # via jedi
-pathspec==0.10.3
+pathspec==0.11.0
     # via black
-pep517==0.13.0
-    # via build
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pillow==9.3.0
+pillow==9.4.0
     # via matplotlib
 pip-tools==6.10.0
     # via symforce (setup.py)
 pkgutil-resolve-name==1.3.10
     # via jsonschema
-platformdirs==2.6.0
+platformdirs==3.0.0
     # via
     #   black
     #   jupyter-core
     #   pylint
-plotly==5.11.0
+plotly==5.13.0
     # via symforce (setup.py)
 ply==3.11
     # via skymarshal
-prompt-toolkit==3.0.36
+prompt-toolkit==3.0.37
     # via ipython
 psutil==5.9.4
     # via ipykernel
@@ -245,41 +243,42 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.2
     # via stack-data
-pybind11-stubgen==0.11.0
+pybind11-stubgen==0.12.0
     # via symforce (setup.py)
-pygments==2.13.0
+pygments==2.14.0
     # via
     #   ipython
     #   nbconvert
     #   sphinx
-pylint==2.16.0
+pylint==2.16.2
     # via symforce (setup.py)
 pyparsing==3.0.9
     # via matplotlib
-pyrsistent==0.19.2
+pyproject-hooks==1.0.0
+    # via build
+pyrsistent==0.19.3
     # via jsonschema
 python-dateutil==2.8.2
     # via
     #   jupyter-client
     #   matplotlib
     #   pandas
-pytz==2022.7
+pytz==2022.7.1
     # via
     #   babel
     #   pandas
 pyyaml==6.0
     # via myst-parser
-pyzmq==24.0.1
+pyzmq==25.0.0
     # via
     #   ipykernel
     #   jupyter-client
-requests==2.28.1
+requests==2.28.2
     # via sphinx
-scipy==1.9.3
+scipy==1.10.1
     # via symforce (setup.py)
 six==1.16.0
     # via
-    #   asttokens
     #   bleach
     #   python-dateutil
     #   skymarshal
@@ -287,7 +286,7 @@ file:./third_party/skymarshal
     # via symforce (setup.py)
 snowballstemmer==2.2.0
     # via sphinx
-soupsieve==2.3.2.post1
+soupsieve==2.4
     # via beautifulsoup4
 sphinx==5.3.0
     # via
@@ -298,11 +297,11 @@ sphinx==5.3.0
     #   symforce (setup.py)
 sphinx-autodoc-typehints==1.14.1
     # via symforce (setup.py)
-sphinxcontrib-applehelp==1.0.2
+sphinxcontrib-applehelp==1.0.4
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.0
+sphinxcontrib-htmlhelp==2.0.1
     # via sphinx
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
@@ -316,7 +315,7 @@ file:./gen/python
     # via symforce (setup.py)
 sympy==1.11.1
     # via symforce (setup.py)
-tenacity==8.1.0
+tenacity==8.2.1
     # via plotly
 tinycss2==1.2.1
     # via nbconvert
@@ -328,15 +327,15 @@ tomli==1.2.3
     # via
     #   black
     #   build
-    #   pep517
     #   pylint
+    #   pyproject-hooks
 tomlkit==0.11.6
     # via pylint
 tornado==6.2
     # via
     #   ipykernel
     #   jupyter-client
-traitlets==5.8.0
+traitlets==5.9.0
     # via
     #   comm
     #   ipykernel
@@ -348,32 +347,34 @@ traitlets==5.8.0
     #   nbconvert
     #   nbformat
     #   nbsphinx
-types-docutils==0.19.1.1
-    # via types-pygments
+types-docutils==0.19.1.6
+    # via
+    #   types-pygments
+    #   types-setuptools
 types-jinja2==2.11.9
     # via symforce (setup.py)
 types-markupsafe==1.1.10
     # via types-jinja2
-types-pygments==2.13.1.1
+types-pygments==2.14.0.5
     # via symforce (setup.py)
-types-requests==2.28.11.7
+types-requests==2.28.11.14
     # via symforce (setup.py)
-types-setuptools==65.6.0.2
+types-setuptools==67.4.0.1
     # via
     #   symforce (setup.py)
     #   types-pygments
-types-urllib3==1.26.25.4
+types-urllib3==1.26.25.7
     # via types-requests
-typing-extensions==4.4.0
+typing-extensions==4.5.0
     # via
     #   astroid
     #   black
     #   mypy
     #   myst-parser
     #   pylint
-urllib3==1.26.13
+urllib3==1.26.14
     # via requests
-wcwidth==0.2.5
+wcwidth==0.2.6
     # via prompt-toolkit
 webencodings==0.5.1
     # via
@@ -385,17 +386,17 @@ wheel==0.38.4
     #   symforce (setup.py)
 wrapt==1.14.1
     # via astroid
-zipp==3.11.0
+zipp==3.14.0
     # via
     #   importlib-metadata
     #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==22.3.1
+pip==23.0.1
     # via
     #   pip-tools
     #   symforce (setup.py)
-setuptools==65.6.3
+setuptools==67.4.0
     # via
     #   numba
     #   pip-tools
