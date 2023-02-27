@@ -68,7 +68,7 @@ if (NOT tl_optional_FOUND)
       tl_optional
       GIT_REPOSITORY https://github.com/TartanLlama/optional
       # NOTE: This pulls in TartanLlama/optional#45, which is not yet in any tagged releases.
-      GIT_TAG c28fcf74d207fc667c4ed3dbae4c251ea551c8c1
+      GIT_TAG 3a1209de8370bf5fe16362934956144b49591565 # v1.1.0
       GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(tl_optional)
