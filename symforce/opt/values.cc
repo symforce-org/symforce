@@ -65,7 +65,7 @@ void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& oth
 }
 
 template <typename Scalar>
-int32_t Values<Scalar>::NumEntries() const {
+size_t Values<Scalar>::NumEntries() const {
   return map_.size();
 }
 

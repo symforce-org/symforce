@@ -93,7 +93,7 @@ class Values {
   /**
    * Number of keys.
    */
-  int32_t NumEntries() const;
+  size_t NumEntries() const;
 
   /**
    * Has zero keys.
