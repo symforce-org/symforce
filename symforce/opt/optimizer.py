@@ -27,6 +27,22 @@ class Optimizer:
     Typical usage is to construct an Optimizer from a set of factors and keys to optimize, and then
     call `optimize` repeatedly with a `Values`.
 
+    Example creation with a single `Factor`:
+
+        factor = Factor(
+            [my_key_0, my_key_1, my_key_2], my_residual_function
+        )
+        optimizer = Optimizer(
+            factors=[factor],
+            optimized_keys=[my_key_0, my_key_1],
+        )
+
+    And usage:
+
+        initial_guess = Values(...)
+        result = optimizer.optimize(initial_guess)
+        print(result.optimized_values)
+
     Example creation with an `OptimizationProblem` using `make_numeric_factors()`. The linearization
     functions are generated in `make_numeric_factors()` and are linearized with respect to
     `problem.optimized_keys()`.
@@ -43,22 +59,6 @@ class Optimizer:
         problem = OptimizationProblem(subproblems=[...], residual_blocks=...)
         factors = problem.make_symbolic_factors("my_problem")
         optimizer = Optimizer(factors, problem.optimized_keys())
-
-    Example creation with a single `Factor`:
-
-        factor = Factor(
-            [my_key_0, my_key_1, my_key_2], my_residual_function
-        )
-        optimizer = Optimizer(
-            factors=[factor],
-            optimized_keys=[my_key_0, my_key_1],
-        )
-
-    And usage:
-
-        initial_guess = Values(...)
-        result = optimizer.optimize(initial_guess)
-        print(result.optimized_values)
 
     Wraps the C++ `sym::Optimizer` class in `opt/optimizer.h`, so the API is mostly the same and
     optimization results will be identical.
