@@ -124,9 +124,10 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
     def test_matrix_operations(self) -> None:
         """
         Tests:
-            Matrix.Matrix_inverse
+            Matrix.inv()
             Matrix.__add__ (scalar_like)
             Matrix.__div__ (scalar_like)
+            Matrix.det()
         """
 
         test_matrix = sf.Matrix([[2, 0], [0, 4]])
@@ -138,6 +139,8 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         diag_matrix = 2 * sf.Matrix.eye(2)
         self.assertEqual(sf.Matrix.eye(2), diag_matrix / 2)
         self.assertEqual(sf.Matrix.eye(2), sf.Matrix(test_matrix / test_matrix))
+
+        self.assertEqual(diag_matrix.det(), 4)
 
     def test_symbolic_operations(self) -> None:
         """
