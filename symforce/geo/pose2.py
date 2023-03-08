@@ -47,12 +47,13 @@ class Pose2(LieGroup):
         """
         Construct from elements in SO2 and R2.
         """
-        self.R = R or Rot2()
-        self.t = t or Vector2()
+        self.R = R if R is not None else Rot2()
+        self.t = t if t is not None else Vector2()
 
-        assert isinstance(self.R, Rot2)
-        assert isinstance(self.t, Vector2)
-        assert self.t.shape == (2, 1), self.t.shape
+        if not isinstance(self.R, Rot2):
+            raise TypeError(f"R must be type Rot2 or None, got {type(R)=} instead")
+        if not isinstance(self.t, Vector2):
+            raise TypeError(f"t must be type Vector2 or None, got {type(t)=} instead")
 
     def rotation(self) -> Rot2:
         """

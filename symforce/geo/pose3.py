@@ -47,12 +47,13 @@ class Pose3(LieGroup):
             R: Frame orientation
             t: Translation 3-vector in the global frame
         """
-        self.R = R or Rot3()
-        self.t = t or Vector3()
+        self.R = R if R is not None else Rot3()
+        self.t = t if t is not None else Vector3()
 
-        assert isinstance(self.R, Rot3)
-        assert isinstance(self.t, Vector3)
-        assert self.t.shape == (3, 1), self.t.shape
+        if not isinstance(self.R, Rot3):
+            raise TypeError(f"R must be type Rot3 or None, got {type(R)=} instead")
+        if not isinstance(self.t, Vector3):
+            raise TypeError(f"t must be type Vector3 or None, got {type(t)=} instead")
 
     def rotation(self) -> Rot3:
         """
