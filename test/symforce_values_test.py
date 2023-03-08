@@ -551,6 +551,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 sf.Rot3,
                 sf.Pose2,
                 sf.Pose3,
+                sf.Unit3,
                 sf.Complex,
                 sf.Quaternion,
                 sf.DualQuaternion,

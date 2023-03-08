@@ -103,6 +103,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                         "Rot2",
                         "Rot3",
                         "SphericalCameraCal",
+                        "Unit3",
                     ],
                     third_party_includes=["import scipy"],
                     cleaned_up_stubgen_output=stubgen_output,

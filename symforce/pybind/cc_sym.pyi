@@ -26,6 +26,7 @@ from sym import Pose3
 from sym import Rot2
 from sym import Rot3
 from sym import SphericalCameraCal
+from sym import Unit3
 
 # isort: off
 
@@ -957,6 +958,10 @@ class Values:
         Add or update a value by key. Returns true if added, false if updated.
 
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
     @typing.overload
     def set(self, key: Key, value: DoubleSphereCameraCal) -> bool: ...
@@ -976,6 +981,8 @@ class Values:
     def set(self, key: Key, value: Rot3) -> bool: ...
     @typing.overload
     def set(self, key: Key, value: SphericalCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: Key, value: Unit3) -> bool: ...
     @typing.overload
     def set(self, key: Key, value: float) -> bool: ...
     @typing.overload
@@ -1000,6 +1007,8 @@ class Values:
     def set(self, key: index_entry_t, value: Rot3) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: SphericalCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: Unit3) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: float) -> None: ...
     @typing.overload

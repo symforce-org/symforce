@@ -12,6 +12,7 @@ constexpr descr<4> handle_sym_type_name<sym::Rot2d>::name;
 constexpr descr<4> handle_sym_type_name<sym::Rot3d>::name;
 constexpr descr<5> handle_sym_type_name<sym::Pose2d>::name;
 constexpr descr<5> handle_sym_type_name<sym::Pose3d>::name;
+constexpr descr<5> handle_sym_type_name<sym::Unit3d>::name;
 constexpr descr<13> handle_sym_type_name<sym::ATANCameraCald>::name;
 constexpr descr<21> handle_sym_type_name<sym::DoubleSphereCameraCald>::name;
 constexpr descr<24> handle_sym_type_name<sym::EquirectangularCameraCald>::name;

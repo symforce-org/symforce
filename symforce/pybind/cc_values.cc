@@ -34,6 +34,7 @@
 #include <sym/rot2.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
+#include <sym/unit3.h>
 #include <sym/util/type_ops.h>
 #include <symforce/opt/key.h>
 #include <symforce/opt/values.h>
@@ -274,6 +275,7 @@ void AddValuesWrapper(pybind11::module_ module) {
   RegisterTypeWithValues<sym::Rot3d>(values_class);
   RegisterTypeWithValues<sym::Pose2d>(values_class);
   RegisterTypeWithValues<sym::Pose3d>(values_class);
+  RegisterTypeWithValues<sym::Unit3d>(values_class);
   RegisterTypeWithValues<sym::ATANCameraCald>(values_class);
   RegisterTypeWithValues<sym::DoubleSphereCameraCald>(values_class);
   RegisterTypeWithValues<sym::EquirectangularCameraCald>(values_class);

@@ -27,6 +27,7 @@
 #include <sym/rot2.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
+#include <sym/unit3.h>
 
 namespace py = pybind11;
 
@@ -57,6 +58,11 @@ struct handle_sym_type_name<sym::Pose2d> {
 template <>
 struct handle_sym_type_name<sym::Pose3d> {
   static constexpr auto name = _("Pose3");
+};
+
+template <>
+struct handle_sym_type_name<sym::Unit3d> {
+  static constexpr auto name = _("Unit3");
 };
 
 template <>
@@ -132,6 +138,8 @@ template <>
 struct type_caster<sym::Pose2d> : public sym_type_caster<sym::Pose2d> {};
 template <>
 struct type_caster<sym::Pose3d> : public sym_type_caster<sym::Pose3d> {};
+template <>
+struct type_caster<sym::Unit3d> : public sym_type_caster<sym::Unit3d> {};
 template <>
 struct type_caster<sym::ATANCameraCald> : public sym_type_caster<sym::ATANCameraCald> {};
 template <>
