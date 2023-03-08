@@ -345,6 +345,12 @@ class Matrix(Storage):
             mat[i, i] = sf.S.One
         return mat
 
+    def det(self) -> _T.Scalar:
+        """
+        Determinant of the matrix.
+        """
+        return self.mat.det()
+
     def inv(self: MatrixT, method: str = "LU") -> MatrixT:
         """
         Inverse of the matrix.
