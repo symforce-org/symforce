@@ -12,7 +12,6 @@ from symforce import ops
 from symforce import typing as T
 from symforce.codegen import codegen_config
 from symforce.codegen.backends.cpp.cpp_config import CppConfig
-from symforce.codegen.backends.python.python_config import PythonConfig
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.opt.sub_problem import SubProblem
@@ -154,11 +153,9 @@ class OptimizationProblem:
             name: Name of factors. Note that the generated linearization functions will have
                 "_factor" appended to the function name (see
                 Codegen._pick_name_for_function_with_derivatives for details).
-            config: Language the factors will be generated in when `.generate()` is called.
+            config: Language the factors will be generated in when `.generate()` is called.  If not
+                provided, uses the same default as the Factor constructor.
         """
-        if config is None:
-            config = PythonConfig()
-
         inputs = self.inputs.dataclasses_to_values()
 
         leading_trailing_dots_and_brackets_regex = re.compile(r"^[\.\[\]]+|[\.\[\]]+$")
@@ -223,11 +220,7 @@ class OptimizationProblem:
         if optimized_keys is None:
             optimized_keys = self.optimized_keys()
         numeric_factors = []
-        # we temp generate the factors, so skip formating to save time
-        config = PythonConfig(
-            render_template_config=codegen_config.RenderTemplateConfig(autoformat=False)
-        )
-        for factor in self.make_symbolic_factors(name, config=config):
+        for factor in self.make_symbolic_factors(name):
             factor_optimized_keys = [
                 opt_key for opt_key in optimized_keys if opt_key in factor.keys
             ]

@@ -52,6 +52,19 @@ class Factor:
 
     _generated_residual_cache = GeneratedResidualCache()
 
+    @staticmethod
+    def default_codegen_config() -> PythonConfig:
+        """
+        The default codegen config used by the Factor class
+
+        This is a PythonConfig with settings appropriate for converting to a NumericFactor (no
+        autoformat, return 2d vectors)
+        """
+        return PythonConfig(
+            render_template_config=codegen_config.RenderTemplateConfig(autoformat=False),
+            return_2d_vectors=True,
+        )
+
     def __init__(
         self,
         keys: T.Sequence[str],
@@ -66,9 +79,8 @@ class Factor:
         # call `__init__()`, and can instead call `__new__()` + `_initialize()` and pass its own
         # codegen object constructed using the default codegen object constructor.
         if config is None:
-            config = PythonConfig(
-                render_template_config=codegen_config.RenderTemplateConfig(autoformat=False)
-            )
+            config = self.default_codegen_config()
+
         self._initialize(
             keys=keys,
             codegen_obj=Codegen.function(func=residual, config=config, **kwargs),
@@ -109,9 +121,8 @@ class Factor:
                 numeric factor. See `Codegen.__init__()` for details.
         """
         if config is None:
-            config = PythonConfig(
-                render_template_config=codegen_config.RenderTemplateConfig(autoformat=False)
-            )
+            config = cls.default_codegen_config()
+
         instance = cls.__new__(cls)
         instance._initialize(
             keys=keys,
@@ -263,6 +274,16 @@ class Factor:
             namespace = f"sym_{uuid.uuid4().hex}"
 
         # Compute the linearization of the residual and generate code
+        if not isinstance(self.codegen.config, PythonConfig):
+            raise TypeError(
+                "Cannot convert to a NumericFactor with config of type "
+                f"{type(self.codegen.config)}; use PythonConfig instead"
+            )
+        if not self.codegen.config.return_2d_vectors:
+            raise ValueError(
+                "Cannot convert to a NumericFactor with config.return_2d_vectors=False"
+            )
+
         output_data = self.generate(optimized_keys, output_dir, namespace, sparse_linearization)
 
         # Load the generated function
