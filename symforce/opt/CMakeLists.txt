@@ -68,9 +68,6 @@ if (NOT tl_optional_FOUND)
       URL_HASH SHA256=a336bb10f51945369c1dd6dc6d2a7086602ab9cab52c98a7a6224bfd782bc0c7
     )
     FetchContent_MakeAvailable(tl_optional)
-
-    # tl::optional does this correctly for installs, but not direct includes with FetchContent
-    add_library(tl::optional ALIAS optional)
   endfunction()
 
   add_tl_optional()
