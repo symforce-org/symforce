@@ -48,7 +48,9 @@ class NumericFactor:
         name: str,
     ) -> NumericFactor:
         """
-        Loads a generated python linearization function from a given file. This can be used after
+        Returns a NumericFactor constructed from the python function `name` from the module
+        located at `output_dir / "python" / "symforce" / namespace / f"{name}.py"` (this matches
+        the directory structure created by `Factor.generate`). This can be used after
         generating a linearization function from a symbolic factor as follows:
 
         Create a symbolic factor and generate the linearization function:

@@ -98,7 +98,7 @@ default to the device and dtype of the first input tensor, or the empty dict if 
  #     spec (Codegen):
  #}
 {%- macro function_name_and_args(spec) -%}
-{{ camelcase_to_snakecase(spec.name) }}(
+{{ spec.name }}(
 {%- for name in spec.inputs.keys() -%}
 {{ name }},{{ ' ' }}
 {%- endfor -%}tensor_kwargs = None)
