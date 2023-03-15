@@ -260,7 +260,8 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
   if (debug_stats_) {
     const auto& linearization = nonlinear_solver_.GetBestLinearization();
     stats.jacobian_sparsity = {linearization.JacobianRowIndicesMap(),
-                               linearization.JacobianColumnPointersMap()};
+                               linearization.JacobianColumnPointersMap(),
+                               {linearization.jacobian.rows(), linearization.jacobian.cols()}};
   }
 
   stats.early_exited = optimization_early_exited;

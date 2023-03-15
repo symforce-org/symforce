@@ -215,6 +215,9 @@ struct sparse_matrix_structure_t {
 
   // The index into row_indices (and the values) of the start of each column
   eigen_lcm.VectorXi column_pointers; // size N
+
+  // The shape (M, N) of the sparse matrix
+  int64_t shape[2];
 }
 
 // Debug stats for a full optimization run

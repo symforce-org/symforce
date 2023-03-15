@@ -201,7 +201,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
           Eigen::Map<const VectorX<typename LinearSolverType::MatrixType::StorageIndex>>(
               linear_solver_.L().innerIndexPtr(), linear_solver_.L().nonZeros()),
           Eigen::Map<const VectorX<typename LinearSolverType::MatrixType::StorageIndex>>(
-              linear_solver_.L().outerIndexPtr(), linear_solver_.L().outerSize())};
+              linear_solver_.L().outerIndexPtr(), linear_solver_.L().outerSize()),
+          {linear_solver_.L().rows(), linear_solver_.L().cols()}};
     }
   }
 
