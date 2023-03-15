@@ -53,7 +53,7 @@ class Linearizer {
    *
    * TODO(aaron): This should be const except that it can initialize the object
    */
-  void Relinearize(const Values<Scalar>& values, Linearization<Scalar>* const linearization);
+  void Relinearize(const Values<Scalar>& values, Linearization<Scalar>& linearization);
 
   /**
    * Check whether the keys in `keys` correspond 1-1 (and in the same order) with the start of the
@@ -73,9 +73,8 @@ class Linearizer {
    * the full covariance matrix.  Requires that the Linearizer has already been initialized
    */
   template <typename MatrixType>
-  void SplitCovariancesByKey(
-      const MatrixType& covariance_block, const std::vector<Key>& keys,
-      std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) const;
+  void SplitCovariancesByKey(const MatrixType& covariance_block, const std::vector<Key>& keys,
+                             std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) const;
 
   /**
    * Whether this contains values, versus having not been evaluated yet
@@ -104,11 +103,11 @@ class Linearizer {
   void UpdateFromLinearizedDenseFactorIntoSparse(
       const LinearizedDenseFactor& linearized_factor,
       const linearization_dense_factor_helper_t& factor_helper,
-      Linearization<Scalar>* const linearization) const;
+      Linearization<Scalar>& linearization) const;
   void UpdateFromLinearizedSparseFactorIntoSparse(
       const LinearizedSparseFactor& linearized_factor,
       const linearization_sparse_factor_helper_t& factor_helper,
-      Linearization<Scalar>* const linearization) const;
+      Linearization<Scalar>& linearization) const;
 
   /**
    * Update the combined residual and rhs, along with triplet lists for the sparse matrices, from a
@@ -128,7 +127,7 @@ class Linearizer {
   /**
    * Check if a Linearization has the correct sizes, and if not, initialize it
    */
-  void EnsureLinearizationHasCorrectSize(Linearization<Scalar>* const linearization) const;
+  void EnsureLinearizationHasCorrectSize(Linearization<Scalar>& linearization) const;
 
   bool initialized_{false};
 
@@ -173,8 +172,7 @@ Linearization<Scalar> Linearize(const std::vector<Factor<Scalar>>& factors,
                                 const std::vector<Key>& keys_to_optimize = {},
                                 const std::string& linearizer_name = "Linearizer") {
   Linearization<Scalar> linearization;
-  Linearizer<Scalar>(linearizer_name, factors, keys_to_optimize)
-      .Relinearize(values, &linearization);
+  Linearizer<Scalar>(linearizer_name, factors, keys_to_optimize).Relinearize(values, linearization);
   return linearization;
 }
 

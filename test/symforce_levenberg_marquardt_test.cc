@@ -44,12 +44,12 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   using StateVector = Eigen::Matrix<Scalar, N, 1>;
 
   auto residual_func = [&](const sym::Values<Scalar>& values,
-                           sym::Linearization<Scalar>* const linearization) {
+                           sym::Linearization<Scalar>& linearization) {
     const auto state_vec = values.template At<StateVector>('v');
-    linearization->residual = J_MN * state_vec;
-    linearization->hessian_lower = (J_MN.transpose() * J_MN).sparseView();
-    linearization->jacobian = J_MN.sparseView();
-    linearization->rhs = J_MN.transpose() * linearization->residual;
+    linearization.residual = J_MN * state_vec;
+    linearization.hessian_lower = (J_MN.transpose() * J_MN).sparseView();
+    linearization.jacobian = J_MN.sparseView();
+    linearization.rhs = J_MN.transpose() * linearization.residual;
   };
 
   sym::Values<Scalar> values_init{};
@@ -57,7 +57,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   sym::index_t index = values_init.CreateIndex({'v'});
   sym::Linearization<Scalar> linearization{};
 
-  residual_func(values_init, &linearization);
+  residual_func(values_init, linearization);
   const sym::VectorX<Scalar> residual_init = linearization.residual;
   const Scalar error_init = 0.5 * residual_init.squaredNorm();
   spdlog::debug("values_init: {}\n", values_init);
@@ -72,7 +72,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
 
   // Do a single gauss-newton iteration
   sym::OptimizationStats<Scalar> stats{};
-  solver.Iterate(residual_func, &stats, debug_stats);
+  solver.Iterate(residual_func, stats, debug_stats);
 
   const sym::VectorX<Scalar> residual_final =
       stats.iterations.back().residual.template cast<Scalar>();

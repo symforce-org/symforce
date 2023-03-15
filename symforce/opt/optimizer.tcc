@@ -66,44 +66,76 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
 
 template <typename ScalarType, typename NonlinearSolverType>
 OptimizationStats<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Optimize(
-    Values<Scalar>* const values, int num_iterations, bool populate_best_linearization) {
+    Values<Scalar>& values, int num_iterations, bool populate_best_linearization) {
   OptimizationStats<Scalar> stats{};
-  Optimize(values, num_iterations, populate_best_linearization, &stats);
+  Optimize(values, num_iterations, populate_best_linearization, stats);
   return stats;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* const values,
+OptimizationStats<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Optimize(
+    Values<Scalar>* values, int num_iterations, bool populate_best_linearization) {
+  SYM_ASSERT(values != nullptr);
+  return Optimize(*values, num_iterations, populate_best_linearization);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
                                                           int num_iterations,
                                                           bool populate_best_linearization,
-                                                          OptimizationStats<Scalar>* const stats) {
+                                                          OptimizationStats<Scalar>& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::Optimize", name_);
-  SYM_ASSERT(values != nullptr);
-  SYM_ASSERT(stats != nullptr);
 
   if (num_iterations < 0) {
     num_iterations = nonlinear_solver_.Params().iterations;
   }
 
-  Initialize(*values);
+  Initialize(values);
 
   // Clear state for this run
-  nonlinear_solver_.Reset(*values);
-  stats->Reset(num_iterations);
+  nonlinear_solver_.Reset(values);
+  stats.Reset(num_iterations);
   IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
                                                           int num_iterations,
+                                                          bool populate_best_linearization,
                                                           OptimizationStats<Scalar>* stats) {
+  SYM_ASSERT(values != nullptr);
+  SYM_ASSERT(stats != nullptr);
+  Optimize(*values, num_iterations, populate_best_linearization, *stats);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
+                                                          int num_iterations,
+                                                          OptimizationStats<Scalar>& stats) {
   return Optimize(values, num_iterations, false, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
+                                                          int num_iterations,
                                                           OptimizationStats<Scalar>* stats) {
+  SYM_ASSERT(values != nullptr);
+  SYM_ASSERT(stats != nullptr);
+  Optimize(*values, num_iterations, *stats);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
+                                                          OptimizationStats<Scalar>& stats) {
   return Optimize(values, -1, false, stats);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
+                                                          OptimizationStats<Scalar>* stats) {
+  SYM_ASSERT(values != nullptr);
+  SYM_ASSERT(stats != nullptr);
+  Optimize(*values, *stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -112,25 +144,33 @@ Linearization<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Linearize(
   Initialize(values);
 
   Linearization<Scalar> linearization;
-  linearize_func_(values, &linearization);
+  linearize_func_(values, linearization);
   return linearization;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
     const Linearization<Scalar>& linearization,
-    std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) {
+    std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
   SYM_ASSERT(IsInitialized());
   nonlinear_solver_.ComputeCovariance(linearization.hessian_lower,
-                                      &compute_covariances_storage_.covariance);
+                                      compute_covariances_storage_.covariance);
   linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys_,
                                     covariances_by_key);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
+    const Linearization<Scalar>& linearization,
+    std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key) {
+  SYM_ASSERT(covariances_by_key != nullptr);
+  ComputeAllCovariances(linearization, *covariances_by_key);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
     const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
-    std::unordered_map<Key, MatrixX<Scalar>>* const covariances_by_key) {
+    std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
   size_t block_dim{};
   const bool contiguous = linearizer_.CheckKeysAreContiguousAtStart(keys, &block_dim);
   SYM_ASSERT(contiguous);
@@ -138,11 +178,19 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
   // Copy into modifiable storage
   compute_covariances_storage_.H_damped = linearization.hessian_lower;
 
-  internal::ComputeCovarianceBlockWithSchurComplement(&compute_covariances_storage_.H_damped,
+  internal::ComputeCovarianceBlockWithSchurComplement(compute_covariances_storage_.H_damped,
                                                       block_dim, epsilon_,
-                                                      &compute_covariances_storage_.covariance);
+                                                      compute_covariances_storage_.covariance);
   linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys,
                                     covariances_by_key);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
+    const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+    std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key) {
+  SYM_ASSERT(covariances_by_key != nullptr);
+  ComputeCovariances(linearization, keys, *covariances_by_key);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -181,8 +229,8 @@ const optimizer_params_t& Optimizer<ScalarType, NonlinearSolverType>::Params() c
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
-    Values<Scalar>* const values, const int num_iterations, const bool populate_best_linearization,
-    OptimizationStats<Scalar>* const stats) {
+    Values<Scalar>& values, const int num_iterations, const bool populate_best_linearization,
+    OptimizationStats<Scalar>& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name_);
   bool optimization_early_exited = false;
 
@@ -199,23 +247,23 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
   {
     SYM_TIME_SCOPE("Optimizer<{}>::CopyValuesAndLinearization", name_);
     // Save best results
-    (*values) = nonlinear_solver_.GetBestValues();
+    values = nonlinear_solver_.GetBestValues();
 
     if (populate_best_linearization) {
       // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead put a
       // Linearization** in the stats, but then we'd have the issue of defining when the pointer
       // becomes invalid
-      stats->best_linearization = nonlinear_solver_.GetBestLinearization();
+      stats.best_linearization = nonlinear_solver_.GetBestLinearization();
     }
   }
 
   if (debug_stats_) {
     const auto& linearization = nonlinear_solver_.GetBestLinearization();
-    stats->jacobian_sparsity = {linearization.JacobianRowIndicesMap(),
-                                linearization.JacobianColumnPointersMap()};
+    stats.jacobian_sparsity = {linearization.JacobianRowIndicesMap(),
+                               linearization.JacobianColumnPointersMap()};
   }
 
-  stats->early_exited = optimization_early_exited;
+  stats.early_exited = optimization_early_exited;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -227,13 +275,11 @@ template <typename ScalarType, typename NonlinearSolverType>
 typename NonlinearSolverType::LinearizeFunc
 Optimizer<ScalarType, NonlinearSolverType>::BuildLinearizeFunc(const bool check_derivatives) {
   return [this, check_derivatives](const Values<Scalar>& values,
-                                   Linearization<Scalar>* const linearization) {
+                                   Linearization<Scalar>& linearization) {
     linearizer_.Relinearize(values, linearization);
 
     if (check_derivatives) {
-      SYM_ASSERT(linearization != nullptr);
-      SYM_ASSERT(
-          internal::CheckDerivatives(&linearizer_, values, index_, *linearization, epsilon_));
+      SYM_ASSERT(internal::CheckDerivatives(linearizer_, values, index_, linearization, epsilon_));
     }
   };
 }

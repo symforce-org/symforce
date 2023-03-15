@@ -46,12 +46,10 @@ class GncOptimizer : public BaseOptimizerType {
    * each time the convexity changes.
    */
   using BaseOptimizerType::Optimize;
-  virtual void Optimize(Values<Scalar>* const values, int num_iterations,
+  virtual void Optimize(Values<Scalar>& values, int num_iterations,
                         bool populate_best_linearization,
-                        OptimizationStats<Scalar>* const stats) override {
+                        OptimizationStats<Scalar>& stats) override {
     SYM_TIME_SCOPE("GNC<{}>::Optimize", BaseOptimizer::GetName());
-    SYM_ASSERT(values != nullptr);
-    SYM_ASSERT(stats != nullptr);
 
     if (num_iterations < 0) {
       num_iterations = this->nonlinear_solver_.Params().iterations;
@@ -60,10 +58,10 @@ class GncOptimizer : public BaseOptimizerType {
     bool updating_gnc = (gnc_params_.mu_initial < gnc_params_.mu_max);
 
     // Initialize the value of mu
-    values->template Set<Scalar>(gnc_mu_key_, gnc_params_.mu_initial);
+    values.template Set<Scalar>(gnc_mu_key_, gnc_params_.mu_initial);
 
     // Cache the index entry for mu
-    const auto mu_index = values->Items().at(gnc_mu_key_);
+    const auto mu_index = values.Items().at(gnc_mu_key_);
 
     optimizer_params_t optimizer_params = this->nonlinear_solver_.Params();
     const double early_exit_min_reduction = optimizer_params.early_exit_min_reduction;
@@ -75,21 +73,21 @@ class GncOptimizer : public BaseOptimizerType {
 
     // Iterate.
     BaseOptimizer::Optimize(values, num_iterations, populate_best_linearization, stats);
-    while (static_cast<int>(stats->iterations.size()) < num_iterations) {
+    while (static_cast<int>(stats.iterations.size()) < num_iterations) {
       // NOTE(aaron): We shouldn't be here unless the optimization early exited (i.e. we had
       // iterations left)
-      SYM_ASSERT(stats->early_exited);
+      SYM_ASSERT(stats.early_exited);
 
       if (!updating_gnc) {
         return;
       }
 
       // Update the GNC parameter.
-      values->Set(gnc_mu_key_, values->template At<Scalar>(mu_index) + gnc_params_.mu_step);
+      values.Set(gnc_mu_key_, values.template At<Scalar>(mu_index) + gnc_params_.mu_step);
 
       // Check if we hit the non-convexity threshold.
-      if (values->template At<Scalar>(mu_index) >= gnc_params_.mu_max) {
-        values->template Set<Scalar>(mu_index, gnc_params_.mu_max);
+      if (values.template At<Scalar>(mu_index) >= gnc_params_.mu_max) {
+        values.template Set<Scalar>(mu_index, gnc_params_.mu_max);
         // Reset early exit threshold.
         optimizer_params.early_exit_min_reduction = early_exit_min_reduction;
         this->UpdateParams(optimizer_params);
@@ -97,24 +95,28 @@ class GncOptimizer : public BaseOptimizerType {
       }
 
       if (optimizer_params.verbose) {
-        spdlog::info("Set GNC param to: {}", values->template At<Scalar>(mu_index));
+        spdlog::info("Set GNC param to: {}", values.template At<Scalar>(mu_index));
       }
 
       // NOTE(aaron): This might populate the best linearization multiple times
-      OptimizeContinue(values, num_iterations - stats->iterations.size(),
+      OptimizeContinue(values, num_iterations - stats.iterations.size(),
                        populate_best_linearization, stats);
     }
   }
+  [[deprecated("Pass values and stats by reference instead")]] virtual void Optimize(
+      Values<Scalar>* const values, int num_iterations, bool populate_best_linearization,
+      OptimizationStats<Scalar>* const stats) override {
+    Optimize(*values, num_iterations, populate_best_linearization, *stats);
+  }
 
  private:
-  void OptimizeContinue(Values<Scalar>* const values, const int num_iterations,
-                        const bool populate_best_linearization,
-                        OptimizationStats<Scalar>* const stats) {
+  void OptimizeContinue(Values<Scalar>& values, const int num_iterations,
+                        const bool populate_best_linearization, OptimizationStats<Scalar>& stats) {
     SYM_ASSERT(num_iterations >= 0);
     SYM_ASSERT(this->IsInitialized());
 
     // Reset values, but do not clear other state
-    this->nonlinear_solver_.ResetState(*values);
+    this->nonlinear_solver_.ResetState(values);
 
     this->IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
   }

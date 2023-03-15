@@ -84,47 +84,45 @@ void Factor<Scalar>::Linearize(
 
 template <typename Scalar>
 void Factor<Scalar>::Linearize(
-    const Values<Scalar>& values, LinearizedDenseFactor* linearized_factor,
+    const Values<Scalar>& values, LinearizedDenseFactor& linearized_factor,
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
-  assert(linearized_factor != nullptr);
   SYM_ASSERT(!IsSparse());
 
   const auto& index_entry_cache =
       maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
-  FillLinearizedFactorIndex(values, *linearized_factor);
+  FillLinearizedFactorIndex(values, linearized_factor);
 
   // TODO(hayk): Maybe the function should just accept a LinearizedDenseFactor*
-  hessian_func_(values, index_entry_cache, &linearized_factor->residual,
-                &linearized_factor->jacobian, &linearized_factor->hessian, &linearized_factor->rhs);
+  hessian_func_(values, index_entry_cache, &linearized_factor.residual, &linearized_factor.jacobian,
+                &linearized_factor.hessian, &linearized_factor.rhs);
 
   // Sanity check dimensions
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->jacobian.cols());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->hessian.rows());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->rhs.rows());
+  SYM_ASSERT(linearized_factor.index.tangent_dim == linearized_factor.jacobian.cols());
+  SYM_ASSERT(linearized_factor.index.tangent_dim == linearized_factor.hessian.rows());
+  SYM_ASSERT(linearized_factor.index.tangent_dim == linearized_factor.rhs.rows());
 }
 
 template <typename Scalar>
 void Factor<Scalar>::Linearize(
-    const Values<Scalar>& values, LinearizedSparseFactor* linearized_factor,
+    const Values<Scalar>& values, LinearizedSparseFactor& linearized_factor,
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
-  assert(linearized_factor != nullptr);
   SYM_ASSERT(IsSparse());
 
   const auto& index_entry_cache =
       maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
-  FillLinearizedFactorIndex(values, *linearized_factor);
+  FillLinearizedFactorIndex(values, linearized_factor);
 
   // TODO(hayk): Maybe the function should just accept a LinearizedSparseFactor*
-  sparse_hessian_func_(values, index_entry_cache, &linearized_factor->residual,
-                       &linearized_factor->jacobian, &linearized_factor->hessian,
-                       &linearized_factor->rhs);
+  sparse_hessian_func_(values, index_entry_cache, &linearized_factor.residual,
+                       &linearized_factor.jacobian, &linearized_factor.hessian,
+                       &linearized_factor.rhs);
 
   // Sanity check dimensions
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->jacobian.cols());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->hessian.rows());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->rhs.rows());
+  SYM_ASSERT(linearized_factor.index.tangent_dim == linearized_factor.jacobian.cols());
+  SYM_ASSERT(linearized_factor.index.tangent_dim == linearized_factor.hessian.rows());
+  SYM_ASSERT(linearized_factor.index.tangent_dim == linearized_factor.rhs.rows());
 }
 
 template <typename Scalar>
@@ -132,7 +130,7 @@ typename Factor<Scalar>::LinearizedDenseFactor Factor<Scalar>::Linearize(
     const Values<Scalar>& values,
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   LinearizedDenseFactor linearized_factor{};
-  Linearize(values, &linearized_factor, maybe_index_entry_cache);
+  Linearize(values, linearized_factor, maybe_index_entry_cache);
   return linearized_factor;
 }
 

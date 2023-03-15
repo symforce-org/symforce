@@ -96,7 +96,7 @@ class SparseCholeskySolver {
 
   // Solves in place for x in A x = b, where x and b are dense
   template <typename Rhs>
-  void SolveInPlace(Eigen::MatrixBase<Rhs>* const b) const;
+  void SolveInPlace(Eigen::MatrixBase<Rhs>& b) const;
 
   const CholMatrixType& L() const {
     SYM_ASSERT(IsInitialized());

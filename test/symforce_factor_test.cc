@@ -187,7 +187,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         jac->makeCompressed();
       },
       {'x', 'y', 'z'});
-  ternary_v3_dyn_sparse.Linearize(values, &linearized_sparse_factor);
+  ternary_v3_dyn_sparse.Linearize(values, linearized_sparse_factor);
   spdlog::debug(linearized_sparse_factor);
 
   // Unary with Rot3
@@ -451,7 +451,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y', 'z'});
-  ternary_v3_sparse.Linearize(values, &linearized_sparse_factor);
+  ternary_v3_sparse.Linearize(values, linearized_sparse_factor);
   spdlog::debug(linearized_sparse_factor);
 
   // Ternary / v3 output with dynamic size
@@ -492,7 +492,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y', 'z'});
-  ternary_v3_dyn_sparse.Linearize(values, &linearized_sparse_factor);
+  ternary_v3_dyn_sparse.Linearize(values, linearized_sparse_factor);
   spdlog::debug(linearized_sparse_factor);
 
   // Unary with Rot3
@@ -608,7 +608,7 @@ void TestJacobianFuncHelper2Args(const ResidualLambda& eval_residual,
   values.Set<double>('y', y);
 
   LinearizedFactor_t<Matrix> linearization{};
-  factor.Linearize(values, &linearization);
+  factor.Linearize(values, linearization);
 
   const Eigen::VectorXd res = eval_residual(x, y);
   const Matrix jac = eval_jacobian(x, y);

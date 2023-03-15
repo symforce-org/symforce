@@ -51,7 +51,7 @@ class LevenbergMarquardtState {
 
     template <typename LinearizeFunc>
     void Relinearize(const LinearizeFunc& func) {
-      func(values, &linearization_);
+      func(values, linearization_);
       linearization_.SetInitialized(true);
       have_cached_error_ = false;
     }

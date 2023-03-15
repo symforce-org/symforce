@@ -61,7 +61,7 @@ namespace sym {
  *
  *   // Optimize
  *   sym::Optimizer<double> optimizer(params, factors, epsilon);
- *   optimizer.Optimize(&values);
+ *   optimizer.Optimize(values);
  *
  * See symforce/test/symforce_optimizer_test.cc for more examples
  */
@@ -108,8 +108,10 @@ class Optimizer {
    * Returns:
    *     The optimization stats
    */
-  OptimizationStats<Scalar> Optimize(Values<Scalar>* values, int num_iterations = -1,
+  OptimizationStats<Scalar> Optimize(Values<Scalar>& values, int num_iterations = -1,
                                      bool populate_best_linearization = false);
+  [[deprecated("Pass values by reference instead")]] OptimizationStats<Scalar> Optimize(
+      Values<Scalar>* values, int num_iterations = -1, bool populate_best_linearization = false);
 
   /**
    * Optimize the given values in-place
@@ -127,8 +129,11 @@ class Optimizer {
    *            allocated fields here, will not reallocate if memory is already allocated in the
    *            required shape (e.g. for repeated calls to Optimize)
    */
-  virtual void Optimize(Values<Scalar>* values, int num_iterations,
-                        bool populate_best_linearization, OptimizationStats<Scalar>* stats);
+  virtual void Optimize(Values<Scalar>& values, int num_iterations,
+                        bool populate_best_linearization, OptimizationStats<Scalar>& stats);
+  [[deprecated("Pass values and stats by reference instead")]] virtual void Optimize(
+      Values<Scalar>* values, int num_iterations, bool populate_best_linearization,
+      OptimizationStats<Scalar>* stats);
 
   /**
    * Optimize the given values in-place
@@ -144,7 +149,9 @@ class Optimizer {
    *            allocated fields here, will not reallocate if memory is already allocated in the
    *            required shape (e.g. for repeated calls to Optimize)
    */
-  void Optimize(Values<Scalar>* values, int num_iterations, OptimizationStats<Scalar>* stats);
+  void Optimize(Values<Scalar>& values, int num_iterations, OptimizationStats<Scalar>& stats);
+  [[deprecated("Pass values and stats by reference instead")]] void Optimize(
+      Values<Scalar>* values, int num_iterations, OptimizationStats<Scalar>* stats);
 
   /**
    * Optimize the given values in-place
@@ -158,7 +165,9 @@ class Optimizer {
    *            allocated fields here, will not reallocate if memory is already allocated in the
    *            required shape (e.g. for repeated calls to Optimize)
    */
-  void Optimize(Values<Scalar>* values, OptimizationStats<Scalar>* stats);
+  void Optimize(Values<Scalar>& values, OptimizationStats<Scalar>& stats);
+  [[deprecated("Pass values and stats by reference instead")]] void Optimize(
+      Values<Scalar>* values, OptimizationStats<Scalar>* stats);
 
   /**
    * Linearize the problem around the given values
@@ -175,7 +184,10 @@ class Optimizer {
    * May not be called before either Optimize or Linearize has been called.
    */
   void ComputeAllCovariances(const Linearization<Scalar>& linearization,
-                             std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
+                             std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
+  [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeAllCovariances(
+      const Linearization<Scalar>& linearization,
+      std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
    * Get covariances for the given subset of keys at the given linearization.  This version is
@@ -193,7 +205,10 @@ class Optimizer {
    * in `keys`.
    */
   void ComputeCovariances(const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
-                          std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
+                          std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
+  [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeCovariances(
+      const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+      std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
    * Get the optimized keys
@@ -226,8 +241,8 @@ class Optimizer {
    * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations
    * or converged
    */
-  void IterateToConvergence(Values<Scalar>* values, int num_iterations,
-                            bool populate_best_linearization, OptimizationStats<Scalar>* stats);
+  void IterateToConvergence(Values<Scalar>& values, int num_iterations,
+                            bool populate_best_linearization, OptimizationStats<Scalar>& stats);
 
   /**
    * Build the linearize_func functor for the underlying nonlinear solver
@@ -286,10 +301,16 @@ using Optimizerf = Optimizer<float>;
 template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
 OptimizationStats<Scalar> Optimize(const optimizer_params_t& params,
                                    const std::vector<Factor<Scalar>>& factors,
-                                   Values<Scalar>* values,
+                                   Values<Scalar>& values,
                                    const Scalar epsilon = kDefaultEpsilon<Scalar>) {
   Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, epsilon);
   return optimizer.Optimize(values);
+}
+template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
+[[deprecated("Pass values by reference instead")]] OptimizationStats<Scalar> Optimize(
+    const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
+    Values<Scalar>* values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
+  return Optimize(params, factors, *values, epsilon);
 }
 
 /**

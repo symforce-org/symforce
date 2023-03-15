@@ -125,7 +125,7 @@ namespace sym {
  *     values.Set({Var::EPSILON}, sym::kDefaultEpsilond);
  *     // Initialize any other items in values ...
  *
- *     optimizer.Optimize(&values);
+ *     optimizer.Optimize(values);
  *   }
  */
 template <typename Scalar>

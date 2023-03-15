@@ -172,7 +172,7 @@ TEST_CASE("Make sure solving in place works", "[sparse_cholesky]") {
 
   solver_ac.Factorize(A);
   Eigen::MatrixXd x_ac = b;
-  solver_ac.SolveInPlace(&x_ac);
+  solver_ac.SolveInPlace(x_ac);
 
   solver_eigen.factorize(A);
   const Eigen::MatrixXd x_eigen = solver_eigen.solve(b);

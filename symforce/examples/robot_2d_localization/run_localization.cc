@@ -73,7 +73,7 @@ void RunLocalization() {
   values.Set('e', sym::kDefaultEpsilond);
 
   // Optimize!
-  const auto stats = optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(values);
 
   spdlog::debug("Optimized values: {}", values);
 

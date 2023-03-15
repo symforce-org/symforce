@@ -525,7 +525,7 @@ for (int i = 0; i < angles.size(); ++i) {
 values.Set('e', sym::kDefaultEpsilond);
 
 // Optimize!
-const auto stats = optimizer.Optimize(&values);
+const auto stats = optimizer.Optimize(values);
 
 std::cout << "Optimized values:" << values << std::endl;
 ```

@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
   auto params = sym::DefaultOptimizerParams();
   params.verbose = true;
   sym::Optimizerd optimizer{params, std::move(problem.factors)};
-  const auto stats = optimizer.Optimize(&optimized_values);
+  const auto stats = optimizer.Optimize(optimized_values);
 
   spdlog::info("Finished in {} iterations", stats.iterations.size());
 }

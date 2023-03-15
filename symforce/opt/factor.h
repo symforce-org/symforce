@@ -247,7 +247,7 @@ class Factor {
    *         prevents repeated hash lookups.  Can be computed as
    *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  void Linearize(const Values<Scalar>& values, LinearizedDenseFactor* linearized_factor,
+  void Linearize(const Values<Scalar>& values, LinearizedDenseFactor& linearized_factor,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
@@ -278,7 +278,7 @@ class Factor {
    *         prevents repeated hash lookups.  Can be computed as
    *         `values.CreateIndex(factor.AllKeys()).entries`.
    */
-  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor* linearized_factor,
+  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor& linearized_factor,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   // ----------------------------------------------------------------------------------------------

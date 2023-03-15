@@ -50,16 +50,14 @@ Linearizer<ScalarType>::Linearizer(const std::string& name,
 
 template <typename ScalarType>
 void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
-                                         Linearization<Scalar>* const linearization) {
-  SYM_ASSERT(linearization != nullptr);
-
+                                         Linearization<Scalar>& linearization) {
   if (IsInitialized()) {
     EnsureLinearizationHasCorrectSize(linearization);
 
     // Zero out blocks that are built additively
-    linearization->rhs.setZero();
-    Eigen::Map<VectorX<Scalar>>(linearization->hessian_lower.valuePtr(),
-                                linearization->hessian_lower.nonZeros())
+    linearization.rhs.setZero();
+    Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr(),
+                                linearization.hessian_lower.nonZeros())
         .setZero();
 
     // Evaluate the factors
@@ -71,7 +69,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
       if (factor.IsSparse()) {
         auto& linearized_sparse_factor = linearized_sparse_factors_.at(sparse_idx);
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
-        factor.Linearize(values, &linearized_sparse_factor, &factor_indices_[i]);
+        factor.Linearize(values, linearized_sparse_factor, &factor_indices_[i]);
 
         UpdateFromLinearizedSparseFactorIntoSparse(
             linearized_sparse_factor, sparse_factor_update_helpers_.at(sparse_idx), linearization);
@@ -82,7 +80,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
         auto& linearized_dense_factor =
             linearized_dense_factors_.at(linearized_dense_factor_indices_.at(dense_idx));
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
-        factor.Linearize(values, &linearized_dense_factor, &factor_indices_[i]);
+        factor.Linearize(values, linearized_dense_factor, &factor_indices_[i]);
 
         UpdateFromLinearizedDenseFactorIntoSparse(
             linearized_dense_factor, dense_factor_update_helpers_.at(dense_idx), linearization);
@@ -91,11 +89,11 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
       }
     }
 
-    linearization->SetInitialized();
+    linearization.SetInitialized();
   } else {
     BuildInitialLinearization(values);
 
-    *linearization = init_linearization_;
+    linearization = init_linearization_;
   }
 }
 
@@ -200,13 +198,13 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
     }
 
     if (factor.IsSparse()) {
-      factor.Linearize(values, &linearized_sparse_factors_.at(sparse_idx), &factor_indices_.back());
+      factor.Linearize(values, linearized_sparse_factors_.at(sparse_idx), &factor_indices_.back());
       ++sparse_idx;
     } else {
       linearized_dense_factor
           .index = {};  // Force the factor to populate its index to use in the factor helper
       SYM_ASSERT(linearized_dense_factor.index.storage_dim == 0);
-      factor.Linearize(values, &linearized_dense_factor, &factor_indices_.back());
+      factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
 
       // Make sure a temporary of the right dimension is kept for relinearizations
       const std::pair<int, int> dims{linearized_dense_factor.jacobian.rows(),
@@ -346,14 +344,14 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
     const LinearizedDenseFactor& linearized_factor,
     const linearization_dense_factor_helper_t& factor_helper,
-    Linearization<Scalar>* const linearization) const {
+    Linearization<Scalar>& linearization) const {
   // The residual dimension must be the same, even for factors that return VectorX.  If the residual
   // size changes, the optimizer must be re-created.
   SYM_ASSERT(factor_helper.residual_dim == linearized_factor.residual.size());
 
   // Fill in the combined residual slice
-  linearization->residual.segment(factor_helper.combined_residual_offset,
-                                  factor_helper.residual_dim) = linearized_factor.residual;
+  linearization.residual.segment(factor_helper.combined_residual_offset,
+                                 factor_helper.residual_dim) = linearized_factor.residual;
 
   // For each key
   for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
@@ -363,7 +361,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
       // Fill in jacobian block, column by column
       for (int col_block = 0; col_block < key_helper.tangent_dim; ++col_block) {
         Eigen::Map<VectorX<Scalar>>(
-            linearization->jacobian.valuePtr() + key_helper.jacobian_storage_col_starts[col_block],
+            linearization.jacobian.valuePtr() + key_helper.jacobian_storage_col_starts[col_block],
             factor_helper.residual_dim) =
             linearized_factor.jacobian.block(0, key_helper.factor_offset + col_block,
                                              factor_helper.residual_dim, 1);
@@ -371,14 +369,14 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
     }
 
     // Add contribution from right-hand-side
-    linearization->rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
+    linearization.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
         linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
 
     // Add contribution from diagonal hessian block, column by column
     for (int col_block = 0; col_block < key_helper.tangent_dim; ++col_block) {
       const std::vector<int32_t>& diag_col_starts = key_helper.hessian_storage_col_starts[key_i];
       Eigen::Map<VectorX<Scalar>>(
-          linearization->hessian_lower.valuePtr() + diag_col_starts[col_block],
+          linearization.hessian_lower.valuePtr() + diag_col_starts[col_block],
           key_helper.tangent_dim - col_block) +=
           linearized_factor.hessian.block(key_helper.factor_offset + col_block,
                                           key_helper.factor_offset + col_block,
@@ -395,7 +393,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
 
       if (key_helper_j.combined_offset < key_helper.combined_offset) {
         for (int32_t col_j = 0; col_j < static_cast<int32_t>(col_starts.size()); ++col_j) {
-          Eigen::Map<VectorX<Scalar>>(linearization->hessian_lower.valuePtr() + col_starts[col_j],
+          Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_starts[col_j],
                                       key_helper.tangent_dim) +=
               linearized_factor.hessian.block(key_helper.factor_offset,
                                               key_helper_j.factor_offset + col_j,
@@ -403,7 +401,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
         }
       } else {
         for (int32_t col_i = 0; col_i < static_cast<int32_t>(col_starts.size()); ++col_i) {
-          Eigen::Map<VectorX<Scalar>>(linearization->hessian_lower.valuePtr() + col_starts[col_i],
+          Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_starts[col_i],
                                       key_helper_j.tangent_dim) +=
               linearized_factor.hessian
                   .block(key_helper.factor_offset + col_i, key_helper_j.factor_offset, 1,
@@ -419,20 +417,20 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
     const LinearizedSparseFactor& linearized_factor,
     const linearization_sparse_factor_helper_t& factor_helper,
-    Linearization<Scalar>* const linearization) const {
+    Linearization<Scalar>& linearization) const {
   // The residual dimension must be the same, even for factors that return VectorX.  If the residual
   // size changes, the optimizer must be re-created.
   SYM_ASSERT(factor_helper.residual_dim == linearized_factor.residual.size());
 
   // Fill in the combined residual slice
-  linearization->residual.segment(factor_helper.combined_residual_offset,
-                                  factor_helper.residual_dim) = linearized_factor.residual;
+  linearization.residual.segment(factor_helper.combined_residual_offset,
+                                 factor_helper.residual_dim) = linearized_factor.residual;
 
   // Add contribution from right-hand-side
   for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     const linearization_sparse_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
-    linearization->rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
+    linearization.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
         linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
   }
 
@@ -441,7 +439,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
     SYM_ASSERT(factor_helper.jacobian_index_map.size() ==
                static_cast<size_t>(linearized_factor.jacobian.nonZeros()));
     for (int i = 0; i < static_cast<int>(factor_helper.jacobian_index_map.size()); i++) {
-      linearization->jacobian.valuePtr()[factor_helper.jacobian_index_map[i]] =
+      linearization.jacobian.valuePtr()[factor_helper.jacobian_index_map[i]] =
           linearized_factor.jacobian.valuePtr()[i];
     }
   }
@@ -450,7 +448,7 @@ void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
   SYM_ASSERT(factor_helper.hessian_index_map.size() ==
              static_cast<size_t>(linearized_factor.hessian.nonZeros()));
   for (int i = 0; i < static_cast<int>(factor_helper.hessian_index_map.size()); i++) {
-    linearization->hessian_lower.valuePtr()[factor_helper.hessian_index_map[i]] +=
+    linearization.hessian_lower.valuePtr()[factor_helper.hessian_index_map[i]] +=
         linearized_factor.hessian.valuePtr()[i];
   }
 }
@@ -576,33 +574,32 @@ void Linearizer<ScalarType>::UpdateFromSparseFactorIntoTripletLists(
 
 template <typename ScalarType>
 void Linearizer<ScalarType>::EnsureLinearizationHasCorrectSize(
-    Linearization<Scalar>* const linearization) const {
-  if (linearization->residual.size() == 0) {
+    Linearization<Scalar>& linearization) const {
+  if (linearization.residual.size() == 0) {
     // Linearization has never been initialized
     // NOTE(aaron): This is independent of linearization.IsInitialized(), i.e. a Linearization can
     // have been initialized in the past and have the correct sizes/sparsity but have been reset
     SYM_ASSERT(init_linearization_.IsInitialized());
 
     // Allocate storage of combined linearization
-    linearization->residual.resize(init_linearization_.residual.size());
-    linearization->rhs.resize(init_linearization_.rhs.size());
+    linearization.residual.resize(init_linearization_.residual.size());
+    linearization.rhs.resize(init_linearization_.rhs.size());
     if (include_jacobians_) {
-      linearization->jacobian = init_linearization_.jacobian;
+      linearization.jacobian = init_linearization_.jacobian;
     }
-    linearization->hessian_lower = init_linearization_.hessian_lower;
-    SYM_ASSERT(linearization->jacobian.isCompressed());
-    SYM_ASSERT(linearization->hessian_lower.isCompressed());
+    linearization.hessian_lower = init_linearization_.hessian_lower;
+    SYM_ASSERT(linearization.jacobian.isCompressed());
+    SYM_ASSERT(linearization.hessian_lower.isCompressed());
   } else {
     const int M = init_linearization_.residual.size();
     const int N = init_linearization_.rhs.size();
 
-    SYM_ASSERT(linearization->residual.size() == M);
+    SYM_ASSERT(linearization.residual.size() == M);
     if (include_jacobians_) {
-      SYM_ASSERT(linearization->jacobian.rows() == M && linearization->jacobian.cols() == N);
+      SYM_ASSERT(linearization.jacobian.rows() == M && linearization.jacobian.cols() == N);
     }
-    SYM_ASSERT(linearization->hessian_lower.rows() == N &&
-               linearization->hessian_lower.cols() == N);
-    SYM_ASSERT(linearization->rhs.size() == N);
+    SYM_ASSERT(linearization.hessian_lower.rows() == N && linearization.hessian_lower.cols() == N);
+    SYM_ASSERT(linearization.rhs.size() == N);
   }
 }
 

@@ -83,7 +83,7 @@ void RunDynamic() {
                                    "Robot3DScanMatchingOptimizerDynamic");
 
   // Optimize
-  const sym::OptimizationStats<double> stats = optimizer.Optimize(&values);
+  const sym::OptimizationStats<double> stats = optimizer.Optimize(values);
 
   // Print out results
   spdlog::info("Optimized State:");

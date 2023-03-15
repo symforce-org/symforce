@@ -37,7 +37,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
            py::arg("name") = "sym::Optimize", py::arg("keys") = std::vector<Key>(),
            py::arg("debug_stats") = false, py::arg("check_derivatives") = false,
            py::arg("include_jacobians") = false)
-      .def("optimize", py::overload_cast<Valuesd*, int, bool>(&Optimizerd::Optimize),
+      .def("optimize", py::overload_cast<Valuesd&, int, bool>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations") = -1,
            py::arg("populate_best_linearization") = false, R"(
               Optimize the given values in-place
@@ -51,7 +51,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
                   The optimization stats
            )")
       .def("optimize",
-           py::overload_cast<Valuesd*, int, bool, OptimizationStatsd*>(&Optimizerd::Optimize),
+           py::overload_cast<Valuesd&, int, bool, OptimizationStatsd&>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations"), py::arg("populate_best_linearization"),
            py::arg("stats"), R"(
               Optimize the given values in-place
@@ -67,7 +67,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
 
                 stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
            )")
-      .def("optimize", py::overload_cast<Valuesd*, int, OptimizationStatsd*>(&Optimizerd::Optimize),
+      .def("optimize", py::overload_cast<Valuesd&, int, OptimizationStatsd&>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations"), py::arg("stats"), R"(
               Optimize the given values in-place
 
@@ -80,7 +80,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
 
                 stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
            )")
-      .def("optimize", py::overload_cast<Valuesd*, OptimizationStatsd*>(&Optimizerd::Optimize),
+      .def("optimize", py::overload_cast<Valuesd&, OptimizationStatsd&>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("stats"), R"(
               Optimize the given values in-place
 
@@ -97,7 +97,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           "compute_all_covariances",
           [](Optimizerd& opt, const Linearizationd& linearization) {
             std::unordered_map<Key, Eigen::MatrixXd> covariances_by_key;
-            opt.ComputeAllCovariances(linearization, &covariances_by_key);
+            opt.ComputeAllCovariances(linearization, covariances_by_key);
             return covariances_by_key;
           },
           py::arg("linearization"), R"(
@@ -109,7 +109,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           "compute_covariances",
           [](Optimizerd& opt, const Linearizationd& linearization, const std::vector<Key>& keys) {
             std::unordered_map<Key, Eigen::MatrixXd> covariances_by_key;
-            opt.ComputeCovariances(linearization, keys, &covariances_by_key);
+            opt.ComputeCovariances(linearization, keys, covariances_by_key);
             return covariances_by_key;
           },
           py::arg("linearization"), py::arg("keys"), R"(
@@ -144,8 +144,14 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           py::arg("key"));
 
   // Wrapping free functions
-  module.def("optimize", &Optimize<double>, py::arg("params"), py::arg("factors"),
-             py::arg("values"), py::arg("epsilon") = kDefaultEpsilond,
+  // NOTE(brad): the overload cast is only necessary because we temporarily have two overloads,
+  // one for the new signature, and one for a deprecated signature. The overload cast could be
+  // removed once the deprecated overload is removed.
+  module.def("optimize",
+             py::overload_cast<const optimizer_params_t&, const std::vector<Factord>&, Valuesd&,
+                               const double>(&Optimize<double>),
+             py::arg("params"), py::arg("factors"), py::arg("values"),
+             py::arg("epsilon") = kDefaultEpsilond,
              "Simple wrapper to make optimization one function call.");
   module.def("default_optimizer_params", &DefaultOptimizerParams,
              "Sensible default parameters for Optimizer.");
