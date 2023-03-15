@@ -91,7 +91,7 @@
  #     spec (Codegen):
  #}
 {%- macro function_name_and_args(spec) -%}
-{{ camelcase_to_snakecase(spec.name) }}(
+{{ spec.name }}(
 {%- for name in spec.inputs.keys() -%}
 {{ name }}{% if not loop.last %}, {% endif %}
 {%- endfor -%})

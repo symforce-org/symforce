@@ -16,6 +16,7 @@ symforce.set_epsilon_to_symbol()
 import symforce.symbolic as sf
 from symforce import ops
 from symforce import typing as T
+from symforce.codegen.codegen_util import load_generated_package
 from symforce.ops.interfaces import LieGroup
 from symforce.opt.factor import Factor
 from symforce.opt.factor import visualize_factors
@@ -102,6 +103,28 @@ class SymforcePyFactorTest(TestCase):
         # Check that we can call the loaded function
         residual, _, _, _ = loaded_factor.linearize(inputs)
         self.assertStorageNear(residual, np.zeros((3,)))
+
+    def test_generate_name(self) -> None:
+        """
+        Tests that the name returned by Factor.generate is actually present in the generated file.
+        """
+
+        def residual(x: T.Scalar) -> sf.V1:
+            return sf.V1(x)
+
+        for name in ["CamelCase", "snake_case", "Other_Case"]:
+            factor = Factor(keys=["x"], residual=residual, name=name)
+
+            output_dir = self.make_output_dir("sf.py_factor_test_")
+            metadata = factor.generate(optimized_keys=["x"], output_dir=output_dir)
+            function_dir = metadata["function_dir"]
+
+            pkg = load_generated_package(
+                f"{function_dir.name}.{name}_factor", function_dir / (name + "_factor.py")
+            )
+
+            # NOTE(brad): Will raise error if metadata["name"] is not in pkg
+            getattr(pkg, metadata["name"])
 
     @unittest.expectedFailure
     def test_custom_jacobians(self) -> None:
