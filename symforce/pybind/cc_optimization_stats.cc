@@ -49,7 +49,9 @@ void AddOptimizationStatsWrapper(pybind11::module_ module) {
             } else {
               stats.best_linearization = *best_linearization;
             }
-          })
+          },
+          "The linearization at best_index (at optimized_values), filled out if "
+          "populate_best_linearization=True")
       .def("get_lcm_type", &sym::OptimizationStatsd::GetLcmType)
       .def(py::pickle(
           [](const sym::OptimizationStatsd& stats) {  //  __getstate__

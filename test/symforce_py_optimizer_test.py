@@ -66,11 +66,11 @@ class SymforcePyOptimizerTest(TestCase):
 
         logger.debug(f"Initial values: {result.initial_values}")
         logger.debug(f"Optimized values: {result.optimized_values}")
-        logger.debug(f"Num iterations: {len(result.iteration_stats)}")
+        logger.debug(f"Num iterations: {len(result.iterations)}")
         logger.debug(f"Final error: {result.error()}")
 
         # Check values
-        self.assertEqual(len(result.iteration_stats), 7)
+        self.assertEqual(len(result.iterations), 7)
         self.assertAlmostEqual(result.error(), 0.039, places=3)
 
         # Check that we can pull out the variable blocks

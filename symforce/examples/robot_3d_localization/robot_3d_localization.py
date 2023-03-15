@@ -249,7 +249,7 @@ def main() -> None:
     result = optimizer.optimize(values)
 
     # Print some values
-    print(f"Num iterations: {len(result.iteration_stats) - 1}")
+    print(f"Num iterations: {len(result.iterations) - 1}")
     print(f"Final error: {result.error():.6f}")
 
     for i, pose in enumerate(result.optimized_values["world_T_body"]):

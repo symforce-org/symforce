@@ -291,11 +291,15 @@ class OptimizationStats:
     @property
     def best_linearization(self) -> typing.Optional[Linearization]:
         """
+        The linearization at best_index (at optimized_values), filled out if populate_best_linearization=True
+
         :type: object
         """
     @best_linearization.setter
     def best_linearization(self, arg1: Linearization) -> None:
-        pass
+        """
+        The linearization at best_index (at optimized_values), filled out if populate_best_linearization=True
+        """
     @property
     def cholesky_factor_sparsity(self) -> sparse_matrix_structure_t:
         """

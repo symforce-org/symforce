@@ -25,6 +25,8 @@ struct OptimizationStats {
   // good step)
   bool early_exited{false};
 
+  // The linearization at best_index (at optimized_values), filled out if
+  // populate_best_linearization=true
   optional<Linearization<Scalar>> best_linearization{};
 
   sparse_matrix_structure_t jacobian_sparsity;

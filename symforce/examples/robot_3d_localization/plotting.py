@@ -24,9 +24,7 @@ def plot_solution(
     matplotlib animation instead of providing an interactive slider.
     """
     # Pull out values from the result
-    values_per_iter = [
-        optimizer.load_iteration_values(stats.values) for stats in result.iteration_stats
-    ]
+    values_per_iter = [optimizer.load_iteration_values(stats.values) for stats in result.iterations]
 
     # Create the layout
     fig = plt.figure()
@@ -109,7 +107,7 @@ def plot_solution(
 
         # Set iteration text and abort if we rejected this iteration
         if show_iteration_text:
-            stats = result.iteration_stats[num]
+            stats = result.iterations[num]
             if num > 0 and not stats.update_accepted:
                 text.set_text(f"Iteration: {num} (rejected)\nError: {stats.new_error:.1f}")
                 return
