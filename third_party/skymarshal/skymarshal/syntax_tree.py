@@ -37,6 +37,7 @@ for float_type in FLOAT_TYPES:
 
 class Hash(object):
     def __init__(self):
+        # type: () -> None
         self.val = int64(0x12345678)
         # TODO(matt): is it possible to remove the int64 dependency?
 
@@ -55,6 +56,7 @@ class Hash(object):
 
     @property
     def int_value(self):
+        # type: () -> int
         # convert to uint64-like number
         # NOTE(matt): this is still a python int, and thus has infinite size
         return int(self.val) & 0xFFFFFFFFFFFFFFFF
@@ -402,6 +404,7 @@ class Enum(AstNode):
             cases_by_id[case.int_value] = case.name
 
     def compute_hash(self):
+        # type: () -> Hash
         return self.equivalent_struct.compute_hash()
 
 
@@ -572,6 +575,7 @@ class Struct(AstNode):
                 field_ids.add(member.field_id)
 
     def compute_hash(self):
+        # type: () -> Hash
         type_hash = Hash()
         for member in self.members:
             if not isinstance(member, ConstMember):
