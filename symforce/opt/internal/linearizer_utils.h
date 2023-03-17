@@ -214,8 +214,9 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor, const index_t
   for (int key_i = 0; key_i < static_cast<int>(factor_index.entries.size()); ++key_i) {
     const index_entry_t& entry = factor_index.entries[key_i];
 
-    const bool key_is_optimized = state_index.count(entry.key) > 0;
-    if (!key_is_optimized) {
+    const auto iterator_to_entry = state_index.find(entry.key);
+    if (iterator_to_entry == state_index.end()) {
+      // The key is not optimized
       continue;
     }
 
@@ -227,7 +228,7 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor, const index_t
     key_helper.tangent_dim = entry.tangent_dim;
 
     // Offset of this key within the combined state
-    key_helper.combined_offset = state_index.at(entry.key).offset;
+    key_helper.combined_offset = iterator_to_entry->second.offset;
   }
 
   // Increment offset into the combined residual
