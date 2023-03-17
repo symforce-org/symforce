@@ -41,9 +41,6 @@ struct valuesf_t {
 
 #cpp_no_display
 struct linearized_dense_factor_t {
-  // Index containing keys of this factor and their offsets within the factor residual/jacobian
-  index_t index;
-
   eigen_lcm.VectorXd residual;  // b
   eigen_lcm.MatrixXd jacobian;  // J
 
@@ -54,8 +51,6 @@ struct linearized_dense_factor_t {
 // Same as linearized_dense_factor_t but for floats.
 #cpp_no_display
 struct linearized_dense_factorf_t {
-  index_t index;
-
   eigen_lcm.VectorXf residual;  // b
   eigen_lcm.MatrixXf jacobian;  // J
 

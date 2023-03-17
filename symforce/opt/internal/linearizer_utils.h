@@ -202,7 +202,7 @@ void ComputeKeyHelperSparseMap(
 }
 
 template <typename Scalar, typename LinearizedFactorT, typename FactorHelperT>
-FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
+FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor, const index_t& factor_index,
                                   const std::unordered_map<key_t, index_entry_t>& state_index,
                                   const std::string& linearizer_name,
                                   int& combined_residual_offset) {
@@ -211,8 +211,8 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
   factor_helper.residual_dim = factor.residual.rows();
   factor_helper.combined_residual_offset = combined_residual_offset;
 
-  for (int key_i = 0; key_i < static_cast<int>(factor.index.entries.size()); ++key_i) {
-    const index_entry_t& entry = factor.index.entries[key_i];
+  for (int key_i = 0; key_i < static_cast<int>(factor_index.entries.size()); ++key_i) {
+    const index_entry_t& entry = factor_index.entries[key_i];
 
     const bool key_is_optimized = state_index.count(entry.key) > 0;
     if (!key_is_optimized) {
@@ -236,7 +236,7 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
   // Warn if this factor touches no optimized keys
   if (factor_helper.key_helpers.empty()) {
     std::vector<key_t> input_keys;
-    for (const auto& entry : factor.index.entries) {
+    for (const auto& entry : factor_index.entries) {
       input_keys.push_back(entry.key);
     }
 
@@ -247,6 +247,47 @@ FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
   }
 
   return factor_helper;
+}
+
+/**
+ * Returns an index for the optimized_keys in values, except with the offset not being relative
+ * to the data start of values, but rather being relative only to a hypothetical data vec of just
+ * the optimized_keys.
+ *
+ * TODO(brad): Look into whether we could use state_index_ in order to avoid doing a second map
+ * lookup of the values (seen when we create the new index). Might need to change usages as well.
+ */
+template <typename Scalar>
+index_t GetIndexForKeys(const Values<Scalar>& values, const std::vector<Key>& optimized_keys) {
+  // Set the types and everything from the index
+  index_t index = values.CreateIndex(optimized_keys);
+
+  // But the offset we want is relative to the other optimized_keys
+  int32_t offset = 0;
+  for (index_entry_t& entry : index.entries) {
+    entry.offset = offset;
+    offset += entry.tangent_dim;
+  }
+  return index;
+}
+
+/**
+ * Performs a sanity check on the dimensions of the residual, jacobian, hessian, and rhs.
+ * Asserts that their shapes match the cumulative tangent_dim of all the optimized arguments.
+ *
+ * Also checks consistency of residual dimension.
+ */
+template <typename LinearizedFactorType>
+void AssertConsistentShapes(const int tangent_dim, const LinearizedFactorType& linearized_factor,
+                            const bool check_jacobian) {
+  // NOTE(brad): Conditionally check jacobian shape because it may not have beeen evaluated.
+  if (check_jacobian) {
+    SYM_ASSERT(linearized_factor.residual.rows() == linearized_factor.jacobian.rows());
+    SYM_ASSERT(tangent_dim == linearized_factor.jacobian.cols());
+  }
+  SYM_ASSERT(tangent_dim == linearized_factor.hessian.rows());
+  SYM_ASSERT(tangent_dim == linearized_factor.hessian.cols());
+  SYM_ASSERT(tangent_dim == linearized_factor.rhs.rows());
 }
 
 }  // namespace internal

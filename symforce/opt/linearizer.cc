@@ -198,13 +198,22 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
     }
 
     if (factor.IsSparse()) {
-      factor.Linearize(values, linearized_sparse_factors_.at(sparse_idx), &factor_indices_.back());
+      LinearizedSparseFactor& linearized_factor = linearized_sparse_factors_.at(sparse_idx);
+      factor.Linearize(values, linearized_factor, &factor_indices_.back());
+
+      const index_t index = internal::GetIndexForKeys(values, factor.OptimizedKeys());
+      internal::AssertConsistentShapes(index.tangent_dim, linearized_factor, include_jacobians_);
+
+      sparse_factor_update_helpers_.push_back(
+          internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedSparseFactor,
+                                        linearization_sparse_factor_helper_t>(
+              linearized_factor, index, state_index_, name_, combined_residual_offset));
       ++sparse_idx;
     } else {
-      linearized_dense_factor
-          .index = {};  // Force the factor to populate its index to use in the factor helper
-      SYM_ASSERT(linearized_dense_factor.index.storage_dim == 0);
       factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
+      const index_t index = internal::GetIndexForKeys(values, factor.OptimizedKeys());
+      internal::AssertConsistentShapes(index.tangent_dim, linearized_dense_factor,
+                                       include_jacobians_);
 
       // Make sure a temporary of the right dimension is kept for relinearizations
       const std::pair<int, int> dims{linearized_dense_factor.jacobian.rows(),
@@ -222,7 +231,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       const auto factor_helper =
           internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedDenseFactor,
                                         linearization_dense_factor_helper_t>(
-              linearized_dense_factor, state_index_, name_, combined_residual_offset);
+              linearized_dense_factor, index, state_index_, name_, combined_residual_offset);
 
       // Create dense factor triplets
       UpdateFromDenseFactorIntoTripletLists(linearized_dense_factor, factor_helper,
@@ -252,16 +261,6 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
             fmt::format("Key {} is in the state vector but is not optimized by any factor.", key));
       }
     }
-  }
-
-  // Now process all of the sparse factors
-  // This will put all the sparse factors at the end of the combined residual, which may not be
-  // desirable?
-  for (const auto& factor : linearized_sparse_factors_) {
-    sparse_factor_update_helpers_.push_back(
-        internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedSparseFactor,
-                                      linearization_sparse_factor_helper_t>(
-            factor, state_index_, name_, combined_residual_offset));
   }
 
   // Create sparse factor triplets

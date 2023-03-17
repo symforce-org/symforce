@@ -27,8 +27,6 @@ struct LinearizedSparseFactorTypeHelper;
 // NOTE(aaron): Unlike the dense versions of these, we don't have SparseMatrix eigen_lcm types, so
 // we just defined these as structs, since we don't need to serialize them anyway
 struct linearized_sparse_factor_t {
-  index_t index;
-
   Eigen::VectorXd residual;              // b
   Eigen::SparseMatrix<double> jacobian;  // J
   Eigen::SparseMatrix<double> hessian;   // H, JtJ
@@ -40,8 +38,6 @@ struct linearized_sparse_factor_t {
 };
 
 struct linearized_sparse_factorf_t {
-  index_t index;
-
   Eigen::VectorXf residual;             // b
   Eigen::SparseMatrix<float> jacobian;  // J
   Eigen::SparseMatrix<float> hessian;   // H, JtJ
@@ -303,10 +299,6 @@ class Factor {
   const std::vector<Key>& AllKeys() const;
 
  private:
-  template <typename LinearizedFactorT>
-  void FillLinearizedFactorIndex(const Values<Scalar>& values,
-                                 LinearizedFactorT& linearized_factor) const;
-
   DenseHessianFunc hessian_func_;
   SparseHessianFunc sparse_hessian_func_;
 
