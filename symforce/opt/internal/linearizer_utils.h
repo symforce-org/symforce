@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include <Eigen/Sparse>
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
@@ -201,75 +203,60 @@ void ComputeKeyHelperSparseMap(
   }
 }
 
-template <typename Scalar, typename LinearizedFactorT, typename FactorHelperT>
-FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor, const index_t& factor_index,
-                                  const std::unordered_map<key_t, index_entry_t>& state_index,
-                                  const std::string& linearizer_name,
-                                  int& combined_residual_offset) {
-  FactorHelperT factor_helper;
+/**
+ * Returns a factor_helper with a subset of its fields filled, along with the
+ * tangent dimension of the factor (according to what the Values says it should
+ * be given its keys), and updates the combined_residual_offset.
+ */
+template <typename FactorHelperT, typename Scalar, typename LinearizedFactorT>
+std::pair<FactorHelperT, int> ComputeFactorHelper(
+    const LinearizedFactorT& factor, const Values<Scalar>& problem_values,
+    const std::vector<Key>& linearized_keys,
+    const std::unordered_map<key_t, index_entry_t>& state_index, const std::string& linearizer_name,
+    int& combined_residual_offset) {
+  std::pair<FactorHelperT, int> helper_and_dimension;
+  FactorHelperT& factor_helper = helper_and_dimension.first;
 
   factor_helper.residual_dim = factor.residual.rows();
   factor_helper.combined_residual_offset = combined_residual_offset;
 
-  for (int key_i = 0; key_i < static_cast<int>(factor_index.entries.size()); ++key_i) {
-    const index_entry_t& entry = factor_index.entries[key_i];
-
-    const auto iterator_to_entry = state_index.find(entry.key);
+  auto factor_offset = 0;
+  for (const Key& key : linearized_keys) {
+    const auto iterator_to_entry = state_index.find(key.GetLcmType());
     if (iterator_to_entry == state_index.end()) {
-      // The key is not optimized
+      // The key is not optimized, but we still need its size
+      factor_offset += problem_values.IndexEntryAt(key).tangent_dim;
       continue;
     }
+
+    const index_entry_t& entry = iterator_to_entry->second;
 
     factor_helper.key_helpers.emplace_back();
     auto& key_helper = factor_helper.key_helpers.back();
 
     // Offset of this key within the factor's state
-    key_helper.factor_offset = entry.offset;
+    key_helper.factor_offset = factor_offset;
     key_helper.tangent_dim = entry.tangent_dim;
 
     // Offset of this key within the combined state
-    key_helper.combined_offset = iterator_to_entry->second.offset;
+    key_helper.combined_offset = entry.offset;
+
+    factor_offset += entry.tangent_dim;
   }
+  helper_and_dimension.second = factor_offset;
 
   // Increment offset into the combined residual
   combined_residual_offset += factor_helper.residual_dim;
 
   // Warn if this factor touches no optimized keys
   if (factor_helper.key_helpers.empty()) {
-    std::vector<key_t> input_keys;
-    for (const auto& entry : factor_index.entries) {
-      input_keys.push_back(entry.key);
-    }
-
     spdlog::warn(
         "LM<{}>: Optimizing a factor that touches no optimized keys! Input keys for the factor "
         "are: {}",
-        linearizer_name, input_keys);
+        linearizer_name, linearized_keys);
   }
 
-  return factor_helper;
-}
-
-/**
- * Returns an index for the optimized_keys in values, except with the offset not being relative
- * to the data start of values, but rather being relative only to a hypothetical data vec of just
- * the optimized_keys.
- *
- * TODO(brad): Look into whether we could use state_index_ in order to avoid doing a second map
- * lookup of the values (seen when we create the new index). Might need to change usages as well.
- */
-template <typename Scalar>
-index_t GetIndexForKeys(const Values<Scalar>& values, const std::vector<Key>& optimized_keys) {
-  // Set the types and everything from the index
-  index_t index = values.CreateIndex(optimized_keys);
-
-  // But the offset we want is relative to the other optimized_keys
-  int32_t offset = 0;
-  for (index_entry_t& entry : index.entries) {
-    entry.offset = offset;
-    offset += entry.tangent_dim;
-  }
-  return index;
+  return helper_and_dimension;
 }
 
 /**

@@ -201,19 +201,17 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       LinearizedSparseFactor& linearized_factor = linearized_sparse_factors_.at(sparse_idx);
       factor.Linearize(values, linearized_factor, &factor_indices_.back());
 
-      const index_t index = internal::GetIndexForKeys(values, factor.OptimizedKeys());
-      internal::AssertConsistentShapes(index.tangent_dim, linearized_factor, include_jacobians_);
+      auto helper_and_dimension =
+          internal::ComputeFactorHelper<linearization_sparse_factor_helper_t>(
+              linearized_factor, values, factor.OptimizedKeys(), state_index_, name_,
+              combined_residual_offset);
+      internal::AssertConsistentShapes(helper_and_dimension.second, linearized_factor,
+                                       include_jacobians_);
+      sparse_factor_update_helpers_.push_back(std::move(helper_and_dimension.first));
 
-      sparse_factor_update_helpers_.push_back(
-          internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedSparseFactor,
-                                        linearization_sparse_factor_helper_t>(
-              linearized_factor, index, state_index_, name_, combined_residual_offset));
       ++sparse_idx;
     } else {
       factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
-      const index_t index = internal::GetIndexForKeys(values, factor.OptimizedKeys());
-      internal::AssertConsistentShapes(index.tangent_dim, linearized_dense_factor,
-                                       include_jacobians_);
 
       // Make sure a temporary of the right dimension is kept for relinearizations
       const std::pair<int, int> dims{linearized_dense_factor.jacobian.rows(),
@@ -228,10 +226,15 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
           linearized_dense_factors_it_and_inserted.first->second);
 
       // Create dense factor helper
-      const auto factor_helper =
-          internal::ComputeFactorHelper<Scalar, typename Factor<Scalar>::LinearizedDenseFactor,
-                                        linearization_dense_factor_helper_t>(
-              linearized_dense_factor, index, state_index_, name_, combined_residual_offset);
+      auto helper_and_dimension =
+          internal::ComputeFactorHelper<linearization_dense_factor_helper_t>(
+              linearized_dense_factor, values, factor.OptimizedKeys(), state_index_, name_,
+              combined_residual_offset);
+      internal::AssertConsistentShapes(helper_and_dimension.second, linearized_dense_factor,
+                                       include_jacobians_);
+      dense_factor_update_helpers_.push_back(std::move(helper_and_dimension.first));
+
+      const auto& factor_helper = dense_factor_update_helpers_.back();
 
       // Create dense factor triplets
       UpdateFromDenseFactorIntoTripletLists(linearized_dense_factor, factor_helper,
@@ -249,8 +252,6 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
         init_linearization_.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
             linearized_dense_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
       }
-
-      dense_factor_update_helpers_.push_back(factor_helper);
     }
   }
 
