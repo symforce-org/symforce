@@ -4,4 +4,6 @@
 # isort: off
 # mypy: disallow-untyped-defs
 
+import typing as T
+
 {% include "./python_enum.py.template" %}
