@@ -90,9 +90,23 @@ class Pose2_SE2(Pose2):
         )
 
     def retract(self, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2_SE2:
+        """
+        Applies a tangent space perturbation vec to self. Often used in optimization
+        to update nonlinear values from an update step in the tangent space.
+
+        Implementation is simply `compose(self, from_tangent(vec))`.
+        Conceptually represents "self + vec" if self is a vector.
+        """
         return LieGroup.retract(self, vec, epsilon)
 
     def local_coordinates(self, b: Pose2_SE2, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
+        """
+        Computes a tangent space perturbation around self to produce b. Often used in optimization
+        to minimize the distance between two group elements.
+
+        Implementation is simply `to_tangent(between(self, b))`.
+        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
+        """
         return LieGroup.local_coordinates(self, b, epsilon)
 
     # -------------------------------------------------------------------------

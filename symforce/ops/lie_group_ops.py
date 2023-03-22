@@ -92,7 +92,7 @@ class LieGroupOps(GroupOps):
         a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> T.Element:
         """
-        Apply a tangent space perturbation vec to the group element a. Often used in optimization
+        Applies a tangent space perturbation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
         Implementation is simply `compose(a, from_tangent(vec))`.

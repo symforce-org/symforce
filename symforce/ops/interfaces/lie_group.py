@@ -51,7 +51,7 @@ class LieGroup(Group):
         self: LieGroupT, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> LieGroupT:
         """
-        Apply a tangent space perturbation vec to self. Often used in optimization
+        Applies a tangent space perturbation vec to self. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
         Implementation is simply `compose(self, from_tangent(vec))`.
