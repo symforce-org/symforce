@@ -44,7 +44,6 @@ Linearizer<ScalarType>::Linearizer(const std::string& name,
   linearized_sparse_factors_.resize(num_sparse_factors);
   sparse_factor_update_helpers_.reserve(num_sparse_factors);
 
-  linearized_dense_factor_indices_.reserve(num_dense_factors);
   dense_factor_update_helpers_.reserve(num_dense_factors);
 }
 
@@ -77,8 +76,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
         ++sparse_idx;
       } else {
         // Use temporary with the right size to avoid allocating after initialization.
-        auto& linearized_dense_factor =
-            linearized_dense_factors_.at(linearized_dense_factor_indices_.at(dense_idx));
+        auto& linearized_dense_factor = linearized_dense_factors_.at(dense_idx);
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
         factor.Linearize(values, linearized_dense_factor, &factor_indices_[i]);
 
@@ -183,10 +181,11 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
   // Track these to make sure that all combined keys are touched by at least one factor.
   std::unordered_set<Key> keys_touched_by_factors;
 
+  linearized_dense_factors_.reserve(factors_->size() - linearized_sparse_factors_.size());
+  typename internal::LinearizedDenseFactorPool<Scalar>::SizeTracker dense_factor_size_tracker;
+
   // Evaluate all factors, processing the dense ones in place and storing the sparse ones for
   // later
-  std::unordered_map<std::pair<int, int>, int, internal::StdPairHash>
-      linearized_dense_factor_indices_by_dims;
   LinearizedDenseFactor linearized_dense_factor{};
   size_t sparse_idx{0};
   factor_indices_.reserve(factors_->size());
@@ -214,16 +213,9 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
 
       // Make sure a temporary of the right dimension is kept for relinearizations
-      const std::pair<int, int> dims{linearized_dense_factor.jacobian.rows(),
-                                     linearized_dense_factor.jacobian.cols()};
-
-      const auto linearized_dense_factors_it_and_inserted =
-          linearized_dense_factor_indices_by_dims.emplace(dims, linearized_dense_factors_.size());
-      if (linearized_dense_factors_it_and_inserted.second) {
-        linearized_dense_factors_.push_back(linearized_dense_factor);
-      }
-      linearized_dense_factor_indices_.push_back(
-          linearized_dense_factors_it_and_inserted.first->second);
+      linearized_dense_factors_.AppendFactorSize(linearized_dense_factor.residual.rows(),
+                                                 linearized_dense_factor.rhs.rows(),
+                                                 dense_factor_size_tracker);
 
       // Create dense factor helper
       auto helper_and_dimension =

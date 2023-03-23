@@ -13,6 +13,7 @@
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "./factor.h"
+#include "./internal/linearized_dense_factor_pool.h"
 #include "./linearization.h"
 #include "./values.h"
 
@@ -144,10 +145,8 @@ class Linearizer {
   bool include_jacobians_;
 
   // Linearized factors - stores individual factor residuals, jacobians, etc
-  std::vector<LinearizedDenseFactor> linearized_dense_factors_;  // one per Jacobian shape
-  std::vector<int> linearized_dense_factor_indices_;  // index into linearized_dense_factors_; one
-                                                      // per dense factor
-  std::vector<LinearizedSparseFactor> linearized_sparse_factors_;  // one per sparse factor
+  internal::LinearizedDenseFactorPool<Scalar> linearized_dense_factors_;  // one per Jacobian shape
+  std::vector<LinearizedSparseFactor> linearized_sparse_factors_;         // one per sparse factor
 
   // Keys that form the state vector
   std::vector<Key> keys_;
