@@ -43,10 +43,10 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
   SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 2);
 
   // Get matrix types from function signature
-  using ResidualVec = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 2>::type>::type;
-  using JacobianMat = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 1>::type>::type;
+  using ResidualVec = typename std::remove_pointer_t<
+      typename Traits::template arg<Traits::num_arguments - 2>::type>;
+  using JacobianMat = typename std::remove_pointer_t<
+      typename Traits::template arg<Traits::num_arguments - 1>::type>;
 
   // Check that they're Eigen matrices (nice for error messages)
   static_assert(kIsEigenType<ResidualVec>,

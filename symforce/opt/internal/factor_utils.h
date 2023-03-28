@@ -37,8 +37,8 @@ struct JacobianFuncTypeHelper {
   template <int Index>
   using ArgType = typename Traits::template arg<Index>::base_type;
 
-  using ResidualVec = typename std::remove_pointer<ArgType<Traits::num_arguments - 2>>::type;
-  using JacobianMat = typename std::remove_pointer<ArgType<Traits::num_arguments - 1>>::type;
+  using ResidualVec = typename std::remove_pointer_t<ArgType<Traits::num_arguments - 2>>;
+  using JacobianMat = typename std::remove_pointer_t<ArgType<Traits::num_arguments - 1>>;
 };
 
 /**
@@ -166,8 +166,8 @@ auto JacobianFixed(Functor&& func) {
   using FunctorType = std::decay_t<Functor>;
 
   // Get matrix types from function signature
-  using JacobianMat = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 1>::type>::type;
+  using JacobianMat = typename std::remove_pointer_t<
+      typename Traits::template arg<Traits::num_arguments - 1>::type>;
 
   return [func = std::forward<Functor>(func)](const Values<Scalar>& values,
                                               const std::vector<index_entry_t>& keys_to_func,
@@ -231,10 +231,10 @@ struct HessianFuncTypeHelper {
   template <int Index>
   using ArgType = typename Traits::template arg<Index>::base_type;
 
-  using ResidualVec = typename std::remove_pointer<ArgType<Traits::num_arguments - 4>>::type;
-  using JacobianMat = typename std::remove_pointer<ArgType<Traits::num_arguments - 3>>::type;
-  using HessianMat = typename std::remove_pointer<ArgType<Traits::num_arguments - 2>>::type;
-  using RhsVec = typename std::remove_pointer<ArgType<Traits::num_arguments - 1>>::type;
+  using ResidualVec = typename std::remove_pointer_t<ArgType<Traits::num_arguments - 4>>;
+  using JacobianMat = typename std::remove_pointer_t<ArgType<Traits::num_arguments - 3>>;
+  using HessianMat = typename std::remove_pointer_t<ArgType<Traits::num_arguments - 2>>;
+  using RhsVec = typename std::remove_pointer_t<ArgType<Traits::num_arguments - 1>>;
 };
 
 /**

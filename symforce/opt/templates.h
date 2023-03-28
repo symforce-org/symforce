@@ -63,7 +63,7 @@ struct function_traits : public function_traits<decltype(&remove_cvref_t<T>::ope
 template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType(Args...)> {
   using return_type = ReturnType;
-  using base_return_type = typename std::decay<return_type>::type;
+  using base_return_type = typename std::decay_t<return_type>;
   using std_function_type = typename std::function<ReturnType(Args...)>;
 
   static constexpr std::size_t num_arguments = sizeof...(Args);
@@ -72,7 +72,7 @@ struct function_traits<ReturnType(Args...)> {
   struct arg {
     static_assert(N < num_arguments, "error: invalid parameter index.");
     using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
-    using base_type = typename std::decay<type>::type;
+    using base_type = typename std::decay_t<type>;
   };
 };
 
