@@ -48,8 +48,8 @@ class Linearizer {
              const std::vector<Key>& key_order = {}, bool include_jacobians = false);
 
   /**
-   * Update linearization at a new evaluation point. Returns the total residual dimension M.
-   * This is more efficient than reconstructing this object repeatedly.  On the first call, it will
+   * Update linearization at a new evaluation point.
+   * This is more efficient than reconstructing this object repeatedly. On the first call, it will
    * allocate memory and perform analysis needed for efficient repeated relinearization.
    *
    * TODO(aaron): This should be const except that it can initialize the object
