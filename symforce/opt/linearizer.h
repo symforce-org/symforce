@@ -117,13 +117,13 @@ class Linearizer {
   void UpdateFromDenseFactorIntoTripletLists(
       const LinearizedDenseFactor& linearized_factor,
       const linearization_dense_factor_helper_t& factor_helper,
-      std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
-      std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const;
+      std::vector<Eigen::Triplet<Scalar>>& jacobian_triplets,
+      std::vector<Eigen::Triplet<Scalar>>& hessian_lower_triplets) const;
   void UpdateFromSparseFactorIntoTripletLists(
       const LinearizedSparseFactor& linearized_factor,
       const linearization_sparse_factor_helper_t& factor_helper,
-      std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
-      std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const;
+      std::vector<Eigen::Triplet<Scalar>>& jacobian_triplets,
+      std::vector<Eigen::Triplet<Scalar>>& hessian_lower_triplets) const;
 
   /**
    * Check if a Linearization has the correct sizes, and if not, initialize it

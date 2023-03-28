@@ -230,7 +230,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
 
       // Create dense factor triplets
       UpdateFromDenseFactorIntoTripletLists(linearized_dense_factor, factor_helper,
-                                            &jacobian_triplets, &hessian_lower_triplets);
+                                            jacobian_triplets, hessian_lower_triplets);
 
       // Fill in the combined residual slice
       for (int i = 0; i < factor_helper.residual_dim; i++) {
@@ -261,7 +261,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
     const auto& factor_helper = sparse_factor_update_helpers_.at(i);
     const auto& linearized_sparse_factor = linearized_sparse_factors_.at(i);
     UpdateFromSparseFactorIntoTripletLists(linearized_sparse_factor, factor_helper,
-                                           &jacobian_triplets, &hessian_lower_triplets);
+                                           jacobian_triplets, hessian_lower_triplets);
 
     // Fill in the combined residual slice
     for (int res_i = 0; res_i < factor_helper.residual_dim; ++res_i) {
@@ -449,17 +449,17 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::UpdateFromDenseFactorIntoTripletLists(
     const LinearizedDenseFactor& linearized_factor,
     const linearization_dense_factor_helper_t& factor_helper,
-    std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
-    std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const {
+    std::vector<Eigen::Triplet<Scalar>>& jacobian_triplets,
+    std::vector<Eigen::Triplet<Scalar>>& hessian_lower_triplets) const {
   const auto update_triplets_from_blocks =
       [](const int rows, const int cols, const int lhs_row_start, const int lhs_col_start,
-         const bool lower_triangle_only, std::vector<Eigen::Triplet<Scalar>>* const triplets,
+         const bool lower_triangle_only, std::vector<Eigen::Triplet<Scalar>>& triplets,
          Eigen::Ref<const MatrixX<ScalarType>> block) {
         for (int block_row = 0; block_row < rows; block_row++) {
           for (int block_col = 0; block_col < (lower_triangle_only ? block_row + 1 : cols);
                block_col++) {
-            triplets->emplace_back(lhs_row_start + block_row, lhs_col_start + block_col,
-                                   block(block_row, block_col));
+            triplets.emplace_back(lhs_row_start + block_row, lhs_col_start + block_col,
+                                  block(block_row, block_col));
           }
         }
       };
@@ -514,8 +514,8 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::UpdateFromSparseFactorIntoTripletLists(
     const LinearizedSparseFactor& linearized_factor,
     const linearization_sparse_factor_helper_t& factor_helper,
-    std::vector<Eigen::Triplet<Scalar>>* const jacobian_triplets,
-    std::vector<Eigen::Triplet<Scalar>>* const hessian_lower_triplets) const {
+    std::vector<Eigen::Triplet<Scalar>>& jacobian_triplets,
+    std::vector<Eigen::Triplet<Scalar>>& hessian_lower_triplets) const {
   std::vector<int> key_for_factor_offset;
   // key_for_factor_offset.reserve();
   for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); key_i++) {
@@ -535,8 +535,8 @@ void Linearizer<ScalarType>::UpdateFromSparseFactorIntoTripletLists(
 
         const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
         const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
-        jacobian_triplets->emplace_back(row + factor_helper.combined_residual_offset, problem_col,
-                                        it.value());
+        jacobian_triplets.emplace_back(row + factor_helper.combined_residual_offset, problem_col,
+                                       it.value());
       }
     }
   }
@@ -556,9 +556,9 @@ void Linearizer<ScalarType>::UpdateFromSparseFactorIntoTripletLists(
       // entry might naively go into the upper triangle if the key order is reversed in the full
       // problem
       if (problem_row >= problem_col) {
-        hessian_lower_triplets->emplace_back(problem_row, problem_col, it.value());
+        hessian_lower_triplets.emplace_back(problem_row, problem_col, it.value());
       } else {
-        hessian_lower_triplets->emplace_back(problem_col, problem_row, it.value());
+        hessian_lower_triplets.emplace_back(problem_col, problem_row, it.value());
       }
     }
   }
