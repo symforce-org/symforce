@@ -28,7 +28,7 @@ struct RangeGenerator : RangeGenerator<N - 1, N - 1, S...> {};
 
 template <int... S>
 struct RangeGenerator<0, S...> {
-  typedef Sequence<S...> Range;
+  using Range = Sequence<S...>;
 };
 
 template <typename F, size_t... Is>
@@ -50,7 +50,7 @@ auto indices(F f) {
 
 template <class T>
 struct remove_cvref {
-  typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+  using type = std::remove_cv_t<std::remove_reference_t<T>>;
 };
 
 template <typename T>
