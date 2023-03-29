@@ -198,6 +198,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
 
     if (factor.IsSparse()) {
       LinearizedSparseFactor& linearized_factor = linearized_sparse_factors_.at(sparse_idx);
+      ++sparse_idx;
       factor.Linearize(values, linearized_factor, &factor_indices_.back());
 
       auto helper_and_dimension =
@@ -207,8 +208,23 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       internal::AssertConsistentShapes(helper_and_dimension.second, linearized_factor,
                                        include_jacobians_);
       sparse_factor_update_helpers_.push_back(std::move(helper_and_dimension.first));
+      const auto& factor_helper = sparse_factor_update_helpers_.back();
 
-      ++sparse_idx;
+      UpdateFromSparseFactorIntoTripletLists(linearized_factor, factor_helper, jacobian_triplets,
+                                             hessian_lower_triplets);
+
+      // Fill in the combined residual slice
+      for (int res_i = 0; res_i < factor_helper.residual_dim; ++res_i) {
+        residual.push_back(linearized_factor.residual(res_i));
+      }
+
+      // Add contribution from right-hand-side
+      for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
+        const linearization_sparse_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
+
+        init_linearization_.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
+            linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
+      }
     } else {
       factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
 
@@ -253,27 +269,6 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
         throw std::runtime_error(
             fmt::format("Key {} is in the state vector but is not optimized by any factor.", key));
       }
-    }
-  }
-
-  // Create sparse factor triplets
-  for (int i = 0; i < static_cast<int>(linearized_sparse_factors_.size()); i++) {
-    const auto& factor_helper = sparse_factor_update_helpers_.at(i);
-    const auto& linearized_sparse_factor = linearized_sparse_factors_.at(i);
-    UpdateFromSparseFactorIntoTripletLists(linearized_sparse_factor, factor_helper,
-                                           jacobian_triplets, hessian_lower_triplets);
-
-    // Fill in the combined residual slice
-    for (int res_i = 0; res_i < factor_helper.residual_dim; ++res_i) {
-      residual.push_back(linearized_sparse_factor.residual(res_i));
-    }
-
-    // Add contribution from right-hand-side
-    for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
-      const linearization_sparse_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
-
-      init_linearization_.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
-          linearized_sparse_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
     }
   }
 
