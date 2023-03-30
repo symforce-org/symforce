@@ -7,6 +7,7 @@
 
 #include <sym/util/epsilon.h>
 
+#include "./factor.h"
 #include "./levenberg_marquardt_solver.h"
 #include "./linearizer.h"
 #include "./optimization_stats.h"

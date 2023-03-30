@@ -6,6 +6,7 @@
 #pragma once
 
 #include <ostream>
+#include <unordered_set>
 
 #include <Eigen/Sparse>
 
@@ -324,6 +325,38 @@ std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factor_t&
 std::ostream& operator<<(std::ostream& os, const sym::linearized_dense_factorf_t& factor);
 std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factor_t& factor);
 std::ostream& operator<<(std::ostream& os, const sym::linearized_sparse_factorf_t& factor);
+
+/**
+ * Compute the combined set of keys to optimize from the given factors. Order using the given
+ * comparison function.
+ */
+template <typename Scalar, typename Compare>
+std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factors,
+                                       Compare key_compare) {
+  // Some thoughts on efficiency at
+  // https://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector
+
+  // Aggregate uniques
+  std::unordered_set<Key> key_set;
+  for (const Factor<Scalar>& factor : factors) {
+    key_set.insert(factor.OptimizedKeys().begin(), factor.OptimizedKeys().end());
+  }
+
+  // Copy to vector
+  std::vector<Key> keys;
+  keys.insert(keys.end(), key_set.begin(), key_set.end());
+
+  // Order
+  std::sort(keys.begin(), keys.end(), key_compare);
+
+  return keys;
+}
+
+// If no comparator is specified, use sym::Key::LexicalLessThan.
+template <typename Scalar>
+std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factors) {
+  return ComputeKeysToOptimize(factors, &sym::Key::LexicalLessThan);
+}
 
 }  // namespace sym
 
