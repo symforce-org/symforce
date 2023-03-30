@@ -155,9 +155,62 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
   SYM_ASSERT(IsInitialized());
   nonlinear_solver_.ComputeCovariance(linearization.hessian_lower,
                                       compute_covariances_storage_.covariance);
-  linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys_,
-                                    covariances_by_key);
+  internal::SplitCovariancesByKey(linearizer_, compute_covariances_storage_.covariance, keys_,
+                                  covariances_by_key);
 }
+
+namespace internal {
+
+/**
+ * Check whether the keys in `keys` correspond 1-1 (and in the same order) with the start of the
+ * key ordering in the problem linearization
+ *
+ * Throws runtime_error if keys is longer than linearizer.Keys() or sometimes if key not in Keys
+ * found at start of linearizer.Keys().
+ *
+ * TODO(aaron): Maybe kill this once we have general marginalization
+ */
+template <typename Scalar>
+bool CheckKeyOrderMatchesLinearizerKeysStart(const Linearizer<Scalar>& linearizer,
+                                             const std::vector<Key>& keys) {
+  SYM_ASSERT(!keys.empty());
+
+  const std::vector<Key>& full_problem_keys = linearizer.Keys();
+  if (full_problem_keys.size() < keys.size()) {
+    throw std::runtime_error("Keys has extra entries that are not in the full problem");
+  }
+
+  const std::unordered_map<key_t, index_entry_t>& state_index = linearizer.StateIndex();
+  for (int i = 0; i < static_cast<int>(keys.size()); i++) {
+    if (keys[i] != full_problem_keys[i]) {
+      if (state_index.find(keys[i].GetLcmType()) == state_index.end()) {
+        throw std::runtime_error("Tried to check key which is not in the full problem");
+      } else {
+        // The next key is in the problem, it's just out of order; so we return false
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Returns the (tangent) dimension of the problem hessian and rhs which is occupied by
+ * the given keys.
+ *
+ * Precondition: keys equals first keys.size() entries of linearizer.Keys()
+ */
+template <typename Scalar>
+size_t ComputeBlockDimension(const Linearizer<Scalar>& linearizer, const std::vector<Key>& keys) {
+  // The idea is that the offset of a state index entry is the sum of the tangent dims of all of
+  // the previous keys, so we just add the tangent_dim of the last key to it's offset to get the
+  // sum of all tangent dims.
+  const auto& last_index_entry = linearizer.StateIndex().at(keys.back().GetLcmType());
+  return last_index_entry.offset + last_index_entry.tangent_dim;
+}
+
+}  // namespace internal
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
@@ -171,9 +224,9 @@ template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
     const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
     std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
-  size_t block_dim{};
-  const bool contiguous = linearizer_.CheckKeysAreContiguousAtStart(keys, &block_dim);
-  SYM_ASSERT(contiguous);
+  const bool same_order = internal::CheckKeyOrderMatchesLinearizerKeysStart(linearizer_, keys);
+  SYM_ASSERT(same_order);
+  const size_t block_dim = internal::ComputeBlockDimension(linearizer_, keys);
 
   // Copy into modifiable storage
   compute_covariances_storage_.H_damped = linearization.hessian_lower;
@@ -181,8 +234,8 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
   internal::ComputeCovarianceBlockWithSchurComplement(compute_covariances_storage_.H_damped,
                                                       block_dim, epsilon_,
                                                       compute_covariances_storage_.covariance);
-  linearizer_.SplitCovariancesByKey(compute_covariances_storage_.covariance, keys,
-                                    covariances_by_key);
+  internal::SplitCovariancesByKey(linearizer_, compute_covariances_storage_.covariance, keys,
+                                  covariances_by_key);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>

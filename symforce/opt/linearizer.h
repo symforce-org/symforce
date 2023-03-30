@@ -55,27 +55,6 @@ class Linearizer {
   void Relinearize(const Values<Scalar>& values, Linearization<Scalar>& linearization);
 
   /**
-   * Check whether the keys in `keys` correspond 1-1 (and in the same order) with the start of the
-   * key ordering in the problem linearization
-   *
-   * If block_dim is provided, it will be filled out with the (tangent) dimension of the problem
-   * hessian and rhs which is occupied by the given keys
-   *
-   * TODO(aaron): Maybe kill this once we have general marginalization
-   */
-  bool CheckKeysAreContiguousAtStart(const std::vector<Key>& keys,
-                                     size_t* block_dim = nullptr) const;
-
-  /**
-   * Extract covariances for optimized variables individually from the full problem covariance.  For
-   * each variable in `keys`, the returned matrix is the corresponding block from the diagonal of
-   * the full covariance matrix.  Requires that the Linearizer has already been initialized
-   */
-  template <typename MatrixType>
-  void SplitCovariancesByKey(const MatrixType& covariance_block, const std::vector<Key>& keys,
-                             std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) const;
-
-  /**
    * Whether this contains values, versus having not been evaluated yet
    */
   bool IsInitialized() const;
@@ -87,6 +66,9 @@ class Linearizer {
 
   const std::vector<Key>& Keys() const;
 
+  // NOTE(brad): Offset of index entries is sum of all tangent_dims of all previous index entries
+  // (order of index entries determined by order of corresponding keys in Keys()). Contains entry
+  // for each key in Keys().
   const std::unordered_map<key_t, index_entry_t>& StateIndex() const;
 
  private:
@@ -174,8 +156,6 @@ Linearization<Scalar> Linearize(const std::vector<Factor<Scalar>>& factors,
 }
 
 }  // namespace sym
-
-#include "./linearizer.tcc"
 
 // Explicit instantiation declaration
 extern template class sym::Linearizer<double>;

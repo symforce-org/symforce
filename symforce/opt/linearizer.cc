@@ -96,36 +96,6 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
 }
 
 template <typename ScalarType>
-bool Linearizer<ScalarType>::CheckKeysAreContiguousAtStart(const std::vector<Key>& keys,
-                                                           size_t* const block_dim) const {
-  SYM_ASSERT(!keys.empty());
-
-  auto full_problem_keys_iter = keys_.begin();
-  auto keys_iter = keys.begin();
-  for (; keys_iter != keys.end(); ++full_problem_keys_iter, ++keys_iter) {
-    if (full_problem_keys_iter == keys_.end()) {
-      throw std::runtime_error("Keys has extra entries that are not in the full problem");
-    }
-
-    if (*full_problem_keys_iter != *keys_iter) {
-      if (state_index_.find(keys_iter->GetLcmType()) == state_index_.end()) {
-        throw std::runtime_error("Tried to check key which is not in the full problem");
-      } else {
-        // The next key is in the problem, it's just out of order; so we return false
-        return false;
-      }
-    }
-  }
-
-  if (block_dim != nullptr) {
-    const auto& index_entry = state_index_.at(keys.back().GetLcmType());
-    *block_dim = index_entry.offset + index_entry.tangent_dim;
-  }
-
-  return true;
-}
-
-template <typename ScalarType>
 bool Linearizer<ScalarType>::IsInitialized() const {
   return initialized_;
 }

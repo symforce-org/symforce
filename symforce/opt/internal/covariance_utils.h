@@ -5,9 +5,12 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include <Eigen/Sparse>
 
 #include <sym/util/typedefs.h>
+#include <symforce/opt/linearizer.h>
 
 #include "../sparse_schur_solver.h"
 
@@ -48,6 +51,33 @@ void ComputeCovarianceBlockWithSchurComplement(Eigen::SparseMatrix<Scalar>& hess
   schur_solver.Factorize(hessian_lower);
   covariance_block = sym::MatrixX<Scalar>::Identity(block_dim, block_dim);
   schur_solver.SInvInPlace(covariance_block);
+}
+
+/**
+ * Extract covariances for optimized variables individually from the full problem covariance.  For
+ * each variable in `keys`, the returned matrix is the corresponding block from the diagonal of
+ * the full covariance matrix.  Requires that the Linearizer has already been initialized
+ */
+template <typename Scalar, typename MatrixType>
+void SplitCovariancesByKey(const Linearizer<Scalar>& linearizer, const MatrixType& covariance_block,
+                           const std::vector<Key>& keys,
+                           std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
+  SYM_ASSERT(linearizer.IsInitialized());
+
+  // Fill out the covariance blocks
+  const auto& state_index = linearizer.StateIndex();
+  for (const auto& key : keys) {
+    const auto& entry = state_index.at(key.GetLcmType());
+
+    covariances_by_key[key] =
+        covariance_block.block(entry.offset, entry.offset, entry.tangent_dim, entry.tangent_dim);
+  }
+
+  // Make sure we have the expected number of keys
+  // If this fails, it might mean that you passed a covariances_by_key that contained keys from a
+  // different Linearizer or Optimizer, or previously called with a different subset of the problem
+  // keys
+  SYM_ASSERT(covariances_by_key.size() == keys.size());
 }
 
 }  // namespace internal
