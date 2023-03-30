@@ -196,8 +196,8 @@ struct optimization_iteration_t {
 
   // The problem residual
   eigen_lcm.VectorXf residual;
-  // The problem jacobian, as CSC format sparse data
-  eigen_lcm.VectorXf jacobian_values;
+  // The problem jacobian exactly if dense, or as CSC format sparse data column vector if sparse
+  eigen_lcm.MatrixXf jacobian_values;
 }
 
 // The structure of a sparse matrix in CSC format, not including the numerical values

@@ -100,7 +100,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
     iteration_stats.values = state_.New().values.template Cast<double>().GetLcmType();
     const VectorX<Scalar> residual_vec = state_.New().GetLinearization().residual;
     iteration_stats.residual = residual_vec.template cast<float>();
-    const VectorX<Scalar> jacobian_vec = state_.New().GetLinearization().JacobianValuesMap();
+    const MatrixX<Scalar> jacobian_vec = JacobianValues(state_.New().GetLinearization().jacobian);
     iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
   }
 }
@@ -168,7 +168,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
       iteration_stats.values = state_.Init().values.template Cast<double>().GetLcmType();
       const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
       iteration_stats.residual = residual_vec.template cast<float>();
-      const VectorX<Scalar> jacobian_vec = state_.Init().GetLinearization().JacobianValuesMap();
+      const MatrixX<Scalar> jacobian_vec =
+          JacobianValues(state_.Init().GetLinearization().jacobian);
       iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
     }
   }
@@ -197,12 +198,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     // by ComputeSymbolicSparsity
     if (debug_stats && stats.linear_solver_ordering.size() == 0) {
       stats.linear_solver_ordering = linear_solver_.Permutation().indices();
-      stats.cholesky_factor_sparsity = {
-          Eigen::Map<const VectorX<typename LinearSolverType::MatrixType::StorageIndex>>(
-              linear_solver_.L().innerIndexPtr(), linear_solver_.L().nonZeros()),
-          Eigen::Map<const VectorX<typename LinearSolverType::MatrixType::StorageIndex>>(
-              linear_solver_.L().outerIndexPtr(), linear_solver_.L().outerSize()),
-          {linear_solver_.L().rows(), linear_solver_.L().cols()}};
+      stats.cholesky_factor_sparsity = GetSparseStructure(linear_solver_.L());
     }
   }
 

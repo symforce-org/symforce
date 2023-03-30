@@ -8,6 +8,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <lcmtypes/sym/sparse_matrix_structure_t.hpp>
+
 #include <sym/util/typedefs.h>
 
 #include "./assert.h"
@@ -54,20 +56,6 @@ struct Linearization {
     return 0.5 * linear_residual_new.squaredNorm();
   }
 
-  Eigen::Map<const VectorX<typename MatrixType::StorageIndex>> JacobianColumnPointersMap() const {
-    return Eigen::Map<const VectorX<typename MatrixType::StorageIndex>>(jacobian.outerIndexPtr(),
-                                                                        jacobian.outerSize());
-  }
-
-  Eigen::Map<const VectorX<typename MatrixType::StorageIndex>> JacobianRowIndicesMap() const {
-    return Eigen::Map<const VectorX<typename MatrixType::StorageIndex>>(jacobian.innerIndexPtr(),
-                                                                        jacobian.nonZeros());
-  }
-
-  Eigen::Map<const VectorX<Scalar>> JacobianValuesMap() const {
-    return Eigen::Map<const VectorX<Scalar>>(jacobian.valuePtr(), jacobian.nonZeros());
-  }
-
   // Sparse storage
   VectorType residual;
   MatrixType hessian_lower;
@@ -81,6 +69,48 @@ struct Linearization {
 // Shorthand instantiations
 using Linearizationd = Linearization<double>;
 using Linearizationf = Linearization<float>;
+
+/**
+ * Returns the sparse matrix structure of matrix.
+ */
+template <typename Scalar>
+sparse_matrix_structure_t GetSparseStructure(const Eigen::SparseMatrix<Scalar>& matrix) {
+  return {Eigen::Map<const VectorX<typename Eigen::SparseMatrix<Scalar>::StorageIndex>>(
+              matrix.innerIndexPtr(), matrix.nonZeros()),
+          Eigen::Map<const VectorX<typename Eigen::SparseMatrix<Scalar>::StorageIndex>>(
+              matrix.outerIndexPtr(), matrix.outerSize()),
+          {matrix.rows(), matrix.cols()}};
+}
+
+/**
+ * Return a default initialized sparse structure because arg is dense.
+ */
+template <typename Scalar>
+sparse_matrix_structure_t GetSparseStructure(const MatrixX<Scalar>&) {
+  return {};
+}
+
+/**
+ * Returns coefficients of matrix. Overloads exist for both dense and sparse matrices
+ * to make writing generic code easier.
+ * This version returns the non-zero values of an Eigen::SparseMatrix
+ * Note: it returns a map, so be careful about mutating or disposing of matrix before
+ * you are finished with the output.
+ */
+template <typename Scalar>
+Eigen::Map<const VectorX<Scalar>> JacobianValues(const Eigen::SparseMatrix<Scalar>& matrix) {
+  return Eigen::Map<const VectorX<Scalar>>(matrix.valuePtr(), matrix.nonZeros());
+}
+
+/**
+ * Returns coefficients of matrix. Overloads exist for both dense and sparse matrices
+ * to make writing generic code easier.
+ * Returns a const-ref to the argument.
+ */
+template <typename Scalar>
+const MatrixX<Scalar>& JacobianValues(const MatrixX<Scalar>& matrix) {
+  return matrix;
+}
 
 }  // namespace sym
 
