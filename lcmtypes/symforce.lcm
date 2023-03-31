@@ -93,7 +93,7 @@ struct linearization_dense_factor_helper_t {
   linearization_dense_key_helper_t key_helpers[];
 };
 
-struct linearization_sparse_key_helper_t {
+struct linearization_offsets_t {
   // Offset of this key within the factor's state vector
   int32_t factor_offset;
   // Offset of this key within the whole problem's state vector
@@ -108,7 +108,7 @@ struct linearization_sparse_factor_helper_t {
   // Offset of this factor's residual slice within the whole problem residual
   int32_t combined_residual_offset;
   // Data about each key's state offsets
-  linearization_sparse_key_helper_t key_helpers[];
+  linearization_offsets_t key_helpers[];
 
   // Mapping from factor jacobian flat storage into problem jacobian flat storage
   int32_t jacobian_index_map[];
