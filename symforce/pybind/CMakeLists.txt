@@ -9,7 +9,7 @@
 
 include(FetchContent)
 
-find_package(pybind11 QUIET)
+find_package(pybind11 2.9.2 QUIET)
 if (NOT pybind11_FOUND)
   message(STATUS "pybind11 not found, adding with FetchContent")
   # NOTE(brad): Set PYTHON_EXECUTABLE to ensure pybind11 uses the same
