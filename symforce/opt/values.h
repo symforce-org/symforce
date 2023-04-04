@@ -82,6 +82,13 @@ class Values {
   std::enable_if_t<kIsEigenType<Derived>, bool> Set(const Key& key, const Derived& value);
 
   /**
+   * Add a value by key, throws runtime_error if the key already exists.
+   * This is useful when setting up initial values for a problem.
+   */
+  template <typename T>
+  void SetNew(const Key& key, T&& value);
+
+  /**
    * Update or add keys to this Values base on other Values of different structure.
    * index MUST be valid for other.
    *

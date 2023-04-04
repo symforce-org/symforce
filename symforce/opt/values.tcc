@@ -3,6 +3,8 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <stdexcept>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
@@ -54,6 +56,15 @@ template <typename Derived>
 std::enable_if_t<kIsEigenType<Derived>, bool> Values<Scalar>::Set(const Key& key,
                                                                   const Derived& value) {
   return SetInternal<typename Derived::PlainMatrix>(key, value);
+}
+
+template <typename Scalar>
+template <typename T>
+void Values<Scalar>::SetNew(const Key& key, T&& value) {
+  const auto added = Set(key, std::forward<T>(value));
+  if (!added) {
+    throw std::runtime_error(fmt::format("Key {} already exists", key));
+  }
 }
 
 template <typename Scalar>

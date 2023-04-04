@@ -396,3 +396,10 @@ TEST_CASE("Test Set with Eigen expressions", "[values]") {
   CHECK(values.At<Eigen::Vector3d>('b') == Eigen::Vector3d::Constant(2));
   CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
 }
+
+TEST_CASE("Test SetNew", "[values]") {
+  sym::Valuesd values;
+  values.SetNew('a', Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
+  CHECK_THROWS_AS(values.SetNew('a', Eigen::Vector3d::Zero()), std::runtime_error);
+}
