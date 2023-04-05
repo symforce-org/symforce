@@ -44,7 +44,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   using StateVector = Eigen::Matrix<Scalar, N, 1>;
 
   auto residual_func = [&](const sym::Values<Scalar>& values,
-                           sym::Linearization<Scalar>& linearization) {
+                           sym::SparseLinearization<Scalar>& linearization) {
     const auto state_vec = values.template At<StateVector>('v');
     linearization.residual = J_MN * state_vec;
     linearization.hessian_lower = (J_MN.transpose() * J_MN).sparseView();
@@ -55,7 +55,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   sym::Values<Scalar> values_init{};
   values_init.Set('v', (StateVector::Ones() * 100).eval());
   sym::index_t index = values_init.CreateIndex({'v'});
-  sym::Linearization<Scalar> linearization{};
+  sym::SparseLinearization<Scalar> linearization{};
 
   residual_func(values_init, linearization);
   const sym::VectorX<Scalar> residual_init = linearization.residual;

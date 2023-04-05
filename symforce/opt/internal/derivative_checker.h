@@ -30,10 +30,10 @@ namespace internal {
  */
 template <typename Scalar>
 bool CheckDerivatives(Linearizer<Scalar>& linearizer, const Values<Scalar>& values,
-                      const index_t& index, const Linearization<Scalar>& linearization,
+                      const index_t& index, const SparseLinearization<Scalar>& linearization,
                       const Scalar epsilon, const bool verbose = true) {
   // Make a copy of the linearization that we can relinearize into
-  Linearization<Scalar> perturbed_linearization = linearization;
+  SparseLinearization<Scalar> perturbed_linearization = linearization;
 
   bool success = true;
 

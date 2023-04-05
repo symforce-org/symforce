@@ -49,7 +49,7 @@ Linearizer<ScalarType>::Linearizer(const std::string& name,
 
 template <typename ScalarType>
 void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
-                                         Linearization<Scalar>& linearization) {
+                                         SparseLinearization<Scalar>& linearization) {
   if (IsInitialized()) {
     EnsureLinearizationHasCorrectSize(linearization);
 
@@ -301,7 +301,7 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
     const LinearizedDenseFactor& linearized_factor,
     const linearization_dense_factor_helper_t& factor_helper,
-    Linearization<Scalar>& linearization) const {
+    SparseLinearization<Scalar>& linearization) const {
   // The residual dimension must be the same, even for factors that return VectorX.  If the residual
   // size changes, the optimizer must be re-created.
   SYM_ASSERT(factor_helper.residual_dim == linearized_factor.residual.size());
@@ -374,7 +374,7 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::UpdateFromLinearizedSparseFactorIntoSparse(
     const LinearizedSparseFactor& linearized_factor,
     const linearization_sparse_factor_helper_t& factor_helper,
-    Linearization<Scalar>& linearization) const {
+    SparseLinearization<Scalar>& linearization) const {
   // The residual dimension must be the same, even for factors that return VectorX.  If the residual
   // size changes, the optimizer must be re-created.
   SYM_ASSERT(factor_helper.residual_dim == linearized_factor.residual.size());
@@ -531,7 +531,7 @@ void Linearizer<ScalarType>::UpdateFromSparseFactorIntoTripletLists(
 
 template <typename ScalarType>
 void Linearizer<ScalarType>::EnsureLinearizationHasCorrectSize(
-    Linearization<Scalar>& linearization) const {
+    SparseLinearization<Scalar>& linearization) const {
   if (linearization.residual.size() == 0) {
     // Linearization has never been initialized
     // NOTE(aaron): This is independent of linearization.IsInitialized(), i.e. a Linearization can

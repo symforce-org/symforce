@@ -56,14 +56,14 @@ class LevenbergMarquardtState {
       have_cached_error_ = false;
     }
 
-    const Linearization<Scalar>& GetLinearization() const {
+    const SparseLinearization<Scalar>& GetLinearization() const {
       return linearization_;
     }
 
     Values<Scalar> values{};
 
    private:
-    Linearization<Scalar> linearization_{};
+    SparseLinearization<Scalar> linearization_{};
     mutable bool have_cached_error_{false};
     mutable double cached_error_{0};
   };

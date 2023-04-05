@@ -139,18 +139,18 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-Linearization<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Linearize(
+SparseLinearization<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Linearize(
     const Values<Scalar>& values) {
   Initialize(values);
 
-  Linearization<Scalar> linearization;
+  SparseLinearization<Scalar> linearization;
   linearize_func_(values, linearization);
   return linearization;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
-    const Linearization<Scalar>& linearization,
+    const SparseLinearization<Scalar>& linearization,
     std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
   SYM_ASSERT(IsInitialized());
   nonlinear_solver_.ComputeCovariance(linearization.hessian_lower,
@@ -214,7 +214,7 @@ size_t ComputeBlockDimension(const Linearizer<Scalar>& linearizer, const std::ve
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
-    const Linearization<Scalar>& linearization,
+    const SparseLinearization<Scalar>& linearization,
     std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key) {
   SYM_ASSERT(covariances_by_key != nullptr);
   ComputeAllCovariances(linearization, *covariances_by_key);
@@ -222,7 +222,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
-    const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+    const SparseLinearization<Scalar>& linearization, const std::vector<Key>& keys,
     std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
   const bool same_order = internal::CheckKeyOrderMatchesLinearizerKeysStart(linearizer_, keys);
   SYM_ASSERT(same_order);
@@ -240,7 +240,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
-    const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+    const SparseLinearization<Scalar>& linearization, const std::vector<Key>& keys,
     std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key) {
   SYM_ASSERT(covariances_by_key != nullptr);
   ComputeCovariances(linearization, keys, *covariances_by_key);
@@ -327,7 +327,7 @@ template <typename ScalarType, typename NonlinearSolverType>
 typename NonlinearSolverType::LinearizeFunc
 Optimizer<ScalarType, NonlinearSolverType>::BuildLinearizeFunc(const bool check_derivatives) {
   return [this, check_derivatives](const Values<Scalar>& values,
-                                   Linearization<Scalar>& linearization) {
+                                   SparseLinearization<Scalar>& linearization) {
     linearizer_.Relinearize(values, linearization);
 
     if (check_derivatives) {

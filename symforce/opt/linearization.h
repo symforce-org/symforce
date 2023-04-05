@@ -19,12 +19,14 @@ namespace sym {
 /**
  * Class for storing a problem linearization evaluated at a Values (i.e. a residual, jacobian,
  * hessian, and rhs)
+ *
+ * MatrixType is expected to be an Eigen MatrixX or SparseMatrix.
  */
-template <typename ScalarType>
+template <typename MatrixType>
 struct Linearization {
-  using Scalar = ScalarType;
-  using VectorType = VectorX<Scalar>;
-  using MatrixType = Eigen::SparseMatrix<Scalar>;
+  using Scalar = typename MatrixType::Scalar;
+  using Vector = VectorX<Scalar>;
+  using Matrix = MatrixType;
 
   /**
    * Set to invalid
@@ -50,25 +52,32 @@ struct Linearization {
     return 0.5 * residual.squaredNorm();
   }
 
-  inline double LinearError(const VectorType& x_update) const {
+  inline double LinearError(const Vector& x_update) const {
     SYM_ASSERT(jacobian.cols() == x_update.size());
     const auto linear_residual_new = -jacobian * x_update + residual;
     return 0.5 * linear_residual_new.squaredNorm();
   }
 
   // Sparse storage
-  VectorType residual;
-  MatrixType hessian_lower;
-  MatrixType jacobian;
-  VectorType rhs;
+  Vector residual;
+  Matrix hessian_lower;
+  Matrix jacobian;
+  Vector rhs;
 
  private:
   bool initialized_{false};
 };
 
 // Shorthand instantiations
-using Linearizationd = Linearization<double>;
-using Linearizationf = Linearization<float>;
+template <typename Scalar>
+using SparseLinearization = Linearization<Eigen::SparseMatrix<Scalar>>;
+using SparseLinearizationd = SparseLinearization<double>;
+using SparseLinearizationf = SparseLinearization<float>;
+
+template <typename Scalar>
+using DenseLinearization = Linearization<MatrixX<Scalar>>;
+using DenseLinearizationd = DenseLinearization<double>;
+using DenseLinearizationf = DenseLinearization<float>;
 
 /**
  * Returns the sparse matrix structure of matrix.
@@ -115,5 +124,7 @@ const MatrixX<Scalar>& JacobianValues(const MatrixX<Scalar>& matrix) {
 }  // namespace sym
 
 // Explicit instantiation declarations
-extern template struct sym::Linearization<double>;
-extern template struct sym::Linearization<float>;
+extern template struct sym::Linearization<Eigen::SparseMatrix<double>>;
+extern template struct sym::Linearization<Eigen::SparseMatrix<float>>;
+extern template struct sym::Linearization<sym::MatrixX<double>>;
+extern template struct sym::Linearization<sym::MatrixX<float>>;

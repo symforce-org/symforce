@@ -9,6 +9,7 @@
 
 #include "./factor.h"
 #include "./levenberg_marquardt_solver.h"
+#include "./linearization.h"
 #include "./linearizer.h"
 #include "./optimization_stats.h"
 
@@ -173,7 +174,7 @@ class Optimizer {
   /**
    * Linearize the problem around the given values
    */
-  Linearization<Scalar> Linearize(const Values<Scalar>& values);
+  SparseLinearization<Scalar> Linearize(const Values<Scalar>& values);
 
   /**
    * Get covariances for each optimized key at the given linearization
@@ -184,10 +185,10 @@ class Optimizer {
    *
    * May not be called before either Optimize or Linearize has been called.
    */
-  void ComputeAllCovariances(const Linearization<Scalar>& linearization,
+  void ComputeAllCovariances(const SparseLinearization<Scalar>& linearization,
                              std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
   [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeAllCovariances(
-      const Linearization<Scalar>& linearization,
+      const SparseLinearization<Scalar>& linearization,
       std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
@@ -205,10 +206,11 @@ class Optimizer {
    * exactly the set of keys requested.  `covariances_by_key` must not contain any keys that are not
    * in `keys`.
    */
-  void ComputeCovariances(const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+  void ComputeCovariances(const SparseLinearization<Scalar>& linearization,
+                          const std::vector<Key>& keys,
                           std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
   [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeCovariances(
-      const Linearization<Scalar>& linearization, const std::vector<Key>& keys,
+      const SparseLinearization<Scalar>& linearization, const std::vector<Key>& keys,
       std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**

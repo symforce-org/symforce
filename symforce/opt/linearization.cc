@@ -6,5 +6,7 @@
 #include "./linearization.h"
 
 // Explicit instantiation
-template struct sym::Linearization<double>;
-template struct sym::Linearization<float>;
+template struct sym::Linearization<Eigen::SparseMatrix<double>>;
+template struct sym::Linearization<Eigen::SparseMatrix<float>>;
+template struct sym::Linearization<sym::MatrixX<double>>;
+template struct sym::Linearization<sym::MatrixX<float>>;

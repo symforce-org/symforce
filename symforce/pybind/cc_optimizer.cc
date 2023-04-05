@@ -95,7 +95,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
            "Linearize the problem around the given values.")
       .def(
           "compute_all_covariances",
-          [](Optimizerd& opt, const Linearizationd& linearization) {
+          [](Optimizerd& opt, const SparseLinearizationd& linearization) {
             std::unordered_map<Key, Eigen::MatrixXd> covariances_by_key;
             opt.ComputeAllCovariances(linearization, covariances_by_key);
             return covariances_by_key;
@@ -107,7 +107,8 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           )")
       .def(
           "compute_covariances",
-          [](Optimizerd& opt, const Linearizationd& linearization, const std::vector<Key>& keys) {
+          [](Optimizerd& opt, const SparseLinearizationd& linearization,
+             const std::vector<Key>& keys) {
             std::unordered_map<Key, Eigen::MatrixXd> covariances_by_key;
             opt.ComputeCovariances(linearization, keys, covariances_by_key);
             return covariances_by_key;

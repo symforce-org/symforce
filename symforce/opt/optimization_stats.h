@@ -27,7 +27,7 @@ struct OptimizationStats {
 
   // The linearization at best_index (at optimized_values), filled out if
   // populate_best_linearization=true
-  optional<Linearization<Scalar>> best_linearization{};
+  optional<SparseLinearization<Scalar>> best_linearization{};
 
   // Only filled if using sparse linear solver and Optimizer created with debug_stats = true.
   // If not filled, row_indices field of sparse_matrix_structure_t and linear_solver_ordering

@@ -53,7 +53,7 @@ TEMPLATE_TEST_CASE("sym_dynamic_linearize", "", double, float) {
                                    sym::kDefaultEpsilon<Scalar>, "sym_dynamic_linearize");
 
   sym::Linearizer<Scalar>& linearizer = optimizer.Linearizer();
-  sym::Linearization<Scalar> linearization;
+  sym::SparseLinearization<Scalar> linearization;
 
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
@@ -106,7 +106,7 @@ TEMPLATE_TEST_CASE("sym_fixed_linearize", "", double, float) {
                                    sym::kDefaultEpsilon<Scalar>, "sym_fixed_linearize");
 
   sym::Linearizer<Scalar>& linearizer = optimizer.Linearizer();
-  sym::Linearization<Scalar> linearization;
+  sym::SparseLinearization<Scalar> linearization;
 
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);

@@ -43,7 +43,8 @@ void AddOptimizationStatsWrapper(pybind11::module_ module) {
             return py::none();
           },
           /* setter */
-          [](sym::OptimizationStatsd& stats, const sym::Linearizationd* const best_linearization) {
+          [](sym::OptimizationStatsd& stats,
+             const sym::SparseLinearizationd* const best_linearization) {
             if (best_linearization == nullptr) {
               stats.best_linearization = {};
             } else {
@@ -67,7 +68,8 @@ void AddOptimizationStatsWrapper(pybind11::module_ module) {
             stats.iterations = state[0].cast<std::vector<optimization_iteration_t>>();
             stats.best_index = state[1].cast<int32_t>();
             stats.early_exited = state[2].cast<bool>();
-            const sym::Linearizationd* best_linearization = state[3].cast<sym::Linearizationd*>();
+            const sym::SparseLinearizationd* best_linearization =
+                state[3].cast<sym::SparseLinearizationd*>();
             if (best_linearization == nullptr) {
               stats.best_linearization = {};
             } else {

@@ -63,7 +63,7 @@ TEST_CASE("Column order of Jacobian matches key_order", "[linearizer]") {
   // Key order 1
   {
     sym::Linearizer<double> linearizer("key_order_1", factors, keys, true /* include_jacobians */);
-    sym::Linearizationd linearization;
+    sym::SparseLinearizationd linearization;
     linearizer.Relinearize(values, linearization);
     CHECK(M42(linearization.jacobian) == J1J2);
   }
@@ -74,7 +74,7 @@ TEST_CASE("Column order of Jacobian matches key_order", "[linearizer]") {
   {
     sym::Linearizer<double> linearizer("key_order_2", factors, {keys[1], keys[0]},
                                        true /* include_jacobians */);
-    sym::Linearizationd linearization;
+    sym::SparseLinearizationd linearization;
     linearizer.Relinearize(values, linearization);
     CHECK(M41(linearization.jacobian.col(0)) == M41(J1J2.col(1)));
     CHECK(M41(linearization.jacobian.col(1)) == M41(J1J2.col(0)));
@@ -98,7 +98,7 @@ TEST_CASE("Relinearization is consistent w/ respect to factor order", "[lineariz
 
   for (const auto* const factors : {&dense_sparse, &sparse_dense}) {
     sym::Linearizer<double> linearizer("order_test", *factors, keys, true /* include_jacobians */);
-    sym::Linearizationd linearization;
+    sym::SparseLinearizationd linearization;
     SYM_ASSERT(!linearization.IsInitialized());
     linearizer.Relinearize(values, linearization);
 

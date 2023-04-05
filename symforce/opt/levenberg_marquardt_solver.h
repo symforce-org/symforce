@@ -13,6 +13,7 @@
 
 #include "./cholesky/sparse_cholesky_solver.h"
 #include "./internal/levenberg_marquardt_state.h"
+#include "./linearization.h"
 #include "./optimization_stats.h"
 #include "./tic_toc.h"
 #include "./values.h"
@@ -39,7 +40,7 @@ namespace sym {
  *   // Create a function that computes the residual (a linear residual for this example)
  *   const auto J_MN = sym::RandomNormalMatrix<double, M, N>(gen);
  *   const auto linearize_func = [&J_MN](const sym::Valuesd& values,
- *                                       sym::Linearizationd* const linearization) {
+ *                                       sym::SparseLinearizationd* const linearization) {
  *     const auto state_vec = values.At<sym::Vector5d>('v');
  *     linearization->residual = J_MN * state_vec;
  *     linearization->hessian_lower = (J_MN.transpose() * J_MN).sparseView();
@@ -126,7 +127,7 @@ class LevenbergMarquardtSolver {
 
   // Function that evaluates the objective function and produces a quadratic approximation of
   // it by linearizing a least-squares residual.
-  using LinearizeFunc = std::function<void(const Values<Scalar>&, Linearization<Scalar>&)>;
+  using LinearizeFunc = std::function<void(const Values<Scalar>&, SparseLinearization<Scalar>&)>;
 
   LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon)
       : p_(p), id_(id), epsilon_(epsilon) {}
@@ -178,7 +179,7 @@ class LevenbergMarquardtSolver {
     return state_.Best().values;
   }
 
-  const Linearization<Scalar>& GetBestLinearization() const {
+  const SparseLinearization<Scalar>& GetBestLinearization() const {
     SYM_ASSERT(state_.BestIsValid() && state_.Best().GetLinearization().IsInitialized());
     return state_.Best().GetLinearization();
   }

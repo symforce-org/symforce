@@ -52,7 +52,7 @@ class Linearizer {
    *
    * TODO(aaron): This should be const except that it can initialize the object
    */
-  void Relinearize(const Values<Scalar>& values, Linearization<Scalar>& linearization);
+  void Relinearize(const Values<Scalar>& values, SparseLinearization<Scalar>& linearization);
 
   /**
    * Whether this contains values, versus having not been evaluated yet
@@ -84,11 +84,11 @@ class Linearizer {
   void UpdateFromLinearizedDenseFactorIntoSparse(
       const LinearizedDenseFactor& linearized_factor,
       const linearization_dense_factor_helper_t& factor_helper,
-      Linearization<Scalar>& linearization) const;
+      SparseLinearization<Scalar>& linearization) const;
   void UpdateFromLinearizedSparseFactorIntoSparse(
       const LinearizedSparseFactor& linearized_factor,
       const linearization_sparse_factor_helper_t& factor_helper,
-      Linearization<Scalar>& linearization) const;
+      SparseLinearization<Scalar>& linearization) const;
 
   /**
    * Update the combined residual and rhs, along with triplet lists for the sparse matrices, from a
@@ -108,7 +108,7 @@ class Linearizer {
   /**
    * Check if a Linearization has the correct sizes, and if not, initialize it
    */
-  void EnsureLinearizationHasCorrectSize(Linearization<Scalar>& linearization) const;
+  void EnsureLinearizationHasCorrectSize(SparseLinearization<Scalar>& linearization) const;
 
   bool initialized_{false};
 
@@ -141,16 +141,16 @@ class Linearizer {
   // Numerical linearization from the very first linearization that is used to initialize new
   // LevenbergMarquardtState::StateBlocks (at most 3 times) and isn't touched on each subsequent
   // relinearization.
-  Linearization<Scalar> init_linearization_;
+  SparseLinearization<Scalar> init_linearization_;
 };
 
 // Free function as an alternate way to call.
 template <typename Scalar>
-Linearization<Scalar> Linearize(const std::vector<Factor<Scalar>>& factors,
-                                const Values<Scalar>& values,
-                                const std::vector<Key>& keys_to_optimize = {},
-                                const std::string& linearizer_name = "Linearizer") {
-  Linearization<Scalar> linearization;
+SparseLinearization<Scalar> Linearize(const std::vector<Factor<Scalar>>& factors,
+                                      const Values<Scalar>& values,
+                                      const std::vector<Key>& keys_to_optimize = {},
+                                      const std::string& linearizer_name = "Linearizer") {
+  SparseLinearization<Scalar> linearization;
   Linearizer<Scalar>(linearizer_name, factors, keys_to_optimize).Relinearize(values, linearization);
   return linearization;
 }
