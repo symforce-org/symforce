@@ -219,6 +219,11 @@ class Optimizer:
                 # We compute the linearization in the same order as `optimized_keys`
                 # so that e.g. columns of the generated jacobians are in the same order
                 factor_opt_keys = [opt_key for opt_key in optimized_keys if opt_key in factor.keys]
+                if not factor_opt_keys:
+                    raise ValueError(
+                        f"Factor {factor.name} has no arguments (keys: {factor.keys}) in "
+                        + f"optimized_keys ({optimized_keys})."
+                    )
                 numeric_factors.append(factor.to_numeric_factor(factor_opt_keys))
             else:
                 # Add unique keys to optimized keys

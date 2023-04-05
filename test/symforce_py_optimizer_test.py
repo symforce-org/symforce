@@ -13,6 +13,7 @@ from lcmtypes.sym._type_t import type_t
 
 import symforce.symbolic as sf
 from symforce import logger
+from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
 from symforce.test_util import TestCase
@@ -96,6 +97,26 @@ class SymforcePyOptimizerTest(TestCase):
 
         index_entry2 = optimizer.linearization_index_entry("x1")
         self.assertEqual(index_entry, index_entry2)
+
+    def test_unoptimized_factor_exception(self) -> None:
+        """
+        Tests that a ValueError is raised if none of the factor keys match the optimizer keys.
+        """
+
+        def residual(x: T.Scalar) -> sf.V1:
+            return sf.V1((x - 2.71828) ** 2)
+
+        factor1 = Factor(["present_key"], residual)
+        factor2 = Factor(["absent_key"], residual)
+
+        optimized_keys = ["present_key", "other_present_key"]
+        with self.assertRaises(ValueError):
+            try:
+                Optimizer([factor1, factor2], optimized_keys)
+            except ValueError as err:
+                self.assertIn(str(factor2.keys), str(err))
+                self.assertIn(str(optimized_keys), str(err))
+                raise err from None
 
 
 if __name__ == "__main__":
