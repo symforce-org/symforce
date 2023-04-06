@@ -249,6 +249,8 @@ class Optimizer:
         # This works because the factors maintain a reference to this, so everything is fine as long
         # as the unoptimized keys are also in here before we attempt to linearize any of the factors
         self._cc_keys_map = {key: cc_sym.Key("x", i) for i, key in enumerate(self.optimized_keys)}
+        # create the mapping from cc_keys back into python keys
+        self._py_keys_from_cc_keys_map = {v: k for k, v in self._cc_keys_map.items()}
 
         # This stores the list of keys in the python Values, which are necessary for reconstructing
         # a Python Values from C++, in particular for methods that don't otherwise have a Python
@@ -291,6 +293,21 @@ class Optimizer:
             cc_values.set(cc_key, values[key])
 
         return cc_values
+
+    def compute_all_covariances(self, optimized_value: Values) -> T.Dict[str, np.ndarray]:
+        """
+        Compute the covariance matrix (J^T@J)^-1 for all optimized keys about a given linearization point
+
+        Args:
+            optimized_value: A value containing the linearization point to compute the covariance matrix about
+
+        Returns:
+            A dict of {optimized_key: numerical covariance matrix}
+        """
+        cc_covariance_dict = self._cc_optimizer.compute_all_covariances(
+            linearization=self.linearize(optimized_value)
+        )
+        return {self._py_keys_from_cc_keys_map[k]: v for k, v in cc_covariance_dict.items()}
 
     def optimize(self, initial_guess: Values, **kwargs: T.Any) -> Optimizer.Result:
         """
