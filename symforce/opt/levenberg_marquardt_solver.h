@@ -123,11 +123,13 @@ class LevenbergMarquardtSolver {
  public:
   using Scalar = ScalarType;
   using LinearSolver = LinearSolverType;
-  using StateType = internal::LevenbergMarquardtState<Scalar>;
+  using MatrixType = typename LinearSolverType::MatrixType;
+  using StateType = internal::LevenbergMarquardtState<MatrixType>;
+  using LinearizationType = Linearization<MatrixType>;
 
   // Function that evaluates the objective function and produces a quadratic approximation of
   // it by linearizing a least-squares residual.
-  using LinearizeFunc = std::function<void(const Values<Scalar>&, SparseLinearization<Scalar>&)>;
+  using LinearizeFunc = std::function<void(const Values<Scalar>&, LinearizationType&)>;
 
   LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon)
       : p_(p), id_(id), epsilon_(epsilon) {}
@@ -179,20 +181,18 @@ class LevenbergMarquardtSolver {
     return state_.Best().values;
   }
 
-  const SparseLinearization<Scalar>& GetBestLinearization() const {
+  const LinearizationType& GetBestLinearization() const {
     SYM_ASSERT(state_.BestIsValid() && state_.Best().GetLinearization().IsInitialized());
     return state_.Best().GetLinearization();
   }
 
-  void ComputeCovariance(const Eigen::SparseMatrix<Scalar>& hessian_lower,
-                         MatrixX<Scalar>& covariance);
+  void ComputeCovariance(const MatrixType& hessian_lower, MatrixX<Scalar>& covariance);
 
  private:
-  Eigen::SparseMatrix<Scalar> DampHessian(const Eigen::SparseMatrix<Scalar>& hessian_lower,
-                                          bool& have_max_diagonal, VectorX<Scalar>& max_diagonal,
-                                          const Scalar lambda) const;
+  MatrixType DampHessian(const MatrixType& hessian_lower, bool& have_max_diagonal,
+                         VectorX<Scalar>& max_diagonal, const Scalar lambda) const;
 
-  void CheckHessianDiagonal(const Eigen::SparseMatrix<Scalar>& hessian_lower_damped);
+  void CheckHessianDiagonal(const MatrixType& hessian_lower_damped);
 
   void PopulateIterationStats(optimization_iteration_t& iteration_stats, const StateType& state,
                               const Scalar new_error, const Scalar relative_reduction,
@@ -227,7 +227,7 @@ class LevenbergMarquardtSolver {
 
   // Working storage to avoid reallocation
   VectorX<Scalar> update_;
-  Eigen::SparseMatrix<Scalar> H_damped_;
+  MatrixType H_damped_;
   Eigen::Array<bool, Eigen::Dynamic, 1> zero_diagonal_;
   std::vector<int> zero_diagonal_indices_;
 

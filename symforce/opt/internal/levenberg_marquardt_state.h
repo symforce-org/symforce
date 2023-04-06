@@ -27,10 +27,10 @@ namespace internal {
  * This class also manages which of the three underlying blocks are currently in use for which
  * purpose (New, Init, or Best).
  */
-template <typename ScalarType>
+template <typename MatrixType>
 class LevenbergMarquardtState {
  public:
-  using Scalar = ScalarType;
+  using Scalar = typename MatrixType::Scalar;
 
   /**
    * Single values with linearization.  The full State contains three of these
@@ -56,14 +56,14 @@ class LevenbergMarquardtState {
       have_cached_error_ = false;
     }
 
-    const SparseLinearization<Scalar>& GetLinearization() const {
+    const Linearization<MatrixType>& GetLinearization() const {
       return linearization_;
     }
 
     Values<Scalar> values{};
 
    private:
-    SparseLinearization<Scalar> linearization_{};
+    Linearization<MatrixType> linearization_{};
     mutable bool have_cached_error_{false};
     mutable double cached_error_{0};
   };

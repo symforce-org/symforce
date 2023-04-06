@@ -17,11 +17,13 @@ namespace sym {
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename LinearSolverType>
-Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
-    const Eigen::SparseMatrix<Scalar>& hessian_lower, bool& have_max_diagonal,
-    VectorX<Scalar>& max_diagonal, const Scalar lambda) const {
+typename LevenbergMarquardtSolver<ScalarType, LinearSolverType>::MatrixType
+LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(const MatrixType& hessian_lower,
+                                                                    bool& have_max_diagonal,
+                                                                    VectorX<Scalar>& max_diagonal,
+                                                                    const Scalar lambda) const {
   SYM_TIME_SCOPE("LM<{}>: DampHessian", id_);
-  Eigen::SparseMatrix<Scalar> H_damped = hessian_lower;
+  MatrixType H_damped = hessian_lower;
 
   if (p_.use_diagonal_damping) {
     if (p_.keep_max_diagonal_damping) {
@@ -49,7 +51,7 @@ Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolve
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagonal(
-    const Eigen::SparseMatrix<Scalar>& hessian_lower_damped) {
+    const MatrixType& hessian_lower_damped) {
   zero_diagonal_ = hessian_lower_damped.diagonal().array().abs() < epsilon_;
 
   // NOTE(aaron): We call this outside the condition so it's guaranteed to do the allocation on the
@@ -278,7 +280,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
-    const Eigen::SparseMatrix<Scalar>& hessian_lower, MatrixX<Scalar>& covariance) {
+    const MatrixType& hessian_lower, MatrixX<Scalar>& covariance) {
   SYM_TIME_SCOPE("LM<{}>: ComputeCovariance()", id_);
 
   H_damped_ = hessian_lower;
