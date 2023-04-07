@@ -20,7 +20,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include <symforce/opt/cholesky/sparse_cholesky_solver.h>
+#include <symforce/opt/sparse_cholesky/sparse_cholesky_solver.h>
 #include <symforce/opt/sparse_schur_solver.h>
 #include <symforce/opt/tic_toc.h>
 

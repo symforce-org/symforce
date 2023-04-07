@@ -12,7 +12,7 @@
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
 
-#include "./cholesky/sparse_cholesky_solver.h"
+#include "./sparse_cholesky/sparse_cholesky_solver.h"
 
 namespace sym {
 

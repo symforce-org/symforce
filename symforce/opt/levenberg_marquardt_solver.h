@@ -11,10 +11,10 @@
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 
-#include "./cholesky/sparse_cholesky_solver.h"
 #include "./internal/levenberg_marquardt_state.h"
 #include "./linearization.h"
 #include "./optimization_stats.h"
+#include "./sparse_cholesky/sparse_cholesky_solver.h"
 #include "./tic_toc.h"
 #include "./values.h"
 

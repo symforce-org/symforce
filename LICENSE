@@ -200,12 +200,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-# symforce/opt/cholesky
+# symforce/opt/sparse_cholesky
 
-Code in symforce/opt/cholesky is adapted from LDL/SuiteSparse and its
+Code in symforce/opt/sparse_cholesky is adapted from LDL/SuiteSparse and its
 corresponding implementation in the SparseCholesky module of the Eigen library,
 and is licensed under the MPL2 license as described in
-symforce/opt/cholesky/LICENSE
+symforce/opt/sparse_cholesky/LICENSE
 
 # Third Party Code
 

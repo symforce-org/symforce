@@ -114,8 +114,8 @@ add_metis()
 # ------------------------------------------------------------------------------
 # symforce_cholesky
 
-file(GLOB SYMFORCE_CHOLESKY_SOURCES CONFIGURE_DEPENDS cholesky/*.cc)
-file(GLOB SYMFORCE_CHOLESKY_HEADERS CONFIGURE_DEPENDS cholesky/*.h cholesky/*.tcc)
+file(GLOB SYMFORCE_CHOLESKY_SOURCES CONFIGURE_DEPENDS sparse_cholesky/*.cc)
+file(GLOB SYMFORCE_CHOLESKY_HEADERS CONFIGURE_DEPENDS sparse_cholesky/*.h sparse_cholesky/*.tcc)
 add_library(
   symforce_cholesky
   ${SYMFORCE_LIBRARY_TYPE}
