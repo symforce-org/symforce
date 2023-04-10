@@ -215,20 +215,31 @@ void Values<Scalar>::Update(const index_t& index_this, const index_t& index_othe
  * Polymorphic helper to apply a retraction.
  */
 template <typename T, typename Scalar = typename sym::StorageOps<T>::Scalar>
-void RetractHelper(const Scalar* tangent_data, const Scalar epsilon, Scalar* t_ptr) {
+void RetractHelper(const Scalar* tangent_data, const Scalar epsilon, Scalar* const t_ptr,
+                   const int32_t /* tangent_dim */) {
+  static_assert(!kIsEigenType<T>, "Eigen types not supported");
+
   const T t_in = sym::StorageOps<T>::FromStorage(t_ptr);
   const typename sym::LieGroupOps<T>::TangentVec tangent_vec(tangent_data);
   const T t_out = sym::LieGroupOps<T>::Retract(t_in, tangent_vec, epsilon);
   sym::StorageOps<T>::ToStorage(t_out, t_ptr);
 }
-BY_TYPE_HELPER(RetractByType, RetractHelper);
+
+template <typename Scalar>
+void MatrixRetractHelper(const Scalar* tangent_data, const Scalar /* epsilon */,
+                         Scalar* const t_ptr, const int32_t tangent_dim) {
+  for (int32_t i = 0; i < tangent_dim; ++i) {
+    t_ptr[i] += tangent_data[i];
+  }
+}
+BY_TYPE_HELPER(RetractByType, RetractHelper, MatrixRetractHelper);
 
 template <typename Scalar>
 void Values<Scalar>::Retract(const index_t& index, const Scalar* delta, const Scalar epsilon) {
   size_t tangent_inx = 0;
   for (const index_entry_t& entry : index.entries) {
     RetractByType<Scalar>(entry.type, /* tangent_data */ delta + tangent_inx, epsilon,
-                          /* t_ptr */ data_.data() + entry.offset);
+                          /* t_ptr */ data_.data() + entry.offset, entry.tangent_dim);
     tangent_inx += entry.tangent_dim;
   }
 }
@@ -237,8 +248,9 @@ void Values<Scalar>::Retract(const index_t& index, const Scalar* delta, const Sc
  * Polymorphic helper to compute local coordinates
  */
 template <typename T, typename Scalar = typename sym::StorageOps<T>::Scalar>
-void LocalCoordinatesHelper(const Scalar* storage_this, const Scalar* storage_others,
-                            Scalar* tangent_out, const Scalar epsilon) {
+void LocalCoordinatesHelper(const Scalar* const storage_this, const Scalar* const storage_others,
+                            Scalar* const tangent_out, const Scalar epsilon,
+                            const int32_t /* tangent_dim */) {
   const T t1 = sym::StorageOps<T>::FromStorage(storage_this);
   const T t2 = sym::StorageOps<T>::FromStorage(storage_others);
   const typename sym::LieGroupOps<T>::TangentVec tangent_vec =
@@ -246,7 +258,16 @@ void LocalCoordinatesHelper(const Scalar* storage_this, const Scalar* storage_ot
   // TODO(alvin): can we avoid this copy?
   std::copy_n(tangent_vec.data(), sym::LieGroupOps<T>::TangentDim(), tangent_out);
 }
-BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper);
+template <typename Scalar>
+void MatrixLocalCoordinatesHelper(const Scalar* const storage_this,
+                                  const Scalar* const storage_others, Scalar* const tangent_out,
+                                  const Scalar /* epsilon */, const int32_t tangent_dim) {
+  for (int32_t i = 0; i < tangent_dim; ++i) {
+    tangent_out[i] = storage_this[i] - storage_others[i];
+  }
+}
+
+BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper, MatrixLocalCoordinatesHelper);
 
 template <typename Scalar>
 VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, const index_t& index,
@@ -257,7 +278,7 @@ VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, c
   for (const index_entry_t& entry : index.entries) {
     LocalCoordinatesByType<Scalar>(entry.type, data_.data() + entry.offset,
                                    others.data_.data() + entry.offset,
-                                   tangent_vec.data() + tangent_inx, epsilon);
+                                   tangent_vec.data() + tangent_inx, epsilon, entry.tangent_dim);
     tangent_inx += entry.tangent_dim;
   }
 
@@ -267,10 +288,16 @@ VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, c
 namespace {
 
 template <typename T>
-std::string FormatHelper(const typename StorageOps<T>::Scalar* data_ptr) {
+std::string FormatHelper(const type_t /* type */, const typename StorageOps<T>::Scalar* data_ptr,
+                         const int32_t /* storage_dim */) {
   return fmt::format("{}", StorageOps<T>::FromStorage(data_ptr));
 }
-BY_TYPE_HELPER(FormatByType, FormatHelper);
+template <typename Scalar>
+std::string MatrixFormatHelper(const type_t type, const Scalar* data_ptr,
+                               const int32_t storage_dim) {
+  return fmt::format("<{} {}>", type, Eigen::Map<const VectorX<Scalar>>(data_ptr, storage_dim));
+}
+BY_TYPE_HELPER(FormatByType, FormatHelper, MatrixFormatHelper);
 
 }  // namespace
 
@@ -292,7 +319,8 @@ std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v) {
   for (const index_entry_t& entry : index.entries) {
     fmt::print(os, " {} [{}:{}] --> {}\n", Key(entry.key), entry.offset,
                entry.offset + entry.storage_dim,
-               FormatByType<Scalar>(entry.type, v.Data().data() + entry.offset));
+               FormatByType<Scalar>(entry.type, entry.type, v.Data().data() + entry.offset,
+                                    entry.storage_dim));
   }
 
   os << ">";

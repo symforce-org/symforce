@@ -15,6 +15,7 @@
 #include <sym/{{ python_util.camelcase_to_snakecase(cls.__name__) }}.h>
 {% endfor %}
 #include <sym/util/typedefs.h>
+#include <symforce/opt/assert.h>
 
 #include <lcmtypes/sym/type_t.hpp>
 
@@ -27,6 +28,53 @@ template <typename T>
 static constexpr const bool kIsSparseEigenType =
     std::is_base_of<Eigen::SparseMatrix<typename T::Scalar>, T>::value;
 
+inline bool IsEigenType(const type_t type) {
+  switch (type.value) {
+    {% for i in range(1, 10) %}
+    case type_t::VECTOR{{ i }}:
+    {% endfor %}
+    case type_t::VECTORX:
+    {% for i in range(1, 10) %}
+    {% for j in range(2, 10) %}
+    case type_t::MATRIX{{ i }}{{ j }}:
+    {% endfor %}
+    {% endfor %}
+      return true;
+    {% for cls in sf.GEO_TYPES %}
+      case type_t::{{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }}:
+    {% endfor %}
+    case type_t::SCALAR:
+    {% for cls in sf.CAM_TYPES %}
+    case type_t::{{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }}:
+    {% endfor %}
+    case type_t::DATABUFFER:
+      return false;
+    case type_t::INVALID:
+      SYM_ASSERT(false, "Invalid type");
+  }
+  SYM_ASSERT(false, "Unreachable");  // gcc (at least >=5,<=11) does not prove this is unreachable
+}
+
+/**
+ *  Returns the shape of an Eigen type as a pair of ints (rows, cols)
+ */
+inline std::pair<int, int> EigenTypeShape(const type_t type) {
+  switch (type.value) {
+    {% for i in range(1, 10) %}
+    case type_t::VECTOR{{ i }}:
+      return { {{ i }}, 1 };
+    {% endfor %}
+    {% for i in range(1, 10) %}
+    {% for j in range(2, 10) %}
+    case type_t::MATRIX{{ i }}{{ j }}:
+      return { {{ i }}, {{ j }} };
+    {% endfor %}
+    {% endfor %}
+    default:
+      SYM_ASSERT(false);
+  }
+}
+
 /**
  * Helper to handle polymorphism by creating a switch from a runtime type enum to dispatch
  * to the templated method func. Used to perform type-aware operations.
@@ -35,9 +83,12 @@ static constexpr const bool kIsSparseEigenType =
  *   name: Name of the output function (ex: FormatByType)
  *   func: Name of a function template (ex: FormatHelper)
  */
-#define BY_TYPE_HELPER(name, func)                                     \
+#define BY_TYPE_HELPER(name, func, matrix_func)                        \
   template <typename Scalar, typename... Args>                         \
   auto name(const type_t type, Args&&... args) {                       \
+    if (IsEigenType(type)) {                                           \
+      return matrix_func<Scalar>(args...);                             \
+    }                                                                  \
     switch (type.value) {                                              \
       {% for cls in sf.GEO_TYPES %}
       case type_t::{{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }}: \
@@ -45,16 +96,6 @@ static constexpr const bool kIsSparseEigenType =
       {% endfor %}
       case type_t::SCALAR:                                             \
         return func<Scalar>(args...);                                  \
-        {% for i in range(1, 10) %}
-      case type_t::VECTOR{{ i }}:                                      \
-        return func<Eigen::Matrix<Scalar, {{ i }}, 1>>(args...);       \
-        {% endfor %}
-        {% for i in range(1, 10) %}
-        {% for j in range(2, 10) %}
-      case type_t::MATRIX{{ i }}{{ j }}:                               \
-        return func<Eigen::Matrix<Scalar, {{ i }}, {{ j }}>>(args...); \
-        {% endfor %}
-        {% endfor %}
       {% for cls in sf.CAM_TYPES %}
       case type_t::{{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }}: \
         return func<sym::{{ cls.__name__ }}<Scalar>>(args...);         \
