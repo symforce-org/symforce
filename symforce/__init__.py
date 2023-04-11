@@ -221,19 +221,6 @@ def get_symbolic_api() -> str:
     return _symbolic_api
 
 
-# NOTE(hayk): Remove this after they are present in a release or two.
-
-
-def get_backend() -> str:
-    warnings.warn("`get_backend` is deprecated, use `get_symbolic_api`", FutureWarning)
-    return get_symbolic_api()
-
-
-def set_backend(name: str) -> None:
-    warnings.warn("`set_backend` is deprecated use `set_symbolic_api`", FutureWarning)
-    return set_symbolic_api(name)
-
-
 # --------------------------------------------------------------------------------
 # Default epsilon
 # --------------------------------------------------------------------------------
