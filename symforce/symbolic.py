@@ -20,6 +20,7 @@ available as well as `symforce.symbolic.sympy`.
 """
 
 # pylint: disable=wildcard-import
+# pylint: disable=unused-import
 # pylint: disable=unused-wildcard-import
 
 from symforce.internal.symbolic import *
@@ -29,6 +30,9 @@ from symforce.geo import *
 
 # isort: split
 from symforce.cam import *
+
+# isort: split
+from symforce import util
 
 # This doesn't change the runtime behavior, but tells Sphinx to document everything in here
 __all__ = list(globals().keys())

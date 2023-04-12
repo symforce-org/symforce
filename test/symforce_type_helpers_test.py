@@ -23,6 +23,9 @@ class SymforceTypeHelpersTest(TestCase):
     """
 
     def test_deduce_input_types(self) -> None:
+        # Lots of unused arguments in here
+        # pylint: disable=unused-argument
+
         # Can deduce self for bound method on geo classes
         assert (
             inspect.signature(sf.Rot3.compose).parameters["self"].annotation

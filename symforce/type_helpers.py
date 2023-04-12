@@ -67,6 +67,8 @@ def symbolic_inputs(func: T.Callable, input_types: T.Sequence[T.ElementOrType] =
 
     Returns:
         A tuple with a symbolic object for each input to func
+
+    See also: sf.util.symbolic_eval
     """
     parameters = [
         p
@@ -87,22 +89,3 @@ def symbolic_inputs(func: T.Callable, input_types: T.Sequence[T.ElementOrType] =
         inputs[arg_parameter.name] = ops.StorageOps.symbolic(arg_type, arg_parameter.name)
 
     return inputs
-
-
-_T = T.TypeVar("_T")
-
-
-def symbolic_eval(func: T.Callable[..., _T]) -> _T:
-    """
-    Build symbolic arguments for a function, and return the function evaluated on those arguments.
-
-    Useful for easily visualizing what expressions a symbolic function produces
-
-    Args:
-        func: A callable; args should have type annotations, and those types should be constructible
-              automatically with StorageOps.symbolic
-
-    Returns:
-        The outputs of `func` evaluated on the constructed symbolic args
-    """
-    return func(**symbolic_inputs(func))

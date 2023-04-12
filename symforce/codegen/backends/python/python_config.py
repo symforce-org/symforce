@@ -30,8 +30,9 @@ class PythonConfig(CodegenConfig):
         use_numba: Add the `@numba.njit` decorator to generated functions.  This will greatly
                    speed up functions by compiling them to machine code, but has large overhead
                    on the first call and some overhead on subsequent calls, so it should not be
-                   used for small functions or functions that are only called a handfull of
-                   times.
+                   used for small functions or functions that are only called a handful of
+                   times.  It also currently requires the the inputs and outputs of the function are
+                   scalars, vectors, or matrices.
         reshape_vectors: Allow rank 1 ndarrays to be passed in for row and column vectors by
                          automatically reshaping the input.
         return_2d_vectors: Return all matrices as 2d ndarrays if True. If False and a matrix has

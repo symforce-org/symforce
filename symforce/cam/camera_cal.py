@@ -6,8 +6,8 @@
 import symforce.internal.symbolic as sf
 from symforce import geo
 from symforce import ops
-from symforce import type_helpers
 from symforce import typing as T
+from symforce import util
 from symforce.ops.interfaces import Storage
 
 
@@ -150,7 +150,7 @@ class CameraCal(Storage):
         otherwise.
         """
         try:
-            type_helpers.symbolic_eval(cls.camera_ray_from_pixel)
+            util.symbolic_eval(cls.camera_ray_from_pixel)
         except NotImplementedError:
             return False
         return True
