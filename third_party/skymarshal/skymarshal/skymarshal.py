@@ -7,6 +7,8 @@ from __future__ import absolute_import, print_function
 
 import argparse
 import os
+import shlex
+import sys
 import typing as T
 
 import six
@@ -17,7 +19,7 @@ from skymarshal.package_map import parse_lcmtypes
 def parse_args(languages, args=None):
     # type: (T.Sequence[T.Type[SkymarshalLanguage]], T.Optional[T.Sequence[str]]) -> argparse.Namespace
     """Parse the argument list and return an options object."""
-    parser = argparse.ArgumentParser(description=__doc__, fromfile_prefix_chars="@")
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source_path", nargs="+")
     parser.add_argument("--debug-tokens", action="store_true")
     parser.add_argument("--print-def", action="store_true")
@@ -43,7 +45,17 @@ def parse_args(languages, args=None):
         options = parser.parse_args(args)
     else:
         # Use the command-line args.
-        options = parser.parse_args()
+
+        # NOTE(will): Support argfiles, e.g. @argfile as the first argument. argparse supports this
+        # directly with fromfile_prefix_chars="@", but this was causing issues for any arguments
+        # that started with @, even if those arguments were inside the argfile. This approach is
+        # much narrower in only supporting an argfile as the first argument.
+        if len(sys.argv) >= 2 and sys.argv[1].startswith("@"):
+            with open(sys.argv[1][1:]) as argfile:
+                args = shlex.split(argfile.read())
+            options = parser.parse_args(args + sys.argv[2:])
+        else:
+            options = parser.parse_args()
 
     return options
 
