@@ -54,6 +54,31 @@ void ComputeCovarianceBlockWithSchurComplement(Eigen::SparseMatrix<Scalar>& hess
 }
 
 /**
+ * Computes the top left square block of the covariance matrix. This is the overload for dense
+ * matrices. Does more or less the exact same thing.
+ *
+ * Args:
+ *     hessian_lower: The lower triangular portion of the Hessian.  This will be modified in place
+ *     block_dim: The dimension of computed block of the covariance matrix
+ *     covariance_block: The matrix in which the result is stored
+ **/
+template <typename Scalar>
+void ComputeCovarianceBlockWithSchurComplement(MatrixX<Scalar>& hessian_lower,
+                                               const size_t block_dim, const Scalar epsilon,
+                                               sym::MatrixX<Scalar>& covariance_block) {
+  // NOTE(brad): If the hessian were of the form:
+  // [ A   B ]
+  // [ B^T C ],
+  // We could instead compute the schur complement A - BC^{-1}Bt, then invert and return that,
+  // but it seems only marginally faster than the below, and is more complicated.
+  hessian_lower.diagonal().array() += epsilon;
+
+  Eigen::LLT<MatrixX<Scalar>> llt(hessian_lower);
+  covariance_block = llt.solve(MatrixX<Scalar>::Identity(hessian_lower.rows(), block_dim))
+                         .block(0, 0, block_dim, block_dim);
+}
+
+/**
  * Extract covariances for optimized variables individually from the full problem covariance.  For
  * each variable in `keys`, the returned matrix is the corresponding block from the diagonal of
  * the full covariance matrix.  Requires that the Linearizer has already been initialized
