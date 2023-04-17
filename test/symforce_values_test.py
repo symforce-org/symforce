@@ -4,25 +4,25 @@
 # ----------------------------------------------------------------------------
 
 import copy
-from dataclasses import dataclass
-import numpy as np
 import itertools
-import unittest
 import pickle
+from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
+
+import sym
+import symforce.internal.symbolic as sf_internal
+import symforce.symbolic as sf
 from symforce import logger
 from symforce import ops
-import symforce.symbolic as sf
-import symforce.internal.symbolic as sf_internal
 from symforce import typing as T
 from symforce.python_util import InvalidKeyError
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase
+from symforce.test_util import slow_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 from symforce.test_util.storage_ops_test_mixin import StorageOpsTestMixin
 from symforce.values import Values
-
-import sym
 
 
 @dataclass
@@ -103,7 +103,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(len(v.keys()), 3)
 
         string = repr(v)
-        logger.debug("v:\n" + string)
+        logger.debug("v:\n%s", string)
 
     def test_name_scope(self) -> None:
         s = sf.Symbol("foo.blah")
@@ -117,10 +117,14 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual("hey.there.what", w.name)
 
         with self.subTest(msg="Scopes are cleaned up correctly"):
+
+            class TestException(Exception):
+                pass
+
             try:
                 with sf.scope("hey"):
-                    raise Exception
-            except:
+                    raise TestException()
+            except TestException:
                 pass
             x = sf.Symbol("who")
             self.assertEqual("who", x.name)
@@ -195,7 +199,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         del v["uhoh"]
 
         string = repr(v)
-        logger.debug("v:\n" + string)
+        logger.debug("v:\n%s", string)
 
         # Copy into other values and change element
         new_v = copy.deepcopy(v)
@@ -235,7 +239,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v = Values()
             for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
-                    v[invalid_key]
+                    _ = v[invalid_key]
 
     def test_setitem(self) -> None:
         """
@@ -365,7 +369,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             v = Values()
             for invalid_key in self.INVALID_KEYS:
                 with self.assertRaises(InvalidKeyError):
-                    invalid_key in v
+                    _ = invalid_key in v
 
     def test_mixing_scopes(self) -> None:
         v1 = Values()
@@ -505,6 +509,11 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
 
         self.assertEqual(v_tuple["pair"], v_after["pair"])
 
+        x = sf.Symbol("x")
+        v_tuple["pair"] = (x, x ** 2)
+        v_after = Values.from_storage_index(v_tuple.to_storage(), v_tuple.index())
+        self.assertEqual(v_tuple["pair"], v_after["pair"])
+
     def test_from_storage_index(self) -> None:
         """
         Tests:
@@ -542,6 +551,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
                 sf.Rot3,
                 sf.Pose2,
                 sf.Pose3,
+                sf.Unit3,
                 sf.Complex,
                 sf.Quaternion,
                 sf.DualQuaternion,
@@ -614,11 +624,19 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
             sub_values=Values(hey=sym.Pose3.identity(), other=[5.4, np.sqrt(10)]),
         )
 
+        numeric_values = values.to_numerical()
+
         # Make sure they match
-        diff = values.to_numerical().local_coordinates(
+        diff = numeric_values.local_coordinates(
             expected_numerical_values, epsilon=sf.numeric_epsilon
         )
         self.assertLess(sf.M(diff).norm(), 1e-10)
+
+        # to and from tangent also work
+        tangent = np.random.rand(numeric_values.tangent_dim()).tolist()
+        exponent = numeric_values.from_tangent(tangent, epsilon=sf.numeric_epsilon)
+        recovered_tangent = exponent.to_tangent(epsilon=sf.numeric_epsilon)
+        self.assertLess((sf.M(recovered_tangent) - sf.M(tangent)).norm(), 10 * sf.numeric_epsilon)
 
 
 class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):

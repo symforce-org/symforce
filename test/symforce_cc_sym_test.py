@@ -5,24 +5,25 @@
 
 import dataclasses
 import math
+import pickle
+
 import numpy as np
 from scipy import sparse
 
-from symforce import cc_sym
-import sym
-
-from symforce import typing as T
-from symforce.test_util import TestCase
-from symforce.opt import optimizer
-
-from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
+from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
+
+import sym
+from symforce import cc_sym
+from symforce import typing as T
+from symforce.opt import optimizer
+from symforce.test_util import TestCase
 
 
 class SymforceCCSymTest(TestCase):
@@ -96,6 +97,16 @@ class SymforceCCSymTest(TestCase):
         with self.subTest(msg="cc_sym.Key.get_lcm_type returns a key_t"):
             self.assertIsInstance(cc_sym.Key("a").get_lcm_type(), key_t)
 
+        with self.subTest(msg="cc_sym.Key is pickleable"):
+            for key in [
+                cc_sym.Key("a"),
+                cc_sym.Key("a", 1),
+                cc_sym.Key("a", 1, 2),
+                cc_sym.Key("a", cc_sym.Key.INVALID_SUB, 2),
+            ]:
+                key_dumps = pickle.dumps(key)
+                self.assertEqual(key, pickle.loads(key_dumps))
+
     def test_values(self) -> None:
         """
         Tests:
@@ -141,13 +152,15 @@ class SymforceCCSymTest(TestCase):
                 return tp.from_storage([0] * tp.storage_dim())
 
         for tp in supported_types:
-            with self.subTest(msg=f"Can set and retrieve {tp.__name__}"):
+            with self.subTest(
+                msg=f"Can set and retrieve {tp.__name__}"  # pylint: disable=no-member
+            ):
                 values = cc_sym.Values()
                 val: T.Any = instantiate_type(tp)
                 values.set(cc_sym.Key("v"), val)
                 self.assertEqual(values.at(cc_sym.Key("v")), val)
 
-        with self.subTest(msg=f"Can set and at 9x9 matrices and smaller"):
+        with self.subTest(msg="Can set and at 9x9 matrices and smaller"):
             values = cc_sym.Values()
             for rows in range(1, 10):
                 for cols in range(1, 10):
@@ -280,7 +293,9 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values.cleanup(), 1)
 
         for tp in supported_types:
-            with self.subTest(msg=f"Can call set as a function of index_entry_t and {tp.__name__}"):
+            with self.subTest(
+                msg=f"Can call set as a function of index_entry_t and {tp.__name__}"  # pylint: disable=no-member
+            ):
                 values = cc_sym.Values()
                 a = cc_sym.Key("a")
                 values.set(a, instantiate_type(tp))
@@ -364,6 +379,18 @@ class SymforceCCSymTest(TestCase):
             v_copy = cc_sym.Values(v.get_lcm_type())
             self.assertTrue(v_copy.has(a))
             self.assertEqual(v_copy.at(a), v.at(a))
+
+        with self.subTest(msg="Can pickle Values"):
+            v = cc_sym.Values()
+            keys = []
+            for i, tp in enumerate(supported_types):
+                v.set(cc_sym.Key("x", i), instantiate_type(tp))
+                keys.append(cc_sym.Key("x", i))
+
+            pickled_v = pickle.loads(pickle.dumps(v))
+
+            for key in keys:
+                self.assertEqual(v.at(key), pickled_v.at(key))
 
     @staticmethod
     def pi_residual(
@@ -540,6 +567,43 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(pi_factor.all_keys(), [pi_key])
             self.assertEqual(pi_factor.optimized_keys(), [pi_key])
 
+    @staticmethod
+    def compare_linearizations(lin1: cc_sym.Linearization, lin2: cc_sym.Linearization) -> bool:
+        return (
+            (lin1.residual == lin2.residual).all()
+            and (lin1.hessian_lower.toarray() == lin2.hessian_lower.toarray()).all()
+            and (lin1.jacobian.toarray() == lin2.jacobian.toarray()).all()
+            and (lin1.rhs == lin2.rhs).all()
+            and lin1.is_initialized() == lin2.is_initialized()
+        )
+
+    @staticmethod
+    def compare_optimization_stats(
+        stats1: cc_sym.OptimizationStats, stats2: cc_sym.OptimizationStats
+    ) -> bool:
+
+        TVar = T.TypeVar("TVar")
+
+        # NOTE(brad): Exists to make mypy happy
+        def unwrap(option: T.Optional[TVar]) -> TVar:
+            assert option is not None
+            return option
+
+        if (stats1.best_linearization is None) ^ (stats2.best_linearization is None):
+            return False
+        return (
+            stats1.iterations == stats2.iterations
+            and stats1.best_index == stats2.best_index
+            and stats1.early_exited == stats2.early_exited
+            and (
+                stats1.best_linearization is None
+                and stats2.best_linearization is None
+                or SymforceCCSymTest.compare_linearizations(
+                    unwrap(stats1.best_linearization), unwrap(stats2.best_linearization)
+                )
+            )
+        )
+
     def test_optimization_stats(self) -> None:
         """
         Tests:
@@ -567,6 +631,26 @@ class SymforceCCSymTest(TestCase):
         with self.subTest(msg="get_lcm_type is wrapped"):
             stats = cc_sym.OptimizationStats()
             self.assertIsInstance(stats.get_lcm_type(), optimization_stats_t)
+
+        with self.subTest(msg="Can pickle cc_sym.OptimizationStats"):
+
+            stats = cc_sym.OptimizationStats()
+            stats.iterations = [optimization_iteration_t(iteration=i) for i in range(4)]
+            stats.best_index = 1
+            stats.early_exited = True
+            stats.best_linearization = None
+
+            self.assertTrue(
+                self.compare_optimization_stats(stats, pickle.loads(pickle.dumps(stats)))
+            )
+
+            linearization = cc_sym.Linearization()
+            linearization.residual = np.array([1, 2, 3])
+            stats.best_linearization = linearization
+
+            self.assertTrue(
+                self.compare_optimization_stats(stats, pickle.loads(pickle.dumps(stats)))
+            )
 
     def test_optimizer(self) -> None:
         """
@@ -600,7 +684,10 @@ class SymforceCCSymTest(TestCase):
             )
 
         make_opt = lambda: cc_sym.Optimizer(
-            params=cc_sym.default_optimizer_params(), factors=[pi_factor]
+            params=cc_sym.default_optimizer_params(),
+            factors=[pi_factor],
+            debug_stats=False,
+            include_jacobians=True,
         )
 
         with self.subTest(msg="Optimizer.factors has been wrapped"):
@@ -695,6 +782,28 @@ class SymforceCCSymTest(TestCase):
             self.assertIsInstance(lin.linear_error(x_update=np.array([0.01])), T.Scalar)
             lin.linear_error(np.array([0.01]))
 
+        with self.subTest(msg="cc_sym.Linearization is pickleable"):
+
+            linearization = cc_sym.Linearization()
+            linearization.residual = np.array([1, 2, 3])
+            linearization.jacobian = sparse.csc_matrix([[1, 2], [3, 4], [5, 6]])
+            linearization.hessian_lower = sparse.csc_matrix([[35, 0], [44, 56]])
+            linearization.rhs = np.array([22, 28])
+
+            self.assertTrue(
+                self.compare_linearizations(
+                    linearization, pickle.loads(pickle.dumps(linearization))
+                )
+            )
+
+            linearization.set_initialized(True)
+
+            self.assertTrue(
+                self.compare_linearizations(
+                    linearization, pickle.loads(pickle.dumps(linearization))
+                )
+            )
+
         with self.subTest(msg="Optimizer.compute_all_covariances has been wrapped"):
             values = cc_sym.Values()
             values.set(pi_key, 2.0)
@@ -738,10 +847,12 @@ class SymforceCCSymTest(TestCase):
     def test_default_params_match(self) -> None:
         """
         Check that the default params in C++ and Python are the same
+
+        Except verbose, which defaults to False in C++ and True in Python
         """
         self.assertEqual(
             cc_sym.default_optimizer_params(),
-            optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params())),
+            optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params(verbose=False))),
         )
 
 

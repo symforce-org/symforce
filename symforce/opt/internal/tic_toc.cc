@@ -17,8 +17,8 @@ namespace {
 // These must be defined in this order, so that they are constructed in this order, and more
 // importantly destroyed in reverse order
 // https://stackoverflow.com/a/469613
-static TicTocManager g_tic_toc{};
-static thread_local ThreadContext g_thread_ctx{};
+TicTocManager g_tic_toc{};
+thread_local ThreadContext g_thread_ctx{};
 
 double ToSeconds(const Duration& duration) {
   return static_cast<double>(duration.count()) * Duration::period::num / Duration::period::den;
@@ -30,7 +30,7 @@ TimePoint GetMonotonicTime() {
   return Clock::now();
 }
 
-// Accumulate a duration specified by the startime and end time with the named block
+// Accumulate a duration specified by the start time and end time with the named block
 void TicTocUpdate(const std::string& name, const Duration& duration) {
   g_thread_ctx.Update(name, duration);
 }

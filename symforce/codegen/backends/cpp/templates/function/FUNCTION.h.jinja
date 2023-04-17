@@ -11,13 +11,18 @@
 #include <complex>
 {% endif %}
 
+{% if spec.config.extra_imports %}
+{% for extra_import in spec.config.extra_imports %}
+#include "{{ extra_import }}" // User-defined extra import
+{% endfor %}
+{% endif %}
 {# Conditional? #}
 #include <Eigen/Dense>
 {% if spec.sparse_mat_data.__len__() > 0 -%}
 #include <Eigen/Sparse>
 {% endif %}
 
-{% for typename in ('Rot3', 'Rot2', 'Pose3', 'Pose2') %}
+{% for typename in ('Rot3', 'Rot2', 'Pose3', 'Pose2', 'Unit3') %}
 {% if typename in spec.types_included %}
 #include <sym/{{ python_util.camelcase_to_snakecase(typename) }}.h>
 {% endif %}

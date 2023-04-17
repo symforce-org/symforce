@@ -3,9 +3,10 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce.python_util import get_type, scalar_like
 import symforce.internal.symbolic as sf
 from symforce import typing as T
+from symforce.typing_util import get_type
+from symforce.typing_util import scalar_like
 
 from .ops import Ops
 
@@ -73,8 +74,9 @@ class StorageOps(Ops):
 
     @staticmethod
     def subs(a: T.Element, *args: T.Any, **kwargs: T.Any) -> T.Element:
+        # We convert to a Matrix here so that we can call `.subs` once, which is faster
         return StorageOps.from_storage(
-            a, [sf.S(s).subs(*args, **kwargs) for s in StorageOps.to_storage(a)]
+            a, list(iter(sf.sympy.Matrix(StorageOps.to_storage(a)).subs(*args, **kwargs)))
         )
 
     @staticmethod

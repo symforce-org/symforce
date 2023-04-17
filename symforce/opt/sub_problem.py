@@ -3,11 +3,12 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
-from symforce.ops.impl.dataclass_storage_ops import DataclassStorageOps
 from symforce import python_util
 from symforce import typing as T
+from symforce.ops.impl.dataclass_storage_ops import DataclassStorageOps
 from symforce.values import Values
 
 

@@ -6,18 +6,23 @@
 from __future__ import annotations
 
 import dataclasses
+import warnings
 from dataclasses import dataclass
+from functools import cached_property
+
+import numpy as np
 
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
+from lcmtypes.sym._sparse_matrix_structure_t import sparse_matrix_structure_t
 from lcmtypes.sym._values_t import values_t
 
+from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.values import Values
-from symforce import cc_sym
 
 
 class Optimizer:
@@ -26,6 +31,22 @@ class Optimizer:
 
     Typical usage is to construct an Optimizer from a set of factors and keys to optimize, and then
     call `optimize` repeatedly with a `Values`.
+
+    Example creation with a single `Factor`:
+
+        factor = Factor(
+            [my_key_0, my_key_1, my_key_2], my_residual_function
+        )
+        optimizer = Optimizer(
+            factors=[factor],
+            optimized_keys=[my_key_0, my_key_1],
+        )
+
+    And usage:
+
+        initial_guess = Values(...)
+        result = optimizer.optimize(initial_guess)
+        print(result.optimized_values)
 
     Example creation with an `OptimizationProblem` using `make_numeric_factors()`. The linearization
     functions are generated in `make_numeric_factors()` and are linearized with respect to
@@ -44,22 +65,6 @@ class Optimizer:
         factors = problem.make_symbolic_factors("my_problem")
         optimizer = Optimizer(factors, problem.optimized_keys())
 
-    Example creation with a single `Factor`:
-
-        factor = Factor(
-            [my_key_0, my_key_1, my_key_2], my_residual_function
-        )
-        optimizer = Optimizer(
-            factors=[factor],
-            optimized_keys=[my_key_0, my_key_1],
-        )
-
-    And usage:
-
-        initial_guess = Values(...)
-        result = optimizer.optimize(initial_guess)
-        print(result.optimized_values)
-
     Wraps the C++ `sym::Optimizer` class in `opt/optimizer.h`, so the API is mostly the same and
     optimization results will be identical.
 
@@ -71,8 +76,9 @@ class Optimizer:
         optimized_keys: A set of the keys to be optimized. Only required if symbolic factors are
             passed to the optimizer.
         params: Params for the optimizer
-        debug_stats: Whether the optimizer should record debuggins stats such as the optimized
+        debug_stats: Whether the optimizer should record debugging stats such as the optimized
             values, residual, jacobian, etc. computed at each iteration of the optimization.
+        include_jacobians: Whether the optimizer should compute jacobians (required for linear error)
     """
 
     @dataclass
@@ -82,6 +88,8 @@ class Optimizer:
 
         Mirrors the optimizer_params_t LCM type, see documentation there for information on each
         parameter
+
+        Note: For the Python optimizer, verbose defaults to True
         """
 
         verbose: bool = True
@@ -109,29 +117,79 @@ class Optimizer:
         optimized_values:
             The best Values achieved during the optimization (Values with the smallest error)
 
-        iteration_stats:
+        iterations:
             Per-iteration stats, if requested, like the error per iteration.  If debug stats are
             turned on, also the Values and linearization per iteration.
+
+        best_index:
+            The index into iterations for the iteration that produced the smallest error.  I.e.
+            `result.iterations[best_index].values == optimized_values`.  This is not guaranteed
+            to be the last iteration, if the optimizer tried additional steps which did not reduce
+            the error
 
         early_exited:
             Did the optimization early exit?  This can happen because it converged successfully,
             of because it was unable to make progress
 
-        best_index:
-            The index into iteration_stats for the iteration that produced the smallest error.  I.e.
-            `result.iteration_stats[best_index].values == optimized_values`.  This is not guaranteed
-            to be the last iteration, if the optimizer tried additional steps which did not reduce
-            the error
+        best_linearization:
+            The linearization at best_index (at optimized_values), filled out if
+            populate_best_linearization=True
+
+        jacobian_sparsity:
+            The sparsity pattern of the jacobian, filled out if debug_stats=True
+
+        linear_solver_ordering:
+            The ordering used for the linear solver, filled out if debug_stats=True
+
+        cholesky_factor_sparsity:
+            The sparsity pattern of the cholesky factor L, filled out if debug_stats=True
         """
 
         initial_values: Values
         optimized_values: Values
-        iteration_stats: T.Sequence[optimization_iteration_t]
-        early_exited: bool
-        best_index: int
+
+        # Private field holding the original stats - we expose fields of this through properties,
+        # since some of the conversions out of this are expensive
+        _stats: cc_sym.OptimizationStats
+
+        @cached_property
+        def iterations(self) -> T.List[optimization_iteration_t]:
+            return self._stats.iterations
+
+        @cached_property
+        def best_index(self) -> int:
+            return self._stats.best_index
+
+        @cached_property
+        def early_exited(self) -> bool:
+            return self._stats.early_exited
+
+        @cached_property
+        def best_linearization(self) -> T.Optional[cc_sym.Linearization]:
+            return self._stats.best_linearization
+
+        @cached_property
+        def jacobian_sparsity(self) -> sparse_matrix_structure_t:
+            return self._stats.jacobian_sparsity
+
+        @cached_property
+        def linear_solver_ordering(self) -> np.ndarray:
+            return self._stats.linear_solver_ordering
+
+        @cached_property
+        def cholesky_factor_sparsity(self) -> sparse_matrix_structure_t:
+            return self._stats.cholesky_factor_sparsity
+
+        @cached_property
+        def iteration_stats(self) -> T.Sequence[optimization_iteration_t]:
+            warnings.warn("iteration_stats is deprecated, use iterations", FutureWarning)
+            return self.iterations
 
         def error(self) -> float:
-            return self.iteration_stats[self.best_index].new_error
+            """
+            The lowest error achieved by the optimization (the error at optimized_values)
+            """
+            return self.iterations[self.best_index].new_error
 
     def __init__(
         self,
@@ -139,6 +197,7 @@ class Optimizer:
         optimized_keys: T.Sequence[str] = None,
         params: Optimizer.Params = None,
         debug_stats: bool = False,
+        include_jacobians: bool = False,
     ):
 
         if optimized_keys is None:
@@ -197,6 +256,7 @@ class Optimizer:
             optimizer_params_t(**dataclasses.asdict(self.params)),
             [factor.cc_factor(self._cc_keys_map) for factor in numeric_factors],
             debug_stats=self.debug_stats,
+            include_jacobians=include_jacobians,
         )
 
     def _initialize(self, values: Values) -> None:
@@ -227,13 +287,17 @@ class Optimizer:
 
         return cc_values
 
-    def optimize(self, initial_guess: Values) -> Optimizer.Result:
+    def optimize(self, initial_guess: Values, **kwargs: T.Any) -> Optimizer.Result:
         """
         Optimize from the given initial guess, and return the optimized Values and stats
 
         Args:
             initial_guess: A Values containing the initial guess, should contain at least all the
-                           keys required by the `factors` passed to the constructor
+                keys required by the `factors` passed to the constructor
+            num_iterations: If < 0 (the default), uses the number of iterations specified by the
+                params at construction
+            populate_best_linearization: If true, the linearization at the best values will be
+                filled out in the stats
 
         Returns:
             The optimization results, with additional stats and debug information.  See the
@@ -242,7 +306,7 @@ class Optimizer:
         cc_values = self._cc_values(initial_guess)
 
         try:
-            stats = self._cc_optimizer.optimize(cc_values)
+            stats = self._cc_optimizer.optimize(cc_values, **kwargs)
         except ZeroDivisionError as ex:
             raise ZeroDivisionError("ERROR: Division by zero - check your use of epsilon!") from ex
 
@@ -254,11 +318,7 @@ class Optimizer:
         )
 
         return Optimizer.Result(
-            initial_values=initial_guess,
-            optimized_values=optimized_values,
-            iteration_stats=stats.iterations,
-            best_index=stats.best_index,
-            early_exited=stats.early_exited,
+            initial_values=initial_guess, optimized_values=optimized_values, _stats=stats
         )
 
     def linearize(self, values: Values) -> cc_sym.Linearization:

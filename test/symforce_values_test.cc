@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -17,17 +19,15 @@
 #include <sym/polynomial_camera_cal.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
+#include <sym/unit3.h>
 #include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 #include <symforce/opt/values.h>
 
-#include "catch.hpp"
-
 TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   using Scalar = TestType;
 
-  spdlog::info("*** Testing Values<{}> ***", typeid(Scalar).name());
-  const Scalar epsilon = 1e-9;
+  spdlog::debug("*** Testing Values<{}> ***", typeid(Scalar).name());
 
   sym::Values<Scalar> v;
   CHECK(v.Keys().size() == 0);
@@ -90,13 +90,13 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   // Right now since we removed a scalar the data array is one longer than the actual storage dim
   CHECK(v.NumEntries() == 7);
   const sym::index_t index_1 = v.CreateIndex(v.Keys());
-  CHECK(v.Data().size() == index_1.storage_dim + 1);
+  CHECK(static_cast<int>(v.Data().size()) == index_1.storage_dim + 1);
   CHECK(index_1.tangent_dim == index_1.storage_dim - 1);
 
   // Cleanup to get rid of the empty space from the scalar
-  size_t num_cleaned = v.Cleanup();
+  v.Cleanup();
   CHECK(v.NumEntries() == 7);
-  CHECK(v.Data().size() == index_1.storage_dim);
+  CHECK(static_cast<int>(v.Data().size()) == index_1.storage_dim);
   const sym::index_t index_2 = v.CreateIndex(v.Keys());
   CHECK(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
   CHECK(Scalar(4.2) == v.template At<Scalar>({'f', 1}));
@@ -110,7 +110,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.template At<Scalar>(sym::Key('f', 2)) == Scalar(15.6));
 
   // Pack to LCM
-  const typename sym::Values<Scalar>::LcmType msg = v.GetLcmType();
+  const typename sym::Values<Scalar>::LcmType msg = v.GetLcmType(true /*sort keys*/);
   CHECK(msg.index == index_2);
   CHECK(msg.data.size() == v.Data().size());
 
@@ -121,7 +121,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
 
   // Print
-  spdlog::info("v: {}", v);
+  spdlog::debug("v: {}", v);
 
   // Clear
   v.RemoveAll();
@@ -166,7 +166,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test Retract and LocalCoordinates of camera cals", "
 }
 
 TEST_CASE("Test IndexEntryAt", "[values]") {
-  spdlog::info("*** Testing Values IndexEntryAt ***");
+  spdlog::debug("*** Testing Values IndexEntryAt ***");
 
   sym::Valuesd values;
   const sym::Key k1 = sym::Key('k', 1);
@@ -202,7 +202,7 @@ TEST_CASE("Test IndexEntryAt", "[values]") {
 }
 
 TEST_CASE("Test implicit construction", "[values]") {
-  spdlog::info("*** Testing Values Implicit Construction ***");
+  spdlog::debug("*** Testing Values Implicit Construction ***");
 
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -211,11 +211,12 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
-  spdlog::info(values);
+  values.Set<sym::Unit3d>('R', sym::Unit3d::Identity());
+  spdlog::debug(values);
 }
 
 TEST_CASE("Test initializer list construction", "[values]") {
-  spdlog::info("*** Testing Values Initializer List Construction ***");
+  spdlog::debug("*** Testing Values Initializer List Construction ***");
 
   sym::Valuesd v1;
   v1.Set<double>('x', 1.0);
@@ -243,7 +244,7 @@ TEST_CASE("Test initializer list construction", "[values]") {
 }
 
 TEST_CASE("Test indexed update", "[values]") {
-  spdlog::info("*** Testing Values Indexed Update ***");
+  spdlog::debug("*** Testing Values Indexed Update ***");
 
   // Create some data
   sym::Valuesd values;
@@ -274,7 +275,7 @@ TEST_CASE("Test indexed update", "[values]") {
 }
 
 TEST_CASE("Test key update", "[values]") {
-  spdlog::info("*** Testing Values Key Update ***");
+  spdlog::debug("*** Testing Values Key Update ***");
 
   // Create some data
   sym::Valuesd values;
@@ -314,16 +315,19 @@ TEST_CASE("Test key update", "[values]") {
 }
 
 TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
-                           (sym::Rot2, sym::Pose2, sym::Rot3, sym::Pose3, sym::Vector1,
+                           (sym::Rot2, sym::Pose2, sym::Rot3, sym::Pose3, sym::Unit3, sym::Vector1,
                             sym::Vector3, sym::Vector9, sym::Matrix11, sym::Matrix33, sym::Matrix99,
                             sym::Matrix34),
                            (double, float)) {
   using T = TestType;
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
-  spdlog::info("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
-               typeid(T).name());
-  const Scalar epsilon = 1e-9;
+  spdlog::debug("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
+                typeid(T).name());
+  constexpr Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
+  const Scalar tolerance = epsilon * 1000;
+  INFO(fmt::format("epsilon: {}\n", epsilon));
+  INFO(fmt::format("tolerance: {}\n", tolerance));
 
   // Create a values object that stores an identity element, and an index for it
   sym::Values<Scalar> v1;
@@ -338,16 +342,19 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
     const sym::Values<Scalar> v2 = v1;
 
     const T random_element = sym::StorageOps<T>::Random(gen);
+    INFO(fmt::format("random: {}\n", random_element));
     const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(random_element, epsilon);
+    INFO(fmt::format("tangent: {}\n", tangent_vec.transpose()));
 
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
     const T retracted_element = v1.template At<T>('x');
-    CHECK(sym::IsClose(random_element, retracted_element, 1e-6));
+    INFO(fmt::format("retract: {}\n", retracted_element));
+    CHECK(sym::IsClose(random_element, retracted_element, tolerance));
 
     // test local coordinates
     const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
-    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, 1e-6));
+    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, tolerance));
   }
 }
 
@@ -388,4 +395,11 @@ TEST_CASE("Test Set with Eigen expressions", "[values]") {
   CHECK(values.At<Eigen::Vector3d>('c') == Eigen::Vector3d::Zero());
   CHECK(values.At<Eigen::Vector3d>('b') == Eigen::Vector3d::Constant(2));
   CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
+}
+
+TEST_CASE("Test SetNew", "[values]") {
+  sym::Valuesd values;
+  values.SetNew('a', Eigen::Vector3d::Zero());
+  CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
+  CHECK_THROWS_AS(values.SetNew('a', Eigen::Vector3d::Zero()), std::runtime_error);
 }

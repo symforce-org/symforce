@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------
  * SymForce - Copyright 2022, Skydio, Inc.
- * This source code is under the LGPL license found in the LICENSE file.
+ * This source code is under the MPL2 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
 #include "./sparse_cholesky_solver.h"

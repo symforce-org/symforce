@@ -39,15 +39,15 @@ class Group(Storage):
 
     def inverse(self: GroupT) -> GroupT:
         """
-        Group inverse, such that `compose(a, inverse(a)) = a`.
+        Group inverse, such that `compose(a, inverse(a)) = identity`.
         """
         raise NotImplementedError()
 
     def between(self: GroupT, b: GroupT) -> GroupT:
         """
-        Returns the element that when composed with this produces b. For vector spaces it is `this - a`.
+        Returns the element that when composed with self produces b. For vector spaces it is `b - self`.
 
-        Implementation is simply `compose(inverse(this), b)`.
+        Implementation is simply `compose(inverse(self), b)`.
         """
         return self.inverse().compose(b)
 

@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-from symforce import ops
-from symforce.ops.interfaces import LieGroup
 import symforce.internal.symbolic as sf
+from symforce import ops
 from symforce import typing as T
+from symforce.ops.interfaces import LieGroup
 
 from .matrix import Matrix
 from .matrix import Matrix33
@@ -47,12 +47,29 @@ class Pose3(LieGroup):
             R: Frame orientation
             t: Translation 3-vector in the global frame
         """
-        self.R = R or Rot3()
-        self.t = t or Vector3()
+        self.R = R if R is not None else Rot3()
+        self.t = t if t is not None else Vector3()
 
-        assert isinstance(self.R, Rot3)
-        assert isinstance(self.t, Vector3)
-        assert self.t.shape == (3, 1), self.t.shape
+        if not isinstance(self.R, Rot3):
+            raise TypeError(f"R must be type Rot3 or None, got {type(R)=} instead")
+        if not isinstance(self.t, Vector3):
+            raise TypeError(f"t must be type Vector3 or None, got {type(t)=} instead")
+
+    def rotation(self) -> Rot3:
+        """
+        Accessor for the rotation component
+
+        Does not make a copy.  Also accessible as `self.R`
+        """
+        return self.R
+
+    def position(self) -> Vector3:
+        """
+        Accessor for the position component
+
+        Does not make a copy.  Also accessible as `self.t`
+        """
+        return self.t
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
@@ -147,6 +164,15 @@ class Pose3(LieGroup):
     def retract(
         self: Pose3T, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> Pose3T:
+        """
+        Applies a tangent space perturbation vec to self. Often used in optimization
+        to update nonlinear values from an update step in the tangent space.
+
+        Conceptually represents "self + vec" if self is a vector.
+
+        Implementation retracts the R and t components separately, which is different from
+        `compose(self, from_tangent(vec))`.  See the class docstring for more information.
+        """
         return self.__class__(
             R=self.R.retract(vec[:3], epsilon=epsilon),
             t=ops.LieGroupOps.retract(self.t, vec[3:], epsilon=epsilon),
@@ -155,6 +181,16 @@ class Pose3(LieGroup):
     def local_coordinates(
         self: Pose3T, b: Pose3T, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
+        """
+        Computes a tangent space perturbation around self to produce b. Often used in optimization
+        to minimize the distance between two group elements.
+
+        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
+
+        Implementation takes local_coordinates of the R and t components separately, which is
+        different from `to_tangent(between(self, b))`.  See the class docstring for more
+        information.
+        """
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon
         )

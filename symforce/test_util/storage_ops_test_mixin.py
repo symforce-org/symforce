@@ -5,8 +5,8 @@
 
 import numpy as np
 
-from symforce import typing as T
 import symforce.symbolic as sf
+from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 
@@ -75,3 +75,10 @@ class StorageOpsTestMixin(_Base):
             StorageOps.subs(sym_element, {sf.Symbol("var_not_in_element"): sf.Symbol("new_var")}),
         )
         self.assertEqual(sym_element, StorageOps.simplify(sym_element))
+
+        with self.assertRaises(ValueError):
+            StorageOps.subs(
+                sym_element,
+                StorageOps.to_storage(sf.Symbol("var_not_in_element")),
+                StorageOps.to_storage(sf.Symbol("new_var")) + [0.0],
+            )

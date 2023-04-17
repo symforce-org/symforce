@@ -3,8 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import ops
 import symforce.symbolic as sf
+from symforce import ops
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
@@ -75,5 +75,11 @@ def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codeg
             input_types=[cls, cls, sf.Symbol],
             config=config,
             docstring=ops.LieGroupOps.local_coordinates.__doc__,
+        ),
+        Codegen.function(
+            func=ops.LieGroupOps.interpolate,
+            input_types=[cls, cls, sf.Symbol, sf.Symbol],
+            config=config,
+            docstring=ops.LieGroupOps.interpolate.__doc__,
         ),
     ]

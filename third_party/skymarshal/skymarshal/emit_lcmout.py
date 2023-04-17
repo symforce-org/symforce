@@ -4,10 +4,10 @@ Generate output files containing just the definition for single LCM types.
 This is used by get_type_for_str, used most notably in json_lcm.
 """
 from __future__ import absolute_import
-import typing as T
 
 import argparse  # pylint: disable=unused-import
 import os
+import typing as T
 
 from skymarshal import syntax_tree  # pylint: disable=unused-import
 from skymarshal.language_plugin import SkymarshalLanguage

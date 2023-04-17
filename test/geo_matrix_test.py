@@ -7,8 +7,9 @@ import numpy as np
 
 import symforce
 import symforce.symbolic as sf
-from symforce import typing as T
-from symforce.test_util import TestCase, sympy_only, expected_failure_on_sympy, epsilon_handling
+from symforce.test_util import TestCase
+from symforce.test_util import epsilon_handling
+from symforce.test_util import expected_failure_on_sympy
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
@@ -35,6 +36,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 2) Matrix(sf.sympy.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
         self.assertIsInstance(sf.M(sf.sympy.Matrix([[1, 2], [3, 4]])), sf.M22)
         self.assertEqual(sf.M(sf.sympy.Matrix([[1, 2], [3, 4]])), sf.M([[1, 2], [3, 4]]))
+        self.assertRaises(AssertionError, lambda: sf.V3(sf.V2()))
 
         # 3A) Matrix([[1, 2], [3, 4]])  # Matrix22 with [1, 2, 3, 4] data
         self.assertIsInstance(sf.M([[1, 2], [3, 4]]), sf.M22)
@@ -113,12 +115,19 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         mat = sf.Matrix([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
         self.assertEqual(mat, sf.Matrix.column_stack(vec1, vec2, vec3))
 
+        # Matrices uniquely allow vector storage
+        self.assertEqual(sf.M21.from_storage(sf.M12(3, 4)), sf.M21(3, 4))
+        self.assertEqual(sf.M21.from_storage(sf.M21(3, 4)), sf.M21(3, 4))
+        self.assertEqual(sf.M12.from_storage(sf.M12(3, 4)), sf.M12(3, 4))
+        self.assertEqual(sf.M12.from_storage(sf.M21(3, 4)), sf.M12(3, 4))
+
     def test_matrix_operations(self) -> None:
         """
         Tests:
-            Matrix.Matrix_inverse
+            Matrix.inv()
             Matrix.__add__ (scalar_like)
             Matrix.__div__ (scalar_like)
+            Matrix.det()
         """
 
         test_matrix = sf.Matrix([[2, 0], [0, 4]])
@@ -130,6 +139,8 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         diag_matrix = 2 * sf.Matrix.eye(2)
         self.assertEqual(sf.Matrix.eye(2), diag_matrix / 2)
         self.assertEqual(sf.Matrix.eye(2), sf.Matrix(test_matrix / test_matrix))
+
+        self.assertEqual(diag_matrix.det(), 4)
 
     def test_symbolic_operations(self) -> None:
         """
@@ -277,6 +288,23 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(sf.M12() * sf.M21(), sf.M11())
         self.assertEqual(sf.M21() * sf.M12(), sf.M22())
 
+    def test_lower_triangle(self) -> None:
+        """
+        Tests:
+            Matrix.lower_triangle
+        """
+        m11 = sf.M11(1)
+        self.assertEqual(m11, m11.lower_triangle())
+
+        m22 = sf.M22([[1, 2], [3, 4]])
+        self.assertEqual(sf.M22([[1, 0], [3, 4]]), m22.lower_triangle())
+
+        m33 = sf.Matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        self.assertEqual(sf.M33([[1, 0, 0], [4, 5, 0], [7, 8, 9]]), m33.lower_triangle())
+
+        self.assertRaises(ValueError, lambda: sf.M45().lower_triangle())
+        self.assertRaises(ValueError, lambda: sf.M54().lower_triangle())
+
     def test_row_col(self) -> None:
         """
         Tests:
@@ -400,6 +428,49 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
             with self.assertRaises(IndexError):
                 m22[:, :] = [[np.float64(1)], [np.float64(2)]]
+
+    def test_getitem(self) -> None:
+        """
+        Test:
+            Matrix.__getitem__
+        """
+        # NOTE(nathan): This differs from how a sympy matrix behaves, which would return a list
+        # object when sliced
+        m31 = sf.M31([1, 2, 3])
+        self.assertEqual(m31[0:2], sf.M21([1, 2]))
+        m13 = sf.M13([1, 2, 3])
+        self.assertEqual(m13[0:2], sf.M12([1, 2]))
+
+    def test_vector_methods(self) -> None:
+        """
+        Tests:
+            V2.x,y
+            V3.x,y,z
+            V2.unit_x,y
+            V3.unit_x,y,z
+        """
+        self.assertEqual(sf.V2.unit_x().x, 1)
+        self.assertEqual(sf.V2.unit_x().y, 0)
+        with self.assertRaises(AttributeError):
+            _ = sf.V2.unit_x().z  # type: ignore[attr-defined]  # pylint: disable=no-member
+
+        self.assertEqual(sf.V2.unit_y().x, 0)
+        self.assertEqual(sf.V2.unit_y().y, 1)
+
+        with self.assertRaises(AttributeError):
+            sf.V2.unit_z()  # type: ignore[attr-defined]  # pylint: disable=no-member
+
+        self.assertEqual(sf.V3.unit_x().x, 1)
+        self.assertEqual(sf.V3.unit_x().y, 0)
+        self.assertEqual(sf.V3.unit_x().z, 0)
+
+        self.assertEqual(sf.V3.unit_y().x, 0)
+        self.assertEqual(sf.V3.unit_y().y, 1)
+        self.assertEqual(sf.V3.unit_y().z, 0)
+
+        self.assertEqual(sf.V3.unit_z().x, 0)
+        self.assertEqual(sf.V3.unit_z().y, 0)
+        self.assertEqual(sf.V3.unit_z().z, 1)
 
 
 if __name__ == "__main__":

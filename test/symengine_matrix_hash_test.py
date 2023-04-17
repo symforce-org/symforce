@@ -3,8 +3,9 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce.test_util import TestCase, symengine_only
 import symforce.symbolic as sf
+from symforce.test_util import TestCase
+from symforce.test_util import symengine_only
 
 
 class SymEngineMatrixHashTest(TestCase):

@@ -31,7 +31,8 @@
 #include <sym/util/epsilon.h>
 #include <symforce/opt/util.h>
 
-#include "catch.hpp"
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Test Rot3", "[geo_package]") {
   // Make a random rotation
@@ -136,7 +137,7 @@ TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", {{ ", ".join(cpp_geo_typ
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
-  spdlog::info("*** Testing StorageOps: {} ***", value);
+  spdlog::debug("*** Testing StorageOps: {} ***", value);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(value.Data().rows() == storage_dim);
@@ -146,8 +147,8 @@ TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", {{ ", ".join(cpp_geo_typ
   vec.resize(storage_dim);
   sym::StorageOps<T>::ToStorage(value, vec.data());
   CHECK(vec.size() > 0);
-  CHECK(vec.size() == storage_dim);
-  for (int i = 0; i < vec.size(); ++i) {
+  CHECK(static_cast<int>(vec.size()) == storage_dim);
+  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
     CHECK(vec[i] == value.Data()[i]);
   }
 
@@ -165,7 +166,7 @@ TEMPLATE_TEST_CASE("Test Scalar storage ops", "[geo_package]", {{ ", ".join(scal
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value{};
-  spdlog::info("*** Testing StorageOps: {} ***", value);
+  spdlog::debug("*** Testing StorageOps: {} ***", value);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(storage_dim == 1);
@@ -189,7 +190,7 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", {{ ", ".join(cpp_
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T value = T::Zero();
-  spdlog::info("*** Testing Matrix StorageOps: {} ***", value.transpose());
+  spdlog::debug("*** Testing Matrix StorageOps: {} ***", value.transpose());
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(storage_dim == T::RowsAtCompileTime);
@@ -197,8 +198,8 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", {{ ", ".join(cpp_
   std::vector<Scalar> vec;
   vec.resize(storage_dim);
   sym::StorageOps<T>::ToStorage(value, vec.data());
-  CHECK(vec.size() == storage_dim);
-  for (int i = 0; i < vec.size(); ++i) {
+  CHECK(static_cast<int>(vec.size()) == storage_dim);
+  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
     CHECK(vec[i] == value[i]);
   }
 
@@ -238,7 +239,7 @@ TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", {{ ", ".join(cpp_geo_types
   using T = TestType;
 
   const T identity{};
-  spdlog::info("*** Testing GroupOps: {} ***", identity);
+  spdlog::debug("*** Testing GroupOps: {} ***", identity);
 
   // TODO(hayk): Make sym::StorageOps<T>::IsApprox that uses ToStorage to compare, then
   // get rid of the custom scalar version below.
@@ -252,7 +253,7 @@ TEMPLATE_TEST_CASE("Test Scalar group ops", "[geo_package]", {{ ", ".join(scalar
   using T = TestType;
 
   const T identity{};
-  spdlog::info("*** Testing GroupOps: {} ***", identity);
+  spdlog::debug("*** Testing GroupOps: {} ***", identity);
 
   CHECK(identity == sym::GroupOps<T>::Identity());
   CHECK(identity == sym::GroupOps<T>::Compose(identity, identity));
@@ -264,7 +265,7 @@ TEMPLATE_TEST_CASE("Test Matrix group ops", "[geo_package]", {{ ", ".join(cpp_ma
   using T = TestType;
 
   const T identity = T::Zero();
-  spdlog::info("*** Testing Matrix GroupOps: {} ***", identity.transpose());
+  spdlog::debug("*** Testing Matrix GroupOps: {} ***", identity.transpose());
 
   CHECK(identity == sym::GroupOps<T>::Identity());
   CHECK(identity == sym::GroupOps<T>::Compose(identity, identity));
@@ -389,7 +390,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", {{ ", ".join(cpp_geo_t
   const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
+  spdlog::debug("*** Testing LieGroupOps: {} ***", identity);
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -418,6 +419,12 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", {{ ", ".join(cpp_geo_t
     identity, recovered_identity, epsilon);
   CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
 
+  const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
+  CHECK(identity_interp.IsApprox(identity, std::sqrt(epsilon)));
+
+  const T value_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 1.0f, epsilon);
+  CHECK(value_interp.IsApprox(value, std::sqrt(epsilon)));
+
   SelfJacobian inverse_jacobian;
   sym::GroupOps<T>::InverseWithJacobian(identity, &inverse_jacobian);
   CHECK(inverse_jacobian.isApprox(-SelfJacobian::Identity(), epsilon));
@@ -427,7 +434,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", {{ ", ".join(cpp_geo_t
   // due to epsilon doesn't extend too far away from 0
   {
     TangentVec small_perturbation = TangentVec::Zero();
-    for (size_t i = 0; i < sym::LieGroupOps<T>::TangentDim(); i++) {
+    for (int i = 0; i < sym::LieGroupOps<T>::TangentDim(); i++) {
       small_perturbation(i) = std::sqrt(epsilon);
       const T value = sym::LieGroupOps<T>::FromTangent(small_perturbation, epsilon);
       const TangentVec recovered_perturbation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
@@ -482,7 +489,7 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", {{ ", ".join(sc
   const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing LieGroupOps: {} ***", identity);
+  spdlog::debug("*** Testing LieGroupOps: {} ***", identity);
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -504,6 +511,12 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", {{ ", ".join(sc
   const TangentVec pertubation_zero = sym::LieGroupOps<T>::LocalCoordinates(
     identity, recovered_identity, epsilon);
   CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+
+  const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
+  CHECK(fabs(identity_interp - identity) < std::sqrt(epsilon));
+
+  const T value_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 1.0f, epsilon);
+  CHECK(fabs(value_interp - value) < std::sqrt(epsilon));
 }
 
 TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", {{ ", ".join(cpp_matrix_types) }}) {
@@ -514,7 +527,7 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", {{ ", ".join(cp
   const Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::info("*** Testing Matrix LieGroupOps: {} ***", identity.transpose());
+  spdlog::debug("*** Testing Matrix LieGroupOps: {} ***", identity.transpose());
 
   constexpr int32_t tangent_dim = sym::LieGroupOps<T>::TangentDim();
   CHECK(tangent_dim > 0);
@@ -536,4 +549,10 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", {{ ", ".join(cp
   const TangentVec pertubation_zero = sym::LieGroupOps<T>::LocalCoordinates(
     identity, recovered_identity, epsilon);
   CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+
+  const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
+  CHECK(identity_interp.isApprox(identity, std::sqrt(epsilon)));
+
+  const T value_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 1.0f, epsilon);
+  CHECK(value_interp.isApprox(value, std::sqrt(epsilon)));
 }

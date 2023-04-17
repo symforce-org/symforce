@@ -5,22 +5,23 @@
 from __future__ import annotations
 
 import dataclasses
-import graphviz
-from pathlib import Path
-import uuid
 import logging
+import uuid
+from pathlib import Path
 
+import graphviz
+
+import symforce.symbolic as sf
+from symforce import logger
+from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import codegen_config
 from symforce.codegen.backends.python.python_config import PythonConfig
-from symforce import python_util
-from symforce.opt.numeric_factor import NumericFactor
-from symforce.values import Values
 from symforce.codegen.similarity_index import SimilarityIndex
 from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
-import symforce.symbolic as sf
-from symforce import logger
+from symforce.opt.numeric_factor import NumericFactor
+from symforce.values import Values
 
 
 class Factor:
@@ -51,6 +52,19 @@ class Factor:
 
     _generated_residual_cache = GeneratedResidualCache()
 
+    @staticmethod
+    def default_codegen_config() -> PythonConfig:
+        """
+        The default codegen config used by the Factor class
+
+        This is a PythonConfig with settings appropriate for converting to a NumericFactor (no
+        autoformat, return 2d vectors)
+        """
+        return PythonConfig(
+            render_template_config=codegen_config.RenderTemplateConfig(autoformat=False),
+            return_2d_vectors=True,
+        )
+
     def __init__(
         self,
         keys: T.Sequence[str],
@@ -65,7 +79,8 @@ class Factor:
         # call `__init__()`, and can instead call `__new__()` + `_initialize()` and pass its own
         # codegen object constructed using the default codegen object constructor.
         if config is None:
-            config = PythonConfig(autoformat=False)
+            config = self.default_codegen_config()
+
         self._initialize(
             keys=keys,
             codegen_obj=Codegen.function(func=residual, config=config, **kwargs),
@@ -106,7 +121,8 @@ class Factor:
                 numeric factor. See `Codegen.__init__()` for details.
         """
         if config is None:
-            config = PythonConfig(autoformat=False)
+            config = cls.default_codegen_config()
+
         instance = cls.__new__(cls)
         instance._initialize(
             keys=keys,
@@ -131,16 +147,16 @@ class Factor:
             codegen_obj: Codegen object used to generate the numerical factor.
             custom_jacobian_func: Custom jacobian function as described in `__init__`.
         """
-        if len(keys) != len(codegen_obj.inputs.keys_recursive()):
-            raise ValueError(
-                "There must be a key for each input to the residual. Expected"
-                + f" {len(codegen_obj.inputs.keys_recursive())} keys but got {len(keys)} keys."
-            )
-
         if len(codegen_obj.inputs.keys()) != len(codegen_obj.inputs.keys_recursive()):
             raise ValueError(
                 "Only flat inputs are currently supported (i.e. inputs should not"
                 + " contain nested Values objects or Dataclasses or Sequences."
+            )
+
+        if len(keys) != len(codegen_obj.inputs.keys_recursive()):
+            raise ValueError(
+                "There must be a key for each input to the residual. Expected"
+                + f" {len(codegen_obj.inputs.keys_recursive())} keys but got {len(keys)} keys."
             )
 
         self.keys = keys
@@ -163,6 +179,8 @@ class Factor:
             optimized_keys: Keys which we compute the linearization of the residual with respect to.
             output_dir: Where the generated linearization function will be output.
             namespace: Namespace of the generated linearization function.
+            sparse_linearization: Whether the generated linearization function should use sparse
+                matricies for the jacobian and hessian approximation
 
         Returns:
             Dict containing locations where the code was generated (e.g. "output_dir" and
@@ -199,6 +217,7 @@ class Factor:
         optimized_keys: T.Sequence[str],
         output_dir: T.Openable = None,
         namespace: str = None,
+        sparse_linearization: bool = False,
     ) -> NumericFactor:
         """
         Constructs a NumericFactor from this Factor, including generating a linearization
@@ -208,10 +227,9 @@ class Factor:
             optimized_keys: Keys which we compute the linearization of the residual with respect to.
             output_dir: Where the generated linearization function will be output
             namespace: Namespace of the generated linearization function
+            sparse_linearization: Whether the generated linearization function should use sparse
+                matrices for the jacobian and hessian approximation
         """
-        if namespace is None:
-            namespace = f"sym_{uuid.uuid4().hex}"
-
         for opt_key in optimized_keys:
             if opt_key not in self.keys:
                 raise ValueError(
@@ -228,9 +246,19 @@ class Factor:
         # If we have already generated a factor of the same form, load the previously generated
         # factor.
         similarity_index = SimilarityIndex.from_codegen(self.codegen)
-        cached_residual = Factor._generated_residual_cache.get_residual(
-            similarity_index, optimized_keys
+        codegen_keys = list(self.codegen.inputs.keys())
+        codegen_optimized_keys = [codegen_keys[self.keys.index(key)] for key in optimized_keys]
+        # NOTE(aaron): This should contain all of the information required to both generate the
+        # residual, and cause any side effects of that.  Basically, this means all information
+        # used to construct this Factor plus the arguments to this function
+        cache_key = (
+            similarity_index,
+            codegen_optimized_keys,
+            output_dir,
+            namespace,
+            sparse_linearization,
         )
+        cached_residual = Factor._generated_residual_cache.get_residual(*cache_key)
         if cached_residual is not None:
             return NumericFactor(
                 keys=self.keys,
@@ -238,8 +266,25 @@ class Factor:
                 linearization_function=cached_residual,
             )
 
+        # NOTE(aaron): We do this after checking the cache, otherwise we'd get 0 cache hits.  I
+        # _think_ this is correct, since the interface of to_numeric_factor doesn't specify the
+        # namespace if the user passes None, so you want to get the same namespace as when it was
+        # cached
+        if namespace is None:
+            namespace = f"sym_{uuid.uuid4().hex}"
+
         # Compute the linearization of the residual and generate code
-        output_data = self.generate(optimized_keys, output_dir, namespace)
+        if not isinstance(self.codegen.config, PythonConfig):
+            raise TypeError(
+                "Cannot convert to a NumericFactor with config of type "
+                f"{type(self.codegen.config)}; use PythonConfig instead"
+            )
+        if not self.codegen.config.return_2d_vectors:
+            raise ValueError(
+                "Cannot convert to a NumericFactor with config.return_2d_vectors=False"
+            )
+
+        output_data = self.generate(optimized_keys, output_dir, namespace, sparse_linearization)
 
         # Load the generated function
         numeric_factor = NumericFactor.from_file_python(
@@ -251,7 +296,7 @@ class Factor:
         )
 
         Factor._generated_residual_cache.cache_residual(
-            similarity_index, optimized_keys, numeric_factor.linearization_function
+            *cache_key, numeric_factor.linearization_function
         )
 
         if output_dir is None and logger.level != logging.DEBUG:

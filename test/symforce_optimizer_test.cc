@@ -3,6 +3,8 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <sym/factors/between_factor_pose3.h>
@@ -10,8 +12,6 @@
 #include <sym/factors/prior_factor_pose3.h>
 #include <sym/factors/prior_factor_rot3.h>
 #include <symforce/opt/optimizer.h>
-
-#include "catch.hpp"
 
 sym::optimizer_params_t DefaultLmParams() {
   sym::optimizer_params_t params{};
@@ -54,7 +54,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   sym::Valuesd values;
   values.Set<double>('x', 0.0);
   values.Set<double>('y', 0.0);
-  spdlog::info("Initial values: {}", values);
+  spdlog::debug("Initial values: {}", values);
 
   // Set parameters
   sym::optimizer_params_t params = DefaultLmParams();
@@ -69,10 +69,10 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   params.use_unit_damping = true;
 
   // Optimize
-  Optimize(params, factors, &values);
+  Optimize(params, factors, values);
 
   // Check results
-  spdlog::info("Optimized values: {}", values);
+  spdlog::debug("Optimized values: {}", values);
 
   // Local minimum from Wolfram Alpha
   // pylint: disable=line-too-long
@@ -142,9 +142,9 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
     values.Set<sym::Pose3d>({'P', i}, value);
   }
 
-  spdlog::info("Initial values: {}", values);
-  spdlog::info("Prior on P0: {}", prior_start);
-  spdlog::info("Prior on P[-1]: {}", prior_last);
+  spdlog::debug("Initial values: {}", values);
+  spdlog::debug("Prior on P0: {}", prior_start);
+  spdlog::debug("Prior on P[-1]: {}", prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -152,15 +152,16 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   params.early_exit_min_reduction = 0.0001;
 
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimize", {},
-                                   /* debug_stats */ false, /* check_derivatives */ true);
-  const auto stats = optimizer.Optimize(&values);
+                                   /* debug_stats */ false, /* check_derivatives */ true,
+                                   /* include_jacobians */ true);
+  const auto stats = optimizer.Optimize(values);
 
-  spdlog::info("Optimized values: {}", values);
+  spdlog::debug("Optimized values: {}", values);
 
   const auto& last_iter = stats.iterations.back();
-  spdlog::info("Iterations: {}", last_iter.iteration);
-  spdlog::info("Lambda: {}", last_iter.current_lambda);
-  spdlog::info("Final error: {}", last_iter.new_error);
+  spdlog::debug("Iterations: {}", last_iter.iteration);
+  spdlog::debug("Lambda: {}", last_iter.current_lambda);
+  spdlog::debug("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 12);
@@ -234,9 +235,9 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
-  spdlog::info("Initial values: {}", values);
-  spdlog::info("Prior on R0: {}", prior_start);
-  spdlog::info("Prior on R[-1]: {}", prior_last);
+  spdlog::debug("Initial values: {}", values);
+  spdlog::debug("Prior on R0: {}", prior_start);
+  spdlog::debug("Prior on R[-1]: {}", prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -244,14 +245,14 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   params.early_exit_min_reduction = 0.0001;
 
   sym::Optimizer<double> optimizer(params, factors, epsilon);
-  const auto stats = optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(values);
 
-  spdlog::info("Optimized values: {}", values);
+  spdlog::debug("Optimized values: {}", values);
 
   const auto& last_iter = stats.iterations.back();
-  spdlog::info("Iterations: {}", last_iter.iteration);
-  spdlog::info("Lambda: {}", last_iter.current_lambda);
-  spdlog::info("Final error: {}", last_iter.new_error);
+  spdlog::debug("Iterations: {}", last_iter.iteration);
+  spdlog::debug("Lambda: {}", last_iter.current_lambda);
+  spdlog::debug("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 6);
@@ -316,7 +317,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
-  spdlog::info("Initial values: {}", values);
+  spdlog::debug("Initial values: {}", values);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -329,14 +330,14 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   }
 
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimizer", optimized_keys);
-  const auto stats = optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(values);
 
-  spdlog::info("Optimized values: {}", values);
+  spdlog::debug("Optimized values: {}", values);
 
   const auto& last_iter = stats.iterations.back();
-  spdlog::info("Iterations: {}", last_iter.iteration);
-  spdlog::info("Lambda: {}", last_iter.current_lambda);
-  spdlog::info("Final error: {}", last_iter.new_error);
+  spdlog::debug("Iterations: {}", last_iter.iteration);
+  spdlog::debug("Lambda: {}", last_iter.current_lambda);
+  spdlog::debug("Final error: {}", last_iter.new_error);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 5);
@@ -358,12 +359,12 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
  */
 TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
   sym::Optimizerd optimizer1(
-      DefaultLmParams(), {}, 1e-10, "sym::Optimizer", {}, false, false,
+      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::MetisOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 
   sym::Optimizerd optimizer2(
-      DefaultLmParams(), {}, 1e-10, "sym::Optimizer", {}, false, false,
+      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::NaturalOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 }

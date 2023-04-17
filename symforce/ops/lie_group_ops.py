@@ -6,9 +6,9 @@
 from __future__ import annotations
 
 import symforce.internal.symbolic as sf
-from symforce import typing as T
 from symforce import logger
-from symforce.python_util import get_type
+from symforce import typing as T
+from symforce.typing_util import get_type
 
 from .group_ops import GroupOps
 
@@ -92,7 +92,7 @@ class LieGroupOps(GroupOps):
         a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()
     ) -> T.Element:
         """
-        Apply a tangent space perturbation vec to the group element a. Often used in optimization
+        Applies a tangent space perturbation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
         Implementation is simply `compose(a, from_tangent(vec))`.
@@ -126,6 +126,30 @@ class LieGroupOps(GroupOps):
             list: Tangent space perturbation that conceptually represents "b - a"
         """
         return LieGroupOps.implementation(get_type(a)).local_coordinates(a, b, epsilon)
+
+    @staticmethod
+    def interpolate(
+        a: T.Element, b: T.Element, alpha: T.Scalar, epsilon: T.Scalar = sf.epsilon()
+    ) -> T.List[T.Scalar]:
+        """
+        Interpolates between self and b.
+
+        Implementation is to take the perturbation between self and b in tangent space
+        (local_coordinates) and add a scaled version of that to self (retract).
+
+        Args:
+            a:
+            b:
+            alpha: ratio between a and b - 0 is a, 1 is b. Note that this variable
+                   is not clamped between 0 and 1 in this function.
+            epsilon: Small number to avoid singularity
+
+        Returns:
+            Element: Interpolated group element
+        """
+        return LieGroupOps.retract(
+            a, [c * alpha for c in LieGroupOps.local_coordinates(a, b, epsilon)], epsilon
+        )
 
     @staticmethod
     def storage_D_tangent(a: T.Element) -> geo.Matrix:

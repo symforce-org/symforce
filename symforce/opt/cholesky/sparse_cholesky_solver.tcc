@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------
  * SymForce - Copyright 2022, Skydio, Inc.
- * This source code is under the LGPL license found in the LICENSE file.
+ * This source code is under the MPL2 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
 #pragma once
@@ -222,23 +222,22 @@ template <typename Rhs>
 typename SparseCholeskySolver<MatrixType, UpLo>::RhsType
 SparseCholeskySolver<MatrixType, UpLo>::Solve(const Eigen::MatrixBase<Rhs>& b) const {
   RhsType x = b;
-  SolveInPlace(&x);
+  SolveInPlace(x);
   return x;
 }
 
 template <typename MatrixType, int UpLo>
 template <typename Rhs>
-void SparseCholeskySolver<MatrixType, UpLo>::SolveInPlace(Eigen::MatrixBase<Rhs>* const b) const {
+void SparseCholeskySolver<MatrixType, UpLo>::SolveInPlace(Eigen::MatrixBase<Rhs>& b) const {
   // Sanity checks
   SYM_ASSERT(is_initialized_);
-  SYM_ASSERT(b != nullptr);
-  SYM_ASSERT(L_.rows() == b->rows());
+  SYM_ASSERT(L_.rows() == b.rows());
   SYM_ASSERT(D_.size() > 0);
 
   // Pre-computed cholesky decomposition
   const Eigen::TriangularView<const CholMatrixType, Eigen::UnitLower> L(L_);
 
-  Eigen::MatrixBase<Rhs>& x = *b;
+  Eigen::MatrixBase<Rhs>& x = b;
 
   // Twist
   if (permutation_.size() > 0) {

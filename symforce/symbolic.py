@@ -23,7 +23,11 @@ available as well as `symforce.symbolic.sympy`.
 # pylint: disable=unused-wildcard-import
 
 from symforce.internal.symbolic import *
+
+# isort: split
 from symforce.geo import *
+
+# isort: split
 from symforce.cam import *
 
 # This doesn't change the runtime behavior, but tells Sphinx to document everything in here

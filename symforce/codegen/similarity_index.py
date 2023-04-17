@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import dataclasses
 
+from symforce import codegen
+from symforce import typing as T
 from symforce.codegen import codegen_config
 from symforce.values import Values
-from symforce import typing as T
-from symforce import codegen
 
 
 @dataclasses.dataclass
@@ -68,6 +68,9 @@ class SimilarityIndex:
                 tuple(self.outputs.to_storage()),
                 self.return_key,
                 self.sorted_sparse_matrices,
-                tuple(dataclasses.asdict(self.config).items()),
+                # Convert to key, value tuples recursively.  Unlike astuple, this has field names
+                dataclasses.asdict(
+                    self.config, dict_factory=T.cast(T.Callable[[T.List], T.Tuple], tuple)
+                ),
             )
         )

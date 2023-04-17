@@ -6,12 +6,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import symforce.symbolic as sf
+from symforce import typing as T
 from symforce.ops import LieGroupOps
+from symforce.opt import noise_models
 from symforce.opt import objective
 from symforce.opt.residual_block import ResidualBlock
-from symforce import typing as T
-import symforce.symbolic as sf
-from symforce.opt import noise_models
 
 
 class PriorValueObjective(objective.TimestepObjective):

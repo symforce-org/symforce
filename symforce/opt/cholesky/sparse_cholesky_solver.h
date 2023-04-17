@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------
  * SymForce - Copyright 2022, Skydio, Inc.
- * This source code is under the LGPL license found in the LICENSE file.
+ * This source code is under the MPL2 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
 #pragma once
@@ -96,7 +96,27 @@ class SparseCholeskySolver {
 
   // Solves in place for x in A x = b, where x and b are dense
   template <typename Rhs>
-  void SolveInPlace(Eigen::MatrixBase<Rhs>* const b) const;
+  void SolveInPlace(Eigen::MatrixBase<Rhs>& b) const;
+
+  const CholMatrixType& L() const {
+    SYM_ASSERT(IsInitialized());
+    return L_;
+  }
+
+  const VectorType& D() const {
+    SYM_ASSERT(IsInitialized());
+    return D_;
+  }
+
+  const PermutationMatrixType& Permutation() const {
+    SYM_ASSERT(IsInitialized());
+    return permutation_;
+  }
+
+  const PermutationMatrixType& InversePermutation() const {
+    SYM_ASSERT(IsInitialized());
+    return inv_permutation_;
+  }
 
  protected:
   // Whether we have computed a symbolic sparsity and
@@ -137,3 +157,9 @@ class SparseCholeskySolver {
 // Include implementation, yay templates.
 #define SYM_SPARSE_CHOLESKY_SOLVER_H
 #include "./sparse_cholesky_solver.tcc"
+
+// Explicit template instantiation declarations
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<double>, Eigen::Upper>;
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<double>, Eigen::Lower>;
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<float>, Eigen::Upper>;
+extern template class sym::SparseCholeskySolver<Eigen::SparseMatrix<float>, Eigen::Lower>;

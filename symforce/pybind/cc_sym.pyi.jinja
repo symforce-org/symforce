@@ -3,6 +3,10 @@
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
 
+{% for include_stmt in spec.third_party_includes %}
+{{ include_stmt }}
+{% endfor %}
+
 {% for lcmtype_name in spec.lcm_include_type_names %}
 from lcmtypes.sym._{{ lcmtype_name }} import {{ lcmtype_name }}
 {% endfor %}
@@ -11,7 +15,6 @@ from lcmtypes.sym._{{ lcmtype_name }} import {{ lcmtype_name }}
 from sym import {{ sym_type_name }}
 {% endfor %}
 
-{% for include_stmt in spec.third_party_includes %}
-{{ include_stmt }}
-{% endfor %}
+# isort: off
+
 {{ spec.cleaned_up_stubgen_output }}

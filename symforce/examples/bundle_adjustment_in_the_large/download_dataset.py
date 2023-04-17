@@ -9,6 +9,7 @@ Script to download Bundle-Adjustment-in-the-Large datasets into the `./data` fol
 
 import bz2
 from pathlib import Path
+
 import requests
 
 CURRENT_DIR = Path(__file__).resolve().parent

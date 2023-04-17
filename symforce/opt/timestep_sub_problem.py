@@ -6,9 +6,9 @@
 import dataclasses
 
 from symforce import ops
-from symforce.opt.sub_problem import SubProblem
 from symforce import typing as T
-from symforce.python_util import get_sequence_from_dataclass_sequence_field
+from symforce import typing_util
+from symforce.opt.sub_problem import SubProblem
 
 
 class TimestepSubProblem(SubProblem):
@@ -58,7 +58,9 @@ class TimestepSubProblem(SubProblem):
                     for i in range(self.timesteps)
                 ]
             elif field.metadata.get("length", False):
-                sequence_instance = get_sequence_from_dataclass_sequence_field(field, field_type)
+                sequence_instance = typing_util.get_sequence_from_dataclass_sequence_field(
+                    field, field_type
+                )
                 constructed_fields[field.name] = ops.StorageOps.symbolic(
                     sequence_instance, f"{self.name}.{field.name}"
                 )

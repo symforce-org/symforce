@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-from symforce import ops
-from symforce.ops.interfaces.lie_group import LieGroup
 import symforce.internal.symbolic as sf
+from symforce import ops
 from symforce import typing as T
+from symforce.ops.interfaces.lie_group import LieGroup
 
 from .matrix import Matrix
 from .matrix import Matrix22
@@ -25,16 +25,20 @@ class Pose2(LieGroup):
     The tangent space is one angle for rotation followed by two elements for translation in the
     non-rotated frame.
 
-    For Lie group enthusiasts: This class is on the PRODUCT manifold, if you really really want
-    SE(2) you should use Pose2_SE2.  On this class, the group operations (e.g. compose and between)
-    operate as you'd expect for a Pose or SE(2), but the manifold operations (e.g. retract and
-    local_coordinates) operate on the product manifold SO(2) x R2.  This means that:
+    For Lie group enthusiasts: This class is on the PRODUCT manifold.  On this class, the group
+    operations (e.g. compose and between) operate as you'd expect for a Pose or SE(2), but the
+    manifold operations (e.g. retract and local_coordinates) operate on the product manifold
+    SO(2) x R2.  This means that:
 
       - retract(a, vec) != compose(a, from_tangent(vec))
 
       - local_coordinates(a, b) != to_tangent(between(a, b))
 
       - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
+
+    If you need a type that has these properties in symbolic expressions, you should use Pose2_SE2.
+    There is no runtime equivalent of Pose2_SE2, see the docstring on that class for more
+    information.
     """
 
     Pose2T = T.TypeVar("Pose2T", bound="Pose2")
@@ -43,12 +47,29 @@ class Pose2(LieGroup):
         """
         Construct from elements in SO2 and R2.
         """
-        self.R = R or Rot2()
-        self.t = t or Vector2()
+        self.R = R if R is not None else Rot2()
+        self.t = t if t is not None else Vector2()
 
-        assert isinstance(self.R, Rot2)
-        assert isinstance(self.t, Vector2)
-        assert self.t.shape == (2, 1), self.t.shape
+        if not isinstance(self.R, Rot2):
+            raise TypeError(f"R must be type Rot2 or None, got {type(R)=} instead")
+        if not isinstance(self.t, Vector2):
+            raise TypeError(f"t must be type Vector2 or None, got {type(t)=} instead")
+
+    def rotation(self) -> Rot2:
+        """
+        Accessor for the rotation component
+
+        Does not make a copy.  Also accessible as `self.R`
+        """
+        return self.R
+
+    def position(self) -> Vector2:
+        """
+        Accessor for the position component
+
+        Does not make a copy.  Also accessible as `self.t`
+        """
+        return self.t
 
     # -------------------------------------------------------------------------
     # Storage concept - see symforce.ops.storage_ops
@@ -136,6 +157,15 @@ class Pose2(LieGroup):
     # Pose3 composition.
 
     def retract(self: Pose2, vec: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2:
+        """
+        Applies a tangent space perturbation vec to self. Often used in optimization
+        to update nonlinear values from an update step in the tangent space.
+
+        Conceptually represents "self + vec" if self is a vector.
+
+        Implementation retracts the R and t components separately, which is different from
+        `compose(self, from_tangent(vec))`.  See the class docstring for more information.
+        """
         return Pose2(
             R=self.R.retract(vec[:1], epsilon=epsilon),
             t=ops.LieGroupOps.retract(self.t, vec[1:], epsilon=epsilon),
@@ -144,6 +174,16 @@ class Pose2(LieGroup):
     def local_coordinates(
         self: Pose2T, b: Pose2T, epsilon: T.Scalar = sf.epsilon()
     ) -> T.List[T.Scalar]:
+        """
+        Computes a tangent space perturbation around self to produce b. Often used in optimization
+        to minimize the distance between two group elements.
+
+        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
+
+        Implementation takes local_coordinates of the R and t components separately, which is
+        different from `to_tangent(between(self, b))`.  See the class docstring for more
+        information.
+        """
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
             self.t, b.t, epsilon=epsilon
         )

@@ -97,6 +97,7 @@ disable=raw-checker-failed,
         invalid-name,
         logging-format-interpolation,
         logging-fstring-interpolation,
+        missing-timeout,
         no-else-break,
         no-else-continue,
         no-else-raise,
@@ -106,6 +107,7 @@ disable=raw-checker-failed,
         unspecified-encoding,
         wrong-import-position,
         unnecessary-lambda-assignment,
+        use-dict-literal,
 
         # These have some false positives and mypy seems to handle them much better
         abstract-method,
@@ -113,6 +115,10 @@ disable=raw-checker-failed,
         unpacking-non-sequence,
         unsubscriptable-object,
         arguments-differ,
+        not-callable,
+
+        # isort handles this
+        ungrouped-imports,
 
         # Would be nice to drive these to 0
         arguments-renamed,
@@ -293,7 +299,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=symforce.cc_sym,cc_sym,symengine  # pylint can't figure this out but mypy can, so just leave it to mypy
+ignored-modules=symforce.cc_sym,cc_sym,symengine,torch  # pylint can't figure this out but mypy can, so just leave it to mypy
 
 # Show a hint with possible names when a member name was not found. The aspect
 # of finding the hint is based on edit distance.
@@ -328,12 +334,7 @@ attr-naming-style=snake_case
 #attr-rgx=
 
 # Bad variable names which should always be refused, separated by a comma.
-bad-names=foo,
-          bar,
-          baz,
-          toto,
-          tutu,
-          tata
+bad-names=
 
 # Bad variable names regexes, separated by a comma. If names match any regex,
 # they will always be refused
@@ -583,7 +584,7 @@ max-branches=12
 max-locals=15
 
 # Maximum number of parents for a class (see R0901).
-max-parents=7
+max-parents=8
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods=20
@@ -602,5 +603,5 @@ min-public-methods=2
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "BaseException, Exception".
-overgeneral-exceptions=BaseException,
-                       Exception
+overgeneral-exceptions=builtins.BaseException,
+                       builtins.Exception

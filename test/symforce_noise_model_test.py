@@ -5,9 +5,10 @@
 
 import symforce.opt.noise_models as nm
 import symforce.symbolic as sf
-from symforce import typing as T
 from symforce.ops import StorageOps
-from symforce.test_util import TestCase, sympy_only, epsilon_handling
+from symforce.test_util import TestCase
+from symforce.test_util import epsilon_handling
+from symforce.test_util import sympy_only
 
 
 class NoiseModelTest(TestCase):

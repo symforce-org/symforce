@@ -1,0 +1,259 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+{# ------------------------------------------------------------------------- #}
+{# Utilities for CUDA code generation templates.                              #}
+{# ------------------------------------------------------------------------- #}
+
+{# Format the scalar type
+ #}
+{%- macro format_scalar(spec) -%}
+    {%- if spec.config.scalar_type.name == "FLOAT" -%}
+        float
+    {%- elif spec.config.scalar_type.name == "DOUBLE" -%}
+        double
+    {%- else -%}
+        {{ raise("Unsupported scalar type: {}".format(spec.config.scalar_type)) }}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro format_vector(T, name, spec) -%}
+    {% set size = T.SHAPE[0] * T.SHAPE[1] %}
+    {%- if size <= 4 -%}
+        {{ format_scalar(spec) }}{{ size }}
+    {%- else -%}
+        {{ raise("Size {} > 4 for CUDA vector {}".format(size, name)) }}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro format_typename(name, type, spec) -%}
+    {% set T = typing_util.get_type(type) %}
+    {% if is_symbolic(type) or T.__name__ == "float" %}
+        {{ format_scalar(spec) }}
+    {% else %}
+        {% if issubclass(T, Matrix) %}
+            {% if name in spec.config.builtin_vector_variables %}
+                {{ format_vector(T, name, spec) }}
+            {% else %}
+                {{ format_scalar(spec) }}
+            {% endif %}
+        {% else %}
+            {{ raise("Unsupported type {} for value {}".format(T, name)) }}
+        {% endif %}
+    {% endif %}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Get the type of the object in the output Values with key given by spec.return_key
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro get_return_type(spec) -%}
+    {%- if spec.return_key is not none -%}
+        {% set type = spec.outputs[spec.return_key] %}
+        {% set T = typing_util.get_type(type) %}
+        {% if is_symbolic(type) or T.__name__ == "float" %}
+            {{ format_scalar(spec) }}
+        {% elif issubclass(T, Matrix) %}
+            {{ format_vector(T, spec.return_key, spec) }}
+        {% else %}
+            {{ raise ("Unsupported return type: {}".format(T)) }}
+        {% endif %}
+    {%- else -%}
+        void
+    {%- endif -%}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+ {# Format function docstring
+ #
+ # Args:
+ #     docstring (str):
+ #}
+{% macro print_docstring(docstring) %}
+{%- if docstring %}
+
+/*
+{%- for line in docstring.split('\n') %}
+*{{ ' {}'.format(line).rstrip() }}
+{% endfor -%}
+*/
+{%- endif -%}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function input argument
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     name (str):
+ #}
+{%- macro format_input_arg(name, T_or_value, spec) %}
+    {%- set T = typing_util.get_type(T_or_value) -%}
+    {% if T.__name__ == "Symbol" %}
+        const {{ format_scalar(spec) }} {{ name }}
+    {% elif issubclass(T, Matrix) and name in spec.config.builtin_vector_variables %}
+        {# TODO(aaron, peter): Is it actually faster to pass these by reference? #}
+        const {{ format_typename(name, T_or_value, spec) }}& {{ name }}
+    {% elif T == DataBuffer or issubclass(T, Matrix) -%}
+        const {{ format_typename(name, T_or_value, spec) }}* const __restrict__ {{ name }}
+    {%- else -%}
+        {{ raise('Unsupported type {} for input "{}"'.format(T, name)) }}
+    {%- endif %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function pointer argument
+ #
+ # Args:
+ #     name (str):
+ #     add_default (bool): Include a default to nullptr?
+ #}
+{%- macro format_output_arg(name, type, add_default, spec) %}
+    {{- format_typename(name, type, spec) -}}* const __restrict__ {{ name }}{% if add_default %} = nullptr{% endif %}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate input arguments declaration.
+ #
+ # Args:
+ #     spec (Codegen):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
+ #}
+{%- macro input_args_declaration(spec, is_declaration) %}
+    {%- for name, type in spec.inputs.items() -%}
+        {{ format_input_arg(name, type, spec) }}
+        {%- if not loop.last
+            or spec.outputs.items() | length > 1
+            or (spec.outputs.items() | length == 1 and spec.return_key is none) -%}
+        , {% endif -%}
+    {%- endfor -%}
+    {%- for name, type in spec.outputs.items() -%}
+        {%- if name != spec.return_key -%}
+            {{- format_output_arg(name, type, is_declaration, spec) -}}
+            {%- if not loop.last -%}
+                {%- if not (loop.revindex0 == 1 and loop.nextitem[0] == spec.return_key) -%}
+                , {% endif -%}
+            {% endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate function declaration
+ #
+ # Args:
+ #     spec (Codegen):
+ #     is_declaration (bool): Is this a declaration as opposed to a definition? (declarations
+ #         include default arguments)
+ #}
+{%- macro function_declaration(spec, is_declaration) -%}
+{% set name = python_util.snakecase_to_camelcase(spec.name) %}
+__host__ __device__ {{ get_return_type(spec) }} {{ name }}({{- input_args_declaration(spec, is_declaration) -}})
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Helper to generate code to fill out an output returned as an output pointer
+ #
+ # Args:
+ #     name (str): Name of the output object
+ #     type (type): Type of the output object
+ #     terms (List[Tuple[str]]): List of output terms for this object
+ #}
+{% macro format_output(name, type, terms, spec) -%}
+{% set T = typing_util.get_type(type) %}
+{% if issubclass(T, Matrix) %}
+    {% for lhs, rhs in terms %}
+        {% if name in spec.config.builtin_vector_variables %}
+_{{ lhs }} = {{ rhs }};
+        {% else %}
+{{ lhs }} = {{ rhs }};
+        {% endif %}
+    {% endfor %}
+{% elif is_symbolic(type) or T.__name__ == "float" %}
+*{{ name }} = {{ terms[0][1] }};
+{% else %}
+    {{ raise('Unsupported return type for CUDA: name="{}", type=`{}`'.format(name, T)) }}
+{% endif %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Helper to generate all pointer and vector outputs #}
+{% macro format_outputs(spec) -%}
+    {% for name, type, terms in spec.print_code_results.dense_terms %}
+        {% if name != spec.return_key %}
+    if ( {{ name }} != nullptr ) {
+        {% if name in spec.config.builtin_vector_variables %}
+        {{ format_vector(typing_util.get_type(type), name, spec) }}& _{{ name }} = *{{ name }};
+
+        {% endif %}
+        {{ format_output(name, type, terms, spec) | indent(width=8) | trim }}
+    }
+        {% endif %}
+
+    {% endfor %}
+    {% for name, type, terms in spec.print_code_results.sparse_terms %}
+        {{ raise("Cannot return sparse output {}; CUDA does not support sparse matrices".format(name)) }}
+    {% endfor %}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro expr_code(spec) -%}
+    // Total ops: {{ spec.total_ops() }}
+
+    {% if spec.unused_arguments %}
+    // Unused inputs
+    {% for arg in spec.unused_arguments %}
+    (void){{ arg }};
+    {% endfor %}
+
+    {% endif %}
+    // Intermediate terms ({{ spec.print_code_results.intermediate_terms | length }})
+    {% for lhs, rhs in spec.print_code_results.intermediate_terms %}
+    const {{ format_scalar(spec) }} {{ lhs }} = {{ rhs }};
+    {% endfor %}
+
+    // Output terms ({{ spec.outputs.items() | length }})
+    {{ format_outputs(spec) | trim }}
+    {# Return the return_key if present #}
+    {% for name, type, terms in spec.print_code_results.dense_terms %}
+        {% set T_return = typing_util.get_type(type) %}
+        {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+            {% if is_symbolic(type) or T_return.__name__ == "float" %}
+    return {{ terms[0][1] }};
+            {% elif issubclass(T_return, Matrix) %}
+                {% set size = T_return.SHAPE[0] * T_return.SHAPE[1] %}
+                {% if size > 4 %}
+                    {{ raise("Cannot return matrix {} with {} > 4 elements".format(name, size)) }}
+                {% elif name not in spec.config.builtin_vector_variables %}
+                    {{ raise("Cannot return matrix {} by pointer, add it to CudaConfig.builtin_vector_variables to return as a CUDA vector".format(name)) }}
+                {% endif %}
+    return make_{{ format_vector(T_return, name, spec) }}(
+                {% for lhs, rhs in terms %}
+        {{ rhs }}{% if not loop.last %},{% endif %}
+                {% endfor %}
+    );
+            {% else %}
+            {{ raise("Cannot return an output of type {}: CUDA backend only supports returning scalars, or vectors up to size 4 as CUDA vectors; other output types must be output arguments.".format(T_return)) }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{%- endmacro -%}

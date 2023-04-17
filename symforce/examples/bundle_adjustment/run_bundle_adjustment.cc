@@ -151,7 +151,7 @@ void RunBundleAdjustment() {
                             optimized_keys, params.debug_stats, params.check_derivatives);
 
   // Optimize
-  const sym::OptimizationStatsd stats = optimizer.Optimize(&values);
+  const sym::OptimizationStatsd stats = optimizer.Optimize(values);
 
   // Print out results
   spdlog::info("Optimized State:");

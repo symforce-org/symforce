@@ -1,13 +1,12 @@
 # aclint: py2 py3
 # mypy: allow-untyped-defs
 from __future__ import absolute_import
-import typing as T
 
 import io
 import os
+import typing as T
 
 import jinja2
-
 from skymarshal.syntax_tree import ConstMember
 
 

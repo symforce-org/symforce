@@ -187,7 +187,7 @@ void RunBundleAdjustment() {
                             params.check_derivatives);
 
   // Optimize
-  const sym::OptimizationStatsd stats = optimizer.Optimize(&values);
+  const sym::OptimizationStatsd stats = optimizer.Optimize(values);
 
   // Print out results
   spdlog::info("Optimized State:");

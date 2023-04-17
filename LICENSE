@@ -204,17 +204,13 @@
 
 Code in symforce/opt/cholesky is adapted from LDL/SuiteSparse and its
 corresponding implementation in the SparseCholesky module of the Eigen library,
-and is licensed as described in symforce/opt/cholesky/LICENSE
+and is licensed under the MPL2 license as described in
+symforce/opt/cholesky/LICENSE
 
 # Third Party Code
 
 SymForce bundles several third party libraries, with documentation of
 licensing and modifications as follows:
-
-### Catch2: C++ Unit testing framework
-
-- Included unmodified in third_party/catch2
-- Licensed under the BSL-1.0 License
 
 ### SymEngine: C++ symbolic manipulation library
 

@@ -3,13 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
+import symforce
 
-from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
+symforce.set_epsilon_to_symbol()
+
+from symforce import path_util
+from symforce.codegen import RenderTemplateConfig
 from symforce.codegen import template_util
+from symforce.codegen.lcm_types_codegen import lcm_symforce_types_data
 from symforce.test_util import TestCase
-
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 class SymforceLcmCodegenTest(TestCase):
@@ -17,14 +19,16 @@ class SymforceLcmCodegenTest(TestCase):
         output_dir = self.make_output_dir("sf_lcm_codegen_test")
 
         template_util.render_template(
-            template_util.LCM_TEMPLATE_DIR / "symforce_types.lcm.jinja",
+            template_dir=template_util.LCM_TEMPLATE_DIR,
+            template_path="symforce_types.lcm.jinja",
             data=lcm_symforce_types_data(),
-            output_path=os.path.join(output_dir, "symforce_types.lcm"),
+            config=RenderTemplateConfig(),
+            output_path=output_dir / "symforce_types.lcm",
         )
 
         self.compare_or_update_file(
-            new_file=os.path.join(output_dir, "symforce_types.lcm"),
-            path=os.path.join(SYMFORCE_DIR, "lcmtypes", "symforce_types.lcm"),
+            new_file=output_dir / "symforce_types.lcm",
+            path=path_util.symforce_data_root() / "lcmtypes" / "symforce_types.lcm",
         )
 
 

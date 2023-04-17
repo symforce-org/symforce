@@ -13,19 +13,21 @@ import dataclasses
 import importlib.abc
 import importlib.util
 import itertools
-from pathlib import Path
-import sympy
 import sys
+from pathlib import Path
+
+import sympy
 
 import symforce
-from symforce import ops
-from symforce.values import Values, IndexEntry
 import symforce.symbolic as sf
-from symforce import typing as T
-from symforce.codegen import format_util
-from symforce.codegen import codegen_config
-from symforce import python_util
 from symforce import _sympy_count_ops
+from symforce import ops
+from symforce import typing as T
+from symforce import typing_util
+from symforce.codegen import codegen_config
+from symforce.codegen import format_util
+from symforce.values import IndexEntry
+from symforce.values import Values
 
 NUMPY_DTYPE_FROM_SCALAR_TYPE = {"double": "numpy.float64", "float": "numpy.float32"}
 # Type representing generated code (list of lhs and rhs terms)
@@ -97,6 +99,17 @@ class CSCFormat:
             kRowIndices=kRowIndices,
             nonzero_elements=nonzero_elements,
         )
+
+    def to_matrix(self) -> sf.Matrix:
+        """
+        Returns a dense matrix representing this CSC sparse matrix.
+        """
+        dense_matrix = sf.M.zeros(self.kRows, self.kCols)
+        for j in range(self.kCols):
+            end_inx = self.kColPtrs[j + 1] if j + 1 < self.kCols else self.kNumNonZero
+            for k in range(self.kColPtrs[j], end_inx):
+                dense_matrix[self.kRowIndices[k], j] = self.nonzero_elements[k]
+        return dense_matrix
 
 
 def print_code(
@@ -284,23 +297,33 @@ def format_symbols(
         )
     )
 
-    intermediate_terms_formatted = [
-        (lhs, ops.StorageOps.subs(rhs, input_subs, dont_flatten_args=True))
-        for lhs, rhs in intermediate_terms
-    ]
+    intermediate_terms_formatted = list(
+        zip(
+            (lhs for lhs, _ in intermediate_terms),
+            ops.StorageOps.subs(
+                [rhs for _, rhs in intermediate_terms], input_subs, dont_flatten_args=True
+            ),
+        )
+    )
 
     dense_output_lhs_formatted, _ = get_formatted_list(
         dense_outputs, config, format_as_inputs=False
     )
     dense_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
-        for lhs_formatted, storage in zip(dense_output_lhs_formatted, output_terms.dense)
+        list(zip(lhs_formatted, subbed_storage))
+        for lhs_formatted, subbed_storage in zip(
+            dense_output_lhs_formatted,
+            ops.StorageOps.subs(output_terms.dense, input_subs, dont_flatten_args=True),
+        )
     ]
 
     sparse_output_lhs_formatted = get_formatted_sparse_list(sparse_outputs)
     sparse_output_terms_formatted = [
-        list(zip(lhs_formatted, ops.StorageOps.subs(storage, input_subs, dont_flatten_args=True)))
-        for lhs_formatted, storage in zip(sparse_output_lhs_formatted, output_terms.sparse)
+        list(zip(lhs_formatted, subbed_storage))
+        for lhs_formatted, subbed_storage in zip(
+            sparse_output_lhs_formatted,
+            ops.StorageOps.subs(output_terms.sparse, input_subs, dont_flatten_args=True),
+        )
     ]
 
     return intermediate_terms_formatted, dense_output_terms_formatted, sparse_output_terms_formatted
@@ -327,7 +350,7 @@ def get_formatted_list(
     flattened_formatted_symbolic_values = []
     flattened_original_values = []
     for key, value in values.items():
-        arg_cls = python_util.get_type(value)
+        arg_cls = typing_util.get_type(value)
         storage_dim = ops.StorageOps.storage_dim(value)
 
         # For each item in the given Values object, we construct a list of symbols used
@@ -340,18 +363,16 @@ def get_formatted_list(
             formatted_symbols = [sf.Symbol(key)]
             flattened_value = [value]
         elif issubclass(arg_cls, sf.Matrix):
-            if config.matrix_is_1d:
-                # TODO(nathan): Not sure this works for 2D matrices. Get rid of this.
-                formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
-            else:
-                # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
-                # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
-                # changed to, say, row major, the below for loops would have to be swapped to
-                # reflect that.
-                formatted_symbols = []
-                for j in range(value.shape[1]):
-                    for i in range(value.shape[0]):
-                        formatted_symbols.append(sf.Symbol(f"{key}({i}, {j})"))
+            # NOTE(brad): The order of the symbols must match the storage order of sf.Matrix
+            # (as returned by sf.Matrix.to_storage). Hence, if there storage order were
+            # changed to, say, row major, the below for loops would have to be swapped to
+            # reflect that.
+            formatted_symbols = []
+            for j in range(value.shape[1]):
+                for i in range(value.shape[0]):
+                    formatted_symbols.append(
+                        sf.Symbol(config.format_matrix_accessor(key, i, j, shape=value.shape))
+                    )
 
             flattened_value = ops.StorageOps.to_storage(value)
 
@@ -409,8 +430,21 @@ def get_formatted_list(
                 formatted_symbols = [sf.Symbol(f"{key}[{j}]") for j in range(storage_dim)]
             flattened_value = ops.StorageOps.to_storage(value)
 
+        if len(formatted_symbols) != len(flattened_value):
+            error_text = (
+                "Number of symbols does not match number of values. "
+                + "This can happen if a databuffer is included in a Values object used as an input "
+                + "to the codegen function (databuffers should be top-level arguments/inputs). "
+            )
+            # Only print matches if flattened_value isn't filled with expressions
+            if format_as_inputs:
+                matches = list(zip(formatted_symbols, flattened_value))
+                error_text += f"The following symbol/value pairs should match: {matches}"
+            raise ValueError(error_text)
+
         flattened_formatted_symbolic_values.append(formatted_symbols)
         flattened_original_values.append(flattened_value)
+
     return flattened_formatted_symbolic_values, flattened_original_values
 
 
@@ -457,10 +491,11 @@ def _get_scalar_keys_recursive(
                 )
             )
     elif issubclass(datatype, sf.Matrix) or not use_data:
-        # TODO(hayk): Fix this in follow-up.
-        # TODO(nathan): I don't think this deals with 2D matrices correctly
-        if config.matrix_is_1d and config.use_eigen_types:
-            vec.extend(sf.Symbol(f"{prefix}.data[{i}]") for i in range(index_value.storage_dim))
+        if config.use_eigen_types:
+            vec.extend(
+                sf.Symbol(config.format_eigen_lcm_accessor(prefix, i))
+                for i in range(index_value.storage_dim)
+            )
         else:
             vec.extend(sf.Symbol(f"{prefix}[{i}]") for i in range(index_value.storage_dim))
     else:
@@ -529,10 +564,31 @@ def _load_generated_package_internal(name: str, path: Path) -> T.Tuple[T.Any, T.
     return module, added_module_names
 
 
-def load_generated_package(name: str, path: T.Openable) -> T.Any:
+def load_generated_package(name: str, path: T.Openable, evict: bool = True) -> T.Any:
     """
     Dynamically load generated package (or module).
+
+    Args:
+        name: The full name of the package or module to load (for example, "pkg.sub_pkg"
+              for a package called "sub_pkg" inside of another package "pkg", or
+              "pkg.sub_pkg.mod" for a module called "mod" inside of pkg.sub_pkg).
+        path: The path to the directory (or __init__.py) of the package, or the python
+              file of the module.
+        evict: Whether to evict the imported package from sys.modules after loading it.  This is
+            necessary for functions generated in the `sym` namespace, since leaving them would make
+            it impossible to `import sym` and get the `symforce-sym` package as expected.  For this
+            reason, attempting to load a generated package called `sym` with `evict=False` is
+            disallowed.  However, evict should be `False` for numba-compiled functions.
     """
+    if not evict:
+        if name.split(".")[0] == "sym":
+            raise ValueError(
+                "Attempted to hotload a generated package called `sym` - see "
+                "`help(load_generated_package)` for more information"
+            )
+
+        return _load_generated_package_internal(name, Path(path))[0]
+
     # NOTE(brad): We remove all possibly conflicting modules from the cache. This is
     # to ensure that when name is executed, it loads local modules (if any) rather
     # than any with colliding names that have been loaded elsewhere
@@ -563,6 +619,42 @@ def load_generated_package(name: str, path: T.Openable) -> T.Any:
     return module
 
 
+def load_generated_function(
+    func_name: str, path_to_package: T.Openable, evict: bool = True
+) -> T.Callable:
+    """
+    Returns the function with name func_name found inside the package located at
+    path_to_package.
+
+    Example usage:
+
+        def my_func(...):
+            ...
+
+        my_codegen = Codegen.function(my_func, config=PythonConfig())
+        codegen_data = my_codegen.generate_function(output_dir=output_dir)
+        generated_func = load_generated_function("my_func", codegen_data.function_dir)
+        generated_func(...)
+
+    Args:
+        path_to_package: a python package with an `__init__.py` containing a module defined in
+            `func_name.py` which in turn defines an attribute named `func_name`. See the example
+            above.
+        evict: Whether to evict the imported package from sys.modules after loading it.  This is
+            necessary for functions generated in the `sym` namespace, since leaving them would make
+            it impossible to `import sym` and get the `symforce-sym` package as expected.  However,
+            this should be `False` for numba-compiled functions.
+    """
+    pkg_path = Path(path_to_package)
+    if pkg_path.name == "__init__.py":
+        pkg_path = pkg_path.parent
+    pkg_name = pkg_path.name
+    func_module = load_generated_package(
+        f"{pkg_name}.{func_name}", pkg_path / f"{func_name}.py", evict
+    )
+    return getattr(func_module, func_name)
+
+
 def load_generated_lcmtype(
     package: str, type_name: str, lcmtypes_path: T.Union[str, Path]
 ) -> T.Type:
@@ -586,6 +678,10 @@ def load_generated_lcmtype(
     Returns:
         The Python LCM type
     """
+    # We need to import the lcmtypes package first so that sys.path is set up correctly, since this
+    # is a namespace package
+    import lcmtypes  # pylint: disable=unused-import
+
     return getattr(
         load_generated_package(
             f"lcmtypes.{package}._{type_name}",
@@ -607,9 +703,15 @@ def get_base_instance(obj: T.Sequence[T.Any]) -> T.Any:
     return obj
 
 
+@dataclasses.dataclass
+class LcmBindingsDirs:
+    python_types_dir: Path
+    cpp_types_dir: Path
+
+
 def generate_lcm_types(
     lcm_type_dir: T.Openable, lcm_files: T.Sequence[str], lcm_output_dir: T.Openable = None
-) -> T.Dict[str, Path]:
+) -> LcmBindingsDirs:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.
 
@@ -628,7 +730,7 @@ def generate_lcm_types(
     cpp_types_dir = lcm_output_dir / "cpp" / "lcmtypes"
     lcm_include_dir = "lcmtypes"
 
-    result = {"python_types_dir": python_types_dir, "cpp_types_dir": cpp_types_dir}
+    result = LcmBindingsDirs(python_types_dir=python_types_dir, cpp_types_dir=cpp_types_dir)
 
     # TODO(brad, aaron): Do something reasonable with lcm_files other than returning early
     # If no LCM files provided, do nothing
@@ -636,8 +738,8 @@ def generate_lcm_types(
         return result
 
     from skymarshal import skymarshal
-    from skymarshal.emit_python import SkymarshalPython
     from skymarshal.emit_cpp import SkymarshalCpp
+    from skymarshal.emit_python import SkymarshalPython
 
     skymarshal.main(
         [SkymarshalPython, SkymarshalCpp],
@@ -655,6 +757,7 @@ def generate_lcm_types(
             "--cpp-include",
             lcm_include_dir,
         ],
+        print_generated=False,
     )
 
     # Autoformat generated python files

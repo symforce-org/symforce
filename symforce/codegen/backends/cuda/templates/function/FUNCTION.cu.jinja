@@ -1,0 +1,20 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+{%- import "../util/util.jinja" as util with context -%}
+
+{% if spec.config.extra_imports %}
+{% for extra_import in spec.config.extra_imports %}
+#include "{{ extra_import }}" // User-defined extra import
+{% endfor %}
+{% endif %}
+
+namespace {{ spec.namespace }} {
+
+{{ util.function_declaration(spec, is_declaration=False) }} {
+    {{ util.expr_code(spec) }}
+}
+
+}  // namespace {{ spec.namespace }}

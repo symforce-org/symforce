@@ -18,6 +18,8 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <sym/rot3.h>
@@ -35,7 +37,6 @@
 
 #include "./robot_3d_localization_ceres.h"
 #include "./robot_3d_localization_gtsam.h"
-#include "catch.hpp"
 
 using namespace robot_3d_localization;
 
@@ -61,7 +62,7 @@ TEMPLATE_TEST_CASE("sym_dynamic_linearize", "", double, float) {
   {
     SYM_TIME_SCOPE("sym_dynamic_{}/linearize", typeid(Scalar).name());
     for (int i = 0; i < 1000; i++) {
-      linearizer.Relinearize(values, &linearization);
+      linearizer.Relinearize(values, linearization);
     }
   }
 }
@@ -87,8 +88,8 @@ TEMPLATE_TEST_CASE("sym_dynamic_iterate", "", double, float) {
   {
     SYM_TIME_SCOPE("sym_dynamic_{}/iterate", typeid(Scalar).name());
     for (int i = 0; i < 1000; i++) {
-      optimizer.Optimize(&values, /* num_iterations */ 1, /* populate_best_linearization */ false,
-                         &stats);
+      optimizer.Optimize(values, /* num_iterations */ 1, /* populate_best_linearization */ false,
+                         stats);
     }
   }
 }
@@ -114,7 +115,7 @@ TEMPLATE_TEST_CASE("sym_fixed_linearize", "", double, float) {
   {
     SYM_TIME_SCOPE("sym_fixed_{}/linearize", typeid(Scalar).name());
     for (int i = 0; i < 1000; i++) {
-      linearizer.Relinearize(values, &linearization);
+      linearizer.Relinearize(values, linearization);
     }
   }
 }
@@ -139,8 +140,8 @@ TEMPLATE_TEST_CASE("sym_fixed_iterate", "", double, float) {
   {
     SYM_TIME_SCOPE("sym_fixed_{}/iterate", typeid(Scalar).name());
     for (int i = 0; i < 1000; i++) {
-      optimizer.Optimize(&values, /* num_iterations */ 1, /* populate_best_linearization */ false,
-                         &stats);
+      optimizer.Optimize(values, /* num_iterations */ 1, /* populate_best_linearization */ false,
+                         stats);
     }
   }
 }

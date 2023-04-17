@@ -3,8 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import ops
 import symforce.internal.symbolic as sf
+from symforce import ops
 from symforce import typing as T
 
 
@@ -72,8 +72,7 @@ class Storage:
         """
         Substitute given values of each scalar element into a new instance.
         """
-        # TODO(hayk): If this is slow, compute the subs dict once.
-        return self.from_storage([sf.S(s).subs(*args, **kwargs) for s in self.to_storage()])
+        return ops.StorageOps.subs(self, *args, **kwargs)
 
     # TODO(hayk): Way to get sf.simplify to work on these types directly?
     def simplify(self: StorageT) -> StorageT:

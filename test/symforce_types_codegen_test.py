@@ -4,13 +4,15 @@
 # ----------------------------------------------------------------------------
 
 import copy
-import os
-from pathlib import Path
+
+import symforce
+
+symforce.set_epsilon_to_symbol()
 
 import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.codegen import types_package_codegen
 from symforce.codegen import codegen_util
+from symforce.codegen import types_package_codegen
 from symforce.test_util import TestCase
 from symforce.values import Values
 
@@ -55,7 +57,7 @@ class SymforceTypesCodegenTest(TestCase):
         scalar_type: str,
         shared_types: T.Mapping[str, str],
         expected_types: T.Sequence[str],
-    ) -> T.Dict[str, T.Any]:
+    ) -> types_package_codegen.TypesCodegenData:
         """
         Helper to test generation with less duplicated code.
         """
@@ -72,31 +74,32 @@ class SymforceTypesCodegenTest(TestCase):
             output_dir=output_dir,
         )
 
-        types_dict = codegen_data["types_dict"]
+        types_dict = codegen_data.types_dict
 
         # Check types dict
         self.assertSetEqual(set(types_dict.keys()), set(expected_types))
 
         # Check generated files
         for typename in expected_types:
-            python_gen_path = os.path.join(
-                codegen_data["python_types_dir"],
-                "lcmtypes",
-                codegen_data["package_name"],
-                f"_{typename}.py",
+            assert codegen_data.lcm_bindings_dirs is not None
+            python_gen_path = (
+                codegen_data.lcm_bindings_dirs.python_types_dir
+                / "lcmtypes"
+                / codegen_data.package_name
+                / f"_{typename}.py"
             )
-            cpp_gen_path = os.path.join(
-                codegen_data["output_dir"],
-                "cpp",
-                "lcmtypes",
-                codegen_data["package_name"],
-                typename + ".hpp",
+            cpp_gen_path = (
+                codegen_data.output_dir
+                / "cpp"
+                / "lcmtypes"
+                / codegen_data.package_name
+                / (typename + ".hpp")
             )
 
             # If the typename has a module, it's assumed to be external and not generated.
             expecting_generated_type = "." not in typename
-            self.assertEqual(os.path.isfile(python_gen_path), expecting_generated_type)
-            self.assertEqual(os.path.isfile(cpp_gen_path), expecting_generated_type)
+            self.assertEqual(python_gen_path.is_file(), expecting_generated_type)
+            self.assertEqual(cpp_gen_path.is_file(), expecting_generated_type)
 
         return codegen_data
 
@@ -118,8 +121,9 @@ class SymforceTypesCodegenTest(TestCase):
             ),
         )
 
+        assert codegen_data.lcm_bindings_dirs is not None
         input_t = codegen_util.load_generated_lcmtype(
-            "vanilla", "input_t", codegen_data["python_types_dir"]
+            "vanilla", "input_t", codegen_data.lcm_bindings_dirs.python_types_dir
         )
 
         inp = input_t()
@@ -156,8 +160,9 @@ class SymforceTypesCodegenTest(TestCase):
             expected_types=expected_types,
         )
 
+        assert codegen_data.lcm_bindings_dirs is not None
         foo_t = codegen_util.load_generated_lcmtype(
-            "renames", "foo_t", codegen_data["python_types_dir"]
+            "renames", "foo_t", codegen_data.lcm_bindings_dirs.python_types_dir
         )
 
         inp = foo_t()
@@ -185,7 +190,7 @@ class SymforceTypesCodegenTest(TestCase):
             "external.vec_t",
         )
 
-        codegen_data = self.types_codegen_helper(
+        self.types_codegen_helper(
             name="external",
             scalar_type="double",
             shared_types=shared_types,
@@ -224,16 +229,17 @@ class SymforceTypesCodegenTest(TestCase):
             output_dir=output_dir,
         )
 
-        types_dict = codegen_data["types_dict"]
+        types_dict = codegen_data.types_dict
 
         self.assertEqual(set(types_dict.keys()), {"input_t", "rot_t"})
 
+        assert codegen_data.lcm_bindings_dirs is not None
         rot_t = codegen_util.load_generated_lcmtype(
-            "reuse", "rot_t", codegen_data["python_types_dir"]
+            "reuse", "rot_t", codegen_data.lcm_bindings_dirs.python_types_dir
         )
 
         input_t = codegen_util.load_generated_lcmtype(
-            "reuse", "input_t", codegen_data["python_types_dir"]
+            "reuse", "input_t", codegen_data.lcm_bindings_dirs.python_types_dir
         )
 
         rot = rot_t()

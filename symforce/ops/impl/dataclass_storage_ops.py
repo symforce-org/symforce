@@ -5,9 +5,9 @@
 
 import dataclasses
 
-from symforce.ops import StorageOps
-from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
 from symforce import typing as T
+from symforce import typing_util
+from symforce.ops import StorageOps
 
 
 class DataclassStorageOps:
@@ -38,10 +38,15 @@ class DataclassStorageOps:
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
                 if field.metadata.get("length") is not None:
-                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                    sequence_instance = typing_util.get_sequence_from_dataclass_sequence_field(
                         field, field_type
                     )
                     count += StorageOps.storage_dim(sequence_instance)
+                elif (
+                    sequence_types := typing_util.maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    count += StorageOps.storage_dim(sequence_types)
                 else:
                     count += StorageOps.storage_dim(field_type)
             return count
@@ -67,12 +72,20 @@ class DataclassStorageOps:
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
                 if field.metadata.get("length") is not None:
-                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                    sequence_instance = typing_util.get_sequence_from_dataclass_sequence_field(
                         field, field_type
                     )
                     storage_dim = StorageOps.storage_dim(sequence_instance)
                     constructed_fields[field.name] = StorageOps.from_storage(
                         sequence_instance, elements[offset : offset + storage_dim]
+                    )
+                elif (
+                    sequence_types := typing_util.maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    storage_dim = StorageOps.storage_dim(sequence_types)
+                    constructed_fields[field.name] = StorageOps.from_storage(
+                        sequence_types, elements[offset : offset + storage_dim]
                     )
                 else:
                     storage_dim = StorageOps.storage_dim(field_type)
@@ -91,7 +104,7 @@ class DataclassStorageOps:
                     field_instance, elements[offset : offset + storage_dim]
                 )
                 offset += storage_dim
-            return get_type(a)(**constructed_fields)
+            return typing_util.get_type(a)(**constructed_fields)
 
     @staticmethod
     def symbolic(a: T.DataclassOrType, name: T.Optional[str], **kwargs: T.Dict) -> T.Dataclass:
@@ -111,11 +124,20 @@ class DataclassStorageOps:
                 field_type = type_hints_map[field.name]
                 try:
                     if field.metadata.get("length") is not None:
-                        sequence_instance = get_sequence_from_dataclass_sequence_field(
+                        sequence_instance = typing_util.get_sequence_from_dataclass_sequence_field(
                             field, field_type
                         )
                         constructed_fields[field.name] = StorageOps.symbolic(
                             sequence_instance, f"{name_prefix}{field.name}", **kwargs
+                        )
+                    elif (
+                        sequence_types := typing_util.maybe_tuples_of_types_from_annotation(
+                            field_type
+                        )
+                    ) is not None:
+                        # It's a Tuple of known size
+                        constructed_fields[field.name] = StorageOps.symbolic(
+                            sequence_types, f"{name_prefix}{field.name}", **kwargs
                         )
                     else:
                         constructed_fields[field.name] = StorageOps.symbolic(
@@ -125,7 +147,7 @@ class DataclassStorageOps:
                     raise NotImplementedError(
                         f"Could not create field {field.name} of type {field_type}"
                     ) from ex
-            return get_type(a)(**constructed_fields)
+            return typing_util.get_type(a)(**constructed_fields)
         else:
             constructed_fields = {}
             name_prefix = f"{name}." if name is not None else ""
@@ -139,4 +161,4 @@ class DataclassStorageOps:
                     raise NotImplementedError(
                         f"Could not create field {field.name} of type {field_instance}"
                     ) from ex
-            return get_type(a)(**constructed_fields)
+            return typing_util.get_type(a)(**constructed_fields)

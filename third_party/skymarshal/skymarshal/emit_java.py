@@ -1,24 +1,19 @@
 # aclint: py2 py3
 # mypy: allow-untyped-defs
 from __future__ import absolute_import
-import typing as T
 
 import argparse  # pylint: disable=unused-import
 import collections
 import os
 import string
+import typing as T
 import zipfile
-
 from io import BytesIO
 
 from six.moves import range  # pylint: disable=redefined-builtin
-
 from skymarshal import syntax_tree
-from skymarshal.emit_helpers import Code
-from skymarshal.emit_helpers import render
-from skymarshal.emit_helpers import StructBuilder
+from skymarshal.emit_helpers import Code, StructBuilder, render
 from skymarshal.language_plugin import SkymarshalLanguage
-
 
 PrimitiveInfo = collections.namedtuple("PrimitiveInfo", ["storage", "constant", "decode", "encode"])
 

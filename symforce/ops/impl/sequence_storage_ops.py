@@ -3,9 +3,9 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce.ops import StorageOps
-from symforce.python_util import get_type
 from symforce import typing as T
+from symforce.ops import StorageOps
+from symforce.typing_util import get_type
 
 
 class SequenceStorageOps:

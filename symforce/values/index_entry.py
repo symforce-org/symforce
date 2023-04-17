@@ -4,11 +4,12 @@
 # ----------------------------------------------------------------------------
 
 from __future__ import annotations
+
 import dataclasses
 import sys
 
-from symforce import typing as T
 from symforce import python_util
+from symforce import typing as T
 
 
 @dataclasses.dataclass

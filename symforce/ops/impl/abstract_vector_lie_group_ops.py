@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-from .abstract_vector_group_ops import AbstractVectorGroupOps
-
 from symforce import typing as T
+
+from .abstract_vector_group_ops import AbstractVectorGroupOps
 
 if T.TYPE_CHECKING:
     from symforce import geo

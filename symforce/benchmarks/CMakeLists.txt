@@ -20,9 +20,8 @@ if (NOT Sophus_FOUND)
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       sophus
-      GIT_REPOSITORY https://github.com/strasdat/Sophus
-      GIT_TAG v1.0.0
-      GIT_SHALLOW TRUE
+      URL https://github.com/strasdat/Sophus/archive/refs/tags/v1.0.0.zip
+      URL_HASH SHA256=60c8a18f750fdfd75c828253c8f123fac15493ced0baaee8a19df64a4acbf548
     )
     FetchContent_MakeAvailable(sophus)
     find_package(Sophus)
@@ -57,9 +56,8 @@ if (NOT gtsam_FOUND)
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       gtsam
-      GIT_REPOSITORY https://github.com/borglab/gtsam
-      GIT_TAG 4.1.1
-      GIT_SHALLOW TRUE
+      URL https://github.com/borglab/gtsam/archive/refs/tags/4.1.1.zip
+      URL_HASH SHA256=f03cd72884647aaa0a24df5ee262ad0824b343554c763d81b2957836f4cab99d
     )
     FetchContent_MakeAvailable(gtsam)
   endfunction()
@@ -90,9 +88,8 @@ if (NOT Ceres_FOUND)
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       ceres
-      GIT_REPOSITORY https://github.com/ceres-solver/ceres-solver
-      GIT_TAG 2.0.0
-      GIT_SHALLOW TRUE
+      URL https://github.com/ceres-solver/ceres-solver/archive/refs/tags/2.0.0.zip
+      URL_HASH SHA256=db12d37b4cebb26353ae5b7746c7985e00877baa8e7b12dc4d3a1512252fff3b
     )
     FetchContent_MakeAvailable(ceres)
   endfunction()
@@ -114,7 +111,7 @@ function(add_matrix_multiplication_benchmark matrix_name)
 
     target_link_libraries(
         matrix_multiplication_benchmark_${matrix_name}
-        symforce_catch2
+        Catch2::Catch2WithMain
         symforce_gen
         symforce_opt
     )
@@ -142,7 +139,7 @@ find_package(Sophus REQUIRED)
 target_link_libraries(
     inverse_compose_jacobian_benchmark
     gtsam
-    symforce_catch2
+    Catch2::Catch2WithMain
     symforce_gen
     symforce_opt
 )
@@ -162,7 +159,7 @@ add_executable(
 target_link_libraries(
     robot_3d_localization_benchmark
     gtsam
-    symforce_catch2
+    Catch2::Catch2WithMain
     symforce_gen
     symforce_opt
     symforce_examples

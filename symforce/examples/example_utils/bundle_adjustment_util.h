@@ -12,6 +12,7 @@
 #include <sym/linear_camera_cal.h>
 #include <sym/posed_camera.h>
 #include <sym/util/typedefs.h>
+#include <symforce/opt/assert.h>
 
 namespace sym {
 namespace example_utils {
@@ -91,7 +92,7 @@ std::vector<Eigen::Matrix<Scalar, 2, 1>> PickSourceCoordsRandomlyFromGrid(
       SampleRegularGrid<Scalar>(image_shape, bucket_width_px);
 
   // Pick randomly the required number of source pixels
-  SYM_ASSERT(uv_samples.size() >= num_coords);
+  SYM_ASSERT(static_cast<int>(uv_samples.size()) >= num_coords);
   std::shuffle(uv_samples.begin(), uv_samples.end(), gen);
 
   std::vector<Eigen::Matrix<Scalar, 2, 1>> subset_uv_samples;

@@ -72,7 +72,7 @@ struct lcm_type_caster {
         py::module_::import(module_path.c_str()).attr(LCMType::getTypeName());
     py::object result = lcm_py_type.attr("decode")(msg_bytes);
     result.inc_ref();
-    return result;
+    return std::move(result);
   }
 };
 
@@ -89,6 +89,9 @@ struct type_caster<sym::linearized_dense_factor_t>
 template <>
 struct type_caster<sym::optimization_iteration_t>
     : public lcm_type_caster<sym::optimization_iteration_t> {};
+template <>
+struct type_caster<sym::sparse_matrix_structure_t>
+    : public lcm_type_caster<sym::sparse_matrix_structure_t> {};
 template <>
 struct type_caster<sym::optimization_stats_t> : public lcm_type_caster<sym::optimization_stats_t> {
 };

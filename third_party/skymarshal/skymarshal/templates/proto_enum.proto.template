@@ -9,6 +9,10 @@ option java_outer_classname = "{{enum_type.proto_java_outer_classname}}";
 
 message {{enum_type.proto_message_name}} {
   enum {{enum_type.proto_enum_name}} {
+{% if enum_type.add_unknown_enum_alias %}
+    option allow_alias = true;
+    UNKNOWN = 0;
+{% endif %}
 {% if enum_type.reserved_ids %}
     reserved {{ enum_type.reserved_ids}};
 {% endif %}

@@ -4,9 +4,9 @@
 # ----------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import animation
 from matplotlib.widgets import Slider
-import numpy as np
 
 import sym
 from symforce.opt.optimizer import Optimizer
@@ -20,9 +20,7 @@ def plot_solution(optimizer: Optimizer, result: Optimizer.Result, animated: bool
     matplotlib animation instead of providing an interactive slider.
     """
     # Pull out values from the result
-    values_per_iter = [
-        optimizer.load_iteration_values(stats.values) for stats in result.iteration_stats
-    ]
+    values_per_iter = [optimizer.load_iteration_values(stats.values) for stats in result.iterations]
 
     # Create the layout
     fig = plt.figure()
@@ -101,7 +99,7 @@ def plot_solution(optimizer: Optimizer, result: Optimizer.Result, animated: bool
         num = int(slider_value)
 
         # Set iteration text and abort if we rejected this iteration
-        stats = result.iteration_stats[num]
+        stats = result.iterations[num]
         if num > 0 and not stats.update_accepted:
             text.set_text(f"Iteration: {num} (rejected)\nError: {stats.new_error:.6f}")
             return
@@ -171,7 +169,7 @@ def get_data_to_plot(v: Values) -> AttrDict:
         [
             [
                 v["poses"][i].rotation()
-                * sym.Rot2.from_tangent([v["angles"][i][landmark_inx]])
+                * sym.Rot2.from_tangent(np.array([v["angles"][i][landmark_inx]]))
                 * np.array([50, 0])
                 for landmark_inx in range(len(v["landmarks"]))
             ]

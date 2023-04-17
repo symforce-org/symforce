@@ -4,12 +4,11 @@
 # ----------------------------------------------------------------------------
 import numpy as np
 
-from symforce.test_util import TestCase
-
 import symforce.symbolic as sf
 from symforce import ops
-from symforce.values import Values
 from symforce.opt.objectives import PriorValueObjective
+from symforce.test_util import TestCase
+from symforce.values import Values
 
 
 class PriorValueObjectiveTest(TestCase):

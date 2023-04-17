@@ -3,11 +3,9 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import unittest
 import numpy as np
 
 import symforce.symbolic as sf
-from symforce import typing as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
@@ -24,6 +22,15 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
     @classmethod
     def element(cls) -> sf.Pose3:
         return sf.Pose3.from_tangent([1.3, 0.2, 1.1, -0.2, 5.3, 1.2])
+
+    def test_pose3_accessors(self) -> None:
+        """
+        Tests additional accessors
+        """
+        element = self.element()
+
+        self.assertEqual(element.R, element.rotation())
+        self.assertEqual(element.t, element.position())
 
     def pose3_operations(self, a: sf.Pose3, b: sf.Pose3) -> None:
         """

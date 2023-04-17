@@ -16,7 +16,8 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <catch.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <gtsam/geometry/Pose3.h>
 #include <sophus/se3.hpp>
 #include <spdlog/spdlog.h>

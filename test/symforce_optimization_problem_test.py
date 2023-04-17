@@ -6,15 +6,21 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import numpy as np
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
+import symforce.symbolic as sf
 from symforce import cc_sym
 from symforce import typing as T
-from symforce.opt.sub_problem import SubProblem
-from symforce.opt.residual_block import ResidualBlock, ResidualBlockWithCustomJacobian
 from symforce.opt.optimization_problem import OptimizationProblem
+from symforce.opt.residual_block import ResidualBlock
+from symforce.opt.residual_block import ResidualBlockWithCustomJacobian
+from symforce.opt.sub_problem import SubProblem
 from symforce.python_util import AttrDict
-import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.values import Values
 
@@ -144,7 +150,7 @@ class SymforceOptimizationProblemTest(TestCase):
             def build_residuals(self) -> Values:
                 residual_blocks = Values()
                 residual_blocks["residual"] = ResidualBlock(
-                    residual=sf.V1(self.inputs.rot.angle_between(self.inputs.rot0)),
+                    residual=sf.V1(self.inputs.rot.angle_between(self.inputs.rot0, epsilon=0)),
                     extra_values=None,
                 )
                 return residual_blocks

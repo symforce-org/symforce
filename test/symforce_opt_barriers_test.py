@@ -3,17 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from symforce.opt.barrier_functions import max_linear_barrier
+from symforce.opt.barrier_functions import max_power_barrier
+from symforce.opt.barrier_functions import min_linear_barrier
+from symforce.opt.barrier_functions import min_max_centering_power_barrier
+from symforce.opt.barrier_functions import min_max_linear_barrier
+from symforce.opt.barrier_functions import min_max_power_barrier
+from symforce.opt.barrier_functions import min_power_barrier
+from symforce.opt.barrier_functions import symmetric_power_barrier
 from symforce.test_util import TestCase
-from symforce.opt.barrier_functions import (
-    symmetric_power_barrier,
-    min_max_power_barrier,
-    min_max_linear_barrier,
-    max_power_barrier,
-    max_linear_barrier,
-    min_power_barrier,
-    min_linear_barrier,
-    min_max_centering_power_barrier,
-)
 
 
 class SymforceOptBarriersTest(TestCase):

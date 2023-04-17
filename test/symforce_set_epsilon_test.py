@@ -5,8 +5,8 @@
 
 import sys
 
-from symforce.test_util import TestCase
 from symforce import typing as T
+from symforce.test_util import TestCase
 
 
 def clear_symforce() -> None:
@@ -36,9 +36,9 @@ class SymforceSetEpsilonTest(TestCase):
         # Since some code relies on the original module still being available in sys.modules, we
         # need to save and restore the original modules to keep from breaking other tests.
         cls.saved_modules = []
-        for module in sys.modules:
-            if module.startswith("symforce"):
-                cls.saved_modules.append((module, sys.modules[module]))
+        for module_name, module in sys.modules.items():
+            if module_name.startswith("symforce"):
+                cls.saved_modules.append((module_name, module))
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -65,14 +65,14 @@ class SymforceSetEpsilonTest(TestCase):
             self.assertEqual(0.0, sf.epsilon())
 
         clear_symforce()
-        with self.subTest(msg="Test function properly raises AlreadyUsedEpsilon exception"):
+        with self.subTest(
+            msg="Test function does not raise on setting epsilon to the current value"
+        ):
             import symforce
+            import symforce.symbolic as sf
 
-            with self.assertRaises(symforce.AlreadyUsedEpsilon):
-                import symforce.symbolic as sf
-
-                sf.epsilon()
-                symforce.set_epsilon_to_zero()
+            sf.epsilon()
+            symforce.set_epsilon_to_zero()
 
     def test_set_epsilon_to_symbol(self) -> None:
         """

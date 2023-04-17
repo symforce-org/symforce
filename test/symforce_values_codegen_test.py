@@ -3,18 +3,24 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
 import string
 
 import symforce
+
+symforce.set_epsilon_to_symbol()
+
 import symforce.symbolic as sf
+from symforce import path_util
+from symforce.codegen import CppConfig
 from symforce.codegen import values_codegen
 from symforce.test_util import TestCase
 from symforce.values import Values
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
+TEST_DATA_DIR = (
+    path_util.symforce_data_root()
+    / "test"
+    / "symforce_function_codegen_test_data"
+    / symforce.get_symbolic_api()
 )
 
 
@@ -38,11 +44,11 @@ class SymforceValuesCodegenTest(TestCase):
             for letter in string.ascii_lowercase:
                 values[letter * i] = sf.Symbol(letter)
 
-        values_codegen.generate_values_keys(values, output_dir)
+        values_codegen.generate_values_keys(values, output_dir, CppConfig())
 
         self.compare_or_update_directory(
-            actual_dir=os.path.join(output_dir),
-            expected_dir=os.path.join(TEST_DATA_DIR, "values_codegen_test_data"),
+            actual_dir=output_dir,
+            expected_dir=TEST_DATA_DIR / "values_codegen_test_data",
         )
 
 

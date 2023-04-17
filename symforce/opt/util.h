@@ -20,7 +20,7 @@ namespace internal {
  */
 template <typename T>
 struct TangentDimHelper {
-  static int32_t TangentDim(const T& x) {
+  static int32_t TangentDim(const T& /* x */) {
     return sym::LieGroupOps<T>::TangentDim();
   }
 };
@@ -62,8 +62,7 @@ class Interpolator {
   explicit Interpolator(const Scalar epsilon = kDefaultEpsilon<Scalar>) : epsilon_(epsilon) {}
 
   T operator()(const T& a, const T& b, const Scalar t) {
-    return sym::LieGroupOps<T>::Retract(
-        a, t * sym::LieGroupOps<T>::LocalCoordinates(a, b, epsilon_), epsilon_);
+    return sym::LieGroupOps<T>::Interpolate(a, b, t, epsilon_);
   }
 
  private:
@@ -102,7 +101,7 @@ auto NumericalDerivative(const F f, const X& x,
                              kDefaultEpsilon<typename StorageOps<X>::Scalar>,
                          const typename sym::StorageOps<X>::Scalar delta = 1e-2f) {
   using Scalar = typename sym::StorageOps<X>::Scalar;
-  using Y = typename std::result_of<F(X)>::type;
+  using Y = typename std::result_of_t<F(X)>;
   using JacobianMat =
       Eigen::Matrix<Scalar, sym::LieGroupOps<Y>::TangentDim(), sym::LieGroupOps<X>::TangentDim()>;
   static_assert(std::is_same<typename sym::StorageOps<Y>::Scalar, Scalar>::value,
@@ -114,7 +113,7 @@ auto NumericalDerivative(const F f, const X& x,
 
   JacobianMat J = JacobianMat::Zero(internal::TangentDimHelper<Y>::TangentDim(f0),
                                     internal::TangentDimHelper<X>::TangentDim(x));
-  for (size_t i = 0; i < internal::TangentDimHelper<X>::TangentDim(x); i++) {
+  for (int i = 0; i < internal::TangentDimHelper<X>::TangentDim(x); i++) {
     dx(i) = delta;
     const typename sym::LieGroupOps<Y>::TangentVec y_plus = sym::LieGroupOps<Y>::LocalCoordinates(
         f0, f(sym::LieGroupOps<X>::Retract(x, dx, epsilon)), epsilon);
