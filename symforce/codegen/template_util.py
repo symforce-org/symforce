@@ -134,7 +134,7 @@ def add_preamble(source: str, name: Path, comment_prefix: str, custom_preamble: 
 
 
 @functools.lru_cache
-def jinja_env(template_dir: T.Openable, search_paths: T.Iterable[T.Openable] = ()) -> RelEnvironment:
+def jinja_env(template_dir: T.Openable, search_paths: T.Tuple[T.Openable] = ()) -> RelEnvironment:
     """
     Helper function to cache the Jinja environment, which enables caching of loaded templates
     """
@@ -184,7 +184,7 @@ def render_template(
 
     filetype = FileType.from_template_path(Path(template_path))
 
-    template = jinja_env(template_dir, search_paths=search_paths).get_template(os.fspath(template_path))
+    template = jinja_env(template_dir, search_paths=tuple(search_paths)).get_template(os.fspath(template_path))
     rendered_str = add_preamble(
         str(template.render(**data)),
         template_path,
