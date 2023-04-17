@@ -139,7 +139,7 @@ def jinja_env(template_dir: T.Openable, search_paths: T.Iterable[T.Openable] = (
     Helper function to cache the Jinja environment, which enables caching of loaded templates
     """
     all_search_paths = [os.fspath(template_dir)]
-    all_search_paths.extend(search_paths)
+    all_search_paths.extend((os.fspath(p) for p in search_paths))
     loader = jinja2.FileSystemLoader(searchpath=all_search_paths)
     env = RelEnvironment(
         loader=loader,
