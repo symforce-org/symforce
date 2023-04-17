@@ -2,13 +2,13 @@
 # mypy: allow-untyped-defs
 """Generate djinni enum definitions and conversions."""
 from __future__ import absolute_import
-import typing as T
 
 import argparse  # pylint: disable=unused-import
 import os
+import typing as T
 
-from skymarshal import emit_proto
 from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import emit_proto
 from skymarshal.common_util import snakecase_to_camelcase
 from skymarshal.emit_helpers import TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage

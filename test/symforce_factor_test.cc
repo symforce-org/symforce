@@ -7,6 +7,9 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
@@ -16,10 +19,8 @@
 #include <symforce/opt/factor.h>
 #include <symforce/opt/key.h>
 
-#include "catch.hpp"
-
 TEST_CASE("Test jacobian constructors", "[factors]") {
-  spdlog::info("*** TestJacobianConstructors() ***");
+  spdlog::debug("*** TestJacobianConstructors() ***");
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
@@ -38,7 +39,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a;
       },
       {'x'});
-  spdlog::info(unary_v1.Linearize(values));
+  spdlog::debug(unary_v1.Linearize(values));
 
   // Unary / v1 output with dynamic size
   const sym::Factord unary_v1_dyn = sym::Factord::Jacobian(
@@ -49,7 +50,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a;
       },
       {'x'});
-  spdlog::info(unary_v1_dyn.Linearize(values));
+  spdlog::debug(unary_v1_dyn.Linearize(values));
 
   // Unary / v2 output with fixed size
   const sym::Factord unary_v2 = sym::Factord::Jacobian(
@@ -58,7 +59,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 1.0;
       },
       {'x'});
-  spdlog::info(unary_v2.Linearize(values));
+  spdlog::debug(unary_v2.Linearize(values));
 
   // Unary / v2 output with dynamic size
   const sym::Factord unary_v2_dyn = sym::Factord::Jacobian(
@@ -69,7 +70,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 1.0;
       },
       {'x'});
-  spdlog::info(unary_v2_dyn.Linearize(values));
+  spdlog::debug(unary_v2_dyn.Linearize(values));
 
   // Unary / v3 output with fixed size
   const sym::Factord unary_v3 = sym::Factord::Jacobian(
@@ -78,7 +79,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 1.0, 0.0;
       },
       {'x'});
-  spdlog::info(unary_v3.Linearize(values));
+  spdlog::debug(unary_v3.Linearize(values));
 
   // Unary / v3 output with dynamic size
   const sym::Factord unary_v3_dyn = sym::Factord::Jacobian(
@@ -89,7 +90,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 1.0, 0.0;
       },
       {'x'});
-  spdlog::info(unary_v3_dyn.Linearize(values));
+  spdlog::debug(unary_v3_dyn.Linearize(values));
 
   // Binary / v1 output with fixed size
   const sym::Factord binary_v1 = sym::Factord::Jacobian(
@@ -98,7 +99,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 2.0;
       },
       {'x', 'y'});
-  spdlog::info(binary_v1.Linearize(values));
+  spdlog::debug(binary_v1.Linearize(values));
 
   // Binary / v1 output with dynamic size
   const sym::Factord binary_v1_dyn = sym::Factord::Jacobian(
@@ -109,7 +110,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 2.0;
       },
       {'x', 'y'});
-  spdlog::info(binary_v1_dyn.Linearize(values));
+  spdlog::debug(binary_v1_dyn.Linearize(values));
 
   // Binary / v2 output with fixed size
   const sym::Factord binary_v2 = sym::Factord::Jacobian(
@@ -118,7 +119,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 0.0, 0.0, 2.0;
       },
       {'x', 'y'});
-  spdlog::info(binary_v2.Linearize(values));
+  spdlog::debug(binary_v2.Linearize(values));
 
   // Binary / v2 output with dynamic size
   const sym::Factord binary_v2_dyn = sym::Factord::Jacobian(
@@ -129,7 +130,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2 * a, 0.0, 0.0, 2.0;
       },
       {'x', 'y'});
-  spdlog::info(binary_v2_dyn.Linearize(values));
+  spdlog::debug(binary_v2_dyn.Linearize(values));
 
   // Ternary / v3 output with fixed size
   const sym::Factord ternary_v3 = sym::Factord::Jacobian(
@@ -141,7 +142,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
             0.0, 1.0, 1.0;
       },
       {'x', 'y', 'z'});
-  spdlog::info(ternary_v3.Linearize(values));
+  spdlog::debug(ternary_v3.Linearize(values));
 
   // This is not allowed, because we can't deduce the size the Rhs vector should be:
   // Ternary / v3 output with fixed size, and a sparse jacobian
@@ -158,7 +159,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
   //     },
   //     {'x', 'y', 'z'});
   // ternary_v3_sparse.Linearize(values, &linearized_sparse_factor);
-  // spdlog::info(linearized_sparse_factor);
+  // spdlog::debug(linearized_sparse_factor);
 
   // Ternary / v3 output with dynamic size
   const sym::Factord ternary_v3_dyn = sym::Factord::Jacobian(
@@ -171,7 +172,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
             0.0, 1.0, 1.0;
       },
       {'x', 'y', 'z'});
-  spdlog::info(ternary_v3_dyn.Linearize(values));
+  spdlog::debug(ternary_v3_dyn.Linearize(values));
 
   // Ternary / v3 output with dynamic size, and a sparse jacobian
   const sym::Factord ternary_v3_dyn_sparse = sym::Factord::Jacobian(
@@ -186,8 +187,8 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         jac->makeCompressed();
       },
       {'x', 'y', 'z'});
-  ternary_v3_dyn_sparse.Linearize(values, &linearized_sparse_factor);
-  spdlog::info(linearized_sparse_factor);
+  ternary_v3_dyn_sparse.Linearize(values, linearized_sparse_factor);
+  spdlog::debug(linearized_sparse_factor);
 
   // Unary with Rot3
   const sym::Factord unary_rot3 = sym::Factord::Jacobian(
@@ -197,7 +198,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << 2.0 * rot.ToTangent().transpose(), -1.0 * rot.ToTangent().transpose();  // fake
       },
       {{'R', 2}});
-  spdlog::info(unary_rot3.Linearize(values));
+  spdlog::debug(unary_rot3.Linearize(values));
 
   // Binary with Rot3
   const sym::Factord binary_rot3 = sym::Factord::Jacobian(
@@ -207,7 +208,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
       },
       {{'R', 1}, {'R', 2}});
-  spdlog::info(binary_rot3.Linearize(values));
+  spdlog::debug(binary_rot3.Linearize(values));
 
   // Huge one
   const sym::Factord big_factor = sym::Factord::Jacobian(
@@ -222,7 +223,7 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
             0.0;
       },
       {'x', {'R', 1}, 'y', {'R', 2}, 'P', 'z'});
-  spdlog::info(big_factor.Linearize(values));
+  spdlog::debug(big_factor.Linearize(values));
 
   // Test keys_to_func != keys_to_optimize - pass in extra epsilon not being optimized
   const std::vector<sym::Key> keys_to_optimize = {{'R', 1}, {'R', 2}};
@@ -236,11 +237,11 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
         (*jac) << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
       },
       keys_to_func, keys_to_optimize);
-  spdlog::info(binary_rot3_with_epsilon.Linearize(values));
+  spdlog::debug(binary_rot3_with_epsilon.Linearize(values));
 }
 
 TEST_CASE("Test hessian constructors", "[factors]") {
-  spdlog::info("*** TestHessianConstructors() ***");
+  spdlog::debug("*** TestHessianConstructors() ***");
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
@@ -265,7 +266,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x'});
-  spdlog::info(unary_v1.Linearize(values));
+  spdlog::debug(unary_v1.Linearize(values));
 
   // Unary / v1 output with dynamic size
   const sym::Factord unary_v1_dyn = sym::Factord::Hessian(
@@ -282,7 +283,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x'});
-  spdlog::info(unary_v1_dyn.Linearize(values));
+  spdlog::debug(unary_v1_dyn.Linearize(values));
 
   // Unary / v2 output with fixed size
   const sym::Factord unary_v2 = sym::Factord::Hessian(
@@ -297,7 +298,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x'});
-  spdlog::info(unary_v2.Linearize(values));
+  spdlog::debug(unary_v2.Linearize(values));
 
   // Unary / v2 output with dynamic size
   const sym::Factord unary_v2_dyn = sym::Factord::Hessian(
@@ -314,7 +315,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x'});
-  spdlog::info(unary_v2_dyn.Linearize(values));
+  spdlog::debug(unary_v2_dyn.Linearize(values));
 
   // Unary / v3 output with fixed size
   const sym::Factord unary_v3 = sym::Factord::Hessian(
@@ -329,7 +330,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x'});
-  spdlog::info(unary_v3.Linearize(values));
+  spdlog::debug(unary_v3.Linearize(values));
 
   // Unary / v3 output with dynamic size
   const sym::Factord unary_v3_dyn = sym::Factord::Hessian(
@@ -346,7 +347,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x'});
-  spdlog::info(unary_v3_dyn.Linearize(values));
+  spdlog::debug(unary_v3_dyn.Linearize(values));
 
   // Binary / v1 output with fixed size
   const sym::Factord binary_v1 = sym::Factord::Hessian(
@@ -361,7 +362,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y'});
-  spdlog::info(binary_v1.Linearize(values));
+  spdlog::debug(binary_v1.Linearize(values));
 
   // Binary / v1 output with dynamic size
   const sym::Factord binary_v1_dyn = sym::Factord::Hessian(
@@ -378,7 +379,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y'});
-  spdlog::info(binary_v1_dyn.Linearize(values));
+  spdlog::debug(binary_v1_dyn.Linearize(values));
 
   // Binary / v2 output with fixed size
   const sym::Factord binary_v2 = sym::Factord::Hessian(
@@ -393,7 +394,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y'});
-  spdlog::info(binary_v2.Linearize(values));
+  spdlog::debug(binary_v2.Linearize(values));
 
   // Binary / v2 output with dynamic size
   const sym::Factord binary_v2_dyn = sym::Factord::Hessian(
@@ -410,7 +411,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y'});
-  spdlog::info(binary_v2_dyn.Linearize(values));
+  spdlog::debug(binary_v2_dyn.Linearize(values));
 
   // Ternary / v3 output with fixed size
   const sym::Factord ternary_v3 = sym::Factord::Hessian(
@@ -428,7 +429,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y', 'z'});
-  spdlog::info(ternary_v3.Linearize(values));
+  spdlog::debug(ternary_v3.Linearize(values));
 
   // Ternary / v3 output with fixed size, and a sparse jacobian and hessian
   const sym::Factord ternary_v3_sparse = sym::Factord::Hessian(
@@ -450,8 +451,8 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y', 'z'});
-  ternary_v3_sparse.Linearize(values, &linearized_sparse_factor);
-  spdlog::info(linearized_sparse_factor);
+  ternary_v3_sparse.Linearize(values, linearized_sparse_factor);
+  spdlog::debug(linearized_sparse_factor);
 
   // Ternary / v3 output with dynamic size
   const sym::Factord ternary_v3_dyn = sym::Factord::Hessian(
@@ -470,7 +471,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y', 'z'});
-  spdlog::info(ternary_v3_dyn.Linearize(values));
+  spdlog::debug(ternary_v3_dyn.Linearize(values));
 
   // Ternary / v3 output with dynamic size, and a sparse jacobian and hessian
   const sym::Factord ternary_v3_dyn_sparse = sym::Factord::Hessian(
@@ -491,8 +492,8 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', 'y', 'z'});
-  ternary_v3_dyn_sparse.Linearize(values, &linearized_sparse_factor);
-  spdlog::info(linearized_sparse_factor);
+  ternary_v3_dyn_sparse.Linearize(values, linearized_sparse_factor);
+  spdlog::debug(linearized_sparse_factor);
 
   // Unary with Rot3
   const sym::Factord unary_rot3 = sym::Factord::Hessian(
@@ -507,7 +508,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {{'R', 2}});
-  spdlog::info(unary_rot3.Linearize(values));
+  spdlog::debug(unary_rot3.Linearize(values));
 
   // Binary with Rot3
   const sym::Factord binary_rot3 = sym::Factord::Hessian(
@@ -523,7 +524,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {{'R', 1}, {'R', 2}});
-  spdlog::info(binary_rot3.Linearize(values));
+  spdlog::debug(binary_rot3.Linearize(values));
 
   // Huge one
   const sym::Factord big_factor = sym::Factord::Hessian(
@@ -544,7 +545,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       {'x', {'R', 1}, 'y', {'R', 2}, 'P', 'z'});
-  spdlog::info(big_factor.Linearize(values));
+  spdlog::debug(big_factor.Linearize(values));
 
   // Test keys_to_func != keys_to_optimize - pass in extra epsilon not being optimized
   const std::vector<sym::Key> keys_to_optimize = {{'R', 1}, {'R', 2}};
@@ -564,7 +565,7 @@ TEST_CASE("Test hessian constructors", "[factors]") {
         (*rhs) = jac->transpose() * (*res);
       },
       keys_to_func, keys_to_optimize);
-  spdlog::info(binary_rot3_with_epsilon.Linearize(values));
+  spdlog::debug(binary_rot3_with_epsilon.Linearize(values));
 }
 
 template <typename MatrixType>
@@ -584,21 +585,21 @@ template <typename Matrix, typename... Keys, typename ResidualLambda, typename J
 void TestJacobianFuncHelper2Args(const ResidualLambda& eval_residual,
                                  const JacobianLambda& eval_jacobian,
                                  const std::vector<Keys>&... keys) {
-  const sym::Factord factor = sym::Factord::Jacobian(
-      sym::Factord::JacobianFunc<Matrix>(
-          [&eval_residual, &eval_jacobian](const sym::Valuesd& values,
-                                           const std::vector<sym::index_entry_t>& keys,
-                                           Eigen::VectorXd* residual, Matrix* jacobian) {
-            const double x = values.At<double>(keys[0]);
-            const double y = values.At<double>(keys[1]);
-            if (residual != nullptr) {
-              *residual = eval_residual(x, y);
-            }
-            if (jacobian != nullptr) {
-              *jacobian = eval_jacobian(x, y);
-            }
-          }),
-      {'x', 'y'}, keys...);
+  const sym::Factord factor =
+      sym::Factord(sym::Factord::JacobianFunc<Matrix>(
+                       [&eval_residual, &eval_jacobian](
+                           const sym::Valuesd& values, const std::vector<sym::index_entry_t>& keys,
+                           Eigen::VectorXd* residual, Matrix* jacobian) {
+                         const double x = values.At<double>(keys[0]);
+                         const double y = values.At<double>(keys[1]);
+                         if (residual != nullptr) {
+                           *residual = eval_residual(x, y);
+                         }
+                         if (jacobian != nullptr) {
+                           *jacobian = eval_jacobian(x, y);
+                         }
+                       }),
+                   {'x', 'y'}, keys...);
 
   const double x = 3.0;
   const double y = -1.0;
@@ -607,7 +608,7 @@ void TestJacobianFuncHelper2Args(const ResidualLambda& eval_residual,
   values.Set<double>('y', y);
 
   LinearizedFactor_t<Matrix> linearization{};
-  factor.Linearize(values, &linearization);
+  factor.Linearize(values, linearization);
 
   const Eigen::VectorXd res = eval_residual(x, y);
   const Matrix jac = eval_jacobian(x, y);
@@ -618,7 +619,7 @@ void TestJacobianFuncHelper2Args(const ResidualLambda& eval_residual,
   CHECK(linearization.rhs.isApprox(jac.transpose() * res));
 }
 
-TEST_CASE("Test Factord::Jacobian(DenseJacobianFunc, keys) and linearization", "[factors]") {
+TEST_CASE("Test Factord(DenseJacobianFunc, keys) and linearization", "[factors]") {
   const auto eval_residual = [](const double x, const double y) {
     return (Eigen::VectorXd(2) << x * x, x * y).finished();
   };
@@ -629,7 +630,7 @@ TEST_CASE("Test Factord::Jacobian(DenseJacobianFunc, keys) and linearization", "
   TestJacobianFuncHelper2Args<Eigen::MatrixXd>(eval_residual, eval_jacobian);
 }
 
-TEST_CASE("Test Factord::Jacobian(DenseJacobianFunc, keys_to_func, keys_to_optimize", "[factors]") {
+TEST_CASE("Test Factord(DenseJacobianFunc, keys_to_func, keys_to_optimize", "[factors]") {
   const auto eval_residual = [](const double x, const double y) {
     return (Eigen::VectorXd(2) << x * x, x * y).finished();
   };
@@ -640,7 +641,7 @@ TEST_CASE("Test Factord::Jacobian(DenseJacobianFunc, keys_to_func, keys_to_optim
   TestJacobianFuncHelper2Args<Eigen::MatrixXd, sym::Key>(eval_residual, eval_jacobian, {'x'});
 }
 
-TEST_CASE("Test Factord::Jacobian(SparseJacobianFunc, keys) and linearization", "[factors]") {
+TEST_CASE("Test Factord(SparseJacobianFunc, keys) and linearization", "[factors]") {
   using Sparse = Eigen::SparseMatrix<double>;
 
   const auto eval_residual = [](const double x, const double y) -> Sparse {
@@ -653,7 +654,7 @@ TEST_CASE("Test Factord::Jacobian(SparseJacobianFunc, keys) and linearization", 
   TestJacobianFuncHelper2Args<Sparse>(eval_residual, eval_jacobian);
 }
 
-TEST_CASE("Test Factord::Jacobian(SparseJacobianFunc, keys_to_func, keys_to_opt", "[factors]") {
+TEST_CASE("Test Factord(SparseJacobianFunc, keys_to_func, keys_to_opt", "[factors]") {
   using Sparse = Eigen::SparseMatrix<double>;
 
   const auto eval_residual = [](const double x, const double y) -> Sparse {
@@ -690,7 +691,7 @@ TEMPLATE_TEST_CASE("Test linearized values", "[factors]", double, float) {
   // Check with keys {x, y} so a = 1, b = 2
   const sym::Factor<Scalar> factor1 = sym::Factor<Scalar>::Jacobian(func, {x, y});
   const auto linearized1 = factor1.Linearize(values);
-  spdlog::info(linearized1);
+  spdlog::debug(linearized1);
   CHECK(linearized1.residual[0] == Catch::Approx(3).epsilon(0).margin(1e-3));
   CHECK(linearized1.jacobian(0, 0) == Catch::Approx(2).epsilon(0).margin(1e-3));
   CHECK(linearized1.jacobian(0, 1) == Catch::Approx(1).epsilon(0).margin(1e-3));
@@ -698,7 +699,7 @@ TEMPLATE_TEST_CASE("Test linearized values", "[factors]", double, float) {
   // Check another combination of keys, now a = -3, b = 1
   const sym::Factor<Scalar> factor2 = sym::Factor<Scalar>::Jacobian(func, {z, x});
   const auto linearized2 = factor2.Linearize(values);
-  spdlog::info(linearized2);
+  spdlog::debug(linearized2);
   CHECK(linearized2.residual[0] == Catch::Approx(10).epsilon(0).margin(1e-3));
   CHECK(linearized2.jacobian(0, 0) == Catch::Approx(-6).epsilon(0).margin(1e-3));
   CHECK(linearized2.jacobian(0, 1) == Catch::Approx(1).epsilon(0).margin(1e-3));
@@ -713,4 +714,142 @@ TEMPLATE_TEST_CASE("Test linearized values", "[factors]", double, float) {
   factor2.Linearize(values, &residual, &jacobian);
   CHECK(residual.isApprox(linearized2.residual));
   CHECK(jacobian.isApprox(linearized2.jacobian));
+}
+
+template <typename Scalar>
+struct TestJacobianFunctor {
+  TestJacobianFunctor() = default;
+  TestJacobianFunctor(const TestJacobianFunctor&) {
+    copies++;
+  }
+
+  TestJacobianFunctor& operator=(const TestJacobianFunctor&) {
+    copies++;
+    return *this;
+  }
+
+  TestJacobianFunctor(TestJacobianFunctor&& rhs) {
+    rhs.is_moved = true;
+  }
+  TestJacobianFunctor& operator=(TestJacobianFunctor&& rhs) {
+    rhs.is_moved = true;
+    return *this;
+  }
+
+  void operator()(Scalar x, sym::Vector1<Scalar>* res, sym::Matrix11<Scalar>* jac) const {
+    (*res) << x;
+    (*jac) << 1;
+  }
+
+  bool is_moved{false};
+  static int copies;
+};
+
+template <typename Scalar>
+int TestJacobianFunctor<Scalar>::copies = 0;
+
+TEMPLATE_TEST_CASE("Test Jacobian functors has minimal copies", "[factors]", double, float) {
+  using Scalar = TestType;
+
+  sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'});
+  sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'}, {'x'});
+  CHECK(TestJacobianFunctor<Scalar>::copies == 0);
+
+  {
+    TestJacobianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Jacobian(std::move(f), {'x'});
+    CHECK(f.is_moved);                                // f should be moved
+    CHECK(TestJacobianFunctor<Scalar>::copies == 0);  // should not be copied
+  }
+
+  {
+    TestJacobianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Jacobian(f, {'x'});
+    CHECK(!f.is_moved);                               // f should not be moved
+    CHECK(TestJacobianFunctor<Scalar>::copies == 1);  // f should be copied once
+  }
+}
+
+template <typename Scalar>
+struct TestHessianFunctor {
+  TestHessianFunctor() = default;
+  TestHessianFunctor(const TestHessianFunctor&) {
+    copies++;
+  }
+
+  TestHessianFunctor& operator=(const TestHessianFunctor&) {
+    copies++;
+    return *this;
+  }
+
+  TestHessianFunctor(TestHessianFunctor&& rhs) {
+    rhs.is_moved = true;
+  }
+  TestHessianFunctor& operator=(TestHessianFunctor&& rhs) {
+    rhs.is_moved = true;
+    return *this;
+  }
+
+  void operator()(Scalar x, sym::Vector1<Scalar>* res, sym::Matrix11<Scalar>* jac,
+                  sym::Matrix11<Scalar>* hes, sym::Matrix11<Scalar>* rhs) const {
+    (*res) << x;
+    (*jac) << 1;
+    (*hes) << 1;
+    (*rhs) << 1;
+  }
+
+  bool is_moved{false};
+  static int copies;
+};
+
+template <typename Scalar>
+int TestHessianFunctor<Scalar>::copies = 0;
+
+TEMPLATE_TEST_CASE("Test Hessian functors has minimal copies", "[factors]", double, float) {
+  using Scalar = TestType;
+
+  sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'});
+  sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'}, {'x'});
+  CHECK(TestHessianFunctor<Scalar>::copies == 0);
+
+  {
+    TestHessianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Hessian(std::move(f), {'x'});
+    CHECK(f.is_moved);                               // f should be moved
+    CHECK(TestHessianFunctor<Scalar>::copies == 0);  // should not be copied
+  }
+
+  {
+    TestHessianFunctor<Scalar> f{};
+    sym::Factor<Scalar>::Hessian(f, {'x'});
+    CHECK(!f.is_moved);                              // f should not be moved
+    CHECK(TestHessianFunctor<Scalar>::copies == 1);  // f should be copied once
+  }
+}
+
+TEMPLATE_TEST_CASE("Test factor maybe_index_entry_cache", "[factors]", double, float) {
+  using Scalar = TestType;
+
+  sym::Values<Scalar> values;
+  values.Set('x', Scalar(5));
+
+  const std::vector<sym::Factor<Scalar>> factors{
+      sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'}),
+      sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'})};
+
+  for (const auto& factor : factors) {
+    // Able to linearize without passing index_entry_cache
+    factor.Linearize(values);
+
+    // Able to linearize with index_entry_cache
+    std::vector<sym::index_entry_t> cache = values.CreateIndex({'x'}).entries;
+    factor.Linearize(values, &cache);
+
+    // Using the wrong size cache throws
+    cache.emplace_back();
+    CHECK_THROWS(factor.Linearize(values, &cache));
+
+    cache.clear();
+    CHECK_THROWS(factor.Linearize(values, &cache));
+  }
 }

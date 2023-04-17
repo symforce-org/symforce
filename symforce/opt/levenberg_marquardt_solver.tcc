@@ -18,23 +18,23 @@ namespace sym {
 
 template <typename ScalarType, typename LinearSolverType>
 Eigen::SparseMatrix<ScalarType> LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
-    const Eigen::SparseMatrix<Scalar>& hessian_lower, bool* const have_max_diagonal,
-    VectorX<Scalar>* const max_diagonal, const Scalar lambda) const {
+    const Eigen::SparseMatrix<Scalar>& hessian_lower, bool& have_max_diagonal,
+    VectorX<Scalar>& max_diagonal, const Scalar lambda) const {
   SYM_TIME_SCOPE("LM<{}>: DampHessian", id_);
   Eigen::SparseMatrix<Scalar> H_damped = hessian_lower;
 
   if (p_.use_diagonal_damping) {
     if (p_.keep_max_diagonal_damping) {
-      if (!*have_max_diagonal) {
-        *max_diagonal = H_damped.diagonal();
-        *max_diagonal = max_diagonal->cwiseMax(p_.diagonal_damping_min);
+      if (!have_max_diagonal) {
+        max_diagonal = H_damped.diagonal();
+        max_diagonal = max_diagonal.cwiseMax(p_.diagonal_damping_min);
       } else {
-        *max_diagonal = max_diagonal->cwiseMax(H_damped.diagonal());
+        max_diagonal = max_diagonal.cwiseMax(H_damped.diagonal());
       }
 
-      *have_max_diagonal = true;
+      have_max_diagonal = true;
 
-      H_damped.diagonal().array() += max_diagonal->array() * lambda;
+      H_damped.diagonal().array() += max_diagonal.array() * lambda;
     } else {
       H_damped.diagonal().array() += H_damped.diagonal().array() * lambda;
     }
@@ -71,56 +71,56 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
-    optimization_iteration_t* const iteration_stats, const StateType& state_,
-    const Scalar new_error, const Scalar relative_reduction, const bool debug_stats) const {
+    optimization_iteration_t& iteration_stats, const StateType& state_, const Scalar new_error,
+    const Scalar relative_reduction, const bool debug_stats, const bool include_jacobians) const {
   SYM_TIME_SCOPE("LM<{}>: IterationStats", id_);
 
-  iteration_stats->iteration = iteration_;
-  iteration_stats->current_lambda = current_lambda_;
+  iteration_stats.iteration = iteration_;
+  iteration_stats.current_lambda = current_lambda_;
 
-  iteration_stats->new_error = new_error;
-  iteration_stats->relative_reduction = relative_reduction;
+  iteration_stats.new_error = new_error;
+  iteration_stats.relative_reduction = relative_reduction;
 
-  {
+  if (include_jacobians) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
-    iteration_stats->new_error_linear = state_.Init().GetLinearization().LinearError(update_);
+    iteration_stats.new_error_linear = state_.Init().GetLinearization().LinearError(update_);
   }
 
   if (p_.verbose) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - Print", id_);
     spdlog::info(
-        "[iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3f}/{:.3f}/{:.3f}, "
+        "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3f}/{:.3f}/{:.3f}, "
         "rel reduction: {:.5f}",
-        iteration_stats->iteration, iteration_stats->current_lambda, state_.Init().Error(),
-        iteration_stats->new_error_linear, iteration_stats->new_error,
-        iteration_stats->relative_reduction);
+        id_, iteration_stats.iteration, iteration_stats.current_lambda, state_.Init().Error(),
+        iteration_stats.new_error_linear, iteration_stats.new_error,
+        iteration_stats.relative_reduction);
   }
 
   if (debug_stats) {
-    iteration_stats->values = state_.New().values.template Cast<double>().GetLcmType();
+    iteration_stats.values = state_.New().values.template Cast<double>().GetLcmType();
     const VectorX<Scalar> residual_vec = state_.New().GetLinearization().residual;
-    iteration_stats->residual = residual_vec.template cast<float>();
-    const VectorX<Scalar> jacobian_vec = state_.New().GetLinearization().JacobianValuesMap();
-    iteration_stats->jacobian_values = jacobian_vec.template cast<float>();
+    iteration_stats.residual = residual_vec.template cast<float>();
+    const MatrixX<Scalar> jacobian_vec = JacobianValues(state_.New().GetLinearization().jacobian);
+    iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
   }
 }
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Update(
     const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
-    Values<Scalar>* const updated_values) const {
+    Values<Scalar>& updated_values) const {
   SYM_ASSERT(update.rows() == index.tangent_dim);
 
-  if (updated_values->NumEntries() == 0) {
+  if (updated_values.NumEntries() == 0) {
     // If the state_ blocks are empty the first time, copy in the full structure
-    (*updated_values) = values;
+    updated_values = values;
   } else {
     // Otherwise just copy the keys being optimized
-    updated_values->Update(index, values);
+    updated_values.Update(index, values);
   }
 
   // Apply the update
-  updated_values->Retract(index, update.data(), epsilon_);
+  updated_values.Retract(index, update.data(), epsilon_);
 }
 
 // ----------------------------------------------------------------------------
@@ -138,9 +138,9 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 
 template <typename ScalarType, typename LinearSolverType>
 bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
-    const LinearizeFunc& func, OptimizationStats<Scalar>* const stats, const bool debug_stats) {
+    const LinearizeFunc& func, OptimizationStats<Scalar>& stats, const bool debug_stats,
+    const bool include_jacobians) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
-  SYM_ASSERT(stats != nullptr);
 
   // new -> init
   {
@@ -158,8 +158,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   // save the initial error state_ before optimizing
   if (iteration_ == 0) {
     SYM_TIME_SCOPE("LM<{}>: FirstIterationStats", id_);
-    stats->iterations.emplace_back();
-    optimization_iteration_t& iteration_stats = stats->iterations.back();
+    stats.iterations.emplace_back();
+    optimization_iteration_t& iteration_stats = stats.iterations.back();
     iteration_stats.iteration = -1;
     iteration_stats.new_error = state_.Init().Error();
     iteration_stats.current_lambda = current_lambda_;
@@ -168,7 +168,8 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
       iteration_stats.values = state_.Init().values.template Cast<double>().GetLcmType();
       const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
       iteration_stats.residual = residual_vec.template cast<float>();
-      const VectorX<Scalar> jacobian_vec = state_.Init().GetLinearization().JacobianValuesMap();
+      const MatrixX<Scalar> jacobian_vec =
+          JacobianValues(state_.Init().GetLinearization().jacobian);
       iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
     }
   }
@@ -184,14 +185,21 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   }
 
   // TODO(aaron): Get rid of this copy
-  H_damped_ = DampHessian(state_.Init().GetLinearization().hessian_lower, &have_max_diagonal_,
-                          &max_diagonal_, current_lambda_);
+  H_damped_ = DampHessian(state_.Init().GetLinearization().hessian_lower, have_max_diagonal_,
+                          max_diagonal_, current_lambda_);
 
   CheckHessianDiagonal(H_damped_);
 
   {
     SYM_TIME_SCOPE("LM<{}>: SparseFactorize", id_);
     linear_solver_.Factorize(H_damped_);
+
+    // NOTE(aaron): This has to happen after the first factorize, since L_inner is not filled out
+    // by ComputeSymbolicSparsity
+    if (debug_stats && stats.linear_solver_ordering.size() == 0) {
+      stats.linear_solver_ordering = linear_solver_.Permutation().indices();
+      stats.cholesky_factor_sparsity = GetSparseStructure(linear_solver_.L());
+    }
   }
 
   {
@@ -201,7 +209,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   {
     SYM_TIME_SCOPE("LM<{}>: Update", id_);
-    Update(state_.Init().values, index_, -update_, &state_.New().values);
+    Update(state_.Init().values, index_, -update_, state_.New().values);
   }
 
   {
@@ -213,9 +221,10 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   const Scalar relative_reduction =
       (state_.Init().Error() - new_error) / (state_.Init().Error() + epsilon_);
 
-  stats->iterations.emplace_back();
-  optimization_iteration_t& iteration_stats = stats->iterations.back();
-  PopulateIterationStats(&iteration_stats, state_, new_error, relative_reduction, debug_stats);
+  stats.iterations.emplace_back();
+  optimization_iteration_t& iteration_stats = stats.iterations.back();
+  PopulateIterationStats(iteration_stats, state_, new_error, relative_reduction, debug_stats,
+                         include_jacobians);
 
   if (!std::isfinite(new_error)) {
     spdlog::warn("LM<{}> Encountered non-finite error: {}", id_, new_error);
@@ -250,7 +259,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
       last_update_ = update_;
       if (state_.New().Error() <= state_.Best().Error()) {
         state_.SetBestToNew();
-        stats->best_index = stats->iterations.size() - 1;
+        stats.best_index = stats.iterations.size() - 1;
       }
       // Ensure that we are not going to modify the Best state_ block in the next iteration
       state_.SetInitToNotBest();
@@ -269,7 +278,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
-    const Eigen::SparseMatrix<Scalar>& hessian_lower, MatrixX<Scalar>* const covariance) {
+    const Eigen::SparseMatrix<Scalar>& hessian_lower, MatrixX<Scalar>& covariance) {
   SYM_TIME_SCOPE("LM<{}>: ComputeCovariance()", id_);
 
   H_damped_ = hessian_lower;
@@ -277,7 +286,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
 
   // TODO(hayk, aaron): This solver assumes a dense RHS, should add support for a sparse RHS
   linear_solver_.Factorize(H_damped_);
-  *covariance = MatrixX<Scalar>::Identity(H_damped_.rows(), H_damped_.rows());
+  covariance = MatrixX<Scalar>::Identity(H_damped_.rows(), H_damped_.rows());
   linear_solver_.SolveInPlace(covariance);
 }
 

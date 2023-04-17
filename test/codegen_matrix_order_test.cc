@@ -4,8 +4,8 @@
  * ---------------------------------------------------------------------------- */
 
 #include <Eigen/Dense>
+#include <catch2/catch_test_macros.hpp>
 
-#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/codegen_matrix_order_data/matrix_order.h"
 
 TEST_CASE("Codegened matrix order is correct", "[codegen_matrix_order]") {

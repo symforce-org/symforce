@@ -11,22 +11,23 @@ import enum
 import functools
 import os
 import pathlib
-from pathlib import Path
 import tempfile
 import textwrap
+from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import jacobian_helpers
-from symforce import ops
 from symforce import logger
+from symforce import ops
 from symforce import python_util
 from symforce import typing as T
-from symforce.values import Values
-from symforce.codegen import template_util
-from symforce.codegen import codegen_util
+from symforce import typing_util
 from symforce.codegen import codegen_config
+from symforce.codegen import codegen_util
+from symforce.codegen import template_util
 from symforce.codegen import types_package_codegen
 from symforce.type_helpers import symbolic_inputs
+from symforce.values import Values
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -56,6 +57,24 @@ class GeneratedPaths:
     generated_files: T.List[Path]
 
 
+class InvalidNamespaceError(ValueError):
+    """
+    Exception class for attempting codegen with an invalid namespace
+    """
+
+
+class InvalidNameError(ValueError):
+    """
+    Exception class for attempting codegen with an invalid function name
+    """
+
+
+class CodeGenerationException(Exception):
+    """
+    Exception class for errors raised from templates during code generation
+    """
+
+
 class Codegen:
     """
     Class used for generating code from symbolic expressions or functions.
@@ -73,7 +92,7 @@ class Codegen:
         config: codegen_config.CodegenConfig,
         name: T.Optional[str] = None,
         return_key: T.Optional[str] = None,
-        sparse_matrices: T.List[str] = None,
+        sparse_matrices: T.Sequence[str] = None,
         docstring: str = None,
     ) -> None:
         """
@@ -94,6 +113,39 @@ class Codegen:
             docstring: The docstring to be used with the generated function
         """
 
+        if sf.epsilon() == 0:
+            warning_message = """
+                Generating code with epsilon set to 0 - This is dangerous!  You may get NaNs, Infs,
+                or numerically unstable results from calling generated functions near singularities.
+
+                In order to safely generate code, you should set epsilon to either a symbol
+                (recommended) or a small numerical value like `sf.numeric_epsilon`.  You should do
+                this before importing any other code from symforce, e.g. with
+
+                    import symforce
+                    symforce.set_epsilon_to_symbol()
+
+                or
+
+                    import symforce
+                    symforce.set_epsilon_to_number()
+
+                For more information on use of epsilon to prevent singularities, take a look at the
+                Epsilon Tutorial: https://symforce.org/tutorials/epsilon_tutorial.html
+                """
+            warning_message = textwrap.indent(textwrap.dedent(warning_message), "    ")
+
+            if config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.FAIL:
+                raise ValueError(warning_message)
+            elif config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.WARN:
+                logger.warning(warning_message)
+            elif config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.ALLOW:
+                pass
+            else:
+                raise ValueError(
+                    f"Invalid config.zero_epsilon_behavior: {config.zero_epsilon_behavior}"
+                )
+
         self.name = name
 
         # Inputs and outputs must be Values objects
@@ -104,15 +156,48 @@ class Codegen:
         inputs = inputs.dataclasses_to_values()
         outputs = outputs.dataclasses_to_values()
 
-        # All symbols in outputs must be present in inputs.  Convert to Matrix before calling
-        # free_symbols because it's much faster to call once
+        self.inputs = inputs
+        self.outputs = outputs
+
+        # All symbols in outputs must be present in inputs
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
-        assert sf.S(
-            sf.Matrix(codegen_util.flat_symbols_from_values(outputs)).mat
-        ).free_symbols.issubset(
-            input_symbols
-        ), f"A symbol in the output expression is missing from inputs. inputs={input_symbols}"
+        if not self.output_symbols.issubset(input_symbols):
+            missing_outputs = self.output_symbols - input_symbols
+            error_msg = textwrap.dedent(
+                f"""
+                A symbol in the output expression is missing from inputs
+
+                Inputs:
+                {input_symbols}
+
+                Missing symbols:
+                {self.output_symbols - input_symbols}
+                """
+            )
+
+            if sf.epsilon() in missing_outputs:
+                error_msg += textwrap.dedent(
+                    f"""
+                    One of the missing symbols is `{sf.epsilon()}`, which is the default epsilon -
+                    this typically means you called a function that requires an epsilon without
+                    passing a value.  You need to either pass 0 for epsilon if you'd like to use 0,
+                    pass through the symbol you're using for epsilon if it's not `{sf.epsilon()}`,
+                    or add `{sf.epsilon()}` as an input to your generated function.  You would do
+                    this either by adding an argument `{sf.epsilon()}: sf.Scalar` if using a
+                    symbolic function, or setting `inputs["{sf.epsilon()}"] = sf.Symbol("{sf.epsilon()}")`
+                    if using `inputs` and `outputs` `Values`.
+
+                    If you aren't sure where you may have forgotten to pass an epsilon, setting
+                    epsilon to invalid may be helpful. You should do this before importing any other
+                    code from symforce, e.g. with
+
+                        import symforce
+                        symforce.set_epsilon_to_invalid()
+                    """
+                )
+
+            raise ValueError(error_msg)
 
         # Names given by keys in inputs/outputs must be valid variable names
         # TODO(aaron): Also check recursively
@@ -128,9 +213,6 @@ class Codegen:
 
         # Outputs must not have same variable names/keys as inputs
         assert all(key not in list(outputs.keys()) for key in inputs.keys())
-
-        self.inputs = inputs
-        self.outputs = outputs
 
         self.config = config
 
@@ -156,6 +238,16 @@ class Codegen:
         self.unique_namespaces: T.Optional[T.Set[str]] = None
         self.namespace: T.Optional[str] = None
 
+    @functools.cached_property
+    def output_symbols(self) -> T.Set[sf.Symbol]:
+        """
+        The set of free symbols in the output
+
+        Cached, because this is somewhat expensive to compute for large outputs
+        """
+        # Convert to Matrix before calling free_symbols because it's much faster to call once
+        return sf.S(sf.Matrix(codegen_util.flat_symbols_from_values(self.outputs)).mat).free_symbols
+
     @classmethod
     def function(
         cls,
@@ -165,6 +257,7 @@ class Codegen:
         input_types: T.Sequence[T.ElementOrType] = None,
         output_names: T.Sequence[str] = None,
         return_key: str = None,
+        sparse_matrices: T.Sequence[str] = None,
         docstring: str = None,
     ) -> Codegen:
         """
@@ -182,8 +275,10 @@ class Codegen:
             config: Programming language and configuration in which the function is to be generated
             name: Name of the function to be generated; if not provided, will be deduced from the
                 function name.  Must be provided if `func` is a lambda
-            output_names: Optional if only one object is returned by the function.
-                If multiple objects are returned, they must be named.
+            output_names: Names to give to outputs returned from `func`.  If None (the default),
+                names will be chosen as f"res{i}" for functions that return multiple results, or
+                "res" for functions that return a single result
+            sparse_matrices: Outputs with this key will be returned as sparse matrices
             return_key: If multiple objects are returned, the generated function will return
                 the object with this name (must be in output_names)
             docstring: The docstring to be used with the generated function.  Default is to use the
@@ -205,7 +300,8 @@ class Codegen:
         if isinstance(res, tuple):
             # Function returns multiple objects
             output_terms = res
-            assert output_names is not None, "Must give output_names for multiple outputs"
+            if output_names is None:
+                output_names = [f"res{i}" for i in range(len(res))]
             # If a return key is given, it must be valid (i.e. in output_names)
             if return_key is not None:
                 assert return_key in output_names, "Return key not found in named outputs"
@@ -240,6 +336,7 @@ class Codegen:
             outputs=outputs,
             config=config,
             return_key=return_key,
+            sparse_matrices=sparse_matrices,
             docstring=textwrap.dedent(docstring),
         )
 
@@ -259,6 +356,7 @@ class Codegen:
         data["scalar_types"] = ("double", "float")
         data["camelcase_to_snakecase"] = python_util.camelcase_to_snakecase
         data["python_util"] = python_util
+        data["typing_util"] = typing_util
         data["lcm_type_t_include_dir"] = "<lcmtypes/sym/type_t.hpp>"
 
         def is_symbolic(T: T.Any) -> bool:
@@ -284,16 +382,46 @@ class Codegen:
 
         data["should_set_zero"] = should_set_zero
 
+        def raise_helper(msg: str) -> None:
+            """
+            Helper function to raise exceptions from jinja templates
+            """
+            raise CodeGenerationException(msg)
+
+        data["raise"] = raise_helper
+
         return data
 
     @functools.cached_property
     def print_code_results(self) -> codegen_util.PrintCodeResult:
-        return codegen_util.print_code(
-            inputs=self.inputs,
-            outputs=self.outputs,
-            sparse_mat_data=self.sparse_mat_data,
-            config=self.config,
-        )
+        try:
+            return codegen_util.print_code(
+                inputs=self.inputs,
+                outputs=self.outputs,
+                sparse_mat_data=self.sparse_mat_data,
+                config=self.config,
+            )
+        # Jinja catches some exception types from templates and swallows them or rewrites them - to
+        # avoid this we re-raise as `CodeGenerationException`
+        # See for example `jinja2/environment.py:466`
+        except (TypeError, LookupError, AttributeError) as ex:
+            raise CodeGenerationException("Exception printing code results, see above") from ex
+
+    @functools.cached_property
+    def unused_arguments(self) -> T.List[str]:
+        """
+        The names of any inputs that do not appear in any outputs
+        """
+        results = []
+        for input_name, input_value in self.inputs.items():
+            if isinstance(input_value, sf.DataBuffer):
+                # DataBuffers have no storage, so we look for their exact symbol
+                input_symbols = {input_value}
+            else:
+                input_symbols = set(ops.StorageOps.to_storage(input_value))
+            if not input_symbols.intersection(self.output_symbols):
+                results.append(input_name)
+        return results
 
     def total_ops(self) -> int:
         """
@@ -329,7 +457,8 @@ class Codegen:
             lcm_bindings_output_dir: Directory in which to output language-specific LCM bindings
             shared_types: Mapping between types defined as part of this codegen object (e.g. keys in
                 self.inputs that map to Values objects) and previously generated external types.
-            namespace: Namespace for the generated function and any generated types.
+            namespace: Namespace for the generated function and any generated types.  Must be a
+                       valid identifier, nested namespaces are not supported.
             generated_file_name: Stem for the filename into which the function is generated, with
                                  no file extension
             skip_directory_nesting: Generate the output file directly into output_dir instead of
@@ -338,6 +467,17 @@ class Codegen:
         assert (
             self.name is not None
         ), "Name should be set either at construction or by with_jacobians"
+
+        if not self.name.isidentifier():
+            raise InvalidNameError(
+                f'Invalid function name "{self.name}". `name` must be a valid identifier.'
+            )
+
+        if not namespace.isidentifier():
+            raise InvalidNamespaceError(
+                f'Invalid namespace "{namespace}".  `namespace` must be a valid identifier (nested '
+                "namespaces are not supported)"
+            )
 
         if output_dir is None:
             output_dir = Path(tempfile.mkdtemp(prefix=f"sf_codegen_{self.name}_", dir="/tmp"))
@@ -355,7 +495,7 @@ class Codegen:
         if generated_file_name is None:
             generated_file_name = self.name
 
-        # List of (template_path, output_path, data)
+        # List of (template_path, output_path, data, template_dir)
         templates = template_util.TemplateList()
 
         # Output types
@@ -388,9 +528,9 @@ class Codegen:
         )
 
         # Maps typenames to generated types
-        self.typenames_dict = types_codegen_data["typenames_dict"]
+        self.typenames_dict = types_codegen_data.typenames_dict
         # Maps typenames to namespaces
-        self.namespaces_dict = types_codegen_data["namespaces_dict"]
+        self.namespaces_dict = types_codegen_data.namespaces_dict
         assert self.namespaces_dict is not None
         self.unique_namespaces = set(self.namespaces_dict.values())
 
@@ -407,27 +547,33 @@ class Codegen:
         else:
             out_function_dir = output_dir / backend_name / "symforce" / namespace
 
-        logger.info(f'Creating {backend_name} function from "{self.name}" at "{out_function_dir}"')
+        logger.debug(f'Creating {backend_name} function from "{self.name}" at "{out_function_dir}"')
 
         # Get templates to render
         for source, dest in self.config.templates_to_render(generated_file_name):
-            templates.add(template_dir / source, out_function_dir / dest, template_data)
+            templates.add(
+                template_path=source,
+                data=template_data,
+                config=self.config.render_template_config,
+                template_dir=template_dir,
+                output_path=out_function_dir / dest,
+            )
 
         # Render
-        templates.render(autoformat=self.config.autoformat)
+        templates.render()
 
         lcm_data = codegen_util.generate_lcm_types(
-            lcm_type_dir=types_codegen_data["lcm_type_dir"],
-            lcm_files=types_codegen_data["lcm_files"],
-            lcm_output_dir=types_codegen_data["lcm_bindings_output_dir"],
+            lcm_type_dir=types_codegen_data.lcm_type_dir,
+            lcm_files=types_codegen_data.lcm_files,
+            lcm_output_dir=types_codegen_data.lcm_bindings_output_dir,
         )
 
         return GeneratedPaths(
             output_dir=output_dir,
-            lcm_type_dir=Path(types_codegen_data["lcm_type_dir"]),
+            lcm_type_dir=types_codegen_data.lcm_type_dir,
             function_dir=out_function_dir,
-            python_types_dir=lcm_data["python_types_dir"],
-            cpp_types_dir=lcm_data["cpp_types_dir"],
+            python_types_dir=lcm_data.python_types_dir,
+            cpp_types_dir=lcm_data.cpp_types_dir,
             generated_files=[Path(v.output_path) for v in templates.items],
         )
 
@@ -442,10 +588,10 @@ class Codegen:
         input_names = [name for name, arg in inputs.items() if name != "self"]
 
         def nice_typename(arg: T.Any) -> str:
-            if python_util.scalar_like(arg):
+            if typing_util.scalar_like(arg):
                 return "Scalar"
             else:
-                return python_util.get_type(arg).__name__
+                return typing_util.get_type(arg).__name__
 
         input_types = [nice_typename(arg) for name, arg in inputs.items() if name != "self"]
         output_types = [nice_typename(arg) for arg in outputs.values()]
@@ -609,9 +755,21 @@ class Codegen:
         outputs["jacobian"] = jacobian
 
         if linearization_mode == LinearizationMode.FULL_LINEARIZATION:
-            assert (
-                isinstance(result, sf.Matrix) and result.cols == 1
-            ), f"The output must be a vector (the residual), got {result} instead"
+            result_is_vector = isinstance(result, sf.Matrix) and result.cols == 1
+            if not result_is_vector:
+                common_msg = (
+                    "The output of a factor must be a column vector representing the residual "
+                    f'(of shape Nx1).  For factor "{self.name}", '
+                )
+                if typing_util.scalar_like(result):
+                    raise ValueError(
+                        common_msg + "got a scalar expression instead.  Did you mean to wrap it in "
+                        "`sf.V1(expr)`?"
+                    )
+                if isinstance(result, sf.Matrix):
+                    raise ValueError(common_msg + f"got a matrix of shape {result.shape} instead")
+
+                raise ValueError(common_msg + f"got an object of type {type(result)} instead")
 
             hessian = jacobian.compute_AtA(lower_only=True)
             outputs["hessian"] = hessian

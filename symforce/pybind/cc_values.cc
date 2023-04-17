@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include <Eigen/Dense>
@@ -33,6 +34,7 @@
 #include <sym/rot2.h>
 #include <sym/rot3.h>
 #include <sym/spherical_camera_cal.h>
+#include <sym/unit3.h>
 #include <sym/util/type_ops.h>
 #include <symforce/opt/key.h>
 #include <symforce/opt/values.h>
@@ -134,7 +136,7 @@ struct RegisterMatricesHelper<0, M> {
 
 template <>
 struct RegisterMatricesHelper<0, 1> {
-  static void Register(py::class_<sym::Valuesd> cls) {}
+  static void Register(py::class_<sym::Valuesd> /* cls */) {}
 };
 
 /**
@@ -221,7 +223,7 @@ void AddValuesWrapper(pybind11::module_ module) {
           "retract",
           [](sym::Valuesd& v, const sym::index_t& index, const std::vector<double>& delta,
              const double epsilon) {
-            if (index.tangent_dim != delta.size()) {
+            if (index.tangent_dim != static_cast<int>(delta.size())) {
               throw std::runtime_error(
                   fmt::format("The length of delta [{}] must match index.tangent_dim [{}]",
                               delta.size(), index.tangent_dim));
@@ -245,13 +247,35 @@ void AddValuesWrapper(pybind11::module_ module) {
               index: Ordered list of keys to include (MUST be valid for both this and others Values)
               epsilon: Small constant to avoid singularities (do not use zero)
            )")
-      .def("get_lcm_type", &sym::Valuesd::GetLcmType, "Serialize to LCM.")
-      .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); });
+      .def("get_lcm_type", &sym::Valuesd::GetLcmType, py::arg("sort_keys") = false,
+           "Serialize to LCM.")
+      .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); })
+      .def(py::pickle(
+          [](const sym::Valuesd& values) {  //  __getstate__
+            const sym::values_t lcm_values = values.GetLcmType();
+            const auto encoded_size = lcm_values.getEncodedSize();
+            std::vector<char> buffer(encoded_size);
+            const auto encoded_bytes = lcm_values.encode(buffer.data(), 0, encoded_size);
+            if (encoded_bytes < 0) {
+              throw std::runtime_error("An error occured while encoded a Values object.");
+            }
+            return py::bytes(buffer.data(), encoded_bytes);
+          },
+          [](py::bytes state) {  // __setstate__
+            const std::string buffer = state.cast<std::string>();
+            sym::values_t lcm_values;
+            const auto decoded_bytes = lcm_values.decode(buffer.data(), 0, buffer.size());
+            if (decoded_bytes < 0) {
+              throw std::runtime_error("An error occured while decoding a Values object.");
+            }
+            return sym::Valuesd(lcm_values);
+          }));
   RegisterTypeWithValues<double>(values_class);
   RegisterTypeWithValues<sym::Rot2d>(values_class);
   RegisterTypeWithValues<sym::Rot3d>(values_class);
   RegisterTypeWithValues<sym::Pose2d>(values_class);
   RegisterTypeWithValues<sym::Pose3d>(values_class);
+  RegisterTypeWithValues<sym::Unit3d>(values_class);
   RegisterTypeWithValues<sym::ATANCameraCald>(values_class);
   RegisterTypeWithValues<sym::DoubleSphereCameraCald>(values_class);
   RegisterTypeWithValues<sym::EquirectangularCameraCald>(values_class);

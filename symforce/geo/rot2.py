@@ -5,14 +5,14 @@
 
 from __future__ import annotations
 
-from symforce.ops.interfaces.lie_group import LieGroup
 import symforce.internal.symbolic as sf
 from symforce import typing as T
+from symforce.ops.interfaces.lie_group import LieGroup
 
 from .complex import Complex
 from .matrix import Matrix12
-from .matrix import Matrix22
 from .matrix import Matrix21
+from .matrix import Matrix22
 from .matrix import Vector2
 
 

@@ -5,9 +5,11 @@
 
 #include <iostream>
 
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
+
 #include <symforce/opt/util.h>
 
-#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/with_jacobians/compose_pose3_with_jacobian0.h"
 
 TEMPLATE_TEST_CASE("Test compose numerical derivative", "[with_jacobians]", double, float) {

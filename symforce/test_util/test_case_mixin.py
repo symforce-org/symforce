@@ -4,21 +4,23 @@
 # ----------------------------------------------------------------------------
 
 import difflib
-import numpy as np
 import logging
-import os
 import re
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
+import numpy as np
+
+import symforce.symbolic as sf
 from symforce import logger
 from symforce import python_util
 from symforce import typing as T
-from symforce.ops import interfaces
-from symforce.ops import StorageOps
+from symforce.codegen import codegen_config
 from symforce.ops import LieGroupOps
-import symforce.symbolic as sf
+from symforce.ops import StorageOps
+from symforce.ops import interfaces
 
 
 class SymforceTestCaseMixin(unittest.TestCase):
@@ -30,12 +32,21 @@ class SymforceTestCaseMixin(unittest.TestCase):
 
     # Set by the --update flag to tell tests that compare against some saved
     # data to update that data instead of failing
-    UPDATE = False
+    _UPDATE = False
 
     KEEP_PATHS = [
         r".*/__pycache__/.*",
         r".*\.pyc",
     ]
+
+    @staticmethod
+    def should_update() -> bool:
+        # NOTE(aaron):  This needs to be accessible before main() is called, so we do it here
+        # instead.  This should also be called from main to make sure it runs at least once
+        if "--update" in sys.argv:
+            SymforceTestCaseMixin._UPDATE = True
+            sys.argv.remove("--update")
+        return SymforceTestCaseMixin._UPDATE
 
     def __init__(self, methodName: str = "runTest") -> None:
         super().__init__(methodName)
@@ -49,11 +60,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         """
         Call this to run all tests in scope.
         """
-        # Sneak through options to expose to tests
-        if "--update" in sys.argv:
-            SymforceTestCaseMixin.UPDATE = True
-            sys.argv.remove("--update")
-
+        SymforceTestCaseMixin.should_update()
         unittest.main(*args, **kwargs)
 
     @staticmethod
@@ -123,7 +130,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         else:
             return super().assertNotEqual(first, second, msg)
 
-    def make_output_dir(self, prefix: str, directory: str = "/tmp") -> str:
+    def make_output_dir(self, prefix: str, directory: Path = Path("/tmp")) -> Path:
         """
         Create a temporary output directory, which will be automatically removed (regardless of
         exceptions) on shutdown, unless logger.level is DEBUG
@@ -135,7 +142,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Returns:
             str: The absolute path to the created output directory
         """
-        output_dir = tempfile.mkdtemp(prefix=prefix, dir=directory)
+        output_dir = Path(tempfile.mkdtemp(prefix=prefix, dir=directory))
         logger.debug(f"Creating temp directory: {output_dir}")
         self.output_dirs.append(output_dir)
         return output_dir
@@ -146,7 +153,12 @@ class SymforceTestCaseMixin(unittest.TestCase):
         mode is on)
         """
         super().setUp()
-        self.output_dirs: T.List[str] = []
+
+        # Set to fail on default epsilon == 0
+        codegen_config.DEFAULT_ZERO_EPSILON_BEHAVIOR = codegen_config.ZeroEpsilonBehavior.FAIL
+
+        # Storage for temporary output directories
+        self.output_dirs: T.List[Path] = []
 
     def tearDown(self) -> None:
         """
@@ -162,19 +174,19 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Compare the given data to what is saved in path, OR update the saved data if
         the --update flag was passed to the test.
         """
-        if SymforceTestCaseMixin.UPDATE:
+        path = Path(path)
+
+        if self.should_update():
             logger.debug(f'Updating data at: "{path}"')
 
-            dirname = os.path.dirname(path)
-            if dirname and not os.path.exists(dirname):
-                os.makedirs(dirname)
+            dirname = path.parent
+            if dirname and not dirname.exists():
+                dirname.mkdir(parents=True)
 
-            with open(path, "w") as f:
-                f.write(data)
+            path.write_text(data)
         else:
             logger.debug(f'Comparing data at: "{path}"')
-            with open(path) as f:
-                expected_data = f.read()
+            expected_data = path.read_text()
 
             if data != expected_data:
                 diff = difflib.unified_diff(
@@ -188,9 +200,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
                 )
 
     def compare_or_update_file(self, path: T.Openable, new_file: T.Openable) -> None:
-        with open(new_file) as f:
-            code = f.read()
-        self.compare_or_update(path, code)
+        self.compare_or_update(path, Path(new_file).read_text())
 
     def _filtered_paths_in_dir(self, directory: T.Openable) -> T.List[str]:
         """
@@ -207,20 +217,21 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Check the contents of actual_dir match expected_dir, OR update the expected directory
         if the --update flag was passed to the test.
         """
+        actual_dir = Path(actual_dir)
+        expected_dir = Path(expected_dir)
+
         logger.debug(f'Comparing directories: actual="{actual_dir}", expected="{expected_dir}"')
 
         actual_paths = self._filtered_paths_in_dir(actual_dir)
         expected_paths = self._filtered_paths_in_dir(expected_dir)
 
-        if not SymforceTestCaseMixin.UPDATE:
+        if not self.should_update():
             # If checking, make sure all file paths are the same
             self.assertSequenceEqual(actual_paths, expected_paths)
         else:
             # If updating, remove any expected files not in actual
             for only_in_expected in set(expected_paths).difference(set(actual_paths)):
-                os.remove(os.path.join(expected_dir, only_in_expected))
+                (expected_dir / only_in_expected).unlink()
 
         for path in actual_paths:
-            self.compare_or_update_file(
-                os.path.join(expected_dir, path), os.path.join(actual_dir, path)
-            )
+            self.compare_or_update_file(expected_dir / path, actual_dir / path)

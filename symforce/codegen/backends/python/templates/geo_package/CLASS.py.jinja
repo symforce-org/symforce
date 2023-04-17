@@ -2,14 +2,19 @@
  # SymForce - Copyright 2022, Skydio, Inc.
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
-import numpy as np
+import math
 import typing as T
 
+import numpy
+
 {# If a pose type, include the necessary rotation type. #}
-{% if cls.__name__.startswith('Pose') %}
-from .rot{{ cls.__name__[-1] }} import Rot{{ cls.__name__[-1] }}
+{% if imported_classes is defined %}
+    {% for imported_cls in imported_classes %}
+from .{{ camelcase_to_snakecase(imported_cls.__name__ )}} import {{ imported_cls.__name__ }}
+    {% endfor %}
 {% endif -%}
 
+# isort: split
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
 
 
@@ -36,6 +41,26 @@ class {{ cls.__name__ }}(object):
     # --------------------------------------------------------------------------
 
     {% include custom_template_name %}
+
+    {% if custom_generated_methods %}
+    {%- import "../util/util.jinja" as util with context -%}
+    # --------------------------------------------------------------------------
+    # Custom generated methods
+    # --------------------------------------------------------------------------
+
+    {% endif %}
+
+    {% for spec in custom_generated_methods %}
+        {% set available_classes = [cls] %}
+        {% if imported_classes is defined %}
+            {% set available_classes = available_classes + imported_classes %}
+        {% endif %}
+    {{ util.function_declaration(spec, is_method=True, available_classes=available_classes) | indent(4)}}
+        {{ util.print_docstring(spec.docstring) | indent(8) }}
+
+        {{ util.expr_code(spec, available_classes=available_classes) | indent(4) }}
+
+    {% endfor %}
 
     # --------------------------------------------------------------------------
     # StorageOps concept
@@ -100,7 +125,7 @@ class {{ cls.__name__ }}(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
+        # type: (numpy.ndarray, float) -> {{ cls.__name__ }}
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -110,11 +135,11 @@ class {{ cls.__name__ }}(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> numpy.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
+        # type: (numpy.ndarray, float) -> {{ cls.__name__ }}
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -124,8 +149,12 @@ class {{ cls.__name__ }}(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: ({{ cls.__name__ }}, float) -> T.List[float]
+        # type: ({{ cls.__name__ }}, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
+
+    def interpolate(self, b, alpha, epsilon=1e-8):
+        # type: ({{ cls.__name__ }}, float, float) -> {{ cls.__name__ }}
+        return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
     {% endif %}
 
     # --------------------------------------------------------------------------
@@ -145,14 +174,14 @@ class {{ cls.__name__ }}(object):
 
     @T.overload
     def __mul__(self, other):  # pragma: no cover
-        # type: (np.ndarray) -> np.ndarray
+        # type: (numpy.ndarray) -> numpy.ndarray
         pass
 
     def __mul__(self, other):
-        # type: (T.Union[{{ cls.__name__ }}, np.ndarray]) -> T.Union[{{ cls.__name__ }}, np.ndarray]
+        # type: (T.Union[{{ cls.__name__ }}, numpy.ndarray]) -> T.Union[{{ cls.__name__ }}, numpy.ndarray]
         if isinstance(other, {{ cls.__name__ }}):
             return self.compose(other)
-        elif isinstance(other, np.ndarray) and hasattr(self, "_apply_to_vector"):
-            return self._apply_to_vector(other)
+        elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
+            return getattr(self, "compose_with_point")(other).reshape(other.shape)
         else:
             raise NotImplementedError('Cannot compose {} with {}.'.format(type(self), type(other)))

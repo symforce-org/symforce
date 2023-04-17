@@ -2,19 +2,18 @@
 # mypy: allow-untyped-defs
 """Generate protocol buffers definition files."""
 from __future__ import absolute_import, print_function
-import typing as T
 
 import argparse  # typing # pylint: disable=unused-import
-import os
 import json
+import os
+import typing as T
 
 from six import next  # pylint: disable=redefined-builtin
-
 from skymarshal import syntax_tree  # pylint: disable=unused-import
-from skymarshal.syntax_tree import ConstMember, ArrayMember
-from skymarshal.common_util import snakecase_to_camelcase, camelcase_to_snakecase
+from skymarshal.common_util import camelcase_to_snakecase, snakecase_to_camelcase
 from skymarshal.emit_helpers import TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage
+from skymarshal.syntax_tree import ArrayMember, ConstMember
 
 # pylint: disable=too-many-instance-attributes
 
@@ -97,6 +96,11 @@ class EnumType(object):
         proto_typename = enum.get_notation_property("#protobuf", "typename")
         if proto_typename is None:
             proto_typename = snakecase_to_camelcase(proto_filename_base)
+
+        # See if we should write an `UNKNOWN = 0;`` alias for 0.
+        self.add_unknown_enum_alias = enum.get_notation_property(
+            "#protobuf", "add_unknown_enum_alias"
+        )
 
         # enumerated cases
         self.cases = [EnumCase(case.int_value, case.name) for case in enum.cases]

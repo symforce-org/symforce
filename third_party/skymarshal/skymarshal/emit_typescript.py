@@ -8,15 +8,13 @@
 # lot of precendent for that, though.
 
 from __future__ import absolute_import
+
+import argparse  # pylint: disable=unused-import
 import os
 import typing as T
-import argparse  # pylint: disable=unused-import
 
 from skymarshal import syntax_tree  # pylint: disable=unused-import
-from skymarshal.emit_helpers import BaseBuilder
-from skymarshal.emit_helpers import EnumBuilder
-from skymarshal.emit_helpers import StructBuilder
-from skymarshal.emit_helpers import TemplateRenderer
+from skymarshal.emit_helpers import BaseBuilder, EnumBuilder, StructBuilder, TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage
 
 # pylint: disable=too-many-instance-attributes
@@ -476,6 +474,9 @@ class TsStruct(StructBuilder, TsBase):
             if member.type_ref.is_primitive_type():
                 # bail if we don't need to import the type
                 if member.type_ref.name in TS_DUPLICATE_TYPES:
+                    continue
+                # don't import `byte` type if in a byte array, since those use `Uint8Array`s
+                elif member.is_byte_array:
                     continue
                 primitive_includes.add(
                     TsInclude(

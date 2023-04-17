@@ -8,17 +8,14 @@ General python utilities.
 """
 import functools
 import inspect
-import numpy as np
 import os
 import random
 import re
 import shutil
 import string
 import subprocess
-import dataclasses
 
 from symforce import logger
-import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -61,7 +58,7 @@ def execute_subprocess(
         stdin_data_encoded = bytes()
 
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
-    logger.info(f"Subprocess: {cmd_str}")
+    logger.debug(f"Subprocess: {cmd_str}")
 
     with subprocess.Popen(
         cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
@@ -72,7 +69,7 @@ def execute_subprocess(
     going_to_log_to_err = return_code != 0 and log_stdout_to_error_on_error
 
     stdout_decoded = stdout.decode("utf-8")
-    if log_stdout and not going_to_log_to_err:
+    if stdout_decoded and log_stdout and not going_to_log_to_err:
         logger.info(stdout_decoded)
 
     if going_to_log_to_err:
@@ -169,52 +166,6 @@ def id_generator(size: int = 6, chars: str = string.ascii_uppercase + string.dig
     This is not cryptographically secure.
     """
     return "".join(random.choice(chars) for _ in range(size))
-
-
-def get_type(a: T.Any) -> T.Type:
-    """
-    Returns the type of the element if its an instance, or a pass through if already a type.
-    """
-    if isinstance(a, type):
-        return a
-    else:
-        return type(a)
-
-
-# NOTE(brad): Each of these classes is automatically registered with ScalarLieGroupOps. (see
-# ops/__init__.py)
-SCALAR_TYPES = (
-    float,
-    np.float16,
-    np.float32,
-    np.float64,
-    # NOTE(hayk): It's weird to call integers lie groups, but the implementation of ScalarLieGroupOps
-    # converts everything to symbolic types so it acts like a floating point.
-    int,
-    np.int8,
-    np.int16,
-    np.int32,
-    np.int64,
-)
-
-
-def scalar_like(a: T.Any) -> bool:
-    """
-    Returns whether the element is scalar-like (an int, float, or sympy expression).
-
-    This method does not rely on the value of a, only the type.
-    """
-    a_type = get_type(a)
-    if issubclass(a_type, SCALAR_TYPES):
-        return True
-
-    is_expr = issubclass(a_type, sf.Expr)
-    if not is_expr:
-        return False
-
-    # It is an expr, check that it's not a matrix
-    is_matrix = issubclass(a_type, sf.sympy.MatrixBase) or (hasattr(a, "is_Matrix") and a.is_Matrix)
-    return not is_matrix
 
 
 def getattr_recursive(obj: object, attrs: T.Sequence[str]) -> T.Any:
@@ -316,20 +267,6 @@ def get_class_for_method(func: T.Callable) -> T.Type:
         if isinstance(cls, type):
             return cls
     return getattr(func, "__objclass__")  # handle special descriptor objects
-
-
-def get_sequence_from_dataclass_sequence_field(
-    field: dataclasses.Field, field_type: T.Type
-) -> T.Sequence[T.Any]:
-    origin = T.get_origin(field_type)
-    length = field.metadata.get("length")
-    if origin is None or not issubclass(origin, T.Sequence):
-        raise TypeError(
-            f"Annotated field with `length={length}` that is of type {field_type}, not T.Sequence"
-        )
-    assert isinstance(length, int)
-    arg_type = T.get_args(field_type)[0]
-    return [arg_type] * length
 
 
 class AttrDict(dict):

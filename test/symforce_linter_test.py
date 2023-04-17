@@ -5,11 +5,13 @@
 
 import os
 import subprocess
+import sys
+import unittest
 
 from symforce import logger
 from symforce import python_util
-from symforce import typing as T
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase
+from symforce.test_util import slow_on_sympy
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__)) or "."
 
@@ -20,12 +22,21 @@ class SymforceLinterTest(TestCase):
     """
 
     @slow_on_sympy
+    @unittest.skipIf(
+        sys.version_info[:3] >= (3, 10, 7),
+        """
+        Mypy fails on Python 3.10.7 because of this bug, which is fixed in mypy 0.981:
+        https://github.com/python/mypy/issues/13627
+        """,
+    )
     def test_linter(self) -> None:
         try:
-            python_util.execute_subprocess(["make", "lint"], cwd=SYMFORCE_DIR)
+            python_util.execute_subprocess(
+                ["make", "lint"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+            )
         except subprocess.CalledProcessError as exc:
             logger.error(exc)
-            self.assertTrue(False, "Linter Failed.")
+            self.fail("Linter Failed.")
 
 
 if __name__ == "__main__":

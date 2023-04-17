@@ -5,10 +5,10 @@
 
 import numpy as np
 
+import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
-import symforce.symbolic as sf
 
 if T.TYPE_CHECKING:
     _Base = TestCase
@@ -51,7 +51,7 @@ class CamTestMixin(_Base):
             camera_ray, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
 
             if abs(StorageOps.evalf(is_valid_forward_proj) - 1) < self.EPSILON:
-                self.assertTrue(sf.Matrix.are_parallel(point, camera_ray, epsilon=self.EPSILON))
+                self.assertTrue(sf.Matrix.are_parallel(point, camera_ray, tolerance=self.EPSILON))
                 self.assertStorageNear(is_valid_back_proj, 1)
             else:
                 self.assertStorageNear(is_valid_forward_proj, 0)

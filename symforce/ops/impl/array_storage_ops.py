@@ -5,8 +5,8 @@
 
 import numpy as np
 
-from symforce.ops import StorageOps
 from symforce import typing as T
+from symforce.ops import StorageOps
 
 
 class ArrayStorageOps:

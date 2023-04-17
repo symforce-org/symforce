@@ -3,8 +3,9 @@
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
 {%- import "../util/util.jinja" as util with context -%}
-import numpy
 import typing as T
+
+import numpy
 
 from .ops import {{ camelcase_to_snakecase(cls.__name__) }} as ops
 
@@ -32,16 +33,11 @@ class {{ cls.__name__ }}(object):
         {{ arg }}{% if not loop.last %}, {% endif %}
         {% endfor %}
     ):
-        # type: ({% for arg, size in storage_order %}{%if size == 1 %}float{% else %}T.Sequence[float]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}) -> None
+        # type: ({% for arg, size in storage_order %}{%if size == 1 %}float{% else %}T.Union[T.Sequence[float], numpy.ndarray]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}) -> None
         self.data = []
         {% for arg, size in storage_order %}
         {% if size != 1 %}
-        if len({{ arg }}) != {{ size }}:
-            raise ValueError(
-                "Expected {{ arg }} to be a sequence of length {{ size }}, was instead length {}.".format(
-                    len({{ arg }})
-                )
-            )
+        {{ util.flatten_if_ndarray(arg, size) | indent(width=8) }}
         {% endif %}
         {% endfor %}
 
@@ -59,7 +55,7 @@ class {{ cls.__name__ }}(object):
     # --------------------------------------------------------------------------
 
     {% for spec in specs["CameraOps"] %}
-    {{ util.function_declaration(spec, defined_class=cls) }}
+    {{ util.function_declaration(spec, is_method=True, available_classes=[cls]) }}
         {{ util.print_docstring(spec.docstring) | indent(8) }}
 
         return ops.CameraOps.{{ util.function_name_and_args(spec) }}
@@ -106,7 +102,7 @@ class {{ cls.__name__ }}(object):
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
+        # type: (numpy.ndarray, float) -> {{ cls.__name__ }}
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -116,11 +112,11 @@ class {{ cls.__name__ }}(object):
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
     def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> T.List[float]
+        # type: (float) -> numpy.ndarray
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     def retract(self, vec, epsilon=1e-8):
-        # type: (T.Sequence[float], float) -> {{ cls.__name__ }}
+        # type: (numpy.ndarray, float) -> {{ cls.__name__ }}
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -130,8 +126,12 @@ class {{ cls.__name__ }}(object):
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
     def local_coordinates(self, b, epsilon=1e-8):
-        # type: ({{ cls.__name__ }}, float) -> T.List[float]
+        # type: ({{ cls.__name__ }}, float) -> numpy.ndarray
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
+
+    def interpolate(self, b, alpha, epsilon=1e-8):
+        # type: ({{ cls.__name__ }}, float, float) -> {{ cls.__name__ }}
+        return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers

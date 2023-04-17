@@ -3,6 +3,10 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#pragma once
+
+#include <utility>
+
 #include <Eigen/Sparse>
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
@@ -11,6 +15,7 @@
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "../factor.h"
+#include "../optional.h"
 #include "./hash_combine.h"
 
 namespace sym {
@@ -92,17 +97,19 @@ CoordsToStorageMap CoordsToStorageOffset(const Eigen::SparseMatrix<Scalar>& mat)
 
 template <typename Scalar>
 void ComputeKeyHelperSparseColOffsets(
-    const typename Factor<Scalar>::LinearizedDenseFactor& linearized_factor,
-    const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
+    const optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
     linearization_dense_factor_helper_t& factor_helper) {
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); ++key_i) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
     linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
 
-    key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
-    for (int32_t col = 0; col < key_helper.tangent_dim; ++col) {
-      key_helper.jacobian_storage_col_starts[col] = jacobian_row_col_to_storage_offset.at(
-          std::make_pair(factor_helper.combined_residual_offset, key_helper.combined_offset + col));
+    if (jacobian_row_col_to_storage_offset.has_value()) {
+      key_helper.jacobian_storage_col_starts.resize(key_helper.tangent_dim);
+      for (int32_t col = 0; col < key_helper.tangent_dim; ++col) {
+        key_helper.jacobian_storage_col_starts[col] =
+            jacobian_row_col_to_storage_offset->at(std::make_pair(
+                factor_helper.combined_residual_offset, key_helper.combined_offset + col));
+      }
     }
 
     key_helper.hessian_storage_col_starts.resize(key_i + 1);
@@ -142,31 +149,33 @@ void ComputeKeyHelperSparseColOffsets(
 template <typename Scalar>
 void ComputeKeyHelperSparseMap(
     const typename Factor<Scalar>::LinearizedSparseFactor& linearized_factor,
-    const CoordsToStorageMap& jacobian_row_col_to_storage_offset,
+    const optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
     linearization_sparse_factor_helper_t& factor_helper) {
   // We're computing this in UpdateFromSparseOnesFactorIntoTripletLists too...
   std::vector<int> key_for_factor_offset;
   // Reserve?
-  for (int key_i = 0; key_i < factor_helper.key_helpers.size(); key_i++) {
+  for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); key_i++) {
     for (int key_offset = 0; key_offset < factor_helper.key_helpers[key_i].tangent_dim;
          key_offset++) {
       key_for_factor_offset.push_back(key_i);
     }
   }
 
-  factor_helper.jacobian_index_map.reserve(linearized_factor.jacobian.nonZeros());
-  for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
-    for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
-                                                                outer_i);
-         it; ++it) {
-      const auto row = it.row();
-      const auto col = it.col();
+  if (jacobian_row_col_to_storage_offset.has_value()) {
+    factor_helper.jacobian_index_map.reserve(linearized_factor.jacobian.nonZeros());
+    for (int outer_i = 0; outer_i < linearized_factor.jacobian.outerSize(); ++outer_i) {
+      for (typename Eigen::SparseMatrix<Scalar>::InnerIterator it(linearized_factor.jacobian,
+                                                                  outer_i);
+           it; ++it) {
+        const auto row = it.row();
+        const auto col = it.col();
 
-      const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
-      const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
-      factor_helper.jacobian_index_map.push_back(jacobian_row_col_to_storage_offset.at(
-          std::make_pair(row + factor_helper.combined_residual_offset, problem_col)));
+        const auto& key_helper = factor_helper.key_helpers[key_for_factor_offset[col]];
+        const auto problem_col = col - key_helper.factor_offset + key_helper.combined_offset;
+        factor_helper.jacobian_index_map.push_back(jacobian_row_col_to_storage_offset->at(
+            std::make_pair(row + factor_helper.combined_residual_offset, problem_col)));
+      }
     }
   }
 
@@ -194,52 +203,79 @@ void ComputeKeyHelperSparseMap(
   }
 }
 
-template <typename Scalar, typename LinearizedFactorT, typename FactorHelperT>
-FactorHelperT ComputeFactorHelper(const LinearizedFactorT& factor,
-                                  const std::unordered_map<key_t, index_entry_t>& state_index,
-                                  const std::string& linearizer_name,
-                                  int& combined_residual_offset) {
-  FactorHelperT factor_helper;
+/**
+ * Returns a factor_helper with a subset of its fields filled, along with the
+ * tangent dimension of the factor (according to what the Values says it should
+ * be given its keys), and updates the combined_residual_offset.
+ */
+template <typename FactorHelperT, typename Scalar, typename LinearizedFactorT>
+std::pair<FactorHelperT, int> ComputeFactorHelper(
+    const LinearizedFactorT& factor, const Values<Scalar>& problem_values,
+    const std::vector<Key>& linearized_keys,
+    const std::unordered_map<key_t, index_entry_t>& state_index, const std::string& linearizer_name,
+    int& combined_residual_offset) {
+  std::pair<FactorHelperT, int> helper_and_dimension;
+  FactorHelperT& factor_helper = helper_and_dimension.first;
 
   factor_helper.residual_dim = factor.residual.rows();
   factor_helper.combined_residual_offset = combined_residual_offset;
 
-  for (int key_i = 0; key_i < factor.index.entries.size(); ++key_i) {
-    const index_entry_t& entry = factor.index.entries[key_i];
-
-    const bool key_is_optimized = state_index.count(entry.key) > 0;
-    if (!key_is_optimized) {
+  auto factor_offset = 0;
+  for (const Key& key : linearized_keys) {
+    const auto iterator_to_entry = state_index.find(key.GetLcmType());
+    if (iterator_to_entry == state_index.end()) {
+      // The key is not optimized, but we still need its size
+      factor_offset += problem_values.IndexEntryAt(key).tangent_dim;
       continue;
     }
+
+    const index_entry_t& entry = iterator_to_entry->second;
 
     factor_helper.key_helpers.emplace_back();
     auto& key_helper = factor_helper.key_helpers.back();
 
     // Offset of this key within the factor's state
-    key_helper.factor_offset = entry.offset;
+    key_helper.factor_offset = factor_offset;
     key_helper.tangent_dim = entry.tangent_dim;
 
     // Offset of this key within the combined state
-    key_helper.combined_offset = state_index.at(entry.key).offset;
+    key_helper.combined_offset = entry.offset;
+
+    factor_offset += entry.tangent_dim;
   }
+  helper_and_dimension.second = factor_offset;
 
   // Increment offset into the combined residual
   combined_residual_offset += factor_helper.residual_dim;
 
   // Warn if this factor touches no optimized keys
   if (factor_helper.key_helpers.empty()) {
-    std::vector<key_t> input_keys;
-    for (const auto& entry : factor.index.entries) {
-      input_keys.push_back(entry.key);
-    }
-
     spdlog::warn(
         "LM<{}>: Optimizing a factor that touches no optimized keys! Input keys for the factor "
         "are: {}",
-        linearizer_name, input_keys);
+        linearizer_name, linearized_keys);
   }
 
-  return factor_helper;
+  return helper_and_dimension;
+}
+
+/**
+ * Performs a sanity check on the dimensions of the residual, jacobian, hessian, and rhs.
+ * Asserts that their shapes match the cumulative tangent_dim of all the optimized arguments.
+ *
+ * Also checks consistency of residual dimension.
+ */
+template <typename LinearizedFactorType>
+void AssertConsistentShapes(const int tangent_dim, const LinearizedFactorType& linearized_factor,
+                            const bool check_jacobian) {
+  // NOTE(brad): Conditionally check jacobian shape because it may not have beeen evaluated.
+  if (check_jacobian) {
+    SYM_ASSERT(linearized_factor.residual.rows() == linearized_factor.jacobian.rows());
+    SYM_ASSERT(tangent_dim == linearized_factor.jacobian.cols());
+  }
+  SYM_ASSERT(tangent_dim == linearized_factor.hessian.rows());
+  SYM_ASSERT(tangent_dim == linearized_factor.hessian.cols());
+  SYM_ASSERT(tangent_dim == linearized_factor.rhs.rows());
 }
 
 }  // namespace internal

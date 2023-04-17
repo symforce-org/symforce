@@ -7,8 +7,13 @@
 Package for executable code generation from symbolic expressions.
 """
 
-from .codegen import Codegen, LinearizationMode, GeneratedPaths
-from .codegen_config import CodegenConfig
-
 from .backends.cpp.cpp_config import CppConfig
 from .backends.python.python_config import PythonConfig
+from .codegen import Codegen
+from .codegen import CodeGenerationException
+from .codegen import GeneratedPaths
+from .codegen import InvalidNameError
+from .codegen import InvalidNamespaceError
+from .codegen import LinearizationMode
+from .codegen_config import CodegenConfig
+from .codegen_config import RenderTemplateConfig

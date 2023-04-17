@@ -64,12 +64,12 @@ class {{enumtype.name}}
          *  equal to getEncodedSize().
          * @return The number of bytes encoded, or <0 on error.
          */
-        inline int encode(void *buf, int offset, int maxlen) const;
+        inline {{ size_t }} encode(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const;
 
         /**
          * Check how many bytes are required to encode this message.
          */
-        inline int getEncodedSize() const;
+        inline {{ size_t }} getEncodedSize() const;
 
         /**
          * Decode a message from binary form into this instance.
@@ -79,7 +79,7 @@ class {{enumtype.name}}
          * @param maxlen The maximum number of bytes to read while decoding.
          * @return The number of bytes decoded, or <0 if an error occured.
          */
-        inline int decode(const void *buf, int offset, int maxlen);
+        inline {{ size_t }} decode(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen);
 
         /**
          * Retrieve the 64-bit fingerprint identifying the structure of the message.
@@ -92,17 +92,17 @@ class {{enumtype.name}}
         /**
          * Returns "{{enumtype.name}}"
          */
-        inline static const char* getTypeName();
+        inline static constexpr const char* getTypeName();
 
         /**
          * Returns "{{enumtype.namespace}}"
          */
-        inline static const char * getPackageName();
+        inline static constexpr const char * getPackageName();
 
         // LCM support functions. Users should not call these
-        inline int _encodeNoHash(void *buf, int offset, int maxlen) const;
-        inline int _getEncodedSizeNoHash() const;
-        inline int _decodeNoHash(const void *buf, int offset, int maxlen);
+        inline {{ size_t }} _encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const;
+        inline {{ size_t }} _getEncodedSizeNoHash() const;
+        inline {{ size_t }} _decodeNoHash(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen);
         constexpr static uint64_t _computeHash(const __lcm_hash_ptr *p);
 };
 
@@ -118,9 +118,9 @@ constexpr {{enumtype.name}}::{{enumtype.name}}(
     return {{enumtype.name}}(static_cast<option_t>(int_value));
 }
 
-int {{enumtype.name}}::encode(void *buf, int offset, int maxlen) const
+{{ size_t }} {{enumtype.name}}::encode(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const
 {
-    int pos = 0, tlen;
+    {{ size_t }} pos = 0, tlen;
     int64_t hash = (int64_t)getHash();
 
     tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
@@ -132,9 +132,9 @@ int {{enumtype.name}}::encode(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int {{enumtype.name}}::decode(const void *buf, int offset, int maxlen)
+{{ size_t }} {{enumtype.name}}::decode(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen)
 {
-    int pos = 0, thislen;
+    {{ size_t }} pos = 0, thislen;
 
     int64_t msg_hash;
     thislen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &msg_hash, 1);
@@ -147,7 +147,7 @@ int {{enumtype.name}}::decode(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int {{enumtype.name}}::getEncodedSize() const
+{{ size_t }} {{enumtype.name}}::getEncodedSize() const
 {
     return 8 + _getEncodedSizeNoHash();
 }
@@ -157,19 +157,19 @@ constexpr int64_t {{enumtype.name}}::getHash()
     return _computeHash(NULL);
 }
 
-const char* {{enumtype.name}}::getTypeName()
+constexpr const char* {{enumtype.name}}::getTypeName()
 {
     return "{{enumtype.name}}";
 }
 
-const char * {{enumtype.name}}::getPackageName()
+constexpr const char * {{enumtype.name}}::getPackageName()
 {
     return "{{enumtype.namespace}}";
 }
 
-int {{enumtype.name}}::_encodeNoHash(void *buf, int offset, int maxlen) const
+{{ size_t }} {{enumtype.name}}::_encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const
 {
-    int pos = 0, tlen;
+    {{ size_t }} pos = 0, tlen;
 
     tlen = __{{enumtype.storage_type}}_encode_array(buf, offset + pos, maxlen - pos, reinterpret_cast<const {{enumtype.storage_type}}*>(&this->value), 1);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -177,9 +177,9 @@ int {{enumtype.name}}::_encodeNoHash(void *buf, int offset, int maxlen) const
     return pos;
 }
 
-int {{enumtype.name}}::_decodeNoHash(const void *buf, int offset, int maxlen)
+{{ size_t }} {{enumtype.name}}::_decodeNoHash(const void *buf, {{ size_t }} offset, {{ size_t }} maxlen)
 {
-    int pos = 0, tlen;
+    {{ size_t }} pos = 0, tlen;
 
     tlen = __{{enumtype.storage_type}}_decode_array(buf, offset + pos, maxlen - pos, reinterpret_cast<{{enumtype.storage_type}}*>(&this->value), 1);
     if(tlen < 0) return tlen; else pos += tlen;
@@ -187,9 +187,9 @@ int {{enumtype.name}}::_decodeNoHash(const void *buf, int offset, int maxlen)
     return pos;
 }
 
-int {{enumtype.name}}::_getEncodedSizeNoHash() const
+{{ size_t }} {{enumtype.name}}::_getEncodedSizeNoHash() const
 {
-    int enc_size = 0;
+    {{ size_t }} enc_size = 0;
     enc_size += __{{enumtype.storage_type}}_encoded_array_size(NULL, 1);
     return enc_size;
 }

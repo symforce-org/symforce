@@ -29,11 +29,9 @@ namespace internal {
  *   true if `linearization` and numerical derivatives match
  */
 template <typename Scalar>
-bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>& values,
+bool CheckDerivatives(Linearizer<Scalar>& linearizer, const Values<Scalar>& values,
                       const index_t& index, const Linearization<Scalar>& linearization,
                       const Scalar epsilon, const bool verbose = true) {
-  SYM_ASSERT(linearizer != nullptr);
-
   // Make a copy of the linearization that we can relinearize into
   Linearization<Scalar> perturbed_linearization = linearization;
 
@@ -47,7 +45,7 @@ bool CheckDerivatives(Linearizer<Scalar>* const linearizer, const Values<Scalar>
       Values<Scalar> perturbed_values = values;
       perturbed_values.Retract(index, values_perturbation.data(), epsilon);
 
-      linearizer->Relinearize(perturbed_values, &perturbed_linearization);
+      linearizer.Relinearize(perturbed_values, perturbed_linearization);
       return perturbed_linearization.residual;
     };
 

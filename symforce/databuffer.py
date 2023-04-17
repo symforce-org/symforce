@@ -4,9 +4,9 @@
 # ----------------------------------------------------------------------------
 from __future__ import annotations
 
-from symforce import typing as T
-
 import sympy
+
+from symforce import typing as T
 
 
 class DataBuffer(sympy.MatrixSymbol):

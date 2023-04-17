@@ -3762,9 +3762,13 @@ cdef class DenseMatrixBase(MatrixBase):
         return diff(self, *args)
 
     #TODO: implement this in C++
-    def subs(self, *args):
-        cdef _DictBasic D = get_dict(*args)
-        return self.applyfunc(lambda x: x.subs(D))
+    def subs(self, *args, **kwargs):
+        cdef _DictBasic D = get_dict(*args, **kwargs)
+
+        def subs_inner(Basic x not None):
+            return c2py(symengine.ssubs(x.thisptr, D.c))
+
+        return self.applyfunc(subs_inner)
 
     def xreplace(self, *args):
         cdef _DictBasic D = get_dict(*args)

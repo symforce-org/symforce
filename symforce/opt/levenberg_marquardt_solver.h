@@ -126,7 +126,7 @@ class LevenbergMarquardtSolver {
 
   // Function that evaluates the objective function and produces a quadratic approximation of
   // it by linearizing a least-squares residual.
-  using LinearizeFunc = std::function<void(const Values<Scalar>&, Linearization<Scalar>* const)>;
+  using LinearizeFunc = std::function<void(const Values<Scalar>&, Linearization<Scalar>&)>;
 
   LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon)
       : p_(p), id_(id), epsilon_(epsilon) {}
@@ -170,8 +170,8 @@ class LevenbergMarquardtSolver {
   void UpdateParams(const optimizer_params_t& p);
 
   // Run one iteration of the optimization. Returns true if the optimization should early exit.
-  bool Iterate(const LinearizeFunc& func, OptimizationStats<Scalar>* const stats,
-               const bool debug_stats = false);
+  bool Iterate(const LinearizeFunc& func, OptimizationStats<Scalar>& stats,
+               const bool debug_stats = false, const bool include_jacobians = false);
 
   const Values<Scalar>& GetBestValues() const {
     SYM_ASSERT(state_.BestIsValid());
@@ -184,22 +184,21 @@ class LevenbergMarquardtSolver {
   }
 
   void ComputeCovariance(const Eigen::SparseMatrix<Scalar>& hessian_lower,
-                         MatrixX<Scalar>* covariance);
+                         MatrixX<Scalar>& covariance);
 
  private:
   Eigen::SparseMatrix<Scalar> DampHessian(const Eigen::SparseMatrix<Scalar>& hessian_lower,
-                                          bool* const have_max_diagonal,
-                                          VectorX<Scalar>* const max_diagonal,
+                                          bool& have_max_diagonal, VectorX<Scalar>& max_diagonal,
                                           const Scalar lambda) const;
 
   void CheckHessianDiagonal(const Eigen::SparseMatrix<Scalar>& hessian_lower_damped);
 
-  void PopulateIterationStats(optimization_iteration_t* const iteration_stats,
-                              const StateType& state, const Scalar new_error,
-                              const Scalar relative_reduction, const bool debug_stats) const;
+  void PopulateIterationStats(optimization_iteration_t& iteration_stats, const StateType& state,
+                              const Scalar new_error, const Scalar relative_reduction,
+                              const bool debug_stats, const bool include_jacobians) const;
 
   void Update(const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
-              Values<Scalar>* const updated_values) const;
+              Values<Scalar>& updated_values) const;
 
   optimizer_params_t p_;
   std::string id_;

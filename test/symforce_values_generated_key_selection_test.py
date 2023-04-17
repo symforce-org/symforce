@@ -19,6 +19,8 @@ class SymforceValuesGeneratedKeySelectionTest(TestCase):
         Tests:
             generated_key_selection._choices_for_name
         """
+        # pylint: disable=protected-access
+
         letters_to_try, sub = generated_key_selection._choices_for_name("foo")
         self.assertSequenceEqual(
             letters_to_try, ["f", "o"] + [l for l in string.ascii_lowercase if l not in "foo"]

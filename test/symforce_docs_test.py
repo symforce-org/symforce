@@ -5,11 +5,12 @@
 
 import os
 import subprocess
+import sys
 
 from symforce import logger
 from symforce import python_util
-from symforce import typing as T
-from symforce.test_util import TestCase, slow_on_sympy
+from symforce.test_util import TestCase
+from symforce.test_util import slow_on_sympy
 
 SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__)) or "."
 
@@ -28,7 +29,12 @@ class SymforceDocsTest(TestCase):
         success = False
         for _ in range(RETRIES):
             try:
-                python_util.execute_subprocess(["make", "docs"], cwd=SYMFORCE_DIR)
+                python_util.execute_subprocess(
+                    ["make", "docs"],
+                    cwd=SYMFORCE_DIR,
+                    env=dict(os.environ, PYTHON=sys.executable),
+                    log_stdout=False,
+                )
             except subprocess.CalledProcessError as exc:
                 logger.error(exc)
             else:

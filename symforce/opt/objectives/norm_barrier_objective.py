@@ -6,9 +6,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from symforce.opt import objective, noise_models, barrier_functions
-from symforce.opt.residual_block import ResidualBlock
 import symforce.symbolic as sf
+from symforce.opt import barrier_functions
+from symforce.opt import noise_models
+from symforce.opt import objective
+from symforce.opt.residual_block import ResidualBlock
 
 
 class NormBarrierObjective(objective.TimestepObjective):

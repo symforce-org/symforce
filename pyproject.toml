@@ -1,1 +1,12 @@
-# NOTE(aaron): This file must exist for `pip install .` to work, but may be empty
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+py_version = "all"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "GENERATED", "FIRSTPARTY", "LOCALFOLDER"]
+known_generated = ["lcmtypes"]
+src_paths = []
+known_first_party = ["sym", "symforce"]
+force_single_line = true

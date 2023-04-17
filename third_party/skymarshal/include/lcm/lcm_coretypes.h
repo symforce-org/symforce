@@ -1,6 +1,7 @@
 #ifndef _LCM_LIB_INLINE_H
 #define _LCM_LIB_INLINE_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,13 +20,19 @@
 
 #define SKYDIO_DISABLE_LCM_FORCE_INLINE 1
 #if defined(SKYDIO_DISABLE_LCM_FORCE_INLINE)
-// #define SKYDIO_LCM_INLINE_PREFIX __attribute__((unused))
-#define SKYDIO_LCM_INLINE_PREFIX
+#define SKYDIO_LCM_INLINE_PREFIX __attribute__((unused))
 #else
 #define SKYDIO_LCM_INLINE_PREFIX __attribute__((unused, always_inline))
 #endif
 
+// The type to use for byte counters and buffer sizes for encoding and decoding.  Must be a signed
+// type.  ptrdiff_t should be signed and typically is the same width as size_t
+typedef ptrdiff_t __lcm_buffer_size;
+
 #ifdef __cplusplus
+
+static_assert(sizeof(__lcm_buffer_size) == sizeof(size_t),
+              "Check that the buffer size is the same width as size_t");
 
 // Suppress warnings about C-style casts, since this code needs to build in
 // both C and C++ modes
@@ -38,6 +45,11 @@
 #endif
 
 extern "C" {
+#else
+
+_Static_assert(sizeof(__lcm_buffer_size) == sizeof(size_t),
+               "Check that the buffer size is the same width as size_t");
+
 #endif
 
 union float_uint32 {
@@ -87,14 +99,14 @@ struct ___lcm_hash_ptr {
     }
 #define int8_t_encoded_size(p) (sizeof(int64_t) + sizeof(int8_t))
 
-static inline int __int8_t_encoded_array_size(const int8_t *p, int elements)
+static inline __lcm_buffer_size __int8_t_encoded_array_size(const int8_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(int8_t) * elements;
 }
 
-static inline int __int8_t_encode_array(void *_buf, int offset, int maxlen, const int8_t *p,
-                                        int elements)
+static inline __lcm_buffer_size __int8_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const int8_t *p,
+                                        __lcm_buffer_size elements)
 {
     if (maxlen < elements)
         return -1;
@@ -105,8 +117,8 @@ static inline int __int8_t_encode_array(void *_buf, int offset, int maxlen, cons
     return elements;
 }
 
-static inline int __int8_t_decode_array(const void *_buf, int offset, int maxlen, int8_t *p,
-                                        int elements)
+static inline __lcm_buffer_size __int8_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, int8_t *p,
+                                        __lcm_buffer_size elements)
 {
     if (maxlen < elements)
         return -1;
@@ -117,7 +129,7 @@ static inline int __int8_t_decode_array(const void *_buf, int offset, int maxlen
     return elements;
 }
 
-static inline int __int8_t_clone_array(const int8_t *p, int8_t *q, int elements)
+static inline __lcm_buffer_size __int8_t_clone_array(const int8_t *p, int8_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(int8_t));
     return 0;
@@ -132,14 +144,14 @@ static inline int __int8_t_clone_array(const int8_t *p, int8_t *q, int elements)
     }
 #define uint8_t_encoded_size(p) (sizeof(int64_t) + sizeof(uint8_t))
 
-static inline int __uint8_t_encoded_array_size(const uint8_t *p, int elements)
+static inline __lcm_buffer_size __uint8_t_encoded_array_size(const uint8_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(uint8_t) * elements;
 }
 
-static inline int __uint8_t_encode_array(void *_buf, int offset, int maxlen, const uint8_t *p,
-                                         int elements)
+static inline __lcm_buffer_size __uint8_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const uint8_t *p,
+                                         __lcm_buffer_size elements)
 {
     if (maxlen < elements)
         return -1;
@@ -150,8 +162,8 @@ static inline int __uint8_t_encode_array(void *_buf, int offset, int maxlen, con
     return elements;
 }
 
-static inline int __uint8_t_decode_array(const void *_buf, int offset, int maxlen, uint8_t *p,
-                                         int elements)
+static inline __lcm_buffer_size __uint8_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, uint8_t *p,
+                                         __lcm_buffer_size elements)
 {
     if (maxlen < elements)
         return -1;
@@ -162,7 +174,7 @@ static inline int __uint8_t_decode_array(const void *_buf, int offset, int maxle
     return elements;
 }
 
-static inline int __uint8_t_clone_array(const uint8_t *p, uint8_t *q, int elements)
+static inline __lcm_buffer_size __uint8_t_clone_array(const uint8_t *p, uint8_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(uint8_t));
     return 0;
@@ -177,19 +189,19 @@ static inline int __uint8_t_clone_array(const uint8_t *p, uint8_t *q, int elemen
     }
 #define int16_t_encoded_size(p) (sizeof(int64_t) + sizeof(int16_t))
 
-static inline int __int16_t_encoded_array_size(const int16_t *p, int elements)
+static inline __lcm_buffer_size __int16_t_encoded_array_size(const int16_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(int16_t) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __int16_t_encode_array(void *_buf, int offset, int maxlen, const int16_t *p,
-                                         int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __int16_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const int16_t *p,
+                                         __lcm_buffer_size elements)
 {
-    int total_size = sizeof(int16_t) * elements;
+    __lcm_buffer_size total_size = sizeof(int16_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -214,13 +226,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __int16_t_encode_array(void *_buf, int offse
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __int16_t_decode_array(const void *_buf, int offset, int maxlen, int16_t *p,
-                                         int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __int16_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, int16_t *p,
+                                         __lcm_buffer_size elements)
 {
-    int total_size = sizeof(int16_t) * elements;
+    __lcm_buffer_size total_size = sizeof(int16_t) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -241,7 +253,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __int16_t_decode_array(const void *_buf, int
     return total_size;
 }
 
-static inline int __int16_t_clone_array(const int16_t *p, int16_t *q, int elements)
+static inline __lcm_buffer_size __int16_t_clone_array(const int16_t *p, int16_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(int16_t));
     return 0;
@@ -256,19 +268,19 @@ static inline int __int16_t_clone_array(const int16_t *p, int16_t *q, int elemen
     }
 #define uint16_t_encoded_size(p) (sizeof(int64_t) + sizeof(uint16_t))
 
-static inline int __uint16_t_encoded_array_size(const uint16_t *p, int elements)
+static inline __lcm_buffer_size __uint16_t_encoded_array_size(const uint16_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(uint16_t) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __uint16_t_encode_array(void *_buf, int offset, int maxlen, const uint16_t *p,
-                                          int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __uint16_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const uint16_t *p,
+                                          __lcm_buffer_size elements)
 {
-    int total_size = sizeof(uint16_t) * elements;
+    __lcm_buffer_size total_size = sizeof(uint16_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -293,13 +305,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __uint16_t_encode_array(void *_buf, int offs
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __uint16_t_decode_array(const void *_buf, int offset, int maxlen, uint16_t *p,
-                                          int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __uint16_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, uint16_t *p,
+                                          __lcm_buffer_size elements)
 {
-    int total_size = sizeof(uint16_t) * elements;
+    __lcm_buffer_size total_size = sizeof(uint16_t) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -320,7 +332,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __uint16_t_decode_array(const void *_buf, in
     return total_size;
 }
 
-static inline int __uint16_t_clone_array(const uint16_t *p, uint16_t *q, int elements)
+static inline __lcm_buffer_size __uint16_t_clone_array(const uint16_t *p, uint16_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(uint16_t));
     return 0;
@@ -335,19 +347,19 @@ static inline int __uint16_t_clone_array(const uint16_t *p, uint16_t *q, int ele
     }
 #define int32_t_encoded_size(p) (sizeof(int64_t) + sizeof(int32_t))
 
-static inline int __int32_t_encoded_array_size(const int32_t *p, int elements)
+static inline __lcm_buffer_size __int32_t_encoded_array_size(const int32_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(int32_t) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __int32_t_encode_array(void *_buf, int offset, int maxlen, const int32_t *p,
-                                         int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __int32_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const int32_t *p,
+                                         __lcm_buffer_size elements)
 {
-    int total_size = sizeof(int32_t) * elements;
+    __lcm_buffer_size total_size = sizeof(int32_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -378,13 +390,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __int32_t_encode_array(void *_buf, int offse
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __int32_t_decode_array(const void *_buf, int offset, int maxlen, int32_t *p,
-                                         int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __int32_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, int32_t *p,
+                                         __lcm_buffer_size elements)
 {
-    int total_size = sizeof(int32_t) * elements;
+    __lcm_buffer_size total_size = sizeof(int32_t) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -413,7 +425,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __int32_t_decode_array(const void *_buf, int
     return total_size;
 }
 
-static inline int __int32_t_clone_array(const int32_t *p, int32_t *q, int elements)
+static inline __lcm_buffer_size __int32_t_clone_array(const int32_t *p, int32_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(int32_t));
     return 0;
@@ -428,19 +440,19 @@ static inline int __int32_t_clone_array(const int32_t *p, int32_t *q, int elemen
     }
 #define uint32_t_encoded_size(p) (sizeof(int64_t) + sizeof(uint32_t))
 
-static inline int __uint32_t_encoded_array_size(const uint32_t *p, int elements)
+static inline __lcm_buffer_size __uint32_t_encoded_array_size(const uint32_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(uint32_t) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __uint32_t_encode_array(void *_buf, int offset, int maxlen, const uint32_t *p,
-                                          int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __uint32_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const uint32_t *p,
+                                          __lcm_buffer_size elements)
 {
-    int total_size = sizeof(uint32_t) * elements;
+    __lcm_buffer_size total_size = sizeof(uint32_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -471,13 +483,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __uint32_t_encode_array(void *_buf, int offs
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __uint32_t_decode_array(const void *_buf, int offset, int maxlen, uint32_t *p,
-                                          int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __uint32_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, uint32_t *p,
+                                          __lcm_buffer_size elements)
 {
-    int total_size = sizeof(uint32_t) * elements;
+    __lcm_buffer_size total_size = sizeof(uint32_t) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -506,7 +518,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __uint32_t_decode_array(const void *_buf, in
     return total_size;
 }
 
-static inline int __uint32_t_clone_array(const uint32_t *p, uint32_t *q, int elements)
+static inline __lcm_buffer_size __uint32_t_clone_array(const uint32_t *p, uint32_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(uint32_t));
     return 0;
@@ -521,19 +533,19 @@ static inline int __uint32_t_clone_array(const uint32_t *p, uint32_t *q, int ele
     }
 #define int64_t_encoded_size(p) (sizeof(int64_t) + sizeof(int64_t))
 
-static inline int __int64_t_encoded_array_size(const int64_t *p, int elements)
+static inline __lcm_buffer_size __int64_t_encoded_array_size(const int64_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(int64_t) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __int64_t_encode_array(void *_buf, int offset, int maxlen, const int64_t *p,
-                                         int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __int64_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const int64_t *p,
+                                         __lcm_buffer_size elements)
 {
-    int total_size = sizeof(int64_t) * elements;
+    __lcm_buffer_size total_size = sizeof(int64_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -577,13 +589,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __int64_t_encode_array(void *_buf, int offse
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __int64_t_decode_array(const void *_buf, int offset, int maxlen, int64_t *p,
-                                         int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __int64_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, int64_t *p,
+                                         __lcm_buffer_size elements)
 {
-    int total_size = sizeof(int64_t) * elements;
+    __lcm_buffer_size total_size = sizeof(int64_t) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -620,7 +632,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __int64_t_decode_array(const void *_buf, int
     return total_size;
 }
 
-static inline int __int64_t_clone_array(const int64_t *p, int64_t *q, int elements)
+static inline __lcm_buffer_size __int64_t_clone_array(const int64_t *p, int64_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(int64_t));
     return 0;
@@ -635,19 +647,19 @@ static inline int __int64_t_clone_array(const int64_t *p, int64_t *q, int elemen
     }
 #define uint64_t_encoded_size(p) (sizeof(int64_t) + sizeof(uint64_t))
 
-static inline int __uint64_t_encoded_array_size(const uint64_t *p, int elements)
+static inline __lcm_buffer_size __uint64_t_encoded_array_size(const uint64_t *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(uint64_t) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __uint64_t_encode_array(void *_buf, int offset, int maxlen, const uint64_t *p,
-                                          int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __uint64_t_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const uint64_t *p,
+                                          __lcm_buffer_size elements)
 {
-    int total_size = sizeof(uint64_t) * elements;
+    __lcm_buffer_size total_size = sizeof(uint64_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -687,13 +699,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __uint64_t_encode_array(void *_buf, int offs
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __uint64_t_decode_array(const void *_buf, int offset, int maxlen, uint64_t *p,
-                                          int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __uint64_t_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, uint64_t *p,
+                                          __lcm_buffer_size elements)
 {
-    int total_size = sizeof(uint64_t) * elements;
+    __lcm_buffer_size total_size = sizeof(uint64_t) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -730,7 +742,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __uint64_t_decode_array(const void *_buf, in
     return total_size;
 }
 
-static inline int __uint64_t_clone_array(const uint64_t *p, uint64_t *q, int elements)
+static inline __lcm_buffer_size __uint64_t_clone_array(const uint64_t *p, uint64_t *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(uint64_t));
     return 0;
@@ -745,19 +757,19 @@ static inline int __uint64_t_clone_array(const uint64_t *p, uint64_t *q, int ele
     }
 #define float_encoded_size(p) (sizeof(int64_t) + sizeof(float))
 
-static inline int __float_encoded_array_size(const float *p, int elements)
+static inline __lcm_buffer_size __float_encoded_array_size(const float *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(float) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __float_encode_array(void *_buf, int offset, int maxlen, const float *p,
-                                       int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __float_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const float *p,
+                                       __lcm_buffer_size elements)
 {
-    int total_size = sizeof(float) * elements;
+    __lcm_buffer_size total_size = sizeof(float) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -789,13 +801,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __float_encode_array(void *_buf, int offset,
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __float_decode_array(const void *_buf, int offset, int maxlen, float *p,
-                                       int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __float_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, float *p,
+                                       __lcm_buffer_size elements)
 {
-    int total_size = sizeof(float) * elements;
+    __lcm_buffer_size total_size = sizeof(float) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -825,7 +837,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __float_decode_array(const void *_buf, int o
     return total_size;
 }
 
-static inline int __float_clone_array(const float *p, float *q, int elements)
+static inline __lcm_buffer_size __float_clone_array(const float *p, float *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(float));
     return 0;
@@ -840,19 +852,19 @@ static inline int __float_clone_array(const float *p, float *q, int elements)
     }
 #define double_encoded_size(p) (sizeof(int64_t) + sizeof(double))
 
-static inline int __double_encoded_array_size(const double *p, int elements)
+static inline __lcm_buffer_size __double_encoded_array_size(const double *p, __lcm_buffer_size elements)
 {
     (void) p;
     return sizeof(double) * elements;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __double_encode_array(void *_buf, int offset, int maxlen, const double *p,
-                                        int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __double_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const double *p,
+                                        __lcm_buffer_size elements)
 {
-    int total_size = sizeof(double) * elements;
+    __lcm_buffer_size total_size = sizeof(double) * elements;
     uint8_t *buf = (uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -865,7 +877,6 @@ static SKYDIO_LCM_INLINE_PREFIX int __double_encode_array(void *_buf, int offset
     // TODO(abe): WTF are we doing this instead of shifting like we do for the rest of the types?
     // Justin's original commit messages and gerrit review don't shed any light, but think it
     // *might* have been performance related?
-    const uint64_t *unsigned_p = (uint64_t *) p;
     for (element = 0; element < elements; element++) {
 #if defined(SKYDIO_DISABLE_LCM_IMPROVED_ENDIAN_HINT)
         const uint8_t *bytes = (const uint8_t *) (p + element);
@@ -897,13 +908,13 @@ static SKYDIO_LCM_INLINE_PREFIX int __double_encode_array(void *_buf, int offset
     return total_size;
 }
 
-static SKYDIO_LCM_INLINE_PREFIX int __double_decode_array(const void *_buf, int offset, int maxlen, double *p,
-                                        int elements)
+static SKYDIO_LCM_INLINE_PREFIX __lcm_buffer_size __double_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, double *p,
+                                        __lcm_buffer_size elements)
 {
-    int total_size = sizeof(double) * elements;
+    __lcm_buffer_size total_size = sizeof(double) * elements;
     const uint8_t *buf = (const uint8_t *) _buf;
-    int pos = offset;
-    int element;
+    __lcm_buffer_size pos = offset;
+    __lcm_buffer_size element;
 
     if (maxlen < total_size)
         return -1;
@@ -941,7 +952,7 @@ static SKYDIO_LCM_INLINE_PREFIX int __double_decode_array(const void *_buf, int 
     return total_size;
 }
 
-static inline int __double_clone_array(const double *p, double *q, int elements)
+static inline __lcm_buffer_size __double_clone_array(const double *p, double *q, __lcm_buffer_size elements)
 {
     memcpy(q, p, elements * sizeof(double));
     return 0;
@@ -952,34 +963,34 @@ static inline int __double_clone_array(const double *p, double *q, int elements)
  */
 #define __string_hash_recursive(p) 0
 
-static inline int __string_decode_array_cleanup(char **s, int elements)
+static inline __lcm_buffer_size __string_decode_array_cleanup(char **s, __lcm_buffer_size elements)
 {
-    int element;
+    __lcm_buffer_size element;
     for (element = 0; element < elements; element++)
         free(s[element]);
     return 0;
 }
 
-static inline int __string_encoded_array_size(char *const *s, int elements)
+static inline __lcm_buffer_size __string_encoded_array_size(char *const *s, __lcm_buffer_size elements)
 {
-    int size = 0;
-    int element;
+    __lcm_buffer_size size = 0;
+    __lcm_buffer_size element;
     for (element = 0; element < elements; element++)
         size += 4 + strlen(s[element]) + 1;
 
     return size;
 }
 
-static inline int __string_encoded_size(char *const *s)
+static inline __lcm_buffer_size __string_encoded_size(char *const *s)
 {
     return sizeof(int64_t) + __string_encoded_array_size(s, 1);
 }
 
-static inline int __string_encode_array(void *_buf, int offset, int maxlen, char *const *p,
-                                        int elements)
+static inline __lcm_buffer_size __string_encode_array(void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, char *const *p,
+                                        __lcm_buffer_size elements)
 {
-    int pos = 0, thislen;
-    int element;
+    __lcm_buffer_size pos = 0, thislen;
+    __lcm_buffer_size element;
 
     for (element = 0; element < elements; element++) {
         int32_t length = strlen(p[element]) + 1;  // length includes \0
@@ -1001,11 +1012,11 @@ static inline int __string_encode_array(void *_buf, int offset, int maxlen, char
     return pos;
 }
 
-static inline int __string_decode_array(const void *_buf, int offset, int maxlen, char **p,
-                                        int elements)
+static inline __lcm_buffer_size __string_decode_array(const void *_buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, char **p,
+                                        __lcm_buffer_size elements)
 {
-    int pos = 0, thislen;
-    int element;
+    __lcm_buffer_size pos = 0, thislen;
+    __lcm_buffer_size element;
 
     for (element = 0; element < elements; element++) {
         int32_t length;
@@ -1029,9 +1040,9 @@ static inline int __string_decode_array(const void *_buf, int offset, int maxlen
     return pos;
 }
 
-static inline int __string_clone_array(char *const *p, char **q, int elements)
+static inline __lcm_buffer_size __string_clone_array(char *const *p, char **q, __lcm_buffer_size elements)
 {
-    int element;
+    __lcm_buffer_size element;
     for (element = 0; element < elements; element++) {
         // because strdup is not C99
         size_t len = strlen(p[element]) + 1;
@@ -1110,13 +1121,13 @@ struct _lcm_field_t {
     void *data;
 };
 
-typedef int (*lcm_encode_t)(void *buf, int offset, int maxlen, const void *p);
-typedef int (*lcm_decode_t)(const void *buf, int offset, int maxlen, void *p);
-typedef int (*lcm_decode_cleanup_t)(void *p);
-typedef int (*lcm_encoded_size_t)(const void *p);
-typedef int (*lcm_struct_size_t)(void);
+typedef __lcm_buffer_size (*lcm_encode_t)(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, const void *p);
+typedef __lcm_buffer_size (*lcm_decode_t)(const void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen, void *p);
+typedef __lcm_buffer_size (*lcm_decode_cleanup_t)(void *p);
+typedef __lcm_buffer_size (*lcm_encoded_size_t)(const void *p);
+typedef __lcm_buffer_size (*lcm_struct_size_t)(void);
 typedef int (*lcm_num_fields_t)(void);
-typedef int (*lcm_get_field_t)(const void *p, int i, lcm_field_t *f);
+typedef int (*lcm_get_field_t)(const void *p, __lcm_buffer_size i, lcm_field_t *f);
 typedef int64_t (*lcm_get_hash_t)(void);
 
 /**

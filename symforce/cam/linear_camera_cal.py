@@ -3,11 +3,11 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from .camera_cal import CameraCal
-
-from symforce import geo
 import symforce.internal.symbolic as sf
+from symforce import geo
 from symforce import typing as T
+
+from .camera_cal import CameraCal
 
 
 class LinearCameraCal(CameraCal):
@@ -23,6 +23,8 @@ class LinearCameraCal(CameraCal):
         """
         Linearly project the 3D point by dividing by the depth.
 
+        Points behind the camera (z <= 0 in the camera frame) are marked as invalid.
+
         Args:
             point: 3D point
 
@@ -37,9 +39,9 @@ class LinearCameraCal(CameraCal):
         if epsilon == 0:
             z = point[2]
         else:
-            z = sf.Max(sf.Abs(point[2]), epsilon)
+            z = sf.Max(point[2], epsilon)
 
-        return geo.Vector2(x / z, y / z), sf.Max(sf.sign(point[2]), 0)
+        return geo.Vector2(x / z, y / z), sf.is_positive(point[2])
 
     def pixel_from_unit_depth(self, unit_depth_coords: geo.V2) -> geo.V2:
         """

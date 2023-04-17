@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from symforce.ops.interfaces import Group
 from symforce import typing as T
+from symforce.ops.interfaces import Group
 
 from .quaternion import Quaternion
 

@@ -17,123 +17,106 @@
 namespace sym {
 
 template <typename Scalar, typename Matrix>
-Factor<Scalar> FactorFromJacobianFunc(
-    const typename Factor<Scalar>::template JacobianFunc<Matrix>& jacobian_func,
-    const std::vector<Key>& keys_to_func, const std::vector<Key>& keys_to_optimize) {
-  return Factor<Scalar>(
-      [jacobian_func](const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
-                      VectorX<Scalar>* residual, Matrix* jacobian, Matrix* hessian,
-                      VectorX<Scalar>* rhs) {
-        jacobian_func(values, keys_to_func, residual, jacobian);
+typename Factor<Scalar>::template HessianFunc<Matrix> HessianFuncFromJacobianFunc(
+    const typename Factor<Scalar>::template JacobianFunc<Matrix>& jacobian_func) {
+  return [jacobian_func](const Values<Scalar>& values,
+                         const std::vector<index_entry_t>& keys_to_func, VectorX<Scalar>* residual,
+                         Matrix* jacobian, Matrix* hessian, VectorX<Scalar>* rhs) {
+    jacobian_func(values, keys_to_func, residual, jacobian);
 
-        SYM_ASSERT(residual != nullptr);
-        if (jacobian == nullptr) {
-          SYM_ASSERT(hessian == nullptr);
-          SYM_ASSERT(rhs == nullptr);
-        } else {
-          SYM_ASSERT(residual->rows() == jacobian->rows());
-          internal::CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
-        }
-      },
-      keys_to_func, keys_to_optimize);
+    SYM_ASSERT(residual != nullptr);
+    if (jacobian == nullptr) {
+      SYM_ASSERT(hessian == nullptr);
+      SYM_ASSERT(rhs == nullptr);
+    } else {
+      SYM_ASSERT(residual->rows() == jacobian->rows());
+      internal::CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
+    }
+  };
 }
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const DenseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys_to_func,
-                                        const std::vector<Key>& keys_to_optimize) {
-  return FactorFromJacobianFunc<Scalar>(jacobian_func, keys_to_func, keys_to_optimize);
-}
+Factor<Scalar>::Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize)
+    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize) {}
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const DenseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys) {
-  return Jacobian(jacobian_func, keys, keys);
-}
+Factor<Scalar>::Factor(const SparseJacobianFunc& jacobian_func,
+                       const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize)
+    : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize) {}
 
 template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const SparseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys_to_func,
-                                        const std::vector<Key>& keys_to_optimize) {
-  return FactorFromJacobianFunc<Scalar>(jacobian_func, keys_to_func, keys_to_optimize);
-}
+void Factor<Scalar>::Linearize(
+    const Values<Scalar>& values, VectorX<Scalar>* residual,
+    const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
+  const auto& index_entry_cache =
+      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
-template <typename Scalar>
-Factor<Scalar> Factor<Scalar>::Jacobian(const SparseJacobianFunc& jacobian_func,
-                                        const std::vector<Key>& keys) {
-  return Jacobian(jacobian_func, keys, keys);
-}
-
-template <typename Scalar>
-void Factor<Scalar>::Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual) const {
-  EnsureIndexEntriesExist(values);
   if (IsSparse()) {
-    sparse_hessian_func_(values, index_entries_, residual, nullptr, nullptr, nullptr);
+    sparse_hessian_func_(values, index_entry_cache, residual, nullptr, nullptr, nullptr);
   } else {
-    hessian_func_(values, index_entries_, residual, nullptr, nullptr, nullptr);
+    hessian_func_(values, index_entry_cache, residual, nullptr, nullptr, nullptr);
   }
 }
 
 template <typename Scalar>
-void Factor<Scalar>::Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
-                               MatrixX<Scalar>* jacobian) const {
+void Factor<Scalar>::Linearize(
+    const Values<Scalar>& values, VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
+    const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(!IsSparse());
-  EnsureIndexEntriesExist(values);
-  hessian_func_(values, index_entries_, residual, jacobian, nullptr, nullptr);
+  const auto& index_entry_cache =
+      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
+
+  hessian_func_(values, index_entry_cache, residual, jacobian, nullptr, nullptr);
 }
 
 template <typename Scalar>
-void Factor<Scalar>::Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
-                               Eigen::SparseMatrix<Scalar>* jacobian) const {
+void Factor<Scalar>::Linearize(
+    const Values<Scalar>& values, VectorX<Scalar>* residual, Eigen::SparseMatrix<Scalar>* jacobian,
+    const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(IsSparse());
-  EnsureIndexEntriesExist(values);
-  sparse_hessian_func_(values, index_entries_, residual, jacobian, nullptr, nullptr);
+  const auto& index_entry_cache =
+      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
+
+  sparse_hessian_func_(values, index_entry_cache, residual, jacobian, nullptr, nullptr);
 }
 
 template <typename Scalar>
-void Factor<Scalar>::Linearize(const Values<Scalar>& values,
-                               LinearizedDenseFactor* linearized_factor) const {
-  assert(linearized_factor != nullptr);
+void Factor<Scalar>::Linearize(
+    const Values<Scalar>& values, LinearizedDenseFactor& linearized_factor,
+    const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(!IsSparse());
 
-  FillLinearizedFactorIndex(values, *linearized_factor);
+  const auto& index_entry_cache =
+      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
   // TODO(hayk): Maybe the function should just accept a LinearizedDenseFactor*
-  EnsureIndexEntriesExist(values);
-  hessian_func_(values, index_entries_, &linearized_factor->residual, &linearized_factor->jacobian,
-                &linearized_factor->hessian, &linearized_factor->rhs);
-
-  // Sanity check dimensions
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->jacobian.cols());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->hessian.rows());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->rhs.rows());
+  hessian_func_(values, index_entry_cache, &linearized_factor.residual, &linearized_factor.jacobian,
+                &linearized_factor.hessian, &linearized_factor.rhs);
 }
 
 template <typename Scalar>
-void Factor<Scalar>::Linearize(const Values<Scalar>& values,
-                               LinearizedSparseFactor* linearized_factor) const {
-  assert(linearized_factor != nullptr);
+void Factor<Scalar>::Linearize(
+    const Values<Scalar>& values, LinearizedSparseFactor& linearized_factor,
+    const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(IsSparse());
 
-  FillLinearizedFactorIndex(values, *linearized_factor);
+  const auto& index_entry_cache =
+      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
   // TODO(hayk): Maybe the function should just accept a LinearizedSparseFactor*
-  EnsureIndexEntriesExist(values);
-  sparse_hessian_func_(values, index_entries_, &linearized_factor->residual,
-                       &linearized_factor->jacobian, &linearized_factor->hessian,
-                       &linearized_factor->rhs);
-
-  // Sanity check dimensions
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->jacobian.cols());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->hessian.rows());
-  SYM_ASSERT(linearized_factor->index.tangent_dim == linearized_factor->rhs.rows());
+  sparse_hessian_func_(values, index_entry_cache, &linearized_factor.residual,
+                       &linearized_factor.jacobian, &linearized_factor.hessian,
+                       &linearized_factor.rhs);
 }
 
 template <typename Scalar>
 typename Factor<Scalar>::LinearizedDenseFactor Factor<Scalar>::Linearize(
-    const Values<Scalar>& values) const {
+    const Values<Scalar>& values,
+    const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   LinearizedDenseFactor linearized_factor{};
-  Linearize(values, &linearized_factor);
+  Linearize(values, linearized_factor, maybe_index_entry_cache);
   return linearized_factor;
 }
 
@@ -145,35 +128,6 @@ const std::vector<Key>& Factor<Scalar>::OptimizedKeys() const {
 template <typename Scalar>
 const std::vector<Key>& Factor<Scalar>::AllKeys() const {
   return keys_;
-}
-
-template <typename ScalarType>
-void Factor<ScalarType>::EnsureIndexEntriesExist(const Values<Scalar>& values) const {
-  if (index_entries_.size() > 0) {
-    return;
-  }
-
-  index_entries_.reserve(keys_.size());
-  for (const auto& key : keys_) {
-    index_entries_.push_back(values.IndexEntryAt(key));
-  }
-}
-
-template <typename Scalar>
-template <typename LinearizedFactorT>
-void Factor<Scalar>::FillLinearizedFactorIndex(const Values<Scalar>& values,
-                                               LinearizedFactorT& linearized_factor) const {
-  if (linearized_factor.index.storage_dim == 0) {
-    // Set the types and everything from the index
-    linearized_factor.index = values.CreateIndex(keys_to_optimize_);
-
-    // But the offset we want is within the factor
-    int32_t offset = 0;
-    for (index_entry_t& entry : linearized_factor.index.entries) {
-      entry.offset = offset;
-      offset += entry.tangent_dim;
-    }
-  }
 }
 
 // ----------------------------------------------------------------------------
@@ -193,15 +147,9 @@ template std::ostream& operator<< <double>(std::ostream& os, const sym::Factor<d
 // TODO(hayk): Why is this needed instead of being able to template operator<<?
 template <typename LinearizedFactorT>
 std::ostream& PrintLinearizedFactor(std::ostream& os, const LinearizedFactorT& factor) {
-  std::vector<key_t> factor_keys;
-  std::transform(factor.index.entries.begin(), factor.index.entries.end(),
-                 std::back_inserter(factor_keys), [](const auto& entry) { return entry.key; });
-  fmt::print(os,
-             "<{}\n  keys: {{{}}}\n  storage_dim: {}\n  tangent_dim: {}\n  "
-             "residual: ({})\n  jacobian: ({})\n  error: "
-             "{}\n>\n",
-             factor.getTypeName(), factor_keys, factor.index.storage_dim, factor.index.tangent_dim,
-             factor.residual.transpose(), factor.jacobian, 0.5 * factor.residual.squaredNorm());
+  fmt::print(os, "<{}\n tangent_dim: {}\n residual: ({})\n  jacobian: ({})\n  error: {}\n>\n",
+             factor.getTypeName(), factor.jacobian.cols(), factor.residual.transpose(),
+             factor.jacobian, 0.5 * factor.residual.squaredNorm());
   return os;
 }
 

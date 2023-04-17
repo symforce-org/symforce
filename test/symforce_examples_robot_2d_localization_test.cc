@@ -5,7 +5,7 @@
 
 #include <symforce/examples/robot_2d_localization/run_localization.h>
 
-int main(int argc, char** argv) {
+int main() {
   // This SYM_ASSERTs on failure instead of CHECK
   robot_2d_localization::RunLocalization();
 }

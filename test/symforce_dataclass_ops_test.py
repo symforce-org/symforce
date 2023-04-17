@@ -3,13 +3,15 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
 import symforce.symbolic as sf
 from symforce import typing as T
-
+from symforce.ops import GroupOps
+from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
 from symforce.test_util import TestCase
-from symforce.ops import StorageOps, GroupOps, LieGroupOps
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
 
 
@@ -24,6 +26,7 @@ class TestDynamicSizeType:
     x: sf.Scalar
     subtype: TestSubType
     seq: T.Sequence[T.Sequence[TestSubType]]
+    tuple_seq: T.Tuple[sf.Pose3, sf.Pose3]
     optional: T.Optional[sf.Scalar] = None
 
 
@@ -33,6 +36,7 @@ class TestFixedSizeType:
     x: sf.Scalar
     subtype: TestSubType
     seq: T.Sequence[TestSubType] = field(metadata={"length": 2})
+    tuple_seq: T.Tuple[sf.Pose3, sf.Pose3]
 
 
 class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
@@ -50,6 +54,7 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
                 [TestSubType(rot=sf.Rot3.from_yaw_pitch_roll(0.1, 0.2, 0.3)) for _ in range(3)]
                 for _ in range(5)
             ],
+            tuple_seq=(sf.Pose3.identity(), sf.Pose3.identity()),
         )
         return element
 
@@ -60,14 +65,14 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             instance) on a dataclass with a sequence of known size.
         """
         with self.subTest("storage dim"):
-            self.assertEqual(StorageOps.storage_dim(TestFixedSizeType), 17)
+            self.assertEqual(StorageOps.storage_dim(TestFixedSizeType), 31)
 
         with self.subTest("symbolic"):
             instance = StorageOps.symbolic(TestFixedSizeType, "instance")
 
         with self.subTest("to_storage"):
             storage = StorageOps.to_storage(instance)
-            self.assertEqual(len(storage), 17)
+            self.assertEqual(len(storage), 31)
             for x in storage:
                 self.assertIsInstance(x, sf.Symbol)
                 self.assertTrue(x.name.startswith("instance"))
@@ -82,6 +87,9 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             instance.subtype.rot = instance.rot.inverse()
             instance.seq[0].rot = instance.rot * instance.rot
             instance.seq[1].rot = instance.rot * instance.rot
+            instance.tuple_seq = tuple(
+                sf.Pose3(R=instance.rot, t=sf.V3(i + 1, i + 2, i + 3)) for i in range(2)
+            )
 
             instancef = StorageOps.evalf(instance)
 
@@ -90,10 +98,10 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
                 self.assertIsInstance(xf, float)
 
         with self.subTest("identity"):
-            identity = GroupOps.identity(TestFixedSizeType)
+            GroupOps.identity(TestFixedSizeType)
 
         with self.subTest("tangent_dim"):
-            self.assertEqual(LieGroupOps.tangent_dim(TestFixedSizeType), 13)
+            self.assertEqual(LieGroupOps.tangent_dim(TestFixedSizeType), 25)
 
         with self.subTest("from_tangent"):
             tangent = LieGroupOps.to_tangent(instance)
@@ -107,9 +115,12 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
         """
         empty_instance = self.element()
 
-        expected_size = 1 + (
-            2 + len(empty_instance.seq) * len(empty_instance.seq[0])
-        ) * StorageOps.storage_dim(sf.Rot3)
+        expected_size = (
+            1
+            + (2 + len(empty_instance.seq) * len(empty_instance.seq[0]))
+            * StorageOps.storage_dim(sf.Rot3)
+            + 2 * StorageOps.storage_dim(sf.Pose3)
+        )
 
         with self.subTest("storage dim"):
             self.assertEqual(StorageOps.storage_dim(empty_instance), expected_size)
@@ -135,6 +146,9 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
             for i in range(5):
                 for j in range(3):
                     instance.seq[i][j].rot = instance.rot * instance.rot
+            instance.tuple_seq = tuple(
+                sf.Pose3(R=instance.rot, t=sf.V3(i + 1, i + 2, i + 3)) for i in range(2)
+            )
 
             instancef = StorageOps.evalf(instance)
 

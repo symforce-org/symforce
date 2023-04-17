@@ -8,13 +8,46 @@ Demonstrates solving a 2D localization problem with SymForce. The goal is for a 
 in a 2D plane to compute its trajectory given distance measurements from wheel odometry
 and relative bearing angle measurements to known landmarks in the environment.
 """
-# pylint: disable=ungrouped-imports
+
+# -----------------------------------------------------------------------------
+# Set the default epsilon to a symbol
+# -----------------------------------------------------------------------------
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
+# -----------------------------------------------------------------------------
+# Create initial Values
+# -----------------------------------------------------------------------------
+import numpy as np
+
+from symforce import typing as T
+from symforce.values import Values
+
+
+def build_initial_values() -> T.Tuple[Values, int, int]:
+    """
+    Creates a Values with numerical values for the constants in the problem, and initial guesses
+    for the optimized variables
+    """
+    num_poses = 3
+    num_landmarks = 3
+
+    initial_values = Values(
+        poses=[sf.Pose2.identity()] * num_poses,
+        landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
+        distances=[1.7, 1.4],
+        angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
+        epsilon=sf.numeric_epsilon,
+    )
+
+    return initial_values, num_poses, num_landmarks
+
 
 # -----------------------------------------------------------------------------
 # Define residual functions
 # -----------------------------------------------------------------------------
 import symforce.symbolic as sf
-from symforce import typing as T
 
 
 def bearing_residual(
@@ -64,22 +97,12 @@ def build_factors(num_poses: int, num_landmarks: int) -> T.Iterator[Factor]:
 # -----------------------------------------------------------------------------
 # Instantiate, optimize, and visualize
 # -----------------------------------------------------------------------------
-import numpy as np
 from symforce.opt.optimizer import Optimizer
-from symforce.values import Values
 
 
 def main() -> None:
     # Create a problem setup and initial guess
-    num_poses = 3
-    num_landmarks = 3
-    initial_values = Values(
-        poses=[sf.Pose2.identity()] * num_poses,
-        landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
-        distances=[1.7, 1.4],
-        angles=np.deg2rad([[55, 245, -35], [95, 220, -20], [125, 220, -20]]).tolist(),
-        epsilon=sf.numeric_epsilon,
-    )
+    initial_values, num_poses, num_landmarks = build_initial_values()
 
     # Create factors
     factors = build_factors(num_poses=num_poses, num_landmarks=num_landmarks)
@@ -99,7 +122,7 @@ def main() -> None:
     result = optimizer.optimize(initial_values)
 
     # Print some values
-    print(f"Num iterations: {len(result.iteration_stats) - 1}")
+    print(f"Num iterations: {len(result.iterations) - 1}")
     print(f"Final error: {result.error():.6f}")
 
     for i, pose in enumerate(result.optimized_values["poses"]):
@@ -114,12 +137,14 @@ def main() -> None:
     plot_solution(optimizer, result)
 
 
+import shutil
+from pathlib import Path
+
 # -----------------------------------------------------------------------------
 # (Optional) Generate C++ functions for residuals with on-manifold jacobians
 # -----------------------------------------------------------------------------
-from symforce.codegen import Codegen, CppConfig
-from pathlib import Path
-import shutil
+from symforce.codegen import Codegen
+from symforce.codegen import CppConfig
 
 
 def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = False) -> None:

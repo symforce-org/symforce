@@ -4,14 +4,17 @@
 # ----------------------------------------------------------------------------
 
 import inspect
-from symforce import geo
-from symforce.cam import LinearCameraCal
-from symforce.geo import Pose3, Vector3
+
+# Unused imports here for testing purposes
+import symforce.symbolic as sf
+from symforce import geo  # pylint: disable=unused-import
+from symforce import typing as T  # pylint: disable=unused-import
+from symforce.cam import LinearCameraCal  # pylint: disable=unused-import
+from symforce.geo import Pose3  # pylint: disable=unused-import
+from symforce.geo import Vector3  # pylint: disable=unused-import
 from symforce.test_util import TestCase
 from symforce.type_helpers import deduce_input_types
-from symforce import typing as T
-from symforce.typing import Scalar
-import symforce.symbolic as sf
+from symforce.typing import Scalar  # pylint: disable=unused-import
 
 
 class SymforceTypeHelpersTest(TestCase):

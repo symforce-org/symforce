@@ -4,17 +4,20 @@
 # ----------------------------------------------------------------------------
 
 import dataclasses
-import numpy as np
 import os
 from pathlib import Path
+
+import numpy as np
 import scipy.io
 
-from symforce import codegen
-from symforce import python_util
 import symforce.symbolic as sf
+from symforce import codegen
+from symforce import logger
+from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import template_util
-from symforce.test_util.random_expressions import unary_binary_expression_gen, op_probabilities
+from symforce.test_util.random_expressions import op_probabilities
+from symforce.test_util.random_expressions import unary_binary_expression_gen
 from symforce.values import Values
 
 # Parameters controlling the randomly generated expressions
@@ -114,7 +117,8 @@ def generate_matrix(
 
     # These files are large enough that autoformatting them is very slow, so just don't do it
     config = codegen.CppConfig(
-        cse_optimizations=[(cse_opts.sub_pre, cse_opts.sub_post)], autoformat=False
+        cse_optimizations=[(cse_opts.sub_pre, cse_opts.sub_post)],
+        render_template_config=codegen.RenderTemplateConfig(autoformat=False),
     )
     config_noinline = dataclasses.replace(config, force_no_inline=True)
 
@@ -188,7 +192,8 @@ def generate_matrix(
         _make_return_dynamic(data.generated_files[0], matrix.shape)
 
     template_util.render_template(
-        template_path=Path(__file__).parent / "matrix_multiplication_benchmark.cc.jinja",
+        template_dir=Path(__file__).parent,
+        template_path="matrix_multiplication_benchmark.cc.jinja",
         data=dict(
             matrix_name=matrix_name,
             matrix_name_camel=python_util.snakecase_to_camelcase(matrix_name),
@@ -199,8 +204,8 @@ def generate_matrix(
             n_symbols=N_SYMBOLS,
             cant_allocate_on_stack=cant_allocate_on_stack,
         ),
+        config=codegen.RenderTemplateConfig(),
         output_path=output_dir / f"matrix_multiplication_benchmark_{matrix_name}.cc",
-        template_dir=Path(__file__).parent,
     )
 
 
@@ -208,5 +213,5 @@ def generate(output_dir: Path) -> None:
     np.random.seed(42)
 
     for i, (matrix_name, _filename, matrix) in enumerate(get_matrices()):
-        print(f"Generating matrix {matrix_name}")
+        logger.debug(f"Generating matrix {matrix_name}")
         generate_matrix(output_dir, matrix_name, matrix, symforce_result_is_sparse=i > 2, i=i)

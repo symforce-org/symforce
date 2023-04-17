@@ -18,8 +18,8 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
     """
 
     @classmethod
-    def element(cls) -> sf.Pose2_SE2:
-        return sf.Pose2_SE2.from_tangent([5.3, 1.2, -0.2])
+    def element(cls) -> sf.unsupported.Pose2_SE2:
+        return sf.unsupported.Pose2_SE2.from_tangent([5.3, 1.2, -0.2])
 
     def test_lie_exponential(self) -> None:
         """
@@ -41,13 +41,13 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = sf.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = sf.Pose2_SE2.from_tangent(pertubation, epsilon=self.EPSILON)
+        expmap = sf.unsupported.Pose2_SE2.from_tangent(pertubation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!
         self.assertStorageNear(hat_exp, matrix_expected, places=5)
 
-    def pose2_operations(self, a: sf.Pose2_SE2, b: sf.Pose2_SE2) -> None:
+    def pose2_operations(self, a: sf.unsupported.Pose2_SE2, b: sf.unsupported.Pose2_SE2) -> None:
         """
         Tests Pose2_SE2 operations
         """
@@ -61,11 +61,11 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
         """
         R_a = sf.Rot2.random()
         t_a = sf.V2(np.random.rand(2))
-        a = sf.Pose2_SE2(R_a, t_a)
+        a = sf.unsupported.Pose2_SE2(R_a, t_a)
 
         R_b = sf.Rot2.random()
         t_b = sf.V2(np.random.rand(2))
-        b = sf.Pose2_SE2(R_b, t_b)
+        b = sf.unsupported.Pose2_SE2(R_b, t_b)
 
         self.pose2_operations(a, b)
 
@@ -74,8 +74,8 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
         Tests:
             Pose2_SE2.__mul__
         """
-        a = sf.Pose2_SE2.symbolic("a")
-        b = sf.Pose2_SE2.symbolic("b")
+        a = sf.unsupported.Pose2_SE2.symbolic("a")
+        b = sf.unsupported.Pose2_SE2.symbolic("b")
         self.pose2_operations(a, b)
 
 

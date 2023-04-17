@@ -3,11 +3,12 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import numpy as np
 import logging
 
-from symforce import logger
+import numpy as np
+
 import symforce.symbolic as sf
+from symforce import logger
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin

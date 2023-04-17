@@ -3,11 +3,11 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include <symforce/opt/gnc_optimizer.h>
 
-#include "catch.hpp"
 #include "symforce_function_codegen_test_data/symengine/gnc_test_data/cpp/symforce/gnc_factors/barron_factor.h"
 
 sym::optimizer_params_t DefaultLmParams() {
@@ -67,20 +67,20 @@ TEST_CASE("Test GNC", "[gnc]") {
   sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(
       DefaultLmParams(), DefaultGncParams(), 'u', factors, kEpsilon, "sym::Optimize",
       /* keys */ std::vector<sym::Key>{}, /* debug_stats */ false,
-      /* check_derivatives */ true);
+      /* check_derivatives */ true, /* include_jacobians */ true);
 
-  spdlog::info("Initial x: {}", initial_values.At<sym::Vector5d>('x').transpose());
+  spdlog::debug("Initial x: {}", initial_values.At<sym::Vector5d>('x').transpose());
 
   sym::Valuesd gnc_optimized_values = initial_values;
-  const auto gnc_stats = gnc_optimizer.Optimize(&gnc_optimized_values);
-  spdlog::info("Final x: {}", gnc_optimized_values.At<sym::Vector5d>('x').transpose());
+  const auto gnc_stats = gnc_optimizer.Optimize(gnc_optimized_values);
+  spdlog::debug("Final x: {}", gnc_optimized_values.At<sym::Vector5d>('x').transpose());
 
   sym::Valuesd regular_optimized_values = initial_values;
   regular_optimized_values.Set('u', 0.0);
-  sym::Optimize(DefaultLmParams(), factors, &regular_optimized_values, kEpsilon);
+  sym::Optimize(DefaultLmParams(), factors, regular_optimized_values, kEpsilon);
 
-  spdlog::info("Final x without GNC: {}",
-               regular_optimized_values.At<sym::Vector5d>('x').transpose());
+  spdlog::debug("Final x without GNC: {}",
+                regular_optimized_values.At<sym::Vector5d>('x').transpose());
 
   CHECK(gnc_stats.iterations.size() == 9);
   const sym::Vector5d gnc_optimized_x = gnc_optimized_values.At<sym::Vector5d>('x');

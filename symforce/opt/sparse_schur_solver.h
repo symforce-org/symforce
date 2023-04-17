@@ -5,6 +5,9 @@
 
 #pragma once
 
+// Required by MetisSupport
+#include <iostream>
+
 #include <Eigen/Dense>
 #include <Eigen/MetisSupport>
 #include <Eigen/Sparse>
@@ -96,7 +99,7 @@ class SparseSchurSolver {
   //     x_and_rhs: This matrix stores both the input and output of the function; when the function
   //                is called, this should be set to rhs; when the function returns, the solution x
   //                is stored here
-  void SInvInPlace(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>* const x_and_rhs) const;
+  void SInvInPlace(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& x_and_rhs) const;
 
  private:
   bool is_initialized_;
@@ -132,3 +135,7 @@ class SparseSchurSolver {
 }  // namespace sym
 
 #include "./sparse_schur_solver.tcc"
+
+// Explicit instantiation declaration
+extern template class sym::SparseSchurSolver<Eigen::SparseMatrix<double>>;
+extern template class sym::SparseSchurSolver<Eigen::SparseMatrix<float>>;

@@ -15,13 +15,12 @@ enum option_t {
 
 {# -- Generate true lcm decoder -- #}
 export class {{enum_type.name}} extends LcmEnumMsg {
-  ["constructor"]: typeof {{enum_type.name}}; // allow access to constructor
-  public static option_t = option_t;
+  public static override option_t = option_t;
   private static _hash = Long.fromString("{{enum_type.hash.int_value}}", true);
   private static _packed_fingerprint?: Long;
 
   /** @internal */
-  public static _get_packed_fingerprint(): Long {
+  public static override _get_packed_fingerprint(): Long {
     if ({{enum_type.name}}._packed_fingerprint === undefined) {
       {{enum_type.name}}._packed_fingerprint = {{enum_type.name}}._get_hash_recursive([]);
     }
@@ -29,7 +28,7 @@ export class {{enum_type.name}} extends LcmEnumMsg {
   }
 
   /** @internal */
-  public static _get_hash_recursive(parents: any[]): Long {
+  public static override _get_hash_recursive(parents: any[]): Long {
     if (parents.indexOf({{enum_type.name}}) > -1) {
       return Long.fromNumber(0, true);
     }
@@ -38,7 +37,7 @@ export class {{enum_type.name}} extends LcmEnumMsg {
     return tmp_hash;
   }
 
-  public decode(array: Uint8Array): {{enum_type.name}} {
+  public override decode(array: Uint8Array): {{enum_type.name}} {
     const decoder = new Decoder(
       new DataView(array.buffer, array.byteOffset, array.byteLength)
     );
@@ -53,7 +52,7 @@ export class {{enum_type.name}} extends LcmEnumMsg {
 
   {# -- TS enums can't use arbitrary types, warn about int64_t -- #}
   // Recursively decode a message with the supplied decoder.
-  public decode_one(decoder: Decoder): {{enum_type.name}} {
+  public override decode_one(decoder: Decoder): {{enum_type.name}} {
 {% if enum_type.storage_type.name == "int64_t" or enum_type.storage_type.name == "uint64_t" %}
     console.warn('64-bit enums are not guaranteed to work');
 {% endif %}
@@ -66,14 +65,14 @@ export class {{enum_type.name}} extends LcmEnumMsg {
     return {{enum_type.storage_type.storage_size}};
   }
 
-  public encode(): ArrayBuffer {
+  public override encode(): ArrayBuffer {
     const total_size = this._get_encoded_size();
     const encoder = new Encoder(total_size);
     this.encode_one(encoder);
     return encoder.view.buffer;
   }
 
-  public encode_one(encoder: Encoder): void {
+  public override encode_one(encoder: Encoder): void {
     encoder.encode_{{enum_type.storage_type.name}}(this.value);
   }
 
@@ -84,9 +83,14 @@ export class {{enum_type.name}} extends LcmEnumMsg {
   }
 {% endfor %}
 
-  public value: option_t;
+  public override value: option_t;
 
-  public get name(): string {
-    return option_t[this.value];
+  constructor(value?: option_t) {
+    super();
+    this.value = value ?? option_t.{{enum_type.cases[0].name}};
+  }
+
+  public override get name(): string {
+    return option_t[this.value]!;
   }
 }

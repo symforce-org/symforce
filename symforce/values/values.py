@@ -9,13 +9,15 @@ import collections
 import contextlib
 import copy
 import dataclasses
+
 import numpy as np
 
-from symforce import geo
 import symforce.internal.symbolic as sf
-from symforce import typing as T
+from symforce import geo
 from symforce import ops
 from symforce import python_util
+from symforce import typing as T
+from symforce import typing_util
 
 from .attr_accessor import AttrAccessor
 from .index_entry import IndexEntry
@@ -168,7 +170,7 @@ class Values(T.MutableMapping[str, T.Any]):
                 assert all(
                     type(v) == type(value[0])  # pylint: disable=unidiomatic-typecheck
                     for v in value
-                )
+                ) or all(typing_util.scalar_like(v) for v in value)
                 name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
                 entry = entry_helper(item_index=item_index)
@@ -257,7 +259,7 @@ class Values(T.MutableMapping[str, T.Any]):
         flat_scalar_keys: T.List[str] = []
         for key, value in self.items_recursive():
             storage_dim = ops.StorageOps.storage_dim(value)
-            if python_util.scalar_like(value):
+            if typing_util.scalar_like(value):
                 flat_scalar_keys.append(key)
             else:
                 flat_scalar_keys.extend(f"{key}[{i}]" for i in range(storage_dim))
@@ -852,6 +854,30 @@ class Values(T.MutableMapping[str, T.Any]):
             return value
 
         return self.apply_to_leaves(_leaf_to_numerical)
+
+    def to_dict(self) -> T.Dict[str, T.Any]:
+        """
+        Converts this Values object and any Values or Dataclass objects contained within it to dict
+        objects. This is different from self.dict because self.dict can have leaves which are
+        Values objects, whereas the dict returned by this function recursively converts all Values
+        and Dataclass objects into dicts.
+        """
+
+        def _to_dict_recursive(value: T.Any) -> T.Any:
+            if isinstance(value, Values):
+                return {k: _to_dict_recursive(v) for k, v in value.items()}
+            elif isinstance(value, (list, tuple)):
+                # pylint: disable=too-many-function-args
+                return type(value)(_to_dict_recursive(v) for v in value)
+            elif isinstance(value, T.Dataclass):
+                return {
+                    field.name: _to_dict_recursive(getattr(value, field.name))
+                    for field in dataclasses.fields(value)
+                }
+            else:
+                return value
+
+        return _to_dict_recursive(self)
 
     def __getstate__(self) -> T.Dict[str, T.Any]:
         """

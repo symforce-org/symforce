@@ -3,13 +3,15 @@
 # LCM Definition File tokenizer
 # We use PLY and regexes to convert a byte stream into a sequence of tokens.
 from __future__ import absolute_import, print_function
-from functools import wraps
-import tempfile
-from ply import lex
+
 import os
 import shutil
 import sys
+import tempfile
 import typing as T
+from functools import wraps
+
+from ply import lex
 
 # Sorry pylint, PLY expects certain names in the module.
 tokens = (

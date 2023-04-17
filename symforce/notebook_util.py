@@ -6,10 +6,11 @@
 """
 Helpers for interactive use in a Jupyter notebook with an IPython kernel.
 """
+import warnings
+
 import IPython
 import matplotlib
 import pygments
-import warnings
 
 # NOTE(aaron): This is currently nice-to-have, otherwise every time we display something LaTeX we
 # get this warning.  It's fixed in IPython master (https://github.com/ipython/ipython/pull/12889),

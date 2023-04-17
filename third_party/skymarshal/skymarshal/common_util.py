@@ -1,9 +1,8 @@
 # aclint: py2 py3
-from __future__ import print_function
-from __future__ import absolute_import
-import typing as T
+from __future__ import absolute_import, print_function
 
 import sys
+import typing as T
 
 # Support both python 2 and 3 versions of the string module
 if sys.version_info[0] == 2:

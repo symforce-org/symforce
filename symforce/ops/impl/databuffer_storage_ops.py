@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import symforce.internal.symbolic as sf
-
 from symforce import typing as T
 
 

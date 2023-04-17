@@ -4,27 +4,31 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-from lcmtypes.sym._key_t import key_t
+import scipy
+
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
+from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
+from lcmtypes.sym._sparse_matrix_structure_t import sparse_matrix_structure_t
 from lcmtypes.sym._values_t import values_t
 
-from sym import Rot2
-from sym import Rot3
-from sym import Pose2
-from sym import Pose3
 from sym import ATANCameraCal
 from sym import DoubleSphereCameraCal
 from sym import EquirectangularCameraCal
 from sym import LinearCameraCal
 from sym import PolynomialCameraCal
+from sym import Pose2
+from sym import Pose3
+from sym import Rot2
+from sym import Rot3
 from sym import SphericalCameraCal
+from sym import Unit3
 
-import scipy
+# isort: off
 
 """This module wraps many of the C++ optimization classes."""
 from __future__ import annotations
@@ -164,6 +168,7 @@ class Key:
     """
 
     def __eq__(self, arg0: object) -> bool: ...
+    def __getstate__(self) -> tuple: ...
     def __hash__(self) -> int: ...
     @typing.overload
     def __init__(self, letter: str) -> None: ...
@@ -172,6 +177,7 @@ class Key:
     @typing.overload
     def __init__(self, letter: str, sub: int, super: int) -> None: ...
     def __repr__(self) -> str: ...
+    def __setstate__(self, arg0: tuple) -> None: ...
     def get_lcm_type(self) -> key_t: ...
     def lexical_less_than(self, arg0: Key) -> bool:
         """
@@ -213,7 +219,9 @@ class Linearization:
     Class for storing a problem linearization evaluated at a Values (i.e. a residual, jacobian, hessian, and rhs).
     """
 
+    def __getstate__(self) -> tuple: ...
     def __init__(self) -> None: ...
+    def __setstate__(self, arg0: tuple) -> None: ...
     def error(self) -> float: ...
     def is_initialized(self) -> bool:
         """
@@ -264,7 +272,9 @@ class OptimizationStats:
     Debug stats for a full optimization run.
     """
 
+    def __getstate__(self) -> tuple: ...
     def __init__(self) -> None: ...
+    def __setstate__(self, arg0: tuple) -> None: ...
     def get_lcm_type(self) -> optimization_stats_t: ...
     @property
     def best_index(self) -> int:
@@ -279,13 +289,29 @@ class OptimizationStats:
         Index into iterations of the best iteration (containing the optimal Values).
         """
     @property
-    def best_linearization(self) -> object:
+    def best_linearization(self) -> typing.Optional[Linearization]:
         """
+        The linearization at best_index (at optimized_values), filled out if populate_best_linearization=True
+
         :type: object
         """
     @best_linearization.setter
     def best_linearization(self, arg1: Linearization) -> None:
-        pass
+        """
+        The linearization at best_index (at optimized_values), filled out if populate_best_linearization=True
+        """
+    @property
+    def cholesky_factor_sparsity(self) -> sparse_matrix_structure_t:
+        """
+        Sparsity pattern of the cholesky factor L (filled out if debug_stats=True)
+
+        :type: sparse_matrix_structure_t
+        """
+    @cholesky_factor_sparsity.setter
+    def cholesky_factor_sparsity(self, arg0: sparse_matrix_structure_t) -> None:
+        """
+        Sparsity pattern of the cholesky factor L (filled out if debug_stats=True)
+        """
     @property
     def early_exited(self) -> bool:
         """
@@ -306,6 +332,30 @@ class OptimizationStats:
     @iterations.setter
     def iterations(self, arg0: typing.List[optimization_iteration_t]) -> None:
         pass
+    @property
+    def jacobian_sparsity(self) -> sparse_matrix_structure_t:
+        """
+        Sparsity pattern of the problem jacobian (filled out if debug_stats=True)
+
+        :type: sparse_matrix_structure_t
+        """
+    @jacobian_sparsity.setter
+    def jacobian_sparsity(self, arg0: sparse_matrix_structure_t) -> None:
+        """
+        Sparsity pattern of the problem jacobian (filled out if debug_stats=True)
+        """
+    @property
+    def linear_solver_ordering(self) -> typing.Any:
+        """
+        Ordering used by the linear solver (filled out if debug_stats=True)
+
+        :type: typing.Any
+        """
+    @linear_solver_ordering.setter
+    def linear_solver_ordering(self, arg0: typing.Any) -> None:
+        """
+        Ordering used by the linear solver (filled out if debug_stats=True)
+        """
     pass
 
 class Optimizer:
@@ -317,11 +367,12 @@ class Optimizer:
         self,
         params: optimizer_params_t,
         factors: typing.List[Factor],
-        epsilon: float = 1e-09,
+        epsilon: float = 2.220446049250313e-15,
         name: str = "sym::Optimize",
         keys: typing.List[Key] = [],
         debug_stats: bool = False,
         check_derivatives: bool = False,
+        include_jacobians: bool = False,
     ) -> None: ...
     def compute_all_covariances(
         self, linearization: Linearization
@@ -440,6 +491,7 @@ class Values:
     LieGroupOps concepts, which are the core operating mechanisms in this class.
     """
 
+    def __getstate__(self) -> bytes: ...
     @typing.overload
     def __init__(self) -> None:
         """
@@ -450,6 +502,7 @@ class Values:
     @typing.overload
     def __init__(self, msg: values_t) -> None: ...
     def __repr__(self) -> str: ...
+    def __setstate__(self, arg0: bytes) -> None: ...
     @typing.overload
     def at(self, entry: index_entry_t) -> typing.Any:
         """
@@ -487,7 +540,7 @@ class Values:
         """
         Has zero keys.
         """
-    def get_lcm_type(self) -> values_t:
+    def get_lcm_type(self, sort_keys: bool = False) -> values_t:
         """
         Serialize to LCM.
         """
@@ -909,6 +962,10 @@ class Values:
         Add or update a value by key. Returns true if added, false if updated.
 
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
     @typing.overload
     def set(self, key: Key, value: DoubleSphereCameraCal) -> bool: ...
@@ -928,6 +985,8 @@ class Values:
     def set(self, key: Key, value: Rot3) -> bool: ...
     @typing.overload
     def set(self, key: Key, value: SphericalCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: Key, value: Unit3) -> bool: ...
     @typing.overload
     def set(self, key: Key, value: float) -> bool: ...
     @typing.overload
@@ -952,6 +1011,8 @@ class Values:
     def set(self, key: index_entry_t, value: Rot3) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: SphericalCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: Unit3) -> None: ...
     @typing.overload
     def set(self, key: index_entry_t, value: float) -> None: ...
     @typing.overload
@@ -980,7 +1041,10 @@ def default_optimizer_params() -> optimizer_params_t:
     """
 
 def optimize(
-    params: optimizer_params_t, factors: typing.List[Factor], values: Values, epsilon: float = 1e-09
+    params: optimizer_params_t,
+    factors: typing.List[Factor],
+    values: Values,
+    epsilon: float = 2.220446049250313e-15,
 ) -> OptimizationStats:
     """
     Simple wrapper to make optimization one function call.

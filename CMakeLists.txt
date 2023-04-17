@@ -3,9 +3,10 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-# NOTE(aaron): This is the minimum version for FetchContent, not sure if we need newer; certainly no
-# newer than 3.15 required
-cmake_minimum_required(VERSION 3.11)
+# NOTE(aaron): This is the minimum version for policy range support, not sure if we need newer;
+# certainly no newer than 3.15 required.  This will use NEW policies up to CMake 3.25; this should
+# be the maximum tested CMake version, matching dev_requirements.txt
+cmake_minimum_required(VERSION 3.12...3.25)
 
 project(symforce)
 
@@ -22,7 +23,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(SYMFORCE_BUILD_OPT "Build symforce_opt and related targets for optimization" ON)
 option(SYMFORCE_BUILD_CC_SYM "Build cc_sym and related targets for python wrapping" ON)
 option(SYMFORCE_BUILD_EXAMPLES "Build the examples" ON)
-option(SYMFORCE_BUILD_TESTS "Build the tests" ON)
+option(SYMFORCE_BUILD_TESTS "Build and run the tests" ON)
+option(SYMFORCE_ADD_PYTHON_TESTS "Include the Python tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
 option(SYMFORCE_GENERATE_MANIFEST "Generate build manifest" ON)
 option(SYMFORCE_BUILD_BENCHMARKS "Generate examples for alternative libraries" OFF)
@@ -64,9 +66,10 @@ option(SYMFORCE_SKYMARSHAL_PRINTING
 # ------------------------------------------------------------------------------
 # Misc
 
-option(SYMFORCE_BUILD_STATIC_LIBRARIES
-  "Build libraries as static (symforce_cholesky is always built as shared)"
-  OFF
+option(SYMFORCE_BUILD_STATIC_LIBRARIES "Build libraries as static" OFF)
+
+set(SYMFORCE_COMPILE_OPTIONS -Wall;-Wextra;-Werror CACHE STRING
+  "Extra flags to pass to the compiler; defaults to enabling warnings"
 )
 
 set(SYMFORCE_PYTHON_OVERRIDE "" CACHE STRING
@@ -127,6 +130,12 @@ endif()
 # Third Party Dependencies (needed for build)
 # ==============================================================================
 
+# NOTE(aaron): Generally, for third party dependencies we will use already-installed versions if
+# available via find_package, and if not pull with FetchContent.  In CMake 3.24, FetchContent can
+# do this check automatically, so this logic could be simplified:
+# https://www.kitware.com/cmake-3-24-0-is-available-for-download/
+# We use URL downloads with FetchContent, because GIT downloads do not have a way to do shallow
+# clones with specific commits
 include(FetchContent)
 
 # ------------------------------------------------------------------------------
@@ -139,9 +148,8 @@ if(SYMFORCE_EIGEN_TARGET STREQUAL "Eigen3::Eigen")
     function(add_eigen)
       FetchContent_Declare(
         eigen3
-        GIT_REPOSITORY https://gitlab.com/libeigen/eigen
-        GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c  # release 3.4.0
-        GIT_SHALLOW TRUE
+        URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+        URL_HASH SHA256=8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
       )
 
       set(EIGEN_BUILD_DOC OFF CACHE BOOL "Don't build Eigen docs")
@@ -162,17 +170,28 @@ if(SYMFORCE_EIGEN_TARGET STREQUAL "Eigen3::Eigen")
   endif()
 endif()
 
-# TODO(aaron): This goes away when we upgrade to Catch2 v3
-add_library(
-  symforce_catch2
-  ${SYMFORCE_LIBRARY_TYPE}
-  EXCLUDE_FROM_ALL  # Only build this if something needs it
-  third_party/catch2/src/catch_amalgamated.cpp test/catch_main.cc
-)
-target_include_directories(
-  symforce_catch2
-  PUBLIC third_party/catch2/include
-)
+# ------------------------------------------------------------------------------
+# catch2
+
+if(SYMFORCE_BUILD_BENCHMARKS OR SYMFORCE_BUILD_TESTS)
+  find_package(Catch2 3 QUIET)
+  if(NOT Catch2_FOUND)
+    message(STATUS "Catch2 not found, adding with FetchContent")
+    function(add_catch)
+      FetchContent_Declare(
+        Catch2
+        URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.1.1.zip
+        URL_HASH SHA256=eec6c327cd9187c63bbaaa8486f715e31544000bf8876c0543e1181a2a52a5de
+      )
+
+      FetchContent_MakeAvailable(Catch2)
+    endfunction()
+
+    add_catch()
+  else()
+    message(STATUS "Catch2 found at ${Catch2_DIR}")
+  endif()
+endif()
 
 # ==============================================================================
 # SymForce Targets
@@ -255,6 +274,7 @@ add_library(
   ${SYMFORCE_GEN_SOURCES}
   ${SYMFORCE_GEN_HEADERS}
 )
+target_compile_options(symforce_gen PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 target_link_libraries(symforce_gen ${SYMFORCE_EIGEN_TARGET} symforce_lcmtypes_cpp)
 target_include_directories(
   symforce_gen
@@ -266,6 +286,7 @@ install(DIRECTORY gen/cpp/ DESTINATION include FILES_MATCHING PATTERN "*.h" PATT
 
 if(SYMFORCE_BUILD_OPT)
   add_subdirectory(symforce/opt)
+  add_subdirectory(symforce/slam)
 endif()
 
 if(SYMFORCE_BUILD_CC_SYM)
@@ -335,6 +356,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
 
   # ------------------------------------------------------------------------------
   # SymEngine
+  string(REPLACE ";" "$<SEMICOLON>" EXTERNAL_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
   include(ExternalProject)
   ExternalProject_Add(symengine
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/third_party/symengine
@@ -344,6 +366,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
                -DBUILD_BENCHMARKS=OFF
                -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
                -DCMAKE_POLICY_DEFAULT_CMP0074=NEW
+               -DCMAKE_PREFIX_PATH=${EXTERNAL_PREFIX_PATH}
   )
 
   # ------------------------------------------------------------------------------
@@ -376,10 +399,10 @@ if(SYMFORCE_BUILD_SYMENGINE)
     set(git_stampfile ${CMAKE_CURRENT_BINARY_DIR}/${project_name}.stamp)
     set(git_check_rulename ${project_name}_check_git_clean)
     add_custom_target(${git_check_rulename}
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
+      COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
                   --path_to_check ${PROJECT_SOURCE_DIR}/third_party/${project_name}
                   --stamp_file ${git_stampfile}
-                  --command_to_run "rm -rf ${cmake_stampdir}"
+                  --cmake_stampdir="${cmake_stampdir}"
       )
 
     add_dependencies(${project_name} ${git_check_rulename})

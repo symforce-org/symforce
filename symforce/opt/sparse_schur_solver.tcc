@@ -155,8 +155,8 @@ SparseSchurSolver<_MatrixType>::Solve(const Eigen::MatrixBase<RhsType>& rhs) con
 
 template <typename _MatrixType>
 void SparseSchurSolver<_MatrixType>::SInvInPlace(
-    Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>* const x_and_rhs) const {
-  *x_and_rhs = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>::Identity(
+    Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& x_and_rhs) const {
+  x_and_rhs = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>::Identity(
       sparsity_information_.B_dim_, sparsity_information_.B_dim_);
   S_solver_.SolveInPlace(x_and_rhs);
 }

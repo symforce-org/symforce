@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from .camera_cal import CameraCal
-from .camera import Camera
-
-from symforce import geo
 import symforce.internal.symbolic as sf
+from symforce import geo
 from symforce import typing as T
+
+from .camera import Camera
+from .camera_cal import CameraCal
 
 
 class PosedCamera(Camera):

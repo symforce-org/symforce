@@ -12,7 +12,7 @@ export type {
   double,
 } from "./types";
 export { default as LcmMsg } from "./lcm";
-export { LcmType } from "./lcm";
+export type { LcmType } from "./lcm";
 export { default as Decoder } from "./decoder";
 export { default as Encoder } from "./encoder";
 import Long from "long";

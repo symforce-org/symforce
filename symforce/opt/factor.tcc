@@ -10,30 +10,19 @@
 namespace sym {
 
 template <typename Scalar>
-Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys)
-    : Factor(std::move(hessian_func), keys, keys) {}
-
-template <typename Scalar>
-Factor<Scalar>::Factor(HessianFunc&& hessian_func, const std::vector<Key>& keys_to_func,
+Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),
-      is_sparse_(false),
-      keys_to_optimize_(keys_to_optimize),
+      keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
       keys_(keys_to_func) {}
 
 template <typename Scalar>
-Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func, const std::vector<Key>& keys)
-    : Factor(std::move(sparse_hessian_func), keys, keys) {}
-
-template <typename Scalar>
-Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func,
-                       const std::vector<Key>& keys_to_func,
+Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : hessian_func_(),
       sparse_hessian_func_(std::move(sparse_hessian_func)),
-      is_sparse_(true),
-      keys_to_optimize_(keys_to_optimize),
+      keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
       keys_(keys_to_func) {}
 
 // ------------------------------------------------------------------------------------------------
@@ -46,13 +35,7 @@ Factor<Scalar>::Factor(SparseHessianFunc&& sparse_hessian_func,
 
 template <typename Scalar>
 template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& keys) {
-  return Jacobian(func, keys, keys);
-}
-
-template <typename Scalar>
-template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& keys_to_func,
+Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& keys_to_func,
                                         const std::vector<Key>& keys_to_optimize) {
   using Traits = function_traits<Functor>;
 
@@ -60,10 +43,10 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
   SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 2);
 
   // Get matrix types from function signature
-  using ResidualVec = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 2>::type>::type;
-  using JacobianMat = typename std::remove_pointer<
-      typename Traits::template arg<Traits::num_arguments - 1>::type>::type;
+  using ResidualVec = typename std::remove_pointer_t<
+      typename Traits::template arg<Traits::num_arguments - 2>::type>;
+  using JacobianMat = typename std::remove_pointer_t<
+      typename Traits::template arg<Traits::num_arguments - 1>::type>;
 
   // Check that they're Eigen matrices (nice for error messages)
   static_assert(kIsEigenType<ResidualVec>,
@@ -72,7 +55,7 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
                 "JacobianMat (last argument) should be an Eigen::Matrix or Eigen::SparseMatrix");
 
   // Check sparse vs dense
-  constexpr bool is_sparse = !kIsEigenType<JacobianMat>;
+  constexpr bool is_sparse = kIsSparseEigenType<JacobianMat>;
 
   // Get dimensions
   constexpr int M = ResidualVec::RowsAtCompileTime;
@@ -90,8 +73,9 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(func, keys_to_func,
-                                                                       keys_to_optimize);
+  return Factor<Scalar>(
+      internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(std::forward<Functor>(func)),
+      keys_to_func, keys_to_optimize);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -104,13 +88,7 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor func, const std::vector<Key>& ke
 
 template <typename Scalar>
 template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& keys) {
-  return Hessian(func, keys, keys);
-}
-
-template <typename Scalar>
-template <typename Functor>
-Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& keys_to_func,
+Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
                                        const std::vector<Key>& keys_to_optimize) {
   using Traits = function_traits<Functor>;
 
@@ -135,8 +113,8 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
   static_assert(kIsEigenType<RhsVec>, "RhsVec (last argument) should be an Eigen::Matrix");
 
   // Check sparse vs dense
-  constexpr bool jacobian_is_sparse = !kIsEigenType<JacobianMat>;
-  constexpr bool hessian_is_sparse = !kIsEigenType<HessianMat>;
+  constexpr bool jacobian_is_sparse = kIsSparseEigenType<JacobianMat>;
+  constexpr bool hessian_is_sparse = kIsSparseEigenType<HessianMat>;
   static_assert(jacobian_is_sparse == hessian_is_sparse,
                 "Matrices cannot be mixed dense and sparse.");
 
@@ -155,8 +133,9 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor func, const std::vector<Key>& key
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
   // Dispatch to either the dynamic size or fixed size implementations
-  return internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(func, keys_to_func,
-                                                                               keys_to_optimize);
+  return Factor<Scalar>(internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(
+                            std::forward<Functor>(func)),
+                        keys_to_func, keys_to_optimize);
 }
 
 // ----------------------------------------------------------------------------

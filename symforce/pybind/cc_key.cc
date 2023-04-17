@@ -47,7 +47,18 @@ void AddKeyWrapper(py::module_ module) {
           "lexical_less_than", &sym::Key::LexicalLessThan,
           "Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).")
       .def("__hash__", std::hash<sym::Key>{})
-      .def("__repr__", [](const sym::Key& key) { return fmt::format("{}", key); });
+      .def("__repr__", [](const sym::Key& key) { return fmt::format("{}", key); })
+      .def(py::pickle(
+          [](const sym::Key& key) {  //  __getstate__
+            return py::make_tuple(key.Letter(), key.Sub(), key.Super());
+          },
+          [](py::tuple state) {  // __setstate__
+            if (state.size() != 3) {
+              throw py::value_error("Key.__setstate__ expected tuple of size 3.");
+            }
+            return sym::Key(state[0].cast<char>(), state[1].cast<Key::subscript_t>(),
+                            state[2].cast<Key::superscript_t>());
+          }));
 }
 
 }  // namespace sym

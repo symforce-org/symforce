@@ -6,10 +6,10 @@ from __future__ import annotations
 
 import dataclasses
 
-from symforce.ops import StorageOps
-from symforce.ops import LieGroupOps
-from symforce.python_util import get_type, get_sequence_from_dataclass_sequence_field
 from symforce import typing as T
+from symforce import typing_util
+from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
 
 from .dataclass_group_ops import DataclassGroupOps
 
@@ -26,10 +26,15 @@ class DataclassLieGroupOps(DataclassGroupOps):
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
                 if field.metadata.get("length") is not None:
-                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                    sequence_instance = typing_util.get_sequence_from_dataclass_sequence_field(
                         field, field_type
                     )
                     count += LieGroupOps.tangent_dim(sequence_instance)
+                elif (
+                    sequence_types := typing_util.maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    count += LieGroupOps.tangent_dim(sequence_types)
                 else:
                     count += LieGroupOps.tangent_dim(field_type)
             return count
@@ -50,12 +55,20 @@ class DataclassLieGroupOps(DataclassGroupOps):
             for field in dataclasses.fields(a):
                 field_type = type_hints_map[field.name]
                 if field.metadata.get("length") is not None:
-                    sequence_instance = get_sequence_from_dataclass_sequence_field(
+                    sequence_instance = typing_util.get_sequence_from_dataclass_sequence_field(
                         field, field_type
                     )
                     tangent_dim = LieGroupOps.tangent_dim(sequence_instance)
                     constructed_fields[field.name] = LieGroupOps.from_tangent(
                         sequence_instance, vec[offset : offset + tangent_dim]
+                    )
+                elif (
+                    sequence_types := typing_util.maybe_tuples_of_types_from_annotation(field_type)
+                ) is not None:
+                    # It's a Tuple of known size
+                    tangent_dim = LieGroupOps.tangent_dim(sequence_types)
+                    constructed_fields[field.name] = LieGroupOps.from_tangent(
+                        sequence_types, vec[offset : offset + tangent_dim], epsilon
                     )
                 else:
                     tangent_dim = LieGroupOps.tangent_dim(field_type)
@@ -74,7 +87,7 @@ class DataclassLieGroupOps(DataclassGroupOps):
                     field_instance, vec[offset : offset + tangent_dim], epsilon
                 )
                 offset += tangent_dim
-            return get_type(a)(**constructed_fields)
+            return typing_util.get_type(a)(**constructed_fields)
 
     @staticmethod
     def to_tangent(a: T.Dataclass, epsilon: T.Scalar) -> T.List[T.Scalar]:
@@ -130,11 +143,11 @@ class DataclassLieGroupOps(DataclassGroupOps):
                 field_instance, vec[offset : offset + tangent_dim], epsilon
             )
             offset += tangent_dim
-        return get_type(a)(**constructed_fields)
+        return typing_util.get_type(a)(**constructed_fields)
 
     @staticmethod
     def local_coordinates(a: T.Dataclass, b: T.Dataclass, epsilon: T.Scalar) -> T.List[T.Scalar]:
-        assert get_type(a) == get_type(b)
+        assert typing_util.get_type(a) == typing_util.get_type(b)
         return [
             x
             for field in dataclasses.fields(a)

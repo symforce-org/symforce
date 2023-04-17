@@ -9,9 +9,9 @@ Symbolic factor and codegen for the Bundle-Adjustment-in-the-Large problem
 
 from pathlib import Path
 
+import symforce.symbolic as sf
 from symforce import codegen
 from symforce.codegen import values_codegen
-import symforce.symbolic as sf
 from symforce.values import Values
 
 
@@ -77,4 +77,6 @@ def generate(output_dir: Path) -> None:
         epsilon=sf.Scalar(),
     )
 
-    values_codegen.generate_values_keys(values, output_dir, skip_directory_nesting=True)
+    values_codegen.generate_values_keys(
+        values, output_dir, config=codegen.CppConfig(), skip_directory_nesting=True
+    )

@@ -38,9 +38,37 @@ def is_nonpositive(x: sf.Scalar) -> sf.Scalar:
     return 1 - sf.Max(sf.sign(x), 0)
 
 
-def logical_and(a: sf.Scalar, b: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
+def less_equal(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
     """
-    Logical and of two Scalars
+    Returns 1 if x <= y, 0 otherwise
+    """
+    return is_nonpositive(x - y)
+
+
+def greater_equal(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
+    """
+    Returns 1 if x >= y, 0 otherwise
+    """
+    return is_nonnegative(x - y)
+
+
+def less(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
+    """
+    Returns 1 if x < y, 0 otherwise
+    """
+    return is_negative(x - y)
+
+
+def greater(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
+    """
+    Returns 1 if x > y, 0 otherwise
+    """
+    return is_positive(x - y)
+
+
+def logical_and(*args: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
+    """
+    Logical and of two or more Scalars
 
     Input values are treated as true if they are positive, false if they are 0 or negative.
     The returned value is 1 for true, 0 for false.
@@ -49,14 +77,14 @@ def logical_and(a: sf.Scalar, b: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     0 or 1; results for other (finite) inputs will be finite, but are otherwise undefined.
     """
     if unsafe:
-        return sf.Min(a, b)
+        return sf.Min(*args)
     else:
-        return sf.Max(sf.sign(a) + sf.sign(b), 1) - 1
+        return sf.Max(sum(sf.sign(x) for x in args), len(args) - 1) - (len(args) - 1)
 
 
-def logical_or(a: sf.Scalar, b: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
+def logical_or(*args: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
-    Logical or of two Scalars
+    Logical or of two or more Scalars
 
     Input values are treated as true if they are positive, false if they are 0 or negative.
     The returned value is 1 for true, 0 for false.
@@ -65,9 +93,9 @@ def logical_or(a: sf.Scalar, b: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     0 or 1; results for other (finite) inputs will be finite, but are otherwise undefined.
     """
     if unsafe:
-        return sf.Max(a, b)
+        return sf.Max(*args)
     else:
-        return sf.Max(sf.sign(a), sf.sign(b), 0)
+        return sf.Max(*[sf.sign(x) for x in args], 0)
 
 
 def logical_not(a: sf.Scalar, unsafe: bool = False) -> sf.Scalar:

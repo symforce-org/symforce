@@ -3,9 +3,13 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
+import symforce.symbolic as sf
 from symforce import codegen
 from symforce.codegen.similarity_index import SimilarityIndex
-import symforce.symbolic as sf
 from symforce.test_util import TestCase
 from symforce.values import Values
 

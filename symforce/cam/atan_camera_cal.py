@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
+import symforce.internal.symbolic as sf
+from symforce import geo
+from symforce import typing as T
+
 from .camera_cal import CameraCal
 from .linear_camera_cal import LinearCameraCal
-
-from symforce import geo
-import symforce.internal.symbolic as sf
-from symforce import typing as T
 
 
 class ATANCameraCal(CameraCal):

@@ -6,7 +6,11 @@
 ![SymForce](docs/static/images/symforce_banner_dark.png#gh-dark-mode-only)
 <!-- /DARK_MODE_ONLY -->
 
+| 📣 We are open for internships!  If you are interested in contributing to SymForce, visit the program page [here](https://github.com/symforce-org/symforce/discussions/242) to learn more.  |
+|-----------------------------------------|
+
 <p align="center">
+<a href="https://github.com/symforce-org/symforce/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI status" src="https://github.com/symforce-org/symforce/actions/workflows/ci.yml/badge.svg" /></a>
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
 <a href="https://github.com/symforce-org/symforce"><img alt="Source Code" src="https://img.shields.io/badge/source-code-blue" /></a>
 <a href="https://github.com/symforce-org/symforce/issues"><img alt="Issues" src="https://img.shields.io/badge/issue-tracker-blue" /></a>
@@ -48,6 +52,8 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
  + Highly performant, modular, tested, and extensible code
 
 ### Read the paper: <a href="https://arxiv.org/abs/2204.07889">https://arxiv.org/abs/2204.07889</a>
+
+### And watch the video: <a href="https://youtu.be/QO_ltJRNj0o">https://youtu.be/QO_ltJRNj0o</a>
 
 SymForce was published to [RSS 2022](https://roboticsconference.org/). Please cite it as follows:
 
@@ -179,13 +185,41 @@ sf.V3.symbolic("x").norm(epsilon=sf.epsilon())
 
 <!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
 
-See the [Epsilon Tutorial](https://symforce.org/notebooks/epsilon_tutorial.html) in the SymForce Docs for more information.
+See the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html) in the SymForce Docs for more information.
 
 ## Build an optimization problem
 
 We will model this problem as a factor graph and solve it with nonlinear least-squares.
 
-The residual function comprises of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
+First, we need to tell SymForce to use a nonzero epsilon to prevent singularities.  This isn't necessary when playing around with symbolic expressions like we were above, but it's important now that we want to numerically evaluate some results.  For more information, check out the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html) - for now, all you need to do is this:
+
+```python
+import symforce
+symforce.set_epsilon_to_symbol()
+```
+
+This needs to be done before other parts of symforce are imported - if you're following along in a
+notebook you should add this at the top and restart the kernel.
+
+Now that epsilon is set up, we will instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
+
+```python
+import numpy as np
+from symforce.values import Values
+
+num_poses = 3
+num_landmarks = 3
+
+initial_values = Values(
+    poses=[sf.Pose2.identity()] * num_poses,
+    landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
+    distances=[1.7, 1.4],
+    angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
+    epsilon=sf.numeric_epsilon,
+)
+```
+
+Next, we can set up the factors connecting our variables.  The residual function comprises of two terms - one for the bearing measurements and one for the odometry measurements. Let's formalize the math we just defined for the bearing measurements into a symbolic residual function:
 
 ```python
 def bearing_residual(
@@ -211,9 +245,6 @@ Now we can create [`Factor`](https://symforce.org/api/symforce.opt.factor.html?h
 
 ```python
 from symforce.opt.factor import Factor
-
-num_poses = 3
-num_landmarks = 3
 
 factors = []
 
@@ -254,21 +285,6 @@ optimizer = Optimizer(
 )
 ```
 
-Now we need to instantiate numerical [`Values`](https://symforce.org/api/symforce.values.values.html?highlight=values#module-symforce.values.values) for the problem, including an initial guess for our unknown poses (just set them to identity).
-
-```python
-import numpy as np
-from symforce.values import Values
-
-initial_values = Values(
-    poses=[sf.Pose2.identity()] * num_poses,
-    landmarks=[sf.V2(-2, 2), sf.V2(1, -3), sf.V2(5, 2)],
-    distances=[1.7, 1.4],
-    angles=np.deg2rad([[145, 335, 55], [185, 310, 70], [215, 310, 70]]).tolist(),
-    epsilon=sf.numeric_epsilon,
-)
-```
-
 Now run the optimization! This returns an [`Optimizer.Result`](https://symforce.org/api/symforce.opt.optimizer.html?highlight=optimizer#symforce.opt.optimizer.Optimizer.Result) object that contains the optimized values, error statistics, and per-iteration debug stats (if enabled).
 ```python
 result = optimizer.optimize(initial_values)
@@ -289,7 +305,7 @@ All of the code for this example can also be found in `symforce/examples/robot_2
 
 SymForce provides `sym` packages with runtime code for geometry and camera types that are generated from its symbolic `geo` and `cam` packages. As such, there are multiple versions of a class like `Pose3` and it can be a common source of confusion.
 
-The canonical symbolic class [`sf.Pose3`](https://symforce.org/api/symforce.sf.pose3.html) lives in the `symforce` package:
+The canonical symbolic class [`sf.Pose3`](https://symforce.org/api/symforce.symbolic.html#symforce.symbolic.Pose3) lives in the `symforce` package:
 ```python
 sf.Pose3.identity()
 ```
@@ -305,7 +321,7 @@ The autogenerated C++ runtime class [`sym::Pose3`](https://symforce.org/api-gen-
 sym::Pose3<double>::Identity()
 ```
 
-The matrix type for symbolic code is [`sf.Matrix`](https://symforce.org/api/symforce.sf.matrix.html?highlight=matrix#module-symforce.sf.matrix), for generated Python is [`numpy.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html), and for C++ is [`Eigen::Matrix`](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html).
+The matrix type for symbolic code is [`sf.Matrix`](https://symforce.org/api/symforce.symbolic.html#symforce.symbolic.Matrix), for generated Python is [`numpy.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html), and for C++ is [`Eigen::Matrix`](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html).
 
 The symbolic classes can also handle numerical values, but will be dramatically slower than the generated classes. The symbolic classes must be used when defining functions for codegen and optimization. Generated functions always accept the runtime types.
 
@@ -509,7 +525,7 @@ for (int i = 0; i < angles.size(); ++i) {
 values.Set('e', sym::kDefaultEpsilond);
 
 // Optimize!
-const auto stats = optimizer.Optimize(&values);
+const auto stats = optimizer.Optimize(values);
 
 std::cout << "Optimized values:" << values << std::endl;
 ```
@@ -542,6 +558,8 @@ To learn more, visit the SymForce tutorials [here](https://symforce.org/#guides)
 
 # Build from Source
 
+For best results, you should build from the [latest tagged release](https://github.com/symforce-org/symforce/releases/latest).  You can also build from `main`, or from another branch, but everything is less guaranteed to work.
+
 SymForce requires Python 3.8 or later. The build is currently tested on Linux and macOS, SymForce on Windows is untested (see [#145](https://github.com/symforce-org/symforce/issues/145)).  We strongly suggest creating a virtual python environment.
 
 Install the `gmp` package with one of:
@@ -557,14 +575,21 @@ If you encounter build issues, please file an [issue](https://github.com/symforc
 
 ## Build with pip
 
-The recommended way to build and install SymForce if you only plan on making Python changes is with pip.  From the symforce directory:
+If you just want to build and install SymForce without repeatedly modifying the source, the recommended way to do this is with pip.  From the symforce directory:
+```bash
+pip install .
+```
+
+If you're modifying the SymForce Python sources, you can do an [editable install](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) instead.  This will let you modify the Python components of SymForce without reinstalling.  If you're going to repeatedly modify the C++ sources, you should instead build with CMake directly as described <a href="#build-with-cmake">below</a>.  From the symforce directory:
 ```bash
 pip install -e .
 ```
 
-This will build the C++ components of SymForce, but you won't be able to run `pip install -e .` repeatedly if you need to rebuild C++ code.  If you're changing C++ code and rebuilding, you should build with CMake directly as described <a href="#build-with-cmake">below</a>.
+You should then [verify your installation](#verify-your-installation).
 
-`pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+___Note:___ `pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+
+_Note: Editable installs as root with the system python on Ubuntu (and other Debian derivatives) are broken on `setuptools<64.0.0`.  This is a [bug in Debian](https://ffy00.github.io/blog/02-python-debian-and-the-install-locations/), not something in SymForce that we can fix.  If this is your situation, either use a virtual environment, upgrade setuptools to a version `>=64.0.0`, or use a different installation method._
 
 ## Build with CMake
 
@@ -584,7 +609,28 @@ cmake ..
 make -j $(nproc)
 ```
 
-You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce) to your PYTHONPATH in order to use them.
+You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce and `lcmtypes/python2.7` within the build directory) to your PYTHONPATH in order to use them, for example:
+
+```bash
+export PYTHONPATH="$PYTHONPATH:/path/to/symforce:/path/to/symforce/build/lcmtypes/python2.7:/path/to/symforce/gen/python:/path/to/symforce/third_party/skymarshal"
+```
+
+If you want to install SymForce to use its C++ libraries in another CMake project, you can do that with:
+```bash
+make install
+```
+
+SymForce does not currently integrate with CMake's `find_package` (see #209), so if you do this you currently need to add its libraries as link dependencies in your CMake project manually.
+
+## Verify your installation:
+```python
+>>> import symforce
+>>> symforce.get_symbolic_api()
+'symengine'
+>>> from symforce import cc_sym
+```
+
+If you see `'sympy'` here instead of `'symengine'`, or can't import `cc_sym`, your installation is probably broken and you should submit an [issue](https://github.com/symforce-org/symforce/issues).
 
 # License
 

@@ -17,18 +17,18 @@
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
+
 // TODO(nathan): We just test linear camera for now, but could/should test other types in the future
 #include <sym/linear_camera_cal.h>
 #include "symforce_function_codegen_test_data/symengine/symforce_gen_codegen_test_data/cam_function_codegen_test/pixel_to_ray_and_back.h"
-
-#include "catch.hpp"
 
 TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCameraCal<double>,
                    sym::LinearCameraCal<float>) {
   using T = TestType;
   using Scalar = typename T::Scalar;
   Scalar epsilon = 1e-6; // For preventing degenerate numerical cases (e.g. division by zero)
-  Scalar tolerance = 10.0 * epsilon; // For assessing approximate equality
 
   Eigen::Matrix<Scalar, sym::StorageOps<T>::StorageDim(), 1> data;
   std::mt19937 gen(42);
@@ -37,9 +37,7 @@ TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCamer
     data[i] = cam_dist(gen);
   }
   T cam(data);
-  spdlog::info("*** Testing generated function with {} ***", cam);
-
-  int is_valid;
+  spdlog::debug("*** Testing generated function with {} ***", cam);
 
   Eigen::Matrix<Scalar, 2, 1> pixel;
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);

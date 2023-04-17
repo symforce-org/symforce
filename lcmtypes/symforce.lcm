@@ -41,9 +41,6 @@ struct valuesf_t {
 
 #cpp_no_display
 struct linearized_dense_factor_t {
-  // Index containing keys of this factor and their offsets within the factor residual/jacobian
-  index_t index;
-
   eigen_lcm.VectorXd residual;  // b
   eigen_lcm.MatrixXd jacobian;  // J
 
@@ -54,8 +51,6 @@ struct linearized_dense_factor_t {
 // Same as linearized_dense_factor_t but for floats.
 #cpp_no_display
 struct linearized_dense_factorf_t {
-  index_t index;
-
   eigen_lcm.VectorXf residual;  // b
   eigen_lcm.MatrixXf jacobian;  // J
 
@@ -98,7 +93,7 @@ struct linearization_dense_factor_helper_t {
   linearization_dense_key_helper_t key_helpers[];
 };
 
-struct linearization_sparse_key_helper_t {
+struct linearization_offsets_t {
   // Offset of this key within the factor's state vector
   int32_t factor_offset;
   // Offset of this key within the whole problem's state vector
@@ -113,7 +108,7 @@ struct linearization_sparse_factor_helper_t {
   // Offset of this factor's residual slice within the whole problem residual
   int32_t combined_residual_offset;
   // Data about each key's state offsets
-  linearization_sparse_key_helper_t key_helpers[];
+  linearization_offsets_t key_helpers[];
 
   // Mapping from factor jacobian flat storage into problem jacobian flat storage
   int32_t jacobian_index_map[];
@@ -201,8 +196,23 @@ struct optimization_iteration_t {
 
   // The problem residual
   eigen_lcm.VectorXf residual;
-  // The problem jacobian, as CSC format sparse data
-  eigen_lcm.VectorXf jacobian_values;
+  // The problem jacobian exactly if dense, or as CSC format sparse data column vector if sparse
+  eigen_lcm.MatrixXf jacobian_values;
+}
+
+// The structure of a sparse matrix in CSC format, not including the numerical values
+// For a description of the format, see
+// https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_column_(CSC_or_CCS)
+// In the comments below, assume an M x N matrix with nnz nonzeros
+struct sparse_matrix_structure_t {
+  // The row for each nonzero entry in the matrix
+  eigen_lcm.VectorXi row_indices; // size nnz
+
+  // The index into row_indices (and the values) of the start of each column
+  eigen_lcm.VectorXi column_pointers; // size N
+
+  // The shape (M, N) of the sparse matrix
+  int64_t shape[2];
 }
 
 // Debug stats for a full optimization run
@@ -215,4 +225,13 @@ struct optimization_stats_t {
   // Did the optimization early exit? (either because it converged, or because it could not find a
   // good step)
   boolean early_exited;
+
+  // The sparsity pattern of the jacobian, filled out if debug_stats=true
+  sparse_matrix_structure_t jacobian_sparsity;
+
+  // The ordering used for the linear solver, filled out if debug_stats=true
+  eigen_lcm.VectorXi linear_solver_ordering;
+
+  // The sparsity pattern of the cholesky factor L, filled out if debug_stats=true
+  sparse_matrix_structure_t cholesky_factor_sparsity;
 }

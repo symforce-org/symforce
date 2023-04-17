@@ -3,13 +3,13 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import numpy as np
 import unittest
 
-from symforce.ops import StorageOps
-from symforce.ops import LieGroupOps
-import symforce.symbolic as sf
+import numpy as np
 
+import symforce.symbolic as sf
+from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
 
 from .group_ops_test_mixin import GroupOpsTestMixin
 

@@ -25,12 +25,12 @@ available as well as `symforce.symbolic.sympy`.
 
 # pylint: disable=unused-import
 # pylint: disable=unused-wildcard-import
-# pylint: disable=ungrouped-imports
 
 import contextlib
+
 import symforce
-from symforce import typing as T
 from symforce import logger
+from symforce import typing as T
 
 # See `symforce/__init__.py` for more information, this is used to check whether things that this
 # module depends on are modified after importing
@@ -39,211 +39,207 @@ symforce._have_imported_symbolic = True  # pylint: disable=protected-access
 if not T.TYPE_CHECKING and symforce.get_symbolic_api() == "symengine":
     sympy = symforce._find_symengine()  # pylint: disable=protected-access
 
-    from symengine import (
-        Abs,
-        Add,
-        Basic,
-        Catalan,
-        Contains,
-        Derivative,
-        Dummy,
-        E,
-        EmptySet,
-        EulerGamma,
-        Expr,
-        FiniteSet,
-        Float,
-        Function,
-        GoldenRatio,
-        I,
-        Integer,
-        Integers,
-        Interval,
-        KroneckerDelta,
-        LambertW,
-        LeviCivita,
-        Max,
-        Min,
-        Mod,
-        Mul,
-        Number,
-        Piecewise,
-        Pow,
-        Rational,
-        RealNumber,
-        Reals,
-        S,
-        Subs,
-        SympifyError,
-        UnevaluatedExpr,
-        UniversalSet,
-        acos,
-        acosh,
-        acot,
-        acoth,
-        acsc,
-        acsch,
-        asec,
-        asech,
-        asin,
-        asinh,
-        atan,
-        atanh,
-        beta,
-        ceiling,
-        conjugate,
-        cos,
-        cosh,
-        cot,
-        coth,
-        csc,
-        csch,
-        cse,
-        diff,
-        digamma,
-        dirichlet_eta,
-        erf,
-        erfc,
-        exp,
-        expand,
-        floor,
-        gamma,
-        init_printing,
-        integer_nthroot,
-        isprime,
-        lambdify,
-        latex,
-        linsolve,
-        log,
-        loggamma,
-        lowergamma,
-        nan,
-        oo,
-        perfect_power,
-        pi,
-        polygamma,
-        sec,
-        sech,
-        series,
-        sign,
-        sin,
-        sinh,
-        sqrt,
-        sqrt_mod,
-        sympify,
-        tan,
-        tanh,
-        trigamma,
-        uppergamma,
-        var,
-        zeta,
-        zoo,
-    )
+    from symengine import Abs
+    from symengine import Add
+    from symengine import Basic
+    from symengine import Catalan
+    from symengine import Contains
+    from symengine import Derivative
+    from symengine import Dummy
+    from symengine import E
+    from symengine import EmptySet
+    from symengine import EulerGamma
+    from symengine import Expr
+    from symengine import FiniteSet
+    from symengine import Float
+    from symengine import Function
+    from symengine import GoldenRatio
+    from symengine import I
+    from symengine import Integer
+    from symengine import Integers
+    from symengine import Interval
+    from symengine import KroneckerDelta
+    from symengine import LambertW
+    from symengine import LeviCivita
+    from symengine import Max
+    from symengine import Min
+    from symengine import Mod
+    from symengine import Mul
+    from symengine import Number
+    from symengine import Piecewise
+    from symengine import Pow
+    from symengine import Rational
+    from symengine import RealNumber
+    from symengine import Reals
+    from symengine import S
+    from symengine import Subs
+    from symengine import SympifyError
+    from symengine import UnevaluatedExpr
+    from symengine import UniversalSet
+    from symengine import acos
+    from symengine import acosh
+    from symengine import acot
+    from symengine import acoth
+    from symengine import acsc
+    from symengine import acsch
+    from symengine import asec
+    from symengine import asech
+    from symengine import asin
+    from symengine import asinh
+    from symengine import atan
+    from symengine import atanh
+    from symengine import beta
+    from symengine import ceiling
+    from symengine import conjugate
+    from symengine import cos
+    from symengine import cosh
+    from symengine import cot
+    from symengine import coth
+    from symengine import csc
+    from symengine import csch
+    from symengine import cse
+    from symengine import diff
+    from symengine import digamma
+    from symengine import dirichlet_eta
+    from symengine import erf
+    from symengine import erfc
+    from symengine import exp
+    from symengine import expand
+    from symengine import floor
+    from symengine import gamma
+    from symengine import init_printing
+    from symengine import integer_nthroot
+    from symengine import isprime
+    from symengine import lambdify
+    from symengine import latex
+    from symengine import linsolve
+    from symengine import log
+    from symengine import loggamma
+    from symengine import lowergamma
+    from symengine import nan
+    from symengine import oo
+    from symengine import perfect_power
+    from symengine import pi
+    from symengine import polygamma
+    from symengine import sec
+    from symengine import sech
+    from symengine import series
+    from symengine import sign
+    from symengine import sin
+    from symengine import sinh
+    from symengine import sqrt
+    from symengine import sqrt_mod
+    from symengine import sympify
+    from symengine import tan
+    from symengine import tanh
+    from symengine import trigamma
+    from symengine import uppergamma
+    from symengine import var
+    from symengine import zeta
+    from symengine import zoo
 elif symforce.get_symbolic_api() == "sympy":
     import sympy
 
     sympy.init_printing()
 
-    from sympy import (
-        Abs,
-        Add,
-        Basic,
-        Catalan,
-        Contains,
-        Derivative,
-        Dummy,
-        E,
-        EmptySet,
-        EulerGamma,
-        Expr,
-        FiniteSet,
-        Float,
-        Function,
-        GoldenRatio,
-        I,
-        Integer,
-        Integers,
-        Interval,
-        KroneckerDelta,
-        LambertW,
-        LeviCivita,
-        Max,
-        Min,
-        Mod,
-        Mul,
-        Number,
-        Piecewise,
-        Pow,
-        Rational,
-        RealNumber,
-        Reals,
-        S,
-        Subs,
-        SympifyError,
-        UnevaluatedExpr,
-        UniversalSet,
-        acos,
-        acosh,
-        acot,
-        acoth,
-        acsc,
-        acsch,
-        asec,
-        asech,
-        asin,
-        asinh,
-        atan,
-        atanh,
-        beta,
-        ceiling,
-        conjugate,
-        cos,
-        cosh,
-        cot,
-        coth,
-        csc,
-        csch,
-        cse,
-        diff,
-        digamma,
-        dirichlet_eta,
-        erf,
-        erfc,
-        exp,
-        expand,
-        floor,
-        gamma,
-        init_printing,
-        integer_nthroot,
-        isprime,
-        lambdify,
-        latex,
-        linsolve,
-        log,
-        loggamma,
-        lowergamma,
-        nan,
-        oo,
-        perfect_power,
-        pi,
-        polygamma,
-        sec,
-        sech,
-        series,
-        sign,
-        sin,
-        sinh,
-        sqrt,
-        sqrt_mod,
-        sympify,
-        tan,
-        tanh,
-        trigamma,
-        uppergamma,
-        var,
-        zeta,
-        zoo,
-    )
+    from sympy import Abs
+    from sympy import Add
+    from sympy import Basic
+    from sympy import Catalan
+    from sympy import Contains
+    from sympy import Derivative
+    from sympy import Dummy
+    from sympy import E
+    from sympy import EmptySet
+    from sympy import EulerGamma
+    from sympy import Expr
+    from sympy import FiniteSet
+    from sympy import Float
+    from sympy import Function
+    from sympy import GoldenRatio
+    from sympy import I
+    from sympy import Integer
+    from sympy import Integers
+    from sympy import Interval
+    from sympy import KroneckerDelta
+    from sympy import LambertW
+    from sympy import LeviCivita
+    from sympy import Max
+    from sympy import Min
+    from sympy import Mod
+    from sympy import Mul
+    from sympy import Number
+    from sympy import Piecewise
+    from sympy import Pow
+    from sympy import Rational
+    from sympy import RealNumber
+    from sympy import Reals
+    from sympy import S
+    from sympy import Subs
+    from sympy import SympifyError
+    from sympy import UnevaluatedExpr
+    from sympy import UniversalSet
+    from sympy import acos
+    from sympy import acosh
+    from sympy import acot
+    from sympy import acoth
+    from sympy import acsc
+    from sympy import acsch
+    from sympy import asec
+    from sympy import asech
+    from sympy import asin
+    from sympy import asinh
+    from sympy import atan
+    from sympy import atanh
+    from sympy import beta
+    from sympy import ceiling
+    from sympy import conjugate
+    from sympy import cos
+    from sympy import cosh
+    from sympy import cot
+    from sympy import coth
+    from sympy import csc
+    from sympy import csch
+    from sympy import cse
+    from sympy import diff
+    from sympy import digamma
+    from sympy import dirichlet_eta
+    from sympy import erf
+    from sympy import erfc
+    from sympy import exp
+    from sympy import expand
+    from sympy import floor
+    from sympy import gamma
+    from sympy import init_printing
+    from sympy import integer_nthroot
+    from sympy import isprime
+    from sympy import lambdify
+    from sympy import latex
+    from sympy import linsolve
+    from sympy import log
+    from sympy import loggamma
+    from sympy import lowergamma
+    from sympy import nan
+    from sympy import oo
+    from sympy import perfect_power
+    from sympy import pi
+    from sympy import polygamma
+    from sympy import sec
+    from sympy import sech
+    from sympy import series
+    from sympy import sign
+    from sympy import sin
+    from sympy import sinh
+    from sympy import sqrt
+    from sympy import sqrt_mod
+    from sympy import sympify
+    from sympy import tan
+    from sympy import tanh
+    from sympy import trigamma
+    from sympy import uppergamma
+    from sympy import var
+    from sympy import zeta
+    from sympy import zoo
 else:
     raise symforce.InvalidSymbolicApiError(symforce.get_symbolic_api())
 
@@ -274,7 +270,7 @@ def epsilon() -> T.Any:
     in the SymForce docs here: https://symforce.org/tutorials/epsilon_tutorial.html
 
     For purely numerical code that just needs a good default numerical epsilon, see
-    `symforce.symbolic.numerical_epsilon`.
+    `symforce.symbolic.numeric_epsilon`.
 
     Returns: The current default epsilon.  This is typically some kind of "Scalar", like a float or
              a Symbol.
@@ -319,7 +315,9 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
 
 elif sympy.__package__ == "sympy":
     from sympy import Symbol
-    from sympy import symbols  # type: ignore[misc] # mypy is mad that this is of a different type on sympy
+    from sympy import (
+        symbols,  # type: ignore[misc] # mypy is mad that this is of a different type on sympy
+    )
 
     # Save original
     original_symbol_new = sympy.Symbol.__new__
@@ -345,15 +343,15 @@ else:
 # Typing
 # --------------------------------------------------------------------------------
 
+# isort: split
 from symforce.typing import Scalar
-
 
 # --------------------------------------------------------------------------------
 # Logic functions
 # --------------------------------------------------------------------------------
 
+# isort: split
 from symforce.logic import *  # pylint: disable=wildcard-import
-
 
 # --------------------------------------------------------------------------------
 # Additional custom functions
@@ -430,6 +428,8 @@ def argmax(vals: T.Iterable[Scalar]) -> Scalar:
 
 
 def atan2(y: Scalar, x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
+    # NOTE(aaron): This is a little nonstandard to not use sign_no_zero, but is fewer ops, and is
+    # safe here
     return sympy.atan2(y, x + (sign(x) + 0.5) * epsilon)
 
 
@@ -441,6 +441,21 @@ def asin_safe(x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
 def acos_safe(x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
     x_safe = Max(-1 + epsilon, Min(1 - epsilon, x))
     return sympy.acos(x_safe)
+
+
+def clamp(x: sf.Scalar, min_value: sf.Scalar, max_value: sf.Scalar) -> sf.Scalar:
+    """
+    Returns min_value if x < min_value
+    Returns x if min_value < x < max_value
+    Returns max_value if x > max_value
+
+    Args:
+        x: Value to clamp between min_value and max_value
+        min_value: Scalar of same type and units as x; minimum value to return
+        max_value: Scalar of same type and units as x; maximum value to return. Must be greater
+            than min_value.
+    """
+    return sf.Min(max_value, sf.Max(min_value, x))
 
 
 def set_eval_on_sympify(eval_on_sympy: bool = True) -> None:
@@ -580,12 +595,15 @@ def _flatten_storage_type_subs(
     new_subs_dict = {}
     # Import these lazily, since initialization.py is imported from symforce/__init__.py
     from symforce import ops  # pylint: disable=cyclic-import
-    from symforce import python_util  # pylint: disable=cyclic-import
+    from symforce import typing_util  # pylint: disable=cyclic-import
 
     for key, value in subs_pairs:
+        if key is None:
+            # Sympy seems to support None keys and do nothing with them
+            continue
 
-        if python_util.scalar_like(key):
-            assert python_util.scalar_like(value)
+        if typing_util.scalar_like(key):
+            assert typing_util.scalar_like(value)
             new_subs_dict[key] = value
             continue
 
@@ -602,6 +620,10 @@ def _flatten_storage_type_subs(
         else:
             error_msg = f"value type {type(value)} is not an instance of key type {type(key)}"
             assert isinstance(value, type(key)) or isinstance(key, type(value)), error_msg
+            if len(new_keys) != len(new_values):
+                raise ValueError(
+                    f"number of keys ({len(new_keys)}) do not match number of values ({len(new_values)})"
+                )
             for new_key, new_value in zip(new_keys, new_values):
                 new_subs_dict[new_key] = new_value
     return new_subs_dict
@@ -628,6 +650,11 @@ def _get_subs_dict(*args: T.Any, dont_flatten_args: bool = False, **kwargs: T.An
             subs_pairs = list(args[0].items())
         else:
             subs_pairs = args[0]
+    else:
+        raise ValueError(
+            "subs must be passed either two positional arguments (a key-value pair), or a dict of "
+            f"key-value pairs.  Instead, got {args}"
+        )
 
     assert isinstance(subs_pairs, T.Sequence)
     return _flatten_storage_type_subs(subs_pairs)

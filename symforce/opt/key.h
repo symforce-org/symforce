@@ -5,9 +5,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <limits>
 #include <ostream>
-#include <stdint.h>
 
 #include <lcmtypes/sym/key_t.hpp>
 
@@ -23,37 +23,34 @@ namespace sym {
  */
 class Key {
  public:
-  using subscript_t = int64_t;
-  using superscript_t = int64_t;
+  using subscript_t = std::int64_t;
+  using superscript_t = std::int64_t;
 
   static constexpr char kInvalidLetter = static_cast<char>(0);
   static constexpr subscript_t kInvalidSub = std::numeric_limits<subscript_t>::min();
   static constexpr superscript_t kInvalidSuper = std::numeric_limits<superscript_t>::min();
 
-  Key(const char letter, const subscript_t sub, const superscript_t super)
+  constexpr Key() = default;
+  constexpr Key(char letter, subscript_t sub = kInvalidSub, superscript_t super = kInvalidSuper)
       : letter_(letter), sub_(sub), super_(super) {
     SYM_ASSERT(letter != kInvalidLetter);
   }
-  Key(const char letter, const subscript_t sub) : Key(letter, sub, kInvalidSuper) {}
-  Key(const char letter) : Key(letter, kInvalidSub, kInvalidSuper) {}
 
-  Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
+  constexpr Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
 
-  Key() {}
-
-  char Letter() const {
+  constexpr char Letter() const noexcept {
     return letter_;
   }
 
-  subscript_t Sub() const {
+  constexpr subscript_t Sub() const noexcept {
     return sub_;
   }
 
-  superscript_t Super() const {
+  constexpr superscript_t Super() const noexcept {
     return super_;
   }
 
-  key_t GetLcmType() const {
+  key_t GetLcmType() const noexcept {
     key_t key;
     key.letter = letter_;
     key.subscript = sub_;
@@ -70,11 +67,11 @@ class Key {
     return Key(key.Letter(), key.Sub(), super);
   }
 
-  bool operator==(const Key& other) const {
+  constexpr bool operator==(const Key& other) const noexcept {
     return (other.letter_ == letter_) && (other.sub_ == sub_) && (other.super_ == super_);
   }
 
-  bool operator!=(const Key& other) const {
+  constexpr bool operator!=(const Key& other) const noexcept {
     return !(*this == other);
   }
 
@@ -93,9 +90,9 @@ class Key {
   };
 
  protected:
-  char letter_;
-  subscript_t sub_;
-  superscript_t super_;
+  char letter_{kInvalidLetter};
+  subscript_t sub_{kInvalidSub};
+  superscript_t super_{kInvalidSuper};
 };
 
 /**

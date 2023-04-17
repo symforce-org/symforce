@@ -15,6 +15,7 @@
 #include <sym/pose3.h>
 #include <sym/rot2.h>
 #include <sym/rot3.h>
+#include <sym/unit3.h>
 {% for class_name in camera_cal_class_names %}
 #include <sym/{{ python_util.camelcase_to_snakecase(class_name) }}.h>
 {% endfor %}
@@ -51,6 +52,8 @@ static constexpr const bool kIsSparseEigenType =
         return func<sym::Pose2<Scalar>>(args...);                      \
       case type_t::POSE3:                                              \
         return func<sym::Pose3<Scalar>>(args...);                      \
+      case type_t::UNIT3:                                              \
+        return func<sym::Unit3<Scalar>>(args...);                      \
       case type_t::SCALAR:                                             \
         return func<Scalar>(args...);                                  \
         {% for i in range(1, 10) %}

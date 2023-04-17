@@ -4,11 +4,11 @@
 # ----------------------------------------------------------------------------
 
 import logging
-import numpy as np
-import unittest
 
-from symforce import logger
+import numpy as np
+
 import symforce.symbolic as sf
+from symforce import logger
 from symforce import typing as T
 from symforce.ops import LieGroupOps
 from symforce.test_util import TestCase
@@ -57,7 +57,8 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         angle = rot1.angle_between(rot2, epsilon=self.EPSILON)
         self.assertStorageNear(angle, 1.4, places=7)
 
-    def get_rotations_to_test(self) -> T.List[sf.Rot3]:
+    @staticmethod
+    def get_rotations_to_test() -> T.List[sf.Rot3]:
         """
         Returns a list of rotations to be used in rotation helper method tests.
         """
@@ -116,7 +117,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
 
         # 180 degree rotation about axis = [1, -1, 0]
-        rot_180_axis = sf.Rot3.from_angle_axis(sf.pi, sf.V3(1, -1, 0).normalized())
+        rot_180_axis = sf.Rot3.from_angle_axis(sf.pi, sf.V3(1, -1, 0).normalized(epsilon=0))
         rot_180_axis_transformed = sf.Rot3.from_rotation_matrix(rot_180_axis.to_rotation_matrix())
         self.assertEqual(
             rot_180_axis.to_rotation_matrix(),
@@ -216,13 +217,13 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             self.assertStorageNear(np.mean(angles), np.pi / 2, places=1)
 
             # Check that we've included both sides of the double cover
-            self.assertLess(min([e.evalf().q.w for e in elements]), -0.8)
-            self.assertGreater(max([e.evalf().q.w for e in elements]), 0.8)
+            self.assertLess(min(e.evalf().q.w for e in elements), -0.8)
+            self.assertGreater(max(e.evalf().q.w for e in elements), 0.8)
 
             # Plot the sphere to show uniform distribution
             if logger.level == logging.DEBUG and self.verbose:
-                from mpl_toolkits.mplot3d import Axes3D
                 import matplotlib.pyplot as plt
+                from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection="3d")

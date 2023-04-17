@@ -1,9 +1,8 @@
 from io import BytesIO
 import enum
 import struct
-import typing as T  # pylint: disable=unused-import
 
-class {{enumtype.name}}(enum.Enum):  # type: ignore[no-redef]
+class {{enumtype.name}}(enum.Enum):
     {% if enumtype.comment %}
     """{{enumtype.comment}}"""
     {% endif %}

@@ -3,10 +3,10 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from symforce import typing as T
 import symforce.symbolic as sf
-from symforce.ops import StorageOps
+from symforce import typing as T
 from symforce.ops import LieGroupOps
+from symforce.ops import StorageOps
 
 
 def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[sf.Matrix]:

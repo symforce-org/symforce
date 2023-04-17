@@ -1,12 +1,11 @@
 # aclint: py2 py3
 # mypy: allow-untyped-defs
-from __future__ import absolute_import
-from __future__ import print_function
-
-from six import iteritems, next  # pylint: disable=redefined-builtin
+from __future__ import absolute_import, print_function
 
 import typing as T
+
 from numpy import int64
+from six import iteritems, next  # pylint: disable=redefined-builtin
 
 INTEGER_TYPES = (
     "int8_t",
@@ -38,6 +37,7 @@ for float_type in FLOAT_TYPES:
 
 class Hash(object):
     def __init__(self):
+        # type: () -> None
         self.val = int64(0x12345678)
         # TODO(matt): is it possible to remove the int64 dependency?
 
@@ -56,6 +56,7 @@ class Hash(object):
 
     @property
     def int_value(self):
+        # type: () -> int
         # convert to uint64-like number
         # NOTE(matt): this is still a python int, and thus has infinite size
         return int(self.val) & 0xFFFFFFFFFFFFFFFF
@@ -170,6 +171,10 @@ class Notation(AstNode):
                 ),
                 NotationSpecProperty(
                     name="allow_negative_enums",
+                    type="bool",
+                ),
+                NotationSpecProperty(
+                    name="add_unknown_enum_alias",
                     type="bool",
                 ),
             ],
@@ -399,6 +404,7 @@ class Enum(AstNode):
             cases_by_id[case.int_value] = case.name
 
     def compute_hash(self):
+        # type: () -> Hash
         return self.equivalent_struct.compute_hash()
 
 
@@ -569,6 +575,7 @@ class Struct(AstNode):
                 field_ids.add(member.field_id)
 
     def compute_hash(self):
+        # type: () -> Hash
         type_hash = Hash()
         for member in self.members:
             if not isinstance(member, ConstMember):

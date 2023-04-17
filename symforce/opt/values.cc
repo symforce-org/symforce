@@ -65,7 +65,7 @@ void Values<Scalar>::UpdateOrSet(const index_t& index, const Values<Scalar>& oth
 }
 
 template <typename Scalar>
-int32_t Values<Scalar>::NumEntries() const {
+size_t Values<Scalar>::NumEntries() const {
   return map_.size();
 }
 
@@ -141,7 +141,6 @@ size_t Values<Scalar>::Cleanup() {
     map_[entry.key].offset = new_offset;
     new_offset += entry.storage_dim;
   }
-
   return data_copy.size() - data_.size();
 }
 
@@ -174,16 +173,21 @@ index_entry_t Values<Scalar>::IndexEntryAt(const Key& key) const {
 }
 
 template <typename Scalar>
-void Values<Scalar>::FillLcmType(LcmType* msg) const {
-  SYM_ASSERT(msg != nullptr);
-  msg->index = CreateIndex(Keys());
-  msg->data = data_;
+void Values<Scalar>::FillLcmType(LcmType& msg, bool sort_keys) const {
+  msg.index = CreateIndex(Keys(sort_keys));
+  msg.data = data_;
 }
 
 template <typename Scalar>
-typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType() const {
+void Values<Scalar>::FillLcmType(LcmType* msg, bool sort_keys) const {
+  SYM_ASSERT(msg != nullptr);
+  FillLcmType(*msg, sort_keys);
+}
+
+template <typename Scalar>
+typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType(bool sort_keys) const {
   LcmType msg;
-  FillLcmType(&msg);
+  FillLcmType(msg, sort_keys);
   return msg;
 }
 
@@ -200,7 +204,7 @@ template <typename Scalar>
 void Values<Scalar>::Update(const index_t& index_this, const index_t& index_other,
                             const Values<Scalar>& other) {
   SYM_ASSERT(index_this.entries.size() == index_other.entries.size());
-  for (int i = 0; i < index_this.entries.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(index_this.entries.size()); ++i) {
     const index_entry_t& entry_this = index_this.entries[i];
     const index_entry_t& entry_other = index_other.entries[i];
     SYM_ASSERT(entry_this.storage_dim == entry_other.storage_dim);

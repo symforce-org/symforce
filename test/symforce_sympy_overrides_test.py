@@ -53,12 +53,22 @@ class SympyOverridesTest(TestCase):
         for nx, ny in ((5, 2), (-5, 2), (5, -2), (-5, -2)):
             self.assertAlmostEqual(
                 float(sf.Mod(x, y).diff(x).subs({x: nx, y: ny})),
-                numerical_derivative(lambda _x: sf.Mod(x, y).subs({x: _x, y: ny}), nx),
+                numerical_derivative(
+                    lambda _x: sf.Mod(x, y).subs(
+                        {x: _x, y: ny}  # pylint: disable=cell-var-from-loop
+                    ),
+                    nx,
+                ),
             )
 
             self.assertAlmostEqual(
                 float(sf.Mod(x, y).diff(y).subs({x: nx, y: ny})),
-                numerical_derivative(lambda _y: sf.Mod(x, y).subs({x: nx, y: _y}), ny),
+                numerical_derivative(
+                    lambda _y: sf.Mod(x, y).subs(
+                        {x: nx, y: _y}  # pylint: disable=cell-var-from-loop
+                    ),
+                    ny,
+                ),
             )
 
 

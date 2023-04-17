@@ -8,23 +8,24 @@ Initialization configuration for symforce, as minimal as possible.
 """
 from __future__ import absolute_import
 
-from types import ModuleType
-import typing as T
 import os
 import sys
+import typing as T
 import warnings
+from types import ModuleType
 
 # -------------------------------------------------------------------------------------------------
 # Version
 # -------------------------------------------------------------------------------------------------
 
+# isort: split
 from ._version import version as __version__
-
 
 # -------------------------------------------------------------------------------------------------
 # Logging configuration
 # -------------------------------------------------------------------------------------------------
 
+# isort: split
 import logging
 
 # Create a logger with this print format
@@ -58,7 +59,7 @@ def set_log_level(log_level: str) -> None:
 
 
 # Set default
-set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "WARNING"))
+set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "INFO"))
 
 # -------------------------------------------------------------------------------------------------
 # Symbolic API configuration
@@ -104,7 +105,7 @@ def _find_symengine() -> ModuleType:
 
     symengine_path_candidates = list(
         symengine_install_dir.glob("lib/python3*/site-packages/symengine/__init__.py")
-    )
+    ) + list(symengine_install_dir.glob("local/lib/python3*/dist-packages/symengine/__init__.py"))
     if len(symengine_path_candidates) != 1:
         raise ImportError(
             f"Should be exactly one symengine package, found candidates {symengine_path_candidates} in directory {path_util.symenginepy_install_dir()}"
@@ -121,7 +122,12 @@ def _find_symengine() -> ModuleType:
     # For mypy: https://github.com/python/typeshed/issues/2793
     assert isinstance(spec.loader, importlib.abc.Loader)
 
-    spec.loader.exec_module(symengine)
+    try:
+        spec.loader.exec_module(symengine)
+    except:  # pylint: disable=bare-except
+        # If executing the module fails for any reason, it shouldn't be in `sys.modules`
+        del sys.modules["symengine"]
+        raise
 
     return symengine
 
@@ -259,12 +265,13 @@ def _set_epsilon(new_epsilon: T.Any) -> None:
     Args:
         new_epsilon: The new default epsilon to use
     """
-    if _have_used_epsilon:
+    global _epsilon  # pylint: disable=global-statement
+
+    if _have_used_epsilon and new_epsilon != _epsilon:
         raise AlreadyUsedEpsilon(
             "Cannot set return value of epsilon after it has already been called."
         )
 
-    global _epsilon  # pylint: disable=global-statement
     _epsilon = new_epsilon
 
 
@@ -309,3 +316,18 @@ def set_epsilon_to_zero() -> None:
     See `symforce.symbolic.epsilon` for more information.
     """
     _set_epsilon(0.0)
+
+
+def set_epsilon_to_invalid() -> None:
+    """
+    Set the default epsilon for SymForce to `None`.  Should not be used to actually create
+    expressions or generate code.
+
+    This is useful if you've forgotten to pass an epsilon somewhere, but are not sure where - using
+    this epsilon in an expression should throw a `TypeError` near the location where you forgot to
+    pass an epsilon.
+
+    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
+    See `symforce.symbolic.epsilon` for more information.
+    """
+    _set_epsilon(None)

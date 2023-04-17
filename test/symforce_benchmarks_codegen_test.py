@@ -3,14 +3,17 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from pathlib import Path
+import symforce
 
-from symforce.test_util import TestCase, sympy_only
+symforce.set_epsilon_to_symbol()
+
+from symforce import path_util
 from symforce.benchmarks.inverse_compose_jacobian import generate_inverse_compose_jacobian
 from symforce.benchmarks.matrix_multiplication import generate_matrix_multiplication_benchmark
+from symforce.test_util import TestCase
+from symforce.test_util import sympy_only
 
-
-BENCHMARKS_DIR = Path(__file__).parent.parent / "symforce" / "benchmarks"
+BENCHMARKS_DIR = path_util.symforce_data_root() / "symforce" / "benchmarks"
 
 
 class SymforceBenchmarksCodegenTest(TestCase):
@@ -24,7 +27,7 @@ class SymforceBenchmarksCodegenTest(TestCase):
         Tests:
             Generates code for the inverse_compose_jacobian benchmark
         """
-        output_dir = Path(self.make_output_dir("sf_benchmarks_codegen_test"))
+        output_dir = self.make_output_dir("sf_benchmarks_codegen_test")
         generate_inverse_compose_jacobian.generate(output_dir)
         self.compare_or_update_directory(
             actual_dir=output_dir, expected_dir=BENCHMARKS_DIR / "inverse_compose_jacobian" / "gen"
@@ -36,7 +39,7 @@ class SymforceBenchmarksCodegenTest(TestCase):
         Tests:
             Generates code for the matrix_multiplication benchmark
         """
-        output_dir = Path(self.make_output_dir("sf_benchmarks_codegen_test"))
+        output_dir = self.make_output_dir("sf_benchmarks_codegen_test")
 
         generate_matrix_multiplication_benchmark.generate(output_dir)
 

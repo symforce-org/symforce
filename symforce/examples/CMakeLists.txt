@@ -18,6 +18,7 @@ add_library(
   ${SYMFORCE_EXAMPLES_SOURCES}
   ${SYMFORCE_EXAMPLES_HEADERS}
 )
+target_compile_options(symforce_examples PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 target_link_libraries(
   symforce_examples
   symforce_gen

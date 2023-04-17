@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <Eigen/Dense>
+#include <spdlog/spdlog.h>
 
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 
@@ -47,7 +48,8 @@ void RunLocalization() {
         ));
   }
 
-  const auto params = sym::DefaultOptimizerParams();
+  auto params = sym::DefaultOptimizerParams();
+  params.verbose = true;
   sym::Optimizer<double> optimizer(params, factors, sym::kDefaultEpsilon<double>);
 
   sym::Values<double> values;
@@ -63,17 +65,17 @@ void RunLocalization() {
   values.Set({'d', 1}, 1.4);
   const std::array<std::array<double, 3>, 3> angles = {
       {{55, 245, -35}, {95, 220, -20}, {125, 220, -20}}};
-  for (int i = 0; i < angles.size(); ++i) {
-    for (int j = 0; j < angles[0].size(); ++j) {
+  for (int i = 0; i < static_cast<int>(angles.size()); ++i) {
+    for (int j = 0; j < static_cast<int>(angles[0].size()); ++j) {
       values.Set({'a', i, j}, angles[i][j] * M_PI / 180);
     }
   }
   values.Set('e', sym::kDefaultEpsilond);
 
   // Optimize!
-  const auto stats = optimizer.Optimize(&values);
+  const auto stats = optimizer.Optimize(values);
 
-  std::cout << "Optimized values:" << values << std::endl;
+  spdlog::debug("Optimized values: {}", values);
 
   // Check output
   const auto& iteration_stats = stats.iterations;

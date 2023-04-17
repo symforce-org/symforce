@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import unittest
-
 from symforce import typing as T
 from symforce.ops.ops import Ops
 from symforce.test_util import TestCase
@@ -25,7 +23,8 @@ class SymforceOpsTest(TestCase):
         with self.assertRaises(NotImplementedError):
             Ops.implementation(type("UnregisteredType", (object,), {}))
 
-    def get_implementation_type(self) -> T.Type:
+    @staticmethod
+    def get_implementation_type() -> T.Type:
         # A helper to make testing more concise
         return type("ImplementationType", (object,), {})
 
@@ -55,12 +54,14 @@ class SymforceOpsTest(TestCase):
         except NotImplementedError:
             self.fail("Ops.implementation raised NotImplementedError unexpectedly")
 
-    def get_type_parent_child(self) -> T.Tuple[T.Type, T.Type]:
+    @staticmethod
+    def get_type_parent_child() -> T.Tuple[T.Type, T.Type]:
         # A helper to make testing more concise
         TypeParent = type("TypeParent", (object,), {})
         return TypeParent, type("TypeChild", (TypeParent,), {})
 
-    def get_ops_parent_child(self) -> T.Tuple[T.Type, T.Type]:
+    @staticmethod
+    def get_ops_parent_child() -> T.Tuple[T.Type, T.Type]:
         # A helper to make testing more concise
         OpsParent = type("OpsParent", (Ops,), {})
         return OpsParent, type("OpsChild", (OpsParent,), {})

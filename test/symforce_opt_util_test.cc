@@ -4,11 +4,10 @@
  * ---------------------------------------------------------------------------- */
 
 #include <Eigen/Dense>
+#include <catch2/catch_test_macros.hpp>
 
 #include <sym/rot3.h>
 #include <symforce/opt/util.h>
-
-#include "catch.hpp"
 
 TEST_CASE("Test interpolation", "[opt_util][interpolate]") {
   std::mt19937 gen(42);

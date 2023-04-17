@@ -3,17 +3,23 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import os
+import sympy
 
 import symforce
 
-from symforce import codegen
-import symforce.symbolic as sf
-from symforce.test_util import TestCase, sympy_only
+symforce.set_epsilon_to_symbol()
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEST_DATA_DIR = os.path.join(
-    SYMFORCE_DIR, "test", "symforce_function_codegen_test_data", symforce.get_symbolic_api()
+import symforce.symbolic as sf
+from symforce import codegen
+from symforce.path_util import symforce_data_root
+from symforce.test_util import TestCase
+from symforce.test_util import sympy_only
+
+TEST_DATA_DIR = (
+    symforce_data_root()
+    / "test"
+    / "symforce_function_codegen_test_data"
+    / symforce.get_symbolic_api()
 )
 
 
@@ -53,9 +59,31 @@ class SymforceCppCodePrinterTest(TestCase):
         )
 
         # Compare to expected
-        expected_code_file = os.path.join(TEST_DATA_DIR, "heaviside.h")
+        expected_code_file = TEST_DATA_DIR / "heaviside.h"
         output_function = heaviside_codegen_data.function_dir / "heaviside.h"
         self.compare_or_update_file(expected_code_file, output_function)
+
+    def test_custom_function_replacement(self) -> None:
+        output_dir = self.make_output_dir("sf_custom_function_replacement_test_")
+
+        # Simple test expression with one function that should be overwritten
+        def test_expression(x: sf.Symbol) -> sf.Expr:
+            return sf.sin(x)
+
+        codegen_config = codegen.CppConfig(
+            override_methods={sympy.sin: "fast_math::sin"},
+            extra_imports=["custom_function_replacement_header.h"],
+        )
+        codegen_function = codegen.Codegen.function(func=test_expression, config=codegen_config)
+
+        codegen_data = codegen_function.generate_function(
+            output_dir=output_dir, namespace="cpp_code_printer_test"
+        )
+
+        # Compare
+        expected = TEST_DATA_DIR / "custom_function_replacement.h"
+        output = codegen_data.function_dir / "test_expression.h"
+        self.compare_or_update_file(expected, output)
 
 
 if __name__ == "__main__":

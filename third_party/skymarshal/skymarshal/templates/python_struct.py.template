@@ -35,6 +35,21 @@ class {{ lcmtype.name }}(object):
 {% endif %}
 {% endfor %}
 
+{% if lcmtype.members|length < 255 %}
+    @staticmethod
+    def from_all_fields(
+{% for member, _, init_val, type_hint in lcmtype.member_initializers() %}
+        {{ member.name }},  # type: {{ type_hint }}
+{% endfor %}
+    ):
+        # type: (...) -> {{ lcmtype.name }}
+        return {{ lcmtype.name }}(
+{% for member, _, _, _ in lcmtype.member_initializers() %}
+            {{ member.name }}={{ member.name }},
+{% endfor %}
+        )
+{% endif %}
+
     @staticmethod
     def _skytype_meta():
         # type: () -> T.Dict[str, str]

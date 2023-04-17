@@ -8,13 +8,14 @@
 # During parsing, the parse stack matches a rule, the corresponding function is executed.
 # A function's p argument is the list of productions in the rule, with p[0] being the output.
 from __future__ import absolute_import, print_function
+
 from ply import yacc
 
 from . import syntax_tree
 
 # PLY relies on the existence of these names for parsing
-from .tokenizer import lexer
 from .tokenizer import tokens  # pylint: disable=unused-import
+from .tokenizer import lexer
 
 
 def recurse_left(p, spaces=0, extend=False):

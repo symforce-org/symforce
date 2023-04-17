@@ -6,8 +6,8 @@
 """
 This file builds a Values with all symbols needed for the fixed-size example.
 """
-from symforce.values import Values
 import symforce.symbolic as sf
+from symforce.values import Values
 
 
 def define_view(index: int) -> Values:
