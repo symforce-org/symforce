@@ -73,7 +73,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
-    optimization_iteration_t& iteration_stats, const StateType& state_, const Scalar new_error,
+    optimization_iteration_t& iteration_stats, const StateType& state, const Scalar new_error,
     const Scalar relative_reduction, const bool debug_stats, const bool include_jacobians) const {
   SYM_TIME_SCOPE("LM<{}>: IterationStats", id_);
 
@@ -85,7 +85,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
 
   if (include_jacobians) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
-    iteration_stats.new_error_linear = state_.Init().GetLinearization().LinearError(update_);
+    iteration_stats.new_error_linear = state.Init().GetLinearization().LinearError(update_);
   }
 
   if (p_.verbose) {
@@ -93,16 +93,16 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
     spdlog::info(
         "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3f}/{:.3f}/{:.3f}, "
         "rel reduction: {:.5f}",
-        id_, iteration_stats.iteration, iteration_stats.current_lambda, state_.Init().Error(),
+        id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
         iteration_stats.new_error_linear, iteration_stats.new_error,
         iteration_stats.relative_reduction);
   }
 
   if (debug_stats) {
-    iteration_stats.values = state_.New().values.template Cast<double>().GetLcmType();
-    const VectorX<Scalar> residual_vec = state_.New().GetLinearization().residual;
+    iteration_stats.values = state.New().values.template Cast<double>().GetLcmType();
+    const VectorX<Scalar> residual_vec = state.New().GetLinearization().residual;
     iteration_stats.residual = residual_vec.template cast<float>();
-    const MatrixX<Scalar> jacobian_vec = JacobianValues(state_.New().GetLinearization().jacobian);
+    const MatrixX<Scalar> jacobian_vec = JacobianValues(state.New().GetLinearization().jacobian);
     iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
   }
 }
