@@ -134,7 +134,7 @@ def add_preamble(source: str, name: Path, comment_prefix: str, custom_preamble: 
 
 
 @functools.lru_cache
-def jinja_env(template_dir: T.Openable, search_paths: T.Tuple[T.Openable] = ()) -> RelEnvironment:
+def jinja_env(template_dir: T.Openable, search_paths: T.Tuple[T.Openable, ...] = ()) -> RelEnvironment:
     """
     Helper function to cache the Jinja environment, which enables caching of loaded templates
     """
