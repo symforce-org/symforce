@@ -189,9 +189,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       }
 
       // Add contribution from right-hand-side
-      for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
-        const linearization_offsets_t& key_helper = factor_helper.key_helpers[key_i];
-
+      for (const linearization_offsets_t& key_helper : factor_helper.key_helpers) {
         init_linearization_.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
             linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
       }
@@ -224,9 +222,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       }
 
       // Add contributions from right-hand-side
-      for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
-        const linearization_dense_key_helper_t& key_helper = factor_helper.key_helpers[key_i];
-
+      for (const linearization_dense_key_helper_t& key_helper : factor_helper.key_helpers) {
         init_linearization_.rhs.segment(key_helper.combined_offset, key_helper.tangent_dim) +=
             linearized_dense_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
       }
