@@ -14,24 +14,25 @@ import re
 import shutil
 import string
 import subprocess
+from pathlib import Path
 
 from symforce import logger
 from symforce import typing as T
 
 
-def remove_if_exists(path: T.Openable) -> None:
+def remove_if_exists(path: Path) -> None:
     """
     Delete a file or directory if it exists.
     """
-    if not os.path.exists(path):
+    if not path.exists():
         logger.debug(f"Doesn't exist: {path}")
         return
-    elif os.path.isdir(path):
+    elif path.is_dir():
         logger.debug(f"Removing directory: {path}")
         shutil.rmtree(path)
     else:
         logger.debug(f"Removing file: {path}")
-        os.remove(path)
+        path.unlink()
 
 
 def execute_subprocess(

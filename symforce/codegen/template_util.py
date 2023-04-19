@@ -196,12 +196,9 @@ def render_template(
         )
 
     if output_path:
-        directory = os.path.dirname(output_path)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        with open(output_path, "w") as f:
-            f.write(rendered_str)
+        output_path = Path(output_path)
+        output_path.parent.mkdir(exist_ok=True, parents=True)
+        output_path.write_text(rendered_str)
 
     return rendered_str
 

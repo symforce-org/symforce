@@ -7,13 +7,14 @@ import os
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 
 from symforce import logger
 from symforce import python_util
 from symforce.test_util import TestCase
 from symforce.test_util import slow_on_sympy
 
-SYMFORCE_DIR = os.path.dirname(os.path.dirname(__file__)) or "."
+SYMFORCE_DIR = Path(__file__).parent.parent
 
 
 class SymforceLinterTest(TestCase):
