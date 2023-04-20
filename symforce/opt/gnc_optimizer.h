@@ -46,9 +46,8 @@ class GncOptimizer : public BaseOptimizerType {
    * each time the convexity changes.
    */
   using BaseOptimizerType::Optimize;
-  virtual void Optimize(Values<Scalar>& values, int num_iterations,
-                        bool populate_best_linearization,
-                        OptimizationStats<Scalar>& stats) override {
+  void Optimize(Values<Scalar>& values, int num_iterations, bool populate_best_linearization,
+                OptimizationStats<Scalar>& stats) override {
     SYM_TIME_SCOPE("GNC<{}>::Optimize", BaseOptimizer::GetName());
 
     if (num_iterations < 0) {
@@ -103,7 +102,7 @@ class GncOptimizer : public BaseOptimizerType {
                        populate_best_linearization, stats);
     }
   }
-  [[deprecated("Pass values and stats by reference instead")]] virtual void Optimize(
+  [[deprecated("Pass values and stats by reference instead")]] void Optimize(
       Values<Scalar>* const values, int num_iterations, bool populate_best_linearization,
       OptimizationStats<Scalar>* const stats) override {
     Optimize(*values, num_iterations, populate_best_linearization, *stats);
