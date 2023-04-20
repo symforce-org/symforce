@@ -39,7 +39,7 @@ class Values {
   /**
    * Default construct as empty.
    */
-  Values();
+  Values() = default;
 
   /**
    * Construct from a list of other Values objects. The order of Keys are preserved by

@@ -102,7 +102,7 @@ class Factor {
   // Constructors
   // ----------------------------------------------------------------------------------------------
 
-  Factor() {}
+  Factor() = default;
 
   /**
    * Create directly from a (dense/sparse) hessian functor. This is the lowest-level constructor.

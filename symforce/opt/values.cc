@@ -13,9 +13,6 @@
 namespace sym {
 
 template <typename Scalar>
-Values<Scalar>::Values() {}
-
-template <typename Scalar>
 Values<Scalar>::Values(std::initializer_list<Values<Scalar>> others) {
   for (const auto& other : others) {
     // add in the Keys with a different offset
