@@ -140,7 +140,7 @@ def symmetric_power_barrier(
     power: sf.Scalar,
 ) -> sf.Scalar:
     """
-    A symmetric barrier cenetered around x = 0, meaning the error at -x is equal to the error at x.
+    A symmetric barrier centered around x = 0, meaning the error at -x is equal to the error at x.
     The barrier passes through the points (x_nominal, error_nominal) and
     (x_nominal - dist_zero_to_nominal, 0) with a curve of the form x^power. For example, the
     barrier with power = 1 will look like:
@@ -282,7 +282,7 @@ def min_max_centering_power_barrier(
                     ------------------*******-------------------
                                    |
 
-    It may be easier to vizualize the bounding and centering barriers independently:
+    It may be easier to visualize the bounding and centering barriers independently:
 
     BOUNDING BARRIER:
                    **              |                          **

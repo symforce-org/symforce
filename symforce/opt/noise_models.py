@@ -278,7 +278,7 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
     def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
         Applies a whitening function to a single element of the unwhitened residual such that the
-        cost associated with the element in the least-sqaures cost function is the Pseudo-Huber
+        cost associated with the element in the least-squares cost function is the Pseudo-Huber
         loss function.
 
         Args:
@@ -329,7 +329,7 @@ class BarronNoiseModel(ScalarNoiseModel):
             by the pseudo-huber loss function.
         scalar_information: Scalar representing the inverse of the variance of an element of the
             unwhitened residual. Conceptually, we use "scalar_information" to whiten (in a
-            probabalistic sense) the unwhitened residual before passing it through the Barron loss.
+            probabilistic sense) the unwhitened residual before passing it through the Barron loss.
         x_epsilon: Small value used for handling the singularity at x == 0.
         alpha_epsilon: Small value used for handling singularities around alpha.
     """
@@ -386,7 +386,7 @@ class BarronNoiseModel(ScalarNoiseModel):
     def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
         Applies a whitening function to a single element of the unwhitened residual such that the
-        cost associated with the element in the least-sqaures cost function is the Barron loss
+        cost associated with the element in the least-squares cost function is the Barron loss
         function (weighted by self.weight).
 
         Args:

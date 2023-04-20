@@ -16,7 +16,7 @@ PACKAGE_NAME = "example_pkg"
 
 class SymforceCodegenUtilTest(TestCase):
     """
-    Tests contents of symforce.codegen.codgen_util.
+    Tests contents of symforce.codegen.codegen_util.
     """
 
     def test_load_generated_package(self) -> None:

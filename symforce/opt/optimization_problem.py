@@ -85,13 +85,13 @@ class OptimizationProblem:
             subproblem.optimized_values() for subproblem in self.subproblems.values()
         )
 
-        content_addressible_inputs = {
+        content_addressable_inputs = {
             tuple(ops.StorageOps.to_storage(value)): key for key, value in inputs.items_recursive()
         }
 
         optimized_keys = []
         for value in optimized_values:
-            optimized_key = content_addressible_inputs[tuple(ops.StorageOps.to_storage(value))]
+            optimized_key = content_addressable_inputs[tuple(ops.StorageOps.to_storage(value))]
             if value != inputs[optimized_key]:
                 raise TypeError(
                     f"Variable returned by `optimized_values()` ({value}) in "
