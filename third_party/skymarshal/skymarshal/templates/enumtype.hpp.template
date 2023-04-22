@@ -89,6 +89,10 @@ class {{enumtype.name}}
          */
         constexpr static int64_t getHash();
 
+        using type_name_array_t = const char[{{enumtype.name|length + 1}}];
+
+        inline static constexpr type_name_array_t* getTypeNameArrayPtr();
+
         /**
          * Returns "{{enumtype.name}}"
          */
@@ -157,9 +161,13 @@ constexpr int64_t {{enumtype.name}}::getHash()
     return _computeHash(NULL);
 }
 
+constexpr {{enumtype.name}}::type_name_array_t* {{enumtype.name}}::getTypeNameArrayPtr() {
+    return &"{{enumtype.name}}";
+}
+
 constexpr const char* {{enumtype.name}}::getTypeName()
 {
-    return "{{enumtype.name}}";
+    return *{{enumtype.name}}::getTypeNameArrayPtr();
 }
 
 constexpr const char * {{enumtype.name}}::getPackageName()
