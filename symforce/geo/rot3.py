@@ -86,23 +86,18 @@ class Rot3(LieGroup):
         assert theta != 0, "Trying to divide by zero, provide epsilon!"
         return cls(Quaternion(xyz=sf.sin(theta / 2) / theta * vm, w=sf.cos(theta / 2)))
 
-    def logmap_acos_clamp_max(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
-        """
-        Implementation of logmap that uses epsilon with the Min function to
-        avoid the singularity in the sqrt at w == 1
-
-        Also flips the sign of the quaternion of w is negative, which makes sure
-        that the resulting tangent vector has norm <= pi
-        """
+    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
+        # Implementation of logmap that uses epsilon with the Min function to
+        # avoid the singularity in the sqrt at w == 1
+        #
+        # Also flips the sign of the quaternion of w is negative, which makes sure
+        # that the resulting tangent vector has norm <= pi
         w_positive = sf.Abs(self.q.w)
         w_safe = sf.Min(1 - epsilon, w_positive)
         xyz_w_positive = self.q.xyz * sf.sign_no_zero(self.q.w)
         norm = sf.sqrt(1 - w_safe ** 2)
         tangent = 2 * xyz_w_positive / norm * sf.acos(w_safe)
         return tangent.to_storage()
-
-    def to_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> T.List[T.Scalar]:
-        return self.logmap_acos_clamp_max(epsilon=epsilon)
 
     @classmethod
     def hat(cls, vec: T.Sequence[T.Scalar]) -> Matrix33:
