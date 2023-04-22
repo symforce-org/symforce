@@ -123,7 +123,11 @@ add_library(
   ${SYMFORCE_CHOLESKY_HEADERS}
 )
 target_compile_options(symforce_cholesky PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
-target_link_libraries(symforce_cholesky metis ${SYMFORCE_EIGEN_TARGET})
+target_link_libraries(symforce_cholesky
+  fmt::fmt
+  metis
+  ${SYMFORCE_EIGEN_TARGET}
+)
 target_include_directories(symforce_cholesky PUBLIC ../..)
 
 # ------------------------------------------------------------------------------
