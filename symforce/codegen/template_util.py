@@ -134,11 +134,15 @@ def add_preamble(source: str, name: Path, comment_prefix: str, custom_preamble: 
 
 
 @functools.lru_cache
-def jinja_env(template_dir: T.Openable) -> RelEnvironment:
+def jinja_env(
+    template_dir: T.Openable, search_paths: T.Tuple[T.Openable, ...] = ()
+) -> RelEnvironment:
     """
     Helper function to cache the Jinja environment, which enables caching of loaded templates
     """
-    loader = jinja2.FileSystemLoader(os.fspath(template_dir))
+    all_search_paths = [os.fspath(template_dir)]
+    all_search_paths.extend((os.fspath(p) for p in search_paths))
+    loader = jinja2.FileSystemLoader(searchpath=all_search_paths)
     env = RelEnvironment(
         loader=loader,
         trim_blocks=True,
@@ -156,9 +160,10 @@ def render_template(
     *,
     template_dir: T.Openable,
     output_path: T.Optional[T.Openable] = None,
+    search_paths: T.Iterable[T.Openable] = (),
 ) -> str:
     """
-    Boiler plate to render template. Returns the rendered string and optionally writes to file.
+    Boilerplate to render template. Returns the rendered string and optionally writes to file.
 
     Args:
         template_path: file path of the template to render
@@ -167,6 +172,7 @@ def render_template(
                 information)
         template_dir: Base directory where templates are found
         output_path: If provided, writes to file
+        search_paths: Additional directories jinja should search when resolving imports
     """
     if not isinstance(template_path, Path):
         template_path = Path(template_path)
@@ -180,7 +186,9 @@ def render_template(
 
     filetype = FileType.from_template_path(Path(template_path))
 
-    template = jinja_env(template_dir).get_template(os.fspath(template_path))
+    template = jinja_env(template_dir, search_paths=tuple(search_paths)).get_template(
+        os.fspath(template_path)
+    )
     rendered_str = add_preamble(
         str(template.render(**data)),
         template_path,
@@ -247,7 +255,7 @@ class TemplateList:
             )
         )
 
-    def render(self) -> T.List[str]:
+    def render(self, search_paths: T.Iterable[T.Openable] = ()) -> T.List[str]:
         rendered_templates = []
         for entry in self.items:
             rendered_templates.append(
@@ -257,6 +265,7 @@ class TemplateList:
                     config=entry.config,
                     template_dir=entry.template_dir,
                     output_path=entry.output_path,
+                    search_paths=search_paths,
                 )
             )
         return rendered_templates
