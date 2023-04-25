@@ -5,9 +5,7 @@
 
 #pragma once
 
-#ifndef SYM_SPARSE_CHOLESKY_SOLVER_H
-#error __FILE__ should only be included from sparse_cholesky_solver.h
-#endif  // SYM_SPARSE_CHOLESKY_SOLVER_H
+#include "./sparse_cholesky_solver.h"
 
 namespace sym {
 

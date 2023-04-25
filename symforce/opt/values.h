@@ -267,6 +267,16 @@ class Values {
 using Valuesd = Values<double>;
 using Valuesf = Values<float>;
 
+template <>
+struct ValuesLcmTypeHelper<double> {
+  using Type = values_t;
+};
+
+template <>
+struct ValuesLcmTypeHelper<float> {
+  using Type = valuesf_t;
+};
+
 /**
  * Prints entries with their keys, data slices, and values, like:
  *
@@ -282,9 +292,6 @@ std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v);
 
 }  // namespace sym
 
-// Template method implementations
-#include "./values.tcc"
-
 // Explicit instantiation declarations
 extern template class sym::Values<double>;
 extern template class sym::Values<float>;
@@ -293,3 +300,6 @@ extern template sym::Values<double> sym::Values<double>::Cast<double>() const;
 extern template sym::Values<float> sym::Values<double>::Cast<float>() const;
 extern template sym::Values<double> sym::Values<float>::Cast<double>() const;
 extern template sym::Values<float> sym::Values<float>::Cast<float>() const;
+
+// Template method implementations
+#include "./values.tcc"

@@ -3,6 +3,8 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#pragma once
+
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
 

@@ -155,7 +155,6 @@ class SparseCholeskySolver {
 }  // namespace sym
 
 // Include implementation, yay templates.
-#define SYM_SPARSE_CHOLESKY_SOLVER_H
 #include "./sparse_cholesky_solver.tcc"
 
 // Explicit template instantiation declarations

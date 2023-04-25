@@ -3,12 +3,15 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#pragma once
+
 #include <stdexcept>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "./assert.h"
+#include "./values.h"
 
 /**
  * Template method implementations for Values.
@@ -130,19 +133,5 @@ void Values<Scalar>::SetInternal(const index_entry_t& entry, const T& value) {
   SYM_ASSERT((entry.offset + entry.storage_dim <= static_cast<int>(data_.size())));
   StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }
-
-// ----------------------------------------------------------------------------
-// LCM type alias
-// ----------------------------------------------------------------------------
-
-template <>
-struct ValuesLcmTypeHelper<double> {
-  using Type = values_t;
-};
-
-template <>
-struct ValuesLcmTypeHelper<float> {
-  using Type = valuesf_t;
-};
 
 }  // namespace sym

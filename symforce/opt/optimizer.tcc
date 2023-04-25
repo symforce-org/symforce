@@ -3,6 +3,8 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#pragma once
+
 #include "./assert.h"
 #include "./internal/covariance_utils.h"
 #include "./internal/derivative_checker.h"
