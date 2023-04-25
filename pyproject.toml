@@ -1,3 +1,54 @@
+[project]
+name = "symforce"
+description = "Fast symbolic computation, code generation, and nonlinear optimization for robotics"
+authors = [{ name = "Skydio, Inc.", email = "hayk@skydio.com" }]
+license = { text = "Apache 2.0" }
+keywords = [
+  "python",
+  "computer-vision",
+  "cpp",
+  "robotics",
+  "optimization",
+  "structure-from-motion",
+  "motion-planning",
+  "code-generation",
+  "slam",
+  "autonomous-vehicles",
+  "symbolic-computation",
+]
+# For a list of valid classifiers see https://pypi.org/classifiers/
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Embedded Systems",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Education :: Computer Aided Instruction (CAI)",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: C++",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/symforce-org/symforce/issues"
+Source = "https://github.com/symforce-org/symforce"
+
+# --------------------------------------------------------------------------------
+# Other configuration
+# --------------------------------------------------------------------------------
+
 [tool.black]
 line-length = 100
 
@@ -5,8 +56,42 @@ line-length = 100
 profile = "black"
 line_length = 100
 py_version = "all"
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "GENERATED", "FIRSTPARTY", "LOCALFOLDER"]
+sections = [
+  "FUTURE",
+  "STDLIB",
+  "THIRDPARTY",
+  "GENERATED",
+  "FIRSTPARTY",
+  "LOCALFOLDER",
+]
 known_generated = ["lcmtypes"]
 src_paths = []
 known_first_party = ["sym", "symforce"]
 force_single_line = true
+
+[tool.mypy]
+python_version = "3.8"
+warn_unused_configs = true
+disallow_untyped_defs = true
+mypy_path = [".", "gen/python", "$SYMFORCE_LCMTYPES_DIR", "symforce/pybind"]
+
+[[tool.mypy.overrides]]
+module = [
+  "IPython.*",
+  "argh.*",
+  "black.*",
+  "graphviz.*",
+  "matplotlib.*",
+  "mpl_toolkits.*",
+  "numba.*",
+  "scipy.*",
+  "skymarshal.*",
+  "symengine.*",
+  "sympy.*",
+  "torch.*",        # We don't require torch to be installed
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "lcmtypes"
+follow_imports = "silent"

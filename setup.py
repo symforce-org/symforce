@@ -3,17 +3,16 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import distutils.errors
 import distutils.util
 import multiprocessing
 import os
 import re
 import subprocess
 import sys
-import typing as T
 from pathlib import Path
 
 from setuptools import Extension
+from setuptools import find_namespace_packages
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
@@ -316,7 +315,7 @@ class InstallWithExtras(install):
 
 
 setup_requirements = [
-    "setuptools",
+    "setuptools>=62.3.0",  # For package data globs
     "wheel",
     "pip",
     "cmake>=3.17",
@@ -339,28 +338,6 @@ docs_requirements = [
     "sphinx-autodoc-typehints<1.15",
     "breathe",
 ]
-
-cmdclass: T.Dict[str, T.Any] = dict(
-    build_ext=CMakeBuild,
-    install=InstallWithExtras,
-    egg_info=SymForceEggInfo,
-    develop=PatchDevelop,
-)
-
-
-def symforce_data_files() -> T.List[str]:
-    # package_data doesn't support recursive globs until this merges:
-    # https://github.com/pypa/setuptools/pull/3309
-    # So, we do the globbing ourselves
-    SYMFORCE_PKG_DIR = SOURCE_DIR / "symforce"
-    files_with_pattern = lambda pattern: [
-        str(p.relative_to(SYMFORCE_PKG_DIR)) for p in SYMFORCE_PKG_DIR.rglob(pattern)
-    ]
-    return (
-        files_with_pattern("*.jinja")
-        + files_with_pattern("*.mtx")
-        + ["test_util/random_expressions/README", ".clang-format"]
-    )
 
 
 def symforce_rev() -> str:
@@ -390,6 +367,7 @@ def fixed_readme() -> str:
     )
 
     # Remove the DARK_MODE_ONLY tags
+    # https://github.com/pypi/warehouse/issues/11251
     # See https://stackoverflow.com/a/1732454/2791611
     readme = re.sub(
         r"<!--\s*DARK_MODE_ONLY\s*-->((?!DARK_MODE_ONLY).)*<!--\s*/DARK_MODE_ONLY\s*-->",
@@ -401,104 +379,75 @@ def fixed_readme() -> str:
     return readme
 
 
-setup(
-    name="symforce",
-    version=symforce_version(),
-    author="Skydio, Inc",
-    author_email="hayk@skydio.com",
-    description="Fast symbolic computation, code generation, and nonlinear optimization for robotics",
-    keywords="python computer-vision cpp robotics optimization structure-from-motion motion-planning code-generation slam autonomous-vehicles symbolic-computation",
-    license="Apache 2.0",
-    license_file="LICENSE",
-    long_description=fixed_readme(),
-    long_description_content_type="text/markdown",
-    url="https://github.com/symforce-org/symforce",
-    project_urls={
-        "Bug Tracker": "https://github.com/symforce-org/symforce/issues",
-        "Source": "https://github.com/symforce-org/symforce",
-    },
-    # For a list of valid classifiers see https://pypi.org/classifiers/
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Education",
-        "Intended Audience :: Science/Research",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Scientific/Engineering :: Mathematics",
-        "Topic :: Software Development :: Code Generators",
-        "Topic :: Software Development :: Embedded Systems",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Education :: Computer Aided Instruction (CAI)",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: C++",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-    ],
-    # -------------------------------------------------------------------------
-    # Build info
-    # -------------------------------------------------------------------------
-    # Minimum Python version
-    python_requires=">=3.8",
-    # Find all packages in the directory
-    packages=find_packages() + find_packages(where="third_party/symenginepy"),
-    package_data={
-        "symforce": symforce_data_files(),
-    },
-    package_dir={
-        "symforce": "symforce",
-        "symengine": "third_party/symenginepy/symengine",
-        "lcmtypes": "lcmtypes_build/lcmtypes",
-    },
-    # Override the extension builder with our cmake class
-    cmdclass=cmdclass,
-    # Build C++ extension module
-    ext_modules=[CMakeExtension("cc_sym"), CMakeExtension("lcmtypes")],
-    # Barebones packages needed to run symforce
-    install_requires=[
-        "black",
-        "clang-format",
-        "graphviz",
-        "jinja2",
-        "numpy",
-        "scipy",
-        f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
-        "sympy~=1.11.1",
-        f"symforce-sym @ file://localhost/{SOURCE_DIR}/gen/python",
-    ],
-    setup_requires=setup_requirements,
-    extras_require={
-        "docs": docs_requirements,
-        "dev": docs_requirements
-        + [
-            "click~=8.0.4",  # Required by black, but not specified by our version of black
-            "argh",
-            "black[jupyter]==21.12b0",
-            "coverage",
-            "isort",
-            "jinja2~=3.0.3",
-            "mypy==0.910",
-            # Not compatible with py3.11 yet: https://github.com/numba/numba/issues/8304
-            "numba ; python_version < '3.11'",
-            # A dependency of numba, only required here because pip-tools does not automatically
-            # propagate python_version to dependencies
-            "llvmlite ; python_version < '3.11'",
-            "pip-tools<6.11",
-            "pybind11-stubgen",
-            "pylint",
-            # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
-            "lazy-object-proxy>=1.9.0",
-            "types-jinja2",
-            "types-pygments",
-            "types-requests",
-            "types-setuptools",
+if __name__ == "__main__":
+    setup(
+        version=symforce_version(),
+        long_description=fixed_readme(),
+        long_description_content_type="text/markdown",
+        # The SymForce package is a namespace package (important for data-only subdirectories
+        # specifically).  We could also treat the others as namespace packages, but that makes it
+        # more annoying to exclude non-package directories.
+        packages=find_namespace_packages(where=".", include=["symforce*"])
+        + find_packages(where=".", exclude=["symforce*"])
+        + find_packages(where="third_party/symenginepy"),
+        package_dir={
+            "symforce": "symforce",
+            "symengine": "third_party/symenginepy/symengine",
+            "lcmtypes": "lcmtypes_build/lcmtypes",
+        },
+        package_data={"": ["*.jinja", "*.mtx", "README*", ".clang-format"]},
+        # pyproject.toml doesn't allow specifying url or homepage separately, and if it's not
+        # specified separately PyPI sorts all the links alphabetically
+        # https://github.com/pypi/warehouse/issues/3097
+        url="https://symforce.org",
+        # Override the extension builder with our cmake class
+        cmdclass=dict(
+            build_ext=CMakeBuild,
+            install=InstallWithExtras,
+            egg_info=SymForceEggInfo,
+            develop=PatchDevelop,
+        ),
+        # Build C++ extension module
+        ext_modules=[CMakeExtension("cc_sym"), CMakeExtension("lcmtypes")],
+        # Barebones packages needed to run symforce
+        install_requires=[
+            "black",
+            "clang-format",
+            "graphviz",
+            "jinja2",
+            "numpy",
+            "scipy",
+            f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
+            "sympy~=1.11.1",
+            f"symforce-sym @ file://localhost/{SOURCE_DIR}/gen/python",
         ],
-        "_setup": setup_requirements,
-    },
-    # Not okay to zip
-    zip_safe=False,
-)
+        setup_requires=setup_requirements,
+        extras_require={
+            "docs": docs_requirements,
+            "dev": docs_requirements
+            + [
+                "click~=8.0.4",  # Required by black, but not specified by our version of black
+                "argh",
+                "black[jupyter]==21.12b0",
+                "coverage",
+                "isort",
+                "jinja2~=3.0.3",
+                "mypy==0.910",
+                # Not compatible with py3.11 yet: https://github.com/numba/numba/issues/8304
+                "numba ; python_version < '3.11'",
+                # A dependency of numba, only required here because pip-tools does not automatically
+                # propagate python_version to dependencies
+                "llvmlite ; python_version < '3.11'",
+                "pip-tools<6.11",
+                "pybind11-stubgen",
+                "pylint",
+                # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
+                "lazy-object-proxy>=1.9.0",
+                "types-jinja2",
+                "types-pygments",
+                "types-requests",
+                "types-setuptools",
+            ],
+            "_setup": setup_requirements,
+        },
+    )
