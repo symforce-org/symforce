@@ -40,7 +40,7 @@ class Storage:
 
     def to_storage(self: StorageT) -> T.List[T.Scalar]:
         """
-        Flat list representation of the underlying storage, length of STORAGE_DIM.
+        Flat list representation of the underlying storage, length of :meth:`storage_dim`.
         This is used purely for plumbing, it is NOT like a tangent space.
         """
         raise NotImplementedError()
@@ -48,7 +48,7 @@ class Storage:
     @classmethod
     def from_storage(cls: T.Type[StorageT], elements: T.Sequence[T.Scalar]) -> StorageT:
         """
-        Construct from a flat list representation. Opposite of `.to_storage()`.
+        Construct from a flat list representation. Opposite of :meth:`to_storage`.
         """
         raise NotImplementedError()
 
@@ -85,7 +85,7 @@ class Storage:
     def symbolic(cls: T.Type[StorageT], name: str, **kwargs: T.Any) -> StorageT:
         """
         Construct a symbolic element with the given name prefix. Kwargs are forwarded
-        to sf.Symbol (for example, sympy assumptions).
+        to :class:`sf.Symbol <symforce.symbolic.Symbol>` (for example, sympy assumptions).
         """
         return cls.from_storage(
             [sf.Symbol(f"{name}_{i}", **kwargs) for i in range(cls.storage_dim())]

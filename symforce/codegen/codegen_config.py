@@ -2,6 +2,7 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
+
 from abc import abstractmethod
 from dataclasses import dataclass
 from dataclasses import field
@@ -57,7 +58,7 @@ class CodegenConfig:
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         render_template_config: Configuration for template rendering, see RenderTemplateConfig for
                                 more information
-        cse_optimizations: Optimizations argument to pass to sf.cse
+        cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
     """
 
@@ -123,7 +124,9 @@ class CodegenConfig:
     def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
         """
         Format accessor for 2D matrices.
-        Raises an index exception if either of the following is false:
+
+        Raises an index exception if either of the following is false::
+
             0 <= i < shape[0]
             0 <= j < shape[1]
         """

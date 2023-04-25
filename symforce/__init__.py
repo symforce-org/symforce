@@ -4,9 +4,14 @@
 # ----------------------------------------------------------------------------
 
 """
-Initialization configuration for symforce, as minimal as possible.
+The top-level symforce package
+
+Importing this by itself performs minimal initialization configuration, and the functions here are
+mostly for configuration purposes.
+
+In particular, this primarily performs configuration that you might need before importing
+:mod:`symforce.symbolic`.
 """
-from __future__ import absolute_import
 
 import os
 import sys
@@ -44,7 +49,7 @@ def set_log_level(log_level: str) -> None:
         2) Calling this function before any other symforce imports
 
     Args:
-        log_level (str): {DEBUG, INFO, WARNING, ERROR, CRITICAL}
+        log_level: {DEBUG, INFO, WARNING, ERROR, CRITICAL}
     """
     # Set default log level
     if not hasattr(logging, log_level.upper()):
@@ -173,7 +178,7 @@ def set_symbolic_api(name: str) -> None:
         2) Calling this function before any other symforce imports
 
     Args:
-        name (str): {sympy, symengine}
+        name: {sympy, symengine}
     """
     if _have_imported_symbolic and name != _symbolic_api:
         raise ValueError(
@@ -245,9 +250,9 @@ def _set_epsilon(new_epsilon: T.Any) -> None:
     """
     Set the default epsilon for SymForce
 
-    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
-    Typically it should be set to some kind of Scalar, such as an int, float, or Symbol.  See
-    `symforce.symbolic.epsilon` for more information.
+    This must be called before :mod:`symforce.symbolic` or other symbolic libraries have been
+    imported. Typically it should be set to some kind of Scalar, such as an int, float, or Symbol.
+    See :func:`symforce.symbolic.epsilon` for more information.
 
     Args:
         new_epsilon: The new default epsilon to use
@@ -266,8 +271,8 @@ def set_epsilon_to_symbol(name: str = "epsilon") -> None:
     """
     Set the default epsilon for Symforce to a Symbol.
 
-    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
-    See `symforce.symbolic.epsilon` for more information.
+    This must be called before :mod:`symforce.symbolic` or other symbolic libraries have been
+    imported. See :func:`symforce.symbolic.epsilon` for more information.
 
     Args:
         name: The name of the symbol for the new default epsilon to use
@@ -286,8 +291,8 @@ def set_epsilon_to_number(value: T.Any = numeric_epsilon) -> None:
     """
     Set the default epsilon for Symforce to a number.
 
-    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
-    See `symforce.symbolic.epsilon` for more information.
+    This must be called before :mod:`symforce.symbolic` or other symbolic libraries have been
+    imported. See :func:`symforce.symbolic.epsilon` for more information.
 
     Args:
         value: The new default epsilon to use
@@ -299,22 +304,22 @@ def set_epsilon_to_zero() -> None:
     """
     Set the default epsilon for Symforce to zero.
 
-    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
-    See `symforce.symbolic.epsilon` for more information.
+    This must be called before :mod:`symforce.symbolic` or other symbolic libraries have been
+    imported. See :func:`symforce.symbolic.epsilon` for more information.
     """
     _set_epsilon(0.0)
 
 
 def set_epsilon_to_invalid() -> None:
     """
-    Set the default epsilon for SymForce to `None`.  Should not be used to actually create
+    Set the default epsilon for SymForce to ``None``.  Should not be used to actually create
     expressions or generate code.
 
     This is useful if you've forgotten to pass an epsilon somewhere, but are not sure where - using
-    this epsilon in an expression should throw a `TypeError` near the location where you forgot to
+    this epsilon in an expression should throw a ``TypeError`` near the location where you forgot to
     pass an epsilon.
 
-    This must be called before `symforce.symbolic` or other symbolic libraries have been imported.
-    See `symforce.symbolic.epsilon` for more information.
+    This must be called before :mod:`symforce.symbolic` or other symbolic libraries have been
+    imported. See :func:`symforce.symbolic.epsilon` for more information.
     """
     _set_epsilon(None)

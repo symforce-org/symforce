@@ -27,25 +27,28 @@ class CudaConfig(CodegenConfig):
         use_eigen_types: Use eigen_lcm types for vectors instead of lists
         autoformat: Run a code formatter on the generated code
         custom_preamble: An optional string to be prepended on the front of the rendered template
-        cse_optimizations: Optimizations argument to pass to sf.cse
+        cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
         override_methods: Add special function overrides in dictionary with symforce function keys
-            (e.g. sf.sin) and a string for the new method (e.g. fast_math::sin_lut), note that this bypasses
-            the default namespace (so std:: won't be added in front automatically). Note that the keys here
-            need to be sympy keys, not symengine (i.e sympy.sin NOT sf.sin with symengine backend). Symengine to
-            sympy conversion does not work for Function types. Note that this function works in the code printer,
-            and should only be used for replacing functions that compute the same thing but in a different way,
-            e.g. replacing `sin` with `my_lib::sin`. It should _not_ be used for substituting a function
-            with a different function, which will break derivatives and certain simplifications,
-            e.g. you should not use this to replace `sin` with `cos` or `sin` with `my_lib::cos`
+            (e.g. ``sympy.sin``) and a string for the new method (e.g. ``"fast_math::sin_lut"``),
+            note that this bypasses the default namespace (so std:: won't be added in front
+            automatically). Note that the keys here need to be sympy keys, not symengine (e.g.
+            ``sympy.sin`` NOT ``sf.sin`` with the symengine backend). SymEngine to SymPy conversion
+            does not work for ``Function`` types. Note that this function works in the code printer,
+            and should only be used for replacing functions that compute the same thing but in a
+            different way, e.g. replacing ``sin`` with ``my_lib::sin``. It should `not` be used for
+            substituting a function with a different function, which will break derivatives and
+            certain simplifications, e.g. you should not use this to replace ``sin`` with ``cos``
+            or ``sin`` with ``my_lib::cos``.
         extra_imports: Add extra imports to the file if you use custom overrides for some functions
-            (i.e. add fast_math.h). Note that these are only added on a call to `generate_function`, i.e.
+            (e.g. add fast_math.h). Note that these are only added on a call to
+            :meth:`generate_function <symforce.codegen.codegen.Codegen.generate_function>`, i.e.
             you can't define custom functions in e.g. the geo package using this
         scalar_type: The scalar type to use (float or double)
-        inline: Whether to generate inline functions (in the header) or a separate `.cu` file
+        inline: Whether to generate inline functions (in the header) or a separate ``.cu`` file
                 containing the function definition
         builtin_vector_variables: Names of inputs and outputs that should use CUDA's
-            [builtin vector types](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#built-in-vector-types)
+            `builtin vector types <https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#built-in-vector-types>`_
             instead of pointers to scalars
     """
 

@@ -14,6 +14,7 @@ from .linear_camera_cal import LinearCameraCal
 class EquirectangularCameraCal(CameraCal):
     """
     Equirectangular camera model with parameters [fx, fy, cx, cy].
+
     (fx, fy) representing focal length; (cx, cy) representing principal point.
     """
 

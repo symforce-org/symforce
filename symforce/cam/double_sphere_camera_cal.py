@@ -16,14 +16,15 @@ from .camera_cal import CameraCal
 class DoubleSphereCameraCal(CameraCal):
     """
     Camera model where a point is consecutively projected onto two unit spheres
-    with centers shifted by `xi`, then projected into the image plane using the
-    pinhole model shifted by `alpha / (1 - alpha)`.
+    with centers shifted by ``xi``, then projected into the image plane using the
+    pinhole model shifted by ``alpha / (1 - alpha)``.
 
     There are important differences here from the derivation in the paper and in other open-source
     packages with double sphere models; see notebooks/double_sphere_derivation.ipynb for more
     information.
 
     The storage for this class is:
+
     [ fx fy cx cy xi alpha ]
 
     TODO(aaron): Create double_sphere_derivation.ipynb

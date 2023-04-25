@@ -15,6 +15,7 @@ namespace sym {
 
 /**
  * Camera with a given pose, camera calibration, and an optionally specified image size.
+ *
  * If the image size is specified, we use it to check whether pixels (either given or computed by
  * projection of 3D points into the image frame) are in the image frame and thus valid/invalid.
  */
@@ -28,7 +29,7 @@ class PosedCamera : public Camera<CameraCalType> {
       : Camera<CameraCalType>(calibration, image_size), pose_(pose) {}
 
   /**
-   * Transforms the given point into the camera frame using the given camera pose and then
+   * Transforms the given point into the camera frame using the given camera pose, and then
    * uses the given camera calibration to compute the resulted pixel coordinates of the
    * projected point.
    *

@@ -118,19 +118,12 @@ frame, we do:
 ```python
 landmark_body = pose.inverse() * landmark
 ```
-<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}  R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1\end{bmatrix}}#gh-light-mode-only"
-    width="250px" />
-<!-- DARK_MODE_ONLY -->
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}  R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\  -R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1\end{bmatrix}}#gh-dark-mode-only"
-    width="250px" />
-<!-- /DARK_MODE_ONLY -->
-
-<!-- $
+$$
 \begin{bmatrix}
-  R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\
-  -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1
+    R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0 \\
+    -R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1
 \end{bmatrix}
-$ -->
+$$
 
 You can see that `sf.Rot2` is represented internally by a complex number (𝑅𝑟𝑒, 𝑅𝑖𝑚) and we can study how it rotates the landmark 𝐿.
 
@@ -139,19 +132,13 @@ For exploration purposes, let's take the jacobian of the body-frame landmark wit
 ```python
 landmark_body.jacobian(pose)
 ```
-<img src="https://render.githubusercontent.com/render/math?math={\begin{bmatrix}-L_0 R_{im} %2B L_1 R_{re} %2B t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} %2B t_0 R_{re} %2B t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-light-mode-only"
-    width="350px" />
-<!-- DARK_MODE_ONLY -->
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} \begin{bmatrix}-L_0 R_{im} %2B L_1 R_{re} %2B t_0 R_{im} - t_1 R_{re}, %26 -R_{re}, %26 -R_{im} \\ -L_0 R_{re} - L_1 R_{im} %2B t_0 R_{re} %2B t_1 R_{im}, %26  R_{im}, %26 -R_{re}\end{bmatrix}}#gh-dark-mode-only"
-    width="350px" />
-<!-- /DARK_MODE_ONLY -->
 
-<!-- $
+$$
 \begin{bmatrix}
-  -L_0*R_{im} + L1*R_{re} + t_0*R_{im} - t_1*R_{re}, & -R_{re}, & -R_{im} \\
-  -L_0*R_{re} - L1*R_{im} + t_0*R_{re} + t_1*R_{im}, &  R_{im}, & -R_{re}
+    -L_0 R_{im} + L_1 R_{re} + t_0 R_{im} - t_1 R_{re}, & -R_{re}, & -R_{im} \\
+    -L_0 R_{re} - L_1 R_{im} + t_0 R_{re} + t_1 R_{im}, &  R_{im}, & -R_{re}
 \end{bmatrix}
-$ -->
+$$
 
 Note that even though the orientation is stored as a complex number, the tangent space is a scalar angle and SymForce understands that.
 
@@ -160,30 +147,19 @@ Now compute the relative bearing angle:
 ```python
 sf.atan2(landmark_body[1], landmark_body[0])
 ```
-<img src="https://render.githubusercontent.com/render/math?math={atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-light-mode-only"
-    width="500px" />
-<!-- DARK_MODE_ONLY -->
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} atan_2(-R_{im} L_0 %2B R_{re} L_1 %2B R_{im} t_0 %2B R_{re} t_1, R_{re} L_0 %2B R_{im} L_1 - R_{im} t_1 - R_{re} t_0)}#gh-dark-mode-only"
-    width="500px" />
-<!-- /DARK_MODE_ONLY -->
 
-<!-- $
-atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0  + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
-$ -->
+$$
+atan_2(-R_{im} L_0 + R_{re} L_1 + R_{im} t_0 + R_{re} t_1, R_{re} L_0 + R_{im} L_1 - R_{im} t_1 - R_{re} t_0)
+$$
 
 One important note is that `atan2` is singular at (0, 0). In SymForce we handle this by placing a symbol ϵ (epsilon) that preserves the value of an expression in the limit of ϵ → 0, but allows evaluating at runtime with a very small nonzero value. Functions with singularities accept an `epsilon` argument:
 
 ```python
 sf.V3.symbolic("x").norm(epsilon=sf.epsilon())
 ```
-<img src="https://render.githubusercontent.com/render/math?math={\sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-light-mode-only"
-    width="135px" />
-<!-- DARK_MODE_ONLY -->
-<img src="https://render.githubusercontent.com/render/math?math={\color{white} \sqrt{x_0^2 %2B x_1^2 %2B x_2^2 %2B \epsilon}}#gh-dark-mode-only"
-    width="135px" />
-<!-- /DARK_MODE_ONLY -->
-
-<!-- $\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}$ -->
+$$
+\sqrt{x_0^2 + x_1^2 + x_2^2 + \epsilon}
+$$
 
 See the [Epsilon Tutorial](https://symforce.org/tutorials/epsilon_tutorial.html) in the SymForce Docs for more information.
 
@@ -331,7 +307,7 @@ As a convenience, the Python `Optimizer` class can accept symbolic types in its 
 
 ## Generate runtime C++ code
 
-Let's look under the hood to understand how that optimization worked. For each factor, SymForce introspects the form of the symbolic function, passes through symbolic inputs to build an output expression, automatically computes tangent-space jacobians of those output expressions wrt the optimized variables, and generates fast runtime code for them.
+Let's look under the hood to understand how that optimization worked. For each factor, SymForce introspects the form of the symbolic function, passes through symbolic inputs to build an output expression, automatically computes tangent-space jacobians of those output expressions w.r.t. the optimized variables, and generates fast runtime code for them.
 
 The [`Codegen`](https://symforce.org/api/symforce.codegen.codegen.html?highlight=codegen#module-symforce.codegen.codegen) class is the central tool for generating runtime code from symbolic expressions. In this case, we pass it the bearing residual function and configure it to generate C++ code:
 ```python
@@ -612,7 +588,7 @@ make -j $(nproc)
 You'll then need to add SymForce (along with `gen/python` and `third_party/skymarshal` within symforce and `lcmtypes/python2.7` within the build directory) to your PYTHONPATH in order to use them, for example:
 
 ```bash
-export PYTHONPATH="$PYTHONPATH:/path/to/symforce:/path/to/symforce/build/lcmtypes/python2.7:/path/to/symforce/gen/python:/path/to/symforce/third_party/skymarshal"
+export PYTHONPATH="$PYTHONPATH:/path/to/symforce:/path/to/symforce/build/lcmtypes/python2.7"
 ```
 
 If you want to install SymForce to use its C++ libraries in another CMake project, you can do that with:
@@ -620,7 +596,7 @@ If you want to install SymForce to use its C++ libraries in another CMake projec
 make install
 ```
 
-SymForce does not currently integrate with CMake's `find_package` (see #209), so if you do this you currently need to add its libraries as link dependencies in your CMake project manually.
+SymForce does not currently integrate with CMake's `find_package` (see [#209](https://github.com/symforce-org/symforce/issues/209)), so if you do this you currently need to add its libraries as link dependencies in your CMake project manually.
 
 ## Verify your installation:
 ```python
@@ -657,10 +633,9 @@ While SymForce already powers tens of thousands of robots at Skydio, the public 
 
 There are many features we're excited to add to SymForce and would love to see contributed by the community. Most are outlined in the issues, but some major desired contributions are:
 
-- Add more backend languages, such as TypeScript, CUDA, GLSL/HLSL, and PyTorch
-- Easily swap in approximate or architecture-specific implementations of primitive
-functions, such as trig functions
+- Add more backend languages, such as TypeScript and GLSL/HLSL, and improvements to the experimental CUDA and PyTorch backends
 - Support for WebAssembly compilation
 - More Lie group types, in particular Sim(3)
 - Support for constraints in our optimizer
 - Integration with [ISPC](https://ispc.github.io/)
+- Windows and conda packages

@@ -123,7 +123,7 @@ class CameraCal(Storage):
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
-        Return:
+        Returns:
             pixel: (x, y) coordinate in pixels if valid
             is_valid: 1 if the operation is within bounds else 0
         """
@@ -135,19 +135,18 @@ class CameraCal(Storage):
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
-        TODO(hayk): Add a normalize boolean argument? Like in `cam.Camera`
-
-        Return:
+        Returns:
             camera_ray: The ray in the camera frame (NOT normalized)
             is_valid: 1 if the operation is within bounds else 0
         """
+        # TODO(hayk): Add a normalize boolean argument? Like in `cam.Camera`
         raise NotImplementedError()
 
     @classmethod
     def has_camera_ray_from_pixel(cls) -> bool:
         """
-        Returns True if cls has implemented the method camera_ray_from_pixel, and False
-        otherwise.
+        Returns ``True`` if cls has implemented the method :meth:`camera_ray_from_pixel`, and
+        ``False`` otherwise.
         """
         try:
             util.symbolic_eval(cls.camera_ray_from_pixel)

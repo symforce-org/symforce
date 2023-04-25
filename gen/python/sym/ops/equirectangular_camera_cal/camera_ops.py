@@ -63,7 +63,7 @@ class CameraOps(object):
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
-        Return:
+        Returns:
             pixel: (x, y) coordinate in pixels if valid
             is_valid: 1 if the operation is within bounds else 0
         """
@@ -172,9 +172,7 @@ class CameraOps(object):
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
-        TODO(hayk): Add a normalize boolean argument? Like in `cam.Camera`
-
-        Return:
+        Returns:
             camera_ray: The ray in the camera frame (NOT normalized)
             is_valid: 1 if the operation is within bounds else 0
         """

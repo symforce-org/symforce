@@ -74,7 +74,8 @@ class CSCFormat:
         in CSC form.
 
         Args:
-            sparse_matrix: A symbolic sf.Matrix where sparsity is given by exact zero equality.
+            sparse_matrix: A symbolic :class:`sf.Matrix <symforce.geo.matrix.Matrix>` where sparsity
+                is given by exact zero equality.
         """
         kColPtrs = []
         kRowIndices = []
@@ -126,7 +127,7 @@ def print_code(
         inputs: Values object specifying names and symbolic inputs
         outputs: Values object specifying names and output expressions (written in terms
             of the symbolic inputs)
-        sparse_mat_data: Data associated with sparse matrices. sparse_mat_data["keys"] stores
+        sparse_mat_data: Data associated with sparse matrices. ``sparse_mat_data["keys"]`` stores
             a list of the keys in outputs which should be treated as sparse matrices
         config: Programming language and configuration in which the expressions are to be generated
         cse: Perform common sub-expression elimination
@@ -236,7 +237,7 @@ def perform_cse(
 
     Args:
         output_exprs: expressions on which to perform cse
-        cse_optimizations: optimizations to be forwarded to sf.cse
+        cse_optimizations: optimizations to be forwarded to :func:`sf.cse <symforce.symbolic.cse>`
 
     Returns:
         T_terms: Temporary variables holding the common sub-expressions found within output_exprs
@@ -284,8 +285,10 @@ def format_symbols(
 ) -> T.Tuple[T_terms, T_nested_terms, T_nested_terms]:
     """
     Reformats symbolic variables used in intermediate and outputs terms to match structure of
-    inputs/outputs. For example if we have an input array "arr" with symbolic elements [arr0, arr1],
-    we will remap symbol "arr0" to "arr[0]" and symbol "arr1" to "arr[1]".
+    inputs/outputs.
+
+    For example, if we have an input array ``"arr"`` with symbolic elements ``[arr0, arr1]``,
+    we will remap symbol ``"arr0"`` to ``"arr[0]"`` and symbol ``"arr1"`` to ``"arr[1]"``.
     """
     # Rename the symbolic inputs so that they match the code we generate
 
@@ -569,16 +572,17 @@ def load_generated_package(name: str, path: T.Openable, evict: bool = True) -> T
     Dynamically load generated package (or module).
 
     Args:
-        name: The full name of the package or module to load (for example, "pkg.sub_pkg"
-              for a package called "sub_pkg" inside of another package "pkg", or
-              "pkg.sub_pkg.mod" for a module called "mod" inside of pkg.sub_pkg).
-        path: The path to the directory (or __init__.py) of the package, or the python
+        name: The full name of the package or module to load (for example, ``"pkg.sub_pkg"``
+              for a package called ``sub_pkg`` inside of another package ``pkg``, or
+              ``"pkg.sub_pkg.mod"`` for a module called ``mod`` inside of ``pkg.sub_pkg``).
+        path: The path to the directory (or ``__init__.py``) of the package, or the python
               file of the module.
         evict: Whether to evict the imported package from sys.modules after loading it.  This is
-            necessary for functions generated in the `sym` namespace, since leaving them would make
-            it impossible to `import sym` and get the `symforce-sym` package as expected.  For this
-            reason, attempting to load a generated package called `sym` with `evict=False` is
-            disallowed.  However, evict should be `False` for numba-compiled functions.
+            necessary for functions generated in the ``sym`` namespace, since leaving them would
+            make it impossible to ``import sym`` and get the ``symforce-sym`` package as expected.
+            For this reason, attempting to load a generated package called ``sym`` with
+            ``evict=False`` is disallowed.  However, evict should be ``False`` for numba-compiled
+            functions.
     """
     if not evict:
         if name.split(".")[0] == "sym":
@@ -623,10 +627,10 @@ def load_generated_function(
     func_name: str, path_to_package: T.Openable, evict: bool = True
 ) -> T.Callable:
     """
-    Returns the function with name func_name found inside the package located at
-    path_to_package.
+    Returns the function with name ``func_name`` found inside the package located at
+    ``path_to_package``.
 
-    Example usage:
+    Example usage::
 
         def my_func(...):
             ...
@@ -637,13 +641,15 @@ def load_generated_function(
         generated_func(...)
 
     Args:
-        path_to_package: a python package with an `__init__.py` containing a module defined in
-            `func_name.py` which in turn defines an attribute named `func_name`. See the example
+        path_to_package: a python package with an ``__init__.py`` containing a module defined in
+            ``func_name.py`` which in turn defines an attribute named ``func_name``. See the example
             above.
         evict: Whether to evict the imported package from sys.modules after loading it.  This is
-            necessary for functions generated in the `sym` namespace, since leaving them would make
-            it impossible to `import sym` and get the `symforce-sym` package as expected.  However,
-            this should be `False` for numba-compiled functions.
+            necessary for functions generated in the ``sym`` namespace, since leaving them would
+            make it impossible to ``import sym`` and get the ``symforce-sym`` package as expected.
+            For this reason, attempting to load a generated package called ``sym`` with
+            ``evict=False`` is disallowed.  However, evict should be ``False`` for numba-compiled
+            functions.
     """
     pkg_path = Path(path_to_package)
     if pkg_path.name == "__init__.py":
@@ -659,9 +665,10 @@ def load_generated_lcmtype(
     package: str, type_name: str, lcmtypes_path: T.Union[str, Path]
 ) -> T.Type:
     """
-    Load an LCM type generated by Codegen.generate_function
+    Load an LCM type generated by
+    :meth:`Codegen.generate_function <symforce.codegen.codegen.Codegen.generate_function>`
 
-    Example usage:
+    Example usage::
 
         my_codegen = Codegen(my_func, config=PythonConfig())
         codegen_data = my_codegen.generate_function(output_dir=output_dir, namespace=namespace)

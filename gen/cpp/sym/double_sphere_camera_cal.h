@@ -21,14 +21,15 @@ namespace sym {
  * 'symforce.cam.double_sphere_camera_cal.DoubleSphereCameraCal'>.
  *
  * Camera model where a point is consecutively projected onto two unit spheres
- * with centers shifted by `xi`, then projected into the image plane using the
- * pinhole model shifted by `alpha / (1 - alpha)`.
+ * with centers shifted by ``xi``, then projected into the image plane using the
+ * pinhole model shifted by ``alpha / (1 - alpha)``.
  *
  * There are important differences here from the derivation in the paper and in other open-source
  * packages with double sphere models; see notebooks/double_sphere_derivation.ipynb for more
  * information.
  *
  * The storage for this class is:
+ *
  * [ fx fy cx cy xi alpha ]
  *
  * TODO(aaron): Create double_sphere_derivation.ipynb
@@ -97,7 +98,7 @@ class DoubleSphereCameraCal {
   /**
    * Project a 3D point in the camera frame into 2D pixel coordinates.
    *
-   * Return:
+   * Returns:
    *     pixel: (x, y) coordinate in pixels if valid
    *     is_valid: 1 if the operation is within bounds else 0
    */
@@ -122,9 +123,7 @@ class DoubleSphereCameraCal {
   /**
    * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
    *
-   * TODO(hayk): Add a normalize boolean argument? Like in `cam.Camera`
-   *
-   * Return:
+   * Returns:
    *     camera_ray: The ray in the camera frame (NOT normalized)
    *     is_valid: 1 if the operation is within bounds else 0
    */

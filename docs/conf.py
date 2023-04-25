@@ -63,6 +63,9 @@ extensions = [
 # anchor links in html
 myst_heading_anchors = 3
 
+# Enable $$ $$ and $ $ math delimiters in MyST markdown
+myst_enable_extensions = ["dollarmath"]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

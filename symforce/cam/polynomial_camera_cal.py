@@ -18,17 +18,18 @@ from .camera_cal import CameraCal
 
 class PolynomialCameraCal(CameraCal):
     """
-    Polynomial camera model in the style of OpenCV.
-    Distortion is a multiplicitive factor applied to the image plane coordinates in the camera
+    Polynomial camera model in the style of OpenCV
+
+    Distortion is a multiplicative factor applied to the image plane coordinates in the camera
     frame. Mapping between distorted image plane coordinates and image coordinates is done using
     a standard linear model.
 
     The distortion function is a 6th order even polynomial that is a function of the radius of the
-    image plane coordinates.
-    r = (p_img[0] ** 2 + p_img[1]**2) ** 0.5
-    distorted_weight = 1 + c0 * r^2 + c1 * r^4 + c2 * r^6
-    uv = p_img * distorted_weight
+    image plane coordinates::
 
+        r = (p_img[0] ** 2 + p_img[1] ** 2) ** 0.5
+        distorted_weight = 1 + c0 * r^2 + c1 * r^4 + c2 * r^6
+        uv = p_img * distorted_weight
     """
 
     NUM_DISTORTION_COEFFS = 3

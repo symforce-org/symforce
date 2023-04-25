@@ -11,14 +11,14 @@ Organization
 SymForce aims to follow Python `standards <https://docs.python-guide.org/writing/structure/>`_. The core ``symforce`` package lives in the equivalently named subdirectory at the top level. Tests, documentation, etc live at the top level outside of the core package.
 To import ``symforce`` add the top level to the Python path.
 
-See the :ref:`module reference <api-reference>` for the core package structure.
+See the `module reference </api/symforce.html>`_ for the core package structure.
 
 *************************************************
 Build
 *************************************************
 SymForce is primarily written in Python and C++, and is Python 3.8+ and C++14 compatible.  The build
 system is CMake for the C++ components, and optionally pip / setuptools on top for Python packaging.
-See the Build section on the [Homepage](/index.html#build-from-source) for build instructions.
+See the Build section on the `Homepage </index.html#build-from-source>`_ for build instructions.
 
 
 *************************************************
@@ -48,26 +48,26 @@ level commands for development:
 *************************************************
 Documentation
 *************************************************
-This documentation is built with `Sphinx <https://www.sphinx-doc.org/>`_, including automatic parsing of the code to generate a module reference using `sphinx-apidoc <https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html>`_. The code uses `Google Style <https://www.sphinx-doc.org/en/1.6/ext/example_google.html>`_ docstrings to annotate all modules, classes, and functions. Docs pages are ``.rst`` files in ``docs``, and the Sphinx config file is ``docs/conf.py``.
+This documentation is built with `Sphinx <https://www.sphinx-doc.org/>`_, including automatic parsing of the code to generate a module reference using `sphinx-apidoc <https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html>`_. The code uses `Google Style <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ docstrings to annotate all modules, classes, and functions. Docs pages are ``.rst`` files in ``docs``, and the Sphinx config file is ``docs/conf.py``.
 
-There are sample `Jupyter <https://jupyter.org/>`_ notebooks in ``notebooks``, some of which are built into these docs using `nbsphinx <https://nbsphinx.readthedocs.io/en/0.5.1/>`_, such as the `tutorial <notebooks/tutorial.html>`_. ``make notebook`` starts a Jupyter server to modify and run them.
+There are sample `Jupyter <https://jupyter.org/>`_ notebooks in ``notebooks``, The tutorial notebooks are built into these docs using `nbsphinx <https://nbsphinx.readthedocs.io/en/0.5.1/>`_, for example the `SymPy Tutorial </tutorials/sympy_tutorial.html>`_.
 
 *************************************************
 Logging
 *************************************************
-SymForce uses the `logging <https://docs.python.org/2/library/logging.html>`_ module. You can import and use the logger like this:
+SymForce uses the `logging <https://docs.python.org/3.8/library/logging.html>`_ module. You can import and use the logger like this:
 
 >>> from symforce import logger
 >>> logger.warning('houston, we have a problem')
 codegen_test.test_codegen_cpp():126 WARNING -- houston, we have a problem
 
-You can configure the log level using :func:`symforce.set_log_level()` or by setting the ``SYMENGINE_LOGLEVEL`` environment variable. The default is ``logging.INFO``.
+You can configure the log level using :func:`symforce.set_log_level()` or by setting the ``SYMFORCE_LOGLEVEL`` environment variable. The default is ``logging.INFO``.
 
 *************************************************
 Testing and Coverage
 *************************************************
 SymForce is heavily tested, targeting close to 100% code coverage.
-Tests live in ``test`` and use `unittest <https://docs.python.org/2/library/unittest.html>`_. Additionally, `coverage.py <https://coverage.readthedocs.io/en/coverage-5.0.4/>`_ is used to run tests while measuring code coverage. The generated coverage report also provides a great view into what methods need to be tested and what code is potentially unused.
+Tests live in ``test`` and use `unittest <https://docs.python.org/3.8/library/unittest.html>`_. Additionally, `coverage.py <https://coverage.readthedocs.io/en/coverage-5.0.4/>`_ is used to run tests while measuring code coverage. The generated coverage report also provides a great view into what methods need to be tested and what code is potentially unused.
 
 | Run a specific test: ``python test/symforce_codegen_test.py``
 | Run with debug level output: ``SYMFORCE_LOGLEVEL=DEBUG python test/symforce_codegen_test.py``
@@ -88,9 +88,9 @@ Running ``make format`` will format the entire codebase. It's recommended to dev
 *************************************************
 Templates
 *************************************************
-Much of the core functionality of SymForce is in generating code using the `Jinja <https://jinja.palletsprojects.com/en/2.11.x/>`_ template language. It's relatively simple and easy to use - you pass it a template file in any language and a python dictionary of data, and it spits out the rendered code.
+Much of the core functionality of SymForce is in generating code using the `Jinja <https://jinja.palletsprojects.com/en/3.0.x/>`_ template language. It's relatively simple and easy to use - you pass it a template file in any language and a python dictionary of data, and it spits out the rendered code.
 
-For example template files, see ``symforce/codegen/backends/cpp/templates``.
+For example template files, see `symforce/codegen/backends/cpp/templates <https://github.com/symforce-org/symforce/blob/main/symforce/codegen/backends/cpp/templates>`_.
 
 *************************************************
 Symbolic API

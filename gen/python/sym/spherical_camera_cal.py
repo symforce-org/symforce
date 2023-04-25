@@ -19,7 +19,7 @@ class SphericalCameraCal(object):
     off the optical axis as opposed to radius within the image plane (i.e. ATANCamera)
 
     I.e. the radius in the image plane as a function of the angle theta from the camera z-axis is
-    assumed to be given by:
+    assumed to be given by::
 
         r(theta) = theta + d[0] * theta^3 + d[1] * theta^5 + d[2] * theta^7 + d[3] * theta^9
 
@@ -33,14 +33,16 @@ class SphericalCameraCal(object):
     other parameters, this function requires polynomial root finding, so it should be computed
     externally at runtime and set to the computed value.
 
-    Paper:
-    A generic camera model and calibration method for conventional, wide-angle, and fish-eye lenses
-    Kannala, Juho; Brandt, Sami S.
-    PAMI 2006
+    Paper::
+
+        A generic camera model and calibration method for conventional, wide-angle, and fish-eye lenses
+        Kannala, Juho; Brandt, Sami S.
+        PAMI 2006
 
     This is the simpler "P9" model without any non-radially-symmetric distortion params.
 
     The storage for this class is:
+
     [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
     """
 
@@ -134,7 +136,7 @@ class SphericalCameraCal(object):
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
-        Return:
+        Returns:
             pixel: (x, y) coordinate in pixels if valid
             is_valid: 1 if the operation is within bounds else 0
         """

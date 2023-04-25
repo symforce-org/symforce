@@ -30,7 +30,7 @@ N_MATRICES = 6
 
 def get_matrices() -> T.List[T.Tuple[str, Path, scipy.sparse.csr_matrix]]:
     """
-    Load the matrices in the `matrices` folder from disk, and return their names, paths to their
+    Load the matrices in the ``matrices`` folder from disk, and return their names, paths to their
     matrix-market files, and the matrices themselves
 
     Filters to the first N_MATRICES results, sorted by number of nonzeros

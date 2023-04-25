@@ -3,8 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-from __future__ import annotations
-
 import numpy as np
 
 from symforce import typing as T
@@ -15,7 +13,9 @@ def compute_odd_polynomial_critical_point(
 ) -> float:
     """
     Compute the critical points of the odd polynomial given by:
+
     f(x) = x + c0 * x^3 + c1 * x^5 + ...
+
     This will return the first real-valued critical point in the range [0, max]. If no real-valued
     critical points are found in this range, return max.
 

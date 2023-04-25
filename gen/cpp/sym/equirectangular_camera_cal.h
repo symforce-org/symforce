@@ -21,6 +21,7 @@ namespace sym {
  * 'symforce.cam.equirectangular_camera_cal.EquirectangularCameraCal'>.
  *
  * Equirectangular camera model with parameters [fx, fy, cx, cy].
+ *
  * (fx, fy) representing focal length; (cx, cy) representing principal point.
  */
 template <typename ScalarType>
@@ -80,7 +81,7 @@ class EquirectangularCameraCal {
   /**
    * Project a 3D point in the camera frame into 2D pixel coordinates.
    *
-   * Return:
+   * Returns:
    *     pixel: (x, y) coordinate in pixels if valid
    *     is_valid: 1 if the operation is within bounds else 0
    */
@@ -105,9 +106,7 @@ class EquirectangularCameraCal {
   /**
    * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
    *
-   * TODO(hayk): Add a normalize boolean argument? Like in `cam.Camera`
-   *
-   * Return:
+   * Returns:
    *     camera_ray: The ray in the camera frame (NOT normalized)
    *     is_valid: 1 if the operation is within bounds else 0
    */

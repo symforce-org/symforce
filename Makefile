@@ -1,4 +1,8 @@
-# High level build commands for symforce
+# Development utilities for SymForce
+#
+# This plays no part in the SymForce build process.  For instructions on building SymForce (which is
+# done with CMake), see the README.  For documentation of these commands, see
+# https://symforce.org/development.html.
 
 BUILD_DIR=build
 

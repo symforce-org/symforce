@@ -13,6 +13,7 @@ from .camera_cal import CameraCal
 class LinearCameraCal(CameraCal):
     """
     Standard pinhole camera w/ four parameters [fx, fy, cx, cy].
+
     (fx, fy) representing focal length; (cx, cy) representing principal point.
     """
 
