@@ -28,7 +28,8 @@ std::ostream& operator<<(std::ostream& os, const {{ cls.__name__ }}{{ scalar[0] 
 {% endif %}
 {% for spec in custom_generated_methods %}
 template <typename Scalar>
-{{ util.method_declaration_custom_namespace(spec, namespace="sym::{}<Scalar>".format(cls.__name__), is_declaration=False) }} {
+{# Return values from methods are const - https://github.com/symforce-org/symforce/issues/312 #}
+const {{ util.method_declaration_custom_namespace(spec, namespace="sym::{}<Scalar>".format(cls.__name__), is_declaration=False) }} {
   {{ util.expr_code(spec) }}
 }
 

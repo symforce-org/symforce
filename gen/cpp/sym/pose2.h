@@ -95,15 +95,15 @@ class Pose2 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  sym::Rot2<Scalar> Rotation() const;
+  const sym::Rot2<Scalar> Rotation() const;
 
-  Vector2 Position() const;
+  const Vector2 Position() const;
 
-  Vector2 ComposeWithPoint(const Vector2& right) const;
+  const Vector2 ComposeWithPoint(const Vector2& right) const;
 
-  Vector2 InverseCompose(const Vector2& point) const;
+  const Vector2 InverseCompose(const Vector2& point) const;
 
-  Eigen::Matrix<Scalar, 3, 3> ToHomogenousMatrix() const;
+  const Eigen::Matrix<Scalar, 3, 3> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept

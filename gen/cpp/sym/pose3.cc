@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Pose3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-sym::Rot3<Scalar> sym::Pose3<Scalar>::Rotation() const {
+const sym::Rot3<Scalar> sym::Pose3<Scalar>::Rotation() const {
   // Total ops: 0
 
   // Input arrays
@@ -47,7 +47,7 @@ sym::Rot3<Scalar> sym::Pose3<Scalar>::Rotation() const {
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Position() const {
+const Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Position() const {
   // Total ops: 0
 
   // Input arrays
@@ -66,7 +66,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::Position() const {
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
+const Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
   // Total ops: 46
 
@@ -100,7 +100,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
+const Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
     const Eigen::Matrix<Scalar, 3, 1>& point) const {
   // Total ops: 61
 
@@ -143,7 +143,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 4, 4> sym::Pose3<Scalar>::ToHomogenousMatrix() const {
+const Eigen::Matrix<Scalar, 4, 4> sym::Pose3<Scalar>::ToHomogenousMatrix() const {
   // Total ops: 28
 
   // Input arrays

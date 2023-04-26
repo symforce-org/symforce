@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Rot3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ComposeWithPoint(
+const Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 3, 1>& right) const {
   // Total ops: 43
 
@@ -61,7 +61,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ComposeWithPoint(
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
+const Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
   // Total ops: 28
 
   // Input arrays
@@ -97,8 +97,9 @@ Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
 }
 
 template <typename Scalar>
-sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1, const Scalar u2,
-                                                              const Scalar u3) {
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1,
+                                                                    const Scalar u2,
+                                                                    const Scalar u3) {
   // Total ops: 14
 
   // Input arrays
@@ -122,7 +123,7 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::RandomFromUniformSamples(const Scalar u1, c
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ToYawPitchRoll() const {
+const Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ToYawPitchRoll() const {
   // Total ops: 27
 
   // Input arrays
@@ -147,8 +148,8 @@ Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ToYawPitchRoll() const {
 }
 
 template <typename Scalar>
-sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
-                                                      const Scalar roll) {
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
+                                                            const Scalar roll) {
   // Total ops: 25
 
   // Input arrays
@@ -180,7 +181,8 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Scalar yaw, const Sc
 }
 
 template <typename Scalar>
-sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Eigen::Matrix<Scalar, 3, 1>& ypr) {
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(
+    const Eigen::Matrix<Scalar, 3, 1>& ypr) {
   // Total ops: 25
 
   // Input arrays
@@ -212,9 +214,9 @@ sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Eigen::Matrix<Scalar
 }
 
 template <typename Scalar>
-sym::Rot3<Scalar> sym::Rot3<Scalar>::FromTwoUnitVectors(const Eigen::Matrix<Scalar, 3, 1>& a,
-                                                        const Eigen::Matrix<Scalar, 3, 1>& b,
-                                                        const Scalar epsilon) {
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromTwoUnitVectors(const Eigen::Matrix<Scalar, 3, 1>& a,
+                                                              const Eigen::Matrix<Scalar, 3, 1>& b,
+                                                              const Scalar epsilon) {
   // Total ops: 44
 
   // Input arrays

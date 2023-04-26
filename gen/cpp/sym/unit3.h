@@ -82,11 +82,11 @@ class Unit3 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  static sym::Unit3<Scalar> FromVector(const Vector3& a, const Scalar epsilon);
+  const static sym::Unit3<Scalar> FromVector(const Vector3& a, const Scalar epsilon);
 
-  Vector3 ToUnitVector() const;
+  const Vector3 ToUnitVector() const;
 
-  sym::Rot3<Scalar> ToRotation() const;
+  const sym::Rot3<Scalar> ToRotation() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept

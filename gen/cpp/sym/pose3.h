@@ -96,15 +96,15 @@ class Pose3 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  sym::Rot3<Scalar> Rotation() const;
+  const sym::Rot3<Scalar> Rotation() const;
 
-  Vector3 Position() const;
+  const Vector3 Position() const;
 
-  Vector3 ComposeWithPoint(const Vector3& right) const;
+  const Vector3 ComposeWithPoint(const Vector3& right) const;
 
-  Vector3 InverseCompose(const Vector3& point) const;
+  const Vector3 InverseCompose(const Vector3& point) const;
 
-  Eigen::Matrix<Scalar, 4, 4> ToHomogenousMatrix() const;
+  const Eigen::Matrix<Scalar, 4, 4> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept

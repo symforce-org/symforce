@@ -27,8 +27,8 @@ std::ostream& operator<<(std::ostream& os, const Unit3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-sym::Unit3<Scalar> sym::Unit3<Scalar>::FromVector(const Eigen::Matrix<Scalar, 3, 1>& a,
-                                                  const Scalar epsilon) {
+const sym::Unit3<Scalar> sym::Unit3<Scalar>::FromVector(const Eigen::Matrix<Scalar, 3, 1>& a,
+                                                        const Scalar epsilon) {
   // Total ops: 35
 
   // Input arrays
@@ -60,7 +60,7 @@ sym::Unit3<Scalar> sym::Unit3<Scalar>::FromVector(const Eigen::Matrix<Scalar, 3,
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 3, 1> sym::Unit3<Scalar>::ToUnitVector() const {
+const Eigen::Matrix<Scalar, 3, 1> sym::Unit3<Scalar>::ToUnitVector() const {
   // Total ops: 14
 
   // Input arrays
@@ -81,7 +81,7 @@ Eigen::Matrix<Scalar, 3, 1> sym::Unit3<Scalar>::ToUnitVector() const {
 }
 
 template <typename Scalar>
-sym::Rot3<Scalar> sym::Unit3<Scalar>::ToRotation() const {
+const sym::Rot3<Scalar> sym::Unit3<Scalar>::ToRotation() const {
   // Total ops: 0
 
   // Input arrays

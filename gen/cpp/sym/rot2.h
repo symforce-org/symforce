@@ -75,11 +75,11 @@ class Rot2 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  Vector2 ComposeWithPoint(const Vector2& right) const;
+  const Vector2 ComposeWithPoint(const Vector2& right) const;
 
-  static sym::Rot2<Scalar> FromAngle(const Scalar theta);
+  const static sym::Rot2<Scalar> FromAngle(const Scalar theta);
 
-  Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
+  const Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
 
   // --------------------------------------------------------------------------
   // StorageOps concept

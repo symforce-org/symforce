@@ -118,22 +118,22 @@ class Rot3 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  Vector3 ComposeWithPoint(const Vector3& right) const;
+  const Vector3 ComposeWithPoint(const Vector3& right) const;
 
-  Eigen::Matrix<Scalar, 3, 3> ToRotationMatrix() const;
+  const Eigen::Matrix<Scalar, 3, 3> ToRotationMatrix() const;
 
-  static sym::Rot3<Scalar> RandomFromUniformSamples(const Scalar u1, const Scalar u2,
-                                                    const Scalar u3);
+  const static sym::Rot3<Scalar> RandomFromUniformSamples(const Scalar u1, const Scalar u2,
+                                                          const Scalar u3);
 
-  Vector3 ToYawPitchRoll() const;
+  const Vector3 ToYawPitchRoll() const;
 
-  static sym::Rot3<Scalar> FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
-                                            const Scalar roll);
+  const static sym::Rot3<Scalar> FromYawPitchRoll(const Scalar yaw, const Scalar pitch,
+                                                  const Scalar roll);
 
-  static sym::Rot3<Scalar> FromYawPitchRoll(const Vector3& ypr);
+  const static sym::Rot3<Scalar> FromYawPitchRoll(const Vector3& ypr);
 
-  static sym::Rot3<Scalar> FromTwoUnitVectors(const Vector3& a, const Vector3& b,
-                                              const Scalar epsilon);
+  const static sym::Rot3<Scalar> FromTwoUnitVectors(const Vector3& a, const Vector3& b,
+                                                    const Scalar epsilon);
 
   // --------------------------------------------------------------------------
   // StorageOps concept

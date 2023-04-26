@@ -90,7 +90,8 @@ class {{ cls.__name__ }} {
       {% set compose_with_point.defined = true %}
       {% set compose_with_point.dimension = typing_util.get_type(spec.inputs["right"]).SHAPE[0] %}
     {% endif %}
-  {{ python_util.str_replace_all(util.method_declaration(spec, is_declaration=True), matrix_type_aliases) }};
+    {# Return values from methods are const - https://github.com/symforce-org/symforce/issues/312 #}
+  const {{ python_util.str_replace_all(util.method_declaration(spec, is_declaration=True), matrix_type_aliases) }};
 
   {% endfor %}
   // --------------------------------------------------------------------------

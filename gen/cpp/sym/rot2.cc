@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Rot2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::ComposeWithPoint(
+const Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::ComposeWithPoint(
     const Eigen::Matrix<Scalar, 2, 1>& right) const {
   // Total ops: 6
 
@@ -46,7 +46,7 @@ Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::ComposeWithPoint(
 }
 
 template <typename Scalar>
-sym::Rot2<Scalar> sym::Rot2<Scalar>::FromAngle(const Scalar theta) {
+const sym::Rot2<Scalar> sym::Rot2<Scalar>::FromAngle(const Scalar theta) {
   // Total ops: 2
 
   // Input arrays
@@ -63,7 +63,7 @@ sym::Rot2<Scalar> sym::Rot2<Scalar>::FromAngle(const Scalar theta) {
 }
 
 template <typename Scalar>
-Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
+const Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
   // Total ops: 1
 
   // Input arrays
