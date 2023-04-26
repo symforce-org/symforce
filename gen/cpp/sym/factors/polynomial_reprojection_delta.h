@@ -26,9 +26,11 @@ namespace sym {
  *     target_calibration_storage: The storage vector of the target camera calibration
  *     source_inverse_range: The inverse range of the landmark in the source camera
  *     p_camera_source: The location of the landmark in the source camera coordinate, will be
- * normalized target_pixel: The location of the correspondence in the target camera epsilon: Small
- * positive value target_camera_model_class: The subclass of CameraCal to use as the target camera
- * model
+ *         normalized
+ *     target_pixel: The location of the correspondence in the target camera
+ *     epsilon: Small positive value
+ *     target_camera_model_class: The subclass of
+ *         :class:`CameraCal <symforce.cam.camera_cal.CameraCal>` to use as the target camera model
  *
  * Outputs:
  *     res: 2dof reprojection delta

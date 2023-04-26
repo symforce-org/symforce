@@ -95,13 +95,13 @@ class Rot2(LieGroup):
 
     def storage_D_tangent(self) -> Matrix21:
         """
-        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
         return Matrix21([[-self.z.imag], [self.z.real]])
 
     def tangent_D_storage(self) -> Matrix12:
         """
-        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
         return T.cast(Matrix12, self.storage_D_tangent().T)
 
@@ -131,9 +131,9 @@ class Rot2(LieGroup):
     @classmethod
     def from_angle(cls, theta: T.Scalar) -> Rot2:
         """
-        Create a Rot2 from an angle `theta` in radians
+        Create a Rot2 from an angle ``theta`` in radians
 
-        This is equivalent to from_tangent([theta])
+        This is equivalent to ``from_tangent([theta])``
         """
         return cls.from_tangent([theta])
 

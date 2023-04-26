@@ -61,24 +61,30 @@ def generate_types(
     Args:
         package_name: Package of LCM types to be generated
         file_name: Name of the LCM file to generate (without the extension)
-        values_indices: Mapping between the name each LCM type to be generated and its index (computed using Values.index())
-        shared_types: Used to specify whether specific types and subtypes have already been generated, either externally or internally
-            (i.e. if one generated type is to represent multiple objects in values_indices).
+        values_indices: Mapping between the name each LCM type to be generated and its index
+            (computed using :meth:`Values.index <symforce.values.Values.index>`)
+        shared_types: Used to specify whether specific types and subtypes have already been
+            generated, either externally or internally (e.g. if one generated type is to represent
+            multiple objects in ``values_indices``).
             Usage examples:
-                shared_types={"my_values" : "external_package.my_values"} (Reuse the implementation of "my_values" defined in package
-                    "external_package", meaning that "my_values" as defined in values_indices will not be generated. Note
-                    that "external_package" can equal package_name, e.g. when generating multiple functions in the same package which
-                    reuse the same types)
-                shared_types={"my_values.V1" : "my_subvalues_t", "my_values.V2" : "my_subvalues_t"} (Only generate one type named
-                    "my_subvalues_t" to represent Values objects defined by "my_values.V1" and "my_values.V2".
+                shared_types={"my_values" : "external_package.my_values"}
+                    (Reuse the implementation of "my_values" defined in package "external_package",
+                    meaning that "my_values" as defined in values_indices will not be generated.
+                    Note that "external_package" can equal package_name, e.g. when generating
+                    multiple functions in the same package which reuse the same types)
+                shared_types={"my_values.V1" : "my_subvalues_t", "my_values.V2" : "my_subvalues_t"}
+                    (Only generate one type named "my_subvalues_t" to represent Values objects
+                    defined by "my_values.V1" and "my_values.V2").
         scalar_type: Type of scalars used in LCM type definition
-        output_dir: Where to output the files. ".lcm" files are output in "output_dir/lcmtypes", and language-specific implementations
-            are generated in "output_dir/package_name".
-        lcm_bindings_output_dir: Where to output language-specific LCM bindings.  Defaults to output_dir
-        templates: TemplateList used if types are being generated as part of a larger code generation (e.g. when generating the
-            types required by a generated function). If None, we generate both the ".lcm" files and the language-specific
-            implementations, else we assume the templates and language-specific type implementations will be rendered
-            in an external function.
+        output_dir: Where to output the files. ``.lcm`` files are output in ``output_dir/lcmtypes``,
+            and language-specific implementations are generated in ``output_dir/package_name``.
+        lcm_bindings_output_dir: Where to output language-specific LCM bindings.  Defaults to
+            ``output_dir``
+        templates: TemplateList used if types are being generated as part of a larger code
+            generation (e.g. when generating the types required by a generated function). If None,
+            we generate both the ``.lcm`` files and the language-specific implementations, else we
+            assume the templates and language-specific type implementations will be rendered in an
+            external function.
     """
     # Create output directory if needed
     if output_dir is None:
@@ -201,7 +207,8 @@ def build_types_dict(
     shared_types: T.Optional[T.Mapping[str, str]] = None,
 ) -> T.Dict[str, T.Dict[str, T.Any]]:
     """
-    Compute the structure of the types we need to generate for the given Values.
+    Compute the structure of the types we need to generate for the given
+    :class:`Values <symforce.values.Values>`.
     """
     if shared_types is None:
         shared_types = {}
@@ -231,8 +238,8 @@ def get_subvalues_from_list_index(
     list_index: T.Dict[str, IndexEntry]
 ) -> T.Optional[T.Dict[str, IndexEntry]]:
     """
-    Returns index of Values object if base element of list is a Values object,
-    otherwise returns None
+    Returns index of :class:`Values <symforce.values.Values>` object if base element of list is a
+    :class:`Values <symforce.values.Values>` object, otherwise returns ``None``.
     """
     index_element = list(list_index.values())[0]
     datatype = index_element.datatype()
@@ -253,7 +260,7 @@ def _fill_types_dict_recursive(
     types_dict: T.Dict[str, T.Dict[str, T.Any]],
 ) -> None:
     """
-    Recursively compute type information from the key and values index and fill into types_dict.
+    Recursively compute type information from the key and values index and fill into ``types_dict``.
     """
     data: T.Dict[str, T.Any] = {}
 

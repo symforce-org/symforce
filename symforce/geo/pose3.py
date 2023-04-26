@@ -25,16 +25,21 @@ class Pose3(LieGroup):
     The tangent space is 3 elements for rotation followed by 3 elements for translation in the
     non-rotated frame.
 
-    For Lie group enthusiasts: This class is on the PRODUCT manifold, if you really really want
-    SE(3) you should use Pose3_SE3.  On this class, the group operations (e.g. compose and between)
-    operate as you'd expect for a Pose or SE(3), but the manifold operations (e.g. retract and
-    local_coordinates) operate on the product manifold SO(3) x R3.  This means that:
+    For Lie group enthusiasts: This class is on the PRODUCT manifold.  On this class, the group
+    operations (e.g. compose and between) operate as you'd expect for a Pose or SE(3), but the
+    manifold operations (e.g. retract and local_coordinates) operate on the product manifold
+    SO(3) x R3.  This means that:
 
       - retract(a, vec) != compose(a, from_tangent(vec))
 
       - local_coordinates(a, b) != to_tangent(between(a, b))
 
       - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
+
+    If you need a type that has these properties in symbolic expressions, you should use
+    :class:`symforce.geo.unsupported.pose3_se3.Pose3_SE3`. There is no runtime equivalent of
+    :class:`Pose3_SE3 <symforce.geo.unsupported.pose3_se3.Pose3_SE3>`, see the docstring on that
+    class for more information.
     """
 
     Pose3T = T.TypeVar("Pose3T", bound="Pose3")
@@ -59,7 +64,7 @@ class Pose3(LieGroup):
         """
         Accessor for the rotation component
 
-        Does not make a copy.  Also accessible as `self.R`
+        Does not make a copy.  Also accessible as ``self.R``
         """
         return self.R
 
@@ -67,7 +72,7 @@ class Pose3(LieGroup):
         """
         Accessor for the position component
 
-        Does not make a copy.  Also accessible as `self.t`
+        Does not make a copy.  Also accessible as ``self.t``
         """
         return self.t
 
@@ -139,7 +144,7 @@ class Pose3(LieGroup):
 
     def storage_D_tangent(self: Pose3T) -> Matrix:
         """
-        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = Matrix33.eye()
@@ -149,7 +154,7 @@ class Pose3(LieGroup):
 
     def tangent_D_storage(self: Pose3T) -> Matrix:
         """
-        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
         tangent_D_storage_R = self.R.tangent_D_storage()
         tangent_D_storage_t = Matrix33.eye()
@@ -168,10 +173,10 @@ class Pose3(LieGroup):
         Applies a tangent space perturbation vec to self. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
-        Conceptually represents "self + vec" if self is a vector.
+        Conceptually represents ``self + vec`` if self is a vector.
 
         Implementation retracts the R and t components separately, which is different from
-        `compose(self, from_tangent(vec))`.  See the class docstring for more information.
+        ``compose(self, from_tangent(vec))``.  See the class docstring for more information.
         """
         return self.__class__(
             R=self.R.retract(vec[:3], epsilon=epsilon),
@@ -185,10 +190,10 @@ class Pose3(LieGroup):
         Computes a tangent space perturbation around self to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
-        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
+        Tangent space perturbation that conceptually represents ``b - self`` if self is a vector.
 
         Implementation takes local_coordinates of the R and t components separately, which is
-        different from `to_tangent(between(self, b))`.  See the class docstring for more
+        different from ``to_tangent(between(self, b))``.  See the class docstring for more
         information.
         """
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(

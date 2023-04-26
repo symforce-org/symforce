@@ -37,9 +37,10 @@ class Pose2(object):
 
       - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
 
-    If you need a type that has these properties in symbolic expressions, you should use Pose2_SE2.
-    There is no runtime equivalent of Pose2_SE2, see the docstring on that class for more
-    information.
+    If you need a type that has these properties in symbolic expressions, you should use
+    :class:`symforce.geo.unsupported.pose2_se2.Pose2_SE2`. There is no runtime equivalent of
+    :class:`Pose2_SE2 <symforce.geo.unsupported.pose2_se2.Pose2_SE2>`, see the docstring on that
+    class for more information.
     """
 
     __slots__ = ["data"]
@@ -135,12 +136,6 @@ class Pose2(object):
         # type: (Pose2, numpy.ndarray) -> numpy.ndarray
         """
         Left-multiply with a compatible quantity.
-
-        Args:
-            right: (Pose2 | R2)
-
-        Returns:
-            (Pose2 | R2)
         """
 
         # Total ops: 8

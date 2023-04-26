@@ -105,7 +105,7 @@ class Rot3(LieGroup):
 
     def storage_D_tangent(self) -> Matrix43:
         """
-        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
         return (
             sf.S.One
@@ -122,7 +122,7 @@ class Rot3(LieGroup):
 
     def tangent_D_storage(self) -> Matrix34:
         """
-        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
         return 4 * T.cast(Matrix34, self.storage_D_tangent().T)
 

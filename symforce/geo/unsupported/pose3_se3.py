@@ -22,12 +22,12 @@ class Pose3_SE3(Pose3):
     """
     Group of three-dimensional rigid body transformations - SE(3).
 
-    There is no generated runtime analogue of this class in the `sym` package, which means you
+    There is no generated runtime analogue of this class in the :mod:`sym` package, which means you
     cannot use it as an input or output of generated functions or as a variable in an optimized
-    Values.  This is intentional - in general, you should use the Pose3 class instead of this one,
-    because the generated expressions will be significantly more efficient.  If you are sure that
-    you need the different behavior of this class, it's here for reference or for use in symbolic
-    expressions.
+    Values.  This is intentional - in general, you should use the
+    :class:`Pose3 <symforce.geo.pose3.Pose3>` class instead of this one, because the generated
+    expressions will be significantly more efficient.  If you are sure that you need the different
+    behavior of this class, it's here for reference or for use in symbolic expressions.
 
     The storage is a quaternion (x, y, z, w) for rotation followed by position (x, y, z).
 
@@ -79,7 +79,7 @@ class Pose3_SE3(Pose3):
 
     def storage_D_tangent(self) -> Matrix:
         """
-        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = self.R.to_rotation_matrix()
@@ -89,7 +89,7 @@ class Pose3_SE3(Pose3):
 
     def tangent_D_storage(self) -> Matrix:
         """
-        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
         tangent_D_storage_R = self.R.tangent_D_storage()
         tangent_D_storage_t = self.R.to_rotation_matrix().T
@@ -102,8 +102,8 @@ class Pose3_SE3(Pose3):
         Applies a tangent space perturbation vec to self. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
-        Implementation is simply `compose(self, from_tangent(vec))`.
-        Conceptually represents "self + vec" if self is a vector.
+        Implementation is simply ``compose(self, from_tangent(vec))``.
+        Conceptually represents ``self + vec`` if self is a vector.
         """
         return LieGroup.retract(self, vec, epsilon)
 
@@ -112,8 +112,8 @@ class Pose3_SE3(Pose3):
         Computes a tangent space perturbation around self to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
-        Implementation is simply `to_tangent(between(self, b))`.
-        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
+        Implementation is simply ``to_tangent(between(self, b))``.
+        Tangent space perturbation that conceptually represents ``b - self`` if self is a vector.
         """
         return LieGroup.local_coordinates(self, b, epsilon)
 

@@ -185,8 +185,6 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
 def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
     """
     Generate the geo package for the given language.
-
-    TODO(hayk): Take scalar_type list here.
     """
     # Create output directory if needed
     if output_dir is None:

@@ -8,8 +8,8 @@ The (symforce-internal) core symbolic API
 
 This represents the core functions that comprise SymForce's unified version of the SymPy API,
 without additional imports that would cause import cycles.  This means this module is safe to be
-imported from those modules within SymForce.  Users should instead import `symforce.symbolic`, which
-includes the entire SymForce symbolic API.
+imported from those modules within SymForce.  Users should instead import :mod:`symforce.symbolic`,
+which includes the entire SymForce symbolic API.
 
 This combines functions available from various sources:
 
@@ -17,10 +17,10 @@ This combines functions available from various sources:
 - Additional functions defined here to override those provided by SymPy or SymEngine, or provide a
   uniform interface between the two.  See https://symforce.org/api/symforce.symbolic.html for
   information on these
-- Logic functions defined in `symforce.logic`, see the documentation for that module
+- Logic functions defined in :mod:`symforce.logic`, see the documentation for that module
 
 It typically isn't necessary to actually access the symbolic API being used internally, but that is
-available as well as `symforce.symbolic.sympy`.
+available as well as :mod:`symforce.symbolic.sympy`.
 """
 
 # pylint: disable=unused-import
@@ -256,7 +256,7 @@ def epsilon() -> T.Any:
     """
     The default epsilon for SymForce
 
-    Library functions that require an epsilon argument should use a function signature like:
+    Library functions that require an epsilon argument should use a function signature like::
 
         def foo(x: Scalar, epsilon: Scalar = sf.epsilon()) -> Scalar:
             ...
@@ -270,10 +270,11 @@ def epsilon() -> T.Any:
     in the SymForce docs here: https://symforce.org/tutorials/epsilon_tutorial.html
 
     For purely numerical code that just needs a good default numerical epsilon, see
-    `symforce.symbolic.numeric_epsilon`.
+    :data:`symforce.symbolic.numeric_epsilon`.
 
-    Returns: The current default epsilon.  This is typically some kind of "Scalar", like a float or
-             a Symbol.
+    Returns:
+        The current default epsilon.  This is typically some kind of "Scalar", like a float or a
+        :class:`Symbol <symforce.symbolic.Symbol>`.
     """
     symforce._have_used_epsilon = True  # pylint: disable=protected-access
 
@@ -363,7 +364,7 @@ def wrap_angle(x: Scalar) -> Scalar:
     Wrap an angle to the interval [-pi, pi).  Commonly used to compute the shortest signed
     distance between two angles.
 
-    See also: `angle_diff`
+    See also: :func:`angle_diff`
     """
     return Mod(x + pi, 2 * pi) - pi
 
@@ -373,7 +374,7 @@ def angle_diff(x: Scalar, y: Scalar) -> Scalar:
     Return the difference x - y, but wrapped into [-pi, pi); i.e. the angle `diff` closest to 0
     such that x = y + diff (mod 2pi).
 
-    See also: `wrap_angle`
+    See also: :func:`wrap_angle`
     """
     return wrap_angle(x - y)
 
@@ -394,8 +395,8 @@ def copysign_no_zero(x: Scalar, y: Scalar) -> Scalar:
 
 def argmax_onehot(vals: T.Iterable[Scalar]) -> T.List[Scalar]:
     """
-    Returns a list l such that l[i] = 1.0 if i is the smallest index such that
-    vals[i] equals Max(*vals). l[i] = 0.0 otherwise.
+    Returns a list ``l`` such that ``l[i] = 1.0`` if ``i`` is the smallest index such that
+    ``vals[i]`` equals ``Max(*vals)``. ``l[i] = 0.0`` otherwise.
 
     Precondition:
         vals has at least one element
@@ -418,8 +419,8 @@ def argmax_onehot(vals: T.Iterable[Scalar]) -> T.List[Scalar]:
 
 def argmax(vals: T.Iterable[Scalar]) -> Scalar:
     """
-    Returns i (as a Scalar) such that i is the smallest index such that
-    vals[i] equals Max(*vals).
+    Returns ``i`` (as a Scalar) such that ``i`` is the smallest index such that
+    ``vals[i]`` equals ``Max(*vals)``.
 
     Precondition:
         vals has at least one element
@@ -445,9 +446,13 @@ def acos_safe(x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
 
 def clamp(x: sf.Scalar, min_value: sf.Scalar, max_value: sf.Scalar) -> sf.Scalar:
     """
-    Returns min_value if x < min_value
-    Returns x if min_value < x < max_value
-    Returns max_value if x > max_value
+    Clamps x between min_value and max_value
+
+    Returns::
+
+        min_value if x < min_value
+        x if min_value <= x <= max_value
+        max_value if x > max_value
 
     Args:
         x: Value to clamp between min_value and max_value
@@ -634,9 +639,9 @@ def _get_subs_dict(*args: T.Any, dont_flatten_args: bool = False, **kwargs: T.An
     Handle args to subs being a single key-value pair or a dict.
 
     Keyword Args:
-        dont_flatten_args (bool): if true and args is a single argument, assume that args is a
-            dict mapping scalar expressions to other scalar expressions. i.e. StorageOps flattening
-            will *not* occur. This is significantly faster.
+        dont_flatten_args: if true and args is a single argument, assume that args is a dict mapping
+            scalar expressions to other scalar expressions. i.e. StorageOps flattening will **not**
+            occur. This is significantly faster.
 
         **kwargs is unused but needed for sympy compatibility
     """

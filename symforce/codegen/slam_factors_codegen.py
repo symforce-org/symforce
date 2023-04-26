@@ -121,11 +121,15 @@ def inverse_range_landmark_reprojection_error_residual(
     landmark is fixed in the source camera and always has residual 0 there (this 0 residual is not
     returned, only the residual in the target camera is returned).
 
-    The norm of the residual is whitened using the Barron noise model.  Whitening each component of
-    the reprojection error separately would result in rejecting individual components as outliers.
-    Instead, we minimize the whitened norm of the full reprojection error for each point.  See the
-    docstring for `NoiseModel.whiten_norm` for more information on this, and the docstring of
-    `BarronNoiseModel` for more information on the noise model.
+    The norm of the residual is whitened using the
+    :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`.  Whitening each
+    component of the reprojection error separately would result in rejecting individual components
+    as outliers. Instead, we minimize the whitened norm of the full reprojection error for each
+    point.  See
+    :meth:`ScalarNoiseModel.whiten_norm <symforce.opt.noise_models.ScalarNoiseModel.whiten_norm>`
+    for more information on this, and
+    :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>` for more information on
+    the noise model.
 
     Args:
         source_pose: The pose of the source camera
@@ -136,10 +140,13 @@ def inverse_range_landmark_reprojection_error_residual(
         source_pixel: The location of the landmark in the source camera
         target_pixel: The location of the correspondence in the target camera
         weight: The weight of the factor
-        gnc_mu: The mu convexity parameter for the Barron noise model
-        gnc_scale: The scale parameter for the Barron noise model
+        gnc_mu: The mu convexity parameter for the
+            :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
+        gnc_scale: The scale parameter for the
+            :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
         epsilon: Small positive value
-        camera_model_class: The subclass of CameraCal to use as the camera model
+        camera_model_class: The subclass of :class:`CameraCal <symforce.cam.camera_cal.CameraCal>`
+            to use as the camera model
 
     Outputs:
         res: 2dof residual of the reprojection
@@ -192,10 +199,12 @@ def ray_reprojection_delta(
         target_pose: The pose of the target camera
         target_calibration_storage: The storage vector of the target camera calibration
         source_inverse_range: The inverse range of the landmark in the source camera
-        p_camera_source: The location of the landmark in the source camera coordinate, will be normalized
+        p_camera_source: The location of the landmark in the source camera coordinate, will be
+            normalized
         target_pixel: The location of the correspondence in the target camera
         epsilon: Small positive value
-        target_camera_model_class: The subclass of CameraCal to use as the target camera model
+        target_camera_model_class: The subclass of
+            :class:`CameraCal <symforce.cam.camera_cal.CameraCal>` to use as the target camera model
 
     Outputs:
         res: 2dof reprojection delta
@@ -233,31 +242,39 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     target_camera_model_class: T.Type[sf.CameraCal],
 ) -> sf.Vector2:
     """
-    Return the 2dof residual of reprojecting the landmark ray into the target spherical camera and comparing
-    it against the correspondence.
+    Return the 2dof residual of reprojecting the landmark ray into the target spherical camera and
+    comparing it against the correspondence.
 
-    The landmark is specified as a camera point in the source camera with an inverse range; this means the
-    landmark is fixed in the source camera and always has residual 0 there (this 0 residual is not
-    returned, only the residual in the target camera is returned).
+    The landmark is specified as a camera point in the source camera with an inverse range; this
+    means the landmark is fixed in the source camera and always has residual 0 there (this 0
+    residual is not returned, only the residual in the target camera is returned).
 
-    The norm of the residual is whitened using the Barron noise model.  Whitening each component of
-    the reprojection error separately would result in rejecting individual components as outliers.
-    Instead, we minimize the whitened norm of the full reprojection error for each point.  See the
-    docstring for `NoiseModel.whiten_norm` for more information on this, and the docstring of
-    `BarronNoiseModel` for more information on the noise model.
+    The norm of the residual is whitened using the
+    :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`.  Whitening each
+    component of the reprojection error separately would result in rejecting individual components
+    as outliers. Instead, we minimize the whitened norm of the full reprojection error for each
+    point.  See
+    :meth:`ScalarNoiseModel.whiten_norm <symforce.opt.noise_models.ScalarNoiseModel.whiten_norm>`
+    for more information on this, and
+    :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>` for more information on
+    the noise model.
 
     Args:
         source_pose: The pose of the source camera
         target_pose: The pose of the target camera
         target_calibration_storage: The storage vector of the target spherical camera calibration
         source_inverse_range: The inverse range of the landmark in the source camera
-        p_camera_source: The location of the landmark in the source camera coordinate, will be normalized
+        p_camera_source: The location of the landmark in the source camera coordinate, will be
+            normalized
         target_pixel: The location of the correspondence in the target camera
         weight: The weight of the factor
-        gnc_mu: The mu convexity parameter for the Barron noise model
-        gnc_scale: The scale parameter for the Barron noise model
+        gnc_mu: The mu convexity parameter for the
+            :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
+        gnc_scale: The scale parameter for the
+            :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
         epsilon: Small positive value
-        target_camera_model_class: The subclass of CameraCal to use as the target camera model
+        target_camera_model_class: The subclass of
+            :class:`CameraCal <symforce.cam.camera_cal.CameraCal>` to use as the target camera model
 
     Outputs:
         res: 2dof whiten residual of the reprojection

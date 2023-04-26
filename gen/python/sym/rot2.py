@@ -86,9 +86,9 @@ class Rot2(object):
     def from_angle(theta):
         # type: (float) -> Rot2
         """
-        Create a Rot2 from an angle `theta` in radians
+        Create a Rot2 from an angle ``theta`` in radians
 
-        This is equivalent to from_tangent([theta])
+        This is equivalent to ``from_tangent([theta])``
         """
 
         # Total ops: 2

@@ -105,7 +105,7 @@ class FileType(enum.Enum):
 
 class RelEnvironment(jinja2.Environment):
     """
-    Override join_path() to enable relative template paths. Modified from the below post.
+    Override ``join_path()`` to enable relative template paths. Modified from the below post.
 
     https://stackoverflow.com/questions/8512677/how-to-include-a-template-with-relative-path-in-jinja2
     """

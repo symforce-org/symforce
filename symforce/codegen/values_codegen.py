@@ -24,7 +24,7 @@ def generate_values_keys(
     skip_directory_nesting: bool = False,
 ) -> None:
     """
-    Generate C++ variables to easily create `sym::Key`s from the python key names
+    Generate C++ variables to easily create ``sym::Key``s from the python key names
 
     Args:
         values: Will generate an entry for each (recursive) key in the values

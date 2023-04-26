@@ -36,9 +36,10 @@ class Pose2(LieGroup):
 
       - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
 
-    If you need a type that has these properties in symbolic expressions, you should use Pose2_SE2.
-    There is no runtime equivalent of Pose2_SE2, see the docstring on that class for more
-    information.
+    If you need a type that has these properties in symbolic expressions, you should use
+    :class:`symforce.geo.unsupported.pose2_se2.Pose2_SE2`. There is no runtime equivalent of
+    :class:`Pose2_SE2 <symforce.geo.unsupported.pose2_se2.Pose2_SE2>`, see the docstring on that
+    class for more information.
     """
 
     Pose2T = T.TypeVar("Pose2T", bound="Pose2")
@@ -59,7 +60,7 @@ class Pose2(LieGroup):
         """
         Accessor for the rotation component
 
-        Does not make a copy.  Also accessible as `self.R`
+        Does not make a copy.  Also accessible as ``self.R``
         """
         return self.R
 
@@ -67,7 +68,7 @@ class Pose2(LieGroup):
         """
         Accessor for the position component
 
-        Does not make a copy.  Also accessible as `self.t`
+        Does not make a copy.  Also accessible as ``self.t``
         """
         return self.t
 
@@ -134,7 +135,7 @@ class Pose2(LieGroup):
 
     def storage_D_tangent(self) -> Matrix:
         """
-        Note: generated from symforce/notebooks/storage_D_tangent.ipynb
+        Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
         storage_D_tangent_R = self.R.storage_D_tangent()
         storage_D_tangent_t = Matrix22.eye()
@@ -144,7 +145,7 @@ class Pose2(LieGroup):
 
     def tangent_D_storage(self) -> Matrix:
         """
-        Note: generated from symforce/notebooks/tangent_D_storage.ipynb
+        Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
         tangent_D_storage_R = self.R.tangent_D_storage()
         tangent_D_storage_t = Matrix22.eye()
@@ -161,10 +162,10 @@ class Pose2(LieGroup):
         Applies a tangent space perturbation vec to self. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
-        Conceptually represents "self + vec" if self is a vector.
+        Conceptually represents ``self + vec`` if self is a vector.
 
         Implementation retracts the R and t components separately, which is different from
-        `compose(self, from_tangent(vec))`.  See the class docstring for more information.
+        ``compose(self, from_tangent(vec))``.  See the class docstring for more information.
         """
         return Pose2(
             R=self.R.retract(vec[:1], epsilon=epsilon),
@@ -178,10 +179,10 @@ class Pose2(LieGroup):
         Computes a tangent space perturbation around self to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
-        Tangent space perturbation that conceptually represents "b - self" if self is a vector.
+        Tangent space perturbation that conceptually represents ``b - self`` if self is a vector.
 
         Implementation takes local_coordinates of the R and t components separately, which is
-        different from `to_tangent(between(self, b))`.  See the class docstring for more
+        different from ``to_tangent(between(self, b))``.  See the class docstring for more
         information.
         """
         return self.R.local_coordinates(b.R, epsilon=epsilon) + ops.LieGroupOps.local_coordinates(
@@ -203,12 +204,6 @@ class Pose2(LieGroup):
     def __mul__(self, right: T.Union[Pose2, Vector2]) -> T.Union[Pose2, Vector2]:
         """
         Left-multiply with a compatible quantity.
-
-        Args:
-            right: (Pose2 | R2)
-
-        Returns:
-            (Pose2 | R2)
         """
         if isinstance(right, Vector2):
             assert right.shape == (2, 1), right.shape

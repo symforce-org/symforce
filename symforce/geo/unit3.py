@@ -18,19 +18,21 @@ from .rot3 import Rot3
 
 class Unit3(LieGroup):
     """
-    Direction in R^3, represented as a Rot3 that transforms [0, 0, 1] to the desired direction.
+    Direction in R^3, represented as a :class:`Rot3 <symforce.geo.rot3.Rot3>` that transforms
+    [0, 0, 1] to the desired direction.
+
     The storage is therefore a quaternion and the tangent space is 2 dimensional.
-    Most operations are implemented using operations from Rot3.
+    Most operations are implemented using operations from :class:`Rot3 <symforce.geo.rot3.Rot3>`.
 
     Note: an alternative implementation could directly store a unit vector and define its boxplus
     manifold as described in Appendix B.2 of [Hertzberg 2013]. This can be done by finding the
     Householder reflector of x and use it to transform the exponential map of delta, which is a
-    small perturbation in the tangent space (R^2). Namely,
+    small perturbation in the tangent space (R^2). Namely::
 
-    x.retract(delta) = x [+] delta = Rx * Exp(delta), where
-    Exp(delta) = [sinc(||delta||) * delta, cos(||delta||)], and
-    Rx = (I - 2 vv^T / (v^Tv))X, v = x - e_z != 0, X is a matrix negating 2nd vector component
-       = I                     , x = e_z
+        x.retract(delta) = x [+] delta = Rx * Exp(delta), where
+        Exp(delta) = [sinc(||delta||) * delta, cos(||delta||)], and
+        Rx = (I - 2 vv^T / (v^Tv))X, v = x - e_z != 0, X is a matrix negating 2nd vector component
+        = I                     , x = e_z
 
     [Hertzberg 2013] Integrating Generic Sensor Fusion Algorithms with Sound State Representations
     through Encapsulation of Manifolds
@@ -40,7 +42,7 @@ class Unit3(LieGroup):
 
     def __init__(self, rot3: Rot3 = None) -> None:
         """
-        Construct from a rot3, or identity if none provided.
+        Construct from a :class:`Rot3 <symforce.geo.rot3.Rot3>`, or identity if none provided.
         """
         self.rot3 = rot3 if rot3 is not None else Rot3.identity()
         assert isinstance(self.rot3, Rot3)
@@ -117,8 +119,9 @@ class Unit3(LieGroup):
     @classmethod
     def from_vector(cls, a: Vector3, epsilon: T.Scalar = sf.epsilon()) -> Unit3:
         """
-        Return a Unit3 that points along the direction of vector a. a does not have to be a unit
-        vector.
+        Return a :class:`Unit3` that points along the direction of vector ``a``
+
+        ``a`` does not have to be a unit vector.
         """
         u = a.normalized(epsilon=epsilon)
         return cls(Rot3.from_two_unit_vectors(cls.E_Z, u, epsilon=epsilon))
@@ -126,7 +129,7 @@ class Unit3(LieGroup):
     @classmethod
     def random(cls, epsilon: T.Scalar = sf.epsilon()) -> Unit3:
         """
-        Generate a random element of Unit3, by generating a random rotation first and then rotating
-        e_z to get a random direction.
+        Generate a random element of :class:`Unit3`, by generating a random rotation first and then
+        rotating ``e_z`` to get a random direction.
         """
         return cls.from_vector(Rot3.random() * cls.E_Z, epsilon=epsilon)

@@ -17,10 +17,23 @@ from symforce.ops.interfaces import Storage
 
 class Matrix(Storage):
     """
-    Matrix type that wraps the Sympy Matrix class. Care has been taken to allow this class
-    to create fixed-size child classes like Matrix31. Anytime __new__ is called, the appropriate
-    fixed size class is returned rather than the type of the arguments. The API is meant to parallel
-    the way Eigen's C++ matrix classes work with dynamic and fixed sizes.
+    Matrix type that wraps the SymPy Matrix class. Care has been taken to allow this class
+    to create fixed-size child classes like :class:`Matrix31`. Anytime :meth:`__new__` is called,
+    the appropriate fixed size class is returned rather than the type of the arguments. The API is
+    meant to parallel the way Eigen's C++ matrix classes work with dynamic and fixed sizes, as well
+    as internal use cases within SymPy and SymEngine.
+
+    Examples::
+
+        1) Matrix32()  # Zero constructed Matrix32
+        2) Matrix(sm.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
+        3A) Matrix([[1, 2], [3, 4]])  # Matrix22 with [1, 2, 3, 4] data
+        3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
+        3C) Matrix([1, 2, 3, 4])  # Matrix41 with [1, 2, 3, 4] data - column vector assumed
+        4) Matrix(4, 3)  # Zero constructed Matrix43
+        5) Matrix(2, 2, [1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (first two are shape)
+        6) Matrix(2, 2, lambda row, col: row + col)  # Matrix22 with [0, 1, 1, 2] data
+        7) Matrix22(1, 2, 3, 4)  # Matrix22 with [1, 2, 3, 4] data (must match fixed length)
 
     References:
 
@@ -29,11 +42,13 @@ class Matrix(Storage):
         https://en.wikipedia.org/wiki/Vector_space
 
     Matrix does not implement the group or lie group concepts using instance/class methods directly,
-    because we want it to represent the group R^{NxM}, not GL(n), which leads to the `identity` and
-    `inverse` methods being confusingly named.  For the group ops and lie group ops, use
-    `ops.GroupOps` and `ops.LieGroupOps` respectively, which use the implementation in
-    vector_class_lie_group_ops.py of the R^{NxM} group under matrix addition.  For
-    the identity matrix and inverse matrix, see `Matrix.eye` and `Matrix.inv` respectively.
+    because we want it to represent the group R^{NxM}, not GL(n), which leads to the ``identity``
+    and ``inverse`` methods being confusingly named.  For the group ops and lie group ops, use
+    :class:`symforce.ops.group_ops.GroupOps` and :class:`symforce.ops.lie_group_ops.LieGroupOps`
+    respectively, which use the implementation in
+    :mod:`symforce.ops.impl.vector_class_lie_group_ops` of the R^{NxM} group under matrix addition.
+    For the identity matrix and inverse matrix, see :meth:`Matrix.eye` and :meth:`Matrix.inv`
+    respectively.
     """
 
     # Type that represents this or any subclasses
@@ -49,21 +64,8 @@ class Matrix(Storage):
         """
         Beast of a method for creating a Matrix. Handles a variety of construction use cases
         and *always* returns a fixed size child class of Matrix rather than Matrix itself. The
-        available construction options depend on whether cls is a fixed size type or not.
-
-        Generally modeled after the Eigen interface, but must also support internal use within
-        sympy and symengine which we cannot change.
-
-        Examples:
-            1) Matrix32()  # Zero constructed Matrix32
-            2) Matrix(sm.Matrix([[1, 2], [3, 4]]))  # Matrix22 with [1, 2, 3, 4] data
-            3A) Matrix([[1, 2], [3, 4]])  # Matrix22 with [1, 2, 3, 4] data
-            3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
-            3C) Matrix([1, 2, 3, 4])  # Matrix41 with [1, 2, 3, 4] data - column vector assumed
-            4) Matrix(4, 3)  # Zero constructed Matrix43
-            5) Matrix(2, 2, [1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (first two are shape)
-            6) Matrix(2, 2, lambda row, col: row + col)  # Matrix22 with [0, 1, 1, 2] data
-            7) Matrix22(1, 2, 3, 4)  # Matrix22 with [1, 2, 3, 4] data (must match fixed length)
+        available construction options depend on whether cls is a fixed size type or not.  See the
+        Matrix docstring for a summary of the construction options.
         """
 
         # 1) Default construction allowed for fixed size.
@@ -406,8 +408,13 @@ class Matrix(Storage):
     @classmethod
     def block_matrix(cls, array: _T.Sequence[_T.Sequence[Matrix]]) -> Matrix:
         """
-        Constructs a matrix from block elements. For example:
-        [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]] -> Matrix35 with elements equal to given blocks
+        Constructs a matrix from block elements.
+
+        For example::
+
+            [[Matrix22(...), Matrix23(...)], [Matrix11(...), Matrix14(...)]]
+
+        constructs a :class:`Matrix35` with elements equal to given blocks
         """
         # Sum rows of matrices in the first column
         rows = sum(mat_row[0].shape[0] for mat_row in array)
@@ -461,7 +468,7 @@ class Matrix(Storage):
 
     def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
         """
-        Compute the jacobian with respect to the tangent space of X if tangent_space = True,
+        Compute the jacobian with respect to the tangent space of X if ``tangent_space = True``,
         otherwise returns the jacobian wih respect to the storage elements of X.
         """
         assert self.cols == 1, "Jacobian is for column vectors."
@@ -480,7 +487,7 @@ class Matrix(Storage):
 
     def diff(self, *args: _T.Scalar) -> Matrix:
         """
-        Differentiate wrt a scalar.
+        Differentiate w.r.t. a scalar.
         """
         return self.__class__(self.mat.diff(*args))
 
@@ -520,7 +527,9 @@ class Matrix(Storage):
     def dot(self, other: Matrix) -> _T.Scalar:
         """
         Dot product, also known as inner product.
-        dot only supports mapping 1 x n or n x 1 Matrices to scalars. Note that both matrices must have the same shape.
+
+        Only supports mapping ``1 x n`` or ``n x 1`` Matrices to scalars. Note that both matrices
+        must have the same shape.
         """
         if not (self.is_vector() and other.is_vector()):
             raise TypeError(
@@ -576,10 +585,10 @@ class Matrix(Storage):
         """
         Clamp a vector to the given norm in a safe/differentiable way.
 
-        Is _NOT_ safe if max_norm can be negative, or if derivatives are needed w.r.t. max_norm and
-        max_norm can be 0 or small enough that `max_squared_norm / squared_norm` is truncated to 0
-        in the particular floating point type being used (e.g. all of these are true if max_norm is
-        optimized)
+        Is **NOT** safe if max_norm can be negative, or if derivatives are needed w.r.t. max_norm and
+        max_norm can be 0 or small enough that ``max_squared_norm / squared_norm`` is truncated to 0
+        in the particular floating point type being used (e.g. all of these are true if ``max_norm``
+        is optimized).
 
         Currently only L2 norm is supported
         """
@@ -597,7 +606,7 @@ class Matrix(Storage):
     def multiply_elementwise(self: MatrixT, rhs: MatrixT) -> MatrixT:
         """
         Do the elementwise multiplication between self and rhs, and return the result as a new
-        Matrix
+        :class:`Matrix`
         """
         assert self.shape == rhs.shape
         return self.__class__(self.mat.multiply_elementwise(rhs.mat))
@@ -618,8 +627,10 @@ class Matrix(Storage):
 
     def __getitem__(self, item: _T.Any) -> _T.Any:
         """
-        Get a scalar value or submatrix slice. Unlike sympy, for 1D matrices the submatrix slice is
-        returned as a 1D matrix instead of as a list.
+        Get a scalar value or submatrix slice.
+
+        Unlike sympy, for 1D matrices the submatrix slice is returned as a 1D matrix instead of as a
+        list.
         """
         ret = self.mat.__getitem__(item)
         if isinstance(ret, sf.sympy.Matrix):
@@ -757,13 +768,13 @@ class Matrix(Storage):
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
         """
-        Compute a symmetric product A.transpose() * A
+        Compute a symmetric product ``A.transpose() * A``
 
         Args:
-            lower_only (bool): If given, only fill the lower half and set upper to zero
+            lower_only: If given, only fill the lower half and set upper to zero
 
         Returns:
-            (Matrix(N, N)): Symmetric matrix AtA = self.transpose() * self
+            (Matrix(N, N)): Symmetric matrix ``AtA = self.transpose() * self``
 
         """
         AtA = self.T * self
@@ -883,13 +894,11 @@ class Matrix(Storage):
 
     @classmethod
     def column_stack(cls, *columns: Matrix) -> Matrix:
-        """Take a sequence of 1-D vectors and stack them as columns to make a single 2-D Matrix.
+        """
+        Take a sequence of 1-D vectors and stack them as columns to make a single 2-D Matrix.
 
         Args:
-            columns (tuple(Matrix)): 1-D vectors
-
-        Returns:
-            Matrix:
+            columns: 1-D vectors
         """
         if not columns:
             return cls()
@@ -918,13 +927,14 @@ class Matrix(Storage):
     @classmethod
     def _is_fixed_size(cls) -> bool:
         """
-        Return True if this is a type with fixed dimensions set, ie Matrix31 instead of Matrix.
+        Return ``True`` if this is a type with fixed dimensions set, e.g. :class:`Matrix31` instead
+        of :class:`Matrix`.
         """
         return cls.SHAPE[0] > 0 and cls.SHAPE[1] > 0
 
     def _ipython_display_(self) -> None:
         """
-        Display self.mat in IPython, with SymPy's pretty printing
+        Display ``self.mat`` in IPython, with SymPy's pretty printing
         """
         display(self.mat)  # type: ignore[name-defined] # pylint: disable=undefined-variable # not defined outside of ipython
 
@@ -933,7 +943,7 @@ class Matrix(Storage):
         """
         Initialize SymPy pretty printing
 
-        _ipython_display_ is sufficient in Jupyter, but this covers other locations
+        ``_ipython_display_`` is sufficient in Jupyter, but this covers other locations
         """
         ip = None
         try:
@@ -1372,8 +1382,9 @@ for rows in range(1, 10):
 
 def matrix_type_from_shape(shape: _T.Tuple[int, int]) -> _T.Type[Matrix]:
     """
-    Return a fixed size matrix type (like Matrix32) given a shape. Either use the statically
-    defined ones or dynamically create a new one if not available.
+    Return a fixed size matrix type (like :class:`Matrix32`) given a shape
+
+    Either uses the statically defined ones or dynamically creates a new one if not available.
     """
     if shape not in DIMS_TO_FIXED_TYPE:
         DIMS_TO_FIXED_TYPE[shape] = type(
