@@ -8,6 +8,8 @@
 
 #include <Eigen/Dense>
 
+#include <sym/linear_camera_cal.h>
+
 namespace cam_function_codegen_test {
 
 /**

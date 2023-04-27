@@ -11,13 +11,8 @@
 // Import all the known types.
 #include <sym/ops/lie_group_ops.h>
 #include <sym/ops/storage_ops.h>
-#include <sym/pose2.h>
-#include <sym/pose3.h>
-#include <sym/rot2.h>
-#include <sym/rot3.h>
-#include <sym/unit3.h>
-{% for class_name in camera_cal_class_names %}
-#include <sym/{{ python_util.camelcase_to_snakecase(class_name) }}.h>
+{% for cls in sf.GEO_TYPES + sf.CAM_TYPES %}
+#include <sym/{{ python_util.camelcase_to_snakecase(cls.__name__) }}.h>
 {% endfor %}
 #include <sym/util/typedefs.h>
 
@@ -44,16 +39,10 @@ static constexpr const bool kIsSparseEigenType =
   template <typename Scalar, typename... Args>                         \
   auto name(const type_t type, Args&&... args) {                       \
     switch (type.value) {                                              \
-      case type_t::ROT2:                                               \
-        return func<sym::Rot2<Scalar>>(args...);                       \
-      case type_t::ROT3:                                               \
-        return func<sym::Rot3<Scalar>>(args...);                       \
-      case type_t::POSE2:                                              \
-        return func<sym::Pose2<Scalar>>(args...);                      \
-      case type_t::POSE3:                                              \
-        return func<sym::Pose3<Scalar>>(args...);                      \
-      case type_t::UNIT3:                                              \
-        return func<sym::Unit3<Scalar>>(args...);                      \
+      {% for cls in sf.GEO_TYPES %}
+      case type_t::{{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }}: \
+        return func<sym::{{ cls.__name__ }}<Scalar>>(args...);           \
+      {% endfor %}
       case type_t::SCALAR:                                             \
         return func<Scalar>(args...);                                  \
         {% for i in range(1, 10) %}
@@ -66,9 +55,9 @@ static constexpr const bool kIsSparseEigenType =
         return func<Eigen::Matrix<Scalar, {{ i }}, {{ j }}>>(args...); \
         {% endfor %}
         {% endfor %}
-      {% for class_name in camera_cal_class_names %}
-      case type_t::{{ python_util.camelcase_to_screaming_snakecase(class_name) }}: \
-        return func<sym::{{ class_name }}<Scalar>>(args...);         \
+      {% for cls in sf.CAM_TYPES %}
+      case type_t::{{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }}: \
+        return func<sym::{{ cls.__name__ }}<Scalar>>(args...);         \
       {% endfor %}
       default:                                                         \
         SYM_ASSERT(false);                                             \

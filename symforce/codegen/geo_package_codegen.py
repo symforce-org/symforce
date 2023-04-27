@@ -23,9 +23,6 @@ from symforce.codegen import template_util
 from symforce.codegen.ops_codegen_util import make_group_ops_funcs
 from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
-# Default geo types to generate
-DEFAULT_GEO_TYPES = (sf.Rot2, sf.Pose2, sf.Rot3, sf.Pose3, sf.Unit3)
-
 
 def geo_class_common_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     """
@@ -205,7 +202,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
 
         # Build up templates for each type
 
-        for cls in DEFAULT_GEO_TYPES:
+        for cls in sf.GEO_TYPES:
             data = geo_class_common_data(cls, config)
             data["matrix_type_aliases"] = matrix_type_aliases.get(cls, {})
             data["custom_generated_methods"] = custom_generated_methods.get(cls, {})
@@ -238,7 +235,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
             template_path=Path("geo_package", "__init__.py.jinja"),
             data=dict(
                 Codegen.common_data(),
-                all_types=DEFAULT_GEO_TYPES,
+                all_types=sf.GEO_TYPES,
                 numeric_epsilon=sf.numeric_epsilon,
             ),
             config=config.render_template_config,
@@ -249,7 +246,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
         for name in ("geo_package_python_test.py",):
             templates.add(
                 template_path=Path("tests", name + ".jinja"),
-                data=dict(Codegen.common_data(), all_types=DEFAULT_GEO_TYPES),
+                data=dict(Codegen.common_data(), all_types=sf.GEO_TYPES),
                 config=config.render_template_config,
                 output_path=output_dir / "tests" / name,
             )
@@ -263,7 +260,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
         logger.debug(f'Creating C++ package at: "{package_dir}"')
 
         # Build up templates for each type
-        for cls in DEFAULT_GEO_TYPES:
+        for cls in sf.GEO_TYPES:
             data = geo_class_common_data(cls, config)
             data["matrix_type_aliases"] = matrix_type_aliases.get(cls, {})
             data["custom_generated_methods"] = custom_generated_methods.get(cls, {})
@@ -308,10 +305,10 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 output_path=output_dir / "tests" / name,
                 data=dict(
                     Codegen.common_data(),
-                    all_types=DEFAULT_GEO_TYPES,
+                    all_types=sf.GEO_TYPES,
                     cpp_geo_types=[
                         f"sym::{cls.__name__}<{scalar}>"
-                        for cls in DEFAULT_GEO_TYPES
+                        for cls in sf.GEO_TYPES
                         for scalar in data["scalar_types"]
                     ],
                     cpp_matrix_types=[

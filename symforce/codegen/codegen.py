@@ -360,6 +360,9 @@ class Codegen:
         data["typing_util"] = typing_util
         data["lcm_type_t_include_dir"] = "<lcmtypes/sym/type_t.hpp>"
 
+        # TODO(aaron): Replace uses of members of sf above
+        data["sf"] = sf
+
         def is_symbolic(T: T.Any) -> bool:
             return isinstance(T, (sf.Expr, sf.Symbol))
 

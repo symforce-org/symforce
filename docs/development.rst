@@ -116,3 +116,23 @@ workflow is currently run manually on a commit, and produces a ``symforce-wheels
 wheels (and sdists) for distribution (e.g. on PyPI).  It doesn't upload them to PyPI - to do that
 (after verifying that the built wheels work as expected) you should download and unzip the archive,
 and upload to PyPI with ``python -m twine upload [--repository testpypi] --verbose *``.
+
+*************************************************
+Adding new types
+*************************************************
+
+To add a new geo or cam type to SymForce:
+
+#. Add a symbolic implementation of your type, to either the :mod:`symforce.geo` or
+   :mod:`symforce.cam` module.  Add an import of your type in the ``__init__.py`` file for the
+   module.
+#. For geo types, you should add it to the ``notebooks/storage_D_tangent.ipynb`` and
+   ``notebooks/tangent_D_storage.ipynb`` notebooks, and use the results there for your symbolic
+   implementation.
+#. Create a test of your symbolic type, for example ``test/geo_rot3_test.py`` or
+   ``test/cam_linear_test.py``.
+#. For geo types, register their numerical equivalents in ``ops/__init__.py``
+#. Add any custom methods you'd like on the runtime numerical classes to the corresponding file in
+   the ``custom_methods`` directory for each backend language
+#. For geo types, add them to the ``"Test implicit construction"`` and ``"Test lie group ops"`` test
+   cases in ``test/symforce_values_test.cc``

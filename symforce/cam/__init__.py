@@ -15,3 +15,6 @@ from .linear_camera_cal import LinearCameraCal
 from .polynomial_camera_cal import PolynomialCameraCal
 from .posed_camera import PosedCamera
 from .spherical_camera_cal import SphericalCameraCal
+
+# Default generated cam types
+CAM_TYPES = tuple(sorted(CameraCal.__subclasses__(), key=lambda cls: cls.__name__))

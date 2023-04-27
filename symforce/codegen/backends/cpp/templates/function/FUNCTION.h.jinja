@@ -22,9 +22,9 @@
 #include <Eigen/Sparse>
 {% endif %}
 
-{% for typename in ('Rot3', 'Rot2', 'Pose3', 'Pose2', 'Unit3') %}
-{% if typename in spec.types_included %}
-#include <sym/{{ python_util.camelcase_to_snakecase(typename) }}.h>
+{% for cls in sf.GEO_TYPES + sf.CAM_TYPES %}
+{% if cls.__name__ in spec.types_included %}
+#include <sym/{{ python_util.camelcase_to_snakecase(cls.__name__) }}.h>
 {% endif %}
 {% endfor %}
 

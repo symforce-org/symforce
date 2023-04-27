@@ -135,7 +135,7 @@ TEST_CASE("Test Rot2 and Pose2", "[geo_package]") {
 }
 
 TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
-                   sym::Pose2<double>, sym::Pose2<float>, sym::Rot3<double>, sym::Rot3<float>,
+                   sym::Rot3<double>, sym::Rot3<float>, sym::Pose2<double>, sym::Pose2<float>,
                    sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
 
@@ -233,7 +233,7 @@ TEST_CASE("Test Matrix storage order is consistent with symbolic storage order")
 }
 
 TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
-                   sym::Pose2<double>, sym::Pose2<float>, sym::Rot3<double>, sym::Rot3<float>,
+                   sym::Rot3<double>, sym::Rot3<float>, sym::Pose2<double>, sym::Pose2<float>,
                    sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
 
@@ -386,7 +386,7 @@ struct TestIsClose<sym::Rot2<Scalar>> {
 };
 
 TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
-                   sym::Pose2<double>, sym::Pose2<float>, sym::Rot3<double>, sym::Rot3<float>,
+                   sym::Rot3<double>, sym::Rot3<float>, sym::Pose2<double>, sym::Pose2<float>,
                    sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
 

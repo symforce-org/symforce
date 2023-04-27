@@ -22,18 +22,6 @@ from symforce.codegen import template_util
 from symforce.codegen.ops_codegen_util import make_group_ops_funcs
 from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
 
-# Default cam types to generate
-DEFAULT_CAM_TYPES = sf.CameraCal.__subclasses__()
-
-
-def camera_cal_class_names() -> T.List[str]:
-    """
-    Returns a sorted list of the CameraCal subclass names.
-    """
-    class_names = [cam_cal_cls.__name__ for cam_cal_cls in sf.CameraCal.__subclasses__()]
-    class_names.sort()
-    return class_names
-
 
 def pixel_from_camera_point_with_jacobians(
     self: sf.CameraCal, point: sf.V3, epsilon: sf.Scalar
@@ -265,7 +253,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
 
         # Build up templates for each type
 
-        for cls in DEFAULT_CAM_TYPES:
+        for cls in sf.CAM_TYPES:
             data = cam_class_data(cls, config=config)
 
             for base_dir, relative_path in (
@@ -292,7 +280,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
             template_path=Path("geo_package", "__init__.py.jinja"),
             data=dict(
                 Codegen.common_data(),
-                all_types=list(geo_package_codegen.DEFAULT_GEO_TYPES) + list(DEFAULT_CAM_TYPES),
+                all_types=list(sf.GEO_TYPES) + list(sf.CAM_TYPES),
                 numeric_epsilon=sf.numeric_epsilon,
             ),
             config=config.render_template_config,
@@ -305,7 +293,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 output_path=output_dir / "tests" / name,
                 data=dict(
                     Codegen.common_data(),
-                    all_types=DEFAULT_CAM_TYPES,
+                    all_types=sf.CAM_TYPES,
                     cam_cal_from_points=cam_cal_from_points,
                     _DISTORTION_COEFF_VALS=_DISTORTION_COEFF_VALS,
                 ),
@@ -322,7 +310,7 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
         geo_package_codegen.generate(config=config, output_dir=output_dir)
 
         # Build up templates for each type
-        for cls in DEFAULT_CAM_TYPES:
+        for cls in sf.CAM_TYPES:
             data = cam_class_data(cls, config=config)
 
             for base_dir, relative_path in (
@@ -376,15 +364,15 @@ def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
                 output_path=output_dir / "tests" / name,
                 data=dict(
                     Codegen.common_data(),
-                    all_types=DEFAULT_CAM_TYPES,
+                    all_types=sf.CAM_TYPES,
                     cpp_cam_types=[
                         f"sym::{cls.__name__}<{scalar}>"
-                        for cls in DEFAULT_CAM_TYPES
+                        for cls in sf.CAM_TYPES
                         for scalar in data["scalar_types"]
                     ],
                     fully_implemented_cpp_cam_types=[
                         f"sym::{cls.__name__}<{scalar}>"
-                        for cls in DEFAULT_CAM_TYPES
+                        for cls in sf.CAM_TYPES
                         for scalar in data["scalar_types"]
                         if supports_camera_ray_from_pixel(cls)
                     ],

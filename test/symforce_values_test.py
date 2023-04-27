@@ -546,16 +546,7 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         # To check handling of normal geo types
         v_geo = Values()
         with v_geo.scope("geo_types"):
-            for geo_type in [
-                sf.Rot2,
-                sf.Rot3,
-                sf.Pose2,
-                sf.Pose3,
-                sf.Unit3,
-                sf.Complex,
-                sf.Quaternion,
-                sf.DualQuaternion,
-            ]:
+            for geo_type in sf.ALL_GEO_TYPES:
                 v_geo[geo_type.__name__] = ops.GroupOps.identity(geo_type)
 
         self.assertEqual(v_geo, Values.from_storage_index(v_geo.to_storage(), v_geo.index()))

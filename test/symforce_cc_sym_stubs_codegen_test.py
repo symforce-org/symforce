@@ -10,6 +10,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+import symforce.symbolic as sf
+
 # Needed so sys.modules["cc_sym"] exists
 from symforce import cc_sym  # pylint: disable=unused-import
 from symforce import path_util
@@ -92,19 +94,9 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                         "sparse_matrix_structure_t",
                         "values_t",
                     ],
-                    sym_include_type_names=[
-                        "ATANCameraCal",
-                        "DoubleSphereCameraCal",
-                        "EquirectangularCameraCal",
-                        "LinearCameraCal",
-                        "PolynomialCameraCal",
-                        "Pose2",
-                        "Pose3",
-                        "Rot2",
-                        "Rot3",
-                        "SphericalCameraCal",
-                        "Unit3",
-                    ],
+                    sym_include_type_names=sorted(
+                        cls.__name__ for cls in sf.GEO_TYPES + sf.CAM_TYPES
+                    ),
                     third_party_includes=["import scipy"],
                     cleaned_up_stubgen_output=stubgen_output,
                 )

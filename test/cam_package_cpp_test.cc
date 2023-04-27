@@ -126,11 +126,11 @@ struct CamCals<sym::ATANCameraCal<Scalar>> {
   }
 };
 
-TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
-                   sym::EquirectangularCameraCal<float>, sym::PolynomialCameraCal<double>,
+                   sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>, sym::PolynomialCameraCal<double>,
                    sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
                    sym::SphericalCameraCal<float>) {
   using T = TestType;
@@ -157,11 +157,11 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::LinearCameraCal<dou
   CHECK(cam_cal.Data() != cam_cal3.Data());
 }
 
-TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
-                   sym::EquirectangularCameraCal<float>, sym::PolynomialCameraCal<double>,
+                   sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>, sym::PolynomialCameraCal<double>,
                    sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
                    sym::SphericalCameraCal<float>) {
   using T = TestType;
@@ -188,11 +188,11 @@ TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", sym::LinearCameraCal<doubl
       sym::GroupOps<T>::BetweenWithJacobians(identity, identity, &jacobian1, &jacobian2), 1e-9));
 }
 
-TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
-                   sym::EquirectangularCameraCal<float>, sym::PolynomialCameraCal<double>,
+                   sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>, sym::PolynomialCameraCal<double>,
                    sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
                    sym::SphericalCameraCal<float>) {
   using T = TestType;
@@ -216,11 +216,11 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", sym::LinearCameraCal<d
         sym::kDefaultEpsilond);
 }
 
-TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
-                   sym::EquirectangularCameraCal<float>) {
+                   sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -250,11 +250,11 @@ TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::LinearCam
   }
 }
 
-TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
-                   sym::EquirectangularCameraCal<float>) {
+                   sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -302,11 +302,11 @@ TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::LinearCameraCal<do
   CHECK(is_valid == 1);
 }
 
-TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", sym::LinearCameraCal<double>,
-                   sym::LinearCameraCal<float>, sym::ATANCameraCal<double>,
+TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
-                   sym::EquirectangularCameraCal<float>) {
+                   sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
+                   sym::LinearCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 

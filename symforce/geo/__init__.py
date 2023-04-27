@@ -25,3 +25,20 @@ from .quaternion import Quaternion
 from .rot2 import Rot2
 from .rot3 import Rot3
 from .unit3 import Unit3
+
+# Default generated geo types
+GEO_TYPES = (
+    Rot2,
+    Rot3,
+    Pose2,
+    Pose3,
+    Unit3,
+)
+
+# All geo types, including GEO_TYPES plus types used for internal representations that are not
+# generated
+ALL_GEO_TYPES = GEO_TYPES + (
+    Quaternion,
+    DualQuaternion,
+    Complex,
+)
