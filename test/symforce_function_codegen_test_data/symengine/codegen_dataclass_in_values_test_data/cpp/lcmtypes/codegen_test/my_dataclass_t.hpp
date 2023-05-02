@@ -107,7 +107,7 @@ class my_dataclass_t
         friend std::ostream& operator<<(std::ostream& stream, const my_dataclass_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
             stream << "my_dataclass_t(";
-            stream << "rot=<EIGEN_LCM TYPE eigen_lcm.Vector4d>";
+            stream << "rot=" << obj.rot;
             stream << ")";
 #else
             stream << "<FORMATTING DISABLED>";

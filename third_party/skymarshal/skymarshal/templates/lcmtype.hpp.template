@@ -155,10 +155,6 @@ class {{lcmtype.name}}
             {# Multidimensional arrays will require some complicated stuff #}
             stream << "{{member.name}}=<MULTIDIMENSIONAL ARRAY {{ array_type_str(member) }}>"{{ comma(loop.last) }};
         {% endif %}
-    {% elif "eigen_lcm" in member.type_ref.full_name %}
-            {# We currently don't have operator<< for eigen_lcm types, or a way to regenerate the
-             # bindings :) #}
-            stream << "{{member.name}}=<EIGEN_LCM TYPE {{ member.type_ref.full_name }}>"{{ comma(loop.last) }};
     {% else %}
             stream << "{{member.name}}=" << obj.{{member.name}}{{ comma(loop.last) }};
     {% endif %}

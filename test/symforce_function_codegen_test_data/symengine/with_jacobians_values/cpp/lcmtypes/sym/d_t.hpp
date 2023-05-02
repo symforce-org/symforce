@@ -111,7 +111,7 @@ class d_t
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
             stream << "d_t(";
             stream << "x=" << obj.x << ", ";
-            stream << "y=<EIGEN_LCM TYPE eigen_lcm.Vector2d>";
+            stream << "y=" << obj.y;
             stream << ")";
 #else
             stream << "<FORMATTING DISABLED>";

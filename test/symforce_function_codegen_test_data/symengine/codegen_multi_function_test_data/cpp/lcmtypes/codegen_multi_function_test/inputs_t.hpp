@@ -151,7 +151,7 @@ class inputs_t
             stream << "inputs_t(";
             stream << "x=" << obj.x << ", ";
             stream << "y=" << obj.y << ", ";
-            stream << "rot=<EIGEN_LCM TYPE eigen_lcm.Vector4d>" << ", ";
+            stream << "rot=" << obj.rot << ", ";
             stream << "rot_vec=[";
             for (size_t i = 0; i < obj.rot_vec.size(); ++i) {
                 stream << obj.rot_vec[i];
@@ -179,7 +179,7 @@ class inputs_t
             stream << "]" << ", ";
             stream << "values_vec_2D=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>" << ", ";
             stream << "constants=" << obj.constants << ", ";
-            stream << "big_matrix=<EIGEN_LCM TYPE eigen_lcm.VectorXd>" << ", ";
+            stream << "big_matrix=" << obj.big_matrix << ", ";
             stream << "states=" << obj.states;
             stream << ")";
 #else

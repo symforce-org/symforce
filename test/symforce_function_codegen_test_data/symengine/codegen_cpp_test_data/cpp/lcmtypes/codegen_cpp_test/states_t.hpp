@@ -107,7 +107,7 @@ class states_t
         friend std::ostream& operator<<(std::ostream& stream, const states_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
             stream << "states_t(";
-            stream << "p=<EIGEN_LCM TYPE eigen_lcm.Vector2d>";
+            stream << "p=" << obj.p;
             stream << ")";
 #else
             stream << "<FORMATTING DISABLED>";
