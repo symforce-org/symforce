@@ -9,8 +9,10 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
 # symforce_test library
 
 file(GLOB_RECURSE SYMFORCE_TEST_SOURCES CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.cc)
-file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.hpp)
-file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS include/*.h)
+file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS
+  symforce_function_codegen_test_data/**/*.hpp
+  include/*.h
+)
 add_library(
   symforce_test
   ${SYMFORCE_LIBRARY_TYPE}
