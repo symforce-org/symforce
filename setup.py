@@ -317,7 +317,7 @@ class InstallWithExtras(install):
 setup_requirements = [
     "setuptools>=62.3.0",  # For package data globs
     "wheel",
-    "pip",
+    "pip<23.1",  # https://github.com/jazzband/pip-tools/issues/1854
     "cmake>=3.17",
     "cython>=0.19.1",
     f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
@@ -433,11 +433,7 @@ if __name__ == "__main__":
                 "isort",
                 "jinja2~=3.0.3",
                 "mypy==0.910",
-                # Not compatible with py3.11 yet: https://github.com/numba/numba/issues/8304
-                "numba ; python_version < '3.11'",
-                # A dependency of numba, only required here because pip-tools does not automatically
-                # propagate python_version to dependencies
-                "llvmlite ; python_version < '3.11'",
+                "numba",
                 "pip-tools<6.11",
                 "pybind11-stubgen",
                 "pylint",
