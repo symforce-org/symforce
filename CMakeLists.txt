@@ -6,7 +6,7 @@
 # NOTE(aaron): This is the minimum version for policy range support, not sure if we need newer;
 # certainly no newer than 3.15 required.  This will use NEW policies up to CMake 3.25; this should
 # be the maximum tested CMake version, matching dev_requirements.txt
-cmake_minimum_required(VERSION 3.12...3.25)
+cmake_minimum_required(VERSION 3.19...3.25)
 
 project(symforce)
 
