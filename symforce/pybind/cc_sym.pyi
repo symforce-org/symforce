@@ -12,6 +12,7 @@ from lcmtypes.sym._key_t import key_t
 from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
+from lcmtypes.sym._optimization_status_t import optimization_status_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._sparse_matrix_structure_t import sparse_matrix_structure_t
 from lcmtypes.sym._values_t import values_t
@@ -313,16 +314,16 @@ class OptimizationStats:
         Sparsity pattern of the cholesky factor L (filled out if debug_stats=True)
         """
     @property
-    def early_exited(self) -> bool:
+    def failure_reason(self) -> int:
         """
-        Did the optimization early exit? (either because it converged, or because it could not find a good step).
+        If status == FAILED, why?  This should be cast to the NonlinearSolver::FailureReason enum for the nonlinear solver you used.
 
-        :type: bool
+        :type: int
         """
-    @early_exited.setter
-    def early_exited(self, arg0: bool) -> None:
+    @failure_reason.setter
+    def failure_reason(self, arg0: int) -> None:
         """
-        Did the optimization early exit? (either because it converged, or because it could not find a good step).
+        If status == FAILED, why?  This should be cast to the NonlinearSolver::FailureReason enum for the nonlinear solver you used.
         """
     @property
     def iterations(self) -> typing.List[optimization_iteration_t]:
@@ -355,6 +356,18 @@ class OptimizationStats:
     def linear_solver_ordering(self, arg0: typing.Any) -> None:
         """
         Ordering used by the linear solver (filled out if debug_stats=True)
+        """
+    @property
+    def status(self) -> optimization_status_t:
+        """
+        What was the result of the optimization? (did it converge, fail, etc.)
+
+        :type: optimization_status_t
+        """
+    @status.setter
+    def status(self, arg0: optimization_status_t) -> None:
+        """
+        What was the result of the optimization? (did it converge, fail, etc.)
         """
     pass
 

@@ -175,9 +175,11 @@ void RunBundleAdjustment() {
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Initial error: {}", first_iter.new_error);
   spdlog::info("Final error: {}", best_iter.new_error);
+  spdlog::info("Status: {}", stats.status);
 
   // Check successful convergence
   SYM_ASSERT(best_iter.new_error < 10);
+  SYM_ASSERT(stats.status == sym::optimization_status_t::SUCCESS);
 }
 
 }  // namespace bundle_adjustment

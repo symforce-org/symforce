@@ -8,6 +8,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <lcmtypes/sym/levenberg_marquardt_solver_failure_reason_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 
@@ -126,6 +127,7 @@ class LevenbergMarquardtSolver {
   using MatrixType = typename LinearSolverType::MatrixType;
   using StateType = internal::LevenbergMarquardtState<MatrixType>;
   using LinearizationType = Linearization<MatrixType>;
+  using FailureReason = levenberg_marquardt_solver_failure_reason_t;
 
   // Function that evaluates the objective function and produces a quadratic approximation of
   // it by linearizing a least-squares residual.
@@ -172,9 +174,11 @@ class LevenbergMarquardtSolver {
 
   void UpdateParams(const optimizer_params_t& p);
 
-  // Run one iteration of the optimization. Returns true if the optimization should early exit.
-  bool Iterate(const LinearizeFunc& func, OptimizationStats<Scalar>& stats,
-               const bool debug_stats = false, const bool include_jacobians = false);
+  // Run one iteration of the optimization. Returns the optimization status, which will be empty if
+  // the optimization should not exit yet.
+  optional<std::pair<optimization_status_t, FailureReason>> Iterate(
+      const LinearizeFunc& func, OptimizationStats<Scalar>& stats, const bool debug_stats = false,
+      const bool include_jacobians = false);
 
   const Values<Scalar>& GetBestValues() const {
     SYM_ASSERT(state_.BestIsValid());

@@ -251,6 +251,7 @@ def main() -> None:
     # Print some values
     print(f"Num iterations: {len(result.iterations) - 1}")
     print(f"Final error: {result.error():.6f}")
+    print(f"Status: {result.status}")
 
     for i, pose in enumerate(result.optimized_values["world_T_body"]):
         print(f"world_T_body {i}: t = {pose.position()}, R = {pose.rotation().to_tangent()}")

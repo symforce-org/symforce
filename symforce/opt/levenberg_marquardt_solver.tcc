@@ -141,9 +141,11 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 }
 
 template <typename ScalarType, typename LinearSolverType>
-bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
-    const LinearizeFunc& func, OptimizationStats<Scalar>& stats, const bool debug_stats,
-    const bool include_jacobians) {
+optional<std::pair<optimization_status_t, levenberg_marquardt_solver_failure_reason_t>>
+LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(const LinearizeFunc& func,
+                                                                OptimizationStats<Scalar>& stats,
+                                                                const bool debug_stats,
+                                                                const bool include_jacobians) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
 
   // new -> init
@@ -234,9 +236,12 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     spdlog::warn("LM<{}> Encountered non-finite error: {}", id_, new_error);
   }
 
+  optional<std::pair<optimization_status_t, FailureReason>> status{};
+
   // Early exit if the reduction in error is too small.
-  bool should_early_exit =
-      (relative_reduction > 0) && (relative_reduction < p_.early_exit_min_reduction);
+  if ((relative_reduction > 0) && (relative_reduction < p_.early_exit_min_reduction)) {
+    status = {optimization_status_t::SUCCESS, {}};
+  }
 
   {
     SYM_TIME_SCOPE("LM<{}>: accept_update bookkeeping", id_);
@@ -251,7 +256,9 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     }
 
     // If we didn't accept the update and lambda is maxed out, just exit.
-    should_early_exit |= (!accept_update && current_lambda_ >= p_.lambda_upper_bound);
+    if (!accept_update && current_lambda_ >= p_.lambda_upper_bound) {
+      status = {optimization_status_t::FAILED, FailureReason::LAMBDA_OUT_OF_BOUNDS};
+    }
 
     if (!accept_update) {
       current_lambda_ *= p_.lambda_up_factor;
@@ -277,7 +284,7 @@ bool LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     iteration_stats.update_accepted = accept_update;
   }
 
-  return should_early_exit;
+  return status;
 }
 
 template <typename ScalarType, typename LinearSolverType>

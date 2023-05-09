@@ -13,9 +13,13 @@ from scipy import sparse
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
 from lcmtypes.sym._key_t import key_t
+from lcmtypes.sym._levenberg_marquardt_solver_failure_reason_t import (
+    levenberg_marquardt_solver_failure_reason_t,
+)
 from lcmtypes.sym._linearized_dense_factor_t import linearized_dense_factor_t
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_stats_t import optimization_stats_t
+from lcmtypes.sym._optimization_status_t import optimization_status_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
 
@@ -594,7 +598,8 @@ class SymforceCCSymTest(TestCase):
         return (
             stats1.iterations == stats2.iterations
             and stats1.best_index == stats2.best_index
-            and stats1.early_exited == stats2.early_exited
+            and stats1.status == stats2.status
+            and stats1.failure_reason == stats2.failure_reason
             and (
                 stats1.best_linearization is None
                 and stats2.best_linearization is None
@@ -616,10 +621,11 @@ class SymforceCCSymTest(TestCase):
             self.assertIsInstance(stats.iterations, list)
             stats.iterations = [optimization_iteration_t() for _ in range(5)]
 
-        with self.subTest(msg="Can read and write to best_index and early_exited"):
+        with self.subTest(msg="Can read and write to best_index and status"):
             stats = cc_sym.OptimizationStats()
             stats.best_index = stats.best_index
-            stats.early_exited = stats.early_exited
+            stats.status = stats.status
+            stats.failure_reason = stats.failure_reason
 
         with self.subTest(msg="Can read and write to best_linearization"):
             stats = cc_sym.OptimizationStats()
@@ -637,7 +643,8 @@ class SymforceCCSymTest(TestCase):
             stats = cc_sym.OptimizationStats()
             stats.iterations = [optimization_iteration_t(iteration=i) for i in range(4)]
             stats.best_index = 1
-            stats.early_exited = True
+            stats.status = optimization_status_t.SUCCESS
+            stats.failure_reason = levenberg_marquardt_solver_failure_reason_t.INVALID.value
             stats.best_linearization = None
 
             self.assertTrue(

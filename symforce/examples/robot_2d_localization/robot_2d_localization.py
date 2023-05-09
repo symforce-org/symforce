@@ -124,6 +124,7 @@ def main() -> None:
     # Print some values
     print(f"Num iterations: {len(result.iterations) - 1}")
     print(f"Final error: {result.error():.6f}")
+    print(f"Status: {result.status}")
 
     for i, pose in enumerate(result.optimized_values["poses"]):
         print(f"Pose {i}: t = {pose.position()}, heading = {pose.rotation().to_tangent()[0]}")

@@ -11,6 +11,7 @@
 #include <sym/factors/between_factor_rot3.h>
 #include <sym/factors/prior_factor_pose3.h>
 #include <sym/factors/prior_factor_rot3.h>
+#include <symforce/opt/optimization_stats.h>
 #include <symforce/opt/optimizer.h>
 
 sym::optimizer_params_t DefaultLmParams() {
@@ -69,7 +70,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   params.use_unit_damping = true;
 
   // Optimize
-  Optimize(params, factors, values);
+  const auto stats = Optimize(params, factors, values);
 
   // Check results
   spdlog::debug("Optimized values: {}", values);
@@ -80,6 +81,9 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   const Eigen::Vector2d expected_gt = {9.854, -17.708};
   const Eigen::Vector2d actual = {values.At<double>('x'), values.At<double>('y')};
   CHECK((expected_gt - actual).norm() < 1e-3);
+
+  // Check success
+  CHECK(stats.status == sym::optimization_status_t::SUCCESS);
 }
 
 /**
@@ -162,11 +166,13 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   spdlog::debug("Iterations: {}", last_iter.iteration);
   spdlog::debug("Lambda: {}", last_iter.current_lambda);
   spdlog::debug("Final error: {}", last_iter.new_error);
+  spdlog::debug("Status: {}", stats.status);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 12);
   CHECK(last_iter.current_lambda == Catch::Approx(0.0039).epsilon(1e-1));
   CHECK(last_iter.new_error == Catch::Approx(7.801).epsilon(1e-3));
+  CHECK(stats.status == sym::optimization_status_t::SUCCESS);
 
   // Check that H = J^T J
   const sym::SparseLinearizationd linearization = sym::Linearize<double>(factors, values);
@@ -253,11 +259,13 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   spdlog::debug("Iterations: {}", last_iter.iteration);
   spdlog::debug("Lambda: {}", last_iter.current_lambda);
   spdlog::debug("Final error: {}", last_iter.new_error);
+  spdlog::debug("Status: {}", stats.status);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 6);
   CHECK(last_iter.current_lambda == Catch::Approx(2.4e-4).epsilon(1e-1));
   CHECK(last_iter.new_error == Catch::Approx(2.174).epsilon(1e-3));
+  CHECK(stats.status == sym::optimization_status_t::SUCCESS);
 
   // Check that H = J^T J
   const sym::SparseLinearizationd linearization = sym::Linearize<double>(factors, values);
@@ -338,11 +346,13 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   spdlog::debug("Iterations: {}", last_iter.iteration);
   spdlog::debug("Lambda: {}", last_iter.current_lambda);
   spdlog::debug("Final error: {}", last_iter.new_error);
+  spdlog::debug("Status: {}", stats.status);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 5);
   CHECK(last_iter.current_lambda < 1e-3);
   CHECK(last_iter.new_error < 1e-15);
+  CHECK(stats.status == sym::optimization_status_t::SUCCESS);
 
   // Check that H = J^T J
   const sym::SparseLinearizationd linearization =
@@ -368,4 +378,68 @@ TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
       DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::NaturalOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
+}
+
+TEST_CASE("Test optimization statuses", "[optimizer]") {
+  {
+    auto params = sym::DefaultOptimizerParams();
+
+    sym::Valuesd values{};
+    values.Set('x', 10.0);
+
+    const auto stats =
+        sym::Optimize(params,
+                      {sym::Factord::Jacobian(
+                          [](const double x, sym::Vector1d* const res, sym::Matrix11d* const jac) {
+                            *res << std::pow(x, 9);
+                            *jac << 9 * std::pow(x, 8);
+                          },
+                          {'x'})},
+                      values);
+
+    CHECK(stats.status == sym::optimization_status_t::SUCCESS);
+    CHECK(stats.failure_reason == sym::levenberg_marquardt_solver_failure_reason_t::INVALID);
+  }
+
+  {
+    auto params = sym::DefaultOptimizerParams();
+    params.iterations = 5;
+
+    sym::Valuesd values{};
+    values.Set('x', 10.0);
+
+    const auto stats =
+        sym::Optimize(params,
+                      {sym::Factord::Jacobian(
+                          [](const double x, sym::Vector1d* const res, sym::Matrix11d* const jac) {
+                            *res << std::pow(x, 9);
+                            *jac << 9 * std::pow(x, 8);
+                          },
+                          {'x'})},
+                      values);
+
+    CHECK(stats.status == sym::optimization_status_t::HIT_ITERATION_LIMIT);
+    CHECK(stats.failure_reason == sym::levenberg_marquardt_solver_failure_reason_t::INVALID);
+  }
+
+  {
+    const auto params = sym::DefaultOptimizerParams();
+
+    sym::Valuesd values{};
+    values.Set('x', 10.0);
+
+    const auto stats =
+        sym::Optimize(params,
+                      {sym::Factord::Jacobian(
+                          [](const double x, sym::Vector1d* const res, sym::Matrix11d* const jac) {
+                            *res << std::sqrt(std::abs(x));
+                            *jac << 1 / (2 * std::sqrt(std::abs(x)));
+                          },
+                          {'x'})},
+                      values);
+
+    CHECK(stats.status == sym::optimization_status_t::FAILED);
+    CHECK(stats.failure_reason ==
+          sym::levenberg_marquardt_solver_failure_reason_t::LAMBDA_OUT_OF_BOUNDS);
+  }
 }

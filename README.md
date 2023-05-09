@@ -266,6 +266,12 @@ Now run the optimization! This returns an [`Optimizer.Result`](https://symforce.
 result = optimizer.optimize(initial_values)
 ```
 
+We can check that the optimization succeeded, and look at the final error:
+```python
+assert result.status == Optimizer.Status.SUCCESS
+print(result.error())
+```
+
 Let's visualize what the optimizer did. The orange circles represent the fixed landmarks, the blue
 circles represent the robot, and the dotted lines represent the bearing measurements.
 
@@ -503,6 +509,7 @@ values.Set('e', sym::kDefaultEpsilond);
 // Optimize!
 const auto stats = optimizer.Optimize(values);
 
+std::cout << "Exit status: " << stats.status << std::endl;
 std::cout << "Optimized values:" << values << std::endl;
 ```
 

@@ -13,7 +13,11 @@ from functools import cached_property
 import numpy as np
 
 from lcmtypes.sym._index_entry_t import index_entry_t
+from lcmtypes.sym._levenberg_marquardt_solver_failure_reason_t import (
+    levenberg_marquardt_solver_failure_reason_t,
+)
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
+from lcmtypes.sym._optimization_status_t import optimization_status_t
 from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._sparse_matrix_structure_t import sparse_matrix_structure_t
 from lcmtypes.sym._values_t import values_t
@@ -106,6 +110,9 @@ class Optimizer:
         early_exit_min_reduction: float = 1e-6
         enable_bold_updates: bool = False
 
+    Status = optimization_status_t
+    FailureReason = levenberg_marquardt_solver_failure_reason_t
+
     @dataclass
     class Result:
         """
@@ -127,9 +134,11 @@ class Optimizer:
             to be the last iteration, if the optimizer tried additional steps which did not reduce
             the error
 
-        early_exited:
-            Did the optimization early exit?  This can happen because it converged successfully,
-            of because it was unable to make progress
+        status:
+            What was the result of the optimization? (did it converge, fail, etc.)
+
+        failure_reason:
+            If status == FAILED, why?
 
         best_linearization:
             The linearization at best_index (at optimized_values), filled out if
@@ -161,8 +170,12 @@ class Optimizer:
             return self._stats.best_index
 
         @cached_property
-        def early_exited(self) -> bool:
-            return self._stats.early_exited
+        def status(self) -> optimization_status_t:
+            return self._stats.status
+
+        @cached_property
+        def failure_reason(self) -> levenberg_marquardt_solver_failure_reason_t:
+            return Optimizer.FailureReason(self._stats.failure_reason)
 
         @cached_property
         def best_linearization(self) -> T.Optional[cc_sym.Linearization]:

@@ -215,6 +215,24 @@ struct sparse_matrix_structure_t {
   int64_t shape[2];
 }
 
+enum optimization_status_t {
+  // Uninitialized enum value
+  INVALID = 0,
+  // The optimization converged successfully
+  SUCCESS = 1,
+  // We hit the iteration limit before converging
+  HIT_ITERATION_LIMIT = 2,
+  // The solver failed to converge for some reason (other than hitting the iteration limit)
+  FAILED = 3,
+}
+
+enum levenberg_marquardt_solver_failure_reason_t : int32_t {
+  // Uninitialized enum value
+  INVALID = 0,
+  // We could not increase lambda high enough to make progress
+  LAMBDA_OUT_OF_BOUNDS = 1,
+}
+
 // Debug stats for a full optimization run
 struct optimization_stats_t {
   optimization_iteration_t iterations[];
@@ -222,9 +240,12 @@ struct optimization_stats_t {
   // Index into iterations of the best iteration (containing the optimal Values)
   int32_t best_index;
 
-  // Did the optimization early exit? (either because it converged, or because it could not find a
-  // good step)
-  boolean early_exited;
+  // What was the result of the optimization? (did it converge, fail, etc.)
+  optimization_status_t status;
+
+  // If status == FAILED, why?  This should be cast to the Optimizer::FailureReason enum
+  // for the nonlinear solver you used.
+  int32_t failure_reason;
 
   // The sparsity pattern of the jacobian, filled out if debug_stats=true
   sparse_matrix_structure_t jacobian_sparsity;

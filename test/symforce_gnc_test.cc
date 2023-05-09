@@ -87,4 +87,5 @@ TEST_CASE("Test GNC", "[gnc]") {
   const sym::Vector5d regular_optimized_x = regular_optimized_values.At<sym::Vector5d>('x');
   CHECK(gnc_optimized_x.norm() < 0.1);
   CHECK(gnc_optimized_x.norm() * 5 < regular_optimized_x.norm());
+  CHECK(gnc_stats.status == sym::optimization_status_t::SUCCESS);
 }

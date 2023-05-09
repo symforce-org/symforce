@@ -105,6 +105,7 @@ void RunDynamic() {
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Initial error: {}", first_iter.new_error);
   spdlog::info("Final error: {}", best_iter.new_error);
+  spdlog::info("Status: {}", stats.status);
 }
 
 // Explicit template specializations for floats and doubles

@@ -72,6 +72,7 @@ class Optimizer {
  public:
   using Scalar = ScalarType;
   using NonlinearSolver = NonlinearSolverType;
+  using FailureReason = typename NonlinearSolver::FailureReason;
 
   /**
    * Base constructor

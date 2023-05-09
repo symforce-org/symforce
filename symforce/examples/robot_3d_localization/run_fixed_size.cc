@@ -82,6 +82,7 @@ void RunFixed() {
   spdlog::info("Lambda: {}", last_iter.current_lambda);
   spdlog::info("Initial error: {}", first_iter.new_error);
   spdlog::info("Final error: {}", best_iter.new_error);
+  spdlog::info("Status: {}", stats.status);
 }
 
 template sym::Factor<double> BuildFixedFactor<double>();

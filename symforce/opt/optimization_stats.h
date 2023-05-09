@@ -21,9 +21,12 @@ struct OptimizationStats {
   // Index into iterations of the best iteration (containing the optimal Values)
   int32_t best_index{0};
 
-  // Did the optimization early exit? (either because it converged, or because it could not find a
-  // good step)
-  bool early_exited{false};
+  // What was the result of the optimization?
+  optimization_status_t status{};
+
+  // If status == FAILED, why?  This should be cast to the Optimizer::FailureReason enum for the
+  // nonlinear solver you used.
+  int32_t failure_reason{};
 
   // The linearization at best_index (at optimized_values), filled out if
   // populate_best_linearization=true
@@ -37,7 +40,7 @@ struct OptimizationStats {
   sparse_matrix_structure_t cholesky_factor_sparsity;
 
   optimization_stats_t GetLcmType() const {
-    return optimization_stats_t(iterations, best_index, early_exited, jacobian_sparsity,
+    return optimization_stats_t(iterations, best_index, status, failure_reason, jacobian_sparsity,
                                 linear_solver_ordering, cholesky_factor_sparsity);
   }
 
@@ -48,7 +51,8 @@ struct OptimizationStats {
     iterations.reserve(num_iterations);
 
     best_index = {};
-    early_exited = {};
+    status = {};
+    failure_reason = {};
     best_linearization = {};
     jacobian_sparsity = {};
     linear_solver_ordering = {};

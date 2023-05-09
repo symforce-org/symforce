@@ -19,6 +19,7 @@
 #include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/index_t.hpp>
 #include <lcmtypes/sym/key_t.hpp>
+#include <lcmtypes/sym/levenberg_marquardt_solver_failure_reason_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factor_t.hpp>
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>
@@ -95,6 +96,12 @@ struct type_caster<sym::sparse_matrix_structure_t>
 template <>
 struct type_caster<sym::optimization_stats_t> : public lcm_type_caster<sym::optimization_stats_t> {
 };
+template <>
+struct type_caster<sym::optimization_status_t>
+    : public lcm_type_caster<sym::optimization_status_t> {};
+template <>
+struct type_caster<sym::levenberg_marquardt_solver_failure_reason_t>
+    : public lcm_type_caster<sym::levenberg_marquardt_solver_failure_reason_t> {};
 template <>
 struct type_caster<sym::optimizer_params_t> : public lcm_type_caster<sym::optimizer_params_t> {};
 template <>

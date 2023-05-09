@@ -69,10 +69,13 @@ class SymforcePyOptimizerTest(TestCase):
         logger.debug(f"Optimized values: {result.optimized_values}")
         logger.debug(f"Num iterations: {len(result.iterations)}")
         logger.debug(f"Final error: {result.error()}")
+        logger.debug(f"Status: {result.status}")
 
         # Check values
         self.assertEqual(len(result.iterations), 7)
         self.assertAlmostEqual(result.error(), 0.039, places=3)
+        self.assertEqual(result.status, Optimizer.Status.SUCCESS)
+        self.assertEqual(result.failure_reason, Optimizer.FailureReason.INVALID)
 
         # Check that we can pull out the variable blocks
         index_entry = optimizer.linearization_index()["x1"]

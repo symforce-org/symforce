@@ -287,16 +287,30 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     Values<Scalar>& values, const int num_iterations, const bool populate_best_linearization,
     OptimizationStats<Scalar>& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name_);
-  bool optimization_early_exited = false;
+  SYM_ASSERT(num_iterations > 0, "num_iterations must be positive, got {}", num_iterations);
 
   // Iterate
-  for (int i = 0; i < num_iterations; i++) {
-    const bool should_early_exit =
+  int i;
+  for (i = 0; i < num_iterations; i++) {
+    const auto maybe_status_and_failure_reason =
         nonlinear_solver_.Iterate(linearize_func_, stats, debug_stats_, include_jacobians_);
-    if (should_early_exit) {
-      optimization_early_exited = true;
+    if (maybe_status_and_failure_reason) {
+      const auto& status_and_failure_reason = maybe_status_and_failure_reason.value();
+
+      SYM_ASSERT(status_and_failure_reason.first != optimization_status_t::INVALID,
+                 "NonlinearSolver::Iterate should never return INVALID");
+      SYM_ASSERT(status_and_failure_reason.first != optimization_status_t::HIT_ITERATION_LIMIT,
+                 "NonlinearSolver::Iterate should never return HIT_ITERATION_LIMIT");
+
+      stats.status = status_and_failure_reason.first;
+      stats.failure_reason = status_and_failure_reason.second.int_value();
       break;
     }
+  }
+
+  if (i == num_iterations) {
+    stats.status = optimization_status_t::HIT_ITERATION_LIMIT;
+    stats.failure_reason = {};
   }
 
   {
@@ -316,8 +330,6 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     const auto& linearization = nonlinear_solver_.GetBestLinearization();
     stats.jacobian_sparsity = GetSparseStructure(linearization.jacobian);
   }
-
-  stats.early_exited = optimization_early_exited;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>

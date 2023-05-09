@@ -90,6 +90,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                         "linearized_dense_factor_t",
                         "optimization_iteration_t",
                         "optimization_stats_t",
+                        "optimization_status_t",
                         "optimizer_params_t",
                         "sparse_matrix_structure_t",
                         "values_t",

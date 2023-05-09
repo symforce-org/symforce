@@ -44,6 +44,7 @@ class Robot3DLocalizationTest(TestCase):
 
         self.assertAlmostEqual(result.iterations[0].new_error, 463700.5625)
         self.assertLess(result.error(), 140)
+        self.assertEqual(result.status, Optimizer.Status.SUCCESS)
 
 
 if __name__ == "__main__":
