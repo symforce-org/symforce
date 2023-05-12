@@ -35,81 +35,91 @@ namespace sym {
  *
  * Example usage:
  *
- *   constexpr const int M = 9;
- *   constexpr const int N = 5;
+ *     constexpr const int M = 9;
+ *     constexpr const int N = 5;
  *
- *   // Create a function that computes the residual (a linear residual for this example)
- *   const auto J_MN = sym::RandomNormalMatrix<double, M, N>(gen);
- *   const auto linearize_func = [&J_MN](const sym::Valuesd& values,
- *                                       sym::SparseLinearizationd* const linearization) {
- *     const auto state_vec = values.At<sym::Vector5d>('v');
- *     linearization->residual = J_MN * state_vec;
- *     linearization->hessian_lower = (J_MN.transpose() * J_MN).sparseView();
- *     linearization->jacobian = J_MN.sparseView();
- *     linearization->rhs = J_MN.transpose() * linearization->residual;
- *   };
+ *     // Create a function that computes the residual (a linear residual for this example)
+ *     const auto J_MN = sym::RandomNormalMatrix<double, M, N>(gen);
+ *     const auto linearize_func = [&J_MN](const sym::Valuesd& values,
+ *                                         sym::SparseLinearizationd* const linearization) {
+ *       const auto state_vec = values.At<sym::Vector5d>('v');
+ *       linearization->residual = J_MN * state_vec;
+ *       linearization->hessian_lower = (J_MN.transpose() * J_MN).sparseView();
+ *       linearization->jacobian = J_MN.sparseView();
+ *       linearization->rhs = J_MN.transpose() * linearization->residual;
+ *     };
  *
- *   // Create a Values
- *   sym::Valuesd values_init{};
- *   values_init.Set('v', (StateVector::Ones() * 100).eval());
+ *     // Create a Values
+ *     sym::Valuesd values_init{};
+ *     values_init.Set('v', (StateVector::Ones() * 100).eval());
  *
- *   // Create a Solver
- *   sym::LevenbergMarquardtSolverd solver(params, "", kEpsilon);
- *   solver.SetIndex(values_init.CreateIndex({'v'}));
- *   solver.Reset(values_init);
+ *     // Create a Solver
+ *     sym::LevenbergMarquardtSolverd solver(params, "", kEpsilon);
+ *     solver.SetIndex(values_init.CreateIndex({'v'}));
+ *     solver.Reset(values_init);
  *
- *   // Iterate to convergence
- *   sym::optimization_stats_t stats;
- *   bool should_early_exit = false;
- *   while (!should_early_exit) {
- *     should_early_exit = solver.Iterate(linearize_func, &stats);
- *   }
+ *     // Iterate to convergence
+ *     sym::optimization_stats_t stats;
+ *     bool should_early_exit = false;
+ *     while (!should_early_exit) {
+ *       should_early_exit = solver.Iterate(linearize_func, &stats);
+ *     }
  *
- *   // Get the best values
- *   sym::Valuesd values_final = solver.GetBestValues();
+ *     // Get the best values
+ *     sym::Valuesd values_final = solver.GetBestValues();
  *
  * The theory:
  *
  *   We start with a nonlinear vector-valued error function that defines an error residual for
  *   which we want to minimize the squared norm. The residual is dimension M, the state is N.
- *     residual = f(x)
+ *
+ *       residual = f(x)
  *
  *   Define a least squares cost function as the squared norm of the residual:
- *     e(x) = 0.5 * ||f(x)||**2 = 0.5 * f(x).T * f(x)
+ *
+ *       e(x) = 0.5 * ||f(x)||**2 = 0.5 * f(x).T * f(x)
  *
  *   Take the first order taylor expansion for x around the linearization point x0:
- *     f(x) = f(x0) + f'(x0) * (x - x0) + ...
+ *
+ *       f(x) = f(x0) + f'(x0) * (x - x0) + ...
  *
  *   Plug in to the cost function to get a quadratic:
- *     e(x) ~= 0.5 * (x - x0).T * f'(x0).T * f'(x0) * (x - x0) + f(x0).T * f'(x0) * (x - x0)
- *             + 0.5 * f(x0).T * f(x0)
+ *
+ *       e(x) ~= 0.5 * (x - x0).T * f'(x0).T * f'(x0) * (x - x0) + f(x0).T * f'(x0) * (x - x0)
+ *               + 0.5 * f(x0).T * f(x0)
  *
  *   Take derivative with respect to x:
- *     e'(x) = f'(x0).T * f'(x0) * (x - x0) + f'(x0).T * f(x0)
+ *
+ *       e'(x) = f'(x0).T * f'(x0) * (x - x0) + f'(x0).T * f(x0)
  *
  *   Set to zero to find the minimum value of the quadratic (paraboloid):
- *     0 = f'(x0).T * f'(x0) * (x - x0) + f'(x0).T * f(x0)
- *     (x - x0) = - inv(f'(x0).T * f'(x0)) * f'(x0).T * f(x0)
- *     x = x0 - inv(f'(x0).T * f'(x0)) * f'(x0).T * f(x0)
+ *
+ *       0 = f'(x0).T * f'(x0) * (x - x0) + f'(x0).T * f(x0)
+ *       (x - x0) = - inv(f'(x0).T * f'(x0)) * f'(x0).T * f(x0)
+ *       x = x0 - inv(f'(x0).T * f'(x0)) * f'(x0).T * f(x0)
  *
  *   Another way to write this is to create some helpful shorthand:
- *     f'(x0) --> jacobian or J (shape = MxN)
- *     f (x0) --> bias or b     (shape = Mx1)
- *     x - x0 --> dx            (shape = Nx1)
+ *
+ *       f'(x0) --> jacobian or J (shape = MxN)
+ *       f (x0) --> bias or b     (shape = Mx1)
+ *       x - x0 --> dx            (shape = Nx1)
  *
  *   Rederiving the Gauss-Newton solution:
- *     e(x) ~= 0.5 * dx.T * J.T * J * dx + b.T * J * dx + 0.5 * b.T * b
- *     e'(x) = J.T * J * dx + J.T * b
- *     x = x0 - inv(J.T * J) * J.T * b
+ *
+ *       e(x) ~= 0.5 * dx.T * J.T * J * dx + b.T * J * dx + 0.5 * b.T * b
+ *       e'(x) = J.T * J * dx + J.T * b
+ *       x = x0 - inv(J.T * J) * J.T * b
  *
  *   A couple more common names:
- *     f'(x0).T * f'(x0) = J.T * J --> hessian approximation or H (shape = NxN)
- *     f'(x0).T * f (x0) = J.T * b --> right hand side or rhs     (shape = Nx1)
+ *
+ *       f'(x0).T * f'(x0) = J.T * J --> hessian approximation or H (shape = NxN)
+ *       f'(x0).T * f (x0) = J.T * b --> right hand side or rhs     (shape = Nx1)
  *
  *   So the iteration loop for optimization is:
- *     J, b = linearize(f, x0)
- *     dx = -inv(J.T * J) * J.T * b
- *     x_new = x0 + dx
+ *
+ *       J, b = linearize(f, x0)
+ *       dx = -inv(J.T * J) * J.T * b
+ *       x_new = x0 + dx
  *
  *   Technically what we've just described is the Gauss-Newton algorithm; the Levenberg-Marquardt
  *   algorithm is based on Gauss-Newton, but adds a term to J.T * J before inverting to make sure
