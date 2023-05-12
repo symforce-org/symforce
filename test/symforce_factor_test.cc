@@ -10,8 +10,10 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/ostream.h>
 
 #include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factor_t.hpp>

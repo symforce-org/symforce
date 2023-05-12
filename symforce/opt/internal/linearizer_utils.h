@@ -9,8 +9,9 @@
 #include <utility>
 
 #include <Eigen/Sparse>
-#include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/ranges.h>
 
 #include <lcmtypes/sym/linearization_dense_factor_helper_t.hpp>
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>

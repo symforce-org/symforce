@@ -5,9 +5,10 @@
 
 #include "./tic_toc.h"
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/ostream.h>
 
 namespace sym {
 namespace internal {

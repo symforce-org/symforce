@@ -7,9 +7,11 @@
 
 #include <cassert>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
+#include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/ostream.h>
+#include <spdlog/fmt/bundled/ranges.h>
 
 #include "./assert.h"
 #include "./internal/factor_utils.h"

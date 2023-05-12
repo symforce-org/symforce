@@ -9,8 +9,12 @@
 #include <functional>
 
 #include <Eigen/Dense>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/ostream.h>
+//
+
 #include <pybind11/eigen.h>
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
