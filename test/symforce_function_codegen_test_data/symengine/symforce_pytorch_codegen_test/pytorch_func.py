@@ -21,6 +21,18 @@ class TensorKwargs(T.TypedDict):
     dtype: torch.dtype
 
 
+def _broadcast_and_stack(tensors, dim=-1):
+    # type: (T.List[torch.Tensor], int) -> torch.Tensor
+    """
+    broadcast tensors to common shape then stack along new dimension
+    """
+
+    broadcast_shape = torch.broadcast_shapes(*(x.size() for x in tensors))
+    broadcast_tensors = [x.broadcast_to(broadcast_shape) for x in tensors]
+
+    return torch.stack(broadcast_tensors, dim=dim)
+
+
 def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
     # type: (torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, TensorKwargs) -> T.Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
     """
@@ -72,18 +84,18 @@ def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
     # Output terms
     _a_out = a
     _b_out = b
-    _c_out = torch.stack([c[..., 0], c[..., 1], c[..., 2]], dim=-1)
-    _d_out = torch.stack(
+    _c_out = _broadcast_and_stack([c[..., 0], c[..., 1], c[..., 2]], dim=-1)
+    _d_out = _broadcast_and_stack(
         [
-            torch.stack([d[..., 0, 0], d[..., 1, 0]], dim=-1),
-            torch.stack([d[..., 0, 1], d[..., 1, 1]], dim=-1),
+            _broadcast_and_stack([d[..., 0, 0], d[..., 1, 0]], dim=-1),
+            _broadcast_and_stack([d[..., 0, 1], d[..., 1, 1]], dim=-1),
         ],
         dim=-1,
     )
-    _e_out = torch.stack([e[..., 0], e[..., 1], e[..., 2], e[..., 3], e[..., 4]], dim=-1)
-    _f_out = torch.stack(
+    _e_out = _broadcast_and_stack([e[..., 0], e[..., 1], e[..., 2], e[..., 3], e[..., 4]], dim=-1)
+    _f_out = _broadcast_and_stack(
         [
-            torch.stack(
+            _broadcast_and_stack(
                 [
                     f[..., 0, 0],
                     f[..., 1, 0],
@@ -94,7 +106,7 @@ def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
                 ],
                 dim=-1,
             ),
-            torch.stack(
+            _broadcast_and_stack(
                 [
                     f[..., 0, 1],
                     f[..., 1, 1],
@@ -105,7 +117,7 @@ def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
                 ],
                 dim=-1,
             ),
-            torch.stack(
+            _broadcast_and_stack(
                 [
                     f[..., 0, 2],
                     f[..., 1, 2],
@@ -116,7 +128,7 @@ def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
                 ],
                 dim=-1,
             ),
-            torch.stack(
+            _broadcast_and_stack(
                 [
                     f[..., 0, 3],
                     f[..., 1, 3],
@@ -127,7 +139,7 @@ def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
                 ],
                 dim=-1,
             ),
-            torch.stack(
+            _broadcast_and_stack(
                 [
                     f[..., 0, 4],
                     f[..., 1, 4],
@@ -138,7 +150,7 @@ def pytorch_func(a, b, c, d, e, f, tensor_kwargs=None):
                 ],
                 dim=-1,
             ),
-            torch.stack(
+            _broadcast_and_stack(
                 [
                     f[..., 0, 5],
                     f[..., 1, 5],

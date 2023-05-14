@@ -172,13 +172,13 @@ def {{ function_name_and_args(spec) }}:
             {% if cols == 1 %}
     _{{ name }} = (
             {% else %}
-    _{{ name }} = torch.stack([
+    _{{ name }} = _broadcast_and_stack([
             {% endif %}
             {% for j in range(cols) %}
                 {% if rows == 1 %}
                 {{ terms[j][1] }}{% if not loop.last %},{% endif %}
                 {% else %}
-                torch.stack([
+                _broadcast_and_stack([
                 {% for i in range(rows) %}
                     {# NOTE(brad): The order of the terms is the storage order of geo.Matrix. If the
                     storage order of geo.Matrix is changed (i.e., from column major to row major),

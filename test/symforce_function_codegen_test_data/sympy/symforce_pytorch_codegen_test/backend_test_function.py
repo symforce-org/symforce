@@ -21,6 +21,18 @@ class TensorKwargs(T.TypedDict):
     dtype: torch.dtype
 
 
+def _broadcast_and_stack(tensors, dim=-1):
+    # type: (T.List[torch.Tensor], int) -> torch.Tensor
+    """
+    broadcast tensors to common shape then stack along new dimension
+    """
+
+    broadcast_shape = torch.broadcast_shapes(*(x.size() for x in tensors))
+    broadcast_tensors = [x.broadcast_to(broadcast_shape) for x in tensors]
+
+    return torch.stack(broadcast_tensors, dim=dim)
+
+
 def backend_test_function(x, y, tensor_kwargs=None):
     # type: (torch.Tensor, torch.Tensor, TensorKwargs) -> T.Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
     """
