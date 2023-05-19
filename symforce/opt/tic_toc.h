@@ -5,7 +5,7 @@
 
 #pragma once
 
-/**
+/** @file
  * Utility for timing execution of various scopes in a program.  Timings are aggregated across all
  * runs of each scope in an execution, and optionally printed in a table on program exit.  Example
  * usage:

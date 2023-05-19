@@ -25,23 +25,22 @@ class DenseLinearizer {
   /**
    * Construct a Linearizer from factors and optional keys
    *
-   * Args:
-   *     name: name of linearizer used for debug information
-   *     factors: Only stores a pointer, MUST be in scope for the lifetime of this object!
-   *     key_order: If provided, acts as an ordered set of keys that form the state vector
-   *                to optimize. Can equal the set of all factor keys or a subset of all
-   *                factor keys. If not provided, it is computed from all keys for all
-   *                factors using a default ordering.
-   *     include_jacobians: Relinearize only allocates and fills out the jacobian if true.
+   * @param name: name of linearizer used for debug information
+   * @param factors: Only stores a pointer, MUST be in scope for the lifetime of this object!
+   * @param key_order: If provided, acts as an ordered set of keys that form the state vector to
+   *     optimize. Can equal the set of all factor keys or a subset of all factor keys. If not
+   *     provided, it is computed from all keys for all factors using a default ordering.
+   * @param include_jacobians: Relinearize only allocates and fills out the jacobian if true.
    */
   DenseLinearizer(const std::string& name, const std::vector<Factor<Scalar>>& factors,
                   const std::vector<Key>& key_order = {}, bool include_jacobians = false);
 
   /**
-   * Returns whether Relinearize has already been called once. Matters because many calculations
-   * need to be called only on the first linearization that are then cached for subsequent use.
-   * Also, if Relinearize has already been called, then the matrices in the linearization are
-   * expected to already be allocated to the right size.
+   * Returns whether Relinearize() has already been called once.
+   *
+   * Matters because many calculations need to be called only on the first linearization that are
+   * then cached for subsequent use. Also, if Relinearize() has already been called, then the
+   * matrices in the linearization are expected to already be allocated to the right size.
    */
   bool IsInitialized() const;
 
@@ -93,11 +92,14 @@ class DenseLinearizer {
 
   /**
    * Evaluates the linearizations of the factors at values into linearization, caching all values
-   * needed for relinearization along the way. Specifically:
+   * needed for relinearization along the way.
+   *
+   * Specifically:
    *  - Calculates state_index_
    *  - Allocates all factor linearizations in lineared_dense_factors_
    *  - Calculates factor_indices_
    *  - Calculates factor_keyoffsets_
+   *
    * Sets is_initialized_ to true.
    *
    * NOTE(brad): Things might break if you call it twice.

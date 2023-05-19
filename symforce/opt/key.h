@@ -16,7 +16,9 @@
 namespace sym {
 
 /**
- * Key type for Values. Contains a letter plus an integral subscript and superscript.
+ * Key type for Values
+ *
+ * Contains a letter plus an integral subscript and superscript.
  * Can construct with a letter, a letter + sub, or a letter + sub + super, but not letter + super.
  *
  * TODO(hayk): Consider an abstraction where Key contains a type enum.
@@ -98,7 +100,8 @@ class Key {
 /**
  * Print implementation for Key.
  *
- * Examples
+ * Examples:
+ *
  *     Key('C', 13) -> "C_13"
  *     Key('f') -> "f"
  *     Key('f', 32, 2) -> "f_32_2"

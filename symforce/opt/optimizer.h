@@ -104,14 +104,12 @@ class Optimizer {
   /**
    * Optimize the given values in-place
    *
-   * Args:
-   *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
-   *                     at construction
-   *     populate_best_linearization: If true, the linearization at the best values will be filled
-   *                                  out in the stats
+   * @param num_iterations: If < 0 (the default), uses the number of iterations specified by the
+   *    params at construction
+   * @param populate_best_linearization: If true, the linearization at the best
+   *    values will be filled out in the stats
    *
-   * Returns:
-   *     The optimization stats
+   * @returns The optimization stats
    */
   OptimizationStats<Scalar> Optimize(Values<Scalar>& values, int num_iterations = -1,
                                      bool populate_best_linearization = false);
@@ -123,16 +121,15 @@ class Optimizer {
    *
    * This overload takes the stats as an argument, and stores into there.  This allows users to
    * avoid reallocating memory for any of the entries in the stats, for use cases where that's
-   * important.  If passed, stats must not be nullptr.
+   * important.
    *
-   * Args:
-   *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
-   *                     at construction
-   *     populate_best_linearization: If true, the linearization at the best values will be filled
-   *                                  out in the stats
-   *     stats: An OptimizationStats to fill out with the result - if filling out dynamically
-   *            allocated fields here, will not reallocate if memory is already allocated in the
-   *            required shape (e.g. for repeated calls to Optimize)
+   * @param num_iterations: If < 0 (the default), uses the number of iterations specified by the
+   *    params at construction
+   * @param populate_best_linearization: If true, the linearization at the best values will be
+   *    filled out in the stats
+   * @param stats: An OptimizationStats to fill out with the result - if filling out dynamically
+   *    allocated fields here, will not reallocate if memory is already allocated in the required
+   *    shape (e.g. for repeated calls to Optimize())
    */
   virtual void Optimize(Values<Scalar>& values, int num_iterations,
                         bool populate_best_linearization, OptimizationStats<Scalar>& stats);
@@ -145,14 +142,13 @@ class Optimizer {
    *
    * This overload takes the stats as an argument, and stores into there.  This allows users to
    * avoid reallocating memory for any of the entries in the stats, for use cases where that's
-   * important.  If passed, stats must not be nullptr.
+   * important.
    *
-   * Args:
-   *     num_iterations: If < 0 (the default), uses the number of iterations specified by the params
-   *                     at construction
-   *     stats: An OptimizationStats to fill out with the result - if filling out dynamically
-   *            allocated fields here, will not reallocate if memory is already allocated in the
-   *            required shape (e.g. for repeated calls to Optimize)
+   * @param num_iterations: If < 0 (the default), uses the number of iterations specified by the
+   *    params at construction
+   * @param stats: An OptimizationStats to fill out with the result - if filling out dynamically
+   *    allocated fields here, will not reallocate if memory is already allocated in the
+   *    required shape (e.g. for repeated calls to Optimize())
    */
   void Optimize(Values<Scalar>& values, int num_iterations, OptimizationStats<Scalar>& stats);
   [[deprecated("Pass values and stats by reference instead")]] void Optimize(
@@ -163,12 +159,11 @@ class Optimizer {
    *
    * This overload takes the stats as an argument, and stores into there.  This allows users to
    * avoid reallocating memory for any of the entries in the stats, for use cases where that's
-   * important.  If passed, stats must not be nullptr.
+   * important.
    *
-   * Args:
-   *     stats: An OptimizationStats to fill out with the result - if filling out dynamically
-   *            allocated fields here, will not reallocate if memory is already allocated in the
-   *            required shape (e.g. for repeated calls to Optimize)
+   * @param stats: An OptimizationStats to fill out with the result - if filling out dynamically
+   *    allocated fields here, will not reallocate if memory is already allocated in the
+   *    required shape (e.g. for repeated calls to Optimize())
    */
   void Optimize(Values<Scalar>& values, OptimizationStats<Scalar>& stats);
   [[deprecated("Pass values and stats by reference instead")]] void Optimize(
@@ -186,7 +181,7 @@ class Optimizer {
    * exactly the set of keys optimized by this Optimizer.  `covariances_by_key` must not contain any
    * keys that are not optimized by this Optimizer.
    *
-   * May not be called before either Optimize or Linearize has been called.
+   * May not be called before either Optimize() or Linearize() has been called.
    */
   void ComputeAllCovariances(const SparseLinearization<Scalar>& linearization,
                              std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
@@ -195,8 +190,10 @@ class Optimizer {
       std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
-   * Get covariances for the given subset of keys at the given linearization.  This version is
-   * potentially much more efficient than computing the covariances for all keys in the problem.
+   * Get covariances for the given subset of keys at the given linearization
+   *
+   * This version is potentially much more efficient than computing the covariances for all keys in
+   * the problem.
    *
    * Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
    * for the full problem, and in the same order.  It uses the Schur complement trick, so will be
@@ -205,7 +202,7 @@ class Optimizer {
    *     A = ( B    E )
    *         ( E^T  C )
    *
-   * Will reuse entries in covariances_by_key, allocating new entries so that the result contains
+   * Will reuse entries in `covariances_by_key`, allocating new entries so that the result contains
    * exactly the set of keys requested.  `covariances_by_key` must not contain any keys that are not
    * in `keys`.
    */
@@ -222,7 +219,7 @@ class Optimizer {
   const std::vector<Key>& Keys() const;
 
   /**
-   * Get the factors.
+   * Get the factors
    */
   const std::vector<Factor<Scalar>>& Factors() const;
 
@@ -244,14 +241,14 @@ class Optimizer {
 
  protected:
   /**
-   * Call nonlinear_solver_.Iterate on the given values (updating in place) until out of iterations
-   * or converged
+   * Call nonlinear_solver_.Iterate() on the given values (updating in place) until out of
+   * iterations or converged
    */
   void IterateToConvergence(Values<Scalar>& values, int num_iterations,
                             bool populate_best_linearization, OptimizationStats<Scalar>& stats);
 
   /**
-   * Build the linearize_func functor for the underlying nonlinear solver
+   * Build the `linearize_func` functor for the underlying nonlinear solver
    */
   typename NonlinearSolver::LinearizeFunc BuildLinearizeFunc(const bool check_derivatives);
 
@@ -264,14 +261,14 @@ class Optimizer {
 
   const std::string& GetName();
 
-  // Store a copy of the nonlinear factors. The Linearization object in the state keeps a
-  // pointer to this memory.
+  /// Store a copy of the nonlinear factors. The Linearization object in the state keeps a
+  /// pointer to this memory.
   std::vector<Factor<Scalar>> factors_;
 
-  // The name of this optimizer to be used for printing debug information.
+  /// The name of this optimizer to be used for printing debug information.
   std::string name_;
 
-  // Underlying nonlinear solver class.
+  /// Underlying nonlinear solver class.
   NonlinearSolver nonlinear_solver_;
 
   Scalar epsilon_;
@@ -283,9 +280,11 @@ class Optimizer {
 
   sym::Linearizer<Scalar> linearizer_;
 
-  // Covariance matrix and damped Hessian, only used by ComputeCovariances but cached here to save
-  // reallocations. This may be the full problem covariance, or a subblock; it's always the full
-  // problem Hessian
+  /*
+   * Covariance matrix and damped Hessian, only used by ComputeCovariances() but cached here to save
+   * reallocations. This may be the full problem covariance, or a subblock; it's always the full
+   * problem Hessian
+   */
   struct ComputeCovariancesStorage {
     sym::MatrixX<Scalar> covariance;
     Eigen::SparseMatrix<Scalar> H_damped;
@@ -293,7 +292,7 @@ class Optimizer {
 
   mutable ComputeCovariancesStorage compute_covariances_storage_;
 
-  // Functor for interfacing with the optimizer
+  /// Functor for interfacing with the optimizer
   typename NonlinearSolver::LinearizeFunc linearize_func_;
 };
 

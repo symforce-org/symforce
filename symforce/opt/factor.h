@@ -107,10 +107,9 @@ class Factor {
   /**
    * Create directly from a (dense/sparse) hessian functor. This is the lowest-level constructor.
    *
-   * Args:
-   *   keys_to_func: The set of input arguments, in order, accepted by func.
-   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
+   * @param keys_to_func: The set of input arguments, in order, accepted by func.
+   * @param keys_to_optimize: The set of input arguments that correspond to the derivative in func.
+   *    Must be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
    */
   Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize = {});
@@ -120,13 +119,13 @@ class Factor {
   /**
    * Create from a function that computes the (dense/sparse) jacobian. The hessian will be computed
    * using the Gauss Newton approximation:
-   *    H   = J.T * J
-   *    rhs = J.T * b
    *
-   * Args:
-   *   keys_to_func: The set of input arguments, in order, accepted by func.
-   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
+   *     H   = J.T * J
+   *     rhs = J.T * b
+   *
+   * @param keys_to_func: The set of input arguments, in order, accepted by func.
+   * @param keys_to_optimize: The set of input arguments that correspond to the derivative in func.
+   *    Must be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
    */
   Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
          const std::vector<Key>& keys_to_optimize = {});
@@ -136,8 +135,9 @@ class Factor {
   /**
    * Create from a function that computes the jacobian. The hessian will be computed using the
    * Gauss Newton approximation:
-   *    H   = J.T * J
-   *    rhs = J.T * b
+   *
+   *     H   = J.T * J
+   *     rhs = J.T * b
    *
    * This version handles a variety of functors that take in individual input arguments
    * rather than a Values object - the last two arguments to `func` should be outputs for the
@@ -151,10 +151,9 @@ class Factor {
    *
    * See `symforce_factor_test.cc` for many examples.
    *
-   * Args:
-   *   keys_to_func: The set of input arguments, in order, accepted by func.
-   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
+   * @param keys_to_func: The set of input arguments, in order, accepted by func.
+   * @param keys_to_optimize: The set of input arguments that correspond to the derivative in func.
+   *    Must be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
    */
   template <typename Functor>
   static Factor Jacobian(Functor&& func, const std::vector<Key>& keys_to_func,
@@ -175,10 +174,9 @@ class Factor {
    *
    * See `symforce_factor_test.cc` for many examples.
    *
-   * Args:
-   *   keys_to_func: The set of input arguments, in order, accepted by func.
-   *   keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must
-   *                     be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
+   * @param keys_to_func: The set of input arguments, in order, accepted by func.
+   * @param keys_to_optimize: The set of input arguments that correspond to the derivative in func.
+   *    Must be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
    */
   template <typename Functor>
   static Factor Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
@@ -192,11 +190,10 @@ class Factor {
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual.
    *
-   * Args:
-   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *         prevents repeated hash lookups.  Can be computed as
-   *         `values.CreateIndex(factor.AllKeys()).entries`.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
@@ -205,13 +202,12 @@ class Factor {
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual and jacobian.
    *
-   * This overload can only be called if IsSparse is false; otherwise, it will throw
+   * This overload can only be called if IsSparse() is false; otherwise, it will throw
    *
-   * Args:
-   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *         prevents repeated hash lookups.  Can be computed as
-   *         `values.CreateIndex(factor.AllKeys()).entries`.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
@@ -220,13 +216,12 @@ class Factor {
    * Evaluate the factor at the given linearization point and output just the
    * numerical values of the residual and jacobian.
    *
-   * This overload can only be called if IsSparse is true; otherwise, it will throw
+   * This overload can only be called if IsSparse() is true; otherwise, it will throw
    *
-   * Args:
-   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *         prevents repeated hash lookups.  Can be computed as
-   *         `values.CreateIndex(factor.AllKeys()).entries`.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
                  Eigen::SparseMatrix<Scalar>* jacobian,
@@ -236,13 +231,12 @@ class Factor {
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    *
-   * This overload can only be called if IsSparse is false; otherwise, it will throw
+   * This overload can only be called if IsSparse() is false; otherwise, it will throw
    *
-   * Args:
-   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *         prevents repeated hash lookups.  Can be computed as
-   *         `values.CreateIndex(factor.AllKeys()).entries`.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, LinearizedDenseFactor& linearized_factor,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
@@ -251,13 +245,12 @@ class Factor {
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    *
-   * This overload can only be called if IsSparse is false; otherwise, it will throw
+   * This overload can only be called if IsSparse() is false; otherwise, it will throw
    *
-   * Args:
-   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *         prevents repeated hash lookups.  Can be computed as
-   *         `values.CreateIndex(factor.AllKeys()).entries`.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   LinearizedDenseFactor Linearize(
       const Values<Scalar>& values,
@@ -269,11 +262,10 @@ class Factor {
    *
    * This overload can only be called if IsSparse is true; otherwise, it will throw
    *
-   * Args:
-   *     maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *         the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *         prevents repeated hash lookups.  Can be computed as
-   *         `values.CreateIndex(factor.AllKeys()).entries`.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, LinearizedSparseFactor& linearized_factor,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;

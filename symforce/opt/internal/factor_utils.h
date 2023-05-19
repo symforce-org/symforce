@@ -5,7 +5,7 @@
 
 #pragma once
 
-/**
+/** @file
  * Utilities for converting various types of factor functors into what's needed for the polymorphic
  * std::function that's actually stored and used by sym::Factor
  *

@@ -102,7 +102,9 @@ sparse_matrix_structure_t GetSparseStructure(const MatrixX<Scalar>&) {
 /**
  * Returns coefficients of matrix. Overloads exist for both dense and sparse matrices
  * to make writing generic code easier.
+ *
  * This version returns the non-zero values of an Eigen::SparseMatrix
+ *
  * Note: it returns a map, so be careful about mutating or disposing of matrix before
  * you are finished with the output.
  */
@@ -114,6 +116,7 @@ Eigen::Map<const VectorX<Scalar>> JacobianValues(const Eigen::SparseMatrix<Scala
 /**
  * Returns coefficients of matrix. Overloads exist for both dense and sparse matrices
  * to make writing generic code easier.
+ *
  * Returns a const-ref to the argument.
  */
 template <typename Scalar>

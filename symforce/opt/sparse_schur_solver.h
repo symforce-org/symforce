@@ -16,47 +16,49 @@
 
 namespace sym {
 
-// A solver for factorizing and solving positive definite matrices with a large block-diagonal
-// component
-//
-// This includes matrices typically encountered in SfM, where the landmarks-to-landmarks block of
-// the Hessian is block diagonal (there are no cross-terms between different landmarks)
-//
-// We should have a matrix A of structure
-//
-// A = ( B    E )
-//     ( E^T  C )
-//
-// with C in R^{C_dim x C_dim} block diagonal.
-//
-// The full problem is A x = b, which we can break down the same way as
-//
-//  ( B    E ) ( y ) = ( v )
-//  ( E^T  C ) ( z )   ( w )
-//
-//  We then have two equations:
-//
-//  B y + E z = v
-//  E^T y + C z = w
-//
-//  C is block diagonal and therefore easy to invert, so we can write
-//
-//  z = C^{-1} (w - E^T y)
-//
-//  Plugging this into the first equation, we can eliminate z:
-//
-//  B y + E C^{-1} (w - E^T y) = v
-//  => B y + E C^{-1} w - E C^{-1} E^T y = v
-//  => (B - E C^{-1} E^T) y = v - E C^{-1} w
-//
-// Defining the Schur complement S = B - E C^{-1} E^T, we have
-//
-// S y = v - E C^{-1} w
-//
-// So, we can form S and use the above equation to solve for y.  Once we have
-// y, we can use the equation for z above to solve for z, and we're done.
-//
-// See http://ceres-solver.org/nnls_solving.html#dense-schur-sparse-schur
+/**
+ * A solver for factorizing and solving positive definite matrices with a large block-diagonal
+ * component
+ *
+ * This includes matrices typically encountered in SfM, where the landmarks-to-landmarks block of
+ * the Hessian is block diagonal (there are no cross-terms between different landmarks)
+ *
+ * We should have a matrix A of structure
+ *
+ *     A = ( B    E )
+ *         ( E^T  C )
+ *
+ * with C in `R^{C_dim x C_dim}` block diagonal.
+ *
+ * The full problem is A x = b, which we can break down the same way as
+ *
+ *     ( B    E ) ( y ) = ( v )
+ *     ( E^T  C ) ( z )   ( w )
+ *
+ * We then have two equations:
+ *
+ *     B y + E z = v
+ *     E^T y + C z = w
+ *
+ * C is block diagonal and therefore easy to invert, so we can write
+ *
+ *     z = C^{-1} (w - E^T y)
+ *
+ * Plugging this into the first equation, we can eliminate z:
+ *
+ *     B y + E C^{-1} (w - E^T y) = v
+ *     => B y + E C^{-1} w - E C^{-1} E^T y = v
+ *     => (B - E C^{-1} E^T) y = v - E C^{-1} w
+ *
+ * Defining the Schur complement `S = B - E C^{-1} E^T`, we have
+ *
+ *     S y = v - E C^{-1} w
+ *
+ * So, we can form S and use the above equation to solve for y.  Once we have
+ * y, we can use the equation for z above to solve for z, and we're done.
+ *
+ * See http://ceres-solver.org/nnls_solving.html#dense-schur-sparse-schur
+ */
 template <typename _MatrixType>
 class SparseSchurSolver {
  public:

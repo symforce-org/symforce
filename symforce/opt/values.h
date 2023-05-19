@@ -33,7 +33,7 @@ class Values {
   using MapType = std::unordered_map<Key, index_entry_t>;
   using ArrayType = std::vector<Scalar>;
 
-  // Expose the correct LCM type (values_t or valuesf_t)
+  /// Expose the correct LCM type (values_t or valuesf_t)
   using LcmType = typename ValuesLcmTypeHelper<Scalar>::Type;
 
   /**
@@ -83,6 +83,7 @@ class Values {
 
   /**
    * Add a value by key, throws runtime_error if the key already exists.
+   *
    * This is useful when setting up initial values for a problem.
    */
   template <typename T>
@@ -90,7 +91,8 @@ class Values {
 
   /**
    * Update or add keys to this Values base on other Values of different structure.
-   * index MUST be valid for other.
+   *
+   * `index` MUST be valid for other.
    *
    * NOTE(alvin): it is less efficient than the Update methods below if index objects are
    *              created and cached. This method performs map lookup for each key of the index
@@ -112,8 +114,7 @@ class Values {
   /**
    * Get all keys.
    *
-   * Args:
-   *   sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
+   * @param sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
    *
    * NOTE(hayk): If we changed key storage to a sorted vector this could automatically be maintained
    * and it would be more embedded friendly, but At(key) would become O(N) for linear search.
@@ -137,8 +138,10 @@ class Values {
   Values<NewScalar> Cast() const;
 
   /**
-   * Remove the given key. Only removes the index entry, does not change the data array.
-   * Returns true if removed, false if already not present.
+   * Remove the given key.
+   *
+   * Only removes the index entry, does not change the data array. Returns true if removed, false if
+   * already not present.
    *
    * Call Cleanup() to re-pack the data array.
    */
@@ -150,9 +153,10 @@ class Values {
   void RemoveAll();
 
   /**
-   * Repack the data array to get rid of empty space from removed keys. If regularly removing
-   * keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
-   * number of Scalar elements cleaned up from the data array.
+   * Repack the data array to get rid of empty space from removed keys.
+   *
+   * If regularly removing keys, it's up to the user to call this appropriately to avoid storage
+   * growth. Returns the number of Scalar elements cleaned up from the data array.
    *
    * It will INVALIDATE all indices, offset increments, and pointers.
    * Re-create an index with CreateIndex().
@@ -166,6 +170,7 @@ class Values {
    * If you want an index of all the keys, call `values.CreateIndex(values.Keys())`.
    *
    * An index will be INVALIDATED if the following happens:
+   *
    *  1) Remove() is called with a contained key, or RemoveAll() is called
    *  2) Cleanup() is called to re-pack the data array
    *
@@ -178,6 +183,7 @@ class Values {
    * Retrieve an index entry by key. This performs a map lookup.
    *
    * An index entry will be INVALIDATED if the following happens:
+   *
    *  1) Remove() is called with the indexed key, or RemoveAll() is called
    *  2) Cleanup() is called to re-pack the data array
    */
@@ -215,28 +221,27 @@ class Values {
 
   /**
    * Efficiently update the keys from a different structured Values, given by
-   * this index and other index. This purely copies slices of the data arrays.
-   * index_this MUST be valid for this object; index_other MUST be valid for other object.
+   * `index_this` and `index_other`. This purely copies slices of the data arrays.
+   *
+   * `index_this` MUST be valid for this object; `index_other` MUST be valid for other object.
    */
   void Update(const index_t& index_this, const index_t& index_other, const Values<Scalar>& other);
 
   /**
    * Perform a retraction from an update vector.
    *
-   * Args:
-   *   index: Ordered list of keys in the delta vector
-   *   delta: Pointer to update vector - MUST be the size of index.tangent_dim!
-   *   epsilon: Small constant to avoid singularities (do not use zero)
+   * @param index: Ordered list of keys in the delta vector
+   * @param delta: Pointer to update vector - MUST be the size of `index.tangent_dim`!
+   * @param epsilon: Small constant to avoid singularities (do not use zero)
    */
   void Retract(const index_t& index, const Scalar* delta, const Scalar epsilon);
 
   /**
    * Express this Values in the local coordinate of others Values, i.e., this \ominus others
    *
-   * Args:
-   *   others: The other Values that the local coordinate is relative to
-   *   index: Ordered list of keys to include (MUST be valid for both this and others Values)
-   *   epsilon: Small constant to avoid singularities (do not use zero)
+   * @param others: The other Values that the local coordinate is relative to
+   * @param index: Ordered list of keys to include (MUST be valid for both this and others Values)
+   * @param epsilon: Small constant to avoid singularities (do not use zero)
    */
   VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, const index_t& index,
                                    const Scalar epsilon);
@@ -280,12 +285,12 @@ struct ValuesLcmTypeHelper<float> {
 /**
  * Prints entries with their keys, data slices, and values, like:
  *
- *   Valuesd entries=4 array=8 storage_dim=7 tangent_dim=6
- *     R_1 [0:4] --> <Rot3d [0.563679, 0.0939464, 0, 0.820634]>
- *     f_1 [5:6] --> 4.2
- *     f_2 [6:7] --> 4.3
- *     d_1 [7:8] --> 4.3
- *   >
+ *     Valuesd entries=4 array=8 storage_dim=7 tangent_dim=6
+ *       R_1 [0:4] --> <Rot3d [0.563679, 0.0939464, 0, 0.820634]>
+ *       f_1 [5:6] --> 4.2
+ *       f_2 [6:7] --> 4.3
+ *       d_1 [7:8] --> 4.3
+ *     >
  */
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v);

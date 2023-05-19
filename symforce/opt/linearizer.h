@@ -23,7 +23,7 @@ namespace sym {
  * Stores the original Factors as well as the LinearizedFactors, and provides tools for
  * aggregating keys and building a large jacobian / hessian for optimization.
  *
- * For efficiency, prefer calling Relinearize instead of re-constructing this object!
+ * For efficiency, prefer calling Relinearize() instead of re-constructing this object!
  */
 template <typename ScalarType>
 class Linearizer {
@@ -35,18 +35,17 @@ class Linearizer {
   /**
    * Construct a Linearizer from factors and optional keys
    *
-   * Args:
-   *     factors: Only stores a pointer, MUST be in scope for the lifetime of this object!
-   *     key_order: If provided, acts as an ordered set of keys that form the state vector
-   *                to optimize. Can equal the set of all factor keys or a subset of all
-   *                factor keys. If not provided, it is computed from all keys for all
-   *                factors using a default ordering.
+   * @param factors: Only stores a pointer, MUST be in scope for the lifetime of this object!
+   * @param key_order: If provided, acts as an ordered set of keys that form the state vector
+   *    to optimize. Can equal the set of all factor keys or a subset of all factor keys. If not
+   *    provided, it is computed from all keys for all factors using a default ordering.
    */
   Linearizer(const std::string& name, const std::vector<Factor<Scalar>>& factors,
              const std::vector<Key>& key_order = {}, bool include_jacobians = false);
 
   /**
-   * Update linearization at a new evaluation point.
+   * Update linearization at a new evaluation point
+   *
    * This is more efficient than reconstructing this object repeatedly. On the first call, it will
    * allocate memory and perform analysis needed for efficient repeated relinearization.
    *
@@ -59,9 +58,10 @@ class Linearizer {
    */
   bool IsInitialized() const;
 
-  /**
-   * Basic accessors.
-   */
+  // ----------------------------------------------------------------------------
+  // Basic accessors
+  // ----------------------------------------------------------------------------
+
   const std::vector<LinearizedSparseFactor>& LinearizedSparseFactors() const;
 
   const std::vector<Key>& Keys() const;
@@ -144,7 +144,9 @@ class Linearizer {
   SparseLinearization<Scalar> init_linearization_;
 };
 
-// Free function as an alternate way to call.
+/**
+ * Free function as an alternate way to call the Linearizer
+ */
 template <typename Scalar>
 SparseLinearization<Scalar> Linearize(const std::vector<Factor<Scalar>>& factors,
                                       const Values<Scalar>& values,

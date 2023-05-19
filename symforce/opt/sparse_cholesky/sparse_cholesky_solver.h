@@ -16,13 +16,15 @@
 
 namespace sym {
 
-// Efficiently solves A * x = b, where A is a sparse matrix and b is a dense vector or matrix,
-// using the LDLT cholesky factorization A = L * D * L^T, where L is a unit triangular matrix
-// and D is a diagonal matrix.
-//
-// When repeatedly solving systems where A changes but its sparsity pattern remains identical,
-// this class can analyze the sparsity pattern once and use it to more efficiently factorize
-// and solve on subsequent calls.
+/**
+ * Efficiently solves `A * x = b`, where A is a sparse matrix and b is a dense vector or matrix,
+ * using the LDLT cholesky factorization `A = L * D * L^T`, where L is a unit triangular matrix
+ * and D is a diagonal matrix.
+ *
+ * When repeatedly solving systems where A changes but its sparsity pattern remains identical,
+ * this class can analyze the sparsity pattern once and use it to more efficiently factorize
+ * and solve on subsequent calls.
+ */
 template <typename _MatrixType, int _UpLo = Eigen::Lower>
 class SparseCholeskySolver {
  public:
@@ -41,30 +43,32 @@ class SparseCholeskySolver {
   using Ordering = std::function<void(const MatrixType&, PermutationMatrixType&)>;
 
  public:
-  // Default constructor
-  //
-  // Args:
-  //     ordering: Functor to compute the variable ordering to use.  Can be any functor with
-  //         signature void(const MatrixType&, PermutationMatrixType&) which takes in the sparsity
-  //         pattern of the matrix A and fills out the permutation of variables to use in the second
-  //         argument.  The first argument is the full matrix A, not just the upper or lower
-  //         triangle; the values may not be the same as in A, but will be nonzero for entries in A
-  //         that are nonzero.  Typically this will be an instance of one of the orderings provided
-  //         by Eigen, such as Eigen::NaturalOrdering().
+  /**
+   * Default constructor
+   *
+   * @param ordering: Functor to compute the variable ordering to use.  Can be any functor with
+   *    signature void(const MatrixType&, PermutationMatrixType&) which takes in the sparsity
+   *    pattern of the matrix A and fills out the permutation of variables to use in the second
+   *    argument.  The first argument is the full matrix A, not just the upper or lower
+   *    triangle; the values may not be the same as in A, but will be nonzero for entries in A
+   *    that are nonzero.  Typically this will be an instance of one of the orderings provided
+   *    by Eigen, such as Eigen::NaturalOrdering().
+   */
   SparseCholeskySolver(const Ordering& ordering = Eigen::MetisOrdering<StorageIndex>())
       : is_initialized_(false), ordering_(ordering) {}
 
-  // Construct with a representative sparse matrix
-  //
-  // Args:
-  //     A: The matrix to be factorized
-  //     ordering: Functor to compute the variable ordering to use.  Can be any functor with
-  //         signature void(const MatrixType&, PermutationMatrixType&) which takes in the sparsity
-  //         pattern of the matrix A and fills out the permutation of variables to use in the second
-  //         argument.  The first argument is the full matrix A, not just the upper or lower
-  //         triangle; the values may not be the same as in A, but will be nonzero for entries in A
-  //         that are nonzero.  Typically this will be an instance of one of the orderings provided
-  //         by Eigen, such as Eigen::NaturalOrdering().
+  /**
+   * Construct with a representative sparse matrix
+   *
+   * @param A: The matrix to be factorized
+   * @param ordering: Functor to compute the variable ordering to use.  Can be any functor with
+   *    signature void(const MatrixType&, PermutationMatrixType&) which takes in the sparsity
+   *    pattern of the matrix A and fills out the permutation of variables to use in the second
+   *    argument.  The first argument is the full matrix A, not just the upper or lower
+   *    triangle; the values may not be the same as in A, but will be nonzero for entries in A
+   *    that are nonzero.  Typically this will be an instance of one of the orderings provided
+   *    by Eigen, such as Eigen::NaturalOrdering().
+   */
   explicit SparseCholeskySolver(const MatrixType& A,
                                 const Ordering& ordering = Eigen::MetisOrdering<StorageIndex>())
       : SparseCholeskySolver(ordering) {
@@ -74,27 +78,26 @@ class SparseCholeskySolver {
 
   ~SparseCholeskySolver() {}
 
-  // Whether we have computed a symbolic sparsity and
-  // are ready to factorize/solve.
+  /// Whether we have computed a symbolic sparsity and are ready to factorize/solve.
   bool IsInitialized() const {
     return is_initialized_;
   }
 
-  // Compute an efficient permutation matrix (ordering) for A and store internally.
+  /// Compute an efficient permutation matrix (ordering) for A and store internally.
   void ComputePermutationMatrix(const MatrixType& A);
 
-  // Compute symbolic sparsity pattern for A and store internally.
+  /// Compute symbolic sparsity pattern for A and store internally.
   void ComputeSymbolicSparsity(const MatrixType& A);
 
-  // Decompose A into A = L * D * L^T and store internally.
-  // A must have the same sparsity as the matrix used for construction.
+  /// Decompose A into A = L * D * L^T and store internally.
+  /// A must have the same sparsity as the matrix used for construction.
   void Factorize(const MatrixType& A);
 
-  // Returns x for A x = b, where x and b are dense
+  /// Returns x for A x = b, where x and b are dense
   template <typename Rhs>
   RhsType Solve(const Eigen::MatrixBase<Rhs>& b) const;
 
-  // Solves in place for x in A x = b, where x and b are dense
+  /// Solves in place for x in A x = b, where x and b are dense
   template <typename Rhs>
   void SolveInPlace(Eigen::MatrixBase<Rhs>& b) const;
 

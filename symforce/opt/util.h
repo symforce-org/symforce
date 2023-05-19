@@ -86,11 +86,10 @@ T Interpolate(const T& a, const T& b, const typename StorageOps<T>::Scalar t,
 /**
  * Compute the numerical derivative of a function using a central difference approximation
  *
- * Args:
- *   f: The function to differentiate
- *   x: Input at which to calculate the derivative
- *   epsilon: Epsilon for Lie Group operations
- *   delta: Derivative step size
+ * @param f: The function to differentiate
+ * @param x: Input at which to calculate the derivative
+ * @param epsilon: Epsilon for Lie Group operations
+ * @param delta: Derivative step size
  *
  * TODO(aaron): Add a higher-order approximation to the derivative either as an option or as the
  * default
