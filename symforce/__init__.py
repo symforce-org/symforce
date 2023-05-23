@@ -138,6 +138,7 @@ def _find_symengine() -> ModuleType:
 
         return symengine
 
+
 _symbolic_api: T.Optional[str] = None
 _have_imported_symbolic = False
 
