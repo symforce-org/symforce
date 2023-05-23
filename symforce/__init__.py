@@ -94,48 +94,49 @@ def _find_symengine() -> ModuleType:
         import symengine
 
         return symengine
-    except ImportError:
-        pass
+    except ImportError as ex:
+        import importlib
+        import importlib.abc
+        import importlib.util
 
-    import importlib
-    import importlib.abc
-    import importlib.util
+        from . import path_util
 
-    from . import path_util
+        try:
+            symengine_install_dir = path_util.symenginepy_install_dir()
+        except path_util.MissingManifestException:
+            raise ImportError(
+                "Unable to import SymEngine, either installed or in the manifest.json"
+            ) from ex
 
-    try:
-        symengine_install_dir = path_util.symenginepy_install_dir()
-    except path_util.MissingManifestException as ex:
-        raise ImportError from ex
-
-    symengine_path_candidates = list(
-        symengine_install_dir.glob("lib/python3*/site-packages/symengine/__init__.py")
-    ) + list(symengine_install_dir.glob("local/lib/python3*/dist-packages/symengine/__init__.py"))
-    if len(symengine_path_candidates) != 1:
-        raise ImportError(
-            f"Should be exactly one symengine package, found candidates {symengine_path_candidates} in directory {path_util.symenginepy_install_dir()}"
+        symengine_path_candidates = list(
+            symengine_install_dir.glob("lib/python3*/site-packages/symengine/__init__.py")
+        ) + list(
+            symengine_install_dir.glob("local/lib/python3*/dist-packages/symengine/__init__.py")
         )
-    symengine_path = symengine_path_candidates[0]
+        if len(symengine_path_candidates) != 1:
+            raise ImportError(
+                f"Should be exactly one symengine package, found candidates {symengine_path_candidates} in directory {path_util.symenginepy_install_dir()}"
+            )
+        symengine_path = symengine_path_candidates[0]
 
-    # Import symengine from the directory where we installed it.  See
-    # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
-    spec = importlib.util.spec_from_file_location("symengine", symengine_path)
-    assert spec is not None
-    symengine = importlib.util.module_from_spec(spec)
-    sys.modules["symengine"] = symengine
+        # Import symengine from the directory where we installed it.  See
+        # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+        spec = importlib.util.spec_from_file_location("symengine", symengine_path)
+        assert spec is not None
+        symengine = importlib.util.module_from_spec(spec)
+        sys.modules["symengine"] = symengine
 
-    # For mypy: https://github.com/python/typeshed/issues/2793
-    assert isinstance(spec.loader, importlib.abc.Loader)
+        # For mypy: https://github.com/python/typeshed/issues/2793
+        assert isinstance(spec.loader, importlib.abc.Loader)
 
-    try:
-        spec.loader.exec_module(symengine)
-    except:  # pylint: disable=bare-except
-        # If executing the module fails for any reason, it shouldn't be in `sys.modules`
-        del sys.modules["symengine"]
-        raise
+        try:
+            spec.loader.exec_module(symengine)
+        except:  # pylint: disable=bare-except
+            # If executing the module fails for any reason, it shouldn't be in `sys.modules`
+            del sys.modules["symengine"]
+            raise
 
-    return symengine
-
+        return symengine
 
 _symbolic_api: T.Optional[str] = None
 _have_imported_symbolic = False
