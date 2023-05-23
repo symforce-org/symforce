@@ -116,7 +116,7 @@ def _find_symengine() -> ModuleType:
         if len(symengine_path_candidates) != 1:
             raise ImportError(
                 f"Should be exactly one symengine package, found candidates {symengine_path_candidates} in directory {path_util.symenginepy_install_dir()}"
-            )
+            ) from ex
         symengine_path = symengine_path_candidates[0]
 
         # Import symengine from the directory where we installed it.  See
