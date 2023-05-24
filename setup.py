@@ -324,6 +324,7 @@ setup_requirements = [
 ]
 
 docs_requirements = [
+    "furo",
     "ipykernel",
     # nbconvert depends on this, but doesn't specify the dependency
     "ipython-genutils",
@@ -334,8 +335,8 @@ docs_requirements = [
     "pandas",
     "plotly",
     "Sphinx",
-    # sphinx-autodoc-typehints >=1.15 contains a bug causing it to crash parsing our typing.py
-    "sphinx-autodoc-typehints<1.15",
+    "sphinx-copybutton",
+    "sphinxext-opengraph",
     "breathe",
 ]
 

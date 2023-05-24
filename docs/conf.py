@@ -18,7 +18,6 @@
 #
 import os
 import sys
-import typing as T
 
 # Add symforce to python path
 package_path = os.path.abspath("..")
@@ -53,11 +52,15 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
+    "sphinxext.opengraph",
+    "sphinx_copybutton",
+    "sphinx.ext.intersphinx",
     "nbsphinx",
     "breathe",
     "myst_parser",
 ]
+
+autodoc_typehints = "description"
 
 # This doesn't seem to fix things, but would be good to fix - currently you have to manually write
 # anchor links in html
@@ -72,11 +75,13 @@ templates_path = ["_templates"]
 # Include special methods
 napoleon_include_special_with_doc = True
 
+# Make "Returns" a params-style section, so we can document multiple returns
+napoleon_custom_sections = [("Returns", "params_style")]
+
 autodoc_default_options = {
     # Order by definition in source rather than alphabetical
     "member-order": "bysource",
-    # Include explicit init functin
-    "special-members": "__init__",
+    # Include undocumented members
     "undoc-members": True,
 }
 # Order by definition in source rather than alphabetical
@@ -88,6 +93,9 @@ autoclass_content = "class"
 # Don't prefix full module path on definitions
 add_module_names = False
 
+# Don't add copybuttons to notebook output blocks
+copybutton_selector = "div:not(.output_area) > div.highlight > pre"
+
 # Skip symforce for module index
 modindex_common_prefix = ["symforce."]
 
@@ -95,6 +103,20 @@ modindex_common_prefix = ["symforce."]
 # You can specify multiple suffix as a list of string:
 #
 source_suffix = [".rst", ".md"]
+
+# This requires Sphinx 5.2+
+toc_object_entries_show_parents = "hide"
+
+# Add links to the Python, numpy, sympy, and scipy docs
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "sympy": ("https://docs.sympy.org/latest/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+}
+
+# Image for OpenGraph
+ogp_image = "https://symforce.org/docs/static/images/symforce_banner.png"
 
 # The master toctree document.
 master_doc = "index"
@@ -104,61 +126,40 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["docs/source/api/modules", "_build", "**.ipynb_checkpoints"]
+exclude_patterns = ["docs/source/api/modules", "**/build", "**/.ipynb_checkpoints"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
-
-always_document_param_types = True
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#
 html_theme_options = {
-    "description": "Fast symbolic computation, code generation, and nonlinear optimization for robotics",
-    "fixed_sidebar": False,
-    "page_width": "1200px",
-    "github_button": True,
-    "github_user": "symforce-org",
-    "github_repo": "symforce",
-    "github_type": "star",
-    # 'canonical_url': '',
-    # 'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
-    # 'logo_only': False,
-    # "display_version": True,
-    # 'prev_next_buttons_location': 'bottom',
-    # 'style_external_links': False,
-    # 'vcs_pageview_mode': '',
-    # 'style_nav_header_background': 'white',
-    # Toc options
-    # "collapse_navigation": False,
-    # "sticky_navigation": True,
-    # "navigation_depth": -1,
-    "sidebar_includehidden": True,
-    # "titles_only": True,
+    "dark_logo": "images/symforce vertical.svg",
+    "light_logo": "images/symforce vertical dark.svg",
+    "sidebar_hide_name": True,
 }
+
+html_title = "SymForce"
+html_favicon = "static/favicon.ico"
+html_css_files = ["css/custom.css"]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["static"]
-
-html_css_files = ["css/custom.css"]
-
-html_favicon = "static/favicon.ico"
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -255,3 +256,4 @@ breathe_projects = {
 }
 breathe_default_project = "api-cpp"
 breathe_default_members = ("members", "undoc-members")
+breathe_implementation_filename_extensions = [".c", ".cc", ".cpp", ".tcc"]

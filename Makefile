@@ -147,31 +147,37 @@ docs_clean:
 	rm -rf $(DOCS_DIR) docs/api docs/api-cpp docs/api-gen-cpp docs/api-gen-py \
 		$(BUILD_DIR)/doxygen-cpp $(BUILD_DIR)/doxygen-gen-cpp
 
-docs_apidoc:
+docs_dir:
 	mkdir -p $(BUILD_DIR)
-	sphinx-apidoc --separate --module-first -o docs/api ./symforce ./symforce/sympy.py
+
+docs_py_apidoc: docs_dir
+	sphinx-apidoc --separate --module-first -o docs/api ./symforce
 	sphinx-apidoc --separate --module-first -o docs/api-gen-py ./gen/python
-	doxygen docs/Doxyfile-cpp
-	doxygen docs/Doxyfile-gen-cpp
-	$(PYTHON) -m breathe.apidoc -o docs/api-cpp --project api-cpp $(BUILD_DIR)/doxygen-cpp/xml
-	$(PYTHON) -m breathe.apidoc -o docs/api-gen-cpp --project api-gen-cpp $(BUILD_DIR)/doxygen-gen-cpp/xml
 # The generated symforce.cc_sym.rst file says to generate docs for symforce.cc_sym. However, that file
 # only rexports cc_sym, and consequently the actual contents of cc_sym are not documented. We replace
 # symforce.cc_sym.rst with a copy which is the same except it says to generate docs for cc_sym instead.
 	rm docs/api/symforce.cc_sym.rst
 	cp docs/symforce.cc_sym.rst docs/api/symforce.cc_sym.rst
 
+# This is very slow, and breaks incremental builds.  If iterating on the Python docs, you'll want to
+# remove this from docs_html, and not run docs_clean.  If
+docs_cpp_apidoc: docs_dir
+	doxygen docs/Doxyfile-cpp
+	doxygen docs/Doxyfile-gen-cpp
+	$(PYTHON) -m breathe.apidoc -o docs/api-cpp --project api-cpp $(BUILD_DIR)/doxygen-cpp/xml
+	$(PYTHON) -m breathe.apidoc -o docs/api-gen-cpp --project api-gen-cpp $(BUILD_DIR)/doxygen-gen-cpp/xml
+
 PY_EXTENSION_MODULE_PATH?=$(BUILD_DIR)/pybind
 
-docs_html: docs_apidoc
+docs_html: docs_cpp_apidoc docs_py_apidoc
 	export PYTHONPATH=$(PY_EXTENSION_MODULE_PATH):$(PYTHONPATH); \
 	SYMFORCE_LOGLEVEL=WARNING $(PYTHON) -m sphinx -b html docs $(DOCS_DIR) -j auto
-	mkdir $(DOCS_DIR)/docs
-	ln -s ../_static $(DOCS_DIR)/docs/static
+	mkdir -p $(DOCS_DIR)/docs
+	ln -s -f ../_static $(DOCS_DIR)/docs/static
 
-docs: docs_clean docs_html
+docs: docs_html
 
 docs_open: docs
 	xdg-open $(DOCS_DIR)/index.html
 
-.PHONY: docs_clean docs_apidoc docs_html docs docs_open
+.PHONY: docs_clean docs_dir docs_py_apidoc docs_cpp_apidoc docs_html docs docs_open

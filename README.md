@@ -40,7 +40,7 @@ SymForce is developed and maintained by [Skydio](https://skydio.com/). It is use
 
 <br/>
 
-#### Features:
+#### Features
 
  + Symbolic implementations of geometry and camera types with Lie group operations
  + Code generation of fast native runtime code from symbolic expressions, reducing duplication and minimizing bugs
@@ -605,7 +605,7 @@ make install
 
 SymForce does not currently integrate with CMake's `find_package` (see [#209](https://github.com/symforce-org/symforce/issues/209)), so if you do this you currently need to add its libraries as link dependencies in your CMake project manually.
 
-## Verify your installation:
+## Verify your installation
 ```python
 >>> import symforce
 >>> symforce.get_symbolic_api()

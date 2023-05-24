@@ -99,3 +99,10 @@ Guides
     api-cpp/classlist
 
     api-cpp/filelist
+
+.. toctree::
+    :hidden:
+    :caption: Project Links
+
+    GitHub <https://github.com/symforce-org/symforce>
+    PyPI <https://pypi.org/project/symforce>

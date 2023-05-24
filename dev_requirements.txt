@@ -26,7 +26,9 @@ babel==2.12.1
 backcall==0.2.0
     # via ipython
 beautifulsoup4==4.12.2
-    # via nbconvert
+    # via
+    #   furo
+    #   nbconvert
 black[jupyter]==21.12b0
     # via symforce (setup.py)
 bleach==6.0.0
@@ -78,6 +80,8 @@ fastjsonschema==2.16.3
     # via nbformat
 fonttools==4.39.3
     # via matplotlib
+furo==2023.3.27
+    # via symforce (setup.py)
 graphviz==0.20.1
     # via symforce (setup.py)
 idna==3.4
@@ -148,7 +152,9 @@ markupsafe==2.1.2
     #   jinja2
     #   nbconvert
 matplotlib==3.7.1
-    # via symforce (setup.py)
+    # via
+    #   sphinxext-opengraph
+    #   symforce (setup.py)
 matplotlib-inline==0.1.6
     # via
     #   ipykernel
@@ -246,6 +252,7 @@ pybind11-stubgen==0.13.0
     # via symforce (setup.py)
 pygments==2.15.1
     # via
+    #   furo
     #   ipython
     #   nbconvert
     #   sphinx
@@ -290,11 +297,16 @@ soupsieve==2.4.1
 sphinx==6.2.1
     # via
     #   breathe
+    #   furo
     #   myst-parser
     #   nbsphinx
-    #   sphinx-autodoc-typehints
+    #   sphinx-basic-ng
+    #   sphinx-copybutton
+    #   sphinxext-opengraph
     #   symforce (setup.py)
-sphinx-autodoc-typehints==1.14.1
+sphinx-basic-ng==1.0.0b1
+    # via furo
+sphinx-copybutton==0.5.2
     # via symforce (setup.py)
 sphinxcontrib-applehelp==1.0.4
     # via sphinx
@@ -308,6 +320,8 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
+sphinxext-opengraph==0.8.2
+    # via symforce (setup.py)
 stack-data==0.6.2
     # via ipython
 file:./gen/python

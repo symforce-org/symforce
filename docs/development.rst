@@ -3,8 +3,6 @@ Development Guide
 
 Guide for how to build, configure, and develop SymForce.
 
-.. contents:: :local:
-
 *************************************************
 Organization
 *************************************************
