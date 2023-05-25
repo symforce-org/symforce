@@ -22,20 +22,22 @@ class OptimizationProblem:
     """
     An optimization problem.
 
-    Defined by a collection of `SubProblem`s, each of which defines a set of inputs (variables in
-    the Values) and a set of residuals.  SubProblems are generally expected to expose inputs that
-    are used by other subproblems; these dependencies should be handled by the user while
-    constructing the `residual_blocks` argument. Typical workflow is to construct a set of
-    SubProblems (which should also construct each SubProblem Inputs), build the `residual_blocks`
-    Values by calling `build_residuals` on each subproblem with the appropriate arguments, and then
-    pass the subproblems and `residual_blocks` to the `Problem` constructor.
+    Defined by a collection of :class:`.sub_problem.SubProblem`, each of which defines a set of
+    inputs (variables in the :class:`Values <symforce.values.values.Values>`) and a set of
+    residuals.  SubProblems are generally expected to expose inputs that are used by other
+    subproblems; these dependencies should be handled by the user while constructing the
+    ``residual_blocks`` argument. Typical workflow is to construct a set of SubProblems (which
+    should also construct each SubProblem Inputs), build the ``residual_blocks`` Values by calling
+    :meth:`.sub_problem.SubProblem.build_residuals` on each subproblem with the appropriate
+    arguments, and then pass the subproblems and ``residual_blocks`` to the
+    :class:`OptimizationProblem` constructor.
 
     Args:
         subproblems: Mapping from subproblem names to subproblems
-        residual_blocks: Values where each leaf is a ResidualBlock, containing all the residuals for
-                         the problem.  Typically created by calling `build_residuals` on each
-                         subproblem.
-        shared_inputs: If provided, an additional shared_inputs block to be added to the Values
+        residual_blocks: Values where each leaf is a :class:`.residual_block.ResidualBlock`,
+            containing all the residuals for the problem.  Typically created by calling
+            :meth:`.sub_problem.SubProblem.build_residuals` on each subproblem.
+        shared_inputs: If provided, an additional ``shared_inputs`` block to be added to the Values
     """
 
     subproblems: T.Mapping[str, SubProblem]
@@ -58,7 +60,7 @@ class OptimizationProblem:
     @staticmethod
     def split_residual_blocks(residual_blocks: Values) -> T.Tuple[Values, Values]:
         """
-        Split residual_blocks into residuals and extra_values
+        Split :attr:`residual_blocks` into ``residuals`` and ``extra_values``
         """
         residuals = Values()
         extra_values = Values()
@@ -111,7 +113,7 @@ class OptimizationProblem:
         config: CppConfig = None,
     ) -> None:
         """
-        Generate everything needed to optimize `problem` in C++. This currently assumes there is
+        Generate everything needed to optimize ``self`` in C++. This currently assumes there is
         only one factor generated for the optimization problem.
 
         Args:
@@ -147,14 +149,15 @@ class OptimizationProblem:
     ) -> T.List[Factor]:
         """
         Return a list of symbolic factors for this problem for analysis purposes. If the factors
-        are to be passed to an optimizer, use `make_numeric_factors` instead.
+        are to be passed to an :class:`symforce.opt.optimizer.Optimizer`, use
+        :meth:`make_numeric_factors` instead.
 
         Args:
             name: Name of factors. Note that the generated linearization functions will have
-                "_factor" appended to the function name (see
-                Codegen._pick_name_for_function_with_derivatives for details).
-            config: Language the factors will be generated in when `.generate()` is called.  If not
-                provided, uses the same default as the Factor constructor.
+                ``"_factor"`` appended to the function name (see
+                ``Codegen._pick_name_for_function_with_derivatives`` for details).
+            config: Language the factors will be generated in when :meth:`generate` is called.  If
+                not provided, uses the same default as the :class:`.factor.Factor` constructor.
         """
         inputs = self.inputs.dataclasses_to_values()
 
@@ -163,7 +166,7 @@ class OptimizationProblem:
 
         def dots_and_brackets_to_underscores(s: str) -> str:
             """
-            Converts all "." and "[]" in the given string to underscores such that the resulting
+            Converts all ``.`` and ``[]`` in the given string to underscores such that the resulting
             string is a valid/readable variable name.
             """
             return re.sub(
@@ -177,8 +180,8 @@ class OptimizationProblem:
             Functor that computes the jacobians of the residual with respect to a set of keys
 
             The set of keys is not known when make_symbolic_factors is called, because we may want
-            to create a NumericFactor which computes derivatives with respect to different sets of
-            optimized variables.
+            to create a :class:`.numeric_factor.NumericFactor` which computes derivatives with
+            respect to different sets of optimized variables.
             """
             jacobians = [
                 residual_block.compute_jacobians(
@@ -208,12 +211,13 @@ class OptimizationProblem:
         self, name: str, optimized_keys: T.Sequence[str] = None
     ) -> T.List[NumericFactor]:
         """
-        Returns a list of `NumericFactor`s for this problem, for example to pass to `Optimizer`.
+        Returns a list of `NumericFactor` for this problem, for example to pass to
+        :class:`Optimizer <symforce.opt.optimizer.Optimizer>`.
 
         Args:
             name: Name of factors. Note that the generated linearization functions will have
-                "_factor" appended to the function name (see
-                Codegen._pick_name_for_function_with_derivatives for details).
+                ``"_factor"`` appended to the function name (see
+                ``Codegen._pick_name_for_function_with_derivatives`` for details).
             optimized_keys: List of keys to optimize with respect to. Defaults to the optimized keys
                 specified by the subproblems of this optimization problem.
         """
@@ -232,7 +236,7 @@ def build_inputs(
     subproblems: T.Iterable[SubProblem], shared_inputs: T.Optional[T.Element] = None
 ) -> Values:
     """
-    Build the inputs Values for a set of subproblems.  The resulting values is structured as:
+    Build the inputs Values for a set of subproblems.  The resulting values is structured as::
 
         Values(
             subproblem1.name=subproblem1.inputs,

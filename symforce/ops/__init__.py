@@ -39,8 +39,9 @@ class ScalarExpr(abc.ABC):
     """
     Metaclass for scalar expressions
 
-    DataBuffer is a subclass of sf.Expr but we do not want it to be registered under
-    ScalarLieGroupOps.
+    :class:`symforce.symbolic.DataBuffer` is a subclass of :class:`sf.Expr <symforce.symbolic.Expr>`
+    but we do not want it to be registered under
+    :class:`ScalarLieGroupOps <symforce.ops.impl.scalar_lie_group_ops.ScalarLieGroupOps>`.
     """
 
     @abc.abstractmethod

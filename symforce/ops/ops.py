@@ -13,12 +13,12 @@ class Ops:
     Class for specifying how Storage/Group/LieGroup ops functions should
     be implemented for specific types (e.g. scalars, geo objects, etc.).
     Classes that inherit from Ops can be considered "concepts" (see
-    https://en.wikipedia.org/wiki/Concept_(generic_programming) ),
+    `<https://en.wikipedia.org/wiki/Concept_(generic_programming)>`_),
     meaning that they define a set of valid operations on the types
     (or subtypes) registered with this base class.
 
     As classes are created, they (or one of their parent classes) must be
-    registered by calling "register()", which specifies a specific implementation
+    registered by calling :meth:`register`, which specifies a specific implementation
     of the ops for that class. This is similar to template specialization in C++.
     """
 
@@ -36,11 +36,15 @@ class Ops:
         """
         Register the operations class for a given type. Once a type is
         registered, child classes of Ops will be able to call functions
-        defined in impl_ops.
+        defined in ``impl_ops``.
 
-        Example:
-            StorageOps.register(float, ScalarStorageOps)  # ScalarStorageOps defines valid storage operations on floats
-            StorageOps.storage_dim(1.0)  # We can now perform storage operations of objects of type float
+        Example::
+
+            # ScalarStorageOps defines valid storage operations on floats
+            StorageOps.register(float, ScalarStorageOps)
+
+            # We can now perform storage operations of objects of type float
+            StorageOps.storage_dim(1.0)
 
         Args:
             impl_type: Type to be registered
@@ -53,12 +57,14 @@ class Ops:
     def implementation(cls, impl_type: T.Type) -> T.Type:
         """
         Returns the class defining the operations for the given type or one of
-        its parent classes. If multiple parent classes are registered with the calling class,
-        the implementation of the first such parent class in method resolution order is returned.
+        its parent classes.
+
+        If multiple parent classes are registered with the calling class, the implementation of the
+        first such parent class in method resolution order is returned.
 
         Raises:
-            NotImplementedError: If impl_type or one of its parent classes is not registered
-            with the calling class or one of its subclasses.
+            NotImplementedError: If ``impl_type`` or one of its parent classes is not registered
+                with the calling class or one of its subclasses.
         """
         registered_and_base: T.List[T.Tuple[T.Type, T.Type]] = []
         for base_class in inspect.getmro(impl_type):

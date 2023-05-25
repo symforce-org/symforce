@@ -16,7 +16,7 @@ class Objective(ABC):
     An objective, defined as a residual or group of residuals and an associated Params block
 
     Subclasses should add individual residual functions as static methods that return
-    `ResidualBlock`, and define the Params block as a dataclass
+    :class:`.residual_block.ResidualBlock`, and define the Params block as a dataclass
     """
 
     Params: T.Dataclass
@@ -39,8 +39,8 @@ class TimestepObjective(Objective):
     An objective defined as a single residual applied over multiple timesteps, and associated Params
     block
 
-    Subclasses should define the residual_at_timestep function needed to compute the residual at
-    each timestep.
+    Subclasses should define the :meth:`residual_at_timestep` function needed to compute the
+    residual at each timestep.
     """
 
     @T.any_args

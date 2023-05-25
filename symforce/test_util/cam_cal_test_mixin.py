@@ -17,7 +17,9 @@ class CamCalTestMixin(CamTestMixin):
     def test_storage_order(self) -> None:
         """
         Tests:
-            storage_order
+
+        - storage_order
+
         Specifically, that the names of storage_order match those of the argument of the
         class constructors, and the the order of the scalars in the storage matches the
         order specified by storage_order.

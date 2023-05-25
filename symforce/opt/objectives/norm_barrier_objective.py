@@ -17,9 +17,9 @@ class NormBarrierObjective(objective.TimestepObjective):
     @dataclass
     class Params:
         """
-        Fields:
+        Attributes:
             norm_nominal: Value of the norm at which the error is equal to error_nominal.
-            error_nominal: Error returned when the norm is equal to `norm_nominal`.
+            error_nominal: Error returned when the norm is equal to ``norm_nominal``.
             dist_zero_to_nominal: The distance from norm_nominal to the region of zero error. Must
                 be a positive number.
         """
@@ -31,7 +31,7 @@ class NormBarrierObjective(objective.TimestepObjective):
     @dataclass
     class ExtraValues:
         """
-        Fields:
+        Attributes:
             unwhitened_residual: Error after applying the barrier function but before applying the
                 cost scaling.
         """
@@ -49,7 +49,7 @@ class NormBarrierObjective(objective.TimestepObjective):
         """
         Returns the residual block for the given timestep, where the residual is computed by
         applying a max barrier function to the norm of the given vector, and then optionally scaling
-        the corresponding cost in the overall optimization problem by `cost_scaling`.
+        the corresponding cost in the overall optimization problem by ``cost_scaling``.
 
         Args:
             vector: Vector whose norm we wish to apply a barrier to.

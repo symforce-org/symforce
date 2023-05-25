@@ -116,7 +116,7 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
  *
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
- * Implementation is simply `compose(inverse(a), b)`.
+ * Implementation is simply ``compose(inverse(a), b)``.
  *
  * Returns:
  *     Element: c such that a @ c = b
@@ -271,7 +271,7 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::ComposeWit
  *
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
- * Implementation is simply `compose(inverse(a), b)`.
+ * Implementation is simply ``compose(inverse(a), b)``.
  *
  * Returns:
  *     Element: c such that a @ c = b

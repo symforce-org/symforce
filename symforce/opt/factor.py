@@ -28,8 +28,8 @@ class Factor:
     """
     A class used to represent symbolic factors as used in a factor graph. The factor is typically
     constructed from either a function or from a symbolic expression using
-    `Factor.from_inputs_and_residual()`. A linearization function can be generated from the factor
-    using `generate()` which can be used in a larger optimization.
+    :meth:`from_inputs_and_residual`. A linearization function can be generated from the
+    factor using :meth:`generate` which can be used in a larger optimization.
 
     Args:
         keys: The set of variables that are inputs to the factor. These should be in order of
@@ -47,7 +47,8 @@ class Factor:
             a function that takes the set of optimized keys, and returns the jacobian of the
             residual with respect to those keys.
         kwargs: Any other arguments to be passed to the codegen object used to generate the
-            numeric factor. See `Codegen.function()` for details.
+            numeric factor. See :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>`
+            for details.
     """
 
     _generated_residual_cache = GeneratedResidualCache()
@@ -57,8 +58,8 @@ class Factor:
         """
         The default codegen config used by the Factor class
 
-        This is a PythonConfig with settings appropriate for converting to a NumericFactor (no
-        autoformat, return 2d vectors)
+        This is a PythonConfig with settings appropriate for converting to a
+        :class:`.numeric_factor.NumericFactor` (no autoformat, return 2d vectors).
         """
         return PythonConfig(
             render_template_config=codegen_config.RenderTemplateConfig(autoformat=False),
@@ -103,8 +104,9 @@ class Factor:
 
         Args:
             keys: The set of variables that are inputs to the factor. These should be in order of
-                input Values entries (computed using inputs.keys_recursive()), and are the keys used
-                in the overall optimization problem.
+                input :class:`Values <symforce.values.values.Values>` entries (computed using
+                :func:`inputs.keys_recursive() <symforce.values.values.Values.keys_recursive>`), and
+                are the keys used in the overall optimization problem.
             inputs: The inputs Values for the factor.
             residual: An expression representing the residual of the factor.
             config: The language the numeric factor will be generated in. Defaults to Python, which
@@ -118,7 +120,7 @@ class Factor:
                 a function that takes the set of optimized keys, and returns the jacobian of the
                 residual with respect to those keys.
             kwargs: Any other arguments to be passed to the codegen object used to generate the
-                numeric factor. See `Codegen.__init__()` for details.
+                numeric factor. See :class:`Codegen <symforce.codegen.codegen.Codegen>` for details.
         """
         if config is None:
             config = cls.default_codegen_config()
@@ -173,7 +175,8 @@ class Factor:
         sparse_linearization: bool = False,
     ) -> T.Dict[str, T.Any]:
         """
-        Generates the code needed to construct a NumericFactor from this Factor.
+        Generates the code needed to construct a :class:`.numeric_factor.NumericFactor` from this
+        Factor.
 
         Args:
             optimized_keys: Keys which we compute the linearization of the residual with respect to.
@@ -220,8 +223,8 @@ class Factor:
         sparse_linearization: bool = False,
     ) -> NumericFactor:
         """
-        Constructs a NumericFactor from this Factor, including generating a linearization
-        function.
+        Constructs a :class:`.numeric_factor.NumericFactor` from this Factor, including generating a
+        linearization function.
 
         Args:
             optimized_keys: Keys which we compute the linearization of the residual with respect to.

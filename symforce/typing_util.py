@@ -79,15 +79,15 @@ def maybe_tuples_of_types_from_annotation(
     annotation: T.Union[T.Type, T.Any], return_annotation_if_not_tuple: bool = False
 ) -> T.Optional[T.Union[T.Tuple[T.Union[T.Tuple, T.Type]], T.Any]]:
     """
-    Attempt to construct a tuple of types from an annotation of the form T.Tuple[A, B, C] of any
+    Attempt to construct a tuple of types from an annotation of the form ``T.Tuple[A, B, C]`` of any
     fixed length, recursively.
 
-    If this is not possible, because the annotation is not a T.Tuple, returns:
+    If this is not possible, because the annotation is not a ``T.Tuple``, returns:
 
-    1) The annotation itself, if return_annotation_if_not_tuple is True
-    2) None, otherwise
+    1) The annotation itself, if ``return_annotation_if_not_tuple`` is True
+    2) ``None``, otherwise
 
-    If the annotation is a T.Tuple, but is of unknown length, returns None
+    If the annotation is a ``T.Tuple``, but is of unknown length, returns ``None``
     """
     origin = T.get_origin(annotation)
     if not isinstance(origin, type) or not issubclass(origin, T.cast(T.Type, T.Tuple)):

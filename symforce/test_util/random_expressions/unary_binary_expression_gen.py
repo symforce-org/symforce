@@ -90,8 +90,10 @@ class UnaryBinaryExpressionGen:
     ) -> T.List[np.ndarray]:
         """
         Enumerate the number of possible unary-binary trees that can be generated from empty nodes.
+
         D[e][n] represents the number of different binary trees with n nodes that
-        can be generated from e empty nodes, using the following recursion:
+        can be generated from e empty nodes, using the following recursion::
+
             D(0, n) = 0
             D(e, 0) = L ** e
             D(e, n) = L * D(e - 1, n) + p_1 * D(e, n - 1) + p_2 * D(e + 1, n - 1)
@@ -117,7 +119,7 @@ class UnaryBinaryExpressionGen:
     ) -> T.Tuple[int, int]:
         """
         Sample the position of the next node (unary-binary case).
-        Sample a position in {0, ..., `nb_empty` - 1}, along with an arity.
+        Sample a position in ``{0, ..., `nb_empty` - 1}``, along with an arity.
         """
         assert nb_empty > 0
         assert nb_ops > 0
@@ -218,8 +220,8 @@ class UnaryBinaryExpressionGen:
 
     def build_expr_vec(self, num_ops_target: int, num_exprs: int = None) -> sf.M:
         """
-        Return a vector of expressions with the total given op target. If no num_exprs
-        is provided, uses an approximate square root of the num_ops_target.
+        Return a vector of expressions with the total given op target. If no ``num_exprs``
+        is provided, uses an approximate square root of the ``num_ops_target``.
         """
         # Empirical fudge factor for simplifications
         num_ops_target = int(1.1 * num_ops_target)

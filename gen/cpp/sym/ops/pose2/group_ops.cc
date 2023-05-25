@@ -100,7 +100,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Compose(const sym::Pose2<Scalar>& a,
  *
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
- * Implementation is simply `compose(inverse(a), b)`.
+ * Implementation is simply ``compose(inverse(a), b)``.
  *
  * Returns:
  *     Element: c such that a @ c = b
@@ -248,7 +248,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::ComposeWithJacobians(const sym::Pose
  *
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
- * Implementation is simply `compose(inverse(a), b)`.
+ * Implementation is simply ``compose(inverse(a), b)``.
  *
  * Returns:
  *     Element: c such that a @ c = b

@@ -45,8 +45,8 @@ def set_log_level(log_level: str) -> None:
 
     The default is INFO, but can be set by one of:
 
-        1) The SYMFORCE_LOGLEVEL environment variable
-        2) Calling this function before any other symforce imports
+    1) The SYMFORCE_LOGLEVEL environment variable
+    2) Calling this function before any other symforce imports
 
     Args:
         log_level: {DEBUG, INFO, WARNING, ERROR, CRITICAL}
@@ -176,8 +176,8 @@ def set_symbolic_api(name: str) -> None:
 
     The default is symengine if available else sympy, but can be set by one of:
 
-        1) The SYMFORCE_SYMBOLIC_API environment variable
-        2) Calling this function before any other symforce imports
+    1) The SYMFORCE_SYMBOLIC_API environment variable
+    2) Calling this function before any other symforce imports
 
     Args:
         name: {sympy, symengine}
@@ -260,7 +260,8 @@ def _set_epsilon(new_epsilon: T.Any) -> None:
 
     if _have_used_epsilon and new_epsilon != _epsilon:
         raise AlreadyUsedEpsilon(
-            "Cannot set return value of epsilon after it has already been called."
+            f"Cannot set return value of epsilon to {new_epsilon} after it has already been "
+            f"accessed with value {_epsilon}."
         )
 
     _epsilon = new_epsilon

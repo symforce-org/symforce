@@ -10,7 +10,8 @@ from .class_storage_ops import ClassStorageOps
 
 class VectorClassLieGroupOps(ClassStorageOps, AbstractVectorLieGroupOps[Storage]):
     """
-    A generic implementation of Lie group ops for subclasses of symforce.ops.interfaces.Storage.
+    A generic implementation of Lie group ops for subclasses of
+    :class:`symforce.ops.interfaces.storage.Storage`.
 
     Treats the subclass like R^n where the vector is the storage representation.
 

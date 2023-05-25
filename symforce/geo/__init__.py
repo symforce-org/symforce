@@ -11,8 +11,8 @@ Implements strict notions of Storage types, Group types, and LieGroup types.
 
 The design of these concepts is similar to those in GTSAM and Sophus:
 
-    * https://gtsam.org/
-    * https://github.com/strasdat/Sophus
+* https://gtsam.org/
+* https://github.com/strasdat/Sophus
 """
 
 from . import unsupported

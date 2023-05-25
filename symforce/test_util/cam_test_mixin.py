@@ -34,7 +34,8 @@ class CamTestMixin(_Base):
     def test_pixel_from_camera_point(self) -> None:
         """
         Tests:
-            pixel_from_camera_point
+
+        - pixel_from_camera_point
         """
         if not self.element().has_camera_ray_from_pixel():
             # TODO(aaron, dominic, brad): Back projection is not implemented for SphericalCameraCal or
@@ -59,7 +60,8 @@ class CamTestMixin(_Base):
     def test_camera_ray_from_pixel(self) -> None:
         """
         Tests:
-            camera_ray_from_pixel
+
+        - camera_ray_from_pixel
         """
         if not self.element().has_camera_ray_from_pixel():
             # TODO(aaron, dominic, brad): Back projection is not implemented for SphericalCameraCal or

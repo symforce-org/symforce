@@ -16,10 +16,11 @@ class GroupOpsTestMixin(StorageOpsTestMixin):
     def test_group_ops(self) -> None:
         """
         Tests:
-            identity
-            inverse
-            compose
-            between
+
+        - identity
+        - inverse
+        - compose
+        - between
         """
         # Create an identity and non-identity element
         element = self.element()

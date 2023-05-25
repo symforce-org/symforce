@@ -84,8 +84,8 @@ def expected_failure_on_sympy(func: T.Callable) -> T.Callable:
 
 def slow_on_sympy(func: T.Callable) -> T.Callable:
     """
-    Decorator to mark a test as slow on sympy..  Will be skipped unless passed the
-    --run_slow_tests flag
+    Decorator to mark a test as slow on sympy.  Will be skipped unless passed the
+    ``--run_slow_tests`` flag
     """
     if symforce.get_symbolic_api() == "sympy" and not TestCase.should_run_slow_tests():
         return unittest.skip("This test is too slow on SymPy.")(func)

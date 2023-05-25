@@ -16,10 +16,11 @@ class SubProblem(ABC):
     """
     A logical grouping of a set of variables and objective terms that use those variables
 
-    Typical usage is to subclass SubProblem, and define an `Inputs` dataclass on your subclass for
-    any variables provided by the subproblem.  Then define `build_residuals`, which should return a
-    Values where each leaf is a ResidualBlock, representing the residuals for your subproblem. For
-    example:
+    Typical usage is to subclass SubProblem, and define an :attr:`Inputs` dataclass on your subclass for
+    any variables provided by the subproblem.  Then define :meth:`build_residuals`, which should
+    return a :class:`symforce.values.values.Values` where each leaf is a
+    :class:`.residual_block.ResidualBlock`, representing the residuals for your subproblem. For
+    example::
 
         class MySubProblem(SubProblem):
             @dataclass
@@ -40,10 +41,10 @@ class SubProblem(ABC):
 
 
     SubProblems can also depend on variables or expressions from other subproblems; the recommended
-    way to do this is to add arguments to `build_residuals` for any expressions your subproblem
-    needs from other subproblems.
+    way to do this is to add arguments to :meth:`build_residuals` for any expressions your
+    subproblem needs from other subproblems.
 
-    Both Inputs and build_residuals must be defined, but can be empty - a SubProblem can be just a
+    Both :attr:`Inputs` and :meth:`build_residuals` must be defined, but can be empty - a SubProblem can be just a
     set of variables with no objectives (for example, variables that are used in other subproblems).
     It can also be a set of objectives with no variables, i.e. with all of its inputs coming from
     other subproblems.
@@ -64,7 +65,7 @@ class SubProblem(ABC):
 
     def build_inputs(self) -> None:
         """
-        Build the inputs block of the subproblem, and store in self.inputs.
+        Build the inputs block of the subproblem, and store in :attr:`self.inputs <inputs>`.
 
         The default implementation works for fixed-size Dataclasses; for dynamic-size dataclasses,
         or to customize this, override this function.
@@ -90,7 +91,7 @@ class SubProblem(ABC):
     def optimized_values(self) -> T.List[T.Any]:
         """
         Return the list of optimized values for this subproblem.  Each entry should be a leaf-level
-        object in the subproblem Inputs
+        object in the subproblem :attr:`Inputs`
         """
         pass
 

@@ -66,7 +66,8 @@ def generate_types(
         shared_types: Used to specify whether specific types and subtypes have already been
             generated, either externally or internally (e.g. if one generated type is to represent
             multiple objects in ``values_indices``).
-            Usage examples:
+            Usage examples::
+
                 shared_types={"my_values" : "external_package.my_values"}
                     (Reuse the implementation of "my_values" defined in package "external_package",
                     meaning that "my_values" as defined in values_indices will not be generated.

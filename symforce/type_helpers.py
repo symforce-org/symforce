@@ -18,9 +18,10 @@ def deduce_input_type(
     Attempt to deduce the type of an input parameter to a function
 
     Strategy:
+
     1) If it's annotated with something, return that
     2) If it's the first parameter and its name is "self", search for a type by the class part of
-        the function's qualified name
+       the function's qualified name
     """
     annotation = parameter.annotation
 
@@ -44,9 +45,10 @@ def deduce_input_type(
 
 def deduce_input_types(func: T.Callable) -> T.Sequence[T.ElementOrType]:
     """
-    Attempt to deduce input types from the type annotations on func, to be used by Codegen.function.
+    Attempt to deduce input types from the type annotations on func, to be used by
+    :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>`.
 
-    See the docstring on deduce_input_type for deduction strategy
+    See the docstring on :func:`deduce_input_type` for deduction strategy
     """
     signature = inspect.signature(func)
 
@@ -59,16 +61,16 @@ def deduce_input_types(func: T.Callable) -> T.Sequence[T.ElementOrType]:
 
 def symbolic_inputs(func: T.Callable, input_types: T.Sequence[T.ElementOrType] = None) -> Values:
     """
-    Return symbolic arguments for the inputs to `func`
+    Return symbolic arguments for the inputs to ``func``
 
     Args:
         func: A callable; args should have type annotations, and those types should be constructible
-              automatically with StorageOps.symbolic
+              automatically with :meth:`symforce.ops.storage_ops.StorageOps.symbolic`
 
     Returns:
         A tuple with a symbolic object for each input to func
 
-    See also: sf.util.symbolic_eval
+    See also: :func:`sf.util.symbolic_eval <symforce.util.symbolic_eval>`
     """
     parameters = [
         p

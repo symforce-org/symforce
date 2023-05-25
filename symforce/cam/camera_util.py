@@ -20,9 +20,9 @@ def compute_odd_polynomial_critical_point(
     critical points are found in this range, return max.
 
     Args:
-            coefficients: the coefficients of the polynomial
-            max_x: the maximum value to be returned if no real-valued critical points are found
-                   in [0, max_x]
+        coefficients: the coefficients of the polynomial
+        max_x: the maximum value to be returned if no real-valued critical points are found in
+            [0, max_x]
     """
     # Build the coefficients for np.polynomial.
     full_poly_coeffs = [0.0, 1.0]

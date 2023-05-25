@@ -16,24 +16,25 @@ from symforce import typing as T
 class IndexEntry:
     """
     Contains the structural information needed to reconstruct a single value of
-    a `Values` from storage in method `Values.from_storage_index`
+    a :class:`.values.Values` from storage in method :meth:`.values.Values.from_storage_index`
 
-    Meant to be a python parallel to index_entry_t in symforce.lcm
+    Meant to be a python parallel to ``index_entry_t`` in ``symforce.lcm``
+
+    For ``entry: IndexEntry = v.index()[key]`` for ``Values v`` and string ``key``
 
     Attributes:
-        For `entry: IndexEntry = v.index()[key]` for `Values v` and string `key`
         offset:
-            The index of `StorageOps.to_storage(v)` at which
-            `StorageOps.to_storage(v[key])` begins
+            The index of ``StorageOps.to_storage(v)`` at which
+            ``StorageOps.to_storage(v[key])`` begins
         storage_dim:
-            The length of `StorageOps.to_storage(v[key])`
+            The length of ``StorageOps.to_storage(v[key])``
         shape:
-            If datatype() is np.ndarray or sf.Matrix, it's the shape of `v[key]`.
-            Otherwise, it's None
+            If datatype() is np.ndarray or :class:`sf.Matrix <symforce.geo.matrix.Matrix>`, it's
+            the shape of ``v[key]``. Otherwise, it's ``None``.
         item_index:
-            `v[key].index()` if datatype() is Values,
-            if datatype() is list or tuple, is dict `d` where `d[f"{key}_{i}"]`
-            equals the `IndexEntry` of `v[key][i]`, and
+            ``v[key].index()`` if datatype() is :class:`Values`,
+            if datatype() is list or tuple, is dict ``d`` where ``d[f"{key}_{i}"]``
+            equals the ``IndexEntry`` of ``v[key][i]``, and
             otherwise is None
     """
 
@@ -62,12 +63,15 @@ class IndexEntry:
         """
         Returns the type indexed by self
 
-        Example:
-            IndexEntry(offset, storage_dim, stored_datatype).datatype() returns stored_datatype
+        Example::
+
+            IndexEntry(offset, storage_dim, stored_datatype).datatype()
+
+        returns ``stored_datatype``
 
         Precondition:
             The datatype stored must have had its module loaded (i.e., if the stored datatype is
-            sf.rot3, symforce.geo must have been imported).
+            :class:`sf.Rot3 <symforce.geo.rot3.Rot3>`, :mod:`symforce.geo` must have been imported).
             The datatype must also be accesible from the module (dynamically created types do not
             do this. For example, the sf.Matrix types with more than 10 rows or columns)
         """

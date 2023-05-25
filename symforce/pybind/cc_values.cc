@@ -165,45 +165,45 @@ void AddValuesWrapper(pybind11::module_ module) {
       .def("has", &sym::Valuesd::Has, py::arg("key"), "Return whether the key exists.")
       .def("at", &ValuesAt, py::arg("key"), "Retrieve a value by key.")
       .def("update_or_set", &sym::Valuesd::UpdateOrSet, py::arg("index"), py::arg("other"), R"(
-        Update or add keys to this Values base on other Values of different structure.
-        index MUST be valid for other.
+          Update or add keys to this Values base on other Values of different structure.
+          index MUST be valid for other.
 
-        NOTE(alvin): it is less efficient than the Update methods below if index objects are created and cached. This method performs map lookup for each key of the index
+          NOTE(alvin): it is less efficient than the Update methods below if index objects are created and cached. This method performs map lookup for each key of the index
       )")
       .def("num_entries", &sym::Valuesd::NumEntries, "Number of keys.")
       .def("empty", &sym::Valuesd::Empty, "Has zero keys.")
       .def("keys", &sym::Valuesd::Keys, py::arg("sort_by_offset") = true, R"(
-        Get all keys.
+          Get all keys.
 
-        Args:
-          sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
+          Args:
+              sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
       )")
       .def("items", &sym::Valuesd::Items, "Expose map type to allow iteration.")
       .def("data", py::overload_cast<>(&sym::Valuesd::Data, py::const_), "Raw data buffer.")
       .def("remove", &sym::Valuesd::Remove, py::arg("key"), R"(
-        Remove the given key. Only removes the index entry, does not change the data array.
-        Returns true if removed, false if already not present.
+          Remove the given key. Only removes the index entry, does not change the data array.
+          Returns true if removed, false if already not present.
 
-        Call cleanup() to re-pack the data array.
+          Call cleanup() to re-pack the data array.
       )")
       .def("remove_all", &sym::Valuesd::RemoveAll, "Remove all keys and empty out the storage.")
       .def("cleanup", &sym::Valuesd::Cleanup, R"(
-        Repack the data array to get rid of empty space from removed keys. If regularly removing
-        keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
-        number of Scalar elements cleaned up from the data array.
+          Repack the data array to get rid of empty space from removed keys. If regularly removing
+          keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
+          number of Scalar elements cleaned up from the data array.
 
-        It will INVALIDATE all indices, offset increments, and pointers.
-        Re-create an index with create_index().
+          It will INVALIDATE all indices, offset increments, and pointers.
+          Re-create an index with create_index().
       )")
       .def("create_index", &sym::Valuesd::CreateIndex, py::arg("keys"), R"(
-        Create an index from the given ordered subset of keys. This object can then be used
-        for repeated efficient operations on that subset of keys.
+          Create an index from the given ordered subset of keys. This object can then be used
+          for repeated efficient operations on that subset of keys.
 
-        If you want an index of all the keys, call `values.create_index(values.keys())`.
+          If you want an index of all the keys, call `values.create_index(values.keys())`.
 
-        An index will be INVALIDATED if the following happens:
-          1) remove() is called with a contained key, or remove_all() is called
-          2) cleanup() is called to re-pack the data array
+          An index will be INVALIDATED if the following happens:
+            1) remove() is called with a contained key, or remove_all() is called
+            2) cleanup() is called to re-pack the data array
       )")
       .def("at", &ValuesAtIndexEntry, py::arg("entry"),
            "Retrieve a value by index entry. This avoids a map lookup compared to at(key).")
@@ -231,18 +231,18 @@ void AddValuesWrapper(pybind11::module_ module) {
             v.Retract(index, delta.data(), epsilon);
           },
           py::arg("index"), py::arg("delta"), py::arg("epsilon"), R"(
-            Perform a retraction from an update vector.
+              Perform a retraction from an update vector.
 
-            Args:
-              index: Ordered list of keys in the delta vector
-              delta: Update vector - MUST be the size of index.tangent_dim!
-              epsilon: Small constant to avoid singularities (do not use zero)
+              Args:
+                  index: Ordered list of keys in the delta vector
+                  delta: Update vector - MUST be the size of index.tangent_dim!
+                  epsilon: Small constant to avoid singularities (do not use zero)
           )")
       .def("local_coordinates", &sym::Valuesd::LocalCoordinates, py::arg("others"),
            py::arg("index"), py::arg("epsilon"), R"(
-            Express this Values in the local coordinate of others Values, i.e., this \ominus others
+          Express this Values in the local coordinate of others Values, i.e., this \ominus others
 
-            Args:
+          Args:
               others: The other Values that the local coordinate is relative to
               index: Ordered list of keys to include (MUST be valid for both this and others Values)
               epsilon: Small constant to avoid singularities (do not use zero)

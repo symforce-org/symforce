@@ -12,14 +12,14 @@ from .group import Group
 
 class LieGroup(Group):
     """
-    Interface for objects that implement the lie group concept. Because this
-    class is registered using ClassLieGroupOps (see bottom of this file), any
-    object that inherits from LieGroup and that implements the functions defined
-    in this class can be used with the LieGroupOps concept.
+    Interface for objects that implement the lie group concept. Because this class is registered
+    using :class:`symforce.ops.impl.class_lie_group_ops.ClassLieGroupOps` (see bottom of this file),
+    any object that inherits from ``LieGroup`` and that implements the functions defined in this
+    class can be used with the LieGroupOps concept.
 
-    Note that LieGroup is a subclass of Group which is a subclass of Storage,
-    meaning that a LieGroup object can be also be used with GroupOps and
-    StorageOps (assuming the necessary functions are implemented).
+    Note that ``LieGroup`` is a subclass of :class:`.group.Group` which is a subclass of
+    :class:`.storage.Storage`, meaning that a ``LieGroup`` object can be also be used with GroupOps
+    and StorageOps (assuming the necessary functions are implemented).
     """
 
     # Type that represents this or any subclasses

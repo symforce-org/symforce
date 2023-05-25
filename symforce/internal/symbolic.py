@@ -27,6 +27,7 @@ available as well as :mod:`symforce.symbolic.sympy`.
 # pylint: disable=unused-wildcard-import
 
 import contextlib
+import functools
 
 import symforce
 from symforce import logger
@@ -304,13 +305,14 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
     sympy.Symbol = Symbol  # type: ignore[misc, assignment]
 
     # Because we're creating a new subclass, we also need to override sm.symbols to use this one
-    original_symbols = sympy.symbols
+    _original_symbols = sympy.symbols
 
+    @functools.wraps(_original_symbols)
     def symbols(  # pylint: disable=function-redefined
         names: str, **args: T.Any
     ) -> T.Union[T.Sequence[Symbol], Symbol]:
         cls = args.pop("cls", Symbol)
-        return original_symbols(names, **dict(args, cls=cls))
+        return _original_symbols(names, **dict(args, cls=cls))
 
     sympy.symbols = symbols
 
@@ -321,9 +323,10 @@ elif sympy.__package__ == "sympy":
     )
 
     # Save original
-    original_symbol_new = sympy.Symbol.__new__
+    _original_symbol_new = sympy.Symbol.__new__
 
-    @staticmethod  # type: ignore[misc]
+    @functools.wraps(_original_symbol_new)  # type: ignore[misc]
+    @staticmethod
     def new_symbol(
         cls: T.Any,
         name: str,
@@ -332,7 +335,7 @@ elif sympy.__package__ == "sympy":
         positive: bool = None,
     ) -> None:
         name = ".".join(__scopes__ + [name])
-        obj = original_symbol_new(cls, name, commutative=commutative, real=real, positive=positive)
+        obj = _original_symbol_new(cls, name, commutative=commutative, real=real, positive=positive)
         return obj
 
     sympy.Symbol.__new__ = new_symbol  # type: ignore[assignment]

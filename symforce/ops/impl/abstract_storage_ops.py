@@ -20,7 +20,7 @@ class AbstractStorageOps(abc.ABC, T.Generic[ElementT]):
     different StorageOps impelmentations.
 
     For example, classes whose storage spaces are abstract vector spaces and whose
-    group operations are their vector operations. See abstract_vector_group_ops.py.
+    group operations are their vector operations. See :mod:`.abstract_vector_group_ops`.
     """
 
     @staticmethod

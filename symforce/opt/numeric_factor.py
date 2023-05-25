@@ -20,7 +20,7 @@ class NumericFactor:
 
     Args:
         keys: The set of keys that are inputs to the linearization function.
-        optimized_keys: A subset of `keys` representing the keys which the given linearization
+        optimized_keys: A subset of ``keys`` representing the keys which the given linearization
                 function computes the jacobian with respect to.
         linearization_function: A function that returns the residual, jacobian, hessian
             approximation, and right-hand-side used with the levenberg marquardt optimizer.
@@ -48,12 +48,13 @@ class NumericFactor:
         name: str,
     ) -> NumericFactor:
         """
-        Returns a NumericFactor constructed from the python function `name` from the module
-        located at `output_dir / "python" / "symforce" / namespace / f"{name}.py"` (this matches
-        the directory structure created by `Factor.generate`). This can be used after
+        Returns a NumericFactor constructed from the python function ``name`` from the module
+        located at ``output_dir / "python" / "symforce" / namespace / f"{name}.py"`` (this matches
+        the directory structure created by :meth:`.factor.Factor.generate`). This can be used after
         generating a linearization function from a symbolic factor as follows:
 
-        Create a symbolic factor and generate the linearization function:
+        Create a symbolic factor and generate the linearization function::
+
             output_dir = "my_output_dir"
             namespace = "my_namespace"
             name = "my_custom_factor"
@@ -62,14 +63,15 @@ class NumericFactor:
             )
             sym_factor.generate(my_optimized_keys, output_dir, namespace)
 
-        Load the generated linearization function:
+        Load the generated linearization function::
+
             num_factor = NumericFactor.from_file_python(
                 my_keys, my_optimized_keys, output_dir, namespace, name
             )
 
         Args:
             keys: The set of keys that are inputs to the linearization function.
-            optimized_keys: A subset of `keys` representing the keys which the given linearization
+            optimized_keys: A subset of ``keys`` representing the keys which the given linearization
                 function computes the jacobian with respect to.
             output_dir: The top-level output directory of the linearization function.
             namespace: The namespace of the linearization function.
@@ -113,13 +115,15 @@ class NumericFactor:
     def cc_factor(self, cc_key_map: T.Mapping[str, cc_sym.Key]) -> cc_sym.Factor:
         """
         Create a C++ Factor from this symbolic Factor, for use with the C++ Optimizer
+
         Note that while this is a C++ Factor object, the linearization function may be a compiled
         C++ function or a Python function passed into C++ through pybind, depending on
         the language the linearization function was generated in.
 
         Args:
             cc_key_map: Mapping from Python keys (strings, like returned by
-                        `Values.keys_recursive()`) to C++ keys
+                        :meth:`Values.keys_recursive <symforce.values.values.Values.keys_recursive>`
+                        ) to C++ keys
         Returns:
             A C++ wrapped Factor object
         """

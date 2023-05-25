@@ -38,9 +38,10 @@ class StorageOpsTestMixin(_Base):
     def test_storage_ops(self) -> None:
         """
         Tests:
-            storage_dim
-            to_storage
-            from_storage
+
+        - storage_dim
+        - to_storage
+        - from_storage
         """
         # Check sane storage dimension
         element = self.element()

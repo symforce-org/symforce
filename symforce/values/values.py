@@ -32,7 +32,8 @@ class Values(T.MutableMapping[str, T.Any]):
     Includes standard operator[] access to keys and values.
 
     Attributes:
-        attr: Access with dot notation, such as `v.attr.states.x0` instead of `v['states.x0']`.
+        attr: Access with dot notation, such as ``v.attr.states.x0`` instead of ``v['states.x0']``.
+        dict: Underlying storage - ordered dictionary
     """
 
     def __init__(self, _dict: T.Optional[T.Dict[str, T.Any]] = None, **kwargs: T.Any) -> None:
@@ -100,7 +101,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Returns a deepcopy of this Values.
 
-        Use copy.deepcopy to call.
+        Use ``copy.deepcopy`` to call.
         """
         return self.from_storage(self.to_storage())
 
@@ -139,8 +140,8 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Builds an index from a list of key/value pairs of objects. This function
         can be called recursively either for the items of a Values object or for the
-        items of a list (using e.g. zip(my_keys, my_list), where my_keys are some
-        arbitrary names for each element in my_list)
+        items of a list (using e.g. ``zip(my_keys, my_list)``, where ``my_keys`` are some
+        arbitrary names for each element in ``my_list``)
         """
         offset = 0
         index_dict = collections.OrderedDict()
@@ -246,8 +247,8 @@ class Values(T.MutableMapping[str, T.Any]):
     def subkeys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of subkeys for every element in this object in insertion order
-        of highest level dot seperated key. Unlike keys_recursive, subkeys_recursive does not
-        return dot-separated keys.
+        of highest level dot seperated key. Unlike :meth:`keys_recursive`, ``subkeys_recursive``
+        does not return dot-separated keys.
         """
         return [k.split(".")[-1] for k in self.keys_recursive()]
 
@@ -331,7 +332,7 @@ class Values(T.MutableMapping[str, T.Any]):
     def from_storage(self, elements: T.List[sf.Scalar]) -> Values:
         """
         Create a Values object with the same structure as self but constructed
-        from a flat list representation. Opposite of `.to_storage()`.
+        from a flat list representation. Opposite of :meth:`to_storage`.
         """
         assert len(elements) == self.storage_dim()
         return Values.from_storage_index(elements, self.index())
@@ -340,7 +341,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         Create a Values object with the same structure as self, where each element
         is a symbolic element with the given name prefix. Kwargs are forwarded
-        to sf.Symbol (for example, sympy assumptions).
+        to :class:`sf.Symbol <symforce.symbolic.Symbol>` (for example, sympy assumptions).
         """
         symbolic_values = Values()
         for k, v in self.items():
@@ -682,9 +683,9 @@ class Values(T.MutableMapping[str, T.Any]):
 
         This means that intermediate Values objects along the path will be created.  Intermediate
         sequences (lists) will be created or appended to only if the index requested is no more than
-        1 past the current length - e.g. `values['foo[0]'] = 5` will create the `foo` list with one
-        entry (5) if the `foo` list did not previously exist, and `values['foo[1]'] = 6` will append
-        6 to the `foo` list if it previosly had length 1.
+        1 past the current length - e.g. ``values['foo[0]'] = 5`` will create the ``foo`` list with
+        one entry (5) if the ``foo`` list did not previously exist, and ``values['foo[1]'] = 6``
+        will append 6 to the ``foo`` list if it previously had length 1.
         """
         values, key_name, indices = self._get_subvalues_key_and_indices(key, create=True)
         if not indices:
@@ -749,7 +750,7 @@ class Values(T.MutableMapping[str, T.Any]):
     def add(self, value: T.Union[str, sf.Symbol], **kwargs: T.Any) -> None:
         """
         Add a symbol into the values using its given name, either a Symbol or a string.
-        Allows avoiding duplication of the sort `v['foo'] = sf.Symbol('foo')`.
+        Allows avoiding duplication of the sort ``v['foo'] = sf.Symbol('foo')``.
 
         Args:
             value (Symbol or str):
@@ -858,7 +859,7 @@ class Values(T.MutableMapping[str, T.Any]):
     def to_dict(self) -> T.Dict[str, T.Any]:
         """
         Converts this Values object and any Values or Dataclass objects contained within it to dict
-        objects. This is different from self.dict because self.dict can have leaves which are
+        objects. This is different from :attr:`dict` because :attr:`dict` can have leaves which are
         Values objects, whereas the dict returned by this function recursively converts all Values
         and Dataclass objects into dicts.
         """

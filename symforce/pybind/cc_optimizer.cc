@@ -40,56 +40,56 @@ void AddOptimizerWrapper(pybind11::module_ module) {
       .def("optimize", py::overload_cast<Valuesd&, int, bool>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations") = -1,
            py::arg("populate_best_linearization") = false, R"(
-              Optimize the given values in-place
+           Optimize the given values in-place
 
-              Args:
-                num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction.
+           Args:
+             num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction.
 
-                populate_best_linearization: If true, the linearization at the best values will be filled out in the stats.
+             populate_best_linearization: If true, the linearization at the best values will be filled out in the stats.
 
-              Returns:
-                  The optimization stats
+           Returns:
+               The optimization stats
            )")
       .def("optimize",
            py::overload_cast<Valuesd&, int, bool, OptimizationStatsd&>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations"), py::arg("populate_best_linearization"),
            py::arg("stats"), R"(
-              Optimize the given values in-place
+           Optimize the given values in-place
 
-              This overload takes the stats as an argument, and stores into there.  This allows users to
-              avoid reallocating memory for any of the entries in the stats, for use cases where that's
-              important.  If passed, stats must not be None.
+           This overload takes the stats as an argument, and stores into there.  This allows users to
+           avoid reallocating memory for any of the entries in the stats, for use cases where that's
+           important.  If passed, stats must not be None.
 
-              Args:
-                num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction
+           Args:
+             num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction
 
-                populate_best_linearization: If true, the linearization at the best values will be filled out in the stats
+             populate_best_linearization: If true, the linearization at the best values will be filled out in the stats
 
-                stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
+             stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
            )")
       .def("optimize", py::overload_cast<Valuesd&, int, OptimizationStatsd&>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("num_iterations"), py::arg("stats"), R"(
-              Optimize the given values in-place
+           Optimize the given values in-place
 
-              This overload takes the stats as an argument, and stores into there.  This allows users to
-              avoid reallocating memory for any of the entries in the stats, for use cases where that's
-              important.  If passed, stats must not be None.
+           This overload takes the stats as an argument, and stores into there.  This allows users to
+           avoid reallocating memory for any of the entries in the stats, for use cases where that's
+           important.  If passed, stats must not be None.
 
-              Args:
-                num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction
+           Args:
+             num_iterations: If < 0 (the default), uses the number of iterations specified by the params at construction
 
-                stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
+             stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
            )")
       .def("optimize", py::overload_cast<Valuesd&, OptimizationStatsd&>(&Optimizerd::Optimize),
            py::arg("values"), py::arg("stats"), R"(
-              Optimize the given values in-place
+           Optimize the given values in-place
 
-              This overload takes the stats as an argument, and stores into there.  This allows users to
-              avoid reallocating memory for any of the entries in the stats, for use cases where that's
-              important.  If passed, stats must not be None.
+           This overload takes the stats as an argument, and stores into there.  This allows users to
+           avoid reallocating memory for any of the entries in the stats, for use cases where that's
+           important.  If passed, stats must not be None.
 
-              Args:
-                stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
+           Args:
+             stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
            )")
       .def("linearize", &Optimizerd::Linearize, py::arg("values"),
            "Linearize the problem around the given values.")
@@ -101,9 +101,9 @@ void AddOptimizerWrapper(pybind11::module_ module) {
             return covariances_by_key;
           },
           py::arg("linearization"), R"(
-            Get covariances for each optimized key at the given linearization
+          Get covariances for each optimized key at the given linearization
 
-            May not be called before either optimize or Linearize has been called.
+          May not be called before either optimize or Linearize has been called.
           )")
       .def(
           "compute_covariances",
@@ -114,12 +114,12 @@ void AddOptimizerWrapper(pybind11::module_ module) {
             return covariances_by_key;
           },
           py::arg("linearization"), py::arg("keys"), R"(
-            Get covariances for the given subset of keys at the given linearization.  This version is
-            potentially much more efficient than computing the covariances for all keys in the problem.
+          Get covariances for the given subset of keys at the given linearization.  This version is
+          potentially much more efficient than computing the covariances for all keys in the problem.
 
-            Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
-            for the full problem, and in the same order.  It uses the Schur complement trick, so will be
-            most efficient if the hessian is of the following form, with C block diagonal::
+          Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
+          for the full problem, and in the same order.  It uses the Schur complement trick, so will be
+          most efficient if the hessian is of the following form, with C block diagonal::
 
               A = ( B    E )
                   ( E^T  C )

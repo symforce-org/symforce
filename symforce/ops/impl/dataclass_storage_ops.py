@@ -16,19 +16,18 @@ class DataclassStorageOps:
 
     Supports nested types.  If any of the fields are of unknown size (e.g. sequences), the relevant
     functions expect to be passed an instance instead of the type. However, the length of sequences
-    can be specified using field metadata, allowing for StorageOps functions such as "storage_dim",
-    "from_storage", and "symbolic" to be passed the dataclass type rather than an instance. Adding
-    a sequence of length 10, for example, would look like:
+    can be specified using field metadata, allowing for StorageOps functions such as
+    ``storage_dim``, ``from_storage``, and ``symbolic`` to be passed the dataclass type rather than
+    an instance. Adding a sequence of length 10, for example, would look like::
 
-    @dataclass
-    class ExampleDataclass:
-        example_list: T.Sequence[ExampleType] = field(metadata={"length": 10})
-
-
-    NOTE(aaron): We use T.get_type_hints in multiple places in here to the field types, does this
-    always work?  A bit worried that this never uses field.type, e.g. if it isn't a simple
-    annotation
+        @dataclass
+        class ExampleDataclass:
+            example_list: T.Sequence[ExampleType] = field(metadata={"length": 10})
     """
+
+    # NOTE(aaron): We use T.get_type_hints in multiple places in here to the field types, does this
+    # always work?  A bit worried that this never uses field.type, e.g. if it isn't a simple
+    # annotation
 
     @staticmethod
     def storage_dim(a: T.DataclassOrType) -> int:

@@ -28,11 +28,12 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
     def test_lie_group_ops(self) -> None:
         """
         Tests:
-            tangent_dim
-            from_tangent
-            to_tangent
-            retract
-            local_coordinates
+
+        - tangent_dim
+        - from_tangent
+        - to_tangent
+        - retract
+        - local_coordinates
         """
         # Create an identity and non-identity element
         element = self.element()
@@ -88,8 +89,9 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
     def test_manifold_ops_match_group_ops_definitions(self) -> None:
         """
         Tests:
-            retract(a, vec) = compose(a, from_tangent(vec))
-            local_coordinates(a, b) = to_tangent(between(a, b))
+
+        - retract(a, vec) = compose(a, from_tangent(vec))
+        - local_coordinates(a, b) = to_tangent(between(a, b))
         """
         if not self.MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS:
             raise unittest.SkipTest(

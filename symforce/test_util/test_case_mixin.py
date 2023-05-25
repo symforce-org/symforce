@@ -120,7 +120,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         a assert_array_not_equal function.
 
         Note that assertNotEqual does not work like assertEqual in unittest. Rather than
-        allowing you to register a custom equality evaluator (e.g. with `addTypeEqualityFunc()`),
+        allowing you to register a custom equality evaluator (e.g. with ``addTypeEqualityFunc()``),
         assertNotEqual assumes the "!=" can be used with the arguments regardless of type.
         """
         if isinstance(first, np.ndarray):
@@ -172,7 +172,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
     def compare_or_update(self, path: T.Openable, data: str) -> None:
         """
         Compare the given data to what is saved in path, OR update the saved data if
-        the --update flag was passed to the test.
+        the ``--update`` flag was passed to the test.
         """
         path = Path(path)
 
@@ -215,7 +215,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
     def compare_or_update_directory(self, actual_dir: T.Openable, expected_dir: T.Openable) -> None:
         """
         Check the contents of actual_dir match expected_dir, OR update the expected directory
-        if the --update flag was passed to the test.
+        if the ``--update`` flag was passed to the test.
         """
         actual_dir = Path(actual_dir)
         expected_dir = Path(expected_dir)

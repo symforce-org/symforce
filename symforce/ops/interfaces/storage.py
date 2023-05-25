@@ -11,15 +11,15 @@ from symforce import typing as T
 class Storage:
     """
     Interface for objects that implement the storage concept. Because this
-    class is registered using ClassStorageOps (see bottom of this file), any
-    object that inherits from Storage and that implements the functions defined
-    in this class can be used with the StorageOps concept.
+    class is registered using :class:`symforce.ops.impl.class_storage_ops.ClassStorageOps` (see
+    bottom of this file), any object that inherits from ``Storage`` and that implements the
+    functions defined in this class can be used with the StorageOps concept.
 
-    I.e. calling
+    E.g. calling::
+
         ops.StorageOps.storage_dim(my_obj)
 
-    will return the same result as my_obj.storage_dim() if my_obj inherits from
-    this class.
+    will return the same result as ``my_obj.storage_dim()`` if ``my_obj`` inherits from this class.
     """
 
     # Type that represents this or any subclasses

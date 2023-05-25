@@ -69,9 +69,9 @@ def symforce_root() -> Path:
 def symforce_data_root() -> Path:
     """
     The root directory of the symforce project, for use accessing data that might need to be updated
-    (such as generated files).  Most of the time this is the same as `symforce_root()`, but when
-    the `--update` flag is passed to a test, this is guaranteed to point to the _resolved_ version,
-    i.e. the actual symforce location on disk regardless of whether this path is a symlink.
+    (such as generated files).  Most of the time this is the same as :func:`symforce_root`, but when
+    the ``--update`` flag is passed to a test, this is guaranteed to point to the *resolved*
+    version, i.e. the actual symforce location on disk regardless of whether this path is a symlink.
     """
     from symforce.test_util.test_case_mixin import SymforceTestCaseMixin
 

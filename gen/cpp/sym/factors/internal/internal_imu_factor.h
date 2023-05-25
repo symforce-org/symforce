@@ -19,7 +19,7 @@ namespace sym {
  * from the preintegrated IMU measurements between those time steps.
  *
  * NOTE: If you are looking for a residual for an IMU factor, do not use this. Instead use
- * the one found in symforce/slam/imu_preintegration/imu_factor.h.
+ * the one found in ``symforce/slam/imu_preintegration/imu_factor.h``.
  *
  * Time step i is the time of the first IMU measurement of the interval.
  * Time step j is the time after the last IMU measurement of the interval.
@@ -36,9 +36,10 @@ namespace sym {
  *     DR (sf.Rot3): Preintegrated estimate for pose_i.R.inverse() * pose_j.R
  *     Dv (sf.V3): Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
  *     Dp (sf.V3): Preintegrated estimate for position change (before velocity and gravity
- *         corrections) in the body frame at timestep i:
- *         R_i^T (p_j - p_i - v_i Delta t - 1/2 g Delta t^2),
- *         where R_i = pose_i.R, p_i = pose_i.t, p_j = pose_j.t, and v_i = vel_i
+ *         corrections) in the body frame at timestep i::
+ *
+ *             R_i^T (p_j - p_i - v_i Delta t - 1/2 g Delta t^2),
+ *             where R_i = pose_i.R, p_i = pose_i.t, p_j = pose_j.t, and v_i = vel_i
  *     sqrt_info (sf.M99): sqrt info matrix of DR('s tangent space), Dv, Dp
  *     DR_D_gyro_bias (sf.M33): Derivative of DR w.r.t. gyro_bias evaluated at gyro_bias_hat
  *     Dv_D_accel_bias (sf.M33): Derivative of Dv w.r.t. accel_bias evaluated at accel_bias_hat

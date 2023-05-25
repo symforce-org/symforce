@@ -34,9 +34,9 @@ class Optimizer:
     A nonlinear least-squares optimizer
 
     Typical usage is to construct an Optimizer from a set of factors and keys to optimize, and then
-    call `optimize` repeatedly with a `Values`.
+    call :meth:`optimize` repeatedly with a :class:`Values <symforce.values.values.Values>`.
 
-    Example creation with a single `Factor`:
+    Example creation with a single :class:`Factor <.factor.Factor>`::
 
         factor = Factor(
             [my_key_0, my_key_1, my_key_2], my_residual_function
@@ -46,43 +46,47 @@ class Optimizer:
             optimized_keys=[my_key_0, my_key_1],
         )
 
-    And usage:
+    And usage::
 
         initial_guess = Values(...)
         result = optimizer.optimize(initial_guess)
         print(result.optimized_values)
 
-    Example creation with an `OptimizationProblem` using `make_numeric_factors()`. The linearization
-    functions are generated in `make_numeric_factors()` and are linearized with respect to
-    `problem.optimized_keys()`.
+    Example creation with an :class:`.optimization_problem.OptimizationProblem` using
+    :meth:`make_numeric_factors() <.optimization_problem.OptimizationProblem.make_numeric_factors>`.
+    The linearization functions are generated in ``make_numeric_factors()`` and are linearized with
+    respect to
+    :meth:`problem.optimized_keys() <.optimization_problem.OptimizationProblem.optimized_keys>`::
 
         problem = OptimizationProblem(subproblems=[...], residual_blocks=...)
         factors = problem.make_numeric_factors("my_problem")
         optimizer = Optimizer(factors)
 
-    Example creation with an `OptimizationProblem` using `make_symbolic_factors()`. The symbolic
-    factors are converted into numeric factors when the optimizer is created, and are linearized
-    with respect to the "optimized keys" passed to the optimizer. The linearization functions
-    are generated when converting to numeric factors when the optimizer is created.
+    Example creation with an :class:`.optimization_problem.OptimizationProblem` using
+    :meth:`make_symbolic_factors() <.optimization_problem.OptimizationProblem.make_symbolic_factors>`.
+    The symbolic factors are converted into numeric factors when the optimizer is created, and are
+    linearized with respect to the "optimized keys" passed to the optimizer. The linearization
+    functions are generated when converting to numeric factors when the optimizer is created::
 
         problem = OptimizationProblem(subproblems=[...], residual_blocks=...)
         factors = problem.make_symbolic_factors("my_problem")
         optimizer = Optimizer(factors, problem.optimized_keys())
 
-    Wraps the C++ `sym::Optimizer` class in `opt/optimizer.h`, so the API is mostly the same and
+    Wraps the C++ ``sym::Optimizer`` class in ``opt/optimizer.h``, so the API is mostly the same and
     optimization results will be identical.
 
     Args:
         factors: A sequence of either Factor or NumericFactor objects representing the
             residuals in the problem. If (symbolic) Factors are passed, they are convered to
             NumericFactors by generating linearization functions of the residual with respect to the
-            keys in `optimized_keys`.
+            keys in ``optimized_keys``.
         optimized_keys: A set of the keys to be optimized. Only required if symbolic factors are
             passed to the optimizer.
         params: Params for the optimizer
         debug_stats: Whether the optimizer should record debugging stats such as the optimized
             values, residual, jacobian, etc. computed at each iteration of the optimization.
-        include_jacobians: Whether the optimizer should compute jacobians (required for linear error)
+        include_jacobians: Whether the optimizer should compute jacobians (required for linear
+            error)
     """
 
     @dataclass
@@ -90,8 +94,8 @@ class Optimizer:
         """
         Parameters for the Python Optimizer
 
-        Mirrors the optimizer_params_t LCM type, see documentation there for information on each
-        parameter
+        Mirrors the ``optimizer_params_t`` LCM type, see documentation there for information on each
+        parameter.
 
         Note: For the Python optimizer, verbose defaults to True
         """
@@ -118,40 +122,41 @@ class Optimizer:
         """
         The result of an optimization, with additional stats and debug information
 
-        initial_values:
-            The initial guess used for this optimization
+        Attributes:
+            initial_values:
+                The initial guess used for this optimization
 
-        optimized_values:
-            The best Values achieved during the optimization (Values with the smallest error)
+            optimized_values:
+                The best Values achieved during the optimization (Values with the smallest error)
 
-        iterations:
-            Per-iteration stats, if requested, like the error per iteration.  If debug stats are
-            turned on, also the Values and linearization per iteration.
+            iterations:
+                Per-iteration stats, if requested, like the error per iteration.  If debug stats are
+                turned on, also the Values and linearization per iteration.
 
-        best_index:
-            The index into iterations for the iteration that produced the smallest error.  I.e.
-            `result.iterations[best_index].values == optimized_values`.  This is not guaranteed
-            to be the last iteration, if the optimizer tried additional steps which did not reduce
-            the error
+            best_index:
+                The index into iterations for the iteration that produced the smallest error.  I.e.
+                ``result.iterations[best_index].values == optimized_values``.  This is not
+                guaranteed to be the last iteration, if the optimizer tried additional steps which
+                did not reduce the error
 
-        status:
-            What was the result of the optimization? (did it converge, fail, etc.)
+            status:
+                What was the result of the optimization? (did it converge, fail, etc.)
 
-        failure_reason:
-            If status == FAILED, why?
+            failure_reason:
+                If status == FAILED, why?
 
-        best_linearization:
-            The linearization at best_index (at optimized_values), filled out if
-            populate_best_linearization=True
+            best_linearization:
+                The linearization at best_index (at optimized_values), filled out if
+                populate_best_linearization=True
 
-        jacobian_sparsity:
-            The sparsity pattern of the jacobian, filled out if debug_stats=True
+            jacobian_sparsity:
+                The sparsity pattern of the jacobian, filled out if debug_stats=True
 
-        linear_solver_ordering:
-            The ordering used for the linear solver, filled out if debug_stats=True
+            linear_solver_ordering:
+                The ordering used for the linear solver, filled out if debug_stats=True
 
-        cholesky_factor_sparsity:
-            The sparsity pattern of the cholesky factor L, filled out if debug_stats=True
+            cholesky_factor_sparsity:
+                The sparsity pattern of the cholesky factor L, filled out if debug_stats=True
         """
 
         initial_values: Values
@@ -328,7 +333,7 @@ class Optimizer:
 
         Args:
             initial_guess: A Values containing the initial guess, should contain at least all the
-                keys required by the `factors` passed to the constructor
+                keys required by the ``factors`` passed to the constructor
             num_iterations: If < 0 (the default), uses the number of iterations specified by the
                 params at construction
             populate_best_linearization: If true, the linearization at the best values will be
@@ -336,7 +341,7 @@ class Optimizer:
 
         Returns:
             The optimization results, with additional stats and debug information.  See the
-            `Optimizer.Result` documentation for more information
+            :class:`Optimizer.Result` documentation for more information
         """
         cc_values = self._cc_values(initial_guess)
 
@@ -364,8 +369,8 @@ class Optimizer:
 
     def load_iteration_values(self, values_msg: values_t) -> Values:
         """
-        Load a values_t message into a Python Values by first creating a C++ Values, then
-        converting back to the python key names.
+        Load a ``values_t`` message into a Python :class:`Values <symforce.values.values.Values>`
+        by first creating a C++ Values, then converting back to the python key names.
         """
         cc_values = cc_sym.Values(values_msg)
 

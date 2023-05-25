@@ -12,11 +12,12 @@ This combines functions available from various sources:
 - Additional functions defined here to override those provided by SymPy or SymEngine, or provide a
   uniform interface between the two.  See https://symforce.org/api/symforce.symbolic.html for
   information on these
-- Logic functions defined in `symforce.logic`, see the documentation for that module
-- Additional geometry and camera types provided by SymForce from the `geo` and `cam` modules
+- Logic functions defined in :mod:`symforce.logic`, see the documentation for that module
+- Additional geometry and camera types provided by SymForce from the :mod:`symforce.geo` and
+  :mod:`symforce.cam` modules
 
 It typically isn't necessary to actually access the symbolic API being used internally, but that is
-available as well as `symforce.symbolic.sympy`.
+available as well as ``symforce.symbolic.sympy``.
 """
 
 # pylint: disable=wildcard-import

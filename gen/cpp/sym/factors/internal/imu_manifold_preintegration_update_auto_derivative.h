@@ -21,8 +21,8 @@ namespace sym {
  * gyroscope and accelerometer measurements. Returns the updated preintegrated measurements.
  *
  * NOTE: If you are interested in this function, you should likely be using the
- * IntegrateMeasurement method of the PreintegratedImuMeasurements class located in
- * symforce/slam/imu_preintegration/preintegrated_imu_measurements.h.
+ * ``IntegrateMeasurement`` method of the ``PreintegratedImuMeasurements`` class located in
+ * ``symforce/slam/imu_preintegration/preintegrated_imu_measurements.h``.
  *
  * When integrating the first measurement, DR should be the identity, Dv, Dp, covariance, and the
  * derivatives w.r.t. to bias should all be 0.

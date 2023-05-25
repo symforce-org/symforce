@@ -17,7 +17,9 @@ class MinMaxBarrierObjective(objective.TimestepObjective):
     @dataclass
     class Params:
         """
-        Fields (same as `barrier_functions.min_max_power_barrier()`):
+        Fields are the same as :func:`symforce.opt.barrier_functions.min_max_power_barrier`
+
+        Attributes:
             x_nominal_lower: x-value of the point at which the error is equal to error_nominal on
                 the left-hand side of the barrier function.
             x_nominal_upper: x-value of the point at which the error is equal to error_nominal on
@@ -36,7 +38,7 @@ class MinMaxBarrierObjective(objective.TimestepObjective):
     @dataclass
     class ExtraValues:
         """
-        Fields:
+        Attributes:
             unwhitened_residual: The value of each element of the vector after applying the barrier
                 function but before applying the cost scaling.
         """
@@ -52,8 +54,8 @@ class MinMaxBarrierObjective(objective.TimestepObjective):
     ) -> ResidualBlock:
         """
         Returns the residual block for the given timestep, where the residual is computed by
-        applying a barrier function to each element of `vector`, and then optionally scaling the
-        corresponding cost in the overall optimization problem by `cost_scaling`.
+        applying a barrier function to each element of ``vector``, and then optionally scaling the
+        corresponding cost in the overall optimization problem by ``cost_scaling``.
 
         Args:
             vector: Each element of the given vector has a barrier function and scaling applied to

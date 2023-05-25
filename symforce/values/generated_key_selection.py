@@ -10,21 +10,17 @@ Works best if the symbol names are snake case, although supports non-snake-case 
 aren't variable names.  General strategy is to try the following for each name, until we find a key
 that is available to pick:
 
-    1) The first letter of each word (words defined by separating on underscores)
-    2) All the other characters in the name
+1) The first letter of each word (words defined by separating on underscores)
+2) All the other characters in the name
 
 For each character we try, we'll prefer the lowercase version, and then the uppercase version
 if lowercase is taken.  If the name has a number in it, we'll first try using that as the
 subscript, or won't use a subscript if there's already a key with the same letter and
-subscript.  For example:
-
-.. code-block:: python
+subscript.  For example::
 
     pick_generated_keys_for_variable_names(['foo', 'foo2', 'foo_bar', 'foo_bar2', 'foo_baz'])
 
-returns
-
-.. code-block:: python
+returns::
 
     {
         'foo': ('f', None),
@@ -34,7 +30,7 @@ returns
         'foo_baz': ('b', None)
     }
 
-For a more thorough example, see symforce_values_generated_key_selection_test.py
+For a more thorough example, see ``symforce_values_generated_key_selection_test.py``.
 """
 
 import re
@@ -55,6 +51,7 @@ class GeneratedKey(T.NamedTuple):
 def _choices_for_name(name: str) -> T.Tuple[T.List[str], T.Optional[int]]:
     """
     For a symbol name (similar to a Python variable name), return
+
     1) A list of letters to consider, in order of preference
     2) A subscript to use (the first integer in name if it exists)
     """

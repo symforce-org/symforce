@@ -95,7 +95,7 @@ class LieGroupOps(GroupOps):
         Applies a tangent space perturbation vec to the group element a. Often used in optimization
         to update nonlinear values from an update step in the tangent space.
 
-        Implementation is simply `compose(a, from_tangent(vec))`.
+        Implementation is simply ``compose(a, from_tangent(vec))``.
 
         Args:
             a:
@@ -115,7 +115,7 @@ class LieGroupOps(GroupOps):
         Computes a tangent space perturbation around a to produce b. Often used in optimization
         to minimize the distance between two group elements.
 
-        Implementation is simply `to_tangent(between(a, b))`.
+        Implementation is simply ``to_tangent(between(a, b))``.
 
         Args:
             a:

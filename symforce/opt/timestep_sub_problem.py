@@ -15,8 +15,8 @@ class TimestepSubProblem(SubProblem):
     """
     A SubProblem intended for use when the Inputs block contains sequences tied to timesteps.
 
-    Provides a `self.timesteps` variable for the number of timesteps, and a `build_inputs` function
-    which works for Inputs blocks containing sequences as long as the number of timesteps.
+    Provides a :attr:`timesteps` variable for the number of timesteps, and a :meth:`build_inputs`
+    function which works for Inputs blocks containing sequences as long as the number of timesteps.
 
     Args:
         timesteps: The number of timesteps
@@ -33,10 +33,10 @@ class TimestepSubProblem(SubProblem):
         """
         Build the inputs block of the subproblem, and store in self.inputs.
 
-        Each field in the subproblem Inputs that's meant to be a sequence of length `self.timesteps`
-        should be marked with `"timestepped": True` in the field metadata. Other sequences of known
-        length should be marked with the `"length": <sequence length>` in the field metadata, where
-        `<sequence length>` is the length of the sequence. For example:
+        Each field in the subproblem Inputs that's meant to be a sequence of length
+        :attr:`timesteps` should be marked with ``"timestepped": True`` in the field metadata. Other
+        sequences of known length should be marked with the ``"length": <sequence length>`` in the
+        field metadata, where ``<sequence length>`` is the length of the sequence. For example::
 
             @dataclass
             class Inputs:

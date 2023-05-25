@@ -136,60 +136,62 @@ void AddFactorWrapper(pybind11::module_ module) {
       // TODO(brad): Add wrapper of the constructor from SparseHessianFunc
       .def(py::init(&MakeHessianFactor<sym::Key>), py::arg("hessian_func"), py::arg("keys"),
            py::arg("sparse") = false, R"(
-              Create directly from a hessian functor. This is the lowest-level constructor.
+           Create directly from a hessian functor. This is the lowest-level constructor.
 
-              Args:
-                keys: The set of input arguments, in order, accepted by func.
-                sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+           Args:
+             keys: The set of input arguments, in order, accepted by func.
+             sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
 
-              Precondition:
-                The jacobian and hessian returned by hessian_func have type scipy.sparse.csc_matrix if and only if sparse = True.
+           Precondition:
+             The jacobian and hessian returned by hessian_func have type scipy.sparse.csc_matrix if and only if sparse = True.
            )")
       .def(py::init(&MakeHessianFactor<sym::Key, sym::Key>), py::arg("hessian_func"),
            py::arg("keys_to_func"), py::arg("keys_to_optimize"), py::arg("sparse") = false,
            R"(
-              Create directly from a hessian functor. This is the lowest-level constructor.
+           Create directly from a hessian functor. This is the lowest-level constructor.
 
-              Args:
-                keys_to_func: The set of input arguments, in order, accepted by func.
-                keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
-                sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+           Args:
+             keys_to_func: The set of input arguments, in order, accepted by func.
+             keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+             sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
 
-              Precondition:
-                The jacobian and hessian returned by hessian_func have type scipy.sparse.csc_matrix if and only if sparse = True.
+           Precondition:
+             The jacobian and hessian returned by hessian_func have type scipy.sparse.csc_matrix if and only if sparse = True.
            )")
       .def("is_sparse", &sym::Factord::IsSparse,
            "Does this factor use a sparse jacobian/hessian matrix?")
       .def_static("jacobian", &MakeJacobianFactor<sym::Key>, py::arg("jacobian_func"),
                   py::arg("keys"), py::arg("sparse") = false, R"(
-                    Create from a function that computes the jacobian. The hessian will be computed using the
-                    Gauss Newton approximation:
-                        H   = J.T * J
-                        rhs = J.T * b
+           Create from a function that computes the jacobian. The hessian will be computed using the
+           Gauss Newton approximation::
 
-                    Args:
-                      keys: The set of input arguments, in order, accepted by func.
-                      sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+               H   = J.T * J
+               rhs = J.T * b
 
-                    Precondition:
-                      The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
-                  )")
+           Args:
+             keys: The set of input arguments, in order, accepted by func.
+             sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+           Precondition:
+             The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
+           )")
       .def_static("jacobian", &MakeJacobianFactor<sym::Key, sym::Key>, py::arg("jacobian_func"),
                   py::arg("keys_to_func"), py::arg("keys_to_optimize"), py::arg("sparse") = false,
                   R"(
-            Create from a function that computes the jacobian. The hessian will be computed using the
-            Gauss Newton approximation:
-                H   = J.T * J
-                rhs = J.T * b
+           Create from a function that computes the jacobian. The hessian will be computed using the
+           Gauss Newton approximation::
 
-            Args:
-              keys_to_func: The set of input arguments, in order, accepted by func.
-              keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
-              sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+               H   = J.T * J
+               rhs = J.T * b
 
-              Precondition:
-                The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
-          )")
+           Args:
+             keys_to_func: The set of input arguments, in order, accepted by func.
+             keys_to_optimize: The set of input arguments that correspond to the derivative in func. Must be a subset of keys_to_func.
+             sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+             Precondition:
+               The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
+           )")
       .def(
           "linearize",
           [](const sym::Factord& factor, const sym::Valuesd& values) {

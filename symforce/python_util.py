@@ -113,7 +113,7 @@ def camelcase_to_screaming_snakecase(s: str) -> str:
 
 def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:
     """
-    Call str.replace(old, new) for every pair (old, new) in replacements
+    Call ``str.replace(old, new)`` for every pair (old, new) in replacements
     """
     for old, new in replacements.items():
         s = s.replace(old, new)
@@ -122,11 +122,12 @@ def str_replace_all(s: str, replacements: T.Dict[str, str]) -> str:
 
 def str_removeprefix(s: str, prefix: str) -> str:
     """
-    Backport of str.removeprefix, from Python3.9
+    Backport of ``str.removeprefix``, from Python3.9
+
     https://docs.python.org/3/library/stdtypes.html#str.removeprefix
 
     If the string starts with the prefix string and that prefix is not empty, return
-    string[len(prefix):]. Otherwise, return a copy of the original string.
+    ``string[len(prefix):]``. Otherwise, return a copy of the original string.
     """
     if s.startswith(prefix):
         return s[len(prefix) :]
@@ -136,11 +137,12 @@ def str_removeprefix(s: str, prefix: str) -> str:
 
 def str_removesuffix(s: str, suffix: str) -> str:
     """
-    Backport of str.removesuffix, from Python3.9
+    Backport of ``str.removesuffix``, from Python3.9
+
     https://docs.python.org/3/library/stdtypes.html#str.removesuffix
 
     If the string ends with the suffix string and that suffix is not empty, return
-    string[:-len(suffix)]. Otherwise, return a copy of the original string.
+    ``string[:-len(suffix)]``. Otherwise, return a copy of the original string.
     """
     if s.endswith(suffix):
         return s[: -len(suffix)]
@@ -163,7 +165,8 @@ def files_in_dir(dirname: T.Openable, relative: bool = False) -> T.Iterator[str]
 
 def id_generator(size: int = 6, chars: str = string.ascii_uppercase + string.digits) -> str:
     """
-    Generate a random string within a character set - for example "6U1S75".
+    Generate a random string within a character set - for example ``"6U1S75"``.
+
     This is not cryptographically secure.
     """
     return "".join(random.choice(chars) for _ in range(size))
@@ -172,10 +175,15 @@ def id_generator(size: int = 6, chars: str = string.ascii_uppercase + string.dig
 def getattr_recursive(obj: object, attrs: T.Sequence[str]) -> T.Any:
     """
     Recursively calls getattr on obj with the attributes in attrs and returns the output.
+
     If attr is empty, returns obj.
 
-    Example:
-        get_attr_recursive(obj, ["A", "B", "C"]) returns the same thing as
+    Example::
+
+        get_attr_recursive(obj, ["A", "B", "C"])
+
+    returns the same thing as:
+
         obj.A.B.C
     """
     return getattr_recursive(getattr(obj, attrs[0]), attrs[1:]) if len(attrs) else obj
@@ -191,17 +199,17 @@ class InvalidPythonIdentifierError(InvalidKeyError):
 
 def base_and_indices(indexed_array: str) -> T.Tuple[str, T.List[int]]:
     r"""
-    Decomposes indexed_array into (base, indices) in the sense that,
-    "arr[1][2]" -> ("arr", [1, 2]). base is the initial substring of indexed_array
-    that does not contain either "[" or "]"; indices is is the list of integer indices
-    indexing into the array denoted by base.
+    Decomposes indexed_array into ``(base, indices)`` in the sense that,
+    ``"arr[1][2]" -> ("arr", [1, 2])``. ``base`` is the initial substring of ``indexed_array``
+    that does not contain either ``[`` or ``]``; ``indices`` is the list of integer indices
+    indexing into the array denoted by ``base``.
 
-    indices will be the empty list if indexed_array has no indices.
+    ``indices`` will be the empty list if ``indexed_array`` has no indices.
 
     Raises:
-        InvalidKeyError if indexed_array is not matched by the regular expression
-        r"[\[\]]*(\[[0-9]+\])*", i.e., is not a string with no square brackets,
-        followed by 0 or more integers wrapped in square brackets.
+        InvalidKeyError: if ``indexed_array`` is not matched by the regular expression
+            ``r"[\[\]]*(\[[0-9]+\])*"``, i.e., is not a string with no square brackets,
+            followed by 0 or more integers wrapped in square brackets.
 
     Example:
         >>> assert ("arr", []) == base_and_indices("arr")
@@ -227,7 +235,7 @@ def plural(singular: str, count: int, plural: str = None) -> str:
     """
     Return the singular or plural form of a word based on count
 
-    Adds an s to singular by default for the plural form, or uses `plural` if provided
+    Adds an s to singular by default for the plural form, or uses ``plural`` if provided
     """
     if count == 1:
         return singular
@@ -237,7 +245,7 @@ def plural(singular: str, count: int, plural: str = None) -> str:
 
 def get_func_from_maybe_bound_function(func: T.Callable) -> T.Callable:
     """
-    Get the original function, from a function possibly bound by functools.partial
+    Get the original function, from a function possibly bound by ``functools.partial``
     """
     if isinstance(func, functools.partial):
         return func.func
@@ -247,7 +255,7 @@ def get_func_from_maybe_bound_function(func: T.Callable) -> T.Callable:
 
 def get_class_for_method(func: T.Callable) -> T.Type:
     """
-    Get the class from an instance method `func`
+    Get the class from an instance method ``func``
 
     See https://stackoverflow.com/a/25959545
     """

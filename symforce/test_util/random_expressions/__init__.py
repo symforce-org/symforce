@@ -5,4 +5,4 @@
 
 from pathlib import Path as _Path
 
-__doc__ = (_Path(__file__).parent / "README").read_text()
+__doc__ = (_Path(__file__).parent / "README.rst").read_text()

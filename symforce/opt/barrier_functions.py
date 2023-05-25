@@ -17,33 +17,33 @@ def max_power_barrier(
     A one-sided, non-symmetric scalar barrier function. The barrier passes through the points
     (x_nominal, error_nominal) and (x_nominal - dist_zero_to_nominal, 0) with a curve of the
     form x^power. The parameterization of the barrier by these variables is convenient because it
-    allows setting a constant penalty for a nominal point, then adjusting the `width` and
-    `steepness` of the curve independently. The barrier with power = 1 will look like:
+    allows setting a constant penalty for a nominal point, then adjusting the ``width`` and
+    ``steepness`` of the curve independently. The barrier with power = 1 will look like::
 
-                                 |              **
-                                 |             ** - (x_nominal, error_nominal) is a fixed point
-                                 |            **
-                                 |           **   <- x^power is the shape of the curve
-                                 |          **
-                                 |         **
-             ----------*********************---------
-                                 |         |<-->| dist_zero_to_nominal is the distance from
-                                                  x_nominal to the point at which the error is zero
+                            |              **
+                            |             ** - (x_nominal, error_nominal) is a fixed point
+                            |            **
+                            |           **   <- x^power is the shape of the curve
+                            |          **
+                            |         **
+        ----------*********************---------
+                            |         |<-->| dist_zero_to_nominal is the distance from
+                            |                x_nominal to the point at which the error is zero
 
     Note that when applying the barrier function to a residual used in a least-squares problem, a
     power = 1 will lead to a quadratic cost in the optimization problem because the cost
     equals 1/2 * residual^2. For example:
 
-    Cost (1/2 * residual^2) when the residual is a max_power_barrier with power = 1 (shown above):
+    Cost (1/2 * residual^2) when the residual is a max_power_barrier with power = 1 (shown above)::
 
-                                |                *
-                                |               ** - (x_nominal, error_nominal^2)
-                                |               *
-                                |              ** <- x^(2*power) is the shape of the cost curve
-                                |            ***
-                                |          ***
-             ---------*********************---------
-                                |         |<-->| dist_zero_to_nominal
+                            |                *
+                            |               ** - (x_nominal, error_nominal^2)
+                            |               *
+                            |              ** <- x^(2*power) is the shape of the cost curve
+                            |            ***
+                            |          ***
+        ----------*********************---------
+                            |         |<-->| dist_zero_to_nominal
 
     Args:
         x: The point at which we want to evaluate the barrier function.
@@ -61,9 +61,9 @@ def max_linear_barrier(
     x: sf.Scalar, x_nominal: sf.Scalar, error_nominal: sf.Scalar, dist_zero_to_nominal: sf.Scalar
 ) -> sf.Scalar:
     """
-    Applies "max_power_barrier" with power = 1.  When applied to a residual of a least-squares
+    Applies :func:`max_power_barrier` with power = 1.  When applied to a residual of a least-squares
     problem, this produces a quadratic cost in the optimization problem because
-    cost = 1/2 * residual^2. See "max_power_barrier" for more details.
+    cost = 1/2 * residual^2. See :func:`max_power_barrier` for more details.
     """
     return max_power_barrier(
         x=x,
@@ -84,16 +84,16 @@ def min_power_barrier(
     """
     A one-sided, non-symmetric scalar barrier function. The barrier passes through the points
     (x_nominal, error_nominal) and (x_nominal + dist_zero_to_nominal, 0) with a curve of the
-    form x^power. The barrier with power = 1 will look like:
+    form x^power. The barrier with power = 1 will look like::
 
-                                        **               |
-            (x_nominal, error_nominal) - **              |
-                                          **             |
-    x^power is the shape of the curve ->   **            |
-                                            **           |
-                                             **          |
-                                     ---------**********************---------
-                    dist_zero_to_nominal  |<->|          |
+                                            **               |
+                (x_nominal, error_nominal) - **              |
+                                              **             |
+        x^power is the shape of the curve ->   **            |
+                                                **           |
+                                                 **          |
+        ------------------------------------------**********************---------
+                        dist_zero_to_nominal  |<->|          |
 
     Args:
         x: The point at which we want to evaluate the barrier function.
@@ -119,9 +119,9 @@ def min_linear_barrier(
     x: sf.Scalar, x_nominal: sf.Scalar, error_nominal: sf.Scalar, dist_zero_to_nominal: sf.Scalar
 ) -> sf.Scalar:
     """
-    Applies "min_power_barrier" with power = 1.  When applied to a residual of a least-squares
+    Applies :func:`min_power_barrier` with power = 1.  When applied to a residual of a least-squares
     problem, this produces a quadratic cost in the optimization problem because
-    cost = 1/2 * residual^2. See "min_power_barrier" for more details.
+    cost = 1/2 * residual^2. See :func:`min_power_barrier` for more details.
     """
     return min_power_barrier(
         x=x,
@@ -143,32 +143,32 @@ def symmetric_power_barrier(
     A symmetric barrier centered around x = 0, meaning the error at -x is equal to the error at x.
     The barrier passes through the points (x_nominal, error_nominal) and
     (x_nominal - dist_zero_to_nominal, 0) with a curve of the form x^power. For example, the
-    barrier with power = 1 will look like:
+    barrier with power = 1 will look like::
 
-                 **              |              **
-                  **             |             ** - (x_nominal, error_nominal) is a fixed point
-                   **            |            **
-                    **           |           **   <- x^power is the shape of the curve
-                     **          |          **
-                      **         |         **
-             ----------*********************---------
-                                 |         |<-->| dist_zero_to_nominal is the distance from
-                                                  x_nominal to the point at which the error is zero
+            **              |              **
+             **             |             ** - (x_nominal, error_nominal) is a fixed point
+              **            |            **
+               **           |           **   <- x^power is the shape of the curve
+                **          |          **
+                 **         |         **
+        ----------*********************---------
+                            |         |<-->| dist_zero_to_nominal is the distance from
+                            |                x_nominal to the point at which the error is zero
 
     Note that when applying the barrier function to a residual used in a least-squares problem, a
     power = 1 will lead to a quadratic cost in the optimization problem because the cost
     equals 1/2 * residual^2. For example:
 
-    Cost (1/2 * residual^2) when the residual is a symmetric barrier with power = 1 (shown above):
+    Cost (1/2 * residual^2) when the residual is a symmetric barrier with power = 1 (shown above)::
 
-               *                |                *
-               **               |               ** - (x_nominal, 1/2 * error_nominal^2)
-                *               |               *
-                **              |              ** <- x^(2*power) is the shape of the cost curve
-                 ***            |            ***
-                   ***          |          ***
-             ---------*********************---------
-                                |         |<-->| dist_zero_to_nominal
+           *                |                *
+           **               |               ** - (x_nominal, 1/2 * error_nominal^2)
+            *               |               *
+            **              |              ** <- x^(2*power) is the shape of the cost curve
+             ***            |            ***
+               ***          |          ***
+        ----------*********************---------
+                            |         |<-->| dist_zero_to_nominal
 
     Args:
         x: The point at which we want to evaluate the barrier function.
@@ -197,17 +197,17 @@ def min_max_power_barrier(
 ) -> sf.Scalar:
     """
     A symmetric barrier centered between x_nominal_lower and x_nominal_upper. See
-    symmetric_power_barrier for a detailed description of the barrier function.
-    As an example, the barrier with power = 1 will look like:
+    :func:`symmetric_power_barrier` for a detailed description of the barrier function.
+    As an example, the barrier with power = 1 will look like::
 
-                                     **          |              **
-                                      **         |             **
-    (x_nominal_lower, error_nominal) - **        |            ** - (x_nominal_upper, error_nominal)
-                                        **       |           **
-                                         **      |          ** <- x^power is the shape of the curve
-                                          **     |         **
-                                 ----------*****************---------
-                  dist_zero_to_nominal |<->|     |         |<->| dist_zero_to_nominal
+                                         **          |              **
+                                          **         |             **
+        (x_nominal_lower, error_nominal) - **        |            ** - (x_nominal_upper, error_nominal)
+                                            **       |           **
+                                             **      |          ** <- x^power is the shape of the curve
+                                              **     |         **
+        ---------------------------------------*****************---------
+                      dist_zero_to_nominal |<->|     |         |<->| dist_zero_to_nominal
 
     Args:
         x: The point at which we want to evaluate the barrier function.
@@ -243,9 +243,9 @@ def min_max_linear_barrier(
     dist_zero_to_nominal: sf.Scalar,
 ) -> sf.Scalar:
     """
-    Applies "min_max_power_barrier" with power = 1. When applied to a residual of a least-squares
+    Applies :func:`min_max_power_barrier` with power = 1. When applied to a residual of a least-squares
     problem, this produces a quadratic cost in the optimization problem because
-    cost = 1/2 * residual^2. See "min_max_power_barrier" for more details.
+    cost = 1/2 * residual^2. See :func:`min_max_power_barrier` for more details.
     """
     return min_max_power_barrier(
         x=x,
@@ -271,43 +271,49 @@ def min_max_centering_power_barrier(
     and the "centering" barrier. Both barriers are centered between x_nominal_lower and
     x_nominal_upper. As an example, the barrier with power = 1 may look like:
 
-    BARRIER (max of bounding and centering barriers):
-                   **              |                          **
-                    ** <-(x_nominal_lower, error_nominal)    ** <-(x_nominal_upper, error_nominal)
-                     **            |                        **
-                      **           |                       **
-                       ******      |                  ******
-                            ****** |             ****** <- x^power is the shape of upper/lower curve
-                                 ******     ******
-                    ------------------*******-------------------
-                                   |
+    BARRIER (max of bounding and centering barriers)::
+
+                    **              |                          **
+                     ** <-(x_nominal_lower, error_nominal)    ** <-(x_nominal_upper, error_nominal)
+                      **            |                        **
+                       **           |                       **
+                        ******      |                  ******
+                             ****** |             ****** <- x^power is the shape of upper/lower curve
+                                  ******     ******
+        -------------------------------*******-------------------
+                                    |
 
     It may be easier to visualize the bounding and centering barriers independently:
 
-    BOUNDING BARRIER:
-                   **              |                          **
-                    ** <-(x_nominal_lower, error_nominal)    ** <-(x_nominal_upper, error_nominal)
-                     **            |                        **
-                      **           |                       **
-                       **          |                      ** <- x^power is the shape of the curve
-                        **         |                     **
-                         **        |                    **
-                    ------*******************************-------
-                                   |                   |<-->| dist_zero_to_nominal
+    BOUNDING BARRIER::
 
-    CENTERING BARRIER:
-                                   |
-                                   |
-             ******                |                            ******
-                  ******           |                       ******
-       nominal_lower ^ ******      |                  ****** ^ nominal_upper
-                            ****** |             ******
-                                 ******     ******  <- x^power is the shape of the curve
-                    ------------------*******-------------------
-                                   |     ^-((x_nominal_lower + x_nominal_upper) / 2, 0)
-    where:
+                    **              |                          **
+                     ** <-(x_nominal_lower, error_nominal)    ** <-(x_nominal_upper, error_nominal)
+                      **            |                        **
+                       **           |                       **
+                        **          |                      ** <- x^power is the shape of the curve
+                         **         |                     **
+                          **        |                    **
+        -------------------*******************************-------
+                                    |                   |<-->| dist_zero_to_nominal
+
+    CENTERING BARRIER::
+
+                                    |
+                                    |
+              ******                |                            ******
+                   ******           |                       ******
+        nominal_lower ^ ******      |                  ****** ^ nominal_upper
+                             ****** |             ******
+                                  ******     ******  <- x^power is the shape of the curve
+        -------------------------------*******-------------------
+                                    |     ^-((x_nominal_lower + x_nominal_upper) / 2, 0)
+
+    where::
+
         nominal_lower = (x_nominal_lower, centering_scale * error_nominal)
         nominal_upper = (x_nominal_upper, centering_scale * error_nominal)
+
     and the only point with zero error is the midpoint of x_nominal_lower and x_nominal_upper.
 
     Args:

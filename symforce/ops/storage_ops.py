@@ -38,7 +38,7 @@ class StorageOps(Ops):
     @staticmethod
     def from_storage(a: T.ElementOrType, elements: T.Sequence[T.Scalar]) -> T.Element:
         """
-        Construct from a flat list representation. Opposite of `.to_storage()`.
+        Construct from a flat list representation. Opposite of :meth:`to_storage`.
         """
         return StorageOps.implementation(get_type(a)).from_storage(a, elements)
 
@@ -50,7 +50,8 @@ class StorageOps(Ops):
         Args:
             a:
             name: String prefix
-            kwargs: Additional arguments to pass to sf.Symbol (like assumptions)
+            kwargs: Additional arguments to pass to :class:`sf.Symbol <symforce.symbolic.Symbol>`
+                (like assumptions)
 
         Returns:
             Storage:

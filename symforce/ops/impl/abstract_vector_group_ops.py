@@ -18,7 +18,7 @@ class AbstractVectorGroupOps(AbstractStorageOps[ElementT]):
     is the element whose storage representation is the 0 vector.
 
     For a list of abstract methods which child classes must define, see
-    AbstractStorageOps from abstract_storage_ops.py
+    :mod:`.abstract_storage_ops`.
     """
 
     @classmethod

@@ -40,8 +40,11 @@ class NoiseModel:
 class ScalarNoiseModel(NoiseModel):
     """
     Base class for noise models that apply a whitening function to each element of the unwhitened
-    residual. I.e. if f() is the whiten_scalar function, each element of the whitened residual can be
-    written as:
+    residual
+
+    I.e. if ``f()`` is the :meth:`whiten_scalar` function, each element of the whitened residual
+    can be written as::
+
         whitened_residual[i] = f(unwhitened_residual[i])
     """
 
@@ -58,7 +61,7 @@ class ScalarNoiseModel(NoiseModel):
 
     def whiten(self, unwhitened_residual: sf.Matrix.MatrixT) -> sf.Matrix.MatrixT:
         """
-        Whiten the unwhitened residual vector by applying `whiten_scalar` to each element.
+        Whiten the unwhitened residual vector by applying :meth:`whiten_scalar` to each element.
         """
         return unwhitened_residual.applyfunc(self.whiten_scalar)
 
@@ -68,9 +71,9 @@ class ScalarNoiseModel(NoiseModel):
         """
         Whiten the norm of the residual vector.
 
-        Let f(x) be the whitening function here, and let x be vector of residuals.
-        We compute the whitened residual vector as w(x) = f(||x||)/||x|| * x.
-        Then, the overall residual is later computed as ||w(x)|| == f(||x||),
+        Let ``f(x)`` be the whitening function here, and let ``x`` be vector of residuals.
+        We compute the whitened residual vector as ``w(x) = f(||x||)/||x|| * x``.
+        Then, the overall residual is later computed as ``||w(x)|| == f(||x||)``,
         and so we're minimizing the whitened norm of the full residual
         for each point.
         """
@@ -88,15 +91,18 @@ class ScalarNoiseModel(NoiseModel):
 
 class IsotropicNoiseModel(ScalarNoiseModel):
     """
-    Isotropic noise model; equivalent to multiplying the squared residual by a scalar. The cost
-    used in the optimization is:
+    Isotropic noise model; equivalent to multiplying the squared residual by a scalar
+
+    The cost used in the optimization is::
 
         cost = 0.5 * information * unwhitened_residual.T * unwhitened_residual
 
-    such that:
+    such that::
+
         cost = 0.5 * whitened_residual.T * whitened_residual
 
-    The whitened residual is:
+    The whitened residual is::
+
         whitened_residual = sqrt(information) * unwhitened_residual
 
     Args:
@@ -104,9 +110,10 @@ class IsotropicNoiseModel(ScalarNoiseModel):
             context of probability theory, the information is the inverse of the variance of the
             unwhitened residual. The information represents the weight given to a specific
             unwhitened residual relative to other residuals used in the least-squares optimization.
-        scalar_sqrt_information: Square-root of scalar_information. If scalar_sqrt_information is
-            specified, we avoid needing to take the square root of scalar_information. Note that
-            only one of scalar_information and scalar_sqrt_information needs to be specified.
+        scalar_sqrt_information: Square-root of ``scalar_information``. If
+            ``scalar_sqrt_information`` is specified, we avoid needing to take the square root of
+            ``scalar_information``. Note that only one of ``scalar_information`` and
+            ``scalar_sqrt_information`` needs to be specified.
     """
 
     def __init__(
@@ -132,7 +139,7 @@ class IsotropicNoiseModel(ScalarNoiseModel):
 
         Args:
             variance: Typically the variance of the residual elements. Results in cost
-                cost = 0.5 * (1 / variance) * unwhitened_residual.T * unwhitened_residual
+                ``cost = 0.5 * (1 / variance) * unwhitened_residual.T * unwhitened_residual``
         """
         return cls(scalar_information=1 / variance)
 
@@ -145,14 +152,14 @@ class IsotropicNoiseModel(ScalarNoiseModel):
 
         Args:
             standard_deviation: The standard deviation of the residual elements. Results in
-                cost = 0.5 * (1 / sigma^2) * unwhitened_residual.T * unwhitened_residual
+                ``cost = 0.5 * (1 / sigma^2) * unwhitened_residual.T * unwhitened_residual``
         """
         return IsotropicNoiseModel(scalar_sqrt_information=1 / standard_deviation)
 
     def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
-        Multiplies a single element of the unwhitened residual by `sqrt(information)` so
-        that the least-squares cost associated with the element is scaled by `information`.
+        Multiplies a single element of the unwhitened residual by ``sqrt(information)`` so
+        that the least-squares cost associated with the element is scaled by ``information``.
 
         Args:
             x: Single element of the unwhitened residual
@@ -166,27 +173,33 @@ class IsotropicNoiseModel(ScalarNoiseModel):
 
 class DiagonalNoiseModel(NoiseModel):
     """
-    Noise model with diagonal weighting matrix. The cost used in the optimization is:
+    Noise model with diagonal weighting matrix
+
+    The cost used in the optimization is::
 
         cost = 0.5 * unwhitened_residual.T * sf.diag(information_diag) * unwhitened_residual
-    where `information_diag` is a vector of scalars representing the relative importance of each
+
+    where ``information_diag`` is a vector of scalars representing the relative importance of each
     element of the unwhitened residual.
 
-    The total cost is then:
+    The total cost is then::
+
         cost = 0.5 * whitened_residual.T * whitened_residual
 
-    Thus, the whitened residual is:
+    Thus, the whitened residual is::
+
         whitened_residual = sf.diag(sqrt_information_diag) * unwhitened_residual
-    where `sqrt_information_diag` is the element-wise square root of `information_diag`.
+
+    where ``sqrt_information_diag`` is the element-wise square root of ``information_diag``.
 
     Args:
         information_diag: List of elements of the diagonal of the information matrix. In the context
             of probability theory, this vector represents the inverse of the variance of each
             element of the unwhitened residual, assuming that each element is an independent
             random variable.
-        sqrt_information_diag: Element-wise square-root of information_diag. If specified, we avoid
-            needing to take the square root of each element of information_diag. Note that only one
-            of information_diag and sqrt_information_diag needs to be specified.
+        sqrt_information_diag: Element-wise square-root of ``information_diag``. If specified, we
+            avoid needing to take the square root of each element of ``information_diag``. Note that
+            only one of ``information_diag`` and ``sqrt_information_diag`` needs to be specified.
     """
 
     def __init__(
@@ -207,8 +220,10 @@ class DiagonalNoiseModel(NoiseModel):
     def from_variances(cls, variances: T.Sequence[sf.Scalar]) -> DiagonalNoiseModel:
         """
         Returns an DiagonalNoiseModel given a list of variances of each element of the unwhitened
-        residual. Typically used when we treat the unwhitened residual as a sequence of independent
-        random variables with known variances.
+        residual
+
+        Typically used when we treat the unwhitened residual as a sequence of independent random
+        variables with known variances.
 
         Args:
             variances: List of the variances of each element of the unwhitened residual
@@ -219,8 +234,10 @@ class DiagonalNoiseModel(NoiseModel):
     def from_sigmas(cls, standard_deviations: T.Sequence[sf.Scalar]) -> DiagonalNoiseModel:
         """
         Returns an DiagonalNoiseModel given a list of standard deviations of each element of the
-        unwhitened residual. Typically used when we treat the unwhitened residual as a sequence of
-        independent random variables with known standard deviations.
+        unwhitened residual
+
+        Typically used when we treat the unwhitened residual as a sequence of independent random
+        variables with known standard deviations.
 
         Args:
             standard_deviations: List of the standard deviations of each element of the unwhitened
@@ -235,17 +252,22 @@ class DiagonalNoiseModel(NoiseModel):
 class PseudoHuberNoiseModel(ScalarNoiseModel):
     """
     A smooth loss function that behaves like the L2 loss for small x and the L1 loss for large x.
-    The cost used in the least-squares optimization will be:
+
+    The cost used in the least-squares optimization will be::
+
         cost = sum( pseudo_huber_loss(unwhitened_residual[i]) )
         cost = 0.5 * whitened_residual.T * whitened_residual
+
     where the sum is taken over the elements of the unwhitened residual.
 
     This noise model applies the square-root of the pseudo-huber loss function to each element of
     the unwhitened residual such that the resulting cost used in the least-squares problem is the
-    pseudo-huber loss. The pseudo-huber loss is defined as:
+    pseudo-huber loss. The pseudo-huber loss is defined as::
+
         pseudo_huber_loss(x) = delta^2 * ( sqrt( 1 + scalar_information * (x/delta)^2 ) - 1)
 
-    The whitened residual is then:
+    The whitened residual is then::
+
         whitened_residual[i] = sqrt( 2 * pseudo_huber_loss(unwhitened_residual[i]) )
 
     Args:
@@ -301,34 +323,42 @@ class BarronNoiseModel(ScalarNoiseModel):
 
     This noise model applies a modified version of the "practical implementation" from Appendix B
     of the paper to each scalar element of an unwhitened residual. The Barron loss function is
-    defined as:
+    defined as::
+
         barron_loss(x) = delta^2 * (b/d) * (( scalar_information * (x/delta)^2 / b + 1)^(d/2) - 1)
-    where
+
+    where::
+
         b = |alpha - 2| + epsilon
         d = alpha + epsilon if alpha >= 0 else alpha - epsilon
+
     Here delta controls the point at which the loss function transitions from quadratic to robust.
     This is different from the original Barron loss function, and is designed to match the pseudo-
     huber loss function.
 
-    Thus, the cost used in the optimization will be:
+    Thus, the cost used in the optimization will be::
+
         cost = sum( barron_loss(unwhitened_residual[i]) )
         cost = 0.5 * whitened_residual.T * whitened_residual
+
     where the sum is taken over the elements of the unwhitened residual.
 
-    Thus, the whitened residual is:
+    Thus, the whitened residual is::
+
         whitened_residual[i] = sqrt( 2 * barron_loss(unwhitened_residual[i]) )
 
     Args:
         alpha: Controls shape and convexity of the loss function. Notable values:
-            alpha = 2 -> L2 loss
-            alpha = 1 -> Pseudo-huber loss
-            alpha = 0 -> Cauchy loss
-            alpha = -2 -> Geman-McClure loss
-            alpha = -inf -> Welsch loss
+
+            - alpha = 2 -> L2 loss
+            - alpha = 1 -> Pseudo-huber loss
+            - alpha = 0 -> Cauchy loss
+            - alpha = -2 -> Geman-McClure loss
+            - alpha = -inf -> Welsch loss
         delta: Determines the transition point from quadratic to robust. Similar to "delta" as used
             by the pseudo-huber loss function.
         scalar_information: Scalar representing the inverse of the variance of an element of the
-            unwhitened residual. Conceptually, we use "scalar_information" to whiten (in a
+            unwhitened residual. Conceptually, we use ``scalar_information`` to whiten (in a
             probabilistic sense) the unwhitened residual before passing it through the Barron loss.
         x_epsilon: Small value used for handling the singularity at x == 0.
         alpha_epsilon: Small value used for handling singularities around alpha.
@@ -387,7 +417,7 @@ class BarronNoiseModel(ScalarNoiseModel):
         """
         Applies a whitening function to a single element of the unwhitened residual such that the
         cost associated with the element in the least-squares cost function is the Barron loss
-        function (weighted by self.weight).
+        function.
 
         Args:
             x: Single element of the unwhitened residual

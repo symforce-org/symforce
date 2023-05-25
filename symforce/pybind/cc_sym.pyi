@@ -111,22 +111,24 @@ class Factor:
         sparse: bool = False,
     ) -> Factor:
         """
-                Create from a function that computes the jacobian. The hessian will be computed using the
-                Gauss Newton approximation:
-                    H   = J.T * J
-                    rhs = J.T * b
+        Create from a function that computes the jacobian. The hessian will be computed using the
+        Gauss Newton approximation::
 
-                Args:
-                  keys: The set of input arguments, in order, accepted by func.
-                  sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+            H   = J.T * J
+            rhs = J.T * b
 
-                Precondition:
-                  The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
+        Args:
+          keys: The set of input arguments, in order, accepted by func.
+          sparse: Create a sparse factor if True, dense factor if false. Defaults to dense.
+
+        Precondition:
+          The jacobian returned by jacobian_func has type scipy.sparse.csc_matrix if and only if sparse = True.
 
 
 
         Create from a function that computes the jacobian. The hessian will be computed using the
-        Gauss Newton approximation:
+        Gauss Newton approximation::
+
             H   = J.T * J
             rhs = J.T * b
 
@@ -406,8 +408,8 @@ class Optimizer:
         for the full problem, and in the same order.  It uses the Schur complement trick, so will be
         most efficient if the hessian is of the following form, with C block diagonal::
 
-          A = ( B    E )
-              ( E^T  C )
+            A = ( B    E )
+                ( E^T  C )
         """
     def factors(self) -> typing.List[Factor]:
         """
@@ -570,16 +572,17 @@ class Values:
         Get all keys.
 
         Args:
-          sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
+            sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
         """
     def local_coordinates(self, others: Values, index: index_t, epsilon: float) -> numpy.ndarray:
         """
         Express this Values in the local coordinate of others Values, i.e., this \ominus others
 
         Args:
-          others: The other Values that the local coordinate is relative to
-          index: Ordered list of keys to include (MUST be valid for both this and others Values)
-          epsilon: Small constant to avoid singularities (do not use zero)
+            others: The other Values that the local coordinate is relative to
+            index: Ordered list of keys to include (MUST be valid for both this and others Values)
+            epsilon: Small constant to avoid singularities (do not use zero)
+
         """
     def num_entries(self) -> int:
         """
@@ -601,9 +604,9 @@ class Values:
         Perform a retraction from an update vector.
 
         Args:
-          index: Ordered list of keys in the delta vector
-          delta: Update vector - MUST be the size of index.tangent_dim!
-          epsilon: Small constant to avoid singularities (do not use zero)
+            index: Ordered list of keys in the delta vector
+            delta: Update vector - MUST be the size of index.tangent_dim!
+            epsilon: Small constant to avoid singularities (do not use zero)
         """
     @typing.overload
     def set(self, key: Key, value: ATANCameraCal) -> bool:

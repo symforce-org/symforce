@@ -68,7 +68,7 @@ def greater(x: sf.Scalar, y: sf.Scalar) -> sf.Scalar:
 
 def logical_and(*args: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
-    Logical and of two or more Scalars
+    Logical ``and`` of two or more Scalars
 
     Input values are treated as true if they are positive, false if they are 0 or negative.
     The returned value is 1 for true, 0 for false.
@@ -84,7 +84,7 @@ def logical_and(*args: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
 
 def logical_or(*args: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
-    Logical or of two or more Scalars
+    Logical ``or`` of two or more Scalars
 
     Input values are treated as true if they are positive, false if they are 0 or negative.
     The returned value is 1 for true, 0 for false.
@@ -100,7 +100,7 @@ def logical_or(*args: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
 
 def logical_not(a: sf.Scalar, unsafe: bool = False) -> sf.Scalar:
     """
-    Logical not of a Scalar
+    Logical ``not`` of a Scalar
 
     Input value is treated as true if it is positive, false if it is 0 or negative. The
     returned value is 1 for true, 0 for false.

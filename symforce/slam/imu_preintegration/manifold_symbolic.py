@@ -39,7 +39,7 @@ def internal_imu_residual(
     from the preintegrated IMU measurements between those time steps.
 
     NOTE: If you are looking for a residual for an IMU factor, do not use this. Instead use
-    the one found in symforce/slam/imu_preintegration/imu_factor.h.
+    the one found in ``symforce/slam/imu_preintegration/imu_factor.h``.
 
     Time step i is the time of the first IMU measurement of the interval.
     Time step j is the time after the last IMU measurement of the interval.
@@ -56,9 +56,10 @@ def internal_imu_residual(
         DR (sf.Rot3): Preintegrated estimate for pose_i.R.inverse() * pose_j.R
         Dv (sf.V3): Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
         Dp (sf.V3): Preintegrated estimate for position change (before velocity and gravity
-            corrections) in the body frame at timestep i:
-            R_i^T (p_j - p_i - v_i Delta t - 1/2 g Delta t^2),
-            where R_i = pose_i.R, p_i = pose_i.t, p_j = pose_j.t, and v_i = vel_i
+            corrections) in the body frame at timestep i::
+
+                R_i^T (p_j - p_i - v_i Delta t - 1/2 g Delta t^2),
+                where R_i = pose_i.R, p_i = pose_i.t, p_j = pose_j.t, and v_i = vel_i
         sqrt_info (sf.M99): sqrt info matrix of DR('s tangent space), Dv, Dp
         DR_D_gyro_bias (sf.M33): Derivative of DR w.r.t. gyro_bias evaluated at gyro_bias_hat
         Dv_D_accel_bias (sf.M33): Derivative of Dv w.r.t. accel_bias evaluated at accel_bias_hat
@@ -98,7 +99,7 @@ def internal_imu_residual(
     return sf.M91(sqrt_info.lower_triangle() * res)
 
 
-def right_jacobian(tangent: sf.V3, epsilon: T.Scalar) -> sf.M33:
+def _right_jacobian(tangent: sf.V3, epsilon: T.Scalar) -> sf.M33:
     """
     The right jacobian J(v) is d/du Log(Exp(v)^{-1} Exp(v + u)), i.e., a matrix such that
     Exp(v + dv) ~= Exp(v) Exp(J(v) dv), where v and u are tangent vectors of SO(3).
@@ -120,8 +121,7 @@ def handwritten_new_state_D_state_gyro_accel(
 ) -> T.Tuple[sf.M99, sf.M93, sf.M93]:
     """
     Calculates the derivatives of the new state (meaning the DR, Dv, and Dp) w.r.t. the previous state,
-    gyroscope measurement, and the accelerometer mesaurement.
-
+    gyroscope measurement, and the accelerometer measurement.
 
     Args:
         DR (sf.Rot3): Preintegrated DR of the previous state
@@ -158,7 +158,7 @@ def handwritten_new_state_D_state_gyro_accel(
     )
 
     # calculate new_D_gyro
-    new_DR_D_gyro = right_jacobian(corrected_gyro * dt, epsilon) * dt
+    new_DR_D_gyro = _right_jacobian(corrected_gyro * dt, epsilon) * dt
     new_DvDp_D_gyro = sf.M63.zero()
 
     new_state_D_gyro = sf.Matrix.block_matrix(
@@ -214,8 +214,8 @@ def imu_manifold_preintegration_update(
     gyroscope and accelerometer measurements. Returns the updated preintegrated measurements.
 
     NOTE: If you are interested in this function, you should likely be using the
-    IntegrateMeasurement method of the PreintegratedImuMeasurements class located in
-    symforce/slam/imu_preintegration/preintegrated_imu_measurements.h.
+    ``IntegrateMeasurement`` method of the ``PreintegratedImuMeasurements`` class located in
+    ``symforce/slam/imu_preintegration/preintegrated_imu_measurements.h``.
 
     When integrating the first measurement, DR should be the identity, Dv, Dp, covariance, and the
     derivatives w.r.t. to bias should all be 0.

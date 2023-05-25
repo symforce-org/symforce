@@ -113,7 +113,7 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Compose(
  *
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
- * Implementation is simply `compose(inverse(a), b)`.
+ * Implementation is simply ``compose(inverse(a), b)``.
  *
  * Returns:
  *     Element: c such that a @ c = b
@@ -262,7 +262,7 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::ComposeW
  *
  * Returns the element that when composed with a produces b. For vector spaces it is b - a.
  *
- * Implementation is simply `compose(inverse(a), b)`.
+ * Implementation is simply ``compose(inverse(a), b)``.
  *
  * Returns:
  *     Element: c such that a @ c = b
