@@ -30,7 +30,7 @@ namespace sym {
  *
  * The storage for this class is:
  *
- * [ fx fy cx cy xi alpha ]
+ *     [ fx fy cx cy xi alpha ]
  *
  * TODO(aaron): Create double_sphere_derivation.ipynb
  *

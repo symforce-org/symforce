@@ -14,7 +14,7 @@ import sym  # pylint: disable=unused-import
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementation for <class 'symforce.cam.double_sphere_camera_cal.DoubleSphereCameraCal'>.
+    Python LieGroupOps implementation for :py:class:`symforce.cam.double_sphere_camera_cal.DoubleSphereCameraCal`.
     """
 
     @staticmethod

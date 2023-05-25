@@ -46,7 +46,7 @@ class SphericalCameraCal(CameraCal):
 
     The storage for this class is:
 
-    [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
+        [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
     """
 
     NUM_DISTORTION_COEFFS = 4

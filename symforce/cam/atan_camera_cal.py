@@ -16,6 +16,7 @@ from .linear_camera_cal import LinearCameraCal
 class ATANCameraCal(CameraCal):
     """
     ATAN camera with 5 parameters [fx, fy, cx, cy, omega].
+
     (fx, fy) representing focal length, (cx, cy) representing principal point,
     and omega representing the distortion parameter.
 

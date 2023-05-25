@@ -21,7 +21,7 @@ from .quaternion import Quaternion
 
 class Rot3(LieGroup):
     """
-    Group of three-dimensional orthogonal matrices with determinant +1, representing
+    Group of three-dimensional orthogonal matrices with determinant ``+1``, representing
     rotations in 3D space. Backed by a quaternion with (x, y, z, w) storage.
     """
 

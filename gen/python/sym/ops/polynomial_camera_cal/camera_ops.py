@@ -14,7 +14,7 @@ import sym  # pylint: disable=unused-import
 
 class CameraOps(object):
     """
-    Python CameraOps implementation for <class 'symforce.cam.polynomial_camera_cal.PolynomialCameraCal'>.
+    Python CameraOps implementation for :py:class:`symforce.cam.polynomial_camera_cal.PolynomialCameraCal`.
     """
 
     @staticmethod

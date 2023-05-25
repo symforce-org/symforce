@@ -14,7 +14,7 @@ import sym  # pylint: disable=unused-import
 
 class LieGroupOps(object):
     """
-    Python LieGroupOps implementation for <class 'symforce.geo.pose2.Pose2'>.
+    Python LieGroupOps implementation for :py:class:`symforce.geo.pose2.Pose2`.
     """
 
     @staticmethod

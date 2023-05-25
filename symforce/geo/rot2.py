@@ -18,7 +18,7 @@ from .matrix import Vector2
 
 class Rot2(LieGroup):
     """
-    Group of two-dimensional orthogonal matrices with determinant +1, representing rotations
+    Group of two-dimensional orthogonal matrices with determinant ``+1``, representing rotations
     in 2D space. Backed by a complex number.
     """
 

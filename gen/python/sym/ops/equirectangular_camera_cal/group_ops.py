@@ -14,7 +14,7 @@ import sym  # pylint: disable=unused-import
 
 class GroupOps(object):
     """
-    Python GroupOps implementation for <class 'symforce.cam.equirectangular_camera_cal.EquirectangularCameraCal'>.
+    Python GroupOps implementation for :py:class:`symforce.cam.equirectangular_camera_cal.EquirectangularCameraCal`.
     """
 
     @staticmethod

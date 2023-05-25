@@ -35,11 +35,11 @@ namespace sym {
  * manifold operations (e.g. retract and local_coordinates) operate on the product manifold
  * SO(2) x R2.  This means that:
  *
- *   - retract(a, vec) != compose(a, from_tangent(vec))
+ * - retract(a, vec) != compose(a, from_tangent(vec))
  *
- *   - local_coordinates(a, b) != to_tangent(between(a, b))
+ * - local_coordinates(a, b) != to_tangent(between(a, b))
  *
- *   - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
+ * - There is no hat operator, because from_tangent/to_tangent is not the matrix exp/log
  *
  * If you need a type that has these properties in symbolic expressions, you should use
  * :class:`symforce.geo.unsupported.pose2_se2.Pose2_SE2`. There is no runtime equivalent of

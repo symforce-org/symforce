@@ -14,7 +14,7 @@ import sym  # pylint: disable=unused-import
 
 class GroupOps(object):
     """
-    Python GroupOps implementation for <class 'symforce.geo.pose3.Pose3'>.
+    Python GroupOps implementation for :py:class:`symforce.geo.pose3.Pose3`.
     """
 
     @staticmethod

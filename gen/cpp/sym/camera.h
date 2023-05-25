@@ -12,6 +12,7 @@ namespace sym {
 
 /**
  * Camera with a given camera calibration and an optionally specified image size (width, height).
+ *
  * If the image size is specified, we use it to check whether pixels (either given or computed by
  * projection of 3D points into the image frame) are in the image frame and thus valid/invalid.
  */

@@ -70,10 +70,13 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         config (CodegenConfig): Specifies the target language of the codegened functions.
     """
 
-    def pose2_inverse_compose(self: sf.Pose2, point: sf.Vector2) -> sf.Vector2:
-        return self.inverse() * point
+    def inverse_compose(self: T.Any, point: sf.Matrix) -> sf.Matrix:
+        """
+        Returns ``self.inverse() * point``
 
-    def pose3_inverse_compose(self: sf.Pose3, point: sf.Vector3) -> sf.Vector3:
+        This is more efficient than calling the generated inverse and compose methods separately, if
+        doing this for one point.
+        """
         return self.inverse() * point
 
     def codegen_mul(group: T.Type, multiplicand_type: T.Type) -> Codegen:
@@ -162,13 +165,17 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         sf.Pose2: pose_getter_methods(sf.Pose2)
         + [
             codegen_mul(sf.Pose2, sf.Vector2),
-            Codegen.function(func=pose2_inverse_compose, name="inverse_compose", config=config),
+            Codegen.function(
+                func=inverse_compose, config=config, input_types=[sf.Pose2, sf.Vector2]
+            ),
             Codegen.function(func=sf.Pose2.to_homogenous_matrix, config=config),
         ],
         sf.Pose3: pose_getter_methods(sf.Pose3)
         + [
             codegen_mul(sf.Pose3, sf.Vector3),
-            Codegen.function(func=pose3_inverse_compose, name="inverse_compose", config=config),
+            Codegen.function(
+                func=inverse_compose, config=config, input_types=[sf.Pose3, sf.Vector3]
+            ),
             Codegen.function(func=sf.Pose3.to_homogenous_matrix, config=config),
         ],
         sf.Unit3: [
