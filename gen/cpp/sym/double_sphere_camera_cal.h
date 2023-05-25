@@ -109,7 +109,7 @@ class DoubleSphereCameraCal {
   /**
    * Project a 3D point in the camera frame into 2D pixel coordinates.
    *
-   * Return:
+   * Returns:
    *     pixel: (x, y) coordinate in pixels if valid
    *     is_valid: 1 if the operation is within bounds else 0
    *     pixel_D_cal: Derivative of pixel with respect to intrinsic calibration parameters
@@ -134,7 +134,7 @@ class DoubleSphereCameraCal {
   /**
    * Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
    *
-   * Return:
+   * Returns:
    *     camera_ray: The ray in the camera frame (NOT normalized)
    *     is_valid: 1 if the operation is within bounds else 0
    *     point_D_cal: Derivative of point with respect to intrinsic calibration parameters

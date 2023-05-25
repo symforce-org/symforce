@@ -220,9 +220,6 @@ else:
 def get_symbolic_api() -> str:
     """
     Return the current symbolic API as a string.
-
-    Returns:
-        str:
     """
     assert _symbolic_api is not None
     return _symbolic_api

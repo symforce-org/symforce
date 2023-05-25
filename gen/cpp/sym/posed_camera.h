@@ -37,7 +37,7 @@ class PosedCamera : public Camera<CameraCalType> {
    *     point: Vector written in camera frame.
    *     epsilon: Small value intended to prevent division by 0.
    *
-   * Return:
+   * Returns:
    *     pixel: UV coodinates in pixel units, assuming the point is in view
    *     is_valid: 1 if point is valid
    *
@@ -60,7 +60,7 @@ class PosedCamera : public Camera<CameraCalType> {
    *     range_to_point: Distance of the returned point along the ray passing through pixel
    *     epsilon: Small value intended to prevent division by 0.
    *
-   * Return:
+   * Returns:
    *     global_point: The point in the global frame.
    *     is_valid: 1 if point is valid
    *
@@ -83,7 +83,7 @@ class PosedCamera : public Camera<CameraCalType> {
    *     inverse_range: Inverse distance along the ray to the global point
    *     target_cam: Camera to project global point into
    *
-   * Return:
+   * Returns:
    *     pixel: Pixel in the target camera
    *     is_valid: 1 if given point is valid in source camera and target camera
    *

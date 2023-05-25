@@ -148,7 +148,7 @@ class SphericalCameraCal(object):
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
-        Return:
+        Returns:
             pixel: (x, y) coordinate in pixels if valid
             is_valid: 1 if the operation is within bounds else 0
             pixel_D_cal: Derivative of pixel with respect to intrinsic calibration parameters
