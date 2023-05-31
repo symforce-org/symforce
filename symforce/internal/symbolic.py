@@ -325,8 +325,8 @@ elif sympy.__package__ == "sympy":
     # Save original
     _original_symbol_new = sympy.Symbol.__new__
 
-    @functools.wraps(_original_symbol_new)  # type: ignore[misc]
-    @staticmethod
+    @staticmethod  # type: ignore[misc]  # staticmethod used with a non-method
+    @functools.wraps(_original_symbol_new)
     def new_symbol(
         cls: T.Any,
         name: str,
