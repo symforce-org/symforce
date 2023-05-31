@@ -94,8 +94,8 @@ sparse_matrix_structure_t GetSparseStructure(const Eigen::SparseMatrix<Scalar>& 
 /**
  * Return a default initialized sparse structure because arg is dense.
  */
-template <typename Scalar>
-sparse_matrix_structure_t GetSparseStructure(const MatrixX<Scalar>&) {
+template <typename Derived>
+sparse_matrix_structure_t GetSparseStructure(const Eigen::EigenBase<Derived>&) {
   return {};
 }
 

@@ -91,7 +91,9 @@ class SparseCholeskySolver {
 
   /// Decompose A into A = L * D * L^T and store internally.
   /// A must have the same sparsity as the matrix used for construction.
-  void Factorize(const MatrixType& A);
+  /// Returns true if factorization was successful, and false otherwise.
+  /// NOTE(brad): Currently always returns true.
+  bool Factorize(const MatrixType& A);
 
   /// Returns x for A x = b, where x and b are dense
   template <typename Rhs>
@@ -119,6 +121,11 @@ class SparseCholeskySolver {
   const PermutationMatrixType& InversePermutation() const {
     SYM_ASSERT(IsInitialized());
     return inv_permutation_;
+  }
+
+  void AnalyzeSparsityPattern(const Eigen::SparseMatrix<Scalar>& matrix) {
+    // Make sure the diagonal is nonzero for analysis
+    this->ComputeSymbolicSparsity(matrix.template triangularView<Eigen::UnitLower>());
   }
 
  protected:

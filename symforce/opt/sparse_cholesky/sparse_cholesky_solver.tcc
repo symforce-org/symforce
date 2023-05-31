@@ -106,7 +106,7 @@ void SparseCholeskySolver<MatrixType, UpLo>::ComputeSymbolicSparsity(const Matri
 }
 
 template <typename MatrixType, int UpLo>
-void SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
+bool SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
   const Eigen::Index N = A.rows();
 
   // Check some invariants
@@ -213,6 +213,9 @@ void SparseCholeskySolver<MatrixType, UpLo>::Factorize(const MatrixType& A) {
     // Save D(k)
     D_[k] = D_k;
   }
+
+  // TODO(brad): Actually check whether factorization should fail and return false if so.
+  return true;
 }
 
 template <typename MatrixType, int UpLo>

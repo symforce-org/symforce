@@ -8,6 +8,7 @@
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
 
+#include "./assert.h"
 #include "./levenberg_marquardt_solver.h"
 #include "./tic_toc.h"
 #include "./util.h"
@@ -184,9 +185,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(const LinearizeF
   if (!solver_analyzed_) {
     // TODO(aaron): Do this with the ones linearization computed by the Linearizer
     SYM_TIME_SCOPE("LM<{}>: AnalyzePattern", id_);
-    Eigen::SparseMatrix<Scalar> H_analyze = state_.Init().GetLinearization().hessian_lower;
-    H_analyze.diagonal().array() = 1.0;  // Make sure the diagonal is nonzero for analysis
-    linear_solver_.ComputeSymbolicSparsity(H_analyze);
+    linear_solver_.AnalyzeSparsityPattern(state_.Init().GetLinearization().hessian_lower);
     solver_analyzed_ = true;
   }
 
@@ -198,7 +197,9 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(const LinearizeF
 
   {
     SYM_TIME_SCOPE("LM<{}>: SparseFactorize", id_);
-    linear_solver_.Factorize(H_damped_);
+    const bool success = linear_solver_.Factorize(H_damped_);
+    // TODO(brad): Instead try recovering from this (ultimately by increasing lambda).
+    SYM_ASSERT(success, "Internal Error: Damped hessian factorization failed");
 
     // NOTE(aaron): This has to happen after the first factorize, since L_inner is not filled out
     // by ComputeSymbolicSparsity
@@ -296,7 +297,9 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
   H_damped_.diagonal().array() += epsilon_;
 
   // TODO(hayk, aaron): This solver assumes a dense RHS, should add support for a sparse RHS
-  linear_solver_.Factorize(H_damped_);
+  const bool success = linear_solver_.Factorize(H_damped_);
+  // TODO(brad): Instead try recovering from this by damping by something larger than epsilon_
+  SYM_ASSERT(success, "Internal Error: damped hessian factorization failed");
   covariance = MatrixX<Scalar>::Identity(H_damped_.rows(), H_damped_.rows());
   linear_solver_.SolveInPlace(covariance);
 }
