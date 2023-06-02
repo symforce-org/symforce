@@ -9,6 +9,7 @@ import os
 import re
 import subprocess
 import sys
+import typing as T
 from pathlib import Path
 
 from setuptools import Extension
@@ -145,11 +146,8 @@ class CMakeBuild(build_ext):
             # in the symenginepy/symengine source directory. Everything is already there
             # except the compiled symengine_wrapper extension module, so we copy that there
             # as well.
-            symengine_wrapper = next(
-                build_temp_path.glob(
-                    f"symengine_install/**/lib/python{sys.version_info.major}.{sys.version_info.minor}/*-packages/symengine/lib/{self.get_ext_filename('symengine_wrapper')}"
-                ),
-                None,
+            symengine_wrapper = maybe_find_symengine_wrapper(
+                build_temp_path, self.get_ext_filename("symengine_wrapper")
             )
             # NOTE(brad) For some reason that I don't fully understand, the symengine_wrapper
             # shared library is neither present in symengine_install nor needed in the source
@@ -264,6 +262,28 @@ class SymForceEggInfo(egg_info):
         super().run()
 
 
+def maybe_find_symengine_wrapper(build_dir: Path, ext_filename: str) -> T.Optional[Path]:
+    symengine_wrapper_candidates = list(
+        build_dir.glob(
+            f"symengine_install/**/lib/python{sys.version_info.major}.{sys.version_info.minor}/*-packages/symengine/lib/{ext_filename}"
+        )
+    )
+
+    if len(symengine_wrapper_candidates) > 1:
+        raise FileNotFoundError(
+            f"Expected to find exactly one symengine_wrapper.so, but found {len(symengine_wrapper_candidates)}: {symengine_wrapper_candidates}"
+        )
+
+    return next(iter(symengine_wrapper_candidates), None)
+
+
+def find_symengine_wrapper(build_dir: Path, ext_filename: str) -> Path:
+    symengine_wrapper = maybe_find_symengine_wrapper(build_dir, ext_filename)
+    if symengine_wrapper is None:
+        raise FileNotFoundError(f"Could not find symengine_wrapper.so in {build_dir}")
+    return symengine_wrapper
+
+
 class InstallWithExtras(install):
     """
     Custom install step that:
@@ -284,14 +304,7 @@ class InstallWithExtras(install):
         # include the additional Cython sources that symenginepy includes in their distributions,
         # but I'm honestly not sure why they include them or why you'd need them.
         self.copy_file(
-            build_dir
-            / "symengine_install"
-            / "lib"
-            / f"python{sys.version_info.major}.{sys.version_info.minor}"
-            / "site-packages"
-            / "symengine"
-            / "lib"
-            / build_ext_obj.get_ext_filename("symengine_wrapper"),
+            find_symengine_wrapper(build_dir, build_ext_obj.get_ext_filename("symengine_wrapper")),
             Path.cwd()
             / self.install_platlib  # type: ignore[attr-defined]
             / "symengine"
