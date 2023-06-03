@@ -8,8 +8,9 @@
 
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/ostream.h>
 
 #include <sym/atan_camera_cal.h>
 #include <sym/double_sphere_camera_cal.h>

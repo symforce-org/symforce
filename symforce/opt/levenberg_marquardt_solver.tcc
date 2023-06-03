@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/ranges.h>
 
 #include "./levenberg_marquardt_solver.h"
 #include "./tic_toc.h"

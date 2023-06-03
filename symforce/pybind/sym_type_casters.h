@@ -13,7 +13,10 @@
 
 #pragma once
 
-#include <fmt/format.h>
+#include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/format.h>
+//
 #include <pybind11/pybind11.h>
 
 #include <sym/atan_camera_cal.h>

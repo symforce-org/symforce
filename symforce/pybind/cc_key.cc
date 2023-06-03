@@ -5,8 +5,10 @@
 
 #include "./cc_key.h"
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
+//
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/ostream.h>
 
 #include <symforce/opt/key.h>
 
