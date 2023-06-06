@@ -31,6 +31,7 @@ class Linearizer {
   using Scalar = ScalarType;
   using LinearizedDenseFactor = typename Factor<Scalar>::LinearizedDenseFactor;
   using LinearizedSparseFactor = typename Factor<Scalar>::LinearizedSparseFactor;
+  using LinearizationType = SparseLinearization<Scalar>;
 
   /**
    * Construct a Linearizer from factors and optional keys

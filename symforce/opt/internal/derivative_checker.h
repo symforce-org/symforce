@@ -6,7 +6,6 @@
 #include <spdlog/spdlog.h>
 
 #include "../linearization.h"
-#include "../linearizer.h"
 #include "../util.h"
 #include "../values.h"
 
@@ -28,12 +27,13 @@ namespace internal {
  * Returns:
  *   true if `linearization` and numerical derivatives match
  */
-template <typename Scalar>
-bool CheckDerivatives(Linearizer<Scalar>& linearizer, const Values<Scalar>& values,
-                      const index_t& index, const SparseLinearization<Scalar>& linearization,
+template <typename Scalar, typename LinearizerType>
+bool CheckDerivatives(LinearizerType& linearizer, const Values<Scalar>& values,
+                      const index_t& index,
+                      const typename LinearizerType::LinearizationType& linearization,
                       const Scalar epsilon, const bool verbose = true) {
   // Make a copy of the linearization that we can relinearize into
-  SparseLinearization<Scalar> perturbed_linearization = linearization;
+  typename LinearizerType::LinearizationType perturbed_linearization = linearization;
 
   bool success = true;
 

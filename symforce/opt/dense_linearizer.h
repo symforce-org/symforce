@@ -21,6 +21,7 @@ template <typename Scalar>
 class DenseLinearizer {
  public:
   using LinearizedDenseFactor = typename Factor<Scalar>::LinearizedDenseFactor;
+  using LinearizationType = DenseLinearization<Scalar>;
 
   /**
    * Construct a Linearizer from factors and optional keys
