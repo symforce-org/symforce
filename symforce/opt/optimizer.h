@@ -75,7 +75,8 @@ class Optimizer {
   using Scalar = ScalarType;
   using NonlinearSolver = NonlinearSolverType;
   using FailureReason = typename NonlinearSolver::FailureReason;
-  using Stats = OptimizationStats<typename NonlinearSolver::MatrixType>;
+  using MatrixType = typename NonlinearSolver::MatrixType;
+  using Stats = OptimizationStats<MatrixType>;
 
   /**
    * Base constructor
@@ -173,7 +174,7 @@ class Optimizer {
   /**
    * Linearize the problem around the given values
    */
-  SparseLinearization<Scalar> Linearize(const Values<Scalar>& values);
+  Linearization<MatrixType> Linearize(const Values<Scalar>& values);
 
   /**
    * Get covariances for each optimized key at the given linearization
@@ -184,10 +185,10 @@ class Optimizer {
    *
    * May not be called before either Optimize() or Linearize() has been called.
    */
-  void ComputeAllCovariances(const SparseLinearization<Scalar>& linearization,
+  void ComputeAllCovariances(const Linearization<MatrixType>& linearization,
                              std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
   [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeAllCovariances(
-      const SparseLinearization<Scalar>& linearization,
+      const Linearization<MatrixType>& linearization,
       std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
@@ -207,11 +208,11 @@ class Optimizer {
    * exactly the set of keys requested.  `covariances_by_key` must not contain any keys that are not
    * in `keys`.
    */
-  void ComputeCovariances(const SparseLinearization<Scalar>& linearization,
+  void ComputeCovariances(const Linearization<MatrixType>& linearization,
                           const std::vector<Key>& keys,
                           std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
   [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeCovariances(
-      const SparseLinearization<Scalar>& linearization, const std::vector<Key>& keys,
+      const Linearization<MatrixType>& linearization, const std::vector<Key>& keys,
       std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
@@ -288,7 +289,7 @@ class Optimizer {
    */
   struct ComputeCovariancesStorage {
     sym::MatrixX<Scalar> covariance;
-    Eigen::SparseMatrix<Scalar> H_damped;
+    MatrixType H_damped;
   };
 
   mutable ComputeCovariancesStorage compute_covariances_storage_;
