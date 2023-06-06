@@ -170,8 +170,8 @@ namespace internal {
  *
  * TODO(aaron): Maybe kill this once we have general marginalization
  */
-template <typename Scalar>
-bool CheckKeyOrderMatchesLinearizerKeysStart(const Linearizer<Scalar>& linearizer,
+template <typename LinearizerType>
+bool CheckKeyOrderMatchesLinearizerKeysStart(const LinearizerType& linearizer,
                                              const std::vector<Key>& keys) {
   SYM_ASSERT(!keys.empty());
 
@@ -201,8 +201,8 @@ bool CheckKeyOrderMatchesLinearizerKeysStart(const Linearizer<Scalar>& linearize
  *
  * Precondition: keys equals first keys.size() entries of linearizer.Keys()
  */
-template <typename Scalar>
-size_t ComputeBlockDimension(const Linearizer<Scalar>& linearizer, const std::vector<Key>& keys) {
+template <typename LinearizerType>
+size_t ComputeBlockDimension(const LinearizerType& linearizer, const std::vector<Key>& keys) {
   // The idea is that the offset of a state index entry is the sum of the tangent dims of all of
   // the previous keys, so we just add the tangent_dim of the last key to it's offset to get the
   // sum of all tangent dims.
@@ -257,12 +257,14 @@ const std::vector<Factor<ScalarType>>& Optimizer<ScalarType, NonlinearSolverType
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-const Linearizer<ScalarType>& Optimizer<ScalarType, NonlinearSolverType>::Linearizer() const {
+const typename Optimizer<ScalarType, NonlinearSolverType>::LinearizerType&
+Optimizer<ScalarType, NonlinearSolverType>::Linearizer() const {
   return linearizer_;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-Linearizer<ScalarType>& Optimizer<ScalarType, NonlinearSolverType>::Linearizer() {
+typename Optimizer<ScalarType, NonlinearSolverType>::LinearizerType&
+Optimizer<ScalarType, NonlinearSolverType>::Linearizer() {
   return linearizer_;
 }
 

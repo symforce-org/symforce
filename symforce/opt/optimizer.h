@@ -8,9 +8,9 @@
 #include <sym/util/epsilon.h>
 
 #include "./factor.h"
+#include "./internal/linearizer_selector.h"
 #include "./levenberg_marquardt_solver.h"
 #include "./linearization.h"
-#include "./linearizer.h"
 #include "./optimization_stats.h"
 
 namespace sym {
@@ -77,6 +77,7 @@ class Optimizer {
   using FailureReason = typename NonlinearSolver::FailureReason;
   using MatrixType = typename NonlinearSolver::MatrixType;
   using Stats = OptimizationStats<MatrixType>;
+  using LinearizerType = internal::LinearizerSelector_t<MatrixType>;
 
   /**
    * Base constructor
@@ -228,8 +229,8 @@ class Optimizer {
   /**
    * Get the Linearizer object
    */
-  const sym::Linearizer<Scalar>& Linearizer() const;
-  sym::Linearizer<Scalar>& Linearizer();
+  const LinearizerType& Linearizer() const;
+  LinearizerType& Linearizer();
 
   /**
    * Update the optimizer params
@@ -280,7 +281,7 @@ class Optimizer {
   std::vector<Key> keys_;
   index_t index_;
 
-  sym::Linearizer<Scalar> linearizer_;
+  LinearizerType linearizer_;
 
   /*
    * Covariance matrix and damped Hessian, only used by ComputeCovariances() but cached here to save

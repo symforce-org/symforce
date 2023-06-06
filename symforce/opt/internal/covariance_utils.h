@@ -83,8 +83,8 @@ void ComputeCovarianceBlockWithSchurComplement(MatrixX<Scalar>& hessian_lower,
  * each variable in `keys`, the returned matrix is the corresponding block from the diagonal of
  * the full covariance matrix.  Requires that the Linearizer has already been initialized
  */
-template <typename Scalar, typename MatrixType>
-void SplitCovariancesByKey(const Linearizer<Scalar>& linearizer, const MatrixType& covariance_block,
+template <typename Scalar, typename LinearizerType, typename MatrixType>
+void SplitCovariancesByKey(const LinearizerType& linearizer, const MatrixType& covariance_block,
                            const std::vector<Key>& keys,
                            std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
   SYM_ASSERT(linearizer.IsInitialized());
