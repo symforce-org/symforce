@@ -67,16 +67,18 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
-OptimizationStats<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Optimize(
-    Values<Scalar>& values, int num_iterations, bool populate_best_linearization) {
-  OptimizationStats<Scalar> stats{};
+typename sym::Optimizer<ScalarType, NonlinearSolverType>::Stats
+Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values, int num_iterations,
+                                                     bool populate_best_linearization) {
+  Stats stats{};
   Optimize(values, num_iterations, populate_best_linearization, stats);
   return stats;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-OptimizationStats<ScalarType> Optimizer<ScalarType, NonlinearSolverType>::Optimize(
-    Values<Scalar>* values, int num_iterations, bool populate_best_linearization) {
+typename sym::Optimizer<ScalarType, NonlinearSolverType>::Stats
+Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values, int num_iterations,
+                                                     bool populate_best_linearization) {
   SYM_ASSERT(values != nullptr);
   return Optimize(*values, num_iterations, populate_best_linearization);
 }
@@ -85,7 +87,7 @@ template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
                                                           int num_iterations,
                                                           bool populate_best_linearization,
-                                                          OptimizationStats<Scalar>& stats) {
+                                                          Stats& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::Optimize", name_);
 
   if (num_iterations < 0) {
@@ -104,7 +106,7 @@ template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
                                                           int num_iterations,
                                                           bool populate_best_linearization,
-                                                          OptimizationStats<Scalar>* stats) {
+                                                          Stats* stats) {
   SYM_ASSERT(values != nullptr);
   SYM_ASSERT(stats != nullptr);
   Optimize(*values, num_iterations, populate_best_linearization, *stats);
@@ -112,29 +114,25 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
-                                                          int num_iterations,
-                                                          OptimizationStats<Scalar>& stats) {
+                                                          int num_iterations, Stats& stats) {
   return Optimize(values, num_iterations, false, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
-                                                          int num_iterations,
-                                                          OptimizationStats<Scalar>* stats) {
+                                                          int num_iterations, Stats* stats) {
   SYM_ASSERT(values != nullptr);
   SYM_ASSERT(stats != nullptr);
   Optimize(*values, num_iterations, *stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
-                                                          OptimizationStats<Scalar>& stats) {
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values, Stats& stats) {
   return Optimize(values, -1, false, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
-                                                          OptimizationStats<Scalar>* stats) {
+void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values, Stats* stats) {
   SYM_ASSERT(values != nullptr);
   SYM_ASSERT(stats != nullptr);
   Optimize(*values, *stats);
@@ -285,7 +283,7 @@ const optimizer_params_t& Optimizer<ScalarType, NonlinearSolverType>::Params() c
 template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     Values<Scalar>& values, const int num_iterations, const bool populate_best_linearization,
-    OptimizationStats<Scalar>& stats) {
+    Stats& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name_);
   SYM_ASSERT(num_iterations > 0, "num_iterations must be positive, got {}", num_iterations);
 

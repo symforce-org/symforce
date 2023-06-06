@@ -75,6 +75,7 @@ class Optimizer {
   using Scalar = ScalarType;
   using NonlinearSolver = NonlinearSolverType;
   using FailureReason = typename NonlinearSolver::FailureReason;
+  using Stats = OptimizationStats<typename NonlinearSolver::MatrixType>;
 
   /**
    * Base constructor
@@ -111,9 +112,9 @@ class Optimizer {
    *
    * @returns The optimization stats
    */
-  OptimizationStats<Scalar> Optimize(Values<Scalar>& values, int num_iterations = -1,
-                                     bool populate_best_linearization = false);
-  [[deprecated("Pass values by reference instead")]] OptimizationStats<Scalar> Optimize(
+  Stats Optimize(Values<Scalar>& values, int num_iterations = -1,
+                 bool populate_best_linearization = false);
+  [[deprecated("Pass values by reference instead")]] Stats Optimize(
       Values<Scalar>* values, int num_iterations = -1, bool populate_best_linearization = false);
 
   /**
@@ -132,10 +133,9 @@ class Optimizer {
    *    shape (e.g. for repeated calls to Optimize())
    */
   virtual void Optimize(Values<Scalar>& values, int num_iterations,
-                        bool populate_best_linearization, OptimizationStats<Scalar>& stats);
+                        bool populate_best_linearization, Stats& stats);
   [[deprecated("Pass values and stats by reference instead")]] virtual void Optimize(
-      Values<Scalar>* values, int num_iterations, bool populate_best_linearization,
-      OptimizationStats<Scalar>* stats);
+      Values<Scalar>* values, int num_iterations, bool populate_best_linearization, Stats* stats);
 
   /**
    * Optimize the given values in-place
@@ -150,9 +150,10 @@ class Optimizer {
    *    allocated fields here, will not reallocate if memory is already allocated in the
    *    required shape (e.g. for repeated calls to Optimize())
    */
-  void Optimize(Values<Scalar>& values, int num_iterations, OptimizationStats<Scalar>& stats);
-  [[deprecated("Pass values and stats by reference instead")]] void Optimize(
-      Values<Scalar>* values, int num_iterations, OptimizationStats<Scalar>* stats);
+  void Optimize(Values<Scalar>& values, int num_iterations, Stats& stats);
+  [[deprecated("Pass values and stats by reference instead")]] void Optimize(Values<Scalar>* values,
+                                                                             int num_iterations,
+                                                                             Stats* stats);
 
   /**
    * Optimize the given values in-place
@@ -165,9 +166,9 @@ class Optimizer {
    *    allocated fields here, will not reallocate if memory is already allocated in the
    *    required shape (e.g. for repeated calls to Optimize())
    */
-  void Optimize(Values<Scalar>& values, OptimizationStats<Scalar>& stats);
-  [[deprecated("Pass values and stats by reference instead")]] void Optimize(
-      Values<Scalar>* values, OptimizationStats<Scalar>* stats);
+  void Optimize(Values<Scalar>& values, Stats& stats);
+  [[deprecated("Pass values and stats by reference instead")]] void Optimize(Values<Scalar>* values,
+                                                                             Stats* stats);
 
   /**
    * Linearize the problem around the given values
@@ -245,7 +246,7 @@ class Optimizer {
    * iterations or converged
    */
   void IterateToConvergence(Values<Scalar>& values, int num_iterations,
-                            bool populate_best_linearization, OptimizationStats<Scalar>& stats);
+                            bool populate_best_linearization, Stats& stats);
 
   /**
    * Build the `linearize_func` functor for the underlying nonlinear solver
@@ -304,17 +305,17 @@ using Optimizerf = Optimizer<float>;
  * Simple wrapper to make it one function call.
  */
 template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
-OptimizationStats<Scalar> Optimize(const optimizer_params_t& params,
-                                   const std::vector<Factor<Scalar>>& factors,
-                                   Values<Scalar>& values,
-                                   const Scalar epsilon = kDefaultEpsilon<Scalar>) {
+typename Optimizer<Scalar, NonlinearSolverType>::Stats Optimize(
+    const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
+    Values<Scalar>& values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
   Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, epsilon);
   return optimizer.Optimize(values);
 }
 template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
-[[deprecated("Pass values by reference instead")]] OptimizationStats<Scalar> Optimize(
-    const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
-    Values<Scalar>* values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
+[[deprecated("Pass values by reference instead")]]
+typename Optimizer<Scalar, NonlinearSolverType>::Stats
+Optimize(const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
+         Values<Scalar>* values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
   return Optimize(params, factors, *values, epsilon);
 }
 

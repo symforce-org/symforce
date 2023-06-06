@@ -79,7 +79,7 @@ TEMPLATE_TEST_CASE("sym_dynamic_iterate", "", double, float) {
   sym::Optimizer<Scalar> optimizer(RobotLocalizationOptimizerParams(), factors,
                                    sym::kDefaultEpsilon<Scalar>, "sym_dynamic_iterate");
 
-  sym::OptimizationStats<Scalar> stats;
+  typename sym::Optimizer<Scalar>::Stats stats;
 
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);
@@ -131,7 +131,7 @@ TEMPLATE_TEST_CASE("sym_fixed_iterate", "", double, float) {
   sym::Optimizer<Scalar> optimizer(RobotLocalizationOptimizerParams(), factors,
                                    sym::kDefaultEpsilon<Scalar>, "sym_fixed_iterate");
 
-  sym::OptimizationStats<Scalar> stats;
+  typename sym::Optimizer<Scalar>::Stats stats;
 
   std::chrono::milliseconds timespan(100);
   std::this_thread::sleep_for(timespan);

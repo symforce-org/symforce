@@ -143,10 +143,9 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 
 template <typename ScalarType, typename LinearSolverType>
 optional<std::pair<optimization_status_t, levenberg_marquardt_solver_failure_reason_t>>
-LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(const LinearizeFunc& func,
-                                                                OptimizationStats<Scalar>& stats,
-                                                                const bool debug_stats,
-                                                                const bool include_jacobians) {
+LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
+    const LinearizeFunc& func, OptimizationStats<MatrixType>& stats, const bool debug_stats,
+    const bool include_jacobians) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
 
   // new -> init

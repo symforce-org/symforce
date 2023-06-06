@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <Eigen/Sparse>
+
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 
@@ -16,7 +18,7 @@ namespace sym {
 /**
  * Debug stats for a full optimization run
  */
-template <typename Scalar>
+template <typename MatrixType>
 struct OptimizationStats {
   std::vector<optimization_iteration_t> iterations;
 
@@ -32,7 +34,7 @@ struct OptimizationStats {
 
   /// The linearization at best_index (at optimized_values), filled out if
   /// populate_best_linearization=true
-  optional<SparseLinearization<Scalar>> best_linearization{};
+  optional<Linearization<MatrixType>> best_linearization{};
 
   /// The sparsity pattern of the problem jacobian
   ///
@@ -80,7 +82,11 @@ struct OptimizationStats {
 };
 
 // Shorthand instantiations
-using OptimizationStatsd = OptimizationStats<double>;
-using OptimizationStatsf = OptimizationStats<float>;
+template <typename Scalar>
+using SparseOptimizationStats = OptimizationStats<Eigen::SparseMatrix<Scalar>>;
+template <typename Scalar>
+using DenseOptimizationStats = OptimizationStats<MatrixX<Scalar>>;
+using OptimizationStatsd = SparseOptimizationStats<double>;
+using OptimizationStatsf = SparseOptimizationStats<float>;
 
 }  // namespace sym

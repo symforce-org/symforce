@@ -187,8 +187,8 @@ class LevenbergMarquardtSolver {
   // Run one iteration of the optimization. Returns the optimization status, which will be empty if
   // the optimization should not exit yet.
   optional<std::pair<optimization_status_t, FailureReason>> Iterate(
-      const LinearizeFunc& func, OptimizationStats<Scalar>& stats, const bool debug_stats = false,
-      const bool include_jacobians = false);
+      const LinearizeFunc& func, OptimizationStats<MatrixType>& stats,
+      const bool debug_stats = false, const bool include_jacobians = false);
 
   const Values<Scalar>& GetBestValues() const {
     SYM_ASSERT(state_.BestIsValid());

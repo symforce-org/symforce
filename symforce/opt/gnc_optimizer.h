@@ -47,7 +47,7 @@ class GncOptimizer : public BaseOptimizerType {
    */
   using BaseOptimizerType::Optimize;
   void Optimize(Values<Scalar>& values, int num_iterations, bool populate_best_linearization,
-                OptimizationStats<Scalar>& stats) override {
+                typename BaseOptimizer::Stats& stats) override {
     SYM_TIME_SCOPE("GNC<{}>::Optimize", BaseOptimizer::GetName());
 
     if (num_iterations < 0) {
@@ -105,13 +105,14 @@ class GncOptimizer : public BaseOptimizerType {
   }
   [[deprecated("Pass values and stats by reference instead")]] void Optimize(
       Values<Scalar>* const values, int num_iterations, bool populate_best_linearization,
-      OptimizationStats<Scalar>* const stats) override {
+      typename BaseOptimizer::Stats* const stats) override {
     Optimize(*values, num_iterations, populate_best_linearization, *stats);
   }
 
  private:
   void OptimizeContinue(Values<Scalar>& values, const int num_iterations,
-                        const bool populate_best_linearization, OptimizationStats<Scalar>& stats) {
+                        const bool populate_best_linearization,
+                        typename BaseOptimizer::Stats& stats) {
     SYM_ASSERT(num_iterations >= 0);
     SYM_ASSERT(this->IsInitialized());
 

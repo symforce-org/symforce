@@ -61,7 +61,7 @@ void RunFixed() {
                                    "Robot3DScanMatchingOptimizerFixed");
 
   // Optimize
-  sym::OptimizationStats<double> stats = optimizer.Optimize(values);
+  sym::Optimizerd::Stats stats = optimizer.Optimize(values);
 
   // Print out results
   spdlog::info("Optimized State:");
