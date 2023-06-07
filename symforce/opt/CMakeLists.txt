@@ -28,7 +28,7 @@ if (NOT fmt_FOUND)
 
   add_fmt()
 else()
-  message(STATUS "fmt found")
+  message(STATUS "fmt found: ${fmt_VERSION}")
 endif()
 
 # ------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ if (NOT spdlog_FOUND)
 
   add_spdlog()
 else()
-  message(STATUS "spdlog found")
+  message(STATUS "spdlog found: ${spdlog_VERSION}")
 endif()
 
 # ------------------------------------------------------------------------------
