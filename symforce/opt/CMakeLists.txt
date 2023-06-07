@@ -58,7 +58,7 @@ endif()
 # tl::optional
 
 find_package(tl-optional QUIET)
-if (NOT tl_optional_FOUND)
+if (NOT tl-optional_FOUND)
   message(STATUS "tl::optional not found, adding with FetchContent")
   function(add_tl_optional)
     set(OPTIONAL_BUILD_TESTS OFF CACHE INTERNAL "tl::optional shouldn't build tests")
@@ -72,7 +72,7 @@ if (NOT tl_optional_FOUND)
 
   add_tl_optional()
 else()
-  message(STATUS "tl::optional found")
+  message(STATUS "tl::optional found: ${tl-optional_VERSION}")
 endif()
 
 # ------------------------------------------------------------------------------
