@@ -20,16 +20,16 @@ struct PreintegratedImuMeasurements {
   using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
   using Matrix33 = Eigen::Matrix<Scalar, 3, 3>;
 
-  // The rotation that occured over the measurement period; i.e., maps the coordinates of a vector
+  // The rotation that occurred over the measurement period; i.e., maps the coordinates of a vector
   // in the body frame of the end of the measurement period to the coordinates of the vector in the
   // body frame at the start of the measurement period.
   sym::Rot3<Scalar> DR;
 
-  // The velocity change that occured over the measurement period in the body frame of the
+  // The velocity change that occurred over the measurement period in the body frame of the
   // initial measurement (assuming 0 acceleration due to gravity)
   Vector3 Dv;
 
-  // The position change that occured over the measurement period in the body frame of the
+  // The position change that occurred over the measurement period in the body frame of the
   // initial measurement (assuming 0 acceleration due to gravity and 0 initial velocity)
   Vector3 Dp;
 
@@ -41,10 +41,10 @@ struct PreintegratedImuMeasurements {
   Matrix33 Dp_D_accel_bias;
   Matrix33 Dp_D_gyro_bias;
 
-  // The assumed accelometer bias used during preintegration
+  // The original accelerometer bias used during preintegration
   Vector3 accel_bias;
 
-  // The assumed gyroscope bias used during preintegration
+  // The original gyroscope bias used during preintegration
   Vector3 gyro_bias;
 
   // The elapsed time of the measurement period

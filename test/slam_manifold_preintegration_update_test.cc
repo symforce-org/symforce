@@ -105,7 +105,7 @@ class MultiVarNormalDist {
   explicit MultiVarNormalDist(const Eigen::MatrixXd covar) : L{covar.llt().matrixL()}, dist{} {}
 
   /**
-   * Returns a matrix whose (count) colums are samples from the distribution.
+   * Returns a matrix whose (count) columns are samples from the distribution.
    */
   template <typename Generator>
   Eigen::MatrixXd Sample(Generator& gen, const int count) {
@@ -121,8 +121,8 @@ class MultiVarNormalDist {
 Eigen::MatrixXd Covariance(const Eigen::MatrixXd& samples) {
   const size_t sample_size = samples.cols();
   const Eigen::VectorXd avg_col = samples.rowwise().sum() / sample_size;
-  const Eigen::MatrixXd meanless_samples = samples.colwise() - avg_col;
-  return (meanless_samples * meanless_samples.transpose()) / (sample_size - 1);
+  const Eigen::MatrixXd zero_mean_samples = samples.colwise() - avg_col;
+  return (zero_mean_samples * zero_mean_samples.transpose()) / (sample_size - 1);
 }
 
 TEST_CASE("Test MultiVarNormalDist generates samples with correct covariance", "[slam]") {
@@ -162,7 +162,7 @@ static const Eigen::Vector3d kTrueAccel = Eigen::Vector3d::Constant(4.3);
 static const Eigen::Vector3d kTrueGyro = Eigen::Vector3d::Constant(10.2);
 }  // namespace example
 
-TEST_CASE("Test ImuPreintegator.covariance", "[slam]") {
+TEST_CASE("Test ImuPreintegrator.covariance", "[slam]") {
   // In order to test that the computed covariance is correct, we sample the values many
   // times to numerically calculate the covariance to compare.
   using M99 = Eigen::Matrix<double, 9, 9>;
