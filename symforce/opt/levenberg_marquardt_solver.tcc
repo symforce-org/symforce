@@ -70,7 +70,15 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
       }
     }
 
-    spdlog::warn("LM<{}> Zero on diagonal at indices: {}", id_, zero_diagonal_indices_);
+    constexpr int max_indices_to_show{15};
+    if (zero_diagonal_indices_.size() > max_indices_to_show) {
+      spdlog::warn("LM<{}> Zero on diagonal at indices: [{}, ... ({} omitted)]", id_,
+                   fmt::join(zero_diagonal_indices_.cbegin(),
+                             zero_diagonal_indices_.cbegin() + max_indices_to_show, ", "),
+                   zero_diagonal_indices_.size() - max_indices_to_show);
+    } else {
+      spdlog::warn("LM<{}> Zero on diagonal at indices: {}", id_, zero_diagonal_indices_);
+    }
   }
 }
 
