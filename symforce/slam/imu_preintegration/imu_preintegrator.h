@@ -39,16 +39,17 @@ class ImuPreintegrator {
   /**
    * Integrate a new measurement.
    *
-   * Args:
-   *   measured_accel is the next accelerometer measurement after the last integrated measurement
-   *   measured_gyro is the next gyroscope measurement after the last integrated measurement
-   *   accel_cov is the covariance of the accelerometer measurement (represented by its diagonal
-   *     entries) [(radians / time)^2 * time]
-   *   gyro_cov is the covariance of the gyroscope measurement (represented by its diagonal
-   *     entries) [(radians / time)^2 * time]
-   *   dt is the time span over which these measurements were made
+   *   @param measured_accel the next accelerometer measurement after the last integrated
+   * measurement
+   *   @param measured_gyro the next gyroscope measurement after the last integrated measurement
+   *   @param accel_cov the covariance of the accelerometer measurement (represented by its diagonal
+   *     entries) `[(radians / time)^2 * time]`
+   *   @param gyro_cov the covariance of the gyroscope measurement (represented by its diagonal
+   *     entries) `[(radians / time)^2 * time]`
+   *   @param dt the time span over which these measurements were made
    *
    * Postcondition:
+   *
    *   If the orientation, velocity, and position were R0, v0, and p0 at the start of the first
    *   integrated IMU measurements, and Rf, vf, and pf are the corresponding values at the end of
    *   the measurement described by the arguments, DT is the total time covered by the integrated

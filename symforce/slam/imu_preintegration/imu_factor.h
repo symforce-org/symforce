@@ -27,9 +27,9 @@ namespace sym {
  * preintegrated measurements when the IMU bias estimate changes during optimization, but rather
  * uses a first order approximation linearized at the IMU biases given during preintegration.
  *
- * The gravity argument should be [0, 0, -g] (where g is 9.8, assuming your world frame is
+ * The gravity argument should be `[0, 0, -g]` (where g is 9.8, assuming your world frame is
  * gravity aligned so that the -z direction points towards the Earth) unless your IMU reads 0
- * acceleration while stationary, in which case it should be [0, 0, 0].
+ * acceleration while stationary, in which case it should be `[0, 0, 0]`.
  *
  * More generally, the gravity argument should yield the true acceleration when added to the
  * accelerometer measurement (after the measurement has been converted to the world frame).
@@ -40,93 +40,93 @@ namespace sym {
  *
  * Based heavily on the on manifold ImuFactor found in GTSAM and on the paper:
  *
- * Christian Forster, Luca Carlone, Frank Dellaert, and Davide Scaramuzza,
- * “IMU Preintegration on Manifold for Efficient Visual-Inertial Maximum-a-Posteriori Estimation”,
- * Robotics: Science and Systems (RSS), 2015.
+ *     Christian Forster, Luca Carlone, Frank Dellaert, and Davide Scaramuzza,
+ *     “IMU Preintegration on Manifold for Efficient Visual-Inertial Maximum-a-Posteriori
+ *     Estimation”, Robotics: Science and Systems (RSS), 2015.
  *
  * Example Usage:
  *
- *   enum Var : char {
- *     POSE = 'p',        // Pose3d
- *     VELOCITY = 'v',    // Vector3d
- *     ACCEL_BIAS = 'A',  // Vector3d
- *     GYRO_BIAS = 'G',   // Vector3d
- *     GRAVITY = 'g',     // Vector3d
- *     EPSILON = 'e'      // Scalar
- *   };
+ *     enum Var : char {
+ *       POSE = 'p',        // Pose3d
+ *       VELOCITY = 'v',    // Vector3d
+ *       ACCEL_BIAS = 'A',  // Vector3d
+ *       GYRO_BIAS = 'G',   // Vector3d
+ *       GRAVITY = 'g',     // Vector3d
+ *       EPSILON = 'e'      // Scalar
+ *     };
  *
- *   struct ImuMeasurement {
- *     Eigen::Vector3d acceleration;
- *     Eigen::Vector3d angular_velocity;
- *     double duration;
- *   };
+ *     struct ImuMeasurement {
+ *       Eigen::Vector3d acceleration;
+ *       Eigen::Vector3d angular_velocity;
+ *       double duration;
+ *     };
  *
- *   int main() {
- *     // Dummy function declarations
- *     std::vector<ImuMeasurement> GetMeasurementsBetween(double start_time, double end_time);
- *     std::vector<double> GetKeyFrameTimes();
- *     Eigen::Vector3d GetAccelBiasEstimate(double time);
- *     Eigen::Vector3d GetGyroBiasEstimate(double time);
- *     void AppendOtherFactors(std::vector<sym::Factord> & factors);
+ *     int main() {
+ *       // Dummy function declarations
+ *       std::vector<ImuMeasurement> GetMeasurementsBetween(double start_time, double end_time);
+ *       std::vector<double> GetKeyFrameTimes();
+ *       Eigen::Vector3d GetAccelBiasEstimate(double time);
+ *       Eigen::Vector3d GetGyroBiasEstimate(double time);
+ *       void AppendOtherFactors(std::vector<sym::Factord> & factors);
  *
- *     // Example accelerometer and gyroscope covariances
- *     const Eigen::Vector3d accel_cov = Eigen::Vector3d::Constant(1e-5);
- *     const Eigen::Vector3d gyro_cov = Eigen::Vector3d::Constant(1e-5);
+ *       // Example accelerometer and gyroscope covariances
+ *       const Eigen::Vector3d accel_cov = Eigen::Vector3d::Constant(1e-5);
+ *       const Eigen::Vector3d gyro_cov = Eigen::Vector3d::Constant(1e-5);
  *
- *     std::vector<sym::Factord> factors;
+ *       std::vector<sym::Factord> factors;
  *
- *     // GetKeyFrameTimes assumed to return at least 2 times
- *     std::vector<double> key_frame_times = GetKeyFrameTimes();
+ *       // GetKeyFrameTimes assumed to return at least 2 times
+ *       std::vector<double> key_frame_times = GetKeyFrameTimes();
  *
- *     // Integrating Imu measurements between keyframes, creating an ImuFactor for each
- *     for (int i = 0; i < static_cast<int>(key_frame_times.size()) - 1; i++) {
- *       const double start_time = key_frame_times[i];
- *       const double end_time = key_frame_times[i + 1];
+ *       // Integrating Imu measurements between keyframes, creating an ImuFactor for each
+ *       for (int i = 0; i < static_cast<int>(key_frame_times.size()) - 1; i++) {
+ *         const double start_time = key_frame_times[i];
+ *         const double end_time = key_frame_times[i + 1];
  *
- *       const std::vector<ImuMeasurement> measurements = GetMeasurementsBetween(start_time,
- *                                                                               end_time);
+ *         const std::vector<ImuMeasurement> measurements = GetMeasurementsBetween(start_time,
+ *                                                                                 end_time);
  *
- *       // ImuPreintegrator should be initialized with the best guesses for the IMU biases
- *       sym::ImuPreintegrator<double> integrator(GetAccelBiasEstimate(start_time),
- *                                                GetGyroBiasEstimate(start_time));
- *       for (const ImuMeasurement& meas : measurements) {
- *         integrator.IntegrateMeasurement(meas.acceleration, meas.angular_velocity, accel_cov,
- *                                         gyro_cov, meas.duration);
+ *         // ImuPreintegrator should be initialized with the best guesses for the IMU biases
+ *         sym::ImuPreintegrator<double> integrator(GetAccelBiasEstimate(start_time),
+ *                                                  GetGyroBiasEstimate(start_time));
+ *         for (const ImuMeasurement& meas : measurements) {
+ *           integrator.IntegrateMeasurement(meas.acceleration, meas.angular_velocity, accel_cov,
+ *                                           gyro_cov, meas.duration);
+ *         }
+ *
+ *         factors.push_back(sym::ImuFactor<double>(integrator)
+ *                               .Factor({{Var::POSE, i},
+ *                                        {Var::VELOCITY, i},
+ *                                        {Var::POSE, i + 1},
+ *                                        {Var::VELOCITY, i + 1},
+ *                                        {Var::ACCEL_BIAS, i},
+ *                                        {Var::GYRO_BIAS, i},
+ *                                        {Var::GRAVITY},
+ *                                        {Var::EPSILON}}));
  *       }
  *
- *       factors.push_back(sym::ImuFactor<double>(integrator)
- *                             .Factor({{Var::POSE, i},
- *                                      {Var::VELOCITY, i},
- *                                      {Var::POSE, i + 1},
- *                                      {Var::VELOCITY, i + 1},
- *                                      {Var::ACCEL_BIAS, i},
- *                                      {Var::GYRO_BIAS, i},
- *                                      {Var::GRAVITY},
- *                                      {Var::EPSILON}}));
+ *       // Adding any other factors there might be for the problem
+ *       AppendOtherFactors(factors);
+ *
+ *       sym::Optimizerd optimizer(sym::DefaultOptimizerParams(), factors);
+ *
+ *       // Build Values
+ *       sym::Valuesd values;
+ *       for (int i = 0; i < key_frame_times.size(); i++) {
+ *         values.Set({Var::POSE, i}, sym::Pose3d());
+ *         values.Set({Var::VELOCITY, i}, Eigen::Vector3d::Zero());
+ *       }
+ *       for (int i = 0; i < key_frame_times.size() - 1; i++) {
+ *         values.Set({Var::ACCEL_BIAS, i}, GetAccelBiasEstimate(key_frame_times[i]));
+ *         values.Set({Var::GYRO_BIAS, i}, GetGyroBiasEstimate(key_frame_times[i]));
+ *       }
+ *       // gravity should point towards the direction of acceleration
+ *       values.Set({Var::GRAVITY}, Eigen::Vector3d(0.0, 0.0, -9.8));
+ *       values.Set({Var::EPSILON}, sym::kDefaultEpsilond);
+ *       // Initialize any other items in values ...
+ *
+ *       optimizer.Optimize(values);
  *     }
- *
- *     // Adding any other factors there might be for the problem
- *     AppendOtherFactors(factors);
- *
- *     sym::Optimizerd optimizer(sym::DefaultOptimizerParams(), factors);
- *
- *     // Build Values
- *     sym::Valuesd values;
- *     for (int i = 0; i < key_frame_times.size(); i++) {
- *       values.Set({Var::POSE, i}, sym::Pose3d());
- *       values.Set({Var::VELOCITY, i}, Eigen::Vector3d::Zero());
- *     }
- *     for (int i = 0; i < key_frame_times.size() - 1; i++) {
- *       values.Set({Var::ACCEL_BIAS, i}, GetAccelBiasEstimate(key_frame_times[i]));
- *       values.Set({Var::GYRO_BIAS, i}, GetGyroBiasEstimate(key_frame_times[i]));
- *     }
- *     // gravity should point towards the direction of acceleration
- *     values.Set({Var::GRAVITY}, Eigen::Vector3d(0.0, 0.0, -9.8));
- *     values.Set({Var::EPSILON}, sym::kDefaultEpsilond);
- *     // Initialize any other items in values ...
- *
- *     optimizer.Optimize(values);
- *   }
  */
 template <typename Scalar>
 class ImuFactor {
@@ -156,26 +156,25 @@ class ImuFactor {
    * Time step i is the time of the first IMU measurement of the interval.
    * Time step j is the time after the last IMU measurement of the interval.
    *
-   * Args:
-   *     pose_i: Pose at time step i (world_T_body)
-   *     vel_i: Velocity at time step i (world frame)
-   *     pose_j: Pose at time step j (world_T_body)
-   *     vel_j: Velocity at time step j (world frame)
-   *     accel_bias_i: The bias of the accelerometer measurements between timesteps i and j
-   *     gyro_bias_i: The bias of the gyroscope measurements between timesteps i and j
-   *     gravity: Acceleration due to gravity (in the same frame as pose_x and vel_x),
-   *              i.e., the vector which when added to the accelerometer measurements
-   *              gives the true acceleration (up to bias and noise) of the IMU.
-   *     epsilon: epsilon used for numerical stability
+   * @param pose_i: Pose at time step i (world_T_body)
+   * @param vel_i: Velocity at time step i (world frame)
+   * @param pose_j: Pose at time step j (world_T_body)
+   * @param vel_j: Velocity at time step j (world frame)
+   * @param accel_bias_i: The bias of the accelerometer measurements between timesteps i and j
+   * @param gyro_bias_i: The bias of the gyroscope measurements between timesteps i and j
+   * @param gravity: Acceleration due to gravity (in the same frame as pose_x and vel_x),
+   *          i.e., the vector which when added to the accelerometer measurements
+   *          gives the true acceleration (up to bias and noise) of the IMU.
+   * @param epsilon: epsilon used for numerical stability
    *
-   * Outputs:
-   *     res: The 9dof whitened local coordinate difference between predicted and estimated state
-   *     jacobian: (9x24) jacobian of res wrt args pose_i (6), vel_i (3), pose_j (6), vel_j (3),
-   *               accel_bias_i (3), gyro_bias_i (3)
-   *     hessian: (24x24) Gauss-Newton hessian for args pose_i (6), vel_i (3), pose_j (6),
-   *              vel_j (3), accel_bias_i (3), gyro_bias_i (3)
-   *     rhs: (24x1) Gauss-Newton rhs for args pose_i (6), vel_i (3), pose_j (6), vel_j (3),
-   *          accel_bias_i (3), gyro_bias_i (3)
+   * @param[out] res: The 9dof whitened local coordinate difference between predicted and estimated
+   *           state
+   * @param[out] jacobian: (9x24) jacobian of res wrt args pose_i (6), vel_i (3), pose_j (6), vel_j
+   *           (3), accel_bias_i (3), gyro_bias_i (3)
+   * @param[out] hessian: (24x24) Gauss-Newton hessian for args pose_i (6), vel_i (3), pose_j (6),
+   *           vel_j (3), accel_bias_i (3), gyro_bias_i (3)
+   * @param[out] rhs: (24x1) Gauss-Newton rhs for args pose_i (6), vel_i (3), pose_j (6), vel_j (3),
+   *           accel_bias_i (3), gyro_bias_i (3)
    */
   void operator()(const sym::Pose3<Scalar>& pose_i, const Eigen::Matrix<Scalar, 3, 1>& vel_i,
                   const sym::Pose3<Scalar>& pose_j, const Eigen::Matrix<Scalar, 3, 1>& vel_j,
