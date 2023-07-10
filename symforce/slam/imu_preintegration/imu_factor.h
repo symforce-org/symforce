@@ -139,7 +139,7 @@ class ImuFactor {
    * Construct an ImuFactor connecting two states from the (preintegrated) imu measurements
    * between them.
    */
-  ImuFactor(const ImuPreintegrator<Scalar>& preintegrator);
+  explicit ImuFactor(const ImuPreintegrator<Scalar>& preintegrator);
 
   /**
    * Construct a Factor object that can be passed to an Optimizer object given the keys to
