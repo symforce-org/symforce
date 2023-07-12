@@ -381,3 +381,66 @@ TEST_CASE("Verify handwritten and auto-derivative impls are equivalent", "[slam]
     CHECK(sym::IsClose(new_Dp_D_gyro_bias, new_Dp_D_gyro_bias_auto, 1e-8));
   }
 }
+
+TEST_CASE("Verify bias-corrected delta", "[slam]") {
+  // This test checks that if we integrate the same IMU data with two slightly different imu biases,
+  // then we can use the first-order Jacobian to correct the pre-integrated delta.
+
+  Eigen::Vector3d accel_cov{0.1, 0.1, 0.1};
+  Eigen::Vector3d gyro_cov{0.1, 0.1, 0.1};
+
+  // True imu biases
+  Eigen::Vector3d accel_bias0{0, 0, 0};
+  Eigen::Vector3d gyro_bias0{0, 0, 0};
+
+  // Slightly different imu biases than the true one
+  Eigen::Vector3d accel_bias1{0.01, 0.01, 0.01};
+  Eigen::Vector3d gyro_bias1{0.01, 0.01, 0.01};
+
+  // preint0 will integrate with bias0
+  sym::ImuPreintegrator<double> preint0(accel_bias0, gyro_bias0);
+  // preint1 will integrate with bias1
+  sym::ImuPreintegrator<double> preint1(accel_bias1, gyro_bias1);
+
+  constexpr double dt = 0.005;
+
+  for (int i = 0; i < 100; ++i) {
+    Eigen::Vector3d accel = Eigen::Vector3d::Random();
+    Eigen::Vector3d gyro = Eigen::Vector3d::Random();
+
+    // Integrate both
+    preint0.IntegrateMeasurement(accel, gyro, accel_cov, gyro_cov, dt);
+    preint1.IntegrateMeasurement(accel, gyro, accel_cov, gyro_cov, dt);
+  }
+
+  const auto& pim0 = preint0.PreintegratedMeasurements();
+  const auto& pim1 = preint1.PreintegratedMeasurements();
+
+  // original delta1 (this should be the same as pim1)
+  const auto delta1 =
+      preint1.PreintegratedMeasurements().GetBiasCorrectedDelta(accel_bias1, gyro_bias1);
+
+  // corrected delta1
+  const auto delta1_corrected =
+      preint1.PreintegratedMeasurements().GetBiasCorrectedDelta(accel_bias0, gyro_bias0);
+
+  CAPTURE(pim0.Dp.transpose(), pim0.Dv.transpose(), pim0.DR);
+  CAPTURE(pim1.Dp.transpose(), pim1.Dv.transpose(), pim1.DR);
+  CAPTURE(delta1.Dp.transpose(), delta1.Dv.transpose(), delta1.DR);
+  CAPTURE(delta1_corrected.Dp.transpose(), delta1_corrected.Dv.transpose(), delta1_corrected.DR);
+
+  constexpr double kTol = 1e-4;
+  CHECK(pim1.Dp.isApprox(delta1.Dp, kTol));
+  CHECK(pim1.Dv.isApprox(delta1.Dv, kTol));
+  CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim1.DR, delta1.DR, kTol));
+
+  // Check that delta1 is not close to the true delta (pim0)
+  CHECK(!pim0.Dp.isApprox(delta1.Dp, kTol));
+  CHECK(!pim0.Dv.isApprox(delta1.Dv, kTol));
+  CHECK(!sym::LieGroupOps<sym::Rot3d>::IsClose(pim0.DR, delta1.DR, kTol));
+
+  // Check that the corrected delta1 is sufficiently close to the true delta (pim0)
+  CHECK(pim0.Dp.isApprox(delta1_corrected.Dp, kTol));
+  CHECK(pim0.Dv.isApprox(delta1_corrected.Dv, kTol));
+  CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim0.DR, delta1_corrected.DR, kTol));
+}

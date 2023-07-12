@@ -50,6 +50,19 @@ struct PreintegratedImuMeasurements {
   // The elapsed time of the measurement period
   Scalar integrated_dt;
 
+  // A convenient struct that holds the Preintegrated delta
+  struct Delta {
+    sym::Rot3<Scalar> DR{};
+    Vector3 Dv{Vector3::Zero()};
+    Vector3 Dp{Vector3::Zero()};
+    Scalar dt{};  // elapsed time
+  };
+
+  // Given new accel and gyro biases, return a first-order correction to the preintegrated delta
+  // The user is responsible for making sure that the new biases are sufficiently close to the
+  // original biases used during the preintegration.
+  Delta GetBiasCorrectedDelta(const Vector3& new_accel_bias, const Vector3& new_gyro_bias) const;
+
   /**
    * Initialize instance struct with accel_bias and gyro_bias and all other values
    * zeroed out (scalars, vectors, and matrices) or set to the identity (DR).

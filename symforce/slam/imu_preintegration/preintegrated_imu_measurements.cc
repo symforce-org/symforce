@@ -22,6 +22,21 @@ PreintegratedImuMeasurements<Scalar>::PreintegratedImuMeasurements(const Vector3
       gyro_bias{gyro_bias},
       integrated_dt{0.0} {}
 
+template <typename Scalar>
+auto PreintegratedImuMeasurements<Scalar>::GetBiasCorrectedDelta(const Vector3& new_accel_bias,
+                                                                 const Vector3& new_gyro_bias) const
+    -> Delta {
+  const Vector3 accel_bias_delta = new_accel_bias - accel_bias;
+  const Vector3 gyro_bias_delta = new_gyro_bias - gyro_bias;
+
+  Delta delta;
+  delta.dt = integrated_dt;
+  delta.DR = DR.Retract(DR_D_gyro_bias * gyro_bias_delta);
+  delta.Dv.noalias() = Dv + Dv_D_accel_bias * accel_bias_delta + Dv_D_gyro_bias * gyro_bias_delta;
+  delta.Dp.noalias() = Dp + Dp_D_accel_bias * accel_bias_delta + Dp_D_gyro_bias * gyro_bias_delta;
+  return delta;
+}
+
 }  // namespace sym
 
 template struct sym::PreintegratedImuMeasurements<double>;
