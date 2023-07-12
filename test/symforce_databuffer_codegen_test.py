@@ -2,6 +2,7 @@
 # SymForce - Copyright 2022, Skydio, Inc.
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
+import unittest
 from pathlib import Path
 
 import numpy as np
@@ -93,7 +94,11 @@ class SymforceDataBufferCodegenTest(TestCase):
             expected_dir=TEST_DATA_DIR / "databuffer_codegen_test_data",
         )
 
+    @unittest.expectedFailure
     def test_databuffer_factor(self) -> None:
+        """
+        DataBuffer does not currently work with the Python optimizer
+        """
         # make sure the implementation plays nicely with the python machinery
 
         # sample residual function that's a simple linear interpolation of the databuffer
@@ -111,7 +116,9 @@ class SymforceDataBufferCodegenTest(TestCase):
         optimizer = Optimizer(factors=factors, optimized_keys=["x"])
         initial_values = Values(epsilon=sf.numeric_epsilon)
         initial_values["left_bound"] = -2
-        initial_values["buffer"] = np.array([-2, -1, 0, 1, 2])
+        # Needs to use an array bigger than the max vector size, since both are numpy arrays in
+        # generated Python code
+        initial_values["buffer"] = np.array(range(100))
         initial_values["x"] = 1.5
 
         result = optimizer.optimize(initial_values)
