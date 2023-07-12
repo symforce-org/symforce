@@ -30,10 +30,10 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
         """
         element = self.element()
         dim = LieGroupOps.tangent_dim(element)
-        pertubation = list(float(f) for f in np.random.normal(scale=0.1, size=(dim,)))
+        perturbation = list(float(f) for f in np.random.normal(scale=0.1, size=(dim,)))
 
         # Compute the hat matrix
-        hat = element.hat(pertubation)
+        hat = element.hat(perturbation)
 
         # Take the matrix exponential (only supported with sympy)
         import sympy
@@ -41,7 +41,7 @@ class GeoPose2SE2Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = sf.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = sf.unsupported.Pose2_SE2.from_tangent(pertubation, epsilon=self.EPSILON)
+        expmap = sf.unsupported.Pose2_SE2.from_tangent(perturbation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_homogenous_matrix()
 
         # They should match!

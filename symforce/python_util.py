@@ -280,7 +280,7 @@ def get_class_for_method(func: T.Callable) -> T.Type:
 
 class AttrDict(dict):
     """
-    A simple attr-dict, i.e. a dictinary whose keys are also accessible directly as fields
+    A simple attr-dict, i.e. a dictionary whose keys are also accessible directly as fields
 
     Based on http://stackoverflow.com/a/14620633/53997
     """

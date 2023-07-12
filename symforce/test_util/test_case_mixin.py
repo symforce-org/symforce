@@ -92,9 +92,9 @@ class SymforceTestCaseMixin(unittest.TestCase):
         Check that two LieGroup elements are close.
         """
         epsilon = 10 ** (-max(9, places + 1))
-        # Compute the tangent space pertubation around `actual` that produces `desired`
+        # Compute the tangent space perturbation around `actual` that produces `desired`
         local_coordinates = LieGroupOps.local_coordinates(actual, desired, epsilon=epsilon)
-        # Compute the identity tangent space pertubation to compare against
+        # Compute the identity tangent space perturbation to compare against
         identity = sf.Matrix.zeros(LieGroupOps.tangent_dim(actual), 1)
         return np.testing.assert_almost_equal(
             actual=StorageOps.evalf(local_coordinates),

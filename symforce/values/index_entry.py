@@ -47,7 +47,7 @@ class IndexEntry:
     # _module and _qualname are private because they need to be of a very particular format for
     # the method datatype to work. To support this, we mark them as not being init fields and
     # instead generate them in __post_init__ from stored_datatype. Together, they represent the
-    # stored_datatype in a serializeable format.
+    # stored_datatype in a serializable format.
     _module: str = dataclasses.field(init=False)
     _qualname: str = dataclasses.field(init=False)
     shape: T.Optional[T.Tuple[int, ...]] = None
@@ -72,11 +72,11 @@ class IndexEntry:
         Precondition:
             The datatype stored must have had its module loaded (i.e., if the stored datatype is
             :class:`sf.Rot3 <symforce.geo.rot3.Rot3>`, :mod:`symforce.geo` must have been imported).
-            The datatype must also be accesible from the module (dynamically created types do not
+            The datatype must also be accessible from the module (dynamically created types do not
             do this. For example, the sf.Matrix types with more than 10 rows or columns)
         """
         assert "<locals>" not in self._qualname.split("."), (
-            f"Datatype {self._qualname} must be accesible from the module: dynamically created"
+            f"Datatype {self._qualname} must be accessible from the module: dynamically created"
             + " types do not do this. For example, the sf.Matrix types with more than 10 rows or"
             + " or columns."
         )

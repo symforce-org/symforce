@@ -240,10 +240,10 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         """
         element = self.element()
         dim = LieGroupOps.tangent_dim(element)
-        pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
+        perturbation = list(np.random.normal(scale=0.1, size=(dim,)))
 
         # Compute the hat matrix
-        hat = sf.M(element.hat(pertubation))
+        hat = sf.M(element.hat(perturbation))
 
         # Take the matrix exponential (only supported with sympy)
         import sympy
@@ -251,7 +251,7 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
         hat_exp = sf.M(sympy.expand(sympy.exp(sympy.S(hat.mat))))
 
         # As a comparison, take the exponential map and convert to a matrix
-        expmap = sf.Rot3.from_tangent(pertubation, epsilon=self.EPSILON)
+        expmap = sf.Rot3.from_tangent(perturbation, epsilon=self.EPSILON)
         matrix_expected = expmap.to_rotation_matrix()
 
         # They should match!

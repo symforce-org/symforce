@@ -411,18 +411,19 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[geo_package]", sym::Rot2<double>, sym
   std::mt19937 gen(24362);
   TestIsClose<T>::Test(gen);
 
-  const TangentVec pertubation = sym::Random<TangentVec>(gen);
-  const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+  const TangentVec perturbation = sym::Random<TangentVec>(gen);
+  const T value = sym::LieGroupOps<T>::FromTangent(perturbation, epsilon);
 
-  const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
-  CHECK(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
+  const TangentVec recovered_perturbation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
+  CHECK(perturbation.isApprox(recovered_perturbation, std::sqrt(epsilon)));
 
-  const T recovered_identity = sym::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
+  const T recovered_identity =
+      sym::LieGroupOps<T>::Retract(value, -recovered_perturbation, epsilon);
   CHECK(recovered_identity.IsApprox(identity, std::sqrt(epsilon)));
 
-  const TangentVec pertubation_zero =
+  const TangentVec perturbation_zero =
       sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
-  CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+  CHECK(perturbation_zero.norm() < std::sqrt(epsilon));
 
   const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
   CHECK(identity_interp.IsApprox(identity, std::sqrt(epsilon)));
@@ -501,20 +502,21 @@ TEMPLATE_TEST_CASE("Test Scalar Lie group ops", "[geo_package]", double, float) 
   CHECK(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
   std::mt19937 gen(42);
-  const TangentVec pertubation = sym::Random<TangentVec>(gen);
-  const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+  const TangentVec perturbation = sym::Random<TangentVec>(gen);
+  const T value = sym::LieGroupOps<T>::FromTangent(perturbation, epsilon);
 
   TestIsClose<T>::Test(gen);
 
-  const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
-  CHECK(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
+  const TangentVec recovered_perturbation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
+  CHECK(perturbation.isApprox(recovered_perturbation, std::sqrt(epsilon)));
 
-  const T recovered_identity = sym::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
+  const T recovered_identity =
+      sym::LieGroupOps<T>::Retract(value, -recovered_perturbation, epsilon);
   CHECK(fabs(recovered_identity - identity) < std::sqrt(epsilon));
 
-  const TangentVec pertubation_zero =
+  const TangentVec perturbation_zero =
       sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
-  CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+  CHECK(perturbation_zero.norm() < std::sqrt(epsilon));
 
   const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
   CHECK(fabs(identity_interp - identity) < std::sqrt(epsilon));
@@ -544,20 +546,21 @@ TEMPLATE_TEST_CASE("Test Matrix Lie group ops", "[geo_package]", sym::Vector1<do
   CHECK(tangent_dim <= sym::StorageOps<T>::StorageDim());
 
   std::mt19937 gen(42);
-  const TangentVec pertubation = sym::Random<TangentVec>(gen);
-  const T value = sym::LieGroupOps<T>::FromTangent(pertubation, epsilon);
+  const TangentVec perturbation = sym::Random<TangentVec>(gen);
+  const T value = sym::LieGroupOps<T>::FromTangent(perturbation, epsilon);
 
   TestIsClose<T>::Test(gen);
 
-  const TangentVec recovered_pertubation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
-  CHECK(pertubation.isApprox(recovered_pertubation, std::sqrt(epsilon)));
+  const TangentVec recovered_perturbation = sym::LieGroupOps<T>::ToTangent(value, epsilon);
+  CHECK(perturbation.isApprox(recovered_perturbation, std::sqrt(epsilon)));
 
-  const T recovered_identity = sym::LieGroupOps<T>::Retract(value, -recovered_pertubation, epsilon);
+  const T recovered_identity =
+      sym::LieGroupOps<T>::Retract(value, -recovered_perturbation, epsilon);
   CHECK(recovered_identity.isApprox(identity, std::sqrt(epsilon)));
 
-  const TangentVec pertubation_zero =
+  const TangentVec perturbation_zero =
       sym::LieGroupOps<T>::LocalCoordinates(identity, recovered_identity, epsilon);
-  CHECK(pertubation_zero.norm() < std::sqrt(epsilon));
+  CHECK(perturbation_zero.norm() < std::sqrt(epsilon));
 
   const T identity_interp = sym::LieGroupOps<T>::Interpolate(identity, value, 0.0f, epsilon);
   CHECK(identity_interp.isApprox(identity, std::sqrt(epsilon)));

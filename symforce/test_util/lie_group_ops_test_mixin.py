@@ -101,22 +101,22 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         # Create a non-identity element and a perturbation
         element = self.element()
         dim = LieGroupOps.tangent_dim(element)
-        pertubation = list(np.random.normal(scale=0.1, size=(dim,)))
-        value = LieGroupOps.from_tangent(element, pertubation, epsilon=self.EPSILON)
+        perturbation = list(np.random.normal(scale=0.1, size=(dim,)))
+        value = LieGroupOps.from_tangent(element, perturbation, epsilon=self.EPSILON)
 
         # Test retraction behaves as expected (compose and from_tangent)
-        retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
+        retracted_element = LieGroupOps.retract(element, perturbation, epsilon=self.EPSILON)
         self.assertStorageNear(retracted_element, LieGroupOps.compose(element, value), places=7)
 
         # Test local_coordinates behaves as expected (between and to_tangent)
-        retracted_element = LieGroupOps.retract(element, pertubation, epsilon=self.EPSILON)
-        pertubation_recovered = LieGroupOps.local_coordinates(
+        retracted_element = LieGroupOps.retract(element, perturbation, epsilon=self.EPSILON)
+        perturbation_recovered = LieGroupOps.local_coordinates(
             element, retracted_element, epsilon=self.EPSILON
         )
         diff_element = LieGroupOps.between(element, retracted_element)
         self.assertStorageNear(
             LieGroupOps.to_tangent(diff_element, epsilon=self.EPSILON),
-            pertubation_recovered,
+            perturbation_recovered,
             places=7,
         )
 

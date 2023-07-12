@@ -80,7 +80,7 @@ class Values(T.MutableMapping[str, T.Any]):
 
     def items(self) -> T.ItemsView[str, T.Any]:
         """
-        An object providng a view on contained key/value pairs.
+        An object providing a view on contained key/value pairs.
         """
         return self.dict.items()
 
@@ -220,14 +220,14 @@ class Values(T.MutableMapping[str, T.Any]):
     def items_recursive(self) -> T.List[T.Tuple[str, T.Any]]:
         """
         Returns a flat list of key/value pairs for every element in this object in insertion order
-        of highest level dot seperated key.
+        of highest level dot separated key.
         """
         return [(key[len(".") :], value) for key, value in Values._items_recursive(self)]
 
     def keys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of unique keys for every element in this object in insertion order
-        of highest level dot seperated key.
+        of highest level dot separated key.
         """
         items = self.items_recursive()
         if len(items) == 0:
@@ -237,7 +237,7 @@ class Values(T.MutableMapping[str, T.Any]):
     def values_recursive(self) -> T.List[T.Any]:
         """
         Returns a flat list of elements stored in this Values object in insertion order
-        of highest level dot seperated key.
+        of highest level dot separated key.
         """
         items = self.items_recursive()
         if len(items) == 0:
@@ -247,7 +247,7 @@ class Values(T.MutableMapping[str, T.Any]):
     def subkeys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of subkeys for every element in this object in insertion order
-        of highest level dot seperated key. Unlike :meth:`keys_recursive`, ``subkeys_recursive``
+        of highest level dot separated key. Unlike :meth:`keys_recursive`, ``subkeys_recursive``
         does not return dot-separated keys.
         """
         return [k.split(".")[-1] for k in self.keys_recursive()]
@@ -255,7 +255,7 @@ class Values(T.MutableMapping[str, T.Any]):
     def scalar_keys_recursive(self) -> T.List[str]:
         """
         Returns a flat list of keys to each scalar in this object in insertion order
-        of highest level dot seperated key.
+        of highest level dot separated key.
         """
         flat_scalar_keys: T.List[str] = []
         for key, value in self.items_recursive():
@@ -310,7 +310,7 @@ class Values(T.MutableMapping[str, T.Any]):
             elif issubclass(datatype, geo.Matrix):
                 assert entry.shape is not None
                 # NOTE(brad): Don't pass entry.shape directly because it has type T.Tuple[int, ...]
-                # (to accomadate ndarray shapes) whereas a T.Tuple[int, int] is expected. mypy does
+                # (to accommodate ndarray shapes) whereas a T.Tuple[int, int] is expected. mypy does
                 # not accept asserting on the length of the tuple, so writing to an intermediate
                 # tuple is a work around.
                 (rows, cols) = entry.shape
@@ -414,7 +414,7 @@ class Values(T.MutableMapping[str, T.Any]):
 
     def to_tangent(self, epsilon: sf.Scalar = sf.epsilon()) -> T.List[sf.Scalar]:
         """
-        Returns flat vector representing concatentated tangent spaces of each element.
+        Returns flat vector representing concatenated tangent spaces of each element.
         """
         vec = []
         for v in self.values():
@@ -423,7 +423,7 @@ class Values(T.MutableMapping[str, T.Any]):
 
     def retract(self, vec: T.List[sf.Scalar], epsilon: sf.Scalar = sf.epsilon()) -> Values:
         """
-        Apply a pertubation vec in the concatenated tangent spaces of each element. Often used in
+        Apply a perturbation vec in the concatenated tangent spaces of each element. Often used in
         optimization to update nonlinear values from an update step in the tangent space.
 
         NOTE(aaron): We have to override the default LieGroup implementation of retract because not
@@ -439,7 +439,7 @@ class Values(T.MutableMapping[str, T.Any]):
 
     def local_coordinates(self, b: Values, epsilon: sf.Scalar = sf.epsilon()) -> T.List[sf.Scalar]:
         """
-        Computes a pertubation in the combined tangent space around self to produce b. Often used
+        Computes a perturbation in the combined tangent space around self to produce b. Often used
         in optimization to minimize the distance between two group elements.
 
         NOTE(aaron): We have to override the default LieGroup implementation of local_coordinates

@@ -79,7 +79,7 @@ def tangent_jacobians_first_order(
 
     def safe_subs(expr: T.Element, old: T.Element, new: T.Element) -> T.Element:
         """
-        Substitutes occurances of old in expr with new. This is safe to use even when the
+        Substitutes occurrences of old in expr with new. This is safe to use even when the
         components of new contain symbols in old that we are replacing.
         """
         intermediate = StorageOps.from_storage(

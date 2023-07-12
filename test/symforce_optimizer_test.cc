@@ -137,7 +137,7 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
         /* keys */ {{'P', i}, {'P', i + 1}}));
   }
 
-  // Create initial values as random pertubations from the first prior
+  // Create initial values as random perturbations from the first prior
   sym::Valuesd values;
   std::mt19937 gen(42);
   for (int i = 0; i < num_keys; ++i) {
@@ -227,7 +227,7 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
         /* keys */ {{'R', i}, {'R', i + 1}}));
   }
 
-  // Create initial values as random pertubations from the first prior
+  // Create initial values as random perturbations from the first prior
   sym::Valuesd values;
   std::mt19937 gen(42);
   for (int i = 0; i < num_keys; ++i) {
@@ -304,7 +304,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
     }
   }
 
-  // Create initial values as random pertubations from the first prior
+  // Create initial values as random perturbations from the first prior
   sym::Valuesd values;
 
   std::mt19937 gen(42);
