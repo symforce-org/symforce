@@ -4,7 +4,6 @@
  * ---------------------------------------------------------------------------- */
 
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 
 #include <symforce/opt/gnc_optimizer.h>
 
@@ -69,18 +68,17 @@ TEST_CASE("Test GNC", "[gnc]") {
       /* keys */ std::vector<sym::Key>{}, /* debug_stats */ false,
       /* check_derivatives */ true, /* include_jacobians */ true);
 
-  spdlog::debug("Initial x: {}", initial_values.At<sym::Vector5d>('x').transpose());
+  INFO("Initial x: " << initial_values.At<sym::Vector5d>('x').transpose());
 
   sym::Valuesd gnc_optimized_values = initial_values;
   const auto gnc_stats = gnc_optimizer.Optimize(gnc_optimized_values);
-  spdlog::debug("Final x: {}", gnc_optimized_values.At<sym::Vector5d>('x').transpose());
+  INFO("Final x: " << gnc_optimized_values.At<sym::Vector5d>('x').transpose());
 
   sym::Valuesd regular_optimized_values = initial_values;
   regular_optimized_values.Set('u', 0.0);
   sym::Optimize(DefaultLmParams(), factors, regular_optimized_values, kEpsilon);
 
-  spdlog::debug("Final x without GNC: {}",
-                regular_optimized_values.At<sym::Vector5d>('x').transpose());
+  INFO("Final x without GNC:" << regular_optimized_values.At<sym::Vector5d>('x').transpose());
 
   CHECK(gnc_stats.iterations.size() == 9);
   const sym::Vector5d gnc_optimized_x = gnc_optimized_values.At<sym::Vector5d>('x');

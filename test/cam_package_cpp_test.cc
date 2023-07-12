@@ -21,8 +21,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/generators/catch_generators_range.hpp>
-#include <fmt/ostream.h>
-#include <spdlog/spdlog.h>
 
 #include <sym/atan_camera_cal.h>
 #include <sym/camera.h>
@@ -138,7 +136,7 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::ATANCameraCal<doubl
 
   using Scalar = typename T::Scalar;
 
-  spdlog::debug("*** Testing StorageOps: {} ***", cam_cal);
+  INFO("Testing StorageOps: " << cam_cal);
 
   constexpr int32_t storage_dim = sym::StorageOps<T>::StorageDim();
   CHECK(cam_cal.Data().rows() == storage_dim);
@@ -167,7 +165,7 @@ TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", sym::ATANCameraCal<double>
   using T = TestType;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::debug("*** Testing GroupOps: {} ***", identity);
+  INFO("Testing GroupOps: " << identity);
 
   using SelfJacobian = typename sym::GroupOps<T>::SelfJacobian;
 
@@ -198,7 +196,7 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", sym::ATANCameraCal<dou
   using T = TestType;
 
   const T identity = sym::GroupOps<T>::Identity();
-  spdlog::debug("*** Testing LieGroupOps: {} ***", identity);
+  INFO("Testing LieGroupOps: " << identity);
 
   CHECK(sym::LieGroupOps<T>::TangentDim() == sym::LieGroupOps<T>::TangentVec::RowsAtCompileTime);
 
@@ -228,7 +226,7 @@ TEMPLATE_TEST_CASE("Test project and deproject", "[cam_package]", sym::ATANCamer
   const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
   const Scalar tolerance = 10.0 * epsilon;  // For checking approx. equality
 
-  spdlog::debug("*** Testing projection model: {} ***", cam_cal);
+  INFO("Testing projection model: " << cam_cal);
 
   std::mt19937 gen(42);
   // Generate pixels around principal point
@@ -261,7 +259,7 @@ TEMPLATE_TEST_CASE("Test Camera class", "[cam_package]", sym::ATANCameraCal<doub
   using Scalar = typename T::Scalar;
   const Scalar epsilon = 1e-6;  // For preventing degenerate numerical cases (e.g. division by zero)
 
-  spdlog::debug("*** Testing Camera class with calibration: {} ***", cam_cal);
+  INFO("Testing Camera class with calibration: " << cam_cal);
 
   // Assume the principal point is at the center of the image
   Eigen::Matrix<int, 2, 1> image_size;
@@ -316,7 +314,7 @@ TEMPLATE_TEST_CASE("Test PosedCamera class", "[cam_package]", sym::ATANCameraCal
   // For assessing approximate equality
   const Scalar tolerance = 50.0 * epsilon;
 
-  spdlog::debug("*** Testing PosedCamera class with calibration: {} ***", cam_cal);
+  INFO("Testing PosedCamera class with calibration: " << cam_cal);
 
   std::mt19937 gen(42);
   // Generate pixels around principal point

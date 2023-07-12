@@ -18,7 +18,6 @@
 #include <Eigen/SparseCholesky>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 
 #include <symforce/opt/sparse_cholesky/sparse_cholesky_solver.h>
 #include <symforce/opt/sparse_schur_solver.h>
@@ -93,7 +92,7 @@ std::pair<int, Eigen::SparseMatrix<double>> LoadMatrix() {
     triplets.emplace_back(row, col, value);
   }
 
-  spdlog::debug("{} {} {}\n", rows, cols, filename);
+  CAPTURE(rows, cols, filename);
 
   Eigen::SparseMatrix<double> A(rows, cols);
   A.setFromTriplets(triplets.begin(), triplets.end());

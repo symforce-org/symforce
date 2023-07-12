@@ -5,7 +5,6 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 
 #include <sym/factors/between_factor_pose3.h>
 #include <sym/factors/between_factor_rot3.h>
@@ -55,7 +54,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   sym::Valuesd values;
   values.Set<double>('x', 0.0);
   values.Set<double>('y', 0.0);
-  spdlog::debug("Initial values: {}", values);
+  INFO("Initial values: " << values);
 
   // Set parameters
   sym::optimizer_params_t params = DefaultLmParams();
@@ -73,7 +72,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   const auto stats = Optimize(params, factors, values);
 
   // Check results
-  spdlog::debug("Optimized values: {}", values);
+  INFO("Optimized values: " << values);
 
   // Local minimum from Wolfram Alpha
   // pylint: disable=line-too-long
@@ -102,10 +101,10 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   const double between_sigma = 0.5;      // [rad]
 
   // Set points (doing 180 rotation and 5m translation to keep it hard)
-  const sym::Pose3d prior_start =
-      sym::Pose3d(sym::Rot3d::FromYawPitchRoll(0.0, 0.0, 0.0), Eigen::Vector3d::Zero());
-  const sym::Pose3d prior_last =
-      sym::Pose3d(sym::Rot3d::FromYawPitchRoll(M_PI, 0.0, 0.0), Eigen::Vector3d(5, 0, 0));
+  const sym::Pose3d prior_start(sym::Rot3d::FromYawPitchRoll(0.0, 0.0, 0.0),
+                                Eigen::Vector3d::Zero());
+  const sym::Pose3d prior_last(sym::Rot3d::FromYawPitchRoll(M_PI, 0.0, 0.0),
+                               Eigen::Vector3d(5, 0, 0));
 
   // Simple wrapper to add a prior
   // TODO(hayk): Make a template specialization mechanism to generalize this to any geo type.
@@ -146,9 +145,8 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
     values.Set<sym::Pose3d>({'P', i}, value);
   }
 
-  spdlog::debug("Initial values: {}", values);
-  spdlog::debug("Prior on P0: {}", prior_start);
-  spdlog::debug("Prior on P[-1]: {}", prior_last);
+  INFO("Initial values: " << values);
+  CAPTURE(prior_start, prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -160,13 +158,9 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
                                    /* include_jacobians */ true);
   const auto stats = optimizer.Optimize(values);
 
-  spdlog::debug("Optimized values: {}", values);
+  INFO("Optimized values: " << values);
 
   const auto& last_iter = stats.iterations.back();
-  spdlog::debug("Iterations: {}", last_iter.iteration);
-  spdlog::debug("Lambda: {}", last_iter.current_lambda);
-  spdlog::debug("Final error: {}", last_iter.new_error);
-  spdlog::debug("Status: {}", stats.status);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 12);
@@ -241,9 +235,8 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
-  spdlog::debug("Initial values: {}", values);
-  spdlog::debug("Prior on R0: {}", prior_start);
-  spdlog::debug("Prior on R[-1]: {}", prior_last);
+  INFO("Initial values: " << values);
+  CAPTURE(prior_start, prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -253,13 +246,9 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   sym::Optimizer<double> optimizer(params, factors, epsilon);
   const auto stats = optimizer.Optimize(values);
 
-  spdlog::debug("Optimized values: {}", values);
+  INFO("Optimized values: " << values);
 
   const auto& last_iter = stats.iterations.back();
-  spdlog::debug("Iterations: {}", last_iter.iteration);
-  spdlog::debug("Lambda: {}", last_iter.current_lambda);
-  spdlog::debug("Final error: {}", last_iter.new_error);
-  spdlog::debug("Status: {}", stats.status);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 6);
@@ -325,7 +314,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
     values.Set<sym::Rot3d>({'R', i}, value);
   }
 
-  spdlog::debug("Initial values: {}", values);
+  INFO("Initial values: " << values);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -340,13 +329,9 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
   sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimizer", optimized_keys);
   const auto stats = optimizer.Optimize(values);
 
-  spdlog::debug("Optimized values: {}", values);
+  INFO("Optimized values: " << values);
 
   const auto& last_iter = stats.iterations.back();
-  spdlog::debug("Iterations: {}", last_iter.iteration);
-  spdlog::debug("Lambda: {}", last_iter.current_lambda);
-  spdlog::debug("Final error: {}", last_iter.new_error);
-  spdlog::debug("Status: {}", stats.status);
 
   // Check successful convergence
   CHECK(last_iter.iteration == 5);

@@ -17,8 +17,6 @@
 #include <Eigen/Dense>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/ostream.h>
-#include <spdlog/spdlog.h>
 
 // TODO(nathan): We just test linear camera for now, but could/should test other types in the future
 #include <sym/linear_camera_cal.h>
@@ -38,7 +36,7 @@ TEMPLATE_TEST_CASE("Test generated function", "[cam_function]", sym::LinearCamer
     data[i] = cam_dist(gen);
   }
   T cam(data);
-  spdlog::debug("*** Testing generated function with {} ***", cam);
+  INFO("Testing generated function with " << cam);
 
   Eigen::Matrix<Scalar, 2, 1> pixel;
   pixel << 2.0 * cam_dist(gen), 2.0 * cam_dist(gen);

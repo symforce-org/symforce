@@ -6,16 +6,14 @@
 #include <math.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 
 #include <sym/rot3.h>
 #include <symforce/codegen_nan_test/identity_dist_jacobian.h>
 
 TEST_CASE("Codegen function does not generate NaN", "[codegen_nan_test]") {
-  spdlog::debug("*** Testing codegen function for NaNs ***");
-
   sym::Rot3<double> rot = sym::Rot3<double>::Identity();
   double epsilon = 1e-6;
   double res = codegen_nan_test::IdentityDistJacobian<double>(rot, epsilon);
+  CAPTURE(res);
   CHECK_FALSE(std::isnan(res));
 }

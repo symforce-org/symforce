@@ -8,8 +8,6 @@
 
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/ostream.h>
-#include <spdlog/spdlog.h>
 
 #include <sym/atan_camera_cal.h>
 #include <sym/double_sphere_camera_cal.h>
@@ -27,7 +25,7 @@
 TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   using Scalar = TestType;
 
-  spdlog::debug("*** Testing Values<{}> ***", typeid(Scalar).name());
+  INFO("Testing Values: " << typeid(Scalar).name());
 
   sym::Values<Scalar> v;
   CHECK(v.Keys().size() == 0);
@@ -121,7 +119,7 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   CHECK(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
 
   // Print
-  spdlog::debug("v: {}", v);
+  CAPTURE(v);
 
   // Clear
   v.RemoveAll();
@@ -166,8 +164,6 @@ TEMPLATE_PRODUCT_TEST_CASE("Test Retract and LocalCoordinates of camera cals", "
 }
 
 TEST_CASE("Test IndexEntryAt", "[values]") {
-  spdlog::debug("*** Testing Values IndexEntryAt ***");
-
   sym::Valuesd values;
   const sym::Key k1 = sym::Key('k', 1);
   const sym::Key k2 = sym::Key('k', 2);
@@ -202,8 +198,6 @@ TEST_CASE("Test IndexEntryAt", "[values]") {
 }
 
 TEST_CASE("Test implicit construction", "[values]") {
-  spdlog::debug("*** Testing Values Implicit Construction ***");
-
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
   values.Set<double>('y', 2.0);
@@ -212,12 +206,10 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
   values.Set<sym::Unit3d>('R', sym::Unit3d::Identity());
-  spdlog::debug(values);
+  CAPTURE(values);
 }
 
 TEST_CASE("Test initializer list construction", "[values]") {
-  spdlog::debug("*** Testing Values Initializer List Construction ***");
-
   sym::Valuesd v1;
   v1.Set<double>('x', 1.0);
   v1.Set<double>('y', 2.0);
@@ -244,8 +236,6 @@ TEST_CASE("Test initializer list construction", "[values]") {
 }
 
 TEST_CASE("Test indexed update", "[values]") {
-  spdlog::debug("*** Testing Values Indexed Update ***");
-
   // Create some data
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -275,8 +265,6 @@ TEST_CASE("Test indexed update", "[values]") {
 }
 
 TEST_CASE("Test key update", "[values]") {
-  spdlog::debug("*** Testing Values Key Update ***");
-
   // Create some data
   sym::Valuesd values;
   values.Set<double>('x', 1.0);
@@ -322,12 +310,10 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
   using T = TestType;
   using Scalar = typename sym::StorageOps<T>::Scalar;
 
-  spdlog::debug("*** Testing Values<{}> LieGroupOps with {} ***", typeid(Scalar).name(),
-                typeid(T).name());
+  INFO("Testing Values " << typeid(Scalar).name() << " LieGroupOps with " << typeid(T).name());
   constexpr Scalar epsilon = sym::kDefaultEpsilon<Scalar>;
   const Scalar tolerance = epsilon * 1000;
-  INFO(fmt::format("epsilon: {}\n", epsilon));
-  INFO(fmt::format("tolerance: {}\n", tolerance));
+  CAPTURE(epsilon, tolerance);
 
   // Create a values object that stores an identity element, and an index for it
   sym::Values<Scalar> v1;
@@ -342,14 +328,14 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
     const sym::Values<Scalar> v2 = v1;
 
     const T random_element = sym::StorageOps<T>::Random(gen);
-    INFO(fmt::format("random: {}\n", random_element));
+    CAPTURE(random_element);
     const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(random_element, epsilon);
-    INFO(fmt::format("tangent: {}\n", tangent_vec.transpose()));
+    CAPTURE(tangent_vec.transpose());
 
     // test retraction
     v1.Retract(index, tangent_vec.data(), epsilon);
     const T retracted_element = v1.template At<T>('x');
-    INFO(fmt::format("retract: {}\n", retracted_element));
+    CAPTURE(retracted_element);
     CHECK(sym::IsClose(random_element, retracted_element, tolerance));
 
     // test local coordinates

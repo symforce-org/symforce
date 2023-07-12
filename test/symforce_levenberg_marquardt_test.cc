@@ -5,7 +5,6 @@
 
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 
 #include <symforce/opt/levenberg_marquardt_solver.h>
 
@@ -25,8 +24,8 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   std::mt19937 gen(12345);
   const sym::MatrixX<Scalar> J_MN = sym::Random<Eigen::Matrix<Scalar, M, N>>(gen);
 
-  spdlog::debug("J_MN:\n{}", J_MN);
-  spdlog::debug("J_MN^T * J_MN:\n{}", (J_MN.transpose() * J_MN).eval());
+  INFO("J_MN:\n" << J_MN);
+  INFO("J_MN^T * J_MN: " << (J_MN.transpose() * J_MN).eval());
 
   constexpr const Scalar kEpsilon = 1e-10;
 
@@ -60,9 +59,9 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   residual_func(values_init, linearization);
   const sym::VectorX<Scalar> residual_init = linearization.residual;
   const Scalar error_init = 0.5 * residual_init.squaredNorm();
-  spdlog::debug("values_init: {}\n", values_init);
-  spdlog::debug("residual_init: {}\n", residual_init.transpose());
-  spdlog::debug("error_init: {}\n", error_init);
+  CAPTURE(values_init);
+  CAPTURE(residual_init.transpose());
+  CAPTURE(error_init);
 
   solver.SetIndex(index);
   solver.Reset(values_init);
@@ -77,9 +76,9 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   const sym::VectorX<Scalar> residual_final =
       stats.iterations.back().residual.template cast<Scalar>();
   const Scalar error_final = 0.5 * residual_final.squaredNorm();
-  spdlog::debug("values_final: {}\n", solver.GetBestValues());
-  spdlog::debug("residual_final: {}\n", residual_final.transpose());
-  spdlog::debug("error_final: {}\n", error_final);
+  CAPTURE(solver.GetBestValues());
+  CAPTURE(residual_final.transpose());
+  CAPTURE(error_final);
 
   // Check initial error was high and final is zero
   CHECK(error_init > 10000.);
