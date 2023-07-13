@@ -186,10 +186,17 @@ class Key:
         """
         Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).
         """
-    @staticmethod
-    def with_super(key: Key, super: int) -> Key:
+    def with_letter(self, letter: str) -> Key:
         """
-        Create a new Key from an existing Key and a superscript. The superscript on the existing Key must be empty.
+        Creates a new key with a modified letter from an existing one.
+        """
+    def with_sub(self, sub: int) -> Key:
+        """
+        Creates a new key with a modified subscript from an existing one.
+        """
+    def with_super(self, super: int) -> Key:
+        """
+        Creates a new key with a modified superscript from an existing one.
         """
     @property
     def letter(self) -> str:

@@ -68,15 +68,32 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(key.sub, 1)
             self.assertEqual(key.super, 2)
 
-        with self.subTest(msg="static method with_super works as intended"):
-            letter = "a"
-            sub = 1
-            superscript = 2
-            key_base = cc_sym.Key(letter=letter, sub=sub)
-            key_with_super = cc_sym.Key.with_super(key=key_base, super=superscript)
-            self.assertEqual(key_with_super.letter, letter)
-            self.assertEqual(key_with_super.sub, sub)
-            self.assertEqual(key_with_super.super, superscript)
+        with self.subTest(msg="Method with_letter works as intended"):
+            key = cc_sym.Key(letter="a", sub=1, super=2)
+
+            new_letter = "b"
+            new_key = key.with_letter(letter=new_letter)
+            self.assertEqual(new_key.letter, new_letter)
+            self.assertEqual(new_key.sub, key.sub)
+            self.assertEqual(new_key.super, key.super)
+
+        with self.subTest(msg="Method with_sub works as intended"):
+            key = cc_sym.Key(letter="a", sub=1, super=2)
+
+            new_sub = 3
+            new_key = key.with_sub(sub=new_sub)
+            self.assertEqual(new_key.letter, key.letter)
+            self.assertEqual(new_key.sub, new_sub)
+            self.assertEqual(new_key.super, key.super)
+
+        with self.subTest(msg="Method with_super works as intended"):
+            key = cc_sym.Key(letter="a", sub=1, super=2)
+
+            new_super = 4
+            new_key = key.with_super(super=new_super)
+            self.assertEqual(new_key.letter, key.letter)
+            self.assertEqual(new_key.sub, key.sub)
+            self.assertEqual(new_key.super, new_super)
 
         letter_sub_super_samples: T.List[
             T.Union[T.Tuple[str], T.Tuple[str, int], T.Tuple[str, int, int]]

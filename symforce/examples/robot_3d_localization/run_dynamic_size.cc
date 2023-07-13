@@ -25,11 +25,11 @@ namespace robot_3d_localization {
 template <typename Scalar>
 sym::Factor<Scalar> CreateMatchingFactor(const int i, const int j) {
   return sym::Factor<Scalar>::Hessian(sym::MatchingFactor<Scalar>,
-                                      {sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i),
-                                       sym::Key::WithSuper(sym::Keys::WORLD_T_LANDMARK, j),
+                                      {sym::Keys::WORLD_T_BODY.WithSuper(i),
+                                       sym::Keys::WORLD_T_LANDMARK.WithSuper(j),
                                        {sym::Keys::BODY_T_LANDMARK_MEASUREMENTS.Letter(), i, j},
                                        sym::Keys::MATCHING_SIGMA},
-                                      {sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i)});
+                                      {sym::Keys::WORLD_T_BODY.WithSuper(i)});
 }
 
 /**
@@ -39,12 +39,10 @@ template <typename Scalar>
 sym::Factor<Scalar> CreateOdometryFactor(const int i) {
   return sym::Factor<Scalar>::Hessian(
       sym::OdometryFactor<Scalar>,
-      {sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i),
-       sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i + 1),
-       sym::Key::WithSuper(sym::Keys::ODOMETRY_RELATIVE_POSE_MEASUREMENTS, i),
+      {sym::Keys::WORLD_T_BODY.WithSuper(i), sym::Keys::WORLD_T_BODY.WithSuper(i + 1),
+       sym::Keys::ODOMETRY_RELATIVE_POSE_MEASUREMENTS.WithSuper(i),
        sym::Keys::ODOMETRY_DIAGONAL_SIGMAS, sym::Keys::EPSILON},
-      {sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i),
-       sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i + 1)});
+      {sym::Keys::WORLD_T_BODY.WithSuper(i), sym::Keys::WORLD_T_BODY.WithSuper(i + 1)});
 }
 
 /**
@@ -88,8 +86,7 @@ void RunDynamic() {
   // Print out results
   spdlog::info("Optimized State:");
   for (int i = 0; i < kNumPoses; i++) {
-    spdlog::info("Pose {}: {}", i,
-                 values.At<sym::Pose3d>(sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i)));
+    spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>(sym::Keys::WORLD_T_BODY.WithSuper(i)));
   }
 
   const auto& iteration_stats = stats.iterations;

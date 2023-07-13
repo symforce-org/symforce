@@ -25,22 +25,23 @@ namespace sym {
  */
 class Key {
  public:
+  using letter_t = char;
   using subscript_t = std::int64_t;
   using superscript_t = std::int64_t;
 
-  static constexpr char kInvalidLetter = static_cast<char>(0);
+  static constexpr letter_t kInvalidLetter = static_cast<letter_t>(0);
   static constexpr subscript_t kInvalidSub = std::numeric_limits<subscript_t>::min();
   static constexpr superscript_t kInvalidSuper = std::numeric_limits<superscript_t>::min();
 
   constexpr Key() = default;
-  constexpr Key(char letter, subscript_t sub = kInvalidSub, superscript_t super = kInvalidSuper)
+  constexpr Key(letter_t letter, subscript_t sub = kInvalidSub, superscript_t super = kInvalidSuper)
       : letter_(letter), sub_(sub), super_(super) {
     SYM_ASSERT(letter != kInvalidLetter);
   }
 
   constexpr Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
 
-  constexpr char Letter() const noexcept {
+  constexpr letter_t Letter() const noexcept {
     return letter_;
   }
 
@@ -52,21 +53,24 @@ class Key {
     return super_;
   }
 
+  constexpr Key WithLetter(const letter_t letter) const noexcept {
+    return {letter, sub_, super_};
+  }
+
+  constexpr Key WithSub(const subscript_t sub) const noexcept {
+    return {letter_, sub, super_};
+  }
+
+  constexpr Key WithSuper(const superscript_t super) const noexcept {
+    return {letter_, sub_, super};
+  }
+
   key_t GetLcmType() const noexcept {
     key_t key;
     key.letter = letter_;
     key.subscript = sub_;
     key.superscript = super_;
     return key;
-  }
-
-  /**
-   * Create a new Key from an existing Key and a superscript.  The superscript on the existing Key
-   * must be empty
-   */
-  static Key WithSuper(const Key& key, const superscript_t super) {
-    SYM_ASSERT(key.Super() == kInvalidSuper);
-    return Key(key.Letter(), key.Sub(), super);
   }
 
   constexpr bool operator==(const Key& other) const noexcept {
@@ -92,7 +96,7 @@ class Key {
   };
 
  protected:
-  char letter_{kInvalidLetter};
+  letter_t letter_{kInvalidLetter};
   subscript_t sub_{kInvalidSub};
   superscript_t super_{kInvalidSuper};
 };

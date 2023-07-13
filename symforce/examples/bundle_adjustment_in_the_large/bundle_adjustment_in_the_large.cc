@@ -26,17 +26,17 @@ sym::Factord MakeFactor(int camera, int point, int pixel) {
   return sym::Factord::Hessian(sym::SnavelyReprojectionFactor<double>,
                                /* all_keys = */
                                {
-                                   sym::Key::WithSuper(CAM_T_WORLD, camera),
-                                   sym::Key::WithSuper(INTRINSICS, camera),
-                                   sym::Key::WithSuper(POINT, point),
-                                   sym::Key::WithSuper(PIXEL, pixel),
+                                   CAM_T_WORLD.WithSuper(camera),
+                                   INTRINSICS.WithSuper(camera),
+                                   POINT.WithSuper(point),
+                                   PIXEL.WithSuper(pixel),
                                    EPSILON,
                                },
                                /* optimized_keys = */
                                {
-                                   sym::Key::WithSuper(CAM_T_WORLD, camera),
-                                   sym::Key::WithSuper(INTRINSICS, camera),
-                                   sym::Key::WithSuper(POINT, point),
+                                   CAM_T_WORLD.WithSuper(camera),
+                                   INTRINSICS.WithSuper(camera),
+                                   POINT.WithSuper(point),
                                });
 }
 
@@ -77,7 +77,7 @@ Problem ReadProblem(const std::string& filename) {
     file >> py;
 
     factors.push_back(MakeFactor(camera, point, i));
-    values.Set(sym::Key::WithSuper(PIXEL, i), Eigen::Vector2d(px, py));
+    values.Set(PIXEL.WithSuper(i), Eigen::Vector2d(px, py));
   }
 
   for (int i = 0; i < num_cameras; i++) {
@@ -92,10 +92,10 @@ Problem ReadProblem(const std::string& filename) {
     file >> k1;
     file >> k2;
 
-    values.Set(sym::Key::WithSuper(CAM_T_WORLD, i),
+    values.Set(CAM_T_WORLD.WithSuper(i),
                sym::Pose3d(sym::Rot3d::FromTangent(Eigen::Vector3d(rx, ry, rz)),
                            Eigen::Vector3d(tx, ty, tz)));
-    values.Set(sym::Key::WithSuper(INTRINSICS, i), Eigen::Vector3d(f, k1, k2));
+    values.Set(INTRINSICS.WithSuper(i), Eigen::Vector3d(f, k1, k2));
   }
 
   for (int i = 0; i < num_points; i++) {
@@ -104,7 +104,7 @@ Problem ReadProblem(const std::string& filename) {
     file >> y;
     file >> z;
 
-    values.Set(sym::Key::WithSuper(POINT, i), Eigen::Vector3d(x, y, z));
+    values.Set(POINT.WithSuper(i), Eigen::Vector3d(x, y, z));
   }
 
   values.Set(EPSILON, sym::kDefaultEpsilond);

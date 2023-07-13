@@ -19,17 +19,17 @@ template <typename Scalar>
 sym::Factor<Scalar> BuildFixedFactor() {
   std::vector<sym::Key> factor_keys;
   for (int i = 0; i < kNumPoses; i++) {
-    factor_keys.push_back(sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i));
+    factor_keys.push_back(sym::Keys::WORLD_T_BODY.WithSuper(i));
   }
 
   for (int i = 0; i < kNumLandmarks; i++) {
-    factor_keys.push_back(sym::Key::WithSuper(sym::Keys::WORLD_T_LANDMARK, i));
+    factor_keys.push_back(sym::Keys::WORLD_T_LANDMARK.WithSuper(i));
   }
 
   factor_keys.push_back(sym::Keys::ODOMETRY_DIAGONAL_SIGMAS);
 
   for (int i = 0; i < kNumPoses - 1; i++) {
-    factor_keys.push_back(sym::Key::WithSuper(sym::Keys::ODOMETRY_RELATIVE_POSE_MEASUREMENTS, i));
+    factor_keys.push_back(sym::Keys::ODOMETRY_RELATIVE_POSE_MEASUREMENTS.WithSuper(i));
   }
 
   factor_keys.push_back(sym::Keys::MATCHING_SIGMA);
@@ -44,7 +44,7 @@ sym::Factor<Scalar> BuildFixedFactor() {
 
   std::vector<sym::Key> optimized_keys;
   for (int i = 0; i < kNumPoses; i++) {
-    optimized_keys.push_back(sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i));
+    optimized_keys.push_back(sym::Keys::WORLD_T_BODY.WithSuper(i));
   }
 
   return sym::Factor<Scalar>::Hessian(Linearization<Scalar>, factor_keys, optimized_keys);
@@ -66,8 +66,7 @@ void RunFixed() {
   // Print out results
   spdlog::info("Optimized State:");
   for (int i = 0; i < kNumPoses; i++) {
-    spdlog::info("Pose {}: {}", i,
-                 values.At<sym::Pose3d>(sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i)));
+    spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>(sym::Keys::WORLD_T_BODY.WithSuper(i)));
   }
 
   const auto& iteration_stats = stats.iterations;

@@ -23,10 +23,10 @@ void AddKeyWrapper(py::module_ module) {
       "Key type for Values. Contains a letter plus an integral subscript and superscript. Can "
       "construct with a letter, a letter + sub, or a letter + sub + super, but not a letter + "
       "super.")
-      .def(py::init<char>(), py::arg("letter"))
-      .def(py::init<char, sym::Key::subscript_t>(), py::arg("letter"), py::arg("sub"))
-      .def(py::init<char, sym::Key::subscript_t, sym::Key::superscript_t>(), py::arg("letter"),
-           py::arg("sub"), py::arg("super"))
+      .def(py::init<sym::Key::letter_t>(), py::arg("letter"))
+      .def(py::init<sym::Key::letter_t, sym::Key::subscript_t>(), py::arg("letter"), py::arg("sub"))
+      .def(py::init<sym::Key::letter_t, sym::Key::subscript_t, sym::Key::superscript_t>(),
+           py::arg("letter"), py::arg("sub"), py::arg("super"))
       .def_readonly_static("INVALID_LETTER", &sym::Key::kInvalidLetter)
       .def_readonly_static("INVALID_SUB", &sym::Key::kInvalidSub)
       .def_readonly_static("INVALID_SUPER", &sym::Key::kInvalidSuper)
@@ -35,9 +35,12 @@ void AddKeyWrapper(py::module_ module) {
                              "The subscript value of the key (INVALID_SUB if not set).")
       .def_property_readonly("super", &sym::Key::Super,
                              "The superscript value of the key (INVALID_SUPER if not set).")
-      .def_static("with_super", &sym::Key::WithSuper, py::arg("key"), py::arg("super"),
-                  "Create a new Key from an existing Key and a superscript. The superscript on the "
-                  "existing Key must be empty.")
+      .def("with_letter", &sym::Key::WithLetter, py::arg("letter"),
+           "Creates a new key with a modified letter from an existing one.")
+      .def("with_sub", &sym::Key::WithSub, py::arg("sub"),
+           "Creates a new key with a modified subscript from an existing one.")
+      .def("with_super", &sym::Key::WithSuper, py::arg("super"),
+           "Creates a new key with a modified superscript from an existing one.")
       .def("get_lcm_type", &sym::Key::GetLcmType)
       .def("__eq__",
            [](const sym::Key& self, const py::object& other) {
@@ -56,8 +59,9 @@ void AddKeyWrapper(py::module_ module) {
             if (state.size() != 3) {
               throw py::value_error("Key.__setstate__ expected tuple of size 3.");
             }
-            return sym::Key(state[0].cast<char>(), state[1].cast<Key::subscript_t>(),
-                            state[2].cast<Key::superscript_t>());
+            return sym::Key(state[0].cast<sym::Key::letter_t>(),
+                            state[1].cast<sym::Key::subscript_t>(),
+                            state[2].cast<sym::Key::superscript_t>());
           }));
 }
 

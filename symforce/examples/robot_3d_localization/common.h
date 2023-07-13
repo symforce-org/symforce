@@ -32,19 +32,18 @@ template <typename Scalar>
 inline sym::Values<Scalar> BuildValues(const int num_poses, const int num_landmarks) {
   sym::Values<Scalar> values;
   for (int i = 0; i < num_poses; i++) {
-    values.Set(sym::Key::WithSuper(sym::Keys::WORLD_T_BODY, i), sym::Pose3<Scalar>());
+    values.Set(sym::Keys::WORLD_T_BODY.WithSuper(i), sym::Pose3<Scalar>());
   }
 
   for (int i = 0; i < num_landmarks; i++) {
-    values.Set(sym::Key::WithSuper(sym::Keys::WORLD_T_LANDMARK, i),
-               landmark_positions[i].cast<Scalar>());
+    values.Set(sym::Keys::WORLD_T_LANDMARK.WithSuper(i), landmark_positions[i].cast<Scalar>());
   }
 
   values.Set(sym::Keys::ODOMETRY_DIAGONAL_SIGMAS,
              (sym::Vector6<Scalar>() << 0.05, 0.05, 0.05, 0.2, 0.2, 0.2).finished());
 
   for (int i = 0; i < num_poses - 1; i++) {
-    values.Set(sym::Key::WithSuper(sym::Keys::ODOMETRY_RELATIVE_POSE_MEASUREMENTS, i),
+    values.Set(sym::Keys::ODOMETRY_RELATIVE_POSE_MEASUREMENTS.WithSuper(i),
                odometry_relative_pose_measurements[i].Cast<Scalar>());
   }
 
