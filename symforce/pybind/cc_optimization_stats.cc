@@ -80,6 +80,6 @@ void AddOptimizationStatsWrapper(pybind11::module_ module) {
             }
             return stats;
           }));
-};
+}
 
 }  // namespace sym
