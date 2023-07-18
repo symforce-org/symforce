@@ -53,15 +53,15 @@ class Key {
     return super_;
   }
 
-  constexpr Key WithLetter(const letter_t letter) const noexcept {
+  constexpr Key WithLetter(const letter_t letter) const {
     return {letter, sub_, super_};
   }
 
-  constexpr Key WithSub(const subscript_t sub) const noexcept {
+  constexpr Key WithSub(const subscript_t sub) const {
     return {letter_, sub, super_};
   }
 
-  constexpr Key WithSuper(const superscript_t super) const noexcept {
+  constexpr Key WithSuper(const superscript_t super) const {
     return {letter_, sub_, super};
   }
 
