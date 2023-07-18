@@ -10,38 +10,6 @@
 namespace sym {
 
 // ------------------------------------------------------------------------------------------------
-// Sequence generator
-//
-// TODO(hayk): Might be able to replace with std::integer_sequence
-//
-// Useful for generating a sequence at compile time, in order to apply the unpacking operator
-// to the sequence. For example, this is useful to unpack a tuple when calling a function.
-// See http://stackoverflow.com/questions/7858817/
-// ------------------------------------------------------------------------------------------------
-
-template <int...>
-struct Sequence {};
-
-// Generates a Sequence from 0 to N-1.
-template <int N, int... S>
-struct RangeGenerator : RangeGenerator<N - 1, N - 1, S...> {};
-
-template <int... S>
-struct RangeGenerator<0, S...> {
-  using Range = Sequence<S...>;
-};
-
-template <typename F, size_t... Is>
-auto indices_impl(F f, std::index_sequence<Is...>) {
-  return f(std::integral_constant<size_t, Is>()...);
-}
-
-template <size_t N, typename F>
-auto indices(F f) {
-  return indices_impl(f, std::make_index_sequence<N>());
-}
-
-// ------------------------------------------------------------------------------------------------
 // Function traits
 //
 // Extracts the number of arguments and types of the arguments and return value.

@@ -12,6 +12,8 @@
  * Primarily intended to be included by factor.tcc and used internally there
  */
 
+#include <utility>
+
 #include "../factor.h"
 
 namespace sym {
@@ -54,26 +56,25 @@ struct JacobianFuncValuesExtractor {
 
   /** Pull out the arg given by Index from the Values. */
   template <int Index>
-  inline static ArgType<Index> GetValue(const sym::Values<Scalar>& values,
-                                        const std::vector<index_entry_t>& keys) {
+  static ArgType<Index> GetValue(const sym::Values<Scalar>& values,
+                                 const std::vector<index_entry_t>& keys) {
     return values.template At<ArgType<Index>>(keys[Index]);
   }
 
   /** Invokes the user function with the proper input args extracted from the Values. */
-  template <int... S>
-  inline static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
-                                   const std::vector<index_entry_t>& keys, ResidualVec* residual,
-                                   JacobianMat* jacobian, Sequence<S...>) {
+  template <std::size_t... S>
+  static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
+                            const std::vector<index_entry_t>& keys, ResidualVec* residual,
+                            JacobianMat* jacobian, std::index_sequence<S...>) {
     func(GetValue<S>(values, keys)..., residual, jacobian);
   }
 
-  inline static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
-                            const std::vector<index_entry_t>& keys, ResidualVec* residual,
-                            JacobianMat* jacobian) {
+  static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
+                     const std::vector<index_entry_t>& keys, ResidualVec* residual,
+                     JacobianMat* jacobian) {
     constexpr auto num_inputs = function_traits<Functor>::num_arguments - 2;
     SYM_ASSERT(keys.size() == num_inputs);
-    InvokeAtRange(func, values, keys, residual, jacobian,
-                  typename RangeGenerator<num_inputs>::Range());
+    InvokeAtRange(func, values, keys, residual, jacobian, std::make_index_sequence<num_inputs>());
   }
 };
 
@@ -252,27 +253,27 @@ struct HessianFuncValuesExtractor {
 
   /** Pull out the arg given by Index from the Values. */
   template <int Index>
-  inline static ArgType<Index> GetValue(const sym::Values<Scalar>& values,
-                                        const std::vector<index_entry_t>& keys) {
+  static ArgType<Index> GetValue(const sym::Values<Scalar>& values,
+                                 const std::vector<index_entry_t>& keys) {
     return values.template At<ArgType<Index>>(keys[Index]);
   }
 
   /** Invokes the user function with the proper input args extracted from the Values. */
-  template <int... S>
-  inline static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
-                                   const std::vector<index_entry_t>& keys, ResidualVec* residual,
-                                   JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs,
-                                   Sequence<S...>) {
+  template <std::size_t... S>
+  static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
+                            const std::vector<index_entry_t>& keys, ResidualVec* residual,
+                            JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs,
+                            std::index_sequence<S...>) {
     func(GetValue<S>(values, keys)..., residual, jacobian, hessian, rhs);
   }
 
-  inline static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
-                            const std::vector<index_entry_t>& keys, ResidualVec* residual,
-                            JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs) {
+  static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
+                     const std::vector<index_entry_t>& keys, ResidualVec* residual,
+                     JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs) {
     constexpr auto num_inputs = function_traits<Functor>::num_arguments - 4;
     SYM_ASSERT(keys.size() == num_inputs);
     InvokeAtRange(func, values, keys, residual, jacobian, hessian, rhs,
-                  typename RangeGenerator<num_inputs>::Range());
+                  std::make_index_sequence<num_inputs>());
   }
 };
 
