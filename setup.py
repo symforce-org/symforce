@@ -332,7 +332,7 @@ setup_requirements = [
     "wheel",
     "pip<23.1",  # https://github.com/jazzband/pip-tools/issues/1854
     "cmake>=3.17",
-    "cython>=0.19.1",
+    "cython>=0.19.1,<3",
     f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
 ]
 
