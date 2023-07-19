@@ -42,7 +42,7 @@ class Robot3DLocalizationTest(TestCase):
         # Solve and return the result
         result = optimizer.optimize(values)
 
-        self.assertAlmostEqual(result.iterations[0].new_error, 463700.5625)
+        self.assertAlmostEqual(result.iterations[0].new_error, 463700.5576620833)
         self.assertLess(result.error(), 140)
         self.assertEqual(result.status, Optimizer.Status.SUCCESS)
 

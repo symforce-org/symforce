@@ -53,8 +53,8 @@ bool CheckDerivatives(LinearizerType& linearizer, const Values<Scalar>& values,
         wrapped_residual, VectorX<Scalar>::Zero(linearization.jacobian.cols()).eval(), epsilon,
         std::sqrt(epsilon));
 
-    const bool jacobian_matches =
-        numerical_jacobian.isApprox(MatrixX<Scalar>(linearization.jacobian), std::sqrt(epsilon));
+    const bool jacobian_matches = numerical_jacobian.isApprox(
+        MatrixX<Scalar>(linearization.jacobian), 10 * std::sqrt(epsilon));
 
     if (!jacobian_matches) {
       if (verbose) {

@@ -83,7 +83,8 @@ class GncOptimizer : public BaseOptimizerType {
       }
 
       // Update the GNC parameter.
-      values.Set(gnc_mu_key_, values.template At<Scalar>(mu_index) + gnc_params_.mu_step);
+      values.template Set<Scalar>(gnc_mu_key_,
+                                  values.template At<Scalar>(mu_index) + gnc_params_.mu_step);
 
       // Check if we hit the non-convexity threshold.
       if (values.template At<Scalar>(mu_index) >= gnc_params_.mu_max) {

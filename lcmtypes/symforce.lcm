@@ -158,13 +158,13 @@ struct optimizer_params_t {
 // Additional parameters for the GNCOptimizer
 struct optimizer_gnc_params_t {
   // The convexity param is stepped each time we early-exit with this threshold.
-  float gnc_update_min_reduction;
+  double gnc_update_min_reduction;
   // Initial mu value.
-  float mu_initial;
+  double mu_initial;
   // Amount to change mu each step.
-  float mu_step;
+  double mu_step;
   // Maximum mu value.
-  float mu_max;
+  double mu_max;
 }
 
 // Debug stats for a single iteration of a Levenberg Marquardt optimization
@@ -174,19 +174,19 @@ struct optimization_iteration_t {
   int16_t iteration;
 
   // Value of lambda at this iteration
-  float current_lambda;
+  double current_lambda;
   // Error after the iteration, using the linearized cost
-  float new_error_linear;
+  double new_error_linear;
   // Error after the iteration, using the full nonlinear cost function
-  float new_error;
+  double new_error;
   // Relative reduction in error between the initial and updated states for
   // this iteration
-  float relative_reduction;
+  double relative_reduction;
 
   // Was the update accepted?
   boolean update_accepted;
   // Angle between previous update and current update
-  float update_angle_change;
+  double update_angle_change;
 
   // The values, residual, and jacobian are only populated when debug_stats is true,
   // otherwise they are size 0

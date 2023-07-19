@@ -41,7 +41,7 @@ class Robot2DLocalizationTest(TestCase):
         # Solve and return the result
         result = optimizer.optimize(initial_values)
 
-        self.assertAlmostEqual(result.iterations[0].new_error, 6.396357536315918)
+        self.assertAlmostEqual(result.iterations[0].new_error, 6.396357319110695)
         self.assertLess(result.error(), 1e-3)
         self.assertEqual(result.status, Optimizer.Status.SUCCESS)
 
