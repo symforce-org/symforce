@@ -100,7 +100,7 @@ TicTocManager::TicTocManager() {
   }
 }
 
-TicTocManager::~TicTocManager() {
+TicTocManager::~TicTocManager() noexcept {
   if (print_on_destruction_ && spdlog::should_log(spdlog::level::info)) {
     PrintTimingResults();
   }

@@ -70,7 +70,7 @@ class ThreadContext {
 class TicTocManager {
  public:
   TicTocManager();
-  ~TicTocManager();
+  ~TicTocManager() noexcept;
 
   // Create string with results of all tic tocs.
   void PrintTimingResults(std::ostream& out = std::cout) const;
