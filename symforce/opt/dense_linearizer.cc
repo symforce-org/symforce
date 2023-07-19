@@ -258,7 +258,7 @@ void DenseLinearizer<ScalarType>::Relinearize(const Values<ScalarType>& values,
       const std::vector<linearization_offsets_t>& key_offsets = factor_keyoffsets_[i];
       const int residual_dim = factor_linearization.residual.size();
 
-      // Copy factor_linearzation values into linearization
+      // Copy factor_linearization values into linearization
       linearization.residual.segment(residual_offset, residual_dim) = factor_linearization.residual;
       if (include_jacobians_) {
         CopyJacobianFactorToCombined(factor_linearization.jacobian, key_offsets, residual_offset,

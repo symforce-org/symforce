@@ -149,12 +149,12 @@ class DoubleSphereCameraCal(CameraCal):
         r2 = m_xy.squared_norm()
 
         # Compute m_z (eq 50)
-        m_z_disciminant = 1 - (2 * alpha - 1) * r2
-        linear_is_valid = sf.is_nonnegative(m_z_disciminant)
+        m_z_discriminant = 1 - (2 * alpha - 1) * r2
+        linear_is_valid = sf.is_nonnegative(m_z_discriminant)
 
         # This denominator is not always positive so we push it away from 0, see:
         # https://www.wolframalpha.com/input/?i=Plot%5Balpha+*+Sqrt%5B1+-+%282+*+alpha+-+1%29+*+r%5E2%5D+%2B+1+-+alpha%2C+%7Balpha%2C+-2%2C+1%7D%2C+%7Br%2C+0%2C+10%7D%5D
-        m_z_denominator = alpha * sf.sqrt(sf.Max(m_z_disciminant, epsilon)) + 1 - alpha
+        m_z_denominator = alpha * sf.sqrt(sf.Max(m_z_discriminant, epsilon)) + 1 - alpha
         m_z_denominator_safe = m_z_denominator + sf.sign_no_zero(m_z_denominator) * epsilon
         m_z = (1 - alpha ** 2 * r2) / m_z_denominator_safe
 

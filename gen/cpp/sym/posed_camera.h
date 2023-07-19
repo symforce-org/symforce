@@ -38,7 +38,7 @@ class PosedCamera : public Camera<CameraCalType> {
    *     epsilon: Small value intended to prevent division by 0.
    *
    * Returns:
-   *     pixel: UV coodinates in pixel units, assuming the point is in view
+   *     pixel: UV coordinates in pixel units, assuming the point is in view
    *     is_valid: 1 if point is valid
    *
    */

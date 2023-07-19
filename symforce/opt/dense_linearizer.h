@@ -97,7 +97,7 @@ class DenseLinearizer {
    *
    * Specifically:
    *  - Calculates state_index_
-   *  - Allocates all factor linearizations in lineared_dense_factors_
+   *  - Allocates all factor linearizations in linearized_dense_factors_
    *  - Calculates factor_indices_
    *  - Calculates factor_keyoffsets_
    *
