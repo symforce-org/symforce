@@ -43,7 +43,7 @@ class ImuPreintegrator {
    * measurement
    *   @param measured_gyro the next gyroscope measurement after the last integrated measurement
    *   @param accel_cov the covariance of the accelerometer measurement (represented by its diagonal
-   *     entries) `[(radians / time)^2 * time]`
+   *     entries) `[(meters / time^2)^2 * time]`
    *   @param gyro_cov the covariance of the gyroscope measurement (represented by its diagonal
    *     entries) `[(radians / time)^2 * time]`
    *   @param dt the time span over which these measurements were made
