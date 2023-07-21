@@ -331,7 +331,7 @@ setup_requirements = [
     "setuptools>=62.3.0",  # For package data globs
     "wheel",
     "pip<23.1",  # https://github.com/jazzband/pip-tools/issues/1854
-    "cmake>=3.17",
+    "cmake>=3.17,<3.27",
     "cython>=0.19.1,<3",
     f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
 ]
