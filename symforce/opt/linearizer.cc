@@ -8,6 +8,7 @@
 #include "./assert.h"
 #include "./internal/linearizer_utils.h"
 #include "./optional.h"
+#include "./tic_toc.h"
 #include "symforce/opt/factor.h"
 
 namespace sym {
@@ -51,6 +52,8 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
                                          SparseLinearization<Scalar>& linearization) {
   if (IsInitialized()) {
+    SYM_TIME_SCOPE("Linearizer<>::Relinearize::NonFirst()");
+
     EnsureLinearizationHasCorrectSize(linearization);
 
     // Zero out blocks that are built additively
@@ -89,6 +92,8 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
 
     linearization.SetInitialized();
   } else {
+    SYM_TIME_SCOPE("Linearizer<>::Relinearize::First()");
+
     BuildInitialLinearization(values);
 
     linearization = init_linearization_;

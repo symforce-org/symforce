@@ -226,10 +226,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     Update(state_.Init().values, index_, -update_, state_.New().values);
   }
 
-  {
-    SYM_TIME_SCOPE("LM<{}>: linearization_func", id_);
-    state_.New().Relinearize(func);
-  }
+  state_.New().Relinearize(func);
 
   const Scalar new_error = state_.New().Error();
   const Scalar relative_reduction =
