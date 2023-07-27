@@ -8,6 +8,12 @@
 # be the maximum tested CMake version, matching dev_requirements.txt
 cmake_minimum_required(VERSION 3.19...3.25)
 
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.27)
+  message(FATAL_ERROR
+    "SymForce does not support CMake >=3.27: https://github.com/symforce-org/symforce/issues/356"
+    )
+endif()
+
 project(symforce)
 
 set(CMAKE_CXX_STANDARD 14)
