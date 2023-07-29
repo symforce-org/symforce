@@ -49,6 +49,18 @@ class GeoRot2Test(LieGroupOpsTestMixin, TestCase):
         rot2 = sf.Rot2.from_tangent([1.5])
         self.assertEqual(rot1, rot2)
 
+    def test_from_to_angle(self) -> None:
+        """
+        Tests:
+            Rot2.from_angle
+            Rot2.to_angle
+        """
+        for angle, angle_gt in zip(
+                [0.0, np.pi / 2, np.pi, 3 * np.pi / 2, 2 * np.pi],
+                [0.0, np.pi / 2, np.pi, -np.pi / 2, 0.0]):
+            rot = sf.Rot2.from_angle(angle).evalf()
+            self.assertLess(abs(angle_gt - rot.to_angle()), 1e-8)
+
     def test_lie_exponential(self) -> None:
         """
         Tests:

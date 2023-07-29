@@ -137,6 +137,14 @@ class Rot2(LieGroup):
         """
         return cls.from_tangent([theta])
 
+    def to_angle(self, epsilon=sf.epsilon()) -> T.Scalar:
+        """
+        Get the angle of this Rot2 in radians
+
+        This is equivalent to ``to_tangent()[0]``
+        """
+        return sf.atan2(self.z.imag, self.z.real, epsilon=epsilon)
+
     def to_rotation_matrix(self) -> Matrix22:
         """
         A matrix representation of this element in the Euclidean space that contains it.
