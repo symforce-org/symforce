@@ -130,16 +130,25 @@ namespace sym {
  */
 template <typename Scalar>
 class ImuFactor {
- private:
-  PreintegratedImuMeasurements<Scalar> preintegrated_measurements_;
-  Eigen::Matrix<Scalar, 9, 9> sqrt_info_;
-
  public:
+  using Pose3 = sym::Pose3<Scalar>;
+  using Vector3 = sym::Vector3<Scalar>;
+
+  using Preintegrator = sym::ImuPreintegrator<Scalar>;
+
+  using Measurement = sym::PreintegratedImuMeasurements<Scalar>;
+  using SqrtInformation = sym::Matrix99<Scalar>;
+
   /**
-   * Construct an ImuFactor connecting two states from the (preintegrated) imu measurements
-   * between them.
+   * Construct an ImuFactor from a preintegrator.
    */
-  explicit ImuFactor(const ImuPreintegrator<Scalar>& preintegrator);
+  explicit ImuFactor(const Preintegrator& preintegrator);
+
+  /**
+   * Construct an ImuFactor from a (preintegrated) measurement
+   * and its corresponding sqrt information.
+   */
+  ImuFactor(const Measurement& measurement, const SqrtInformation& sqrt_information);
 
   /**
    * Construct a Factor object that can be passed to an Optimizer object given the keys to
@@ -160,15 +169,15 @@ class ImuFactor {
    * @param vel_i: Velocity at time step i (world frame)
    * @param pose_j: Pose at time step j (world_T_body)
    * @param vel_j: Velocity at time step j (world frame)
-   * @param accel_bias_i: The bias of the accelerometer measurements between timesteps i and j
-   * @param gyro_bias_i: The bias of the gyroscope measurements between timesteps i and j
+   * @param accel_bias_i: Bias of the accelerometer measurements between timesteps i and j
+   * @param gyro_bias_i: Bias of the gyroscope measurements between timesteps i and j
    * @param gravity: Acceleration due to gravity (in the same frame as pose_x and vel_x),
    *          i.e., the vector which when added to the accelerometer measurements
    *          gives the true acceleration (up to bias and noise) of the IMU.
    * @param epsilon: epsilon used for numerical stability
    *
-   * @param[out] res: The 9dof whitened local coordinate difference between predicted and estimated
-   *           state
+   * @param[out] residual: The 9dof whitened local coordinate difference between predicted and
+   * estimated state
    * @param[out] jacobian: (9x24) jacobian of res wrt args pose_i (6), vel_i (3), pose_j (6), vel_j
    *           (3), accel_bias_i (3), gyro_bias_i (3)
    * @param[out] hessian: (24x24) Gauss-Newton hessian for args pose_i (6), vel_i (3), pose_j (6),
@@ -176,15 +185,17 @@ class ImuFactor {
    * @param[out] rhs: (24x1) Gauss-Newton rhs for args pose_i (6), vel_i (3), pose_j (6), vel_j (3),
    *           accel_bias_i (3), gyro_bias_i (3)
    */
-  void operator()(const sym::Pose3<Scalar>& pose_i, const Eigen::Matrix<Scalar, 3, 1>& vel_i,
-                  const sym::Pose3<Scalar>& pose_j, const Eigen::Matrix<Scalar, 3, 1>& vel_j,
-                  const Eigen::Matrix<Scalar, 3, 1>& accel_bias_i,
-                  const Eigen::Matrix<Scalar, 3, 1>& gyro_bias_i,
-                  const Eigen::Matrix<Scalar, 3, 1>& gravity, const Scalar epsilon,
-                  Eigen::Matrix<Scalar, 9, 1>* const res = nullptr,
+  void operator()(const Pose3& pose_i, const Vector3& vel_i, const Pose3& pose_j,
+                  const Vector3& vel_j, const Vector3& accel_bias_i, const Vector3& gyro_bias_i,
+                  const Vector3& gravity, const Scalar epsilon,
+                  Eigen::Matrix<Scalar, 9, 1>* const residual = nullptr,
                   Eigen::Matrix<Scalar, 9, 24>* const jacobian = nullptr,
                   Eigen::Matrix<Scalar, 24, 24>* const hessian = nullptr,
                   Eigen::Matrix<Scalar, 24, 1>* const rhs = nullptr) const;
+
+ private:
+  Measurement measurement_;
+  SqrtInformation sqrt_information_;
 };
 
 using ImuFactord = ImuFactor<double>;
