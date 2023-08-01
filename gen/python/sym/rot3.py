@@ -5,6 +5,7 @@
 # -----------------------------------------------------------------------------
 
 import math
+import random
 import typing as T
 
 import numpy
@@ -73,6 +74,13 @@ class Rot3(object):
             z = -z
 
         return Rot3.from_storage([x, y, z, w])
+
+    @classmethod
+    def random(cls):
+        # type: () -> Rot3
+        return Rot3.random_from_uniform_samples(
+            random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)
+        )
 
     # --------------------------------------------------------------------------
     # Custom generated methods
