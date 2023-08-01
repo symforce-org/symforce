@@ -7,7 +7,10 @@
 
 #include <Eigen/Core>
 
+#include <lcmtypes/sym/imu_integrated_measurement_t.hpp>
+
 #include <sym/rot3.h>
+#include <sym/util/typedefs.h>
 
 namespace sym {
 
@@ -17,21 +20,58 @@ namespace sym {
  */
 template <typename Scalar>
 struct PreintegratedImuMeasurements {
-  using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
-  using Matrix33 = Eigen::Matrix<Scalar, 3, 3>;
+  using Rot3 = sym::Rot3<Scalar>;
+  using Vector3 = sym::Vector3<Scalar>;
+  using Matrix33 = sym::Matrix33<Scalar>;
 
-  // The rotation that occurred over the measurement period; i.e., maps the coordinates of a vector
-  // in the body frame of the end of the measurement period to the coordinates of the vector in the
-  // body frame at the start of the measurement period.
-  sym::Rot3<Scalar> DR;
+  /// A convenient struct that holds the Preintegrated delta
+  struct Delta {
+    // Constructor from LCM type
+    static Delta FromLcm(const imu_integrated_measurement_delta_t& msg);
 
-  // The velocity change that occurred over the measurement period in the body frame of the
-  // initial measurement (assuming 0 acceleration due to gravity)
-  Vector3 Dv;
+    // Converts this to a LCM type
+    imu_integrated_measurement_delta_t GetLcmType() const;
 
-  // The position change that occurred over the measurement period in the body frame of the
-  // initial measurement (assuming 0 acceleration due to gravity and 0 initial velocity)
-  Vector3 Dp;
+    // The elapsed time of the measurement period
+    Scalar Dt{0};
+
+    // The rotation that occurred over the measurement period; i.e., maps the coordinates of a
+    // vector in the body frame of the end of the measurement period to the coordinates of the
+    // vector in the body frame at the start of the measurement period
+    Rot3 DR{Rot3::Identity()};
+
+    // The velocity change that occurred over the measurement period in the body frame of the
+    // initial measurement (assuming 0 acceleration due to gravity)
+    Vector3 Dv{Vector3::Zero()};
+
+    // The position change that occurred over the measurement period in the body frame of the
+    // initial measurement (assuming 0 acceleration due to gravity and 0 initial velocity)
+    Vector3 Dp{Vector3::Zero()};
+  };
+
+  // Constructor from LCM type.
+  static PreintegratedImuMeasurements<Scalar> FromLcm(const imu_integrated_measurement_t& msg);
+
+  /// Initialize instance struct with accel_bias and gyro_bias and all other values
+  /// zeroed out (scalars, vectors, and matrices) or set to the identity (DR).
+  PreintegratedImuMeasurements(const Vector3& accel_bias, const Vector3& gyro_bias);
+
+  // Given new accel and gyro biases, return a first-order correction to the preintegrated delta
+  // The user is responsible for making sure that the new biases are sufficiently close to the
+  // original biases used during the preintegration.
+  Delta GetBiasCorrectedDelta(const Vector3& new_accel_bias, const Vector3& new_gyro_bias) const;
+
+  // Converts this to a LCM type
+  imu_integrated_measurement_t GetLcmType() const;
+
+  // The original accelerometer bias used during preintegration
+  Vector3 accel_bias;
+
+  // The original gyroscope bias used during preintegration
+  Vector3 gyro_bias;
+
+  // See struct description above
+  Delta delta;
 
   // Derivatives of DR/Dv/Dp w.r.t. the gyroscope/accelerometer bias linearized at the values
   // of gyro_bias and accel_bias
@@ -40,34 +80,6 @@ struct PreintegratedImuMeasurements {
   Matrix33 Dv_D_gyro_bias;
   Matrix33 Dp_D_accel_bias;
   Matrix33 Dp_D_gyro_bias;
-
-  // The original accelerometer bias used during preintegration
-  Vector3 accel_bias;
-
-  // The original gyroscope bias used during preintegration
-  Vector3 gyro_bias;
-
-  // The elapsed time of the measurement period
-  Scalar integrated_dt;
-
-  // A convenient struct that holds the Preintegrated delta
-  struct Delta {
-    sym::Rot3<Scalar> DR{};
-    Vector3 Dv{Vector3::Zero()};
-    Vector3 Dp{Vector3::Zero()};
-    Scalar dt{};  // elapsed time
-  };
-
-  // Given new accel and gyro biases, return a first-order correction to the preintegrated delta
-  // The user is responsible for making sure that the new biases are sufficiently close to the
-  // original biases used during the preintegration.
-  Delta GetBiasCorrectedDelta(const Vector3& new_accel_bias, const Vector3& new_gyro_bias) const;
-
-  /**
-   * Initialize instance struct with accel_bias and gyro_bias and all other values
-   * zeroed out (scalars, vectors, and matrices) or set to the identity (DR).
-   */
-  PreintegratedImuMeasurements(const Vector3& accel_bias, const Vector3& gyro_bias);
 };
 
 using PreintegratedImuMeasurementsd = PreintegratedImuMeasurements<double>;

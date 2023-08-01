@@ -206,10 +206,10 @@ struct optimization_iteration_t {
 // In the comments below, assume an M x N matrix with nnz nonzeros
 struct sparse_matrix_structure_t {
   // The row for each nonzero entry in the matrix
-  eigen_lcm.VectorXi row_indices; // size nnz
+  eigen_lcm.VectorXi row_indices;  // size nnz
 
   // The index into row_indices (and the values) of the start of each column
-  eigen_lcm.VectorXi column_pointers; // size N
+  eigen_lcm.VectorXi column_pointers;  // size N
 
   // The shape (M, N) of the sparse matrix
   int64_t shape[2];
@@ -255,4 +255,34 @@ struct optimization_stats_t {
 
   // The sparsity pattern of the cholesky factor L, filled out if debug_stats=true
   sparse_matrix_structure_t cholesky_factor_sparsity;
+}
+
+#cpp_no_display
+struct imu_biases_t {
+  eigen_lcm.Vector3d accel_bias;
+  eigen_lcm.Vector3d gyro_bias;
+}
+
+#cpp_no_display
+struct imu_integrated_measurement_delta_t {
+  double Dt;
+  eigen_lcm.Quaterniond DR;
+  eigen_lcm.Vector3d Dv;
+  eigen_lcm.Vector3d Dp;
+}
+
+#cpp_no_display
+struct imu_integrated_measurement_derivatives_t {
+  eigen_lcm.Matrix3d DR_D_gyro_bias;
+  eigen_lcm.Matrix3d Dv_D_accel_bias;
+  eigen_lcm.Matrix3d Dv_D_gyro_bias;
+  eigen_lcm.Matrix3d Dp_D_accel_bias;
+  eigen_lcm.Matrix3d Dp_D_gyro_bias;
+}
+
+#cpp_no_display
+struct imu_integrated_measurement_t {
+  imu_biases_t biases;
+  imu_integrated_measurement_delta_t delta;
+  imu_integrated_measurement_derivatives_t derivatives;
 }

@@ -19,6 +19,8 @@ void ImuPreintegrator<Scalar>::IntegrateMeasurement(const Vector3& measured_acce
                                                     const Vector3& accel_cov,
                                                     const Vector3& gyro_cov, const Scalar dt,
                                                     const Scalar epsilon) {
+  auto& delta = preintegrated_measurements_.delta;
+
   Rot3<Scalar> new_DR;
   Vector3 new_Dv;
   Vector3 new_Dp;
@@ -28,9 +30,9 @@ void ImuPreintegrator<Scalar>::IntegrateMeasurement(const Vector3& measured_acce
   Matrix33 new_Dv_D_gyro_bias;
   Matrix33 new_Dp_D_accel_bias;
   Matrix33 new_Dp_D_gyro_bias;
+
   ImuManifoldPreintegrationUpdate<Scalar>(
-      preintegrated_measurements_.DR, preintegrated_measurements_.Dv,
-      preintegrated_measurements_.Dp, covariance_, preintegrated_measurements_.DR_D_gyro_bias,
+      delta.DR, delta.Dv, delta.Dp, covariance_, preintegrated_measurements_.DR_D_gyro_bias,
       preintegrated_measurements_.Dv_D_accel_bias, preintegrated_measurements_.Dv_D_gyro_bias,
       preintegrated_measurements_.Dp_D_accel_bias, preintegrated_measurements_.Dp_D_gyro_bias,
       preintegrated_measurements_.accel_bias, preintegrated_measurements_.gyro_bias, accel_cov,
@@ -39,17 +41,16 @@ void ImuPreintegrator<Scalar>::IntegrateMeasurement(const Vector3& measured_acce
       &new_DR, &new_Dv, &new_Dp, &new_covariance, &new_DR_D_gyro_bias, &new_Dv_D_accel_bias,
       &new_Dv_D_gyro_bias, &new_Dp_D_accel_bias, &new_Dp_D_gyro_bias);
 
-  preintegrated_measurements_.DR = new_DR;
-  preintegrated_measurements_.Dv = new_Dv;
-  preintegrated_measurements_.Dp = new_Dp;
+  delta.Dt += dt;
+  delta.DR = new_DR;
+  delta.Dv = new_Dv;
+  delta.Dp = new_Dp;
   preintegrated_measurements_.DR_D_gyro_bias = new_DR_D_gyro_bias;
   preintegrated_measurements_.Dv_D_accel_bias = new_Dv_D_accel_bias;
   preintegrated_measurements_.Dv_D_gyro_bias = new_Dv_D_gyro_bias;
   preintegrated_measurements_.Dp_D_accel_bias = new_Dp_D_accel_bias;
   preintegrated_measurements_.Dp_D_gyro_bias = new_Dp_D_gyro_bias;
   covariance_ = new_covariance;
-
-  preintegrated_measurements_.integrated_dt += dt;
 }
 
 template <typename Scalar>

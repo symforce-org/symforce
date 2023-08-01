@@ -212,11 +212,12 @@ TEST_CASE("Test ImuPreintegrator.covariance", "[slam]") {
               example::kGyroCov, dt, sym::kDefaultEpsilond);
         }
 
-        samples.col(j).segment(0, 3) =
-            noiseless_integrator.PreintegratedMeasurements().DR.LocalCoordinates(
-                integrator.PreintegratedMeasurements().DR);
-        samples.col(j).segment(3, 3) = integrator.PreintegratedMeasurements().Dv;
-        samples.col(j).segment(6, 3) = integrator.PreintegratedMeasurements().Dp;
+        const auto& noiseless_delta = noiseless_integrator.PreintegratedMeasurements().delta;
+        const auto& delta = integrator.PreintegratedMeasurements().delta;
+
+        samples.col(j).segment(0, 3) = noiseless_delta.DR.LocalCoordinates(delta.DR);
+        samples.col(j).segment(3, 3) = delta.Dv;
+        samples.col(j).segment(6, 3) = delta.Dp;
 
         covariance_sums[i] += integrator.Covariance();
       }
@@ -286,18 +287,13 @@ TEST_CASE("Test preintegrated derivatives wrt IMU biases", "[slam]") {
           example::kAccelCov, example::kGyroCov, dt, sym::kDefaultEpsilond);
     }
 
+    const auto& delta = integrator.PreintegratedMeasurements().delta;
+    const auto& perturbed_delta = perturbed_integrator.PreintegratedMeasurements().delta;
+
     numerical_state_D_bias.col(i).segment(0, 3) =
-        integrator.PreintegratedMeasurements().DR.LocalCoordinates(
-            perturbed_integrator.PreintegratedMeasurements().DR) /
-        perturbation;
-    numerical_state_D_bias.col(i).segment(3, 3) =
-        (perturbed_integrator.PreintegratedMeasurements().Dv -
-         integrator.PreintegratedMeasurements().Dv) /
-        perturbation;
-    numerical_state_D_bias.col(i).segment(6, 3) =
-        (perturbed_integrator.PreintegratedMeasurements().Dp -
-         integrator.PreintegratedMeasurements().Dp) /
-        perturbation;
+        delta.DR.LocalCoordinates(perturbed_delta.DR) / perturbation;
+    numerical_state_D_bias.col(i).segment(3, 3) = (perturbed_delta.Dv - delta.Dv) / perturbation;
+    numerical_state_D_bias.col(i).segment(6, 3) = (perturbed_delta.Dp - delta.Dp) / perturbation;
   }
 
   const Eigen::MatrixXd relative_error =
@@ -424,23 +420,26 @@ TEST_CASE("Verify bias-corrected delta", "[slam]") {
   const auto delta1_corrected =
       preint1.PreintegratedMeasurements().GetBiasCorrectedDelta(accel_bias0, gyro_bias0);
 
-  CAPTURE(pim0.Dp.transpose(), pim0.Dv.transpose(), pim0.DR);
-  CAPTURE(pim1.Dp.transpose(), pim1.Dv.transpose(), pim1.DR);
+  const auto& pim0_delta = pim0.delta;
+  const auto& pim1_delta = pim1.delta;
+
+  CAPTURE(pim0_delta.Dp.transpose(), pim0_delta.Dv.transpose(), pim0_delta.DR);
+  CAPTURE(pim1_delta.Dp.transpose(), pim1_delta.Dv.transpose(), pim1_delta.DR);
   CAPTURE(delta1.Dp.transpose(), delta1.Dv.transpose(), delta1.DR);
   CAPTURE(delta1_corrected.Dp.transpose(), delta1_corrected.Dv.transpose(), delta1_corrected.DR);
 
   constexpr double kTol = 1e-4;
-  CHECK(pim1.Dp.isApprox(delta1.Dp, kTol));
-  CHECK(pim1.Dv.isApprox(delta1.Dv, kTol));
-  CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim1.DR, delta1.DR, kTol));
+  CHECK(pim1_delta.Dp.isApprox(delta1.Dp, kTol));
+  CHECK(pim1_delta.Dv.isApprox(delta1.Dv, kTol));
+  CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim1_delta.DR, delta1.DR, kTol));
 
-  // Check that delta1 is not close to the true delta (pim0)
-  CHECK(!pim0.Dp.isApprox(delta1.Dp, kTol));
-  CHECK(!pim0.Dv.isApprox(delta1.Dv, kTol));
-  CHECK(!sym::LieGroupOps<sym::Rot3d>::IsClose(pim0.DR, delta1.DR, kTol));
+  // Check that pim1_delta is not close to the true pim0_delta
+  CHECK(!pim0_delta.Dp.isApprox(delta1.Dp, kTol));
+  CHECK(!pim0_delta.Dv.isApprox(delta1.Dv, kTol));
+  CHECK(!sym::LieGroupOps<sym::Rot3d>::IsClose(pim0_delta.DR, delta1.DR, kTol));
 
-  // Check that the corrected delta1 is sufficiently close to the true delta (pim0)
-  CHECK(pim0.Dp.isApprox(delta1_corrected.Dp, kTol));
-  CHECK(pim0.Dv.isApprox(delta1_corrected.Dv, kTol));
-  CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim0.DR, delta1_corrected.DR, kTol));
+  // Check that the corrected delta1 is sufficiently close to the true delta (pim0_delta)
+  CHECK(pim0_delta.Dp.isApprox(delta1_corrected.Dp, kTol));
+  CHECK(pim0_delta.Dv.isApprox(delta1_corrected.Dv, kTol));
+  CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim0_delta.DR, delta1_corrected.DR, kTol));
 }

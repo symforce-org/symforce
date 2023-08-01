@@ -39,12 +39,13 @@ void ImuFactor<Scalar>::operator()(const Pose3& pose_i, const Vector3& vel_i, co
                                    Eigen::Matrix<Scalar, 9, 24>* const jacobian,
                                    Eigen::Matrix<Scalar, 24, 24>* const hessian,
                                    Eigen::Matrix<Scalar, 24, 1>* const rhs) const {
-  InternalImuFactor(pose_i, vel_i, pose_j, vel_j, accel_bias_i, gyro_bias_i, measurement_.DR,
-                    measurement_.Dv, measurement_.Dp, sqrt_information_,
-                    measurement_.DR_D_gyro_bias, measurement_.Dv_D_accel_bias,
-                    measurement_.Dv_D_gyro_bias, measurement_.Dp_D_accel_bias,
-                    measurement_.Dp_D_gyro_bias, measurement_.accel_bias, measurement_.gyro_bias,
-                    gravity, measurement_.integrated_dt, epsilon, residual, jacobian, hessian, rhs);
+  const auto& delta = measurement_.delta;
+  InternalImuFactor(pose_i, vel_i, pose_j, vel_j, accel_bias_i, gyro_bias_i, delta.DR, delta.Dv,
+                    delta.Dp, sqrt_information_, measurement_.DR_D_gyro_bias,
+                    measurement_.Dv_D_accel_bias, measurement_.Dv_D_gyro_bias,
+                    measurement_.Dp_D_accel_bias, measurement_.Dp_D_gyro_bias,
+                    measurement_.accel_bias, measurement_.gyro_bias, gravity, delta.Dt, epsilon,
+                    residual, jacobian, hessian, rhs);
 }
 
 }  // namespace sym
