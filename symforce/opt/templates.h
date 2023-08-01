@@ -10,12 +10,7 @@
 namespace sym {
 
 // ------------------------------------------------------------------------------------------------
-// Function traits
-//
-// Extracts the number of arguments and types of the arguments and return value.
-// Handle generic functors by looking at the 'operator()'.
-// ------------------------------------------------------------------------------------------------
-
+// C++14 implementation of remove_cvref
 template <class T>
 struct remove_cvref {
   using type = std::remove_cv_t<std::remove_reference_t<T>>;
@@ -24,8 +19,19 @@ struct remove_cvref {
 template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;
 
+// ------------------------------------------------------------------------------------------------
+// Function traits
+//
+// Extracts the number of arguments and types of the arguments and return value.
+// Handles:
+// - Function pointers
+// - Member function pointers
+// - Functors (objects with operator())
+// - Lambdas
+// ------------------------------------------------------------------------------------------------
+
 template <typename T>
-struct function_traits : public function_traits<decltype(&remove_cvref_t<T>::operator())> {};
+struct function_traits;
 
 // Traits implementation
 template <typename ReturnType, typename... Args>
@@ -44,12 +50,20 @@ struct function_traits<ReturnType(Args...)> {
   };
 };
 
-// Specialize for function pointers
 template <typename ReturnType, typename... Args>
-struct function_traits<ReturnType (&)(Args...)> : public function_traits<ReturnType(Args...)> {};
+constexpr std::size_t function_traits<ReturnType(Args...)>::num_arguments;
 
-template <typename ReturnType, typename... Args>
-struct function_traits<ReturnType (*)(Args...)> : public function_traits<ReturnType(Args...)> {};
+// Specializations to remove type modifiers
+template <typename T>
+struct function_traits<T*> : public function_traits<T> {};
+template <typename T>
+struct function_traits<T&> : public function_traits<T> {};
+template <typename T>
+struct function_traits<T&&> : public function_traits<T> {};
+template <typename T>
+struct function_traits<const T> : public function_traits<T> {};
+template <typename T>
+struct function_traits<volatile T> : public function_traits<T> {};
 
 // Specialize for member function pointers
 template <typename ClassType, typename ReturnType, typename... Args>
@@ -60,5 +74,10 @@ struct function_traits<ReturnType (ClassType::*)(Args...)>
 template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType (ClassType::*)(Args...) const>
     : public function_traits<ReturnType(Args...)> {};
+
+// ------------------------------------------------------------------------------------------------
+// Specialize for functors
+template <typename T>
+struct function_traits : public function_traits<decltype(&T::operator())> {};
 
 }  // namespace sym
