@@ -56,7 +56,7 @@ namespace sym {
  *          (1)
  */
 template <typename Scalar>
-void InverseRangeLandmarkEquirectangularReprojectionErrorFactor(
+void InverseRangeLandmarkEquirectangularGncFactor(
     const sym::Pose3<Scalar>& source_pose,
     const sym::EquirectangularCameraCal<Scalar>& source_calibration,
     const sym::Pose3<Scalar>& target_pose,

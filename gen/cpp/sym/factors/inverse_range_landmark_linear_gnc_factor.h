@@ -56,7 +56,7 @@ namespace sym {
  *          (1)
  */
 template <typename Scalar>
-void InverseRangeLandmarkLinearReprojectionErrorFactor(
+void InverseRangeLandmarkLinearGncFactor(
     const sym::Pose3<Scalar>& source_pose, const sym::LinearCameraCal<Scalar>& source_calibration,
     const sym::Pose3<Scalar>& target_pose, const sym::LinearCameraCal<Scalar>& target_calibration,
     const Scalar source_inverse_range, const Eigen::Matrix<Scalar, 2, 1>& source_pixel,

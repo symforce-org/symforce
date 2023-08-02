@@ -19,6 +19,7 @@ from symforce import codegen
 from symforce import python_util
 from symforce import typing as T
 from symforce.opt.noise_models import BarronNoiseModel
+from symforce.opt.noise_models import ScalarNoiseModel
 
 
 def inverse_range_landmark_prior_residual(
@@ -103,6 +104,67 @@ def inverse_range_landmark_reprojection_error_residual(
     source_pixel: sf.Vector2,
     target_pixel: sf.Vector2,
     weight: sf.Scalar,
+    epsilon: sf.Scalar,
+    noise_model: ScalarNoiseModel,
+) -> sf.Vector2:
+    """
+    Return the 2dof residual of reprojecting the landmark into the target camera and comparing
+    against the correspondence in the target camera.
+
+    The landmark is specified as a pixel in the source camera and an inverse range; this means the
+    landmark is fixed in the source camera and always has residual 0 there (this 0 residual is not
+    returned, only the residual in the target camera is returned).
+
+    The norm of the residual is whitened using a
+    :class:`ScalarNoiseModel <symforce.opt.noise_models.ScalarNoiseModel>`.  Whitening each
+    component of the reprojection error separately would result in rejecting individual components
+    as outliers. Instead, we minimize the whitened norm of the full reprojection error for each
+    point.  See
+    :meth:`ScalarNoiseModel.whiten_norm <symforce.opt.noise_models.ScalarNoiseModel.whiten_norm>`
+    for more information on this.
+
+    Args:
+        source_pose: The pose of the source camera
+        source_calibration: The source camera calibration
+        target_pose: The pose of the target camera
+        target_calibration: The target camera calibration
+        source_inverse_range: The inverse range of the landmark in the source camera
+        source_pixel: The location of the landmark in the source camera
+        target_pixel: The location of the correspondence in the target camera
+        weight: The weight of the factor
+        epsilon: Small positive value
+        noise_model: The noise model to use for whitening the residual
+
+    Outputs:
+        res: 2dof residual of the reprojection
+    """
+    reprojection_error, warp_is_valid = reprojection_delta(
+        source_pose,
+        source_calibration,
+        target_pose,
+        target_calibration,
+        source_inverse_range,
+        source_pixel,
+        target_pixel,
+        epsilon,
+    )
+
+    whitened_residual = (
+        warp_is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+    )
+
+    return whitened_residual
+
+
+def inverse_range_landmark_gnc_residual(
+    source_pose: sf.Pose3,
+    source_calibration: sf.CameraCal,
+    target_pose: sf.Pose3,
+    target_calibration: sf.CameraCal,
+    source_inverse_range: sf.Scalar,
+    source_pixel: sf.Vector2,
+    target_pixel: sf.Vector2,
+    weight: sf.Scalar,
     gnc_mu: sf.Scalar,
     gnc_scale: sf.Scalar,
     epsilon: sf.Scalar,
@@ -143,7 +205,13 @@ def inverse_range_landmark_reprojection_error_residual(
     Outputs:
         res: 2dof residual of the reprojection
     """
-    reprojection_error, warp_is_valid = reprojection_delta(
+    noise_model = BarronNoiseModel(
+        alpha=BarronNoiseModel.compute_alpha_from_mu(gnc_mu, epsilon),
+        scalar_information=1 / gnc_scale ** 2,
+        x_epsilon=epsilon,
+    )
+
+    return inverse_range_landmark_reprojection_error_residual(
         source_pose,
         source_calibration,
         target_pose,
@@ -151,20 +219,10 @@ def inverse_range_landmark_reprojection_error_residual(
         source_inverse_range,
         source_pixel,
         target_pixel,
+        weight,
         epsilon,
+        noise_model,
     )
-
-    noise_model = BarronNoiseModel(
-        alpha=BarronNoiseModel.compute_alpha_from_mu(gnc_mu, epsilon),
-        scalar_information=1 / gnc_scale ** 2,
-        x_epsilon=epsilon,
-    )
-
-    whitened_residual = (
-        warp_is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
-    )
-
-    return whitened_residual
 
 
 def ray_reprojection_delta(
@@ -223,6 +281,70 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     p_camera_source: sf.Vector3,
     target_pixel: sf.Vector2,
     weight: sf.Scalar,
+    epsilon: sf.Scalar,
+    noise_model: ScalarNoiseModel,
+) -> sf.Vector2:
+    """
+    Return the 2dof residual of reprojecting the landmark ray into the target spherical camera and
+    comparing it against the correspondence.
+
+    The landmark is specified as a camera point in the source camera with an inverse range; this
+    means the landmark is fixed in the source camera and always has residual 0 there (this 0
+    residual is not returned, only the residual in the target camera is returned).
+
+    The norm of the residual is whitened using a
+    :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`.  Whitening each
+    component of the reprojection error separately would result in rejecting individual components
+    as outliers. Instead, we minimize the whitened norm of the full reprojection error for each
+    point.  See
+    :meth:`ScalarNoiseModel.whiten_norm <symforce.opt.noise_models.ScalarNoiseModel.whiten_norm>`
+    for more information on this, and
+    :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>` for more information on
+    the noise model.
+
+    Args:
+        source_pose: The pose of the source camera
+        target_pose: The pose of the target camera
+        target_calibration: The target spherical camera calibration
+        source_inverse_range: The inverse range of the landmark in the source camera
+        p_camera_source: The location of the landmark in the source camera coordinate, will be
+            normalized
+        target_pixel: The location of the correspondence in the target camera
+        weight: The weight of the factor
+        gnc_mu: The mu convexity parameter for the
+            :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
+        gnc_scale: The scale parameter for the
+            :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
+        epsilon: Small positive value
+
+    Outputs:
+        res: 2dof whiten residual of the reprojection
+    """
+    reprojection_error, is_valid = ray_reprojection_delta(
+        source_pose,
+        target_pose,
+        target_calibration,
+        source_inverse_range,
+        p_camera_source,
+        target_pixel,
+        epsilon,
+    )
+
+    whitened_residual = (
+        is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
+    )
+
+    return whitened_residual
+
+
+def inverse_range_landmark_ray_gnc_residual(
+    source_pose: sf.Pose3,
+    target_pose: sf.Pose3,
+    target_calibration: sf.CameraCal,
+    source_inverse_range: sf.Scalar,
+    p_camera_source: sf.Vector3,
+    target_pixel: sf.Vector2,
+    weight: sf.Scalar,
     gnc_mu: sf.Scalar,
     gnc_scale: sf.Scalar,
     epsilon: sf.Scalar,
@@ -263,27 +385,24 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     Outputs:
         res: 2dof whiten residual of the reprojection
     """
-    reprojection_error, is_valid = ray_reprojection_delta(
+
+    noise_model = BarronNoiseModel(
+        alpha=BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon),
+        scalar_information=1 / gnc_scale ** 2,
+        x_epsilon=epsilon,
+    )
+
+    return inverse_range_landmark_ray_reprojection_error_residual(
         source_pose,
         target_pose,
         target_calibration,
         source_inverse_range,
         p_camera_source,
         target_pixel,
+        weight,
         epsilon,
+        noise_model,
     )
-
-    # Compute whitened residual with a noise model.
-    alpha = BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon)
-    noise_model = BarronNoiseModel(
-        alpha=alpha, scalar_information=1 / gnc_scale ** 2, x_epsilon=epsilon
-    )
-
-    whitened_residual = (
-        is_valid * sf.sqrt(weight) * noise_model.whiten_norm(reprojection_error, epsilon)
-    )
-
-    return whitened_residual
 
 
 def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
@@ -317,8 +436,8 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
 
         try:
             codegen.Codegen.function(
-                func=inverse_range_landmark_reprojection_error_residual,
-                name=f"inverse_range_landmark_{cam_type_name}_reprojection_error_residual",
+                func=inverse_range_landmark_gnc_residual,
+                name=f"inverse_range_landmark_{cam_type_name}_gnc_residual",
                 config=config,
                 input_types=[
                     sf.Pose3,
@@ -359,8 +478,8 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
         except NotImplementedError:
             # Not all cameras implement backprojection
             codegen.Codegen.function(
-                func=inverse_range_landmark_ray_reprojection_error_residual,
-                name=f"inverse_range_landmark_{cam_type_name}_reprojection_error_residual",
+                func=inverse_range_landmark_ray_gnc_residual,
+                name=f"inverse_range_landmark_{cam_type_name}_gnc_residual",
                 config=config,
                 input_types=[
                     sf.Pose3,

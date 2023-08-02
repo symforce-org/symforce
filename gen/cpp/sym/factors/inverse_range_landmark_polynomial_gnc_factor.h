@@ -56,7 +56,7 @@ namespace sym {
  *          (1)
  */
 template <typename Scalar>
-void InverseRangeLandmarkPolynomialReprojectionErrorFactor(
+void InverseRangeLandmarkPolynomialGncFactor(
     const sym::Pose3<Scalar>& source_pose, const sym::Pose3<Scalar>& target_pose,
     const sym::PolynomialCameraCal<Scalar>& target_calibration, const Scalar source_inverse_range,
     const Eigen::Matrix<Scalar, 3, 1>& p_camera_source,

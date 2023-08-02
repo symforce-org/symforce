@@ -11,8 +11,8 @@ from symforce import codegen
 from symforce import logger
 from symforce import typing as T
 from symforce.codegen import geo_factors_codegen
+from symforce.codegen.slam_factors_codegen import inverse_range_landmark_gnc_residual
 from symforce.codegen.slam_factors_codegen import inverse_range_landmark_prior_residual
-from symforce.codegen.slam_factors_codegen import inverse_range_landmark_reprojection_error_residual
 from symforce.values import Values
 
 from .build_values import build_values
@@ -142,7 +142,7 @@ class FixedBundleAdjustmentProblem:
 
                 # Feature match reprojection error (huberized)
                 reprojections.append(
-                    inverse_range_landmark_reprojection_error_residual(
+                    inverse_range_landmark_gnc_residual(
                         self.values["views"][0]["pose"],
                         self.values["views"][0]["calibration"],
                         self.values["views"][v_i]["pose"],

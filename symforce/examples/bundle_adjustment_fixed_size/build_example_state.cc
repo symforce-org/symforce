@@ -127,7 +127,7 @@ sym::Valuesd BuildValues(std::mt19937& gen, const BundleAdjustmentProblemParams&
   values.Set({Var::EPSILON}, params.epsilon);
 
   // The factors we use have variable convexity, for use as a tunable robust cost or in an iterative
-  // Graduated Non-Convexity (GNC) optimization.  See the ReprojectionErrorFactor docstring for more
+  // Graduated Non-Convexity (GNC) optimization.  See the GncFactor docstring for more
   // information.
   values.Set({Var::GNC_SCALE}, params.reprojection_error_gnc_scale);
   values.Set(Var::GNC_MU, 0.0);

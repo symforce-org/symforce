@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include <sym/factors/between_factor_pose3.h>
-#include <sym/factors/inverse_range_landmark_linear_reprojection_error_factor.h>
+#include <sym/factors/inverse_range_landmark_linear_gnc_factor.h>
 #include <sym/factors/inverse_range_landmark_prior_factor.h>
 #include <symforce/examples/example_utils/bundle_adjustment_util.h>
 #include <symforce/opt/assert.h>
@@ -50,9 +50,8 @@ sym::Factord CreateInverseRangeLandmarkPriorFactor(const int i, const int landma
 /**
  * Creates a factor for a reprojection error residual of landmark landmark_idx projected into view i
  */
-sym::Factord CreateInverseRangeLandmarkReprojectionErrorFactor(const int i,
-                                                               const int landmark_idx) {
-  return sym::Factord::Hessian(sym::InverseRangeLandmarkLinearReprojectionErrorFactor<double>,
+sym::Factord CreateInverseRangeLandmarkGncFactor(const int i, const int landmark_idx) {
+  return sym::Factord::Hessian(sym::InverseRangeLandmarkLinearGncFactor<double>,
                                {{Var::VIEW, 0},
                                 {Var::CALIBRATION, 0},
                                 {Var::VIEW, i},
@@ -95,7 +94,7 @@ std::vector<sym::Factord> BuildFactors(const BundleAdjustmentProblemParams& para
   // Reprojection errors
   for (int i = 1; i < params.num_views; i++) {
     for (int landmark_idx = 0; landmark_idx < params.num_landmarks; landmark_idx++) {
-      factors.push_back(CreateInverseRangeLandmarkReprojectionErrorFactor(i, landmark_idx));
+      factors.push_back(CreateInverseRangeLandmarkGncFactor(i, landmark_idx));
     }
   }
 
