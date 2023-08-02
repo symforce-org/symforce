@@ -148,7 +148,7 @@ struct optimizer_params_t {
 
   // Max number of LM iterations to run in an optimization
   int32_t iterations;
-  // Early exit from the optimization if the relative reduction is positive and
+  // Early exit from the optimization if the absolute value of the relative reduction is
   // less than this amount
   double early_exit_min_reduction;
   // Allow uphill movements in the optimization?

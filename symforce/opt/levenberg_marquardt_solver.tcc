@@ -244,7 +244,8 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   optional<std::pair<optimization_status_t, FailureReason>> status{};
 
   // Early exit if the reduction in error is too small.
-  if ((relative_reduction > 0) && (relative_reduction < p_.early_exit_min_reduction)) {
+  if (relative_reduction > -p_.early_exit_min_reduction / 10 &&
+      relative_reduction < p_.early_exit_min_reduction) {
     status = {optimization_status_t::SUCCESS, {}};
   }
 
