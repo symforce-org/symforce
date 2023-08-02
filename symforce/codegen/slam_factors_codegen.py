@@ -12,12 +12,14 @@ backprojection, the factor operates on pixel coordinates in the source and targe
 cameras that do not have backprojection, it instead operates on a ray in the source camera frame and
 a pixel in the target camera.
 """
+import functools
 from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import python_util
 from symforce import typing as T
+from symforce import util
 from symforce.opt.noise_models import BarronNoiseModel
 from symforce.opt.noise_models import ScalarNoiseModel
 
@@ -434,24 +436,15 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
             python_util.str_removesuffix(cam_type.__name__, "CameraCal")
         )
 
+        specialize_cam = functools.partial(
+            util.specialize_types, type_replacements={sf.CameraCal: cam_type}
+        )
+
         try:
             codegen.Codegen.function(
-                func=inverse_range_landmark_gnc_residual,
+                func=specialize_cam(inverse_range_landmark_gnc_residual),
                 name=f"inverse_range_landmark_{cam_type_name}_gnc_residual",
                 config=config,
-                input_types=[
-                    sf.Pose3,
-                    cam_type,
-                    sf.Pose3,
-                    cam_type,
-                    sf.Scalar,
-                    sf.Vector2,
-                    sf.Vector2,
-                    sf.Scalar,
-                    sf.Scalar,
-                    sf.Scalar,
-                    sf.Scalar,
-                ],
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
             ).generate_function(
@@ -459,40 +452,18 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
             )
 
             codegen.Codegen.function(
-                func=reprojection_delta,
+                func=specialize_cam(reprojection_delta),
                 name=f"{cam_type_name}_reprojection_delta",
                 config=config,
-                input_types=[
-                    sf.Pose3,
-                    cam_type,
-                    sf.Pose3,
-                    cam_type,
-                    sf.Scalar,
-                    sf.Vector2,
-                    sf.Vector2,
-                    sf.Scalar,
-                ],
                 output_names=["reprojection_delta", "is_valid"],
             ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
 
         except NotImplementedError:
             # Not all cameras implement backprojection
             codegen.Codegen.function(
-                func=inverse_range_landmark_ray_gnc_residual,
+                func=specialize_cam(inverse_range_landmark_ray_gnc_residual),
                 name=f"inverse_range_landmark_{cam_type_name}_gnc_residual",
                 config=config,
-                input_types=[
-                    sf.Pose3,
-                    sf.Pose3,
-                    cam_type,
-                    sf.Scalar,
-                    sf.Vector3,
-                    sf.Vector2,
-                    sf.Scalar,
-                    sf.Scalar,
-                    sf.Scalar,
-                    sf.Scalar,
-                ],
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
             ).generate_function(
@@ -500,17 +471,8 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
             )
 
             codegen.Codegen.function(
-                func=ray_reprojection_delta,
+                func=specialize_cam(ray_reprojection_delta),
                 name=f"{cam_type_name}_reprojection_delta",
                 config=config,
-                input_types=[
-                    sf.Pose3,
-                    sf.Pose3,
-                    cam_type,
-                    sf.Scalar,
-                    sf.Vector3,
-                    sf.Vector2,
-                    sf.Scalar,
-                ],
                 output_names=["reprojection_delta", "is_valid"],
             ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)

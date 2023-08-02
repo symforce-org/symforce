@@ -3,6 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import functools
+
 from symforce import codegen
 from symforce import typing as T
 from symforce.codegen import codegen_util
@@ -67,3 +69,73 @@ def numbify(f: T.Callable) -> T.Callable:
         :func:`lambdify`
     """
     return lambdify(f, use_numba=True)
+
+
+SymbolicFunction = T.TypeVar("SymbolicFunction", bound=T.Callable)
+
+
+def specialize_types(
+    f: SymbolicFunction, type_replacements: T.Mapping[T.Type, T.Type]
+) -> SymbolicFunction:
+    """
+    Specialize the type annotations on the given function, replacing any types in
+    ``type_replacements``
+
+    For example, this can be used to take a symbolic function that accepts a generic type and
+    generate it for several concrete types::
+
+        def f(x: sf.CameraCal) -> sf.Scalar:
+            ...
+
+        Codegen.function(specialize_types(f, {sf.CameraCal: sf.LinearCameraCal}), ...)
+        Codegen.function(specialize_types(f, {sf.CameraCal: sf.PolynomialCameraCal}), ...)
+
+    See also:
+        :func:`specialize_args`
+    """
+
+    @functools.wraps(f)
+    def specialized_function(*args: T.Any, **kwargs: T.Any) -> T.Any:
+        return f(*args, **kwargs)
+
+    specialized_function.__annotations__ = f.__annotations__.copy()
+
+    for annotation, cls in specialized_function.__annotations__.items():
+        if cls in type_replacements:
+            specialized_function.__annotations__[annotation] = type_replacements[cls]
+
+    return T.cast(SymbolicFunction, specialized_function)
+
+
+def specialize_args(
+    f: SymbolicFunction, arg_replacements: T.Mapping[str, T.Type]
+) -> SymbolicFunction:
+    """
+    Specialize the type annotations on the given function, replacing types for any arguments in
+    ``arg_replacements``
+
+    For example, this can be used to take a symbolic function that accepts a generic type and
+    generate it for several concrete types::
+
+        def f(x: sf.CameraCal, y: sf.CameraCal) -> sf.Scalar:
+            ...
+
+        Codegen.function(
+            specialize_types(f, {"x": sf.LinearCameraCal, "y": sf.PolynomialCameraCal}), ...
+        )
+
+    See also:
+        :func:`specialize_types`
+    """
+
+    @functools.wraps(f)
+    def specialized_function(*args: T.Any, **kwargs: T.Any) -> T.Any:
+        return f(*args, **kwargs)
+
+    specialized_function.__annotations__ = f.__annotations__.copy()
+
+    for annotation in specialized_function.__annotations__:
+        if annotation in arg_replacements:
+            specialized_function.__annotations__[annotation] = arg_replacements[annotation]
+
+    return T.cast(SymbolicFunction, specialized_function)
