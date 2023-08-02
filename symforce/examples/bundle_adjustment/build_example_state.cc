@@ -35,11 +35,11 @@ std::vector<sym::PosedCamera<sym::LinearCameraCald>> AddViews(
   const sym::PosedCamera<sym::LinearCameraCald> cam1(view1, camera_cal, params.image_shape);
 
   values->Set({Var::VIEW, 0}, cam0.Pose());
-  values->Set({Var::CALIBRATION, 0}, cam0.Calibration().Data());
+  values->Set({Var::CALIBRATION, 0}, cam0.Calibration());
 
   values->Set({Var::VIEW, 1},
               cam1.Pose().Retract(params.pose_noise * sym::Random<sym::Vector6d>(gen)));
-  values->Set({Var::CALIBRATION, 1}, cam1.Calibration().Data());
+  values->Set({Var::CALIBRATION, 1}, cam1.Calibration());
 
   return {cam0, cam1};
 }

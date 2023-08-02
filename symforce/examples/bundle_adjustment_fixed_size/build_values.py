@@ -15,7 +15,7 @@ def define_view(index: int) -> Values:
     Creates a symbolic pose + calibration representing a single image
     """
     values = Values()
-    values["calibration"] = sf.M(sf.LinearCameraCal.symbolic(f"cal{index}").to_storage())
+    values["calibration"] = sf.LinearCameraCal.symbolic(f"cal{index}")
     values["pose"] = sf.Pose3.symbolic(f"pose{index}")
     return values
 

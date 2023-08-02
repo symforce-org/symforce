@@ -12,7 +12,6 @@ backprojection, the factor operates on pixel coordinates in the source and targe
 cameras that do not have backprojection, it instead operates on a ray in the source camera frame and
 a pixel in the target camera.
 """
-import functools
 from pathlib import Path
 
 import symforce.symbolic as sf
@@ -49,14 +48,13 @@ def inverse_range_landmark_prior_residual(
 
 def reprojection_delta(
     source_pose: sf.Pose3,
-    source_calibration_storage: sf.Matrix,
+    source_calibration: sf.CameraCal,
     target_pose: sf.Pose3,
-    target_calibration_storage: sf.Matrix,
+    target_calibration: sf.CameraCal,
     source_inverse_range: sf.Scalar,
     source_pixel: sf.Vector2,
     target_pixel: sf.Vector2,
     epsilon: sf.Scalar,
-    camera_model_class: T.Type[sf.CameraCal],
 ) -> T.Tuple[sf.Vector2, sf.Scalar]:
     """
     Reprojects the landmark into the target camera and returns the delta from the correspondence to
@@ -68,9 +66,9 @@ def reprojection_delta(
 
     Args:
         source_pose: The pose of the source camera
-        source_calibration_storage: The storage vector of the source camera calibration
+        source_calibration: The source camera calibration
         target_pose: The pose of the target camera
-        target_calibration_storage: The storage vector of the target camera calibration
+        target_calibration: The target camera calibration
         source_inverse_range: The inverse range of the landmark in the source camera
         source_pixel: The location of the landmark in the source camera
         target_pixel: The location of the correspondence in the target camera
@@ -81,9 +79,6 @@ def reprojection_delta(
         res: 2dof pixel reprojection error
         valid: is valid projection or not
     """
-    source_calibration = camera_model_class.from_storage(source_calibration_storage.to_flat_list())
-    target_calibration = camera_model_class.from_storage(target_calibration_storage.to_flat_list())
-
     # Warp source coords into target
     source_cam = sf.PosedCamera(pose=source_pose, calibration=source_calibration)
     target_cam = sf.PosedCamera(pose=target_pose, calibration=target_calibration)
@@ -101,9 +96,9 @@ def reprojection_delta(
 
 def inverse_range_landmark_reprojection_error_residual(
     source_pose: sf.Pose3,
-    source_calibration_storage: sf.Matrix,
+    source_calibration: sf.CameraCal,
     target_pose: sf.Pose3,
-    target_calibration_storage: sf.Matrix,
+    target_calibration: sf.CameraCal,
     source_inverse_range: sf.Scalar,
     source_pixel: sf.Vector2,
     target_pixel: sf.Vector2,
@@ -111,7 +106,6 @@ def inverse_range_landmark_reprojection_error_residual(
     gnc_mu: sf.Scalar,
     gnc_scale: sf.Scalar,
     epsilon: sf.Scalar,
-    camera_model_class: T.Type[sf.CameraCal],
 ) -> sf.Vector2:
     """
     Return the 2dof residual of reprojecting the landmark into the target camera and comparing
@@ -133,9 +127,9 @@ def inverse_range_landmark_reprojection_error_residual(
 
     Args:
         source_pose: The pose of the source camera
-        source_calibration_storage: The storage vector of the source camera calibration
+        source_calibration: The source camera calibration
         target_pose: The pose of the target camera
-        target_calibration_storage: The storage vector of the target camera calibration
+        target_calibration: The target camera calibration
         source_inverse_range: The inverse range of the landmark in the source camera
         source_pixel: The location of the landmark in the source camera
         target_pixel: The location of the correspondence in the target camera
@@ -145,22 +139,19 @@ def inverse_range_landmark_reprojection_error_residual(
         gnc_scale: The scale parameter for the
             :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
         epsilon: Small positive value
-        camera_model_class: The subclass of :class:`CameraCal <symforce.cam.camera_cal.CameraCal>`
-            to use as the camera model
 
     Outputs:
         res: 2dof residual of the reprojection
     """
     reprojection_error, warp_is_valid = reprojection_delta(
         source_pose,
-        source_calibration_storage,
+        source_calibration,
         target_pose,
-        target_calibration_storage,
+        target_calibration,
         source_inverse_range,
         source_pixel,
         target_pixel,
         epsilon,
-        camera_model_class,
     )
 
     noise_model = BarronNoiseModel(
@@ -179,12 +170,11 @@ def inverse_range_landmark_reprojection_error_residual(
 def ray_reprojection_delta(
     source_pose: sf.Pose3,
     target_pose: sf.Pose3,
-    target_calibration_storage: sf.Matrix,
+    target_calibration: sf.CameraCal,
     source_inverse_range: sf.Scalar,
     p_camera_source: sf.Vector3,
     target_pixel: sf.Vector2,
     epsilon: sf.Scalar,
-    target_camera_model_class: T.Type[sf.CameraCal],
 ) -> T.Tuple[sf.Vector2, sf.Scalar]:
     """
     Reprojects the landmark ray into the target camera and returns the delta between the
@@ -197,14 +187,12 @@ def ray_reprojection_delta(
     Args:
         source_pose: The pose of the source camera
         target_pose: The pose of the target camera
-        target_calibration_storage: The storage vector of the target camera calibration
+        target_calibration: The target camera calibration
         source_inverse_range: The inverse range of the landmark in the source camera
         p_camera_source: The location of the landmark in the source camera coordinate, will be
             normalized
         target_pixel: The location of the correspondence in the target camera
         epsilon: Small positive value
-        target_camera_model_class: The subclass of
-            :class:`CameraCal <symforce.cam.camera_cal.CameraCal>` to use as the target camera model
 
     Outputs:
         res: 2dof reprojection delta
@@ -219,8 +207,7 @@ def ray_reprojection_delta(
         + (nav_T_source_cam.t - nav_T_target_cam.t) * source_inverse_range
     )
 
-    target_cam = target_camera_model_class.from_storage(target_calibration_storage.to_flat_list())
-    target_pixel_reprojection, is_valid = target_cam.pixel_from_camera_point(
+    target_pixel_reprojection, is_valid = target_calibration.pixel_from_camera_point(
         p_cam_target, epsilon=epsilon
     )
     reprojection_error = target_pixel_reprojection - target_pixel
@@ -231,7 +218,7 @@ def ray_reprojection_delta(
 def inverse_range_landmark_ray_reprojection_error_residual(
     source_pose: sf.Pose3,
     target_pose: sf.Pose3,
-    target_calibration_storage: sf.Matrix,
+    target_calibration: sf.CameraCal,
     source_inverse_range: sf.Scalar,
     p_camera_source: sf.Vector3,
     target_pixel: sf.Vector2,
@@ -239,7 +226,6 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     gnc_mu: sf.Scalar,
     gnc_scale: sf.Scalar,
     epsilon: sf.Scalar,
-    target_camera_model_class: T.Type[sf.CameraCal],
 ) -> sf.Vector2:
     """
     Return the 2dof residual of reprojecting the landmark ray into the target spherical camera and
@@ -262,7 +248,7 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     Args:
         source_pose: The pose of the source camera
         target_pose: The pose of the target camera
-        target_calibration_storage: The storage vector of the target spherical camera calibration
+        target_calibration: The target spherical camera calibration
         source_inverse_range: The inverse range of the landmark in the source camera
         p_camera_source: The location of the landmark in the source camera coordinate, will be
             normalized
@@ -273,8 +259,6 @@ def inverse_range_landmark_ray_reprojection_error_residual(
         gnc_scale: The scale parameter for the
             :class:`BarronNoiseModel <symforce.opt.noise_models.BarronNoiseModel>`
         epsilon: Small positive value
-        target_camera_model_class: The subclass of
-            :class:`CameraCal <symforce.cam.camera_cal.CameraCal>` to use as the target camera model
 
     Outputs:
         res: 2dof whiten residual of the reprojection
@@ -282,12 +266,11 @@ def inverse_range_landmark_ray_reprojection_error_residual(
     reprojection_error, is_valid = ray_reprojection_delta(
         source_pose,
         target_pose,
-        target_calibration_storage,
+        target_calibration,
         source_inverse_range,
         p_camera_source,
         target_pixel,
         epsilon,
-        target_camera_model_class,
     )
 
     # Compute whitened residual with a noise model.
@@ -334,16 +317,14 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
 
         try:
             codegen.Codegen.function(
-                func=functools.partial(
-                    inverse_range_landmark_reprojection_error_residual, camera_model_class=cam_type
-                ),
+                func=inverse_range_landmark_reprojection_error_residual,
                 name=f"inverse_range_landmark_{cam_type_name}_reprojection_error_residual",
                 config=config,
                 input_types=[
                     sf.Pose3,
-                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    cam_type,
                     sf.Pose3,
-                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    cam_type,
                     sf.Scalar,
                     sf.Vector2,
                     sf.Vector2,
@@ -359,14 +340,14 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
             )
 
             codegen.Codegen.function(
-                func=functools.partial(reprojection_delta, camera_model_class=cam_type),
+                func=reprojection_delta,
                 name=f"{cam_type_name}_reprojection_delta",
                 config=config,
                 input_types=[
                     sf.Pose3,
-                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    cam_type,
                     sf.Pose3,
-                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    cam_type,
                     sf.Scalar,
                     sf.Vector2,
                     sf.Vector2,
@@ -378,16 +359,13 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
         except NotImplementedError:
             # Not all cameras implement backprojection
             codegen.Codegen.function(
-                func=functools.partial(
-                    inverse_range_landmark_ray_reprojection_error_residual,
-                    target_camera_model_class=cam_type,
-                ),
+                func=inverse_range_landmark_ray_reprojection_error_residual,
                 name=f"inverse_range_landmark_{cam_type_name}_reprojection_error_residual",
                 config=config,
                 input_types=[
                     sf.Pose3,
                     sf.Pose3,
-                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    cam_type,
                     sf.Scalar,
                     sf.Vector3,
                     sf.Vector2,
@@ -403,13 +381,13 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
             )
 
             codegen.Codegen.function(
-                func=functools.partial(ray_reprojection_delta, target_camera_model_class=cam_type),
+                func=ray_reprojection_delta,
                 name=f"{cam_type_name}_reprojection_delta",
                 config=config,
                 input_types=[
                     sf.Pose3,
                     sf.Pose3,
-                    sf.matrix_type_from_shape((cam_type.storage_dim(), 1)),
+                    cam_type,
                     sf.Scalar,
                     sf.Vector3,
                     sf.Vector2,

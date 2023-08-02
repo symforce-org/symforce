@@ -8,6 +8,7 @@
 
 #include <Eigen/Dense>
 
+#include <sym/double_sphere_camera_cal.h>
 #include <sym/pose3.h>
 
 namespace sym {
@@ -22,9 +23,9 @@ namespace sym {
  *
  * Args:
  *     source_pose: The pose of the source camera
- *     source_calibration_storage: The storage vector of the source camera calibration
+ *     source_calibration: The source camera calibration
  *     target_pose: The pose of the target camera
- *     target_calibration_storage: The storage vector of the target camera calibration
+ *     target_calibration: The target camera calibration
  *     source_inverse_range: The inverse range of the landmark in the source camera
  *     source_pixel: The location of the landmark in the source camera
  *     target_pixel: The location of the correspondence in the target camera
@@ -37,9 +38,9 @@ namespace sym {
  */
 template <typename Scalar>
 void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
-                                   const Eigen::Matrix<Scalar, 6, 1>& source_calibration_storage,
+                                   const sym::DoubleSphereCameraCal<Scalar>& source_calibration,
                                    const sym::Pose3<Scalar>& target_pose,
-                                   const Eigen::Matrix<Scalar, 6, 1>& target_calibration_storage,
+                                   const sym::DoubleSphereCameraCal<Scalar>& target_calibration,
                                    const Scalar source_inverse_range,
                                    const Eigen::Matrix<Scalar, 2, 1>& source_pixel,
                                    const Eigen::Matrix<Scalar, 2, 1>& target_pixel,
@@ -50,95 +51,93 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();
+  const Eigen::Matrix<Scalar, 6, 1>& _source_calibration = source_calibration.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _target_pose = target_pose.Data();
+  const Eigen::Matrix<Scalar, 6, 1>& _target_calibration = target_calibration.Data();
 
   // Intermediate terms (64)
   const Scalar _tmp0 = 2 * _target_pose[2];
   const Scalar _tmp1 = _target_pose[3] * _tmp0;
   const Scalar _tmp2 = 2 * _target_pose[1];
   const Scalar _tmp3 = _target_pose[0] * _tmp2;
-  const Scalar _tmp4 = 2 * _source_pose[0] * _source_pose[3];
-  const Scalar _tmp5 = 2 * _source_pose[1];
-  const Scalar _tmp6 = _source_pose[2] * _tmp5;
-  const Scalar _tmp7 = -source_calibration_storage(3, 0) + source_pixel(1, 0);
-  const Scalar _tmp8 =
-      std::pow(_tmp7, Scalar(2)) / std::pow(source_calibration_storage(1, 0), Scalar(2));
-  const Scalar _tmp9 = -source_calibration_storage(2, 0) + source_pixel(0, 0);
-  const Scalar _tmp10 =
-      std::pow(_tmp9, Scalar(2)) / std::pow(source_calibration_storage(0, 0), Scalar(2));
+  const Scalar _tmp4 = 2 * _source_pose[0];
+  const Scalar _tmp5 = _source_pose[1] * _tmp4;
+  const Scalar _tmp6 = 2 * _source_pose[2] * _source_pose[3];
+  const Scalar _tmp7 = -_source_calibration[2] + source_pixel(0, 0);
+  const Scalar _tmp8 = std::pow(_tmp7, Scalar(2)) / std::pow(_source_calibration[0], Scalar(2));
+  const Scalar _tmp9 = -_source_calibration[3] + source_pixel(1, 0);
+  const Scalar _tmp10 = std::pow(_tmp9, Scalar(2)) / std::pow(_source_calibration[1], Scalar(2));
   const Scalar _tmp11 = _tmp10 + _tmp8;
-  const Scalar _tmp12 = -_tmp11 * std::pow(source_calibration_storage(5, 0), Scalar(2)) + 1;
-  const Scalar _tmp13 = -_tmp11 * (2 * source_calibration_storage(5, 0) - 1) + 1;
+  const Scalar _tmp12 = -std::pow(_source_calibration[5], Scalar(2)) * _tmp11 + 1;
+  const Scalar _tmp13 = -_tmp11 * (2 * _source_calibration[5] - 1) + 1;
   const Scalar _tmp14 =
-      source_calibration_storage(5, 0) * std::sqrt(Scalar(std::max<Scalar>(_tmp13, epsilon))) -
-      source_calibration_storage(5, 0) + 1;
+      _source_calibration[5] * std::sqrt(Scalar(std::max<Scalar>(_tmp13, epsilon))) -
+      _source_calibration[5] + 1;
   const Scalar _tmp15 =
       _tmp14 + epsilon * (2 * std::min<Scalar>(0, (((_tmp14) > 0) - ((_tmp14) < 0))) + 1);
   const Scalar _tmp16 = _tmp12 / _tmp15;
   const Scalar _tmp17 = std::pow(_tmp12, Scalar(2)) / std::pow(_tmp15, Scalar(2));
-  const Scalar _tmp18 = _tmp11 + _tmp17;
+  const Scalar _tmp18 = _tmp11 * (1 - std::pow(_source_calibration[4], Scalar(2))) + _tmp17;
   const Scalar _tmp19 =
-      _tmp18 + epsilon * (2 * std::min<Scalar>(0, (((_tmp18) > 0) - ((_tmp18) < 0))) + 1);
-  const Scalar _tmp20 =
-      _tmp11 * (1 - std::pow(source_calibration_storage(4, 0), Scalar(2))) + _tmp17;
-  const Scalar _tmp21 = _tmp16 * source_calibration_storage(4, 0) +
-                        std::sqrt(Scalar(std::max<Scalar>(_tmp20, epsilon)));
-  const Scalar _tmp22 = _tmp21 / _tmp19;
-  const Scalar _tmp23 = _tmp16 * _tmp22 - source_calibration_storage(4, 0);
-  const Scalar _tmp24 = std::pow(_tmp21, Scalar(2)) / std::pow(_tmp19, Scalar(2));
+      _source_calibration[4] * _tmp16 + std::sqrt(Scalar(std::max<Scalar>(_tmp18, epsilon)));
+  const Scalar _tmp20 = _tmp11 + _tmp17;
+  const Scalar _tmp21 =
+      _tmp20 + epsilon * (2 * std::min<Scalar>(0, (((_tmp20) > 0) - ((_tmp20) < 0))) + 1);
+  const Scalar _tmp22 = _tmp19 / _tmp21;
+  const Scalar _tmp23 = -_source_calibration[4] + _tmp16 * _tmp22;
+  const Scalar _tmp24 = std::pow(_tmp19, Scalar(2)) / std::pow(_tmp21, Scalar(2));
   const Scalar _tmp25 =
       std::pow(Scalar(_tmp10 * _tmp24 + std::pow(_tmp23, Scalar(2)) + _tmp24 * _tmp8 + epsilon),
                Scalar(Scalar(-1) / Scalar(2)));
-  const Scalar _tmp26 = _tmp23 * _tmp25;
-  const Scalar _tmp27 = _source_pose[0] * _tmp5;
-  const Scalar _tmp28 = 2 * _source_pose[2];
-  const Scalar _tmp29 = _source_pose[3] * _tmp28;
-  const Scalar _tmp30 = _tmp22 * _tmp25;
-  const Scalar _tmp31 = _tmp30 * _tmp9 / source_calibration_storage(0, 0);
-  const Scalar _tmp32 = -2 * std::pow(_source_pose[2], Scalar(2));
-  const Scalar _tmp33 = -2 * std::pow(_source_pose[0], Scalar(2));
-  const Scalar _tmp34 = _tmp30 * _tmp7 / source_calibration_storage(1, 0);
-  const Scalar _tmp35 = _tmp26 * (-_tmp4 + _tmp6) + _tmp31 * (_tmp27 + _tmp29) +
-                        _tmp34 * (_tmp32 + _tmp33 + 1) +
+  const Scalar _tmp26 = _tmp22 * _tmp25;
+  const Scalar _tmp27 = _tmp26 * _tmp7 / _source_calibration[0];
+  const Scalar _tmp28 = -2 * std::pow(_source_pose[2], Scalar(2));
+  const Scalar _tmp29 = -2 * std::pow(_source_pose[0], Scalar(2));
+  const Scalar _tmp30 = _tmp26 * _tmp9 / _source_calibration[1];
+  const Scalar _tmp31 = _source_pose[3] * _tmp4;
+  const Scalar _tmp32 = 2 * _source_pose[1];
+  const Scalar _tmp33 = _source_pose[2] * _tmp32;
+  const Scalar _tmp34 = _tmp23 * _tmp25;
+  const Scalar _tmp35 = _tmp27 * (_tmp5 + _tmp6) + _tmp30 * (_tmp28 + _tmp29 + 1) +
+                        _tmp34 * (-_tmp31 + _tmp33) +
                         source_inverse_range * (_source_pose[5] - _target_pose[5]);
-  const Scalar _tmp36 = -2 * std::pow(_target_pose[1], Scalar(2));
-  const Scalar _tmp37 = 1 - 2 * std::pow(_target_pose[2], Scalar(2));
-  const Scalar _tmp38 = _source_pose[0] * _tmp28;
-  const Scalar _tmp39 = _source_pose[3] * _tmp5;
+  const Scalar _tmp36 = _target_pose[0] * _tmp0;
+  const Scalar _tmp37 = _target_pose[3] * _tmp2;
+  const Scalar _tmp38 = _source_pose[2] * _tmp4;
+  const Scalar _tmp39 = _source_pose[3] * _tmp32;
   const Scalar _tmp40 = 1 - 2 * std::pow(_source_pose[1], Scalar(2));
-  const Scalar _tmp41 = _tmp26 * (_tmp38 + _tmp39) + _tmp31 * (_tmp32 + _tmp40) +
-                        _tmp34 * (_tmp27 - _tmp29) +
-                        source_inverse_range * (_source_pose[4] - _target_pose[4]);
-  const Scalar _tmp42 = _target_pose[0] * _tmp0;
-  const Scalar _tmp43 = _target_pose[3] * _tmp2;
-  const Scalar _tmp44 = _tmp26 * (_tmp33 + _tmp40) + _tmp31 * (_tmp38 - _tmp39) +
-                        _tmp34 * (_tmp4 + _tmp6) +
+  const Scalar _tmp41 = _tmp27 * (_tmp38 - _tmp39) + _tmp30 * (_tmp31 + _tmp33) +
+                        _tmp34 * (_tmp29 + _tmp40) +
                         source_inverse_range * (_source_pose[6] - _target_pose[6]);
+  const Scalar _tmp42 = -2 * std::pow(_target_pose[2], Scalar(2));
+  const Scalar _tmp43 = 1 - 2 * std::pow(_target_pose[1], Scalar(2));
+  const Scalar _tmp44 = _tmp27 * (_tmp28 + _tmp40) + _tmp30 * (_tmp5 - _tmp6) +
+                        _tmp34 * (_tmp38 + _tmp39) +
+                        source_inverse_range * (_source_pose[4] - _target_pose[4]);
   const Scalar _tmp45 =
-      _tmp35 * (_tmp1 + _tmp3) + _tmp41 * (_tmp36 + _tmp37) + _tmp44 * (_tmp42 - _tmp43);
-  const Scalar _tmp46 =
-      std::min<Scalar>(0, (((target_calibration_storage(5, 0) + Scalar(-0.5)) > 0) -
-                           ((target_calibration_storage(5, 0) + Scalar(-0.5)) < 0)));
+      _tmp35 * (_tmp1 + _tmp3) + _tmp41 * (_tmp36 - _tmp37) + _tmp44 * (_tmp42 + _tmp43);
+  const Scalar _tmp46 = std::min<Scalar>(0, (((_target_calibration[5] + Scalar(-0.5)) > 0) -
+                                             ((_target_calibration[5] + Scalar(-0.5)) < 0)));
   const Scalar _tmp47 = 2 * _tmp46;
-  const Scalar _tmp48 = -epsilon * (_tmp47 + 1) + target_calibration_storage(5, 0);
+  const Scalar _tmp48 = _target_calibration[5] - epsilon * (_tmp47 + 1);
   const Scalar _tmp49 = _target_pose[2] * _tmp2;
   const Scalar _tmp50 = 2 * _target_pose[0] * _target_pose[3];
   const Scalar _tmp51 = -2 * std::pow(_target_pose[0], Scalar(2));
   const Scalar _tmp52 =
-      _tmp35 * (_tmp49 - _tmp50) + _tmp41 * (_tmp42 + _tmp43) + _tmp44 * (_tmp36 + _tmp51 + 1);
+      _tmp35 * (_tmp49 - _tmp50) + _tmp41 * (_tmp43 + _tmp51) + _tmp44 * (_tmp36 + _tmp37);
   const Scalar _tmp53 =
-      _tmp35 * (_tmp37 + _tmp51) + _tmp41 * (-_tmp1 + _tmp3) + _tmp44 * (_tmp49 + _tmp50);
+      _tmp35 * (_tmp42 + _tmp51 + 1) + _tmp41 * (_tmp49 + _tmp50) + _tmp44 * (-_tmp1 + _tmp3);
   const Scalar _tmp54 =
       std::pow(_tmp45, Scalar(2)) + std::pow(_tmp53, Scalar(2)) + std::pow(epsilon, Scalar(2));
   const Scalar _tmp55 = std::sqrt(Scalar(std::pow(_tmp52, Scalar(2)) + _tmp54));
-  const Scalar _tmp56 = _tmp52 + _tmp55 * target_calibration_storage(4, 0);
+  const Scalar _tmp56 = _target_calibration[4] * _tmp55 + _tmp52;
   const Scalar _tmp57 = -_tmp48;
   const Scalar _tmp58 =
       Scalar(1.0) /
       (std::max<Scalar>(epsilon, _tmp48 * std::sqrt(Scalar(_tmp54 + std::pow(_tmp56, Scalar(2)))) +
                                      _tmp56 * (_tmp57 + 1)));
   const Scalar _tmp59 = (Scalar(1) / Scalar(2)) * _tmp47 + _tmp57 + 1;
-  const Scalar _tmp60 = std::pow(target_calibration_storage(4, 0), Scalar(2));
+  const Scalar _tmp60 = std::pow(_target_calibration[4], Scalar(2));
   const Scalar _tmp61 = _tmp46 + _tmp48;
   const Scalar _tmp62 = std::pow(_tmp59, Scalar(2)) / std::pow(_tmp61, Scalar(2));
   const Scalar _tmp63 = _tmp60 * _tmp62 - _tmp60 + 1;
@@ -147,10 +146,10 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   if (reprojection_delta != nullptr) {
     Eigen::Matrix<Scalar, 2, 1>& _reprojection_delta = (*reprojection_delta);
 
-    _reprojection_delta(0, 0) = _tmp45 * _tmp58 * target_calibration_storage(0, 0) +
-                                target_calibration_storage(2, 0) - target_pixel(0, 0);
-    _reprojection_delta(1, 0) = _tmp53 * _tmp58 * target_calibration_storage(1, 0) +
-                                target_calibration_storage(3, 0) - target_pixel(1, 0);
+    _reprojection_delta(0, 0) =
+        _target_calibration[0] * _tmp45 * _tmp58 + _target_calibration[2] - target_pixel(0, 0);
+    _reprojection_delta(1, 0) =
+        _target_calibration[1] * _tmp53 * _tmp58 + _target_calibration[3] - target_pixel(1, 0);
   }
 
   if (is_valid != nullptr) {
@@ -161,28 +160,28 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
             0,
             std::min<Scalar>(
                 std::max<Scalar>(
-                    -(((target_calibration_storage(4, 0) - 1) > 0) -
-                      ((target_calibration_storage(4, 0) - 1) < 0)),
-                    1 - std::max<Scalar>(
-                            0, -(((_tmp52 * target_calibration_storage(4, 0) + _tmp55) > 0) -
-                                 ((_tmp52 * target_calibration_storage(4, 0) + _tmp55) < 0)))),
+                    -(((_target_calibration[4] - 1) > 0) - ((_target_calibration[4] - 1) < 0)),
+                    1 - std::max<Scalar>(0, -(((_target_calibration[4] * _tmp52 + _tmp55) > 0) -
+                                              ((_target_calibration[4] * _tmp52 + _tmp55) < 0)))),
                 std::max<Scalar>(
                     -(((_tmp63) > 0) - ((_tmp63) < 0)),
                     1 - std::max<Scalar>(
-                            0, -(((_tmp52 - _tmp55 * (-_tmp59 *
-                                                          std::sqrt(Scalar(std::max<Scalar>(
-                                                              _tmp63, std::sqrt(epsilon)))) /
-                                                          _tmp61 +
-                                                      _tmp62 * target_calibration_storage(4, 0) -
-                                                      target_calibration_storage(4, 0))) > 0) -
-                                 ((_tmp52 - _tmp55 * (-_tmp59 *
-                                                          std::sqrt(Scalar(std::max<Scalar>(
-                                                              _tmp63, std::sqrt(epsilon)))) /
-                                                          _tmp61 +
-                                                      _tmp62 * target_calibration_storage(4, 0) -
-                                                      target_calibration_storage(4, 0))) < 0)))))) *
+                            0, -(((_tmp52 -
+                                   _tmp55 *
+                                       (_target_calibration[4] * _tmp62 - _target_calibration[4] -
+                                        _tmp59 *
+                                            std::sqrt(Scalar(
+                                                std::max<Scalar>(_tmp63, std::sqrt(epsilon)))) /
+                                            _tmp61)) > 0) -
+                                 ((_tmp52 -
+                                   _tmp55 *
+                                       (_target_calibration[4] * _tmp62 - _target_calibration[4] -
+                                        _tmp59 *
+                                            std::sqrt(Scalar(
+                                                std::max<Scalar>(_tmp63, std::sqrt(epsilon)))) /
+                                            _tmp61)) < 0)))))) *
         std::min<Scalar>(1 - std::max<Scalar>(0, -(((_tmp13) > 0) - ((_tmp13) < 0))),
-                         1 - std::max<Scalar>(0, -(((_tmp20) > 0) - ((_tmp20) < 0))));
+                         1 - std::max<Scalar>(0, -(((_tmp18) > 0) - ((_tmp18) < 0))));
   }
 }  // NOLINT(readability/fn_size)
 

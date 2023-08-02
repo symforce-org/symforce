@@ -154,7 +154,6 @@ class FixedBundleAdjustmentProblem:
                         self.values["costs"]["reprojection_error_gnc_mu"],
                         self.values["costs"]["reprojection_error_gnc_scale"],
                         self.values["epsilon"],
-                        sf.LinearCameraCal,
                     )
                 )
 
