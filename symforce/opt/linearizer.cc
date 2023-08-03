@@ -52,7 +52,7 @@ template <typename ScalarType>
 void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
                                          SparseLinearization<Scalar>& linearization) {
   if (IsInitialized()) {
-    SYM_TIME_SCOPE("Linearizer<>::Relinearize::NonFirst()");
+    SYM_TIME_SCOPE("Linearizer<{}>::Relinearize::NonFirst()", name_);
 
     EnsureLinearizationHasCorrectSize(linearization);
 
@@ -92,7 +92,7 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
 
     linearization.SetInitialized();
   } else {
-    SYM_TIME_SCOPE("Linearizer<>::Relinearize::First()");
+    SYM_TIME_SCOPE("Linearizer<{}>::Relinearize::First()", name_);
 
     BuildInitialLinearization(values);
 
