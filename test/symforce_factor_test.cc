@@ -14,6 +14,7 @@
 #include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factor_t.hpp>
 
+#include <sym/factors/prior_factor_rot3.h>
 #include <symforce/opt/factor.h>
 #include <symforce/opt/key.h>
 
@@ -221,6 +222,14 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
       },
       {'x', {'R', 1}, 'y', {'R', 2}, 'P', 'z'});
   INFO(big_factor.Linearize(values));
+
+  // An example with a std::bind expression
+  using namespace std::placeholders;
+  const Eigen::Matrix3d sqrt_info = Eigen::Matrix3d::Identity();
+  const sym::Factord prior_rot3_bind = sym::Factord::Jacobian(
+      std::bind(sym::PriorFactorRot3<double>, _1, _2, sqrt_info, _3, _4, _5, nullptr, nullptr),
+      {{'R', 1}, {'R', 2}, 'e'});
+  INFO(prior_rot3_bind.Linearize(values));
 
   // Test keys_to_func != keys_to_optimize - pass in extra epsilon not being optimized
   const std::vector<sym::Key> keys_to_optimize = {{'R', 1}, {'R', 2}};
@@ -542,6 +551,14 @@ TEST_CASE("Test hessian constructors", "[factors]") {
       },
       {'x', {'R', 1}, 'y', {'R', 2}, 'P', 'z'});
   INFO(big_factor.Linearize(values));
+
+  // An example with a std::bind expression
+  using namespace std::placeholders;
+  const Eigen::Matrix3d sqrt_info = Eigen::Matrix3d::Identity();
+  const sym::Factord prior_rot3_bind = sym::Factord::Hessian(
+      std::bind(sym::PriorFactorRot3<double>, _1, _2, sqrt_info, _3, _4, _5, _6, _7),
+      {{'R', 1}, {'R', 2}, 'e'});
+  INFO(prior_rot3_bind.Linearize(values));
 
   // Test keys_to_func != keys_to_optimize - pass in extra epsilon not being optimized
   const std::vector<sym::Key> keys_to_optimize = {{'R', 1}, {'R', 2}};
