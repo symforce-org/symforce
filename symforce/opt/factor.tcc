@@ -40,7 +40,10 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
   using Traits = function_traits<Functor>;
 
   SYM_ASSERT(keys_to_func.size() >= keys_to_optimize.size());
-  SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 2);
+  SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 2,
+             "Function takes {} arguments, but got {} keys_to_func; expected ({} + 2) == {}",
+             Traits::num_arguments, keys_to_func.size(), keys_to_func.size(),
+             keys_to_func.size() + 2);
 
   // Get matrix types from function signature
   using ResidualVec = typename std::remove_pointer_t<
@@ -93,7 +96,10 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& k
   using Traits = function_traits<Functor>;
 
   SYM_ASSERT(keys_to_func.size() >= keys_to_optimize.size());
-  SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 4);
+  SYM_ASSERT(Traits::num_arguments == keys_to_func.size() + 4,
+             "Function takes {} arguments, but got {} keys_to_func; expected ({} + 4) == {}",
+             Traits::num_arguments, keys_to_func.size(), keys_to_func.size(),
+             keys_to_func.size() + 4);
 
   // Get matrix types from function signature
   using ResidualVec = typename internal::HessianFuncTypeHelper<Functor>::ResidualVec;
