@@ -143,7 +143,7 @@ class Rot2(LieGroup):
 
         This is equivalent to ``to_tangent()[0]``
         """
-        return sf.atan2(self.z.imag, self.z.real, epsilon=epsilon)
+        return self.to_tangent(epsilon)[0]
 
     def to_rotation_matrix(self) -> Matrix22:
         """
