@@ -10,6 +10,7 @@
 #include <lcmtypes/eigen_lcm/Matrix4d.hpp>
 #include <lcmtypes/eigen_lcm/Matrix4f.hpp>
 #include <lcmtypes/eigen_lcm/Matrix4i.hpp>
+#include <lcmtypes/eigen_lcm/Matrix68f.hpp>
 #include <lcmtypes/eigen_lcm/MatrixXd.hpp>
 #include <lcmtypes/eigen_lcm/MatrixXf.hpp>
 #include <lcmtypes/eigen_lcm/MatrixXi.hpp>
