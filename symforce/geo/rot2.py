@@ -137,7 +137,7 @@ class Rot2(LieGroup):
         """
         return cls.from_tangent([theta])
 
-    def to_angle(self, epsilon=sf.epsilon()) -> T.Scalar:
+    def to_angle(self, epsilon: T.Scalar = sf.epsilon()) -> T.Scalar:
         """
         Get the angle of this Rot2 in radians
 
