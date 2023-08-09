@@ -331,11 +331,12 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
         linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
 
     // Add contribution from diagonal hessian block, column by column
+    auto col_start_iter = key_helper.hessian_storage_col_starts.begin();
     for (int col_block = 0; col_block < key_helper.tangent_dim; ++col_block) {
-      const std::vector<int32_t>& diag_col_starts = key_helper.hessian_storage_col_starts[key_i];
-      Eigen::Map<VectorX<Scalar>>(
-          linearization.hessian_lower.valuePtr() + diag_col_starts[col_block],
-          key_helper.tangent_dim - col_block) +=
+      const auto col_start = *col_start_iter;
+      col_start_iter++;
+      Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_start,
+                                  key_helper.tangent_dim - col_block) +=
           linearized_factor.hessian.block(key_helper.factor_offset + col_block,
                                           key_helper.factor_offset + col_block,
                                           key_helper.tangent_dim - col_block, 1);
@@ -347,19 +348,22 @@ void Linearizer<ScalarType>::UpdateFromLinearizedDenseFactorIntoSparse(
     // of the block is contiguous in sparse storage.
     for (int key_j = 0; key_j < key_i; key_j++) {
       const linearization_dense_key_helper_t& key_helper_j = factor_helper.key_helpers[key_j];
-      const std::vector<int32_t>& col_starts = key_helper.hessian_storage_col_starts[key_j];
 
       if (key_helper_j.combined_offset < key_helper.combined_offset) {
-        for (int32_t col_j = 0; col_j < static_cast<int32_t>(col_starts.size()); ++col_j) {
-          Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_starts[col_j],
+        for (int32_t col_j = 0; col_j < static_cast<int32_t>(key_helper_j.tangent_dim); ++col_j) {
+          const auto col_start = *col_start_iter;
+          col_start_iter++;
+          Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_start,
                                       key_helper.tangent_dim) +=
               linearized_factor.hessian.block(key_helper.factor_offset,
                                               key_helper_j.factor_offset + col_j,
                                               key_helper.tangent_dim, 1);
         }
       } else {
-        for (int32_t col_i = 0; col_i < static_cast<int32_t>(col_starts.size()); ++col_i) {
-          Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_starts[col_i],
+        for (int32_t col_i = 0; col_i < static_cast<int32_t>(key_helper.tangent_dim); ++col_i) {
+          const auto col_start = *col_start_iter;
+          col_start_iter++;
+          Eigen::Map<VectorX<Scalar>>(linearization.hessian_lower.valuePtr() + col_start,
                                       key_helper_j.tangent_dim) +=
               linearized_factor.hessian
                   .block(key_helper.factor_offset + col_i, key_helper_j.factor_offset, 1,

@@ -74,12 +74,9 @@ struct linearization_dense_key_helper_t {
   // For each column of this key's block in the factor jacobian, the sparse storage valuePtr array
   // offsets
   int32_t jacobian_storage_col_starts[];
-  // For each other key (from 0 to this key's index), the sparse storage valuePtr array offsets
-  // NOTE(hayk): Currently num_other_cols is not constant in actual use - this type likely
-  // can't be serialized right now. Perhaps try to store a flatter structure of slices.
-  int32_t num_other_keys;
-  int32_t num_other_cols;
-  int32_t hessian_storage_col_starts[num_other_keys][num_other_cols];
+  // For this key, then each other key (from 0 to this key's index); and each column in that key;
+  // the sparse storage valuePtr array offsets
+  int32_t hessian_storage_col_starts[];
 };
 
 // Index information for a linearized factor into the combined problem

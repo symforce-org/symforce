@@ -113,34 +113,30 @@ void ComputeKeyHelperSparseColOffsets(
       }
     }
 
-    key_helper.hessian_storage_col_starts.resize(key_i + 1);
-    key_helper.num_other_keys = key_helper.hessian_storage_col_starts.size();
+    // Build the hessian storage col starts.  The insertion order here must match the order these
+    // are accessed in Linearizer::UpdateFromLinearizedDenseFactorIntoSparse
+    auto& col_starts = key_helper.hessian_storage_col_starts;
 
     // Diagonal block
-    std::vector<int32_t>& diag_col_starts = key_helper.hessian_storage_col_starts[key_i];
-    diag_col_starts.resize(key_helper.tangent_dim);
     for (int32_t col = 0; col < key_helper.tangent_dim; ++col) {
-      diag_col_starts[col] = hessian_row_col_to_storage_offset.at(
-          std::make_pair(key_helper.combined_offset + col, key_helper.combined_offset + col));
+      col_starts.push_back(hessian_row_col_to_storage_offset.at(
+          std::make_pair(key_helper.combined_offset + col, key_helper.combined_offset + col)));
     }
 
     // Off diagonal blocks
     for (int key_j = 0; key_j < key_i; key_j++) {
       const linearization_dense_key_helper_t& j_key_helper = factor_helper.key_helpers[key_j];
-      std::vector<int32_t>& col_starts = key_helper.hessian_storage_col_starts[key_j];
 
       // If key_j comes after key_i in the full problem, we need to transpose things
       if (j_key_helper.combined_offset < key_helper.combined_offset) {
-        col_starts.resize(j_key_helper.tangent_dim);
         for (int32_t j_col = 0; j_col < j_key_helper.tangent_dim; ++j_col) {
-          col_starts[j_col] = hessian_row_col_to_storage_offset.at(
-              std::make_pair(key_helper.combined_offset, j_key_helper.combined_offset + j_col));
+          col_starts.push_back(hessian_row_col_to_storage_offset.at(
+              std::make_pair(key_helper.combined_offset, j_key_helper.combined_offset + j_col)));
         }
       } else {
-        col_starts.resize(key_helper.tangent_dim);
         for (int32_t i_col = 0; i_col < key_helper.tangent_dim; ++i_col) {
-          col_starts[i_col] = hessian_row_col_to_storage_offset.at(
-              std::make_pair(j_key_helper.combined_offset, key_helper.combined_offset + i_col));
+          col_starts.push_back(hessian_row_col_to_storage_offset.at(
+              std::make_pair(j_key_helper.combined_offset, key_helper.combined_offset + i_col)));
         }
       }
     }
