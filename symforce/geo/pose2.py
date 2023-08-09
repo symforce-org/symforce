@@ -211,7 +211,7 @@ class Pose2(LieGroup):
         elif isinstance(right, self.__class__):
             return self.compose(right)
         else:
-            raise NotImplementedError(f'Unsupported type: "{right}"')
+            raise NotImplementedError(f'Unsupported type: "{type(right)}"')
 
     def to_homogenous_matrix(self) -> Matrix:
         """

@@ -147,7 +147,7 @@ class Rot3(LieGroup):
         elif isinstance(right, Rot3):
             return self.compose(right)
         else:
-            raise NotImplementedError(f'Unsupported type: "{right}"')
+            raise NotImplementedError(f'Unsupported type: "{type(right)}"')
 
     def to_rotation_matrix(self) -> Matrix33:
         """
