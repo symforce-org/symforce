@@ -254,13 +254,11 @@ struct optimization_stats_t {
   sparse_matrix_structure_t cholesky_factor_sparsity;
 }
 
-#cpp_no_display
 struct imu_biases_t {
   eigen_lcm.Vector3d accel_bias;
   eigen_lcm.Vector3d gyro_bias;
 }
 
-#cpp_no_display
 struct imu_integrated_measurement_delta_t {
   double Dt;
   eigen_lcm.Quaterniond DR;
@@ -268,7 +266,6 @@ struct imu_integrated_measurement_delta_t {
   eigen_lcm.Vector3d Dp;
 }
 
-#cpp_no_display
 struct imu_integrated_measurement_derivatives_t {
   eigen_lcm.Matrix3d DR_D_gyro_bias;
   eigen_lcm.Matrix3d Dv_D_accel_bias;
@@ -277,7 +274,6 @@ struct imu_integrated_measurement_derivatives_t {
   eigen_lcm.Matrix3d Dp_D_gyro_bias;
 }
 
-#cpp_no_display
 struct imu_integrated_measurement_t {
   imu_biases_t biases;
   imu_integrated_measurement_delta_t delta;
