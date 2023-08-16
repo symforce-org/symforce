@@ -94,6 +94,7 @@ class Codegen:
         return_key: T.Optional[str] = None,
         sparse_matrices: T.Sequence[str] = None,
         docstring: str = None,
+        output_symbols: T.Optional[T.Set[sf.Symbol]] = None,
     ) -> None:
         """
         Creates the Codegen specification.
@@ -111,6 +112,10 @@ class Codegen:
                         in as a named output argument.
             sparse_matrices: Outputs with this key will be returned as sparse matrices
             docstring: The docstring to be used with the generated function
+            output_symbols: Optionally specify a set of any symbols found in the output. Otherwise these
+                            are computed in this method. For some complicated expressions, the cost of
+                            computing these with symengine is very high, hence you may wish to specify
+                            them manually to workaround this issue.
         """
 
         if sf.epsilon() == 0:
@@ -158,6 +163,12 @@ class Codegen:
 
         self.inputs = inputs
         self.outputs = outputs
+
+        if output_symbols is None:
+            # compute the output symbols from the expressions:
+            self.output_symbols = self._compute_output_symbols(output_values=self.outputs)
+        else:
+            self.output_symbols = output_symbols.copy()
 
         # All symbols in outputs must be present in inputs
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
@@ -238,15 +249,10 @@ class Codegen:
         self.unique_namespaces: T.Optional[T.Set[str]] = None
         self.namespace: T.Optional[str] = None
 
-    @functools.cached_property
-    def output_symbols(self) -> T.Set[sf.Symbol]:
-        """
-        The set of free symbols in the output
-
-        Cached, because this is somewhat expensive to compute for large outputs
-        """
-        # Convert to Matrix before calling free_symbols because it's much faster to call once
-        return sf.S(sf.Matrix(codegen_util.flat_symbols_from_values(self.outputs)).mat).free_symbols
+    @staticmethod
+    def _compute_output_symbols(output_values: Values) -> T.Set[sf.Symbol]:
+        flat_symbols = codegen_util.flat_symbols_from_values(output_values)
+        return sf.S(sf.Matrix(flat_symbols).mat).free_symbols
 
     @classmethod
     def function(
@@ -679,6 +685,7 @@ class Codegen:
         linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
         sparse_linearization: bool = False,
         custom_jacobian: sf.Matrix = None,
+        output_symbols: T.Optional[T.Set[sf.Symbol]] = None,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
@@ -712,6 +719,8 @@ class Codegen:
                              should have shape (result_dim, input_tangent_dim), where
                              input_tangent_dim is the sum of the tangent dimensions of arguments
                              corresponding to which_args
+            output_symbols: Manually specified set of symbols to expect in the output.
+                            See docstring on __init__.
         """
         if which_args is None:
             which_args = list(self.inputs.keys())
@@ -819,6 +828,7 @@ class Codegen:
             return_key=return_key,
             sparse_matrices=sparse_matrices,
             docstring="\n".join(docstring_lines),
+            output_symbols=output_symbols,
         )
 
     def with_jacobians(
@@ -828,6 +838,7 @@ class Codegen:
         include_results: bool = True,
         name: str = None,
         sparse_jacobians: bool = False,
+        output_symbols: T.Optional[T.Set[sf.Symbol]] = None,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes some number of results,
@@ -853,6 +864,8 @@ class Codegen:
             name: Generated function name. If not given, picks a reasonable name based on the one
                   given at construction.
             sparse_jacobians: Whether to output jacobians as sparse matrices, as opposed to dense
+            output_symbols: Manually specified set of symbols to expect in the output.
+                            See docstring on __init__.
         """
         if which_args is None:
             which_args = list(self.inputs.keys())
