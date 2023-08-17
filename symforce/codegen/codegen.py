@@ -441,6 +441,7 @@ class Codegen:
         namespace: str = "sym",
         generated_file_name: str = None,
         skip_directory_nesting: bool = False,
+        skip_type_generation: bool = False,
     ) -> GeneratedPaths:
         """
         Generates a function that computes the given outputs from the given inputs.
@@ -469,6 +470,7 @@ class Codegen:
                                  no file extension
             skip_directory_nesting: Generate the output file directly into output_dir instead of
                                     adding the usual directory structure inside output_dir
+            skip_type_generation: Skip generation of python/c++/LCM types (only generate code).
         """
         assert (
             self.name is not None
@@ -530,7 +532,8 @@ class Codegen:
             shared_types=shared_types,
             output_dir=os.fspath(output_dir),
             lcm_bindings_output_dir=os.fspath(lcm_bindings_output_dir),
-            templates=templates,
+            # If not generating types, pass empty TemplateList to emission of files:
+            templates=templates if not skip_type_generation else template_util.TemplateList(),
         )
 
         # Maps typenames to generated types
@@ -568,18 +571,22 @@ class Codegen:
         # Render
         templates.render()
 
-        lcm_data = codegen_util.generate_lcm_types(
-            lcm_type_dir=types_codegen_data.lcm_type_dir,
-            lcm_files=types_codegen_data.lcm_files,
-            lcm_output_dir=types_codegen_data.lcm_bindings_output_dir,
-        )
+        if not skip_type_generation:
+            lcm_data = codegen_util.generate_lcm_types(
+                lcm_type_dir=types_codegen_data.lcm_type_dir,
+                lcm_files=types_codegen_data.lcm_files,
+                lcm_output_dir=types_codegen_data.lcm_bindings_output_dir,
+            )
+            (python_types_dir, cpp_types_dir) = (lcm_data.python_types_dir, lcm_data.cpp_types_dir)
+        else:
+            (python_types_dir, cpp_types_dir) = (Path(), Path())
 
         return GeneratedPaths(
             output_dir=output_dir,
             lcm_type_dir=types_codegen_data.lcm_type_dir,
             function_dir=out_function_dir,
-            python_types_dir=lcm_data.python_types_dir,
-            cpp_types_dir=lcm_data.cpp_types_dir,
+            python_types_dir=python_types_dir,
+            cpp_types_dir=cpp_types_dir,
             generated_files=[Path(v.output_path) for v in templates.items],
         )
 
