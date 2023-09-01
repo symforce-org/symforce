@@ -57,10 +57,7 @@ def generate_manifold_imu_preintegration(
         output_dir=output_dir, skip_directory_nesting=True
     )
 
-    codegen_residual = codegen.Codegen.function(
-        internal_imu_residual,
-        config=config,
-    ).with_linearization(
+    codegen.Codegen.function(internal_imu_residual, config=config).with_linearization(
         which_args=[
             "pose_i",
             "vel_i",
@@ -69,5 +66,20 @@ def generate_manifold_imu_preintegration(
             "accel_bias_i",
             "gyro_bias_i",
         ]
+    ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
+
+    codegen.Codegen.function(
+        internal_imu_residual, name="internal_imu_with_gravity_residual", config=config
+    ).with_linearization(
+        which_args=[
+            "pose_i",
+            "vel_i",
+            "pose_j",
+            "vel_j",
+            "accel_bias_i",
+            "gyro_bias_i",
+            "gravity",
+        ]
+    ).generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
     )
-    codegen_residual.generate_function(output_dir=output_dir, skip_directory_nesting=True)
