@@ -2,14 +2,14 @@
 # mypy: allow-untyped-defs
 from __future__ import absolute_import
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import copy
 import os
 import typing as T
 import zipfile
 from io import BytesIO
 
-from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import syntax_tree
 from skymarshal.emit_helpers import Code, EnumBuilder, StructBuilder, render
 from skymarshal.language_plugin import SkymarshalLanguage
 
@@ -568,7 +568,7 @@ class PythonClass(StructBuilder):
 
 
 class PyEnum(EnumBuilder):
-    # TODO: Add unpacker support for enums, which should be pretty easy.
+    # TODO(nikhilm): Add unpacker support for enums, which should be pretty easy.
     def decode_value(self):
         info = TYPE_MAP[self.storage_type.name]
         return "struct.unpack('{}', buf.read({}))[0]".format(info.pack_format, info.size)

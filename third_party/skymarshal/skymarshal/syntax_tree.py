@@ -1,11 +1,10 @@
 # aclint: py2 py3
-# mypy: allow-untyped-defs
 from __future__ import absolute_import, print_function
 
 import typing as T
 
 from numpy import int64
-from six import iteritems, next  # pylint: disable=redefined-builtin
+from six import iteritems  # pylint: disable=redefined-builtin
 
 INTEGER_TYPES = (
     "int8_t",
@@ -42,11 +41,13 @@ class Hash(object):
         # TODO(matt): is it possible to remove the int64 dependency?
 
     def update(self, byte):
+        # type: (int) -> None
         """Make the hash dependent on the value of the given character.
         The order that hash_update is called in IS important."""
         self.val = ((self.val << 8) ^ (self.val >> 55)) + byte
 
     def update_string(self, string):
+        # type: (str) -> None
         "Make the hash dependent on each character in a string."
         self.update(len(string))
 
@@ -62,17 +63,21 @@ class Hash(object):
         return int(self.val) & 0xFFFFFFFFFFFFFFFF
 
     def hex_no_padding(self):
+        # type: () -> str
         return "0x{0:x}".format(self.int_value)
 
     def hex_str(self):
+        # type: () -> str
         # Convert to hexidecimal with padding
         return "{0:#0{1}x}".format(self.int_value, 18)  # 18 is 16 + 2
 
     def __repr__(self):
+        # type: () -> str
         # Add the L since most languages use that.
         return self.hex_str() + "L"
 
     def __eq__(self, rhs):
+        # type: (T.Any) -> bool
         return self.int_value == rhs
 
 
@@ -80,8 +85,9 @@ class AstNode(object):
     """Base class in the syntax tree"""
 
     def __init__(self):
+        # type: () -> None
         self.lineno = -1
-        self.comments = []
+        self.comments = []  # type: T.List[str]
 
 
 class Package(AstNode):
@@ -97,17 +103,21 @@ class Package(AstNode):
 
     @property
     def struct_definitions(self):
+        # type: () -> T.List[Struct]
         return [s for s in self.type_definitions.values() if isinstance(s, Struct)]
 
     @property
     def enum_definitions(self):
+        # type: () -> T.List[Enum]
         return [e for e in self.type_definitions.values() if isinstance(e, Enum)]
 
     def reference_check(self):
+        # type: () -> None
         for type_definition in self.type_definitions.values():
             type_definition.reference_check()
 
     def type_definition_with_name(self, name):
+        # type: (str) -> T.Union[Enum, Struct]
         """Return a struct in the package by name."""
         if name not in self.type_definitions:
             raise NameError(
@@ -120,6 +130,7 @@ class Package(AstNode):
         return self.type_definitions[name]
 
     def extend_with_package(self, other_package):
+        # type: (Package) -> None
         """Add the given package's structs and enums to this package"""
         assert self.name == other_package.name
         for name, t in iteritems(other_package.type_definitions):
@@ -130,7 +141,8 @@ class Package(AstNode):
             self.type_definitions[name] = t
 
     def __repr__(self):
-        lines = []
+        # type: () -> str
+        lines = []  # type: T.List[str]
         for _, type_definition in iteritems(self.type_definitions):
             lines.extend(repr(type_definition).splitlines())
         children = "\n".join(lines)
@@ -207,6 +219,7 @@ class Notation(AstNode):
     allow_unknown_notations = False
 
     def __init__(self, name, properties, lineno):
+        # type: (str, T.Dict[str, str], int) -> None
         super(Notation, self).__init__()
         self.name = name
         self.raw_properties = properties
@@ -239,8 +252,9 @@ class Notation(AstNode):
             }
 
     def parse_property(self, prop_name, raw_value):
+        # type: (str, str) -> T.Union[None, str, bool]
         if self.spec is None:
-            return
+            return None
         [prop_spec] = [spec for spec in self.spec.properties if spec.name == prop_name]
         if prop_spec.type == "string":
             if '"' not in raw_value:
@@ -266,12 +280,15 @@ class Notation(AstNode):
             raise AssertionError("unhandled prop_spec.type: {}".format(prop_spec.type))
 
     def allowed_on_enum(self):
+        # type: () -> bool
         return self.spec is None or "enum" in self.spec.allowed
 
     def allowed_on_struct(self):
+        # type: () -> bool
         return self.spec is None or "struct" in self.spec.allowed
 
     def __repr__(self):
+        # type: () -> str
         properties = ", ".join(
             "{} = {}".format(key, value) for key, value in self.raw_properties.items()
         )
@@ -283,6 +300,7 @@ class Enum(AstNode):
 
     @classmethod
     def from_name_and_cases(cls, name, case_names_and_values, type_name="int32_t"):
+        # type: (str, T.Sequence[T.Tuple[str, int]], str) -> Enum
         value_to_case = {}  # type: T.Dict[int, str]
         for case_name, case_value in case_names_and_values:
             if case_name in value_to_case.values():
@@ -307,6 +325,7 @@ class Enum(AstNode):
         )
 
     def __init__(self, name, type_ref, cases, notations, reserved_ids):
+        # type: (str, TypeRef, T.Sequence[EnumCase], T.Sequence[Notation], T.Sequence[int]) -> None
         super(Enum, self).__init__()
         equivalent_members = [Member(type_ref, "value")]
         equivalent_members += [ConstMember(type_ref, case.name, case.value_str) for case in cases]
@@ -321,6 +340,7 @@ class Enum(AstNode):
         self.reserved_ids = set(reserved_ids)
 
     def __repr__(self):
+        # type: () -> str
         notations = "".join(repr(notation) for notation in self.notations)
         children = "\n".join("  " + repr(case) for case in self.cases)
         reserved = ""
@@ -335,6 +355,7 @@ class Enum(AstNode):
         )
 
     def __eq__(self, other):
+        # type: (T.Any) -> bool
         try:
             other_tuple = (other.name, other.storage_type_ref, other.cases)
         except AttributeError:
@@ -342,6 +363,7 @@ class Enum(AstNode):
         return (self.name, self.storage_type_ref, self.cases) == other_tuple
 
     def __ne__(self, other):
+        # type: (T.Any) -> bool
         return not self == other
 
     @property
@@ -355,10 +377,15 @@ class Enum(AstNode):
         return self.type_ref.full_name
 
     def get_notation(self, name):
+        # type: (str) -> T.Optional[Notation]
         # get the first notation with the given name, else None
-        return next((notation for notation in self.notations if notation.name == name), None)
+        for notation in self.notations:
+            if notation.name == name:
+                return notation
+        return None
 
     def get_notation_property(self, name, prop_name):
+        # type: (str, str) -> T.Union[None, str, bool]
         notation = self.get_notation(name)
         if notation is None:
             return None
@@ -368,17 +395,20 @@ class Enum(AstNode):
         return prop_value
 
     def case_for_int_value(self, int_value):
+        # type: (int) -> EnumCase
         for case in self.cases:
             if case.int_value == int_value:
                 return case
         raise KeyError("Value {} not found in:\n{}".format(int_value, self))
 
     def add_package_name(self, package_name):
+        # type: (str) -> None
         self.type_ref.add_package_name(package_name)
         self.equivalent_struct.add_package_name(package_name)
         self.option_type_ref.add_package_name(self.type_ref.full_name)
 
     def reference_check(self):
+        # type: () -> None
         self.equivalent_struct.reference_check()
 
         disallowed_notations = [x.name for x in self.notations if not x.allowed_on_enum()]
@@ -412,15 +442,18 @@ class EnumCase(AstNode):
     """A name/value case of an lcm enum type"""
 
     def __init__(self, name, value_str):
+        # type: (str, str) -> None
         super(EnumCase, self).__init__()
         self.name = name
         self.value_str = value_str
         self.type_ref = TypeRef(name)
 
     def __repr__(self):
+        # type: () -> str
         return "{} = {},".format(self.name, self.value_str)
 
     def __eq__(self, other):
+        # type: (T.Any) -> bool
         try:
             other_tuple = (other.name, other.value_str)
         except AttributeError:
@@ -428,10 +461,12 @@ class EnumCase(AstNode):
         return (self.name, self.value_str) == other_tuple
 
     def __ne__(self, other):
+        # type: (T.Any) -> bool
         return not self == other
 
     @property
     def int_value(self):
+        # type: () -> int
         return int(self.value_str, base=0)
 
 
@@ -439,6 +474,7 @@ class Struct(AstNode):
     """A description of an lcmtype"""
 
     def __init__(self, name, members, notations):
+        # type: (str, T.Sequence[Member], T.Sequence[Notation]) -> None
         super(Struct, self).__init__()
         self.reserved_ids = [
             field_id
@@ -446,15 +482,24 @@ class Struct(AstNode):
             if isinstance(group, ReservedFieldGroup)
             for field_id in group.field_ids
         ]
-        self.members = [member for member in members if not isinstance(member, ReservedFieldGroup)]
-        self.member_map = {member.name: member for member in self.members}
+        self.members = [
+            member for member in members if not isinstance(member, ReservedFieldGroup)
+        ]  # type: T.List[Member]
+        self.member_map = {
+            member.name: member for member in self.members
+        }  # type: T.Dict[str, Member]
         self.type_ref = TypeRef(name)
         self.notations = list(notations)
 
     def __repr__(self):
+        # type: () -> str
         notations = "".join(repr(notation) for notation in self.notations)
-        reserved = [ReservedFieldGroup(self.reserved_ids)] if self.reserved_ids else []
-        children = "\n".join("  " + repr(member) for member in reserved + self.members)
+        reserved = (
+            [ReservedFieldGroup(self.reserved_ids)] if self.reserved_ids else []
+        )  # type: T.List[AstNode]
+        children = "\n".join(
+            "  " + repr(member) for member in reserved + T.cast(T.List[AstNode], self.members)
+        )
         return "{}struct {} {{\n{}\n}};".format(notations, self.name, children)
 
     @property
@@ -468,10 +513,15 @@ class Struct(AstNode):
         return self.type_ref.full_name
 
     def get_notation(self, name):
+        # type: (str) -> T.Optional[Notation]
         # get the first notation with the given name, else None
-        return next((notation for notation in self.notations if notation.name == name), None)
+        for notation in self.notations:
+            if notation.name == name:
+                return notation
+        return None
 
     def get_notation_property(self, name, prop_name):
+        # type: (str, str) -> T.Union[None, str, bool]
         notation = self.get_notation(name)
         if notation is None:
             return None
@@ -481,11 +531,13 @@ class Struct(AstNode):
         return prop_value
 
     def add_package_name(self, package_name):
+        # type: (str) -> None
         self.type_ref.add_package_name(package_name)
         for member in self.members:
             member.add_package_name(package_name)
 
     def reference_check(self):
+        # type: () -> None
         for member in self.members:
             member.reference_check(self)
 
@@ -511,6 +563,7 @@ class Struct(AstNode):
                     continue
                 if dim.auto_member:
                     continue
+                assert dim.size_str is not None
                 dim_member = self.member_map[dim.size_str]
                 if isinstance(dim_member, ConstMember):
                     continue
@@ -587,10 +640,12 @@ class ReservedFieldGroup(AstNode):
     """A group of reserved field ids"""
 
     def __init__(self, field_ids):
+        # type: (T.Iterable[int]) -> None
         super(ReservedFieldGroup, self).__init__()
         self.field_ids = set(field_ids)
 
     def __repr__(self):
+        # type: () -> str
         return "reserved {};".format(", ".join(str(fid) for fid in sorted(self.field_ids)))
 
 
@@ -598,6 +653,7 @@ class Member(AstNode):
     """A field of an lcmtype"""
 
     def __init__(self, type_ref, name, field_id=None, comments=None):
+        # type: (TypeRef, str, T.Optional[int], T.Optional[T.List[str]]) -> None
         super(Member, self).__init__()
         self.name = name
         self.type_ref = type_ref
@@ -606,14 +662,17 @@ class Member(AstNode):
 
     @property
     def ndim(self):
+        # type: () -> int
         return 0
 
     def __repr__(self):
+        # type: () -> str
         if self.field_id is None:
             return "{} {};".format(self.type_ref, self.name)
         return "{} {} = {};".format(self.type_ref, self.name, self.field_id)
 
     def compute_hash(self, type_hash):
+        # type: (Hash) -> None
         self.compute_hash_prefix_for_auto_members(type_hash)
 
         # Hash the member name
@@ -629,17 +688,21 @@ class Member(AstNode):
         self.compute_hash_for_dimensions(type_hash)
 
     def compute_hash_prefix_for_auto_members(self, type_hash):
+        # type: (Hash) -> None
         # Normal members don't have dimensions, thus don't have virtual members to add to the hash
         pass
 
     def compute_hash_for_dimensions(self, type_hash):
+        # type: (Hash) -> None
         # Normal members don't have dimensions
         type_hash.update(0)
 
     def add_package_name(self, package_name):
+        # type: (str) -> None
         self.type_ref.add_package_name(package_name)
 
     def reference_check(self, _):
+        # type: (Struct) -> None
         pass
 
 
@@ -647,6 +710,7 @@ class TypeRef(AstNode):
     """A named reference to an existing type"""
 
     def __init__(self, ref_str):
+        # type: (str) -> None
         super(TypeRef, self).__init__()
         if ref_str in PRIMITIVE_TYPES:
             # This is a primitive.
@@ -661,21 +725,25 @@ class TypeRef(AstNode):
             self.name = ref_str
 
     def add_package_name(self, package_name):
+        # type: (str) -> None
         if self.package_name == "<PACKAGE-NOT-SET>":
             # We only set the package name if the given one was implied.
             self.package_name = package_name
 
     @property
     def full_name(self):
+        # type: () -> str
         if self.package_name:
             return "{}.{}".format(self.package_name, self.name)
         else:
             return self.name
 
     def __repr__(self):
+        # type: () -> str
         return self.full_name
 
     def __eq__(self, other):
+        # type: (T.Any) -> bool
         try:
             other_tuple = (other.name, other.package_name)
         except AttributeError:
@@ -683,19 +751,24 @@ class TypeRef(AstNode):
         return (self.name, self.package_name) == other_tuple
 
     def __ne__(self, other):
+        # type: (T.Any) -> bool
         return not self == other
 
     def is_non_string_primitive_type(self):
+        # type: () -> bool
         # Many languages treat strings differently than other primitives, so this is a common check.
         return self.name != "string" and self.is_primitive_type()
 
     def is_primitive_type(self):
+        # type: () -> bool
         return self.name in PRIMITIVE_TYPES
 
     def is_numeric_type(self):
+        # type: () -> bool
         return self.name in NUMERIC_TYPES
 
     def is_const_type(self):
+        # type: () -> bool
         return self.name in CONST_TYPES
 
 
@@ -703,16 +776,18 @@ class ArrayDim(AstNode):
     """A static or dynamic size of an array in a single axis"""
 
     def __init__(self, sizes):
+        # type: (T.Tuple[str, ...]) -> None
         super(ArrayDim, self).__init__()
         self.sizes_as_declared = sizes  # This is a tuple of the 0-2 strings in the .lcm definition.
         # These will be set after the reference check.
-        self.size_str = None
-        self.size_int = None
-        self._dynamic = None
-        self._auto_member = None
+        self.size_str = None  # type: T.Optional[str]
+        self.size_int = None  # type: T.Optional[int]
+        self._dynamic = None  # type: T.Optional[bool]
+        self._auto_member = None  # type: T.Optional[Member]
 
     @property
     def dynamic(self):
+        # type: () -> bool
         """Return True if the dimension is dynamic based on struct contents.
         This value is not known until after struct.reference_check(...) is called."""
         if self._dynamic is None:
@@ -721,6 +796,7 @@ class ArrayDim(AstNode):
 
     @property
     def auto_member(self):
+        # type: () -> T.Optional[Member]
         """Return the virtual Member of the dimension if using automatic length encoding.
         This value is not known until after struct.reference_check(...) is called."""
         if self._dynamic is None:
@@ -728,10 +804,13 @@ class ArrayDim(AstNode):
         return self._auto_member
 
     def compute_hash(self, type_hash):
+        # type: (Hash) -> None
         type_hash.update(1 if self.dynamic else 0)
+        assert self.size_str is not None, "size_str must be set before calling compute_hash"
         type_hash.update_string(self.size_str)
 
     def reference_check(self, struct, member):
+        # type: (Struct, Member) -> None
         """
         Use the references to determine if this arraydim is static or dynamic, and to build the
         rest of the info. There are 6 valid ways of specifying an array dimension:
@@ -843,6 +922,7 @@ class ArrayDim(AstNode):
         return  # case 3
 
     def __repr__(self):
+        # type: () -> str
         return "[{}]".format(" ".join(self.sizes_as_declared))
 
 
@@ -852,36 +932,43 @@ class ArrayMember(Member):
     # TODO(matt): might be better to just combine with Member, as lcmgen original does.
 
     def __init__(self, type_ref, name, dims, field_id=None):
+        # type: (TypeRef, str, T.Sequence[ArrayDim], T.Optional[int]) -> None
         super(ArrayMember, self).__init__(type_ref, name, field_id=field_id)
         self.dims = dims
 
     def compute_hash_prefix_for_auto_members(self, type_hash):
+        # type: (Hash) -> None
         # this adds the hash of virtual fields would have been used by a manual dynamic array
         for dim in self.dims:
             if dim.auto_member:
                 dim.auto_member.compute_hash(type_hash)
 
     def compute_hash_for_dimensions(self, type_hash):
+        # type: (Hash) -> None
         # hash the dimensionality information
         type_hash.update(len(self.dims))
         for dim in self.dims:
             dim.compute_hash(type_hash)
 
     def __repr__(self):
+        # type: () -> str
         dims_str = "".join(repr(dim) for dim in self.dims)
         if self.field_id is None:
             return "{} {}{};".format(self.type_ref, self.name, dims_str)
         return "{} {}{} = {};".format(self.type_ref, self.name, dims_str, self.field_id)
 
     def is_constant_size(self):
+        # type: () -> bool
         return not any(dim.dynamic for dim in self.dims)
 
     def reference_check(self, struct):
+        # type: (Struct) -> None
         for dim in self.dims:
             dim.reference_check(struct, self)
 
     @property
     def ndim(self):
+        # type: () -> int
         return len(self.dims)
 
 
@@ -889,6 +976,7 @@ class ConstMember(Member):
     """An attribute whose value is bound to the type itself, not encoded in a message"""
 
     def __init__(self, type_ref, name, value_str):
+        # type: (TypeRef, str, str) -> None
         super(ConstMember, self).__init__(type_ref, name)
         if not type_ref.is_const_type():
             raise TypeError(
@@ -907,4 +995,5 @@ class ConstMember(Member):
         self.value_str = value_str
 
     def __repr__(self):
+        # type: () -> str
         return "const {} {} = {};".format(self.type_ref, self.name, self.value_str)
