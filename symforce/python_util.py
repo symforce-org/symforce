@@ -150,6 +150,21 @@ def str_removesuffix(s: str, suffix: str) -> str:
         return s
 
 
+def dots_and_brackets_to_underscores(s: str) -> str:
+    """
+    Converts all ``.`` and ``[]`` in the given string to underscores such that the resulting
+    string is a valid/readable variable name.
+    """
+    leading_trailing_dots_and_brackets_regex = re.compile(r"^[\.\[\]]+|[\.\[\]]+$")
+    dots_and_brackets_regex = re.compile(r"[\.\[\]]+")
+
+    return re.sub(
+        dots_and_brackets_regex,
+        "_",
+        re.sub(leading_trailing_dots_and_brackets_regex, "", s),
+    )
+
+
 def files_in_dir(dirname: T.Openable, relative: bool = False) -> T.Iterator[str]:
     """
     Return a list of files in the given directory.

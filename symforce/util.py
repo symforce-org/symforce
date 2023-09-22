@@ -7,7 +7,6 @@ import functools
 
 from symforce import codegen
 from symforce import typing as T
-from symforce.codegen import codegen_util
 from symforce.type_helpers import symbolic_inputs
 
 _T = T.TypeVar("_T")
@@ -49,16 +48,12 @@ def lambdify(f: T.Callable, use_numba: bool = False) -> T.Callable:
         A numerical function equivalent to ``f``
 
     See also:
+        :meth:`Codegen.lambdify <symforce.codegen.codegen.Codegen.lambdify>`
         :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>`
         :class:`codegen.PythonConfig <symforce.codegen.backends.python.python_config.PythonConfig>`
     """
     codegen_obj = codegen.Codegen.function(f, config=codegen.PythonConfig(use_numba=use_numba))
-    data = codegen_obj.generate_function(namespace=f.__name__)
-    assert codegen_obj.name is not None
-    generated_function = codegen_util.load_generated_function(
-        codegen_obj.name, data.function_dir, evict=not use_numba
-    )
-    return generated_function
+    return codegen_obj.lambdify()
 
 
 def numbify(f: T.Callable) -> T.Callable:

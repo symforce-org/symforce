@@ -4,7 +4,6 @@
 # ----------------------------------------------------------------------------
 
 import itertools
-import re
 
 import symforce.symbolic as sf
 from symforce import logger
@@ -15,6 +14,7 @@ from symforce.codegen.backends.cpp.cpp_config import CppConfig
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
 from symforce.opt.sub_problem import SubProblem
+from symforce.python_util import dots_and_brackets_to_underscores
 from symforce.values import Values
 
 
@@ -160,20 +160,6 @@ class OptimizationProblem:
                 not provided, uses the same default as the :class:`.factor.Factor` constructor.
         """
         inputs = self.inputs.dataclasses_to_values()
-
-        leading_trailing_dots_and_brackets_regex = re.compile(r"^[\.\[\]]+|[\.\[\]]+$")
-        dots_and_brackets_regex = re.compile(r"[\.\[\]]+")
-
-        def dots_and_brackets_to_underscores(s: str) -> str:
-            """
-            Converts all ``.`` and ``[]`` in the given string to underscores such that the resulting
-            string is a valid/readable variable name.
-            """
-            return re.sub(
-                dots_and_brackets_regex,
-                "_",
-                re.sub(leading_trailing_dots_and_brackets_regex, "", s),
-            )
 
         def compute_jacobians(keys: T.Iterable[str]) -> sf.Matrix:
             """

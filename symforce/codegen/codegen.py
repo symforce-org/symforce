@@ -29,6 +29,8 @@ from symforce.codegen import types_package_codegen
 from symforce.type_helpers import symbolic_inputs
 from symforce.values import Values
 
+from . import PythonConfig
+
 CURRENT_DIR = Path(__file__).parent
 
 
@@ -929,3 +931,33 @@ class Codegen:
             sparse_matrices=sparse_matrices,
             docstring="\n".join(docstring_lines),
         )
+
+    def lambdify(self) -> T.Callable:
+        """
+        Generates a numerical function from an existing codegen object. Wraps codegen
+        generate function and load function methods.
+
+        Args:
+            self: Existing codegen object with a PythonConfig
+
+        Returns:
+            A numerical function generated from the codegen object
+
+        See also:
+            :meth:`lambdify <symforce.util.lambdify>`
+        """
+        if not isinstance(self.config, PythonConfig):
+            raise TypeError("Lambdify is only supported for Python codegen objects.")
+
+        name_was_none = False
+        if self.name is None:
+            self.name = "lambda"
+            name_was_none = True
+
+        data = self.generate_function(namespace="lambda")
+        generated_function = codegen_util.load_generated_function(
+            self.name, data.function_dir, evict=not self.config.use_numba
+        )
+        if name_was_none:
+            self.name = None
+        return generated_function
