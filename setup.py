@@ -449,7 +449,8 @@ if __name__ == "__main__":
                 "mypy==0.910",
                 "numba",
                 "pip-tools<6.11",
-                "pybind11-stubgen",
+                # NOTE(aaron): v1.0 changed lots of things, we'll need to update and regenerate
+                "pybind11-stubgen<1.0",
                 "pylint",
                 # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
                 "lazy-object-proxy>=1.9.0",

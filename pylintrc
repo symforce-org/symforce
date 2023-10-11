@@ -116,6 +116,7 @@ disable=raw-checker-failed,
         unsubscriptable-object,
         arguments-differ,
         not-callable,
+        undefined-variable,
 
         # isort handles this
         ungrouped-imports,
