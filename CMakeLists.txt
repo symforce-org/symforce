@@ -74,7 +74,7 @@ option(SYMFORCE_SKYMARSHAL_PRINTING
 
 option(SYMFORCE_BUILD_STATIC_LIBRARIES "Build libraries as static" OFF)
 
-set(SYMFORCE_COMPILE_OPTIONS -Wall;-Wextra;-Werror CACHE STRING
+set(SYMFORCE_COMPILE_OPTIONS -Wall;-Wextra CACHE STRING
   "Extra flags to pass to the compiler; defaults to enabling warnings"
 )
 
