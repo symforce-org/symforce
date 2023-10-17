@@ -20,7 +20,7 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
   const double early_exit_min_reduction = 1e-6;
   const bool enable_bold_updates = false;
 
-  const bool something_unused;
+  const bool something_unused = false;
 
   return sym::optimizer_params_t{
       verbose,
