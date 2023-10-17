@@ -309,9 +309,7 @@ class Enum(AstNode):
                 existing_name = value_to_case[case_value]
                 raise KeyError(
                     'Value {} is not unique: it is used by "{}" and "{}"'.format(
-                        case_value,
-                        existing_name,
-                        case_name,
+                        case_value, existing_name, case_name
                     )
                 )
             value_to_case[case_value] = case_name
@@ -338,6 +336,11 @@ class Enum(AstNode):
         self.type_ref = TypeRef(name)
         self.notations = list(notations)
         self.reserved_ids = set(reserved_ids)
+        self.source_file = None  # type: T.Optional[str]
+
+    def set_source_file(self, source_file):
+        # type: (str) -> None
+        self.source_file = source_file
 
     def __repr__(self):
         # type: () -> str
@@ -347,11 +350,7 @@ class Enum(AstNode):
         if self.reserved_ids:
             reserved = "  {}\n".format(ReservedFieldGroup(self.reserved_ids))
         return "{}enum {} : {} {{\n{}{}\n}};".format(
-            notations,
-            self.name,
-            self.storage_type_ref,
-            reserved,
-            children,
+            notations, self.name, self.storage_type_ref, reserved, children
         )
 
     def __eq__(self, other):
@@ -490,6 +489,11 @@ class Struct(AstNode):
         }  # type: T.Dict[str, Member]
         self.type_ref = TypeRef(name)
         self.notations = list(notations)
+        self.source_file = None  # type: T.Optional[str]
+
+    def set_source_file(self, source_file):
+        # type: (str) -> None
+        self.source_file = source_file
 
     def __repr__(self):
         # type: () -> str
@@ -869,8 +873,7 @@ class ArrayDim(AstNode):
             if type_name not in INTEGER_TYPES:
                 raise TypeError(
                     "ArrayDim {} does not specify a valid integer type: {}".format(
-                        size_declaration,
-                        type_name,
+                        size_declaration, type_name
                     )
                 )
 
@@ -878,8 +881,7 @@ class ArrayDim(AstNode):
             if member_name in struct.member_map:
                 raise NameError(
                     "ArrayDim {} with auto-size conflicts with existing member {}".format(
-                        size_declaration,
-                        member_name,
+                        size_declaration, member_name
                     )
                 )
 
@@ -981,10 +983,7 @@ class ConstMember(Member):
         if not type_ref.is_const_type():
             raise TypeError(
                 "Constant '{}' from line {} must be one of {}. '{}' found.".format(
-                    name,
-                    type_ref.lineno,
-                    CONST_TYPES,
-                    type_ref.name,
+                    name, type_ref.lineno, CONST_TYPES, type_ref.name
                 )
             )
         try:

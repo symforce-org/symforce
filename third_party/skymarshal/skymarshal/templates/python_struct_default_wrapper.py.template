@@ -3,6 +3,10 @@
 # fmt: off
 # isort: off
 # mypy: disallow-untyped-defs
+{% if lcmtype.struct.source_file %}
+#
+# From Source File: {{ lcmtype.struct.source_file }}
+{% endif %}
 
 import copy
 import typing as T  # pylint: disable=unused-import

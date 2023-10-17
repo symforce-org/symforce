@@ -9,6 +9,8 @@
 # A function's p argument is the list of productions in the rule, with p[0] being the output.
 from __future__ import absolute_import, print_function
 
+import typing as T
+
 from ply import yacc
 
 from . import syntax_tree
@@ -309,6 +311,7 @@ PARSER = None
 
 
 def lcmparse(src, verbose=True, cache=False, debug_src_path=None, allow_unknown_notations=False):
+    # type: (str, bool, bool, str, bool) -> T.List[syntax_tree.Package]
     """Parse an LCM definition source into a list of packages"""
     global PARSER  # pylint: disable=global-statement
     lexer.lineno = 1  # reset the line number on repeat calls to lcmgen

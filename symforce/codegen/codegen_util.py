@@ -763,6 +763,7 @@ def generate_lcm_types(
             str(cpp_types_dir),
             "--cpp-include",
             lcm_include_dir,
+            "--no-source-paths",
         ],
         print_generated=False,
     )

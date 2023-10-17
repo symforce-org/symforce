@@ -37,6 +37,12 @@ def parse_args(languages, args=None):
         help="Add this package name as a prefix to the declared package on types",
     )
 
+    parser.add_argument(
+        "--no-source-paths",
+        action="store_true",
+        help="Don't include the LCM source path in generated files",
+    )
+
     for lang in languages:
         lang.add_args(parser)
 
@@ -75,6 +81,7 @@ def main(
         verbose=options.verbose,
         print_debug_tokens=options.debug_tokens,
         cache_parser=True,
+        include_source_paths=not options.no_source_paths,
     )
 
     packages = list(package_map.values())

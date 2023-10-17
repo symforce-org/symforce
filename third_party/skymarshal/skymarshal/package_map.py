@@ -8,7 +8,7 @@ import typing as T
 from skymarshal import parser, syntax_tree, tokenizer
 
 # Path -> packages map of things we already parsed.
-FILE_CACHE = dict()  # type: T.Dict[str, T.Any]
+FILE_CACHE = dict()  # type: T.Dict[T.Tuple[str, bool], T.List[syntax_tree.Package]]
 
 
 def merge_packages(packages, package_map=None):
@@ -23,7 +23,8 @@ def merge_packages(packages, package_map=None):
         if package.name not in package_map:
             # This is a new package. Create a copy so the original isn't modified.
             package_map[package.name] = syntax_tree.Package(
-                name=package.name, type_definitions=list(package.type_definitions.values())
+                name=package.name,
+                type_definitions=list(package.type_definitions.values()),
             )
         else:
             # This package already exists: add the new structs and enums to the existing
@@ -69,6 +70,7 @@ def parse_lcmtypes(
     print_debug_tokens=False,  # type: bool
     cache_parser=False,  # type: bool
     allow_unknown_notations=False,  # type: bool
+    include_source_paths=True,  # type: bool
 ):
     # type: (...) -> T.Dict[str, syntax_tree.Package]
     """
@@ -77,14 +79,15 @@ def parse_lcmtypes(
     :param lcmtypes_paths: Iterable of .lcm file paths, or paths to folders of .lcm files, to parse.
     :param print_debug_tokens: If true, print debug info.
     :param cache_parser: If true, cache YACC parser across each package
+    :param include_source_paths: If true, include the source file in the generated bindings
     :return: Map from package name to syntax_tree.Package.
     """
     package_map = {}  # type: T.Dict[str, syntax_tree.Package]
 
     for path in _flatten_paths(lcmtypes_paths):
-        if path in FILE_CACHE:
+        if (path, include_source_paths) in FILE_CACHE:
             # Get the original list from the cache.
-            packages = FILE_CACHE[path]
+            packages = FILE_CACHE[(path, include_source_paths)]
         else:
             with open(path) as src_file:
                 src = src_file.read()
@@ -101,8 +104,14 @@ def parse_lcmtypes(
                 allow_unknown_notations=allow_unknown_notations,
             )
 
+            # Add source files to types, which the parser doesn't know about
+            if include_source_paths:
+                for package in packages:
+                    for typedef in package.type_definitions.values():
+                        typedef.set_source_file(path)
+
             # Cache the raw package list for this path.
-            FILE_CACHE[path] = packages
+            FILE_CACHE[(path, include_source_paths)] = packages
 
         # Copy the packages into the map
         merge_packages(packages, package_map)
