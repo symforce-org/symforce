@@ -14,6 +14,7 @@
 #include <sym/util/type_ops.h>
 
 #include "./key.h"
+#include "./optional.h"
 
 namespace sym {
 
@@ -188,6 +189,17 @@ class Values {
    *  2) Cleanup() is called to re-pack the data array
    */
   index_entry_t IndexEntryAt(const Key& key) const;
+
+  /**
+   * Retrieve an index entry by key, or the empty optional if the key is not present. This performs
+   * a map lookup.
+   *
+   * An index entry will be INVALIDATED if the following happens:
+   *
+   *  1) Remove() is called with the indexed key, or RemoveAll() is called
+   *  2) Cleanup() is called to re-pack the data array
+   */
+  optional<index_entry_t> MaybeIndexEntryAt(const Key& key) const;
 
   /**
    * Retrieve a value by index entry. This avoids a map lookup compared to At(key).

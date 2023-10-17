@@ -389,3 +389,10 @@ TEST_CASE("Test SetNew", "[values]") {
   CHECK(values.At<Eigen::Vector3d>('a') == Eigen::Vector3d::Zero());
   CHECK_THROWS_AS(values.SetNew('a', Eigen::Vector3d::Zero()), std::runtime_error);
 }
+
+TEST_CASE("Test MaybeIndexEntryAt", "[values]") {
+  sym::Valuesd values;
+  CHECK(values.MaybeIndexEntryAt('a') == sym::optional<sym::index_entry_t>{});
+  values.Set('a', 1.0);
+  CHECK(values.MaybeIndexEntryAt('a') != sym::optional<sym::index_entry_t>{});
+}
