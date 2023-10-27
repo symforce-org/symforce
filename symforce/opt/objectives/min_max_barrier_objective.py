@@ -51,6 +51,7 @@ class MinMaxBarrierObjective(objective.TimestepObjective):
         params: MinMaxBarrierObjective.Params,
         power: sf.Scalar = 1,
         cost_scaling: sf.Scalar = 1,
+        epsilon: sf.Scalar = sf.epsilon(),
     ) -> ResidualBlock:
         """
         Returns the residual block for the given timestep, where the residual is computed by
@@ -76,6 +77,7 @@ class MinMaxBarrierObjective(objective.TimestepObjective):
             error_nominal=params.error_nominal,
             dist_zero_to_nominal=params.dist_zero_to_nominal,
             power=power,
+            epsilon=epsilon,
         )
         unwhitened_residual = vector.applyfunc(barrier)
 

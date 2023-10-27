@@ -67,6 +67,7 @@ class NormBarrierObjective(objective.TimestepObjective):
                 error_nominal=params.error_nominal,
                 dist_zero_to_nominal=params.dist_zero_to_nominal,
                 power=power,
+                epsilon=epsilon,
             )
         )
 

@@ -3,6 +3,12 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import symforce
+
+symforce.set_epsilon_to_symbol()
+
+import symforce.symbolic as sf
+from symforce import util
 from symforce.opt.barrier_functions import max_linear_barrier
 from symforce.opt.barrier_functions import max_power_barrier
 from symforce.opt.barrier_functions import min_linear_barrier
@@ -202,6 +208,24 @@ class SymforceOptBarriersTest(TestCase):
                 self.assertStorageNear(
                     centering_barrier_helper(x_centering, power), expected_error_centering
                 )
+
+    def test_not_singular(self) -> None:
+        """
+        Tests that the x=0 singularity is handled
+        """
+
+        def f(x: sf.Scalar, y: sf.Scalar, d: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
+            return max_power_barrier(
+                x=x, x_nominal=2, error_nominal=1, dist_zero_to_nominal=d, power=y, epsilon=epsilon
+            )
+
+        def f_deriv(x: sf.Scalar, y: sf.Scalar, d: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
+            return f(x, y, d, epsilon).diff(x)
+
+        f_deriv_numeric = util.lambdify(f_deriv)
+        with self.assertRaises(ZeroDivisionError):
+            f_deriv_numeric(x=0, y=1, d=1, epsilon=0)
+        self.assertEqual(f_deriv_numeric(x=0, y=1, d=1, epsilon=sf.numeric_epsilon), 0)
 
 
 if __name__ == "__main__":

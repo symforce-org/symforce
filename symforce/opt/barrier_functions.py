@@ -12,6 +12,7 @@ def max_power_barrier(
     error_nominal: sf.Scalar,
     dist_zero_to_nominal: sf.Scalar,
     power: sf.Scalar,
+    epsilon: sf.Scalar = sf.epsilon(),
 ) -> sf.Scalar:
     """
     A one-sided, non-symmetric scalar barrier function. The barrier passes through the points
@@ -52,9 +53,23 @@ def max_power_barrier(
         dist_zero_to_nominal: The distance from x_nominal to the region of zero error. Must be
             a positive number.
         power: The power used to describe the curve of the error tails.
+        epsilon: Used iff power is not an `sf.Number`
     """
     x_zero_error = x_nominal - dist_zero_to_nominal
-    return error_nominal * sf.Pow(sf.Max(0, x - x_zero_error) / dist_zero_to_nominal, power)
+
+    # If power is a number, then both sympy and symengine represent the derivative of Pow without a
+    # division by the base.  Otherwise, for a constant exponent, they use ``Pow(x, y) * y / x``,
+    # so it needs to be safe to divide by the base.  We still want to represent the derivative this
+    # way, instead of using ``Pow(x, y - 1) * y``, because we typically need both the value and its
+    # derivative, so the former is better for CSE.
+    if isinstance(sf.sympify(power), sf.Number):
+        base_floor = 0
+    else:
+        base_floor = epsilon
+
+    return error_nominal * sf.Pow(
+        sf.Max(base_floor, x - x_zero_error) / dist_zero_to_nominal, power
+    )
 
 
 def max_linear_barrier(
@@ -65,6 +80,7 @@ def max_linear_barrier(
     problem, this produces a quadratic cost in the optimization problem because
     cost = 1/2 * residual^2. See :func:`max_power_barrier` for more details.
     """
+    # NOTE(aaron): For power=1, epsilon is not used
     return max_power_barrier(
         x=x,
         x_nominal=x_nominal,
@@ -80,6 +96,7 @@ def min_power_barrier(
     error_nominal: sf.Scalar,
     dist_zero_to_nominal: sf.Scalar,
     power: sf.Scalar,
+    epsilon: sf.Scalar = sf.epsilon(),
 ) -> sf.Scalar:
     """
     A one-sided, non-symmetric scalar barrier function. The barrier passes through the points
@@ -112,6 +129,7 @@ def min_power_barrier(
         error_nominal=error_nominal,
         dist_zero_to_nominal=dist_zero_to_nominal,
         power=power,
+        epsilon=epsilon,
     )
 
 
@@ -123,6 +141,7 @@ def min_linear_barrier(
     problem, this produces a quadratic cost in the optimization problem because
     cost = 1/2 * residual^2. See :func:`min_power_barrier` for more details.
     """
+    # NOTE(aaron): For power=1, epsilon is not used
     return min_power_barrier(
         x=x,
         x_nominal=x_nominal,
@@ -138,6 +157,7 @@ def symmetric_power_barrier(
     error_nominal: sf.Scalar,
     dist_zero_to_nominal: sf.Scalar,
     power: sf.Scalar,
+    epsilon: sf.Scalar = sf.epsilon(),
 ) -> sf.Scalar:
     """
     A symmetric barrier centered around x = 0, meaning the error at -x is equal to the error at x.
@@ -184,6 +204,7 @@ def symmetric_power_barrier(
         error_nominal=error_nominal,
         dist_zero_to_nominal=dist_zero_to_nominal,
         power=power,
+        epsilon=epsilon,
     )
 
 
@@ -194,6 +215,7 @@ def min_max_power_barrier(
     error_nominal: sf.Scalar,
     dist_zero_to_nominal: sf.Scalar,
     power: sf.Scalar,
+    epsilon: sf.Scalar = sf.epsilon(),
 ) -> sf.Scalar:
     """
     A symmetric barrier centered between x_nominal_lower and x_nominal_upper. See
@@ -232,6 +254,7 @@ def min_max_power_barrier(
         error_nominal=error_nominal,
         dist_zero_to_nominal=dist_zero_to_nominal,
         power=power,
+        epsilon=epsilon,
     )
 
 
@@ -247,6 +270,7 @@ def min_max_linear_barrier(
     problem, this produces a quadratic cost in the optimization problem because
     cost = 1/2 * residual^2. See :func:`min_max_power_barrier` for more details.
     """
+    # NOTE(aaron): For power=1, epsilon is not used
     return min_max_power_barrier(
         x=x,
         x_nominal_lower=x_nominal_lower,
@@ -265,6 +289,7 @@ def min_max_centering_power_barrier(
     dist_zero_to_nominal: sf.Scalar,
     power: sf.Scalar,
     centering_scale: sf.Scalar,
+    epsilon: sf.Scalar = sf.epsilon(),
 ) -> sf.Scalar:
     """
     This barrier is the maximum of two power barriers which we call the "bounding" barrier
@@ -341,6 +366,7 @@ def min_max_centering_power_barrier(
         error_nominal=error_nominal,
         dist_zero_to_nominal=dist_zero_to_nominal,
         power=power,
+        epsilon=epsilon,
     )
     center = (x_nominal_lower + x_nominal_upper) / 2
     centering_barrier = min_max_power_barrier(
@@ -350,5 +376,6 @@ def min_max_centering_power_barrier(
         error_nominal=centering_scale * error_nominal,
         dist_zero_to_nominal=x_nominal_upper - center,
         power=power,
+        epsilon=epsilon,
     )
     return sf.Max(bounding_barrier, centering_barrier)
