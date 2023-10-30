@@ -186,8 +186,8 @@ if(SYMFORCE_BUILD_BENCHMARKS OR SYMFORCE_BUILD_TESTS)
     function(add_catch)
       FetchContent_Declare(
         Catch2
-        URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.1.1.zip
-        URL_HASH SHA256=eec6c327cd9187c63bbaaa8486f715e31544000bf8876c0543e1181a2a52a5de
+        URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.4.0.zip
+        URL_HASH SHA256=cd175f5b7e62c29558d4c17d2b94325ee0ab6d0bf1a4b3d61bc8dbcc688ea3c2
       )
 
       FetchContent_MakeAvailable(Catch2)
