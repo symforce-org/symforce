@@ -138,6 +138,7 @@ class SymforceCCSymTest(TestCase):
                 sym.Rot3
                 sym.Pose2
                 sym.Pose3
+                sym.Unit3
                 sym.ATANCameraCal
                 sym.DoubleSphereCameraCal
                 sym.EquirectangularCameraCal
@@ -152,6 +153,7 @@ class SymforceCCSymTest(TestCase):
             sym.Rot3,
             sym.Pose2,
             sym.Pose3,
+            sym.Unit3,
             sym.ATANCameraCal,
             sym.DoubleSphereCameraCal,
             sym.EquirectangularCameraCal,
