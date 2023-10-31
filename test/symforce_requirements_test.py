@@ -12,6 +12,7 @@ from symforce import path_util
 from symforce import python_util
 from symforce import typing as T
 from symforce.test_util import TestCase
+from symforce.test_util import symengine_only
 
 
 class SymforceRequirementsTest(TestCase):
@@ -33,6 +34,7 @@ class SymforceRequirementsTest(TestCase):
 
         TestCase.main(*args, **kwargs)
 
+    @symengine_only
     def test_requirements(self) -> None:
         output_dir = self.make_output_dir("sf_requirements_test_")
 
