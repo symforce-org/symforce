@@ -41,13 +41,13 @@ jobs:
               CXX: clang++-7
               package: clang-7
               repos: []
-          # Clang 14
+          # Clang 15
           - os: ubuntu-22.04
             python: python3.10
             compiler:
-              C: clang-14
-              CXX: clang++-14
-              package: clang-14
+              C: clang-15
+              CXX: clang++-15
+              package: clang-15
               repos: []
     steps:
       - name: Checkout
