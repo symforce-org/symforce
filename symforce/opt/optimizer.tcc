@@ -247,6 +247,13 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::ComputeFullCovariance(
+    const Linearization<MatrixType>& linearization, MatrixX<Scalar>& covariance) {
+  SYM_ASSERT(IsInitialized());
+  nonlinear_solver_.ComputeCovariance(linearization.hessian_lower, covariance);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
 const std::vector<Key>& Optimizer<ScalarType, NonlinearSolverType>::Keys() const {
   return keys_;
 }

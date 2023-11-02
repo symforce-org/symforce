@@ -103,7 +103,7 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           py::arg("linearization"), R"(
           Get covariances for each optimized key at the given linearization
 
-          May not be called before either optimize or Linearize has been called.
+          May not be called before either optimize or linearize has been called.
           )")
       .def(
           "compute_covariances",
@@ -114,8 +114,10 @@ void AddOptimizerWrapper(pybind11::module_ module) {
             return covariances_by_key;
           },
           py::arg("linearization"), py::arg("keys"), R"(
-          Get covariances for the given subset of keys at the given linearization.  This version is
-          potentially much more efficient than computing the covariances for all keys in the problem.
+          Get covariances for the given subset of keys at the given linearization
+
+          This version is potentially much more efficient than computing the covariances for all
+          keys in the problem.
 
           Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
           for the full problem, and in the same order.  It uses the Schur complement trick, so will be
@@ -123,6 +125,24 @@ void AddOptimizerWrapper(pybind11::module_ module) {
 
               A = ( B    E )
                   ( E^T  C )
+          )")
+      .def(
+          "compute_full_covariance",
+          [](Optimizerd& opt, const SparseLinearizationd& linearization) {
+            Eigen::MatrixXd covariance;
+            opt.ComputeFullCovariance(linearization, covariance);
+            return covariance;
+          },
+          py::arg("linearization"), R"(
+          Get the full problem covariance at the given linearization
+
+          Unlike compute_covariance and compute_all_covariances, this includes the off-diagonal
+          blocks, i.e. the cross-covariances between different keys.
+
+          The ordering of entries here is the same as the ordering of the keys in the linearization,
+          which can be accessed via linearization_index().
+
+          May not be called before either optimize or linearize has been called.
           )")
       .def("keys", &Optimizerd::Keys, "Get the optimized keys.")
       .def("factors", &Optimizerd::Factors, "Get the factors.")

@@ -232,7 +232,7 @@ class Optimizer:
             if isinstance(factor, Factor):
                 if optimized_keys is None:
                     raise ValueError(
-                        "You must specify keys to optimize when passing symbolic factors."
+                        "You must specify `optimized_keys` when passing symbolic factors."
                     )
                 # We compute the linearization in the same order as `optimized_keys`
                 # so that e.g. columns of the generated jacobians are in the same order
@@ -326,6 +326,49 @@ class Optimizer:
             linearization=self.linearize(optimized_value)
         )
         return {self._py_keys_from_cc_keys_map[k]: v for k, v in cc_covariance_dict.items()}
+
+    def compute_covariances(
+        self, optimized_value: Values, keys: T.Sequence[str]
+    ) -> T.Dict[str, np.ndarray]:
+        """
+        Get covariances for the given subset of keys at the given linearization
+
+        This version is potentially much more efficient than computing the covariances for all
+        keys in the problem.
+
+        Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
+        for the full problem, and in the same order.  It uses the Schur complement trick, so will be
+        most efficient if the hessian is of the following form, with C block diagonal::
+
+            A = ( B    E )
+                ( E^T  C )
+
+        Args:
+            optimized_value: A value containing the linearization point to compute the covariance matrix about
+            keys: The subset of keys to compute covariances for
+
+        Returns:
+            A dict of {optimized_key: numerical covariance matrix}
+        """
+        cc_covariance_dict = self._cc_optimizer.compute_covariances(
+            linearization=self.linearize(optimized_value),
+            keys=[self._cc_keys_map[key] for key in keys],
+        )
+        return {self._py_keys_from_cc_keys_map[k]: v for k, v in cc_covariance_dict.items()}
+
+    def compute_full_covariance(self, optimized_value: Values) -> np.ndarray:
+        """
+        Get the full problem covariance at the given linearization
+
+        Unlike compute_covariance and compute_all_covariances, this includes the off-diagonal
+        blocks, i.e. the cross-covariances between different keys.
+
+        The ordering of entries here is the same as the ordering of the keys in the linearization,
+        which can be accessed via linearization_index().
+
+        May not be called before either optimize or linearize has been called.
+        """
+        return self._cc_optimizer.compute_full_covariance(self.linearize(optimized_value))
 
     def optimize(self, initial_guess: Values, **kwargs: T.Any) -> Optimizer.Result:
         """

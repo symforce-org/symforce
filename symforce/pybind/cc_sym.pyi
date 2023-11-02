@@ -402,14 +402,16 @@ class Optimizer:
         """
         Get covariances for each optimized key at the given linearization
 
-        May not be called before either optimize or Linearize has been called.
+        May not be called before either optimize or linearize has been called.
         """
     def compute_covariances(
         self, linearization: Linearization, keys: typing.List[Key]
     ) -> typing.Dict[Key, numpy.ndarray]:
         """
-        Get covariances for the given subset of keys at the given linearization.  This version is
-        potentially much more efficient than computing the covariances for all keys in the problem.
+        Get covariances for the given subset of keys at the given linearization
+
+        This version is potentially much more efficient than computing the covariances for all
+        keys in the problem.
 
         Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
         for the full problem, and in the same order.  It uses the Schur complement trick, so will be
@@ -417,6 +419,18 @@ class Optimizer:
 
             A = ( B    E )
                 ( E^T  C )
+        """
+    def compute_full_covariance(self, linearization: Linearization) -> numpy.ndarray:
+        """
+        Get the full problem covariance at the given linearization
+
+        Unlike compute_covariance and compute_all_covariances, this includes the off-diagonal
+        blocks, i.e. the cross-covariances between different keys.
+
+        The ordering of entries here is the same as the ordering of the keys in the linearization,
+        which can be accessed via linearization_index().
+
+        May not be called before either optimize or linearize has been called.
         """
     def factors(self) -> typing.List[Factor]:
         """

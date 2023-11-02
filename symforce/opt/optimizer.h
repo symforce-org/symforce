@@ -217,6 +217,22 @@ class Optimizer {
       std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
+   * Get the full problem covariance at the given linearization
+   *
+   * Unlike ComputeCovariance and ComputeAllCovariances, this includes the off-diagonal blocks, i.e.
+   * the cross-covariances between different keys.
+   *
+   * The ordering of entries here is the same as the ordering of the keys in the linearization,
+   * which can be accessed via ``optimizer.Linearizer().StateIndex()``.
+   *
+   * May not be called before either Optimize() or Linearize() has been called.
+   *
+   * @param covariance A matrix that will be filled out with the full problem covariance.
+   */
+  void ComputeFullCovariance(const Linearization<MatrixType>& linearization,
+                             MatrixX<Scalar>& covariance);
+
+  /**
    * Get the optimized keys
    */
   const std::vector<Key>& Keys() const;
