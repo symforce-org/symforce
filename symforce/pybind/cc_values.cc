@@ -61,6 +61,20 @@ py::object PyAt(const sym::Valuesd& v, const sym::index_entry_t& index_entry) {
   return py::cast(v.At<T>(index_entry));
 }
 
+template <typename Scalar>
+py::object PyAtMatrix(const sym::Valuesd& v, const sym::index_entry_t& index_entry) {
+  const auto shape = EigenTypeShape(index_entry.type);
+  if (shape.first == 1 || shape.second == 1) {
+    return py::cast(Eigen::Map<const Eigen::VectorXd>(v.Data().data() + index_entry.offset,
+                                                      shape.first * shape.second),
+                    py::return_value_policy::copy);
+  } else {
+    return py::cast(Eigen::Map<const Eigen::MatrixXd>(v.Data().data() + index_entry.offset,
+                                                      shape.first, shape.second),
+                    py::return_value_policy::copy);
+  }
+}
+
 /**
  * Has signature
  * template <typename Scalar>
@@ -71,7 +85,7 @@ py::object PyAt(const sym::Valuesd& v, const sym::index_entry_t& index_entry) {
  *
  * Precondition: type is a supported type_t
  */
-BY_TYPE_HELPER(DynamicPyAt, PyAt)
+BY_TYPE_HELPER(DynamicPyAt, PyAt, PyAtMatrix)
 
 /**
  * Dynamically identifies the type T stored in v at index_entry, then returns
