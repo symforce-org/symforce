@@ -86,25 +86,11 @@ struct function_traits : public function_traits<decltype(&T::operator())> {};
 // Specialize for std::bind
 namespace internal {
 
-/// A template-metaprogramming conditional
-template <bool v, typename a, typename b>
-struct cond;
-
-template <typename a, typename b>
-struct cond<true, a, b> {
-  using type = a;
-};
-
-template <typename a, typename b>
-struct cond<false, a, b> {
-  using type = b;
-};
-
 /// A template-metaprogramming max<a, b>, where a and b are std::placeholders
 template <typename a, typename b>
 struct max {
   using type =
-      typename cond<(std::is_placeholder<a>::value > std::is_placeholder<b>::value), a, b>::type;
+      std::conditional_t<(std::is_placeholder<a>::value > std::is_placeholder<b>::value), a, b>;
 };
 
 /// The type of a std::bind expression in various standard library implementations - this is
@@ -156,8 +142,9 @@ template <int i, int curr, typename Bind>
 struct type_for_placeholder_impl {
   using curr_orig_type = typename std::tuple_element<curr, typename orig_args<Bind>::type>::type;
   using curr_bound_type = typename std::tuple_element<curr, typename bound_args<Bind>::type>::type;
-  using type = typename cond<(i + 1 == std::is_placeholder<curr_bound_type>::value), curr_orig_type,
-                             typename type_for_placeholder_impl<i, curr - 1, Bind>::type>::type;
+  using type =
+      std::conditional_t<(i + 1 == std::is_placeholder<curr_bound_type>::value), curr_orig_type,
+                         typename type_for_placeholder_impl<i, curr - 1, Bind>::type>;
 };
 
 template <int i, typename Bind>
