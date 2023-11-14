@@ -22,6 +22,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - if: ${{ matrix.os == 'macos-12' }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: install dev_requirements.txt
         run: python3 -m pip install -r dev_requirements.txt
 
