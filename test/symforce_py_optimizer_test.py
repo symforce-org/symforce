@@ -14,6 +14,7 @@ from lcmtypes.sym._type_t import type_t
 import symforce.symbolic as sf
 from symforce import logger
 from symforce import typing as T
+from symforce.opt._internal.generated_residual_cache import GeneratedResidualCache
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
 from symforce.test_util import TestCase
@@ -24,6 +25,14 @@ class SymforcePyOptimizerTest(TestCase):
     """
     Test the symforce optimizer in Python.
     """
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        # Clear the residual cache before each test
+        Factor._generated_residual_cache = (  # pylint: disable=protected-access
+            GeneratedResidualCache()
+        )
 
     def test_rotation_smoothing(self) -> None:
         """
@@ -120,6 +129,40 @@ class SymforcePyOptimizerTest(TestCase):
                 self.assertIn(str(factor2.keys), str(err))
                 self.assertIn(str(optimized_keys), str(err))
                 raise err from None
+
+    def test_factor_keys_ordering(self) -> None:
+        """
+        Adding the same residual with different key orderings should work correctly
+
+        https://github.com/symforce-org/symforce/issues/300
+        """
+
+        def prior(x: T.Scalar) -> sf.V1:
+            return sf.V1(x)
+
+        def between(x: T.Scalar, y: T.Scalar, b: T.Scalar) -> sf.V1:
+            return sf.V1(y - x - b)
+
+        initial_values = Values(x0=0.0, x1=0.0, x2=0.0, b01=1.0, b12=1.0, b20=-2.0)
+
+        factors = []
+
+        factors.append(Factor(keys=["x0"], residual=prior))
+        factors.append(Factor(keys=["x0", "x1", "b01"], residual=between))
+        factors.append(Factor(keys=["x1", "x2", "b12"], residual=between))
+        factors.append(Factor(keys=["x2", "x0", "b20"], residual=between))
+
+        optimizer = Optimizer(factors=factors, optimized_keys=["x0", "x1", "x2"])
+
+        result = optimizer.optimize(initial_values)
+
+        self.assertEqual(result.status, Optimizer.Status.SUCCESS)
+        self.assertLess(result.error(), 1e-6)
+
+        # Check that the factor cache has the expected number of entries
+        self.assertEqual(
+            len(Factor._generated_residual_cache), 2  # pylint: disable=protected-access
+        )
 
 
 if __name__ == "__main__":

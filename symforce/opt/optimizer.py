@@ -227,6 +227,8 @@ class Optimizer:
                 set(optimized_keys)
             ), f"Duplicates in optimized keys: {optimized_keys}"
 
+        optimized_keys_set = set(self.optimized_keys)
+
         numeric_factors = []
         for factor in factors:
             if isinstance(factor, Factor):
@@ -234,9 +236,11 @@ class Optimizer:
                     raise ValueError(
                         "You must specify `optimized_keys` when passing symbolic factors."
                     )
-                # We compute the linearization in the same order as `optimized_keys`
-                # so that e.g. columns of the generated jacobians are in the same order
-                factor_opt_keys = [opt_key for opt_key in optimized_keys if opt_key in factor.keys]
+                # We compute the linearization in the same order as `factor.keys` so that using the
+                # same factor with different problem keys will produce the same generated function
+                factor_opt_keys = [
+                    opt_key for opt_key in factor.keys if opt_key in optimized_keys_set
+                ]
                 if not factor_opt_keys:
                     raise ValueError(
                         f"Factor {factor.name} has no arguments (keys: {factor.keys}) in "

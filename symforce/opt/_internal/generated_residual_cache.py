@@ -59,7 +59,7 @@ class GeneratedResidualCache:
         return self._dict.get(
             _GRCKey(
                 index=index,
-                optimized_keys=tuple(sorted(optimized_keys)),
+                optimized_keys=tuple(optimized_keys),
                 output_dir=output_dir,
                 namespace=namespace,
                 sparse_linearization=sparse_linearization,
@@ -85,7 +85,7 @@ class GeneratedResidualCache:
         self._dict[
             _GRCKey(
                 index=copy.deepcopy(index),
-                optimized_keys=tuple(sorted(optimized_keys)),
+                optimized_keys=tuple(optimized_keys),
                 output_dir=output_dir,
                 namespace=namespace,
                 sparse_linearization=sparse_linearization,
