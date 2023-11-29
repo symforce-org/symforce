@@ -183,7 +183,7 @@ class Factor:
             output_dir: Where the generated linearization function will be output.
             namespace: Namespace of the generated linearization function.
             sparse_linearization: Whether the generated linearization function should use sparse
-                matricies for the jacobian and hessian approximation
+                matrices for the jacobian and hessian approximation
 
         Returns:
             Dict containing locations where the code was generated (e.g. "output_dir" and
