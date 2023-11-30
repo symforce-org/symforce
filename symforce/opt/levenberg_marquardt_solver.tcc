@@ -54,7 +54,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(const Matrix
 
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagonal(
-    const MatrixType& hessian_lower_damped) {
+    const MatrixType& hessian_lower_damped, const Scalar lambda) {
   zero_diagonal_ = hessian_lower_damped.diagonal().array().abs() < epsilon_;
 
   // NOTE(aaron): We call this outside the condition so it's guaranteed to do the allocation on the
@@ -72,12 +72,18 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
 
     constexpr int max_indices_to_show{15};
     if (zero_diagonal_indices_.size() > max_indices_to_show) {
-      spdlog::warn("LM<{}> Zero on diagonal at indices: [{}, ... ({} omitted)]", id_,
-                   fmt::join(zero_diagonal_indices_.cbegin(),
-                             zero_diagonal_indices_.cbegin() + max_indices_to_show, ", "),
-                   zero_diagonal_indices_.size() - max_indices_to_show);
+      spdlog::warn(
+          "LM<{}> Zero on diagonal after damping (with lambda = {:.2e}, epsilon = {:.2e}) at "
+          "indices: [{}, ... ({} omitted)]",
+          id_, lambda, epsilon_,
+          fmt::join(zero_diagonal_indices_.cbegin(),
+                    zero_diagonal_indices_.cbegin() + max_indices_to_show, ", "),
+          zero_diagonal_indices_.size() - max_indices_to_show);
     } else {
-      spdlog::warn("LM<{}> Zero on diagonal at indices: {}", id_, zero_diagonal_indices_);
+      spdlog::warn(
+          "LM<{}> Zero on diagonal after damping (with lambda = {:.2e}, epsilon = {:.2e}) at "
+          "indices: {}",
+          id_, lambda, epsilon_, zero_diagonal_indices_);
     }
   }
 }
@@ -200,7 +206,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   H_damped_ = DampHessian(state_.Init().GetLinearization().hessian_lower, have_max_diagonal_,
                           max_diagonal_, current_lambda_);
 
-  CheckHessianDiagonal(H_damped_);
+  CheckHessianDiagonal(H_damped_, current_lambda_);
 
   {
     SYM_TIME_SCOPE("LM<{}>: SparseFactorize", id_);

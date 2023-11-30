@@ -206,7 +206,7 @@ class LevenbergMarquardtSolver {
   MatrixType DampHessian(const MatrixType& hessian_lower, bool& have_max_diagonal,
                          VectorX<Scalar>& max_diagonal, const Scalar lambda) const;
 
-  void CheckHessianDiagonal(const MatrixType& hessian_lower_damped);
+  void CheckHessianDiagonal(const MatrixType& hessian_lower_damped, const Scalar lambda);
 
   void PopulateIterationStats(optimization_iteration_t& iteration_stats, const StateType& state,
                               const Scalar new_error, const Scalar relative_reduction,
