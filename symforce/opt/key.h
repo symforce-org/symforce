@@ -34,7 +34,8 @@ class Key {
   static constexpr superscript_t kInvalidSuper = std::numeric_limits<superscript_t>::min();
 
   constexpr Key() = default;
-  constexpr Key(letter_t letter, subscript_t sub = kInvalidSub, superscript_t super = kInvalidSuper)
+  constexpr Key(const letter_t letter, const subscript_t sub = kInvalidSub,
+                const superscript_t super = kInvalidSuper)
       : letter_(letter), sub_(sub), super_(super) {
     SYM_ASSERT(letter != kInvalidLetter);
   }

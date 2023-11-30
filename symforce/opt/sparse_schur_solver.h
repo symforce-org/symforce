@@ -85,7 +85,7 @@ class SparseSchurSolver {
   // on the first call to Factorize)
   //
   // `A` should be lower triangular
-  void ComputeSymbolicSparsity(const MatrixType& A, const int C_dim);
+  void ComputeSymbolicSparsity(const MatrixType& A, int C_dim);
 
   void Factorize(const MatrixType& A);
 

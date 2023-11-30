@@ -188,11 +188,11 @@ class ImuFactor {
    */
   void operator()(const Pose3& pose_i, const Vector3& vel_i, const Pose3& pose_j,
                   const Vector3& vel_j, const Vector3& accel_bias_i, const Vector3& gyro_bias_i,
-                  const Vector3& gravity, const Scalar epsilon,
-                  Eigen::Matrix<Scalar, 9, 1>* const residual = nullptr,
-                  Eigen::Matrix<Scalar, 9, 24>* const jacobian = nullptr,
-                  Eigen::Matrix<Scalar, 24, 24>* const hessian = nullptr,
-                  Eigen::Matrix<Scalar, 24, 1>* const rhs = nullptr) const;
+                  const Vector3& gravity, Scalar epsilon,
+                  Eigen::Matrix<Scalar, 9, 1>* residual = nullptr,
+                  Eigen::Matrix<Scalar, 9, 24>* jacobian = nullptr,
+                  Eigen::Matrix<Scalar, 24, 24>* hessian = nullptr,
+                  Eigen::Matrix<Scalar, 24, 1>* rhs = nullptr) const;
 
  private:
   Measurement measurement_;
@@ -264,11 +264,11 @@ class ImuWithGravityFactor {
    */
   void operator()(const Pose3& pose_i, const Vector3& vel_i, const Pose3& pose_j,
                   const Vector3& vel_j, const Vector3& accel_bias_i, const Vector3& gyro_bias_i,
-                  const Vector3& gravity, const Scalar epsilon,
-                  Eigen::Matrix<Scalar, 9, 1>* const residual = nullptr,
-                  Eigen::Matrix<Scalar, 9, 27>* const jacobian = nullptr,
-                  Eigen::Matrix<Scalar, 27, 27>* const hessian = nullptr,
-                  Eigen::Matrix<Scalar, 27, 1>* const rhs = nullptr) const;
+                  const Vector3& gravity, Scalar epsilon,
+                  Eigen::Matrix<Scalar, 9, 1>* residual = nullptr,
+                  Eigen::Matrix<Scalar, 9, 27>* jacobian = nullptr,
+                  Eigen::Matrix<Scalar, 27, 27>* hessian = nullptr,
+                  Eigen::Matrix<Scalar, 27, 1>* rhs = nullptr) const;
 
  private:
   Measurement measurement_;
@@ -343,11 +343,11 @@ class ImuWithGravityDirectionFactor {
    */
   void operator()(const Pose3& pose_i, const Vector3& vel_i, const Pose3& pose_j,
                   const Vector3& vel_j, const Vector3& accel_bias_i, const Vector3& gyro_bias_i,
-                  const Unit3<Scalar>& gravity_direction, const Scalar gravity_norm,
-                  const Scalar epsilon, Eigen::Matrix<Scalar, 9, 1>* const residual = nullptr,
-                  Eigen::Matrix<Scalar, 9, 26>* const jacobian = nullptr,
-                  Eigen::Matrix<Scalar, 26, 26>* const hessian = nullptr,
-                  Eigen::Matrix<Scalar, 26, 1>* const rhs = nullptr) const;
+                  const Unit3<Scalar>& gravity_direction, Scalar gravity_norm, Scalar epsilon,
+                  Eigen::Matrix<Scalar, 9, 1>* residual = nullptr,
+                  Eigen::Matrix<Scalar, 9, 26>* jacobian = nullptr,
+                  Eigen::Matrix<Scalar, 26, 26>* hessian = nullptr,
+                  Eigen::Matrix<Scalar, 26, 1>* rhs = nullptr) const;
 
  private:
   Measurement measurement_;

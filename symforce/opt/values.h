@@ -120,7 +120,7 @@ class Values {
    * NOTE(hayk): If we changed key storage to a sorted vector this could automatically be maintained
    * and it would be more embedded friendly, but At(key) would become O(N) for linear search.
    */
-  std::vector<Key> Keys(const bool sort_by_offset = true) const;
+  std::vector<Key> Keys(bool sort_by_offset = true) const;
 
   /**
    * Expose map type to allow iteration.
@@ -246,7 +246,7 @@ class Values {
    * @param delta: Pointer to update vector - MUST be the size of `index.tangent_dim`!
    * @param epsilon: Small constant to avoid singularities (do not use zero)
    */
-  void Retract(const index_t& index, const Scalar* delta, const Scalar epsilon);
+  void Retract(const index_t& index, const Scalar* delta, Scalar epsilon);
 
   /**
    * Express this Values in the local coordinate of others Values, i.e., this \ominus others
@@ -256,7 +256,7 @@ class Values {
    * @param epsilon: Small constant to avoid singularities (do not use zero)
    */
   VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, const index_t& index,
-                                   const Scalar epsilon);
+                                   Scalar epsilon);
 
   /**
    * Serialize to LCM.

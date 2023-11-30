@@ -65,8 +65,8 @@ class ImuPreintegrator {
    *   - covariance -> the covariance [DR, Dv, Dp] in local coordinates of mean
    */
   void IntegrateMeasurement(const Vector3& measured_accel, const Vector3& measured_gyro,
-                            const Vector3& accel_cov, const Vector3& gyro_cov, const Scalar dt,
-                            const Scalar epsilon = kDefaultEpsilon<Scalar>);
+                            const Vector3& accel_cov, const Vector3& gyro_cov, Scalar dt,
+                            Scalar epsilon = kDefaultEpsilon<Scalar>);
 
   const PreintegratedImuMeasurements<Scalar>& PreintegratedMeasurements() const;
 

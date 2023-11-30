@@ -83,17 +83,16 @@ class Optimizer {
    * Base constructor
    */
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
-            const Scalar epsilon = kDefaultEpsilon<Scalar>,
-            const std::string& name = "sym::Optimize", std::vector<Key> keys = {},
-            bool debug_stats = false, bool check_derivatives = false,
+            Scalar epsilon = kDefaultEpsilon<Scalar>, const std::string& name = "sym::Optimize",
+            std::vector<Key> keys = {}, bool debug_stats = false, bool check_derivatives = false,
             bool include_jacobians = false);
 
   /**
    * Constructor that copies in factors and keys, with arguments for the nonlinear solver
    */
   template <typename... NonlinearSolverArgs>
-  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
-            const Scalar epsilon, const std::string& name, std::vector<Key> keys, bool debug_stats,
+  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, Scalar epsilon,
+            const std::string& name, std::vector<Key> keys, bool debug_stats,
             bool check_derivatives, bool include_jacobians, NonlinearSolverArgs&&... args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
@@ -269,7 +268,7 @@ class Optimizer {
   /**
    * Build the `linearize_func` functor for the underlying nonlinear solver
    */
-  typename NonlinearSolver::LinearizeFunc BuildLinearizeFunc(const bool check_derivatives);
+  typename NonlinearSolver::LinearizeFunc BuildLinearizeFunc(bool check_derivatives);
 
   bool IsInitialized() const;
 
