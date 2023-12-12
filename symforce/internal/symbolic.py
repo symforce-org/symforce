@@ -33,6 +33,25 @@ import symforce
 from symforce import logger
 from symforce import typing as T
 
+if symforce._symbolic_api is None:  # pylint: disable=protected-access
+    import textwrap
+
+    logger.warning(
+        textwrap.dedent(
+            """
+            No SYMFORCE_SYMBOLIC_API set, no symengine found, using sympy.
+
+            For best performance during symbolic manipulation and code generation, use the symengine
+            symbolic API, which should come installed with SymForce.  If you've installed SymForce
+            without intentionally disabling SymEngine, and you are seeing this warning, this is a
+            bug - please submit an issue: https://github.com/symforce-org/symforce/issues.
+
+            To silence this warning, call `symforce.set_symbolic_api("sympy")` or set
+            `SYMFORCE_SYMBOLIC_API=sympy` in your environment before importing `symforce.symbolic`.
+            """
+        )
+    )
+
 # See `symforce/__init__.py` for more information, this is used to check whether things that this
 # module depends on are modified after importing
 symforce._have_imported_symbolic = True  # pylint: disable=protected-access
@@ -246,41 +265,44 @@ else:
 
 
 # --------------------------------------------------------------------------------
-# Default epsilon
+# Create scopes
 # --------------------------------------------------------------------------------
 
 
-from symforce import numeric_epsilon
-
-
-def epsilon() -> T.Any:
+def create_named_scope(scopes_list: T.List[str]) -> T.Callable:
     """
-    The default epsilon for SymForce
-
-    Library functions that require an epsilon argument should use a function signature like::
-
-        def foo(x: Scalar, epsilon: Scalar = sf.epsilon()) -> Scalar:
-            ...
-
-    This makes it easy to configure entire expressions that make extensive use of epsilon to either
-    use no epsilon (i.e. 0), or a symbol, or a numerical value.  It also means that by setting the
-    default to a symbol, you can confidently generate code without worrying about having forgotten
-    to pass an epsilon argument to one of these functions.
-
-    For more information on how we use epsilon to prevent singularities, see the Epsilon Tutorial
-    in the SymForce docs here: https://symforce.org/tutorials/epsilon_tutorial.html
-
-    For purely numerical code that just needs a good default numerical epsilon, see
-    :data:`symforce.symbolic.numeric_epsilon`.
-
-    Returns:
-        The current default epsilon.  This is typically some kind of "Scalar", like a float or a
-        :class:`Symbol <symforce.symbolic.Symbol>`.
+    Return a context manager that adds to the given list of name scopes. This is used to
+    add scopes to symbol names for namespacing.
     """
-    symforce._have_used_epsilon = True  # pylint: disable=protected-access
 
-    return symforce._epsilon  # pylint: disable=protected-access
+    @contextlib.contextmanager
+    def named_scope(scope: str) -> T.Iterator[None]:
+        scopes_list.append(scope)
 
+        # The body of the with block is executed inside the yield, this ensures we release the
+        # scope if something in the block throws
+        try:
+            yield None
+        finally:
+            scopes_list.pop()
+
+    return named_scope
+
+
+# Nested scopes created with `sf.scope`, initialized to empty (symbols created with no added scope)
+__scopes__ = []
+
+
+def set_scope(scope: str) -> None:
+    global __scopes__  # pylint: disable=global-statement
+    __scopes__ = scope.split(".") if scope else []
+
+
+def get_scope() -> str:
+    return ".".join(__scopes__)
+
+
+scope = create_named_scope(__scopes__)
 
 # --------------------------------------------------------------------------------
 # Override Symbol and symbols
@@ -341,6 +363,48 @@ elif sympy.__package__ == "sympy":
     sympy.Symbol.__new__ = new_symbol  # type: ignore[assignment]
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
+
+
+# --------------------------------------------------------------------------------
+# Default epsilon
+# --------------------------------------------------------------------------------
+
+
+from symforce import numeric_epsilon
+
+
+def epsilon() -> T.Any:
+    """
+    The default epsilon for SymForce
+
+    Library functions that require an epsilon argument should use a function signature like::
+
+        def foo(x: Scalar, epsilon: Scalar = sf.epsilon()) -> Scalar:
+            ...
+
+    This makes it easy to configure entire expressions that make extensive use of epsilon to either
+    use no epsilon (i.e. 0), or a symbol, or a numerical value.  It also means that by setting the
+    default to a symbol, you can confidently generate code without worrying about having forgotten
+    to pass an epsilon argument to one of these functions.
+
+    For more information on how we use epsilon to prevent singularities, see the Epsilon Tutorial
+    in the SymForce docs here: https://symforce.org/tutorials/epsilon_tutorial.html
+
+    For purely numerical code that just needs a good default numerical epsilon, see
+    :data:`symforce.symbolic.numeric_epsilon`.
+
+    Returns:
+        The current default epsilon.  This is typically some kind of "Scalar", like a float or a
+        :class:`Symbol <symforce.symbolic.Symbol>`.
+    """
+    # pylint: disable=protected-access
+
+    if isinstance(symforce._epsilon, symforce.SymbolicEpsilon):
+        symforce._epsilon = sympy.Symbol(symforce._epsilon.name)
+
+    symforce._have_used_epsilon = True
+
+    return symforce._epsilon
 
 
 # --------------------------------------------------------------------------------
@@ -683,43 +747,3 @@ elif sympy.__package__ == "sympy":
     )
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
-
-# --------------------------------------------------------------------------------
-# Create scopes
-# --------------------------------------------------------------------------------
-
-
-def create_named_scope(scopes_list: T.List[str]) -> T.Callable:
-    """
-    Return a context manager that adds to the given list of name scopes. This is used to
-    add scopes to symbol names for namespacing.
-    """
-
-    @contextlib.contextmanager
-    def named_scope(scope: str) -> T.Iterator[None]:
-        scopes_list.append(scope)
-
-        # The body of the with block is executed inside the yield, this ensures we release the
-        # scope if something in the block throws
-        try:
-            yield None
-        finally:
-            scopes_list.pop()
-
-    return named_scope
-
-
-# Nested scopes created with `sf.scope`, initialized to empty (symbols created with no added scope)
-__scopes__ = []
-
-
-def set_scope(scope: str) -> None:
-    global __scopes__  # pylint: disable=global-statement
-    __scopes__ = scope.split(".") if scope else []
-
-
-def get_scope() -> str:
-    return ".".join(__scopes__)
-
-
-scope = create_named_scope(__scopes__)

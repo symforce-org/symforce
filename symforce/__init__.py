@@ -16,7 +16,7 @@ In particular, this primarily performs configuration that you might need before 
 import os
 import sys
 import typing as T
-import warnings
+from dataclasses import dataclass
 from types import ModuleType
 
 # -------------------------------------------------------------------------------------------------
@@ -139,11 +139,11 @@ def _find_symengine() -> ModuleType:
         return symengine
 
 
-_symbolic_api: T.Optional[str] = None
+_symbolic_api: T.Optional[T.Literal["sympy", "symengine"]] = None
 _have_imported_symbolic = False
 
 
-def _set_symbolic_api(sympy_module: str) -> None:
+def _set_symbolic_api(sympy_module: T.Literal["sympy", "symengine"]) -> None:
     # Set this as the default symbolic API
     global _symbolic_api  # pylint: disable=global-statement
     _symbolic_api = sympy_module
@@ -213,16 +213,15 @@ else:
         logger.debug("No SYMFORCE_SYMBOLIC_API set, found and using symengine.")
         set_symbolic_api("symengine")
     except ImportError:
-        logger.debug("No SYMFORCE_SYMBOLIC_API set, no symengine found, using sympy.")
-        set_symbolic_api("sympy")
+        logger.debug("No SYMFORCE_SYMBOLIC_API set, no symengine found.  Will use sympy.")
+        pass
 
 
-def get_symbolic_api() -> str:
+def get_symbolic_api() -> T.Literal["sympy", "symengine"]:
     """
     Return the current symbolic API as a string.
     """
-    assert _symbolic_api is not None
-    return _symbolic_api
+    return _symbolic_api or "sympy"
 
 
 # --------------------------------------------------------------------------------
@@ -241,7 +240,7 @@ class AlreadyUsedEpsilon(Exception):
     pass
 
 
-_epsilon = 0.0
+_epsilon: T.Any = 0.0
 _have_used_epsilon = False
 
 
@@ -267,6 +266,15 @@ def _set_epsilon(new_epsilon: T.Any) -> None:
     _epsilon = new_epsilon
 
 
+@dataclass
+class SymbolicEpsilon:
+    """
+    An indicator that SymForce should use a symbolic epsilon
+    """
+
+    name: str
+
+
 def set_epsilon_to_symbol(name: str = "epsilon") -> None:
     """
     Set the default epsilon for Symforce to a Symbol.
@@ -277,14 +285,7 @@ def set_epsilon_to_symbol(name: str = "epsilon") -> None:
     Args:
         name: The name of the symbol for the new default epsilon to use
     """
-    if get_symbolic_api() == "sympy":
-        import sympy
-    elif get_symbolic_api() == "symengine":
-        sympy = _find_symengine()
-    else:
-        raise InvalidSymbolicApiError(get_symbolic_api())
-
-    _set_epsilon(sympy.Symbol(name))
+    _set_epsilon(SymbolicEpsilon(name))
 
 
 def set_epsilon_to_number(value: T.Any = numeric_epsilon) -> None:
