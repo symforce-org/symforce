@@ -8,8 +8,6 @@
 #include <Eigen/Core>
 #include <Eigen/SparseCore>
 
-#include "./assert.h"
-
 namespace sym {
 
 /**

@@ -11,8 +11,6 @@
 #include <sym/factors/internal/internal_imu_unit_gravity_factor.h>
 #include <sym/factors/internal/internal_imu_with_gravity_factor.h>
 
-#include "preintegrated_imu_measurements.h"
-
 namespace sym {
 
 template <typename Scalar>

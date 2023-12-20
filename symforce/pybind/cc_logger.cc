@@ -9,8 +9,6 @@
 
 #include <symforce/opt/internal/logging_configure.h>
 
-namespace py = pybind11;
-
 namespace sym {
 
 void AddLoggerWrapper(pybind11::module_ module) {

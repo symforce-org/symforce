@@ -3,14 +3,11 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
-#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <mutex>
 #include <string>
-#include <thread>
 #include <unordered_map>
-#include <vector>
 
 namespace sym {
 namespace internal {

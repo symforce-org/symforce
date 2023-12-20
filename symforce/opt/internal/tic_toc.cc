@@ -5,6 +5,8 @@
 
 #include "./tic_toc.h"
 
+#include <algorithm>
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>

@@ -5,7 +5,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include "../linearization.h"
 #include "../util.h"
 #include "../values.h"
 

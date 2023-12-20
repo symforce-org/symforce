@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <atomic>
 #include <unordered_map>
 
 #include <lcmtypes/sym/values_t.hpp>
