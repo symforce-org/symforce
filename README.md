@@ -6,9 +6,6 @@
 ![SymForce](docs/static/images/symforce_banner_dark.png#gh-dark-mode-only)
 <!-- /DARK_MODE_ONLY -->
 
-| 📣 We are open for internships!  If you are interested in contributing to SymForce, visit the program page [here](https://github.com/symforce-org/symforce/discussions/242) to learn more.  |
-|-----------------------------------------|
-
 <p align="center">
 <a href="https://github.com/symforce-org/symforce/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI status" src="https://github.com/symforce-org/symforce/actions/workflows/ci.yml/badge.svg" /></a>
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
