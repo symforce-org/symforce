@@ -295,7 +295,7 @@ class PseudoHuberNoiseModel(ScalarNoiseModel):
         Args:
             x: argument to return the cost for.
         """
-        return self.delta ** 2 * (sf.sqrt(1 + self.scalar_information * (x / self.delta) ** 2) - 1)
+        return self.delta**2 * (sf.sqrt(1 + self.scalar_information * (x / self.delta) ** 2) - 1)
 
     def whiten_scalar(self, x: sf.Scalar, bounded_away_from_zero: bool = False) -> sf.Scalar:
         """
@@ -408,7 +408,7 @@ class BarronNoiseModel(ScalarNoiseModel):
         b = sf.Abs(self.alpha - 2) + self.alpha_epsilon
         d = self.alpha + (sf.sign_no_zero(self.alpha) * self.alpha_epsilon)
         return (
-            self.delta ** 2
+            self.delta**2
             * (b / d)
             * (((self.scalar_information * (x / self.delta) ** 2) / b + 1) ** (d / 2) - 1)
         )

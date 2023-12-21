@@ -101,7 +101,7 @@ def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
         + epsilon * ((0.0 if _tmp18 == 0 else math.copysign(1, _tmp18)) + 0.5),
     )
     _res[1] = (
-        -math.acos(_tmp22 / math.sqrt(_tmp18 ** 2 + _tmp22 ** 2 + _tmp9 ** 2 + epsilon))
+        -math.acos(_tmp22 / math.sqrt(_tmp18**2 + _tmp22**2 + _tmp9**2 + epsilon))
         + (1.0 / 2.0) * math.pi
     )
     return _res

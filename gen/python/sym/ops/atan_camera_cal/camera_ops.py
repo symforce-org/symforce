@@ -145,7 +145,7 @@ class CameraOps(object):
         _tmp21 = _self[0] * point[0, 0]
         _tmp22 = _tmp10 * _tmp21
         _tmp23 = _tmp12 * _tmp19 / _self[4] ** 2
-        _tmp24 = _tmp18 ** 2
+        _tmp24 = _tmp18**2
         _tmp25 = 4 * _tmp6
         _tmp26 = 1.0 * (_tmp24 + 1) / (_tmp24 * _tmp25 + 1)
         _tmp27 = _tmp13 * _tmp21
@@ -155,7 +155,7 @@ class CameraOps(object):
         _tmp31 = _self[0] * _tmp5
         _tmp32 = _tmp3 ** (-3)
         _tmp33 = _tmp11 * _tmp32
-        _tmp34 = _tmp1 / (_tmp6 * (_tmp1 ** 2 * _tmp25 + 1))
+        _tmp34 = _tmp1 / (_tmp6 * (_tmp1**2 * _tmp25 + 1))
         _tmp35 = 2 * _tmp33 * _tmp34
         _tmp36 = _tmp9 / _tmp6 ** (3.0 / 2.0)
         _tmp37 = _tmp33 * _tmp36
@@ -222,7 +222,7 @@ class CameraOps(object):
         # Intermediate terms (5)
         _tmp0 = -_self[2] + pixel[0, 0]
         _tmp1 = -_self[3] + pixel[1, 0]
-        _tmp2 = math.sqrt(epsilon + _tmp1 ** 2 / _self[1] ** 2 + _tmp0 ** 2 / _self[0] ** 2)
+        _tmp2 = math.sqrt(epsilon + _tmp1**2 / _self[1] ** 2 + _tmp0**2 / _self[0] ** 2)
         _tmp3 = _self[4] * _tmp2
         _tmp4 = (1.0 / 2.0) * math.tan(_tmp3) / (_tmp2 * math.tan(0.5 * _self[4]))
 
@@ -270,9 +270,9 @@ class CameraOps(object):
         # Intermediate terms (54)
         _tmp0 = -_self[2] + pixel[0, 0]
         _tmp1 = -_self[3] + pixel[1, 0]
-        _tmp2 = _tmp1 ** 2
+        _tmp2 = _tmp1**2
         _tmp3 = _self[1] ** (-2)
-        _tmp4 = _tmp0 ** 2
+        _tmp4 = _tmp0**2
         _tmp5 = _self[0] ** (-2)
         _tmp6 = _tmp2 * _tmp3 + _tmp4 * _tmp5 + epsilon
         _tmp7 = math.sqrt(_tmp6)
@@ -289,10 +289,10 @@ class CameraOps(object):
         _tmp18 = (1.0 / 2.0) * _tmp17
         _tmp19 = _tmp1 * _tmp18
         _tmp20 = _tmp10 * _tmp12
-        _tmp21 = _tmp0 ** 3 / _self[0] ** 4
+        _tmp21 = _tmp0**3 / _self[0] ** 4
         _tmp22 = math.tan(_tmp11)
         _tmp23 = 1 / _tmp22
-        _tmp24 = _tmp9 ** 2 + 1
+        _tmp24 = _tmp9**2 + 1
         _tmp25 = _tmp23 * _tmp24
         _tmp26 = _self[4] / _tmp6
         _tmp27 = (1.0 / 2.0) * _tmp26
@@ -313,9 +313,9 @@ class CameraOps(object):
         _tmp42 = _tmp25 * _tmp41
         _tmp43 = _tmp26 * _tmp42
         _tmp44 = _tmp38 * _tmp41
-        _tmp45 = _tmp1 ** 3 / _self[1] ** 4
+        _tmp45 = _tmp1**3 / _self[1] ** 4
         _tmp46 = _tmp1 * _tmp3
-        _tmp47 = _tmp22 ** 2
+        _tmp47 = _tmp22**2
         _tmp48 = 0.25 * _tmp10 * (_tmp47 + 1) / _tmp47
         _tmp49 = _tmp12 * _tmp30
         _tmp50 = _tmp12 * _tmp24

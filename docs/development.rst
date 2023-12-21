@@ -77,11 +77,9 @@ When debugging a specific test, the use of `ipdb <https://pypi.org/project/ipdb/
 *************************************************
 Formatting
 *************************************************
-Symforce uses the `Black <https://github.com/psf/black>`_ formatter for Python code. To quote the authors:
+Symforce uses the `Ruff <https://github.com/astral-sh/ruff>`_ formatter for Python code.
 
-    `Black is the uncompromising Python code formatter. By using it, you agree to cede control over minutiae of hand-formatting. In return, Black gives you speed, determinism, and freedom from nagging about formatting. You will save time and mental energy for more important matters.`
-
-Running ``make format`` will format the entire codebase. It's recommended to develop with `VSCode <https://code.visualstudio.com/>`_ and integrate black.
+Running ``make format`` will format the entire codebase. It's recommended to develop with `VSCode <https://code.visualstudio.com/>`_ and integrate black or ruff.
 
 *************************************************
 Templates

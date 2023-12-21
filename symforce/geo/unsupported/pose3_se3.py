@@ -49,12 +49,12 @@ class Pose3_SE3(Pose3):
         R_hat = Rot3.hat(R_tangent)
         R_hat_sq = R_hat * R_hat
         R_tangent_vector = Vector3(R_tangent)
-        theta = sf.sqrt(R_tangent_vector.squared_norm() + epsilon ** 2)
+        theta = sf.sqrt(R_tangent_vector.squared_norm() + epsilon**2)
 
         V = (
             Matrix.eye(3)
-            + (1 - sf.cos(theta)) / (theta ** 2) * R_hat
-            + (theta - sf.sin(theta)) / (theta ** 3) * R_hat_sq
+            + (1 - sf.cos(theta)) / (theta**2) * R_hat
+            + (theta - sf.sin(theta)) / (theta**3) * R_hat_sq
         )
 
         return cls(R, V * t_tangent_vector)

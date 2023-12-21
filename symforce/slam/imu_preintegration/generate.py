@@ -131,9 +131,7 @@ def generate_manifold_imu_preintegration(
             "gyro_bias_i",
             "gravity",
         ]
-    ).generate_function(
-        output_dir=output_dir, skip_directory_nesting=True
-    )
+    ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
 
     codegen.Codegen.function(internal_imu_unit_gravity_residual, config=config).with_linearization(
         which_args=[

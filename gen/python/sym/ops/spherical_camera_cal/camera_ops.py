@@ -86,10 +86,10 @@ class CameraOps(object):
         _tmp1 = math.atan2(_tmp0, point[2, 0])
         _tmp2 = min(_tmp1, _self[4] - epsilon)
         _tmp3 = (
-            _self[5] * _tmp2 ** 3
-            + _self[6] * _tmp2 ** 5
-            + _self[7] * _tmp2 ** 7
-            + _self[8] * _tmp2 ** 9
+            _self[5] * _tmp2**3
+            + _self[6] * _tmp2**5
+            + _self[7] * _tmp2**7
+            + _self[8] * _tmp2**9
             + _tmp2
         ) / _tmp0
 
@@ -134,10 +134,10 @@ class CameraOps(object):
         _tmp4 = math.sqrt(_tmp3)
         _tmp5 = math.atan2(_tmp4, point[2, 0])
         _tmp6 = min(_tmp5, _self[4] + _tmp0)
-        _tmp7 = _tmp6 ** 5
-        _tmp8 = _tmp6 ** 7
-        _tmp9 = _tmp6 ** 9
-        _tmp10 = _tmp6 ** 3
+        _tmp7 = _tmp6**5
+        _tmp8 = _tmp6**7
+        _tmp9 = _tmp6**9
+        _tmp10 = _tmp6**3
         _tmp11 = _self[5] * _tmp10 + _self[6] * _tmp7 + _self[7] * _tmp8 + _self[8] * _tmp9 + _tmp6
         _tmp12 = 1 / _tmp4
         _tmp13 = _tmp11 * _tmp12
@@ -149,18 +149,18 @@ class CameraOps(object):
         _tmp19 = _self[1] * point[1, 0]
         _tmp20 = _tmp12 * _tmp19
         _tmp21 = _tmp12 * _tmp9
-        _tmp22 = (9.0 / 2.0) * _self[8] * _tmp6 ** 8
+        _tmp22 = (9.0 / 2.0) * _self[8] * _tmp6**8
         _tmp23 = ((0.0 if _tmp0 + _tmp16 == 0 else math.copysign(1, _tmp0 + _tmp16)) + 1) / (
             _tmp3 + point[2, 0] ** 2
         )
         _tmp24 = _tmp12 * point[2, 0]
         _tmp25 = _tmp23 * _tmp24
         _tmp26 = _tmp22 * _tmp25
-        _tmp27 = (5.0 / 2.0) * _self[6] * _tmp6 ** 4
+        _tmp27 = (5.0 / 2.0) * _self[6] * _tmp6**4
         _tmp28 = _tmp25 * _tmp27
-        _tmp29 = (7.0 / 2.0) * _self[7] * _tmp6 ** 6
+        _tmp29 = (7.0 / 2.0) * _self[7] * _tmp6**6
         _tmp30 = _tmp25 * _tmp29
-        _tmp31 = (3.0 / 2.0) * _self[5] * _tmp6 ** 2
+        _tmp31 = (3.0 / 2.0) * _self[5] * _tmp6**2
         _tmp32 = _tmp25 * _tmp31
         _tmp33 = (1.0 / 2.0) * _tmp23
         _tmp34 = _tmp24 * _tmp33

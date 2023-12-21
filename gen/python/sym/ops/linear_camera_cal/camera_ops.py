@@ -128,7 +128,7 @@ class CameraOps(object):
                 (0.0 if -epsilon + point[2, 0] == 0 else math.copysign(1, -epsilon + point[2, 0]))
                 + 1
             )
-            / _tmp0 ** 2
+            / _tmp0**2
         )
 
         # Output terms

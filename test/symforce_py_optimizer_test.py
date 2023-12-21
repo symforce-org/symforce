@@ -104,7 +104,8 @@ class SymforcePyOptimizerTest(TestCase):
 
         # Check that the factor cache has the expected number of entries
         self.assertEqual(
-            len(Factor._generated_residual_cache), 2  # pylint: disable=protected-access
+            len(Factor._generated_residual_cache),  # pylint: disable=protected-access
+            2,
         )
 
         index_entry2 = optimizer.linearization_index_entry("x1")
@@ -161,7 +162,8 @@ class SymforcePyOptimizerTest(TestCase):
 
         # Check that the factor cache has the expected number of entries
         self.assertEqual(
-            len(Factor._generated_residual_cache), 2  # pylint: disable=protected-access
+            len(Factor._generated_residual_cache),  # pylint: disable=protected-access
+            2,
         )
 
 

@@ -120,7 +120,7 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             Generate a pixel a given radius away from the principal point, at a random angle
             """
             return (
-                (sf.Rot2.from_tangent([np.random.uniform(0, 2 * np.pi)]) * sf.V2(radius, 0))
+                sf.Rot2.from_tangent([np.random.uniform(0, 2 * np.pi)]) * sf.V2(radius, 0)
             ) + sf.V2(400, 400)
 
         def check_backward_is_valid_on_boundary(xi: float, alpha: float, radius: float) -> None:

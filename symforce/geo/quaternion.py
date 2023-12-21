@@ -159,7 +159,7 @@ class Quaternion(Group):
         Returns:
             Scalar:
         """
-        return self.xyz.dot(self.xyz) + self.w ** 2
+        return self.xyz.dot(self.xyz) + self.w**2
 
     def conj(self) -> Quaternion:
         """

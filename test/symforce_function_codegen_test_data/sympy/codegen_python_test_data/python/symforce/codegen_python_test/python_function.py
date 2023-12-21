@@ -58,7 +58,7 @@ def python_function(
     _rot = rot.data
 
     # Intermediate terms (66)
-    _tmp0 = x ** 2
+    _tmp0 = x**2
     _tmp1 = 2 * values_vec[0].rot.data[3]
     _tmp2 = 2 * values_vec[0].rot_vec[0].data[3]
     _tmp3 = 2 * values_vec[0].rot_vec[1].data[3]
@@ -139,7 +139,7 @@ def python_function(
     _values_vec_out[3] = _tmp1 * values_vec[0].rot.data[1]
     _values_vec_out[4] = _tmp1 * values_vec[0].rot.data[2]
     _values_vec_out[5] = (
-        -values_vec[0].rot.data[0] ** 2
+        -(values_vec[0].rot.data[0] ** 2)
         - values_vec[0].rot.data[1] ** 2
         - values_vec[0].rot.data[2] ** 2
         + values_vec[0].rot.data[3] ** 2
@@ -148,7 +148,7 @@ def python_function(
     _values_vec_out[7] = _tmp2 * values_vec[0].rot_vec[0].data[1]
     _values_vec_out[8] = _tmp2 * values_vec[0].rot_vec[0].data[2]
     _values_vec_out[9] = (
-        -values_vec[0].rot_vec[0].data[0] ** 2
+        -(values_vec[0].rot_vec[0].data[0] ** 2)
         - values_vec[0].rot_vec[0].data[1] ** 2
         - values_vec[0].rot_vec[0].data[2] ** 2
         + values_vec[0].rot_vec[0].data[3] ** 2
@@ -157,7 +157,7 @@ def python_function(
     _values_vec_out[11] = _tmp3 * values_vec[0].rot_vec[1].data[1]
     _values_vec_out[12] = _tmp3 * values_vec[0].rot_vec[1].data[2]
     _values_vec_out[13] = (
-        -values_vec[0].rot_vec[1].data[0] ** 2
+        -(values_vec[0].rot_vec[1].data[0] ** 2)
         - values_vec[0].rot_vec[1].data[1] ** 2
         - values_vec[0].rot_vec[1].data[2] ** 2
         + values_vec[0].rot_vec[1].data[3] ** 2
@@ -166,7 +166,7 @@ def python_function(
     _values_vec_out[15] = _tmp4 * values_vec[0].rot_vec[2].data[1]
     _values_vec_out[16] = _tmp4 * values_vec[0].rot_vec[2].data[2]
     _values_vec_out[17] = (
-        -values_vec[0].rot_vec[2].data[0] ** 2
+        -(values_vec[0].rot_vec[2].data[0] ** 2)
         - values_vec[0].rot_vec[2].data[1] ** 2
         - values_vec[0].rot_vec[2].data[2] ** 2
         + values_vec[0].rot_vec[2].data[3] ** 2
@@ -178,7 +178,7 @@ def python_function(
     _values_vec_out[22] = _tmp5 * values_vec[0].list_of_lists[0][0].data[1]
     _values_vec_out[23] = _tmp5 * values_vec[0].list_of_lists[0][0].data[2]
     _values_vec_out[24] = (
-        -values_vec[0].list_of_lists[0][0].data[0] ** 2
+        -(values_vec[0].list_of_lists[0][0].data[0] ** 2)
         - values_vec[0].list_of_lists[0][0].data[1] ** 2
         - values_vec[0].list_of_lists[0][0].data[2] ** 2
         + values_vec[0].list_of_lists[0][0].data[3] ** 2
@@ -187,7 +187,7 @@ def python_function(
     _values_vec_out[26] = _tmp6 * values_vec[0].list_of_lists[0][1].data[1]
     _values_vec_out[27] = _tmp6 * values_vec[0].list_of_lists[0][1].data[2]
     _values_vec_out[28] = (
-        -values_vec[0].list_of_lists[0][1].data[0] ** 2
+        -(values_vec[0].list_of_lists[0][1].data[0] ** 2)
         - values_vec[0].list_of_lists[0][1].data[1] ** 2
         - values_vec[0].list_of_lists[0][1].data[2] ** 2
         + values_vec[0].list_of_lists[0][1].data[3] ** 2
@@ -196,7 +196,7 @@ def python_function(
     _values_vec_out[30] = _tmp7 * values_vec[0].list_of_lists[0][2].data[1]
     _values_vec_out[31] = _tmp7 * values_vec[0].list_of_lists[0][2].data[2]
     _values_vec_out[32] = (
-        -values_vec[0].list_of_lists[0][2].data[0] ** 2
+        -(values_vec[0].list_of_lists[0][2].data[0] ** 2)
         - values_vec[0].list_of_lists[0][2].data[1] ** 2
         - values_vec[0].list_of_lists[0][2].data[2] ** 2
         + values_vec[0].list_of_lists[0][2].data[3] ** 2
@@ -205,7 +205,7 @@ def python_function(
     _values_vec_out[34] = _tmp8 * values_vec[0].list_of_lists[1][0].data[1]
     _values_vec_out[35] = _tmp8 * values_vec[0].list_of_lists[1][0].data[2]
     _values_vec_out[36] = (
-        -values_vec[0].list_of_lists[1][0].data[0] ** 2
+        -(values_vec[0].list_of_lists[1][0].data[0] ** 2)
         - values_vec[0].list_of_lists[1][0].data[1] ** 2
         - values_vec[0].list_of_lists[1][0].data[2] ** 2
         + values_vec[0].list_of_lists[1][0].data[3] ** 2
@@ -214,7 +214,7 @@ def python_function(
     _values_vec_out[38] = _tmp9 * values_vec[0].list_of_lists[1][1].data[1]
     _values_vec_out[39] = _tmp9 * values_vec[0].list_of_lists[1][1].data[2]
     _values_vec_out[40] = (
-        -values_vec[0].list_of_lists[1][1].data[0] ** 2
+        -(values_vec[0].list_of_lists[1][1].data[0] ** 2)
         - values_vec[0].list_of_lists[1][1].data[1] ** 2
         - values_vec[0].list_of_lists[1][1].data[2] ** 2
         + values_vec[0].list_of_lists[1][1].data[3] ** 2
@@ -223,7 +223,7 @@ def python_function(
     _values_vec_out[42] = _tmp10 * values_vec[0].list_of_lists[1][2].data[1]
     _values_vec_out[43] = _tmp10 * values_vec[0].list_of_lists[1][2].data[2]
     _values_vec_out[44] = (
-        -values_vec[0].list_of_lists[1][2].data[0] ** 2
+        -(values_vec[0].list_of_lists[1][2].data[0] ** 2)
         - values_vec[0].list_of_lists[1][2].data[1] ** 2
         - values_vec[0].list_of_lists[1][2].data[2] ** 2
         + values_vec[0].list_of_lists[1][2].data[3] ** 2
@@ -232,7 +232,7 @@ def python_function(
     _values_vec_out[46] = _tmp11 * values_vec[0].list_of_lists[2][0].data[1]
     _values_vec_out[47] = _tmp11 * values_vec[0].list_of_lists[2][0].data[2]
     _values_vec_out[48] = (
-        -values_vec[0].list_of_lists[2][0].data[0] ** 2
+        -(values_vec[0].list_of_lists[2][0].data[0] ** 2)
         - values_vec[0].list_of_lists[2][0].data[1] ** 2
         - values_vec[0].list_of_lists[2][0].data[2] ** 2
         + values_vec[0].list_of_lists[2][0].data[3] ** 2
@@ -241,7 +241,7 @@ def python_function(
     _values_vec_out[50] = _tmp12 * values_vec[0].list_of_lists[2][1].data[1]
     _values_vec_out[51] = _tmp12 * values_vec[0].list_of_lists[2][1].data[2]
     _values_vec_out[52] = (
-        -values_vec[0].list_of_lists[2][1].data[0] ** 2
+        -(values_vec[0].list_of_lists[2][1].data[0] ** 2)
         - values_vec[0].list_of_lists[2][1].data[1] ** 2
         - values_vec[0].list_of_lists[2][1].data[2] ** 2
         + values_vec[0].list_of_lists[2][1].data[3] ** 2
@@ -250,7 +250,7 @@ def python_function(
     _values_vec_out[54] = _tmp13 * values_vec[0].list_of_lists[2][2].data[1]
     _values_vec_out[55] = _tmp13 * values_vec[0].list_of_lists[2][2].data[2]
     _values_vec_out[56] = (
-        -values_vec[0].list_of_lists[2][2].data[0] ** 2
+        -(values_vec[0].list_of_lists[2][2].data[0] ** 2)
         - values_vec[0].list_of_lists[2][2].data[1] ** 2
         - values_vec[0].list_of_lists[2][2].data[2] ** 2
         + values_vec[0].list_of_lists[2][2].data[3] ** 2
@@ -261,7 +261,7 @@ def python_function(
     _values_vec_out[60] = _tmp14 * values_vec[1].rot.data[1]
     _values_vec_out[61] = _tmp14 * values_vec[1].rot.data[2]
     _values_vec_out[62] = (
-        -values_vec[1].rot.data[0] ** 2
+        -(values_vec[1].rot.data[0] ** 2)
         - values_vec[1].rot.data[1] ** 2
         - values_vec[1].rot.data[2] ** 2
         + values_vec[1].rot.data[3] ** 2
@@ -270,7 +270,7 @@ def python_function(
     _values_vec_out[64] = _tmp15 * values_vec[1].rot_vec[0].data[1]
     _values_vec_out[65] = _tmp15 * values_vec[1].rot_vec[0].data[2]
     _values_vec_out[66] = (
-        -values_vec[1].rot_vec[0].data[0] ** 2
+        -(values_vec[1].rot_vec[0].data[0] ** 2)
         - values_vec[1].rot_vec[0].data[1] ** 2
         - values_vec[1].rot_vec[0].data[2] ** 2
         + values_vec[1].rot_vec[0].data[3] ** 2
@@ -279,7 +279,7 @@ def python_function(
     _values_vec_out[68] = _tmp16 * values_vec[1].rot_vec[1].data[1]
     _values_vec_out[69] = _tmp16 * values_vec[1].rot_vec[1].data[2]
     _values_vec_out[70] = (
-        -values_vec[1].rot_vec[1].data[0] ** 2
+        -(values_vec[1].rot_vec[1].data[0] ** 2)
         - values_vec[1].rot_vec[1].data[1] ** 2
         - values_vec[1].rot_vec[1].data[2] ** 2
         + values_vec[1].rot_vec[1].data[3] ** 2
@@ -288,7 +288,7 @@ def python_function(
     _values_vec_out[72] = _tmp17 * values_vec[1].rot_vec[2].data[1]
     _values_vec_out[73] = _tmp17 * values_vec[1].rot_vec[2].data[2]
     _values_vec_out[74] = (
-        -values_vec[1].rot_vec[2].data[0] ** 2
+        -(values_vec[1].rot_vec[2].data[0] ** 2)
         - values_vec[1].rot_vec[2].data[1] ** 2
         - values_vec[1].rot_vec[2].data[2] ** 2
         + values_vec[1].rot_vec[2].data[3] ** 2
@@ -300,7 +300,7 @@ def python_function(
     _values_vec_out[79] = _tmp18 * values_vec[1].list_of_lists[0][0].data[1]
     _values_vec_out[80] = _tmp18 * values_vec[1].list_of_lists[0][0].data[2]
     _values_vec_out[81] = (
-        -values_vec[1].list_of_lists[0][0].data[0] ** 2
+        -(values_vec[1].list_of_lists[0][0].data[0] ** 2)
         - values_vec[1].list_of_lists[0][0].data[1] ** 2
         - values_vec[1].list_of_lists[0][0].data[2] ** 2
         + values_vec[1].list_of_lists[0][0].data[3] ** 2
@@ -309,7 +309,7 @@ def python_function(
     _values_vec_out[83] = _tmp19 * values_vec[1].list_of_lists[0][1].data[1]
     _values_vec_out[84] = _tmp19 * values_vec[1].list_of_lists[0][1].data[2]
     _values_vec_out[85] = (
-        -values_vec[1].list_of_lists[0][1].data[0] ** 2
+        -(values_vec[1].list_of_lists[0][1].data[0] ** 2)
         - values_vec[1].list_of_lists[0][1].data[1] ** 2
         - values_vec[1].list_of_lists[0][1].data[2] ** 2
         + values_vec[1].list_of_lists[0][1].data[3] ** 2
@@ -318,7 +318,7 @@ def python_function(
     _values_vec_out[87] = _tmp20 * values_vec[1].list_of_lists[0][2].data[1]
     _values_vec_out[88] = _tmp20 * values_vec[1].list_of_lists[0][2].data[2]
     _values_vec_out[89] = (
-        -values_vec[1].list_of_lists[0][2].data[0] ** 2
+        -(values_vec[1].list_of_lists[0][2].data[0] ** 2)
         - values_vec[1].list_of_lists[0][2].data[1] ** 2
         - values_vec[1].list_of_lists[0][2].data[2] ** 2
         + values_vec[1].list_of_lists[0][2].data[3] ** 2
@@ -327,7 +327,7 @@ def python_function(
     _values_vec_out[91] = _tmp21 * values_vec[1].list_of_lists[1][0].data[1]
     _values_vec_out[92] = _tmp21 * values_vec[1].list_of_lists[1][0].data[2]
     _values_vec_out[93] = (
-        -values_vec[1].list_of_lists[1][0].data[0] ** 2
+        -(values_vec[1].list_of_lists[1][0].data[0] ** 2)
         - values_vec[1].list_of_lists[1][0].data[1] ** 2
         - values_vec[1].list_of_lists[1][0].data[2] ** 2
         + values_vec[1].list_of_lists[1][0].data[3] ** 2
@@ -336,7 +336,7 @@ def python_function(
     _values_vec_out[95] = _tmp22 * values_vec[1].list_of_lists[1][1].data[1]
     _values_vec_out[96] = _tmp22 * values_vec[1].list_of_lists[1][1].data[2]
     _values_vec_out[97] = (
-        -values_vec[1].list_of_lists[1][1].data[0] ** 2
+        -(values_vec[1].list_of_lists[1][1].data[0] ** 2)
         - values_vec[1].list_of_lists[1][1].data[1] ** 2
         - values_vec[1].list_of_lists[1][1].data[2] ** 2
         + values_vec[1].list_of_lists[1][1].data[3] ** 2
@@ -345,7 +345,7 @@ def python_function(
     _values_vec_out[99] = _tmp23 * values_vec[1].list_of_lists[1][2].data[1]
     _values_vec_out[100] = _tmp23 * values_vec[1].list_of_lists[1][2].data[2]
     _values_vec_out[101] = (
-        -values_vec[1].list_of_lists[1][2].data[0] ** 2
+        -(values_vec[1].list_of_lists[1][2].data[0] ** 2)
         - values_vec[1].list_of_lists[1][2].data[1] ** 2
         - values_vec[1].list_of_lists[1][2].data[2] ** 2
         + values_vec[1].list_of_lists[1][2].data[3] ** 2
@@ -354,7 +354,7 @@ def python_function(
     _values_vec_out[103] = _tmp24 * values_vec[1].list_of_lists[2][0].data[1]
     _values_vec_out[104] = _tmp24 * values_vec[1].list_of_lists[2][0].data[2]
     _values_vec_out[105] = (
-        -values_vec[1].list_of_lists[2][0].data[0] ** 2
+        -(values_vec[1].list_of_lists[2][0].data[0] ** 2)
         - values_vec[1].list_of_lists[2][0].data[1] ** 2
         - values_vec[1].list_of_lists[2][0].data[2] ** 2
         + values_vec[1].list_of_lists[2][0].data[3] ** 2
@@ -363,7 +363,7 @@ def python_function(
     _values_vec_out[107] = _tmp25 * values_vec[1].list_of_lists[2][1].data[1]
     _values_vec_out[108] = _tmp25 * values_vec[1].list_of_lists[2][1].data[2]
     _values_vec_out[109] = (
-        -values_vec[1].list_of_lists[2][1].data[0] ** 2
+        -(values_vec[1].list_of_lists[2][1].data[0] ** 2)
         - values_vec[1].list_of_lists[2][1].data[1] ** 2
         - values_vec[1].list_of_lists[2][1].data[2] ** 2
         + values_vec[1].list_of_lists[2][1].data[3] ** 2
@@ -372,7 +372,7 @@ def python_function(
     _values_vec_out[111] = _tmp26 * values_vec[1].list_of_lists[2][2].data[1]
     _values_vec_out[112] = _tmp26 * values_vec[1].list_of_lists[2][2].data[2]
     _values_vec_out[113] = (
-        -values_vec[1].list_of_lists[2][2].data[0] ** 2
+        -(values_vec[1].list_of_lists[2][2].data[0] ** 2)
         - values_vec[1].list_of_lists[2][2].data[1] ** 2
         - values_vec[1].list_of_lists[2][2].data[2] ** 2
         + values_vec[1].list_of_lists[2][2].data[3] ** 2
@@ -383,7 +383,7 @@ def python_function(
     _values_vec_out[117] = _tmp27 * values_vec[2].rot.data[1]
     _values_vec_out[118] = _tmp27 * values_vec[2].rot.data[2]
     _values_vec_out[119] = (
-        -values_vec[2].rot.data[0] ** 2
+        -(values_vec[2].rot.data[0] ** 2)
         - values_vec[2].rot.data[1] ** 2
         - values_vec[2].rot.data[2] ** 2
         + values_vec[2].rot.data[3] ** 2
@@ -392,7 +392,7 @@ def python_function(
     _values_vec_out[121] = _tmp28 * values_vec[2].rot_vec[0].data[1]
     _values_vec_out[122] = _tmp28 * values_vec[2].rot_vec[0].data[2]
     _values_vec_out[123] = (
-        -values_vec[2].rot_vec[0].data[0] ** 2
+        -(values_vec[2].rot_vec[0].data[0] ** 2)
         - values_vec[2].rot_vec[0].data[1] ** 2
         - values_vec[2].rot_vec[0].data[2] ** 2
         + values_vec[2].rot_vec[0].data[3] ** 2
@@ -401,7 +401,7 @@ def python_function(
     _values_vec_out[125] = _tmp29 * values_vec[2].rot_vec[1].data[1]
     _values_vec_out[126] = _tmp29 * values_vec[2].rot_vec[1].data[2]
     _values_vec_out[127] = (
-        -values_vec[2].rot_vec[1].data[0] ** 2
+        -(values_vec[2].rot_vec[1].data[0] ** 2)
         - values_vec[2].rot_vec[1].data[1] ** 2
         - values_vec[2].rot_vec[1].data[2] ** 2
         + values_vec[2].rot_vec[1].data[3] ** 2
@@ -410,7 +410,7 @@ def python_function(
     _values_vec_out[129] = _tmp30 * values_vec[2].rot_vec[2].data[1]
     _values_vec_out[130] = _tmp30 * values_vec[2].rot_vec[2].data[2]
     _values_vec_out[131] = (
-        -values_vec[2].rot_vec[2].data[0] ** 2
+        -(values_vec[2].rot_vec[2].data[0] ** 2)
         - values_vec[2].rot_vec[2].data[1] ** 2
         - values_vec[2].rot_vec[2].data[2] ** 2
         + values_vec[2].rot_vec[2].data[3] ** 2
@@ -422,7 +422,7 @@ def python_function(
     _values_vec_out[136] = _tmp31 * values_vec[2].list_of_lists[0][0].data[1]
     _values_vec_out[137] = _tmp31 * values_vec[2].list_of_lists[0][0].data[2]
     _values_vec_out[138] = (
-        -values_vec[2].list_of_lists[0][0].data[0] ** 2
+        -(values_vec[2].list_of_lists[0][0].data[0] ** 2)
         - values_vec[2].list_of_lists[0][0].data[1] ** 2
         - values_vec[2].list_of_lists[0][0].data[2] ** 2
         + values_vec[2].list_of_lists[0][0].data[3] ** 2
@@ -431,7 +431,7 @@ def python_function(
     _values_vec_out[140] = _tmp32 * values_vec[2].list_of_lists[0][1].data[1]
     _values_vec_out[141] = _tmp32 * values_vec[2].list_of_lists[0][1].data[2]
     _values_vec_out[142] = (
-        -values_vec[2].list_of_lists[0][1].data[0] ** 2
+        -(values_vec[2].list_of_lists[0][1].data[0] ** 2)
         - values_vec[2].list_of_lists[0][1].data[1] ** 2
         - values_vec[2].list_of_lists[0][1].data[2] ** 2
         + values_vec[2].list_of_lists[0][1].data[3] ** 2
@@ -440,7 +440,7 @@ def python_function(
     _values_vec_out[144] = _tmp33 * values_vec[2].list_of_lists[0][2].data[1]
     _values_vec_out[145] = _tmp33 * values_vec[2].list_of_lists[0][2].data[2]
     _values_vec_out[146] = (
-        -values_vec[2].list_of_lists[0][2].data[0] ** 2
+        -(values_vec[2].list_of_lists[0][2].data[0] ** 2)
         - values_vec[2].list_of_lists[0][2].data[1] ** 2
         - values_vec[2].list_of_lists[0][2].data[2] ** 2
         + values_vec[2].list_of_lists[0][2].data[3] ** 2
@@ -449,7 +449,7 @@ def python_function(
     _values_vec_out[148] = _tmp34 * values_vec[2].list_of_lists[1][0].data[1]
     _values_vec_out[149] = _tmp34 * values_vec[2].list_of_lists[1][0].data[2]
     _values_vec_out[150] = (
-        -values_vec[2].list_of_lists[1][0].data[0] ** 2
+        -(values_vec[2].list_of_lists[1][0].data[0] ** 2)
         - values_vec[2].list_of_lists[1][0].data[1] ** 2
         - values_vec[2].list_of_lists[1][0].data[2] ** 2
         + values_vec[2].list_of_lists[1][0].data[3] ** 2
@@ -458,7 +458,7 @@ def python_function(
     _values_vec_out[152] = _tmp35 * values_vec[2].list_of_lists[1][1].data[1]
     _values_vec_out[153] = _tmp35 * values_vec[2].list_of_lists[1][1].data[2]
     _values_vec_out[154] = (
-        -values_vec[2].list_of_lists[1][1].data[0] ** 2
+        -(values_vec[2].list_of_lists[1][1].data[0] ** 2)
         - values_vec[2].list_of_lists[1][1].data[1] ** 2
         - values_vec[2].list_of_lists[1][1].data[2] ** 2
         + values_vec[2].list_of_lists[1][1].data[3] ** 2
@@ -467,7 +467,7 @@ def python_function(
     _values_vec_out[156] = _tmp36 * values_vec[2].list_of_lists[1][2].data[1]
     _values_vec_out[157] = _tmp36 * values_vec[2].list_of_lists[1][2].data[2]
     _values_vec_out[158] = (
-        -values_vec[2].list_of_lists[1][2].data[0] ** 2
+        -(values_vec[2].list_of_lists[1][2].data[0] ** 2)
         - values_vec[2].list_of_lists[1][2].data[1] ** 2
         - values_vec[2].list_of_lists[1][2].data[2] ** 2
         + values_vec[2].list_of_lists[1][2].data[3] ** 2
@@ -476,7 +476,7 @@ def python_function(
     _values_vec_out[160] = _tmp37 * values_vec[2].list_of_lists[2][0].data[1]
     _values_vec_out[161] = _tmp37 * values_vec[2].list_of_lists[2][0].data[2]
     _values_vec_out[162] = (
-        -values_vec[2].list_of_lists[2][0].data[0] ** 2
+        -(values_vec[2].list_of_lists[2][0].data[0] ** 2)
         - values_vec[2].list_of_lists[2][0].data[1] ** 2
         - values_vec[2].list_of_lists[2][0].data[2] ** 2
         + values_vec[2].list_of_lists[2][0].data[3] ** 2
@@ -485,7 +485,7 @@ def python_function(
     _values_vec_out[164] = _tmp38 * values_vec[2].list_of_lists[2][1].data[1]
     _values_vec_out[165] = _tmp38 * values_vec[2].list_of_lists[2][1].data[2]
     _values_vec_out[166] = (
-        -values_vec[2].list_of_lists[2][1].data[0] ** 2
+        -(values_vec[2].list_of_lists[2][1].data[0] ** 2)
         - values_vec[2].list_of_lists[2][1].data[1] ** 2
         - values_vec[2].list_of_lists[2][1].data[2] ** 2
         + values_vec[2].list_of_lists[2][1].data[3] ** 2
@@ -494,7 +494,7 @@ def python_function(
     _values_vec_out[168] = _tmp39 * values_vec[2].list_of_lists[2][2].data[1]
     _values_vec_out[169] = _tmp39 * values_vec[2].list_of_lists[2][2].data[2]
     _values_vec_out[170] = (
-        -values_vec[2].list_of_lists[2][2].data[0] ** 2
+        -(values_vec[2].list_of_lists[2][2].data[0] ** 2)
         - values_vec[2].list_of_lists[2][2].data[1] ** 2
         - values_vec[2].list_of_lists[2][2].data[2] ** 2
         + values_vec[2].list_of_lists[2][2].data[3] ** 2
@@ -506,7 +506,7 @@ def python_function(
     _values_vec_2D_out[3] = _tmp40 * values_vec_2D[0][0].rot.data[1]
     _values_vec_2D_out[4] = _tmp40 * values_vec_2D[0][0].rot.data[2]
     _values_vec_2D_out[5] = (
-        -values_vec_2D[0][0].rot.data[0] ** 2
+        -(values_vec_2D[0][0].rot.data[0] ** 2)
         - values_vec_2D[0][0].rot.data[1] ** 2
         - values_vec_2D[0][0].rot.data[2] ** 2
         + values_vec_2D[0][0].rot.data[3] ** 2
@@ -515,7 +515,7 @@ def python_function(
     _values_vec_2D_out[7] = _tmp41 * values_vec_2D[0][0].rot_vec[0].data[1]
     _values_vec_2D_out[8] = _tmp41 * values_vec_2D[0][0].rot_vec[0].data[2]
     _values_vec_2D_out[9] = (
-        -values_vec_2D[0][0].rot_vec[0].data[0] ** 2
+        -(values_vec_2D[0][0].rot_vec[0].data[0] ** 2)
         - values_vec_2D[0][0].rot_vec[0].data[1] ** 2
         - values_vec_2D[0][0].rot_vec[0].data[2] ** 2
         + values_vec_2D[0][0].rot_vec[0].data[3] ** 2
@@ -524,7 +524,7 @@ def python_function(
     _values_vec_2D_out[11] = _tmp42 * values_vec_2D[0][0].rot_vec[1].data[1]
     _values_vec_2D_out[12] = _tmp42 * values_vec_2D[0][0].rot_vec[1].data[2]
     _values_vec_2D_out[13] = (
-        -values_vec_2D[0][0].rot_vec[1].data[0] ** 2
+        -(values_vec_2D[0][0].rot_vec[1].data[0] ** 2)
         - values_vec_2D[0][0].rot_vec[1].data[1] ** 2
         - values_vec_2D[0][0].rot_vec[1].data[2] ** 2
         + values_vec_2D[0][0].rot_vec[1].data[3] ** 2
@@ -533,7 +533,7 @@ def python_function(
     _values_vec_2D_out[15] = _tmp43 * values_vec_2D[0][0].rot_vec[2].data[1]
     _values_vec_2D_out[16] = _tmp43 * values_vec_2D[0][0].rot_vec[2].data[2]
     _values_vec_2D_out[17] = (
-        -values_vec_2D[0][0].rot_vec[2].data[0] ** 2
+        -(values_vec_2D[0][0].rot_vec[2].data[0] ** 2)
         - values_vec_2D[0][0].rot_vec[2].data[1] ** 2
         - values_vec_2D[0][0].rot_vec[2].data[2] ** 2
         + values_vec_2D[0][0].rot_vec[2].data[3] ** 2
@@ -545,7 +545,7 @@ def python_function(
     _values_vec_2D_out[22] = _tmp44 * values_vec_2D[0][0].list_of_lists[0][0].data[1]
     _values_vec_2D_out[23] = _tmp44 * values_vec_2D[0][0].list_of_lists[0][0].data[2]
     _values_vec_2D_out[24] = (
-        -values_vec_2D[0][0].list_of_lists[0][0].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[0][0].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[0][0].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[0][0].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[0][0].data[3] ** 2
@@ -554,7 +554,7 @@ def python_function(
     _values_vec_2D_out[26] = _tmp45 * values_vec_2D[0][0].list_of_lists[0][1].data[1]
     _values_vec_2D_out[27] = _tmp45 * values_vec_2D[0][0].list_of_lists[0][1].data[2]
     _values_vec_2D_out[28] = (
-        -values_vec_2D[0][0].list_of_lists[0][1].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[0][1].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[0][1].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[0][1].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[0][1].data[3] ** 2
@@ -563,7 +563,7 @@ def python_function(
     _values_vec_2D_out[30] = _tmp46 * values_vec_2D[0][0].list_of_lists[0][2].data[1]
     _values_vec_2D_out[31] = _tmp46 * values_vec_2D[0][0].list_of_lists[0][2].data[2]
     _values_vec_2D_out[32] = (
-        -values_vec_2D[0][0].list_of_lists[0][2].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[0][2].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[0][2].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[0][2].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[0][2].data[3] ** 2
@@ -572,7 +572,7 @@ def python_function(
     _values_vec_2D_out[34] = _tmp47 * values_vec_2D[0][0].list_of_lists[1][0].data[1]
     _values_vec_2D_out[35] = _tmp47 * values_vec_2D[0][0].list_of_lists[1][0].data[2]
     _values_vec_2D_out[36] = (
-        -values_vec_2D[0][0].list_of_lists[1][0].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[1][0].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[1][0].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[1][0].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[1][0].data[3] ** 2
@@ -581,7 +581,7 @@ def python_function(
     _values_vec_2D_out[38] = _tmp48 * values_vec_2D[0][0].list_of_lists[1][1].data[1]
     _values_vec_2D_out[39] = _tmp48 * values_vec_2D[0][0].list_of_lists[1][1].data[2]
     _values_vec_2D_out[40] = (
-        -values_vec_2D[0][0].list_of_lists[1][1].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[1][1].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[1][1].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[1][1].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[1][1].data[3] ** 2
@@ -590,7 +590,7 @@ def python_function(
     _values_vec_2D_out[42] = _tmp49 * values_vec_2D[0][0].list_of_lists[1][2].data[1]
     _values_vec_2D_out[43] = _tmp49 * values_vec_2D[0][0].list_of_lists[1][2].data[2]
     _values_vec_2D_out[44] = (
-        -values_vec_2D[0][0].list_of_lists[1][2].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[1][2].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[1][2].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[1][2].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[1][2].data[3] ** 2
@@ -599,7 +599,7 @@ def python_function(
     _values_vec_2D_out[46] = _tmp50 * values_vec_2D[0][0].list_of_lists[2][0].data[1]
     _values_vec_2D_out[47] = _tmp50 * values_vec_2D[0][0].list_of_lists[2][0].data[2]
     _values_vec_2D_out[48] = (
-        -values_vec_2D[0][0].list_of_lists[2][0].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[2][0].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[2][0].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[2][0].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[2][0].data[3] ** 2
@@ -608,7 +608,7 @@ def python_function(
     _values_vec_2D_out[50] = _tmp51 * values_vec_2D[0][0].list_of_lists[2][1].data[1]
     _values_vec_2D_out[51] = _tmp51 * values_vec_2D[0][0].list_of_lists[2][1].data[2]
     _values_vec_2D_out[52] = (
-        -values_vec_2D[0][0].list_of_lists[2][1].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[2][1].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[2][1].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[2][1].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[2][1].data[3] ** 2
@@ -617,7 +617,7 @@ def python_function(
     _values_vec_2D_out[54] = _tmp52 * values_vec_2D[0][0].list_of_lists[2][2].data[1]
     _values_vec_2D_out[55] = _tmp52 * values_vec_2D[0][0].list_of_lists[2][2].data[2]
     _values_vec_2D_out[56] = (
-        -values_vec_2D[0][0].list_of_lists[2][2].data[0] ** 2
+        -(values_vec_2D[0][0].list_of_lists[2][2].data[0] ** 2)
         - values_vec_2D[0][0].list_of_lists[2][2].data[1] ** 2
         - values_vec_2D[0][0].list_of_lists[2][2].data[2] ** 2
         + values_vec_2D[0][0].list_of_lists[2][2].data[3] ** 2
@@ -628,7 +628,7 @@ def python_function(
     _values_vec_2D_out[60] = _tmp53 * values_vec_2D[1][0].rot.data[1]
     _values_vec_2D_out[61] = _tmp53 * values_vec_2D[1][0].rot.data[2]
     _values_vec_2D_out[62] = (
-        -values_vec_2D[1][0].rot.data[0] ** 2
+        -(values_vec_2D[1][0].rot.data[0] ** 2)
         - values_vec_2D[1][0].rot.data[1] ** 2
         - values_vec_2D[1][0].rot.data[2] ** 2
         + values_vec_2D[1][0].rot.data[3] ** 2
@@ -637,7 +637,7 @@ def python_function(
     _values_vec_2D_out[64] = _tmp54 * values_vec_2D[1][0].rot_vec[0].data[1]
     _values_vec_2D_out[65] = _tmp54 * values_vec_2D[1][0].rot_vec[0].data[2]
     _values_vec_2D_out[66] = (
-        -values_vec_2D[1][0].rot_vec[0].data[0] ** 2
+        -(values_vec_2D[1][0].rot_vec[0].data[0] ** 2)
         - values_vec_2D[1][0].rot_vec[0].data[1] ** 2
         - values_vec_2D[1][0].rot_vec[0].data[2] ** 2
         + values_vec_2D[1][0].rot_vec[0].data[3] ** 2
@@ -646,7 +646,7 @@ def python_function(
     _values_vec_2D_out[68] = _tmp55 * values_vec_2D[1][0].rot_vec[1].data[1]
     _values_vec_2D_out[69] = _tmp55 * values_vec_2D[1][0].rot_vec[1].data[2]
     _values_vec_2D_out[70] = (
-        -values_vec_2D[1][0].rot_vec[1].data[0] ** 2
+        -(values_vec_2D[1][0].rot_vec[1].data[0] ** 2)
         - values_vec_2D[1][0].rot_vec[1].data[1] ** 2
         - values_vec_2D[1][0].rot_vec[1].data[2] ** 2
         + values_vec_2D[1][0].rot_vec[1].data[3] ** 2
@@ -655,7 +655,7 @@ def python_function(
     _values_vec_2D_out[72] = _tmp56 * values_vec_2D[1][0].rot_vec[2].data[1]
     _values_vec_2D_out[73] = _tmp56 * values_vec_2D[1][0].rot_vec[2].data[2]
     _values_vec_2D_out[74] = (
-        -values_vec_2D[1][0].rot_vec[2].data[0] ** 2
+        -(values_vec_2D[1][0].rot_vec[2].data[0] ** 2)
         - values_vec_2D[1][0].rot_vec[2].data[1] ** 2
         - values_vec_2D[1][0].rot_vec[2].data[2] ** 2
         + values_vec_2D[1][0].rot_vec[2].data[3] ** 2
@@ -667,7 +667,7 @@ def python_function(
     _values_vec_2D_out[79] = _tmp57 * values_vec_2D[1][0].list_of_lists[0][0].data[1]
     _values_vec_2D_out[80] = _tmp57 * values_vec_2D[1][0].list_of_lists[0][0].data[2]
     _values_vec_2D_out[81] = (
-        -values_vec_2D[1][0].list_of_lists[0][0].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[0][0].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[0][0].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[0][0].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[0][0].data[3] ** 2
@@ -676,7 +676,7 @@ def python_function(
     _values_vec_2D_out[83] = _tmp58 * values_vec_2D[1][0].list_of_lists[0][1].data[1]
     _values_vec_2D_out[84] = _tmp58 * values_vec_2D[1][0].list_of_lists[0][1].data[2]
     _values_vec_2D_out[85] = (
-        -values_vec_2D[1][0].list_of_lists[0][1].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[0][1].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[0][1].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[0][1].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[0][1].data[3] ** 2
@@ -685,7 +685,7 @@ def python_function(
     _values_vec_2D_out[87] = _tmp59 * values_vec_2D[1][0].list_of_lists[0][2].data[1]
     _values_vec_2D_out[88] = _tmp59 * values_vec_2D[1][0].list_of_lists[0][2].data[2]
     _values_vec_2D_out[89] = (
-        -values_vec_2D[1][0].list_of_lists[0][2].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[0][2].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[0][2].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[0][2].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[0][2].data[3] ** 2
@@ -694,7 +694,7 @@ def python_function(
     _values_vec_2D_out[91] = _tmp60 * values_vec_2D[1][0].list_of_lists[1][0].data[1]
     _values_vec_2D_out[92] = _tmp60 * values_vec_2D[1][0].list_of_lists[1][0].data[2]
     _values_vec_2D_out[93] = (
-        -values_vec_2D[1][0].list_of_lists[1][0].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[1][0].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[1][0].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[1][0].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[1][0].data[3] ** 2
@@ -703,7 +703,7 @@ def python_function(
     _values_vec_2D_out[95] = _tmp61 * values_vec_2D[1][0].list_of_lists[1][1].data[1]
     _values_vec_2D_out[96] = _tmp61 * values_vec_2D[1][0].list_of_lists[1][1].data[2]
     _values_vec_2D_out[97] = (
-        -values_vec_2D[1][0].list_of_lists[1][1].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[1][1].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[1][1].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[1][1].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[1][1].data[3] ** 2
@@ -712,7 +712,7 @@ def python_function(
     _values_vec_2D_out[99] = _tmp62 * values_vec_2D[1][0].list_of_lists[1][2].data[1]
     _values_vec_2D_out[100] = _tmp62 * values_vec_2D[1][0].list_of_lists[1][2].data[2]
     _values_vec_2D_out[101] = (
-        -values_vec_2D[1][0].list_of_lists[1][2].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[1][2].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[1][2].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[1][2].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[1][2].data[3] ** 2
@@ -721,7 +721,7 @@ def python_function(
     _values_vec_2D_out[103] = _tmp63 * values_vec_2D[1][0].list_of_lists[2][0].data[1]
     _values_vec_2D_out[104] = _tmp63 * values_vec_2D[1][0].list_of_lists[2][0].data[2]
     _values_vec_2D_out[105] = (
-        -values_vec_2D[1][0].list_of_lists[2][0].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[2][0].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[2][0].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[2][0].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[2][0].data[3] ** 2
@@ -730,7 +730,7 @@ def python_function(
     _values_vec_2D_out[107] = _tmp64 * values_vec_2D[1][0].list_of_lists[2][1].data[1]
     _values_vec_2D_out[108] = _tmp64 * values_vec_2D[1][0].list_of_lists[2][1].data[2]
     _values_vec_2D_out[109] = (
-        -values_vec_2D[1][0].list_of_lists[2][1].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[2][1].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[2][1].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[2][1].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[2][1].data[3] ** 2
@@ -739,7 +739,7 @@ def python_function(
     _values_vec_2D_out[111] = _tmp65 * values_vec_2D[1][0].list_of_lists[2][2].data[1]
     _values_vec_2D_out[112] = _tmp65 * values_vec_2D[1][0].list_of_lists[2][2].data[2]
     _values_vec_2D_out[113] = (
-        -values_vec_2D[1][0].list_of_lists[2][2].data[0] ** 2
+        -(values_vec_2D[1][0].list_of_lists[2][2].data[0] ** 2)
         - values_vec_2D[1][0].list_of_lists[2][2].data[1] ** 2
         - values_vec_2D[1][0].list_of_lists[2][2].data[2] ** 2
         + values_vec_2D[1][0].list_of_lists[2][2].data[3] ** 2

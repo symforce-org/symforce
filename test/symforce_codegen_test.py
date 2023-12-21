@@ -36,6 +36,7 @@ TEST_DATA_DIR = (
     / symforce.get_symbolic_api()
 )
 
+
 # Test function
 def az_el_from_point(
     nav_T_cam: sf.Pose3, nav_t_point: sf.Vector3, epsilon: sf.Scalar = 0
@@ -117,8 +118,8 @@ class SymforceCodegenTest(TestCase):
             # inputs.add(sf.Symbol('q(0)'))
 
         outputs = Values()
-        outputs["foo"] = x ** 2 + inputs["rot"].q.w
-        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x ** 2
+        outputs["foo"] = x**2 + inputs["rot"].q.w
+        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x**2
         # Test outputing lists of objects, scalars, and Values
         outputs["scalar_vec_out"] = ops.GroupOps.compose(inputs["scalar_vec"], inputs["scalar_vec"])
         outputs["values_vec_out"] = ops.GroupOps.compose(inputs["values_vec"], inputs["values_vec"])
@@ -209,8 +210,8 @@ class SymforceCodegenTest(TestCase):
             big_matrix,
             states,
         )
-        self.assertStorageNear(foo, x ** 2 + rot.data[3])
-        self.assertStorageNear(bar, constants.epsilon + sf.sin(y) + x ** 2)
+        self.assertStorageNear(foo, x**2 + rot.data[3])
+        self.assertStorageNear(bar, constants.epsilon + sf.sin(y) + x**2)
 
     def test_matrix_order_python(self) -> None:
         """
@@ -927,7 +928,7 @@ class SymforceCodegenTest(TestCase):
 
         outputs = Values(
             a_out=inputs.attr.a * sf.V3(0, 0, inputs.attr.b),
-            b_out=inputs.attr.c.norm(epsilon=0) + inputs.attr.b ** 2,
+            b_out=inputs.attr.c.norm(epsilon=0) + inputs.attr.b**2,
             c_out=(inputs.attr.d.x * sf.V2(1, 1) + inputs.attr.d.y).T * sf.M22(((1, 2), (3, 4))),
             d_out=Values(x=3, y=inputs.attr.a.q.w + inputs.attr.b),
         )

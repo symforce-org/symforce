@@ -37,7 +37,8 @@ class RenderTemplateConfig:
     Arguments to template_util.render_template
 
     Args:
-        autoformat: Run a code formatter on the generated code
+        autoformat: Run a code formatter on the generated code.  [This option is deprecated - future
+            versions of SymForce will always autoformat generated code]
         custom_preamble: An optional string to be prepended on the front of the rendered template
     """
 

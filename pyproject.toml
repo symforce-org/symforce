@@ -46,28 +46,32 @@ dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
 Source = "https://github.com/symforce-org/symforce"
 
 # --------------------------------------------------------------------------------
-# Other configuration
+# Ruff
 # --------------------------------------------------------------------------------
 
-[tool.black]
+[tool.ruff]
 line-length = 100
+exclude = ["third_party", "build", ".eggs"]
+extend-include = ["*.ipynb"]
 
-[tool.isort]
-profile = "black"
-line_length = 100
-py_version = "all"
-sections = [
-  "FUTURE",
-  "STDLIB",
-  "THIRDPARTY",
-  "GENERATED",
-  "FIRSTPARTY",
-  "LOCALFOLDER",
+[tool.ruff.lint.isort]
+known-first-party = ["sym", "symforce"]
+force-single-line = true
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "generated",
+  "first-party",
+  "local-folder",
 ]
-known_generated = ["lcmtypes"]
-src_paths = []
-known_first_party = ["sym", "symforce"]
-force_single_line = true
+
+[tool.ruff.lint.isort.sections]
+"generated" = ["lcmtypes"]
+
+# --------------------------------------------------------------------------------
+# Mypy
+# --------------------------------------------------------------------------------
 
 [tool.mypy]
 python_version = "3.8"
@@ -79,11 +83,11 @@ mypy_path = [".", "gen/python", "$SYMFORCE_LCMTYPES_DIR", "symforce/pybind"]
 module = [
   "IPython.*",
   "argh.*",
-  "black.*",
   "graphviz.*",
   "matplotlib.*",
   "mpl_toolkits.*",
   "numba.*",
+  "ruff.*",
   "scipy.*",
   "skymarshal.*",
   "symengine.*",

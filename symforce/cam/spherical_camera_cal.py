@@ -182,7 +182,7 @@ class SphericalCameraCal(CameraCal):
         acc = theta
 
         for coef in self.distortion_coeffs.to_flat_list():
-            theta_term *= theta ** 2
+            theta_term *= theta**2
             acc += coef * theta_term
 
         return acc
@@ -190,7 +190,6 @@ class SphericalCameraCal(CameraCal):
     def pixel_from_camera_point(
         self, point: geo.Matrix31, epsilon: T.Scalar = sf.epsilon()
     ) -> T.Tuple[geo.Matrix21, T.Scalar]:
-
         # compute theta
         xy_norm = point[:2, :].norm(epsilon)
         theta = sf.atan2(xy_norm, point[2], epsilon=0)

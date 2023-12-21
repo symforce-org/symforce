@@ -52,8 +52,8 @@ class CountOpsTest(TestCase):
             self.assertEqual(2, sf.count_ops(1 / (x * y)))
 
         with self.subTest(msg=f"{sf.__name__} handles exponents properly"):
-            self.assertEqual(1, sf.count_ops(x * y ** 1))
-            self.assertEqual(2, sf.count_ops(x * y ** 2))
+            self.assertEqual(1, sf.count_ops(x * y**1))
+            self.assertEqual(2, sf.count_ops(x * y**2))
             self.assertEqual(2, sf.count_ops(x * y ** (-2)))
 
     def test_constants(self) -> None:

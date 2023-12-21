@@ -573,7 +573,10 @@ if sympy.__package__ == "symengine":
     import sympy as _sympy_py
 
     def limit(
-        e: T.Any, z: T.Any, z0: T.Any, dir: str = "+"  # pylint: disable=redefined-builtin
+        e: T.Any,
+        z: T.Any,
+        z0: T.Any,
+        dir: str = "+",  # pylint: disable=redefined-builtin
     ) -> Scalar:
         logger.warning("Converting to sympy to use .limit")
         return sympy.S(_sympy_py.limit(_sympy_py.S(e), _sympy_py.S(z), _sympy_py.S(z0), dir=dir))
@@ -659,7 +662,7 @@ else:
 
 
 def _flatten_storage_type_subs(
-    subs_pairs: T.Sequence[T.Tuple[T.Any, T.Any]]
+    subs_pairs: T.Sequence[T.Tuple[T.Any, T.Any]],
 ) -> T.Dict[T.Any, T.Any]:
     """
     Replace storage types with their scalar counterparts

@@ -101,7 +101,7 @@ class UnaryBinaryExpressionGen:
         # enumerate possible trees
         # first generate the tranposed version of D, then transpose it
 
-        D = [np.array([0] + ([num_leaves ** e for e in range(1, 2 * max_ops + 1)]))]
+        D = [np.array([0] + ([num_leaves**e for e in range(1, 2 * max_ops + 1)]))]
 
         for n in range(1, max_ops + 1):  # number of operators
             D.append(UnaryBinaryExpressionGen._next_row_of_D(num_leaves, max_ops, n, D[-1], p1, p2))
@@ -127,9 +127,9 @@ class UnaryBinaryExpressionGen:
 
         probs: T.List[float] = []
         for i in range(nb_empty):
-            probs.append((num_leaves ** i) * p1 * self.D[nb_empty - i][nb_ops - 1])
+            probs.append((num_leaves**i) * p1 * self.D[nb_empty - i][nb_ops - 1])
         for i in range(nb_empty):
-            probs.append((num_leaves ** i) * p2 * self.D[nb_empty - i + 1][nb_ops - 1])
+            probs.append((num_leaves**i) * p2 * self.D[nb_empty - i + 1][nb_ops - 1])
 
         np_probs = np.array([p / self.D[nb_empty][nb_ops] for p in probs], dtype=np.float64)
 
@@ -191,7 +191,7 @@ class UnaryBinaryExpressionGen:
         """
 
         def _seq_to_expr(
-            seq: T.Sequence[T.Union[str, sf.Scalar]]
+            seq: T.Sequence[T.Union[str, sf.Scalar]],
         ) -> T.Tuple[sf.Scalar, T.Sequence[T.Union[str, sf.Scalar]]]:
             assert len(seq) > 0
             t = seq[0]

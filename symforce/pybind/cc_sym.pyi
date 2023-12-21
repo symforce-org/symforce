@@ -56,7 +56,6 @@ class Factor:
     Created from a function and a set of Keys that act as inputs. Given a Values as an evaluation
     point, generates a linear approximation to the residual function.
     """
-
     @typing.overload
     def __init__(
         self,
@@ -169,7 +168,6 @@ class Key:
     """
     Key type for Values. Contains a letter plus an integral subscript and superscript. Can construct with a letter, a letter + sub, or a letter + sub + super, but not a letter + super.
     """
-
     def __eq__(self, arg0: object) -> bool: ...
     def __getstate__(self) -> tuple: ...
     def __hash__(self) -> int: ...
@@ -228,7 +226,6 @@ class Linearization:
     """
     Class for storing a problem linearization evaluated at a Values (i.e. a residual, jacobian, hessian, and rhs).
     """
-
     def __getstate__(self) -> tuple: ...
     def __init__(self) -> None: ...
     def __setstate__(self, arg0: tuple) -> None: ...
@@ -281,7 +278,6 @@ class OptimizationStats:
     """
     Debug stats for a full optimization run.
     """
-
     def __getstate__(self) -> tuple: ...
     def __init__(self) -> None: ...
     def __setstate__(self, arg0: tuple) -> None: ...
@@ -384,7 +380,6 @@ class Optimizer:
     """
     Class for optimizing a nonlinear least-squares problem specified as a list of Factors. For efficient use, create once and call Optimize() multiple times with different initial guesses, as long as the factors remain constant and the structure of the Values is identical.
     """
-
     def __init__(
         self,
         params: optimizer_params_t,
@@ -526,7 +521,6 @@ class Values:
     Compatible types are given by the type_t enum. All types implement the StorageOps and
     LieGroupOps concepts, which are the core operating mechanisms in this class.
     """
-
     def __getstate__(self) -> bytes: ...
     @typing.overload
     def __init__(self) -> None:

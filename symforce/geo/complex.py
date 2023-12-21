@@ -109,7 +109,7 @@ class Complex(Group):
         Returns:
             Scalar: real**2 + imag**2
         """
-        return self.real ** 2 + self.imag ** 2
+        return self.real**2 + self.imag**2
 
     def __mul__(self, right: Complex) -> Complex:
         """

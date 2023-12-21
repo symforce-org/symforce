@@ -598,7 +598,7 @@ class Matrix(Storage):
             )
 
         squared_norm = self.squared_norm() + epsilon
-        max_squared_norm = max_norm ** 2
+        max_squared_norm = max_norm**2
 
         # This sqrt can be near 0, if max_norm can be exactly 0
         return self * sf.Min(1, sf.sqrt(max_squared_norm / squared_norm))
@@ -854,7 +854,7 @@ class Matrix(Storage):
         """
         Returns 1 if a and b are parallel within tolerance, and 0 otherwise.
         """
-        return (1 - sf.sign(a.cross(b).squared_norm() - tolerance ** 2)) / 2
+        return (1 - sf.sign(a.cross(b).squared_norm() - tolerance**2)) / 2
 
     @staticmethod
     def skew_symmetric(a: Vector3) -> Matrix33:

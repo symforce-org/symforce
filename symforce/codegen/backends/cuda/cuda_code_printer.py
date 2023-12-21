@@ -33,7 +33,7 @@ class CudaCodePrinter(C11CodePrinter):
         super().__init__(dict(settings or {}, type_aliases={real: scalar_type.value}))
 
         self.override_methods = override_methods or {}
-        for (expr, name) in self.override_methods.items():
+        for expr, name in self.override_methods.items():
             self._set_override_methods(expr, name)
 
     def _set_override_methods(self, expr: sympy.Function, name: str) -> None:

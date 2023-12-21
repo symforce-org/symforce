@@ -209,7 +209,7 @@ def inverse_range_landmark_gnc_residual(
     """
     noise_model = BarronNoiseModel(
         alpha=BarronNoiseModel.compute_alpha_from_mu(gnc_mu, epsilon),
-        scalar_information=1 / gnc_scale ** 2,
+        scalar_information=1 / gnc_scale**2,
         x_epsilon=epsilon,
     )
 
@@ -390,7 +390,7 @@ def inverse_range_landmark_ray_gnc_residual(
 
     noise_model = BarronNoiseModel(
         alpha=BarronNoiseModel.compute_alpha_from_mu(mu=gnc_mu, epsilon=epsilon),
-        scalar_information=1 / gnc_scale ** 2,
+        scalar_information=1 / gnc_scale**2,
         x_epsilon=epsilon,
     )
 
@@ -447,9 +447,7 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
                 config=config,
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
-            ).generate_function(
-                output_dir=factors_dir, skip_directory_nesting=True
-            )
+            ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
 
             codegen.Codegen.function(
                 func=specialize_cam(reprojection_delta),
@@ -466,9 +464,7 @@ def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
                 config=config,
             ).with_linearization(
                 which_args=["source_pose", "target_pose", "source_inverse_range"]
-            ).generate_function(
-                output_dir=factors_dir, skip_directory_nesting=True
-            )
+            ).generate_function(output_dir=factors_dir, skip_directory_nesting=True)
 
             codegen.Codegen.function(
                 func=specialize_cam(ray_reprojection_delta),

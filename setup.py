@@ -252,7 +252,8 @@ class SymForceEggInfo(egg_info):
                 return s
 
             self.distribution.install_requires = [  # type: ignore[attr-defined]
-                filter_local(requirement) for requirement in self.distribution.install_requires  # type: ignore[attr-defined]
+                filter_local(requirement)
+                for requirement in self.distribution.install_requires  # type: ignore[attr-defined]
             ]
             self.distribution.extras_require = {  # type: ignore[attr-defined]
                 k: [filter_local(requirement) for requirement in v]
@@ -425,7 +426,7 @@ if __name__ == "__main__":
         ext_modules=[CMakeExtension("cc_sym"), CMakeExtension("lcmtypes")],
         # Barebones packages needed to run symforce
         install_requires=[
-            "black",
+            "ruff",
             "clang-format",
             "graphviz",
             "jinja2",
@@ -440,11 +441,8 @@ if __name__ == "__main__":
             "docs": docs_requirements,
             "dev": docs_requirements
             + [
-                "click~=8.0.4",  # Required by black, but not specified by our version of black
                 "argh",
-                "black[jupyter]==21.12b0",
                 "coverage",
-                "isort",
                 "jinja2~=3.0.3",
                 "mypy==0.910",
                 "numba",

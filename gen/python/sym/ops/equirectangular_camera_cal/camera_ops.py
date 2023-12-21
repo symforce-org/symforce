@@ -139,7 +139,7 @@ class CameraOps(object):
         _tmp4 = math.sqrt(_tmp3 + epsilon)
         _tmp5 = math.atan2(point[1, 0], _tmp4)
         _tmp6 = _tmp3 + point[1, 0] ** 2
-        _tmp7 = _self[0] / (_tmp0 ** 2 + _tmp2)
+        _tmp7 = _self[0] / (_tmp0**2 + _tmp2)
         _tmp8 = _self[1] / (_tmp6 + epsilon)
         _tmp9 = _tmp8 * point[1, 0] / _tmp4
 

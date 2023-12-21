@@ -171,7 +171,7 @@ def run_matmul_benchmark(
                     # Parse n_runs_multiplier out of the log, and divide results by number of runs
                     # to give all metrics per-run
                     gain = float(output.splitlines()[1].split()[-1][:-1])
-                    scale = (10 ** 2) * (gain ** 2)
+                    scale = (10**2) * (gain**2)
 
                     matrix_results = [float(l.split(",")[0]) for l in output.splitlines()[-3:]]
                     matrix_results = [x / scale for x in matrix_results]

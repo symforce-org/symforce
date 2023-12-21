@@ -172,7 +172,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         )
 
         x = sf.Symbol("x")
-        unsimple_matrix = sf.Matrix([x ** 2 - x, 0])
+        unsimple_matrix = sf.Matrix([x**2 - x, 0])
         simple_matrix = sf.Matrix([x * (x - 1), 0])
         self.assertEqual(unsimple_matrix.simplify(), simple_matrix)
 

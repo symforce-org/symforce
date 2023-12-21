@@ -10,6 +10,7 @@ import enum
 import functools
 import os
 import textwrap
+import warnings
 from pathlib import Path
 
 import jinja2
@@ -78,25 +79,23 @@ class FileType(enum.Enum):
         """
         Format code of this file type.
         """
+        # Come up with a fake filename to give to the formatter just for formatting purposes, even
+        # if this isn't being written to disk
+        if output_path is not None:
+            format_filename = os.path.basename(output_path)
+        else:
+            format_filename = str(template_name).replace(".jinja", "")
+
         # TODO(hayk): Move up to language-specific config or printer. This is quite an awkward
         # place for auto-format logic, but I thought it was better centralized here than down below
         # hidden in a function. We might want to somehow pass the config through to render a
         # template so we can move things into the backend code. (tag=centralize-language-diffs)
         if self in (FileType.CPP, FileType.CUDA):
-            # Come up with a fake filename to give to the formatter just for formatting purposes,
-            # even if this isn't being written to disk
-            if output_path is not None:
-                format_cpp_filename = os.path.basename(output_path)
-            else:
-                format_cpp_filename = os.fspath(template_name).replace(".jinja", "")
-
             return format_util.format_cpp(
-                file_contents, filename=str(CURRENT_DIR / format_cpp_filename)
+                file_contents, filename=str(CURRENT_DIR / format_filename)
             )
-        elif self == FileType.PYTHON:
-            return format_util.format_py(file_contents)
-        elif self == FileType.PYTHON_INTERFACE:
-            return format_util.format_pyi(file_contents)
+        elif self in (FileType.PYTHON, FileType.PYTHON_INTERFACE):
+            return format_util.format_py(file_contents, filename=str(CURRENT_DIR / format_filename))
         elif self == FileType.LCM:
             return file_contents
         else:
@@ -201,6 +200,11 @@ def render_template(
             file_contents=rendered_str,
             template_name=template_path,
             output_path=output_path,
+        )
+    else:
+        warnings.warn(
+            "Config.autoformat == False is deprecated, this option will be removed in a future release",
+            DeprecationWarning,
         )
 
     if output_path:

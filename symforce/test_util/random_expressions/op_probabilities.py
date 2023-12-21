@@ -41,8 +41,8 @@ DEFAULT_UNARY_OPS = (
     OpProbability("sin", sf.sin, 0.5),
     OpProbability("cos", sf.cos, 0.5),
     OpProbability("tan", sf.tan, 0.3),
-    OpProbability("pow2", lambda x: x ** 2, 3),
-    OpProbability("pow3", lambda x: x ** 3, 1),
+    OpProbability("pow2", lambda x: x**2, 3),
+    OpProbability("pow3", lambda x: x**3, 1),
     OpProbability("asin", sf.asin_safe, 0.2),
     OpProbability("acos", sf.acos_safe, 0.2),
     OpProbability("atan", sf.atan, 0.1),
@@ -53,7 +53,7 @@ DEFAULT_BINARY_OPS = (
     OpProbability("sub", lambda x, y: x - y, 2),
     OpProbability("mul", lambda x, y: x * y, 5),
     OpProbability("div", lambda x, y: x / y, 1),
-    OpProbability("pow", lambda x, y: x ** y, 0.5),
+    OpProbability("pow", lambda x, y: x**y, 0.5),
     OpProbability("atan2", sf.atan2, 0.2),
 )
 

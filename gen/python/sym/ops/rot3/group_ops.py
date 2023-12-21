@@ -106,7 +106,7 @@ class GroupOps(object):
         # Intermediate terms (13)
         _tmp0 = _a[2] ** 2
         _tmp1 = _a[0] ** 2
-        _tmp2 = -_a[3] ** 2
+        _tmp2 = -(_a[3] ** 2)
         _tmp3 = _a[1] ** 2
         _tmp4 = _tmp2 + _tmp3
         _tmp5 = 2 * _a[2]

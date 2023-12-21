@@ -217,7 +217,6 @@ class Optimizer:
         debug_stats: bool = False,
         include_jacobians: bool = False,
     ):
-
         if optimized_keys is None:
             # This will be filled with the optimized keys of the numeric factors
             self.optimized_keys = []

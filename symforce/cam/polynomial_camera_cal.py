@@ -110,7 +110,7 @@ class PolynomialCameraCal(CameraCal):
         total = 1.0
         radius_term = 1.0
         for coef in self.distortion_coeffs.to_flat_list():
-            radius_term *= undistorted_radius ** 2
+            radius_term *= undistorted_radius**2
             total += radius_term * coef
         return total
 

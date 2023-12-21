@@ -82,7 +82,7 @@ class Unit3(object):
 
         # Intermediate terms (8)
         _tmp0 = 1.0 / 2.0 - 1.0 / 2.0 * (
-            0.0 if 1 - epsilon ** 2 == 0 else math.copysign(1, 1 - epsilon ** 2)
+            0.0 if 1 - epsilon**2 == 0 else math.copysign(1, 1 - epsilon**2)
         )
         _tmp1 = 1 / math.sqrt(a[0, 0] ** 2 + a[1, 0] ** 2 + a[2, 0] ** 2 + epsilon)
         _tmp2 = _tmp1 * a[2, 0]

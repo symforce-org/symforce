@@ -31,8 +31,6 @@ beautifulsoup4==4.12.2
     # via
     #   furo
     #   nbconvert
-black[jupyter]==21.12b0
-    # via symforce (setup.py)
 bleach==6.1.0
     # via nbconvert
 breathe==4.35.0
@@ -46,10 +44,7 @@ charset-normalizer==3.3.0
 clang-format==17.0.2
     # via symforce (setup.py)
 click==8.0.4
-    # via
-    #   black
-    #   pip-tools
-    #   symforce (setup.py)
+    # via pip-tools
 cmake==3.26.4
     # via symforce (setup.py)
 comm==0.1.4
@@ -105,15 +100,11 @@ importlib-resources==6.1.0
 ipykernel==6.25.2
     # via symforce (setup.py)
 ipython==8.12.3
-    # via
-    #   black
-    #   ipykernel
+    # via ipykernel
 ipython-genutils==0.2.0
     # via symforce (setup.py)
 isort==5.12.0
-    # via
-    #   pylint
-    #   symforce (setup.py)
+    # via pylint
 jedi==0.19.1
     # via ipython
 jinja2==3.0.3
@@ -176,9 +167,7 @@ mpmath==1.3.0
 mypy==0.910
     # via symforce (setup.py)
 mypy-extensions==0.4.4
-    # via
-    #   black
-    #   mypy
+    # via mypy
 myst-parser==2.0.0
     # via symforce (setup.py)
 nbclient==0.8.0
@@ -223,8 +212,6 @@ pandocfilters==1.5.0
     # via nbconvert
 parso==0.8.3
     # via jedi
-pathspec==0.11.2
-    # via black
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
@@ -237,7 +224,6 @@ pkgutil-resolve-name==1.3.10
     # via jsonschema
 platformdirs==3.11.0
     # via
-    #   black
     #   jupyter-core
     #   pylint
 plotly==5.17.0
@@ -291,6 +277,8 @@ rpds-py==0.10.4
     # via
     #   jsonschema
     #   referencing
+ruff==0.1.7
+    # via symforce (setup.py)
 scipy==1.10.1
     # via symforce (setup.py)
 six==1.16.0
@@ -343,13 +331,10 @@ tenacity==8.2.3
     # via plotly
 tinycss2==1.2.1
     # via nbconvert
-tokenize-rt==5.2.0
-    # via black
 toml==0.10.2
     # via mypy
 tomli==1.2.3
     # via
-    #   black
     #   build
     #   pylint
     #   pyproject-hooks
@@ -388,7 +373,6 @@ types-setuptools==68.2.0.0
 typing-extensions==4.8.0
     # via
     #   astroid
-    #   black
     #   ipython
     #   mypy
     #   pylint

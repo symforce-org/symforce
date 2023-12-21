@@ -40,10 +40,10 @@ class SympyOverridesTest(TestCase):
         x, y = sf.symbols("x y")
 
         self.assertEqual(sf.floor(x).diff(x), 0)
-        self.assertEqual(sf.floor(x ** 2).diff(x), 0)
+        self.assertEqual(sf.floor(x**2).diff(x), 0)
 
         self.assertEqual(sf.sign(x).diff(x), 0)
-        self.assertEqual(sf.sign(x ** 2).diff(x), 0)
+        self.assertEqual(sf.sign(x**2).diff(x), 0)
 
         def numerical_derivative(
             f: T.Callable[[sf.Scalar], sf.Scalar], x: sf.Scalar, delta: float = 1e-8

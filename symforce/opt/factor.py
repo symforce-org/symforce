@@ -37,8 +37,7 @@ class Factor:
         residual: The residual function for the factor. When passed symbolic inputs, this should
             return a symbolic expression for the residual.
         config: The language the numeric factor will be generated in. Defaults to Python, which
-            does not require any compilation. Also does not autoformat by default in order to
-            speed up code generation.
+            does not require any compilation.
         custom_jacobian_func: A functor that computes the jacobian, typically unnecessary unless
             you want to override the jacobian computed by SymForce, e.g. to stop derivatives
             with respect to certain variables or directions, or because the jacobian can be
@@ -59,12 +58,9 @@ class Factor:
         The default codegen config used by the Factor class
 
         This is a PythonConfig with settings appropriate for converting to a
-        :class:`.numeric_factor.NumericFactor` (no autoformat, return 2d vectors).
+        :class:`.numeric_factor.NumericFactor` (returns 2d vectors).
         """
-        return PythonConfig(
-            render_template_config=codegen_config.RenderTemplateConfig(autoformat=False),
-            return_2d_vectors=True,
-        )
+        return PythonConfig(return_2d_vectors=True)
 
     def __init__(
         self,
@@ -110,8 +106,7 @@ class Factor:
             inputs: The inputs Values for the factor.
             residual: An expression representing the residual of the factor.
             config: The language the numeric factor will be generated in. Defaults to Python, which
-                does not require any compilation. Also does not autoformat by default in order to
-                speed up code generation.
+                does not require any compilation.
             custom_jacobian_func: A functor that computes the jacobian, typically unnecessary unless
                 you want to override the jacobian computed by SymForce, e.g. to stop derivatives
                 with respect to certain variables or directions, or because the jacobian can be

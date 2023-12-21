@@ -25,7 +25,7 @@ class GeoScalarTest(LieGroupOpsTestMixin, TestCase):
         Check that we get correct types out from scalar expressions of various forms.
         """
         x, y = sf.symbols("x y")
-        scalars = (12, -1.3, sf.S(4), sf.S(12.5), np.double(5.5), x, x ** 2 + y)
+        scalars = (12, -1.3, sf.S(4), sf.S(12.5), np.double(5.5), x, x**2 + y)
         for scalar in scalars:
             scalar_type = type(scalar)
             from_storage = ops.StorageOps.from_storage(scalar_type, [scalar])

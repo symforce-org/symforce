@@ -236,7 +236,7 @@ def typename_from_key(key: str, shared_types: T.Mapping[str, str]) -> str:
 
 
 def get_subvalues_from_list_index(
-    list_index: T.Dict[str, IndexEntry]
+    list_index: T.Dict[str, IndexEntry],
 ) -> T.Optional[T.Dict[str, IndexEntry]]:
     """
     Returns index of :class:`Values <symforce.values.Values>` object if base element of list is a

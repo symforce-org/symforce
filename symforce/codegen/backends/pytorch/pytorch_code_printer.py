@@ -95,9 +95,7 @@ class PyTorchCodePrinter(CodePrinter):
     def _print_sign(self, expr: sympy.sign) -> str:
         return f"torch.sign({self._print(expr.args[0])})"
 
-    def _print_Pow(
-        self, expr: sympy.Pow, rational: bool = False
-    ) -> str:  # pylint: disable=unused-argument
+    def _print_Pow(self, expr: sympy.Pow, rational: bool = False) -> str:  # pylint: disable=unused-argument
         # TODO(aaron): Optimize this?
         return f"torch.pow({self._print(expr.base)}, {self._print(expr.exp)})"
 

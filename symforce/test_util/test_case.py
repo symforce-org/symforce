@@ -25,7 +25,6 @@ class TestCase(SymforceTestCaseMixin):
 
     @staticmethod
     def should_run_slow_tests() -> bool:
-
         # NOTE(aaron):  This needs to be accessible before main() is called, so we do it here
         # instead.  This should also be called from main to make sure it runs at least once
         if "--run_slow_tests" in sys.argv:

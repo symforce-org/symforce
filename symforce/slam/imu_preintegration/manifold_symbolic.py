@@ -90,7 +90,7 @@ def internal_imu_residual(
     res_R = (corrected_DR.inverse() * pose_i.R.inverse() * pose_j.R).to_tangent(epsilon)
     res_v = pose_i.R.inverse() * (vel_j - vel_i - gravity * dt) - corrected_Dv
     res_p = (
-        pose_i.R.inverse() * (pose_j.t - pose_i.t - vel_i * dt - sf.S(1) / 2 * gravity * dt ** 2)
+        pose_i.R.inverse() * (pose_j.t - pose_i.t - vel_i * dt - sf.S(1) / 2 * gravity * dt**2)
         - corrected_Dp
     )
 
@@ -111,8 +111,8 @@ def _right_jacobian(tangent: sf.V3, epsilon: T.Scalar) -> sf.M33:
     norm = tangent.norm(sf.sqrt(epsilon))
     tangent_hat = sf.Matrix.skew_symmetric(tangent)
     out = sf.M33.eye()
-    out -= ((1 - sf.cos(norm)) / (norm ** 2)) * tangent_hat
-    out += ((norm - sf.sin(norm)) / (norm ** 3)) * (tangent_hat * tangent_hat)
+    out -= ((1 - sf.cos(norm)) / (norm**2)) * tangent_hat
+    out += ((norm - sf.sin(norm)) / (norm**3)) * (tangent_hat * tangent_hat)
     return out
 
 
@@ -344,6 +344,6 @@ def integrate_state(
     """
     new_DR = DR * sf.Rot3.from_tangent(gyro * dt, epsilon)
     new_Dv = Dv + DR * accel * dt
-    new_Dp = Dp + Dv * dt + DR * accel * dt ** 2 / 2
+    new_Dp = Dp + Dv * dt + DR * accel * dt**2 / 2
 
     return new_DR, new_Dv, new_Dp

@@ -439,7 +439,7 @@ class SymforceCCSymTest(TestCase):
         # Output terms
         res = [cos]
         jacobian = [-sin_2]
-        hessian = [(1.0 / 4.0) * sin ** 2]
+        hessian = [(1.0 / 4.0) * sin**2]
         rhs = [-cos * sin_2]
         return res, jacobian, hessian, rhs
 
@@ -604,7 +604,6 @@ class SymforceCCSymTest(TestCase):
     def compare_optimization_stats(
         stats1: cc_sym.OptimizationStats, stats2: cc_sym.OptimizationStats
     ) -> bool:
-
         TVar = T.TypeVar("TVar")
 
         # NOTE(brad): Exists to make mypy happy
@@ -658,7 +657,6 @@ class SymforceCCSymTest(TestCase):
             self.assertIsInstance(stats.get_lcm_type(), optimization_stats_t)
 
         with self.subTest(msg="Can pickle cc_sym.OptimizationStats"):
-
             stats = cc_sym.OptimizationStats()
             stats.iterations = [optimization_iteration_t(iteration=i) for i in range(4)]
             stats.best_index = 1
@@ -809,7 +807,6 @@ class SymforceCCSymTest(TestCase):
             lin.linear_error(np.array([0.01]))
 
         with self.subTest(msg="cc_sym.Linearization is pickleable"):
-
             linearization = cc_sym.Linearization()
             linearization.residual = np.array([1, 2, 3])
             linearization.jacobian = sparse.csc_matrix([[1, 2], [3, 4], [5, 6]])

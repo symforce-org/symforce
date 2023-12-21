@@ -46,8 +46,8 @@ class SymforceTypesCodegenTest(TestCase):
             inputs["p"] = sf.V2.symbolic("p")
 
         outputs = Values()
-        outputs["foo"] = x ** 2 + inputs["rot"].q.w
-        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x ** 2
+        outputs["foo"] = x**2 + inputs["rot"].q.w
+        outputs["bar"] = inputs.attr.constants.epsilon + sf.sin(inputs.attr.y) + x**2
 
         return inputs, outputs
 

@@ -117,7 +117,7 @@ class GroupOps(object):
         _res[2] = -_tmp1
         _res[3] = -_tmp2 + _tmp3
         _res_D_a = numpy.zeros((3, 3))
-        _res_D_a[0, 0] = -_a[0] ** 2 - _a[1] ** 2
+        _res_D_a[0, 0] = -(_a[0] ** 2) - _a[1] ** 2
         _res_D_a[1, 0] = -_tmp2 + _tmp3
         _res_D_a[2, 0] = _tmp1
         _res_D_a[0, 1] = 0
@@ -146,7 +146,7 @@ class GroupOps(object):
         _tmp4 = _a[0] * _b[2] - _a[1] * _b[3]
         _tmp5 = _a[1] * _b[2]
         _tmp6 = _a[0] * _b[3]
-        _tmp7 = _tmp0 ** 2 - _tmp3 * (-_tmp1 - _tmp2)
+        _tmp7 = _tmp0**2 - _tmp3 * (-_tmp1 - _tmp2)
 
         # Output terms
         _res = [0.0] * 4
@@ -209,7 +209,7 @@ class GroupOps(object):
         _res[2] = -_tmp6 + _tmp7 + _tmp8
         _res[3] = _tmp10 + _tmp11 - _tmp9
         _res_D_a = numpy.zeros((3, 3))
-        _res_D_a[0, 0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5 ** 2
+        _res_D_a[0, 0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5**2
         _res_D_a[1, 0] = _tmp10 + _tmp11 - _tmp9
         _res_D_a[2, 0] = _tmp6 - _tmp7 - _tmp8
         _res_D_a[0, 1] = 0
@@ -219,7 +219,7 @@ class GroupOps(object):
         _res_D_a[1, 2] = _tmp13
         _res_D_a[2, 2] = _tmp12
         _res_D_b = numpy.zeros((3, 3))
-        _res_D_b[0, 0] = _tmp2 ** 2 - _tmp5 * (_tmp3 - _tmp4)
+        _res_D_b[0, 0] = _tmp2**2 - _tmp5 * (_tmp3 - _tmp4)
         _res_D_b[1, 0] = 0
         _res_D_b[2, 0] = 0
         _res_D_b[0, 1] = 0

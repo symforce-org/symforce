@@ -181,7 +181,7 @@ def generate_matrix(
 
     # By default, Eigen will not allocate more than 128KB on the stack
     # https://eigen.tuxfamily.org/dox/TopicPreprocessorDirectives.html
-    EIGEN_STACK_ALLOCATION_LIMIT_BYTES = 128 * 2 ** 10
+    EIGEN_STACK_ALLOCATION_LIMIT_BYTES = 128 * 2**10
 
     cant_allocate_on_stack = (
         matrix.shape[0] * matrix.shape[1] * 8 > EIGEN_STACK_ALLOCATION_LIMIT_BYTES

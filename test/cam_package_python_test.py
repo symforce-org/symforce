@@ -43,7 +43,7 @@ class CamPackageTest(unittest.TestCase):
         return cam_cls(
             focal_length=focal_length,
             principal_point=principal_point,
-            **CamPackageTest._DISTORTION_COEFF_VALS.get(cam_cls.__name__, {})
+            **CamPackageTest._DISTORTION_COEFF_VALS.get(cam_cls.__name__, {}),
         )
 
     def test_getters_ATANCameraCal(self):

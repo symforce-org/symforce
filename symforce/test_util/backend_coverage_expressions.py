@@ -68,11 +68,11 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         lambda x: sf.Mod(x, 5.5),
         lambda x: x + 1,
         lambda x: 2 * x,
-        lambda x: x ** 2,
-        lambda x: x ** 3,
-        lambda x: x ** 4,
-        lambda x: x ** 5,
-        lambda x: x ** sf.S.Half,
+        lambda x: x**2,
+        lambda x: x**3,
+        lambda x: x**4,
+        lambda x: x**5,
+        lambda x: x**sf.S.Half,
         lambda x: x ** sf.Rational(3, 2),
         lambda x: sf.Max(0, x).diff(x),  # The heaviside function
     )
@@ -84,7 +84,7 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         sf.Mod,
         lambda x, y: x + y,
         lambda x, y: x * y,
-        lambda x, y: x ** y,
+        lambda x, y: x**y,
         lambda x, y: (x + y) ** 2,
         lambda x, y: (x + y) ** 3,
     )

@@ -131,7 +131,6 @@ def count_ops(expr: T.Any, visual: bool = False) -> T.Union[Expr, int]:
 
     # pylint: disable=too-many-nested-blocks
     if isinstance(expr, Expr) and not expr.is_Relational:
-
         ops = []
         args = [expr]
         NEG = Symbol("NEG")

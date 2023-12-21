@@ -82,18 +82,18 @@ class CameraOps(object):
             )
 
         # Intermediate terms (13)
-        _tmp0 = epsilon ** 2 + point[0, 0] ** 2 + point[1, 0] ** 2
+        _tmp0 = epsilon**2 + point[0, 0] ** 2 + point[1, 0] ** 2
         _tmp1 = math.sqrt(_tmp0 + point[2, 0] ** 2)
         _tmp2 = _self[4] * _tmp1 + point[2, 0]
         _tmp3 = min(0, (0.0 if _self[5] - 0.5 == 0 else math.copysign(1, _self[5] - 0.5)))
         _tmp4 = 2 * _tmp3
         _tmp5 = _self[5] - epsilon * (_tmp4 + 1)
         _tmp6 = -_tmp5
-        _tmp7 = 1 / max(epsilon, _tmp2 * (_tmp6 + 1) + _tmp5 * math.sqrt(_tmp0 + _tmp2 ** 2))
+        _tmp7 = 1 / max(epsilon, _tmp2 * (_tmp6 + 1) + _tmp5 * math.sqrt(_tmp0 + _tmp2**2))
         _tmp8 = _tmp3 + _tmp5
         _tmp9 = (1.0 / 2.0) * _tmp4 + _tmp6 + 1
         _tmp10 = _self[4] ** 2
-        _tmp11 = _tmp9 ** 2 / _tmp8 ** 2
+        _tmp11 = _tmp9**2 / _tmp8**2
         _tmp12 = _tmp10 * _tmp11 - _tmp10 + 1
 
         # Output terms
@@ -174,10 +174,10 @@ class CameraOps(object):
             )
 
         # Intermediate terms (40)
-        _tmp0 = epsilon ** 2 + point[0, 0] ** 2 + point[1, 0] ** 2
+        _tmp0 = epsilon**2 + point[0, 0] ** 2 + point[1, 0] ** 2
         _tmp1 = math.sqrt(_tmp0 + point[2, 0] ** 2)
         _tmp2 = _self[4] * _tmp1 + point[2, 0]
-        _tmp3 = math.sqrt(_tmp0 + _tmp2 ** 2)
+        _tmp3 = math.sqrt(_tmp0 + _tmp2**2)
         _tmp4 = min(0, (0.0 if _self[5] - 0.5 == 0 else math.copysign(1, _self[5] - 0.5)))
         _tmp5 = 2 * _tmp4
         _tmp6 = _self[5] - epsilon * (_tmp5 + 1)
@@ -192,7 +192,7 @@ class CameraOps(object):
         _tmp15 = _tmp4 + _tmp6
         _tmp16 = (1.0 / 2.0) * _tmp5 + _tmp7 + 1
         _tmp17 = _self[4] ** 2
-        _tmp18 = _tmp16 ** 2 / _tmp15 ** 2
+        _tmp18 = _tmp16**2 / _tmp15**2
         _tmp19 = _tmp17 * _tmp18 - _tmp17 + 1
         _tmp20 = _self[0] * point[0, 0]
         _tmp21 = _tmp6 / _tmp3
@@ -200,7 +200,7 @@ class CameraOps(object):
         _tmp23 = (
             (1.0 / 2.0)
             * ((0.0 if _tmp9 - epsilon == 0 else math.copysign(1, _tmp9 - epsilon)) + 1)
-            / _tmp10 ** 2
+            / _tmp10**2
         )
         _tmp24 = _tmp23 * (_tmp1 * _tmp22 + _tmp1 * _tmp8)
         _tmp25 = _self[1] * point[1, 0]
@@ -309,12 +309,12 @@ class CameraOps(object):
         # Intermediate terms (12)
         _tmp0 = -_self[2] + pixel[0, 0]
         _tmp1 = -_self[3] + pixel[1, 0]
-        _tmp2 = _tmp1 ** 2 / _self[1] ** 2 + _tmp0 ** 2 / _self[0] ** 2
-        _tmp3 = -_self[5] ** 2 * _tmp2 + 1
+        _tmp2 = _tmp1**2 / _self[1] ** 2 + _tmp0**2 / _self[0] ** 2
+        _tmp3 = -(_self[5] ** 2) * _tmp2 + 1
         _tmp4 = -_tmp2 * (2 * _self[5] - 1) + 1
         _tmp5 = _self[5] * math.sqrt(max(_tmp4, epsilon)) - _self[5] + 1
         _tmp6 = _tmp5 + epsilon * (2 * min(0, (0.0 if _tmp5 == 0 else math.copysign(1, _tmp5))) + 1)
-        _tmp7 = _tmp3 ** 2 / _tmp6 ** 2
+        _tmp7 = _tmp3**2 / _tmp6**2
         _tmp8 = _tmp2 + _tmp7
         _tmp9 = _tmp3 / _tmp6
         _tmp10 = _tmp2 * (1 - _self[4] ** 2) + _tmp7
@@ -363,14 +363,14 @@ class CameraOps(object):
         _tmp0 = -_self[2] + pixel[0, 0]
         _tmp1 = 1 / _self[0]
         _tmp2 = -_self[3] + pixel[1, 0]
-        _tmp3 = _tmp2 ** 2
+        _tmp3 = _tmp2**2
         _tmp4 = _self[1] ** (-2)
-        _tmp5 = _tmp0 ** 2
+        _tmp5 = _tmp0**2
         _tmp6 = _self[0] ** (-2)
         _tmp7 = _tmp3 * _tmp4 + _tmp5 * _tmp6
         _tmp8 = _self[5] ** 2
         _tmp9 = -_tmp7 * _tmp8 + 1
-        _tmp10 = _tmp9 ** 2
+        _tmp10 = _tmp9**2
         _tmp11 = 2 * _self[5]
         _tmp12 = _tmp11 - 1
         _tmp13 = -_tmp12 * _tmp7 + 1
@@ -404,7 +404,7 @@ class CameraOps(object):
         _tmp37 = _tmp17 * _tmp9
         _tmp38 = 4 * _tmp37
         _tmp39 = _tmp38 * _tmp8
-        _tmp40 = _tmp10 / _tmp16 ** 3
+        _tmp40 = _tmp10 / _tmp16**3
         _tmp41 = -epsilon
         _tmp42 = (
             _self[5]
@@ -414,7 +414,7 @@ class CameraOps(object):
         _tmp43 = _tmp12 * _tmp42
         _tmp44 = _tmp40 * _tmp43
         _tmp45 = _tmp35 * _tmp39 - _tmp35 * _tmp44
-        _tmp46 = _tmp27 / _tmp20 ** 2
+        _tmp46 = _tmp27 / _tmp20**2
         _tmp47 = _tmp46 * (-_tmp36 + _tmp45)
         _tmp48 = (1.0 / 2.0) * _tmp37 * _tmp43
         _tmp49 = _self[4] * _tmp48

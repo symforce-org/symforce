@@ -34,7 +34,7 @@ class LieGroupOps(object):
             )
 
         # Intermediate terms (3)
-        _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
+        _tmp0 = math.sqrt(epsilon**2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
         _tmp2 = math.sin(_tmp1) / _tmp0
 
@@ -64,7 +64,7 @@ class LieGroupOps(object):
             2
             * (2 * min(0, (0.0 if _a[3] == 0 else math.copysign(1, _a[3]))) + 1)
             * math.acos(_tmp0)
-            / math.sqrt(1 - _tmp0 ** 2)
+            / math.sqrt(1 - _tmp0**2)
         )
 
         # Output terms
@@ -95,7 +95,7 @@ class LieGroupOps(object):
             )
 
         # Intermediate terms (8)
-        _tmp0 = math.sqrt(epsilon ** 2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
+        _tmp0 = math.sqrt(epsilon**2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
         _tmp2 = math.sin(_tmp1) / _tmp0
         _tmp3 = _tmp2 * vec[1, 0]
@@ -133,7 +133,7 @@ class LieGroupOps(object):
             2
             * (2 * min(0, (0.0 if -_tmp0 + _tmp1 == 0 else math.copysign(1, -_tmp0 + _tmp1))) + 1)
             * math.acos(_tmp2)
-            / math.sqrt(1 - _tmp2 ** 2)
+            / math.sqrt(1 - _tmp2**2)
         )
 
         # Output terms
@@ -164,12 +164,10 @@ class LieGroupOps(object):
         _tmp4 = min(1 - epsilon, abs(_tmp2 - _tmp3))
         _tmp5 = math.acos(_tmp4)
         _tmp6 = 2 * min(0, (0.0 if -_tmp2 + _tmp3 == 0 else math.copysign(1, -_tmp2 + _tmp3))) + 1
-        _tmp7 = 1 - _tmp4 ** 2
-        _tmp8 = 4 * _tmp5 ** 2 * _tmp6 ** 2 * alpha ** 2 / _tmp7
+        _tmp7 = 1 - _tmp4**2
+        _tmp8 = 4 * _tmp5**2 * _tmp6**2 * alpha**2 / _tmp7
         _tmp9 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
-        _tmp10 = math.sqrt(
-            _tmp0 ** 2 * _tmp8 + _tmp1 ** 2 * _tmp8 + _tmp8 * _tmp9 ** 2 + epsilon ** 2
-        )
+        _tmp10 = math.sqrt(_tmp0**2 * _tmp8 + _tmp1**2 * _tmp8 + _tmp8 * _tmp9**2 + epsilon**2)
         _tmp11 = (1.0 / 2.0) * _tmp10
         _tmp12 = 2 * _tmp5 * _tmp6 * alpha * math.sin(_tmp11) / (_tmp10 * math.sqrt(_tmp7))
         _tmp13 = _tmp0 * _tmp12

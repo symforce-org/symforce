@@ -56,10 +56,10 @@ class Rot3(object):
     def from_rotation_matrix(cls, R, epsilon=0.0):
         # type: (numpy.ndarray, float) -> Rot3
         assert R.shape == (3, 3)
-        w = numpy.sqrt(max(epsilon ** 2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
-        x = numpy.sqrt(max(epsilon ** 2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
-        y = numpy.sqrt(max(epsilon ** 2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
-        z = numpy.sqrt(max(epsilon ** 2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
+        w = numpy.sqrt(max(epsilon**2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
+        x = numpy.sqrt(max(epsilon**2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
+        y = numpy.sqrt(max(epsilon**2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
+        z = numpy.sqrt(max(epsilon**2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
 
         x = abs(x)
         if (R[2, 1] - R[1, 2]) < 0:
@@ -223,7 +223,7 @@ class Rot3(object):
         _tmp1 = 2 * _self[2]
         _tmp2 = _self[2] ** 2
         _tmp3 = _self[0] ** 2
-        _tmp4 = -_self[1] ** 2 + _self[3] ** 2
+        _tmp4 = -(_self[1] ** 2) + _self[3] ** 2
 
         # Output terms
         _res = numpy.zeros(3)
@@ -328,8 +328,8 @@ class Rot3(object):
         # Intermediate terms (7)
         _tmp0 = 1.0 / 2.0 - 1.0 / 2.0 * (
             0.0
-            if a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon ** 2 == 0
-            else math.copysign(1, a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon ** 2)
+            if a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon**2 == 0
+            else math.copysign(1, a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon**2)
         )
         _tmp1 = a[0, 0] * b[0, 0] + a[1, 0] * b[1, 0] + a[2, 0] * b[2, 0]
         _tmp2 = (

@@ -189,7 +189,7 @@ class NoiseModelTest(TestCase):
         jac = error.jacobian(x_matrix)
 
         test3a = error.subs(x, 1000.0).evalf()
-        self.assertStorageNear(test3a, delta ** 2, places=2)
+        self.assertStorageNear(test3a, delta**2, places=2)
 
         test3b = jac.subs(x, 1000.0).evalf()
         self.assertStorageNear(test3b, 0.0)

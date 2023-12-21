@@ -86,7 +86,7 @@ class CameraOps(object):
         _tmp1 = _tmp0 ** (-2)
         _tmp2 = _tmp1 * point[0, 0] ** 2 + _tmp1 * point[1, 0] ** 2 + epsilon
         _tmp3 = (
-            1.0 * _self[5] * _tmp2 + 1.0 * _self[6] * _tmp2 ** 2 + 1.0 * _self[7] * _tmp2 ** 3 + 1.0
+            1.0 * _self[5] * _tmp2 + 1.0 * _self[6] * _tmp2**2 + 1.0 * _self[7] * _tmp2**3 + 1.0
         ) / _tmp0
 
         # Output terms
@@ -140,8 +140,8 @@ class CameraOps(object):
         _tmp4 = point[0, 0] ** 2
         _tmp5 = _tmp2 * _tmp4
         _tmp6 = _tmp3 + _tmp5 + epsilon
-        _tmp7 = 1.0 * _tmp6 ** 3
-        _tmp8 = _tmp6 ** 2
+        _tmp7 = 1.0 * _tmp6**3
+        _tmp8 = _tmp6**2
         _tmp9 = 1.0 * _tmp8
         _tmp10 = 1.0 * _self[5]
         _tmp11 = _self[6] * _tmp9 + _self[7] * _tmp7 + _tmp10 * _tmp6 + 1.0
@@ -167,7 +167,7 @@ class CameraOps(object):
             0.0 if -epsilon + point[2, 0] == 0 else math.copysign(1, -epsilon + point[2, 0])
         ) + 1
         _tmp31 = (1.0 / 2.0) * _tmp11 * _tmp30
-        _tmp32 = _tmp30 / _tmp1 ** 3
+        _tmp32 = _tmp30 / _tmp1**3
         _tmp33 = -_tmp0 * _tmp32 - _tmp32 * _tmp4
         _tmp34 = _tmp12 * (_tmp10 * _tmp33 + 3.0 * _tmp23 * _tmp33 + 2.0 * _tmp25 * _tmp33)
 

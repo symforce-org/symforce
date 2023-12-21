@@ -146,7 +146,6 @@ class Values(T.MutableMapping[str, T.Any]):
         offset = 0
         index_dict = collections.OrderedDict()
         for name, value in items:
-
             entry_helper = lambda datatype=type(
                 value
             ), shape=None, item_index=None, curr_offset=offset, curr_value=value: IndexEntry(

@@ -35,5 +35,5 @@ def buffer_func(buffer, a, b):
     # Intermediate terms (0)
 
     # Output terms
-    _result = a + b + buffer[int((-a + b) * (a + b))] + buffer[int(-(a ** 2) + b ** 2)]
+    _result = a + b + buffer[int((-a + b) * (a + b))] + buffer[int(-(a**2) + b**2)]
     return _result
