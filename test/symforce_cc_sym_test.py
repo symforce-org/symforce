@@ -24,6 +24,7 @@ from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._values_t import values_t
 
 import sym
+import symforce.symbolic as sf
 from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt import optimizer
@@ -133,33 +134,11 @@ class SymforceCCSymTest(TestCase):
         Tests:
             cc_sym.Values
             cc_sym.Key
-            Implicitly tests conversions of sym types:
-                sym.Rot2
-                sym.Rot3
-                sym.Pose2
-                sym.Pose3
-                sym.Unit3
-                sym.ATANCameraCal
-                sym.DoubleSphereCameraCal
-                sym.EquirectangularCameraCal
-                sym.LinearCameraCal
-                sym.PolynomialCameraCal
-                sym.SphericalCameraCal
+            Implicitly tests conversions of all sym types
         """
 
-        supported_types = [
-            T.Scalar,
-            sym.Rot2,
-            sym.Rot3,
-            sym.Pose2,
-            sym.Pose3,
-            sym.Unit3,
-            sym.ATANCameraCal,
-            sym.DoubleSphereCameraCal,
-            sym.EquirectangularCameraCal,
-            sym.LinearCameraCal,
-            sym.PolynomialCameraCal,
-            sym.SphericalCameraCal,
+        supported_types = [T.Scalar] + [
+            getattr(sym, cls.__name__) for cls in sf.GEO_TYPES + sf.CAM_TYPES
         ]
 
         def instantiate_type(tp: T.Type[T.Any]) -> T.Any:
