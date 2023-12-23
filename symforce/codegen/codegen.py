@@ -213,8 +213,11 @@ class Codegen:
             [symbol for symbol in input_symbols_list if input_symbols_list.count(symbol) > 1]
         )
 
-        # Outputs must not have same variable names/keys as inputs
-        assert all(key not in list(outputs.keys()) for key in inputs.keys())
+        if any(key in outputs.keys() for key in inputs.keys()):
+            bad_keys = [key for key in inputs.keys() if key in outputs.keys()]
+            raise ValueError(
+                f"Outputs cannot share names with inputs, found duplicates: {bad_keys}"
+            )
 
         self.config = config
 

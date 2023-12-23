@@ -808,9 +808,7 @@ class SymforceCodegenTest(TestCase):
         # Inputs and outputs have non-unique keys
         inputs = Values(x=x)
         outputs = Values(x=x)
-        self.assertRaises(
-            AssertionError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test"
-        )
+        self.assertRaises(ValueError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test")
 
         valid_codegen = codegen.Codegen(Values(x=x), Values(y=x), codegen.CppConfig(), "test")
         with self.assertRaises(codegen.InvalidNamespaceError):
