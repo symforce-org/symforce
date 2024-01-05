@@ -59,6 +59,11 @@ symforce._have_imported_symbolic = True  # pylint: disable=protected-access
 if not T.TYPE_CHECKING and symforce.get_symbolic_api() == "symengine":
     sympy = symforce._find_symengine()  # pylint: disable=protected-access
 
+    # Import sympy, for methods that convert to sympy types or call sympy functions below
+    import sympy as _sympy_py
+
+    # isort: split
+
     from symengine import Abs
     from symengine import Add
     from symengine import Basic
@@ -552,8 +557,7 @@ def set_eval_on_sympify(eval_on_sympy: bool = True) -> None:
 # Create simplify
 # --------------------------------------------------------------------------------
 
-if sympy.__package__ == "symengine":
-    import sympy as _sympy_py
+if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
 
     def simplify(*args: T.Any, **kwargs: T.Any) -> Scalar:
         logger.warning("Converting to sympy to use .simplify")
@@ -569,8 +573,7 @@ else:
 # Create limit
 # --------------------------------------------------------------------------------
 
-if sympy.__package__ == "symengine":
-    import sympy as _sympy_py
+if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
 
     def limit(
         e: T.Any,
@@ -587,10 +590,43 @@ else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
 
 # --------------------------------------------------------------------------------
+# Create integrate
+# --------------------------------------------------------------------------------
+
+if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
+
+    def integrate(
+        *args: T.Any,
+        meijerg: bool = None,
+        conds: T.Literal["piecewise", "separate", "none"] = "piecewise",
+        risch: bool = None,
+        heurisch: T.Any = None,
+        manual: bool = None,
+        **kwargs: T.Any,
+    ):
+        logger.warning("Converting to sympy to use .integrate")
+        return sympy.S(
+            _sympy_py.integrate(
+                *[_sympy_py.S(arg) for arg in args],
+                meijerg=meijerg,
+                conds=conds,
+                risch=risch,
+                heurisch=heurisch,
+                manual=manual,
+                **kwargs,
+            )
+        )
+
+elif sympy.__package__ == "sympy":
+    from sympy import integrate  # type: ignore[misc] # incompatible import
+else:
+    raise symforce.InvalidSymbolicApiError(sympy.__package__)
+
+# --------------------------------------------------------------------------------
 # Override solve
 # --------------------------------------------------------------------------------
 
-if sympy.__package__ == "symengine":
+if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
     # Unfortunately this already doesn't have a docstring or argument list in symengine
     def solve(*args: T.Any, **kwargs: T.Any) -> T.List[Scalar]:
         solution = sympy.solve(*args, **kwargs)
@@ -614,7 +650,7 @@ else:
 # Override count_ops
 # --------------------------------------------------------------------------------
 
-if sympy.__package__ == "symengine":
+if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
     from symengine import count_ops
 elif sympy.__package__ == "sympy":
     from symforce._sympy_count_ops import count_ops
