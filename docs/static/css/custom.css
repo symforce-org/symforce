@@ -36,6 +36,8 @@ section#symforce-home h1 {
  * Font size tweaks
  */
 
+/* Python */
+
 /* h1 module names smaller */
 section[id^="module-"] h1 {
   font-size: 1.5em;
@@ -50,6 +52,18 @@ dl.py.class > dt.sig > em.property {
 dl.py.class > dt.sig > span.sig-name {
   font-size: 1.8em;
 }
+
+/* `exception` keywords larger */
+dl.py.exception > dt.sig > em.property {
+  font-size: 1.3em;
+}
+
+/* exception names larger */
+dl.py.exception > dt.sig > span.sig-name {
+  font-size: 1.8em;
+}
+
+/* C++ */
 
 /* h1 class names smaller */
 section[id^="class-"] h1 {

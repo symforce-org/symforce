@@ -8,7 +8,6 @@ Helpers for interactive use in a Jupyter notebook with an IPython kernel.
 """
 
 import IPython
-import pygments
 import sympy as sympy_py
 
 sympy_py.init_printing()
@@ -17,11 +16,18 @@ import symforce
 import symforce.symbolic as sf
 from symforce import typing as T
 
+if symforce.get_symbolic_api() == "symengine":
+    sf.sympy.init_printing()
+
 
 def display(*args: T.Any) -> None:
     """
     Display the given expressions in latex, or print if not an expression.
     """
+    # TODO(aaron): This should all be unnecessary on new symengine.  The problem is that our version
+    # of symengine does not define `DenseMatrixBase._repr_latex_`, so we need to convert symengine
+    # matrices to sympy
+
     if symforce.get_symbolic_api() == "sympy":
         IPython.display.display(*args)
         return
@@ -39,24 +45,15 @@ def display(*args: T.Any) -> None:
         IPython.display.display(*args)
 
 
-def display_code(code: str, language: str) -> None:
+def display_code(code: str, language: str = None) -> None:
     """
     Display code with syntax highlighting.
 
     Args:
-        code (str): Source code
-        language (str): {python, c++, anything supported by pygments}
+        code: Source code
+        language: {python, c++, anything supported by pygments}
     """
-    # types-pygments doesn't have the type for this
-    lexer = T.cast(T.Any, pygments).lexers.get_lexer_by_name(language)
-
-    # And sometimes not this either
-    formatter = T.cast(T.Any, pygments).formatters.HtmlFormatter(  # pylint: disable=no-member
-        noclasses=True
-    )
-    html = pygments.highlight(code, lexer, formatter)
-
-    IPython.display.display(IPython.display.HTML(html))
+    IPython.display.display(IPython.display.Code(code, language=language))
 
 
 def display_code_file(path: T.Openable, language: str) -> None:
@@ -64,8 +61,8 @@ def display_code_file(path: T.Openable, language: str) -> None:
     Display code from a file path with syntax highlighting.
 
     Args:
-        path (T.Openable): Path to source file
-        language (str): {python, c++, anything supported by pygments}
+        path: Path to source file
+        language: {python, c++, anything supported by pygments}
     """
     with open(path) as f:
         code = f.read()
@@ -73,12 +70,17 @@ def display_code_file(path: T.Openable, language: str) -> None:
     display_code(code, language)
 
 
-def print_expression_tree(expr: sf.Expr) -> None:
+def print_expression_tree(expr: sf.Expr, assumptions: bool = False) -> None:
     """
     Print a SymPy expression tree, ignoring node attributes
+
+    Args:
+        expr: The expression to print
+        assumptions: Whether to include assumption information for nodes.  See
+            ``sympy.printing.tree`` for more information.
     """
     from sympy.printing.tree import tree
 
-    unfiltered_tree = tree(expr).split("\n")
+    unfiltered_tree = tree(expr, assumptions=assumptions).split("\n")
     filtered_tree = "\n".join(v for i, v in enumerate(unfiltered_tree) if "+-" in v or i == 0)
     print(filtered_tree)

@@ -453,7 +453,6 @@ if __name__ == "__main__":
                 # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
                 "lazy-object-proxy>=1.9.0",
                 "types-jinja2",
-                "types-pygments",
                 "types-requests",
                 "types-setuptools",
             ],

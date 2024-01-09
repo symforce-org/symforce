@@ -144,7 +144,7 @@ class Values(T.MutableMapping[str, T.Any]):
         arbitrary names for each element in ``my_list``)
         """
         offset = 0
-        index_dict = collections.OrderedDict()
+        index_dict = {}
         for name, value in items:
             entry_helper = lambda datatype=type(
                 value

@@ -1,5 +1,5 @@
 from symengine.lib.symengine_wrapper import ccode, sympify, Basic
-import symengine.lib.symengine_wrapper
+from symengine.lib import symengine_wrapper
 
 class CCodePrinter:
 
@@ -29,6 +29,6 @@ def init_printing(pretty_print=True, use_latex=True):
     if pretty_print:
         if not use_latex:
             raise RuntimeError("Only latex is supported for pretty printing")
-        symengine.lib.symengine_wrapper.repr_latex[0] = True
+        symengine_wrapper.repr_latex[0] = True
     else:
-        symengine.lib.symengine_wrapper.repr_latex[0] = False
+        symengine_wrapper.repr_latex[0] = False

@@ -54,6 +54,11 @@ line-length = 100
 exclude = ["third_party", "build", ".eggs"]
 extend-include = ["*.ipynb"]
 
+select = [
+  "I",      # isort
+  "RUF100", # unused-noqa
+]
+
 [tool.ruff.lint.isort]
 known-first-party = ["sym", "symforce"]
 force-single-line = true

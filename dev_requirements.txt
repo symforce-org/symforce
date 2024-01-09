@@ -356,20 +356,14 @@ traitlets==5.11.2
     #   nbconvert
     #   nbformat
     #   nbsphinx
-types-docutils==0.20.0.3
-    # via types-pygments
 types-jinja2==2.11.9
     # via symforce (setup.py)
 types-markupsafe==1.1.10
     # via types-jinja2
-types-pygments==2.16.0.0
-    # via symforce (setup.py)
 types-requests==2.31.0.8
     # via symforce (setup.py)
 types-setuptools==68.2.0.0
-    # via
-    #   symforce (setup.py)
-    #   types-pygments
+    # via symforce (setup.py)
 typing-extensions==4.8.0
     # via
     #   astroid

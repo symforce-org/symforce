@@ -170,13 +170,18 @@ def _use_sympy() -> None:
 
 def set_symbolic_api(name: str) -> None:
     """
-    Set the symbolic API for symforce. The sympy API is the default and pure python,
-    whereas the symengine API is C++ and requires building the symengine library. It can
-    be 100-200 times faster for many operations, but is less fully featured.
+    Set the symbolic API for symforce
 
-    The default is symengine if available else sympy, but can be set by one of:
+    See the SymPy tutorial for information on the symbolic APIs that can be used:
+    https://symforce.org/tutorials/sympy_tutorial.html
 
-    1) The SYMFORCE_SYMBOLIC_API environment variable
+    By default, SymForce will use the ``symengine`` API if it is available.  If the symbolic API is
+    set to ``sympy`` it will use that.  If ``symengine`` is not available and the symbolic API was
+    not set, it will emit a warning and use the ``sympy`` API.
+
+    The symbolic API can be set by one of:
+
+    1) The ``SYMFORCE_SYMBOLIC_API`` environment variable
     2) Calling this function before any other symforce imports
 
     Args:
