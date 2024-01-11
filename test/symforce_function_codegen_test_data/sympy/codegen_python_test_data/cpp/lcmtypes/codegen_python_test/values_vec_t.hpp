@@ -127,7 +127,7 @@ class values_vec_t
             stream << "values_vec_t(";
             stream << "x=" << obj.x << ", ";
             stream << "y=" << obj.y << ", ";
-            stream << "rot=<EIGEN_LCM TYPE eigen_lcm.Vector4d>" << ", ";
+            stream << "rot=" << obj.rot << ", ";
             stream << "rot_vec=[";
             for (size_t i = 0; i < obj.rot_vec.size(); ++i) {
                 stream << obj.rot_vec[i];
