@@ -9,17 +9,31 @@
 
 {# ------------------------------------------------------------------------- #}
 
-{# Returns the right size of eigen lcm type to use
+{# Returns the right size of eigen vector lcm type to use
  #
- # third_party/eigen_lcm/lcmtypes/eigen_lcm.lcm only supports up to Cector8, so for anything
+ # third_party/eigen_lcm/lcmtypes/eigen_lcm.lcm only supports up to Vector8, so for anything
  # larger we use VectorX (Note that VectorX won't work with storage ops at present)
  #
  # Args:
  #      dim (int): storage dimension
 #}
-{%- macro eigen_lcm_dim(dim) -%}
+{%- macro eigen_vector_lcm_dim(dim) -%}
 {%- if dim <= 8 -%}
 {{- dim -}}
+{%- else -%}
+X
+{%- endif -%}
+{%- endmacro -%}
+
+{# Returns the right size of eigen matrix lcm type to use
+ #
+ # third_party/eigen_lcm/lcmtypes/eigen_lcm.lcm only supports up to Matrix4, so for anything
+ # else we use MatrixX
+ #
+#}
+{%- macro eigen_matrix_lcm_dim(rows, cols) -%}
+{%- if rows == cols and rows < 5 -%}
+{{- rows -}}
 {%- else -%}
 X
 {%- endif -%}
@@ -30,12 +44,19 @@ X
  # Args:
  #     scalar_type (str): double or float
  #     dim (int): storage dimension
+ #     shape (tuple[int]): shape of the matrix/vector
  #}
-{%- macro eigen_lcm_type(scalar_type, dim) -%}
-{%- if scalar_type == "float" -%}
-eigen_lcm.Vector{{- eigen_lcm_dim(dim) -}}f
+{%- macro eigen_lcm_type(scalar_type, dim, shape=none) -%}
+eigen_lcm.
+{%- if shape and shape|length == 2 and shape[0] > 1 and shape[1] > 1 -%}
+Matrix{{- eigen_matrix_lcm_dim(shape[0], shape[1]) -}}
 {%- else -%}
-eigen_lcm.Vector{{- eigen_lcm_dim(dim) -}}d
+Vector{{- eigen_vector_lcm_dim(dim) -}}
+{%- endif -%}
+{%- if scalar_type == "float" -%}
+f
+{%- else -%}
+d
 {%- endif -%}
 {%- endmacro -%}
 

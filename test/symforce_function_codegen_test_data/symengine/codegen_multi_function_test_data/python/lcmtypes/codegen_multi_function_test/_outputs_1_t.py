@@ -10,9 +10,11 @@ import typing as T  # pylint: disable=unused-import
 from io import BytesIO
 import struct
 from lcmtypes.codegen_multi_function_test._values_vec_t import values_vec_t
+from lcmtypes.eigen_lcm._Matrix4d import Matrix4d
+from lcmtypes.eigen_lcm._MatrixXd import MatrixXd
 
 class outputs_1_t(object):
-    __slots__ = ["foo", "bar", "scalar_vec_out", "values_vec_out", "values_vec_2D_out"]  # type: T.List[str]
+    __slots__ = ["foo", "bar", "scalar_vec_out", "values_vec_out", "values_vec_2D_out", "big_matrix_from_small_matrix", "small_matrix_from_big_matrix"]  # type: T.List[str]
 
     def __init__(
         self,
@@ -21,6 +23,8 @@ class outputs_1_t(object):
         scalar_vec_out=None,  # type: T.List[float]
         values_vec_out=None,  # type: T.List[values_vec_t]
         values_vec_2D_out=None,  # type: T.List[T.List[values_vec_t]]
+        big_matrix_from_small_matrix=None,  # type: MatrixXd
+        small_matrix_from_big_matrix=None,  # type: Matrix4d
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None
@@ -32,6 +36,8 @@ class outputs_1_t(object):
         self.scalar_vec_out = [ 0.0 for dim0 in range(3) ] if scalar_vec_out is None else scalar_vec_out  # type: T.List[float]
         self.values_vec_out = [ values_vec_t._default() for dim0 in range(3) ] if values_vec_out is None else values_vec_out  # type: T.List[values_vec_t]
         self.values_vec_2D_out = [ [ values_vec_t._default() for dim1 in range(1) ] for dim0 in range(2) ] if values_vec_2D_out is None else values_vec_2D_out  # type: T.List[T.List[values_vec_t]]
+        self.big_matrix_from_small_matrix = MatrixXd._default() if big_matrix_from_small_matrix is None else big_matrix_from_small_matrix  # type: MatrixXd
+        self.small_matrix_from_big_matrix = Matrix4d._default() if small_matrix_from_big_matrix is None else small_matrix_from_big_matrix  # type: Matrix4d
 
     @staticmethod
     def from_all_fields(
@@ -40,6 +46,8 @@ class outputs_1_t(object):
         scalar_vec_out,  # type: T.List[float]
         values_vec_out,  # type: T.List[values_vec_t]
         values_vec_2D_out,  # type: T.List[T.List[values_vec_t]]
+        big_matrix_from_small_matrix,  # type: MatrixXd
+        small_matrix_from_big_matrix,  # type: Matrix4d
     ):
         # type: (...) -> outputs_1_t
         return outputs_1_t(
@@ -48,6 +56,8 @@ class outputs_1_t(object):
             scalar_vec_out=scalar_vec_out,
             values_vec_out=values_vec_out,
             values_vec_2D_out=values_vec_2D_out,
+            big_matrix_from_small_matrix=big_matrix_from_small_matrix,
+            small_matrix_from_big_matrix=small_matrix_from_big_matrix,
         )
 
     @staticmethod
@@ -78,7 +88,9 @@ class outputs_1_t(object):
             (self.bar==other.bar) and
             (self.scalar_vec_out==other.scalar_vec_out) and
             (self.values_vec_out==other.values_vec_out) and
-            (self.values_vec_2D_out==other.values_vec_2D_out)
+            (self.values_vec_2D_out==other.values_vec_2D_out) and
+            (self.big_matrix_from_small_matrix==other.big_matrix_from_small_matrix) and
+            (self.small_matrix_from_big_matrix==other.small_matrix_from_big_matrix)
         )
     # Disallow hashing for python struct lcmtypes.
     __hash__ = None  # type: ignore
@@ -107,6 +119,16 @@ class outputs_1_t(object):
                 else:
                     assert self.values_vec_2D_out[i0][i1]._get_hash_recursive([]) == values_vec_t._get_hash_recursive([])
                 self.values_vec_2D_out[i0][i1]._encode_one(buf)
+        if hasattr(self.big_matrix_from_small_matrix, '_get_packed_fingerprint'):
+            assert self.big_matrix_from_small_matrix._get_packed_fingerprint() == MatrixXd._get_packed_fingerprint()
+        else:
+            assert self.big_matrix_from_small_matrix._get_hash_recursive([]) == MatrixXd._get_hash_recursive([])
+        self.big_matrix_from_small_matrix._encode_one(buf)
+        if hasattr(self.small_matrix_from_big_matrix, '_get_packed_fingerprint'):
+            assert self.small_matrix_from_big_matrix._get_packed_fingerprint() == Matrix4d._get_packed_fingerprint()
+        else:
+            assert self.small_matrix_from_big_matrix._get_hash_recursive([]) == Matrix4d._get_hash_recursive([])
+        self.small_matrix_from_big_matrix._encode_one(buf)
 
     @staticmethod
     def decode(data):
@@ -139,6 +161,8 @@ class outputs_1_t(object):
             self.values_vec_2D_out.append ([])
             for i1 in range(1):
                 self.values_vec_2D_out[i0].append(values_vec_t._decode_one(buf))
+        self.big_matrix_from_small_matrix = MatrixXd._decode_one(buf)
+        self.small_matrix_from_big_matrix = Matrix4d._decode_one(buf)
         return self
 
     @staticmethod
@@ -146,7 +170,7 @@ class outputs_1_t(object):
         # type: (T.List[T.Type]) -> int
         if outputs_1_t in parents: return 0
         newparents = parents + [outputs_1_t]
-        tmphash = (0x56da9f927edddf51+ values_vec_t._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xa7f6beb7efb65a6f+ values_vec_t._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ MatrixXd._get_hash_recursive(newparents)+ Matrix4d._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
 

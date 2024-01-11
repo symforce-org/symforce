@@ -28,6 +28,7 @@ void ExplicitTemplateInstantiationTestHelper() {
       values_vec_2D{};
   codegen_explicit_template_instantiation_test::constants_t constants{};
   const Eigen::Matrix<Scalar, 5, 5> big_matrix = Eigen::Matrix<Scalar, 5, 5>::Zero();
+  const Eigen::Matrix<Scalar, 4, 4> small_matrix = Eigen::Matrix<Scalar, 4, 4>::Zero();
   codegen_explicit_template_instantiation_test::states_t states{};
 
   // Initialize outputs
@@ -38,9 +39,10 @@ void ExplicitTemplateInstantiationTestHelper() {
   std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>
       values_vec_2D_out;
 
-  CodegenExplicitTemplateInstantiationTest(
-      x, y, rot, rot_vec, scalar_vec, list_of_lists, values_vec, values_vec_2D, constants,
-      big_matrix, states, &foo, &bar, &scalar_vec_out, &values_vec_out, &values_vec_2D_out);
+  CodegenExplicitTemplateInstantiationTest(x, y, rot, rot_vec, scalar_vec, list_of_lists,
+                                           values_vec, values_vec_2D, constants, big_matrix,
+                                           small_matrix, states, &foo, &bar, &scalar_vec_out,
+                                           &values_vec_out, &values_vec_2D_out);
 }
 
 TEST_CASE("Test explicit template instantiation", "[codegen_test]") {

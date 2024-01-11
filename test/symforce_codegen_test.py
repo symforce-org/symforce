@@ -107,8 +107,9 @@ class SymforceCodegenTest(TestCase):
         # Scalar
         inputs.add(sf.Symbol("constants.epsilon"))
 
-        # Add matrix with large storage dim
+        # Add matrix with large storage dim and small storage dim
         inputs["big_matrix"] = sf.M55.symbolic("big_matrix")
+        inputs["small_matrix"] = sf.M44.symbolic("small_matrix")
 
         with inputs.scope("states"):
             # Array element, turns into std::array
@@ -126,6 +127,10 @@ class SymforceCodegenTest(TestCase):
         outputs["values_vec_2D_out"] = ops.GroupOps.compose(
             inputs["values_vec_2D"], inputs["values_vec_2D"]
         )
+        # Check indexing between fixed and dynamic sized matrices
+        outputs["big_matrix_from_small_matrix"] = sf.M55.zero()
+        outputs["big_matrix_from_small_matrix"][0:4, 0:4] = inputs["small_matrix"]
+        outputs["small_matrix_from_big_matrix"] = sf.M44(inputs["big_matrix"][0:4, 0:4])
 
         return inputs, outputs
 
@@ -194,10 +199,11 @@ class SymforceCodegenTest(TestCase):
         constants.epsilon = 1e-8
 
         big_matrix = np.zeros((5, 5))
+        small_matrix = np.zeros((4, 4))
 
         gen_module = codegen_util.load_generated_package(namespace, codegen_data.function_dir)
         # TODO(nathan): Split this test into several different functions
-        (foo, bar, _, _, _) = gen_module.python_function(
+        (foo, bar, _, _, _, _, _) = gen_module.python_function(
             x,
             y,
             rot,
@@ -208,6 +214,7 @@ class SymforceCodegenTest(TestCase):
             values_vec_2D,
             constants,
             big_matrix,
+            small_matrix,
             states,
         )
         self.assertStorageNear(foo, x**2 + rot.data[3])

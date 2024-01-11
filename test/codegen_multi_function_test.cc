@@ -3,6 +3,7 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <Eigen/Dense>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -66,12 +67,21 @@ TEST_CASE("Multi-function codegen compiles", "[codegen_multi_function]") {
   inputs.states.p[0] = 1.0;
   inputs.states.p[1] = 2.0;
 
+  inputs.big_matrix = Eigen::MatrixXd::Constant(5, 5, 55.5);
+  inputs.small_matrix = Eigen::Matrix4d::Constant(44.4);
+
   codegen_multi_function_test::outputs_1_t outputs_1;
+  outputs_1.big_matrix_from_small_matrix = Eigen::MatrixXd::Zero(5, 5);
   codegen_multi_function_test::CodegenMultiFunctionTest1<double>(inputs, &outputs_1);
   CHECK(outputs_1.foo == Catch::Approx(std::pow(inputs.x, 2) + inputs.rot[3]).epsilon(1e-8));
   CHECK(outputs_1.bar ==
         Catch::Approx(inputs.constants.epsilon + std::sin(inputs.y) + std::pow(inputs.x, 2))
             .epsilon(1e-8));
+  Eigen::MatrixXd expected_big_matrix_from_small_matrix = Eigen::MatrixXd::Zero(5, 5);
+  expected_big_matrix_from_small_matrix.block<4, 4>(0, 0) = inputs.small_matrix;
+  CHECK(
+      outputs_1.big_matrix_from_small_matrix.isApprox(expected_big_matrix_from_small_matrix, 1e-8));
+  CHECK(outputs_1.small_matrix_from_big_matrix.isApprox(inputs.big_matrix.block<4, 4>(0, 0), 1e-8));
 
   codegen_multi_function_test::outputs_2_t outputs_2;
   codegen_multi_function_test::CodegenMultiFunctionTest2<double>(inputs, &outputs_2);

@@ -14,8 +14,9 @@
 #include "lcmtypes/codegen_multi_function_test/inputs_constants_t.hpp"
 #include "lcmtypes/codegen_multi_function_test/inputs_states_t.hpp"
 #include "lcmtypes/codegen_multi_function_test/values_vec_t.hpp"
+#include "lcmtypes/eigen_lcm/Matrix4d.hpp"
+#include "lcmtypes/eigen_lcm/MatrixXd.hpp"
 #include "lcmtypes/eigen_lcm/Vector4d.hpp"
-#include "lcmtypes/eigen_lcm/VectorXd.hpp"
 
 namespace codegen_multi_function_test
 {
@@ -41,7 +42,9 @@ class inputs_t
 
         ::codegen_multi_function_test::inputs_constants_t constants;
 
-        ::eigen_lcm::VectorXd big_matrix;
+        ::eigen_lcm::MatrixXd big_matrix;
+
+        ::eigen_lcm::Matrix4d small_matrix;
 
         ::codegen_multi_function_test::inputs_states_t states;
 
@@ -61,7 +64,8 @@ class inputs_t
             const std::array< ::codegen_multi_function_test::values_vec_t, 3 >& values_vec_arg,
             const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_arg,
             const ::codegen_multi_function_test::inputs_constants_t& constants_arg,
-            const ::eigen_lcm::VectorXd& big_matrix_arg,
+            const ::eigen_lcm::MatrixXd& big_matrix_arg,
+            const ::eigen_lcm::Matrix4d& small_matrix_arg,
             const ::codegen_multi_function_test::inputs_states_t& states_arg
         );
 
@@ -128,14 +132,15 @@ class inputs_t
                     return 0;
             const __lcm_hash_ptr cp = { p, inputs_t::getHash };
 
-            uint64_t hash = 0xadf229d823991adaLL +
+            uint64_t hash = 0x57fdecbc3532ce7fLL +
                 ::eigen_lcm::Vector4d::_computeHash(&cp) +
          ::eigen_lcm::Vector4d::_computeHash(&cp) +
          ::eigen_lcm::Vector4d::_computeHash(&cp) +
          ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
          ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
          ::codegen_multi_function_test::inputs_constants_t::_computeHash(&cp) +
-         ::eigen_lcm::VectorXd::_computeHash(&cp) +
+         ::eigen_lcm::MatrixXd::_computeHash(&cp) +
+         ::eigen_lcm::Matrix4d::_computeHash(&cp) +
          ::codegen_multi_function_test::inputs_states_t::_computeHash(&cp);
 
             return (hash<<1) + ((hash>>63)&1);
@@ -180,6 +185,7 @@ class inputs_t
             stream << "values_vec_2D=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>" << ", ";
             stream << "constants=" << obj.constants << ", ";
             stream << "big_matrix=" << obj.big_matrix << ", ";
+            stream << "small_matrix=" << obj.small_matrix << ", ";
             stream << "states=" << obj.states;
             stream << ")";
 #else
@@ -199,7 +205,8 @@ inputs_t::inputs_t(
     const std::array< ::codegen_multi_function_test::values_vec_t, 3 >& values_vec_arg,
     const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_arg,
     const ::codegen_multi_function_test::inputs_constants_t& constants_arg,
-    const ::eigen_lcm::VectorXd& big_matrix_arg,
+    const ::eigen_lcm::MatrixXd& big_matrix_arg,
+    const ::eigen_lcm::Matrix4d& small_matrix_arg,
     const ::codegen_multi_function_test::inputs_states_t& states_arg
 ) : x(x_arg),
     y(y_arg),
@@ -211,6 +218,7 @@ inputs_t::inputs_t(
     values_vec_2D(values_vec_2D_arg),
     constants(constants_arg),
     big_matrix(big_matrix_arg),
+    small_matrix(small_matrix_arg),
     states(states_arg) {}
 
 __lcm_buffer_size inputs_t::encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
@@ -313,6 +321,9 @@ __lcm_buffer_size inputs_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, _
     tlen = this->big_matrix._encodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    tlen = this->small_matrix._encodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = this->states._encodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -365,6 +376,9 @@ __lcm_buffer_size inputs_t::_decodeNoHash(const void *buf, __lcm_buffer_size off
     tlen = this->big_matrix._decodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    tlen = this->small_matrix._decodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = this->states._decodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -396,6 +410,7 @@ __lcm_buffer_size inputs_t::_getEncodedSizeNoHash() const
     }
     enc_size += this->constants._getEncodedSizeNoHash();
     enc_size += this->big_matrix._getEncodedSizeNoHash();
+    enc_size += this->small_matrix._getEncodedSizeNoHash();
     enc_size += this->states._getEncodedSizeNoHash();
     return enc_size;
 }
@@ -412,6 +427,7 @@ bool inputs_t::operator==(const inputs_t& other) const {
           (values_vec_2D==other.values_vec_2D) && 
           (constants==other.constants) && 
           (big_matrix==other.big_matrix) && 
+          (small_matrix==other.small_matrix) && 
           (states==other.states));
 }
 

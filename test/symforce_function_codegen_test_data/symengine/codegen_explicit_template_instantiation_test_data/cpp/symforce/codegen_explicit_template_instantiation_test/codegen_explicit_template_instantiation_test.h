@@ -30,6 +30,7 @@ namespace codegen_explicit_template_instantiation_test {
  *     values_vec_2D: list
  *     constants: Values
  *     big_matrix: Matrix55
+ *     small_matrix: Matrix44
  *     states: Values
  *
  * Outputs:
@@ -38,6 +39,8 @@ namespace codegen_explicit_template_instantiation_test {
  *     scalar_vec_out: list
  *     values_vec_out: list
  *     values_vec_2D_out: list
+ *     big_matrix_from_small_matrix: Matrix55
+ *     small_matrix_from_big_matrix: Matrix44
  */
 template <typename Scalar>
 void CodegenExplicitTemplateInstantiationTest(
@@ -48,20 +51,21 @@ void CodegenExplicitTemplateInstantiationTest(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
-    const Eigen::Matrix<Scalar, 5, 5>& big_matrix,
+    const Eigen::Matrix<Scalar, 5, 5>& big_matrix, const Eigen::Matrix<Scalar, 4, 4>& small_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states,
     Scalar* const foo = nullptr, Scalar* const bar = nullptr,
     std::array<Scalar, 3>* const scalar_vec_out = nullptr,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const
         values_vec_out = nullptr,
     std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>* const
-        values_vec_2D_out = nullptr) {
+        values_vec_2D_out = nullptr,
+    Eigen::Matrix<Scalar, 5, 5>* const big_matrix_from_small_matrix = nullptr,
+    Eigen::Matrix<Scalar, 4, 4>* const small_matrix_from_big_matrix = nullptr) {
   // Total ops: 748
 
   // Unused inputs
   (void)rot_vec;
   (void)list_of_lists;
-  (void)big_matrix;
   (void)states;
 
   // Input arrays
@@ -135,7 +139,7 @@ void CodegenExplicitTemplateInstantiationTest(
   const Scalar _tmp64 = 2 * values_vec_2D[1][0].list_of_lists[2][1].data()[3];
   const Scalar _tmp65 = 2 * values_vec_2D[1][0].list_of_lists[2][2].data()[3];
 
-  // Output terms (5)
+  // Output terms (7)
   if (foo != nullptr) {
     Scalar& _foo = (*foo);
 
@@ -862,6 +866,57 @@ void CodegenExplicitTemplateInstantiationTest(
         std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[2], Scalar(2)) +
         std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[3], Scalar(2));
   }
+
+  if (big_matrix_from_small_matrix != nullptr) {
+    Eigen::Matrix<Scalar, 5, 5>& _big_matrix_from_small_matrix = (*big_matrix_from_small_matrix);
+
+    _big_matrix_from_small_matrix(0, 0) = small_matrix(0, 0);
+    _big_matrix_from_small_matrix(1, 0) = small_matrix(1, 0);
+    _big_matrix_from_small_matrix(2, 0) = small_matrix(2, 0);
+    _big_matrix_from_small_matrix(3, 0) = small_matrix(3, 0);
+    _big_matrix_from_small_matrix(4, 0) = 0;
+    _big_matrix_from_small_matrix(0, 1) = small_matrix(0, 1);
+    _big_matrix_from_small_matrix(1, 1) = small_matrix(1, 1);
+    _big_matrix_from_small_matrix(2, 1) = small_matrix(2, 1);
+    _big_matrix_from_small_matrix(3, 1) = small_matrix(3, 1);
+    _big_matrix_from_small_matrix(4, 1) = 0;
+    _big_matrix_from_small_matrix(0, 2) = small_matrix(0, 2);
+    _big_matrix_from_small_matrix(1, 2) = small_matrix(1, 2);
+    _big_matrix_from_small_matrix(2, 2) = small_matrix(2, 2);
+    _big_matrix_from_small_matrix(3, 2) = small_matrix(3, 2);
+    _big_matrix_from_small_matrix(4, 2) = 0;
+    _big_matrix_from_small_matrix(0, 3) = small_matrix(0, 3);
+    _big_matrix_from_small_matrix(1, 3) = small_matrix(1, 3);
+    _big_matrix_from_small_matrix(2, 3) = small_matrix(2, 3);
+    _big_matrix_from_small_matrix(3, 3) = small_matrix(3, 3);
+    _big_matrix_from_small_matrix(4, 3) = 0;
+    _big_matrix_from_small_matrix(0, 4) = 0;
+    _big_matrix_from_small_matrix(1, 4) = 0;
+    _big_matrix_from_small_matrix(2, 4) = 0;
+    _big_matrix_from_small_matrix(3, 4) = 0;
+    _big_matrix_from_small_matrix(4, 4) = 0;
+  }
+
+  if (small_matrix_from_big_matrix != nullptr) {
+    Eigen::Matrix<Scalar, 4, 4>& _small_matrix_from_big_matrix = (*small_matrix_from_big_matrix);
+
+    _small_matrix_from_big_matrix(0, 0) = big_matrix(0, 0);
+    _small_matrix_from_big_matrix(1, 0) = big_matrix(1, 0);
+    _small_matrix_from_big_matrix(2, 0) = big_matrix(2, 0);
+    _small_matrix_from_big_matrix(3, 0) = big_matrix(3, 0);
+    _small_matrix_from_big_matrix(0, 1) = big_matrix(0, 1);
+    _small_matrix_from_big_matrix(1, 1) = big_matrix(1, 1);
+    _small_matrix_from_big_matrix(2, 1) = big_matrix(2, 1);
+    _small_matrix_from_big_matrix(3, 1) = big_matrix(3, 1);
+    _small_matrix_from_big_matrix(0, 2) = big_matrix(0, 2);
+    _small_matrix_from_big_matrix(1, 2) = big_matrix(1, 2);
+    _small_matrix_from_big_matrix(2, 2) = big_matrix(2, 2);
+    _small_matrix_from_big_matrix(3, 2) = big_matrix(3, 2);
+    _small_matrix_from_big_matrix(0, 3) = big_matrix(0, 3);
+    _small_matrix_from_big_matrix(1, 3) = big_matrix(1, 3);
+    _small_matrix_from_big_matrix(2, 3) = big_matrix(2, 3);
+    _small_matrix_from_big_matrix(3, 3) = big_matrix(3, 3);
+  }
 }  // NOLINT(readability/fn_size)
 
 extern template void CodegenExplicitTemplateInstantiationTest<double>(
@@ -872,12 +927,14 @@ extern template void CodegenExplicitTemplateInstantiationTest<double>(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
-    const Eigen::Matrix<double, 5, 5>& big_matrix,
+    const Eigen::Matrix<double, 5, 5>& big_matrix, const Eigen::Matrix<double, 4, 4>& small_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states, double* const foo,
     double* const bar, std::array<double, 3>* const scalar_vec_out,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const values_vec_out,
     std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>* const
-        values_vec_2D_out);
+        values_vec_2D_out,
+    Eigen::Matrix<double, 5, 5>* const big_matrix_from_small_matrix,
+    Eigen::Matrix<double, 4, 4>* const small_matrix_from_big_matrix);
 
 extern template void CodegenExplicitTemplateInstantiationTest<float>(
     const float x, const float y, const sym::Rot3<float>& rot,
@@ -887,12 +944,14 @@ extern template void CodegenExplicitTemplateInstantiationTest<float>(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
-    const Eigen::Matrix<float, 5, 5>& big_matrix,
+    const Eigen::Matrix<float, 5, 5>& big_matrix, const Eigen::Matrix<float, 4, 4>& small_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states, float* const foo,
     float* const bar, std::array<float, 3>* const scalar_vec_out,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const values_vec_out,
     std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>* const
-        values_vec_2D_out);
+        values_vec_2D_out,
+    Eigen::Matrix<float, 5, 5>* const big_matrix_from_small_matrix,
+    Eigen::Matrix<float, 4, 4>* const small_matrix_from_big_matrix);
 
 // NOLINTNEXTLINE(readability/fn_size)
 }  // namespace codegen_explicit_template_instantiation_test

@@ -28,7 +28,7 @@ struct {{ typename }} {
       {% if not use_eigen_types %}
   {{ scalar_type }} {{ key }}[{{ info['storage_dims'][key] }}];
       {% else %}
-  {{ util.eigen_lcm_type(scalar_type, info['storage_dims'][key]) }} {{ key }};
+  {{ util.eigen_lcm_type(scalar_type, info['storage_dims'][key], info["index"][key]["shape"]) }} {{ key }};
       {% endif %}
     {% endif %}
   {% endfor %}

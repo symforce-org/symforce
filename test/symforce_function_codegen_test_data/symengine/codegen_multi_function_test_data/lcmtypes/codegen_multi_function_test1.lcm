@@ -33,7 +33,8 @@ struct inputs_t {
   values_vec_t values_vec[3];
   values_vec_t values_vec_2D[2][1];
   inputs_constants_t constants;
-  eigen_lcm.VectorXd big_matrix;
+  eigen_lcm.MatrixXd big_matrix;
+  eigen_lcm.Matrix4d small_matrix;
   inputs_states_t states;
 }
 
@@ -43,4 +44,6 @@ struct outputs_1_t {
   double scalar_vec_out[3];
   values_vec_t values_vec_out[3];
   values_vec_t values_vec_2D_out[2][1];
+  eigen_lcm.MatrixXd big_matrix_from_small_matrix;
+  eigen_lcm.Matrix4d small_matrix_from_big_matrix;
 }
