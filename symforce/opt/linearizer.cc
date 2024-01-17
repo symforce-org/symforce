@@ -151,6 +151,13 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
   std::vector<Eigen::Triplet<Scalar>> jacobian_triplets;
   std::vector<Eigen::Triplet<Scalar>> hessian_lower_triplets;
 
+  // Add triplets for the diagonal.  These can otherwise be symbolically 0 for parts of keys touched
+  // only by sparse factors
+  hessian_lower_triplets.reserve(N);
+  for (int i = 0; i < N; i++) {
+    hessian_lower_triplets.emplace_back(i, i, 0);
+  }
+
   int32_t combined_residual_offset = 0;
 
   // Track these to make sure that all combined keys are touched by at least one factor.

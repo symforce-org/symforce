@@ -428,3 +428,32 @@ TEST_CASE("Test optimization statuses", "[optimizer]") {
           sym::levenberg_marquardt_solver_failure_reason_t::LAMBDA_OUT_OF_BOUNDS);
   }
 }
+
+TEST_CASE("Test optimizing with symbolic zeros on the diagonal", "[optimizer]") {
+  // Issue #380
+
+  auto params = sym::DefaultOptimizerParams();
+
+  sym::Valuesd values{};
+  values.Set('x', Eigen::Vector3d::Zero());
+
+  const auto stats =
+      sym::Optimize(params,
+                    {sym::Factord::Hessian(
+                        [](const Eigen::Vector3d& x, Eigen::VectorXd* const res,
+                           Eigen::SparseMatrix<double>* const jac,
+                           Eigen::SparseMatrix<double>* const hess, Eigen::VectorXd* const rhs) {
+                          *res = sym::Vector1d(x(0) - 3);
+
+                          Eigen::SparseMatrix<double> hessian(3, 3);
+                          const std::vector<Eigen::Triplet<double>> triplets = {{0, 0, 1.0}};
+                          hessian.setFromTriplets(triplets.begin(), triplets.end());
+                          *hess = hessian;
+                          *rhs = Eigen::Vector3d(x(0) - 3, 0, 0);
+                        },
+                        {'x'})},
+                    values);
+
+  CHECK(stats.status == sym::optimization_status_t::SUCCESS);
+  CHECK(values.At<Eigen::Vector3d>('x').isApprox(Eigen::Vector3d(3, 0, 0), 1e-6));
+}

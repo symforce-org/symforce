@@ -196,7 +196,6 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   // Analyze the sparsity pattern for efficient repeated factorization
   if (!solver_analyzed_) {
-    // TODO(aaron): Do this with the ones linearization computed by the Linearizer
     SYM_TIME_SCOPE("LM<{}>: AnalyzePattern", id_);
     linear_solver_.AnalyzeSparsityPattern(state_.Init().GetLinearization().hessian_lower);
     solver_analyzed_ = true;
