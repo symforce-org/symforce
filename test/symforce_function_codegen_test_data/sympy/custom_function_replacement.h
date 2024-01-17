@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "custom_function_replacement_header.h"  // User-defined extra import
 

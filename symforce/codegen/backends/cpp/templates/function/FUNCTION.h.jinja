@@ -17,9 +17,9 @@
 {% endfor %}
 {% endif %}
 {# Conditional? #}
-#include <Eigen/Dense>
+#include <Eigen/Core>
 {% if spec.sparse_mat_data.__len__() > 0 -%}
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 {% endif %}
 
 {% for cls in sf.GEO_TYPES + sf.CAM_TYPES %}

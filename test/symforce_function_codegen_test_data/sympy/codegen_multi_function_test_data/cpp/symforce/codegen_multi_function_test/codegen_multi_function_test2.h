@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <lcmtypes/codegen_multi_function_test/inputs_t.hpp>
 #include <lcmtypes/codegen_multi_function_test/outputs_2_t.hpp>

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <lcmtypes/sym/d_out_t.hpp>
 #include <lcmtypes/sym/d_t.hpp>

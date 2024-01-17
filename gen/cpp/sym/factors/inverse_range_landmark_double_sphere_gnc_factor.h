@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/double_sphere_camera_cal.h>
 #include <sym/pose3.h>

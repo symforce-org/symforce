@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <lcmtypes/codegen_explicit_template_instantiation_test/constants_t.hpp>
 #include <lcmtypes/codegen_explicit_template_instantiation_test/states_t.hpp>

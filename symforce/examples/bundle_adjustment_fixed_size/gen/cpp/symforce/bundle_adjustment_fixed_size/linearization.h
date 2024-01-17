@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
 
 #include <sym/linear_camera_cal.h>
 #include <sym/pose3.h>

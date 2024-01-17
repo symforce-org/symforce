@@ -3,7 +3,7 @@
 #pragma once
 #include <utility>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <lcm/lcm_coretypes.h>
 
 namespace eigen_lcm {
