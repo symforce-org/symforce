@@ -156,11 +156,18 @@ struct optimizer_params_t {
 struct optimizer_gnc_params_t {
   // The convexity param is stepped each time we early-exit with this threshold.
   double gnc_update_min_reduction;
+
   // Initial mu value.
   double mu_initial;
+
   // Amount to change mu each step.
   double mu_step;
-  // Maximum mu value.
+
+  // Maximum mu value
+  //
+  // If mu_initial >= mu_max, the GncOptimizer will behave like an Optimizer; it will iterate to
+  // convergence once, with the value of gnc_mu_key set to mu_initial and convergence threshold
+  // early_exit_min_reduction.
   double mu_max;
 }
 
