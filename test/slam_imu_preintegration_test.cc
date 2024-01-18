@@ -8,7 +8,7 @@
 #include <random>
 #include <thread>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <catch2/catch_test_macros.hpp>
 
 #include <sym/factors/internal/imu_manifold_preintegration_update.h>

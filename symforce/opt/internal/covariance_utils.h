@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 #include <sym/util/typedefs.h>
 #include <symforce/opt/linearizer.h>

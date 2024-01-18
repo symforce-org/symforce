@@ -3,6 +3,7 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
+#include <Eigen/OrderingMethods>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 

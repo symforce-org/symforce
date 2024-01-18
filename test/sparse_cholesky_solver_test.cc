@@ -9,10 +9,12 @@
 // Required by MetisSupport
 #include <iostream>
 
-#include <Eigen/Dense>
+#include <Eigen/Cholesky>
+#include <Eigen/Core>
 #include <Eigen/MetisSupport>
-#include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
+#include <Eigen/SparseCore>
+#include <Eigen/SparseLU>
 #include <catch2/catch_test_macros.hpp>
 
 #include <sym/ops/storage_ops.h>

@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <cassert>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/pose3.h>
 

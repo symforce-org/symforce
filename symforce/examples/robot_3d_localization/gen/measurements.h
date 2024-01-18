@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/pose3.h>
 

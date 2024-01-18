@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/spherical_camera_cal.h>
 

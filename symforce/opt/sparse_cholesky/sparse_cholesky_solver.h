@@ -10,9 +10,9 @@
 // Needed for Metis
 #include <iostream>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <Eigen/MetisSupport>
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 namespace sym {
 

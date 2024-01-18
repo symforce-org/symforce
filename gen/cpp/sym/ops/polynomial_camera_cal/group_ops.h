@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/polynomial_camera_cal.h>
 

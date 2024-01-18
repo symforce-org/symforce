@@ -8,9 +8,9 @@
 // Required by MetisSupport
 #include <iostream>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <Eigen/MetisSupport>
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 #include "./sparse_cholesky/sparse_cholesky_solver.h"
 

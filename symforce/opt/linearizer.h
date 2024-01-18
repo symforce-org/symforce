@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 #include <lcmtypes/sym/linearization_dense_factor_helper_t.hpp>
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>

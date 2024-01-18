@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <ceres/autodiff_cost_function.h>
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>

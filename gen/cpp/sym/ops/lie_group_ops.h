@@ -8,7 +8,7 @@
 
 #include <limits>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/util/epsilon.h>
 

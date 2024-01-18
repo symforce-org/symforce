@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
 
 // Import all the known types.
 #include <lcmtypes/sym/type_t.hpp>

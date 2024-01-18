@@ -337,7 +337,7 @@ This C++ code depends only on Eigen and computes the results in a single flat fu
 ```c++
 #pragma once
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/pose2.h>
 

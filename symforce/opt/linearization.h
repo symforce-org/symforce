@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
 
 #include <lcmtypes/sym/sparse_matrix_structure_t.hpp>
 

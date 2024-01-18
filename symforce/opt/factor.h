@@ -8,7 +8,7 @@
 #include <ostream>
 #include <unordered_set>
 
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 #include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factor_t.hpp>

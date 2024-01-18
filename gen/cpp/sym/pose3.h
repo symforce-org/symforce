@@ -10,7 +10,7 @@
 #include <random>
 #include <vector>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "./ops/group_ops.h"
 #include "./ops/lie_group_ops.h"

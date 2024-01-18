@@ -15,7 +15,7 @@
 
 #include <random>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 {% for cls in all_types %}
 #include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>

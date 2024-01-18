@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <cassert>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/atan_camera_cal.h>
 

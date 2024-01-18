@@ -8,7 +8,7 @@
 #include <tuple>
 #include <utility>
 
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
 

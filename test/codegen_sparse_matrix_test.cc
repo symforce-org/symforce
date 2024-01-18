@@ -5,8 +5,8 @@
 
 #include <math.h>
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
 #include <catch2/catch_test_macros.hpp>
 
 #include <symforce/codegen_sparse_matrix_test/get_diagonal_sparse.h>

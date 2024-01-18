@@ -8,7 +8,7 @@
 #include <cstring>
 #include <functional>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <pybind11/eigen.h>

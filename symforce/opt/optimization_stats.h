@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>

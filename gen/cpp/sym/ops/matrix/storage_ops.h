@@ -9,7 +9,7 @@
 #include <cassert>
 #include <random>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <lcmtypes/sym/type_t.hpp>
 

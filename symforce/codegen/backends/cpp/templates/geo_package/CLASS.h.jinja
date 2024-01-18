@@ -10,7 +10,11 @@
 #include <ostream>
 #include <random>
 #include <vector>
-#include <Eigen/Dense>
+#include <Eigen/Core>
+{# If a Rot type, include Geometry for Eigen::Quaternion #}
+{% if cls.__name__.startswith('Rot') %}
+#include <Eigen/Geometry>
+{% endif %}
 
 {# If a pose type, include the necessary rotation type. #}
 {% if cls.__name__.startswith('Pose') %}

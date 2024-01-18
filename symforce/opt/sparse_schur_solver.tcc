@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <Eigen/Cholesky>
+
 #include "./assert.h"
 #include "./sparse_schur_solver.h"
 

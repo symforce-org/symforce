@@ -10,7 +10,7 @@
 #include <random>
 #include <vector>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <sym/ops/storage_ops.h>
 

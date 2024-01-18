@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
 
 #include <lcmtypes/sym/levenberg_marquardt_solver_failure_reason_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>

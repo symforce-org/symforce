@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <pybind11/eigen.h>

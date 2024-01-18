@@ -4,7 +4,7 @@
  * ---------------------------------------------------------------------------- */
 
 #pragma once
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include <lcmtypes/sym/optimizer_params_t.hpp>
 

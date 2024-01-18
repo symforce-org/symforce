@@ -5,7 +5,7 @@
 #include <array>
 #include <iostream>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <spdlog/spdlog.h>
 
 #include <lcmtypes/sym/optimization_iteration_t.hpp>

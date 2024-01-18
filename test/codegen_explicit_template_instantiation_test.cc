@@ -3,7 +3,7 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include <catch2/catch_test_macros.hpp>
 
 #include <lcmtypes/codegen_explicit_template_instantiation_test/constants_t.hpp>
