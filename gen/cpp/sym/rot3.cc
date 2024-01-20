@@ -61,6 +61,23 @@ const Eigen::Matrix<Scalar, 3, 1> sym::Rot3<Scalar>::ComposeWithPoint(
 }
 
 template <typename Scalar>
+const Scalar sym::Rot3<Scalar>::ToTangentNorm(const Scalar epsilon) const {
+  // Total ops: 5
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Scalar _res;
+
+  _res = 2 * std::acos(std::min<Scalar>(std::fabs(_self[3]), 1 - epsilon));
+
+  return _res;
+}
+
+template <typename Scalar>
 const Eigen::Matrix<Scalar, 3, 3> sym::Rot3<Scalar>::ToRotationMatrix() const {
   // Total ops: 28
 

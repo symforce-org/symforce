@@ -121,6 +121,8 @@ class Rot3 {
 
   const Vector3 ComposeWithPoint(const Vector3& right) const;
 
+  const Scalar ToTangentNorm(const Scalar epsilon) const;
+
   const Eigen::Matrix<Scalar, 3, 3> ToRotationMatrix() const;
 
   const static sym::Rot3<Scalar> RandomFromUniformSamples(const Scalar u1, const Scalar u2,

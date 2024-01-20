@@ -90,13 +90,13 @@ class Rot3(LieGroup):
         # Implementation of logmap that uses epsilon with the Min function to
         # avoid the singularity in the sqrt at w == 1
         #
-        # Also flips the sign of the quaternion of w is negative, which makes sure
+        # Also flips the sign of the quaternion if w is negative, which makes sure
         # that the resulting tangent vector has norm <= pi
         w_positive = sf.Abs(self.q.w)
         w_safe = sf.Min(1 - epsilon, w_positive)
         xyz_w_positive = self.q.xyz * sf.sign_no_zero(self.q.w)
         norm = sf.sqrt(1 - w_safe**2)
-        tangent = 2 * xyz_w_positive / norm * sf.acos(w_safe)
+        tangent = xyz_w_positive / norm * self.to_tangent_norm(epsilon=epsilon)
         return tangent.to_storage()
 
     @classmethod
@@ -148,6 +148,19 @@ class Rot3(LieGroup):
             return self.compose(right)
         else:
             raise NotImplementedError(f'Unsupported type: "{type(right)}"')
+
+    def to_tangent_norm(self, epsilon: T.Scalar = sf.epsilon()) -> sf.Scalar:
+        """
+        Returns the norm of the tangent vector corresponding to this rotation
+
+        This is equal to the angle that should be rotated through to get this Rot3, in radians.
+        Using this function directly is usually more efficient than computing the norm of the
+        tangent vector, both in symbolic and generated code; by default, symbolic APIs will not
+        automatically simplify to this
+        """
+        w_positive = sf.Abs(self.q.w)
+        w_safe = sf.Min(1 - epsilon, w_positive)
+        return 2 * sf.acos(w_safe)
 
     def to_rotation_matrix(self) -> Matrix33:
         """

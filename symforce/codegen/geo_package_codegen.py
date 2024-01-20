@@ -94,6 +94,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     rot3_functions = (
         [
             codegen_mul(sf.Rot3, sf.Vector3),
+            Codegen.function(func=sf.Rot3.to_tangent_norm, config=config),
             Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
             Codegen.function(
                 func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),

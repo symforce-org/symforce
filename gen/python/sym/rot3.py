@@ -137,6 +137,28 @@ class Rot3(object):
         )
         return _res
 
+    def to_tangent_norm(self, epsilon):
+        # type: (Rot3, float) -> float
+        """
+        Returns the norm of the tangent vector corresponding to this rotation
+
+        This is equal to the angle that should be rotated through to get this Rot3, in radians.
+        Using this function directly is usually more efficient than computing the norm of the
+        tangent vector, both in symbolic and generated code; by default, symbolic APIs will not
+        automatically simplify to this
+        """
+
+        # Total ops: 5
+
+        # Input arrays
+        _self = self.data
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = 2 * math.acos(min(abs(_self[3]), 1 - epsilon))
+        return _res
+
     def to_rotation_matrix(self):
         # type: (Rot3) -> numpy.ndarray
         """
