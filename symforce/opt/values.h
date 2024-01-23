@@ -261,8 +261,7 @@ class Values {
    * Serialize to LCM.
    */
   void FillLcmType(LcmType& msg, bool sort_keys = false) const;
-  [[deprecated("Pass msg by reference instead")]] void FillLcmType(LcmType* msg,
-                                                                   bool sort_keys = false) const;
+
   LcmType GetLcmType(bool sort_keys = false) const;
 
  protected:

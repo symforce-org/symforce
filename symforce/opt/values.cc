@@ -186,12 +186,6 @@ void Values<Scalar>::FillLcmType(LcmType& msg, bool sort_keys) const {
 }
 
 template <typename Scalar>
-void Values<Scalar>::FillLcmType(LcmType* msg, bool sort_keys) const {
-  SYM_ASSERT(msg != nullptr);
-  FillLcmType(*msg, sort_keys);
-}
-
-template <typename Scalar>
 typename Values<Scalar>::LcmType Values<Scalar>::GetLcmType(bool sort_keys) const {
   LcmType msg;
   FillLcmType(msg, sort_keys);

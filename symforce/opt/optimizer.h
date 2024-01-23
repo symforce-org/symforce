@@ -115,8 +115,6 @@ class Optimizer {
    */
   Stats Optimize(Values<Scalar>& values, int num_iterations = -1,
                  bool populate_best_linearization = false);
-  [[deprecated("Pass values by reference instead")]] Stats Optimize(
-      Values<Scalar>* values, int num_iterations = -1, bool populate_best_linearization = false);
 
   /**
    * Optimize the given values in-place
@@ -135,8 +133,6 @@ class Optimizer {
    */
   virtual void Optimize(Values<Scalar>& values, int num_iterations,
                         bool populate_best_linearization, Stats& stats);
-  [[deprecated("Pass values and stats by reference instead")]] virtual void Optimize(
-      Values<Scalar>* values, int num_iterations, bool populate_best_linearization, Stats* stats);
 
   /**
    * Optimize the given values in-place
@@ -152,9 +148,6 @@ class Optimizer {
    *    required shape (e.g. for repeated calls to Optimize())
    */
   void Optimize(Values<Scalar>& values, int num_iterations, Stats& stats);
-  [[deprecated("Pass values and stats by reference instead")]] void Optimize(Values<Scalar>* values,
-                                                                             int num_iterations,
-                                                                             Stats* stats);
 
   /**
    * Optimize the given values in-place
@@ -168,8 +161,6 @@ class Optimizer {
    *    required shape (e.g. for repeated calls to Optimize())
    */
   void Optimize(Values<Scalar>& values, Stats& stats);
-  [[deprecated("Pass values and stats by reference instead")]] void Optimize(Values<Scalar>* values,
-                                                                             Stats* stats);
 
   /**
    * Linearize the problem around the given values
@@ -187,9 +178,6 @@ class Optimizer {
    */
   void ComputeAllCovariances(const Linearization<MatrixType>& linearization,
                              std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
-  [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeAllCovariances(
-      const Linearization<MatrixType>& linearization,
-      std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
    * Get covariances for the given subset of keys at the given linearization
@@ -211,9 +199,6 @@ class Optimizer {
   void ComputeCovariances(const Linearization<MatrixType>& linearization,
                           const std::vector<Key>& keys,
                           std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
-  [[deprecated("Pass covariances_by_key by reference instead")]] void ComputeCovariances(
-      const Linearization<MatrixType>& linearization, const std::vector<Key>& keys,
-      std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key);
 
   /**
    * Get the full problem covariance at the given linearization
@@ -327,13 +312,6 @@ typename Optimizer<Scalar, NonlinearSolverType>::Stats Optimize(
     Values<Scalar>& values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
   Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, epsilon);
   return optimizer.Optimize(values);
-}
-template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolver<Scalar>>
-[[deprecated("Pass values by reference instead")]]
-typename Optimizer<Scalar, NonlinearSolverType>::Stats
-Optimize(const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
-         Values<Scalar>* values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
-  return Optimize(params, factors, *values, epsilon);
 }
 
 /**

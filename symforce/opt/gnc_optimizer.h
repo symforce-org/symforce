@@ -104,11 +104,6 @@ class GncOptimizer : public BaseOptimizerType {
                        populate_best_linearization, stats);
     }
   }
-  [[deprecated("Pass values and stats by reference instead")]] void Optimize(
-      Values<Scalar>* const values, int num_iterations, bool populate_best_linearization,
-      typename BaseOptimizer::Stats* const stats) override {
-    Optimize(*values, num_iterations, populate_best_linearization, *stats);
-  }
 
  private:
   void OptimizeContinue(Values<Scalar>& values, const int num_iterations,

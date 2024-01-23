@@ -76,14 +76,6 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values, int
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-typename sym::Optimizer<ScalarType, NonlinearSolverType>::Stats
-Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values, int num_iterations,
-                                                     bool populate_best_linearization) {
-  SYM_ASSERT(values != nullptr);
-  return Optimize(*values, num_iterations, populate_best_linearization);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
                                                           int num_iterations,
                                                           bool populate_best_linearization,
@@ -103,39 +95,14 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
-                                                          int num_iterations,
-                                                          bool populate_best_linearization,
-                                                          Stats* stats) {
-  SYM_ASSERT(values != nullptr);
-  SYM_ASSERT(stats != nullptr);
-  Optimize(*values, num_iterations, populate_best_linearization, *stats);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values,
                                                           int num_iterations, Stats& stats) {
   return Optimize(values, num_iterations, false, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values,
-                                                          int num_iterations, Stats* stats) {
-  SYM_ASSERT(values != nullptr);
-  SYM_ASSERT(stats != nullptr);
-  Optimize(*values, num_iterations, *stats);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values, Stats& stats) {
   return Optimize(values, -1, false, stats);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>* values, Stats* stats) {
-  SYM_ASSERT(values != nullptr);
-  SYM_ASSERT(stats != nullptr);
-  Optimize(*values, *stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -213,14 +180,6 @@ size_t ComputeBlockDimension(const LinearizerType& linearizer, const std::vector
 }  // namespace internal
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::ComputeAllCovariances(
-    const Linearization<MatrixType>& linearization,
-    std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key) {
-  SYM_ASSERT(covariances_by_key != nullptr);
-  ComputeAllCovariances(linearization, *covariances_by_key);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
     const Linearization<MatrixType>& linearization, const std::vector<Key>& keys,
     std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
@@ -236,14 +195,6 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
                                                       compute_covariances_storage_.covariance);
   internal::SplitCovariancesByKey(linearizer_, compute_covariances_storage_.covariance, keys,
                                   covariances_by_key);
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
-    const Linearization<MatrixType>& linearization, const std::vector<Key>& keys,
-    std::unordered_map<Key, MatrixX<Scalar>>* covariances_by_key) {
-  SYM_ASSERT(covariances_by_key != nullptr);
-  ComputeCovariances(linearization, keys, *covariances_by_key);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
