@@ -297,6 +297,8 @@ class Optimizer {
 
   /// Functor for interfacing with the optimizer
   typename NonlinearSolver::LinearizeFunc linearize_func_;
+
+  bool verbose_;
 };
 
 // Shorthand instantiations

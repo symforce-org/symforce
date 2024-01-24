@@ -32,7 +32,8 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
       linearizer_(name_, factors_, keys_, include_jacobians),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)) {
+      linearize_func_(BuildLinearizeFunc(check_derivatives)),
+      verbose_(params.verbose) {
   SYM_ASSERT(factors_.size() > 0);
   SYM_ASSERT(keys_.size() > 0);
 
@@ -55,7 +56,8 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
       linearizer_(name_, factors_, keys_, include_jacobians),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)) {
+      linearize_func_(BuildLinearizeFunc(check_derivatives)),
+      verbose_(params.verbose) {
   SYM_ASSERT(factors_.size() > 0);
   SYM_ASSERT(keys_.size() > 0);
 
@@ -92,6 +94,15 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values
   nonlinear_solver_.Reset(values);
   stats.Reset(num_iterations);
   IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
+
+  if (verbose_) {
+    if (stats.status == optimization_status_t::FAILED) {
+      spdlog::info("LM<{}> Optimization finished with status: FAILED, reason: {}", name_,
+                   stats.status, FailureReason::from_int(stats.failure_reason));
+    } else {
+      spdlog::info("LM<{}> Optimization finished with status: {}", name_, stats.status);
+    }
+  }
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
