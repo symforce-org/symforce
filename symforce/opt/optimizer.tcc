@@ -97,10 +97,12 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values
 
   if (verbose_) {
     if (stats.status == optimization_status_t::FAILED) {
-      spdlog::info("LM<{}> Optimization finished with status: FAILED, reason: {}", name_,
-                   stats.status, FailureReason::from_int(stats.failure_reason));
+      spdlog::warn("LM<{}> Optimization finished with status: FAILED, reason: {}", name_,
+                   FailureReason::from_int(stats.failure_reason));
     } else {
-      spdlog::info("LM<{}> Optimization finished with status: {}", name_, stats.status);
+      spdlog::log(stats.status == optimization_status_t::SUCCESS ? spdlog::level::info
+                                                                 : spdlog::level::warn,
+                  "LM<{}> Optimization finished with status: {}", name_, stats.status);
     }
   }
 }
