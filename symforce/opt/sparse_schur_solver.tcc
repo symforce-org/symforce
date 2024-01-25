@@ -38,7 +38,13 @@ void SparseSchurSolver<_MatrixType>::ComputeSymbolicSparsity(const MatrixType& A
         start_row = it.row();
       }
 
-      SYM_ASSERT(prev_row == -1 || it.row() == prev_row + 1);
+      if (prev_row != -1) {
+        SYM_ASSERT(it.row() == prev_row + 1,
+                   "Submatrix C of A is not block diagonal, cannot use a Schur complement solver.  "
+                   "Found gap between nonzeros in rows {} and {} in column {}",
+                   prev_row, it.row(), col);
+      }
+
       prev_row = it.row();
     }
 
