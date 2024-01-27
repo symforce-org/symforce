@@ -305,7 +305,11 @@ class InstallWithExtras(install):
         # include the additional Cython sources that symenginepy includes in their distributions,
         # but I'm honestly not sure why they include them or why you'd need them.
         self.copy_file(
-            find_symengine_wrapper(build_dir, build_ext_obj.get_ext_filename("symengine_wrapper")),
+            str(
+                find_symengine_wrapper(
+                    build_dir, build_ext_obj.get_ext_filename("symengine_wrapper")
+                )
+            ),
             Path.cwd()
             / self.install_platlib  # type: ignore[attr-defined]
             / "symengine"
