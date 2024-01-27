@@ -307,7 +307,7 @@ def p_error(token):
         raise LcmParseError("Unexpected end of input")
 
 
-PARSER = None
+PARSER = None  # type: T.Optional[yacc.LRParser]
 
 
 def lcmparse(src, verbose=True, cache=False, debug_src_path=None, allow_unknown_notations=False):
