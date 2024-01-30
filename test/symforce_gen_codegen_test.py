@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import asyncio
 import math
 import sys
 from pathlib import Path
@@ -122,8 +123,10 @@ class SymforceGenCodegenTest(TestCase):
 
             # Run generated example / test from disk in a standalone process
             current_python = sys.executable
-            python_util.execute_subprocess(
-                [current_python, str(generated_code_file)], log_stdout=False
+            asyncio.run(
+                python_util.execute_subprocess(
+                    [current_python, str(generated_code_file)], log_stdout=False
+                )
             )
 
         # Also hot load package directly in to this process

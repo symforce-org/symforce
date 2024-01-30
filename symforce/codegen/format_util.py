@@ -10,7 +10,6 @@ from pathlib import Path
 
 from ruff.__main__ import find_ruff_bin
 
-from symforce import python_util
 from symforce import typing as T
 
 
@@ -37,13 +36,16 @@ def format_cpp(file_contents: str, filename: str) -> str:
     except ImportError:
         clang_format_path = "clang-format"
 
-    formatted_file_contents = python_util.execute_subprocess(
+    result = subprocess.run(
         [clang_format_path, f"-assume-filename={filename}"],
-        stdin_data=file_contents,
-        log_stdout=False,
+        input=file_contents,
+        stdout=subprocess.PIPE,
+        stderr=None,
+        check=True,
+        text=True,
     )
 
-    return formatted_file_contents
+    return result.stdout
 
 
 _ruff_path: T.Optional[Path] = None

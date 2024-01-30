@@ -6,6 +6,7 @@
 """
 General python utilities.
 """
+import asyncio
 import functools
 import inspect
 import os
@@ -35,7 +36,7 @@ def remove_if_exists(path: Path) -> None:
         path.unlink()
 
 
-def execute_subprocess(
+async def execute_subprocess(
     cmd: T.Union[str, T.Sequence[str]],
     stdin_data: T.Optional[str] = None,
     log_stdout: bool = True,
@@ -61,11 +62,12 @@ def execute_subprocess(
     cmd_str = " ".join(cmd) if isinstance(cmd, (tuple, list)) else cmd
     logger.debug(f"Subprocess: {cmd_str}")
 
-    with subprocess.Popen(
-        cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
-    ) as proc:
-        (stdout, _) = proc.communicate(stdin_data_encoded)
-        return_code = proc.returncode
+    proc = await asyncio.create_subprocess_exec(
+        *cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
+    )
+    (stdout, _) = await proc.communicate(stdin_data_encoded)
+    assert proc.returncode is not None
+    return_code = proc.returncode
 
     going_to_log_to_err = return_code != 0 and log_stdout_to_error_on_error
 

@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import asyncio
 import os
 import re
 import sys
@@ -64,25 +65,27 @@ class SymforceRequirementsTest(TestCase):
 
         maybe_piptools_upgrade = ["--upgrade"] if self._PIPTOOLS_UPGRADE else []
 
-        python_util.execute_subprocess(
-            [
-                sys.executable,
-                "-m",
-                "piptools",
-                "compile",
-                f"--output-file={output_requirements_file}",
-                "--index-url=https://pypi.python.org/simple",
-                "--allow-unsafe",
-                "--extra=dev",
-                "--extra=_setup",
-            ]
-            + maybe_piptools_upgrade,
-            cwd=path_util.symforce_root(),
-            env=dict(
-                os.environ,
-                # Compile command to put in the header of dev_requirements.txt
-                CUSTOM_COMPILE_COMMAND="python test/symforce_requirements_test.py --update",
-            ),
+        asyncio.run(
+            python_util.execute_subprocess(
+                [
+                    sys.executable,
+                    "-m",
+                    "piptools",
+                    "compile",
+                    f"--output-file={output_requirements_file}",
+                    "--index-url=https://pypi.python.org/simple",
+                    "--allow-unsafe",
+                    "--extra=dev",
+                    "--extra=_setup",
+                ]
+                + maybe_piptools_upgrade,
+                cwd=path_util.symforce_root(),
+                env=dict(
+                    os.environ,
+                    # Compile command to put in the header of dev_requirements.txt
+                    CUSTOM_COMPILE_COMMAND="python test/symforce_requirements_test.py --update",
+                ),
+            )
         )
 
         # Reverse path rewrite back to relative paths

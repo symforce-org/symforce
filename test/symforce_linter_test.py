@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import asyncio
 import os
 import subprocess
 import sys
@@ -32,8 +33,10 @@ class SymforceLinterTest(TestCase):
     )
     def test_linter(self) -> None:
         try:
-            python_util.execute_subprocess(
-                ["make", "lint"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+            asyncio.run(
+                python_util.execute_subprocess(
+                    ["make", "lint"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+                )
             )
         except subprocess.CalledProcessError as exc:
             logger.error(exc)

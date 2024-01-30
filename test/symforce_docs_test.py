@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import asyncio
 import os
 import subprocess
 import sys
@@ -30,11 +31,13 @@ class SymforceDocsTest(TestCase):
         success = False
         for _ in range(RETRIES):
             try:
-                python_util.execute_subprocess(
-                    ["make", "docs"],
-                    cwd=SYMFORCE_DIR,
-                    env=dict(os.environ, PYTHON=sys.executable),
-                    log_stdout=False,
+                asyncio.run(
+                    python_util.execute_subprocess(
+                        ["make", "docs"],
+                        cwd=SYMFORCE_DIR,
+                        env=dict(os.environ, PYTHON=sys.executable),
+                        log_stdout=False,
+                    )
                 )
             except subprocess.CalledProcessError as exc:
                 logger.error(exc)
