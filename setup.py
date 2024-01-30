@@ -346,6 +346,8 @@ docs_requirements = [
     "ipykernel",
     # nbconvert depends on this, but doesn't specify the dependency
     "ipython-genutils",
+    # Transitive dependency of ipykernel and nbsphinx, 8.6 is incompatible with mypy 0.910
+    "jupyter-client<8.6.0",
     "matplotlib",
     "myst-parser",
     "nbsphinx",
@@ -447,7 +449,7 @@ if __name__ == "__main__":
             + [
                 "argh",
                 "coverage",
-                "jinja2~=3.0.3",
+                "jinja2~=3.0",
                 "mypy==0.910",
                 "numba",
                 "pip-tools<6.11",
