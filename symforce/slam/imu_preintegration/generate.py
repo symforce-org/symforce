@@ -10,6 +10,7 @@ from symforce import codegen
 from symforce import typing as T
 from symforce.slam.imu_preintegration.manifold_symbolic import imu_manifold_preintegration_update
 from symforce.slam.imu_preintegration.manifold_symbolic import internal_imu_residual
+from symforce.slam.imu_preintegration.manifold_symbolic import roll_forward_state
 
 
 def internal_imu_unit_gravity_residual(
@@ -144,3 +145,7 @@ def generate_manifold_imu_preintegration(
             "gravity_direction",
         ]
     ).generate_function(output_dir=output_dir, skip_directory_nesting=True)
+
+    codegen.Codegen.function(roll_forward_state, config=config).generate_function(
+        output_dir=output_dir, skip_directory_nesting=True
+    )

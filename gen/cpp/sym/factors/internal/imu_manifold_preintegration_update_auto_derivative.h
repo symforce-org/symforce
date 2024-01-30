@@ -28,23 +28,23 @@ namespace sym {
  * derivatives w.r.t. to bias should all be 0.
  *
  * Args:
- *     DR (sf.Rot3): Preintegrated change in orientation
- *     Dv (sf.V3): Preintegrated change in velocity
- *     Dp (sf.V3): Preintegrated change in position
- *     covariance (sf.M99): Covariance [DR, Dv, Dp] in local coordinates of mean
- *     DR_D_gyro_bias (sf.M33): Derivative of DR w.r.t. gyro_bias
- *     Dv_D_accel_bias (sf.M33): Derivative of Dv w.r.t. accel_bias
- *     Dv_D_gyro_bias (sf.M33): Derivative of Dv w.r.t. gyro_bias
- *     Dp_D_accel_bias (sf.M33): Derivative of Dp w.r.t. accel_bias
- *     Dp_D_gyro_bias (sf.M33): Derivative of Dp w.r.t. gyro_bias
- *     accel_bias (sf.V3): Initial guess for the accelerometer measurement bias
- *     gyro_bias (sf.V3): Initial guess for the gyroscope measurement bias
- *     accel_cov_diagonal (sf.M33): The diagonal of the covariance of the accelerometer measurement
- *     gyro_cov_diagonal (sf.M33): The diagonal of the covariance of the gyroscope measurement
- *     accel_measurement (sf.V3): The accelerometer measurement
- *     gyro_measurement (sf.V3): The gyroscope measurement
- *     dt (T.Scalar): The time between the new measurements and the last
- *     epsilon (T.Scalar): epsilon for numerical stability
+ *     DR: Preintegrated change in orientation
+ *     Dv: Preintegrated change in velocity
+ *     Dp: Preintegrated change in position
+ *     covariance: Covariance [DR, Dv, Dp] in local coordinates of mean
+ *     DR_D_gyro_bias: Derivative of DR w.r.t. gyro_bias
+ *     Dv_D_accel_bias: Derivative of Dv w.r.t. accel_bias
+ *     Dv_D_gyro_bias: Derivative of Dv w.r.t. gyro_bias
+ *     Dp_D_accel_bias: Derivative of Dp w.r.t. accel_bias
+ *     Dp_D_gyro_bias: Derivative of Dp w.r.t. gyro_bias
+ *     accel_bias: Initial guess for the accelerometer measurement bias
+ *     gyro_bias: Initial guess for the gyroscope measurement bias
+ *     accel_cov_diagonal: The diagonal of the covariance of the accelerometer measurement
+ *     gyro_cov_diagonal: The diagonal of the covariance of the gyroscope measurement
+ *     accel_measurement: The accelerometer measurement
+ *     gyro_measurement: The gyroscope measurement
+ *     dt: The time between the new measurements and the last
+ *     epsilon: epsilon for numerical stability
  *
  * Returns:
  *     T.Tuple[sf.Rot3, sf.V3, sf.V3, sf.M99, sf.M33, sf.M33, sf.M33, sf.M33, sf.M33]:

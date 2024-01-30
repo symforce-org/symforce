@@ -27,32 +27,32 @@ namespace sym {
  * Assumes sqrt_info is lower triangular and only reads the lower triangle.
  *
  * Args:
- *     pose_i (sf.Pose3): Pose at time step i (world_T_body)
- *     vel_i (sf.V3): Velocity at time step i (world frame)
- *     pose_j (sf.Pose3): Pose at time step j (world_T_body)
- *     vel_j (sf.V3): Velocity at time step j (world frame)
- *     accel_bias_i (sf.V3): The accelerometer bias between timesteps i and j
- *     gyro_bias_i (sf.V3): The gyroscope bias between timesteps i and j
- *     DR (sf.Rot3): Preintegrated estimate for pose_i.R.inverse() * pose_j.R
- *     Dv (sf.V3): Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
- *     Dp (sf.V3): Preintegrated estimate for position change (before velocity and gravity
- *         corrections) in the body frame at timestep i::
+ *     pose_i: Pose at time step i (world_T_body)
+ *     vel_i: Velocity at time step i (world frame)
+ *     pose_j: Pose at time step j (world_T_body)
+ *     vel_j: Velocity at time step j (world frame)
+ *     accel_bias_i: The accelerometer bias between timesteps i and j
+ *     gyro_bias_i: The gyroscope bias between timesteps i and j
+ *     DR: Preintegrated estimate for pose_i.R.inverse() * pose_j.R
+ *     Dv: Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
+ *     Dp: Preintegrated estimate for position change (before velocity and gravity corrections) in
+ *         the body frame at timestep i::
  *
  *             R_i^T (p_j - p_i - v_i Delta t - 1/2 g Delta t^2),
  *             where R_i = pose_i.R, p_i = pose_i.t, p_j = pose_j.t, and v_i = vel_i
- *     sqrt_info (sf.M99): sqrt info matrix of DR('s tangent space), Dv, Dp
- *     DR_D_gyro_bias (sf.M33): Derivative of DR w.r.t. gyro_bias evaluated at gyro_bias_hat
- *     Dv_D_accel_bias (sf.M33): Derivative of Dv w.r.t. accel_bias evaluated at accel_bias_hat
- *     Dv_D_gyro_bias (sf.M33): Derivative of Dv w.r.t. gyro_bias evaluated at gyro_bias_hat
- *     Dp_D_accel_bias (sf.M33): Derivative of Dp w.r.t. accel_bias evaluated at accel_bias_hat
- *     Dp_D_gyro_bias (sf.M33): Derivative of Dp w.r.t. gyro_bias evaluated at gyro_bias_hat
- *     accel_bias_hat (sf.V3): The accelerometer bias used during preintegration
- *     gyro_bias_hat (sf.V3): The gyroscope bias used during preintegration
- *     gravity (sf.V3): Acceleration due to gravity (in the same frame as pose_x and vel_x),
- *         i.e., the vector which when added to the accelerometer measurements gives the
- *         true acceleration (up to bias and noise) of the IMU.
- *     dt (T.Scalar): The time between timestep i and j: t_j - t_i
- *     epsilon (T.Scalar): epsilon used for numerical stability
+ *     sqrt_info: sqrt info matrix of DR('s tangent space), Dv, Dp
+ *     DR_D_gyro_bias: Derivative of DR w.r.t. gyro_bias evaluated at gyro_bias_hat
+ *     Dv_D_accel_bias: Derivative of Dv w.r.t. accel_bias evaluated at accel_bias_hat
+ *     Dv_D_gyro_bias: Derivative of Dv w.r.t. gyro_bias evaluated at gyro_bias_hat
+ *     Dp_D_accel_bias: Derivative of Dp w.r.t. accel_bias evaluated at accel_bias_hat
+ *     Dp_D_gyro_bias: Derivative of Dp w.r.t. gyro_bias evaluated at gyro_bias_hat
+ *     accel_bias_hat: The accelerometer bias used during preintegration
+ *     gyro_bias_hat: The gyroscope bias used during preintegration
+ *     gravity: Acceleration due to gravity (in the same frame as pose_x and vel_x), i.e., the
+ *         vector which when added to the accelerometer measurements gives the true acceleration
+ *         (up to bias and noise) of the IMU.
+ *     dt: The time between timestep i and j: t_j - t_i
+ *     epsilon: epsilon used for numerical stability
  *
  * Outputs:
  *     res: 9dof product residual between the orientations, then velocities, then positions.

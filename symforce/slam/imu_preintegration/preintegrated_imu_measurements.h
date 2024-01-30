@@ -70,7 +70,9 @@ struct PreintegratedImuMeasurements {
   // The original gyroscope bias used during preintegration
   Vector3 gyro_bias;
 
-  // See struct description above
+  /// See description for Delta.  This is the Delta for the biases used during preintegration, i.e.
+  /// for PreintegratedImuMeasurements::accel_bias and PreintegratedImuMeasurements::gyro_bias.  For
+  /// the (approximate) Delta with other biases, see GetBiasCorrectedDelta
   Delta delta;
 
   // Derivatives of DR/Dv/Dp w.r.t. the gyroscope/accelerometer bias linearized at the values

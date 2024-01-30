@@ -8,6 +8,46 @@ from symforce import typing as T
 from symforce.jacobian_helpers import tangent_jacobians
 
 
+def roll_forward_state(
+    pose_i: sf.Pose3,
+    vel_i: sf.V3,
+    # Preintegrated measurements: state
+    DR: sf.Rot3,
+    Dv: sf.V3,
+    Dp: sf.V3,
+    # other
+    gravity: sf.V3,
+    dt: T.Scalar,
+) -> T.Tuple[sf.Pose3, sf.V3]:
+    """
+    Roll forward the given state by the given preintegrated measurements
+
+    This returns the pose_j and vel_j that give 0 residual
+
+    Args:
+        pose_i: Pose at time step i (world_T_body)
+        vel_i: Velocity at time step i (world frame)
+        DR: Preintegrated estimate for pose_i.R.inverse() * pose_j.R
+        Dv: Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
+        Dp: Preintegrated estimate for position change (before velocity and gravity
+        gravity: Acceleration due to gravity (in the same frame as pose_x and vel_x), i.e., the
+            vector which when added to the accelerometer measurements gives the true acceleration
+            (up to bias and noise) of the IMU.
+        dt: The time between timestep i and j: t_j - t_i
+
+    Returns:
+        T.Tuple[sf.Pose3, sf.V3]: pose_j, vel_j
+    """
+    # NOTE(aaron): Derived by setting the residual below to 0 and solving for pose_j and vel_j
+    return (
+        sf.Pose3(
+            R=pose_i.R * DR,
+            t=pose_i.R * Dp + pose_i.t + vel_i * dt + sf.S(1) / 2 * gravity * dt**2,
+        ),
+        pose_i.R * Dv + vel_i + gravity * dt,
+    )
+
+
 def internal_imu_residual(
     pose_i: sf.Pose3,
     vel_i: sf.V3,
@@ -47,32 +87,32 @@ def internal_imu_residual(
     Assumes sqrt_info is lower triangular and only reads the lower triangle.
 
     Args:
-        pose_i (sf.Pose3): Pose at time step i (world_T_body)
-        vel_i (sf.V3): Velocity at time step i (world frame)
-        pose_j (sf.Pose3): Pose at time step j (world_T_body)
-        vel_j (sf.V3): Velocity at time step j (world frame)
-        accel_bias_i (sf.V3): The accelerometer bias between timesteps i and j
-        gyro_bias_i (sf.V3): The gyroscope bias between timesteps i and j
-        DR (sf.Rot3): Preintegrated estimate for pose_i.R.inverse() * pose_j.R
-        Dv (sf.V3): Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
-        Dp (sf.V3): Preintegrated estimate for position change (before velocity and gravity
-            corrections) in the body frame at timestep i::
+        pose_i: Pose at time step i (world_T_body)
+        vel_i: Velocity at time step i (world frame)
+        pose_j: Pose at time step j (world_T_body)
+        vel_j: Velocity at time step j (world frame)
+        accel_bias_i: The accelerometer bias between timesteps i and j
+        gyro_bias_i: The gyroscope bias between timesteps i and j
+        DR: Preintegrated estimate for pose_i.R.inverse() * pose_j.R
+        Dv: Preintegrated estimate for vel_j - vel_i in the body frame at timestep i
+        Dp: Preintegrated estimate for position change (before velocity and gravity corrections) in
+            the body frame at timestep i::
 
                 R_i^T (p_j - p_i - v_i Delta t - 1/2 g Delta t^2),
                 where R_i = pose_i.R, p_i = pose_i.t, p_j = pose_j.t, and v_i = vel_i
-        sqrt_info (sf.M99): sqrt info matrix of DR('s tangent space), Dv, Dp
-        DR_D_gyro_bias (sf.M33): Derivative of DR w.r.t. gyro_bias evaluated at gyro_bias_hat
-        Dv_D_accel_bias (sf.M33): Derivative of Dv w.r.t. accel_bias evaluated at accel_bias_hat
-        Dv_D_gyro_bias (sf.M33): Derivative of Dv w.r.t. gyro_bias evaluated at gyro_bias_hat
-        Dp_D_accel_bias (sf.M33): Derivative of Dp w.r.t. accel_bias evaluated at accel_bias_hat
-        Dp_D_gyro_bias (sf.M33): Derivative of Dp w.r.t. gyro_bias evaluated at gyro_bias_hat
-        accel_bias_hat (sf.V3): The accelerometer bias used during preintegration
-        gyro_bias_hat (sf.V3): The gyroscope bias used during preintegration
-        gravity (sf.V3): Acceleration due to gravity (in the same frame as pose_x and vel_x),
-            i.e., the vector which when added to the accelerometer measurements gives the
-            true acceleration (up to bias and noise) of the IMU.
-        dt (T.Scalar): The time between timestep i and j: t_j - t_i
-        epsilon (T.Scalar): epsilon used for numerical stability
+        sqrt_info: sqrt info matrix of DR('s tangent space), Dv, Dp
+        DR_D_gyro_bias: Derivative of DR w.r.t. gyro_bias evaluated at gyro_bias_hat
+        Dv_D_accel_bias: Derivative of Dv w.r.t. accel_bias evaluated at accel_bias_hat
+        Dv_D_gyro_bias: Derivative of Dv w.r.t. gyro_bias evaluated at gyro_bias_hat
+        Dp_D_accel_bias: Derivative of Dp w.r.t. accel_bias evaluated at accel_bias_hat
+        Dp_D_gyro_bias: Derivative of Dp w.r.t. gyro_bias evaluated at gyro_bias_hat
+        accel_bias_hat: The accelerometer bias used during preintegration
+        gyro_bias_hat: The gyroscope bias used during preintegration
+        gravity: Acceleration due to gravity (in the same frame as pose_x and vel_x), i.e., the
+            vector which when added to the accelerometer measurements gives the true acceleration
+            (up to bias and noise) of the IMU.
+        dt: The time between timestep i and j: t_j - t_i
+        epsilon: epsilon used for numerical stability
 
     Outputs:
         res: 9dof product residual between the orientations, then velocities, then positions.
@@ -124,11 +164,11 @@ def handwritten_new_state_D_state_gyro_accel(
     gyroscope measurement, and the accelerometer measurement.
 
     Args:
-        DR (sf.Rot3): Preintegrated DR of the previous state
-        corrected_gyro (sf.V3): gyroscope measurment corrected for IMU bias
-        corrected_accel (sf.V3): accelerometer measurement corrected for IMU bias
-        dt (T.Scalar): Time difference between the previous time step and the new time step
-        epsilon (T.Scalar): epsilon for numerical stability
+        DR: Preintegrated DR of the previous state
+        corrected_gyro: gyroscope measurment corrected for IMU bias
+        corrected_accel: accelerometer measurement corrected for IMU bias
+        dt: Time difference between the previous time step and the new time step
+        epsilon: epsilon for numerical stability
 
     Returns:
         T.Tuple[sf.M99, sf.M93, sf.M93]: new_state_D_old_state, new_state_D_gyro_measurement, new_state_D_accel_measurement
@@ -221,23 +261,23 @@ def imu_manifold_preintegration_update(
     derivatives w.r.t. to bias should all be 0.
 
     Args:
-        DR (sf.Rot3): Preintegrated change in orientation
-        Dv (sf.V3): Preintegrated change in velocity
-        Dp (sf.V3): Preintegrated change in position
-        covariance (sf.M99): Covariance [DR, Dv, Dp] in local coordinates of mean
-        DR_D_gyro_bias (sf.M33): Derivative of DR w.r.t. gyro_bias
-        Dv_D_accel_bias (sf.M33): Derivative of Dv w.r.t. accel_bias
-        Dv_D_gyro_bias (sf.M33): Derivative of Dv w.r.t. gyro_bias
-        Dp_D_accel_bias (sf.M33): Derivative of Dp w.r.t. accel_bias
-        Dp_D_gyro_bias (sf.M33): Derivative of Dp w.r.t. gyro_bias
-        accel_bias (sf.V3): Initial guess for the accelerometer measurement bias
-        gyro_bias (sf.V3): Initial guess for the gyroscope measurement bias
-        accel_cov_diagonal (sf.M33): The diagonal of the covariance of the accelerometer measurement
-        gyro_cov_diagonal (sf.M33): The diagonal of the covariance of the gyroscope measurement
-        accel_measurement (sf.V3): The accelerometer measurement
-        gyro_measurement (sf.V3): The gyroscope measurement
-        dt (T.Scalar): The time between the new measurements and the last
-        epsilon (T.Scalar): epsilon for numerical stability
+        DR: Preintegrated change in orientation
+        Dv: Preintegrated change in velocity
+        Dp: Preintegrated change in position
+        covariance: Covariance [DR, Dv, Dp] in local coordinates of mean
+        DR_D_gyro_bias: Derivative of DR w.r.t. gyro_bias
+        Dv_D_accel_bias: Derivative of Dv w.r.t. accel_bias
+        Dv_D_gyro_bias: Derivative of Dv w.r.t. gyro_bias
+        Dp_D_accel_bias: Derivative of Dp w.r.t. accel_bias
+        Dp_D_gyro_bias: Derivative of Dp w.r.t. gyro_bias
+        accel_bias: Initial guess for the accelerometer measurement bias
+        gyro_bias: Initial guess for the gyroscope measurement bias
+        accel_cov_diagonal: The diagonal of the covariance of the accelerometer measurement
+        gyro_cov_diagonal: The diagonal of the covariance of the gyroscope measurement
+        accel_measurement: The accelerometer measurement
+        gyro_measurement: The gyroscope measurement
+        dt: The time between the new measurements and the last
+        epsilon: epsilon for numerical stability
 
     Returns:
         T.Tuple[sf.Rot3, sf.V3, sf.V3, sf.M99, sf.M33, sf.M33, sf.M33, sf.M33, sf.M33]:
