@@ -25,8 +25,6 @@ struct BundleAdjustmentProblemParams {
   double pose_noise = 0.1;
   double pose_prior_noise = 0.3;
   Eigen::Vector2i image_shape{1280, 720};
-  bool debug_stats = false;
-  bool check_derivatives = false;
 };
 
 enum Var : char {

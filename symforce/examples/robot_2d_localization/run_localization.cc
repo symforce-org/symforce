@@ -50,7 +50,7 @@ void RunLocalization() {
 
   auto params = sym::DefaultOptimizerParams();
   params.verbose = true;
-  sym::Optimizer<double> optimizer(params, factors, sym::kDefaultEpsilon<double>);
+  sym::Optimizer<double> optimizer(params, factors);
 
   sym::Values<double> values;
   for (int i = 0; i < num_poses; ++i) {

@@ -30,6 +30,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   constexpr const Scalar kEpsilon = 1e-10;
 
   sym::optimizer_params_t params{};
+  params.debug_stats = true;
   params.initial_lambda = 1.0;
   params.lambda_up_factor = 3.0;
   params.lambda_down_factor = 1.0 / 3.0;
@@ -66,12 +67,9 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   solver.SetIndex(index);
   solver.Reset(values_init);
 
-  // Collect debug stats so that we have the final residual
-  const bool debug_stats = true;
-
   // Do a single gauss-newton iteration
   sym::OptimizationStats<typename sym::LevenbergMarquardtSolver<Scalar>::MatrixType> stats{};
-  solver.Iterate(residual_func, stats, debug_stats);
+  solver.Iterate(residual_func, stats);
 
   const sym::VectorX<Scalar> residual_final =
       stats.iterations.back().residual.template cast<Scalar>();

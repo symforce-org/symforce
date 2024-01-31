@@ -34,8 +34,11 @@ TEST_CASE("Optimizer can be used with dense cholesky solver", "[dense-optimizer]
       },
       {'x'}));
 
-  DenseOptimizer<double> optimizer(sym::DefaultOptimizerParams(), factors, sym::kDefaultEpsilond,
-                                   "optimizer_name", {'x'}, true, true, true);
+  auto params = sym::DefaultOptimizerParams();
+  params.check_derivatives = true;
+  params.include_jacobians = true;
+
+  DenseOptimizer<double> optimizer(params, factors, "optimizer_name", {'x'});
 
   sym::Valuesd values;
   values.Set('x', 2.0);

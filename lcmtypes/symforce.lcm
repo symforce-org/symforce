@@ -119,6 +119,20 @@ struct optimizer_params_t {
   // Print information for every iteration?
   boolean verbose;
 
+  // Whether the optimizer should record debugging stats such as the optimized values, residual,
+  // jacobian, etc. computed at each iteration of the optimization.
+  boolean debug_stats;
+  // Check derivatives for consistency.  This computes the numerical jacobian of the residual, and
+  // verifies that it matches the jacobian computed by the linearization function.  It also verifies
+  // that the Hessian and RHS computed by the linearization function match J^T * J and J^T * b
+  boolean check_derivatives;
+  // Whether the optimizer should compute jacobians.  Required for check_derivatives, and for
+  // computing linear error at each step.
+  boolean include_jacobians;
+  // If true, will perform additional sanity checks while optimizing which may be expensive.  This
+  // uses additional compute but not additional memory except for logging.
+  boolean debug_checks;
+
   // Damping value (lambda) on the first iteration of the LM loop
   double initial_lambda;
   // Factor greater than one to multiply by lambda
@@ -235,6 +249,9 @@ enum levenberg_marquardt_solver_failure_reason_t : int32_t {
   INVALID = 0,
   // We could not increase lambda high enough to make progress
   LAMBDA_OUT_OF_BOUNDS = 1,
+  // The initial error was not finite (either NaN or Inf)
+  INITIAL_ERROR_NOT_FINITE = 2,
+
 }
 
 // Debug stats for a full optimization run

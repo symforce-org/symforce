@@ -682,16 +682,11 @@ class SymforceCCSymTest(TestCase):
                 epsilon=1e-6,
                 name="OptimizeTest",
                 keys=[],
-                debug_stats=False,
-                check_derivatives=False,
             )
 
-        make_opt = lambda: cc_sym.Optimizer(
-            params=cc_sym.default_optimizer_params(),
-            factors=[pi_factor],
-            debug_stats=False,
-            include_jacobians=True,
-        )
+        params_with_jacobians = cc_sym.default_optimizer_params()
+        params_with_jacobians.include_jacobians = True
+        make_opt = lambda: cc_sym.Optimizer(params=params_with_jacobians, factors=[pi_factor])
 
         with self.subTest(msg="Optimizer.factors has been wrapped"):
             opt = make_opt()

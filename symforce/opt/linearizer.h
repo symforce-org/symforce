@@ -40,9 +40,12 @@ class Linearizer {
    * @param key_order: If provided, acts as an ordered set of keys that form the state vector
    *    to optimize. Can equal the set of all factor keys or a subset of all factor keys. If not
    *    provided, it is computed from all keys for all factors using a default ordering.
+   * @param debug_checks: Whether to perform additional sanity checks for NaNs.  This uses
+   *    additional compute but not additional memory except for logging.
    */
   Linearizer(const std::string& name, const std::vector<Factor<Scalar>>& factors,
-             const std::vector<Key>& key_order = {}, bool include_jacobians = false);
+             const std::vector<Key>& key_order = {}, bool include_jacobians = false,
+             bool debug_checks = false);
 
   /**
    * Update linearization at a new evaluation point
@@ -124,6 +127,8 @@ class Linearizer {
   std::vector<std::vector<index_entry_t>> factor_indices_;
 
   bool include_jacobians_;
+
+  bool debug_checks_;
 
   // Linearized factors - stores individual factor residuals, jacobians, etc
   internal::LinearizedDenseFactorPool<Scalar> linearized_dense_factors_;  // one per Jacobian shape

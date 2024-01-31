@@ -83,10 +83,6 @@ class Optimizer:
         optimized_keys: A set of the keys to be optimized. Only required if symbolic factors are
             passed to the optimizer.
         params: Params for the optimizer
-        debug_stats: Whether the optimizer should record debugging stats such as the optimized
-            values, residual, jacobian, etc. computed at each iteration of the optimization.
-        include_jacobians: Whether the optimizer should compute jacobians (required for linear
-            error)
     """
 
     @dataclass
@@ -101,6 +97,10 @@ class Optimizer:
         """
 
         verbose: bool = True
+        debug_stats: bool = False
+        check_derivatives: bool = False
+        include_jacobians: bool = False
+        debug_checks: bool = False
         initial_lambda: float = 1.0
         lambda_up_factor: float = 4.0
         lambda_down_factor: float = 1 / 4.0
@@ -214,8 +214,8 @@ class Optimizer:
         factors: T.Iterable[T.Union[Factor, NumericFactor]],
         optimized_keys: T.Sequence[str] = None,
         params: Optimizer.Params = None,
-        debug_stats: bool = False,
-        include_jacobians: bool = False,
+        debug_stats: bool = None,
+        include_jacobians: bool = None,
     ):
         if optimized_keys is None:
             # This will be filled with the optimized keys of the numeric factors
@@ -261,7 +261,18 @@ class Optimizer:
         else:
             self.params = params
 
-        self.debug_stats = debug_stats
+        if debug_stats is not None:
+            self.params.debug_stats = debug_stats
+            warnings.warn(
+                "debug_stats argument is deprecated, use params.debug_stats", FutureWarning
+            )
+
+        if include_jacobians is not None:
+            self.params.include_jacobians = include_jacobians
+            warnings.warn(
+                "include_jacobians argument is deprecated, use params.include_jacobians",
+                FutureWarning,
+            )
 
         self._initialized = False
 
@@ -283,8 +294,6 @@ class Optimizer:
         self._cc_optimizer = cc_sym.Optimizer(
             optimizer_params_t(**dataclasses.asdict(self.params)),
             [factor.cc_factor(self._cc_keys_map) for factor in numeric_factors],
-            debug_stats=self.debug_stats,
-            include_jacobians=include_jacobians,
         )
 
     def _initialize(self, values: Values) -> None:

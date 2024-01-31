@@ -187,8 +187,7 @@ class LevenbergMarquardtSolver {
   // Run one iteration of the optimization. Returns the optimization status, which will be empty if
   // the optimization should not exit yet.
   optional<std::pair<optimization_status_t, FailureReason>> Iterate(
-      const LinearizeFunc& func, OptimizationStats<MatrixType>& stats, bool debug_stats = false,
-      bool include_jacobians = false);
+      const LinearizeFunc& func, OptimizationStats<MatrixType>& stats);
 
   const Values<Scalar>& GetBestValues() const {
     SYM_ASSERT(state_.BestIsValid());
@@ -209,8 +208,7 @@ class LevenbergMarquardtSolver {
   void CheckHessianDiagonal(const MatrixType& hessian_lower_damped, Scalar lambda);
 
   void PopulateIterationStats(optimization_iteration_t& iteration_stats, const StateType& state,
-                              Scalar new_error, Scalar relative_reduction, bool debug_stats,
-                              bool include_jacobians) const;
+                              Scalar new_error, Scalar relative_reduction) const;
 
   void Update(const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
               Values<Scalar>& updated_values) const;

@@ -7,6 +7,10 @@
 
 sym::optimizer_params_t sym::DefaultOptimizerParams() {
   const bool verbose = false;
+  const bool debug_stats = false;
+  const bool check_derivatives = false;
+  const bool include_jacobians = false;
+  const bool debug_checks = false;
   const double initial_lambda = 1.0;
   const double lambda_up_factor = 4.0;
   const double lambda_down_factor = 1 / 4.0;
@@ -22,6 +26,10 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
 
   return sym::optimizer_params_t{
       verbose,
+      debug_stats,
+      check_derivatives,
+      include_jacobians,
+      debug_checks,
       initial_lambda,
       lambda_up_factor,
       lambda_down_factor,

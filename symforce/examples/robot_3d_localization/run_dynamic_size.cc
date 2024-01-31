@@ -77,7 +77,6 @@ void RunDynamic() {
       BuildDynamicFactors<double>(kNumPoses, kNumLandmarks);
 
   sym::Optimizer<double> optimizer(RobotLocalizationOptimizerParams(), factors,
-                                   sym::kDefaultEpsilon<double>,
                                    "Robot3DScanMatchingOptimizerDynamic");
 
   // Optimize

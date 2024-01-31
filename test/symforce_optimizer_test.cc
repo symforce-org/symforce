@@ -153,10 +153,10 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   sym::optimizer_params_t params = DefaultLmParams();
   params.iterations = 50;
   params.early_exit_min_reduction = 0.0001;
+  params.check_derivatives = true;
+  params.include_jacobians = true;
 
-  sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimize", {},
-                                   /* debug_stats */ false, /* check_derivatives */ true,
-                                   /* include_jacobians */ true);
+  sym::Optimizer<double> optimizer(params, factors);
   const auto stats = optimizer.Optimize(values);
 
   INFO("Optimized values: " << values);
@@ -244,7 +244,7 @@ TEST_CASE("Test Rotation smoothing", "[optimizer]") {
   params.iterations = 50;
   params.early_exit_min_reduction = 0.0001;
 
-  sym::Optimizer<double> optimizer(params, factors, epsilon);
+  sym::Optimizer<double> optimizer(params, factors);
   const auto stats = optimizer.Optimize(values);
 
   INFO("Optimized values: " << values);
@@ -327,7 +327,7 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
     optimized_keys.emplace_back('R', i);
   }
 
-  sym::Optimizer<double> optimizer(params, factors, epsilon, "sym::Optimizer", optimized_keys);
+  sym::Optimizer<double> optimizer(params, factors, "sym::Optimizer", optimized_keys);
   const auto stats = optimizer.Optimize(values);
 
   INFO("Optimized values: " << values);
@@ -356,12 +356,12 @@ TEST_CASE("Test nontrivial (frozen, out-of-order) keys", "[optimizer]") {
  */
 TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
   sym::Optimizerd optimizer1(
-      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
+      DefaultLmParams(), {sym::Factord()}, "sym::Optimizer", {'a'}, sym::kDefaultEpsilond,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::MetisOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 
   sym::Optimizerd optimizer2(
-      DefaultLmParams(), {sym::Factord()}, 1e-10, "sym::Optimizer", {'a'}, false, false, false,
+      DefaultLmParams(), {sym::Factord()}, "sym::Optimizer", {'a'}, sym::kDefaultEpsilond,
       sym::SparseCholeskySolver<Eigen::SparseMatrix<double>>(
           Eigen::NaturalOrdering<Eigen::SparseMatrix<double>::StorageIndex>()));
 }

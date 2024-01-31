@@ -182,9 +182,8 @@ void RunBundleAdjustment() {
   // Create and set up Optimizer
   const sym::optimizer_params_t optimizer_params = sym::example_utils::OptimizerParams();
 
-  sym::Optimizerd optimizer(optimizer_params, {BuildFactor()}, params.epsilon,
-                            "BundleAdjustmentOptimizer", {}, params.debug_stats,
-                            params.check_derivatives);
+  sym::Optimizerd optimizer(optimizer_params, {BuildFactor()}, "BundleAdjustmentOptimizer", {},
+                            params.epsilon);
 
   // Optimize
   const sym::Optimizerd::Stats stats = optimizer.Optimize(values);

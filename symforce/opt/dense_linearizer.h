@@ -32,9 +32,12 @@ class DenseLinearizer {
    *     optimize. Can equal the set of all factor keys or a subset of all factor keys. If not
    *     provided, it is computed from all keys for all factors using a default ordering.
    * @param include_jacobians: Relinearize only allocates and fills out the jacobian if true.
+   * @param debug_checks: Whether to perform additional sanity checks for NaNs.  This uses
+   *    additional compute but not additional memory except for logging.
    */
   DenseLinearizer(const std::string& name, const std::vector<Factor<Scalar>>& factors,
-                  const std::vector<Key>& key_order = {}, bool include_jacobians = false);
+                  const std::vector<Key>& key_order = {}, bool include_jacobians = false,
+                  bool debug_checks = false);
 
   /**
    * Returns whether Relinearize() has already been called once.
@@ -80,6 +83,7 @@ class DenseLinearizer {
   internal::LinearizedDenseFactorPool<Scalar> linearized_dense_factors_;
   bool is_initialized_;
   bool include_jacobians_;
+  bool debug_checks_;
 
   // The index for each factor in the values. Cached the first time we linearize, to avoid repeated
   // unordered_map lookups

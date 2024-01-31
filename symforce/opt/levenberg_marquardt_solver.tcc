@@ -91,7 +91,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
     optimization_iteration_t& iteration_stats, const StateType& state, const Scalar new_error,
-    const Scalar relative_reduction, const bool debug_stats, const bool include_jacobians) const {
+    const Scalar relative_reduction) const {
   SYM_TIME_SCOPE("LM<{}>: IterationStats", id_);
 
   iteration_stats.iteration = iteration_;
@@ -100,22 +100,30 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
   iteration_stats.new_error = new_error;
   iteration_stats.relative_reduction = relative_reduction;
 
-  if (include_jacobians) {
+  if (p_.include_jacobians) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
     iteration_stats.new_error_linear = state.Init().GetLinearization().LinearError(update_);
   }
 
   if (p_.verbose) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - Print", id_);
-    spdlog::info(
-        "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3e}/{:.3e}/{:.3e}, "
-        "rel reduction: {:.5e}",
-        id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
-        iteration_stats.new_error_linear, iteration_stats.new_error,
-        iteration_stats.relative_reduction);
+    if (p_.include_jacobians) {
+      spdlog::info(
+          "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3e}/{:.3e}/{:.3e}, "
+          "rel reduction: {:.5e}",
+          id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
+          iteration_stats.new_error_linear, iteration_stats.new_error,
+          iteration_stats.relative_reduction);
+    } else {
+      spdlog::info(
+          "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/new: {:.3e}/{:.3e}, "
+          "rel reduction: {:.5e}",
+          id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
+          iteration_stats.new_error, iteration_stats.relative_reduction);
+    }
   }
 
-  if (debug_stats) {
+  if (p_.debug_stats) {
     iteration_stats.values = state.New().values.template Cast<double>().GetLcmType();
     const VectorX<Scalar> residual_vec = state.New().GetLinearization().residual;
     iteration_stats.residual = residual_vec.template cast<float>();
@@ -158,8 +166,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
 template <typename ScalarType, typename LinearSolverType>
 optional<std::pair<optimization_status_t, levenberg_marquardt_solver_failure_reason_t>>
 LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
-    const LinearizeFunc& func, OptimizationStats<MatrixType>& stats, const bool debug_stats,
-    const bool include_jacobians) {
+    const LinearizeFunc& func, OptimizationStats<MatrixType>& stats) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
 
   // new -> init
@@ -184,13 +191,19 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     iteration_stats.new_error = state_.Init().Error();
     iteration_stats.current_lambda = current_lambda_;
 
-    if (debug_stats) {
+    if (p_.debug_stats) {
       iteration_stats.values = state_.Init().values.template Cast<double>().GetLcmType();
       const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
       iteration_stats.residual = residual_vec.template cast<float>();
       const MatrixX<Scalar> jacobian_vec =
           JacobianValues(state_.Init().GetLinearization().jacobian);
       iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
+    }
+
+    if (!std::isfinite(state_.Init().Error())) {
+      spdlog::warn("LM<{}> Encountered non-finite initial error: {}", id_, state_.Init().Error());
+      spdlog::warn("LM<{}> Turn on debug_checks to see which factor is causing this", id_);
+      return {{optimization_status_t::FAILED, FailureReason::INITIAL_ERROR_NOT_FINITE}};
     }
   }
 
@@ -215,7 +228,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
     // NOTE(aaron): This has to happen after the first factorize, since L_inner is not filled out
     // by ComputeSymbolicSparsity
-    if (debug_stats && stats.linear_solver_ordering.size() == 0) {
+    if (p_.debug_stats && stats.linear_solver_ordering.size() == 0) {
       stats.linear_solver_ordering = linear_solver_.Permutation().indices();
       stats.cholesky_factor_sparsity = GetSparseStructure(linear_solver_.L());
     }
@@ -224,6 +237,10 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   {
     SYM_TIME_SCOPE("LM<{}>: SparseSolve", id_);
     update_ = linear_solver_.Solve(state_.Init().GetLinearization().rhs);
+  }
+
+  if (p_.debug_checks && !update_.array().isFinite().all()) {
+    spdlog::warn("LM<{}> Non-finite update: {}", id_, update_.transpose());
   }
 
   {
@@ -239,11 +256,11 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   stats.iterations.emplace_back();
   optimization_iteration_t& iteration_stats = stats.iterations.back();
-  PopulateIterationStats(iteration_stats, state_, new_error, relative_reduction, debug_stats,
-                         include_jacobians);
+  PopulateIterationStats(iteration_stats, state_, new_error, relative_reduction);
 
   if (!std::isfinite(new_error)) {
     spdlog::warn("LM<{}> Encountered non-finite error: {}", id_, new_error);
+    spdlog::warn("LM<{}> Turn on debug_checks to see which factor is causing this", id_);
   }
 
   optional<std::pair<optimization_status_t, FailureReason>> status{};

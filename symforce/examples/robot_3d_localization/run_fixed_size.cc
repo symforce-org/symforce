@@ -57,7 +57,6 @@ void RunFixed() {
   const std::vector<sym::Factor<double>> factors = {BuildFixedFactor<double>()};
 
   sym::Optimizer<double> optimizer(RobotLocalizationOptimizerParams(), factors,
-                                   sym::kDefaultEpsilon<double>,
                                    "Robot3DScanMatchingOptimizerFixed");
 
   // Optimize

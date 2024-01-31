@@ -19,25 +19,63 @@ namespace sym {
 template <typename ScalarType, typename NonlinearSolverType>
 Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
                                                       std::vector<Factor<Scalar>> factors,
-                                                      const Scalar epsilon, const std::string& name,
-                                                      std::vector<Key> keys, bool debug_stats,
-                                                      bool check_derivatives,
-                                                      bool include_jacobians)
+                                                      const std::string& name,
+                                                      std::vector<Key> keys, const Scalar epsilon)
     : factors_(std::move(factors)),
       name_(name),
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
-      debug_stats_(debug_stats),
-      include_jacobians_(include_jacobians),
+      debug_stats_(params.debug_stats),
+      include_jacobians_(params.include_jacobians),
       keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
       index_(),
-      linearizer_(name_, factors_, keys_, include_jacobians),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)),
+      linearizer_(name_, factors_, keys_, params.include_jacobians, params.debug_checks),
+      linearize_func_(BuildLinearizeFunc(params.check_derivatives)),
       verbose_(params.verbose) {
   SYM_ASSERT(factors_.size() > 0);
   SYM_ASSERT(keys_.size() > 0);
 
-  SYM_ASSERT(!check_derivatives || include_jacobians);
+  SYM_ASSERT(!params.check_derivatives || params.include_jacobians);
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
+                                                      std::vector<Factor<Scalar>> factors,
+                                                      const Scalar epsilon, const std::string& name,
+                                                      std::vector<Key> keys, const bool debug_stats,
+                                                      const bool check_derivatives,
+                                                      const bool include_jacobians)
+    : Optimizer(
+          [&]() {
+            auto modified_params = params;
+            modified_params.debug_stats = debug_stats;
+            modified_params.check_derivatives = check_derivatives;
+            modified_params.include_jacobians = include_jacobians;
+            return modified_params;
+          }(),
+          std::move(factors), name, std::move(keys), epsilon) {}
+
+template <typename ScalarType, typename NonlinearSolverType>
+template <typename... NonlinearSolverArgs>
+Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
+    const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const std::string& name,
+    std::vector<Key> keys, Scalar epsilon, NonlinearSolverArgs&&... nonlinear_solver_args)
+    : factors_(std::move(factors)),
+      name_(name),
+      nonlinear_solver_(params, name, epsilon,
+                        std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
+      epsilon_(epsilon),
+      debug_stats_(params.debug_stats),
+      include_jacobians_(params.include_jacobians),
+      keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
+      index_(),
+      linearizer_(name_, factors_, keys_, params.include_jacobians),
+      linearize_func_(BuildLinearizeFunc(params.check_derivatives)),
+      verbose_(params.verbose) {
+  SYM_ASSERT(factors_.size() > 0);
+  SYM_ASSERT(keys_.size() > 0);
+
+  SYM_ASSERT(!params.check_derivatives || params.include_jacobians);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -46,23 +84,16 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
     const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const Scalar epsilon,
     const std::string& name, std::vector<Key> keys, bool debug_stats, bool check_derivatives,
     bool include_jacobians, NonlinearSolverArgs&&... nonlinear_solver_args)
-    : factors_(std::move(factors)),
-      name_(name),
-      nonlinear_solver_(params, name, epsilon,
-                        std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
-      epsilon_(epsilon),
-      debug_stats_(debug_stats),
-      include_jacobians_(include_jacobians),
-      keys_(keys.empty() ? ComputeKeysToOptimize(factors_) : std::move(keys)),
-      index_(),
-      linearizer_(name_, factors_, keys_, include_jacobians),
-      linearize_func_(BuildLinearizeFunc(check_derivatives)),
-      verbose_(params.verbose) {
-  SYM_ASSERT(factors_.size() > 0);
-  SYM_ASSERT(keys_.size() > 0);
-
-  SYM_ASSERT(!check_derivatives || include_jacobians);
-}
+    : Optimizer(
+          [&]() {
+            auto modified_params = params;
+            modified_params.debug_stats = debug_stats;
+            modified_params.check_derivatives = check_derivatives;
+            modified_params.include_jacobians = include_jacobians;
+            return modified_params;
+          }(),
+          std::move(factors), name, std::move(keys), epsilon,
+          std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...) {}
 
 // ----------------------------------------------------------------------------
 // Public methods
@@ -263,8 +294,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
   // Iterate
   int i;
   for (i = 0; i < num_iterations; i++) {
-    const auto maybe_status_and_failure_reason =
-        nonlinear_solver_.Iterate(linearize_func_, stats, debug_stats_, include_jacobians_);
+    const auto maybe_status_and_failure_reason = nonlinear_solver_.Iterate(linearize_func_, stats);
     if (maybe_status_and_failure_reason) {
       const auto& status_and_failure_reason = maybe_status_and_failure_reason.value();
 

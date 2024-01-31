@@ -384,12 +384,9 @@ class Optimizer:
         self,
         params: optimizer_params_t,
         factors: typing.List[Factor],
-        epsilon: float = 2.220446049250313e-15,
         name: str = "sym::Optimize",
         keys: typing.List[Key] = [],
-        debug_stats: bool = False,
-        check_derivatives: bool = False,
-        include_jacobians: bool = False,
+        epsilon: float = 2.220446049250313e-15,
     ) -> None: ...
     def compute_all_covariances(
         self, linearization: Linearization

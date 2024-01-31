@@ -15,12 +15,13 @@ template <typename Scalar>
 DenseLinearizer<Scalar>::DenseLinearizer(const std::string& name,
                                          const std::vector<Factor<Scalar>>& factors,
                                          const std::vector<Key>& key_order,
-                                         const bool include_jacobians)
+                                         const bool include_jacobians, const bool debug_checks)
     : name_(name),
       factors_{&factors},
       state_index_{},
       is_initialized_{false},
-      include_jacobians_{include_jacobians} {
+      include_jacobians_{include_jacobians},
+      debug_checks_{debug_checks} {
   if (key_order.empty()) {
     keys_ = ComputeKeysToOptimize(factors);
   } else {
@@ -171,6 +172,10 @@ void DenseLinearizer<Scalar>::InitialLinearization(const Values<Scalar>& values,
     // First, we evaluate into a temporary linearized factor
     factor_indices_.push_back(values.CreateIndex(factor.AllKeys()).entries);
     factor.Linearize(values, factor_linearization, &factor_indices_.back());
+    if (debug_checks_) {
+      internal::CheckLinearizedFactor(name_, factor, values, factor_linearization,
+                                      factor_indices_.back());
+    }
 
     factor_keyoffsets_.emplace_back();
     const int32_t tangent_dim = [&] {
@@ -252,7 +257,13 @@ void DenseLinearizer<ScalarType>::Relinearize(const Values<ScalarType>& values,
 
     int residual_offset = 0;
     for (int i = 0; i < static_cast<int>(factors_->size()); i++) {
-      (*factors_)[i].Linearize(values, linearized_dense_factors_.at(i), &factor_indices_[i]);
+      const auto& factor = (*factors_)[i];
+      auto& linearized_dense_factor = linearized_dense_factors_.at(i);
+      factor.Linearize(values, linearized_dense_factor, &factor_indices_[i]);
+      if (debug_checks_) {
+        internal::CheckLinearizedFactor(name_, factor, values, linearized_dense_factor,
+                                        factor_indices_.back());
+      }
 
       const LinearizedDenseFactor& factor_linearization = linearized_dense_factors_.at(i);
       const std::vector<linearization_offsets_t>& key_offsets = factor_keyoffsets_[i];

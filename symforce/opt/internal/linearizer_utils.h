@@ -305,5 +305,67 @@ void AssertConsistentShapes(const int tangent_dim, const LinearizedFactorType& l
   SYM_ASSERT(tangent_dim == linearized_factor.rhs.rows());
 }
 
+template <typename Scalar>
+void CheckLinearizedFactor(
+    const std::string& name, const Factor<Scalar>& factor, const Values<Scalar>& values,
+    const typename LinearizedDenseFactorTypeHelper<Scalar>::Type& linearized_factor,
+    const std::vector<index_entry_t>& index_entry_cache) {
+  if (!linearized_factor.residual.array().isFinite().all() ||
+      !linearized_factor.hessian.array().isFinite().all() ||
+      !linearized_factor.rhs.array().isFinite().all()) {
+    std::ostringstream ss;
+    fmt::print(ss, "LM<{}> Non-finite linearization for factor:\n{}\n", name, factor);
+    for (const auto& index_entry : index_entry_cache) {
+      auto d = std::vector<double>{};
+      std::copy(values.Data().data() + index_entry.offset,
+                values.Data().data() + index_entry.offset + index_entry.storage_dim,
+                std::back_inserter(d));
+
+      fmt::print(ss, "  {} (offset={}, size={}) = {}\n", Key(index_entry.key), index_entry.offset,
+                 index_entry.storage_dim, d);
+    }
+
+    fmt::print(ss, "\n");
+    fmt::print(ss, "Residual:\n{}\n\n", linearized_factor.residual.transpose());
+    fmt::print(ss, "Jacobian:\n{}\n\n", MatrixX<Scalar>(linearized_factor.jacobian));
+    fmt::print(ss, "Hessian:\n{}\n\n", MatrixX<Scalar>(linearized_factor.hessian));
+    fmt::print(ss, "Rhs:\n{}\n", linearized_factor.rhs.transpose());
+
+    spdlog::warn(ss.str());
+  }
+}
+
+template <typename Scalar>
+void CheckLinearizedFactor(
+    const std::string& name, const Factor<Scalar>& factor, const Values<Scalar>& values,
+    const typename LinearizedSparseFactorTypeHelper<Scalar>::Type& linearized_factor,
+    const std::vector<index_entry_t>& index_entry_cache) {
+  const auto hessian_map = Eigen::Map<const VectorX<Scalar>>(linearized_factor.hessian.valuePtr(),
+                                                             linearized_factor.hessian.nonZeros());
+
+  if (!linearized_factor.residual.array().isFinite().all() ||
+      !hessian_map.array().isFinite().all() || !linearized_factor.rhs.array().isFinite().all()) {
+    std::ostringstream ss;
+    fmt::print(ss, "LM<{}> Non-finite linearization for factor:\n{}\n", name, factor);
+    for (const auto& index_entry : index_entry_cache) {
+      auto d = std::vector<double>{};
+      std::copy(values.Data().data() + index_entry.offset,
+                values.Data().data() + index_entry.offset + index_entry.storage_dim,
+                std::back_inserter(d));
+
+      fmt::print(ss, "  {} (offset={}, size={}) = {}\n", Key(index_entry.key), index_entry.offset,
+                 index_entry.storage_dim, d);
+    }
+
+    fmt::print(ss, "\n");
+    fmt::print(ss, "Residual:\n{}\n\n", linearized_factor.residual.transpose());
+    fmt::print(ss, "Jacobian:\n{}\n\n", Eigen::SparseMatrix<Scalar>(linearized_factor.jacobian));
+    fmt::print(ss, "Hessian:\n{}\n\n", Eigen::SparseMatrix<Scalar>(linearized_factor.hessian));
+    fmt::print(ss, "Rhs:\n{}\n", linearized_factor.rhs.transpose());
+
+    spdlog::warn(ss.str());
+  }
+}
+
 }  // namespace internal
 }  // namespace sym

@@ -81,19 +81,39 @@ class Optimizer {
 
   /**
    * Base constructor
+   *
+   * @param params: The params to use for the optimizer and nonlinear solver
+   * @param factors: The set of factors to include
+   * @param name: The name of this optimizer to be used for printing debug information
+   * @param keys: The set of keys to optimize.  If empty, will use all optimized keys touched by the
+   *    factors
+   * @param epsilon: Epsilon for numerical stability
    */
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
-            Scalar epsilon = kDefaultEpsilon<Scalar>, const std::string& name = "sym::Optimize",
-            std::vector<Key> keys = {}, bool debug_stats = false, bool check_derivatives = false,
-            bool include_jacobians = false);
+            const std::string& name = "sym::Optimize", std::vector<Key> keys = {},
+            const Scalar epsilon = sym::kDefaultEpsilon<Scalar>);
+
+  [[deprecated("Use the constructor that takes a params struct")]] Optimizer(
+      const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const Scalar epsilon,
+      const std::string& name, std::vector<Key> keys, bool debug_stats,
+      bool check_derivatives = false, bool include_jacobians = false);
 
   /**
    * Constructor that copies in factors and keys, with arguments for the nonlinear solver
+   *
+   * See the base constructor for argument descriptions, additional arguments are forwarded to the
+   * constructor for NonlinearSolverType
    */
   template <typename... NonlinearSolverArgs>
-  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, Scalar epsilon,
-            const std::string& name, std::vector<Key> keys, bool debug_stats,
-            bool check_derivatives, bool include_jacobians, NonlinearSolverArgs&&... args);
+  Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
+            const std::string& name, std::vector<Key> keys, Scalar epsilon,
+            NonlinearSolverArgs&&... nonlinear_solver_args);
+
+  template <typename... NonlinearSolverArgs>
+  [[deprecated("Use the constructor that takes a params struct")]] Optimizer(
+      const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, Scalar epsilon,
+      const std::string& name, std::vector<Key> keys, bool debug_stats, bool check_derivatives,
+      bool include_jacobians, NonlinearSolverArgs&&... nonlinear_solver_args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
   Optimizer(Optimizer&&) = delete;
@@ -312,7 +332,7 @@ template <typename Scalar, typename NonlinearSolverType = LevenbergMarquardtSolv
 typename Optimizer<Scalar, NonlinearSolverType>::Stats Optimize(
     const optimizer_params_t& params, const std::vector<Factor<Scalar>>& factors,
     Values<Scalar>& values, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
-  Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, epsilon);
+  Optimizer<Scalar, NonlinearSolverType> optimizer(params, factors, "sym::Optimize", {}, epsilon);
   return optimizer.Optimize(values);
 }
 

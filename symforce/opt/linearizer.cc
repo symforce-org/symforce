@@ -20,10 +20,12 @@ namespace sym {
 template <typename ScalarType>
 Linearizer<ScalarType>::Linearizer(const std::string& name,
                                    const std::vector<Factor<Scalar>>& factors,
-                                   const std::vector<Key>& key_order, const bool include_jacobians)
+                                   const std::vector<Key>& key_order, const bool include_jacobians,
+                                   const bool debug_checks)
     : name_(name),
       factors_(&factors),
       include_jacobians_(include_jacobians),
+      debug_checks_(debug_checks),
       linearized_dense_factors_(),
       linearized_sparse_factors_() {
   if (key_order.empty()) {
@@ -72,6 +74,10 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
         auto& linearized_sparse_factor = linearized_sparse_factors_.at(sparse_idx);
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
         factor.Linearize(values, linearized_sparse_factor, &factor_indices_[i]);
+        if (debug_checks_) {
+          internal::CheckLinearizedFactor(name_, factor, values, linearized_sparse_factor,
+                                          factor_indices_[i]);
+        }
 
         UpdateFromLinearizedSparseFactorIntoSparse(
             linearized_sparse_factor, sparse_factor_update_helpers_.at(sparse_idx), linearization);
@@ -82,6 +88,10 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
         auto& linearized_dense_factor = linearized_dense_factors_.at(dense_idx);
         // TODO: Only compute factor Jacobians when include_jacobians_ is true.
         factor.Linearize(values, linearized_dense_factor, &factor_indices_[i]);
+        if (debug_checks_) {
+          internal::CheckLinearizedFactor(name_, factor, values, linearized_dense_factor,
+                                          factor_indices_[i]);
+        }
 
         UpdateFromLinearizedDenseFactorIntoSparse(
             linearized_dense_factor, dense_factor_update_helpers_.at(dense_idx), linearization);
@@ -182,6 +192,10 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       LinearizedSparseFactor& linearized_factor = linearized_sparse_factors_.at(sparse_idx);
       ++sparse_idx;
       factor.Linearize(values, linearized_factor, &factor_indices_.back());
+      if (debug_checks_) {
+        internal::CheckLinearizedFactor(name_, factor, values, linearized_factor,
+                                        factor_indices_.back());
+      }
 
       auto helper_and_dimension =
           internal::ComputeFactorHelper<linearization_sparse_factor_helper_t>(
@@ -207,6 +221,10 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
       }
     } else {
       factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
+      if (debug_checks_) {
+        internal::CheckLinearizedFactor(name_, factor, values, linearized_dense_factor,
+                                        factor_indices_.back());
+      }
 
       // Make sure a temporary of the right dimension is kept for relinearizations
       linearized_dense_factors_.AppendFactorSize(linearized_dense_factor.residual.rows(),

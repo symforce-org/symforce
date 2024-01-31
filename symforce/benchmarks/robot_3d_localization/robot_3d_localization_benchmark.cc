@@ -50,7 +50,7 @@ TEMPLATE_TEST_CASE("sym_dynamic_linearize", "", double, float) {
       BuildDynamicFactors<Scalar>(kNumPoses, kNumLandmarks);
 
   sym::Optimizer<Scalar> optimizer(RobotLocalizationOptimizerParams(), factors,
-                                   sym::kDefaultEpsilon<Scalar>, "sym_dynamic_linearize");
+                                   "sym_dynamic_linearize");
 
   sym::Linearizer<Scalar>& linearizer = optimizer.Linearizer();
   sym::SparseLinearization<Scalar> linearization;
@@ -77,7 +77,7 @@ TEMPLATE_TEST_CASE("sym_dynamic_iterate", "", double, float) {
       BuildDynamicFactors<Scalar>(kNumPoses, kNumLandmarks);
 
   sym::Optimizer<Scalar> optimizer(RobotLocalizationOptimizerParams(), factors,
-                                   sym::kDefaultEpsilon<Scalar>, "sym_dynamic_iterate");
+                                   "sym_dynamic_iterate");
 
   typename sym::Optimizer<Scalar>::Stats stats;
 
@@ -103,7 +103,7 @@ TEMPLATE_TEST_CASE("sym_fixed_linearize", "", double, float) {
   const std::vector<sym::Factor<Scalar>> factors = {BuildFixedFactor<Scalar>()};
 
   sym::Optimizer<Scalar> optimizer(RobotLocalizationOptimizerParams(), factors,
-                                   sym::kDefaultEpsilon<Scalar>, "sym_fixed_linearize");
+                                   "sym_fixed_linearize");
 
   sym::Linearizer<Scalar>& linearizer = optimizer.Linearizer();
   sym::SparseLinearization<Scalar> linearization;
@@ -129,7 +129,7 @@ TEMPLATE_TEST_CASE("sym_fixed_iterate", "", double, float) {
   const std::vector<sym::Factor<Scalar>> factors = {BuildFixedFactor<Scalar>()};
 
   sym::Optimizer<Scalar> optimizer(RobotLocalizationOptimizerParams(), factors,
-                                   sym::kDefaultEpsilon<Scalar>, "sym_fixed_iterate");
+                                   "sym_fixed_iterate");
 
   typename sym::Optimizer<Scalar>::Stats stats;
 
