@@ -777,8 +777,10 @@ class SymforceCCSymTest(TestCase):
 
             lin.set_initialized()
             self.assertIsInstance(lin.error(), T.Scalar)
-            self.assertIsInstance(lin.linear_error(x_update=np.array([0.01])), T.Scalar)
-            lin.linear_error(np.array([0.01]))
+            self.assertIsInstance(
+                lin.linear_delta_error(x_update=np.array([0.01]), damping_vector=np.array([0.0])),
+                T.Scalar,
+            )
 
         with self.subTest(msg="cc_sym.Linearization is pickleable"):
             linearization = cc_sym.Linearization()

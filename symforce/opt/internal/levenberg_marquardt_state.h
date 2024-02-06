@@ -56,6 +56,10 @@ class LevenbergMarquardtState {
       have_cached_error_ = false;
     }
 
+    Linearization<MatrixType>& GetLinearization() {
+      return linearization_;
+    }
+
     const Linearization<MatrixType>& GetLinearization() const {
       return linearization_;
     }

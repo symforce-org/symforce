@@ -20,36 +20,37 @@ namespace sym {
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename LinearSolverType>
-typename LevenbergMarquardtSolver<ScalarType, LinearSolverType>::MatrixType
-LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(const MatrixType& hessian_lower,
-                                                                    bool& have_max_diagonal,
-                                                                    VectorX<Scalar>& max_diagonal,
-                                                                    const Scalar lambda) const {
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
+    MatrixType& hessian_lower, bool& have_max_diagonal, VectorX<Scalar>& max_diagonal,
+    const Scalar lambda, VectorX<Scalar>& damping_vector,
+    VectorX<Scalar>& undamped_diagonal) const {
   SYM_TIME_SCOPE("LM<{}>: DampHessian", id_);
-  MatrixType H_damped = hessian_lower;
+
+  undamped_diagonal = hessian_lower.diagonal();
 
   if (p_.use_diagonal_damping) {
     if (p_.keep_max_diagonal_damping) {
       if (!have_max_diagonal) {
-        max_diagonal = H_damped.diagonal();
-        max_diagonal = max_diagonal.cwiseMax(p_.diagonal_damping_min);
+        max_diagonal = undamped_diagonal.cwiseMax(p_.diagonal_damping_min);
       } else {
-        max_diagonal = max_diagonal.cwiseMax(H_damped.diagonal());
+        max_diagonal = max_diagonal.cwiseMax(undamped_diagonal);
       }
 
       have_max_diagonal = true;
 
-      H_damped.diagonal().array() += max_diagonal.array() * lambda;
+      damping_vector = max_diagonal * lambda;
     } else {
-      H_damped.diagonal().array() += H_damped.diagonal().array() * lambda;
+      damping_vector = undamped_diagonal.cwiseMax(p_.diagonal_damping_min) * lambda;
     }
+  } else {
+    damping_vector = VectorX<Scalar>::Zero(hessian_lower.rows());
   }
 
   if (p_.use_unit_damping) {
-    H_damped.diagonal().array() += lambda;
+    damping_vector.array() += lambda;
   }
 
-  return H_damped;
+  hessian_lower.diagonal() += damping_vector;
 }
 
 template <typename ScalarType, typename LinearSolverType>
@@ -100,27 +101,23 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
   iteration_stats.new_error = new_error;
   iteration_stats.relative_reduction = relative_reduction;
 
-  if (p_.include_jacobians) {
+  {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
-    iteration_stats.new_error_linear = state.Init().GetLinearization().LinearError(update_);
+    iteration_stats.new_error_linear =
+        state.Init().Error() +
+        state.Init().GetLinearization().LinearDeltaError(update_, damping_vector_);
   }
 
   if (p_.verbose) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - Print", id_);
-    if (p_.include_jacobians) {
-      spdlog::info(
-          "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3e}/{:.3e}/{:.3e}, "
-          "rel reduction: {:.5e}",
-          id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
-          iteration_stats.new_error_linear, iteration_stats.new_error,
-          iteration_stats.relative_reduction);
-    } else {
-      spdlog::info(
-          "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/new: {:.3e}/{:.3e}, "
-          "rel reduction: {:.5e}",
-          id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
-          iteration_stats.new_error, iteration_stats.relative_reduction);
-    }
+    spdlog::info(
+        "LM<{}> [iter {:4d}] lambda: {:.3e}, error prev/linear/new: {:.3e}/{:.3e}/{:.3e}, "
+        "rel reduction: {:.5e}, gain ratio: {:.5e}",
+        id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
+        iteration_stats.new_error_linear, iteration_stats.new_error,
+        iteration_stats.relative_reduction,
+        (state.Init().Error() - new_error) /
+            (state.Init().Error() - iteration_stats.new_error_linear));
   }
 
   if (p_.debug_stats) {
@@ -202,7 +199,9 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
     if (!std::isfinite(state_.Init().Error())) {
       spdlog::warn("LM<{}> Encountered non-finite initial error: {}", id_, state_.Init().Error());
-      spdlog::warn("LM<{}> Turn on debug_checks to see which factor is causing this", id_);
+      if (!p_.debug_checks) {
+        spdlog::warn("LM<{}> Turn on debug_checks to see which factor is causing this", id_);
+      }
       return {{optimization_status_t::FAILED, FailureReason::INITIAL_ERROR_NOT_FINITE}};
     }
   }
@@ -214,15 +213,14 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     solver_analyzed_ = true;
   }
 
-  // TODO(aaron): Get rid of this copy
-  H_damped_ = DampHessian(state_.Init().GetLinearization().hessian_lower, have_max_diagonal_,
-                          max_diagonal_, current_lambda_);
+  DampHessian(state_.Init().GetLinearization().hessian_lower, have_max_diagonal_, max_diagonal_,
+              current_lambda_, damping_vector_, undamped_diagonal_);
 
-  CheckHessianDiagonal(H_damped_, current_lambda_);
+  CheckHessianDiagonal(state_.Init().GetLinearization().hessian_lower, current_lambda_);
 
   {
     SYM_TIME_SCOPE("LM<{}>: SparseFactorize", id_);
-    const bool success = linear_solver_.Factorize(H_damped_);
+    const bool success = linear_solver_.Factorize(state_.Init().GetLinearization().hessian_lower);
     // TODO(brad): Instead try recovering from this (ultimately by increasing lambda).
     SYM_ASSERT(success, "Internal Error: Damped hessian factorization failed");
 
@@ -236,7 +234,12 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   {
     SYM_TIME_SCOPE("LM<{}>: SparseSolve", id_);
-    update_ = linear_solver_.Solve(state_.Init().GetLinearization().rhs);
+    update_ = -linear_solver_.Solve(state_.Init().GetLinearization().rhs);
+  }
+
+  {
+    SYM_TIME_SCOPE("LM<{}>: ResetHessianDiagonal", id_);
+    state_.Init().GetLinearization().hessian_lower.diagonal() = undamped_diagonal_;
   }
 
   if (p_.debug_checks && !update_.array().isFinite().all()) {
@@ -245,7 +248,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   {
     SYM_TIME_SCOPE("LM<{}>: Update", id_);
-    Update(state_.Init().values, index_, -update_, state_.New().values);
+    Update(state_.Init().values, index_, update_, state_.New().values);
   }
 
   state_.New().Relinearize(func);
@@ -260,7 +263,9 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   if (!std::isfinite(new_error)) {
     spdlog::warn("LM<{}> Encountered non-finite error: {}", id_, new_error);
-    spdlog::warn("LM<{}> Turn on debug_checks to see which factor is causing this", id_);
+    if (!p_.debug_checks) {
+      spdlog::warn("LM<{}> Turn on debug_checks to see which factor is causing this", id_);
+    }
   }
 
   optional<std::pair<optimization_status_t, FailureReason>> status{};
@@ -320,14 +325,11 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
     const MatrixType& hessian_lower, MatrixX<Scalar>& covariance) {
   SYM_TIME_SCOPE("LM<{}>: ComputeCovariance()", id_);
 
-  H_damped_ = hessian_lower;
-  H_damped_.diagonal().array() += epsilon_;
-
   // TODO(hayk, aaron): This solver assumes a dense RHS, should add support for a sparse RHS
-  const bool success = linear_solver_.Factorize(H_damped_);
-  // TODO(brad): Instead try recovering from this by damping by something larger than epsilon_
+  const bool success = linear_solver_.Factorize(hessian_lower);
+  // TODO(brad): Instead try recovering from this by damping?
   SYM_ASSERT(success, "Internal Error: damped hessian factorization failed");
-  covariance = MatrixX<Scalar>::Identity(H_damped_.rows(), H_damped_.rows());
+  covariance = MatrixX<Scalar>::Identity(hessian_lower.rows(), hessian_lower.rows());
   linear_solver_.SolveInPlace(covariance);
 }
 

@@ -202,8 +202,9 @@ class LevenbergMarquardtSolver {
   void ComputeCovariance(const MatrixType& hessian_lower, MatrixX<Scalar>& covariance);
 
  private:
-  MatrixType DampHessian(const MatrixType& hessian_lower, bool& have_max_diagonal,
-                         VectorX<Scalar>& max_diagonal, Scalar lambda) const;
+  void DampHessian(MatrixType& hessian_lower, bool& have_max_diagonal,
+                   VectorX<Scalar>& max_diagonal, Scalar lambda, VectorX<Scalar>& damping_vector,
+                   VectorX<Scalar>& undamped_diagonal) const;
 
   void CheckHessianDiagonal(const MatrixType& hessian_lower_damped, Scalar lambda);
 
@@ -239,7 +240,8 @@ class LevenbergMarquardtSolver {
 
   // Working storage to avoid reallocation
   VectorX<Scalar> update_;
-  MatrixType H_damped_;
+  VectorX<Scalar> damping_vector_;
+  VectorX<Scalar> undamped_diagonal_;
   Eigen::Array<bool, Eigen::Dynamic, 1> zero_diagonal_;
   std::vector<int> zero_diagonal_indices_;
 

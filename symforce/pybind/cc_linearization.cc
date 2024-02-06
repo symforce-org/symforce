@@ -32,7 +32,8 @@ void AddLinearizationWrapper(pybind11::module_ module) {
       .def("set_initialized", &sym::SparseLinearizationd::SetInitialized,
            py::arg("initialized") = true)
       .def("error", &sym::SparseLinearizationd::Error)
-      .def("linear_error", &sym::SparseLinearizationd::LinearError, py::arg("x_update"))
+      .def("linear_delta_error", &sym::SparseLinearizationd::LinearDeltaError, py::arg("x_update"),
+           py::arg("damping_vector"))
       .def(py::pickle(
           [](const sym::SparseLinearizationd& linearization) {  //  __getstate__
             return py::make_tuple(linearization.residual, linearization.hessian_lower,

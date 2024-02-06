@@ -234,7 +234,9 @@ class Linearization:
         """
         Returns whether the linearization is currently valid for the corresponding values. Accessing any of the members when this is false could result in unexpected behavior.
         """
-    def linear_error(self, x_update: numpy.ndarray) -> float: ...
+    def linear_delta_error(
+        self, x_update: numpy.ndarray, damping_vector: numpy.ndarray
+    ) -> float: ...
     def reset(self) -> None:
         """
         Set to invalid.

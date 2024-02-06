@@ -47,15 +47,22 @@ struct Linearization {
     initialized_ = initialized;
   }
 
-  inline double Error() const {
+  inline Scalar Error() const {
     SYM_ASSERT(IsInitialized());
-    return 0.5 * residual.squaredNorm();
+    return Scalar{0.5} * residual.squaredNorm();
   }
 
-  inline double LinearError(const Vector& x_update) const {
-    SYM_ASSERT(jacobian.cols() == x_update.size());
-    const auto linear_residual_new = -jacobian * x_update + residual;
-    return 0.5 * linear_residual_new.squaredNorm();
+  /**
+   * Returns the change in error predicted by the Linearization at the given update
+   *
+   * @param x_update The update to the values
+   * @param damping_vector The vector added to the diagonal of the hessian during the linear solve
+   */
+  inline Scalar LinearDeltaError(const Vector& x_update, const Vector& damping_vector) const {
+    SYM_ASSERT(IsInitialized());
+    // See Section 3.2 of "Methods For Non-Linear Least Squares Problems" 2nd Edition.
+    // http://www2.imm.dtu.dk/pubdb/edoc/imm3215.pdf
+    return Scalar{0.5} * x_update.dot(rhs - damping_vector.cwiseProduct(x_update));
   }
 
   // Sparse storage
