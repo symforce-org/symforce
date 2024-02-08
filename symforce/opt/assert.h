@@ -36,8 +36,6 @@ inline std::string FormatFailure(const char* error, const char* func, const char
  *
  * Inspiration taken from:
  *     http://cnicholson.net/2009/02/stupid-c-tricks-adventures-in-assert/
- *
- * TODO(hayk): Improve with _EQ variant, etc.
  */
 #ifndef SYMFORCE_DISABLE_ASSERT
 #define SYM_ASSERT(expr, ...)                                                                   \
@@ -47,9 +45,25 @@ inline std::string FormatFailure(const char* error, const char* func, const char
           sym::FormatFailure((#expr), __PRETTY_FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__)); \
     }                                                                                           \
   } while (0)
+
+#define SYM_ASSERT_EQ(a, b, ...)                                                          \
+  do {                                                                                    \
+    if ((a) != (b)) {                                                                     \
+      throw std::runtime_error(                                                           \
+          sym::FormatFailure(fmt::format((#a " == " #b " ({} == {})"), (a), (b)).c_str(), \
+                             __PRETTY_FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__));    \
+    }                                                                                     \
+  } while (0)
+
 #else
 #define SYM_ASSERT(expr, ...) \
   do {                        \
     (void)sizeof(expr);       \
+  } while (0)
+
+#define SYM_ASSERT_EQ(a, b, ... /*fmt, message args*/) \
+  do {                                                 \
+    (void)sizeof(a);                                   \
+    (void)sizeof(b);                                   \
   } while (0)
 #endif

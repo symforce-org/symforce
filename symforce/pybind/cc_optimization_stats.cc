@@ -30,7 +30,8 @@ void AddOptimizationStatsWrapper(pybind11::module_ module) {
                      "If status == FAILED, why?  This should be cast to the "
                      "NonlinearSolver::FailureReason enum for the nonlinear solver you used.")
       .def_readwrite("jacobian_sparsity", &sym::OptimizationStatsd::jacobian_sparsity,
-                     "Sparsity pattern of the problem jacobian (filled out if debug_stats=True)")
+                     "Sparsity pattern of the problem jacobian (filled out if debug_stats=True and "
+                     "include_jacobians=True)")
       .def_readwrite("linear_solver_ordering", &sym::OptimizationStatsd::linear_solver_ordering,
                      "Ordering used by the linear solver (filled out if debug_stats=True)")
       .def_readwrite("cholesky_factor_sparsity", &sym::OptimizationStatsd::cholesky_factor_sparsity,

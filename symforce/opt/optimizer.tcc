@@ -327,7 +327,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
     }
   }
 
-  if (debug_stats_) {
+  if (debug_stats_ && include_jacobians_) {
     const auto& linearization = nonlinear_solver_.GetBestLinearization();
     stats.jacobian_sparsity = GetSparseStructure(linearization.jacobian);
   }

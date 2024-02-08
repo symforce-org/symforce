@@ -343,14 +343,14 @@ class OptimizationStats:
     @property
     def jacobian_sparsity(self) -> sparse_matrix_structure_t:
         """
-        Sparsity pattern of the problem jacobian (filled out if debug_stats=True)
+        Sparsity pattern of the problem jacobian (filled out if debug_stats=True and include_jacobians=True)
 
         :type: sparse_matrix_structure_t
         """
     @jacobian_sparsity.setter
     def jacobian_sparsity(self, arg0: sparse_matrix_structure_t) -> None:
         """
-        Sparsity pattern of the problem jacobian (filled out if debug_stats=True)
+        Sparsity pattern of the problem jacobian (filled out if debug_stats=True and include_jacobians=True)
         """
     @property
     def linear_solver_ordering(self) -> typing.Any:

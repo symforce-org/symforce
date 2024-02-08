@@ -11,8 +11,10 @@
 #include <sym/factors/between_factor_rot3.h>
 #include <sym/factors/prior_factor_pose3.h>
 #include <sym/factors/prior_factor_rot3.h>
+#include <symforce/opt/linearization.h>
 #include <symforce/opt/optimization_stats.h>
 #include <symforce/opt/optimizer.h>
+#include <symforce/test_util/check_linear_error.h>
 
 sym::optimizer_params_t DefaultLmParams() {
   sym::optimizer_params_t params{};
@@ -153,6 +155,7 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   sym::optimizer_params_t params = DefaultLmParams();
   params.iterations = 50;
   params.early_exit_min_reduction = 0.0001;
+  params.debug_stats = true;
   params.check_derivatives = true;
   params.include_jacobians = true;
 
@@ -168,6 +171,8 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   CHECK(last_iter.current_lambda == Catch::Approx(0.0039).epsilon(1e-1));
   CHECK(last_iter.new_error == Catch::Approx(7.801).epsilon(1e-3));
   CHECK(stats.status == sym::optimization_status_t::SUCCESS);
+
+  CheckLinearError(stats);
 
   // Check that H = J^T J
   const sym::SparseLinearizationd linearization = sym::Linearize<double>(factors, values);

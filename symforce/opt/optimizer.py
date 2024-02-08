@@ -143,20 +143,21 @@ class Optimizer:
                 What was the result of the optimization? (did it converge, fail, etc.)
 
             failure_reason:
-                If status == FAILED, why?
+                If ``status == FAILED``, why?
 
             best_linearization:
                 The linearization at best_index (at optimized_values), filled out if
-                populate_best_linearization=True
+                ``populate_best_linearization=True``
 
             jacobian_sparsity:
-                The sparsity pattern of the jacobian, filled out if debug_stats=True
+                The sparsity pattern of the jacobian, filled out if ``debug_stats=True`` and
+                ``include_jacobians=True``
 
             linear_solver_ordering:
-                The ordering used for the linear solver, filled out if debug_stats=True
+                The ordering used for the linear solver, filled out if ``debug_stats=True``
 
             cholesky_factor_sparsity:
-                The sparsity pattern of the cholesky factor L, filled out if debug_stats=True
+                The sparsity pattern of the cholesky factor L, filled out if ``debug_stats=True``
         """
 
         initial_values: Values

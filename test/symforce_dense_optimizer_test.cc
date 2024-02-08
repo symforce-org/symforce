@@ -15,6 +15,7 @@
 #include <symforce/opt/levenberg_marquardt_solver.h>
 #include <symforce/opt/optimizer.h>
 #include <symforce/opt/values.h>
+#include <symforce/test_util/check_linear_error.h>
 
 template <typename Scalar>
 using DenseOptimizer =
@@ -35,6 +36,7 @@ TEST_CASE("Optimizer can be used with dense cholesky solver", "[dense-optimizer]
       {'x'}));
 
   auto params = sym::DefaultOptimizerParams();
+  params.debug_stats = true;
   params.check_derivatives = true;
   params.include_jacobians = true;
 
@@ -44,6 +46,8 @@ TEST_CASE("Optimizer can be used with dense cholesky solver", "[dense-optimizer]
   values.Set('x', 2.0);
 
   DenseOptimizer<double>::Stats stats = optimizer.Optimize(values, -1, true);
+
+  CheckLinearError(stats);
 
   CHECK((std::sqrt(2.0) - values.At<double>('x')) < 1e-14);
 }

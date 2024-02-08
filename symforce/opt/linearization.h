@@ -10,6 +10,7 @@
 
 #include <lcmtypes/sym/sparse_matrix_structure_t.hpp>
 
+#include <sym/util/type_ops.h>
 #include <sym/util/typedefs.h>
 
 #include "./assert.h"
@@ -102,8 +103,68 @@ sparse_matrix_structure_t GetSparseStructure(const Eigen::SparseMatrix<Scalar>& 
  * Return a default initialized sparse structure because arg is dense.
  */
 template <typename Derived>
-sparse_matrix_structure_t GetSparseStructure(const Eigen::EigenBase<Derived>&) {
-  return {};
+sparse_matrix_structure_t GetSparseStructure(const Eigen::EigenBase<Derived>& matrix) {
+  return {{}, {}, {matrix.rows(), matrix.cols()}};
+}
+
+/**
+ * Returns the reconstructed matrix from the stored values and sparse_matrix_structure_t
+ *
+ * Useful for reconstructing the jacobian for an iteration in the OptimizationStats
+ *
+ * The result contains references to structure and values, so its lifetime must be shorter than
+ * those.
+ *
+ * @param rows The number of rows in the matrix (must match structure.shape for sparse matrices)
+ * @param cols The number of columns in the matrix (must match structure.shape for sparse matrices)
+ * @param structure The sparsity pattern of the matrix, as obtained from GetSparseStructure or
+ * stored in OptimizationStats::iterations.  For dense matrices, this should be empty.
+ * @param values The coefficients of the matrix; flat for sparse matrices, 2d for dense
+ * @tparam MatrixType The type of the matrix used to decide if the result is sparse or dense.  This
+ * is not otherwise used
+ * @tparam Scalar The scalar type of the result (must match the scalar type of values)
+ */
+template <typename MatrixType, typename Scalar,
+          typename std::enable_if_t<kIsSparseEigenType<MatrixType>, bool> = true>
+Eigen::Map<const Eigen::SparseMatrix<Scalar>> MatrixViewFromSparseStructure(
+    const sparse_matrix_structure_t& structure, const MatrixX<Scalar>& values) {
+  SYM_ASSERT_EQ(structure.shape.size(), 2, "Invalid shape for sparse matrix: {}", structure.shape);
+  SYM_ASSERT_EQ(structure.column_pointers.size(), structure.shape.at(1));
+  SYM_ASSERT_EQ(structure.row_indices.size(), values.rows());
+  SYM_ASSERT_EQ(values.cols(), 1);
+  return {structure.shape.at(0),        structure.shape.at(1),
+          structure.row_indices.size(), structure.column_pointers.data(),
+          structure.row_indices.data(), values.data()};
+}
+
+/**
+ * Returns the reconstructed matrix from the stored values and sparse_matrix_structure_t
+ *
+ * Useful for reconstructing the jacobian for an iteration in the OptimizationStats
+ *
+ * The result contains references to structure and values, so its lifetime must be shorter than
+ * those.
+ *
+ * @param rows The number of rows in the matrix (must match structure.shape for sparse matrices)
+ * @param cols The number of columns in the matrix (must match structure.shape for sparse matrices)
+ * @param structure The sparsity pattern of the matrix, as obtained from GetSparseStructure or
+ * stored in OptimizationStats::iterations.  For dense matrices, this should be empty.
+ * @param values The coefficients of the matrix; flat for sparse matrices, 2d for dense
+ * @tparam MatrixType The type of the matrix used to decide if the result is sparse or dense.  This
+ * is not otherwise used
+ * @tparam Scalar The scalar type of the result (must match the scalar type of values)
+ */
+template <typename MatrixType, typename Scalar,
+          typename std::enable_if_t<kIsEigenType<MatrixType>, bool> = true>
+Eigen::Map<const MatrixX<Scalar>> MatrixViewFromSparseStructure(
+    const sparse_matrix_structure_t& structure, const MatrixX<Scalar>& values) {
+  SYM_ASSERT_EQ(structure.shape.size(), 2, "Invalid shape for dense matrix: {}", structure.shape);
+  SYM_ASSERT_EQ(structure.column_pointers.size(), 0,
+                "column_pointers must be empty for dense matrix");
+  SYM_ASSERT_EQ(structure.row_indices.size(), 0, "row_indices must be empty for dense matrix");
+  SYM_ASSERT_EQ(values.rows(), structure.shape.at(0));
+  SYM_ASSERT_EQ(values.cols(), structure.shape.at(1));
+  return {values.data(), values.rows(), values.cols()};
 }
 
 /**

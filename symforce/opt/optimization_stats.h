@@ -33,33 +33,44 @@ struct OptimizationStats {
   int32_t failure_reason{};
 
   /// The linearization at best_index (at optimized_values), filled out if
-  /// populate_best_linearization=true
+  /// populate_best_linearization = true
   optional<Linearization<MatrixType>> best_linearization{};
 
   /// The sparsity pattern of the problem jacobian
   ///
-  /// Only filled if using sparse linear solver and Optimizer created with debug_stats = true.
-  /// If not filled, row_indices field of sparse_matrix_structure_t and linear_solver_ordering
-  /// will have size() = 0.
-  sparse_matrix_structure_t jacobian_sparsity;
+  /// Only filled if Optimizer created with debug_stats = true and include_jacobians = true,
+  /// otherwise default constructed.
+  ///
+  /// If using a dense linearization, only the shape field will be filled.
+  sparse_matrix_structure_t jacobian_sparsity{};
 
   /// The permutation used by the linear solver
   ///
-  /// Only filled if using sparse linear solver and Optimizer created with debug_stats = true.
-  /// If not filled, row_indices field of sparse_matrix_structure_t and linear_solver_ordering
-  /// will have size() = 0.
-  Eigen::VectorXi linear_solver_ordering;
+  /// Only filled if using an Optimizer created with debug_stats = true and a linear solver that
+  /// exposes Permutation() (such as the default SparseCholeskySolver).  Otherwise, will be default
+  /// constructed.
+  Eigen::VectorXi linear_solver_ordering{};
 
-  /// The sparsity pattern of the cholesky factor
+  /// The sparsity pattern of the cholesky factor L
   ///
-  /// Only filled if using sparse linear solver and Optimizer created with debug_stats = true.
-  /// If not filled, row_indices field of sparse_matrix_structure_t and linear_solver_ordering
-  /// will have size() = 0.
-  sparse_matrix_structure_t cholesky_factor_sparsity;
+  /// Only filled if using an Optimizer created with debug_stats = true and a linear solver that
+  /// exposes L() (such as the default SparseCholeskySolver).  Otherwise, will be default
+  /// constructed.
+  sparse_matrix_structure_t cholesky_factor_sparsity{};
 
   optimization_stats_t GetLcmType() const {
     return optimization_stats_t(iterations, best_index, status, failure_reason, jacobian_sparsity,
                                 linear_solver_ordering, cholesky_factor_sparsity);
+  }
+
+  /// Get a view of the Jacobian at a particular iteration
+  ///
+  /// The lifetime of the result is tied to the lifetime of the OptimizationStats object
+  auto JacobianView(const optimization_iteration_t& iteration) const {
+    SYM_ASSERT(
+        jacobian_sparsity.shape.size() == 2,
+        "Jacobian sparsity is empty, did you set debug_stats = true and include_jacobians = true?");
+    return MatrixViewFromSparseStructure<MatrixType>(jacobian_sparsity, iteration.jacobian_values);
   }
 
   /**

@@ -121,11 +121,12 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
   }
 
   if (p_.debug_stats) {
+    iteration_stats.update = update_.template cast<double>();
     iteration_stats.values = state.New().values.template Cast<double>().GetLcmType();
     const VectorX<Scalar> residual_vec = state.New().GetLinearization().residual;
-    iteration_stats.residual = residual_vec.template cast<float>();
+    iteration_stats.residual = residual_vec.template cast<double>();
     const MatrixX<Scalar> jacobian_vec = JacobianValues(state.New().GetLinearization().jacobian);
-    iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
+    iteration_stats.jacobian_values = jacobian_vec.template cast<double>();
   }
 }
 
@@ -191,10 +192,10 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     if (p_.debug_stats) {
       iteration_stats.values = state_.Init().values.template Cast<double>().GetLcmType();
       const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
-      iteration_stats.residual = residual_vec.template cast<float>();
+      iteration_stats.residual = residual_vec.template cast<double>();
       const MatrixX<Scalar> jacobian_vec =
           JacobianValues(state_.Init().GetLinearization().jacobian);
-      iteration_stats.jacobian_values = jacobian_vec.template cast<float>();
+      iteration_stats.jacobian_values = jacobian_vec.template cast<double>();
     }
 
     if (!std::isfinite(state_.Init().Error())) {
@@ -225,8 +226,9 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     SYM_ASSERT(success, "Internal Error: Damped hessian factorization failed");
 
     // NOTE(aaron): This has to happen after the first factorize, since L_inner is not filled out
-    // by ComputeSymbolicSparsity
-    if (p_.debug_stats && stats.linear_solver_ordering.size() == 0) {
+    // by ComputeSymbolicSparsity.  The linear_solver may return an empty result for either of
+    // these, so the only way to know we haven't filled it out yet is the iteration number.
+    if (p_.debug_stats && iteration_ == 0) {
       stats.linear_solver_ordering = linear_solver_.Permutation().indices();
       stats.cholesky_factor_sparsity = GetSparseStructure(linear_solver_.L());
     }

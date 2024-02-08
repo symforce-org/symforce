@@ -206,16 +206,19 @@ struct optimization_iteration_t {
   // Angle between previous update and current update
   double update_angle_change;
 
-  // The values, residual, and jacobian are only populated when debug_stats is true,
+  // The update, values, residual, and jacobian are only populated when debug_stats is true,
   // otherwise they are size 0
+
+  // The update at this step
+  eigen_lcm.VectorXd update;
 
   // The Values at this step
   values_t values;
 
   // The problem residual
-  eigen_lcm.VectorXf residual;
+  eigen_lcm.VectorXd residual;
   // The problem jacobian exactly if dense, or as CSC format sparse data column vector if sparse
-  eigen_lcm.MatrixXf jacobian_values;
+  eigen_lcm.MatrixXd jacobian_values;
 }
 
 // The structure of a sparse matrix in CSC format, not including the numerical values
@@ -232,7 +235,6 @@ struct sparse_matrix_structure_t {
   // The shape (M, N) of the sparse matrix
   int64_t shape[2];
 }
-
 #protobuf
 enum optimization_status_t {
   // Uninitialized enum value
@@ -270,13 +272,26 @@ struct optimization_stats_t {
   // for the nonlinear solver you used.
   int32_t failure_reason;
 
-  // The sparsity pattern of the jacobian, filled out if debug_stats=true
+  /// The sparsity pattern of the problem jacobian
+  ///
+  /// Only filled if Optimizer created with debug_stats = true and include_jacobians = true,
+  /// otherwise default constructed.
+  ///
+  /// If using a dense linearization, only the shape field will be filled.
   sparse_matrix_structure_t jacobian_sparsity;
 
-  // The ordering used for the linear solver, filled out if debug_stats=true
+  /// The permutation used by the linear solver
+  ///
+  /// Only filled if using an Optimizer created with debug_stats = true and a linear solver that
+  /// exposes Permutation() (such as the default SparseCholeskySolver).  Otherwise, will be default
+  /// constructed.
   eigen_lcm.VectorXi linear_solver_ordering;
 
-  // The sparsity pattern of the cholesky factor L, filled out if debug_stats=true
+  /// The sparsity pattern of the cholesky factor L
+  ///
+  /// Only filled if using an Optimizer created with debug_stats = true and a linear solver that
+  /// exposes L() (such as the default SparseCholeskySolver).  Otherwise, will be default
+  /// constructed.
   sparse_matrix_structure_t cholesky_factor_sparsity;
 }
 
