@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
-        python: [python3.8, python3.9, python3.10, python3.11]
+        python: [python3.8, python3.9, python3.10, python3.11, python3.12]
         compiler:
           - C: gcc-11
             CXX: g++-11
@@ -112,6 +112,16 @@ jobs:
               libgoogle-glog-dev \
               libeigen3-dev
 
+      # NOTE(aaron): Some packages do not have a version that supports py3.8..py3.12
+      - name: Fix py3.12 versions
+        if: ${{ matrix.python == 'python3.12' }}
+        run: |
+          sed -i 's|numba==0.58.1|numba~=0.59.0|g' dev_requirements.txt
+          sed -i 's|llvmlite==0.41.1|llvmlite~=0.42.0|g' dev_requirements.txt
+          sed -i 's|numpy==1.24.4|numpy~=1.26.0|g' dev_requirements.txt
+          sed -i 's|scipy==1.10.1|scipy~=1.12.0|g' dev_requirements.txt
+          sed -i 's|pandas==2.0.3|pandas~=2.2.0|g' dev_requirements.txt
+
       - name: Install python dependencies
         run: pip install -r dev_requirements.txt
 
@@ -134,6 +144,8 @@ jobs:
           pip install build/lcmtypes/python2.7
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           ${{ matrix.python }} test/symforce_requirements_test.py --update
+          echo "Modifications made to requirements:"
+          git diff
           EXIT_CODE=0
           ctest --test-dir build -j $(nproc) || EXIT_CODE=$?
           if [ $EXIT_CODE -ne 0 ]; then

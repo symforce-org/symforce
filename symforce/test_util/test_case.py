@@ -38,6 +38,16 @@ class TestCase(SymforceTestCaseMixin):
         Call this to run all tests in scope.
         """
         TestCase.should_run_slow_tests()
+
+        # unittest on py3.12 exits with _NO_TESTS_EXITCODE = 5 if no tests are found.  As of
+        # py3.12.1, this includes if all tests are skipped (which applies to some of our tests,
+        # depending on symbolic API and installed packages).  So, we monkey patch unittest to exit
+        # with 0 in this case (including if no tests were found, which isn't great).  This hack
+        # can be removed once the fix is in a release:
+        # https://github.com/python/cpython/commit/159e3db1f7697b9aecdf674bb833fbb87f3dcad3
+        if sys.version_info >= (3, 12, 0) and sys.version_info < (3, 12, 2):
+            sys.modules[unittest.main.__module__]._NO_TESTS_EXITCODE = 0  # type: ignore[attr-defined]  # pylint: disable=protected-access
+
         SymforceTestCaseMixin.main(*args, **kwargs)
 
     def setUp(self) -> None:
