@@ -335,7 +335,7 @@ class InstallWithExtras(install):
 setup_requirements = [
     "setuptools>=62.3.0",  # For package data globs
     "wheel",
-    "pip<23.1",  # https://github.com/jazzband/pip-tools/issues/1854
+    "pip",
     "cmake>=3.17,<3.27",
     "cython>=0.19.1,<3",
     f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
@@ -452,7 +452,8 @@ if __name__ == "__main__":
                 "jinja2~=3.0",
                 "mypy==0.910",
                 "numba",
-                "pip-tools<6.11",
+                # 6.13 fixes pip >=23.1 support
+                "pip-tools>=6.13",
                 # NOTE(aaron): v1.0 changed lots of things, we'll need to update and regenerate
                 "pybind11-stubgen<1.0",
                 "pylint",
