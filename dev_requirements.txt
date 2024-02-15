@@ -37,7 +37,7 @@ breathe==4.35.0
     # via symforce (setup.py)
 build==1.0.3
     # via pip-tools
-certifi==2023.11.17
+certifi==2024.2.2
     # via requests
 charset-normalizer==3.3.2
     # via requests
@@ -63,7 +63,7 @@ decorator==5.1.1
     # via ipython
 defusedxml==0.7.1
     # via nbconvert
-dill==0.3.7
+dill==0.3.8
     # via pylint
 docutils==0.20.1
     # via
@@ -77,7 +77,7 @@ fastjsonschema==2.19.1
     # via nbformat
 fonttools==4.47.2
     # via matplotlib
-furo==2023.9.10
+furo==2024.1.29
     # via symforce (setup.py)
 graphviz==0.20.1
     # via symforce (setup.py)
@@ -143,7 +143,7 @@ markdown-it-py==3.0.0
     # via
     #   mdit-py-plugins
     #   myst-parser
-markupsafe==2.1.4
+markupsafe==2.1.5
     # via
     #   jinja2
     #   nbconvert
@@ -221,7 +221,7 @@ pip-tools==7.3.0
     # via symforce (setup.py)
 pkgutil-resolve-name==1.3.10
     # via jsonschema
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via
     #   jupyter-core
     #   pylint
@@ -256,7 +256,7 @@ python-dateutil==2.8.2
     #   jupyter-client
     #   matplotlib
     #   pandas
-pytz==2023.3.post1
+pytz==2024.1
     # via
     #   babel
     #   pandas
@@ -266,7 +266,7 @@ pyzmq==25.1.2
     # via
     #   ipykernel
     #   jupyter-client
-referencing==0.32.1
+referencing==0.33.0
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -276,7 +276,7 @@ rpds-py==0.17.1
     # via
     #   jsonschema
     #   referencing
-ruff==0.1.14
+ruff==0.2.0
     # via symforce (setup.py)
 scipy==1.10.1
     # via symforce (setup.py)
@@ -372,7 +372,7 @@ typing-extensions==4.9.0
     #   pylint
 tzdata==2023.4
     # via pandas
-urllib3==2.1.0
+urllib3==2.2.0
     # via
     #   requests
     #   types-requests
