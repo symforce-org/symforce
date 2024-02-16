@@ -9,7 +9,12 @@
 #ifndef __codegen_multi_function_test_outputs_1_t_hpp__
 #define __codegen_multi_function_test_outputs_1_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 #include <array>
 #include "lcmtypes/codegen_multi_function_test/values_vec_t.hpp"
 #include "lcmtypes/eigen_lcm/Matrix4d.hpp"
@@ -127,37 +132,66 @@ class outputs_1_t
         inline bool operator==(const outputs_1_t& other) const;
         inline bool operator!=(const outputs_1_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const outputs_1_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "outputs_1_t(";
-            stream << "foo=" << obj.foo << ", ";
-            stream << "bar=" << obj.bar << ", ";
-            stream << "scalar_vec_out=[";
-            for (size_t i = 0; i < obj.scalar_vec_out.size(); ++i) {
-                stream << obj.scalar_vec_out[i];
-                if (i + 1 < obj.scalar_vec_out.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "values_vec_out=[";
-            for (size_t i = 0; i < obj.values_vec_out.size(); ++i) {
-                stream << obj.values_vec_out[i];
-                if (i + 1 < obj.values_vec_out.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "values_vec_2D_out=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>" << ", ";
-            stream << "big_matrix_from_small_matrix=" << obj.big_matrix_from_small_matrix << ", ";
-            stream << "small_matrix_from_big_matrix=" << obj.small_matrix_from_big_matrix;
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 7> fields()
+        {
+            return {{
+                "foo",
+                "bar",
+                "scalar_vec_out",
+                "values_vec_out",
+                "values_vec_2D_out",
+                "big_matrix_from_small_matrix",
+                "small_matrix_from_big_matrix",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        {
+            if (strcmp(_fieldname, "foo") == 0) {
+                lcm::format_json(_stream, foo, _indent);
+                return true;
+            }
+            if (strcmp(_fieldname, "bar") == 0) {
+                lcm::format_json(_stream, bar, _indent);
+                return true;
+            }
+            if (strcmp(_fieldname, "scalar_vec_out") == 0) {
+                lcm::format_json(_stream, scalar_vec_out, _indent);
+                return true;
+            }
+            if (strcmp(_fieldname, "values_vec_out") == 0) {
+                lcm::format_json(_stream, values_vec_out, _indent);
+                return true;
+            }
+            if (strcmp(_fieldname, "values_vec_2D_out") == 0) {
+                lcm::format_json(_stream, values_vec_2D_out, _indent);
+                return true;
+            }
+            if (strcmp(_fieldname, "big_matrix_from_small_matrix") == 0) {
+                lcm::format_json(_stream, big_matrix_from_small_matrix, _indent);
+                return true;
+            }
+            if (strcmp(_fieldname, "small_matrix_from_big_matrix") == 0) {
+                lcm::format_json(_stream, small_matrix_from_big_matrix, _indent);
+                return true;
+            }
+            return false;
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const outputs_1_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const outputs_1_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 outputs_1_t::outputs_1_t(

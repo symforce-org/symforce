@@ -9,7 +9,12 @@
 #ifndef __codegen_test_my_dataclass_t_hpp__
 #define __codegen_test_my_dataclass_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 #include "lcmtypes/eigen_lcm/Vector4d.hpp"
 
 namespace codegen_test
@@ -103,17 +108,36 @@ class my_dataclass_t
         inline bool operator==(const my_dataclass_t& other) const;
         inline bool operator!=(const my_dataclass_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const my_dataclass_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "my_dataclass_t(";
-            stream << "rot=" << obj.rot;
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 1> fields()
+        {
+            return {{
+                "rot",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        {
+            if (strcmp(_fieldname, "rot") == 0) {
+                lcm::format_json(_stream, rot, _indent);
+                return true;
+            }
+            return false;
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const my_dataclass_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const my_dataclass_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 my_dataclass_t::my_dataclass_t(

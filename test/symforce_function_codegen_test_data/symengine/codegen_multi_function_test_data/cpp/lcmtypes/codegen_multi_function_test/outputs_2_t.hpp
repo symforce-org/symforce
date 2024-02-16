@@ -9,7 +9,12 @@
 #ifndef __codegen_multi_function_test_outputs_2_t_hpp__
 #define __codegen_multi_function_test_outputs_2_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 
 namespace codegen_multi_function_test
 {
@@ -91,17 +96,36 @@ class outputs_2_t
         inline bool operator==(const outputs_2_t& other) const;
         inline bool operator!=(const outputs_2_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const outputs_2_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "outputs_2_t(";
-            stream << "foo=" << obj.foo;
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 1> fields()
+        {
+            return {{
+                "foo",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        {
+            if (strcmp(_fieldname, "foo") == 0) {
+                lcm::format_json(_stream, foo, _indent);
+                return true;
+            }
+            return false;
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const outputs_2_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const outputs_2_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 outputs_2_t::outputs_2_t(

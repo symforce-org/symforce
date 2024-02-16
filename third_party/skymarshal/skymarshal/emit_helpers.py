@@ -76,6 +76,7 @@ class StructBuilder(BaseBuilder):
         self.members = [
             member for member in struct.members if not isinstance(member, ConstMember)
         ]  # type: T.List[T.Any]
+        self.num_members = len(self.members)
         self.constants = [
             member for member in struct.members if isinstance(member, ConstMember)
         ]  # type: T.List[T.Any]

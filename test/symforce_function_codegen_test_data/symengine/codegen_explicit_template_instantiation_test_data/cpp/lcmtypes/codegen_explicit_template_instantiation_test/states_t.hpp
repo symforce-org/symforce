@@ -9,7 +9,12 @@
 #ifndef __codegen_explicit_template_instantiation_test_states_t_hpp__
 #define __codegen_explicit_template_instantiation_test_states_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 #include "lcmtypes/eigen_lcm/Vector2d.hpp"
 
 namespace codegen_explicit_template_instantiation_test
@@ -103,17 +108,36 @@ class states_t
         inline bool operator==(const states_t& other) const;
         inline bool operator!=(const states_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const states_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "states_t(";
-            stream << "p=" << obj.p;
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 1> fields()
+        {
+            return {{
+                "p",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        {
+            if (strcmp(_fieldname, "p") == 0) {
+                lcm::format_json(_stream, p, _indent);
+                return true;
+            }
+            return false;
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const states_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const states_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 states_t::states_t(

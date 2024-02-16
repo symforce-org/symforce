@@ -3,8 +3,11 @@
 #pragma once
 #include <utility>
 
-#include <Eigen/Core>
 #include <lcm/lcm_coretypes.h>
+#ifdef SKYMARSHAL_PRINTING_ENABLED
+#include <lcm/lcm_json_eigen.hpp>
+#endif
+#include <Eigen/Core>
 
 namespace eigen_lcm {
 

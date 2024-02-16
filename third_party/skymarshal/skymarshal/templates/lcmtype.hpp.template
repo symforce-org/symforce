@@ -14,8 +14,17 @@
 #define __{{lcmtype.underscored}}_hpp__
 
 {% if not lcmtype.cpp_no_display %}
+{% if not lcmtype.cpp_display_everywhere %}
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+{% endif %}
+#include <lcm/lcm_json.hpp>
+#include <array>
+{% if not lcmtype.cpp_display_everywhere %}
+#endif
+{% endif %}
 #include <ostream>
 {% endif %}
+
 {{lcmtype.includes()}}
 namespace {{lcmtype.namespace}}
 {
@@ -132,55 +141,50 @@ class {{lcmtype.name}}
         inline bool operator==(const {{lcmtype.name}}& other) const;
         inline bool operator!=(const {{lcmtype.name}}& other) const;
 {% endif %}
+
 {% if not lcmtype.cpp_no_display %}
-
-{%- macro comma(last) %}
-    {%- if not last %} << ", "{% endif %}
-{%- endmacro %}
-
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const {{lcmtype.name}}& obj) {
 {% if not lcmtype.cpp_display_everywhere %}
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
 {% endif %}
-            stream << "{{lcmtype.name}}(";
+        constexpr static std::array<const char*, {{lcmtype.num_members}}> fields()
+        {
+            return {{ '{{' }}
+        {% for member in lcmtype.members %}
+                "{{member.name}}",
+        {% endfor %}
+            {{ '}}' }};
+        }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        {
 {% for member in lcmtype.members %}
-    {% if is_array_member(member) %}
-        {% if member.dims | length == 1 %}
-            stream << "{{member.name}}=[";
-            for (size_t i = 0; i < obj.{{member.name}}.size(); ++i) {
-            {% if member.type_ref.name == "boolean" %}
-                stream << (obj.{{member.name}}[i] ? "true" : "false");
-            {% elif member.type_ref.name in ("int8_t", "uint8_t", "byte") %}
-                stream << static_cast<int16_t>(obj.{{member.name}}[i]);
-            {% else %}
-                stream << obj.{{member.name}}[i];
-            {% endif %}
-                if (i + 1 < obj.{{member.name}}.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]"{{comma(loop.last)}};
+            if (strcmp(_fieldname, "{{member.name}}") == 0) {
+        {% if member.type_ref.name == "boolean" and not is_array_member(member) %}
+                lcm::format_json(_stream, static_cast<bool>({{member.name}}), _indent);
         {% else %}
-            {# Multidimensional arrays will require some complicated stuff #}
-            stream << "{{member.name}}=<MULTIDIMENSIONAL ARRAY {{ array_type_str(member) }}>"{{ comma(loop.last) }};
+                lcm::format_json(_stream, {{member.name}}, _indent);
         {% endif %}
-    {% elif member.type_ref.name == "boolean" %}
-            stream << "{{member.name}}=" << (obj.{{member.name}} ? "true" : "false"){{ comma(loop.last) }};
-    {% elif member.type_ref.name in ("int8_t", "uint8_t", "byte") %}
-            stream << "{{member.name}}=" << static_cast<int16_t>(obj.{{member.name}}){{ comma(loop.last) }};
-    {% else %}
-            stream << "{{member.name}}=" << obj.{{member.name}}{{ comma(loop.last) }};
-    {% endif %}
+                return true;
+            }
 {% endfor %}
-            stream << ")";
+            return false;
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const {{lcmtype.name}}& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
 {% if not lcmtype.cpp_display_everywhere %}
 #else
-            stream << "<FORMATTING DISABLED>";
+        friend std::ostream& operator<<(std::ostream& _stream, const {{lcmtype.name}}& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
 #endif
 {% endif %}
-            return stream;
-        }
 {% endif %}
 };
 {% if lcmtype.members and not lcmtype.args.cpp_no_operators %}
