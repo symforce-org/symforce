@@ -20,7 +20,7 @@ jobs:
         setuptools_version: [65.3.0]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - if: ${{ matrix.os == 'macos-12' }}
         uses: actions/setup-python@v4
