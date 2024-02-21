@@ -12,7 +12,7 @@ template <typename T, typename = void>
 struct is_iterable : std::false_type {};
 
 template <typename T>
-struct is_iterable<T, typename std::conditional<false, typename T::iterator, void>::type>
+struct is_iterable<T, typename std::conditional<false, typename T::pointer, void>::type>
     : public std::true_type {};
 
 template <typename T>
