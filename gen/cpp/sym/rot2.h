@@ -36,10 +36,15 @@ class Rot2 {
   using TangentVec = Eigen::Matrix<Scalar, 1, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, 1, 1>;
 
-  // Construct from data vec
-  // For rotation types the storage is normalized on construction.
-  // This ensures numerical stability as this constructor is called after each codegen operation.
-  explicit Rot2(const DataVec& data) : data_(data.normalized()) {}
+  /**
+   * Construct from data vec
+   *
+   * @param normalize Project to the manifold on construction.  This ensures numerical stability as
+   *     this constructor is called after each codegen operation.  Constructing from a normalized
+   *     vector may be faster, e.g. with `FromStorage`.
+   */
+  explicit Rot2(const DataVec& data, const bool normalize = true)
+      : data_(normalize ? data.normalized() : data) {}
 
   // Default construct to identity
   Rot2() : Rot2(GroupOps<Self>::Identity()) {}

@@ -70,13 +70,22 @@ option(SYMFORCE_SKYMARSHAL_PRINTING
 )
 
 # ------------------------------------------------------------------------------
-# Misc
+# Build Customization
 
 option(SYMFORCE_BUILD_STATIC_LIBRARIES "Build libraries as static" OFF)
 
 set(SYMFORCE_COMPILE_OPTIONS -Wall;-Wextra CACHE STRING
   "Extra flags to pass to the compiler; defaults to enabling warnings"
 )
+
+option(SYMFORCE_NO_FAST_MATH "Don't automatically add -ffast-math to some targets" OFF)
+
+set(SYMFORCE_EIGEN_TARGET "Eigen3::Eigen" CACHE STRING
+  "Target to depend on for Eigen. Default is to find Eigen with find_package."
+)
+
+# ------------------------------------------------------------------------------
+# Misc
 
 set(SYMFORCE_PYTHON_OVERRIDE "" CACHE STRING
   "Python executable to use - if empty (the default), find python in the environment"
@@ -96,10 +105,6 @@ set(SYMENGINEPY_INSTALL_ENV "" CACHE STRING "Options for symenginepy install ste
 
 set(SYMFORCE_PY_EXTENSION_MODULE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/pybind CACHE PATH
   "Location to place generated python extension modules"
-)
-
-set(SYMFORCE_EIGEN_TARGET "Eigen3::Eigen" CACHE STRING
-  "Target to depend on for Eigen. Default is to find Eigen with find_package."
 )
 
 # ==============================================================================
@@ -281,6 +286,9 @@ add_library(
   ${SYMFORCE_GEN_HEADERS}
 )
 target_compile_options(symforce_gen PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
+if(NOT SYMFORCE_NO_FAST_MATH)
+  target_compile_options(symforce_gen PRIVATE -ffast-math)
+endif()
 target_link_libraries(symforce_gen ${SYMFORCE_EIGEN_TARGET} symforce_lcmtypes_cpp)
 target_include_directories(
   symforce_gen

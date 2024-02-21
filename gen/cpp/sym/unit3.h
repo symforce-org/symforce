@@ -52,8 +52,15 @@ class Unit3 {
   using TangentVec = Eigen::Matrix<Scalar, 2, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, 2, 2>;
 
-  // Construct from data vec
-  explicit Unit3(const DataVec& data) : data_(data) {}
+  /**
+   * Construct from data vec
+   *
+   * @param normalize Project to the manifold on construction.  This ensures numerical stability as
+   *     this constructor is called after each codegen operation.  Constructing from a normalized
+   *     vector may be faster, e.g. with `FromStorage`.
+   */
+  explicit Unit3(const DataVec& data, const bool normalize = true)
+      : data_(normalize ? data.normalized() : data) {}
 
   // Default construct to identity
   Unit3() : Unit3(GroupOps<Self>::Identity()) {}

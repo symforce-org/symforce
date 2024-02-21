@@ -24,7 +24,8 @@ void StorageOps<Unit3<ScalarType>>::ToStorage(const Unit3<ScalarType>& a, Scalar
 template <typename ScalarType>
 Unit3<ScalarType> StorageOps<Unit3<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return Unit3<ScalarType>(Eigen::Map<const typename Unit3<ScalarType>::DataVec>(data));
+  return Unit3<ScalarType>(Eigen::Map<const typename Unit3<ScalarType>::DataVec>(data),
+                           /* normalize */ false);
 }
 
 }  // namespace sym

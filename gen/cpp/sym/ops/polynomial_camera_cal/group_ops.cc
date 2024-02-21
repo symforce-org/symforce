@@ -41,7 +41,7 @@ sym::PolynomialCameraCal<Scalar> GroupOps<PolynomialCameraCal<Scalar>>::Identity
   _res[6] = 0;
   _res[7] = 0;
 
-  return sym::PolynomialCameraCal<Scalar>(_res);
+  return sym::PolynomialCameraCal<Scalar>(_res, /* normalize */ false);
 }
 
 /**

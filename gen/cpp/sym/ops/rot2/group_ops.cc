@@ -35,7 +35,7 @@ sym::Rot2<Scalar> GroupOps<Rot2<Scalar>>::Identity() {
   _res[0] = 1;
   _res[1] = 0;
 
-  return sym::Rot2<Scalar>(_res);
+  return sym::Rot2<Scalar>(_res, /* normalize */ false);
 }
 
 /**

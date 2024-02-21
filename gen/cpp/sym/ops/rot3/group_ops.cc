@@ -37,7 +37,7 @@ sym::Rot3<Scalar> GroupOps<Rot3<Scalar>>::Identity() {
   _res[2] = 0;
   _res[3] = 1;
 
-  return sym::Rot3<Scalar>(_res);
+  return sym::Rot3<Scalar>(_res, /* normalize */ false);
 }
 
 /**

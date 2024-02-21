@@ -37,7 +37,7 @@ sym::LinearCameraCal<Scalar> GroupOps<LinearCameraCal<Scalar>>::Identity() {
   _res[2] = 0;
   _res[3] = 0;
 
-  return sym::LinearCameraCal<Scalar>(_res);
+  return sym::LinearCameraCal<Scalar>(_res, /* normalize */ false);
 }
 
 /**

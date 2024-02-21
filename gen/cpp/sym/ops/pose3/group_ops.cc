@@ -40,7 +40,7 @@ sym::Pose3<Scalar> GroupOps<Pose3<Scalar>>::Identity() {
   _res[5] = 0;
   _res[6] = 0;
 
-  return sym::Pose3<Scalar>(_res);
+  return sym::Pose3<Scalar>(_res, /* normalize */ false);
 }
 
 /**

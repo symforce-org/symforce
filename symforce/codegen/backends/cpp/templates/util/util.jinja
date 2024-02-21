@@ -351,7 +351,9 @@ _{{ lhs }} = {{ rhs }};
 {% if name != spec.return_key %}
     {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
 
-*{{ name }} = {{ format_typename(type, name, scalar_type) }}(_{{ name }});
+        {% set typename = format_typename(type, name, scalar_type) %}
+        {% set normalize = "" if spec.config.normalize_results else ", /* normalize */ false" %}
+*{{ name }} = {{ typename }}(_{{ name }}{{ normalize }});
     {% endif %}
 {% endif %}
 {% endmacro -%}
@@ -436,7 +438,9 @@ _{{ lhs }} = {{ rhs }};
             {% elif issubclass(T_return, Matrix) or issubclass(T_return, Values) or is_symbolic(type) or is_sequence(type) %}
     return _{{ name }};
             {% else %}
-    return {{ format_typename(type, name, scalar_type) }}(_{{ name }});
+                {% set typename = format_typename(type, name, scalar_type) %}
+                {% set normalize = "" if spec.config.normalize_results else ", /* normalize */ false" %}
+    return {{ typename }}(_{{ name }}{{ normalize }});
             {% endif %}
         {% endif %}
     {% endfor %}

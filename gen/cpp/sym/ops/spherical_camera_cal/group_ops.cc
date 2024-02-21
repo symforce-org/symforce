@@ -42,7 +42,7 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Identity()
   _res[7] = 0;
   _res[8] = 0;
 
-  return sym::SphericalCameraCal<Scalar>(_res);
+  return sym::SphericalCameraCal<Scalar>(_res, /* normalize */ false);
 }
 
 /**

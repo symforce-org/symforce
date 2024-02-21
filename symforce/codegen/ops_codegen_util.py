@@ -3,6 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import dataclasses
+
 import symforce.symbolic as sf
 from symforce import ops
 from symforce import typing as T
@@ -15,7 +17,10 @@ def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     Create func spec arguments for group ops on the given class.
     """
     identity = Codegen.function(
-        name="identity", func=(lambda: ops.GroupOps.identity(cls)), input_types=[], config=config
+        name="identity",
+        func=(lambda: ops.GroupOps.identity(cls)),
+        input_types=[],
+        config=dataclasses.replace(config, normalize_results=False),
     )
 
     inverse = Codegen.function(

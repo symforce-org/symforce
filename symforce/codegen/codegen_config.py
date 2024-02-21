@@ -61,6 +61,8 @@ class CodegenConfig:
                                 more information
         cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
+        normalize_results: Should function outputs be explicitly projected onto the manifold before
+                           returning?
     """
 
     doc_comment_line_prefix: str
@@ -73,6 +75,7 @@ class CodegenConfig:
     zero_epsilon_behavior: ZeroEpsilonBehavior = field(
         default_factory=lambda: DEFAULT_ZERO_EPSILON_BEHAVIOR
     )
+    normalize_results: bool = True
 
     @classmethod
     @abstractmethod

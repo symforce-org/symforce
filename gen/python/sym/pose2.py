@@ -91,12 +91,16 @@ class Pose2(object):
         """
         return self.position()
 
+    def rotation(self):
+        # type: () -> Rot2
+        return Rot2.from_storage(list(self.rotation_storage()))
+
     # --------------------------------------------------------------------------
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    def rotation(self):
-        # type: (Pose2) -> Rot2
+    def rotation_storage(self):
+        # type: (Pose2) -> numpy.ndarray
         """
         Returns the rotational component of this pose.
         """
@@ -109,10 +113,10 @@ class Pose2(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 2
+        _res = numpy.zeros(2)
         _res[0] = _self[0]
         _res[1] = _self[1]
-        return Rot2.from_storage(_res)
+        return _res
 
     def position(self):
         # type: (Pose2) -> numpy.ndarray

@@ -111,25 +111,25 @@ TEST_CASE("Test Rot2 and Pose2", "[geo_package]") {
 
   // Cast
   const sym::Rot2d rotd = rot.Cast<double>();
-  CHECK(rotd.IsApprox(rot.Cast<double>(), 1e-6));
-  CHECK(rotd.Cast<float>().IsApprox(rot, 1e-6));
+  CHECK(rotd.IsApprox(rot.Cast<double>(), sym::kDefaultEpsilon<float>));
+  CHECK(rotd.Cast<float>().IsApprox(rot, sym::kDefaultEpsilon<float>));
 
   // Make a pose
   const sym::Pose2f pose(rot, pos);
-  CHECK(pose.Rotation().IsApprox(rot, 1e-6));
+  CHECK(pose.Rotation().IsApprox(rot, sym::kDefaultEpsilon<float>));
   CHECK(pose.Position() == pos);
 
   const sym::Pose2f pose_inv = pose.Inverse();
-  CHECK(pose_inv.Rotation().IsApprox(rot.Inverse(), 1e-9));
+  CHECK(pose_inv.Rotation().IsApprox(rot.Inverse(), sym::kDefaultEpsilon<float>));
 
   // Test InverseCompose
   const Eigen::Vector2f point = sym::Random<Eigen::Vector2f>(gen);
-  CHECK(pose.InverseCompose(point).isApprox(pose.Inverse() * point, 1e-6));
+  CHECK(pose.InverseCompose(point).isApprox(pose.Inverse() * point, sym::kDefaultEpsilon<float>));
 
   // Test FromAngle and angle constructor
   const float angle = rot.ToTangent()(0);
-  CHECK(rot.IsApprox(sym::Rot2f(angle), 1e-6));
-  CHECK(rot.IsApprox(sym::Rot2f::FromAngle(angle), 1e-6));
+  CHECK(rot.IsApprox(sym::Rot2f(angle), sym::kDefaultEpsilon<float>));
+  CHECK(rot.IsApprox(sym::Rot2f::FromAngle(angle), sym::kDefaultEpsilon<float>));
 }
 
 TEMPLATE_TEST_CASE("Test Storage ops", "[geo_package]", sym::Rot2<double>, sym::Rot2<float>,
@@ -234,16 +234,19 @@ TEMPLATE_TEST_CASE("Test Group ops", "[geo_package]", sym::Rot2<double>, sym::Ro
                    sym::Rot3<double>, sym::Rot3<float>, sym::Pose2<double>, sym::Pose2<float>,
                    sym::Pose3<double>, sym::Pose3<float>, sym::Unit3<double>, sym::Unit3<float>) {
   using T = TestType;
+  using Scalar = typename sym::StorageOps<T>::Scalar;
 
   const T identity{};
   INFO("Testing GroupOps: " << identity);
 
   // TODO(hayk): Make sym::StorageOps<T>::IsApprox that uses ToStorage to compare, then
   // get rid of the custom scalar version below.
-  CHECK(identity.IsApprox(sym::GroupOps<T>::Identity(), 1e-9));
-  CHECK(identity.IsApprox(sym::GroupOps<T>::Compose(identity, identity), 1e-9));
-  CHECK(identity.IsApprox(sym::GroupOps<T>::Inverse(identity), 1e-9));
-  CHECK(identity.IsApprox(sym::GroupOps<T>::Between(identity, identity), 1e-9));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Identity(), sym::kDefaultEpsilon<Scalar>));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Compose(identity, identity),
+                          sym::kDefaultEpsilon<Scalar>));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Inverse(identity), sym::kDefaultEpsilon<Scalar>));
+  CHECK(identity.IsApprox(sym::GroupOps<T>::Between(identity, identity),
+                          sym::kDefaultEpsilon<Scalar>));
 }
 
 TEMPLATE_TEST_CASE("Test Scalar group ops", "[geo_package]", double, float) {

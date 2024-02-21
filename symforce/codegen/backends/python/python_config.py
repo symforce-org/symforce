@@ -27,6 +27,8 @@ class PythonConfig(CodegenConfig):
         custom_preamble: An optional string to be prepended on the front of the rendered template
         cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
+        normalize_results: Should function outputs be explicitly projected onto the manifold before
+                           returning?
         use_numba: Add the ``@numba.njit`` decorator to generated functions.  This will greatly
                    speed up functions by compiling them to machine code, but has large overhead
                    on the first call and some overhead on subsequent calls, so it should not be

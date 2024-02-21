@@ -41,8 +41,16 @@ class {{ cls.__name__ }} {
   ) : {{ cls.__name__ }}((Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() <<
         {% for arg, _ in storage_order %}{{ arg }}{% if not loop.last %}, {% endif %}{% endfor %}).finished()) {}
 
-  // Construct from data vec
-  explicit {{ cls.__name__ }}(const DataVec& data) : data_(data) {}
+  /**
+   * Construct from data vec
+   *
+   * @param normalize Project to the manifold on construction.  This ensures numerical stability as
+   *     this constructor is called after each codegen operation.  Constructing from a normalized
+   *     vector may be faster, e.g. with `FromStorage`.
+   */
+  explicit {{ cls.__name__ }}(const DataVec& data, bool normalize = true) : data_(data) {
+    (void)normalize;
+  }
 
   // Access underlying storage as const
   inline const DataVec& Data() const {

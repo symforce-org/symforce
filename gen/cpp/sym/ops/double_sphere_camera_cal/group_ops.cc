@@ -39,7 +39,7 @@ sym::DoubleSphereCameraCal<Scalar> GroupOps<DoubleSphereCameraCal<Scalar>>::Iden
   _res[4] = 0;
   _res[5] = 0;
 
-  return sym::DoubleSphereCameraCal<Scalar>(_res);
+  return sym::DoubleSphereCameraCal<Scalar>(_res, /* normalize */ false);
 }
 
 /**

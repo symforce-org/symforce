@@ -26,3 +26,7 @@
   Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry> ToTransform() const {
     return Eigen::Transform<Scalar, 3, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
   }
+
+  sym::Rot3<Scalar> Rotation() const {
+    return sym::Rot3<Scalar>(RotationStorage(), /* normalize */ false);
+  }

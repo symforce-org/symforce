@@ -24,8 +24,10 @@ void StorageOps<{{ cls.__name__ }}<ScalarType>>::ToStorage(const {{ cls.__name__
 template <typename ScalarType>
 {{ cls.__name__ }}<ScalarType> StorageOps<{{ cls.__name__ }}<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
+  {% set maybe_normalize = ", /* normalize */ false" if cls.__name__.startswith("Rot") or cls.__name__ == "Unit3" else "" %}
   return {{ cls.__name__ }}<ScalarType>(
-    Eigen::Map<const typename {{ cls.__name__ }}<ScalarType>::DataVec>(data));
+    Eigen::Map<const typename {{ cls.__name__ }}<ScalarType>::DataVec>(data){{ maybe_normalize }}
+  );
 }
 
 }  // namespace sym

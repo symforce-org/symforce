@@ -139,11 +139,11 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     )
 
     def pose_getter_methods(pose_type: T.Type) -> T.List[Codegen]:
-        def rotation(self: T.Any) -> T.Any:
+        def rotation_storage(self: T.Any) -> T.Any:
             """
             Returns the rotational component of this pose.
             """
-            return self.R
+            return sf.Matrix(self.R.to_storage())
 
         def position(self: T.Any) -> T.Any:
             """
@@ -152,7 +152,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             return self.t
 
         return [
-            Codegen.function(func=rotation, input_types=[pose_type], config=config),
+            Codegen.function(func=rotation_storage, input_types=[pose_type], config=config),
             Codegen.function(func=position, input_types=[pose_type], config=config),
         ]
 

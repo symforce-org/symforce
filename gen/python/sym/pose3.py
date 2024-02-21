@@ -91,12 +91,16 @@ class Pose3(object):
         """
         return self.position()
 
+    def rotation(self):
+        # type: () -> Rot3
+        return Rot3.from_storage(list(self.rotation_storage()))
+
     # --------------------------------------------------------------------------
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    def rotation(self):
-        # type: (Pose3) -> Rot3
+    def rotation_storage(self):
+        # type: (Pose3) -> numpy.ndarray
         """
         Returns the rotational component of this pose.
         """
@@ -109,12 +113,12 @@ class Pose3(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
+        _res = numpy.zeros(4)
         _res[0] = _self[0]
         _res[1] = _self[1]
         _res[2] = _self[2]
         _res[3] = _self[3]
-        return Rot3.from_storage(_res)
+        return _res
 
     def position(self):
         # type: (Pose3) -> numpy.ndarray

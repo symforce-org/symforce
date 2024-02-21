@@ -32,3 +32,7 @@
         Accessor for the position component, equivalent to self.position()
         """
         return self.position()
+
+    def rotation(self):
+        # type: () -> Rot2
+        return Rot2.from_storage(list(self.rotation_storage()))

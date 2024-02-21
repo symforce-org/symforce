@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const Pose2f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-const sym::Rot2<Scalar> sym::Pose2<Scalar>::Rotation() const {
+const Eigen::Matrix<Scalar, 2, 1> sym::Pose2<Scalar>::RotationStorage() const {
   // Total ops: 0
 
   // Input arrays
@@ -38,10 +38,10 @@ const sym::Rot2<Scalar> sym::Pose2<Scalar>::Rotation() const {
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;
 
-  _res[0] = _self[0];
-  _res[1] = _self[1];
+  _res(0, 0) = _self[0];
+  _res(1, 0) = _self[1];
 
-  return sym::Rot2<Scalar>(_res);
+  return _res;
 }
 
 template <typename Scalar>

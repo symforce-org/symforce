@@ -28,6 +28,8 @@ class CppConfig(CodegenConfig):
         custom_preamble: An optional string to be prepended on the front of the rendered template
         cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
+        normalize_results: Should function outputs be explicitly projected onto the manifold before
+                           returning?
         support_complex: Generate code that can work with std::complex or with regular float types
         force_no_inline: Mark generated functions as ``__attribute__((noinline))``
         zero_initialization_sparsity_threshold: Threshold between 0 and 1 for the sparsity below

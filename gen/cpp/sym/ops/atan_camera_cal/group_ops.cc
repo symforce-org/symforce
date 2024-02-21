@@ -38,7 +38,7 @@ sym::ATANCameraCal<Scalar> GroupOps<ATANCameraCal<Scalar>>::Identity() {
   _res[3] = 0;
   _res[4] = 0;
 
-  return sym::ATANCameraCal<Scalar>(_res);
+  return sym::ATANCameraCal<Scalar>(_res, /* normalize */ false);
 }
 
 /**

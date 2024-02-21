@@ -51,8 +51,16 @@ class PolynomialCameraCal {
              principal_point, critical_undistorted_radius, distortion_coeffs)
                 .finished()) {}
 
-  // Construct from data vec
-  explicit PolynomialCameraCal(const DataVec& data) : data_(data) {}
+  /**
+   * Construct from data vec
+   *
+   * @param normalize Project to the manifold on construction.  This ensures numerical stability as
+   *     this constructor is called after each codegen operation.  Constructing from a normalized
+   *     vector may be faster, e.g. with `FromStorage`.
+   */
+  explicit PolynomialCameraCal(const DataVec& data, bool normalize = true) : data_(data) {
+    (void)normalize;
+  }
 
   // Access underlying storage as const
   inline const DataVec& Data() const {

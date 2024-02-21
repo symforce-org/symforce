@@ -24,7 +24,8 @@ void StorageOps<Rot3<ScalarType>>::ToStorage(const Rot3<ScalarType>& a, ScalarTy
 template <typename ScalarType>
 Rot3<ScalarType> StorageOps<Rot3<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return Rot3<ScalarType>(Eigen::Map<const typename Rot3<ScalarType>::DataVec>(data));
+  return Rot3<ScalarType>(Eigen::Map<const typename Rot3<ScalarType>::DataVec>(data),
+                          /* normalize */ false);
 }
 
 }  // namespace sym

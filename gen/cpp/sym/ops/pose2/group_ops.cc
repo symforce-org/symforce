@@ -37,7 +37,7 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::Identity() {
   _res[2] = 0;
   _res[3] = 0;
 
-  return sym::Pose2<Scalar>(_res);
+  return sym::Pose2<Scalar>(_res, /* normalize */ false);
 }
 
 /**

@@ -37,7 +37,7 @@ sym::Unit3<Scalar> GroupOps<Unit3<Scalar>>::Identity() {
   _res[2] = 0;
   _res[3] = 1;
 
-  return sym::Unit3<Scalar>(_res);
+  return sym::Unit3<Scalar>(_res, /* normalize */ false);
 }
 
 /**

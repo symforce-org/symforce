@@ -51,13 +51,18 @@ class {{ cls.__name__ }} {
   using SelfJacobian = Eigen::Matrix<Scalar, {{ ops.LieGroupOps.tangent_dim(cls) }}, {{ ops.LieGroupOps.tangent_dim(cls) }}>;
   {% endif %}
 
-  // Construct from data vec
-  {% if cls.__name__.startswith('Rot') %}
-  // For rotation types the storage is normalized on construction.
-  // This ensures numerical stability as this constructor is called after each codegen operation.
-  explicit {{ cls.__name__ }}(const DataVec& data) : data_(data.normalized()) {}
+  /**
+   * Construct from data vec
+   *
+   * @param normalize Project to the manifold on construction.  This ensures numerical stability as
+   *     this constructor is called after each codegen operation.  Constructing from a normalized
+   *     vector may be faster, e.g. with `FromStorage`.
+   */
+  explicit {{ cls.__name__ }}(const DataVec& data, const bool normalize = true)
+  {% if cls in (sf.Rot2, sf.Rot3, sf.Unit3) %}
+      : data_(normalize ? data.normalized() : data) {}
   {% else %}
-  explicit {{ cls.__name__ }}(const DataVec& data) : data_(data) {}
+      : data_(data) { (void)normalize; }
   {% endif %}
 
   // Default construct to identity

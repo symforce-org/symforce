@@ -29,6 +29,8 @@ class CudaConfig(CodegenConfig):
         custom_preamble: An optional string to be prepended on the front of the rendered template
         cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
         zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
+        normalize_results: Should function outputs be explicitly projected onto the manifold before
+                           returning?
         override_methods: Add special function overrides in dictionary with symforce function keys
             (e.g. ``sympy.sin``) and a string for the new method (e.g. ``"fast_math::sin_lut"``),
             note that this bypasses the default namespace (so std:: won't be added in front

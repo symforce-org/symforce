@@ -56,8 +56,16 @@ class Pose2 {
   using TangentVec = Eigen::Matrix<Scalar, 3, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, 3, 3>;
 
-  // Construct from data vec
-  explicit Pose2(const DataVec& data) : data_(data) {}
+  /**
+   * Construct from data vec
+   *
+   * @param normalize Project to the manifold on construction.  This ensures numerical stability as
+   *     this constructor is called after each codegen operation.  Constructing from a normalized
+   *     vector may be faster, e.g. with `FromStorage`.
+   */
+  explicit Pose2(const DataVec& data, const bool normalize = true) : data_(data) {
+    (void)normalize;
+  }
 
   // Default construct to identity
   Pose2() : Pose2(GroupOps<Self>::Identity()) {}
@@ -92,11 +100,15 @@ class Pose2 {
     return Eigen::Transform<Scalar, 2, Eigen::TransformTraits::Isometry>{ToHomogenousMatrix()};
   }
 
+  sym::Rot2<Scalar> Rotation() const {
+    return sym::Rot2<Scalar>(RotationStorage(), /* normalize */ false);
+  }
+
   // --------------------------------------------------------------------------
   // Custom generated methods
   // --------------------------------------------------------------------------
 
-  const sym::Rot2<Scalar> Rotation() const;
+  const Vector2 RotationStorage() const;
 
   const Vector2 Position() const;
 
