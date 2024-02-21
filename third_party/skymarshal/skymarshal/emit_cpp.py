@@ -16,7 +16,7 @@ from skymarshal.syntax_tree import ArrayMember
 
 TYPE_MAP = {
     "string": "std::string",
-    "boolean": "int8_t",
+    "boolean": "bool",
     "byte": "uint8_t",
     "sfixed32": "int32_t",
     "sfixed64": "int64_t",
@@ -35,9 +35,21 @@ INT64_TYPES = ["int64_t", "uint64_t", "ufixed32", "ufixed64"]
 
 
 def get_array_type(member, mapped_typename):
-    std_type_str = "std::array< " if member.is_constant_size() else "std::vector< "
     parts = []
-    for _ in member.dims:
+    for i in range(len(member.dims)):
+        if i == len(member.dims) - 1:
+            # Booleans need to be contained in a basic_string because std::vector<bool> has the undesirable
+            # specialization of being a bitset and thus not addressable. Outer layers do not need this.
+            std_type_str = (
+                "std::array< "
+                if member.is_constant_size()
+                else "std::basic_string< "
+                if member.type_ref.name == "boolean"
+                else "std::vector< "
+            )
+        else:
+            std_type_str = "std::array< " if member.is_constant_size() else "std::vector< "
+
         parts.append(std_type_str)
     parts.append(mapped_typename)
     # Reverse dimmension order so that we can write them from the inside out
@@ -212,6 +224,8 @@ class CppStruct(StructBuilder, CppBase):
             if isinstance(member, ArrayMember):
                 if member.is_constant_size():
                     includes.add(CppInclude(std="array"))
+                elif member.type_ref.name == "boolean":
+                    includes.add(CppInclude(std="string"))
                 else:
                     includes.add(CppInclude(std="vector"))
             if member.type_ref.name == "string":

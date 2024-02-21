@@ -5,6 +5,7 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __codegen_multi_function_test_inputs_constants_t_hpp__
 #define __codegen_multi_function_test_inputs_constants_t_hpp__

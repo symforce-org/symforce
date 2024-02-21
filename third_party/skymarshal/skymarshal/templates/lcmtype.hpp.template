@@ -9,6 +9,7 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __{{lcmtype.underscored}}_hpp__
 #define __{{lcmtype.underscored}}_hpp__
@@ -160,11 +161,7 @@ class {{lcmtype.name}}
         {
 {% for member in lcmtype.members %}
             if (strcmp(_fieldname, "{{member.name}}") == 0) {
-        {% if member.type_ref.name == "boolean" and not is_array_member(member) %}
-                lcm::format_json(_stream, static_cast<bool>({{member.name}}), _indent);
-        {% else %}
                 lcm::format_json(_stream, {{member.name}}, _indent);
-        {% endif %}
                 return true;
             }
 {% endfor %}

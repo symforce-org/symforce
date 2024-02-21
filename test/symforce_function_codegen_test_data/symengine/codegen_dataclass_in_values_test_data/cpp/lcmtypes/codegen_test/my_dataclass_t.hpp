@@ -5,6 +5,7 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __codegen_test_my_dataclass_t_hpp__
 #define __codegen_test_my_dataclass_t_hpp__

@@ -5,6 +5,7 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __sym_d_t_hpp__
 #define __sym_d_t_hpp__

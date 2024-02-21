@@ -68,6 +68,7 @@ struct ___lcm_hash_ptr {
     int64_t (*v)(void);
 };
 
+#ifndef __cplusplus
 /**
  * BOOLEAN
  */
@@ -78,6 +79,7 @@ struct ___lcm_hash_ptr {
 #define __boolean_decode_array __int8_t_decode_array
 #define __boolean_clone_array __int8_t_clone_array
 #define boolean_encoded_size int8_t_encoded_size
+#endif
 
 /**
  * BYTE
