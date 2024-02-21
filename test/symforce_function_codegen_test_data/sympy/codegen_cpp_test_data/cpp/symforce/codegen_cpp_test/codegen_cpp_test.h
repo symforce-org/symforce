@@ -30,6 +30,7 @@ namespace codegen_cpp_test {
  *     values_vec_2D: list
  *     constants: Values
  *     big_matrix: Matrix55
+ *     small_matrix: Matrix44
  *     states: Values
  *
  * Outputs:
@@ -38,6 +39,8 @@ namespace codegen_cpp_test {
  *     scalar_vec_out: list
  *     values_vec_out: list
  *     values_vec_2D_out: list
+ *     big_matrix_from_small_matrix: Matrix55
+ *     small_matrix_from_big_matrix: Matrix44
  */
 template <typename Scalar>
 void CodegenCppTest(
@@ -47,17 +50,18 @@ void CodegenCppTest(
     const std::array<codegen_cpp_test::values_vec_t, 3>& values_vec,
     const std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>& values_vec_2D,
     const codegen_cpp_test::constants_t& constants, const Eigen::Matrix<Scalar, 5, 5>& big_matrix,
-    const codegen_cpp_test::states_t& states, Scalar* const foo = nullptr,
-    Scalar* const bar = nullptr, std::array<Scalar, 3>* const scalar_vec_out = nullptr,
+    const Eigen::Matrix<Scalar, 4, 4>& small_matrix, const codegen_cpp_test::states_t& states,
+    Scalar* const foo = nullptr, Scalar* const bar = nullptr,
+    std::array<Scalar, 3>* const scalar_vec_out = nullptr,
     std::array<codegen_cpp_test::values_vec_t, 3>* const values_vec_out = nullptr,
-    std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>* const values_vec_2D_out =
-        nullptr) {
+    std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2>* const values_vec_2D_out = nullptr,
+    Eigen::Matrix<Scalar, 5, 5>* const big_matrix_from_small_matrix = nullptr,
+    Eigen::Matrix<Scalar, 4, 4>* const small_matrix_from_big_matrix = nullptr) {
   // Total ops: 748
 
   // Unused inputs
   (void)rot_vec;
   (void)list_of_lists;
-  (void)big_matrix;
   (void)states;
 
   // Input arrays
@@ -131,7 +135,7 @@ void CodegenCppTest(
   const Scalar _tmp64 = 2 * values_vec_2D[1][0].list_of_lists[2][1].data()[3];
   const Scalar _tmp65 = 2 * values_vec_2D[1][0].list_of_lists[2][2].data()[3];
 
-  // Output terms (5)
+  // Output terms (7)
   if (foo != nullptr) {
     Scalar& _foo = (*foo);
 
@@ -856,6 +860,57 @@ void CodegenCppTest(
         std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[1], Scalar(2)) -
         std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[2], Scalar(2)) +
         std::pow(values_vec_2D[1][0].list_of_lists[2][2].data()[3], Scalar(2));
+  }
+
+  if (big_matrix_from_small_matrix != nullptr) {
+    Eigen::Matrix<Scalar, 5, 5>& _big_matrix_from_small_matrix = (*big_matrix_from_small_matrix);
+
+    _big_matrix_from_small_matrix(0, 0) = small_matrix(0, 0);
+    _big_matrix_from_small_matrix(1, 0) = small_matrix(1, 0);
+    _big_matrix_from_small_matrix(2, 0) = small_matrix(2, 0);
+    _big_matrix_from_small_matrix(3, 0) = small_matrix(3, 0);
+    _big_matrix_from_small_matrix(4, 0) = 0;
+    _big_matrix_from_small_matrix(0, 1) = small_matrix(0, 1);
+    _big_matrix_from_small_matrix(1, 1) = small_matrix(1, 1);
+    _big_matrix_from_small_matrix(2, 1) = small_matrix(2, 1);
+    _big_matrix_from_small_matrix(3, 1) = small_matrix(3, 1);
+    _big_matrix_from_small_matrix(4, 1) = 0;
+    _big_matrix_from_small_matrix(0, 2) = small_matrix(0, 2);
+    _big_matrix_from_small_matrix(1, 2) = small_matrix(1, 2);
+    _big_matrix_from_small_matrix(2, 2) = small_matrix(2, 2);
+    _big_matrix_from_small_matrix(3, 2) = small_matrix(3, 2);
+    _big_matrix_from_small_matrix(4, 2) = 0;
+    _big_matrix_from_small_matrix(0, 3) = small_matrix(0, 3);
+    _big_matrix_from_small_matrix(1, 3) = small_matrix(1, 3);
+    _big_matrix_from_small_matrix(2, 3) = small_matrix(2, 3);
+    _big_matrix_from_small_matrix(3, 3) = small_matrix(3, 3);
+    _big_matrix_from_small_matrix(4, 3) = 0;
+    _big_matrix_from_small_matrix(0, 4) = 0;
+    _big_matrix_from_small_matrix(1, 4) = 0;
+    _big_matrix_from_small_matrix(2, 4) = 0;
+    _big_matrix_from_small_matrix(3, 4) = 0;
+    _big_matrix_from_small_matrix(4, 4) = 0;
+  }
+
+  if (small_matrix_from_big_matrix != nullptr) {
+    Eigen::Matrix<Scalar, 4, 4>& _small_matrix_from_big_matrix = (*small_matrix_from_big_matrix);
+
+    _small_matrix_from_big_matrix(0, 0) = big_matrix(0, 0);
+    _small_matrix_from_big_matrix(1, 0) = big_matrix(1, 0);
+    _small_matrix_from_big_matrix(2, 0) = big_matrix(2, 0);
+    _small_matrix_from_big_matrix(3, 0) = big_matrix(3, 0);
+    _small_matrix_from_big_matrix(0, 1) = big_matrix(0, 1);
+    _small_matrix_from_big_matrix(1, 1) = big_matrix(1, 1);
+    _small_matrix_from_big_matrix(2, 1) = big_matrix(2, 1);
+    _small_matrix_from_big_matrix(3, 1) = big_matrix(3, 1);
+    _small_matrix_from_big_matrix(0, 2) = big_matrix(0, 2);
+    _small_matrix_from_big_matrix(1, 2) = big_matrix(1, 2);
+    _small_matrix_from_big_matrix(2, 2) = big_matrix(2, 2);
+    _small_matrix_from_big_matrix(3, 2) = big_matrix(3, 2);
+    _small_matrix_from_big_matrix(0, 3) = big_matrix(0, 3);
+    _small_matrix_from_big_matrix(1, 3) = big_matrix(1, 3);
+    _small_matrix_from_big_matrix(2, 3) = big_matrix(2, 3);
+    _small_matrix_from_big_matrix(3, 3) = big_matrix(3, 3);
   }
 }  // NOLINT(readability/fn_size)
 

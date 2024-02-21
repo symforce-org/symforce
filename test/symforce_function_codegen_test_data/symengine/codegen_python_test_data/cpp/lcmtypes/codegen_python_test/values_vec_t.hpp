@@ -141,33 +141,30 @@ class values_vec_t
         }
 
         // Return true if field was found
-        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
         {
-            if (strcmp(_fieldname, "x") == 0) {
+            switch (field_index) {
+                case 0:
                 lcm::format_json(_stream, x, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "y") == 0) {
+                case 1:
                 lcm::format_json(_stream, y, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "rot") == 0) {
+                case 2:
                 lcm::format_json(_stream, rot, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "rot_vec") == 0) {
+                case 3:
                 lcm::format_json(_stream, rot_vec, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "scalar_vec") == 0) {
+                case 4:
                 lcm::format_json(_stream, scalar_vec, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "list_of_lists") == 0) {
+                case 5:
                 lcm::format_json(_stream, list_of_lists, _indent);
                 return true;
+                default:
+                return false;
             }
-            return false;
         }
 
         // Ability to print to standard streams as well as the fmt library.

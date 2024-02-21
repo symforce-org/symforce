@@ -110,17 +110,18 @@ class d_out_t
         }
 
         // Return true if field was found
-        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
         {
-            if (strcmp(_fieldname, "x") == 0) {
+            switch (field_index) {
+                case 0:
                 lcm::format_json(_stream, x, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "y") == 0) {
+                case 1:
                 lcm::format_json(_stream, y, _indent);
                 return true;
+                default:
+                return false;
             }
-            return false;
         }
 
         // Ability to print to standard streams as well as the fmt library.

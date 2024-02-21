@@ -5,17 +5,24 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __codegen_multi_function_test_inputs_t_hpp__
 #define __codegen_multi_function_test_inputs_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 #include <array>
 #include "lcmtypes/codegen_multi_function_test/inputs_constants_t.hpp"
 #include "lcmtypes/codegen_multi_function_test/inputs_states_t.hpp"
 #include "lcmtypes/codegen_multi_function_test/values_vec_t.hpp"
+#include "lcmtypes/eigen_lcm/Matrix4d.hpp"
+#include "lcmtypes/eigen_lcm/MatrixXd.hpp"
 #include "lcmtypes/eigen_lcm/Vector4d.hpp"
-#include "lcmtypes/eigen_lcm/VectorXd.hpp"
 
 namespace codegen_multi_function_test
 {
@@ -41,7 +48,9 @@ class inputs_t
 
         ::codegen_multi_function_test::inputs_constants_t constants;
 
-        ::eigen_lcm::VectorXd big_matrix;
+        ::eigen_lcm::MatrixXd big_matrix;
+
+        ::eigen_lcm::Matrix4d small_matrix;
 
         ::codegen_multi_function_test::inputs_states_t states;
 
@@ -61,7 +70,8 @@ class inputs_t
             const std::array< ::codegen_multi_function_test::values_vec_t, 3 >& values_vec_arg,
             const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_arg,
             const ::codegen_multi_function_test::inputs_constants_t& constants_arg,
-            const ::eigen_lcm::VectorXd& big_matrix_arg,
+            const ::eigen_lcm::MatrixXd& big_matrix_arg,
+            const ::eigen_lcm::Matrix4d& small_matrix_arg,
             const ::codegen_multi_function_test::inputs_states_t& states_arg
         );
 
@@ -128,14 +138,15 @@ class inputs_t
                     return 0;
             const __lcm_hash_ptr cp = { p, inputs_t::getHash };
 
-            uint64_t hash = 0xadf229d823991adaLL +
+            uint64_t hash = 0x57fdecbc3532ce7fLL +
                 ::eigen_lcm::Vector4d::_computeHash(&cp) +
          ::eigen_lcm::Vector4d::_computeHash(&cp) +
          ::eigen_lcm::Vector4d::_computeHash(&cp) +
          ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
          ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
          ::codegen_multi_function_test::inputs_constants_t::_computeHash(&cp) +
-         ::eigen_lcm::VectorXd::_computeHash(&cp) +
+         ::eigen_lcm::MatrixXd::_computeHash(&cp) +
+         ::eigen_lcm::Matrix4d::_computeHash(&cp) +
          ::codegen_multi_function_test::inputs_states_t::_computeHash(&cp);
 
             return (hash<<1) + ((hash>>63)&1);
@@ -145,48 +156,82 @@ class inputs_t
         inline bool operator==(const inputs_t& other) const;
         inline bool operator!=(const inputs_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const inputs_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "inputs_t(";
-            stream << "x=" << obj.x << ", ";
-            stream << "y=" << obj.y << ", ";
-            stream << "rot=" << obj.rot << ", ";
-            stream << "rot_vec=[";
-            for (size_t i = 0; i < obj.rot_vec.size(); ++i) {
-                stream << obj.rot_vec[i];
-                if (i + 1 < obj.rot_vec.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "scalar_vec=[";
-            for (size_t i = 0; i < obj.scalar_vec.size(); ++i) {
-                stream << obj.scalar_vec[i];
-                if (i + 1 < obj.scalar_vec.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "list_of_lists=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::eigen_lcm::Vector4d, 3 >, 3 >>" << ", ";
-            stream << "values_vec=[";
-            for (size_t i = 0; i < obj.values_vec.size(); ++i) {
-                stream << obj.values_vec[i];
-                if (i + 1 < obj.values_vec.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "values_vec_2D=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>" << ", ";
-            stream << "constants=" << obj.constants << ", ";
-            stream << "big_matrix=" << obj.big_matrix << ", ";
-            stream << "states=" << obj.states;
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 12> fields()
+        {
+            return {{
+                "x",
+                "y",
+                "rot",
+                "rot_vec",
+                "scalar_vec",
+                "list_of_lists",
+                "values_vec",
+                "values_vec_2D",
+                "constants",
+                "big_matrix",
+                "small_matrix",
+                "states",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
+        {
+            switch (field_index) {
+                case 0:
+                lcm::format_json(_stream, x, _indent);
+                return true;
+                case 1:
+                lcm::format_json(_stream, y, _indent);
+                return true;
+                case 2:
+                lcm::format_json(_stream, rot, _indent);
+                return true;
+                case 3:
+                lcm::format_json(_stream, rot_vec, _indent);
+                return true;
+                case 4:
+                lcm::format_json(_stream, scalar_vec, _indent);
+                return true;
+                case 5:
+                lcm::format_json(_stream, list_of_lists, _indent);
+                return true;
+                case 6:
+                lcm::format_json(_stream, values_vec, _indent);
+                return true;
+                case 7:
+                lcm::format_json(_stream, values_vec_2D, _indent);
+                return true;
+                case 8:
+                lcm::format_json(_stream, constants, _indent);
+                return true;
+                case 9:
+                lcm::format_json(_stream, big_matrix, _indent);
+                return true;
+                case 10:
+                lcm::format_json(_stream, small_matrix, _indent);
+                return true;
+                case 11:
+                lcm::format_json(_stream, states, _indent);
+                return true;
+                default:
+                return false;
+            }
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const inputs_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const inputs_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 inputs_t::inputs_t(
@@ -199,7 +244,8 @@ inputs_t::inputs_t(
     const std::array< ::codegen_multi_function_test::values_vec_t, 3 >& values_vec_arg,
     const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_arg,
     const ::codegen_multi_function_test::inputs_constants_t& constants_arg,
-    const ::eigen_lcm::VectorXd& big_matrix_arg,
+    const ::eigen_lcm::MatrixXd& big_matrix_arg,
+    const ::eigen_lcm::Matrix4d& small_matrix_arg,
     const ::codegen_multi_function_test::inputs_states_t& states_arg
 ) : x(x_arg),
     y(y_arg),
@@ -211,6 +257,7 @@ inputs_t::inputs_t(
     values_vec_2D(values_vec_2D_arg),
     constants(constants_arg),
     big_matrix(big_matrix_arg),
+    small_matrix(small_matrix_arg),
     states(states_arg) {}
 
 __lcm_buffer_size inputs_t::encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
@@ -313,6 +360,9 @@ __lcm_buffer_size inputs_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, _
     tlen = this->big_matrix._encodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    tlen = this->small_matrix._encodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = this->states._encodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -365,6 +415,9 @@ __lcm_buffer_size inputs_t::_decodeNoHash(const void *buf, __lcm_buffer_size off
     tlen = this->big_matrix._decodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    tlen = this->small_matrix._decodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     tlen = this->states._decodeNoHash(buf, offset + pos, maxlen - pos);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -396,6 +449,7 @@ __lcm_buffer_size inputs_t::_getEncodedSizeNoHash() const
     }
     enc_size += this->constants._getEncodedSizeNoHash();
     enc_size += this->big_matrix._getEncodedSizeNoHash();
+    enc_size += this->small_matrix._getEncodedSizeNoHash();
     enc_size += this->states._getEncodedSizeNoHash();
     return enc_size;
 }
@@ -412,6 +466,7 @@ bool inputs_t::operator==(const inputs_t& other) const {
           (values_vec_2D==other.values_vec_2D) && 
           (constants==other.constants) && 
           (big_matrix==other.big_matrix) && 
+          (small_matrix==other.small_matrix) && 
           (states==other.states));
 }
 

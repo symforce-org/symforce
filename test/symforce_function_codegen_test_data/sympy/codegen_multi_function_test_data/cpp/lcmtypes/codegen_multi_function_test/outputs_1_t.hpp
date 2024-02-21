@@ -5,13 +5,21 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __codegen_multi_function_test_outputs_1_t_hpp__
 #define __codegen_multi_function_test_outputs_1_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 #include <array>
 #include "lcmtypes/codegen_multi_function_test/values_vec_t.hpp"
+#include "lcmtypes/eigen_lcm/Matrix4d.hpp"
+#include "lcmtypes/eigen_lcm/MatrixXd.hpp"
 
 namespace codegen_multi_function_test
 {
@@ -29,6 +37,10 @@ class outputs_1_t
 
         std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 > values_vec_2D_out;
 
+        ::eigen_lcm::MatrixXd big_matrix_from_small_matrix;
+
+        ::eigen_lcm::Matrix4d small_matrix_from_big_matrix;
+
     public:
         outputs_1_t() = default;
 
@@ -40,7 +52,9 @@ class outputs_1_t
             const double& bar_arg,
             const std::array< double, 3 >& scalar_vec_out_arg,
             const std::array< ::codegen_multi_function_test::values_vec_t, 3 >& values_vec_out_arg,
-            const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_out_arg
+            const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_out_arg,
+            const ::eigen_lcm::MatrixXd& big_matrix_from_small_matrix_arg,
+            const ::eigen_lcm::Matrix4d& small_matrix_from_big_matrix_arg
         );
 
         /**
@@ -106,9 +120,11 @@ class outputs_1_t
                     return 0;
             const __lcm_hash_ptr cp = { p, outputs_1_t::getHash };
 
-            uint64_t hash = 0x56da9f927edddf51LL +
+            uint64_t hash = 0xa7f6beb7efb65a6fLL +
                 ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
-         ::codegen_multi_function_test::values_vec_t::_computeHash(&cp);
+         ::codegen_multi_function_test::values_vec_t::_computeHash(&cp) +
+         ::eigen_lcm::MatrixXd::_computeHash(&cp) +
+         ::eigen_lcm::Matrix4d::_computeHash(&cp);
 
             return (hash<<1) + ((hash>>63)&1);
         }
@@ -117,35 +133,62 @@ class outputs_1_t
         inline bool operator==(const outputs_1_t& other) const;
         inline bool operator!=(const outputs_1_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const outputs_1_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "outputs_1_t(";
-            stream << "foo=" << obj.foo << ", ";
-            stream << "bar=" << obj.bar << ", ";
-            stream << "scalar_vec_out=[";
-            for (size_t i = 0; i < obj.scalar_vec_out.size(); ++i) {
-                stream << obj.scalar_vec_out[i];
-                if (i + 1 < obj.scalar_vec_out.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "values_vec_out=[";
-            for (size_t i = 0; i < obj.values_vec_out.size(); ++i) {
-                stream << obj.values_vec_out[i];
-                if (i + 1 < obj.values_vec_out.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "values_vec_2D_out=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >>";
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 7> fields()
+        {
+            return {{
+                "foo",
+                "bar",
+                "scalar_vec_out",
+                "values_vec_out",
+                "values_vec_2D_out",
+                "big_matrix_from_small_matrix",
+                "small_matrix_from_big_matrix",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
+        {
+            switch (field_index) {
+                case 0:
+                lcm::format_json(_stream, foo, _indent);
+                return true;
+                case 1:
+                lcm::format_json(_stream, bar, _indent);
+                return true;
+                case 2:
+                lcm::format_json(_stream, scalar_vec_out, _indent);
+                return true;
+                case 3:
+                lcm::format_json(_stream, values_vec_out, _indent);
+                return true;
+                case 4:
+                lcm::format_json(_stream, values_vec_2D_out, _indent);
+                return true;
+                case 5:
+                lcm::format_json(_stream, big_matrix_from_small_matrix, _indent);
+                return true;
+                case 6:
+                lcm::format_json(_stream, small_matrix_from_big_matrix, _indent);
+                return true;
+                default:
+                return false;
+            }
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const outputs_1_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const outputs_1_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 outputs_1_t::outputs_1_t(
@@ -153,12 +196,16 @@ outputs_1_t::outputs_1_t(
     const double& bar_arg,
     const std::array< double, 3 >& scalar_vec_out_arg,
     const std::array< ::codegen_multi_function_test::values_vec_t, 3 >& values_vec_out_arg,
-    const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_out_arg
+    const std::array< std::array< ::codegen_multi_function_test::values_vec_t, 1 >, 2 >& values_vec_2D_out_arg,
+    const ::eigen_lcm::MatrixXd& big_matrix_from_small_matrix_arg,
+    const ::eigen_lcm::Matrix4d& small_matrix_from_big_matrix_arg
 ) : foo(foo_arg),
     bar(bar_arg),
     scalar_vec_out(scalar_vec_out_arg),
     values_vec_out(values_vec_out_arg),
-    values_vec_2D_out(values_vec_2D_out_arg) {}
+    values_vec_2D_out(values_vec_2D_out_arg),
+    big_matrix_from_small_matrix(big_matrix_from_small_matrix_arg),
+    small_matrix_from_big_matrix(small_matrix_from_big_matrix_arg) {}
 
 __lcm_buffer_size outputs_1_t::encode(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const
 {
@@ -239,6 +286,12 @@ __lcm_buffer_size outputs_1_t::_encodeNoHash(void *buf, __lcm_buffer_size offset
         }
     }
 
+    tlen = this->big_matrix_from_small_matrix._encodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
+    tlen = this->small_matrix_from_big_matrix._encodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     return pos;
 }
 
@@ -267,6 +320,12 @@ __lcm_buffer_size outputs_1_t::_decodeNoHash(const void *buf, __lcm_buffer_size 
         }
     }
 
+    tlen = this->big_matrix_from_small_matrix._decodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
+    tlen = this->small_matrix_from_big_matrix._decodeNoHash(buf, offset + pos, maxlen - pos);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     return pos;
 }
 
@@ -284,6 +343,8 @@ __lcm_buffer_size outputs_1_t::_getEncodedSizeNoHash() const
             enc_size += this->values_vec_2D_out[a0][a1]._getEncodedSizeNoHash();
         }
     }
+    enc_size += this->big_matrix_from_small_matrix._getEncodedSizeNoHash();
+    enc_size += this->small_matrix_from_big_matrix._getEncodedSizeNoHash();
     return enc_size;
 }
 
@@ -293,7 +354,9 @@ bool outputs_1_t::operator==(const outputs_1_t& other) const {
           (bar==other.bar) && 
           (scalar_vec_out==other.scalar_vec_out) && 
           (values_vec_out==other.values_vec_out) && 
-          (values_vec_2D_out==other.values_vec_2D_out));
+          (values_vec_2D_out==other.values_vec_2D_out) && 
+          (big_matrix_from_small_matrix==other.big_matrix_from_small_matrix) && 
+          (small_matrix_from_big_matrix==other.small_matrix_from_big_matrix));
 }
 
 bool outputs_1_t::operator!=(const outputs_1_t& other) const {

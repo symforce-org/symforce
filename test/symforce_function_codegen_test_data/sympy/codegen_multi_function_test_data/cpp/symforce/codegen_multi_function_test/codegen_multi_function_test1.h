@@ -838,6 +838,47 @@ void CodegenMultiFunctionTest1(
         std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2].data()[1], Scalar(2)) -
         std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2].data()[2], Scalar(2)) +
         std::pow(inputs.values_vec_2D[1][0].list_of_lists[2][2].data()[3], Scalar(2));
+    _outputs_1.big_matrix_from_small_matrix.data()[0] = inputs.small_matrix.data()[0];
+    _outputs_1.big_matrix_from_small_matrix.data()[1] = inputs.small_matrix.data()[1];
+    _outputs_1.big_matrix_from_small_matrix.data()[2] = inputs.small_matrix.data()[2];
+    _outputs_1.big_matrix_from_small_matrix.data()[3] = inputs.small_matrix.data()[3];
+    _outputs_1.big_matrix_from_small_matrix.data()[4] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[5] = inputs.small_matrix.data()[4];
+    _outputs_1.big_matrix_from_small_matrix.data()[6] = inputs.small_matrix.data()[5];
+    _outputs_1.big_matrix_from_small_matrix.data()[7] = inputs.small_matrix.data()[6];
+    _outputs_1.big_matrix_from_small_matrix.data()[8] = inputs.small_matrix.data()[7];
+    _outputs_1.big_matrix_from_small_matrix.data()[9] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[10] = inputs.small_matrix.data()[8];
+    _outputs_1.big_matrix_from_small_matrix.data()[11] = inputs.small_matrix.data()[9];
+    _outputs_1.big_matrix_from_small_matrix.data()[12] = inputs.small_matrix.data()[10];
+    _outputs_1.big_matrix_from_small_matrix.data()[13] = inputs.small_matrix.data()[11];
+    _outputs_1.big_matrix_from_small_matrix.data()[14] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[15] = inputs.small_matrix.data()[12];
+    _outputs_1.big_matrix_from_small_matrix.data()[16] = inputs.small_matrix.data()[13];
+    _outputs_1.big_matrix_from_small_matrix.data()[17] = inputs.small_matrix.data()[14];
+    _outputs_1.big_matrix_from_small_matrix.data()[18] = inputs.small_matrix.data()[15];
+    _outputs_1.big_matrix_from_small_matrix.data()[19] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[20] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[21] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[22] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[23] = 0;
+    _outputs_1.big_matrix_from_small_matrix.data()[24] = 0;
+    _outputs_1.small_matrix_from_big_matrix.data()[0] = inputs.big_matrix.data()[0];
+    _outputs_1.small_matrix_from_big_matrix.data()[1] = inputs.big_matrix.data()[1];
+    _outputs_1.small_matrix_from_big_matrix.data()[2] = inputs.big_matrix.data()[2];
+    _outputs_1.small_matrix_from_big_matrix.data()[3] = inputs.big_matrix.data()[3];
+    _outputs_1.small_matrix_from_big_matrix.data()[4] = inputs.big_matrix.data()[5];
+    _outputs_1.small_matrix_from_big_matrix.data()[5] = inputs.big_matrix.data()[6];
+    _outputs_1.small_matrix_from_big_matrix.data()[6] = inputs.big_matrix.data()[7];
+    _outputs_1.small_matrix_from_big_matrix.data()[7] = inputs.big_matrix.data()[8];
+    _outputs_1.small_matrix_from_big_matrix.data()[8] = inputs.big_matrix.data()[10];
+    _outputs_1.small_matrix_from_big_matrix.data()[9] = inputs.big_matrix.data()[11];
+    _outputs_1.small_matrix_from_big_matrix.data()[10] = inputs.big_matrix.data()[12];
+    _outputs_1.small_matrix_from_big_matrix.data()[11] = inputs.big_matrix.data()[13];
+    _outputs_1.small_matrix_from_big_matrix.data()[12] = inputs.big_matrix.data()[15];
+    _outputs_1.small_matrix_from_big_matrix.data()[13] = inputs.big_matrix.data()[16];
+    _outputs_1.small_matrix_from_big_matrix.data()[14] = inputs.big_matrix.data()[17];
+    _outputs_1.small_matrix_from_big_matrix.data()[15] = inputs.big_matrix.data()[18];
   }
 }  // NOLINT(readability/fn_size)
 

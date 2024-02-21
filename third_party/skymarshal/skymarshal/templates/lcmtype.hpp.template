@@ -157,15 +157,17 @@ class {{lcmtype.name}}
         }
 
         // Return true if field was found
-        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
         {
+            switch (field_index) {
 {% for member in lcmtype.members %}
-            if (strcmp(_fieldname, "{{member.name}}") == 0) {
+                case {{loop.index0}}:
                 lcm::format_json(_stream, {{member.name}}, _indent);
                 return true;
-            }
 {% endfor %}
-            return false;
+                default:
+                return false;
+            }
         }
 
         // Ability to print to standard streams as well as the fmt library.

@@ -5,11 +5,17 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __codegen_cpp_test_values_vec_t_hpp__
 #define __codegen_cpp_test_values_vec_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 #include <array>
 #include "lcmtypes/eigen_lcm/Vector4d.hpp"
 
@@ -121,36 +127,58 @@ class values_vec_t
         inline bool operator==(const values_vec_t& other) const;
         inline bool operator!=(const values_vec_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const values_vec_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "values_vec_t(";
-            stream << "x=" << obj.x << ", ";
-            stream << "y=" << obj.y << ", ";
-            stream << "rot=" << obj.rot << ", ";
-            stream << "rot_vec=[";
-            for (size_t i = 0; i < obj.rot_vec.size(); ++i) {
-                stream << obj.rot_vec[i];
-                if (i + 1 < obj.rot_vec.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "scalar_vec=[";
-            for (size_t i = 0; i < obj.scalar_vec.size(); ++i) {
-                stream << obj.scalar_vec[i];
-                if (i + 1 < obj.scalar_vec.size()) {
-                    stream << ", ";
-                }
-            }
-            stream << "]" << ", ";
-            stream << "list_of_lists=<MULTIDIMENSIONAL ARRAY std::array< std::array< ::eigen_lcm::Vector4d, 3 >, 3 >>";
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 6> fields()
+        {
+            return {{
+                "x",
+                "y",
+                "rot",
+                "rot_vec",
+                "scalar_vec",
+                "list_of_lists",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
+        {
+            switch (field_index) {
+                case 0:
+                lcm::format_json(_stream, x, _indent);
+                return true;
+                case 1:
+                lcm::format_json(_stream, y, _indent);
+                return true;
+                case 2:
+                lcm::format_json(_stream, rot, _indent);
+                return true;
+                case 3:
+                lcm::format_json(_stream, rot_vec, _indent);
+                return true;
+                case 4:
+                lcm::format_json(_stream, scalar_vec, _indent);
+                return true;
+                case 5:
+                lcm::format_json(_stream, list_of_lists, _indent);
+                return true;
+                default:
+                return false;
+            }
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const values_vec_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const values_vec_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 values_vec_t::values_vec_t(

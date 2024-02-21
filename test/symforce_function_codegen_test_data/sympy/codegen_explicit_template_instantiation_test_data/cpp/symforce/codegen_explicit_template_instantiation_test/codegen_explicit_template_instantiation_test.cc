@@ -16,12 +16,14 @@ template void CodegenExplicitTemplateInstantiationTest<double>(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
-    const Eigen::Matrix<double, 5, 5>& big_matrix,
+    const Eigen::Matrix<double, 5, 5>& big_matrix, const Eigen::Matrix<double, 4, 4>& small_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states, double* const foo,
     double* const bar, std::array<double, 3>* const scalar_vec_out,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const values_vec_out,
     std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>* const
-        values_vec_2D_out);
+        values_vec_2D_out,
+    Eigen::Matrix<double, 5, 5>* const big_matrix_from_small_matrix,
+    Eigen::Matrix<double, 4, 4>* const small_matrix_from_big_matrix);
 
 template void CodegenExplicitTemplateInstantiationTest<float>(
     const float x, const float y, const sym::Rot3<float>& rot,
@@ -31,11 +33,13 @@ template void CodegenExplicitTemplateInstantiationTest<float>(
     const std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>&
         values_vec_2D,
     const codegen_explicit_template_instantiation_test::constants_t& constants,
-    const Eigen::Matrix<float, 5, 5>& big_matrix,
+    const Eigen::Matrix<float, 5, 5>& big_matrix, const Eigen::Matrix<float, 4, 4>& small_matrix,
     const codegen_explicit_template_instantiation_test::states_t& states, float* const foo,
     float* const bar, std::array<float, 3>* const scalar_vec_out,
     std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3>* const values_vec_out,
     std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>* const
-        values_vec_2D_out);
+        values_vec_2D_out,
+    Eigen::Matrix<float, 5, 5>* const big_matrix_from_small_matrix,
+    Eigen::Matrix<float, 4, 4>* const small_matrix_from_big_matrix);
 
 }  // namespace codegen_explicit_template_instantiation_test

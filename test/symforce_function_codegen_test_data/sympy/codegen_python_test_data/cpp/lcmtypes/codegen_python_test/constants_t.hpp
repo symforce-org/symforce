@@ -5,11 +5,17 @@
  **/
 
 #include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 #ifndef __codegen_python_test_constants_t_hpp__
 #define __codegen_python_test_constants_t_hpp__
 
+#if defined(SKYMARSHAL_PRINTING_ENABLED)
+#include <lcm/lcm_json.hpp>
+#include <array>
+#endif
 #include <ostream>
+
 
 namespace codegen_python_test
 {
@@ -91,17 +97,38 @@ class constants_t
         inline bool operator==(const constants_t& other) const;
         inline bool operator!=(const constants_t& other) const;
 
-        // Ability to print to standard streams as well as the fmt library.
-        friend std::ostream& operator<<(std::ostream& stream, const constants_t& obj) {
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-            stream << "constants_t(";
-            stream << "epsilon=" << obj.epsilon;
-            stream << ")";
-#else
-            stream << "<FORMATTING DISABLED>";
-#endif
-            return stream;
+        constexpr static std::array<const char*, 1> fields()
+        {
+            return {{
+                "epsilon",
+            }};
         }
+
+        // Return true if field was found
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
+        {
+            switch (field_index) {
+                case 0:
+                lcm::format_json(_stream, epsilon, _indent);
+                return true;
+                default:
+                return false;
+            }
+        }
+
+        // Ability to print to standard streams as well as the fmt library.
+        friend std::ostream& operator<<(std::ostream& _stream, const constants_t& obj) {
+            lcm::format_json(_stream, obj, 0);
+            return _stream;
+        }
+
+#else
+        friend std::ostream& operator<<(std::ostream& _stream, const constants_t& obj) {
+            _stream << "<FORMATTING DISABLED>";
+            return _stream;
+        }
+#endif
 };
 
 constants_t::constants_t(

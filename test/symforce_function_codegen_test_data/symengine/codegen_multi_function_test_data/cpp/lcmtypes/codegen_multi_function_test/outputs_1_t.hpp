@@ -148,37 +148,33 @@ class outputs_1_t
         }
 
         // Return true if field was found
-        bool format_field(std::ostream& _stream, const char* _fieldname, uint16_t _indent) const
+        bool format_field(std::ostream& _stream, uint16_t field_index, uint16_t _indent) const
         {
-            if (strcmp(_fieldname, "foo") == 0) {
+            switch (field_index) {
+                case 0:
                 lcm::format_json(_stream, foo, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "bar") == 0) {
+                case 1:
                 lcm::format_json(_stream, bar, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "scalar_vec_out") == 0) {
+                case 2:
                 lcm::format_json(_stream, scalar_vec_out, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "values_vec_out") == 0) {
+                case 3:
                 lcm::format_json(_stream, values_vec_out, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "values_vec_2D_out") == 0) {
+                case 4:
                 lcm::format_json(_stream, values_vec_2D_out, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "big_matrix_from_small_matrix") == 0) {
+                case 5:
                 lcm::format_json(_stream, big_matrix_from_small_matrix, _indent);
                 return true;
-            }
-            if (strcmp(_fieldname, "small_matrix_from_big_matrix") == 0) {
+                case 6:
                 lcm::format_json(_stream, small_matrix_from_big_matrix, _indent);
                 return true;
+                default:
+                return false;
             }
-            return false;
         }
 
         // Ability to print to standard streams as well as the fmt library.

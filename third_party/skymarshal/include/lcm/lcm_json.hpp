@@ -64,9 +64,9 @@ void format_json(std::ostream &stream, const T &item, uint16_t indent)
 {
     stream << "{\n";
     uint16_t new_indent = indent + kLcmIndentSpaces;
-    for (const auto &field : item.fields()) {
-        stream << std::string(new_indent, ' ') << "\"" << field << "\": ";
-        item.format_field(stream, field, new_indent);
+    for (uint16_t i = 0; i < item.fields().size(); i++) {
+        stream << std::string(new_indent, ' ') << "\"" << item.fields()[i] << "\": ";
+        item.format_field(stream, i, new_indent);
         stream << ",\n";
     }
     stream << std::string(new_indent, ' ') << "\"_struct_\": \"" << item.getTypeName() << "\"\n";
