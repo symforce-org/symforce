@@ -232,6 +232,67 @@ class inputs_t
             return _stream;
         }
 #endif
+
+#if defined(SKYMARSHAL_STORING_ENABLED)
+        // Return value is 0 if the operation succeeded.
+        // If the operation failed, return value is equal to 1 + the index of the first invalid field,
+        // 1 + field_size if there are not enough fields, or 2 + field_size if the value is invalid.
+        __attribute__((nodiscard)) uint16_t store_field(const char* _fields[], uint16_t _num_fields, const char* _value)
+        {
+            if (_num_fields == 0 || _fields[0] == nullptr) {
+                return 1;
+            }
+            if (strcmp(_fields[0], fields()[0]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, x, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[1]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, y, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[2]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, rot, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[3]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, rot_vec, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[4]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, scalar_vec, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[5]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, list_of_lists, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[6]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, values_vec, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[7]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, values_vec_2D, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[8]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, constants, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[9]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, big_matrix, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[10]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, small_matrix, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            if (strcmp(_fields[0], fields()[11]) == 0) {
+                uint16_t ret = lcm::store_field(_fields + 1, _num_fields - 1, states, _value);
+                return ret == 0 ? ret : ret + 1;
+            }
+            return 1;
+        }
+#endif
 };
 
 inputs_t::inputs_t(
