@@ -66,7 +66,7 @@ class StorageOps(Ops):
 
         def evalf_scalar(s: T.Scalar) -> T.Scalar:
             if hasattr(s, "evalf"):
-                return s.evalf()  # type: ignore
+                return s.evalf()
             if scalar_like(s):
                 return s
             raise TypeError

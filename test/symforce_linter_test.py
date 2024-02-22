@@ -7,7 +7,6 @@ import asyncio
 import os
 import subprocess
 import sys
-import unittest
 from pathlib import Path
 
 from symforce import logger
@@ -24,13 +23,6 @@ class SymforceLinterTest(TestCase):
     """
 
     @slow_on_sympy
-    @unittest.skipIf(
-        sys.version_info[:3] >= (3, 10, 7),
-        """
-        Mypy fails on Python 3.10.7 because of this bug, which is fixed in mypy 0.981:
-        https://github.com/python/mypy/issues/13627
-        """,
-    )
     def test_linter(self) -> None:
         try:
             asyncio.run(

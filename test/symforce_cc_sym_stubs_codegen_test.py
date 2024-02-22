@@ -28,6 +28,9 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         """
         output_dir = self.make_output_dir("sf_cc_sym_stubgen_output")
 
+        cc_sym_path = sys.modules["cc_sym"].__file__
+        assert cc_sym_path is not None
+
         subprocess.check_call(
             [
                 sys.executable,
@@ -44,7 +47,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
                 PYTHONPATH=os.pathsep.join(
                     [
                         os.environ.get("PYTHONPATH", ""),
-                        str(Path(sys.modules["cc_sym"].__file__).parent),
+                        str(Path(cc_sym_path).parent),
                     ]
                 ),
             ),

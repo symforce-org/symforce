@@ -659,7 +659,7 @@ class SymforceCodegenTest(TestCase):
         dist_to_identity = sf.M(
             inputs["R1"].local_coordinates(sf.Rot3.identity(), epsilon=inputs["e"])
         ).squared_norm()
-        dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)  # type: ignore
+        dist_D_R1 = dist_to_identity.diff(inputs["R1"].q.w)
 
         namespace = "codegen_nan_test"
         output_dir = self.make_output_dir("sf_codegen_cpp_nan_")

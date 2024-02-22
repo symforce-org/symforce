@@ -65,7 +65,7 @@ class PatchDevelop(develop):
         # regardless of whether we're building with develop or build_editable,
         # (both before and after version 64.0.0), we patch develop to add this
         # field to build_ext and set it to True.
-        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[attr-defined]
+        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[union-attr]
         super().run()
 
 
@@ -155,13 +155,15 @@ class CMakeBuild(build_ext):
             # So, if the file's not present, we just move on.
             if symengine_wrapper:
                 self.copy_file(
-                    symengine_wrapper,
-                    SOURCE_DIR
-                    / "third_party"
-                    / "symenginepy"
-                    / "symengine"
-                    / "lib"
-                    / self.get_ext_filename("symengine_wrapper"),
+                    str(symengine_wrapper),
+                    str(
+                        SOURCE_DIR
+                        / "third_party"
+                        / "symenginepy"
+                        / "symengine"
+                        / "lib"
+                        / self.get_ext_filename("symengine_wrapper")
+                    ),
                 )
 
             # NOTE(brad) By setting the RPATH of the generated binaries to include $ORIGIN,
@@ -172,8 +174,8 @@ class CMakeBuild(build_ext):
             # find them when it looks.
             for cc_sym_dependency in build_temp_path.glob("libsymforce_*"):
                 self.copy_file(
-                    cc_sym_dependency,
-                    SOURCE_DIR / cc_sym_dependency.name,
+                    str(cc_sym_dependency),
+                    str(SOURCE_DIR / cc_sym_dependency.name),
                 )
 
         # Move from build temp to final position
@@ -181,9 +183,9 @@ class CMakeBuild(build_ext):
             self.move_output(ext)
 
     def move_output(self, ext: CMakeExtension) -> None:
-        if ext.name == "lcmtypes":  # type: ignore[attr-defined]
+        if ext.name == "lcmtypes":
             build_temp_path = Path(self.build_temp)
-            dest_path_dir = Path(self.get_ext_fullpath(ext.name)).resolve().parent  # type: ignore[attr-defined]
+            dest_path_dir = Path(self.get_ext_fullpath(ext.name)).resolve().parent
             if self.inplace:
                 # NOTE(brad): If building in-place, place package in lcmtypes_build dir to avoid
                 # collision with existing lcmtypes directory. Happens in editable installs.
@@ -201,10 +203,10 @@ class CMakeBuild(build_ext):
         extension_source_paths = {"cc_sym": build_temp / "pybind" / self.get_ext_filename("cc_sym")}
 
         build_temp = Path(self.build_temp).resolve()
-        dest_path = Path(self.get_ext_fullpath(ext.name)).resolve()  # type: ignore[attr-defined]
+        dest_path = Path(self.get_ext_fullpath(ext.name)).resolve()
         dest_directory = dest_path.parents[0]
         dest_directory.mkdir(parents=True, exist_ok=True)
-        self.copy_file(extension_source_paths[ext.name], dest_path)  # type: ignore[attr-defined]
+        self.copy_file(extension_source_paths[ext.name], str(dest_path))
 
 
 class SymForceEggInfo(egg_info):
@@ -296,8 +298,9 @@ class InstallWithExtras(install):
     def run(self) -> None:
         super().run()
 
-        build_ext_obj = self.distribution.get_command_obj("build_ext")  # type: ignore[attr-defined]
-        build_dir = Path(self.distribution.get_command_obj("build_ext").build_temp)  # type: ignore[attr-defined]
+        build_ext_obj = self.distribution.get_command_obj("build_ext")
+        assert isinstance(build_ext_obj, CMakeBuild)
+        build_dir = Path(build_ext_obj.build_temp)
 
         # Install symengine
         # NOTE(aaron): We add symenginepy as a package down below, and the only remaining thing we
@@ -311,7 +314,7 @@ class InstallWithExtras(install):
                 )
             ),
             Path.cwd()
-            / self.install_platlib  # type: ignore[attr-defined]
+            / self.install_platlib
             / "symengine"
             / "lib"
             / build_ext_obj.get_ext_filename("symengine_wrapper"),
@@ -346,8 +349,6 @@ docs_requirements = [
     "ipykernel",
     # nbconvert depends on this, but doesn't specify the dependency
     "ipython-genutils",
-    # Transitive dependency of ipykernel and nbsphinx, 8.6 is incompatible with mypy 0.910
-    "jupyter-client<8.6.0",
     "matplotlib",
     "myst-parser",
     "nbsphinx",
@@ -450,7 +451,7 @@ if __name__ == "__main__":
                 "argh",
                 "coverage",
                 "jinja2~=3.0",
-                "mypy==0.910",
+                "mypy~=1.8.0",
                 "numba",
                 # 6.13 fixes pip >=23.1 support
                 "pip-tools>=6.13",

@@ -46,8 +46,7 @@ class RenderTemplateConfig:
     custom_preamble: str = ""
 
 
-# TODO(hayk): This type ignore is fixed by https://github.com/python/mypy/pull/13398 in mypy 0.981
-@dataclass  # type: ignore[misc]
+@dataclass
 class CodegenConfig:
     """
     Base class for backend-specific arguments for code generation.

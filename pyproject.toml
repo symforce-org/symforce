@@ -82,13 +82,19 @@ section-order = [
 [tool.mypy]
 python_version = "3.8"
 warn_unused_configs = true
+warn_unused_ignores = true
 disallow_untyped_defs = true
 mypy_path = [".", "gen/python", "$SYMFORCE_LCMTYPES_DIR", "symforce/pybind"]
+explicit_package_bases = true
+
+# TODO(aaron): Migrate, and remove this
+implicit_optional = true
 
 [[tool.mypy.overrides]]
 module = [
   "IPython.*",
   "argh.*",
+  "clang_format",
   "graphviz.*",
   "matplotlib.*",
   "mpl_toolkits.*",

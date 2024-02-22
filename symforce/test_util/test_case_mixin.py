@@ -112,7 +112,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         """
         return np.testing.assert_array_equal(actual, desired, err_msg=msg)
 
-    def assertNotEqual(self, first: T.Any, second: T.Any, msg: str = "") -> None:
+    def assertNotEqual(self, first: T.Any, second: T.Any, msg: T.Optional[str] = "") -> None:
         """
         Overrides unittest.assertNotEqual to handle ndarrays separately. "assertNotEqual"
         uses the "!=" operator, but this is not implemented for ndarrays. Instead, we check that
@@ -125,7 +125,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
         """
         if isinstance(first, np.ndarray):
             return np.testing.assert_raises(
-                AssertionError, np.testing.assert_array_equal, first, second, msg
+                AssertionError, np.testing.assert_array_equal, first, second, err_msg=msg or ""
             )
         else:
             return super().assertNotEqual(first, second, msg)

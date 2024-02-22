@@ -345,9 +345,7 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
 
 elif sympy.__package__ == "sympy":
     from sympy import Symbol
-    from sympy import (
-        symbols,  # type: ignore[misc] # mypy is mad that this is of a different type on sympy
-    )
+    from sympy import symbols
 
     # Save original
     _original_symbol_new = sympy.Symbol.__new__
@@ -564,7 +562,7 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
         return sympy.S(_sympy_py.simplify(_sympy_py.S(*args), **kwargs))
 
 elif sympy.__package__ == "sympy":
-    from sympy import simplify  # type: ignore[misc] # incompatible import
+    from sympy.simplify import simplify
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
 
@@ -585,7 +583,7 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
         return sympy.S(_sympy_py.limit(_sympy_py.S(e), _sympy_py.S(z), _sympy_py.S(z0), dir=dir))
 
 elif sympy.__package__ == "sympy":
-    from sympy import limit  # type: ignore[misc] # incompatible import
+    from sympy import limit
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
 
@@ -618,7 +616,7 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
         )
 
 elif sympy.__package__ == "sympy":
-    from sympy import integrate  # type: ignore[misc] # incompatible import
+    from sympy import integrate
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
 
@@ -642,7 +640,7 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
             )
 
 elif sympy.__package__ == "sympy":
-    from sympy import solve  # type: ignore[misc] # incompatible import
+    from sympy import solve
 else:
     raise symforce.InvalidSymbolicApiError(sympy.__package__)
 
@@ -781,7 +779,7 @@ if sympy.__package__ == "symengine":
     wrapper.get_dict = lambda *args, **kwargs: original_get_dict(_get_subs_dict(*args, **kwargs))
 elif sympy.__package__ == "sympy":
     original_subs = sympy.Basic.subs
-    sympy.Basic.subs = lambda self, *args, **kwargs: original_subs(  # type: ignore[assignment]
+    sympy.Basic.subs = lambda self, *args, **kwargs: original_subs(  # type: ignore[method-assign]
         self, _get_subs_dict(*args, **kwargs), **kwargs
     )
 else:

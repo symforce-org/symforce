@@ -34,7 +34,7 @@ class SimilarityIndex:
     sorted_sparse_matrices: T.Tuple[str, ...] = dataclasses.field(init=False)
     sparse_matrices: dataclasses.InitVar[T.Iterable[str]]
 
-    def __post_init__(self, sparse_matrices: T.List[str]) -> None:
+    def __post_init__(self, sparse_matrices: T.Iterable[str]) -> None:
         self.sorted_sparse_matrices = tuple(sorted(sparse_matrices))
 
     @staticmethod

@@ -136,7 +136,7 @@ class PosedCameraTest(CamTestMixin, TestCase):
         )
         cam_2_ray = posed_cam_2.pose.R.inverse() * (posed_cam_1.pose.R * cam_1_ray)
         pixel_inf_2_rot_only, _ = posed_cam_2.pixel_from_camera_point(cam_2_ray)
-        self.assertEqual(is_valid_inf.subs(symbolic_inverse_range, 0), 1)  # type: ignore
+        self.assertEqual(is_valid_inf.subs(symbolic_inverse_range, 0), 1)
         self.assertStorageNear(
             pixel_inf_2.subs(symbolic_inverse_range, 0), pixel_inf_2_rot_only, places=4
         )

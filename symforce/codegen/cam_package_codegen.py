@@ -3,6 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 import collections
 import tempfile
 import textwrap
@@ -161,12 +163,11 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     return data
 
 
-def class_template_data(
-    cls: T.Type, functions_to_doc: T.Sequence["function"]
-) -> T.Dict[str, T.Any]:
+def class_template_data(cls: T.Type, functions_to_doc: T.Sequence[function]) -> T.Dict[str, T.Any]:
     data = Codegen.common_data()
     data["doc"] = {}
-    data["doc"]["cls"] = textwrap.dedent(cls.__doc__).strip()  # type: ignore
+    assert cls.__doc__ is not None
+    data["doc"]["cls"] = textwrap.dedent(cls.__doc__).strip()
     for func in functions_to_doc:
         if func.__doc__ is not None:
             data["doc"][func.__name__] = textwrap.dedent(func.__doc__)

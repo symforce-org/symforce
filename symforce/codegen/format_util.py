@@ -28,7 +28,7 @@ def format_cpp(file_contents: str, filename: str) -> str:
         formatted_file_contents (str): The contents of the file after formatting
     """
     try:
-        import clang_format  # type: ignore[import]
+        import clang_format
 
         clang_format_path = str(
             Path(clang_format.__file__).parent / "data" / "bin" / "clang-format"

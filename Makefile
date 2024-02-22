@@ -40,29 +40,18 @@ check_format:
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) --dry-run -Werror
 
 # Check type hints using mypy
-# NOTE(aaron): mypy does not recurse through directories unless they're packages, so we run `find`.
-# See https://github.com/python/mypy/issues/8548
-# We don't need to run find on `symforce` because we know the whole thing is a package
-MYPY_COMMAND=$(PYTHON) -m mypy --show-error-code --config-file=pyproject.toml
+MYPY_COMMAND=$(PYTHON) -m mypy --show-error-codes --config-file=pyproject.toml
 SYMFORCE_LCMTYPES_DIR ?= build/lcmtypes/python2.7
 check_types:
-	export SYMFORCE_LCMTYPES_DIR=$(SYMFORCE_LCMTYPES_DIR); \
-	$(MYPY_COMMAND) symforce $(shell find . \
-		\( -path ./symforce \
-		-o -path ./third_party \
-		-o -path ./build \
-		-o -path ./.eggs \
-		-o -path ./gen/python/setup.py \
-		-o -path ./test/symforce_function_codegen_test_data \
-		-o -path ./gen/python/build \
-		\) -prune -o -name "*.py" -print) \
-		--exclude "symforce/examples/.*/gen/python2\.7/lcmtypes"
-	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/sympy \
-		-path "*/lcmtypes" -prune -false \
-		-o -name "*.py")
-	$(MYPY_COMMAND) $(shell find test/symforce_function_codegen_test_data/symengine \
-		-path "*/lcmtypes" -prune -false \
-		-o -name "*.py")
+	SYMFORCE_LCMTYPES_DIR=$(SYMFORCE_LCMTYPES_DIR) $(MYPY_COMMAND) . \
+		--exclude build \
+		--exclude .eggs \
+		--exclude gen/python/setup.py \
+		--exclude gen/python/build \
+		--exclude test/symforce_function_codegen_test_data/sympy \
+		--exclude test/symforce_function_codegen_test_data/.*/lcmtypes \
+		--exclude "symforce/examples/.*/gen/python2\.7/lcmtypes" \
+		--exclude third_party
 
 # Run pylint on the symforce package, and tests
 # TODO(aaron): Also run on other python code in symforce.  Generated code will require a different

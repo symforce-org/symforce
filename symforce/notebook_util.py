@@ -40,7 +40,9 @@ def display(*args: T.Any) -> None:
             converted_args.append(arg)
 
     try:
-        IPython.display.display(sympy_py.S(*converted_args, strict=True))
+        IPython.display.display(
+            *[sympy_py.S(converted_arg, strict=True) for converted_arg in converted_args]
+        )
     except (sympy_py.SympifyError, AttributeError, TypeError):
         IPython.display.display(*args)
 

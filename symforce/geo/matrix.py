@@ -14,6 +14,9 @@ from symforce import typing as _T  # We already have a Matrix.T which collides
 from symforce import typing_util
 from symforce.ops.interfaces import Storage
 
+if _T.TYPE_CHECKING:
+    import symengine
+
 
 class Matrix(Storage):
     """
@@ -482,7 +485,7 @@ class Matrix(Storage):
         else:
             # Compute jacobian wrt X storage
             return Matrix(
-                [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in iter(self.mat)]  # type: ignore[call-overload]  # fixed by python/typeshed#7817
+                [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in iter(self.mat)]
             )
 
     def diff(self, *args: _T.Scalar) -> Matrix:
@@ -762,9 +765,9 @@ class Matrix(Storage):
         else:
             return self.__class__(self.mat * _T.cast(sf.sympy.MutableDenseMatrix, right).inv())
 
-    def _symengine_(self) -> "symengine.Matrix":  # type: ignore[name-defined]
+    def _symengine_(self) -> symengine.Matrix:
         symengine = symforce._find_symengine()  # pylint: disable=protected-access
-        return symengine.S(self.mat)  # type: ignore[attr-defined]
+        return symengine.S(self.mat)
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
         """
@@ -879,7 +882,7 @@ class Matrix(Storage):
         """
         Convert to a flattened list
         """
-        return list(iter(self.mat))  # type: ignore[call-overload]  # fixed by python/typeshed#7817
+        return list(iter(self.mat))
 
     @classmethod
     def from_flat_list(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
