@@ -199,11 +199,6 @@ class Optimizer:
         def cholesky_factor_sparsity(self) -> sparse_matrix_structure_t:
             return self._stats.cholesky_factor_sparsity
 
-        @cached_property
-        def iteration_stats(self) -> T.Sequence[optimization_iteration_t]:
-            warnings.warn("iteration_stats is deprecated, use iterations", FutureWarning)
-            return self.iterations
-
         def error(self) -> float:
             """
             The lowest error achieved by the optimization (the error at optimized_values)
