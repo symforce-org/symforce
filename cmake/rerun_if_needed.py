@@ -135,7 +135,7 @@ def check_path_git_hash(
         # Note: this doesn't work for builds not in a git repo.  This also might not work if we're
         # included as a submodule in another git repo?  So if this fails, just always rebuild
         # https://stackoverflow.com/a/957978
-        repo_root = get_output(["git", "rev-parse", "--show-toplevel"])
+        repo_root = get_output(["git", "rev-parse", "--show-toplevel"], cwd=path_to_check)
     except subprocess.CalledProcessError as ex:
         if ex.returncode == 128:  # Code for "not a git repository"
             return (False, None)
