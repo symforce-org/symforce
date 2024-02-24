@@ -17,7 +17,7 @@ class d_t(object):
     def __init__(
         self,
         x=0.0,  # type: float
-        y=None,  # type: Vector2d
+        y=None,  # type: T.Optional[Vector2d]
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None

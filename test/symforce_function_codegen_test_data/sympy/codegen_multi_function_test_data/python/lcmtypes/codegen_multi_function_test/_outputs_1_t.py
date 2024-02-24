@@ -20,11 +20,11 @@ class outputs_1_t(object):
         self,
         foo=0.0,  # type: float
         bar=0.0,  # type: float
-        scalar_vec_out=None,  # type: T.List[float]
-        values_vec_out=None,  # type: T.List[values_vec_t]
-        values_vec_2D_out=None,  # type: T.List[T.List[values_vec_t]]
-        big_matrix_from_small_matrix=None,  # type: MatrixXd
-        small_matrix_from_big_matrix=None,  # type: Matrix4d
+        scalar_vec_out=None,  # type: T.Optional[T.List[float]]
+        values_vec_out=None,  # type: T.Optional[T.List[values_vec_t]]
+        values_vec_2D_out=None,  # type: T.Optional[T.List[T.List[values_vec_t]]]
+        big_matrix_from_small_matrix=None,  # type: T.Optional[MatrixXd]
+        small_matrix_from_big_matrix=None,  # type: T.Optional[Matrix4d]
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None

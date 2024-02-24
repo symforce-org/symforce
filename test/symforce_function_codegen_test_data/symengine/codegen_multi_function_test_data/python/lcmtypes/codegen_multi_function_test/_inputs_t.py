@@ -23,16 +23,16 @@ class inputs_t(object):
         self,
         x=0.0,  # type: float
         y=0.0,  # type: float
-        rot=None,  # type: Vector4d
-        rot_vec=None,  # type: T.List[Vector4d]
-        scalar_vec=None,  # type: T.List[float]
-        list_of_lists=None,  # type: T.List[T.List[Vector4d]]
-        values_vec=None,  # type: T.List[values_vec_t]
-        values_vec_2D=None,  # type: T.List[T.List[values_vec_t]]
-        constants=None,  # type: inputs_constants_t
-        big_matrix=None,  # type: MatrixXd
-        small_matrix=None,  # type: Matrix4d
-        states=None,  # type: inputs_states_t
+        rot=None,  # type: T.Optional[Vector4d]
+        rot_vec=None,  # type: T.Optional[T.List[Vector4d]]
+        scalar_vec=None,  # type: T.Optional[T.List[float]]
+        list_of_lists=None,  # type: T.Optional[T.List[T.List[Vector4d]]]
+        values_vec=None,  # type: T.Optional[T.List[values_vec_t]]
+        values_vec_2D=None,  # type: T.Optional[T.List[T.List[values_vec_t]]]
+        constants=None,  # type: T.Optional[inputs_constants_t]
+        big_matrix=None,  # type: T.Optional[MatrixXd]
+        small_matrix=None,  # type: T.Optional[Matrix4d]
+        states=None,  # type: T.Optional[inputs_states_t]
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None

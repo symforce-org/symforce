@@ -16,7 +16,7 @@ class inputs_states_t(object):
 
     def __init__(
         self,
-        p=None,  # type: Vector2d
+        p=None,  # type: T.Optional[Vector2d]
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None

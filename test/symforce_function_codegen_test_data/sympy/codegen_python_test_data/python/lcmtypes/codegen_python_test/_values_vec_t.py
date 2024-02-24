@@ -18,10 +18,10 @@ class values_vec_t(object):
         self,
         x=0.0,  # type: float
         y=0.0,  # type: float
-        rot=None,  # type: Vector4d
-        rot_vec=None,  # type: T.List[Vector4d]
-        scalar_vec=None,  # type: T.List[float]
-        list_of_lists=None,  # type: T.List[T.List[Vector4d]]
+        rot=None,  # type: T.Optional[Vector4d]
+        rot_vec=None,  # type: T.Optional[T.List[Vector4d]]
+        scalar_vec=None,  # type: T.Optional[T.List[float]]
+        list_of_lists=None,  # type: T.Optional[T.List[T.List[Vector4d]]]
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None

@@ -15,7 +15,7 @@ class {{ lcmtype.name }}(object):
 
     def __init__(
         self,
-{% for member, kwarg_default, init_val, type_hint in lcmtype.member_initializers() %}
+{% for member, kwarg_default, init_val, type_hint in lcmtype.member_initializers(optional=True) %}
         {{ member.name }}={{ kwarg_default }},  # type: {{ type_hint }}
 {% endfor %}
         _skip_initialize=False,  # type: bool

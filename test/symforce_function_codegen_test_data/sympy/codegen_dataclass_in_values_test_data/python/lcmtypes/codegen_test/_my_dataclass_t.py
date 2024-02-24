@@ -16,7 +16,7 @@ class my_dataclass_t(object):
 
     def __init__(
         self,
-        rot=None,  # type: Vector4d
+        rot=None,  # type: T.Optional[Vector4d]
         _skip_initialize=False,  # type: bool
     ):
         # type: (...) -> None
