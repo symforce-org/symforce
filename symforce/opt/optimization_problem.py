@@ -110,7 +110,7 @@ class OptimizationProblem:
         namespace: str,
         name: str,
         sparse_linearization: bool = False,
-        config: CppConfig = None,
+        config: T.Optional[CppConfig] = None,
     ) -> None:
         """
         Generate everything needed to optimize ``self`` in C++. This currently assumes there is
@@ -194,7 +194,7 @@ class OptimizationProblem:
         ]
 
     def make_numeric_factors(
-        self, name: str, optimized_keys: T.Sequence[str] = None
+        self, name: str, optimized_keys: T.Optional[T.Sequence[str]] = None
     ) -> T.List[NumericFactor]:
         """
         Returns a list of `NumericFactor` for this problem, for example to pass to

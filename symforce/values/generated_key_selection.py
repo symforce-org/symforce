@@ -120,7 +120,7 @@ def _pick_key_for_choices(
 
 
 def pick_generated_keys_for_variable_names(
-    names: T.Sequence[str], excluded_keys: T.Set[GeneratedKey] = None
+    names: T.Sequence[str], excluded_keys: T.Optional[T.Set[GeneratedKey]] = None
 ) -> T.Dict[str, GeneratedKey]:
     """
     Pick a character (and possibly a subscript) to represent each string in names

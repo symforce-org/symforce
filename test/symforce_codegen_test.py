@@ -286,7 +286,7 @@ class SymforceCodegenTest(TestCase):
             row_shape: T.Tuple[int, ...],
             col_shape: T.Tuple[int, ...],
             mat_shape: T.Tuple[int, ...],
-            expected_exception: T.Any = None,
+            expected_exception: T.Optional[T.Any] = None,
         ) -> None:
             row = np.random.random(row_shape)
             col = np.random.random(col_shape)

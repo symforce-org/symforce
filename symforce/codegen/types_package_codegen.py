@@ -48,11 +48,11 @@ def generate_types(
     file_name: str,
     values_indices: T.Mapping[str, T.Dict[str, IndexEntry]],
     use_eigen_types: bool,
-    shared_types: T.Mapping[str, str] = None,
+    shared_types: T.Optional[T.Mapping[str, str]] = None,
     scalar_type: str = "double",
-    output_dir: T.Openable = None,
-    lcm_bindings_output_dir: T.Openable = None,
-    templates: template_util.TemplateList = None,
+    output_dir: T.Optional[T.Openable] = None,
+    lcm_bindings_output_dir: T.Optional[T.Openable] = None,
+    templates: T.Optional[template_util.TemplateList] = None,
 ) -> TypesCodegenData:
     """
     Generates LCM types from the given values_indices, including the necessary subtypes

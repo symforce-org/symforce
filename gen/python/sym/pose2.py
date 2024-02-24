@@ -55,7 +55,7 @@ class Pose2(object):
     # --------------------------------------------------------------------------
 
     def __init__(self, R=None, t=None):
-        # type: (Rot2, T.Union[T.Sequence[float], numpy.ndarray]) -> None
+        # type: (T.Optional[Rot2], T.Union[T.Sequence[float], numpy.ndarray, None]) -> None
         rotation = R if R is not None else Rot2()
         if t is None:
             t = [0.0, 0.0]

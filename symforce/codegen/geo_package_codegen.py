@@ -187,7 +187,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     }
 
 
-def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
+def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path:
     """
     Generate the geo package for the given language.
     """

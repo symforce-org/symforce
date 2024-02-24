@@ -10,10 +10,11 @@ import symforce.symbolic as sf
 from symforce import codegen
 from symforce import logger
 from symforce import python_util
+from symforce import typing as T
 from symforce.codegen import template_util
 
 
-def generate(config: codegen.CodegenConfig, output_dir: Path = None) -> Path:
+def generate(config: codegen.CodegenConfig, output_dir: T.Optional[Path] = None) -> Path:
     """
     Generate the sym util package for the given language.
     """

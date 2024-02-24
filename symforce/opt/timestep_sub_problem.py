@@ -25,7 +25,7 @@ class TimestepSubProblem(SubProblem):
 
     timesteps: int
 
-    def __init__(self, timesteps: int, name: str = None) -> None:
+    def __init__(self, timesteps: int, name: T.Optional[str] = None) -> None:
         self.timesteps = timesteps
         super().__init__(name=name)
 

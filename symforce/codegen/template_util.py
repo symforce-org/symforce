@@ -74,7 +74,10 @@ class FileType(enum.Enum):
             raise NotImplementedError(f"Unknown comment prefix for {self}")
 
     def autoformat(
-        self, file_contents: str, template_name: T.Openable, output_path: T.Openable = None
+        self,
+        file_contents: str,
+        template_name: T.Openable,
+        output_path: T.Optional[T.Openable] = None,
     ) -> str:
         """
         Format code of this file type.
@@ -229,7 +232,7 @@ class TemplateList:
         template_dir: T.Openable
         output_path: T.Optional[T.Openable]
 
-    def __init__(self, template_dir: T.Openable = None) -> None:
+    def __init__(self, template_dir: T.Optional[T.Openable] = None) -> None:
         self.items: T.List = []
         self.common_template_dir = template_dir
 
@@ -239,8 +242,8 @@ class TemplateList:
         data: T.Dict[str, T.Any],
         config: RenderTemplateConfig,
         *,
-        template_dir: T.Openable = None,
-        output_path: T.Openable = None,
+        template_dir: T.Optional[T.Openable] = None,
+        output_path: T.Optional[T.Openable] = None,
     ) -> None:
         if template_dir is None:
             if self.common_template_dir is None:

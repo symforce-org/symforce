@@ -228,8 +228,8 @@ def print_code(
 
 def perform_cse(
     output_exprs: DenseAndSparseOutputTerms,
-    cse_optimizations: T.Union[
-        T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]
+    cse_optimizations: T.Optional[
+        T.Union[T.Literal["basic"], T.Sequence[T.Tuple[T.Callable, T.Callable]]]
     ] = None,
 ) -> T.Tuple[T_terms, DenseAndSparseOutputTerms]:
     """
@@ -717,7 +717,9 @@ class LcmBindingsDirs:
 
 
 def generate_lcm_types(
-    lcm_type_dir: T.Openable, lcm_files: T.Sequence[str], lcm_output_dir: T.Openable = None
+    lcm_type_dir: T.Openable,
+    lcm_files: T.Sequence[str],
+    lcm_output_dir: T.Optional[T.Openable] = None,
 ) -> LcmBindingsDirs:
     """
     Generates the language-specific type files for all symforce generated ".lcm" files.

@@ -51,7 +51,7 @@ class Unit3(object):
     # --------------------------------------------------------------------------
 
     def __init__(self, rot3=None):
-        # type: (Rot3) -> None
+        # type: (T.Optional[Rot3]) -> None
         if rot3 is None:
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:

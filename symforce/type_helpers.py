@@ -59,7 +59,9 @@ def deduce_input_types(func: T.Callable) -> T.Sequence[T.ElementOrType]:
     return input_types
 
 
-def symbolic_inputs(func: T.Callable, input_types: T.Sequence[T.ElementOrType] = None) -> Values:
+def symbolic_inputs(
+    func: T.Callable, input_types: T.Optional[T.Sequence[T.ElementOrType]] = None
+) -> Values:
     """
     Return symbolic arguments for the inputs to ``func``
 

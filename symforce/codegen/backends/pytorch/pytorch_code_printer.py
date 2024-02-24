@@ -73,12 +73,12 @@ class PyTorchCodePrinter(CodePrinter):
     language = "Python"
     _default_settings = dict(CodePrinter._default_settings, human=False)
 
-    def __init__(self, settings: T.Mapping[str, T.Any] = None):
+    def __init__(self, settings: T.Optional[T.Mapping[str, T.Any]] = None):
         if settings and settings.get("human", False):
             raise ValueError("Setting `human=True` not supported for PyTorchCodePrinter")
         super().__init__(settings)
 
-    def doprint(self, expr: sympy.Expr, assign_to: T.Any = None) -> str:
+    def doprint(self, expr: sympy.Expr, assign_to: T.Optional[T.Any] = None) -> str:
         _, not_supported, result = super().doprint(expr, assign_to)
         if not_supported:
             raise NotImplementedError(

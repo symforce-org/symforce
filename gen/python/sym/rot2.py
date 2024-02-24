@@ -33,7 +33,7 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     def __init__(self, z=None):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray]) -> None
+        # type: (T.Union[T.Sequence[float], numpy.ndarray, None]) -> None
         if z is None:
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:

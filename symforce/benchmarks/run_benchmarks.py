@@ -203,7 +203,7 @@ def run_matmul_benchmark(
 @argh.arg(
     "--out_dir", help="Directory in which to put results (will be created if it does not exist)"
 )
-def main(benchmark: str = None, out_dir: str = "benchmark_outputs") -> None:
+def main(benchmark: T.Optional[str] = None, out_dir: str = "benchmark_outputs") -> None:
     out_path = Path(out_dir)
     if not out_path.is_dir():
         out_path.mkdir()

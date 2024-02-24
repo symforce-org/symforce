@@ -44,7 +44,7 @@ class Pose3(LieGroup):
 
     Pose3T = T.TypeVar("Pose3T", bound="Pose3")
 
-    def __init__(self, R: Rot3 = None, t: Vector3 = None) -> None:
+    def __init__(self, R: T.Optional[Rot3] = None, t: T.Optional[Vector3] = None) -> None:
         """
         Construct from elements in SO3 and R3.
 

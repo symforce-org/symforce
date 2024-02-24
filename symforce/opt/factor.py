@@ -66,8 +66,8 @@ class Factor:
         self,
         keys: T.Sequence[str],
         residual: T.Callable[..., sf.Matrix],
-        config: codegen_config.CodegenConfig = None,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
+        config: T.Optional[codegen_config.CodegenConfig] = None,
+        custom_jacobian_func: T.Optional[T.Callable[[T.Iterable[str]], sf.Matrix]] = None,
         **kwargs: T.Any,
     ) -> None:
         # We use `_initialize()` to set `self.codegen` because we want the default constructor of
@@ -90,8 +90,8 @@ class Factor:
         keys: T.Sequence[str],
         inputs: Values,
         residual: sf.Matrix,
-        config: codegen_config.CodegenConfig = None,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
+        config: T.Optional[codegen_config.CodegenConfig] = None,
+        custom_jacobian_func: T.Optional[T.Callable[[T.Iterable[str]], sf.Matrix]] = None,
         **kwargs: T.Any,
     ) -> Factor:
         """
@@ -134,7 +134,7 @@ class Factor:
         self,
         keys: T.Sequence[str],
         codegen_obj: Codegen,
-        custom_jacobian_func: T.Callable[[T.Iterable[str]], sf.Matrix] = None,
+        custom_jacobian_func: T.Optional[T.Callable[[T.Iterable[str]], sf.Matrix]] = None,
     ) -> None:
         """
         Initializes the Factor object from a codegen object
@@ -165,8 +165,8 @@ class Factor:
     def generate(
         self,
         optimized_keys: T.Sequence[str],
-        output_dir: T.Openable = None,
-        namespace: str = None,
+        output_dir: T.Optional[T.Openable] = None,
+        namespace: T.Optional[str] = None,
         sparse_linearization: bool = False,
     ) -> T.Dict[str, T.Any]:
         """
@@ -213,8 +213,8 @@ class Factor:
     def to_numeric_factor(
         self,
         optimized_keys: T.Sequence[str],
-        output_dir: T.Openable = None,
-        namespace: str = None,
+        output_dir: T.Optional[T.Openable] = None,
+        namespace: T.Optional[str] = None,
         sparse_linearization: bool = False,
     ) -> NumericFactor:
         """
@@ -304,7 +304,9 @@ class Factor:
         return numeric_factor
 
 
-def visualize_factors(factors: T.Sequence[Factor], outfile: T.Openable = None) -> graphviz.Graph:
+def visualize_factors(
+    factors: T.Sequence[Factor], outfile: T.Optional[T.Openable] = None
+) -> graphviz.Graph:
     """
     Construct a dot file of the factor graph given by the input set of factors.
 

@@ -148,7 +148,9 @@ from symforce.codegen import Codegen
 from symforce.codegen import CppConfig
 
 
-def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
+def generate_bearing_residual_code(
+    output_dir: T.Optional[Path] = None, print_code: bool = False
+) -> None:
     """
     Generate C++ code for the bearing residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.
@@ -179,7 +181,9 @@ def generate_bearing_residual_code(output_dir: Path = None, print_code: bool = F
         shutil.rmtree(metadata.output_dir)
 
 
-def generate_odometry_residual_code(output_dir: Path = None, print_code: bool = False) -> None:
+def generate_odometry_residual_code(
+    output_dir: T.Optional[Path] = None, print_code: bool = False
+) -> None:
     """
     Generate C++ code for the odometry residual function. A C++ Factor can then be
     constructed and optimized from this function without any Python dependency.

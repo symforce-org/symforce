@@ -25,7 +25,7 @@ class Rot3(LieGroup):
     rotations in 3D space. Backed by a quaternion with (x, y, z, w) storage.
     """
 
-    def __init__(self, q: Quaternion = None) -> None:
+    def __init__(self, q: T.Optional[Quaternion] = None) -> None:
         """
         Construct from a unit quaternion, or identity if none provided.
         """

@@ -84,7 +84,7 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         return self.dict.items()
 
-    def get(self, key: str, default: T.Any = None) -> T.Any:
+    def get(self, key: str, default: T.Optional[T.Any] = None) -> T.Any:
         """
         Return the value for key if key is in the dictionary, else default.
 
@@ -599,7 +599,7 @@ class Values(T.MutableMapping[str, T.Any]):
         indices: T.Sequence[int],
         create: bool = False,
         should_set: bool = False,
-        set_target: T.Any = None,
+        set_target: T.Optional[T.Any] = None,
     ) -> T.Any:
         """
         Recurse into a nested sequence, using multi-dimensional `indices`, and return the entry in

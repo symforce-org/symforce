@@ -47,7 +47,7 @@ def display(*args: T.Any) -> None:
         IPython.display.display(*args)
 
 
-def display_code(code: str, language: str = None) -> None:
+def display_code(code: str, language: T.Optional[str] = None) -> None:
     """
     Display code with syntax highlighting.
 

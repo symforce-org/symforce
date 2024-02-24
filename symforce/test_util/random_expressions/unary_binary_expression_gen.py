@@ -218,7 +218,7 @@ class UnaryBinaryExpressionGen:
         seq = self.build_tree_sequence(num_ops_target=num_ops_target)
         return self.seq_to_expr(seq)
 
-    def build_expr_vec(self, num_ops_target: int, num_exprs: int = None) -> sf.M:
+    def build_expr_vec(self, num_ops_target: int, num_exprs: T.Optional[int] = None) -> sf.M:
         """
         Return a vector of expressions with the total given op target. If no ``num_exprs``
         is provided, uses an approximate square root of the ``num_ops_target``.

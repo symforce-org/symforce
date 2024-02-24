@@ -325,7 +325,9 @@ class Matrix(Storage):
     #     pass
 
     @classmethod
-    def eye(cls: _T.Type[MatrixT], rows: int = None, cols: int = None) -> MatrixT:
+    def eye(
+        cls: _T.Type[MatrixT], rows: _T.Optional[int] = None, cols: _T.Optional[int] = None
+    ) -> MatrixT:
         """
         Construct an identity matrix
 

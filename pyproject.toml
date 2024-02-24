@@ -87,9 +87,6 @@ disallow_untyped_defs = true
 mypy_path = [".", "gen/python", "$SYMFORCE_LCMTYPES_DIR", "symforce/pybind"]
 explicit_package_bases = true
 
-# TODO(aaron): Migrate, and remove this
-implicit_optional = true
-
 [[tool.mypy.overrides]]
 module = [
   "IPython.*",

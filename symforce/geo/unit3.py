@@ -40,7 +40,7 @@ class Unit3(LieGroup):
 
     E_Z = Vector3.unit_z()
 
-    def __init__(self, rot3: Rot3 = None) -> None:
+    def __init__(self, rot3: T.Optional[Rot3] = None) -> None:
         """
         Construct from a :class:`Rot3 <symforce.geo.rot3.Rot3>`, or identity if none provided.
         """

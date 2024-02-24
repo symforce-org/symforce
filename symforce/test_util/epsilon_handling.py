@@ -25,7 +25,7 @@ def is_value_with_epsilon_correct(
     singularity: sf.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Optional[T.Callable[[T.Any], None]] = _default_display_func,
-    expected_value: sf.Scalar = None,
+    expected_value: T.Optional[sf.Scalar] = None,
 ) -> bool:
     """
     Check epsilon handling for the value of a function that accepts a single value and an epsilon.
@@ -96,7 +96,7 @@ def is_derivative_with_epsilon_correct(
     singularity: sf.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Optional[T.Callable[[T.Any], None]] = _default_display_func,
-    expected_derivative: sf.Scalar = None,
+    expected_derivative: T.Optional[sf.Scalar] = None,
 ) -> bool:
     """
     Check epsilon handling for the derivative of a function that accepts a single value and an
@@ -157,8 +157,8 @@ def is_epsilon_correct(
     singularity: sf.Scalar = 0,
     limit_direction: str = "+",
     display_func: T.Optional[T.Callable[[T.Any], None]] = _default_display_func,
-    expected_value: sf.Scalar = None,
-    expected_derivative: sf.Scalar = None,
+    expected_value: T.Optional[sf.Scalar] = None,
+    expected_derivative: T.Optional[sf.Scalar] = None,
 ) -> bool:
     """
     Check epsilon handling for a function that accepts a single value and an epsilon.

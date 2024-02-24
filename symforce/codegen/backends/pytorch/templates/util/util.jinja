@@ -122,7 +122,7 @@ def {{ function_name_and_args(spec) }}:
     # type: (
     {%- for name, type in spec.inputs.items() -%}
     {{ format_typename(type, name, is_input=True, available_classes=available_classes) }},{{ ' ' }}
-    {%- endfor -%}TensorKwargs) -> {{ get_return_type(spec, available_classes=available_classes) }}
+    {%- endfor -%}T.Optional[TensorKwargs]) -> {{ get_return_type(spec, available_classes=available_classes) }}
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}

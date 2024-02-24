@@ -208,10 +208,10 @@ class Optimizer:
     def __init__(
         self,
         factors: T.Iterable[T.Union[Factor, NumericFactor]],
-        optimized_keys: T.Sequence[str] = None,
-        params: Optimizer.Params = None,
-        debug_stats: bool = None,
-        include_jacobians: bool = None,
+        optimized_keys: T.Optional[T.Sequence[str]] = None,
+        params: T.Optional[Optimizer.Params] = None,
+        debug_stats: T.Optional[bool] = None,
+        include_jacobians: T.Optional[bool] = None,
     ):
         if optimized_keys is None:
             # This will be filled with the optimized keys of the numeric factors

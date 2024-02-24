@@ -317,7 +317,11 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
 
     class Symbol(sympy.Symbol):  # pylint: disable=function-redefined,too-many-ancestors
         def __init__(
-            self, name: str, commutative: bool = True, real: bool = True, positive: bool = None
+            self,
+            name: str,
+            commutative: bool = True,
+            real: bool = True,
+            positive: T.Optional[bool] = None,
         ) -> None:
             scoped_name = ".".join(__scopes__ + [name])
             # mypy doesn't understand that sympy.Symbol defines __new__, which takes these args
@@ -357,7 +361,7 @@ elif sympy.__package__ == "sympy":
         name: str,
         commutative: bool = True,
         real: bool = True,
-        positive: bool = None,
+        positive: T.Optional[bool] = None,
     ) -> None:
         name = ".".join(__scopes__ + [name])
         obj = _original_symbol_new(cls, name, commutative=commutative, real=real, positive=positive)
@@ -595,11 +599,11 @@ if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
 
     def integrate(
         *args: T.Any,
-        meijerg: bool = None,
+        meijerg: T.Optional[bool] = None,
         conds: T.Literal["piecewise", "separate", "none"] = "piecewise",
-        risch: bool = None,
-        heurisch: T.Any = None,
-        manual: bool = None,
+        risch: T.Optional[bool] = None,
+        heurisch: T.Optional[T.Any] = None,
+        manual: T.Optional[bool] = None,
         **kwargs: T.Any,
     ):
         logger.warning("Converting to sympy to use .integrate")

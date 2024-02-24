@@ -370,7 +370,7 @@ class BarronNoiseModel(ScalarNoiseModel):
         scalar_information: sf.Scalar,
         x_epsilon: sf.Scalar,
         delta: sf.Scalar = 1,
-        alpha_epsilon: sf.Scalar = None,
+        alpha_epsilon: T.Optional[sf.Scalar] = None,
     ) -> None:
         self.alpha = alpha
         self.delta = delta

@@ -58,7 +58,7 @@ class SubProblem(ABC):
     name: str
     inputs: T.Dataclass
 
-    def __init__(self, name: str = None):
+    def __init__(self, name: T.Optional[str] = None):
         self.name = name or self._default_name()
         assert self.name, "SubProblem name cannot be empty"
         self.build_inputs()

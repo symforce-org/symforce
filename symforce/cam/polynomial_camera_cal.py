@@ -40,7 +40,7 @@ class PolynomialCameraCal(CameraCal):
         focal_length: T.Sequence[T.Scalar],
         principal_point: T.Sequence[T.Scalar],
         distortion_coeffs: T.Sequence[T.Scalar] = (0.0, 0.0, 0.0),
-        critical_undistorted_radius: T.Scalar = None,
+        critical_undistorted_radius: T.Optional[T.Scalar] = None,
         max_fov: T.Scalar = DEFAULT_MAX_FOV,
     ) -> None:
         """

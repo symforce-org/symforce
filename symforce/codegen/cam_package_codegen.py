@@ -228,7 +228,7 @@ def cam_cal_from_points(
     )
 
 
-def generate(config: CodegenConfig, output_dir: Path = None) -> Path:
+def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path:
     """
     Generate the cam package for the given language.
     """

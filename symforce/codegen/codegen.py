@@ -94,8 +94,8 @@ class Codegen:
         config: codegen_config.CodegenConfig,
         name: T.Optional[str] = None,
         return_key: T.Optional[str] = None,
-        sparse_matrices: T.Sequence[str] = None,
-        docstring: str = None,
+        sparse_matrices: T.Optional[T.Sequence[str]] = None,
+        docstring: T.Optional[str] = None,
     ) -> None:
         """
         Creates the Codegen specification.
@@ -259,11 +259,11 @@ class Codegen:
         func: T.Callable,
         config: codegen_config.CodegenConfig,
         name: T.Optional[str] = None,
-        input_types: T.Sequence[T.ElementOrType] = None,
-        output_names: T.Sequence[str] = None,
-        return_key: str = None,
-        sparse_matrices: T.Sequence[str] = None,
-        docstring: str = None,
+        input_types: T.Optional[T.Sequence[T.ElementOrType]] = None,
+        output_names: T.Optional[T.Sequence[str]] = None,
+        return_key: T.Optional[str] = None,
+        sparse_matrices: T.Optional[T.Sequence[str]] = None,
+        docstring: T.Optional[str] = None,
     ) -> Codegen:
         """
         Creates a Codegen object from a symbolic python function.
@@ -440,11 +440,11 @@ class Codegen:
 
     def generate_function(
         self,
-        output_dir: T.Openable = None,
-        lcm_bindings_output_dir: T.Openable = None,
-        shared_types: T.Mapping[str, str] = None,
+        output_dir: T.Optional[T.Openable] = None,
+        lcm_bindings_output_dir: T.Optional[T.Openable] = None,
+        shared_types: T.Optional[T.Mapping[str, str]] = None,
         namespace: str = "sym",
-        generated_file_name: str = None,
+        generated_file_name: T.Optional[str] = None,
         skip_directory_nesting: bool = False,
     ) -> GeneratedPaths:
         """
@@ -590,7 +590,7 @@ class Codegen:
 
     @staticmethod
     def default_docstring(
-        inputs: Values, outputs: Values, original_function: T.Callable = None
+        inputs: Values, outputs: Values, original_function: T.Optional[T.Callable] = None
     ) -> str:
         """
         Create a default docstring if no other is available from the function or caller.
@@ -678,12 +678,12 @@ class Codegen:
 
     def with_linearization(
         self,
-        which_args: T.Sequence[str] = None,
+        which_args: T.Optional[T.Sequence[str]] = None,
         include_result: bool = True,
-        name: str = None,
+        name: T.Optional[str] = None,
         linearization_mode: LinearizationMode = LinearizationMode.FULL_LINEARIZATION,
         sparse_linearization: bool = False,
-        custom_jacobian: sf.Matrix = None,
+        custom_jacobian: T.Optional[sf.Matrix] = None,
     ) -> Codegen:
         """
         Given a codegen object that takes some number of inputs and computes a single result,
@@ -828,10 +828,10 @@ class Codegen:
 
     def with_jacobians(
         self,
-        which_args: T.Sequence[str] = None,
+        which_args: T.Optional[T.Sequence[str]] = None,
         which_results: T.Sequence[int] = (0,),
         include_results: bool = True,
-        name: str = None,
+        name: T.Optional[str] = None,
         sparse_jacobians: bool = False,
     ) -> Codegen:
         """

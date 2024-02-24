@@ -407,7 +407,7 @@ def inverse_range_landmark_ray_gnc_residual(
     )
 
 
-def generate(output_dir: Path, config: codegen.CodegenConfig = None) -> None:
+def generate(output_dir: Path, config: T.Optional[codegen.CodegenConfig] = None) -> None:
     """
     Generate the SLAM package for the given language.
 

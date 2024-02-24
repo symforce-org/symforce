@@ -21,7 +21,9 @@ class Camera:
     # Type that represents this or any subclasses
     CameraT = T.TypeVar("CameraT", bound="Camera")
 
-    def __init__(self, calibration: CameraCal, image_size: T.Sequence[T.Scalar] = None) -> None:
+    def __init__(
+        self, calibration: CameraCal, image_size: T.Optional[T.Sequence[T.Scalar]] = None
+    ) -> None:
         self.calibration = calibration
 
         if image_size is not None:

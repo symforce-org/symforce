@@ -248,7 +248,7 @@ def base_and_indices(indexed_array: str) -> T.Tuple[str, T.List[int]]:
     return base, indices
 
 
-def plural(singular: str, count: int, plural: str = None) -> str:
+def plural(singular: str, count: int, plural: T.Optional[str] = None) -> str:
     """
     Return the singular or plural form of a word based on count
 

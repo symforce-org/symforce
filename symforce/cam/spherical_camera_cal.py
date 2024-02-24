@@ -56,7 +56,7 @@ class SphericalCameraCal(CameraCal):
         focal_length: T.Sequence[T.Scalar],
         principal_point: T.Sequence[T.Scalar],
         distortion_coeffs: T.Sequence[T.Scalar] = (0.0, 0.0, 0.0, 0.0),
-        critical_theta: T.Scalar = None,
+        critical_theta: T.Optional[T.Scalar] = None,
         max_theta: T.Scalar = math.pi,
     ) -> None:
         """

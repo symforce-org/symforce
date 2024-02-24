@@ -26,8 +26,8 @@ class ResidualBlock:
     def compute_jacobians(
         self,
         inputs: T.Sequence[T.Element],
-        residual_name: str = None,
-        key_names: T.Sequence[str] = None,
+        residual_name: T.Optional[str] = None,
+        key_names: T.Optional[T.Sequence[str]] = None,
     ) -> T.Sequence[sf.Matrix]:
         """
         Compute the jacobians of this residual block with respect to a sequence of inputs
@@ -73,8 +73,8 @@ class ResidualBlockWithCustomJacobian(ResidualBlock):
     def compute_jacobians(
         self,
         inputs: T.Sequence[T.Element],
-        residual_name: str = None,
-        key_names: T.Sequence[str] = None,
+        residual_name: T.Optional[str] = None,
+        key_names: T.Optional[T.Sequence[str]] = None,
     ) -> T.Sequence[sf.Matrix]:
         """
         Compute the jacobians of this residual block with respect to a sequence of inputs

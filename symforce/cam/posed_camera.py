@@ -25,7 +25,10 @@ class PosedCamera(Camera):
     PosedCameraT = T.TypeVar("PosedCameraT", bound="PosedCamera")
 
     def __init__(
-        self, pose: geo.Pose3, calibration: CameraCal, image_size: T.Sequence[T.Scalar] = None
+        self,
+        pose: geo.Pose3,
+        calibration: CameraCal,
+        image_size: T.Optional[T.Sequence[T.Scalar]] = None,
     ) -> None:
         super().__init__(calibration=calibration, image_size=image_size)
         self.pose = pose  # global_T_cam

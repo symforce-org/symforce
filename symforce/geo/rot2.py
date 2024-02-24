@@ -22,7 +22,7 @@ class Rot2(LieGroup):
     in 2D space. Backed by a complex number.
     """
 
-    def __init__(self, z: Complex = None) -> None:
+    def __init__(self, z: T.Optional[Complex] = None) -> None:
         """
         Construct from a unit complex number, or identity if none provided.
 

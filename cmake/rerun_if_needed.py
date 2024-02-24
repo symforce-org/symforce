@@ -48,7 +48,7 @@ DEBUG_GIT_HASHES = int(os.environ.get("DEBUG_GIT_HASHES", "0"))
 
 
 def _get_hashes(
-    relative_path: str, cwd: str = None, env: T.Mapping[str, str] = None
+    relative_path: str, cwd: T.Optional[str] = None, env: T.Optional[T.Mapping[str, str]] = None
 ) -> T.Tuple[str, str]:
     if relative_path == ".":
         # Getting tree hash of root is not allowed unless it's clear that it's a directory to git.
@@ -72,7 +72,7 @@ def _get_hashes(
     return tree_hash, diff_index
 
 
-def get_path_git_hash(path_to_check: str, repo_root: str = None) -> str:
+def get_path_git_hash(path_to_check: str, repo_root: T.Optional[str] = None) -> str:
     """
     "hash" check for a path stored under git that combines the
     path's "tree hash" and the output of diff-index.
@@ -120,7 +120,7 @@ def get_path_git_hash(path_to_check: str, repo_root: str = None) -> str:
 
 
 def check_path_git_hash(
-    path_to_check: str, stamp_file: str, version: str = None
+    path_to_check: str, stamp_file: str, version: T.Optional[str] = None
 ) -> T.Tuple[bool, T.Optional[str]]:
     """
     Check the path for whether its contents have changed since the stamp_file was written.
