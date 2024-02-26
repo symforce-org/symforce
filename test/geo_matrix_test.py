@@ -305,6 +305,23 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertRaises(ValueError, lambda: sf.M45().lower_triangle())
         self.assertRaises(ValueError, lambda: sf.M54().lower_triangle())
 
+    def test_symmetric_copy(self) -> None:
+        """
+        Tests:
+            Matrix.symmetric_copy
+        """
+
+        m22 = sf.M22([[1, 2], [3, 4]])
+        self.assertEqual(m22.symmetric_copy(sf.Matrix.Triangle.LOWER), sf.M22([[1, 3], [3, 4]]))
+        self.assertEqual(m22.symmetric_copy(sf.Matrix.Triangle.UPPER), sf.M22([[1, 2], [2, 4]]))
+
+        with self.assertRaises(TypeError):
+            sf.M31().symmetric_copy(sf.Matrix.Triangle.LOWER)
+
+        m22_copy = m22.symmetric_copy(sf.Matrix.Triangle.LOWER)
+        m22_copy[0, 1] = 5
+        self.assertNotEqual(m22, m22_copy)
+
     def test_row_col(self) -> None:
         """
         Tests:

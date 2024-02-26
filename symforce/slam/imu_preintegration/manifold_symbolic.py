@@ -336,9 +336,13 @@ def imu_manifold_preintegration_update(
         new_state_D_gyro_bias = -new_state_D_gyro
         new_state_D_accel_bias = -new_state_D_accel
 
+    covariance = covariance.symmetric_copy(sf.Matrix.Triangle.LOWER)
+
     new_covariance = new_state_D_state * covariance * new_state_D_state.T
     new_covariance += new_state_D_gyro * sf.M.diag(gyro_cov_diagonal / dt) * new_state_D_gyro.T
     new_covariance += new_state_D_accel * sf.M.diag(accel_cov_diagonal / dt) * new_state_D_accel.T
+
+    new_covariance = new_covariance.symmetric_copy(sf.Matrix.Triangle.LOWER)
 
     state_D_bias = sf.Matrix.block_matrix(
         [

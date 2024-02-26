@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import enum
+
 import numpy as np
 
 import symforce
@@ -525,6 +527,32 @@ class Matrix(Storage):
         for k in range(rows):
             lt[k, : k + 1] = self[k, : k + 1]
         return lt
+
+    class Triangle(enum.Enum):
+        LOWER = "lower"
+        UPPER = "upper"
+
+    def symmetric_copy(self: MatrixT, upper_or_lower: Triangle) -> MatrixT:
+        """
+        Returns a symmetric copy of `self` by copying the lower or upper triangle to the opposite
+        triangle.
+
+        Args:
+            upper_or_lower: The triangle to copy to the opposite triangle
+        """
+        if self.rows != self.cols:
+            raise TypeError(f"Matrix must be square to make a symmetric copy, not {self.shape}")
+
+        result = self[:, :]
+
+        for i in range(self.rows):
+            for j in range(i + 1, self.rows):
+                if upper_or_lower == self.Triangle.LOWER:
+                    result[i, j] = result[j, i]
+                else:
+                    result[j, i] = result[i, j]
+
+        return result
 
     def reshape(self, rows: int, cols: int) -> Matrix:
         return Matrix(self.mat.reshape(rows, cols))
