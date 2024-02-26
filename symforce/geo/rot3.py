@@ -296,6 +296,11 @@ class Rot3(LieGroup):
         """
         Compute the yaw, pitch, and roll Euler angles in radians of this rotation
 
+        Euler angles are subject to gimbal lock: https://en.wikipedia.org/wiki/Gimbal_lock
+
+        This means that when the pitch is close to +/- pi/2, the yaw and roll angles are not
+        uniquely defined, so the returned values are not unique in this case.
+
         Returns:
             Scalar: Yaw angle [radians]
             Scalar: Pitch angle [radians]
