@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import numpy as np
+import numpy.typing as npt
 
 import symforce.symbolic as sf
 from symforce import logger
@@ -131,7 +132,9 @@ class UnaryBinaryExpressionGen:
         for i in range(nb_empty):
             probs.append((num_leaves**i) * p2 * self.D[nb_empty - i + 1][nb_ops - 1])
 
-        np_probs = np.array([p / self.D[nb_empty][nb_ops] for p in probs], dtype=np.float64)
+        np_probs: npt.NDArray[np.float64] = np.array(
+            [p / self.D[nb_empty][nb_ops] for p in probs], dtype=np.float64
+        )
 
         e = np.random.choice(2 * nb_empty, p=np_probs)
         arity = 1 if e < nb_empty else 2

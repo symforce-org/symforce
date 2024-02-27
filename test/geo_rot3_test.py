@@ -6,6 +6,7 @@
 import logging
 
 import numpy as np
+import numpy.typing as npt
 
 import symforce.symbolic as sf
 from symforce import logger
@@ -211,7 +212,9 @@ class GeoRot3Test(LieGroupOpsTestMixin, TestCase):
             Ps_rotated = [e.evalf() * P for e in elements]
 
             # Compute angles and check basic stats
-            angles = np.array([sf.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64)
+            angles: npt.NDArray[np.float64] = np.array(
+                [sf.acos(P.dot(P_rot)) for P_rot in Ps_rotated], dtype=np.float64
+            )
             self.assertLess(np.min(angles), 0.3)
             self.assertGreater(np.max(angles), np.pi - 0.3)
             self.assertStorageNear(np.mean(angles), np.pi / 2, places=1)
