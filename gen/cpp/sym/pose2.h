@@ -108,14 +108,35 @@ class Pose2 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
+  /**
+   * Returns the rotational component of this pose.
+   */
   const Vector2 RotationStorage() const;
 
+  /**
+   * Returns the positional component of this pose.
+   */
   const Vector2 Position() const;
 
+  /**
+   * Left-multiply with a compatible quantity.
+   */
   const Vector2 ComposeWithPoint(const Vector2& right) const;
 
+  /**
+   * Returns ``self.inverse() * point``
+   *
+   * This is more efficient than calling the generated inverse and compose methods separately, if
+   * doing this for one point.
+   */
   const Vector2 InverseCompose(const Vector2& point) const;
 
+  /**
+   * A matrix representation of this element in the Euclidean space that contains it.
+   *
+   * Returns:
+   *     3x3 Matrix
+   */
   const Eigen::Matrix<Scalar, 3, 3> ToHomogenousMatrix() const;
 
   // --------------------------------------------------------------------------

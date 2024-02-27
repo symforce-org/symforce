@@ -87,14 +87,14 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
  #     docstring (str):
  #}
 {% macro print_docstring(docstring) %}
-{%- if docstring %}
+{% if docstring %}
 
-/*
-{%- for line in docstring.split('\n') %}
-*{{ ' {}'.format(line).rstrip() }}
-{% endfor -%}
-*/
-{%- endif -%}
+/**
+{% for line in docstring.lstrip().split('\n') %}
+ *{{ ' {}'.format(line).rstrip() }}
+{% endfor %}
+ */
+{%- endif %}
 {% endmacro %}
 
 {# ------------------------------------------------------------------------- #}

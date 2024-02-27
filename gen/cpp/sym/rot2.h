@@ -81,10 +81,21 @@ class Rot2 {
   // Custom generated methods
   // --------------------------------------------------------------------------
 
+  /**
+   * Left-multiplication. Either rotation concatenation or point transform.
+   */
   const Vector2 ComposeWithPoint(const Vector2& right) const;
 
+  /**
+   * Create a Rot2 from an angle ``theta`` in radians
+   *
+   * This is equivalent to ``from_tangent([theta])``
+   */
   const static sym::Rot2<Scalar> FromAngle(const Scalar theta);
 
+  /**
+   * A matrix representation of this element in the Euclidean space that contains it.
+   */
   const Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
 
   // --------------------------------------------------------------------------
