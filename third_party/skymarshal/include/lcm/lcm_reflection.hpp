@@ -76,7 +76,7 @@ void format_json(std::ostream &stream, const T &item, uint16_t indent)
     stream << std::string(indent, ' ') << "}";
 }
 
-// Forward declare the eigen specializations, however they are defined in lcm_json_eigen.hpp
+// Forward declare the eigen specializations, however they are defined in lcm_reflection_eigen.hpp
 template <typename T, std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value,
                                        bool> = true>
 void format_json(std::ostream &stream, const T &item, uint16_t indent);
@@ -265,7 +265,7 @@ __attribute__((nodiscard)) uint16_t store_field(const char *fields[], uint16_t n
     return item.store_field(fields, num_fields, value);
 }
 
-// Forward declare the eigen specializations, however they are defined in lcm_json_eigen.hpp
+// Forward declare the eigen specializations, however they are defined in lcm_reflection_eigen.hpp
 template <typename T, std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value,
                                        bool> = true>
 __attribute__((nodiscard)) uint16_t store_field(const char *fields[], uint16_t num_fields, T &item,

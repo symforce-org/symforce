@@ -5,7 +5,7 @@
 
 #include <lcm/lcm_coretypes.h>
 #ifdef SKYMARSHAL_PRINTING_ENABLED
-#include <lcm/lcm_json_eigen.hpp>
+#include <lcm/lcm_reflection_eigen.hpp>
 #endif
 #include <Eigen/Core>
 

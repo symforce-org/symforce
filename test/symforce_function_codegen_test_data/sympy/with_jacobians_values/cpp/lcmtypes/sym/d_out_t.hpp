@@ -11,7 +11,7 @@
 #define __sym_d_out_t_hpp__
 
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
-#include <lcm/lcm_json.hpp>
+#include <lcm/lcm_reflection.hpp>
 #include <array>
 #endif
 #include <ostream>

@@ -2,7 +2,7 @@
 
 #include <Eigen/Core>
 #include <iostream>
-#include <lcm/lcm_json.hpp>
+#include <lcm/lcm_reflection.hpp>
 #include <string>
 #include <type_traits>
 
