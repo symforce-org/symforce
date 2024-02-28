@@ -13,6 +13,7 @@ from functools import cached_property
 import numpy as np
 
 from lcmtypes.sym._index_entry_t import index_entry_t
+from lcmtypes.sym._lambda_update_type_t import lambda_update_type_t
 from lcmtypes.sym._levenberg_marquardt_solver_failure_reason_t import (
     levenberg_marquardt_solver_failure_reason_t,
 )
@@ -102,10 +103,14 @@ class Optimizer:
         include_jacobians: bool = False
         debug_checks: bool = False
         initial_lambda: float = 1.0
-        lambda_up_factor: float = 4.0
-        lambda_down_factor: float = 1 / 4.0
         lambda_lower_bound: float = 0.0
         lambda_upper_bound: float = 1000000.0
+        lambda_update_type: lambda_update_type_t = lambda_update_type_t.STATIC
+        lambda_up_factor: float = 4.0
+        lambda_down_factor: float = 1 / 4.0
+        dynamic_lambda_update_beta: float = 2.0
+        dynamic_lambda_update_gamma: float = 3.0
+        dynamic_lambda_update_p: int = 3
         use_diagonal_damping: bool = False
         use_unit_damping: bool = True
         keep_max_diagonal_damping: bool = False

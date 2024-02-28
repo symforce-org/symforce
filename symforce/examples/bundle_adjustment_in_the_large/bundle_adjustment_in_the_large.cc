@@ -116,7 +116,7 @@ Problem ReadProblem(const std::string& filename) {
  * Example usage: `bundle_adjustment_in_the_large_example data/problem-21-11315-pre.txt`
  */
 int main(int argc, char** argv) {
-  SYM_ASSERT(argc == 2);
+  SYM_ASSERT_EQ(argc, 2);
 
   // Read the problem from disk, and create the Values and factors
   const auto problem = ReadProblem(argv[1]);
@@ -127,6 +127,7 @@ int main(int argc, char** argv) {
   // Optimize
   auto params = sym::DefaultOptimizerParams();
   params.verbose = true;
+  params.lambda_update_type = sym::lambda_update_type_t::DYNAMIC;
   sym::Optimizerd optimizer{params, std::move(problem.factors)};
   const auto stats = optimizer.Optimize(optimized_values);
 

@@ -160,6 +160,7 @@ class LevenbergMarquardtSolver {
     SYM_ASSERT(!index_.entries.empty());
 
     current_lambda_ = p_.initial_lambda;
+    current_nu_ = p_.dynamic_lambda_update_beta;
     iteration_ = -1;
 
     ResetState(values);
@@ -209,7 +210,8 @@ class LevenbergMarquardtSolver {
   void CheckHessianDiagonal(const MatrixType& hessian_lower_damped, Scalar lambda);
 
   void PopulateIterationStats(optimization_iteration_t& iteration_stats, const StateType& state,
-                              Scalar new_error, Scalar relative_reduction) const;
+                              Scalar new_error, Scalar new_error_linear, Scalar relative_reduction,
+                              Scalar gain_ratio) const;
 
   void Update(const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
               Values<Scalar>& updated_values) const;
@@ -231,6 +233,9 @@ class LevenbergMarquardtSolver {
 
   // Current value of the damping parameter lambda
   Scalar current_lambda_;
+
+  // Current value of the lambda update parameter nu, used if p_.lambda_update_type is DYNAMIC
+  Scalar current_nu_;
 
   // Previous update vector, used to decide if we should take an uphill "bold" step
   bool have_last_update_{false};

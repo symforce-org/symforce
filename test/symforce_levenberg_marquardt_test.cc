@@ -32,6 +32,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
   sym::optimizer_params_t params{};
   params.debug_stats = true;
   params.initial_lambda = 1.0;
+  params.lambda_update_type = sym::lambda_update_type_t::STATIC;
   params.lambda_up_factor = 3.0;
   params.lambda_down_factor = 1.0 / 3.0;
   params.lambda_lower_bound = 0.0;

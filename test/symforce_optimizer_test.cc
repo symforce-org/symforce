@@ -17,20 +17,8 @@
 #include <symforce/test_util/check_linear_error.h>
 
 sym::optimizer_params_t DefaultLmParams() {
-  sym::optimizer_params_t params{};
-  params.iterations = 50;
+  auto params = sym::DefaultOptimizerParams();
   params.verbose = true;
-  params.initial_lambda = 1.0;
-  params.lambda_up_factor = 4.0;
-  params.lambda_down_factor = 1 / 4.0;
-  params.lambda_lower_bound = 0.0;
-  params.lambda_upper_bound = 1000000.0;
-  params.early_exit_min_reduction = 0.0001;
-  params.use_unit_damping = true;
-  params.use_diagonal_damping = false;
-  params.keep_max_diagonal_damping = false;
-  params.diagonal_damping_min = 1e-6;
-  params.enable_bold_updates = false;
   return params;
 }
 
@@ -62,6 +50,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   // Set parameters
   sym::optimizer_params_t params = DefaultLmParams();
   params.initial_lambda = 10.0;
+  params.lambda_update_type = sym::lambda_update_type_t::STATIC;
   params.lambda_up_factor = 3.0;
   params.lambda_down_factor = 1.0 / 3.0;
   params.lambda_lower_bound = 0.01;
@@ -88,12 +77,7 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   CHECK(stats.status == sym::optimization_status_t::SUCCESS);
 }
 
-/**
- * Test manifold optimization of Pose3 in a simple chain where we have priors at the start and end
- * and between factors in the middle. When the priors are strong it should act as on-manifold
- * interpolation, and when the between factors are strong it should act as a mean.
- */
-TEST_CASE("Test pose smoothing", "[optimizer]") {
+std::pair<std::vector<sym::Factord>, sym::Valuesd> CreatePoseSmoothingProblem() {
   // Constants
   const double epsilon = 1e-10;
   const int num_keys = 10;
@@ -114,8 +98,8 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   const auto create_prior_factor = [&epsilon](const sym::Key& key, const sym::Pose3d& prior,
                                               const double sigma) {
     return sym::Factord::Jacobian(
-        [&prior, sigma, &epsilon](const sym::Pose3d& pose, sym::Vector6d* const res,
-                                  sym::Matrix66d* const jac) {
+        [prior, sigma, epsilon](const sym::Pose3d& pose, sym::Vector6d* const res,
+                                sym::Matrix66d* const jac) {
           const sym::Matrix66d sqrt_info = sym::Vector6d::Constant(1 / sigma).asDiagonal();
           sym::PriorFactorPose3<double>(pose, prior, sqrt_info, epsilon, res, jac);
         },
@@ -130,9 +114,9 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
   // Add between factors in a chain
   for (int i = 0; i < num_keys - 1; ++i) {
     factors.push_back(sym::Factord::Jacobian(
-        [&between_sigma, &epsilon](const sym::Pose3d& a, const sym::Pose3d& b,
-                                   sym::Vector6d* const res,
-                                   Eigen::Matrix<double, 6, 12>* const jac) {
+        [between_sigma, epsilon](const sym::Pose3d& a, const sym::Pose3d& b,
+                                 sym::Vector6d* const res,
+                                 Eigen::Matrix<double, 6, 12>* const jac) {
           const sym::Matrix66d sqrt_info = sym::Vector6d::Constant(1 / between_sigma).asDiagonal();
           const sym::Pose3d a_T_b = sym::Pose3d::Identity();
           sym::BetweenFactorPose3<double>(a, b, a_T_b, sqrt_info, epsilon, res, jac);
@@ -148,8 +132,20 @@ TEST_CASE("Test pose smoothing", "[optimizer]") {
     values.Set<sym::Pose3d>({'P', i}, value);
   }
 
+  return {std::move(factors), std::move(values)};
+}
+
+/**
+ * Test manifold optimization of Pose3 in a simple chain where we have priors at the start and end
+ * and between factors in the middle. When the priors are strong it should act as on-manifold
+ * interpolation, and when the between factors are strong it should act as a mean.
+ */
+TEST_CASE("Test pose smoothing", "[optimizer]") {
+  auto factors_and_values = CreatePoseSmoothingProblem();
+  const auto& factors = factors_and_values.first;
+  auto& values = factors_and_values.second;
+
   INFO("Initial values: " << values);
-  CAPTURE(prior_start, prior_last);
 
   // Optimize
   sym::optimizer_params_t params = DefaultLmParams();
@@ -374,6 +370,7 @@ TEST_CASE("Check that we can change linear solvers", "[optimizer]") {
 TEST_CASE("Test optimization statuses", "[optimizer]") {
   {
     auto params = sym::DefaultOptimizerParams();
+    params.verbose = true;
 
     sym::Valuesd values{};
     values.Set('x', 10.0);
@@ -462,4 +459,22 @@ TEST_CASE("Test optimizing with symbolic zeros on the diagonal", "[optimizer]") 
 
   CHECK(stats.status == sym::optimization_status_t::SUCCESS);
   CHECK(values.At<Eigen::Vector3d>('x').isApprox(Eigen::Vector3d(3, 0, 0), 1e-6));
+}
+
+TEST_CASE("Test dynamic lambda update", "[optimizer]") {
+  {
+    auto params = sym::DefaultOptimizerParams();
+    params.lambda_update_type = sym::lambda_update_type_t::DYNAMIC;
+    params.verbose = true;
+
+    auto factors_and_values = CreatePoseSmoothingProblem();
+    const auto& factors = factors_and_values.first;
+    auto& values = factors_and_values.second;
+
+    const auto stats = sym::Optimize(params, factors, values);
+
+    CHECK(stats.status == sym::optimization_status_t::SUCCESS);
+    CHECK(stats.failure_reason == sym::levenberg_marquardt_solver_failure_reason_t::INVALID);
+    CHECK(stats.iterations.size() == 27);
+  }
 }

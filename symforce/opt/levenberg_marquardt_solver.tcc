@@ -92,21 +92,15 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
 template <typename ScalarType, typename LinearSolverType>
 void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
     optimization_iteration_t& iteration_stats, const StateType& state, const Scalar new_error,
-    const Scalar relative_reduction) const {
+    const Scalar new_error_linear, const Scalar relative_reduction, const Scalar gain_ratio) const {
   SYM_TIME_SCOPE("LM<{}>: IterationStats", id_);
 
   iteration_stats.iteration = iteration_;
   iteration_stats.current_lambda = current_lambda_;
 
   iteration_stats.new_error = new_error;
+  iteration_stats.new_error_linear = new_error_linear;
   iteration_stats.relative_reduction = relative_reduction;
-
-  {
-    SYM_TIME_SCOPE("LM<{}>: IterationStats - LinearErrorFromValues", id_);
-    iteration_stats.new_error_linear =
-        state.Init().Error() +
-        state.Init().GetLinearization().LinearDeltaError(update_, damping_vector_);
-  }
 
   if (p_.verbose) {
     SYM_TIME_SCOPE("LM<{}>: IterationStats - Print", id_);
@@ -115,9 +109,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
         "rel reduction: {:.5e}, gain ratio: {:.5e}",
         id_, iteration_stats.iteration, iteration_stats.current_lambda, state.Init().Error(),
         iteration_stats.new_error_linear, iteration_stats.new_error,
-        iteration_stats.relative_reduction,
-        (state.Init().Error() - new_error) /
-            (state.Init().Error() - iteration_stats.new_error_linear));
+        iteration_stats.relative_reduction, gain_ratio);
   }
 
   if (p_.debug_stats) {
@@ -259,9 +251,19 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   const Scalar relative_reduction =
       (state_.Init().Error() - new_error) / (state_.Init().Error() + epsilon_);
 
+  const Scalar new_error_linear = [this] {
+    SYM_TIME_SCOPE("LM<{}>: LinearErrorFromValues", id_);
+    return state_.Init().Error() +
+           state_.Init().GetLinearization().LinearDeltaError(update_, damping_vector_);
+  }();
+
+  const Scalar gain_ratio =
+      (state_.Init().Error() - new_error) / (state_.Init().Error() - new_error_linear);
+
   stats.iterations.emplace_back();
   optimization_iteration_t& iteration_stats = stats.iterations.back();
-  PopulateIterationStats(iteration_stats, state_, new_error, relative_reduction);
+  PopulateIterationStats(iteration_stats, state_, new_error, new_error_linear, relative_reduction,
+                         gain_ratio);
 
   if (!std::isfinite(new_error)) {
     spdlog::warn("LM<{}> Encountered non-finite error: {}", id_, new_error);
@@ -296,11 +298,37 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     }
 
     if (!accept_update) {
-      current_lambda_ *= p_.lambda_up_factor;
+      switch (p_.lambda_update_type.value) {
+        case lambda_update_type_t::INVALID:
+          SYM_ASSERT(false, "Invalid lambda update type");
+        case lambda_update_type_t::STATIC:
+          current_lambda_ *= p_.lambda_up_factor;
+          break;
+        case lambda_update_type_t::DYNAMIC:
+          current_lambda_ *= current_nu_;
+          current_nu_ *= 2;
+          break;
+      }
+
       // swap state_ blocks so that the next iteration gets the same initial state_ as this one
       state_.SwapNewAndInit();
     } else {
-      current_lambda_ *= p_.lambda_down_factor;
+      switch (p_.lambda_update_type.value) {
+        case lambda_update_type_t::INVALID:
+          SYM_ASSERT(false, "Invalid lambda update type");
+        case lambda_update_type_t::STATIC:
+          current_lambda_ *= p_.lambda_down_factor;
+          break;
+        case lambda_update_type_t::DYNAMIC:
+          current_lambda_ *=
+              std::max(Scalar{1} / static_cast<Scalar>(p_.dynamic_lambda_update_gamma),
+                       Scalar{1} - (static_cast<Scalar>(p_.dynamic_lambda_update_beta) - 1) *
+                                       std::pow(2 * gain_ratio - 1,
+                                                static_cast<Scalar>(p_.dynamic_lambda_update_p)));
+          current_nu_ = 2;
+          break;
+      }
+
       have_last_update_ = true;
       last_update_ = update_;
       if (state_.New().Error() <= state_.Best().Error()) {

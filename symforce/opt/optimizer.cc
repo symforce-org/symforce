@@ -12,10 +12,14 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
   const bool include_jacobians = false;
   const bool debug_checks = false;
   const double initial_lambda = 1.0;
-  const double lambda_up_factor = 4.0;
-  const double lambda_down_factor = 1 / 4.0;
   const double lambda_lower_bound = 0.0;
   const double lambda_upper_bound = 1000000.0;
+  const lambda_update_type_t lambda_update_type = lambda_update_type_t::STATIC;
+  const double lambda_up_factor = 4.0;
+  const double lambda_down_factor = 1 / 4.0;
+  const double dynamic_lambda_update_beta = 2.0;
+  const double dynamic_lambda_update_gamma = 3.0;
+  const int32_t dynamic_lambda_update_p = 3;
   const bool use_diagonal_damping = false;
   const bool use_unit_damping = true;
   const bool keep_max_diagonal_damping = false;
@@ -31,10 +35,14 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
       include_jacobians,
       debug_checks,
       initial_lambda,
-      lambda_up_factor,
-      lambda_down_factor,
       lambda_lower_bound,
       lambda_upper_bound,
+      lambda_update_type,
+      lambda_up_factor,
+      lambda_down_factor,
+      dynamic_lambda_update_beta,
+      dynamic_lambda_update_gamma,
+      dynamic_lambda_update_p,
       use_diagonal_damping,
       use_unit_damping,
       keep_max_diagonal_damping,

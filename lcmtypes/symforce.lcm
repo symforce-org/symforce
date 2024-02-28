@@ -114,6 +114,22 @@ struct linearization_sparse_factor_helper_t {
   int32_t hessian_index_map[];
 };
 
+enum lambda_update_type_t {
+  INVALID = 0,
+  // Multiply lambda by a constant based on whether each step was accepted
+  STATIC = 1,
+  // Change lambda intelligently based on the gain ratio, instead of just multiplying by a constant.
+  //
+  // This uses the update rule proposed in "DAMPING PARAMETER IN MARQUARDT’S METHOD", page 10:
+  // https://www.imm.dtu.dk/documents/ftp/tr99/tr05_99.pdf.
+  //
+  // This works better for some problems, for example the "Bundle Adjustment in the Large" problems.
+  // At least with the recommended defaults for dynamic_lambda_update_params, it does not reduce
+  // lambda as aggressively as the static update defaults, so in cases where the problem is very
+  // quadratic at the minimum it does not converge as quickly.
+  DYNAMIC = 2,
+};
+
 // Parameters for the Optimizer
 struct optimizer_params_t {
   // Print information for every iteration?
@@ -135,14 +151,28 @@ struct optimizer_params_t {
 
   // Damping value (lambda) on the first iteration of the LM loop
   double initial_lambda;
-  // Factor greater than one to multiply by lambda
-  double lambda_up_factor;
-  // Factor less than one to multiply by lambda
-  double lambda_down_factor;
   // Smallest allowed value for lambda
   double lambda_lower_bound;
   // Largest allowed value for lambda
   double lambda_upper_bound;
+
+  // Method for updating lambda, see lambda_update_type_t
+  lambda_update_type_t lambda_update_type;
+
+  // [Used if lambda_update_type == STATIC] Factor greater than one to multiply by lambda
+  double lambda_up_factor;
+  // [Used if lambda_update_type == STATIC] Factor less than one to multiply by lambda
+  double lambda_down_factor;
+
+  // [Used if lambda_update_type == DYNAMIC] Lambda update parameter beta.  This is the initial
+  // value of nu, and scales the update for lambda.  Recommended value is 2
+  double dynamic_lambda_update_beta;
+  // [Used if lambda_update_type == DYNAMIC] Lambda update parameter gamma.  This is the factor by
+  // which lambda is reduced when the gain is >= 1.  Recommended value is 3
+  double dynamic_lambda_update_gamma;
+  // [Used if lambda_update_type == DYNAMIC] Exponent in the power law for the updated lambda,
+  // should be an odd positive integer. Recommended value is 3
+  int32_t dynamic_lambda_update_p;
 
   // Damp the Hessian adaptively based on the values on its diagonal?
   boolean use_diagonal_damping;

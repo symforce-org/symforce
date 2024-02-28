@@ -122,8 +122,9 @@ std::vector<Scalar> SampleInverseRanges(const size_t num, std::mt19937& gen,
 inline optimizer_params_t OptimizerParams() {
   optimizer_params_t params{};
   params.iterations = 50;
-  params.verbose = false;
+  params.verbose = true;
   params.initial_lambda = 1.0;
+  params.lambda_update_type = sym::lambda_update_type_t::STATIC;
   params.lambda_up_factor = 10.0;
   params.lambda_down_factor = 1 / 10.0;
   params.lambda_lower_bound = 1.0e-8;
