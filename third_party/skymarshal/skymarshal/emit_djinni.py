@@ -1,7 +1,8 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
+# aclint: py3
 """Generate djinni enum definitions and conversions."""
-from __future__ import absolute_import
+
+from __future__ import annotations
 
 import argparse  # pylint: disable=unused-import
 import os
@@ -14,7 +15,7 @@ from skymarshal.emit_helpers import TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage
 
 
-class EnumCase(object):
+class EnumCase:
     """A template-friendly wrapper object for LCM #djinni Enum Cases"""
 
     def __init__(self, int_value, name):
@@ -27,7 +28,7 @@ class EnumCase(object):
         self.proto_name = name
 
 
-class EnumType(object):
+class EnumType:
     """A template-friendly wrapper object for LCM #djinni Enums"""
 
     # pylint: disable=too-many-instance-attributes
@@ -49,7 +50,7 @@ class EnumType(object):
         self.default_case = self.cases[0]
 
         # names for templating
-        self.definition_name = "{}.{}".format(package_name, enum.name)
+        self.definition_name = f"{package_name}.{enum.name}"
         self.djinni_idl_name = snakecase_name
         self.djinni_name = camelcase_name
         self.djinni_namespace = args.djinni_module
@@ -57,12 +58,12 @@ class EnumType(object):
         self.lcm_package = package_name
 
         # filenames for generated converter sources
-        self.filename_h = "{}/converters/{}.h".format(self.djinni_namespace, snakecase_name)
-        self.filename_cc = "{}/converters/{}.cc".format(self.djinni_namespace, snakecase_name)
+        self.filename_h = f"{self.djinni_namespace}/converters/{snakecase_name}.h"
+        self.filename_cc = f"{self.djinni_namespace}/converters/{snakecase_name}.cc"
 
         # header paths to the underlying type definitions
-        self.djinni_header = "djinni/{}/{}.hpp".format(self.djinni_namespace, snakecase_name)
-        self.lcm_header = "lcmtypes/{}/{}.hpp".format(self.lcm_package, self.lcm_name)
+        self.djinni_header = f"djinni/{self.djinni_namespace}/{snakecase_name}.hpp"
+        self.lcm_header = f"lcmtypes/{self.lcm_package}/{self.lcm_name}.hpp"
 
         if enum.get_notation("#protobuf") is None:
             self.is_protobuf = False
@@ -78,8 +79,7 @@ class EnumType(object):
 
 class SkymarshalDjinni(SkymarshalLanguage):
     @classmethod
-    def add_args(cls, parser):
-        # type: (argparse.ArgumentParser) -> None
+    def add_args(cls, parser: argparse.ArgumentParser) -> None:
         parser.add_argument("--djinni", action="store_true", help="generate converters for djinni")
         parser.add_argument("--djinni-idl-path", help="Full path of the .djinni file")
         parser.add_argument("--djinni-path", help="Location of the .cc and .h files")
@@ -90,10 +90,9 @@ class SkymarshalDjinni(SkymarshalLanguage):
     @classmethod
     def create_files(
         cls,
-        packages,  # type: T.Iterable[syntax_tree.Package]
-        args,  # type: argparse.Namespace
-    ):
-        # type: (...) -> T.Dict[str, T.Union[str, bytes]]
+        packages: T.Iterable[syntax_tree.Package],
+        args: argparse.Namespace,
+    ) -> T.Dict[str, T.Union[str, bytes]]:
         """
         Turn a list of lcm packages into a djinni definition file and source files for lcm
         converters.
@@ -118,7 +117,7 @@ class SkymarshalDjinni(SkymarshalLanguage):
         enum_types.sort(key=lambda x: x.djinni_idl_name)
 
         for enum_type in enum_types:
-            idl_file = "{}.djinni".format(args.djinni_module)
+            idl_file = f"{args.djinni_module}.djinni"
             if args.djinni_idl_path:
                 idl_file = os.path.join(args.djinni_idl_path, idl_file, enum_type.djinni_idl_name)
                 file_map[idl_file] = render("djinni_idl.djinni.template", enum_types=[enum_type])

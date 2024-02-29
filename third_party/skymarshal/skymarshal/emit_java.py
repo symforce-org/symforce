@@ -1,6 +1,7 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
-from __future__ import absolute_import
+# aclint: py3
+
+from __future__ import annotations
 
 import argparse  # pylint: disable=unused-import
 import collections
@@ -10,7 +11,6 @@ import typing as T
 import zipfile
 from io import BytesIO
 
-from six.moves import range  # pylint: disable=redefined-builtin
 from skymarshal import syntax_tree
 from skymarshal.emit_helpers import Code, StructBuilder, render
 from skymarshal.language_plugin import SkymarshalLanguage
@@ -64,7 +64,7 @@ def make_accessor(member, obj, get_last_array=False):
     else:
         num = member.ndim
     for i in range(num):
-        accessor += "[{}]".format(string.ascii_lowercase[i])
+        accessor += f"[{string.ascii_lowercase[i]}]"
 
     return accessor
 
@@ -72,7 +72,7 @@ def make_accessor(member, obj, get_last_array=False):
 def dim_size_access(dim):
     """Get the size of a single array dimension."""
     if dim.dynamic:
-        return "this.{}".format(dim.size_str)
+        return f"this.{dim.size_str}"
     return dim.size_str
 
 
@@ -81,7 +81,7 @@ class JavaClass(StructBuilder):
 
     def __init__(self, package, struct, args):
         # TODO(jeff): Implement auto arrays for java classes instead of exposing the legacy form.
-        super(JavaClass, self).__init__(package, struct, args)
+        super().__init__(package, struct, args)
         new_members = []
         for member in self.members:
             if member.ndim:
@@ -93,7 +93,7 @@ class JavaClass(StructBuilder):
 
     @property
     def filename(self):
-        return "{}.java".format(os.path.join(self.package.name, self.name))
+        return f"{os.path.join(self.package.name, self.name)}.java"
 
     @property
     def fullpath(self):
@@ -194,7 +194,7 @@ class JavaClass(StructBuilder):
             if pinfo:
                 code.add(pinfo.encode.replace("#", accessor))
             else:
-                code.add("{}._encodeRecursive(outs);".format(accessor))
+                code.add(f"{accessor}._encodeRecursive(outs);")
             code.end(" ")
             return
 
@@ -375,10 +375,9 @@ class SkymarshalJava(SkymarshalLanguage):
     @classmethod
     def create_files(
         cls,
-        packages,  # type: T.Iterable[syntax_tree.Package]
-        args,  # type: argparse.Namespace
-    ):
-        # type: (...) -> T.Dict[str, T.Union[str, bytes]]
+        packages: T.Iterable[syntax_tree.Package],
+        args: argparse.Namespace,
+    ) -> T.Dict[str, T.Union[str, bytes]]:
         """Turn a list of lcm packages into java bindings for each struct.
 
         @param packages: the list of syntax_tree.Package objects

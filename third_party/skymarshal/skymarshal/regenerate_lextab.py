@@ -1,8 +1,9 @@
-# aclint: py2 py3
+# aclint: py3
 """
 NOTE: if running with bazel, should run from the skymarshal directory
 """
-from __future__ import absolute_import
+
+from __future__ import annotations
 
 import argparse
 import imp
@@ -51,14 +52,13 @@ LEXTABS = {
 }
 
 
-def get_py_ver():
-    # type: () -> PyVersion
+def get_py_ver() -> PyVersion:
     if sys.version_info.major < 3:
         return PyVersion.PY2
     return PyVersion.PY3
 
 
-class Lextab(object):
+class Lextab:
     """
     Helper class to compare two instances of the lexstatere
     """
@@ -75,13 +75,11 @@ class Lextab(object):
         "_tabversion",
     )
 
-    def __init__(self, lextab_module):
-        # type: (types.ModuleType) -> None
+    def __init__(self, lextab_module: types.ModuleType) -> None:
         for attrname in self.ATTRS:
             setattr(self, attrname, getattr(lextab_module, attrname))
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if not isinstance(other, Lextab):
             return False
 
@@ -94,16 +92,12 @@ class Lextab(object):
 
         return True
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "Lextab({})".format(
-            ", ".join(
-                ["{}={}".format(attrname, str(getattr(self, attrname))) for attrname in self.ATTRS]
-            )
+            ", ".join([f"{attrname}={str(getattr(self, attrname))}" for attrname in self.ATTRS])
         )
 
-    def _compare_lexstatere(self, other):
-        # type: (Lextab) -> bool
+    def _compare_lexstatere(self, other: Lextab) -> bool:
         """
         This attribute requires special handling because the regex is constructed in a
         non-deterministic fashion, and so the actual content of the regex may be sorted
@@ -130,8 +124,7 @@ class Lextab(object):
         return self_re == other_re and self_token == other_token
 
 
-def regenerate_lextab(py_ver, write=False):
-    # type: (PyVersion, bool) -> None
+def regenerate_lextab(py_ver: PyVersion, write: bool = False) -> None:
 
     tokenizer_path = os.path.join(SKYMARSHAL_DIR, "tokenizer.py")
     generated_path = os.path.join(SKYMARSHAL_DIR, "lextab.py")
@@ -162,8 +155,7 @@ def regenerate_lextab(py_ver, write=False):
             os.remove(generated_path)
 
 
-def get_parser():
-    # type: () -> argparse.ArgumentParser
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--check",
@@ -173,8 +165,7 @@ def get_parser():
     return parser
 
 
-def main():
-    # type: () -> None
+def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 

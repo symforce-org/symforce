@@ -1,9 +1,10 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
+# aclint: py3
 """
 Parse lcm defintion files and generate bindings in different languages.
 """
-from __future__ import absolute_import, print_function
+
+from __future__ import annotations
 
 import argparse
 import os
@@ -16,8 +17,9 @@ from skymarshal.language_plugin import SkymarshalLanguage  # pylint: disable=unu
 from skymarshal.package_map import parse_lcmtypes
 
 
-def parse_args(languages, args=None):
-    # type: (T.Sequence[T.Type[SkymarshalLanguage]], T.Optional[T.Sequence[str]]) -> argparse.Namespace
+def parse_args(
+    languages: T.Sequence[T.Type[SkymarshalLanguage]], args: T.Optional[T.Sequence[str]] = None
+) -> argparse.Namespace:
     """Parse the argument list and return an options object."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source_path", nargs="+")
@@ -67,11 +69,10 @@ def parse_args(languages, args=None):
 
 
 def main(
-    languages,  # type: T.Sequence[T.Type[SkymarshalLanguage]]
-    args=None,  # type: T.Sequence[str]
-    print_generated=True,  # type: bool
-):
-    # type: (...) -> None
+    languages: T.Sequence[T.Type[SkymarshalLanguage]],
+    args: T.Sequence[str] = None,
+    print_generated: bool = True,
+) -> None:
     """The primary executable for generating lcmtypes code from struct definitions.
     This is mostly an example of how to use the generator."""
 
@@ -95,15 +96,15 @@ def main(
         files.update(lang.create_files(packages, options))
 
     # Write any generated files that have changed.
-    for filename, content in six.iteritems(files):
+    for filename, content in files.items():
         dirname = os.path.dirname(filename)
         if bool(dirname) and not os.path.exists(dirname):
             os.makedirs(dirname, 0o755)
         with open(filename, mode="wb") as output_file:
-            if isinstance(content, six.text_type):
+            if isinstance(content, str):
                 output_file.write(content.encode("utf-8"))
             else:
                 output_file.write(content)
 
     if print_generated:
-        print("Generated {} files".format(len(files)))
+        print(f"Generated {len(files)} files")

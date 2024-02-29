@@ -1,6 +1,7 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
-from __future__ import absolute_import
+# aclint: py3
+
+from __future__ import annotations
 
 import io
 import os
@@ -10,7 +11,7 @@ import jinja2
 from skymarshal.syntax_tree import ConstMember
 
 
-class TemplateRenderer(object):
+class TemplateRenderer:
     "A wrapper around a jinja template Environment instantiated for this package"
 
     def __init__(self, module_dir):
@@ -29,7 +30,7 @@ class Code(io.StringIO):
     Modeled off the emit functions from the original lcmgen."""
 
     def start(self, indent, fmt, *args):
-        self.write(u"    " * indent)
+        self.write("    " * indent)
         self.add(fmt, *args)
 
     def add(self, fmt, *args):
@@ -37,7 +38,7 @@ class Code(io.StringIO):
 
     def end(self, fmt, *args):
         self.add(fmt, *args)
-        self.write(u"\n")
+        self.write("\n")
 
     def _format(self, fmt, args):
         if isinstance(fmt, bytes):
@@ -45,12 +46,12 @@ class Code(io.StringIO):
         return fmt % args
 
     def __call__(self, indent, fmt, *args):
-        self.write(u"    " * indent)
+        self.write("    " * indent)
         self.write(self._format(fmt, args))
-        self.write(u"\n")
+        self.write("\n")
 
 
-class BaseBuilder(object):
+class BaseBuilder:
     def __init__(self, package, name, full_name, comments, args):
         self.package = package
         self.name = name
@@ -69,17 +70,15 @@ class StructBuilder(BaseBuilder):
     """Helper class for converting a lcm struct into a destination code file."""
 
     def __init__(self, package, struct, args):
-        super(StructBuilder, self).__init__(
-            package, struct.name, struct.full_name, struct.comments, args
-        )
+        super().__init__(package, struct.name, struct.full_name, struct.comments, args)
         self.struct = struct
-        self.members = [
+        self.members: T.List[T.Any] = [
             member for member in struct.members if not isinstance(member, ConstMember)
-        ]  # type: T.List[T.Any]
+        ]
         self.num_members = len(self.members)
-        self.constants = [
+        self.constants: T.List[T.Any] = [
             member for member in struct.members if isinstance(member, ConstMember)
-        ]  # type: T.List[T.Any]
+        ]
 
     @property
     def hash(self):
@@ -90,7 +89,7 @@ class EnumBuilder(BaseBuilder):
     """Helper class for converting a 'lcm' enum into a destination code file."""
 
     def __init__(self, package, enum, args):
-        super(EnumBuilder, self).__init__(package, enum.name, enum.full_name, enum.comments, args)
+        super().__init__(package, enum.name, enum.full_name, enum.comments, args)
         self.enum = enum
         self.cases = enum.cases
         self.num_cases = len(enum.cases)

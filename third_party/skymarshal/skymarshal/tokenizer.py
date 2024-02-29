@@ -1,8 +1,9 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
 # LCM Definition File tokenizer
 # We use PLY and regexes to convert a byte stream into a sequence of tokens.
-from __future__ import absolute_import, print_function
+# aclint: py3
+
+from __future__ import annotations
 
 import os
 import shutil
@@ -54,7 +55,7 @@ t_OPEN_BRACKET = r"\["
 # So for now I create a COMMENT_QUEUE which holds unprocessed comments
 # When a STRUCT, PACKAGE, CLOSE_BRACE, or SEMICOLOR token is found, the queue gets processed.
 # This enables the parser to associate comments without complicating the syntax rules.
-COMMENT_QUEUE = []  # type: T.List[str]
+COMMENT_QUEUE: T.List[str] = []
 
 
 def consume_comment_queue(f):

@@ -1,6 +1,7 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
-from __future__ import absolute_import
+# aclint: py3
+
+from __future__ import annotations
 
 import argparse  # pylint: disable=unused-import
 import copy
@@ -8,7 +9,6 @@ import os
 import typing as T
 
 import six
-from six.moves import range  # pylint: disable=redefined-builtin
 from skymarshal import syntax_tree
 from skymarshal.emit_helpers import BaseBuilder, Code, EnumBuilder, StructBuilder, render
 from skymarshal.language_plugin import SkymarshalLanguage
@@ -68,9 +68,9 @@ def declare_member(member, suffix="", const_ref=False):
         type_str = mapped_typename
 
     if const_ref:
-        type_str = "const {}&".format(type_str)
+        type_str = f"const {type_str}&"
 
-    return "{} {}{}".format(type_str, member.name, suffix)
+    return f"{type_str} {member.name}{suffix}"
 
 
 def map_to_cpptype(type_ref):
@@ -95,10 +95,10 @@ def dim_size_access(dim, array_member=None):
     """Get the size of a single array dimension"""
     if dim.auto_member:
         if array_member:
-            return "this->{}.size()".format(array_member.name)
-        return "v_{}".format(dim.size_str)
+            return f"this->{array_member.name}.size()"
+        return f"v_{dim.size_str}"
     if dim.dynamic:
-        return "this->{}".format(dim.size_str)
+        return f"this->{dim.size_str}"
     return dim.size_str
 
 
@@ -111,7 +111,7 @@ class CppBase(BaseBuilder):
 
     @property
     def filename(self):
-        return "{}.hpp".format(os.path.join(self.namespace, self.name))
+        return f"{os.path.join(self.namespace, self.name)}.hpp"
 
     @property
     def fullpath(self):
@@ -122,7 +122,7 @@ class CppBase(BaseBuilder):
 
     @property
     def underscored(self):
-        return "{}_{}".format(self.namespace, self.name)
+        return f"{self.namespace}_{self.name}"
 
     @property
     def comment(self):
@@ -143,8 +143,7 @@ class CppBase(BaseBuilder):
             return "\n" + "\n".join(lines)
 
     @property
-    def size_t(self):
-        # type: () -> str
+    def size_t(self) -> str:
         """
         The C++ type to use for buffer size variables
         """
@@ -164,7 +163,7 @@ class CppEnum(EnumBuilder, CppBase):
         return {"int8_t": "int16_t"}.get(storage_name, storage_name)
 
 
-class CppInclude(object):
+class CppInclude:
     def __init__(self, member=None, std=None, prefix=None):
         assert member or std
         self.member = member
@@ -189,10 +188,10 @@ class CppInclude(object):
     def directive(self):
         name = self.absolute_path
         if self.std is not None:
-            name = "<{}>".format(name)
+            name = f"<{name}>"
         else:
-            name = '"{}"'.format(name)
-        return "#include {}\n".format(name)
+            name = f'"{name}"'
+        return f"#include {name}\n"
 
     @property
     def package(self):
@@ -236,7 +235,7 @@ class CppStruct(StructBuilder, CppBase):
                 # This is an lcmtype
                 if include.relative_path != self.filename:
                     includes.add(include)
-        std_includes = set(inc for inc in includes if inc.std)
+        std_includes = {inc for inc in includes if inc.std}
         lcm_includes = includes - std_includes
         return sorted(std_includes, key=str) + sorted(lcm_includes, key=str)
 
@@ -278,7 +277,7 @@ class CppStruct(StructBuilder, CppBase):
             else:
                 mapped_typename = map_to_cpptype(constant.type_ref)
                 if self.args.cpp_std not in ("c++98", "c++11"):
-                    raise ValueError("Invalid C++ std: {}".format(self.args.cpp_std))
+                    raise ValueError(f"Invalid C++ std: {self.args.cpp_std}")
 
                 if self.args.cpp_std == "c++11":
                     code(2, "// If you are getting compiler/linker errors saying things like")
@@ -324,8 +323,9 @@ class CppStruct(StructBuilder, CppBase):
     def initializers(self):
         return ",\n".join("{0}({0}_arg)".format(member.name) for member in self.members)
 
-    def encode_recursive(self, code, member, depth, extra_indent):
-        # type: (Code, syntax_tree.Member, int, int) -> None
+    def encode_recursive(
+        self, code: Code, member: syntax_tree.Member, depth: int, extra_indent: int
+    ) -> None:
         indent = extra_indent + 1 + depth
         # primitive array
         if member.ndim == (depth + 1) and member.type_ref.is_non_string_primitive_type():
@@ -444,7 +444,7 @@ class CppStruct(StructBuilder, CppBase):
         for member in self.members:
             if not member.type_ref.is_primitive_type():
                 scoped_name = map_to_cpptype(member.type_ref)
-                hash_calls.append("{}::_computeHash(&cp)".format(scoped_name))
+                hash_calls.append(f"{scoped_name}::_computeHash(&cp)")
         return " +\n         ".join(hash_calls)
 
     def encoded_size(self):
@@ -452,7 +452,7 @@ class CppStruct(StructBuilder, CppBase):
             return "    return 0;"
 
         code = Code()
-        code(1, "{} enc_size = 0;".format(self.size_t))
+        code(1, f"{self.size_t} enc_size = 0;")
         for member in self.members:
             self.encoded_size_member(code, member)
 
@@ -661,10 +661,9 @@ class SkymarshalCpp(SkymarshalLanguage):
     @classmethod
     def create_files(
         cls,
-        packages,  # type: T.Iterable[syntax_tree.Package]
-        args,  # type: argparse.Namespace
-    ):
-        # type: (...) -> T.Dict[str, T.Union[str, bytes]]
+        packages: T.Iterable[syntax_tree.Package],
+        args: argparse.Namespace,
+    ) -> T.Dict[str, T.Union[str, bytes]]:
         """Turn a list of lcm packages into C++ bindings for each struct.
 
         @param packages: the list of syntax_tree.Package objects
@@ -682,7 +681,7 @@ class SkymarshalCpp(SkymarshalLanguage):
         file_map = {}
         for package in packages:
             for struct in package.struct_definitions:
-                cppclass = CppStruct(package, struct, args)  # type: T.Union[CppStruct, CppEnum]
+                cppclass: T.Union[CppStruct, CppEnum] = CppStruct(package, struct, args)
                 file_map[cppclass.fullpath] = render(
                     "lcmtype.hpp.template",
                     lcmtype=cppclass,
@@ -699,7 +698,7 @@ class SkymarshalCpp(SkymarshalLanguage):
                 )
 
             type_names = sorted(
-                type_definition.name for type_definition in six.itervalues(package.type_definitions)
+                type_definition.name for type_definition in package.type_definitions.values()
             )
 
             if args.cpp_aggregate:

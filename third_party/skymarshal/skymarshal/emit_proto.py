@@ -1,14 +1,14 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
+# aclint: py3
 """Generate protocol buffers definition files."""
-from __future__ import absolute_import, print_function
+
+from __future__ import annotations
 
 import argparse  # typing # pylint: disable=unused-import
 import json
 import os
 import typing as T
 
-from six import next  # pylint: disable=redefined-builtin
 from skymarshal import syntax_tree  # pylint: disable=unused-import
 from skymarshal.common_util import camelcase_to_snakecase, snakecase_to_camelcase
 from skymarshal.emit_helpers import TemplateRenderer
@@ -18,7 +18,7 @@ from skymarshal.syntax_tree import ArrayMember, ConstMember
 # pylint: disable=too-many-instance-attributes
 
 
-class PrimitiveType(object):
+class PrimitiveType:
     """A primitive type object that supports templating properties"""
 
     def __init__(self, lcm_decl, lcm_storage, proto_decl, proto_storage, short_int_warning):
@@ -30,14 +30,14 @@ class PrimitiveType(object):
 
     def convert_pb_to_lcm(self, expression):
         if self.short_int_warning:
-            return "static_cast<{}>({})".format(self.lcm_storage, expression)
+            return f"static_cast<{self.lcm_storage}>({expression})"
         return expression
 
     def single_lcm_to_pb(self, field_name, in_expression):
-        return "out->set_{}({})".format(field_name, in_expression)
+        return f"out->set_{field_name}({in_expression})"
 
     def add_lcm_to_pb(self, field_name, in_expression):
-        return "out->add_{}({})".format(field_name, in_expression)
+        return f"out->add_{field_name}({in_expression})"
 
     @property
     def default_lcm_value(self):
@@ -70,7 +70,7 @@ PRIMITIVE_MAP = {
 }
 
 
-class EnumCase(object):
+class EnumCase:
     """A template-friendly wrapper object for LCM #protobuf Enum Cases"""
 
     def __init__(self, int_value, name):
@@ -78,7 +78,7 @@ class EnumCase(object):
         self.name = name
 
 
-class EnumType(object):
+class EnumType:
     """A template-friendly wrapper object for LCM #protobuf Enums"""
 
     def __init__(self, package_name, enum, args):
@@ -123,9 +123,9 @@ class EnumType(object):
         self.reserved_ids = ", ".join(str(field_id) for field_id in sorted(enum.reserved_ids))
 
         # names for templating
-        self.definition_name = "{}.{}".format(package_name, enum.name)
+        self.definition_name = f"{package_name}.{enum.name}"
         self.proto_package = package_name
-        self.proto_java_package = "com.skydio.pbtypes.{}".format(package_name)
+        self.proto_java_package = f"com.skydio.pbtypes.{package_name}"
         self.proto_java_outer_classname = "{}Proto".format(
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
         )
@@ -135,19 +135,19 @@ class EnumType(object):
             package_name, self.proto_message_name, self.proto_enum_name
         )
 
-        self.lcm_cpp_type = "::{}::{}".format(package_name, enum.name)
-        self.proto_cpp_container_type = "::{}::{}".format(package_name, self.proto_message_name)
-        self.proto_cpp_type = "{}::{}".format(self.proto_cpp_container_type, self.proto_enum_name)
+        self.lcm_cpp_type = f"::{package_name}::{enum.name}"
+        self.proto_cpp_container_type = f"::{package_name}::{self.proto_message_name}"
+        self.proto_cpp_type = f"{self.proto_cpp_container_type}::{self.proto_enum_name}"
 
         # filenames for generated converter sources
-        self.proto_filename = "{}/pbtypes/{}.proto".format(package_name, proto_filename_base)
+        self.proto_filename = f"{package_name}/pbtypes/{proto_filename_base}.proto"
 
         # include paths
         self.proto_import_path = os.path.join(self.args.proto_import_path, self.proto_filename)
-        self.protogen_header = "pbtypes/gen/{}/{}.pb.h".format(package_name, proto_filename_base)
+        self.protogen_header = f"pbtypes/gen/{package_name}/{proto_filename_base}.pb.h"
 
     def convert_pb_to_lcm(self, expression):
-        return "{}::from_int({})".format(self.lcm_cpp_type, expression)
+        return f"{self.lcm_cpp_type}::from_int({expression})"
 
     def single_lcm_to_pb(self, field_name, in_expression):
         return "out->set_{}(static_cast<{}>({}.int_value()))".format(
@@ -165,10 +165,10 @@ class EnumType(object):
 
     @property
     def default_lcm_value(self):
-        return "{}{{}}".format(self.lcm_cpp_type)
+        return f"{self.lcm_cpp_type}{{}}"
 
 
-class StructField(object):
+class StructField:
     """A template-friendly wrapper object for LCM #protobuf Struct Fields"""
 
     def __init__(self, parent, member, type_map, args):
@@ -202,8 +202,8 @@ class StructField(object):
         elif self.referenced_type:
             name = self.referenced_type.proto_reference_name
         else:
-            raise KeyError("Missing referenced type: {}".format(self.type_ref))
-        return "repeated {}".format(name) if self.repeated else name
+            raise KeyError(f"Missing referenced type: {self.type_ref}")
+        return f"repeated {name}" if self.repeated else name
 
     def get_type(self):
         if self.type_ref.package_name is None:
@@ -212,7 +212,7 @@ class StructField(object):
 
     @property
     def referenced_type(self):
-        full_type_name = "{}.{}".format(self.type_ref.package_name, self.type_ref.name)
+        full_type_name = f"{self.type_ref.package_name}.{self.type_ref.name}"
         return self._type_map.get(full_type_name)
 
     @property
@@ -222,25 +222,25 @@ class StructField(object):
                 array_field = self.parent.array_for_dim(self.lcm_name)
                 if array_field.type_ref.name == "byte":
                     # bytes is a string, so call size on the string
-                    return "out.{} = in.{}().size();".format(self.lcm_name, array_field.proto_name)
+                    return f"out.{self.lcm_name} = in.{array_field.proto_name}().size();"
                 # normal fields have a <field>_size() method
-                return "out.{} = in.{}_size();".format(self.lcm_name, array_field.proto_name)
+                return f"out.{self.lcm_name} = in.{array_field.proto_name}_size();"
 
             field_type = self.get_type()
             if not self.repeated:
-                in_expression = field_type.convert_pb_to_lcm("in.{}()".format(self.proto_name))
-                return "out.{} = {};".format(self.lcm_name, in_expression)
+                in_expression = field_type.convert_pb_to_lcm(f"in.{self.proto_name}()")
+                return f"out.{self.lcm_name} = {in_expression};"
 
-            in_expression = field_type.convert_pb_to_lcm("in.{}(i)".format(self.proto_name))
+            in_expression = field_type.convert_pb_to_lcm(f"in.{self.proto_name}(i)")
             if self.type_ref.name == "byte":
                 # bytes need special logic to convert between string and vector
-                in_expression = "in.{}()".format(self.proto_name)
+                in_expression = f"in.{self.proto_name}()"
                 return "out.{} = std::vector<uint8_t>({in_expr}.begin(), {in_expr}.end());".format(
                     self.lcm_name, in_expr=in_expression
                 )
 
             dim = self.struct.member_map[self.lcm_name].dims[0]
-            var_max_expression = "in.{}_size()".format(self.proto_name)
+            var_max_expression = f"in.{self.proto_name}_size()"
             if dim.size_int is None:
                 # dynamic array is easy because we pass along the size
                 return "for (int i = 0; i < {}; i++) {{\n  out.{}.push_back({});\n}}".format(
@@ -267,7 +267,7 @@ class StructField(object):
                 # NOTE(jeff): std::array<std::string> will default-initialize to empty string
                 return main_loop
 
-            return "{}\n{}".format(main_loop, fill_loop)
+            return f"{main_loop}\n{fill_loop}"
         except Exception as e:
             # If there's an AttributeError in this function, jinja will silently "swallow" it and
             # put an empty string in the generated code, which can make it very hard to figure
@@ -279,15 +279,15 @@ class StructField(object):
     def lcm_to_pb(self):
         if self.field_id is None:
             array_field = self.parent.array_for_dim(self.lcm_name)
-            return "// skip {} (size of {})".format(self.lcm_name, array_field.lcm_name)
+            return f"// skip {self.lcm_name} (size of {array_field.lcm_name})"
         field_type = self.get_type()
         if not self.repeated:
-            in_expression = "in.{}".format(self.lcm_name)
-            return "{};".format(field_type.single_lcm_to_pb(self.proto_name, in_expression))
+            in_expression = f"in.{self.lcm_name}"
+            return f"{field_type.single_lcm_to_pb(self.proto_name, in_expression)};"
 
         dim = self.struct.member_map[self.lcm_name].dims[0]
         if self.type_ref.name == "byte":
-            in_expression = "in.{}".format(self.lcm_name)
+            in_expression = f"in.{self.lcm_name}"
             if dim.auto_member:
                 return "out->set_{}(std::string({in_expr}.begin(), {in_expr}.end()));".format(
                     self.proto_name,
@@ -299,14 +299,14 @@ class StructField(object):
                 dim=dim.size_str,
             )
 
-        max_expression = "in.{}".format(dim.size_str) if dim.size_int is None else dim.size_int
+        max_expression = f"in.{dim.size_str}" if dim.size_int is None else dim.size_int
         if dim.auto_member:
-            max_expression = "in.{}.size()".format(self.lcm_name)
-        add_statement = field_type.add_lcm_to_pb(self.proto_name, "in.{}[i]".format(self.lcm_name))
-        return "for (int i = 0; i < {}; i++) {{\n  {};\n}}".format(max_expression, add_statement)
+            max_expression = f"in.{self.lcm_name}.size()"
+        add_statement = field_type.add_lcm_to_pb(self.proto_name, f"in.{self.lcm_name}[i]")
+        return f"for (int i = 0; i < {max_expression}; i++) {{\n  {add_statement};\n}}"
 
 
-class StructType(object):
+class StructType:
     """A template-friendly wrapper object for LCM #protobuf Structs"""
 
     def __init__(self, package, struct, type_map, args):
@@ -339,34 +339,34 @@ class StructType(object):
         self.proto_fields = [field for field in self.fields if field.field_id is not None]
 
         # names for templating
-        self.definition_name = "{}.{}".format(package.name, struct.name)
+        self.definition_name = f"{package.name}.{struct.name}"
         self.proto_package = package.name
-        self.proto_java_package = "com.skydio.pbtypes.{}".format(package.name)
+        self.proto_java_package = f"com.skydio.pbtypes.{package.name}"
         self.proto_java_outer_classname = "{}Proto".format(
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
         )
         self.proto_message_name = proto_typename
-        self.proto_reference_name = "{}.{}".format(package.name, self.proto_message_name)
-        self.proto_cpp_type = "::{}::{}".format(package.name, self.proto_message_name)
-        self.lcm_cpp_type = "::{}::{}".format(package.name, struct.name)
+        self.proto_reference_name = f"{package.name}.{self.proto_message_name}"
+        self.proto_cpp_type = f"::{package.name}::{self.proto_message_name}"
+        self.lcm_cpp_type = f"::{package.name}::{struct.name}"
 
         # filenames for generated files sources
-        self.proto_filename = "{}/pbtypes/{}.proto".format(package.name, proto_filename_base)
-        self.protolcm_filename_h = "{}/{}.h".format(package.name, proto_filename_base)
-        self.protolcm_filename_cc = "{}/{}.cc".format(package.name, proto_filename_base)
+        self.proto_filename = f"{package.name}/pbtypes/{proto_filename_base}.proto"
+        self.protolcm_filename_h = f"{package.name}/{proto_filename_base}.h"
+        self.protolcm_filename_cc = f"{package.name}/{proto_filename_base}.cc"
 
         # include paths
         self.proto_import_path = os.path.join(self.args.proto_import_path, self.proto_filename)
         # TODO(jeff): don't hard-code these include prefixes
-        self.lcmgen_header = "lcmtypes/{}/{}.hpp".format(package.name, struct.name)
-        self.protogen_header = "pbtypes/gen/{}/{}.pb.h".format(package.name, proto_filename_base)
+        self.lcmgen_header = f"lcmtypes/{package.name}/{struct.name}.hpp"
+        self.protogen_header = f"pbtypes/gen/{package.name}/{proto_filename_base}.pb.h"
         self.protolcm_include_path = os.path.join(
             self.args.protolcm_include_path, self.protolcm_filename_h
         )
 
     @property
     def default_lcm_value(self):
-        return "{}{{}}".format(self.lcm_cpp_type)
+        return f"{self.lcm_cpp_type}{{}}"
 
     def array_for_dim(self, dim_name):
         return next(
@@ -378,11 +378,11 @@ class StructType(object):
     @property
     def referenced_types(self):
         return sorted(
-            set(
+            {
                 field.referenced_type
                 for field in self.proto_fields
                 if field.referenced_type and field.referenced_type != self
-            ),
+            },
             key=lambda x: x.definition_name,
         )
 
@@ -399,13 +399,13 @@ class StructType(object):
         ]
 
     def convert_pb_to_lcm(self, expression):
-        return "PbToLcm({})".format(expression)
+        return f"PbToLcm({expression})"
 
     def single_lcm_to_pb(self, field_name, in_expression):
-        return "LcmToPb({}, out->mutable_{}())".format(in_expression, field_name)
+        return f"LcmToPb({in_expression}, out->mutable_{field_name}())"
 
     def add_lcm_to_pb(self, field_name, in_expression):
-        return "LcmToPb({}, out->add_{}())".format(in_expression, field_name)
+        return f"LcmToPb({in_expression}, out->add_{field_name}())"
 
 
 ProtoJsonInfo = T.TypedDict(
@@ -423,9 +423,8 @@ ProtoJsonInfo = T.TypedDict(
 )
 
 
-class ForeignType(object):
-    def __init__(self, enum_info):
-        # type: (ProtoJsonInfo) -> None
+class ForeignType:
+    def __init__(self, enum_info: ProtoJsonInfo) -> None:
         self.proto_reference_name = enum_info["reference_name"]
         self.pb_to_lcm_template = enum_info["pb_to_lcm_template"]
         self.proto_import_path = enum_info["proto_import_path"]
@@ -450,8 +449,7 @@ class ForeignType(object):
         )
 
     @staticmethod
-    def get_proto_info(type_map):
-        # type: (T.Dict[str, ProtoType]) -> T.Dict[str, ProtoJsonInfo]
+    def get_proto_info(type_map: T.Dict[str, ProtoType]) -> T.Dict[str, ProtoJsonInfo]:
         data = {}
         for type_wrapper in type_map.values():
             data[type_wrapper.definition_name] = ProtoJsonInfo(  # pylint: disable=not-callable
@@ -477,10 +475,9 @@ MaybeForeignType = T.Union[ProtoType, ForeignType]
 
 
 def make_proto_type_map(
-    output_packages,  # type: T.Iterable[syntax_tree.Package]
-    args,  # type: argparse.Namespace
-):
-    # type: (...) -> T.Dict[str, ProtoType]
+    output_packages: T.Iterable[syntax_tree.Package],
+    args: argparse.Namespace,
+) -> T.Dict[str, ProtoType]:
     """
     Parses the provided packages, outputing all protobuf types that should be generated from them.
 
@@ -495,12 +492,12 @@ def make_proto_type_map(
     """
 
     # All types from output_packages
-    type_map = {}  # type: T.Dict[str, ProtoType]
+    type_map: T.Dict[str, ProtoType] = {}
 
     # All types from output_packages or referenced_packages
-    all_referenceable_types = {}  # type: T.Dict[str, MaybeForeignType]
+    all_referenceable_types: T.Dict[str, MaybeForeignType] = {}
     for path in args.proto_deps_info or []:
-        with open(path, "r") as f:
+        with open(path) as f:
             data = T.cast(T.Dict[str, ProtoJsonInfo], json.load(f))
             for full_name, enum_info in data.items():
                 all_referenceable_types[full_name] = ForeignType(enum_info)
@@ -514,7 +511,7 @@ def make_proto_type_map(
                 enum_type = EnumType(package.name, enum, args)
                 if enum_type.definition_name in type_map:
                     raise ValueError(
-                        "Two definitions of the same type: {}".format(enum_type.definition_name)
+                        f"Two definitions of the same type: {enum_type.definition_name}"
                     )
                 all_referenceable_types[enum_type.definition_name] = enum_type
                 type_map[enum_type.definition_name] = enum_type
@@ -524,7 +521,7 @@ def make_proto_type_map(
                 struct_type = StructType(package, struct, all_referenceable_types, args)
                 if struct_type.definition_name in type_map:
                     raise ValueError(
-                        "Two definitions of the same type: {}".format(struct_type.definition_name)
+                        f"Two definitions of the same type: {struct_type.definition_name}"
                     )
                 all_referenceable_types[struct_type.definition_name] = struct_type
                 type_map[struct_type.definition_name] = struct_type
@@ -534,8 +531,7 @@ def make_proto_type_map(
 
 class SkymarshalProto(SkymarshalLanguage):
     @classmethod
-    def add_args(cls, parser):
-        # type: (argparse.ArgumentParser) -> None
+    def add_args(cls, parser: argparse.ArgumentParser) -> None:
         parser.add_argument("--proto", action="store_true", help="generate protobuf definitions")
         parser.add_argument(
             "--proto-path", default="", help="Location of the .proto file hierarchy"
@@ -553,8 +549,9 @@ class SkymarshalProto(SkymarshalLanguage):
         parser.add_argument("--proto-info-out", help="output location for json info")
 
     @classmethod
-    def create_files(cls, packages, args):
-        # type: (T.Iterable[syntax_tree.Package], argparse.Namespace) -> T.Dict[str, T.Union[str, bytes]]
+    def create_files(
+        cls, packages: T.Iterable[syntax_tree.Package], args: argparse.Namespace
+    ) -> T.Dict[str, T.Union[str, bytes]]:
 
         """Turn a list of lcm packages into a bunch of .proto files
 
@@ -571,7 +568,7 @@ class SkymarshalProto(SkymarshalLanguage):
 
         render = TemplateRenderer(os.path.dirname(__file__))
         type_map = make_proto_type_map(packages, args)
-        file_map = {}  # type: T.Dict[str, T.Union[str, bytes]]
+        file_map: T.Dict[str, T.Union[str, bytes]] = {}
         for type_wrapper in type_map.values():
             # set paths
             proto_filename = os.path.join(args.proto_path, type_wrapper.proto_filename)
@@ -585,7 +582,7 @@ class SkymarshalProto(SkymarshalLanguage):
                     "proto_struct.proto.template", struct_type=type_wrapper
                 )
             else:
-                raise TypeError("Unknown wrapper: {}".format(type_wrapper))
+                raise TypeError(f"Unknown wrapper: {type_wrapper}")
 
         if args.proto_info_out:
             file_map[args.proto_info_out] = json.dumps(
@@ -597,8 +594,7 @@ class SkymarshalProto(SkymarshalLanguage):
 
 class SkymarshalProtoLCM(SkymarshalLanguage):
     @classmethod
-    def add_args(cls, parser):
-        # type: (argparse.ArgumentParser) -> None
+    def add_args(cls, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "--protolcm", action="store_true", help="generate protobuf-lcm converters"
         )
@@ -614,10 +610,9 @@ class SkymarshalProtoLCM(SkymarshalLanguage):
     @classmethod
     def create_files(
         cls,
-        packages,  # type: T.Iterable[syntax_tree.Package]
-        args,  # type: argparse.Namespace
-    ):
-        # type: (...) -> T.Dict[str, T.Union[str, bytes]]
+        packages: T.Iterable[syntax_tree.Package],
+        args: argparse.Namespace,
+    ) -> T.Dict[str, T.Union[str, bytes]]:
         """Turn a list of lcm packages into a bunch of .h converter files
 
         skymarshal can be invoked in two ways, the first is invoking it with the full context of the
@@ -651,6 +646,6 @@ class SkymarshalProtoLCM(SkymarshalLanguage):
                 file_map[filename_h] = render("protolcm.h.template", struct_type=type_wrapper)
                 file_map[filename_cc] = render("protolcm.cc.template", struct_type=type_wrapper)
             else:
-                raise TypeError("Unknown wrapper: {}".format(type_wrapper))
+                raise TypeError(f"Unknown wrapper: {type_wrapper}")
 
         return file_map

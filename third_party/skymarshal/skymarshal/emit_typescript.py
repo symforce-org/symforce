@@ -1,5 +1,5 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
+# aclint: py3
 """LCM definition files for TypeScript"""
 
 # TODO(danny): I think this whole module could use a refactor. This code uses a combination of
@@ -7,7 +7,8 @@
 # a AST pretty-printer might be a cleaner and clearer way of doing code generation. There's not a
 # lot of precendent for that, though.
 
-from __future__ import absolute_import
+
+from __future__ import annotations
 
 import argparse  # pylint: disable=unused-import
 import os
@@ -164,14 +165,12 @@ TYPE_ENCODED_SIZE_MAP = {
 
 class TsBase(BaseBuilder):
     @property
-    def bare_base_path(self):
-        # type: () -> str
+    def bare_base_path(self) -> str:
         """package_name/filename"""
         return os.path.join(self.package.name, self.name)
 
     @property
-    def bare_import_path(self):
-        # type: () -> str
+    def bare_import_path(self) -> str:
         """
         import_dir/package_name/filename
 
@@ -180,8 +179,7 @@ class TsBase(BaseBuilder):
         return os.path.join(self.args.typescript_import_path, self.bare_base_path)
 
     @property
-    def generation_path(self):
-        # type: () -> str
+    def generation_path(self) -> str:
         """
         generation_dir/package_name/filename.ts
 
@@ -190,8 +188,7 @@ class TsBase(BaseBuilder):
         return os.path.join(self.args.typescript_path, self.bare_base_path + ".ts")
 
     @property
-    def comment(self):
-        # type: () -> str
+    def comment(self) -> str:
         """
         class comment at top of definition
         taken directly from emit_cpp.py
@@ -213,13 +210,12 @@ class TsBase(BaseBuilder):
 
 
 class TsEnum(EnumBuilder, TsBase):
-    def __init__(self, package, enum, args):
-        # type: (syntax_tree.Package, syntax_tree.Enum, T.Any) -> None
-        super(TsEnum, self).__init__(package, enum, args)
+    def __init__(self, package: syntax_tree.Package, enum: syntax_tree.Enum, args: T.Any) -> None:
+        super().__init__(package, enum, args)
         self.storage_type = TsTypeRef(self.storage_type)
 
 
-class TsInclude(object):
+class TsInclude:
     def __init__(self, member=None, is_primitive=False, prefix=None):
         self.member = member
         self.is_primitive = is_primitive
@@ -228,7 +224,7 @@ class TsInclude(object):
     @property
     def absolute_path(self):
         if self.is_primitive:
-            return "{}/types".format(self.prefix)
+            return f"{self.prefix}/types"
 
         return os.path.join(
             self.prefix, self.member.type_ref.package_name, self.member.type_ref.name
@@ -236,7 +232,7 @@ class TsInclude(object):
 
     @property
     def directive(self):
-        return '{{ {} }} from "{}"'.format(self.member.type_ref.name, self.absolute_path)
+        return f'{{ {self.member.type_ref.name} }} from "{self.absolute_path}"'
 
     def __hash__(self):
         return hash(self.directive)
@@ -248,8 +244,7 @@ class TsInclude(object):
         return self.directive
 
 
-def type_ref_to_reflection_dict(type_ref):
-    # type: (TsTypeRef) -> str
+def type_ref_to_reflection_dict(type_ref: TsTypeRef) -> str:
     """Takes a type_ref and generates a JS dictionary that corresponds to a ReflectionType in TS.
     Does not handle array types, as TsMember has the information about if a member is an array, but
     the TsTypeRef is unaware.
@@ -261,24 +256,23 @@ def type_ref_to_reflection_dict(type_ref):
         a string that corresponds to a ReflectionType in TS.
     """
     if type_ref.is_primitive_type():
-        return '{ kind: "primitive", type: %s, typeStr: "%s" }' % (
+        return '{{ kind: "primitive", type: {}, typeStr: "{}" }}'.format(
             type_ref.reflection_constructor,
             type_ref.name,
         )
     else:
-        return '{ kind: "struct", type: %s, typeStr: "%s" }' % (
+        return '{{ kind: "struct", type: {}, typeStr: "{}" }}'.format(
             type_ref.reflection_constructor,
             type_ref.name,
         )
 
 
-class TsMember(object):
+class TsMember:
     """
     Passthrough type for Member that defines specifically needed extra methods
     """
 
-    def __init__(self, member):
-        # type: (syntax_tree.Member) -> None
+    def __init__(self, member: syntax_tree.Member) -> None:
         self._member = member
         self.type_ref = TsTypeRef(member.type_ref)
 
@@ -301,8 +295,7 @@ class TsMember(object):
         return self.ndim == 1 and self.dims[0].auto_member
 
     @property
-    def auto_member_type_ref(self):
-        # type: () -> T.Optional[TsTypeRef]
+    def auto_member_type_ref(self) -> T.Optional[TsTypeRef]:
         """
         We need to know storage_size for auto_members, wrap
         """
@@ -311,13 +304,11 @@ class TsMember(object):
         return None
 
     @property
-    def is_byte_array(self):
-        # type: () -> bool
+    def is_byte_array(self) -> bool:
         return self.ndim == 1 and self.type_ref.name == "byte"
 
     @property
-    def type_declaration(self):
-        # type: () -> str
+    def type_declaration(self) -> str:
         """
         Canonical TS definition for a type
         Example: double[][] for a 2d array member of type double
@@ -328,8 +319,7 @@ class TsMember(object):
         return "{}{}".format(self.type_ref.name, "[]" * self.ndim)
 
     @property
-    def type_reflection_array_dims(self):
-        # type: () -> str
+    def type_reflection_array_dims(self) -> str:
         """Reflection metadata generation for array dimensions for ReflectionTypeArray
 
         Returns:
@@ -348,8 +338,7 @@ class TsMember(object):
         return "[{}]".format(", ".join(dim_strings))
 
     @property
-    def type_reflection_dict(self):
-        # type: () -> str
+    def type_reflection_dict(self) -> str:
         """Reflection metadata generation for this member, corresponds to a ReflectionType
 
         Returns:
@@ -359,7 +348,7 @@ class TsMember(object):
             return '{ kind: "bytes", dims: %s, nDim: 1 }' % (self.type_reflection_array_dims)
 
         elif self.ndim > 0:
-            return '{ kind: "array", dims: %s, nDim: %s, inner: %s }' % (
+            return '{{ kind: "array", dims: {}, nDim: {}, inner: {} }}'.format(
                 self.type_reflection_array_dims,
                 self.ndim,
                 type_ref_to_reflection_dict(self.type_ref),
@@ -395,10 +384,10 @@ class TsMember(object):
             return "[]"
         elif self.type_ref.is_primitive_type():
             return TYPE_INITALIZER_MAP[self.type_ref.name]
-        return "new {}()".format(self.type_ref.name)
+        return f"new {self.type_ref.name}()"
 
 
-class TsTypeRef(object):
+class TsTypeRef:
     """
     Passthrough type for TypeRef that overrides some behavior
     """
@@ -407,19 +396,16 @@ class TsTypeRef(object):
         self._type_ref = type_ref
 
     @property
-    def name(self):
-        # type: () -> str
+    def name(self) -> str:
         """Map the protobuf types to the standard types"""
         return PROTO_TYPE_MAP.get(self._type_ref.name, self._type_ref.name)
 
     @property
-    def storage_size(self):
-        # type: () -> T.Optional[int]
+    def storage_size(self) -> T.Optional[int]:
         return TYPE_ENCODED_SIZE_MAP.get(self.name, None)
 
     @property
-    def reflection_constructor(self):
-        # type: () -> str
+    def reflection_constructor(self) -> str:
         """Get the constructor function for a type in JS. Checks a primitive map, or just returns
         the struct/enum name. Array types are handled by TsMember, which calls this for the type
         contained in the array.
@@ -440,7 +426,7 @@ class TsTypeRef(object):
 
 class TsStruct(StructBuilder, TsBase):
     def __init__(self, package, struct, args):
-        super(TsStruct, self).__init__(package, struct, args)
+        super().__init__(package, struct, args)
         self.members = [TsMember(member) for member in self.members]
         self.constants = [TsMember(member) for member in self.constants]
 
@@ -494,8 +480,7 @@ class TsStruct(StructBuilder, TsBase):
 
 class SkymarshalTypeScript(SkymarshalLanguage):
     @classmethod
-    def add_args(cls, parser):
-        # type: (argparse.ArgumentParser) -> None
+    def add_args(cls, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "--typescript", action="store_true", help="generate typescript definitions"
         )
@@ -517,10 +502,9 @@ class SkymarshalTypeScript(SkymarshalLanguage):
     @classmethod
     def create_files(
         cls,
-        packages,  # type: T.Iterable[syntax_tree.Package]
-        args,  # type: argparse.Namespace
-    ):
-        # type: (...) -> T.Dict[str, T.Union[str, bytes]]
+        packages: T.Iterable[syntax_tree.Package],
+        args: argparse.Namespace,
+    ) -> T.Dict[str, T.Union[str, bytes]]:
         """Turn a list of lcm packages into a bunch of .ts files
 
         @param packages: the list of syntax_tree.Package objects

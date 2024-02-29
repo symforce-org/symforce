@@ -1,4 +1,3 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
 # LCM Defintion File Parsing
 # ==========================
@@ -7,7 +6,9 @@
 # Functions are required to have p_ prefix and docstrings that explain the syntax rules.
 # During parsing, the parse stack matches a rule, the corresponding function is executed.
 # A function's p argument is the list of productions in the rule, with p[0] being the output.
-from __future__ import absolute_import, print_function
+# aclint: py3
+
+from __future__ import annotations
 
 import typing as T
 
@@ -78,7 +79,7 @@ def p_enum(p):
         type_ref = syntax_tree.TypeRef("int32_t")
         reserved_ids, cases = p[5]
     else:
-        raise AssertionError("parser bug: len(p)={}".format(len(p)))
+        raise AssertionError(f"parser bug: len(p)={len(p)}")
     p[0] = syntax_tree.Enum(
         name=p[3], type_ref=type_ref, cases=cases, notations=p[1], reserved_ids=reserved_ids
     )
@@ -300,18 +301,21 @@ def p_error(token):
     # NOTE: Call yacc.errok() to proceed with parsing.
     # TODO(matt): add more error handling.
     if token:
-        raise LcmParseError(
-            'Unable to parse starting from "{}" on line {}'.format(token.value, token.lineno)
-        )
+        raise LcmParseError(f'Unable to parse starting from "{token.value}" on line {token.lineno}')
     else:
         raise LcmParseError("Unexpected end of input")
 
 
-PARSER = None  # type: T.Optional[yacc.LRParser]
+PARSER: T.Optional[yacc.LRParser] = None
 
 
-def lcmparse(src, verbose=True, cache=False, debug_src_path=None, allow_unknown_notations=False):
-    # type: (str, bool, bool, str, bool) -> T.List[syntax_tree.Package]
+def lcmparse(
+    src: str,
+    verbose: bool = True,
+    cache: bool = False,
+    debug_src_path: str = None,
+    allow_unknown_notations: bool = False,
+) -> T.List[syntax_tree.Package]:
     """Parse an LCM definition source into a list of packages"""
     global PARSER  # pylint: disable=global-statement
     lexer.lineno = 1  # reset the line number on repeat calls to lcmgen
@@ -336,9 +340,9 @@ def lcmparse(src, verbose=True, cache=False, debug_src_path=None, allow_unknown_
         packages = parser.parse(src)
     except LcmParseError as ex:
         if debug_src_path:
-            raise LcmParseError("{} of {}".format(str(ex), debug_src_path))
+            raise LcmParseError(f"{str(ex)} of {debug_src_path}")
         else:
-            raise LcmParseError("{}\n==========\n{}\n==========".format(str(ex), src))
+            raise LcmParseError(f"{str(ex)}\n==========\n{src}\n==========")
 
     # NOTE(matt): this does not perform deduplication on package or struct names.
     return packages

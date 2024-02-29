@@ -1,6 +1,7 @@
-# aclint: py2 py3
+# aclint: py3
 "Allow the skymarshal package to be executable"
-from __future__ import absolute_import
+
+from __future__ import annotations
 
 from skymarshal import skymarshal
 from skymarshal.emit_cpp import SkymarshalCpp

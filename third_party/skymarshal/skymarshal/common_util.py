@@ -1,5 +1,6 @@
-# aclint: py2 py3
-from __future__ import absolute_import, print_function
+# aclint: py3
+
+from __future__ import annotations
 
 import sys
 import typing as T
@@ -15,26 +16,23 @@ else:
 StrType = T.TypeVar("StrType", str, T.Text)
 
 
-def snakecase_to_camelcase(snake_string):
-    # type: (StrType) -> StrType
+def snakecase_to_camelcase(snake_string: StrType) -> StrType:
     return "".join(word.capitalize() for word in snake_string.split("_"))
 
 
-def snakecase_to_lower_camelcase(snake_string):
-    # type: (StrType) -> StrType
+def snakecase_to_lower_camelcase(snake_string: StrType) -> StrType:
     words = snake_string.split("_")
     return words[0] + "".join(word.capitalize() for word in words[1:])
 
 
-def camelcase_to_snakecase(camelcase, to_upper=False):
-    # type: (StrType, bool) -> StrType
+def camelcase_to_snakecase(camelcase: StrType, to_upper: bool = False) -> StrType:
     if "_" in camelcase:
         # This string is already using underscores.
         if to_upper:
             return camelcase.upper()
         else:
             return camelcase.lower()
-    out = []  # type: T.List[StrType]
+    out: T.List[StrType] = []
     for char in camelcase:
         if out and char in uppercase:
             out.append("_")
@@ -46,8 +44,7 @@ def camelcase_to_snakecase(camelcase, to_upper=False):
     return "".join(out)
 
 
-def is_camelcase(string):
-    # type: (StrType) -> bool
+def is_camelcase(string: StrType) -> bool:
     if not string:
         return False
     if "_" in string or " " in string:

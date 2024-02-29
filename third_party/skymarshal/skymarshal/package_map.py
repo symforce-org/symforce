@@ -1,6 +1,7 @@
-# aclint: py2 py3
 # mypy: allow-untyped-defs
-from __future__ import absolute_import, print_function
+# aclint: py3
+
+from __future__ import annotations
 
 import os
 import typing as T
@@ -8,11 +9,12 @@ import typing as T
 from skymarshal import parser, syntax_tree, tokenizer
 
 # Path -> packages map of things we already parsed.
-FILE_CACHE = dict()  # type: T.Dict[T.Tuple[str, bool], T.List[syntax_tree.Package]]
+FILE_CACHE: T.Dict[T.Tuple[str, bool], T.List[syntax_tree.Package]] = dict()
 
 
-def merge_packages(packages, package_map=None):
-    # type: (T.List[syntax_tree.Package], T.Dict[str, syntax_tree.Package]) -> T.Dict[str, syntax_tree.Package]
+def merge_packages(
+    packages: T.List[syntax_tree.Package], package_map: T.Dict[str, syntax_tree.Package] = None
+) -> T.Dict[str, syntax_tree.Package]:
     """Converts a list of packages to a map.
     NOTE(matt): This makes copies instead of modifying the input packages.
     """
@@ -50,8 +52,7 @@ def find_lcmtypes_dirs(root_path, excluded_paths=None):
             dirnames[:] = []
 
 
-def _flatten_paths(lcmtypes_paths):
-    # type: (T.Iterable[str]) -> T.Iterable[str]
+def _flatten_paths(lcmtypes_paths: T.Iterable[str]) -> T.Iterable[str]:
     for path in lcmtypes_paths:
         if not os.path.exists(path):
             continue
@@ -65,14 +66,13 @@ def _flatten_paths(lcmtypes_paths):
 
 
 def parse_lcmtypes(
-    lcmtypes_paths,  # type: T.Iterable[str]
-    verbose=False,  # type: bool
-    print_debug_tokens=False,  # type: bool
-    cache_parser=False,  # type: bool
-    allow_unknown_notations=False,  # type: bool
-    include_source_paths=True,  # type: bool
-):
-    # type: (...) -> T.Dict[str, syntax_tree.Package]
+    lcmtypes_paths: T.Iterable[str],
+    verbose: bool = False,
+    print_debug_tokens: bool = False,
+    cache_parser: bool = False,
+    allow_unknown_notations: bool = False,
+    include_source_paths: bool = True,
+) -> T.Dict[str, syntax_tree.Package]:
     """
     Parse LCM definitions and assemble a map from package to syntax tree nodes.
 
@@ -82,7 +82,7 @@ def parse_lcmtypes(
     :param include_source_paths: If true, include the source file in the generated bindings
     :return: Map from package name to syntax_tree.Package.
     """
-    package_map = {}  # type: T.Dict[str, syntax_tree.Package]
+    package_map: T.Dict[str, syntax_tree.Package] = {}
 
     for path in _flatten_paths(lcmtypes_paths):
         if (path, include_source_paths) in FILE_CACHE:
