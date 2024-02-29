@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 
 from symforce import typing as T
+from symforce.ops.ops import OpNotImplementedError
 from symforce.ops.ops import Ops
 from symforce.test_util import TestCase
 
@@ -20,7 +21,7 @@ class SymforceOpsTest(TestCase):
         Check that Ops.implementation raises a NotImplementedError if
         argument has not been registered.
         """
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(OpNotImplementedError):
             Ops.implementation(type("UnregisteredType", (object,), {}))
 
     @staticmethod
@@ -44,7 +45,7 @@ class SymforceOpsTest(TestCase):
 
     def assert_implementation_raises(self, reg_cls: T.Type, impl_type: T.Type) -> None:
         # A helper to make testing more concise
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(OpNotImplementedError):
             reg_cls.implementation(impl_type)
 
     def assert_implementation_returns(self, reg_cls: T.Type, impl_type: T.Type) -> None:
@@ -152,7 +153,7 @@ class SymforceOpsTest(TestCase):
 
         # Checking TypeParent gets the correct implementations
         self.assertEqual(OpsParent.implementation(TypeParent), ImplementationType1)
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(OpNotImplementedError):
             OpsChild.implementation(TypeParent)
 
         # Checking TypeChild gets the correct implementations

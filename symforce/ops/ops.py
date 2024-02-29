@@ -8,6 +8,12 @@ import inspect
 from symforce import typing as T
 
 
+class OpNotImplementedError(NotImplementedError):
+    """
+    Exception raised when an operation is not implemented for a given type.
+    """
+
+
 class Ops:
     """
     Class for specifying how Storage/Group/LieGroup ops functions should
@@ -63,10 +69,10 @@ class Ops:
         first such parent class in method resolution order is returned.
 
         Raises:
-            NotImplementedError: If ``impl_type`` or one of its parent classes is not registered
+            OpNotImplementedError: If ``impl_type`` or one of its parent classes is not registered
                 with the calling class or one of its subclasses.
         """
-        registered_and_base: T.List[T.Tuple[T.Type, T.Type]] = []
+        registered_and_base: T.Set[T.Tuple[T.Type, T.Type]] = set()
         for base_class in inspect.getmro(impl_type):
             reg_class_and_impl = cls.IMPLEMENTATIONS.get(base_class, None)
             if reg_class_and_impl is not None:
@@ -74,7 +80,7 @@ class Ops:
                 if issubclass(registration_class, cls):
                     return impl
 
-                registered_and_base.append((registration_class, base_class))
+                registered_and_base.add((registration_class, base_class))
 
         # Handle Protocols/Metaclasses that aren't in the MRO (method resolution order), by trying
         # every class that's registered, and checking if impl_type is a subclass.
@@ -83,20 +89,19 @@ class Ops:
                 if issubclass(registration_class, cls):
                     return impl
 
-                # TODO(aaron): This will double count things with the above loop
-                registered_and_base.append((registration_class, base_class))
+                registered_and_base.add((registration_class, base_class))
 
         if len(registered_and_base) != 0:
-            raise NotImplementedError(
-                f"While {impl_type} is registered under {{reg_info}}, {{none_do}} subclass {cls.__name__}.".format(
-                    reg_info=", ".join(
+            raise OpNotImplementedError(
+                f"Class {impl_type} is not registered under {cls.__name__}.  It does have "
+                "registered implementations for:\n{reg_info}".format(
+                    reg_info="\n".join(
                         [
-                            f"{reg.__name__} (via base class {base})"
+                            f"  - {reg.__name__} (via base class {base})"
                             for reg, base in registered_and_base
                         ]
-                    ),
-                    none_do="that does not" if len(registered_and_base) == 1 else "none of those",
+                    )
                 )
             )
 
-        raise NotImplementedError(f"{impl_type} is not registered under {cls.__name__}")
+        raise OpNotImplementedError(f"{impl_type} is not registered under {cls.__name__}")
