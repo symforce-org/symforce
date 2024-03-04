@@ -51,7 +51,7 @@ jobs:
               repos: []
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # - Installing software-properties-common adds add-apt-repository
       - name: Update install tools
@@ -157,7 +157,7 @@ jobs:
       # (probably any is good, assuming they all pass)
       # Unzip to a directory and run `npx http-server` in that directory
       - name: Upload Generated Docs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docs ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.compiler.C }}
           path: build/docs
