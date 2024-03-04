@@ -265,6 +265,7 @@ struct sparse_matrix_structure_t {
   // The shape (M, N) of the sparse matrix
   int64_t shape[2];
 }
+
 #protobuf
 enum optimization_status_t {
   // Uninitialized enum value
