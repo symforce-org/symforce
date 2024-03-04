@@ -295,7 +295,7 @@ def create_named_scope(scopes_list: T.List[str]) -> T.Callable:
 
 
 # Nested scopes created with `sf.scope`, initialized to empty (symbols created with no added scope)
-__scopes__ = []
+__scopes__: T.List[str] = []
 
 
 def set_scope(scope: str) -> None:

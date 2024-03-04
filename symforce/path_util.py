@@ -18,7 +18,7 @@ class _Manifest:
     intended for use outside of path_util.py.
     """
 
-    _manifest = None
+    _manifest: T.Optional[T.Dict[str, str]] = None
 
     @classmethod
     def _ensure_loaded(cls) -> None:
