@@ -284,7 +284,6 @@ six==1.16.0
     #   asttokens
     #   bleach
     #   python-dateutil
-    #   skymarshal
 file:./third_party/skymarshal
     # via symforce (setup.py)
 snowballstemmer==2.2.0

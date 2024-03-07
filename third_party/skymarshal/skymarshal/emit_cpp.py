@@ -8,7 +8,6 @@ import copy
 import os
 import typing as T
 
-import six
 from skymarshal import syntax_tree
 from skymarshal.emit_helpers import BaseBuilder, Code, EnumBuilder, StructBuilder, render
 from skymarshal.language_plugin import SkymarshalLanguage

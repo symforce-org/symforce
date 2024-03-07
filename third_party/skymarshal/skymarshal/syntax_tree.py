@@ -5,7 +5,6 @@ from __future__ import annotations
 import typing as T
 
 from numpy import int64
-from six import iteritems  # pylint: disable=redefined-builtin
 
 INTEGER_TYPES = (
     "int8_t",
