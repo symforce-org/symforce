@@ -6,6 +6,7 @@
 """
 Script to download the matrices used for the benchmark into this folder, in Matrix Market format.
 """
+
 import ssgetpy  # type: ignore
 
 # Matrix ID's used by the benchmark

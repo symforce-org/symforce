@@ -463,9 +463,9 @@ class Values(T.MutableMapping[str, T.Any]):
         for v in self.values():
             s_dim = ops.StorageOps.storage_dim(v)
             t_dim = ops.LieGroupOps.tangent_dim(v)
-            storage_D_tangent[
-                s_inx : s_inx + s_dim, t_inx : t_inx + t_dim
-            ] = ops.LieGroupOps.storage_D_tangent(v)
+            storage_D_tangent[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = (
+                ops.LieGroupOps.storage_D_tangent(v)
+            )
             s_inx += s_dim
             t_inx += t_dim
         return storage_D_tangent
@@ -483,9 +483,9 @@ class Values(T.MutableMapping[str, T.Any]):
         for v in self.values():
             t_dim = ops.LieGroupOps.tangent_dim(v)
             s_dim = ops.StorageOps.storage_dim(v)
-            tangent_D_storage[
-                t_inx : t_inx + t_dim, s_inx : s_inx + s_dim
-            ] = ops.LieGroupOps.tangent_D_storage(v)
+            tangent_D_storage[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = (
+                ops.LieGroupOps.tangent_D_storage(v)
+            )
             t_inx += t_dim
             s_inx += s_dim
         return tangent_D_storage

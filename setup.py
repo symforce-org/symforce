@@ -458,7 +458,7 @@ if __name__ == "__main__":
                 # NOTE(aaron): v1.0 changed lots of things, we'll need to update and regenerate
                 "pybind11-stubgen<1.0",
                 "pylint",
-                "ruff~=0.1.7",
+                "ruff~=0.3.2",
                 # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
                 "lazy-object-proxy>=1.9.0",
                 "types-jinja2",

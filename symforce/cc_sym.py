@@ -6,6 +6,7 @@
 """
 Locate and re-export cc_sym as symforce.cc_sym
 """
+
 import logging as _logging
 import os
 import sys

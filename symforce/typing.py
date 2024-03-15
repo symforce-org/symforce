@@ -6,6 +6,7 @@
 """
 Common type definitions.
 """
+
 import abc
 import dataclasses
 import os

@@ -277,7 +277,7 @@ rpds-py==0.18.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.1.15
+ruff==0.3.2
     # via symforce (setup.py)
 scipy==1.10.1
     # via symforce (setup.py)
