@@ -9,7 +9,7 @@ import typing as T
 
 import numpy
 
-import sym  # pylint: disable=unused-import
+import sym  # pylint: disable=useless-suppression,unused-import
 
 
 class LieGroupOps(object):

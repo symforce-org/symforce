@@ -4,7 +4,11 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-# pylint: disable=too-many-locals,too-many-lines,too-many-statements,unused-argument
+# pylint: disable=useless-suppression
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-lines
+# pylint: disable=too-many-statements
+# pylint: disable=unused-argument
 
 import math  # pylint: disable=unused-import
 import typing as T
