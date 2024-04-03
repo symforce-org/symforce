@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import dataclasses
 import warnings
 from dataclasses import dataclass
 from functools import cached_property
@@ -13,13 +12,11 @@ from functools import cached_property
 import numpy as np
 
 from lcmtypes.sym._index_entry_t import index_entry_t
-from lcmtypes.sym._lambda_update_type_t import lambda_update_type_t
 from lcmtypes.sym._levenberg_marquardt_solver_failure_reason_t import (
     levenberg_marquardt_solver_failure_reason_t,
 )
 from lcmtypes.sym._optimization_iteration_t import optimization_iteration_t
 from lcmtypes.sym._optimization_status_t import optimization_status_t
-from lcmtypes.sym._optimizer_params_t import optimizer_params_t
 from lcmtypes.sym._sparse_matrix_structure_t import sparse_matrix_structure_t
 from lcmtypes.sym._values_t import values_t
 
@@ -27,6 +24,7 @@ from symforce import cc_sym
 from symforce import typing as T
 from symforce.opt.factor import Factor
 from symforce.opt.numeric_factor import NumericFactor
+from symforce.opt.optimizer_params import OptimizerParams
 from symforce.values import Values
 
 
@@ -83,42 +81,11 @@ class Optimizer:
             keys in ``optimized_keys``.
         optimized_keys: A set of the keys to be optimized. Only required if symbolic factors are
             passed to the optimizer.
-        params: Params for the optimizer
+        params: Params for the optimizer.  Defaults are in `OptimizerParams`, except that `verbose`
+            is `True` by default.
     """
 
-    @dataclass
-    class Params:
-        """
-        Parameters for the Python Optimizer
-
-        Mirrors the ``optimizer_params_t`` LCM type, see documentation there for information on each
-        parameter.
-
-        Note: For the Python optimizer, verbose defaults to True
-        """
-
-        verbose: bool = True
-        debug_stats: bool = False
-        check_derivatives: bool = False
-        include_jacobians: bool = False
-        debug_checks: bool = False
-        initial_lambda: float = 1.0
-        lambda_lower_bound: float = 0.0
-        lambda_upper_bound: float = 1000000.0
-        lambda_update_type: lambda_update_type_t = lambda_update_type_t.STATIC
-        lambda_up_factor: float = 4.0
-        lambda_down_factor: float = 1 / 4.0
-        dynamic_lambda_update_beta: float = 2.0
-        dynamic_lambda_update_gamma: float = 3.0
-        dynamic_lambda_update_p: int = 3
-        use_diagonal_damping: bool = False
-        use_unit_damping: bool = True
-        keep_max_diagonal_damping: bool = False
-        diagonal_damping_min: float = 1e-6
-        iterations: int = 50
-        early_exit_min_reduction: float = 1e-6
-        enable_bold_updates: bool = False
-
+    Params = OptimizerParams
     Status = optimization_status_t
     FailureReason = levenberg_marquardt_solver_failure_reason_t
 
@@ -214,7 +181,7 @@ class Optimizer:
         self,
         factors: T.Iterable[T.Union[Factor, NumericFactor]],
         optimized_keys: T.Optional[T.Sequence[str]] = None,
-        params: T.Optional[Optimizer.Params] = None,
+        params: T.Optional[OptimizerParams] = None,
         debug_stats: T.Optional[bool] = None,
         include_jacobians: T.Optional[bool] = None,
     ):
@@ -258,7 +225,7 @@ class Optimizer:
 
         # Set default params if none given
         if params is None:
-            self.params = Optimizer.Params()
+            self.params = OptimizerParams(verbose=True)
         else:
             self.params = params
 
@@ -293,7 +260,7 @@ class Optimizer:
 
         # Construct the C++ optimizer
         self._cc_optimizer = cc_sym.Optimizer(
-            optimizer_params_t(**dataclasses.asdict(self.params)),
+            self.params.to_lcm(),
             [factor.cc_factor(self._cc_keys_map) for factor in numeric_factors],
         )
 

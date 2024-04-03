@@ -3,7 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import dataclasses
 import math
 import pickle
 
@@ -846,13 +845,8 @@ class SymforceCCSymTest(TestCase):
     def test_default_params_match(self) -> None:
         """
         Check that the default params in C++ and Python are the same
-
-        Except verbose, which defaults to False in C++ and True in Python
         """
-        self.assertEqual(
-            cc_sym.default_optimizer_params(),
-            optimizer_params_t(**dataclasses.asdict(optimizer.Optimizer.Params(verbose=False))),
-        )
+        self.assertEqual(cc_sym.default_optimizer_params(), optimizer.OptimizerParams().to_lcm())
 
 
 if __name__ == "__main__":
