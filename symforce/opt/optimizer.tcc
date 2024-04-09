@@ -126,16 +126,7 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values
   stats.Reset(num_iterations);
   IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
 
-  if (verbose_) {
-    if (stats.status == optimization_status_t::FAILED) {
-      spdlog::warn("LM<{}> Optimization finished with status: FAILED, reason: {}", name_,
-                   FailureReason::from_int(stats.failure_reason));
-    } else {
-      spdlog::log(stats.status == optimization_status_t::SUCCESS ? spdlog::level::info
-                                                                 : spdlog::level::warn,
-                  "LM<{}> Optimization finished with status: {}", name_, stats.status);
-    }
-  }
+  MaybeLogStatus(stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -362,6 +353,20 @@ void Optimizer<ScalarType, NonlinearSolverType>::Initialize(const Values<Scalar>
 template <typename ScalarType, typename NonlinearSolverType>
 const std::string& Optimizer<ScalarType, NonlinearSolverType>::GetName() {
   return name_;
+}
+
+template <typename ScalarType, typename NonlinearSolverType>
+void Optimizer<ScalarType, NonlinearSolverType>::MaybeLogStatus(const Stats& stats) const {
+  if (verbose_) {
+    if (stats.status == optimization_status_t::FAILED) {
+      spdlog::warn("LM<{}> Optimization finished with status: FAILED, reason: {}", name_,
+                   FailureReason::from_int(stats.failure_reason));
+    } else {
+      spdlog::log(stats.status == optimization_status_t::SUCCESS ? spdlog::level::info
+                                                                 : spdlog::level::warn,
+                  "LM<{}> Optimization finished with status: {}", name_, stats.status);
+    }
+  }
 }
 
 extern template class Optimizer<double>;

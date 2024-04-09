@@ -282,6 +282,11 @@ class Optimizer {
    */
   void Initialize(const Values<Scalar>& values);
 
+  /**
+   * If verbose_, log the exit status of the optimization
+   */
+  void MaybeLogStatus(const Stats& stats) const;
+
   const std::string& GetName();
 
   /// Store a copy of the nonlinear factors. The Linearization object in the state keeps a

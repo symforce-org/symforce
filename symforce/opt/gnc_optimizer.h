@@ -70,15 +70,23 @@ class GncOptimizer : public BaseOptimizerType {
     }
     this->UpdateParams(optimizer_params);
 
+    BaseOptimizer::Initialize(values);
+
+    // Clear state for this run
+    this->nonlinear_solver_.Reset(values);
+    stats.Reset(num_iterations);
+
     // Iterate.
-    BaseOptimizer::Optimize(values, num_iterations, populate_best_linearization, stats);
+    BaseOptimizer::IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
     while (static_cast<int>(stats.iterations.size()) < num_iterations) {
       if (stats.status != optimization_status_t::SUCCESS) {
         // NOTE(aaron): The previous optimization did not converge, so do not continue
+        BaseOptimizer::MaybeLogStatus(stats);
         return;
       }
 
       if (!updating_gnc) {
+        BaseOptimizer::MaybeLogStatus(stats);
         return;
       }
 
@@ -103,6 +111,8 @@ class GncOptimizer : public BaseOptimizerType {
       OptimizeContinue(values, num_iterations - stats.iterations.size(),
                        populate_best_linearization, stats);
     }
+
+    BaseOptimizer::MaybeLogStatus(stats);
   }
 
  private:
