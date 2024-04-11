@@ -167,10 +167,17 @@ class Values(T.MutableMapping[str, T.Any]):
             elif isinstance(value, (sf.Expr, sf.Symbol, int, float)):
                 entry = entry_helper(datatype=sf.Scalar)
             elif isinstance(value, (list, tuple)):
-                assert all(
-                    type(v) == type(value[0])  # pylint: disable=unidiomatic-typecheck
-                    for v in value
-                ) or all(typing_util.scalar_like(v) for v in value)
+                if not (
+                    all(
+                        type(v) == type(value[0])  # pylint: disable=unidiomatic-typecheck
+                        for v in value
+                    )
+                    or all(typing_util.scalar_like(v) for v in value)
+                ):
+                    raise TypeError(
+                        "A list/tuple in a Values object should not contain different types. "
+                        f'Types in list "{name}" are {set(type(v) for v in value)}'
+                    )
                 name_list = [f"{name}_{i}" for i in range(len(value))]
                 item_index = Values.get_index_from_items(zip(name_list, value))
                 entry = entry_helper(item_index=item_index)
