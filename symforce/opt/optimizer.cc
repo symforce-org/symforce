@@ -26,6 +26,7 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
   const double diagonal_damping_min = 1e-6;
   const int iterations = 50;
   const double early_exit_min_reduction = 1e-6;
+  const double early_exit_min_absolute_error = 0.0;
   const bool enable_bold_updates = false;
 
   return sym::optimizer_params_t{
@@ -49,6 +50,7 @@ sym::optimizer_params_t sym::DefaultOptimizerParams() {
       diagonal_damping_min,
       iterations,
       early_exit_min_reduction,
+      early_exit_min_absolute_error,
       enable_bold_updates,
   };
 }

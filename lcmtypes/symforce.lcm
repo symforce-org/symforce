@@ -192,6 +192,9 @@ struct optimizer_params_t {
   // Early exit from the optimization if the absolute value of the relative reduction is
   // less than this amount
   double early_exit_min_reduction;
+  // Early exit from the optimization if the error (i.e. 0.5 * residual.dot(residual)) is less than
+  // this amount
+  double early_exit_min_absolute_error;
   // Allow uphill movements in the optimization?
   boolean enable_bold_updates;
 }
@@ -265,7 +268,6 @@ struct sparse_matrix_structure_t {
   // The shape (M, N) of the sparse matrix
   int64_t shape[2];
 }
-
 #protobuf
 enum optimization_status_t {
   // Uninitialized enum value

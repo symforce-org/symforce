@@ -41,6 +41,7 @@ class OptimizerParams:
     diagonal_damping_min: float = 1e-6
     iterations: int = 50
     early_exit_min_reduction: float = 1e-6
+    early_exit_min_absolute_error: float = 0.0
     enable_bold_updates: bool = False
 
     def to_lcm(self) -> optimizer_params_t:
