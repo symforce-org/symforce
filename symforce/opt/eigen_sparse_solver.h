@@ -42,7 +42,7 @@ class EigenSparseSolver {
    * @returns true if factorization succeeded, and false if failed.
    */
   bool Factorize(const MatrixType& A) {
-    solver_.compute(A);
+    solver_.factorize(A);
     return solver_.info() == Eigen::Success;
   }
 
