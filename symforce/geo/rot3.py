@@ -284,7 +284,17 @@ class Rot3(LieGroup):
         # So max(R00, R11, R22, R00 + R11 + R22) = max(x^2, y^2, z^2, w^2)
         # x^2 + y^2 + z^2 + w^2 = 1  =>  max(x^2, y^2, z^2, w^2) >= 1/4
         # This is all to say that if use_branch[i] = 1, then it's safe to use q_i's expression
-        use_branch = sf.argmax_onehot([R[0, 0], R[1, 1], R[2, 2], R[0, 0] + R[1, 1] + R[2, 2]])
+        #
+        # For the tolerance: The smallest the max of `|x|^2`, `|y|^2`, `|z|^2`, and `|w|^2` can be
+        # is `1/4`. So, if `R[i, i]` is within `0.1` of the max, that means `|x_i|^2` is within
+        # `0.05` of the max component, i.e., at least `1/5`. `1 / sqrt(5) = 0.47` is far from zero
+        # and save to divide by. Therefore the tolerance is not too large.
+        #
+        # It's not too small because the error that caused the bug in `argmax_onehot` will be at
+        # most a small multiple of machine epsilon, which is small compared to 0.1
+        use_branch = sf.argmax_onehot(
+            [R[0, 0], R[1, 1], R[2, 2], R[0, 0] + R[1, 1] + R[2, 2]], tolerance=0.1
+        )
         q = from_rotation_matrix_w_not_0(R, use_branch[3])
         for i in range(0, 3):
             q += from_rotation_matrix_qi_not_0(R, i, use_branch[i])

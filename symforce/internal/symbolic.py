@@ -467,16 +467,21 @@ def copysign_no_zero(x: Scalar, y: Scalar) -> Scalar:
     return Abs(x) * sign_no_zero(y)
 
 
-def argmax_onehot(vals: T.Iterable[Scalar]) -> T.List[Scalar]:
+def argmax_onehot(vals: T.Iterable[Scalar], tolerance: Scalar = epsilon()) -> T.List[Scalar]:
     """
     Returns a list ``l`` such that ``l[i] = 1.0`` if ``i`` is the smallest index such that
     ``vals[i]`` equals ``Max(*vals)``. ``l[i] = 0.0`` otherwise.
 
     Precondition:
         vals has at least one element
+
+    Args:
+        tolerance: The selected max will be guaranteed to be within ``tolerance`` of the true max.
+            If this is too small (e.g. if this is 0), the returned vector may be all zeros for some
+            inputs.
     """
     vals = tuple(vals)
-    m = Max(*vals)
+    m = Max(*vals) - tolerance
     results = []
     have_max_already = 0
     for val in vals:
