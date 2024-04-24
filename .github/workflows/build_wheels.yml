@@ -30,52 +30,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        # 13 is x86_64, latest (14+) is arm64
+        os: [macos-13, macos-latest]
         python-version: [cp38, cp39, cp310, cp311, cp312]
-        arch: [x86_64, arm64]
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install cibuildwheel
-      run: python3 -m pip install cibuildwheel==2.16.5
-
     - name: Build wheels
-      run: python3 -m cibuildwheel --output-dir wheelhouse
+      uses: pypa/cibuildwheel@v2.17.0
       env:
         CIBW_BUILD: ${{ matrix.python-version }}-*
-        CIBW_ARCHS_MACOS: ${{ matrix.arch }}
         CIBW_BUILD_FRONTEND: build
-        GMP_ROOT: /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/arm-homebrew/opt/gmp
-        CIBW_BEFORE_BUILD: ./.github/scripts/mac_install_gmp.sh
+        # For arm64; for x86, it's at /usr/local but cmake finds that ok already
+        GMP_ROOT: /opt/homebrew
+        CIBW_BEFORE_BUILD: brew install gmp
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
       with:
-        name: symforce-wheels-macos-${{ matrix.python-version }}-${{ matrix.arch }}
+        name: symforce-wheels-${{ matrix.os }}-${{ matrix.python-version }}
         path: wheelhouse/*.whl
 
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         python-version: [cp38, cp39, cp310, cp311, cp312]
-        arch: [x86_64]
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install cibuildwheel
-      run: python3 -m pip install cibuildwheel==2.16.5
-
     - name: Build wheels
-      run: python3 -m cibuildwheel --output-dir wheelhouse
+      uses: pypa/cibuildwheel@v2.17.0
       env:
-        CIBW_BUILD: ${{ matrix.python-version }}-manylinux_${{ matrix.arch }}
+        CIBW_BUILD: ${{ matrix.python-version }}-manylinux_x86_64
         CIBW_BUILD_FRONTEND: build
         CIBW_BEFORE_BUILD: yum install -y gmp-devel git
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
@@ -83,7 +77,7 @@ jobs:
     - name: Upload Wheels
       uses: actions/upload-artifact@v4
       with:
-        name: symforce-wheels-linux-${{ matrix.python-version }}
+        name: symforce-wheels-${{ matrix.os }}-${{ matrix.python-version }}
         path: wheelhouse/*.whl
 
   merge-wheel-artifacts:
