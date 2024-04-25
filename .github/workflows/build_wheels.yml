@@ -26,12 +26,15 @@ jobs:
         path: dist/*
 
   build-macos:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.runner }}
     strategy:
       fail-fast: false
       matrix:
-        # 13 is x86_64, latest (14+) is arm64
-        os: [macos-13, macos-latest]
+        os:
+          - runner: macos-13
+            arch: x86_64
+          - runner: macos-latest
+            arch: arm64
         python-version: [cp38, cp39, cp310, cp311, cp312]
 
     steps:
@@ -42,6 +45,7 @@ jobs:
       uses: pypa/cibuildwheel@v2.17.0
       env:
         CIBW_BUILD: ${{ matrix.python-version }}-*
+        CIBW_ARCHS_MACOS: ${{ matrix.os.arch }}
         CIBW_BUILD_FRONTEND: build
         # For arm64; for x86, it's at /usr/local but cmake finds that ok already
         GMP_ROOT: /opt/homebrew
@@ -51,7 +55,7 @@ jobs:
     - name: Upload wheels
       uses: actions/upload-artifact@v4
       with:
-        name: symforce-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+        name: symforce-wheels-${{ matrix.os.arch }}-${{ matrix.python-version }}
         path: wheelhouse/*.whl
 
   build-linux:
