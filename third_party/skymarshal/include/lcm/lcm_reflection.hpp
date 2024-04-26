@@ -351,7 +351,7 @@ __attribute__((nodiscard)) uint16_t store_field(const char *fields[], uint16_t n
         }
         // Vector needs to be resized
         item.resize(index);
-        item.emplace_back(std::move(new_item));
+        item.push_back(std::move(new_item));
         return 0;
     }
     uint16_t ret = store_field(fields + 1, num_fields - 1, item[index], value);
