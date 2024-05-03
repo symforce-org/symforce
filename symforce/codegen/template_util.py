@@ -33,6 +33,7 @@ class FileType(enum.Enum):
     LCM = enum.auto()
     MAKEFILE = enum.auto()
     TYPESCRIPT = enum.auto()
+    TOML = enum.auto()
 
     @staticmethod
     def from_extension(extension: str) -> FileType:
@@ -50,6 +51,8 @@ class FileType(enum.Enum):
             return FileType.MAKEFILE
         elif extension == "ts":
             return FileType.TYPESCRIPT
+        elif extension == "toml":
+            return FileType.TOML
         else:
             raise ValueError(f"Could not get FileType from extension {extension}")
 
@@ -68,7 +71,7 @@ class FileType(enum.Enum):
         """
         if self in (FileType.CPP, FileType.CUDA, FileType.LCM):
             return "//"
-        elif self in (FileType.PYTHON, FileType.PYTHON_INTERFACE):
+        elif self in (FileType.PYTHON, FileType.PYTHON_INTERFACE, FileType.TOML):
             return "#"
         else:
             raise NotImplementedError(f"Unknown comment prefix for {self}")

@@ -1,0 +1,22 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ package_name }}"
+description = "{{ description }} (installed by SymForce)"
+authors = [{ name = "Skydio, Inc.", email = "hayk@skydio.com" }]
+license = { text = "Apache 2.0" }
+version = "{{ version }}"
+dependencies = ["numpy"]
+requires-python = ">=2.7"
+
+[project.urls]
+SymForce = "https://symforce.org"
+"Bug Tracker" = "https://github.com/symforce-org/symforce/issues"
+Source = "https://github.com/symforce-org/symforce/tree/main/gen/python"

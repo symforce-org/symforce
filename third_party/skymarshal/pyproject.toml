@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skymarshal"
+description = "Python implementation of marshalling for LCM messages"
+version = "0.9.0"
+authors = [{ name = "Skydio, Inc." }]
+license = { text = "LGPL-2.1-or-later" }
+readme = "README.md"
+classifiers = [
+  "Intended Audience :: Developers",
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = ["argh", "jinja2", "numpy", "ply"]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/symforce-org/symforce/issues"
+Source = "https://github.com/symforce-org/symforce/tree/main/third_party/skymarshal"
+
+[tool.setuptools.packages.find]
+include = ["skymarshal", "skymarshal.*"]

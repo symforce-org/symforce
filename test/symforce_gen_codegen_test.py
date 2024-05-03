@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 
 import asyncio
+import dataclasses
 import math
 import sys
 from pathlib import Path
@@ -93,16 +94,17 @@ class SymforceGenCodegenTest(TestCase):
         cam_package_codegen.generate(config=config, output_dir=output_dir)
         template_util.render_template(
             template_dir=config.template_dir(),
-            template_path="setup.py.jinja",
-            output_path=output_dir / "setup.py",
+            template_path="pyproject.toml.jinja",
+            output_path=output_dir / "pyproject.toml",
             data=dict(
                 package_name="symforce-sym",
                 version=symforce.__version__,
                 description="generated numerical python package",
-                long_description="generated numerical python package",
             ),
-            config=config.render_template_config,
+            config=dataclasses.replace(config.render_template_config, autoformat=False),
         )
+
+        (output_dir / "sym" / "py.typed").touch()
 
         # Test against checked-in geo package (only on SymEngine)
         if symforce.get_symbolic_api() == "symengine":
@@ -110,7 +112,8 @@ class SymforceGenCodegenTest(TestCase):
                 actual_dir=output_dir / "sym", expected_dir=SYMFORCE_DIR / "gen" / "python" / "sym"
             )
             self.compare_or_update_file(
-                new_file=output_dir / "setup.py", path=SYMFORCE_DIR / "gen" / "python" / "setup.py"
+                new_file=output_dir / "pyproject.toml",
+                path=SYMFORCE_DIR / "gen" / "python" / "pyproject.toml",
             )
 
         # Compare against the checked-in tests
