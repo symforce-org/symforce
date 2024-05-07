@@ -24,11 +24,11 @@ class LieGroupOps(object):
         # Total ops: 0
 
         # Input arrays
-        if vec.shape == (9,):
-            vec = vec.reshape((9, 1))
-        elif vec.shape != (9, 1):
+        if vec.shape == (11,):
+            vec = vec.reshape((11, 1))
+        elif vec.shape != (11, 1):
             raise IndexError(
-                "vec is expected to have shape (9, 1) or (9,); instead had shape {}".format(
+                "vec is expected to have shape (11, 1) or (11,); instead had shape {}".format(
                     vec.shape
                 )
             )
@@ -36,7 +36,7 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = vec[0, 0]
         _res[1] = vec[1, 0]
         _res[2] = vec[2, 0]
@@ -46,6 +46,8 @@ class LieGroupOps(object):
         _res[6] = vec[6, 0]
         _res[7] = vec[7, 0]
         _res[8] = vec[8, 0]
+        _res[9] = vec[9, 0]
+        _res[10] = vec[10, 0]
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
@@ -60,7 +62,7 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros(9)
+        _res = numpy.zeros(11)
         _res[0] = _a[0]
         _res[1] = _a[1]
         _res[2] = _a[2]
@@ -70,21 +72,23 @@ class LieGroupOps(object):
         _res[6] = _a[6]
         _res[7] = _a[7]
         _res[8] = _a[8]
+        _res[9] = _a[9]
+        _res[10] = _a[10]
         return _res
 
     @staticmethod
     def retract(a, vec, epsilon):
         # type: (sym.SphericalCameraCal, numpy.ndarray, float) -> sym.SphericalCameraCal
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
-        if vec.shape == (9,):
-            vec = vec.reshape((9, 1))
-        elif vec.shape != (9, 1):
+        if vec.shape == (11,):
+            vec = vec.reshape((11, 1))
+        elif vec.shape != (11, 1):
             raise IndexError(
-                "vec is expected to have shape (9, 1) or (9,); instead had shape {}".format(
+                "vec is expected to have shape (11, 1) or (11,); instead had shape {}".format(
                     vec.shape
                 )
             )
@@ -92,7 +96,7 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = _a[0] + vec[0, 0]
         _res[1] = _a[1] + vec[1, 0]
         _res[2] = _a[2] + vec[2, 0]
@@ -102,13 +106,15 @@ class LieGroupOps(object):
         _res[6] = _a[6] + vec[6, 0]
         _res[7] = _a[7] + vec[7, 0]
         _res[8] = _a[8] + vec[8, 0]
+        _res[9] = _a[9] + vec[9, 0]
+        _res[10] = _a[10] + vec[10, 0]
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
     def local_coordinates(a, b, epsilon):
         # type: (sym.SphericalCameraCal, sym.SphericalCameraCal, float) -> numpy.ndarray
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -117,7 +123,7 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = numpy.zeros(9)
+        _res = numpy.zeros(11)
         _res[0] = -_a[0] + _b[0]
         _res[1] = -_a[1] + _b[1]
         _res[2] = -_a[2] + _b[2]
@@ -127,13 +133,15 @@ class LieGroupOps(object):
         _res[6] = -_a[6] + _b[6]
         _res[7] = -_a[7] + _b[7]
         _res[8] = -_a[8] + _b[8]
+        _res[9] = -_a[9] + _b[9]
+        _res[10] = -_a[10] + _b[10]
         return _res
 
     @staticmethod
     def interpolate(a, b, alpha, epsilon):
         # type: (sym.SphericalCameraCal, sym.SphericalCameraCal, float, float) -> sym.SphericalCameraCal
 
-        # Total ops: 27
+        # Total ops: 33
 
         # Input arrays
         _a = a.data
@@ -142,7 +150,7 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = _a[0] + alpha * (-_a[0] + _b[0])
         _res[1] = _a[1] + alpha * (-_a[1] + _b[1])
         _res[2] = _a[2] + alpha * (-_a[2] + _b[2])
@@ -152,4 +160,6 @@ class LieGroupOps(object):
         _res[6] = _a[6] + alpha * (-_a[6] + _b[6])
         _res[7] = _a[7] + alpha * (-_a[7] + _b[7])
         _res[8] = _a[8] + alpha * (-_a[8] + _b[8])
+        _res[9] = _a[9] + alpha * (-_a[9] + _b[9])
+        _res[10] = _a[10] + alpha * (-_a[10] + _b[10])
         return sym.SphericalCameraCal.from_storage(_res)

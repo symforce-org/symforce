@@ -28,7 +28,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = 0
         _res[1] = 0
         _res[2] = 0
@@ -38,13 +38,15 @@ class GroupOps(object):
         _res[6] = 0
         _res[7] = 0
         _res[8] = 0
+        _res[9] = 0
+        _res[10] = 0
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
     def inverse(a):
         # type: (sym.SphericalCameraCal) -> sym.SphericalCameraCal
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -52,7 +54,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = -_a[0]
         _res[1] = -_a[1]
         _res[2] = -_a[2]
@@ -62,13 +64,15 @@ class GroupOps(object):
         _res[6] = -_a[6]
         _res[7] = -_a[7]
         _res[8] = -_a[8]
+        _res[9] = -_a[9]
+        _res[10] = -_a[10]
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
     def compose(a, b):
         # type: (sym.SphericalCameraCal, sym.SphericalCameraCal) -> sym.SphericalCameraCal
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -77,7 +81,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = _a[0] + _b[0]
         _res[1] = _a[1] + _b[1]
         _res[2] = _a[2] + _b[2]
@@ -87,13 +91,15 @@ class GroupOps(object):
         _res[6] = _a[6] + _b[6]
         _res[7] = _a[7] + _b[7]
         _res[8] = _a[8] + _b[8]
+        _res[9] = _a[9] + _b[9]
+        _res[10] = _a[10] + _b[10]
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
     def between(a, b):
         # type: (sym.SphericalCameraCal, sym.SphericalCameraCal) -> sym.SphericalCameraCal
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -102,7 +108,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = -_a[0] + _b[0]
         _res[1] = -_a[1] + _b[1]
         _res[2] = -_a[2] + _b[2]
@@ -112,13 +118,15 @@ class GroupOps(object):
         _res[6] = -_a[6] + _b[6]
         _res[7] = -_a[7] + _b[7]
         _res[8] = -_a[8] + _b[8]
+        _res[9] = -_a[9] + _b[9]
+        _res[10] = -_a[10] + _b[10]
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
     def inverse_with_jacobian(a):
         # type: (sym.SphericalCameraCal) -> T.Tuple[sym.SphericalCameraCal, numpy.ndarray]
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -126,7 +134,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = -_a[0]
         _res[1] = -_a[1]
         _res[2] = -_a[2]
@@ -136,7 +144,9 @@ class GroupOps(object):
         _res[6] = -_a[6]
         _res[7] = -_a[7]
         _res[8] = -_a[8]
-        _res_D_a = numpy.zeros((9, 9))
+        _res[9] = -_a[9]
+        _res[10] = -_a[10]
+        _res_D_a = numpy.zeros((11, 11))
         _res_D_a[0, 0] = -1
         _res_D_a[1, 0] = 0
         _res_D_a[2, 0] = 0
@@ -146,6 +156,8 @@ class GroupOps(object):
         _res_D_a[6, 0] = 0
         _res_D_a[7, 0] = 0
         _res_D_a[8, 0] = 0
+        _res_D_a[9, 0] = 0
+        _res_D_a[10, 0] = 0
         _res_D_a[0, 1] = 0
         _res_D_a[1, 1] = -1
         _res_D_a[2, 1] = 0
@@ -155,6 +167,8 @@ class GroupOps(object):
         _res_D_a[6, 1] = 0
         _res_D_a[7, 1] = 0
         _res_D_a[8, 1] = 0
+        _res_D_a[9, 1] = 0
+        _res_D_a[10, 1] = 0
         _res_D_a[0, 2] = 0
         _res_D_a[1, 2] = 0
         _res_D_a[2, 2] = -1
@@ -164,6 +178,8 @@ class GroupOps(object):
         _res_D_a[6, 2] = 0
         _res_D_a[7, 2] = 0
         _res_D_a[8, 2] = 0
+        _res_D_a[9, 2] = 0
+        _res_D_a[10, 2] = 0
         _res_D_a[0, 3] = 0
         _res_D_a[1, 3] = 0
         _res_D_a[2, 3] = 0
@@ -173,6 +189,8 @@ class GroupOps(object):
         _res_D_a[6, 3] = 0
         _res_D_a[7, 3] = 0
         _res_D_a[8, 3] = 0
+        _res_D_a[9, 3] = 0
+        _res_D_a[10, 3] = 0
         _res_D_a[0, 4] = 0
         _res_D_a[1, 4] = 0
         _res_D_a[2, 4] = 0
@@ -182,6 +200,8 @@ class GroupOps(object):
         _res_D_a[6, 4] = 0
         _res_D_a[7, 4] = 0
         _res_D_a[8, 4] = 0
+        _res_D_a[9, 4] = 0
+        _res_D_a[10, 4] = 0
         _res_D_a[0, 5] = 0
         _res_D_a[1, 5] = 0
         _res_D_a[2, 5] = 0
@@ -191,6 +211,8 @@ class GroupOps(object):
         _res_D_a[6, 5] = 0
         _res_D_a[7, 5] = 0
         _res_D_a[8, 5] = 0
+        _res_D_a[9, 5] = 0
+        _res_D_a[10, 5] = 0
         _res_D_a[0, 6] = 0
         _res_D_a[1, 6] = 0
         _res_D_a[2, 6] = 0
@@ -200,6 +222,8 @@ class GroupOps(object):
         _res_D_a[6, 6] = -1
         _res_D_a[7, 6] = 0
         _res_D_a[8, 6] = 0
+        _res_D_a[9, 6] = 0
+        _res_D_a[10, 6] = 0
         _res_D_a[0, 7] = 0
         _res_D_a[1, 7] = 0
         _res_D_a[2, 7] = 0
@@ -209,6 +233,8 @@ class GroupOps(object):
         _res_D_a[6, 7] = 0
         _res_D_a[7, 7] = -1
         _res_D_a[8, 7] = 0
+        _res_D_a[9, 7] = 0
+        _res_D_a[10, 7] = 0
         _res_D_a[0, 8] = 0
         _res_D_a[1, 8] = 0
         _res_D_a[2, 8] = 0
@@ -218,13 +244,37 @@ class GroupOps(object):
         _res_D_a[6, 8] = 0
         _res_D_a[7, 8] = 0
         _res_D_a[8, 8] = -1
+        _res_D_a[9, 8] = 0
+        _res_D_a[10, 8] = 0
+        _res_D_a[0, 9] = 0
+        _res_D_a[1, 9] = 0
+        _res_D_a[2, 9] = 0
+        _res_D_a[3, 9] = 0
+        _res_D_a[4, 9] = 0
+        _res_D_a[5, 9] = 0
+        _res_D_a[6, 9] = 0
+        _res_D_a[7, 9] = 0
+        _res_D_a[8, 9] = 0
+        _res_D_a[9, 9] = -1
+        _res_D_a[10, 9] = 0
+        _res_D_a[0, 10] = 0
+        _res_D_a[1, 10] = 0
+        _res_D_a[2, 10] = 0
+        _res_D_a[3, 10] = 0
+        _res_D_a[4, 10] = 0
+        _res_D_a[5, 10] = 0
+        _res_D_a[6, 10] = 0
+        _res_D_a[7, 10] = 0
+        _res_D_a[8, 10] = 0
+        _res_D_a[9, 10] = 0
+        _res_D_a[10, 10] = -1
         return sym.SphericalCameraCal.from_storage(_res), _res_D_a
 
     @staticmethod
     def compose_with_jacobians(a, b):
         # type: (sym.SphericalCameraCal, sym.SphericalCameraCal) -> T.Tuple[sym.SphericalCameraCal, numpy.ndarray, numpy.ndarray]
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -233,7 +283,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = _a[0] + _b[0]
         _res[1] = _a[1] + _b[1]
         _res[2] = _a[2] + _b[2]
@@ -243,7 +293,9 @@ class GroupOps(object):
         _res[6] = _a[6] + _b[6]
         _res[7] = _a[7] + _b[7]
         _res[8] = _a[8] + _b[8]
-        _res_D_a = numpy.zeros((9, 9))
+        _res[9] = _a[9] + _b[9]
+        _res[10] = _a[10] + _b[10]
+        _res_D_a = numpy.zeros((11, 11))
         _res_D_a[0, 0] = 1
         _res_D_a[1, 0] = 0
         _res_D_a[2, 0] = 0
@@ -253,6 +305,8 @@ class GroupOps(object):
         _res_D_a[6, 0] = 0
         _res_D_a[7, 0] = 0
         _res_D_a[8, 0] = 0
+        _res_D_a[9, 0] = 0
+        _res_D_a[10, 0] = 0
         _res_D_a[0, 1] = 0
         _res_D_a[1, 1] = 1
         _res_D_a[2, 1] = 0
@@ -262,6 +316,8 @@ class GroupOps(object):
         _res_D_a[6, 1] = 0
         _res_D_a[7, 1] = 0
         _res_D_a[8, 1] = 0
+        _res_D_a[9, 1] = 0
+        _res_D_a[10, 1] = 0
         _res_D_a[0, 2] = 0
         _res_D_a[1, 2] = 0
         _res_D_a[2, 2] = 1
@@ -271,6 +327,8 @@ class GroupOps(object):
         _res_D_a[6, 2] = 0
         _res_D_a[7, 2] = 0
         _res_D_a[8, 2] = 0
+        _res_D_a[9, 2] = 0
+        _res_D_a[10, 2] = 0
         _res_D_a[0, 3] = 0
         _res_D_a[1, 3] = 0
         _res_D_a[2, 3] = 0
@@ -280,6 +338,8 @@ class GroupOps(object):
         _res_D_a[6, 3] = 0
         _res_D_a[7, 3] = 0
         _res_D_a[8, 3] = 0
+        _res_D_a[9, 3] = 0
+        _res_D_a[10, 3] = 0
         _res_D_a[0, 4] = 0
         _res_D_a[1, 4] = 0
         _res_D_a[2, 4] = 0
@@ -289,6 +349,8 @@ class GroupOps(object):
         _res_D_a[6, 4] = 0
         _res_D_a[7, 4] = 0
         _res_D_a[8, 4] = 0
+        _res_D_a[9, 4] = 0
+        _res_D_a[10, 4] = 0
         _res_D_a[0, 5] = 0
         _res_D_a[1, 5] = 0
         _res_D_a[2, 5] = 0
@@ -298,6 +360,8 @@ class GroupOps(object):
         _res_D_a[6, 5] = 0
         _res_D_a[7, 5] = 0
         _res_D_a[8, 5] = 0
+        _res_D_a[9, 5] = 0
+        _res_D_a[10, 5] = 0
         _res_D_a[0, 6] = 0
         _res_D_a[1, 6] = 0
         _res_D_a[2, 6] = 0
@@ -307,6 +371,8 @@ class GroupOps(object):
         _res_D_a[6, 6] = 1
         _res_D_a[7, 6] = 0
         _res_D_a[8, 6] = 0
+        _res_D_a[9, 6] = 0
+        _res_D_a[10, 6] = 0
         _res_D_a[0, 7] = 0
         _res_D_a[1, 7] = 0
         _res_D_a[2, 7] = 0
@@ -316,6 +382,8 @@ class GroupOps(object):
         _res_D_a[6, 7] = 0
         _res_D_a[7, 7] = 1
         _res_D_a[8, 7] = 0
+        _res_D_a[9, 7] = 0
+        _res_D_a[10, 7] = 0
         _res_D_a[0, 8] = 0
         _res_D_a[1, 8] = 0
         _res_D_a[2, 8] = 0
@@ -325,7 +393,31 @@ class GroupOps(object):
         _res_D_a[6, 8] = 0
         _res_D_a[7, 8] = 0
         _res_D_a[8, 8] = 1
-        _res_D_b = numpy.zeros((9, 9))
+        _res_D_a[9, 8] = 0
+        _res_D_a[10, 8] = 0
+        _res_D_a[0, 9] = 0
+        _res_D_a[1, 9] = 0
+        _res_D_a[2, 9] = 0
+        _res_D_a[3, 9] = 0
+        _res_D_a[4, 9] = 0
+        _res_D_a[5, 9] = 0
+        _res_D_a[6, 9] = 0
+        _res_D_a[7, 9] = 0
+        _res_D_a[8, 9] = 0
+        _res_D_a[9, 9] = 1
+        _res_D_a[10, 9] = 0
+        _res_D_a[0, 10] = 0
+        _res_D_a[1, 10] = 0
+        _res_D_a[2, 10] = 0
+        _res_D_a[3, 10] = 0
+        _res_D_a[4, 10] = 0
+        _res_D_a[5, 10] = 0
+        _res_D_a[6, 10] = 0
+        _res_D_a[7, 10] = 0
+        _res_D_a[8, 10] = 0
+        _res_D_a[9, 10] = 0
+        _res_D_a[10, 10] = 1
+        _res_D_b = numpy.zeros((11, 11))
         _res_D_b[0, 0] = 1
         _res_D_b[1, 0] = 0
         _res_D_b[2, 0] = 0
@@ -335,6 +427,8 @@ class GroupOps(object):
         _res_D_b[6, 0] = 0
         _res_D_b[7, 0] = 0
         _res_D_b[8, 0] = 0
+        _res_D_b[9, 0] = 0
+        _res_D_b[10, 0] = 0
         _res_D_b[0, 1] = 0
         _res_D_b[1, 1] = 1
         _res_D_b[2, 1] = 0
@@ -344,6 +438,8 @@ class GroupOps(object):
         _res_D_b[6, 1] = 0
         _res_D_b[7, 1] = 0
         _res_D_b[8, 1] = 0
+        _res_D_b[9, 1] = 0
+        _res_D_b[10, 1] = 0
         _res_D_b[0, 2] = 0
         _res_D_b[1, 2] = 0
         _res_D_b[2, 2] = 1
@@ -353,6 +449,8 @@ class GroupOps(object):
         _res_D_b[6, 2] = 0
         _res_D_b[7, 2] = 0
         _res_D_b[8, 2] = 0
+        _res_D_b[9, 2] = 0
+        _res_D_b[10, 2] = 0
         _res_D_b[0, 3] = 0
         _res_D_b[1, 3] = 0
         _res_D_b[2, 3] = 0
@@ -362,6 +460,8 @@ class GroupOps(object):
         _res_D_b[6, 3] = 0
         _res_D_b[7, 3] = 0
         _res_D_b[8, 3] = 0
+        _res_D_b[9, 3] = 0
+        _res_D_b[10, 3] = 0
         _res_D_b[0, 4] = 0
         _res_D_b[1, 4] = 0
         _res_D_b[2, 4] = 0
@@ -371,6 +471,8 @@ class GroupOps(object):
         _res_D_b[6, 4] = 0
         _res_D_b[7, 4] = 0
         _res_D_b[8, 4] = 0
+        _res_D_b[9, 4] = 0
+        _res_D_b[10, 4] = 0
         _res_D_b[0, 5] = 0
         _res_D_b[1, 5] = 0
         _res_D_b[2, 5] = 0
@@ -380,6 +482,8 @@ class GroupOps(object):
         _res_D_b[6, 5] = 0
         _res_D_b[7, 5] = 0
         _res_D_b[8, 5] = 0
+        _res_D_b[9, 5] = 0
+        _res_D_b[10, 5] = 0
         _res_D_b[0, 6] = 0
         _res_D_b[1, 6] = 0
         _res_D_b[2, 6] = 0
@@ -389,6 +493,8 @@ class GroupOps(object):
         _res_D_b[6, 6] = 1
         _res_D_b[7, 6] = 0
         _res_D_b[8, 6] = 0
+        _res_D_b[9, 6] = 0
+        _res_D_b[10, 6] = 0
         _res_D_b[0, 7] = 0
         _res_D_b[1, 7] = 0
         _res_D_b[2, 7] = 0
@@ -398,6 +504,8 @@ class GroupOps(object):
         _res_D_b[6, 7] = 0
         _res_D_b[7, 7] = 1
         _res_D_b[8, 7] = 0
+        _res_D_b[9, 7] = 0
+        _res_D_b[10, 7] = 0
         _res_D_b[0, 8] = 0
         _res_D_b[1, 8] = 0
         _res_D_b[2, 8] = 0
@@ -407,13 +515,37 @@ class GroupOps(object):
         _res_D_b[6, 8] = 0
         _res_D_b[7, 8] = 0
         _res_D_b[8, 8] = 1
+        _res_D_b[9, 8] = 0
+        _res_D_b[10, 8] = 0
+        _res_D_b[0, 9] = 0
+        _res_D_b[1, 9] = 0
+        _res_D_b[2, 9] = 0
+        _res_D_b[3, 9] = 0
+        _res_D_b[4, 9] = 0
+        _res_D_b[5, 9] = 0
+        _res_D_b[6, 9] = 0
+        _res_D_b[7, 9] = 0
+        _res_D_b[8, 9] = 0
+        _res_D_b[9, 9] = 1
+        _res_D_b[10, 9] = 0
+        _res_D_b[0, 10] = 0
+        _res_D_b[1, 10] = 0
+        _res_D_b[2, 10] = 0
+        _res_D_b[3, 10] = 0
+        _res_D_b[4, 10] = 0
+        _res_D_b[5, 10] = 0
+        _res_D_b[6, 10] = 0
+        _res_D_b[7, 10] = 0
+        _res_D_b[8, 10] = 0
+        _res_D_b[9, 10] = 0
+        _res_D_b[10, 10] = 1
         return sym.SphericalCameraCal.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(a, b):
         # type: (sym.SphericalCameraCal, sym.SphericalCameraCal) -> T.Tuple[sym.SphericalCameraCal, numpy.ndarray, numpy.ndarray]
 
-        # Total ops: 9
+        # Total ops: 11
 
         # Input arrays
         _a = a.data
@@ -422,7 +554,7 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 9
+        _res = [0.0] * 11
         _res[0] = -_a[0] + _b[0]
         _res[1] = -_a[1] + _b[1]
         _res[2] = -_a[2] + _b[2]
@@ -432,7 +564,9 @@ class GroupOps(object):
         _res[6] = -_a[6] + _b[6]
         _res[7] = -_a[7] + _b[7]
         _res[8] = -_a[8] + _b[8]
-        _res_D_a = numpy.zeros((9, 9))
+        _res[9] = -_a[9] + _b[9]
+        _res[10] = -_a[10] + _b[10]
+        _res_D_a = numpy.zeros((11, 11))
         _res_D_a[0, 0] = -1
         _res_D_a[1, 0] = 0
         _res_D_a[2, 0] = 0
@@ -442,6 +576,8 @@ class GroupOps(object):
         _res_D_a[6, 0] = 0
         _res_D_a[7, 0] = 0
         _res_D_a[8, 0] = 0
+        _res_D_a[9, 0] = 0
+        _res_D_a[10, 0] = 0
         _res_D_a[0, 1] = 0
         _res_D_a[1, 1] = -1
         _res_D_a[2, 1] = 0
@@ -451,6 +587,8 @@ class GroupOps(object):
         _res_D_a[6, 1] = 0
         _res_D_a[7, 1] = 0
         _res_D_a[8, 1] = 0
+        _res_D_a[9, 1] = 0
+        _res_D_a[10, 1] = 0
         _res_D_a[0, 2] = 0
         _res_D_a[1, 2] = 0
         _res_D_a[2, 2] = -1
@@ -460,6 +598,8 @@ class GroupOps(object):
         _res_D_a[6, 2] = 0
         _res_D_a[7, 2] = 0
         _res_D_a[8, 2] = 0
+        _res_D_a[9, 2] = 0
+        _res_D_a[10, 2] = 0
         _res_D_a[0, 3] = 0
         _res_D_a[1, 3] = 0
         _res_D_a[2, 3] = 0
@@ -469,6 +609,8 @@ class GroupOps(object):
         _res_D_a[6, 3] = 0
         _res_D_a[7, 3] = 0
         _res_D_a[8, 3] = 0
+        _res_D_a[9, 3] = 0
+        _res_D_a[10, 3] = 0
         _res_D_a[0, 4] = 0
         _res_D_a[1, 4] = 0
         _res_D_a[2, 4] = 0
@@ -478,6 +620,8 @@ class GroupOps(object):
         _res_D_a[6, 4] = 0
         _res_D_a[7, 4] = 0
         _res_D_a[8, 4] = 0
+        _res_D_a[9, 4] = 0
+        _res_D_a[10, 4] = 0
         _res_D_a[0, 5] = 0
         _res_D_a[1, 5] = 0
         _res_D_a[2, 5] = 0
@@ -487,6 +631,8 @@ class GroupOps(object):
         _res_D_a[6, 5] = 0
         _res_D_a[7, 5] = 0
         _res_D_a[8, 5] = 0
+        _res_D_a[9, 5] = 0
+        _res_D_a[10, 5] = 0
         _res_D_a[0, 6] = 0
         _res_D_a[1, 6] = 0
         _res_D_a[2, 6] = 0
@@ -496,6 +642,8 @@ class GroupOps(object):
         _res_D_a[6, 6] = -1
         _res_D_a[7, 6] = 0
         _res_D_a[8, 6] = 0
+        _res_D_a[9, 6] = 0
+        _res_D_a[10, 6] = 0
         _res_D_a[0, 7] = 0
         _res_D_a[1, 7] = 0
         _res_D_a[2, 7] = 0
@@ -505,6 +653,8 @@ class GroupOps(object):
         _res_D_a[6, 7] = 0
         _res_D_a[7, 7] = -1
         _res_D_a[8, 7] = 0
+        _res_D_a[9, 7] = 0
+        _res_D_a[10, 7] = 0
         _res_D_a[0, 8] = 0
         _res_D_a[1, 8] = 0
         _res_D_a[2, 8] = 0
@@ -514,7 +664,31 @@ class GroupOps(object):
         _res_D_a[6, 8] = 0
         _res_D_a[7, 8] = 0
         _res_D_a[8, 8] = -1
-        _res_D_b = numpy.zeros((9, 9))
+        _res_D_a[9, 8] = 0
+        _res_D_a[10, 8] = 0
+        _res_D_a[0, 9] = 0
+        _res_D_a[1, 9] = 0
+        _res_D_a[2, 9] = 0
+        _res_D_a[3, 9] = 0
+        _res_D_a[4, 9] = 0
+        _res_D_a[5, 9] = 0
+        _res_D_a[6, 9] = 0
+        _res_D_a[7, 9] = 0
+        _res_D_a[8, 9] = 0
+        _res_D_a[9, 9] = -1
+        _res_D_a[10, 9] = 0
+        _res_D_a[0, 10] = 0
+        _res_D_a[1, 10] = 0
+        _res_D_a[2, 10] = 0
+        _res_D_a[3, 10] = 0
+        _res_D_a[4, 10] = 0
+        _res_D_a[5, 10] = 0
+        _res_D_a[6, 10] = 0
+        _res_D_a[7, 10] = 0
+        _res_D_a[8, 10] = 0
+        _res_D_a[9, 10] = 0
+        _res_D_a[10, 10] = -1
+        _res_D_b = numpy.zeros((11, 11))
         _res_D_b[0, 0] = 1
         _res_D_b[1, 0] = 0
         _res_D_b[2, 0] = 0
@@ -524,6 +698,8 @@ class GroupOps(object):
         _res_D_b[6, 0] = 0
         _res_D_b[7, 0] = 0
         _res_D_b[8, 0] = 0
+        _res_D_b[9, 0] = 0
+        _res_D_b[10, 0] = 0
         _res_D_b[0, 1] = 0
         _res_D_b[1, 1] = 1
         _res_D_b[2, 1] = 0
@@ -533,6 +709,8 @@ class GroupOps(object):
         _res_D_b[6, 1] = 0
         _res_D_b[7, 1] = 0
         _res_D_b[8, 1] = 0
+        _res_D_b[9, 1] = 0
+        _res_D_b[10, 1] = 0
         _res_D_b[0, 2] = 0
         _res_D_b[1, 2] = 0
         _res_D_b[2, 2] = 1
@@ -542,6 +720,8 @@ class GroupOps(object):
         _res_D_b[6, 2] = 0
         _res_D_b[7, 2] = 0
         _res_D_b[8, 2] = 0
+        _res_D_b[9, 2] = 0
+        _res_D_b[10, 2] = 0
         _res_D_b[0, 3] = 0
         _res_D_b[1, 3] = 0
         _res_D_b[2, 3] = 0
@@ -551,6 +731,8 @@ class GroupOps(object):
         _res_D_b[6, 3] = 0
         _res_D_b[7, 3] = 0
         _res_D_b[8, 3] = 0
+        _res_D_b[9, 3] = 0
+        _res_D_b[10, 3] = 0
         _res_D_b[0, 4] = 0
         _res_D_b[1, 4] = 0
         _res_D_b[2, 4] = 0
@@ -560,6 +742,8 @@ class GroupOps(object):
         _res_D_b[6, 4] = 0
         _res_D_b[7, 4] = 0
         _res_D_b[8, 4] = 0
+        _res_D_b[9, 4] = 0
+        _res_D_b[10, 4] = 0
         _res_D_b[0, 5] = 0
         _res_D_b[1, 5] = 0
         _res_D_b[2, 5] = 0
@@ -569,6 +753,8 @@ class GroupOps(object):
         _res_D_b[6, 5] = 0
         _res_D_b[7, 5] = 0
         _res_D_b[8, 5] = 0
+        _res_D_b[9, 5] = 0
+        _res_D_b[10, 5] = 0
         _res_D_b[0, 6] = 0
         _res_D_b[1, 6] = 0
         _res_D_b[2, 6] = 0
@@ -578,6 +764,8 @@ class GroupOps(object):
         _res_D_b[6, 6] = 1
         _res_D_b[7, 6] = 0
         _res_D_b[8, 6] = 0
+        _res_D_b[9, 6] = 0
+        _res_D_b[10, 6] = 0
         _res_D_b[0, 7] = 0
         _res_D_b[1, 7] = 0
         _res_D_b[2, 7] = 0
@@ -587,6 +775,8 @@ class GroupOps(object):
         _res_D_b[6, 7] = 0
         _res_D_b[7, 7] = 1
         _res_D_b[8, 7] = 0
+        _res_D_b[9, 7] = 0
+        _res_D_b[10, 7] = 0
         _res_D_b[0, 8] = 0
         _res_D_b[1, 8] = 0
         _res_D_b[2, 8] = 0
@@ -596,4 +786,28 @@ class GroupOps(object):
         _res_D_b[6, 8] = 0
         _res_D_b[7, 8] = 0
         _res_D_b[8, 8] = 1
+        _res_D_b[9, 8] = 0
+        _res_D_b[10, 8] = 0
+        _res_D_b[0, 9] = 0
+        _res_D_b[1, 9] = 0
+        _res_D_b[2, 9] = 0
+        _res_D_b[3, 9] = 0
+        _res_D_b[4, 9] = 0
+        _res_D_b[5, 9] = 0
+        _res_D_b[6, 9] = 0
+        _res_D_b[7, 9] = 0
+        _res_D_b[8, 9] = 0
+        _res_D_b[9, 9] = 1
+        _res_D_b[10, 9] = 0
+        _res_D_b[0, 10] = 0
+        _res_D_b[1, 10] = 0
+        _res_D_b[2, 10] = 0
+        _res_D_b[3, 10] = 0
+        _res_D_b[4, 10] = 0
+        _res_D_b[5, 10] = 0
+        _res_D_b[6, 10] = 0
+        _res_D_b[7, 10] = 0
+        _res_D_b[8, 10] = 0
+        _res_D_b[9, 10] = 0
+        _res_D_b[10, 10] = 1
         return sym.SphericalCameraCal.from_storage(_res), _res_D_a, _res_D_b

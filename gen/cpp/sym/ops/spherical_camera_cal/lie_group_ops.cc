@@ -25,7 +25,7 @@ sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::FromTan
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = vec(0, 0);
   _res[1] = vec(1, 0);
@@ -36,6 +36,8 @@ sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::FromTan
   _res[6] = vec(6, 0);
   _res[7] = vec(7, 0);
   _res[8] = vec(8, 0);
+  _res[9] = vec(9, 0);
+  _res[10] = vec(10, 0);
 
   return sym::SphericalCameraCal<Scalar>(_res);
 }
@@ -50,12 +52,12 @@ LieGroupOps<SphericalCameraCal<Scalar>>::ToTangent(const sym::SphericalCameraCal
   (void)epsilon;
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res(0, 0) = _a[0];
   _res(1, 0) = _a[1];
@@ -66,6 +68,8 @@ LieGroupOps<SphericalCameraCal<Scalar>>::ToTangent(const sym::SphericalCameraCal
   _res(6, 0) = _a[6];
   _res(7, 0) = _a[7];
   _res(8, 0) = _a[8];
+  _res(9, 0) = _a[9];
+  _res(10, 0) = _a[10];
 
   return _res;
 }
@@ -73,18 +77,18 @@ LieGroupOps<SphericalCameraCal<Scalar>>::ToTangent(const sym::SphericalCameraCal
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::Retract(
     const sym::SphericalCameraCal<Scalar>& a, const TangentVec& vec, const Scalar epsilon) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Unused inputs
   (void)epsilon;
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = _a[0] + vec(0, 0);
   _res[1] = _a[1] + vec(1, 0);
@@ -95,6 +99,8 @@ sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::Retract
   _res[6] = _a[6] + vec(6, 0);
   _res[7] = _a[7] + vec(7, 0);
   _res[8] = _a[8] + vec(8, 0);
+  _res[9] = _a[9] + vec(9, 0);
+  _res[10] = _a[10] + vec(10, 0);
 
   return sym::SphericalCameraCal<Scalar>(_res);
 }
@@ -104,19 +110,19 @@ typename LieGroupOps<SphericalCameraCal<Scalar>>::TangentVec
 LieGroupOps<SphericalCameraCal<Scalar>>::LocalCoordinates(const sym::SphericalCameraCal<Scalar>& a,
                                                           const sym::SphericalCameraCal<Scalar>& b,
                                                           const Scalar epsilon) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Unused inputs
   (void)epsilon;
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _b = b.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res(0, 0) = -_a[0] + _b[0];
   _res(1, 0) = -_a[1] + _b[1];
@@ -127,6 +133,8 @@ LieGroupOps<SphericalCameraCal<Scalar>>::LocalCoordinates(const sym::SphericalCa
   _res(6, 0) = -_a[6] + _b[6];
   _res(7, 0) = -_a[7] + _b[7];
   _res(8, 0) = -_a[8] + _b[8];
+  _res(9, 0) = -_a[9] + _b[9];
+  _res(10, 0) = -_a[10] + _b[10];
 
   return _res;
 }
@@ -135,19 +143,19 @@ template <typename Scalar>
 sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::Interpolate(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b,
     const Scalar alpha, const Scalar epsilon) {
-  // Total ops: 27
+  // Total ops: 33
 
   // Unused inputs
   (void)epsilon;
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _b = b.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = _a[0] + alpha * (-_a[0] + _b[0]);
   _res[1] = _a[1] + alpha * (-_a[1] + _b[1]);
@@ -158,6 +166,8 @@ sym::SphericalCameraCal<Scalar> LieGroupOps<SphericalCameraCal<Scalar>>::Interpo
   _res[6] = _a[6] + alpha * (-_a[6] + _b[6]);
   _res[7] = _a[7] + alpha * (-_a[7] + _b[7]);
   _res[8] = _a[8] + alpha * (-_a[8] + _b[8]);
+  _res[9] = _a[9] + alpha * (-_a[9] + _b[9]);
+  _res[10] = _a[10] + alpha * (-_a[10] + _b[10]);
 
   return sym::SphericalCameraCal<Scalar>(_res);
 }

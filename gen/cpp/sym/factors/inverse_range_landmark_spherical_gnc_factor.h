@@ -65,21 +65,21 @@ void InverseRangeLandmarkSphericalGncFactor(
     Eigen::Matrix<Scalar, 2, 13>* const jacobian = nullptr,
     Eigen::Matrix<Scalar, 13, 13>* const hessian = nullptr,
     Eigen::Matrix<Scalar, 13, 1>* const rhs = nullptr) {
-  // Total ops: 1214
+  // Total ops: 1806
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _target_pose = target_pose.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _target_calibration = target_calibration.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _target_calibration = target_calibration.Data();
 
-  // Intermediate terms (312)
-  const Scalar _tmp0 = std::pow(_target_pose[1], Scalar(2));
-  const Scalar _tmp1 = -2 * _tmp0;
-  const Scalar _tmp2 = std::pow(_target_pose[2], Scalar(2));
-  const Scalar _tmp3 = 1 - 2 * _tmp2;
-  const Scalar _tmp4 = _tmp1 + _tmp3;
-  const Scalar _tmp5 = 2 * _source_pose[1];
-  const Scalar _tmp6 = _source_pose[0] * _tmp5;
+  // Intermediate terms (426)
+  const Scalar _tmp0 = -epsilon;
+  const Scalar _tmp1 = std::pow(_target_pose[1], Scalar(2));
+  const Scalar _tmp2 = -2 * _tmp1;
+  const Scalar _tmp3 = std::pow(_target_pose[2], Scalar(2));
+  const Scalar _tmp4 = 1 - 2 * _tmp3;
+  const Scalar _tmp5 = _tmp2 + _tmp4;
+  const Scalar _tmp6 = 2 * _source_pose[0] * _source_pose[1];
   const Scalar _tmp7 = 2 * _source_pose[3];
   const Scalar _tmp8 = _source_pose[2] * _tmp7;
   const Scalar _tmp9 = -_tmp8;
@@ -89,68 +89,68 @@ void InverseRangeLandmarkSphericalGncFactor(
                                         std::pow(p_camera_source(2, 0), Scalar(2))),
                                  Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp12 = _tmp11 * p_camera_source(1, 0);
-  const Scalar _tmp13 = 2 * _source_pose[0] * _source_pose[2];
-  const Scalar _tmp14 = _source_pose[3] * _tmp5;
-  const Scalar _tmp15 = _tmp13 + _tmp14;
-  const Scalar _tmp16 = _tmp11 * p_camera_source(2, 0);
-  const Scalar _tmp17 = std::pow(_source_pose[2], Scalar(2));
-  const Scalar _tmp18 = -2 * _tmp17;
-  const Scalar _tmp19 = std::pow(_source_pose[1], Scalar(2));
-  const Scalar _tmp20 = 1 - 2 * _tmp19;
-  const Scalar _tmp21 = _tmp11 * p_camera_source(0, 0);
-  const Scalar _tmp22 = _source_pose[4] - _target_pose[4];
-  const Scalar _tmp23 = _tmp10 * _tmp12 + _tmp15 * _tmp16 + _tmp21 * (_tmp18 + _tmp20) +
-                        _tmp22 * source_inverse_range;
-  const Scalar _tmp24 = 2 * _target_pose[0];
-  const Scalar _tmp25 = _target_pose[2] * _tmp24;
-  const Scalar _tmp26 = 2 * _target_pose[1] * _target_pose[3];
-  const Scalar _tmp27 = -_tmp26;
-  const Scalar _tmp28 = _tmp25 + _tmp27;
-  const Scalar _tmp29 = _source_pose[0] * _tmp7;
-  const Scalar _tmp30 = _source_pose[2] * _tmp5;
-  const Scalar _tmp31 = _tmp29 + _tmp30;
-  const Scalar _tmp32 = -_tmp14;
-  const Scalar _tmp33 = _tmp13 + _tmp32;
-  const Scalar _tmp34 = std::pow(_source_pose[0], Scalar(2));
-  const Scalar _tmp35 = -2 * _tmp34;
-  const Scalar _tmp36 = _source_pose[6] - _target_pose[6];
-  const Scalar _tmp37 = _tmp12 * _tmp31 + _tmp16 * (_tmp20 + _tmp35) + _tmp21 * _tmp33 +
-                        _tmp36 * source_inverse_range;
-  const Scalar _tmp38 = 2 * _target_pose[2];
-  const Scalar _tmp39 = _target_pose[3] * _tmp38;
-  const Scalar _tmp40 = _target_pose[1] * _tmp24;
-  const Scalar _tmp41 = _tmp39 + _tmp40;
-  const Scalar _tmp42 = _tmp6 + _tmp8;
-  const Scalar _tmp43 = -_tmp29;
-  const Scalar _tmp44 = _tmp30 + _tmp43;
-  const Scalar _tmp45 = _source_pose[5] - _target_pose[5];
-  const Scalar _tmp46 = _tmp12 * (_tmp18 + _tmp35 + 1) + _tmp16 * _tmp44 + _tmp21 * _tmp42 +
-                        _tmp45 * source_inverse_range;
-  const Scalar _tmp47 = _tmp28 * _tmp37 + _tmp41 * _tmp46;
-  const Scalar _tmp48 = _tmp23 * _tmp4 + _tmp47;
-  const Scalar _tmp49 = -epsilon;
-  const Scalar _tmp50 = std::pow(_tmp48, Scalar(2));
+  const Scalar _tmp13 = 2 * _source_pose[2];
+  const Scalar _tmp14 = _source_pose[0] * _tmp13;
+  const Scalar _tmp15 = _source_pose[1] * _tmp7;
+  const Scalar _tmp16 = _tmp14 + _tmp15;
+  const Scalar _tmp17 = _tmp11 * p_camera_source(2, 0);
+  const Scalar _tmp18 = std::pow(_source_pose[1], Scalar(2));
+  const Scalar _tmp19 = -2 * _tmp18;
+  const Scalar _tmp20 = std::pow(_source_pose[2], Scalar(2));
+  const Scalar _tmp21 = 1 - 2 * _tmp20;
+  const Scalar _tmp22 = _tmp11 * p_camera_source(0, 0);
+  const Scalar _tmp23 = _source_pose[4] - _target_pose[4];
+  const Scalar _tmp24 = _tmp10 * _tmp12 + _tmp16 * _tmp17 + _tmp22 * (_tmp19 + _tmp21) +
+                        _tmp23 * source_inverse_range;
+  const Scalar _tmp25 = 2 * _target_pose[0];
+  const Scalar _tmp26 = _target_pose[2] * _tmp25;
+  const Scalar _tmp27 = 2 * _target_pose[1];
+  const Scalar _tmp28 = _target_pose[3] * _tmp27;
+  const Scalar _tmp29 = -_tmp28;
+  const Scalar _tmp30 = _tmp26 + _tmp29;
+  const Scalar _tmp31 = _source_pose[0] * _tmp7;
+  const Scalar _tmp32 = _source_pose[1] * _tmp13;
+  const Scalar _tmp33 = _tmp31 + _tmp32;
+  const Scalar _tmp34 = -_tmp15;
+  const Scalar _tmp35 = _tmp14 + _tmp34;
+  const Scalar _tmp36 = std::pow(_source_pose[0], Scalar(2));
+  const Scalar _tmp37 = -2 * _tmp36;
+  const Scalar _tmp38 = _source_pose[6] - _target_pose[6];
+  const Scalar _tmp39 = _tmp12 * _tmp33 + _tmp17 * (_tmp19 + _tmp37 + 1) + _tmp22 * _tmp35 +
+                        _tmp38 * source_inverse_range;
+  const Scalar _tmp40 = 2 * _target_pose[2] * _target_pose[3];
+  const Scalar _tmp41 = _target_pose[1] * _tmp25;
+  const Scalar _tmp42 = _tmp40 + _tmp41;
+  const Scalar _tmp43 = _tmp6 + _tmp8;
+  const Scalar _tmp44 = -_tmp31;
+  const Scalar _tmp45 = _tmp32 + _tmp44;
+  const Scalar _tmp46 = _source_pose[5] - _target_pose[5];
+  const Scalar _tmp47 = _tmp12 * (_tmp21 + _tmp37) + _tmp17 * _tmp45 + _tmp22 * _tmp43 +
+                        _tmp46 * source_inverse_range;
+  const Scalar _tmp48 = _tmp30 * _tmp39 + _tmp42 * _tmp47;
+  const Scalar _tmp49 = _tmp24 * _tmp5 + _tmp48;
+  const Scalar _tmp50 = std::pow(_tmp49, Scalar(2));
   const Scalar _tmp51 = std::pow(_target_pose[0], Scalar(2));
   const Scalar _tmp52 = -2 * _tmp51;
-  const Scalar _tmp53 = _tmp3 + _tmp52;
-  const Scalar _tmp54 = _target_pose[1] * _tmp38;
-  const Scalar _tmp55 = _target_pose[3] * _tmp24;
+  const Scalar _tmp53 = _tmp4 + _tmp52;
+  const Scalar _tmp54 = _target_pose[2] * _tmp27;
+  const Scalar _tmp55 = _target_pose[3] * _tmp25;
   const Scalar _tmp56 = _tmp54 + _tmp55;
-  const Scalar _tmp57 = -_tmp39;
-  const Scalar _tmp58 = _tmp40 + _tmp57;
-  const Scalar _tmp59 = _tmp23 * _tmp58 + _tmp37 * _tmp56;
-  const Scalar _tmp60 = _tmp46 * _tmp53 + _tmp59;
+  const Scalar _tmp57 = -_tmp40;
+  const Scalar _tmp58 = _tmp41 + _tmp57;
+  const Scalar _tmp59 = _tmp24 * _tmp58 + _tmp39 * _tmp56;
+  const Scalar _tmp60 = _tmp47 * _tmp53 + _tmp59;
   const Scalar _tmp61 = std::pow(_tmp60, Scalar(2));
   const Scalar _tmp62 = _tmp50 + _tmp61 + epsilon;
   const Scalar _tmp63 = std::sqrt(_tmp62);
-  const Scalar _tmp64 = _tmp1 + _tmp52 + 1;
+  const Scalar _tmp64 = _tmp2 + _tmp52 + 1;
   const Scalar _tmp65 = -_tmp55;
   const Scalar _tmp66 = _tmp54 + _tmp65;
-  const Scalar _tmp67 = _tmp25 + _tmp26;
-  const Scalar _tmp68 = _tmp23 * _tmp67 + _tmp46 * _tmp66;
-  const Scalar _tmp69 = _tmp37 * _tmp64 + _tmp68;
+  const Scalar _tmp67 = _tmp26 + _tmp28;
+  const Scalar _tmp68 = _tmp24 * _tmp67 + _tmp47 * _tmp66;
+  const Scalar _tmp69 = _tmp39 * _tmp64 + _tmp68;
   const Scalar _tmp70 = std::atan2(_tmp63, _tmp69);
-  const Scalar _tmp71 = std::min<Scalar>(_tmp70, _target_calibration[4] + _tmp49);
+  const Scalar _tmp71 = std::min<Scalar>(_tmp70, _target_calibration[4] + _tmp0);
   const Scalar _tmp72 = _target_calibration[5] *
                             [&]() {
                               const Scalar base = _tmp71;
@@ -159,409 +159,615 @@ void InverseRangeLandmarkSphericalGncFactor(
                         _target_calibration[6] * std::pow(_tmp71, Scalar(5)) +
                         _target_calibration[7] * std::pow(_tmp71, Scalar(7)) +
                         _target_calibration[8] * std::pow(_tmp71, Scalar(9)) + _tmp71;
-  const Scalar _tmp73 = Scalar(1.0) / (_tmp63);
-  const Scalar _tmp74 = _target_calibration[0] * _tmp73;
-  const Scalar _tmp75 = _tmp72 * _tmp74;
-  const Scalar _tmp76 = _target_calibration[2] + _tmp48 * _tmp75 - target_pixel(0, 0);
-  const Scalar _tmp77 = _target_calibration[1] * _tmp73;
-  const Scalar _tmp78 = _tmp60 * _tmp77;
-  const Scalar _tmp79 = _target_calibration[3] + _tmp72 * _tmp78 - target_pixel(1, 0);
-  const Scalar _tmp80 = std::pow(_tmp76, Scalar(2)) + std::pow(_tmp79, Scalar(2)) + epsilon;
-  const Scalar _tmp81 = std::pow(_tmp80, Scalar(Scalar(-1) / Scalar(2)));
-  const Scalar _tmp82 = std::sqrt(weight);
-  const Scalar _tmp83 = Scalar(1.0) / (epsilon - gnc_mu + 1);
-  const Scalar _tmp84 = epsilon + std::fabs(_tmp83);
-  const Scalar _tmp85 = std::pow(gnc_scale, Scalar(-2));
-  const Scalar _tmp86 = _tmp80 * _tmp85 / _tmp84 + 1;
-  const Scalar _tmp87 = 2 - _tmp83;
-  const Scalar _tmp88 =
-      _tmp87 + epsilon * (2 * std::min<Scalar>(0, (((_tmp87) > 0) - ((_tmp87) < 0))) + 1);
-  const Scalar _tmp89 = (Scalar(1) / Scalar(2)) * _tmp88;
-  const Scalar _tmp90 =
-      std::sqrt(Scalar(2)) * std::sqrt(Scalar(_tmp84 * (std::pow(_tmp86, _tmp89) - 1) / _tmp88));
-  const Scalar _tmp91 = _target_calibration[4] - _tmp70;
-  const Scalar _tmp92 = std::max<Scalar>(0, (((_tmp91) > 0) - ((_tmp91) < 0)));
-  const Scalar _tmp93 = _tmp82 * _tmp90 * _tmp92;
-  const Scalar _tmp94 = _tmp81 * _tmp93;
-  const Scalar _tmp95 = _tmp76 * _tmp94;
-  const Scalar _tmp96 = _tmp79 * _tmp94;
-  const Scalar _tmp97 = -_tmp19;
-  const Scalar _tmp98 = _tmp34 + _tmp97;
-  const Scalar _tmp99 = std::pow(_source_pose[3], Scalar(2));
-  const Scalar _tmp100 = -_tmp99;
-  const Scalar _tmp101 = _tmp100 + _tmp17;
-  const Scalar _tmp102 = _tmp12 * _tmp44 + _tmp16 * (_tmp101 + _tmp98);
-  const Scalar _tmp103 = -_tmp30;
-  const Scalar _tmp104 = -_tmp34;
-  const Scalar _tmp105 =
-      _tmp12 * (_tmp104 + _tmp17 + _tmp97 + _tmp99) + _tmp16 * (_tmp103 + _tmp43);
-  const Scalar _tmp106 = -_tmp6;
-  const Scalar _tmp107 = _tmp12 * _tmp15 + _tmp16 * (_tmp106 + _tmp8);
-  const Scalar _tmp108 = std::pow(_tmp69, Scalar(2));
-  const Scalar _tmp109 = _tmp63 / _tmp108;
-  const Scalar _tmp110 = _tmp102 * _tmp53 + _tmp105 * _tmp56 + _tmp107 * _tmp58;
-  const Scalar _tmp111 = 2 * _tmp60;
-  const Scalar _tmp112 = _tmp102 * _tmp41 + _tmp105 * _tmp28 + _tmp107 * _tmp4;
-  const Scalar _tmp113 = 2 * _tmp48;
-  const Scalar _tmp114 = _tmp110 * _tmp111 + _tmp112 * _tmp113;
-  const Scalar _tmp115 = _tmp73 / _tmp69;
-  const Scalar _tmp116 = (Scalar(1) / Scalar(2)) * _tmp115;
-  const Scalar _tmp117 =
-      -_tmp109 * (_tmp102 * _tmp66 + _tmp105 * _tmp64 + _tmp107 * _tmp67) + _tmp114 * _tmp116;
-  const Scalar _tmp118 =
-      ((((_tmp49 + _tmp91) > 0) - ((_tmp49 + _tmp91) < 0)) + 1) / (_tmp108 + _tmp62);
-  const Scalar _tmp119 = _tmp108 * _tmp118;
-  const Scalar _tmp120 = _target_calibration[6] * std::pow(_tmp71, Scalar(4));
-  const Scalar _tmp121 = (Scalar(5) / Scalar(2)) * _tmp120;
-  const Scalar _tmp122 = _tmp119 * _tmp121;
-  const Scalar _tmp123 = _target_calibration[5] * std::pow(_tmp71, Scalar(2));
-  const Scalar _tmp124 = (Scalar(3) / Scalar(2)) * _tmp123;
-  const Scalar _tmp125 = _tmp119 * _tmp124;
-  const Scalar _tmp126 = (Scalar(1) / Scalar(2)) * _tmp119;
-  const Scalar _tmp127 = _target_calibration[8] * std::pow(_tmp71, Scalar(8));
-  const Scalar _tmp128 = (Scalar(9) / Scalar(2)) * _tmp127;
-  const Scalar _tmp129 = _tmp119 * _tmp128;
-  const Scalar _tmp130 = _target_calibration[7] * std::pow(_tmp71, Scalar(6));
-  const Scalar _tmp131 = (Scalar(7) / Scalar(2)) * _tmp130;
-  const Scalar _tmp132 = _tmp119 * _tmp131;
-  const Scalar _tmp133 = _tmp117 * _tmp122 + _tmp117 * _tmp125 + _tmp117 * _tmp126 +
-                         _tmp117 * _tmp129 + _tmp117 * _tmp132;
-  const Scalar _tmp134 = _tmp72 * _tmp77;
-  const Scalar _tmp135 = _tmp72 / (_tmp62 * std::sqrt(_tmp62));
-  const Scalar _tmp136 = _target_calibration[1] * _tmp135;
-  const Scalar _tmp137 = _tmp136 * _tmp60;
-  const Scalar _tmp138 = (Scalar(1) / Scalar(2)) * _tmp137;
-  const Scalar _tmp139 = _tmp110 * _tmp134 - _tmp114 * _tmp138 + _tmp133 * _tmp78;
-  const Scalar _tmp140 = 2 * _tmp79;
-  const Scalar _tmp141 = _tmp48 * _tmp74;
-  const Scalar _tmp142 = _target_calibration[0] * _tmp135;
-  const Scalar _tmp143 = _tmp142 * _tmp48;
-  const Scalar _tmp144 = (Scalar(1) / Scalar(2)) * _tmp143;
-  const Scalar _tmp145 = _tmp112 * _tmp75 - _tmp114 * _tmp144 + _tmp133 * _tmp141;
-  const Scalar _tmp146 = 2 * _tmp76;
-  const Scalar _tmp147 = _tmp139 * _tmp140 + _tmp145 * _tmp146;
-  const Scalar _tmp148 = (Scalar(1) / Scalar(2)) * _tmp76;
-  const Scalar _tmp149 =
-      _tmp81 * _tmp82 * _tmp85 * std::pow(_tmp86, Scalar(_tmp89 - 1)) * _tmp92 / _tmp90;
+  const Scalar _tmp73 = std::pow(_tmp72, Scalar(2));
+  const Scalar _tmp74 = Scalar(1.0) / (_tmp62);
+  const Scalar _tmp75 = _tmp73 * _tmp74;
+  const Scalar _tmp76 = _target_calibration[9] * _tmp61;
+  const Scalar _tmp77 = 2 * _tmp60;
+  const Scalar _tmp78 = _target_calibration[10] * _tmp75;
+  const Scalar _tmp79 = _tmp77 * _tmp78;
+  const Scalar _tmp80 = Scalar(1.0) / (_tmp63);
+  const Scalar _tmp81 = _tmp72 * _tmp80;
+  const Scalar _tmp82 = 3 * _tmp75;
+  const Scalar _tmp83 = _target_calibration[9] * _tmp50;
+  const Scalar _tmp84 = _target_calibration[0] * (_tmp49 * _tmp79 + _tmp49 * _tmp81 +
+                                                  _tmp75 * _tmp76 + _tmp82 * _tmp83) +
+                        _target_calibration[2] - target_pixel(0, 0);
+  const Scalar _tmp85 = _target_calibration[10] * _tmp61;
+  const Scalar _tmp86 = _target_calibration[9] * _tmp75;
+  const Scalar _tmp87 = _tmp49 * _tmp86;
+  const Scalar _tmp88 = _tmp60 * _tmp80;
+  const Scalar _tmp89 = _target_calibration[10] * _tmp50;
+  const Scalar _tmp90 = _target_calibration[1] * (_tmp72 * _tmp88 + _tmp75 * _tmp89 +
+                                                  _tmp77 * _tmp87 + _tmp82 * _tmp85) +
+                        _target_calibration[3] - target_pixel(1, 0);
+  const Scalar _tmp91 = std::pow(_tmp84, Scalar(2)) + std::pow(_tmp90, Scalar(2)) + epsilon;
+  const Scalar _tmp92 = std::pow(_tmp91, Scalar(Scalar(-1) / Scalar(2)));
+  const Scalar _tmp93 = std::sqrt(weight);
+  const Scalar _tmp94 = Scalar(1.0) / (epsilon - gnc_mu + 1);
+  const Scalar _tmp95 = epsilon + std::fabs(_tmp94);
+  const Scalar _tmp96 = 2 - _tmp94;
+  const Scalar _tmp97 =
+      _tmp96 + epsilon * (2 * std::min<Scalar>(0, (((_tmp96) > 0) - ((_tmp96) < 0))) + 1);
+  const Scalar _tmp98 = std::pow(gnc_scale, Scalar(-2));
+  const Scalar _tmp99 = _tmp91 * _tmp98 / _tmp95 + 1;
+  const Scalar _tmp100 = (Scalar(1) / Scalar(2)) * _tmp97;
+  const Scalar _tmp101 =
+      std::sqrt(Scalar(2)) * std::sqrt(Scalar(_tmp95 * (std::pow(_tmp99, _tmp100) - 1) / _tmp97));
+  const Scalar _tmp102 = _target_calibration[4] - _tmp70;
+  const Scalar _tmp103 = std::max<Scalar>(0, (((_tmp102) > 0) - ((_tmp102) < 0)));
+  const Scalar _tmp104 = _tmp101 * _tmp103 * _tmp93;
+  const Scalar _tmp105 = _tmp104 * _tmp92;
+  const Scalar _tmp106 = _tmp105 * _tmp84;
+  const Scalar _tmp107 = _tmp105 * _tmp90;
+  const Scalar _tmp108 = _tmp73 / std::pow(_tmp62, Scalar(2));
+  const Scalar _tmp109 = _target_calibration[10] * _tmp108;
+  const Scalar _tmp110 = std::pow(_source_pose[3], Scalar(2));
+  const Scalar _tmp111 = -_tmp110;
+  const Scalar _tmp112 = -_tmp18;
+  const Scalar _tmp113 = _tmp12 * _tmp45 + _tmp17 * (_tmp111 + _tmp112 + _tmp20 + _tmp36);
+  const Scalar _tmp114 = -_tmp32;
+  const Scalar _tmp115 = -_tmp36;
+  const Scalar _tmp116 = _tmp115 + _tmp20;
+  const Scalar _tmp117 = _tmp110 + _tmp112;
+  const Scalar _tmp118 = _tmp12 * (_tmp116 + _tmp117) + _tmp17 * (_tmp114 + _tmp44);
+  const Scalar _tmp119 = -_tmp6;
+  const Scalar _tmp120 = _tmp12 * _tmp16 + _tmp17 * (_tmp119 + _tmp8);
+  const Scalar _tmp121 = _tmp113 * _tmp53 + _tmp118 * _tmp56 + _tmp120 * _tmp58;
+  const Scalar _tmp122 = _tmp121 * _tmp77;
+  const Scalar _tmp123 = _tmp113 * _tmp42 + _tmp118 * _tmp30 + _tmp120 * _tmp5;
+  const Scalar _tmp124 = 2 * _tmp49;
+  const Scalar _tmp125 = _tmp123 * _tmp124;
+  const Scalar _tmp126 = _tmp122 + _tmp125;
+  const Scalar _tmp127 = _tmp49 * _tmp77;
+  const Scalar _tmp128 = _tmp126 * _tmp127;
+  const Scalar _tmp129 = _target_calibration[6] * std::pow(_tmp71, Scalar(4));
+  const Scalar _tmp130 = (Scalar(5) / Scalar(2)) * _tmp129;
+  const Scalar _tmp131 = std::pow(_tmp69, Scalar(2));
+  const Scalar _tmp132 = _tmp63 / _tmp131;
+  const Scalar _tmp133 = Scalar(1.0) / (_tmp69);
+  const Scalar _tmp134 = _tmp133 * _tmp80;
+  const Scalar _tmp135 = (Scalar(1) / Scalar(2)) * _tmp134;
+  const Scalar _tmp136 =
+      _tmp126 * _tmp135 - _tmp132 * (_tmp113 * _tmp66 + _tmp118 * _tmp64 + _tmp120 * _tmp67);
+  const Scalar _tmp137 =
+      ((((_tmp0 + _tmp102) > 0) - ((_tmp0 + _tmp102) < 0)) + 1) / (_tmp131 + _tmp62);
+  const Scalar _tmp138 = _tmp131 * _tmp137;
+  const Scalar _tmp139 = _tmp136 * _tmp138;
+  const Scalar _tmp140 = _target_calibration[5] * std::pow(_tmp71, Scalar(2));
+  const Scalar _tmp141 = (Scalar(3) / Scalar(2)) * _tmp140;
+  const Scalar _tmp142 = (Scalar(1) / Scalar(2)) * _tmp138;
+  const Scalar _tmp143 = _target_calibration[8] * std::pow(_tmp71, Scalar(8));
+  const Scalar _tmp144 = (Scalar(9) / Scalar(2)) * _tmp143;
+  const Scalar _tmp145 = _target_calibration[7] * std::pow(_tmp71, Scalar(6));
+  const Scalar _tmp146 = (Scalar(7) / Scalar(2)) * _tmp145;
+  const Scalar _tmp147 = _tmp130 * _tmp139 + _tmp136 * _tmp142 + _tmp139 * _tmp141 +
+                         _tmp139 * _tmp144 + _tmp139 * _tmp146;
+  const Scalar _tmp148 = _tmp72 * _tmp74;
+  const Scalar _tmp149 = 2 * _tmp76;
   const Scalar _tmp150 = _tmp148 * _tmp149;
-  const Scalar _tmp151 = _tmp93 / (_tmp80 * std::sqrt(_tmp80));
-  const Scalar _tmp152 = _tmp148 * _tmp151;
-  const Scalar _tmp153 = _tmp145 * _tmp94 + _tmp147 * _tmp150 - _tmp147 * _tmp152;
-  const Scalar _tmp154 = (Scalar(1) / Scalar(2)) * _tmp79;
-  const Scalar _tmp155 = _tmp151 * _tmp154;
-  const Scalar _tmp156 = _tmp149 * _tmp154;
-  const Scalar _tmp157 = _tmp139 * _tmp94 - _tmp147 * _tmp155 + _tmp147 * _tmp156;
-  const Scalar _tmp158 = -_tmp13;
-  const Scalar _tmp159 = -_tmp17;
-  const Scalar _tmp160 = _tmp159 + _tmp99;
-  const Scalar _tmp161 = _tmp16 * (_tmp160 + _tmp98) + _tmp21 * (_tmp158 + _tmp32);
-  const Scalar _tmp162 = _tmp16 * _tmp33 + _tmp21 * (_tmp100 + _tmp159 + _tmp19 + _tmp34);
-  const Scalar _tmp163 = _tmp16 * _tmp42 + _tmp21 * (_tmp103 + _tmp29);
-  const Scalar _tmp164 = _tmp161 * _tmp58 + _tmp162 * _tmp56 + _tmp163 * _tmp53;
-  const Scalar _tmp165 = _tmp161 * _tmp4 + _tmp162 * _tmp28 + _tmp163 * _tmp41;
-  const Scalar _tmp166 = _tmp111 * _tmp164 + _tmp113 * _tmp165;
-  const Scalar _tmp167 =
-      -_tmp109 * (_tmp161 * _tmp67 + _tmp162 * _tmp64 + _tmp163 * _tmp66) + _tmp116 * _tmp166;
-  const Scalar _tmp168 = _tmp122 * _tmp167 + _tmp125 * _tmp167 + _tmp126 * _tmp167 +
-                         _tmp129 * _tmp167 + _tmp132 * _tmp167;
-  const Scalar _tmp169 = _tmp141 * _tmp168 - _tmp144 * _tmp166 + _tmp165 * _tmp75;
-  const Scalar _tmp170 = _tmp134 * _tmp164 - _tmp138 * _tmp166 + _tmp168 * _tmp78;
-  const Scalar _tmp171 = _tmp140 * _tmp170 + _tmp146 * _tmp169;
-  const Scalar _tmp172 = _tmp150 * _tmp171 - _tmp152 * _tmp171 + _tmp169 * _tmp94;
-  const Scalar _tmp173 = -_tmp155 * _tmp171 + _tmp156 * _tmp171 + _tmp170 * _tmp94;
-  const Scalar _tmp174 = _tmp12 * (_tmp14 + _tmp158) + _tmp21 * _tmp31;
-  const Scalar _tmp175 = _tmp104 + _tmp19;
-  const Scalar _tmp176 = _tmp12 * (_tmp106 + _tmp9) + _tmp21 * (_tmp160 + _tmp175);
-  const Scalar _tmp177 = _tmp10 * _tmp21 + _tmp12 * (_tmp101 + _tmp175);
-  const Scalar _tmp178 = _tmp174 * _tmp28 + _tmp176 * _tmp41 + _tmp177 * _tmp4;
-  const Scalar _tmp179 = _tmp174 * _tmp56 + _tmp176 * _tmp53 + _tmp177 * _tmp58;
-  const Scalar _tmp180 =
-      (Scalar(1) / Scalar(2)) * _tmp111 * _tmp179 + (Scalar(1) / Scalar(2)) * _tmp113 * _tmp178;
+  const Scalar _tmp151 = _tmp49 * _tmp80;
+  const Scalar _tmp152 = 6 * _tmp87;
+  const Scalar _tmp153 = _tmp108 * _tmp76;
+  const Scalar _tmp154 = 6 * _tmp83;
+  const Scalar _tmp155 = _tmp148 * _tmp154;
+  const Scalar _tmp156 = _tmp49 * _tmp60;
+  const Scalar _tmp157 = 4 * _tmp156;
+  const Scalar _tmp158 = _tmp148 * _tmp157;
+  const Scalar _tmp159 = _target_calibration[10] * _tmp158;
+  const Scalar _tmp160 = _tmp72 / (_tmp62 * std::sqrt(_tmp62));
+  const Scalar _tmp161 = (Scalar(1) / Scalar(2)) * _tmp160;
+  const Scalar _tmp162 = _tmp161 * _tmp49;
+  const Scalar _tmp163 = _tmp121 * _tmp124;
+  const Scalar _tmp164 = 3 * _tmp108;
+  const Scalar _tmp165 = _tmp164 * _tmp83;
+  const Scalar _tmp166 = -_tmp109 * _tmp128 + _tmp122 * _tmp86 + _tmp123 * _tmp152 +
+                         _tmp123 * _tmp79 + _tmp123 * _tmp81 - _tmp126 * _tmp153 -
+                         _tmp126 * _tmp162 - _tmp126 * _tmp165 + _tmp147 * _tmp150 +
+                         _tmp147 * _tmp151 + _tmp147 * _tmp155 + _tmp147 * _tmp159 +
+                         _tmp163 * _tmp78;
+  const Scalar _tmp167 = 2 * _tmp84;
+  const Scalar _tmp168 = _target_calibration[0] * _tmp167;
+  const Scalar _tmp169 = _target_calibration[9] * _tmp108;
+  const Scalar _tmp170 = _tmp161 * _tmp60;
+  const Scalar _tmp171 = 6 * _tmp85;
+  const Scalar _tmp172 = _tmp148 * _tmp171;
+  const Scalar _tmp173 = _tmp77 * _tmp86;
+  const Scalar _tmp174 = _tmp164 * _tmp85;
+  const Scalar _tmp175 = 2 * _tmp89;
+  const Scalar _tmp176 = _tmp148 * _tmp175;
+  const Scalar _tmp177 = _target_calibration[9] * _tmp158;
+  const Scalar _tmp178 = _tmp60 * _tmp78;
+  const Scalar _tmp179 = 6 * _tmp178;
+  const Scalar _tmp180 = _tmp108 * _tmp89;
   const Scalar _tmp181 =
-      -_tmp109 * (_tmp174 * _tmp64 + _tmp176 * _tmp66 + _tmp177 * _tmp67) + _tmp115 * _tmp180;
-  const Scalar _tmp182 = _tmp122 * _tmp181 + _tmp125 * _tmp181 + _tmp126 * _tmp181 +
-                         _tmp129 * _tmp181 + _tmp132 * _tmp181;
-  const Scalar _tmp183 = _tmp141 * _tmp182 - _tmp143 * _tmp180 + _tmp178 * _tmp75;
-  const Scalar _tmp184 = _tmp134 * _tmp179 - _tmp137 * _tmp180 + _tmp182 * _tmp78;
-  const Scalar _tmp185 = _tmp140 * _tmp184 + _tmp146 * _tmp183;
-  const Scalar _tmp186 = _tmp150 * _tmp185 - _tmp152 * _tmp185 + _tmp183 * _tmp94;
-  const Scalar _tmp187 = _tmp154 * _tmp185;
-  const Scalar _tmp188 = _tmp149 * _tmp187 - _tmp151 * _tmp187 + _tmp184 * _tmp94;
-  const Scalar _tmp189 = _tmp109 * source_inverse_range;
-  const Scalar _tmp190 = _tmp189 * _tmp67;
-  const Scalar _tmp191 = _tmp113 * source_inverse_range;
-  const Scalar _tmp192 = _tmp191 * _tmp4;
-  const Scalar _tmp193 = _tmp111 * source_inverse_range;
-  const Scalar _tmp194 = _tmp193 * _tmp58;
-  const Scalar _tmp195 = _tmp192 + _tmp194;
-  const Scalar _tmp196 = _tmp116 * _tmp195 - _tmp190;
-  const Scalar _tmp197 = _tmp122 * _tmp196 + _tmp125 * _tmp196 + _tmp126 * _tmp196 +
-                         _tmp129 * _tmp196 + _tmp132 * _tmp196;
-  const Scalar _tmp198 = _tmp75 * source_inverse_range;
-  const Scalar _tmp199 = _tmp198 * _tmp4;
-  const Scalar _tmp200 = _tmp141 * _tmp197 - _tmp144 * _tmp195 + _tmp199;
-  const Scalar _tmp201 = _tmp134 * source_inverse_range;
-  const Scalar _tmp202 = _tmp201 * _tmp58;
-  const Scalar _tmp203 = -_tmp138 * _tmp195 + _tmp197 * _tmp78 + _tmp202;
-  const Scalar _tmp204 = _tmp140 * _tmp203 + _tmp146 * _tmp200;
-  const Scalar _tmp205 = _tmp150 * _tmp204 - _tmp152 * _tmp204 + _tmp200 * _tmp94;
-  const Scalar _tmp206 = -_tmp155 * _tmp204 + _tmp156 * _tmp204 + _tmp203 * _tmp94;
-  const Scalar _tmp207 = _tmp189 * _tmp66;
-  const Scalar _tmp208 = _tmp191 * _tmp41;
-  const Scalar _tmp209 = _tmp193 * _tmp53;
-  const Scalar _tmp210 = _tmp208 + _tmp209;
-  const Scalar _tmp211 = _tmp116 * _tmp210 - _tmp207;
-  const Scalar _tmp212 = _tmp119 * _tmp211;
-  const Scalar _tmp213 = _tmp121 * _tmp212 + _tmp124 * _tmp212 + _tmp126 * _tmp211 +
-                         _tmp128 * _tmp212 + _tmp131 * _tmp212;
-  const Scalar _tmp214 = _tmp198 * _tmp41;
-  const Scalar _tmp215 = _tmp141 * _tmp213 - _tmp144 * _tmp210 + _tmp214;
-  const Scalar _tmp216 = _tmp201 * _tmp53;
-  const Scalar _tmp217 = -_tmp138 * _tmp210 + _tmp213 * _tmp78 + _tmp216;
-  const Scalar _tmp218 = _tmp140 * _tmp217 + _tmp146 * _tmp215;
-  const Scalar _tmp219 = _tmp150 * _tmp218 - _tmp152 * _tmp218 + _tmp215 * _tmp94;
-  const Scalar _tmp220 = -_tmp155 * _tmp218 + _tmp156 * _tmp218 + _tmp217 * _tmp94;
-  const Scalar _tmp221 = _tmp189 * _tmp64;
-  const Scalar _tmp222 = _tmp191 * _tmp28;
-  const Scalar _tmp223 = _tmp193 * _tmp56;
-  const Scalar _tmp224 = _tmp222 + _tmp223;
-  const Scalar _tmp225 = _tmp116 * _tmp224 - _tmp221;
-  const Scalar _tmp226 = _tmp119 * _tmp225;
-  const Scalar _tmp227 = _tmp121 * _tmp226 + _tmp124 * _tmp226 + _tmp126 * _tmp225 +
-                         _tmp128 * _tmp226 + _tmp131 * _tmp226;
-  const Scalar _tmp228 = _tmp198 * _tmp28;
-  const Scalar _tmp229 = (Scalar(1) / Scalar(2)) * _tmp224;
-  const Scalar _tmp230 = _tmp141 * _tmp227 - _tmp143 * _tmp229 + _tmp228;
-  const Scalar _tmp231 = _tmp201 * _tmp56;
-  const Scalar _tmp232 = -_tmp137 * _tmp229 + _tmp227 * _tmp78 + _tmp231;
-  const Scalar _tmp233 = _tmp140 * _tmp232 + _tmp146 * _tmp230;
-  const Scalar _tmp234 = _tmp150 * _tmp233 - _tmp152 * _tmp233 + _tmp230 * _tmp94;
-  const Scalar _tmp235 = -_tmp155 * _tmp233 + _tmp156 * _tmp233 + _tmp232 * _tmp94;
-  const Scalar _tmp236 = -_tmp51;
-  const Scalar _tmp237 = std::pow(_target_pose[3], Scalar(2));
-  const Scalar _tmp238 = _tmp236 + _tmp237;
-  const Scalar _tmp239 = -_tmp0;
-  const Scalar _tmp240 = _tmp2 + _tmp239;
-  const Scalar _tmp241 = _tmp37 * (_tmp238 + _tmp240) + _tmp68;
-  const Scalar _tmp242 = _tmp241 * _tmp60;
-  const Scalar _tmp243 = -_tmp54;
-  const Scalar _tmp244 = -_tmp237;
-  const Scalar _tmp245 = _tmp244 + _tmp51;
-  const Scalar _tmp246 = -_tmp40;
-  const Scalar _tmp247 = -_tmp109 * (_tmp23 * (_tmp246 + _tmp39) + _tmp37 * (_tmp243 + _tmp65) +
-                                     _tmp46 * (_tmp240 + _tmp245)) +
-                         _tmp115 * _tmp242;
-  const Scalar _tmp248 = _tmp122 * _tmp247 + _tmp125 * _tmp247 + _tmp126 * _tmp247 +
-                         _tmp129 * _tmp247 + _tmp132 * _tmp247;
-  const Scalar _tmp249 = _tmp141 * _tmp248 - _tmp143 * _tmp242;
-  const Scalar _tmp250 = _tmp134 * _tmp241 - _tmp136 * _tmp241 * _tmp61 + _tmp248 * _tmp78;
-  const Scalar _tmp251 = _tmp140 * _tmp250 + _tmp146 * _tmp249;
-  const Scalar _tmp252 = _tmp150 * _tmp251 - _tmp152 * _tmp251 + _tmp249 * _tmp94;
-  const Scalar _tmp253 = -_tmp155 * _tmp251 + _tmp156 * _tmp251 + _tmp250 * _tmp94;
-  const Scalar _tmp254 = -_tmp2;
-  const Scalar _tmp255 = _tmp0 + _tmp254;
-  const Scalar _tmp256 = -_tmp25;
-  const Scalar _tmp257 =
-      _tmp23 * (_tmp256 + _tmp27) + _tmp37 * (_tmp245 + _tmp255) + _tmp46 * (_tmp243 + _tmp55);
-  const Scalar _tmp258 = _tmp257 * _tmp48;
-  const Scalar _tmp259 =
-      -_tmp109 * (_tmp23 * (_tmp237 + _tmp239 + _tmp254 + _tmp51) + _tmp47) + _tmp115 * _tmp258;
-  const Scalar _tmp260 = _tmp122 * _tmp259 + _tmp125 * _tmp259 + _tmp126 * _tmp259 +
-                         _tmp129 * _tmp259 + _tmp132 * _tmp259;
-  const Scalar _tmp261 = -_tmp137 * _tmp258 + _tmp260 * _tmp78;
-  const Scalar _tmp262 = _tmp141 * _tmp260 - _tmp142 * _tmp257 * _tmp50 + _tmp257 * _tmp75;
-  const Scalar _tmp263 = _tmp140 * _tmp261 + _tmp146 * _tmp262;
-  const Scalar _tmp264 = _tmp150 * _tmp263 - _tmp152 * _tmp263 + _tmp262 * _tmp94;
-  const Scalar _tmp265 = -_tmp155 * _tmp263 + _tmp156 * _tmp263 + _tmp261 * _tmp94;
-  const Scalar _tmp266 = _tmp46 * (_tmp238 + _tmp255) + _tmp59;
-  const Scalar _tmp267 = _tmp23 * (_tmp0 + _tmp2 + _tmp236 + _tmp244) +
-                         _tmp37 * (_tmp256 + _tmp26) + _tmp46 * (_tmp246 + _tmp57);
-  const Scalar _tmp268 = _tmp111 * _tmp267 + _tmp113 * _tmp266;
-  const Scalar _tmp269 = _tmp118 * _tmp268 * _tmp69 * _tmp73;
-  const Scalar _tmp270 =
-      (Scalar(5) / Scalar(4)) * _tmp120 * _tmp269 + (Scalar(3) / Scalar(4)) * _tmp123 * _tmp269 +
-      (Scalar(9) / Scalar(4)) * _tmp127 * _tmp269 + (Scalar(7) / Scalar(4)) * _tmp130 * _tmp269 +
-      (Scalar(1) / Scalar(4)) * _tmp269;
-  const Scalar _tmp271 = _tmp141 * _tmp270 - _tmp144 * _tmp268 + _tmp266 * _tmp75;
-  const Scalar _tmp272 = _tmp134 * _tmp267 - _tmp138 * _tmp268 + _tmp270 * _tmp78;
-  const Scalar _tmp273 = _tmp140 * _tmp272 + _tmp146 * _tmp271;
-  const Scalar _tmp274 = _tmp150 * _tmp273 - _tmp152 * _tmp273 + _tmp271 * _tmp94;
-  const Scalar _tmp275 = -_tmp155 * _tmp273 + _tmp156 * _tmp273 + _tmp272 * _tmp94;
-  const Scalar _tmp276 = -_tmp192 - _tmp194;
-  const Scalar _tmp277 = _tmp116 * _tmp276 + _tmp190;
-  const Scalar _tmp278 = _tmp122 * _tmp277 + _tmp125 * _tmp277 + _tmp126 * _tmp277 +
-                         _tmp129 * _tmp277 + _tmp132 * _tmp277;
-  const Scalar _tmp279 = -_tmp138 * _tmp276 - _tmp202 + _tmp278 * _tmp78;
-  const Scalar _tmp280 = _tmp141 * _tmp278 - _tmp144 * _tmp276 - _tmp199;
-  const Scalar _tmp281 = _tmp140 * _tmp279 + _tmp146 * _tmp280;
-  const Scalar _tmp282 = _tmp150 * _tmp281 - _tmp152 * _tmp281 + _tmp280 * _tmp94;
-  const Scalar _tmp283 = -_tmp155 * _tmp281 + _tmp156 * _tmp281 + _tmp279 * _tmp94;
-  const Scalar _tmp284 = -_tmp208 - _tmp209;
-  const Scalar _tmp285 = _tmp116 * _tmp284 + _tmp207;
-  const Scalar _tmp286 = _tmp119 * _tmp285;
-  const Scalar _tmp287 = _tmp121 * _tmp286 + _tmp125 * _tmp285 + _tmp126 * _tmp285 +
-                         _tmp128 * _tmp286 + _tmp131 * _tmp286;
-  const Scalar _tmp288 = _tmp141 * _tmp287 - _tmp144 * _tmp284 - _tmp214;
-  const Scalar _tmp289 = -_tmp138 * _tmp284 - _tmp216 + _tmp287 * _tmp78;
-  const Scalar _tmp290 = _tmp140 * _tmp289 + _tmp146 * _tmp288;
-  const Scalar _tmp291 = _tmp150 * _tmp290 - _tmp152 * _tmp290 + _tmp288 * _tmp94;
-  const Scalar _tmp292 = -_tmp155 * _tmp290 + _tmp156 * _tmp290 + _tmp289 * _tmp94;
-  const Scalar _tmp293 = -_tmp222 - _tmp223;
-  const Scalar _tmp294 = _tmp116 * _tmp293 + _tmp221;
-  const Scalar _tmp295 = _tmp122 * _tmp294 + _tmp125 * _tmp294 + _tmp126 * _tmp294 +
-                         _tmp129 * _tmp294 + _tmp132 * _tmp294;
-  const Scalar _tmp296 = _tmp141 * _tmp295 - _tmp144 * _tmp293 - _tmp228;
-  const Scalar _tmp297 = -_tmp138 * _tmp293 - _tmp231 + _tmp295 * _tmp78;
-  const Scalar _tmp298 = _tmp140 * _tmp297 + _tmp146 * _tmp296;
-  const Scalar _tmp299 = _tmp150 * _tmp298 - _tmp152 * _tmp298 + _tmp296 * _tmp94;
-  const Scalar _tmp300 = -_tmp155 * _tmp298 + _tmp156 * _tmp298 + _tmp297 * _tmp94;
-  const Scalar _tmp301 = _tmp22 * _tmp4 + _tmp28 * _tmp36 + _tmp41 * _tmp45;
-  const Scalar _tmp302 = _tmp22 * _tmp58 + _tmp36 * _tmp56 + _tmp45 * _tmp53;
-  const Scalar _tmp303 = _tmp111 * _tmp302 + _tmp113 * _tmp301;
-  const Scalar _tmp304 =
-      -_tmp109 * (_tmp22 * _tmp67 + _tmp36 * _tmp64 + _tmp45 * _tmp66) + _tmp116 * _tmp303;
-  const Scalar _tmp305 = _tmp119 * _tmp304;
-  const Scalar _tmp306 = _tmp121 * _tmp305 + _tmp124 * _tmp305 + _tmp126 * _tmp304 +
-                         _tmp128 * _tmp305 + _tmp131 * _tmp305;
-  const Scalar _tmp307 = _tmp141 * _tmp306 - _tmp144 * _tmp303 + _tmp301 * _tmp75;
-  const Scalar _tmp308 = _tmp134 * _tmp302 - _tmp138 * _tmp303 + _tmp306 * _tmp78;
-  const Scalar _tmp309 = _tmp140 * _tmp308 + _tmp146 * _tmp307;
-  const Scalar _tmp310 = _tmp150 * _tmp309 - _tmp152 * _tmp309 + _tmp307 * _tmp94;
-  const Scalar _tmp311 = -_tmp155 * _tmp309 + _tmp156 * _tmp309 + _tmp308 * _tmp94;
+      _target_calibration[1] *
+      (_tmp121 * _tmp179 + _tmp121 * _tmp81 + _tmp123 * _tmp173 + _tmp125 * _tmp78 -
+       _tmp126 * _tmp170 - _tmp126 * _tmp174 - _tmp126 * _tmp180 - _tmp128 * _tmp169 +
+       _tmp147 * _tmp172 + _tmp147 * _tmp176 + _tmp147 * _tmp177 + _tmp147 * _tmp88 +
+       _tmp163 * _tmp86);
+  const Scalar _tmp182 = 2 * _tmp90;
+  const Scalar _tmp183 = _tmp166 * _tmp168 + _tmp181 * _tmp182;
+  const Scalar _tmp184 = (Scalar(1) / Scalar(2)) * _tmp84;
+  const Scalar _tmp185 =
+      _tmp103 * _tmp92 * _tmp93 * _tmp98 * std::pow(_tmp99, Scalar(_tmp100 - 1)) / _tmp101;
+  const Scalar _tmp186 = _tmp184 * _tmp185;
+  const Scalar _tmp187 = _target_calibration[0] * _tmp105;
+  const Scalar _tmp188 = _tmp104 / (_tmp91 * std::sqrt(_tmp91));
+  const Scalar _tmp189 = _tmp184 * _tmp188;
+  const Scalar _tmp190 = _tmp166 * _tmp187 + _tmp183 * _tmp186 - _tmp183 * _tmp189;
+  const Scalar _tmp191 = (Scalar(1) / Scalar(2)) * _tmp90;
+  const Scalar _tmp192 = _tmp188 * _tmp191;
+  const Scalar _tmp193 = _tmp185 * _tmp191;
+  const Scalar _tmp194 = _tmp105 * _tmp181 - _tmp183 * _tmp192 + _tmp183 * _tmp193;
+  const Scalar _tmp195 = -_tmp14;
+  const Scalar _tmp196 = -_tmp20;
+  const Scalar _tmp197 = _tmp196 + _tmp36;
+  const Scalar _tmp198 = _tmp17 * (_tmp117 + _tmp197) + _tmp22 * (_tmp195 + _tmp34);
+  const Scalar _tmp199 = _tmp111 + _tmp18;
+  const Scalar _tmp200 = _tmp17 * _tmp35 + _tmp22 * (_tmp197 + _tmp199);
+  const Scalar _tmp201 = _tmp17 * _tmp43 + _tmp22 * (_tmp114 + _tmp31);
+  const Scalar _tmp202 = _tmp198 * _tmp58 + _tmp200 * _tmp56 + _tmp201 * _tmp53;
+  const Scalar _tmp203 = _tmp202 * _tmp77;
+  const Scalar _tmp204 = _tmp198 * _tmp5 + _tmp200 * _tmp30 + _tmp201 * _tmp42;
+  const Scalar _tmp205 = _tmp124 * _tmp204;
+  const Scalar _tmp206 = _tmp203 + _tmp205;
+  const Scalar _tmp207 = _tmp124 * _tmp78;
+  const Scalar _tmp208 = _tmp204 * _tmp77;
+  const Scalar _tmp209 =
+      -_tmp132 * (_tmp198 * _tmp67 + _tmp200 * _tmp64 + _tmp201 * _tmp66) + _tmp135 * _tmp206;
+  const Scalar _tmp210 = _tmp138 * _tmp144;
+  const Scalar _tmp211 = _tmp138 * _tmp141;
+  const Scalar _tmp212 = _tmp138 * _tmp146;
+  const Scalar _tmp213 = _tmp130 * _tmp138;
+  const Scalar _tmp214 = _tmp142 * _tmp209 + _tmp209 * _tmp210 + _tmp209 * _tmp211 +
+                         _tmp209 * _tmp212 + _tmp209 * _tmp213;
+  const Scalar _tmp215 = _tmp127 * _tmp206;
+  const Scalar _tmp216 = _tmp148 * _tmp214;
+  const Scalar _tmp217 = _tmp157 * _tmp216;
+  const Scalar _tmp218 = _target_calibration[10] * _tmp217 - _tmp109 * _tmp215 + _tmp149 * _tmp216 +
+                         _tmp151 * _tmp214 + _tmp152 * _tmp204 - _tmp153 * _tmp206 +
+                         _tmp154 * _tmp216 - _tmp162 * _tmp206 - _tmp165 * _tmp206 +
+                         _tmp202 * _tmp207 + _tmp203 * _tmp86 + _tmp204 * _tmp81 + _tmp208 * _tmp78;
+  const Scalar _tmp219 = _tmp124 * _tmp86;
+  const Scalar _tmp220 = _target_calibration[9] * _tmp217 - _tmp169 * _tmp215 - _tmp170 * _tmp206 +
+                         _tmp171 * _tmp216 - _tmp174 * _tmp206 + _tmp175 * _tmp216 +
+                         _tmp179 * _tmp202 - _tmp180 * _tmp206 + _tmp202 * _tmp219 +
+                         _tmp202 * _tmp81 + _tmp205 * _tmp78 + _tmp208 * _tmp86 + _tmp214 * _tmp88;
+  const Scalar _tmp221 = _target_calibration[1] * _tmp182;
+  const Scalar _tmp222 = _tmp168 * _tmp218 + _tmp220 * _tmp221;
+  const Scalar _tmp223 = _tmp186 * _tmp222 + _tmp187 * _tmp218 - _tmp189 * _tmp222;
+  const Scalar _tmp224 = _target_calibration[1] * _tmp105;
+  const Scalar _tmp225 = -_tmp192 * _tmp222 + _tmp193 * _tmp222 + _tmp220 * _tmp224;
+  const Scalar _tmp226 = _tmp12 * (_tmp15 + _tmp195) + _tmp22 * _tmp33;
+  const Scalar _tmp227 =
+      _tmp12 * (_tmp119 + _tmp9) + _tmp22 * (_tmp110 + _tmp115 + _tmp18 + _tmp196);
+  const Scalar _tmp228 = _tmp10 * _tmp22 + _tmp12 * (_tmp116 + _tmp199);
+  const Scalar _tmp229 = _tmp226 * _tmp30 + _tmp227 * _tmp42 + _tmp228 * _tmp5;
+  const Scalar _tmp230 = _tmp124 * _tmp229;
+  const Scalar _tmp231 = _tmp226 * _tmp56 + _tmp227 * _tmp53 + _tmp228 * _tmp58;
+  const Scalar _tmp232 = _tmp231 * _tmp77;
+  const Scalar _tmp233 = _tmp230 + _tmp232;
+  const Scalar _tmp234 = (Scalar(1) / Scalar(2)) * _tmp233;
+  const Scalar _tmp235 =
+      -_tmp132 * (_tmp226 * _tmp64 + _tmp227 * _tmp66 + _tmp228 * _tmp67) + _tmp134 * _tmp234;
+  const Scalar _tmp236 = _tmp142 * _tmp235 + _tmp210 * _tmp235 + _tmp211 * _tmp235 +
+                         _tmp212 * _tmp235 + _tmp213 * _tmp235;
+  const Scalar _tmp237 = _tmp148 * _tmp236;
+  const Scalar _tmp238 = _tmp157 * _tmp237;
+  const Scalar _tmp239 = _tmp229 * _tmp77;
+  const Scalar _tmp240 = _tmp127 * _tmp233;
+  const Scalar _tmp241 = _target_calibration[10] * _tmp238 - _tmp109 * _tmp240 + _tmp149 * _tmp237 +
+                         _tmp151 * _tmp236 + _tmp152 * _tmp229 - _tmp153 * _tmp233 +
+                         _tmp154 * _tmp237 - _tmp160 * _tmp234 * _tmp49 - _tmp165 * _tmp233 +
+                         _tmp207 * _tmp231 + _tmp229 * _tmp81 + _tmp232 * _tmp86 + _tmp239 * _tmp78;
+  const Scalar _tmp242 = _tmp160 * _tmp60;
+  const Scalar _tmp243 = _target_calibration[9] * _tmp238 - _tmp169 * _tmp240 + _tmp171 * _tmp237 -
+                         _tmp174 * _tmp233 + _tmp175 * _tmp237 + _tmp179 * _tmp231 -
+                         _tmp180 * _tmp233 + _tmp219 * _tmp231 + _tmp230 * _tmp78 +
+                         _tmp231 * _tmp81 - _tmp234 * _tmp242 + _tmp236 * _tmp88 + _tmp239 * _tmp86;
+  const Scalar _tmp244 = _tmp168 * _tmp241 + _tmp221 * _tmp243;
+  const Scalar _tmp245 = _tmp186 * _tmp244 + _tmp187 * _tmp241 - _tmp189 * _tmp244;
+  const Scalar _tmp246 = -_tmp192 * _tmp244 + _tmp193 * _tmp244 + _tmp224 * _tmp243;
+  const Scalar _tmp247 = _tmp77 * source_inverse_range;
+  const Scalar _tmp248 = _tmp247 * _tmp5;
+  const Scalar _tmp249 = _tmp248 * _tmp86;
+  const Scalar _tmp250 = _tmp132 * source_inverse_range;
+  const Scalar _tmp251 = _tmp250 * _tmp67;
+  const Scalar _tmp252 = _tmp124 * source_inverse_range;
+  const Scalar _tmp253 = _tmp252 * _tmp5;
+  const Scalar _tmp254 = _tmp247 * _tmp58;
+  const Scalar _tmp255 = _tmp253 + _tmp254;
+  const Scalar _tmp256 = _tmp135 * _tmp255 - _tmp251;
+  const Scalar _tmp257 = _tmp138 * _tmp256;
+  const Scalar _tmp258 = _tmp130 * _tmp257 + _tmp141 * _tmp257 + _tmp142 * _tmp256 +
+                         _tmp144 * _tmp257 + _tmp146 * _tmp257;
+  const Scalar _tmp259 = _tmp148 * _tmp258;
+  const Scalar _tmp260 = _tmp157 * _tmp259;
+  const Scalar _tmp261 = _tmp179 * source_inverse_range;
+  const Scalar _tmp262 = _tmp261 * _tmp58;
+  const Scalar _tmp263 = _tmp81 * source_inverse_range;
+  const Scalar _tmp264 = _tmp263 * _tmp58;
+  const Scalar _tmp265 = _tmp253 * _tmp78;
+  const Scalar _tmp266 = _tmp127 * _tmp169;
+  const Scalar _tmp267 = _tmp252 * _tmp58;
+  const Scalar _tmp268 = _tmp267 * _tmp86;
+  const Scalar _tmp269 = _target_calibration[9] * _tmp260 - _tmp170 * _tmp255 + _tmp171 * _tmp259 -
+                         _tmp174 * _tmp255 + _tmp175 * _tmp259 - _tmp180 * _tmp255 + _tmp249 -
+                         _tmp255 * _tmp266 + _tmp258 * _tmp88 + _tmp262 + _tmp264 + _tmp265 +
+                         _tmp268;
+  const Scalar _tmp270 = _tmp248 * _tmp78;
+  const Scalar _tmp271 = _tmp254 * _tmp86;
+  const Scalar _tmp272 = _tmp152 * source_inverse_range;
+  const Scalar _tmp273 = _tmp272 * _tmp5;
+  const Scalar _tmp274 = _tmp263 * _tmp5;
+  const Scalar _tmp275 = _tmp109 * _tmp127;
+  const Scalar _tmp276 = _tmp267 * _tmp78;
+  const Scalar _tmp277 = _target_calibration[10] * _tmp260 + _tmp149 * _tmp259 + _tmp151 * _tmp258 -
+                         _tmp153 * _tmp255 + _tmp155 * _tmp258 - _tmp162 * _tmp255 -
+                         _tmp165 * _tmp255 - _tmp255 * _tmp275 + _tmp270 + _tmp271 + _tmp273 +
+                         _tmp274 + _tmp276;
+  const Scalar _tmp278 = _tmp168 * _tmp277 + _tmp221 * _tmp269;
+  const Scalar _tmp279 = _tmp186 * _tmp278 + _tmp187 * _tmp277 - _tmp189 * _tmp278;
+  const Scalar _tmp280 = -_tmp192 * _tmp278 + _tmp193 * _tmp278 + _tmp224 * _tmp269;
+  const Scalar _tmp281 = _tmp252 * _tmp53;
+  const Scalar _tmp282 = _tmp281 * _tmp78;
+  const Scalar _tmp283 = _tmp247 * _tmp53;
+  const Scalar _tmp284 = _tmp283 * _tmp86;
+  const Scalar _tmp285 = _tmp252 * _tmp42;
+  const Scalar _tmp286 = _tmp283 + _tmp285;
+  const Scalar _tmp287 = _tmp263 * _tmp42;
+  const Scalar _tmp288 = _tmp250 * _tmp66;
+  const Scalar _tmp289 = _tmp135 * _tmp286 - _tmp288;
+  const Scalar _tmp290 = _tmp142 * _tmp289 + _tmp210 * _tmp289 + _tmp211 * _tmp289 +
+                         _tmp212 * _tmp289 + _tmp213 * _tmp289;
+  const Scalar _tmp291 = _tmp247 * _tmp42;
+  const Scalar _tmp292 = _tmp291 * _tmp78;
+  const Scalar _tmp293 = _tmp272 * _tmp42;
+  const Scalar _tmp294 = _tmp150 * _tmp290 + _tmp151 * _tmp290 - _tmp153 * _tmp286 +
+                         _tmp155 * _tmp290 + _tmp159 * _tmp290 - _tmp162 * _tmp286 -
+                         _tmp165 * _tmp286 - _tmp275 * _tmp286 + _tmp282 + _tmp284 + _tmp287 +
+                         _tmp292 + _tmp293;
+  const Scalar _tmp295 = _tmp281 * _tmp86;
+  const Scalar _tmp296 = _tmp263 * _tmp53;
+  const Scalar _tmp297 = _tmp261 * _tmp53;
+  const Scalar _tmp298 = _tmp291 * _tmp86;
+  const Scalar _tmp299 = _tmp285 * _tmp78;
+  const Scalar _tmp300 = -_tmp170 * _tmp286 + _tmp172 * _tmp290 - _tmp174 * _tmp286 +
+                         _tmp176 * _tmp290 + _tmp177 * _tmp290 - _tmp180 * _tmp286 -
+                         _tmp266 * _tmp286 + _tmp290 * _tmp88 + _tmp295 + _tmp296 + _tmp297 +
+                         _tmp298 + _tmp299;
+  const Scalar _tmp301 = _tmp168 * _tmp294 + _tmp221 * _tmp300;
+  const Scalar _tmp302 = _tmp186 * _tmp301 + _tmp187 * _tmp294 - _tmp189 * _tmp301;
+  const Scalar _tmp303 = -_tmp192 * _tmp301 + _tmp193 * _tmp301 + _tmp224 * _tmp300;
+  const Scalar _tmp304 = _tmp252 * _tmp56;
+  const Scalar _tmp305 = _tmp304 * _tmp86;
+  const Scalar _tmp306 = _tmp252 * _tmp30;
+  const Scalar _tmp307 = _tmp247 * _tmp56;
+  const Scalar _tmp308 = _tmp306 + _tmp307;
+  const Scalar _tmp309 = _tmp261 * _tmp56;
+  const Scalar _tmp310 = _tmp250 * _tmp64;
+  const Scalar _tmp311 = _tmp135 * _tmp308 - _tmp310;
+  const Scalar _tmp312 = _tmp142 * _tmp311 + _tmp210 * _tmp311 + _tmp211 * _tmp311 +
+                         _tmp212 * _tmp311 + _tmp213 * _tmp311;
+  const Scalar _tmp313 = _tmp306 * _tmp78;
+  const Scalar _tmp314 = _tmp263 * _tmp56;
+  const Scalar _tmp315 = _tmp247 * _tmp30;
+  const Scalar _tmp316 = _tmp315 * _tmp86;
+  const Scalar _tmp317 = -_tmp170 * _tmp308 + _tmp172 * _tmp312 - _tmp174 * _tmp308 +
+                         _tmp176 * _tmp312 + _tmp177 * _tmp312 - _tmp180 * _tmp308 -
+                         _tmp266 * _tmp308 + _tmp305 + _tmp309 + _tmp312 * _tmp88 + _tmp313 +
+                         _tmp314 + _tmp316;
+  const Scalar _tmp318 = _tmp304 * _tmp78;
+  const Scalar _tmp319 = _tmp307 * _tmp86;
+  const Scalar _tmp320 = _tmp272 * _tmp30;
+  const Scalar _tmp321 = _tmp263 * _tmp30;
+  const Scalar _tmp322 = _tmp315 * _tmp78;
+  const Scalar _tmp323 = _tmp150 * _tmp312 + _tmp151 * _tmp312 - _tmp153 * _tmp308 +
+                         _tmp155 * _tmp312 + _tmp159 * _tmp312 - _tmp162 * _tmp308 -
+                         _tmp165 * _tmp308 - _tmp275 * _tmp308 + _tmp318 + _tmp319 + _tmp320 +
+                         _tmp321 + _tmp322;
+  const Scalar _tmp324 = _tmp168 * _tmp323 + _tmp221 * _tmp317;
+  const Scalar _tmp325 = _tmp186 * _tmp324 + _tmp187 * _tmp323 - _tmp189 * _tmp324;
+  const Scalar _tmp326 = -_tmp192 * _tmp324 + _tmp193 * _tmp324 + _tmp224 * _tmp317;
+  const Scalar _tmp327 = [&]() {
+    const Scalar base = _tmp60;
+    return base * base * base;
+  }();
+  const Scalar _tmp328 = -_tmp1;
+  const Scalar _tmp329 = _tmp3 + _tmp328;
+  const Scalar _tmp330 = -_tmp51;
+  const Scalar _tmp331 = std::pow(_target_pose[3], Scalar(2));
+  const Scalar _tmp332 = _tmp330 + _tmp331;
+  const Scalar _tmp333 = _tmp39 * (_tmp329 + _tmp332) + _tmp68;
+  const Scalar _tmp334 = _tmp108 * _tmp333;
+  const Scalar _tmp335 = _tmp124 * _tmp333;
+  const Scalar _tmp336 = -_tmp54;
+  const Scalar _tmp337 = -_tmp331;
+  const Scalar _tmp338 = _tmp337 + _tmp51;
+  const Scalar _tmp339 = -_tmp41;
+  const Scalar _tmp340 = -_tmp132 * (_tmp24 * (_tmp339 + _tmp40) + _tmp39 * (_tmp336 + _tmp65) +
+                                     _tmp47 * (_tmp329 + _tmp338)) +
+                         _tmp133 * _tmp333 * _tmp88;
+  const Scalar _tmp341 = _tmp142 * _tmp340 + _tmp210 * _tmp340 + _tmp211 * _tmp340 +
+                         _tmp212 * _tmp340 + _tmp213 * _tmp340;
+  const Scalar _tmp342 = _tmp148 * _tmp341;
+  const Scalar _tmp343 = _tmp157 * _tmp342;
+  const Scalar _tmp344 = _tmp341 * _tmp80;
+  const Scalar _tmp345 = _tmp333 * _tmp61;
+  const Scalar _tmp346 = 4 * _tmp345 * _tmp49;
+  const Scalar _tmp347 =
+      _target_calibration[10] * _tmp343 - 2 * _target_calibration[9] * _tmp327 * _tmp334 -
+      _tmp109 * _tmp346 + _tmp150 * _tmp341 - _tmp154 * _tmp334 * _tmp60 + _tmp155 * _tmp341 +
+      _tmp173 * _tmp333 - _tmp242 * _tmp333 * _tmp49 + _tmp335 * _tmp78 + _tmp344 * _tmp49;
+  const Scalar _tmp348 = 6 * _tmp333;
+  const Scalar _tmp349 = _target_calibration[9] * _tmp343 - _tmp109 * _tmp327 * _tmp348 -
+                         _tmp160 * _tmp345 - _tmp169 * _tmp346 + _tmp171 * _tmp342 +
+                         _tmp175 * _tmp342 + _tmp178 * _tmp348 - _tmp180 * _tmp333 * _tmp77 +
+                         _tmp333 * _tmp81 + _tmp335 * _tmp86 + _tmp344 * _tmp60;
+  const Scalar _tmp350 = _tmp168 * _tmp347 + _tmp221 * _tmp349;
+  const Scalar _tmp351 = _tmp186 * _tmp350 + _tmp187 * _tmp347 - _tmp189 * _tmp350;
+  const Scalar _tmp352 = -_tmp192 * _tmp350 + _tmp193 * _tmp350 + _tmp224 * _tmp349;
+  const Scalar _tmp353 = -_tmp3;
+  const Scalar _tmp354 = _tmp1 + _tmp353;
+  const Scalar _tmp355 = -_tmp26;
+  const Scalar _tmp356 =
+      _tmp24 * (_tmp29 + _tmp355) + _tmp39 * (_tmp338 + _tmp354) + _tmp47 * (_tmp336 + _tmp55);
+  const Scalar _tmp357 = -_tmp132 * (_tmp24 * (_tmp328 + _tmp331 + _tmp353 + _tmp51) + _tmp48) +
+                         _tmp133 * _tmp151 * _tmp356;
+  const Scalar _tmp358 = _tmp138 * _tmp357;
+  const Scalar _tmp359 = _tmp130 * _tmp358 + _tmp141 * _tmp358 + _tmp142 * _tmp357 +
+                         _tmp144 * _tmp358 + _tmp146 * _tmp358;
+  const Scalar _tmp360 = _tmp148 * _tmp359;
+  const Scalar _tmp361 = _tmp160 * _tmp356;
+  const Scalar _tmp362 = _tmp108 * [&]() {
+    const Scalar base = _tmp49;
+    return base * base * base;
+  }();
+  const Scalar _tmp363 = _tmp356 * _tmp77;
+  const Scalar _tmp364 = _tmp157 * _tmp360;
+  const Scalar _tmp365 = 4 * _tmp356 * _tmp60;
+  const Scalar _tmp366 = -2 * _target_calibration[10] * _tmp356 * _tmp362 +
+                         _target_calibration[9] * _tmp364 - _tmp108 * _tmp171 * _tmp356 * _tmp49 -
+                         _tmp108 * _tmp365 * _tmp83 - _tmp156 * _tmp361 + _tmp171 * _tmp360 +
+                         _tmp175 * _tmp360 + _tmp207 * _tmp356 + _tmp359 * _tmp88 +
+                         _tmp363 * _tmp86;
+  const Scalar _tmp367 = 6 * _tmp356;
+  const Scalar _tmp368 =
+      _target_calibration[10] * _tmp364 - _target_calibration[9] * _tmp362 * _tmp367 -
+      _tmp124 * _tmp153 * _tmp356 + _tmp150 * _tmp359 + _tmp151 * _tmp359 + _tmp155 * _tmp359 -
+      _tmp180 * _tmp365 + _tmp356 * _tmp81 - _tmp361 * _tmp50 + _tmp363 * _tmp78 + _tmp367 * _tmp87;
+  const Scalar _tmp369 = _tmp168 * _tmp368 + _tmp221 * _tmp366;
+  const Scalar _tmp370 = _tmp186 * _tmp369 + _tmp187 * _tmp368 - _tmp189 * _tmp369;
+  const Scalar _tmp371 = -_tmp192 * _tmp369 + _tmp193 * _tmp369 + _tmp224 * _tmp366;
+  const Scalar _tmp372 = _tmp47 * (_tmp332 + _tmp354) + _tmp59;
+  const Scalar _tmp373 = _tmp124 * _tmp372;
+  const Scalar _tmp374 = _tmp24 * (_tmp1 + _tmp3 + _tmp330 + _tmp337) +
+                         _tmp39 * (_tmp28 + _tmp355) + _tmp47 * (_tmp339 + _tmp57);
+  const Scalar _tmp375 = _tmp374 * _tmp77;
+  const Scalar _tmp376 = _tmp373 + _tmp375;
+  const Scalar _tmp377 = _tmp137 * _tmp376 * _tmp69 * _tmp80;
+  const Scalar _tmp378 =
+      (Scalar(5) / Scalar(4)) * _tmp129 * _tmp377 + (Scalar(3) / Scalar(4)) * _tmp140 * _tmp377 +
+      (Scalar(9) / Scalar(4)) * _tmp143 * _tmp377 + (Scalar(7) / Scalar(4)) * _tmp145 * _tmp377 +
+      (Scalar(1) / Scalar(4)) * _tmp377;
+  const Scalar _tmp379 = _tmp372 * _tmp77;
+  const Scalar _tmp380 = _tmp150 * _tmp378 + _tmp151 * _tmp378 + _tmp152 * _tmp372 -
+                         _tmp153 * _tmp376 + _tmp155 * _tmp378 + _tmp159 * _tmp378 -
+                         _tmp162 * _tmp376 - _tmp165 * _tmp376 + _tmp207 * _tmp374 -
+                         _tmp275 * _tmp376 + _tmp372 * _tmp81 + _tmp375 * _tmp86 + _tmp379 * _tmp78;
+  const Scalar _tmp381 = -_tmp170 * _tmp376 + _tmp172 * _tmp378 - _tmp174 * _tmp376 +
+                         _tmp176 * _tmp378 + _tmp177 * _tmp378 + _tmp179 * _tmp374 -
+                         _tmp180 * _tmp376 + _tmp219 * _tmp374 - _tmp266 * _tmp376 +
+                         _tmp373 * _tmp78 + _tmp374 * _tmp81 + _tmp378 * _tmp88 + _tmp379 * _tmp86;
+  const Scalar _tmp382 = _tmp168 * _tmp380 + _tmp221 * _tmp381;
+  const Scalar _tmp383 = _tmp186 * _tmp382 + _tmp187 * _tmp380 - _tmp189 * _tmp382;
+  const Scalar _tmp384 = _tmp191 * _tmp382;
+  const Scalar _tmp385 = _tmp185 * _tmp384 - _tmp188 * _tmp384 + _tmp224 * _tmp381;
+  const Scalar _tmp386 = -_tmp253 - _tmp254;
+  const Scalar _tmp387 = _tmp135 * _tmp386 + _tmp251;
+  const Scalar _tmp388 = _tmp142 * _tmp387 + _tmp210 * _tmp387 + _tmp211 * _tmp387 +
+                         _tmp212 * _tmp387 + _tmp213 * _tmp387;
+  const Scalar _tmp389 = -_tmp170 * _tmp386 + _tmp172 * _tmp388 - _tmp174 * _tmp386 +
+                         _tmp176 * _tmp388 + _tmp177 * _tmp388 - _tmp180 * _tmp386 - _tmp249 -
+                         _tmp262 - _tmp264 - _tmp265 - _tmp266 * _tmp386 - _tmp268 +
+                         _tmp388 * _tmp88;
+  const Scalar _tmp390 = _tmp150 * _tmp388 + _tmp151 * _tmp388 - _tmp153 * _tmp386 +
+                         _tmp155 * _tmp388 + _tmp159 * _tmp388 - _tmp162 * _tmp386 -
+                         _tmp165 * _tmp386 - _tmp270 - _tmp271 - _tmp273 - _tmp274 -
+                         _tmp275 * _tmp386 - _tmp276;
+  const Scalar _tmp391 = _tmp168 * _tmp390 + _tmp221 * _tmp389;
+  const Scalar _tmp392 = _tmp186 * _tmp391 + _tmp187 * _tmp390 - _tmp189 * _tmp391;
+  const Scalar _tmp393 = -_tmp192 * _tmp391 + _tmp193 * _tmp391 + _tmp224 * _tmp389;
+  const Scalar _tmp394 = -_tmp283 - _tmp285;
+  const Scalar _tmp395 = _tmp135 * _tmp394 + _tmp288;
+  const Scalar _tmp396 = _tmp142 * _tmp395 + _tmp210 * _tmp395 + _tmp211 * _tmp395 +
+                         _tmp212 * _tmp395 + _tmp213 * _tmp395;
+  const Scalar _tmp397 = _tmp127 * _tmp394;
+  const Scalar _tmp398 =
+      _target_calibration[0] *
+      (-_tmp109 * _tmp397 + _tmp150 * _tmp396 + _tmp151 * _tmp396 - _tmp153 * _tmp394 +
+       _tmp155 * _tmp396 + _tmp159 * _tmp396 - _tmp162 * _tmp394 - _tmp165 * _tmp394 - _tmp282 -
+       _tmp284 - _tmp287 - _tmp292 - _tmp293);
+  const Scalar _tmp399 = -_tmp169 * _tmp397 - _tmp170 * _tmp394 + _tmp172 * _tmp396 -
+                         _tmp174 * _tmp394 + _tmp176 * _tmp396 + _tmp177 * _tmp396 -
+                         _tmp180 * _tmp394 - _tmp295 - _tmp296 - _tmp297 - _tmp298 - _tmp299 +
+                         _tmp396 * _tmp88;
+  const Scalar _tmp400 = _tmp167 * _tmp398 + _tmp221 * _tmp399;
+  const Scalar _tmp401 = _tmp105 * _tmp398 + _tmp186 * _tmp400 - _tmp189 * _tmp400;
+  const Scalar _tmp402 = -_tmp192 * _tmp400 + _tmp193 * _tmp400 + _tmp224 * _tmp399;
+  const Scalar _tmp403 = -_tmp306 - _tmp307;
+  const Scalar _tmp404 = _tmp127 * _tmp403;
+  const Scalar _tmp405 = _tmp135 * _tmp403 + _tmp310;
+  const Scalar _tmp406 = _tmp138 * _tmp405;
+  const Scalar _tmp407 = _tmp130 * _tmp406 + _tmp141 * _tmp406 + _tmp142 * _tmp405 +
+                         _tmp144 * _tmp406 + _tmp146 * _tmp406;
+  const Scalar _tmp408 = -_tmp109 * _tmp404 + _tmp150 * _tmp407 + _tmp151 * _tmp407 -
+                         _tmp153 * _tmp403 + _tmp155 * _tmp407 + _tmp159 * _tmp407 -
+                         _tmp162 * _tmp403 - _tmp165 * _tmp403 - _tmp318 - _tmp319 - _tmp320 -
+                         _tmp321 - _tmp322;
+  const Scalar _tmp409 = -_tmp169 * _tmp404 - _tmp170 * _tmp403 + _tmp172 * _tmp407 -
+                         _tmp174 * _tmp403 + _tmp176 * _tmp407 + _tmp177 * _tmp407 -
+                         _tmp180 * _tmp403 - _tmp305 - _tmp309 - _tmp313 - _tmp314 - _tmp316 +
+                         _tmp407 * _tmp88;
+  const Scalar _tmp410 = _tmp168 * _tmp408 + _tmp221 * _tmp409;
+  const Scalar _tmp411 = _tmp186 * _tmp410 + _tmp187 * _tmp408 - _tmp189 * _tmp410;
+  const Scalar _tmp412 = -_tmp192 * _tmp410 + _tmp193 * _tmp410 + _tmp224 * _tmp409;
+  const Scalar _tmp413 = _tmp23 * _tmp5 + _tmp30 * _tmp38 + _tmp42 * _tmp46;
+  const Scalar _tmp414 = _tmp124 * _tmp413;
+  const Scalar _tmp415 = _tmp23 * _tmp58 + _tmp38 * _tmp56 + _tmp46 * _tmp53;
+  const Scalar _tmp416 = _tmp415 * _tmp77;
+  const Scalar _tmp417 = _tmp414 + _tmp416;
+  const Scalar _tmp418 =
+      -_tmp132 * (_tmp23 * _tmp67 + _tmp38 * _tmp64 + _tmp46 * _tmp66) + _tmp135 * _tmp417;
+  const Scalar _tmp419 = _tmp142 * _tmp418 + _tmp210 * _tmp418 + _tmp211 * _tmp418 +
+                         _tmp212 * _tmp418 + _tmp213 * _tmp418;
+  const Scalar _tmp420 = _tmp124 * _tmp415;
+  const Scalar _tmp421 = _tmp150 * _tmp419 + _tmp151 * _tmp419 + _tmp152 * _tmp413 -
+                         _tmp153 * _tmp417 + _tmp155 * _tmp419 + _tmp159 * _tmp419 -
+                         _tmp162 * _tmp417 - _tmp165 * _tmp417 - _tmp275 * _tmp417 +
+                         _tmp413 * _tmp79 + _tmp413 * _tmp81 + _tmp416 * _tmp86 + _tmp420 * _tmp78;
+  const Scalar _tmp422 = -_tmp170 * _tmp417 + _tmp172 * _tmp419 + _tmp173 * _tmp413 -
+                         _tmp174 * _tmp417 + _tmp176 * _tmp419 + _tmp177 * _tmp419 +
+                         _tmp179 * _tmp415 - _tmp180 * _tmp417 - _tmp266 * _tmp417 +
+                         _tmp414 * _tmp78 + _tmp415 * _tmp81 + _tmp419 * _tmp88 + _tmp420 * _tmp86;
+  const Scalar _tmp423 = _tmp168 * _tmp421 + _tmp221 * _tmp422;
+  const Scalar _tmp424 = _tmp186 * _tmp423 + _tmp187 * _tmp421 - _tmp189 * _tmp423;
+  const Scalar _tmp425 = -_tmp192 * _tmp423 + _tmp193 * _tmp423 + _tmp224 * _tmp422;
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 2, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp95;
-    _res(1, 0) = _tmp96;
+    _res(0, 0) = _tmp106;
+    _res(1, 0) = _tmp107;
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 2, 13>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp153;
-    _jacobian(1, 0) = _tmp157;
-    _jacobian(0, 1) = _tmp172;
-    _jacobian(1, 1) = _tmp173;
-    _jacobian(0, 2) = _tmp186;
-    _jacobian(1, 2) = _tmp188;
-    _jacobian(0, 3) = _tmp205;
-    _jacobian(1, 3) = _tmp206;
-    _jacobian(0, 4) = _tmp219;
-    _jacobian(1, 4) = _tmp220;
-    _jacobian(0, 5) = _tmp234;
-    _jacobian(1, 5) = _tmp235;
-    _jacobian(0, 6) = _tmp252;
-    _jacobian(1, 6) = _tmp253;
-    _jacobian(0, 7) = _tmp264;
-    _jacobian(1, 7) = _tmp265;
-    _jacobian(0, 8) = _tmp274;
-    _jacobian(1, 8) = _tmp275;
-    _jacobian(0, 9) = _tmp282;
-    _jacobian(1, 9) = _tmp283;
-    _jacobian(0, 10) = _tmp291;
-    _jacobian(1, 10) = _tmp292;
-    _jacobian(0, 11) = _tmp299;
-    _jacobian(1, 11) = _tmp300;
-    _jacobian(0, 12) = _tmp310;
-    _jacobian(1, 12) = _tmp311;
+    _jacobian(0, 0) = _tmp190;
+    _jacobian(1, 0) = _tmp194;
+    _jacobian(0, 1) = _tmp223;
+    _jacobian(1, 1) = _tmp225;
+    _jacobian(0, 2) = _tmp245;
+    _jacobian(1, 2) = _tmp246;
+    _jacobian(0, 3) = _tmp279;
+    _jacobian(1, 3) = _tmp280;
+    _jacobian(0, 4) = _tmp302;
+    _jacobian(1, 4) = _tmp303;
+    _jacobian(0, 5) = _tmp325;
+    _jacobian(1, 5) = _tmp326;
+    _jacobian(0, 6) = _tmp351;
+    _jacobian(1, 6) = _tmp352;
+    _jacobian(0, 7) = _tmp370;
+    _jacobian(1, 7) = _tmp371;
+    _jacobian(0, 8) = _tmp383;
+    _jacobian(1, 8) = _tmp385;
+    _jacobian(0, 9) = _tmp392;
+    _jacobian(1, 9) = _tmp393;
+    _jacobian(0, 10) = _tmp401;
+    _jacobian(1, 10) = _tmp402;
+    _jacobian(0, 11) = _tmp411;
+    _jacobian(1, 11) = _tmp412;
+    _jacobian(0, 12) = _tmp424;
+    _jacobian(1, 12) = _tmp425;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 13, 13>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow(_tmp153, Scalar(2)) + std::pow(_tmp157, Scalar(2));
-    _hessian(1, 0) = _tmp153 * _tmp172 + _tmp157 * _tmp173;
-    _hessian(2, 0) = _tmp153 * _tmp186 + _tmp157 * _tmp188;
-    _hessian(3, 0) = _tmp153 * _tmp205 + _tmp157 * _tmp206;
-    _hessian(4, 0) = _tmp153 * _tmp219 + _tmp157 * _tmp220;
-    _hessian(5, 0) = _tmp153 * _tmp234 + _tmp157 * _tmp235;
-    _hessian(6, 0) = _tmp153 * _tmp252 + _tmp157 * _tmp253;
-    _hessian(7, 0) = _tmp153 * _tmp264 + _tmp157 * _tmp265;
-    _hessian(8, 0) = _tmp153 * _tmp274 + _tmp157 * _tmp275;
-    _hessian(9, 0) = _tmp153 * _tmp282 + _tmp157 * _tmp283;
-    _hessian(10, 0) = _tmp153 * _tmp291 + _tmp157 * _tmp292;
-    _hessian(11, 0) = _tmp153 * _tmp299 + _tmp157 * _tmp300;
-    _hessian(12, 0) = _tmp153 * _tmp310 + _tmp157 * _tmp311;
+    _hessian(0, 0) = std::pow(_tmp190, Scalar(2)) + std::pow(_tmp194, Scalar(2));
+    _hessian(1, 0) = _tmp190 * _tmp223 + _tmp194 * _tmp225;
+    _hessian(2, 0) = _tmp190 * _tmp245 + _tmp194 * _tmp246;
+    _hessian(3, 0) = _tmp190 * _tmp279 + _tmp194 * _tmp280;
+    _hessian(4, 0) = _tmp190 * _tmp302 + _tmp194 * _tmp303;
+    _hessian(5, 0) = _tmp190 * _tmp325 + _tmp194 * _tmp326;
+    _hessian(6, 0) = _tmp190 * _tmp351 + _tmp194 * _tmp352;
+    _hessian(7, 0) = _tmp190 * _tmp370 + _tmp194 * _tmp371;
+    _hessian(8, 0) = _tmp190 * _tmp383 + _tmp194 * _tmp385;
+    _hessian(9, 0) = _tmp190 * _tmp392 + _tmp194 * _tmp393;
+    _hessian(10, 0) = _tmp190 * _tmp401 + _tmp194 * _tmp402;
+    _hessian(11, 0) = _tmp190 * _tmp411 + _tmp194 * _tmp412;
+    _hessian(12, 0) = _tmp190 * _tmp424 + _tmp194 * _tmp425;
     _hessian(0, 1) = 0;
-    _hessian(1, 1) = std::pow(_tmp172, Scalar(2)) + std::pow(_tmp173, Scalar(2));
-    _hessian(2, 1) = _tmp172 * _tmp186 + _tmp173 * _tmp188;
-    _hessian(3, 1) = _tmp172 * _tmp205 + _tmp173 * _tmp206;
-    _hessian(4, 1) = _tmp172 * _tmp219 + _tmp173 * _tmp220;
-    _hessian(5, 1) = _tmp172 * _tmp234 + _tmp173 * _tmp235;
-    _hessian(6, 1) = _tmp172 * _tmp252 + _tmp173 * _tmp253;
-    _hessian(7, 1) = _tmp172 * _tmp264 + _tmp173 * _tmp265;
-    _hessian(8, 1) = _tmp172 * _tmp274 + _tmp173 * _tmp275;
-    _hessian(9, 1) = _tmp172 * _tmp282 + _tmp173 * _tmp283;
-    _hessian(10, 1) = _tmp172 * _tmp291 + _tmp173 * _tmp292;
-    _hessian(11, 1) = _tmp172 * _tmp299 + _tmp173 * _tmp300;
-    _hessian(12, 1) = _tmp172 * _tmp310 + _tmp173 * _tmp311;
+    _hessian(1, 1) = std::pow(_tmp223, Scalar(2)) + std::pow(_tmp225, Scalar(2));
+    _hessian(2, 1) = _tmp223 * _tmp245 + _tmp225 * _tmp246;
+    _hessian(3, 1) = _tmp223 * _tmp279 + _tmp225 * _tmp280;
+    _hessian(4, 1) = _tmp223 * _tmp302 + _tmp225 * _tmp303;
+    _hessian(5, 1) = _tmp223 * _tmp325 + _tmp225 * _tmp326;
+    _hessian(6, 1) = _tmp223 * _tmp351 + _tmp225 * _tmp352;
+    _hessian(7, 1) = _tmp223 * _tmp370 + _tmp225 * _tmp371;
+    _hessian(8, 1) = _tmp223 * _tmp383 + _tmp225 * _tmp385;
+    _hessian(9, 1) = _tmp223 * _tmp392 + _tmp225 * _tmp393;
+    _hessian(10, 1) = _tmp223 * _tmp401 + _tmp225 * _tmp402;
+    _hessian(11, 1) = _tmp223 * _tmp411 + _tmp225 * _tmp412;
+    _hessian(12, 1) = _tmp223 * _tmp424 + _tmp225 * _tmp425;
     _hessian(0, 2) = 0;
     _hessian(1, 2) = 0;
-    _hessian(2, 2) = std::pow(_tmp186, Scalar(2)) + std::pow(_tmp188, Scalar(2));
-    _hessian(3, 2) = _tmp186 * _tmp205 + _tmp188 * _tmp206;
-    _hessian(4, 2) = _tmp186 * _tmp219 + _tmp188 * _tmp220;
-    _hessian(5, 2) = _tmp186 * _tmp234 + _tmp188 * _tmp235;
-    _hessian(6, 2) = _tmp186 * _tmp252 + _tmp188 * _tmp253;
-    _hessian(7, 2) = _tmp186 * _tmp264 + _tmp188 * _tmp265;
-    _hessian(8, 2) = _tmp186 * _tmp274 + _tmp188 * _tmp275;
-    _hessian(9, 2) = _tmp186 * _tmp282 + _tmp188 * _tmp283;
-    _hessian(10, 2) = _tmp186 * _tmp291 + _tmp188 * _tmp292;
-    _hessian(11, 2) = _tmp186 * _tmp299 + _tmp188 * _tmp300;
-    _hessian(12, 2) = _tmp186 * _tmp310 + _tmp188 * _tmp311;
+    _hessian(2, 2) = std::pow(_tmp245, Scalar(2)) + std::pow(_tmp246, Scalar(2));
+    _hessian(3, 2) = _tmp245 * _tmp279 + _tmp246 * _tmp280;
+    _hessian(4, 2) = _tmp245 * _tmp302 + _tmp246 * _tmp303;
+    _hessian(5, 2) = _tmp245 * _tmp325 + _tmp246 * _tmp326;
+    _hessian(6, 2) = _tmp245 * _tmp351 + _tmp246 * _tmp352;
+    _hessian(7, 2) = _tmp245 * _tmp370 + _tmp246 * _tmp371;
+    _hessian(8, 2) = _tmp245 * _tmp383 + _tmp246 * _tmp385;
+    _hessian(9, 2) = _tmp245 * _tmp392 + _tmp246 * _tmp393;
+    _hessian(10, 2) = _tmp245 * _tmp401 + _tmp246 * _tmp402;
+    _hessian(11, 2) = _tmp245 * _tmp411 + _tmp246 * _tmp412;
+    _hessian(12, 2) = _tmp245 * _tmp424 + _tmp246 * _tmp425;
     _hessian(0, 3) = 0;
     _hessian(1, 3) = 0;
     _hessian(2, 3) = 0;
-    _hessian(3, 3) = std::pow(_tmp205, Scalar(2)) + std::pow(_tmp206, Scalar(2));
-    _hessian(4, 3) = _tmp205 * _tmp219 + _tmp206 * _tmp220;
-    _hessian(5, 3) = _tmp205 * _tmp234 + _tmp206 * _tmp235;
-    _hessian(6, 3) = _tmp205 * _tmp252 + _tmp206 * _tmp253;
-    _hessian(7, 3) = _tmp205 * _tmp264 + _tmp206 * _tmp265;
-    _hessian(8, 3) = _tmp205 * _tmp274 + _tmp206 * _tmp275;
-    _hessian(9, 3) = _tmp205 * _tmp282 + _tmp206 * _tmp283;
-    _hessian(10, 3) = _tmp205 * _tmp291 + _tmp206 * _tmp292;
-    _hessian(11, 3) = _tmp205 * _tmp299 + _tmp206 * _tmp300;
-    _hessian(12, 3) = _tmp205 * _tmp310 + _tmp206 * _tmp311;
+    _hessian(3, 3) = std::pow(_tmp279, Scalar(2)) + std::pow(_tmp280, Scalar(2));
+    _hessian(4, 3) = _tmp279 * _tmp302 + _tmp280 * _tmp303;
+    _hessian(5, 3) = _tmp279 * _tmp325 + _tmp280 * _tmp326;
+    _hessian(6, 3) = _tmp279 * _tmp351 + _tmp280 * _tmp352;
+    _hessian(7, 3) = _tmp279 * _tmp370 + _tmp280 * _tmp371;
+    _hessian(8, 3) = _tmp279 * _tmp383 + _tmp280 * _tmp385;
+    _hessian(9, 3) = _tmp279 * _tmp392 + _tmp280 * _tmp393;
+    _hessian(10, 3) = _tmp279 * _tmp401 + _tmp280 * _tmp402;
+    _hessian(11, 3) = _tmp279 * _tmp411 + _tmp280 * _tmp412;
+    _hessian(12, 3) = _tmp279 * _tmp424 + _tmp280 * _tmp425;
     _hessian(0, 4) = 0;
     _hessian(1, 4) = 0;
     _hessian(2, 4) = 0;
     _hessian(3, 4) = 0;
-    _hessian(4, 4) = std::pow(_tmp219, Scalar(2)) + std::pow(_tmp220, Scalar(2));
-    _hessian(5, 4) = _tmp219 * _tmp234 + _tmp220 * _tmp235;
-    _hessian(6, 4) = _tmp219 * _tmp252 + _tmp220 * _tmp253;
-    _hessian(7, 4) = _tmp219 * _tmp264 + _tmp220 * _tmp265;
-    _hessian(8, 4) = _tmp219 * _tmp274 + _tmp220 * _tmp275;
-    _hessian(9, 4) = _tmp219 * _tmp282 + _tmp220 * _tmp283;
-    _hessian(10, 4) = _tmp219 * _tmp291 + _tmp220 * _tmp292;
-    _hessian(11, 4) = _tmp219 * _tmp299 + _tmp220 * _tmp300;
-    _hessian(12, 4) = _tmp219 * _tmp310 + _tmp220 * _tmp311;
+    _hessian(4, 4) = std::pow(_tmp302, Scalar(2)) + std::pow(_tmp303, Scalar(2));
+    _hessian(5, 4) = _tmp302 * _tmp325 + _tmp303 * _tmp326;
+    _hessian(6, 4) = _tmp302 * _tmp351 + _tmp303 * _tmp352;
+    _hessian(7, 4) = _tmp302 * _tmp370 + _tmp303 * _tmp371;
+    _hessian(8, 4) = _tmp302 * _tmp383 + _tmp303 * _tmp385;
+    _hessian(9, 4) = _tmp302 * _tmp392 + _tmp303 * _tmp393;
+    _hessian(10, 4) = _tmp302 * _tmp401 + _tmp303 * _tmp402;
+    _hessian(11, 4) = _tmp302 * _tmp411 + _tmp303 * _tmp412;
+    _hessian(12, 4) = _tmp302 * _tmp424 + _tmp303 * _tmp425;
     _hessian(0, 5) = 0;
     _hessian(1, 5) = 0;
     _hessian(2, 5) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 5) = 0;
-    _hessian(5, 5) = std::pow(_tmp234, Scalar(2)) + std::pow(_tmp235, Scalar(2));
-    _hessian(6, 5) = _tmp234 * _tmp252 + _tmp235 * _tmp253;
-    _hessian(7, 5) = _tmp234 * _tmp264 + _tmp235 * _tmp265;
-    _hessian(8, 5) = _tmp234 * _tmp274 + _tmp235 * _tmp275;
-    _hessian(9, 5) = _tmp234 * _tmp282 + _tmp235 * _tmp283;
-    _hessian(10, 5) = _tmp234 * _tmp291 + _tmp235 * _tmp292;
-    _hessian(11, 5) = _tmp234 * _tmp299 + _tmp235 * _tmp300;
-    _hessian(12, 5) = _tmp234 * _tmp310 + _tmp235 * _tmp311;
+    _hessian(5, 5) = std::pow(_tmp325, Scalar(2)) + std::pow(_tmp326, Scalar(2));
+    _hessian(6, 5) = _tmp325 * _tmp351 + _tmp326 * _tmp352;
+    _hessian(7, 5) = _tmp325 * _tmp370 + _tmp326 * _tmp371;
+    _hessian(8, 5) = _tmp325 * _tmp383 + _tmp326 * _tmp385;
+    _hessian(9, 5) = _tmp325 * _tmp392 + _tmp326 * _tmp393;
+    _hessian(10, 5) = _tmp325 * _tmp401 + _tmp326 * _tmp402;
+    _hessian(11, 5) = _tmp325 * _tmp411 + _tmp326 * _tmp412;
+    _hessian(12, 5) = _tmp325 * _tmp424 + _tmp326 * _tmp425;
     _hessian(0, 6) = 0;
     _hessian(1, 6) = 0;
     _hessian(2, 6) = 0;
     _hessian(3, 6) = 0;
     _hessian(4, 6) = 0;
     _hessian(5, 6) = 0;
-    _hessian(6, 6) = std::pow(_tmp252, Scalar(2)) + std::pow(_tmp253, Scalar(2));
-    _hessian(7, 6) = _tmp252 * _tmp264 + _tmp253 * _tmp265;
-    _hessian(8, 6) = _tmp252 * _tmp274 + _tmp253 * _tmp275;
-    _hessian(9, 6) = _tmp252 * _tmp282 + _tmp253 * _tmp283;
-    _hessian(10, 6) = _tmp252 * _tmp291 + _tmp253 * _tmp292;
-    _hessian(11, 6) = _tmp252 * _tmp299 + _tmp253 * _tmp300;
-    _hessian(12, 6) = _tmp252 * _tmp310 + _tmp253 * _tmp311;
+    _hessian(6, 6) = std::pow(_tmp351, Scalar(2)) + std::pow(_tmp352, Scalar(2));
+    _hessian(7, 6) = _tmp351 * _tmp370 + _tmp352 * _tmp371;
+    _hessian(8, 6) = _tmp351 * _tmp383 + _tmp352 * _tmp385;
+    _hessian(9, 6) = _tmp351 * _tmp392 + _tmp352 * _tmp393;
+    _hessian(10, 6) = _tmp351 * _tmp401 + _tmp352 * _tmp402;
+    _hessian(11, 6) = _tmp351 * _tmp411 + _tmp352 * _tmp412;
+    _hessian(12, 6) = _tmp351 * _tmp424 + _tmp352 * _tmp425;
     _hessian(0, 7) = 0;
     _hessian(1, 7) = 0;
     _hessian(2, 7) = 0;
@@ -569,12 +775,12 @@ void InverseRangeLandmarkSphericalGncFactor(
     _hessian(4, 7) = 0;
     _hessian(5, 7) = 0;
     _hessian(6, 7) = 0;
-    _hessian(7, 7) = std::pow(_tmp264, Scalar(2)) + std::pow(_tmp265, Scalar(2));
-    _hessian(8, 7) = _tmp264 * _tmp274 + _tmp265 * _tmp275;
-    _hessian(9, 7) = _tmp264 * _tmp282 + _tmp265 * _tmp283;
-    _hessian(10, 7) = _tmp264 * _tmp291 + _tmp265 * _tmp292;
-    _hessian(11, 7) = _tmp264 * _tmp299 + _tmp265 * _tmp300;
-    _hessian(12, 7) = _tmp264 * _tmp310 + _tmp265 * _tmp311;
+    _hessian(7, 7) = std::pow(_tmp370, Scalar(2)) + std::pow(_tmp371, Scalar(2));
+    _hessian(8, 7) = _tmp370 * _tmp383 + _tmp371 * _tmp385;
+    _hessian(9, 7) = _tmp370 * _tmp392 + _tmp371 * _tmp393;
+    _hessian(10, 7) = _tmp370 * _tmp401 + _tmp371 * _tmp402;
+    _hessian(11, 7) = _tmp370 * _tmp411 + _tmp371 * _tmp412;
+    _hessian(12, 7) = _tmp370 * _tmp424 + _tmp371 * _tmp425;
     _hessian(0, 8) = 0;
     _hessian(1, 8) = 0;
     _hessian(2, 8) = 0;
@@ -583,11 +789,11 @@ void InverseRangeLandmarkSphericalGncFactor(
     _hessian(5, 8) = 0;
     _hessian(6, 8) = 0;
     _hessian(7, 8) = 0;
-    _hessian(8, 8) = std::pow(_tmp274, Scalar(2)) + std::pow(_tmp275, Scalar(2));
-    _hessian(9, 8) = _tmp274 * _tmp282 + _tmp275 * _tmp283;
-    _hessian(10, 8) = _tmp274 * _tmp291 + _tmp275 * _tmp292;
-    _hessian(11, 8) = _tmp274 * _tmp299 + _tmp275 * _tmp300;
-    _hessian(12, 8) = _tmp274 * _tmp310 + _tmp275 * _tmp311;
+    _hessian(8, 8) = std::pow(_tmp383, Scalar(2)) + std::pow(_tmp385, Scalar(2));
+    _hessian(9, 8) = _tmp383 * _tmp392 + _tmp385 * _tmp393;
+    _hessian(10, 8) = _tmp383 * _tmp401 + _tmp385 * _tmp402;
+    _hessian(11, 8) = _tmp383 * _tmp411 + _tmp385 * _tmp412;
+    _hessian(12, 8) = _tmp383 * _tmp424 + _tmp385 * _tmp425;
     _hessian(0, 9) = 0;
     _hessian(1, 9) = 0;
     _hessian(2, 9) = 0;
@@ -597,10 +803,10 @@ void InverseRangeLandmarkSphericalGncFactor(
     _hessian(6, 9) = 0;
     _hessian(7, 9) = 0;
     _hessian(8, 9) = 0;
-    _hessian(9, 9) = std::pow(_tmp282, Scalar(2)) + std::pow(_tmp283, Scalar(2));
-    _hessian(10, 9) = _tmp282 * _tmp291 + _tmp283 * _tmp292;
-    _hessian(11, 9) = _tmp282 * _tmp299 + _tmp283 * _tmp300;
-    _hessian(12, 9) = _tmp282 * _tmp310 + _tmp283 * _tmp311;
+    _hessian(9, 9) = std::pow(_tmp392, Scalar(2)) + std::pow(_tmp393, Scalar(2));
+    _hessian(10, 9) = _tmp392 * _tmp401 + _tmp393 * _tmp402;
+    _hessian(11, 9) = _tmp392 * _tmp411 + _tmp393 * _tmp412;
+    _hessian(12, 9) = _tmp392 * _tmp424 + _tmp393 * _tmp425;
     _hessian(0, 10) = 0;
     _hessian(1, 10) = 0;
     _hessian(2, 10) = 0;
@@ -611,9 +817,9 @@ void InverseRangeLandmarkSphericalGncFactor(
     _hessian(7, 10) = 0;
     _hessian(8, 10) = 0;
     _hessian(9, 10) = 0;
-    _hessian(10, 10) = std::pow(_tmp291, Scalar(2)) + std::pow(_tmp292, Scalar(2));
-    _hessian(11, 10) = _tmp291 * _tmp299 + _tmp292 * _tmp300;
-    _hessian(12, 10) = _tmp291 * _tmp310 + _tmp292 * _tmp311;
+    _hessian(10, 10) = std::pow(_tmp401, Scalar(2)) + std::pow(_tmp402, Scalar(2));
+    _hessian(11, 10) = _tmp401 * _tmp411 + _tmp402 * _tmp412;
+    _hessian(12, 10) = _tmp401 * _tmp424 + _tmp402 * _tmp425;
     _hessian(0, 11) = 0;
     _hessian(1, 11) = 0;
     _hessian(2, 11) = 0;
@@ -625,8 +831,8 @@ void InverseRangeLandmarkSphericalGncFactor(
     _hessian(8, 11) = 0;
     _hessian(9, 11) = 0;
     _hessian(10, 11) = 0;
-    _hessian(11, 11) = std::pow(_tmp299, Scalar(2)) + std::pow(_tmp300, Scalar(2));
-    _hessian(12, 11) = _tmp299 * _tmp310 + _tmp300 * _tmp311;
+    _hessian(11, 11) = std::pow(_tmp411, Scalar(2)) + std::pow(_tmp412, Scalar(2));
+    _hessian(12, 11) = _tmp411 * _tmp424 + _tmp412 * _tmp425;
     _hessian(0, 12) = 0;
     _hessian(1, 12) = 0;
     _hessian(2, 12) = 0;
@@ -639,25 +845,25 @@ void InverseRangeLandmarkSphericalGncFactor(
     _hessian(9, 12) = 0;
     _hessian(10, 12) = 0;
     _hessian(11, 12) = 0;
-    _hessian(12, 12) = std::pow(_tmp310, Scalar(2)) + std::pow(_tmp311, Scalar(2));
+    _hessian(12, 12) = std::pow(_tmp424, Scalar(2)) + std::pow(_tmp425, Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 13, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp153 * _tmp95 + _tmp157 * _tmp96;
-    _rhs(1, 0) = _tmp172 * _tmp95 + _tmp173 * _tmp96;
-    _rhs(2, 0) = _tmp186 * _tmp95 + _tmp188 * _tmp96;
-    _rhs(3, 0) = _tmp205 * _tmp95 + _tmp206 * _tmp96;
-    _rhs(4, 0) = _tmp219 * _tmp95 + _tmp220 * _tmp96;
-    _rhs(5, 0) = _tmp234 * _tmp95 + _tmp235 * _tmp96;
-    _rhs(6, 0) = _tmp252 * _tmp95 + _tmp253 * _tmp96;
-    _rhs(7, 0) = _tmp264 * _tmp95 + _tmp265 * _tmp96;
-    _rhs(8, 0) = _tmp274 * _tmp95 + _tmp275 * _tmp96;
-    _rhs(9, 0) = _tmp282 * _tmp95 + _tmp283 * _tmp96;
-    _rhs(10, 0) = _tmp291 * _tmp95 + _tmp292 * _tmp96;
-    _rhs(11, 0) = _tmp299 * _tmp95 + _tmp300 * _tmp96;
-    _rhs(12, 0) = _tmp310 * _tmp95 + _tmp311 * _tmp96;
+    _rhs(0, 0) = _tmp106 * _tmp190 + _tmp107 * _tmp194;
+    _rhs(1, 0) = _tmp106 * _tmp223 + _tmp107 * _tmp225;
+    _rhs(2, 0) = _tmp106 * _tmp245 + _tmp107 * _tmp246;
+    _rhs(3, 0) = _tmp106 * _tmp279 + _tmp107 * _tmp280;
+    _rhs(4, 0) = _tmp106 * _tmp302 + _tmp107 * _tmp303;
+    _rhs(5, 0) = _tmp106 * _tmp325 + _tmp107 * _tmp326;
+    _rhs(6, 0) = _tmp106 * _tmp351 + _tmp107 * _tmp352;
+    _rhs(7, 0) = _tmp106 * _tmp370 + _tmp107 * _tmp371;
+    _rhs(8, 0) = _tmp106 * _tmp383 + _tmp107 * _tmp385;
+    _rhs(9, 0) = _tmp106 * _tmp392 + _tmp107 * _tmp393;
+    _rhs(10, 0) = _tmp106 * _tmp401 + _tmp107 * _tmp402;
+    _rhs(11, 0) = _tmp106 * _tmp411 + _tmp107 * _tmp412;
+    _rhs(12, 0) = _tmp106 * _tmp424 + _tmp107 * _tmp425;
   }
 }  // NOLINT(readability/fn_size)
 

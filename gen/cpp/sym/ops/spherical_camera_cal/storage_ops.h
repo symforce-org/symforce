@@ -29,7 +29,7 @@ struct StorageOps<SphericalCameraCal<ScalarType>> {
   using Scalar = ScalarType;
 
   static constexpr int32_t StorageDim() {
-    return 9;
+    return 11;
   }
 
   static void ToStorage(const T& a, ScalarType* out);

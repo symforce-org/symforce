@@ -32,7 +32,7 @@ struct LieGroupOps<SphericalCameraCal<Scalar>>
   using T = SphericalCameraCal<Scalar>;
 
   static constexpr int32_t TangentDim() {
-    return 9;
+    return 11;
   }
 
   using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;

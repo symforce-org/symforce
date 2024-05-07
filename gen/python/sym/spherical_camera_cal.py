@@ -23,6 +23,10 @@ class SphericalCameraCal(object):
 
         r(theta) = theta + d[0] * theta^3 + d[1] * theta^5 + d[2] * theta^7 + d[3] * theta^9
 
+    This model also includes two tangential coefficients, implemented similar to the
+    Brown-Conrady model. For details, see the Fisheye62 model from Project Aria:
+    https://facebookresearch.github.io/projectaria_tools/docs/tech_insights/camera_intrinsic_models
+
     With no tangential coefficients, this model is over-parameterized in that we may scale all the
     distortion coefficients by a constant, and the focal length by the inverse of that constant. To
     fix this issue, we peg the first coefficient at 1. So while the distortion dimension is '4',
@@ -39,11 +43,12 @@ class SphericalCameraCal(object):
         Kannala, Juho; Brandt, Sami S.
         PAMI 2006
 
-    This is the simpler "P9" model without any non-radially-symmetric distortion params.
+    This is the simpler "P9" model without any non-radially-symmetric distortion params, but also includes
+    two tangential distortion params similar to the Brown-Conrady model.
 
     The storage for this class is:
 
-        [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
+        [ fx fy cx cy critical_theta d0 d1 d2 d3 p0 p1]
     """
 
     __slots__ = ["data"]
@@ -87,17 +92,17 @@ class SphericalCameraCal(object):
                 )
             )
         if isinstance(distortion_coeffs, numpy.ndarray):
-            if distortion_coeffs.shape in [(4, 1), (1, 4)]:
+            if distortion_coeffs.shape in [(6, 1), (1, 6)]:
                 distortion_coeffs = distortion_coeffs.flatten()
-            elif distortion_coeffs.shape != (4,):
+            elif distortion_coeffs.shape != (6,):
                 raise IndexError(
-                    "Expected distortion_coeffs to be a vector of length 4; instead had shape {}".format(
+                    "Expected distortion_coeffs to be a vector of length 6; instead had shape {}".format(
                         distortion_coeffs.shape
                     )
                 )
-        elif len(distortion_coeffs) != 4:
+        elif len(distortion_coeffs) != 6:
             raise IndexError(
-                "Expected distortion_coeffs to be a sequence of length 4, was instead length {}.".format(
+                "Expected distortion_coeffs to be a sequence of length 6, was instead length {}.".format(
                     len(distortion_coeffs)
                 )
             )
@@ -164,7 +169,7 @@ class SphericalCameraCal(object):
     @staticmethod
     def storage_dim():
         # type: () -> int
-        return 9
+        return 11
 
     def to_storage(self):
         # type: () -> T.List[float]
@@ -194,7 +199,7 @@ class SphericalCameraCal(object):
     @staticmethod
     def tangent_dim():
         # type: () -> int
-        return 9
+        return 11
 
     @classmethod
     def from_tangent(cls, vec, epsilon=1e-8):

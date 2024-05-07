@@ -26,6 +26,10 @@ class SphericalCameraCal(CameraCal):
 
         r(theta) = theta + d[0] * theta^3 + d[1] * theta^5 + d[2] * theta^7 + d[3] * theta^9
 
+    This model also includes two tangential coefficients, implemented similar to the
+    Brown-Conrady model. For details, see the Fisheye62 model from Project Aria:
+    https://facebookresearch.github.io/projectaria_tools/docs/tech_insights/camera_intrinsic_models
+
     With no tangential coefficients, this model is over-parameterized in that we may scale all the
     distortion coefficients by a constant, and the focal length by the inverse of that constant. To
     fix this issue, we peg the first coefficient at 1. So while the distortion dimension is '4',
@@ -42,20 +46,21 @@ class SphericalCameraCal(CameraCal):
         Kannala, Juho; Brandt, Sami S.
         PAMI 2006
 
-    This is the simpler "P9" model without any non-radially-symmetric distortion params.
+    This is the simpler "P9" model without any non-radially-symmetric distortion params, but also includes
+    two tangential distortion params similar to the Brown-Conrady model.
 
     The storage for this class is:
 
-        [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
+        [ fx fy cx cy critical_theta d0 d1 d2 d3 p0 p1]
     """
 
-    NUM_DISTORTION_COEFFS = 4
+    NUM_DISTORTION_COEFFS = 6
 
     def __init__(
         self,
         focal_length: T.Sequence[T.Scalar],
         principal_point: T.Sequence[T.Scalar],
-        distortion_coeffs: T.Sequence[T.Scalar] = (0.0, 0.0, 0.0, 0.0),
+        distortion_coeffs: T.Sequence[T.Scalar] = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
         critical_theta: T.Optional[T.Scalar] = None,
         max_theta: T.Scalar = math.pi,
     ) -> None:
@@ -164,6 +169,18 @@ class SphericalCameraCal(CameraCal):
             self.distortion_coeffs.to_storage(),
         )
 
+    def _radial_distortion_coefficients(self) -> T.List[T.Scalar]:
+        """
+        Return the coefficients for the radial distortion polynomial
+        """
+        return self.distortion_coeffs.to_flat_list()[:-2]
+
+    def _tangential_distortion_coefficients(self) -> T.List[T.Scalar]:
+        """
+        Return the coefficients for the tangential distortion polynomial
+        """
+        return self.distortion_coeffs.to_flat_list()[-2:]
+
     def _compute_critical_theta(self, max_theta: float) -> float:
         """
         Compute the critical_theta for the given (numerical) distortion_coeffs and max_theta
@@ -171,7 +188,7 @@ class SphericalCameraCal(CameraCal):
         # Build the coefficients for np.polynomial.  Even coefficients are 0, and the coefficient
         # on theta is 1
         return compute_odd_polynomial_critical_point(
-            self.distortion_coeffs.to_flat_list(), max_theta
+            self._radial_distortion_coefficients(), max_theta
         )
 
     def _radial_distortion(self, theta: sf.Symbol) -> sf.Symbol:
@@ -181,7 +198,7 @@ class SphericalCameraCal(CameraCal):
         theta_term = theta
         acc = theta
 
-        for coef in self.distortion_coeffs.to_flat_list():
+        for coef in self._radial_distortion_coefficients():
             theta_term *= theta**2
             acc += coef * theta_term
 
@@ -201,7 +218,19 @@ class SphericalCameraCal(CameraCal):
         # compute image plane coordinate
         r = self._radial_distortion(theta)
         unit_xy = point[:2, :].normalized(epsilon)
-        point_img = r * unit_xy
+        point_img_dist = r * unit_xy
+
+        # apply tangential coefficients
+        p0, p1 = self._tangential_distortion_coefficients()
+        tangential_offset = geo.Vector2(
+            3 * p0 * point_img_dist[0] ** 2
+            + p0 * point_img_dist[1] ** 2
+            + 2 * p1 * point_img_dist[0] * point_img_dist[1],
+            3 * p1 * point_img_dist[1] ** 2
+            + p1 * point_img_dist[0] ** 2
+            + 2 * p0 * point_img_dist[0] * point_img_dist[1],
+        )
+        point_img = point_img_dist + tangential_offset
 
         # image plane to pixel coordinate
         linear_camera_cal = LinearCameraCal(

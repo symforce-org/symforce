@@ -30,7 +30,7 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Identity()
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = 0;
   _res[1] = 0;
@@ -41,6 +41,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Identity()
   _res[6] = 0;
   _res[7] = 0;
   _res[8] = 0;
+  _res[9] = 0;
+  _res[10] = 0;
 
   return sym::SphericalCameraCal<Scalar>(_res, /* normalize */ false);
 }
@@ -55,15 +57,15 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Identity()
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Inverse(
     const sym::SphericalCameraCal<Scalar>& a) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = -_a[0];
   _res[1] = -_a[1];
@@ -74,6 +76,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Inverse(
   _res[6] = -_a[6];
   _res[7] = -_a[7];
   _res[8] = -_a[8];
+  _res[9] = -_a[9];
+  _res[10] = -_a[10];
 
   return sym::SphericalCameraCal<Scalar>(_res);
 }
@@ -88,16 +92,16 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Inverse(
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _b = b.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = _a[0] + _b[0];
   _res[1] = _a[1] + _b[1];
@@ -108,6 +112,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
   _res[6] = _a[6] + _b[6];
   _res[7] = _a[7] + _b[7];
   _res[8] = _a[8] + _b[8];
+  _res[9] = _a[9] + _b[9];
+  _res[10] = _a[10] + _b[10];
 
   return sym::SphericalCameraCal<Scalar>(_res);
 }
@@ -124,16 +130,16 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Compose(
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Between(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _b = b.Data();
 
   // Intermediate terms (0)
 
   // Output terms (1)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = -_a[0] + _b[0];
   _res[1] = -_a[1] + _b[1];
@@ -144,6 +150,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Between(
   _res[6] = -_a[6] + _b[6];
   _res[7] = -_a[7] + _b[7];
   _res[8] = -_a[8] + _b[8];
+  _res[9] = -_a[9] + _b[9];
+  _res[10] = -_a[10] + _b[10];
 
   return sym::SphericalCameraCal<Scalar>(_res);
 }
@@ -154,20 +162,20 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::Between(
  *
  * Returns:
  *     Element: b such that a @ b = identity
- *     res_D_a: (9x9) jacobian of res (9) wrt arg a (9)
+ *     res_D_a: (11x11) jacobian of res (11) wrt arg a (11)
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::InverseWithJacobian(
     const sym::SphericalCameraCal<Scalar>& a, SelfJacobian* const res_D_a) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
 
   // Intermediate terms (0)
 
   // Output terms (2)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = -_a[0];
   _res[1] = -_a[1];
@@ -178,9 +186,11 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::InverseWit
   _res[6] = -_a[6];
   _res[7] = -_a[7];
   _res[8] = -_a[8];
+  _res[9] = -_a[9];
+  _res[10] = -_a[10];
 
   if (res_D_a != nullptr) {
-    Eigen::Matrix<Scalar, 9, 9>& _res_D_a = (*res_D_a);
+    Eigen::Matrix<Scalar, 11, 11>& _res_D_a = (*res_D_a);
 
     _res_D_a.setZero();
 
@@ -193,6 +203,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::InverseWit
     _res_D_a(6, 6) = -1;
     _res_D_a(7, 7) = -1;
     _res_D_a(8, 8) = -1;
+    _res_D_a(9, 9) = -1;
+    _res_D_a(10, 10) = -1;
   }
 
   return sym::SphericalCameraCal<Scalar>(_res);
@@ -204,23 +216,23 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::InverseWit
  *
  * Returns:
  *     Element: a @ b
- *     res_D_a: (9x9) jacobian of res (9) wrt arg a (9)
- *     res_D_b: (9x9) jacobian of res (9) wrt arg b (9)
+ *     res_D_a: (11x11) jacobian of res (11) wrt arg a (11)
+ *     res_D_b: (11x11) jacobian of res (11) wrt arg b (11)
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::ComposeWithJacobians(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _b = b.Data();
 
   // Intermediate terms (0)
 
   // Output terms (3)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = _a[0] + _b[0];
   _res[1] = _a[1] + _b[1];
@@ -231,9 +243,11 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::ComposeWit
   _res[6] = _a[6] + _b[6];
   _res[7] = _a[7] + _b[7];
   _res[8] = _a[8] + _b[8];
+  _res[9] = _a[9] + _b[9];
+  _res[10] = _a[10] + _b[10];
 
   if (res_D_a != nullptr) {
-    Eigen::Matrix<Scalar, 9, 9>& _res_D_a = (*res_D_a);
+    Eigen::Matrix<Scalar, 11, 11>& _res_D_a = (*res_D_a);
 
     _res_D_a.setZero();
 
@@ -246,10 +260,12 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::ComposeWit
     _res_D_a(6, 6) = 1;
     _res_D_a(7, 7) = 1;
     _res_D_a(8, 8) = 1;
+    _res_D_a(9, 9) = 1;
+    _res_D_a(10, 10) = 1;
   }
 
   if (res_D_b != nullptr) {
-    Eigen::Matrix<Scalar, 9, 9>& _res_D_b = (*res_D_b);
+    Eigen::Matrix<Scalar, 11, 11>& _res_D_b = (*res_D_b);
 
     _res_D_b.setZero();
 
@@ -262,6 +278,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::ComposeWit
     _res_D_b(6, 6) = 1;
     _res_D_b(7, 7) = 1;
     _res_D_b(8, 8) = 1;
+    _res_D_b(9, 9) = 1;
+    _res_D_b(10, 10) = 1;
   }
 
   return sym::SphericalCameraCal<Scalar>(_res);
@@ -275,23 +293,23 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::ComposeWit
  *
  * Returns:
  *     Element: c such that a @ c = b
- *     res_D_a: (9x9) jacobian of res (9) wrt arg a (9)
- *     res_D_b: (9x9) jacobian of res (9) wrt arg b (9)
+ *     res_D_a: (11x11) jacobian of res (11) wrt arg a (11)
+ *     res_D_b: (11x11) jacobian of res (11) wrt arg b (11)
  */
 template <typename Scalar>
 sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::BetweenWithJacobians(
     const sym::SphericalCameraCal<Scalar>& a, const sym::SphericalCameraCal<Scalar>& b,
     SelfJacobian* const res_D_a, SelfJacobian* const res_D_b) {
-  // Total ops: 9
+  // Total ops: 11
 
   // Input arrays
-  const Eigen::Matrix<Scalar, 9, 1>& _a = a.Data();
-  const Eigen::Matrix<Scalar, 9, 1>& _b = b.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _a = a.Data();
+  const Eigen::Matrix<Scalar, 11, 1>& _b = b.Data();
 
   // Intermediate terms (0)
 
   // Output terms (3)
-  Eigen::Matrix<Scalar, 9, 1> _res;
+  Eigen::Matrix<Scalar, 11, 1> _res;
 
   _res[0] = -_a[0] + _b[0];
   _res[1] = -_a[1] + _b[1];
@@ -302,9 +320,11 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::BetweenWit
   _res[6] = -_a[6] + _b[6];
   _res[7] = -_a[7] + _b[7];
   _res[8] = -_a[8] + _b[8];
+  _res[9] = -_a[9] + _b[9];
+  _res[10] = -_a[10] + _b[10];
 
   if (res_D_a != nullptr) {
-    Eigen::Matrix<Scalar, 9, 9>& _res_D_a = (*res_D_a);
+    Eigen::Matrix<Scalar, 11, 11>& _res_D_a = (*res_D_a);
 
     _res_D_a.setZero();
 
@@ -317,10 +337,12 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::BetweenWit
     _res_D_a(6, 6) = -1;
     _res_D_a(7, 7) = -1;
     _res_D_a(8, 8) = -1;
+    _res_D_a(9, 9) = -1;
+    _res_D_a(10, 10) = -1;
   }
 
   if (res_D_b != nullptr) {
-    Eigen::Matrix<Scalar, 9, 9>& _res_D_b = (*res_D_b);
+    Eigen::Matrix<Scalar, 11, 11>& _res_D_b = (*res_D_b);
 
     _res_D_b.setZero();
 
@@ -333,6 +355,8 @@ sym::SphericalCameraCal<Scalar> GroupOps<SphericalCameraCal<Scalar>>::BetweenWit
     _res_D_b(6, 6) = 1;
     _res_D_b(7, 7) = 1;
     _res_D_b(8, 8) = 1;
+    _res_D_b(9, 9) = 1;
+    _res_D_b(10, 10) = 1;
   }
 
   return sym::SphericalCameraCal<Scalar>(_res);

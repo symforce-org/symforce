@@ -204,7 +204,7 @@ _DISTORTION_COEFF_VALS: T.Dict[str, T.Dict[str, T.Any]] = {
     },
     sf.SphericalCameraCal.__name__: {
         "critical_theta": np.pi,
-        "distortion_coeffs": [0.035, -0.025, 0.0070, -0.0015],
+        "distortion_coeffs": [0.035, -0.025, 0.0070, -0.0015, 0.00023, -0.00027],
     },
 }
 

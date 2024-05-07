@@ -27,6 +27,10 @@ namespace sym {
  *
  *     r(theta) = theta + d[0] * theta^3 + d[1] * theta^5 + d[2] * theta^7 + d[3] * theta^9
  *
+ * This model also includes two tangential coefficients, implemented similar to the
+ * Brown-Conrady model. For details, see the Fisheye62 model from Project Aria:
+ * https://facebookresearch.github.io/projectaria_tools/docs/tech_insights/camera_intrinsic_models
+ *
  * With no tangential coefficients, this model is over-parameterized in that we may scale all the
  * distortion coefficients by a constant, and the focal length by the inverse of that constant. To
  * fix this issue, we peg the first coefficient at 1. So while the distortion dimension is '4',
@@ -42,11 +46,12 @@ namespace sym {
  *     A generic camera model and calibration method for conventional, wide-angle, and fish-eye
  * lenses Kannala, Juho; Brandt, Sami S. PAMI 2006
  *
- * This is the simpler "P9" model without any non-radially-symmetric distortion params.
+ * This is the simpler "P9" model without any non-radially-symmetric distortion params, but also
+ * includes two tangential distortion params similar to the Brown-Conrady model.
  *
  * The storage for this class is:
  *
- *     [ fx fy cx cy critical_theta d0 d1 d2 d3 ]
+ *     [ fx fy cx cy critical_theta d0 d1 d2 d3 p0 p1]
  */
 template <typename ScalarType>
 class SphericalCameraCal {
@@ -54,13 +59,13 @@ class SphericalCameraCal {
   // Typedefs
   using Scalar = ScalarType;
   using Self = SphericalCameraCal<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 9, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 11, 1>;
 
   // Construct from focal_length, principal_point, critical_theta, and distortion_coeffs.
   SphericalCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
                      const Eigen::Matrix<Scalar, 2, 1>& principal_point,
                      const Scalar critical_theta,
-                     const Eigen::Matrix<Scalar, 4, 1>& distortion_coeffs)
+                     const Eigen::Matrix<Scalar, 6, 1>& distortion_coeffs)
       : SphericalCameraCal(
             (Eigen::Matrix<Scalar, sym::StorageOps<Self>::StorageDim(), 1>() << focal_length,
              principal_point, critical_theta, distortion_coeffs)
@@ -134,7 +139,7 @@ class SphericalCameraCal {
    */
   Eigen::Matrix<Scalar, 2, 1> PixelFromCameraPointWithJacobians(
       const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon,
-      Scalar* const is_valid = nullptr, Eigen::Matrix<Scalar, 2, 8>* const pixel_D_cal = nullptr,
+      Scalar* const is_valid = nullptr, Eigen::Matrix<Scalar, 2, 10>* const pixel_D_cal = nullptr,
       Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point = nullptr) const;
 
   // --------------------------------------------------------------------------

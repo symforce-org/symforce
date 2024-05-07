@@ -33,7 +33,7 @@ class CamPackageTest(unittest.TestCase):
         },
         "SphericalCameraCal": {
             "critical_theta": 3.141592653589793,
-            "distortion_coeffs": [0.035, -0.025, 0.007, -0.0015],
+            "distortion_coeffs": [0.035, -0.025, 0.007, -0.0015, 0.00023, -0.00027],
         },
     }
 
@@ -665,8 +665,8 @@ class CamPackageTest(unittest.TestCase):
         )
         storage = cam_cal.to_storage()
 
-        self.assertEqual(cam_cal.storage_dim(), 9)
-        self.assertEqual(len(storage), 9)
+        self.assertEqual(cam_cal.storage_dim(), 11)
+        self.assertEqual(len(storage), 11)
 
         cam_cal_copy = sym.SphericalCameraCal.from_storage(storage)
 
@@ -682,41 +682,103 @@ class CamPackageTest(unittest.TestCase):
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.SphericalCameraCal.from_storage(
-            [1.0, 2.0, 3.0, 4.0, 3.141592653589793, 0.035, -0.025, 0.007, -0.0015]
+            [
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                3.141592653589793,
+                0.035,
+                -0.025,
+                0.007,
+                -0.0015,
+                0.00023,
+                -0.00027,
+            ]
         )
 
         tangent = cam_cal.to_tangent(epsilon=1e-08)
 
         # Test tangent_dim is correct
-        self.assertEqual(cam_cal.tangent_dim(), 9)
+        self.assertEqual(cam_cal.tangent_dim(), 11)
 
         # Test to_tangent is correct
         np.testing.assert_allclose(
             tangent,
-            np.array([1.0, 2.0, 3.0, 4.0, 3.141592653589793, 0.035, -0.025, 0.007, -0.0015]),
+            np.array(
+                [
+                    1.0,
+                    2.0,
+                    3.0,
+                    4.0,
+                    3.141592653589793,
+                    0.035,
+                    -0.025,
+                    0.007,
+                    -0.0015,
+                    0.00023,
+                    -0.00027,
+                ]
+            ),
         )
 
         # Test from_tangent is correct
         np.testing.assert_allclose(
             sym.SphericalCameraCal.from_tangent(vec=tangent, epsilon=1e-08).to_storage(),
-            [1.0, 2.0, 3.0, 4.0, 3.141592653589793, 0.035, -0.025, 0.007, -0.0015],
+            [
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                3.141592653589793,
+                0.035,
+                -0.025,
+                0.007,
+                -0.0015,
+                0.00023,
+                -0.00027,
+            ],
         )
 
         second_cam_cal = sym.SphericalCameraCal.from_storage(
-            [3.3, 5.5, 2.4, 3.8, 3.141592653589793, 0.035, -0.025, 0.007, -0.0015]
+            [
+                3.3,
+                5.5,
+                2.4,
+                3.8,
+                3.141592653589793,
+                0.035,
+                -0.025,
+                0.007,
+                -0.0015,
+                0.00023,
+                -0.00027,
+            ]
         )
 
         # Test retract is correct
         np.testing.assert_allclose(
             second_cam_cal.retract(vec=tangent, epsilon=1e-08).to_storage(),
-            [4.3, 7.5, 5.4, 7.8, 6.283185307179586, 0.07, -0.05, 0.014, -0.003],
+            [4.3, 7.5, 5.4, 7.8, 6.283185307179586, 0.07, -0.05, 0.014, -0.003, 0.00046, -0.00054],
         )
 
         # Test local_coordinates is correct
         np.testing.assert_allclose(
             second_cam_cal.local_coordinates(cam_cal, epsilon=1e-08),
             np.array(
-                [-2.3, -3.5, 0.6000000000000001, 0.20000000000000018, 0.0, 0.0, 0.0, 0.0, 0.0]
+                [
+                    -2.3,
+                    -3.5,
+                    0.6000000000000001,
+                    0.20000000000000018,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                ]
             ),
         )
 
@@ -727,22 +789,34 @@ class CamPackageTest(unittest.TestCase):
         # of the symbolic class's methods.
 
         cam_cal = sym.SphericalCameraCal.from_storage(
-            [1.0, 2.0, 3.0, 4.0, 3.141592653589793, 0.035, -0.025, 0.007, -0.0015]
+            [
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                3.141592653589793,
+                0.035,
+                -0.025,
+                0.007,
+                -0.0015,
+                0.00023,
+                -0.00027,
+            ]
         )
         point = np.array([0.6, 0.8, 0.2])
 
         pixel, is_valid = cam_cal.pixel_from_camera_point(point=point, epsilon=1e-08)
 
-        np.testing.assert_allclose(pixel, np.array([3.82821053086175, 6.20856141563133]))
+        np.testing.assert_allclose(pixel, np.array([3.82847042313402, 6.20705693661234]))
         self.assertEqual(is_valid, 1.0)
 
         j_pixel, j_is_valid, pixel_D_cal, pixel_D_point = (
             cam_cal.pixel_from_camera_point_with_jacobians(point=point, epsilon=1e-08)
         )
 
-        np.testing.assert_allclose(j_pixel, np.array([3.82821053086175, 6.20856141563133]))
+        np.testing.assert_allclose(j_pixel, np.array([3.82847042313402, 6.20705693661234]))
         self.assertEqual(j_is_valid, 1.0)
-        self.assertEqual(pixel_D_cal.shape, (2, 8))
+        self.assertEqual(pixel_D_cal.shape, (2, 10))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
 
