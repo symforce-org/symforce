@@ -15,36 +15,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-20.04, macos-12]
-        pip_version: [22.2.2]
-        setuptools_version: [65.3.0]
+        os: [ubuntu-22.04, ubuntu-20.04, macos-latest]
+        pip_version: [24.0]
+        setuptools_version: [69.5.1]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - if: ${{ matrix.os == 'macos-12' }}
-        uses: actions/setup-python@v4
+      - if: ${{ matrix.os == 'macos-latest' }}
+        name: Set up user-managed python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: install dev_requirements.txt
-        run: python3 -m pip install -r dev_requirements.txt
-
       - name: Upgrade versions
         run: |
-          python3 -m pip install pip==${{ matrix.pip_version }}
-          python3 -m pip install setuptools==${{ matrix.setuptools_version }}
+          python -m pip install \
+            pip==${{ matrix.pip_version }} \
+            setuptools==${{ matrix.setuptools_version }}
 
-      # NOTE(brad): There seems to be a bug in pip which prevents editable installation
-      # in user directories. Seems to be resolved in 22.3.0. An alternative which works
-      # for older pip versions is to instead run `pip install --no-use-pep517 -e .` See
-      # https://github.com/pypa/pip/issues/7953 for more info.
-      - name: Update pip
-        if: ${{ matrix.os == 'ubuntu-22.04' }}
-        run: python3 -m pip install pip==22.3.0
+      - name: install dev_requirements.txt
+        run: python -m pip install -r dev_requirements.txt
 
       - name: editable install
-        run: python3 -m pip install -e .
+        run: python -m pip install -v -e .
 
       - name: Set expected install locations for ubuntu focal
         if: ${{ matrix.os == 'ubuntu-20.04' }}
@@ -69,7 +63,7 @@ jobs:
           echo SF_SYMPY_LOCATION=/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
 
       - name: Set expected install locations for macos
-        if: ${{ matrix.os == 'macos-12' }}
+        if: ${{ matrix.os == 'macos-latest' }}
         run: |
           echo CC_SYM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/cc_sym.cpython-311-darwin.so >> $GITHUB_ENV
           echo SYM_LOCATION=/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sym/__init__.py >> $GITHUB_ENV
