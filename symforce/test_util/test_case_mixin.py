@@ -130,18 +130,24 @@ class SymforceTestCaseMixin(unittest.TestCase):
         else:
             return super().assertNotEqual(first, second, msg)
 
-    def make_output_dir(self, prefix: str, directory: Path = Path("/tmp")) -> Path:
+    def make_output_dir(
+        self, prefix: T.Optional[str] = None, directory: Path = Path("/tmp")
+    ) -> Path:
         """
         Create a temporary output directory, which will be automatically removed (regardless of
         exceptions) on shutdown, unless logger.level is DEBUG
 
         Args:
-            prefix: The prefix for the directory name - a random unique identifier is added to this
+            prefix: The prefix for the directory name - a random unique identifier is added to this.
+                Defaults to the name of the test, in snake_case
             dir: Location of the output directory. Defaults to "/tmp".
 
         Returns:
             str: The absolute path to the created output directory
         """
+        if prefix is None:
+            prefix = python_util.camelcase_to_snakecase(self.__class__.__name__)
+
         output_dir = Path(tempfile.mkdtemp(prefix=prefix, dir=directory))
         logger.debug(f"Creating temp directory: {output_dir}")
         self.output_dirs.append(output_dir)

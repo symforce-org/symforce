@@ -55,6 +55,42 @@ inline std::string FormatFailure(const char* error, const char* func, const char
     }                                                                                     \
   } while (0)
 
+#define SYM_ASSERT_LT(a, b, ...)                                                        \
+  do {                                                                                  \
+    if (!((a) < (b))) {                                                                 \
+      throw std::runtime_error(                                                         \
+          sym::FormatFailure(fmt::format((#a " < " #b " ({} < {})"), (a), (b)).c_str(), \
+                             __PRETTY_FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__));  \
+    }                                                                                   \
+  } while (0)
+
+#define SYM_ASSERT_LE(a, b, ...)                                                          \
+  do {                                                                                    \
+    if (!((a) <= (b))) {                                                                  \
+      throw std::runtime_error(                                                           \
+          sym::FormatFailure(fmt::format((#a " <= " #b " ({} <= {})"), (a), (b)).c_str(), \
+                             __PRETTY_FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__));    \
+    }                                                                                     \
+  } while (0)
+
+#define SYM_ASSERT_GT(a, b, ...)                                                        \
+  do {                                                                                  \
+    if (!((a) > (b))) {                                                                 \
+      throw std::runtime_error(                                                         \
+          sym::FormatFailure(fmt::format((#a " > " #b " ({} > {})"), (a), (b)).c_str(), \
+                             __PRETTY_FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__));  \
+    }                                                                                   \
+  } while (0)
+
+#define SYM_ASSERT_GE(a, b, ...)                                                          \
+  do {                                                                                    \
+    if (!((a) >= (b))) {                                                                  \
+      throw std::runtime_error(                                                           \
+          sym::FormatFailure(fmt::format((#a " >= " #b " ({} >= {})"), (a), (b)).c_str(), \
+                             __PRETTY_FUNCTION__, __FILE__, __LINE__, ##__VA_ARGS__));    \
+    }                                                                                     \
+  } while (0)
+
 #else
 #define SYM_ASSERT(expr, ...) \
   do {                        \

@@ -832,6 +832,21 @@ class Values(T.MutableMapping[str, T.Any]):
         """
         return self.apply_to_leaves(lambda x: x)
 
+    @staticmethod
+    def from_dataclass(d: T.Dataclass) -> Values:
+        """
+        Convert a dataclass to a Values object.
+        """
+        return Values(
+            {field.name: getattr(d, field.name) for field in dataclasses.fields(d)}
+        ).dataclasses_to_values()
+
+    def to_dataclass(self, d: T.Type[T.Dataclass]) -> T.Dataclass:
+        """
+        Convert this Values object to a dataclass.
+        """
+        return ops.StorageOps.from_storage(d, self.to_storage())
+
     def to_numerical(self) -> Values:
         """
         Convert any symbolic types in this Values to numerical quantities. This currently
