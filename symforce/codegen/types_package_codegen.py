@@ -263,6 +263,7 @@ def _fill_types_dict_recursive(
     """
     Recursively compute type information from the key and values index and fill into ``types_dict``.
     """
+    is_shared_type = key in shared_types and "." in shared_types[key]
     data: T.Dict[str, T.Any] = {}
 
     typename = typename_from_key(key, shared_types)
@@ -279,7 +280,7 @@ def _fill_types_dict_recursive(
     data["subtypes"] = {}
     for subkey, entry in index.items():
         datatype = entry.datatype()
-        if key in shared_types and "." in shared_types[key]:
+        if is_shared_type:
             # This is a shared type. Don't generate any subtypes.
             continue
         if issubclass(datatype, Values):
@@ -306,7 +307,7 @@ def _fill_types_dict_recursive(
             types_dict=types_dict,
         )
 
-    if typename in types_dict:
+    if typename in types_dict and not is_shared_type:
 
         def assert_equal(field: str) -> None:
             assert types_dict[typename][field] == data[field]
