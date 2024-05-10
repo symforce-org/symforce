@@ -54,6 +54,9 @@ class CppConfig(CodegenConfig):
             (e.g. add fast_math.h). Note that these are only added on a call to
             :meth:`generate_function <symforce.codegen.codegen.Codegen.generate_function>`, i.e.
             you can't define custom functions in e.g. the geo package using this
+        databuffer_type: Changes the type of any DataBuffers to the given type instead of using
+            the default Scalar type. Useful for cases where DataBuffers have a different type than
+            other arguments to the generated function.
     """
 
     doc_comment_line_prefix: str = " * "
@@ -65,6 +68,7 @@ class CppConfig(CodegenConfig):
     explicit_template_instantiation_types: T.Optional[T.Sequence[str]] = None
     override_methods: T.Optional[T.Dict[sympy.Function, str]] = None
     extra_imports: T.Optional[T.List[str]] = None
+    databuffer_type: T.Optional[str] = None
 
     @classmethod
     def backend_name(cls) -> str:

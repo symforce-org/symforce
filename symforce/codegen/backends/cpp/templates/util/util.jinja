@@ -40,7 +40,11 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
     {%- set T = typing_util.get_type(T_or_value) -%}
     {%- if T.__name__ == 'Symbol' or is_symbolic(T_or_value) or T.__name__ == 'float' -%}
         {%- if issubclass(T, DataBuffer) -%}
+            {%- if spec.config.databuffer_type is not none -%}
+            {{ spec.config.databuffer_type }}* const
+            {%- else -%}
             {{ scalar_type }}* const
+            {%- endif -%}
         {%- else -%}
             {{ scalar_type }}
         {%- endif -%}
