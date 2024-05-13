@@ -16,7 +16,7 @@ authors = [{ name = "Skydio, Inc.", email = "hayk@skydio.com" }]
 license = { text = "Apache 2.0" }
 version = "0.9.0"
 dependencies = ["numpy"]
-requires-python = ">=2.7"
+requires-python = ">=3.5"
 
 [project.urls]
 SymForce = "https://symforce.org"
