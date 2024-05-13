@@ -62,8 +62,6 @@ void FilterCameraOutliers(std::vector<sym::Factord>& factors, sym::Valuesd& valu
       filtered_factors.push_back(factors[i]);
 
       num_filtered_cameras++;
-    } else {
-      spdlog::info("Removing camera outlier: {}", i);
     }
   }
 
@@ -186,7 +184,7 @@ int main(int argc, char** argv) {
   auto params = sym::DefaultOptimizerParams();
   params.verbose = true;
   params.lambda_update_type = sym::lambda_update_type_t::DYNAMIC;
-  k sym::Optimizerd optimizer{params, std::move(problem.factors)};
+  sym::Optimizerd optimizer{params, std::move(problem.factors)};
   const auto stats = optimizer.Optimize(optimized_values);
 
   spdlog::info("Finished in {} iterations", stats.iterations.size());
