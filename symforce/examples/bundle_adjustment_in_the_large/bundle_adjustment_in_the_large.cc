@@ -62,8 +62,6 @@ void FilterCameraOutliers(std::vector<sym::Factord>& factors, sym::Valuesd& valu
       filtered_factors.push_back(factors[i]);
 
       num_filtered_cameras++;
-    } else {
-      spdlog::info("Filtering camera {} with distance {}", i, distance);
     }
   }
 
