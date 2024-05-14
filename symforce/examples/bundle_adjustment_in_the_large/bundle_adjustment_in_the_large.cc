@@ -43,7 +43,7 @@ Eigen::Vector3d CalculateMedianPosition(const sym::Valuesd& values, int num_came
  * See https://github.com/symforce-org/symforce/issues/387
  */
 void FilterCameraOutliers(std::vector<sym::Factord>& factors, sym::Valuesd& values,
-                          int& num_cameras, double threshold = 100.0) {
+                          int& num_cameras, double threshold = 10.0) {
   std::vector<sym::Pose3d> camera_poses;
   std::vector<sym::Factord> filtered_factors;
 
@@ -62,6 +62,8 @@ void FilterCameraOutliers(std::vector<sym::Factord>& factors, sym::Valuesd& valu
       filtered_factors.push_back(factors[i]);
 
       num_filtered_cameras++;
+    } else {
+      spdlog::info("Filtering camera {} with distance {}", i, distance);
     }
   }
 
