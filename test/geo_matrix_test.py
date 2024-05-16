@@ -48,13 +48,13 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
         self.assertIsInstance(sf.M22([1, 2, 3, 4]), sf.M22)
         self.assertEqual(sf.M22([1, 2, 3, 4]).to_flat_list(), [1, 2, 3, 4])
-        self.assertRaises(AssertionError, lambda: sf.M22([1, 2, 3]))
-        self.assertRaises(AssertionError, lambda: sf.M22([1, 2, 3, 4, 5]))
+        self.assertRaises(ValueError, lambda: sf.M22([1, 2, 3]))
+        self.assertRaises(ValueError, lambda: sf.M22([1, 2, 3, 4, 5]))
 
         # 3C) Matrix([1, 2, 3, 4])  # Matrix41 with [1, 2, 3, 4] data - column vector assumed
         self.assertEqual(sf.M([1, 2, 3, 4]), sf.M([[1], [2], [3], [4]]))
         self.assertEqual(sf.M41([1, 2, 3, 4]), sf.M([[1], [2], [3], [4]]))
-        self.assertRaises(AssertionError, lambda: sf.M31([1, 2, 3, 4]))
+        self.assertRaises(ValueError, lambda: sf.M31([1, 2, 3, 4]))
 
         # 4) Matrix(4, 3)  # Zero constructed Matrix43
         self.assertEqual(sf.M(4, 3), sf.M43.zero())
@@ -207,7 +207,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(vec(*rand_vec), sf.Matrix(rand_vec))
 
             rand_vec_long = np.random.rand(i + 2)
-            self.assertRaises(AssertionError, vec, rand_vec_long)
+            self.assertRaises(ValueError, vec, rand_vec_long)
             self.assertRaises(AssertionError, vec, *rand_vec_long)
 
         eye_matrix_constructors = [sf.I1, sf.I2, sf.I3, sf.I4, sf.I5, sf.I6]

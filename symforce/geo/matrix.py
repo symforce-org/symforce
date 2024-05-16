@@ -111,7 +111,10 @@ class Matrix(Storage):
             # 1D array - if fixed size this must match data length. If not, assume column vec.
             else:
                 if cls._is_fixed_size():
-                    assert len(array) == cls.storage_dim(), f"Gave args {args} for {cls}"
+                    if len(array) != cls.storage_dim():
+                        raise ValueError(
+                            f"Expected {cls.storage_dim()} elements for {cls}, got {len(array)}"
+                        )
                     rows, cols = cls.SHAPE
                 else:
                     # Only set the second dimension to 1 if the array is nonempty
@@ -301,31 +304,6 @@ class Matrix(Storage):
             mat[i, i] = x
         return mat
 
-    # NOTE(aaron):  The following set of overloads is the correct signature for `eye`. However, when
-    # I do this mypy thinks the signature is:
-    #
-    #     Overload(def (rows: builtins.int) -> symforce.sf.matrix.Matrix, def (rows: builtins.int,
-    #     cols: builtins.int) -> symforce.sf.matrix.Matrix)
-    #
-    # And I cannot figure out why for the life of me.  So instead we lie to the type checker, and
-    # tell it we always return `cls`, even though we also support returning a superclass if called
-    # with a different shape.
-
-    # @_T.overload
-    # @classmethod
-    # def eye(cls: _T.Type[MatrixT]) -> MatrixT:  # pragma: no cover
-    #     pass
-
-    # @_T.overload
-    # @classmethod
-    # def eye(cls: _T.Type[Matrix], rows: int) -> Matrix:  # pragma: no cover
-    #     pass
-
-    # @_T.overload
-    # @classmethod
-    # def eye(cls: _T.Type[Matrix], rows: int, cols: int) -> Matrix:  # pragma: no cover
-    #     pass
-
     @classmethod
     def eye(
         cls: _T.Type[MatrixT], rows: _T.Optional[int] = None, cols: _T.Optional[int] = None
@@ -341,14 +319,23 @@ class Matrix(Storage):
         If rows and cols are provided, returns a (rows x cols) matrix, with ones on the diagonal.
         """
         if rows is None and cols is None:
-            assert cls._is_fixed_size(), f"Type has no size info: {cls}"
-            return cls.eye(*cls.SHAPE)
+            if not cls._is_fixed_size():
+                raise TypeError(
+                    "Matrix.eye can only be called with no arguments on a fixed-size matrix type"
+                )
+
+            rows, cols = cls.SHAPE
 
         if rows is None:
             raise ValueError("If cols is not None, rows must not be None")
 
+        orig_cols = cols
         if cols is None:
             cols = rows
+
+        if cls._is_fixed_size() and cls.SHAPE != (rows, cols):
+            raise TypeError(f"Called eye({rows=}, cols={orig_cols}) on matrix of shape {cls.SHAPE}")
+
         mat = cls.zeros(rows, cols)
         for i in range(min(rows, cols)):
             mat[i, i] = sf.S.One
