@@ -96,7 +96,7 @@ struct max {
 /// The type of a std::bind expression in various standard library implementations - this is
 /// unspecified by the standard
 #if defined _LIBCPP_VERSION  // libc++ (Clang)
-#define SYM_BIND_TYPE std::__1::__bind<ReturnTypeT (&)(Args...), FArgs...>
+#define SYM_BIND_TYPE std::__bind<ReturnTypeT (&)(Args...), FArgs...>
 #elif defined __GLIBCXX__  // glibc++ (GNU C++)
 #define SYM_BIND_TYPE std::_Bind<ReturnTypeT (*(FArgs...))(Args...)>
 #elif defined _MSC_VER  // MS Visual Studio
