@@ -15,7 +15,7 @@ argh==0.31.2
     # via
     #   skymarshal
     #   symforce (setup.py)
-astroid==3.1.0
+astroid==2.15.8
     # via pylint
 asttokens==2.4.1
     # via stack-data
@@ -23,7 +23,7 @@ attrs==23.2.0
     # via
     #   jsonschema
     #   referencing
-babel==2.14.0
+babel==2.15.0
     # via sphinx
 backcall==0.2.0
     # via ipython
@@ -41,7 +41,7 @@ certifi==2024.2.2
     # via requests
 charset-normalizer==3.3.2
     # via requests
-clang-format==18.1.4
+clang-format==18.1.5
     # via symforce (setup.py)
 click==8.1.7
     # via pip-tools
@@ -51,7 +51,7 @@ comm==0.2.2
     # via ipykernel
 contourpy==1.1.1
     # via matplotlib
-coverage==7.5.0
+coverage==7.5.1
     # via symforce (setup.py)
 cycler==0.12.1
     # via matplotlib
@@ -77,7 +77,7 @@ fastjsonschema==2.19.1
     # via nbformat
 fonttools==4.51.0
     # via matplotlib
-furo==2024.1.29
+furo==2024.5.6
     # via symforce (setup.py)
 graphviz==0.20.3
     # via symforce (setup.py)
@@ -107,7 +107,7 @@ isort==5.13.2
     # via pylint
 jedi==0.19.1
     # via ipython
-jinja2==3.1.3
+jinja2==3.1.4
     # via
     #   myst-parser
     #   nbconvert
@@ -115,7 +115,7 @@ jinja2==3.1.3
     #   skymarshal
     #   sphinx
     #   symforce (setup.py)
-jsonschema==4.21.1
+jsonschema==4.22.0
     # via nbformat
 jsonschema-specifications==2023.12.1
     # via jsonschema
@@ -135,7 +135,7 @@ jupyterlab-pygments==0.3.0
 kiwisolver==1.4.5
     # via matplotlib
 lazy-object-proxy==1.10.0
-    # via symforce (setup.py)
+    # via astroid
 llvmlite==0.41.1
     # via numba
 markdown-it-py==3.0.0
@@ -154,7 +154,7 @@ matplotlib-inline==0.1.7
     #   ipython
 mccabe==0.7.0
     # via pylint
-mdit-py-plugins==0.4.0
+mdit-py-plugins==0.4.1
     # via myst-parser
 mdurl==0.1.2
     # via markdown-it-py
@@ -162,15 +162,15 @@ mistune==3.0.2
     # via nbconvert
 mpmath==1.3.0
     # via sympy
-mypy==1.8.0
+mypy==1.9.0
     # via symforce (setup.py)
 mypy-extensions==1.0.0
     # via mypy
-myst-parser==3.0.0
+myst-parser==3.0.1
     # via symforce (setup.py)
 nbclient==0.10.0
     # via nbconvert
-nbconvert==7.16.3
+nbconvert==7.16.4
     # via nbsphinx
 nbformat==5.10.4
     # via
@@ -178,7 +178,7 @@ nbformat==5.10.4
     #   nbconvert
     #   nbsphinx
     #   nbstripout
-nbsphinx==0.9.3
+nbsphinx==0.9.4
     # via symforce (setup.py)
 nbstripout==0.7.1
     # via symforce (setup.py)
@@ -220,11 +220,11 @@ pip-tools==7.4.1
     # via symforce (setup.py)
 pkgutil-resolve-name==1.3.10
     # via jsonschema
-platformdirs==4.2.1
+platformdirs==4.2.2
     # via
     #   jupyter-core
     #   pylint
-plotly==5.21.0
+plotly==5.22.0
     # via symforce (setup.py)
 ply==3.11
     # via skymarshal
@@ -238,17 +238,17 @@ pure-eval==0.2.2
     # via stack-data
 pybind11-stubgen==0.16.2
     # via symforce (setup.py)
-pygments==2.17.2
+pygments==2.18.0
     # via
     #   furo
     #   ipython
     #   nbconvert
     #   sphinx
-pylint==3.1.0
+pylint==2.17.7
     # via symforce (setup.py)
 pyparsing==3.1.2
     # via matplotlib
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
@@ -263,21 +263,21 @@ pytz==2024.1
     #   pandas
 pyyaml==6.0.1
     # via myst-parser
-pyzmq==26.0.2
+pyzmq==26.0.3
     # via
     #   ipykernel
     #   jupyter-client
-referencing==0.34.0
+referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
 requests==2.31.0
     # via sphinx
-rpds-py==0.18.0
+rpds-py==0.18.1
     # via
     #   jsonschema
     #   referencing
-ruff==0.3.7
+ruff==0.4.4
     # via symforce (setup.py)
 scipy==1.10.1
     # via symforce (setup.py)
@@ -326,7 +326,7 @@ file:./gen/python
     # via symforce (setup.py)
 sympy==1.11.1
     # via symforce (setup.py)
-tenacity==8.2.3
+tenacity==8.3.0
     # via plotly
 tinycss2==1.3.0
     # via nbconvert
@@ -336,8 +336,7 @@ tomli==2.0.1
     #   mypy
     #   pip-tools
     #   pylint
-    #   pyproject-hooks
-tomlkit==0.12.4
+tomlkit==0.12.5
     # via pylint
 tornado==6.4
     # via
@@ -361,7 +360,7 @@ types-markupsafe==1.1.10
     # via types-jinja2
 types-requests==2.31.0.20240406
     # via symforce (setup.py)
-types-setuptools==69.5.0.20240423
+types-setuptools==69.5.0.20240513
     # via symforce (setup.py)
 typing-extensions==4.11.0
     # via
@@ -385,6 +384,8 @@ wheel==0.43.0
     # via
     #   pip-tools
     #   symforce (setup.py)
+wrapt==1.16.0
+    # via astroid
 zipp==3.18.1
     # via
     #   importlib-metadata

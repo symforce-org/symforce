@@ -451,16 +451,14 @@ if __name__ == "__main__":
                 "argh",
                 "coverage",
                 "jinja2~=3.0",
-                "mypy~=1.8.0",
+                "mypy~=1.9.0",
                 "numba",
                 # 6.13 fixes pip >=23.1 support
                 "pip-tools>=6.13",
                 # NOTE(aaron): v1.0 changed lots of things, we'll need to update and regenerate
                 "pybind11-stubgen<1.0",
-                "pylint",
-                "ruff~=0.3.2",
-                # NOTE(brad): A transitive dependency of pylint. Added here only to pin the version.
-                "lazy-object-proxy>=1.9.0",
+                "pylint~=2.16",
+                "ruff~=0.4.4",
                 "types-jinja2",
                 "types-requests",
                 "types-setuptools",
