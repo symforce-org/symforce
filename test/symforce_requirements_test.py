@@ -7,13 +7,12 @@ import asyncio
 import os
 import re
 import sys
-import textwrap
 
 from symforce import path_util
 from symforce import python_util
 from symforce import typing as T
 from symforce.test_util import TestCase
-from symforce.test_util import symengine_only
+from symforce.test_util import sympy_only
 
 
 class SymforceRequirementsTest(TestCase):
@@ -35,12 +34,14 @@ class SymforceRequirementsTest(TestCase):
 
         TestCase.main(*args, **kwargs)
 
-    @symengine_only
+    @sympy_only
     def test_requirements(self) -> None:
         output_dir = self.make_output_dir("sf_requirements_test_")
 
-        output_requirements_file = output_dir / "dev_requirements.txt"
-        symforce_requirements_file = path_util.symforce_root() / "dev_requirements.txt"
+        version = sys.version_info.minor
+
+        output_requirements_file = output_dir / f"dev_requirements_py3{version}.txt"
+        symforce_requirements_file = path_util.symforce_root() / f"dev_requirements_py3{version}.txt"
 
         local_requirements_map = {
             "skymarshal @ file://localhost/{}/third_party/skymarshal": "file:./third_party/skymarshal",
@@ -68,15 +69,13 @@ class SymforceRequirementsTest(TestCase):
         asyncio.run(
             python_util.execute_subprocess(
                 [
-                    sys.executable,
-                    "-m",
-                    "piptools",
+                    "uv",
+                    "pip",
                     "compile",
+                    "--all-extras",
                     f"--output-file={output_requirements_file}",
                     "--index-url=https://pypi.python.org/simple",
-                    "--allow-unsafe",
-                    "--extra=dev",
-                    "--extra=_setup",
+                    "pyproject.toml",
                 ]
                 + maybe_piptools_upgrade,
                 cwd=path_util.symforce_root(),
@@ -93,22 +92,12 @@ class SymforceRequirementsTest(TestCase):
         for key, value in local_requirements_map.items():
             requirements_contents = re.sub(key.format(".*"), value, requirements_contents)
 
-        # Inject the python version requirement
-        sentinel = "--index-url https://pypi.python.org/simple\n"
-        version_requirement = textwrap.dedent(
-            """
-            # Create a requirement incompatible with python < 3.8
-            symforce_requires_python_38_or_higher___your_python_version_is_incompatible; python_version < '3.8'
-            """
-        )
-        requirements_contents = requirements_contents.replace(
-            sentinel, sentinel + version_requirement
-        )
+        requirements_contents = requirements_contents.replace(str(output_dir) + "/", "")
 
         output_requirements_file.write_text(requirements_contents)
 
         self.compare_or_update_file(
-            path_util.symforce_data_root() / "dev_requirements.txt", output_requirements_file
+            path_util.symforce_data_root() / f"dev_requirements_py3{version}.txt", output_requirements_file
         )
 
 
