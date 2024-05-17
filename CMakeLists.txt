@@ -5,7 +5,7 @@
 
 # NOTE(aaron): This is the minimum version for policy range support, not sure if we need newer;
 # certainly no newer than 3.15 required.  This will use NEW policies up to CMake 3.25; this should
-# be the maximum tested CMake version, matching dev_requirements.txt
+# be the maximum tested CMake version, matching requirements_dev.txt
 cmake_minimum_required(VERSION 3.19...3.25)
 
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.27)

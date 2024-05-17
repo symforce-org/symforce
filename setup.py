@@ -399,16 +399,16 @@ if __name__ == "__main__":
                     "jinja2~=3.0",
                     "mypy~=1.11.0",
                     "numba",
-                    # 6.13 fixes pip >=23.1 support
-                    "pip-tools>=6.13",
                     # For https://github.com/sizmailov/pybind11-stubgen/pull/243
                     "pybind11-stubgen>=2.5.3",
                     "ruff~=0.9.7",
                     "types-jinja2",
                     "types-requests",
                     "types-setuptools",
+                    # Oldest version that solves to the right requirements
+                    "uv>=0.2.0",
                 ]
             ),
-            "_setup": maybe_rewrite_local_dependencies(setup_requirements),
+            "setup": maybe_rewrite_local_dependencies(setup_requirements),
         },
     )

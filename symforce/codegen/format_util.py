@@ -8,9 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from ruff.__main__ import find_ruff_bin
-
 from symforce import typing as T
+from symforce.python_util import find_ruff_bin
 
 
 def format_cpp(file_contents: str, filename: str) -> str:
@@ -48,35 +47,6 @@ def format_cpp(file_contents: str, filename: str) -> str:
     return result.stdout
 
 
-_ruff_path: T.Optional[Path] = None
-
-
-def _find_ruff() -> Path:
-    """
-    Find the ruff binary
-
-    `find_ruff_bin` does not work in all environments, for example it does not work on debian when
-    things are installed in `/usr/local/bin` and `sysconfig` only returns `/usr/bin`.  Adding
-    `shutil.which` should cover most cases, but not all, the better solution would require `ruff`
-    putting the binary in `data` like `clang-format` does
-    """
-    global _ruff_path  # noqa: PLW0603
-
-    if _ruff_path is not None:
-        return _ruff_path
-
-    try:
-        ruff = find_ruff_bin()
-    except FileNotFoundError as ex:
-        ruff = shutil.which("ruff")
-        if ruff is None:
-            raise FileNotFoundError("Could not find ruff") from ex
-
-    _ruff_path = ruff
-
-    return ruff
-
-
 def format_py(file_contents: str, filename: str) -> str:
     """
     Autoformat a given Python file using ruff
@@ -87,7 +57,7 @@ def format_py(file_contents: str, filename: str) -> str:
             location)
     """
     result = subprocess.run(
-        [_find_ruff(), "format", f"--stdin-filename={filename}", "-"],
+        [find_ruff_bin(), "format", f"--stdin-filename={filename}", "-"],
         input=file_contents,
         stdout=subprocess.PIPE,
         check=True,
@@ -99,7 +69,7 @@ def format_py(file_contents: str, filename: str) -> str:
     )
     result = subprocess.run(
         [
-            _find_ruff(),
+            find_ruff_bin(),
             "check",
             "--select=I",
             "--fix",
@@ -124,7 +94,7 @@ def format_py_dir(dirname: T.Openable) -> None:
     Autoformat python files in a directory (recursively) in-place
     """
     subprocess.run(
-        [_find_ruff(), "format", dirname],
+        [find_ruff_bin(), "format", dirname],
         check=True,
         # Disable the ruff cache.  This is important for running in a hermetic context like a bazel
         # test, and shouldn't really hurt other use cases.  If it does, we should work around this
