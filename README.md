@@ -567,7 +567,7 @@ pip install -e .
 
 You should then [verify your installation](#verify-your-installation).
 
-___Note:___ `pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r dev_requirements.txt`.
+___Note:___ `pip install .` will not install pinned versions of SymForce's dependencies, it'll install any compatible versions.  It also won't install all packages required to run all of the SymForce tests and build all of the targets (e.g. building the docs or running the linters).  If you want all packages required for that, you should `pip install .[dev]` instead (or one of the other groups of extra requirements in our `setup.py`).  If you additionally want pinned versions of our dependencies, which are the exact versions guaranteed by CI to pass all of our tests, you can install them from `pip install -r requirements_dev_py3<version>.txt`.
 
 _Note: Editable installs as root with the system python on Ubuntu (and other Debian derivatives) are broken on `setuptools<64.0.0`.  This is a [bug in Debian](https://ffy00.github.io/blog/02-python-debian-and-the-install-locations/), not something in SymForce that we can fix.  If this is your situation, either use a virtual environment, upgrade setuptools to a version `>=64.0.0`, or use a different installation method._
 
@@ -576,10 +576,12 @@ _Note: Editable installs as root with the system python on Ubuntu (and other Deb
 If you'll be modifying the C++ parts of SymForce, you should build with CMake directly instead - this method will not install
 SymForce into your Python environment, so you'll need to add it to your PYTHONPATH separately.
 
-Install python requirements:
+Install dependencies required to build and run SymForce:
 ```bash
-pip install -r dev_requirements.txt
+pip install -r requirements_build.txt
 ```
+
+___Note:___ `requirements_build` contains only packages required to build and run symforce, but not everything recommended to develop symforce, like to run the SymForce tests and linters.  For that, install the full pinned requirements using `pip install -r requirements_dev_py3<version>.txt` for your Python version.
 
 Build SymForce (requires C++14 or later):
 ```bash
