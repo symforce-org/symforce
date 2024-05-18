@@ -12,11 +12,11 @@
 
 #include <Eigen/Core>
 
-#include "./ops/group_ops.h"
-#include "./ops/lie_group_ops.h"
-#include "./ops/storage_ops.h"
-#include "./rot2.h"
-#include "./util/epsilon.h"
+#include <sym/ops/group_ops.h>
+#include <sym/ops/lie_group_ops.h>
+#include <sym/ops/storage_ops.h>
+#include <sym/rot2.h>
+#include <sym/util/epsilon.h>
 
 namespace sym {
 

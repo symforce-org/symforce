@@ -8,7 +8,7 @@
 
 #include <Eigen/Core>
 
-#include "../group_ops.h"
+#include <sym/ops/group_ops.h>
 
 namespace sym {
 

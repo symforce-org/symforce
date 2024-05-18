@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./linear_camera_cal.h"
+#include <sym/linear_camera_cal.h>
 
 // Camera operation implementations
 namespace sym {

@@ -13,7 +13,7 @@
 
 #include <lcmtypes/sym/type_t.hpp>
 
-#include "../storage_ops.h"
+#include <sym/ops/storage_ops.h>
 
 namespace sym {
 namespace scalar {

@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./polynomial_camera_cal.h"
+#include <sym/polynomial_camera_cal.h>
 
 // Camera operation implementations
 namespace sym {

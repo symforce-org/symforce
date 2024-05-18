@@ -11,8 +11,8 @@
 
 #include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 
-#include "../group_ops.h"
-#include "./lie_group_ops.h"
+#include <sym/ops/group_ops.h>
+#include <sym/ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h>
 
 // Forward declare class, without including header
 // We could include the class header here, but we forward declare to be consistent

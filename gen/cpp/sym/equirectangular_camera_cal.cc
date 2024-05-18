@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./equirectangular_camera_cal.h"
+#include <sym/equirectangular_camera_cal.h>
 
 // Camera operation implementations
 namespace sym {

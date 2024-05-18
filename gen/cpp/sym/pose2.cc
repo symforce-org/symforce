@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./pose2.h"
+#include <sym/pose2.h>
 
 namespace sym {
 

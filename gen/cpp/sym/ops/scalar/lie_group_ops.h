@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "../lie_group_ops.h"
+#include <sym/ops/lie_group_ops.h>
 
 namespace sym {
 namespace scalar {

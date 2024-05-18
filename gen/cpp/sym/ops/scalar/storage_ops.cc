@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./storage_ops.h"
+#include <sym/ops/scalar/storage_ops.h>
 
 // Explicit instantiation
 template struct sym::StorageOps<double>;

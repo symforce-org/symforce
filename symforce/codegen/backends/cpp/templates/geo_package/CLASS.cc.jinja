@@ -5,7 +5,7 @@
 
 {%- import "../util/util.jinja" as util with context -%}
 
-#include "./{{ camelcase_to_snakecase(cls.__name__) }}.h"
+#include <sym/{{ camelcase_to_snakecase(cls.__name__) }}.h>
 
 namespace sym {
 

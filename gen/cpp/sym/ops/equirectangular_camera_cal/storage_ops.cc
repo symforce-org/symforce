@@ -4,14 +4,13 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./storage_ops.h"
-
 #include <algorithm>
 #include <cassert>
 
 #include <Eigen/Core>
 
 #include <sym/equirectangular_camera_cal.h>
+#include <sym/ops/equirectangular_camera_cal/storage_ops.h>
 
 namespace sym {
 

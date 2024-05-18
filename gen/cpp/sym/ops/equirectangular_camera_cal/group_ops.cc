@@ -4,9 +4,8 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./group_ops.h"
-
 #include <sym/equirectangular_camera_cal.h>
+#include <sym/ops/equirectangular_camera_cal/group_ops.h>
 
 namespace sym {
 

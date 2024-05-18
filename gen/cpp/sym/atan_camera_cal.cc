@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./atan_camera_cal.h"
+#include <sym/atan_camera_cal.h>
 
 // Camera operation implementations
 namespace sym {

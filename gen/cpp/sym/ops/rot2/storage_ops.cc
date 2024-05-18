@@ -4,13 +4,12 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./storage_ops.h"
-
 #include <algorithm>
 #include <cassert>
 
 #include <Eigen/Core>
 
+#include <sym/ops/rot2/storage_ops.h>
 #include <sym/rot2.h>
 
 namespace sym {

@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./unit3.h"
+#include <sym/unit3.h>
 
 namespace sym {
 

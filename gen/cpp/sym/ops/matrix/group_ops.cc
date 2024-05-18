@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./group_ops.h"
+#include <sym/ops/matrix/group_ops.h>
 
 // Explicit instantiation
 template struct sym::GroupOps<Eigen::Matrix<double, 1, 1>>;

@@ -4,8 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./group_ops.h"
-
+#include <sym/ops/pose2/group_ops.h>
 #include <sym/pose2.h>
 
 namespace sym {

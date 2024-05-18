@@ -18,15 +18,15 @@
 
 {# If a pose type, include the necessary rotation type. #}
 {% if cls.__name__.startswith('Pose') %}
-#include "./rot{{ cls.__name__[-1] }}.h"
+#include <sym/rot{{ cls.__name__[-1] }}.h>
 {% elif cls.__name__ == 'Unit3' %}
-#include "./rot3.h"
+#include <sym/rot3.h>
 {% endif -%}
 
-#include "./ops/storage_ops.h"
-#include "./ops/group_ops.h"
-#include "./ops/lie_group_ops.h"
-#include "./util/epsilon.h"
+#include <sym/ops/storage_ops.h>
+#include <sym/ops/group_ops.h>
+#include <sym/ops/lie_group_ops.h>
+#include <sym/util/epsilon.h>
 
 namespace sym {
 

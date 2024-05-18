@@ -4,10 +4,9 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./lie_group_ops.h"
-
 #include <cmath>
 
+#include <sym/ops/spherical_camera_cal/lie_group_ops.h>
 #include <sym/spherical_camera_cal.h>
 
 namespace sym {

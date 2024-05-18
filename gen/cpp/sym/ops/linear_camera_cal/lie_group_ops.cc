@@ -4,11 +4,10 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./lie_group_ops.h"
-
 #include <cmath>
 
 #include <sym/linear_camera_cal.h>
+#include <sym/ops/linear_camera_cal/lie_group_ops.h>
 
 namespace sym {
 

@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./group_ops.h"
+#include <sym/ops/scalar/group_ops.h>
 
 // Explicit instantiation
 template struct sym::GroupOps<double>;

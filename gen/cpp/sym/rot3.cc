@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./rot3.h"
+#include <sym/rot3.h>
 
 namespace sym {
 

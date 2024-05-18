@@ -10,9 +10,8 @@
 
 #include <Eigen/Core>
 
+#include <sym/ops/storage_ops.h>
 #include <sym/util/epsilon.h>
-
-#include "./storage_ops.h"
 
 namespace sym {
 
@@ -59,5 +58,5 @@ bool IsClose(const T& a, const T& b, const typename StorageOps<T>::Scalar tol) {
 
 }  // namespace sym
 
-#include "./matrix/lie_group_ops.h"
-#include "./scalar/lie_group_ops.h"
+#include <sym/ops/matrix/lie_group_ops.h>
+#include <sym/ops/scalar/lie_group_ops.h>

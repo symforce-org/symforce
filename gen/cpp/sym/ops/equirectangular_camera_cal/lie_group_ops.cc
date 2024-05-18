@@ -4,11 +4,10 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./lie_group_ops.h"
-
 #include <cmath>
 
 #include <sym/equirectangular_camera_cal.h>
+#include <sym/ops/equirectangular_camera_cal/lie_group_ops.h>
 
 namespace sym {
 

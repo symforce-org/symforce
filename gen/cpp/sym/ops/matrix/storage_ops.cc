@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./storage_ops.h"
+#include <sym/ops/matrix/storage_ops.h>
 
 // Explicit instantiation
 template struct sym::StorageOps<Eigen::Matrix<double, 1, 1>>;

@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./epsilon.h"
+#include <sym/util/epsilon.h>
 
 // Explicit instantiation
 template const double sym::kDefaultEpsilon<double>;

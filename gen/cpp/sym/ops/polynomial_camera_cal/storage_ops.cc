@@ -4,13 +4,12 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./storage_ops.h"
-
 #include <algorithm>
 #include <cassert>
 
 #include <Eigen/Core>
 
+#include <sym/ops/polynomial_camera_cal/storage_ops.h>
 #include <sym/polynomial_camera_cal.h>
 
 namespace sym {

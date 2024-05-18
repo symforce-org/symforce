@@ -8,7 +8,7 @@
 
 #include <Eigen/Core>
 
-#include "../lie_group_ops.h"
+#include <sym/ops/lie_group_ops.h>
 
 // Forward declare class, without including header
 // Note(brad): We can't include the class header here because the class header

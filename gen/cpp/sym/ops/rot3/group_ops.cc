@@ -4,8 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./group_ops.h"
-
+#include <sym/ops/rot3/group_ops.h>
 #include <sym/rot3.h>
 
 namespace sym {

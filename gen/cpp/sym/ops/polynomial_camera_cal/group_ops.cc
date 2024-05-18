@@ -4,8 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./group_ops.h"
-
+#include <sym/ops/polynomial_camera_cal/group_ops.h>
 #include <sym/polynomial_camera_cal.h>
 
 namespace sym {

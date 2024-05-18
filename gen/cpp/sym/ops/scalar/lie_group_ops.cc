@@ -4,7 +4,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./lie_group_ops.h"
+#include <sym/ops/scalar/lie_group_ops.h>
 
 // Explicit instantiation
 template struct sym::LieGroupOps<double>;

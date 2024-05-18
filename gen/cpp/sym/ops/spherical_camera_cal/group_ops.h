@@ -8,10 +8,9 @@
 
 #include <Eigen/Core>
 
+#include <sym/ops/group_ops.h>
+#include <sym/ops/spherical_camera_cal/lie_group_ops.h>
 #include <sym/spherical_camera_cal.h>
-
-#include "../group_ops.h"
-#include "./lie_group_ops.h"
 
 // Forward declare class, without including header
 // We could include the class header here, but we forward declare to be consistent

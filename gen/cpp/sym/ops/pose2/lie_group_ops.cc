@@ -4,10 +4,9 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./lie_group_ops.h"
-
 #include <cmath>
 
+#include <sym/ops/pose2/lie_group_ops.h>
 #include <sym/pose2.h>
 
 namespace sym {

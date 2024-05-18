@@ -4,10 +4,9 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-#include "./lie_group_ops.h"
-
 #include <cmath>
 
+#include <sym/ops/polynomial_camera_cal/lie_group_ops.h>
 #include <sym/polynomial_camera_cal.h>
 
 namespace sym {

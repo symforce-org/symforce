@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "./lie_group_ops.h"
+#include <sym/ops/lie_group_ops.h>
 
 namespace sym {
 
@@ -35,5 +35,5 @@ struct GroupOps {
 
 }  // namespace sym
 
-#include "./matrix/group_ops.h"
-#include "./scalar/group_ops.h"
+#include <sym/ops/matrix/group_ops.h>
+#include <sym/ops/scalar/group_ops.h>
