@@ -3,11 +3,16 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 import symforce.internal.symbolic as sf
 from symforce import ops
 from symforce import typing as T
 
 from .group import Group
+
+if T.TYPE_CHECKING:
+    from symforce import geo
 
 
 class LieGroup(Group):
@@ -70,6 +75,24 @@ class LieGroup(Group):
         Tangent space perturbation that conceptually represents "b - self" if self is a vector.
         """
         return self.between(b).to_tangent(epsilon=epsilon)
+
+    def jacobian(self: LieGroupT, X: T.Any, tangent_space: bool = True) -> geo.Matrix:
+        """
+        Computes the jacobian of this LieGroup element with respect to the input X, where X is
+        anything that supports LieGroupOps
+
+        If tangent_space is True, the jacobian is computed in the local coordinates of the tangent
+        spaces around self and X. If tangent_space is False, the jacobian is computed in the storage
+        spaces of self and X.
+
+        See also:
+            :func:`symforce.ops.lie_group_ops.LieGroupOps.jacobian`
+            :func:`symforce.jacobian_helpers.tangent_jacobians`
+
+        Returns: the jacobian matrix of shape MxN, where M is the dimension of the tangent (or
+            storage) space of self and N is the dimension of the tangent (or storage) space of X.
+        """
+        return ops.LieGroupOps.jacobian(self, X, tangent_space)
 
 
 from ..impl.class_lie_group_ops import ClassLieGroupOps

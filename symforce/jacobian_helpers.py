@@ -83,18 +83,22 @@ def tangent_jacobians_first_order(
         components of new contain symbols in old that we are replacing.
         """
         intermediate = StorageOps.from_storage(
-            old, sf.M(StorageOps.storage_dim(old), 1).symbolic("intermediate").to_flat_list()
+            old,
+            sf.M(StorageOps.storage_dim(old), 1)
+            .symbolic("__symforce_internal_intermediate")
+            .to_flat_list(),
         )
-        return expr.subs(old, intermediate).subs(intermediate, new)
+        return StorageOps.subs(StorageOps.subs(expr, old, intermediate), intermediate, new)
 
     for arg in args:
-        xi = sf.M(LieGroupOps.tangent_dim(arg), 1).symbolic("xi")
+        xi = sf.M(LieGroupOps.tangent_dim(arg), 1).symbolic("__symforce_internal_xi")
         arg_perturbed = infinitesimal_retract(arg, xi)
 
         expr_perturbed = safe_subs(expr, arg, arg_perturbed)
 
         result = infinitesimal_local_coordinates(expr, expr_perturbed)
-        arg_jacobian = result.jacobian(xi).subs(xi, xi.zero())
+        # Use tangent_space=False here to avoid recursion
+        arg_jacobian = result.jacobian(xi, tangent_space=False).subs(xi, xi.zero())
 
         jacobians.append(arg_jacobian)
 
@@ -131,7 +135,10 @@ def tangent_jacobians_chain_rule(expr: T.Element, args: T.Sequence[T.Element]) -
     expr_tangent_D_storage = LieGroupOps.tangent_D_storage(expr)
 
     for arg in args:
-        expr_storage_D_arg_storage = expr_storage.jacobian(StorageOps.to_storage(arg))
+        # Use tangent_space=False here to avoid recursion
+        expr_storage_D_arg_storage = expr_storage.jacobian(
+            StorageOps.to_storage(arg), tangent_space=False
+        )
         arg_jacobian = expr_tangent_D_storage * (
             expr_storage_D_arg_storage * LieGroupOps.storage_D_tangent(arg)
         )

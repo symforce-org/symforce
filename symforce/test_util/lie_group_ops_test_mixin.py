@@ -10,6 +10,7 @@ import numpy as np
 import symforce.symbolic as sf
 from symforce.ops import LieGroupOps
 from symforce.ops import StorageOps
+from symforce.ops.interfaces.lie_group import LieGroup
 
 from .group_ops_test_mixin import GroupOpsTestMixin
 
@@ -119,6 +120,21 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
             perturbation_recovered,
             places=7,
         )
+
+    def test_jacobian(self) -> None:
+        symbolic_element = StorageOps.symbolic(self.element(), "e")
+        symbolic_perturbation = sf.M(LieGroupOps.tangent_dim(symbolic_element), 1).symbolic("p")
+        symbolic_retracted_element = LieGroupOps.retract(
+            symbolic_element, symbolic_perturbation.to_flat_list()
+        )
+        LieGroupOps.jacobian(symbolic_retracted_element, symbolic_perturbation, tangent_space=True)
+        LieGroupOps.jacobian(symbolic_retracted_element, symbolic_perturbation, tangent_space=False)
+
+        if isinstance(self.element(), (LieGroup, sf.Matrix)):
+            # These classes should also have a .jacobian instance method
+            # TODO(aaron): Should there be a separate test mixin for these classes?
+            symbolic_retracted_element.jacobian(symbolic_perturbation, tangent_space=True)
+            symbolic_retracted_element.jacobian(symbolic_perturbation, tangent_space=False)
 
     def test_storage_D_tangent(self) -> None:
         element = self.element()

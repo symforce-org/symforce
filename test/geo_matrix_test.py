@@ -248,7 +248,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         mat = sf.M22.symbolic("a")
         vec = mat[:, 0]
-        self.assertRaises(AssertionError, lambda: mat.jacobian(vec))
+        self.assertEqual(sf.M42.eye(), mat.jacobian(vec))
 
     def test_block_matrix(self) -> None:
         """

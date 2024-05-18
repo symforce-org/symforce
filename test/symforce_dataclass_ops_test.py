@@ -13,6 +13,7 @@ from symforce.ops import LieGroupOps
 from symforce.ops import StorageOps
 from symforce.test_util import TestCase
 from symforce.test_util.lie_group_ops_test_mixin import LieGroupOpsTestMixin
+from symforce.test_util.test_case import slow_on_sympy
 
 
 @dataclass
@@ -43,6 +44,8 @@ class SymforceDataclassOpsTest(LieGroupOpsTestMixin, TestCase):
     """
     Tests ops.impl.dataclass_*_ops.py
     """
+
+    test_jacobian = slow_on_sympy(LieGroupOpsTestMixin.test_jacobian)
 
     @classmethod
     def element(cls) -> T.Dataclass:

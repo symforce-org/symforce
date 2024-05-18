@@ -463,21 +463,12 @@ class Matrix(Storage):
     def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
         """
         Compute the jacobian with respect to the tangent space of X if ``tangent_space = True``,
-        otherwise returns the jacobian wih respect to the storage elements of X.
+        otherwise returns the jacobian with respect to the storage elements of X.
+
+        Note that the jacobian is always 2D, even if self or X are matrices - it will be M x N,
+        where M is the size of self and N is the size of X
         """
-        assert self.cols == 1, "Jacobian is for column vectors."
-
-        if tangent_space and not isinstance(X, Matrix):
-            # This imports geo, so lazily import here
-            from symforce import jacobian_helpers  # pylint: disable=cyclic-import
-
-            # This calls Matrix.jacobian, so don't call it if X is a Matrix to prevent recursion
-            return jacobian_helpers.tangent_jacobians(self, [X])[0]
-        else:
-            # Compute jacobian wrt X storage
-            return Matrix(
-                [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in iter(self.mat)]
-            )
+        return ops.LieGroupOps.jacobian(self, X, tangent_space=tangent_space)
 
     def diff(self, *args: _T.Scalar) -> Matrix:
         """
