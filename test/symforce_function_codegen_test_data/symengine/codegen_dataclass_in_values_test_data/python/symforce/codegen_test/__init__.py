@@ -4,4 +4,3 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-from .codegen_dataclass_in_values_test import codegen_dataclass_in_values_test

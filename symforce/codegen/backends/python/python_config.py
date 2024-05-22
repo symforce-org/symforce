@@ -19,6 +19,14 @@ class PythonConfig(CodegenConfig):
     """
     Code generation config for the Python backend.
 
+    Note: Generating a function generates an empty `__init__.py` file in the same directory.
+    If you have multiple functions that get generated in the same directory, it can be convenient to
+    also generate an `__init__.py` file that imports all of them - you can use
+    :func:`symforce.codegen.backends.python.generate_module_init` for this.
+
+    See also:
+        :func:`symforce.codegen.backends.python.generate_module_init`
+
     Args:
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
