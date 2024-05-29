@@ -5,7 +5,7 @@ from {{ import_path }} import {{ import_submodule }}
 {% endfor %}
 
 class {{ lcmtype.name }}(object):
-    __slots__ = [{% for member in lcmtype.members %}"{{ member.name }}"{% if not loop.last %}, {% endif %}{% endfor %}]  # type: T.List[str]
+    __slots__: T.List[str] = [{% for member in lcmtype.members %}"{{ member.name }}"{% if not loop.last %}, {% endif %}{% endfor %}]
 {% if lcmtype.constants %}
 
 {% for constant in lcmtype.constants %}
@@ -16,11 +16,10 @@ class {{ lcmtype.name }}(object):
     def __init__(
         self,
 {% for member, kwarg_default, init_val, type_hint in lcmtype.member_initializers(optional=True) %}
-        {{ member.name }}={{ kwarg_default }},  # type: {{ type_hint }}
+        {{ member.name }}: {{ type_hint }}={{ kwarg_default }},
 {% endfor %}
-        _skip_initialize=False,  # type: bool
-    ):
-        # type: (...) -> None
+        _skip_initialize: bool=False,
+    ) -> None:
         """ If _skip_initialize is True, all other constructor arguments are ignored """
         if _skip_initialize:
             return
@@ -29,9 +28,9 @@ class {{ lcmtype.name }}(object):
         # {{comment}}
 {% endfor%}
 {% if kwarg_default == None %}
-        self.{{ member.name }} = {{ init_val }} if {{ member.name }} is None else {{ member.name }}  # type: {{ type_hint }}
+        self.{{ member.name }}: {{ type_hint }} = {{ init_val }} if {{ member.name }} is None else {{ member.name }}
 {% else %}
-        self.{{ member.name }} = {{ member.name }}
+        self.{{ member.name }}: {{ type_hint }} = {{ member.name }}
 {% endif %}
 {% endfor %}
 
@@ -39,10 +38,9 @@ class {{ lcmtype.name }}(object):
     @staticmethod
     def from_all_fields(
 {% for member, _, init_val, type_hint in lcmtype.member_initializers() %}
-        {{ member.name }},  # type: {{ type_hint }}
+        {{ member.name }}: {{ type_hint }},
 {% endfor %}
-    ):
-        # type: (...) -> {{ lcmtype.name }}
+    ) -> "{{ lcmtype.name }}":
         return {{ lcmtype.name }}(
 {% for member, _, _, _ in lcmtype.member_initializers() %}
             {{ member.name }}={{ member.name }},
@@ -51,8 +49,7 @@ class {{ lcmtype.name }}(object):
 {% endif %}
 
     @staticmethod
-    def _skytype_meta():
-        # type: () -> T.Dict[str, str]
+    def _skytype_meta() -> T.Dict[str, str]:
         return dict(
             type="struct",
             package="{{lcmtype.package.name}}",
@@ -60,17 +57,14 @@ class {{ lcmtype.name }}(object):
         )
 
     @classmethod
-    def _default(cls):
-        # type: () -> {{ lcmtype.name }}
+    def _default(cls) -> "{{ lcmtype.name }}":
         return cls()
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "{{ lcmtype.fully_qualified_name }}({})".format(
             ", ".join("{}={}".format(name, repr(getattr(self, name))) for name in self.__slots__))
 
-    def __eq__(self, other):
-        # type: (object) -> bool
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, {{ lcmtype.name }}):
             return NotImplemented
         {% if lcmtype.members %}
@@ -86,8 +80,7 @@ class {{ lcmtype.name }}(object):
         {% endif %}
 
 {% if lcmtype.hashable %}
-    def __hash__(self):
-        # type: () -> int
+    def __hash__(self) -> int:
         return hash((
             {% for member in lcmtype.members %}
             self.{{member.name}},
@@ -98,20 +91,17 @@ class {{ lcmtype.name }}(object):
     __hash__ = None  # type: ignore
 {% endif %}
 
-    def encode(self):
-        # type: () -> bytes
+    def encode(self) -> bytes:
         buf = BytesIO()
         buf.write({{ lcmtype.name }}._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
-    def _encode_one(self, buf):
-        # type: (T.BinaryIO) -> None
+    def _encode_one(self, buf: T.BinaryIO) -> None:
 {{ lcmtype.encode_members(2) }}
 
     @staticmethod
-    def decode(data):
-        # type: (T.Union[bytes, T.BinaryIO]) -> {{ lcmtype.name }}
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> "{{ lcmtype.name }}":
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -127,8 +117,7 @@ class {{ lcmtype.name }}(object):
         return {{ lcmtype.name }}._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf):
-        # type: (T.BinaryIO) -> {{ lcmtype.name }}
+    def _decode_one(buf: T.BinaryIO) -> "{{ lcmtype.name }}":
         self = {{ lcmtype.name }}(_skip_initialize=True)
 {% if lcmtype.members %}
 {{ lcmtype.decode_members(2) }}
@@ -136,8 +125,7 @@ class {{ lcmtype.name }}(object):
         return self
 
     @staticmethod
-    def _get_hash_recursive(parents):
-        # type: (T.List[T.Type]) -> int
+    def _get_hash_recursive(parents: T.List[T.Type]) -> int:
         if {{ lcmtype.name }} in parents: return 0
 {% if lcmtype.has_complex_members() %}
         newparents = parents + [{{ lcmtype.name }}]
@@ -146,17 +134,15 @@ class {{ lcmtype.name }}(object):
         tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
 
-    _packed_fingerprint = None  # type: T.Optional[bytes]
+    _packed_fingerprint: T.Optional[bytes] = None
 
     @staticmethod
-    def _get_packed_fingerprint():
-        # type: () -> bytes
+    def _get_packed_fingerprint() -> bytes:
         if {{ lcmtype.name }}._packed_fingerprint is None:
             {{ lcmtype.name }}._packed_fingerprint = struct.pack(">Q", {{ lcmtype.name }}._get_hash_recursive([]))
         return {{ lcmtype.name }}._packed_fingerprint
 
-    def deepcopy(self, **kwargs):
-        # type: (**T.Any) -> {{ lcmtype.name }}
+    def deepcopy(self, **kwargs: T.Any) -> "{{ lcmtype.name }}":
         """
         Deep copy of this LCM type
 

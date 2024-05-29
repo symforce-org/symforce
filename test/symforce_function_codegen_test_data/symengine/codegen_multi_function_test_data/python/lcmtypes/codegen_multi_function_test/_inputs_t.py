@@ -17,57 +17,55 @@ from lcmtypes.eigen_lcm._MatrixXd import MatrixXd
 from lcmtypes.eigen_lcm._Vector4d import Vector4d
 
 class inputs_t(object):
-    __slots__ = ["x", "y", "rot", "rot_vec", "scalar_vec", "list_of_lists", "values_vec", "values_vec_2D", "constants", "big_matrix", "small_matrix", "states"]  # type: T.List[str]
+    __slots__: T.List[str] = ["x", "y", "rot", "rot_vec", "scalar_vec", "list_of_lists", "values_vec", "values_vec_2D", "constants", "big_matrix", "small_matrix", "states"]
 
     def __init__(
         self,
-        x=0.0,  # type: float
-        y=0.0,  # type: float
-        rot=None,  # type: T.Optional[Vector4d]
-        rot_vec=None,  # type: T.Optional[T.List[Vector4d]]
-        scalar_vec=None,  # type: T.Optional[T.List[float]]
-        list_of_lists=None,  # type: T.Optional[T.List[T.List[Vector4d]]]
-        values_vec=None,  # type: T.Optional[T.List[values_vec_t]]
-        values_vec_2D=None,  # type: T.Optional[T.List[T.List[values_vec_t]]]
-        constants=None,  # type: T.Optional[inputs_constants_t]
-        big_matrix=None,  # type: T.Optional[MatrixXd]
-        small_matrix=None,  # type: T.Optional[Matrix4d]
-        states=None,  # type: T.Optional[inputs_states_t]
-        _skip_initialize=False,  # type: bool
-    ):
-        # type: (...) -> None
+        x: float=0.0,
+        y: float=0.0,
+        rot: T.Optional[Vector4d]=None,
+        rot_vec: T.Optional[T.List[Vector4d]]=None,
+        scalar_vec: T.Optional[T.List[float]]=None,
+        list_of_lists: T.Optional[T.List[T.List[Vector4d]]]=None,
+        values_vec: T.Optional[T.List[values_vec_t]]=None,
+        values_vec_2D: T.Optional[T.List[T.List[values_vec_t]]]=None,
+        constants: T.Optional[inputs_constants_t]=None,
+        big_matrix: T.Optional[MatrixXd]=None,
+        small_matrix: T.Optional[Matrix4d]=None,
+        states: T.Optional[inputs_states_t]=None,
+        _skip_initialize: bool=False,
+    ) -> None:
         """ If _skip_initialize is True, all other constructor arguments are ignored """
         if _skip_initialize:
             return
-        self.x = x
-        self.y = y
-        self.rot = Vector4d._default() if rot is None else rot  # type: Vector4d
-        self.rot_vec = [ Vector4d._default() for dim0 in range(3) ] if rot_vec is None else rot_vec  # type: T.List[Vector4d]
-        self.scalar_vec = [ 0.0 for dim0 in range(3) ] if scalar_vec is None else scalar_vec  # type: T.List[float]
-        self.list_of_lists = [ [ Vector4d._default() for dim1 in range(3) ] for dim0 in range(3) ] if list_of_lists is None else list_of_lists  # type: T.List[T.List[Vector4d]]
-        self.values_vec = [ values_vec_t._default() for dim0 in range(3) ] if values_vec is None else values_vec  # type: T.List[values_vec_t]
-        self.values_vec_2D = [ [ values_vec_t._default() for dim1 in range(1) ] for dim0 in range(2) ] if values_vec_2D is None else values_vec_2D  # type: T.List[T.List[values_vec_t]]
-        self.constants = inputs_constants_t._default() if constants is None else constants  # type: inputs_constants_t
-        self.big_matrix = MatrixXd._default() if big_matrix is None else big_matrix  # type: MatrixXd
-        self.small_matrix = Matrix4d._default() if small_matrix is None else small_matrix  # type: Matrix4d
-        self.states = inputs_states_t._default() if states is None else states  # type: inputs_states_t
+        self.x: float = x
+        self.y: float = y
+        self.rot: Vector4d = Vector4d._default() if rot is None else rot
+        self.rot_vec: T.List[Vector4d] = [ Vector4d._default() for dim0 in range(3) ] if rot_vec is None else rot_vec
+        self.scalar_vec: T.List[float] = [ 0.0 for dim0 in range(3) ] if scalar_vec is None else scalar_vec
+        self.list_of_lists: T.List[T.List[Vector4d]] = [ [ Vector4d._default() for dim1 in range(3) ] for dim0 in range(3) ] if list_of_lists is None else list_of_lists
+        self.values_vec: T.List[values_vec_t] = [ values_vec_t._default() for dim0 in range(3) ] if values_vec is None else values_vec
+        self.values_vec_2D: T.List[T.List[values_vec_t]] = [ [ values_vec_t._default() for dim1 in range(1) ] for dim0 in range(2) ] if values_vec_2D is None else values_vec_2D
+        self.constants: inputs_constants_t = inputs_constants_t._default() if constants is None else constants
+        self.big_matrix: MatrixXd = MatrixXd._default() if big_matrix is None else big_matrix
+        self.small_matrix: Matrix4d = Matrix4d._default() if small_matrix is None else small_matrix
+        self.states: inputs_states_t = inputs_states_t._default() if states is None else states
 
     @staticmethod
     def from_all_fields(
-        x,  # type: float
-        y,  # type: float
-        rot,  # type: Vector4d
-        rot_vec,  # type: T.List[Vector4d]
-        scalar_vec,  # type: T.List[float]
-        list_of_lists,  # type: T.List[T.List[Vector4d]]
-        values_vec,  # type: T.List[values_vec_t]
-        values_vec_2D,  # type: T.List[T.List[values_vec_t]]
-        constants,  # type: inputs_constants_t
-        big_matrix,  # type: MatrixXd
-        small_matrix,  # type: Matrix4d
-        states,  # type: inputs_states_t
-    ):
-        # type: (...) -> inputs_t
+        x: float,
+        y: float,
+        rot: Vector4d,
+        rot_vec: T.List[Vector4d],
+        scalar_vec: T.List[float],
+        list_of_lists: T.List[T.List[Vector4d]],
+        values_vec: T.List[values_vec_t],
+        values_vec_2D: T.List[T.List[values_vec_t]],
+        constants: inputs_constants_t,
+        big_matrix: MatrixXd,
+        small_matrix: Matrix4d,
+        states: inputs_states_t,
+    ) -> "inputs_t":
         return inputs_t(
             x=x,
             y=y,
@@ -84,8 +82,7 @@ class inputs_t(object):
         )
 
     @staticmethod
-    def _skytype_meta():
-        # type: () -> T.Dict[str, str]
+    def _skytype_meta() -> T.Dict[str, str]:
         return dict(
             type="struct",
             package="codegen_multi_function_test",
@@ -93,17 +90,14 @@ class inputs_t(object):
         )
 
     @classmethod
-    def _default(cls):
-        # type: () -> inputs_t
+    def _default(cls) -> "inputs_t":
         return cls()
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "inputs_t({})".format(
             ", ".join("{}={}".format(name, repr(getattr(self, name))) for name in self.__slots__))
 
-    def __eq__(self, other):
-        # type: (object) -> bool
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, inputs_t):
             return NotImplemented
         return (
@@ -123,15 +117,13 @@ class inputs_t(object):
     # Disallow hashing for python struct lcmtypes.
     __hash__ = None  # type: ignore
 
-    def encode(self):
-        # type: () -> bytes
+    def encode(self) -> bytes:
         buf = BytesIO()
         buf.write(inputs_t._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
-    def _encode_one(self, buf):
-        # type: (T.BinaryIO) -> None
+    def _encode_one(self, buf: T.BinaryIO) -> None:
         buf.write(inputs_t._CACHED_STRUCT_0.pack(self.x, self.y))
         if hasattr(self.rot, '_get_packed_fingerprint'):
             assert self.rot._get_packed_fingerprint() == Vector4d._get_packed_fingerprint()
@@ -187,8 +179,7 @@ class inputs_t(object):
         self.states._encode_one(buf)
 
     @staticmethod
-    def decode(data):
-        # type: (T.Union[bytes, T.BinaryIO]) -> inputs_t
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> "inputs_t":
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -204,8 +195,7 @@ class inputs_t(object):
         return inputs_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf):
-        # type: (T.BinaryIO) -> inputs_t
+    def _decode_one(buf: T.BinaryIO) -> "inputs_t":
         self = inputs_t(_skip_initialize=True)
         self.x, self.y = inputs_t._CACHED_STRUCT_0.unpack(buf.read(16))
         self.rot = Vector4d._decode_one(buf)
@@ -233,25 +223,22 @@ class inputs_t(object):
         return self
 
     @staticmethod
-    def _get_hash_recursive(parents):
-        # type: (T.List[T.Type]) -> int
+    def _get_hash_recursive(parents: T.List[T.Type]) -> int:
         if inputs_t in parents: return 0
         newparents = parents + [inputs_t]
         tmphash = (0x57fdecbc3532ce7f+ Vector4d._get_hash_recursive(newparents)+ Vector4d._get_hash_recursive(newparents)+ Vector4d._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ values_vec_t._get_hash_recursive(newparents)+ inputs_constants_t._get_hash_recursive(newparents)+ MatrixXd._get_hash_recursive(newparents)+ Matrix4d._get_hash_recursive(newparents)+ inputs_states_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
 
-    _packed_fingerprint = None  # type: T.Optional[bytes]
+    _packed_fingerprint: T.Optional[bytes] = None
 
     @staticmethod
-    def _get_packed_fingerprint():
-        # type: () -> bytes
+    def _get_packed_fingerprint() -> bytes:
         if inputs_t._packed_fingerprint is None:
             inputs_t._packed_fingerprint = struct.pack(">Q", inputs_t._get_hash_recursive([]))
         return inputs_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs):
-        # type: (**T.Any) -> inputs_t
+    def deepcopy(self, **kwargs: T.Any) -> "inputs_t":
         """
         Deep copy of this LCM type
 

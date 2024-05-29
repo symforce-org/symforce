@@ -131,7 +131,11 @@ class PythonClass(StructBuilder):
         Returns a mypy type hint for the provided member
         """
         if depth == member.ndim:
-            return self.get_type_info(member.type_ref).pytype
+            ret = self.get_type_info(member.type_ref).pytype
+            if ret == self.name:
+                # Put quotes around recursive types
+                ret = f"\"{ret}\""
+            return ret
 
         if depth == member.ndim - 1 and member.type_ref.name == "byte":
             return "bytes"

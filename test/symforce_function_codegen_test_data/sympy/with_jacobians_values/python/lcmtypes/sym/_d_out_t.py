@@ -11,35 +11,32 @@ from io import BytesIO
 import struct
 
 class d_out_t(object):
-    __slots__ = ["x", "y"]  # type: T.List[str]
+    __slots__: T.List[str] = ["x", "y"]
 
     def __init__(
         self,
-        x=0.0,  # type: float
-        y=0.0,  # type: float
-        _skip_initialize=False,  # type: bool
-    ):
-        # type: (...) -> None
+        x: float=0.0,
+        y: float=0.0,
+        _skip_initialize: bool=False,
+    ) -> None:
         """ If _skip_initialize is True, all other constructor arguments are ignored """
         if _skip_initialize:
             return
-        self.x = x
-        self.y = y
+        self.x: float = x
+        self.y: float = y
 
     @staticmethod
     def from_all_fields(
-        x,  # type: float
-        y,  # type: float
-    ):
-        # type: (...) -> d_out_t
+        x: float,
+        y: float,
+    ) -> "d_out_t":
         return d_out_t(
             x=x,
             y=y,
         )
 
     @staticmethod
-    def _skytype_meta():
-        # type: () -> T.Dict[str, str]
+    def _skytype_meta() -> T.Dict[str, str]:
         return dict(
             type="struct",
             package="sym",
@@ -47,17 +44,14 @@ class d_out_t(object):
         )
 
     @classmethod
-    def _default(cls):
-        # type: () -> d_out_t
+    def _default(cls) -> "d_out_t":
         return cls()
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "d_out_t({})".format(
             ", ".join("{}={}".format(name, repr(getattr(self, name))) for name in self.__slots__))
 
-    def __eq__(self, other):
-        # type: (object) -> bool
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, d_out_t):
             return NotImplemented
         return (
@@ -67,20 +61,17 @@ class d_out_t(object):
     # Disallow hashing for python struct lcmtypes.
     __hash__ = None  # type: ignore
 
-    def encode(self):
-        # type: () -> bytes
+    def encode(self) -> bytes:
         buf = BytesIO()
         buf.write(d_out_t._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
-    def _encode_one(self, buf):
-        # type: (T.BinaryIO) -> None
+    def _encode_one(self, buf: T.BinaryIO) -> None:
         buf.write(d_out_t._CACHED_STRUCT_0.pack(self.x, self.y))
 
     @staticmethod
-    def decode(data):
-        # type: (T.Union[bytes, T.BinaryIO]) -> d_out_t
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> "d_out_t":
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -96,31 +87,27 @@ class d_out_t(object):
         return d_out_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf):
-        # type: (T.BinaryIO) -> d_out_t
+    def _decode_one(buf: T.BinaryIO) -> "d_out_t":
         self = d_out_t(_skip_initialize=True)
         self.x, self.y = d_out_t._CACHED_STRUCT_0.unpack(buf.read(16))
         return self
 
     @staticmethod
-    def _get_hash_recursive(parents):
-        # type: (T.List[T.Type]) -> int
+    def _get_hash_recursive(parents: T.List[T.Type]) -> int:
         if d_out_t in parents: return 0
         tmphash = (0xd259512e30b44885) & 0xffffffffffffffff
         tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
 
-    _packed_fingerprint = None  # type: T.Optional[bytes]
+    _packed_fingerprint: T.Optional[bytes] = None
 
     @staticmethod
-    def _get_packed_fingerprint():
-        # type: () -> bytes
+    def _get_packed_fingerprint() -> bytes:
         if d_out_t._packed_fingerprint is None:
             d_out_t._packed_fingerprint = struct.pack(">Q", d_out_t._get_hash_recursive([]))
         return d_out_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs):
-        # type: (**T.Any) -> d_out_t
+    def deepcopy(self, **kwargs: T.Any) -> "d_out_t":
         """
         Deep copy of this LCM type
 

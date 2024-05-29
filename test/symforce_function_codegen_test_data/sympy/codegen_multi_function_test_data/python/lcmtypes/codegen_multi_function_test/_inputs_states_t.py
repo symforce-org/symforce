@@ -12,31 +12,28 @@ import struct
 from lcmtypes.eigen_lcm._Vector2d import Vector2d
 
 class inputs_states_t(object):
-    __slots__ = ["p"]  # type: T.List[str]
+    __slots__: T.List[str] = ["p"]
 
     def __init__(
         self,
-        p=None,  # type: T.Optional[Vector2d]
-        _skip_initialize=False,  # type: bool
-    ):
-        # type: (...) -> None
+        p: T.Optional[Vector2d]=None,
+        _skip_initialize: bool=False,
+    ) -> None:
         """ If _skip_initialize is True, all other constructor arguments are ignored """
         if _skip_initialize:
             return
-        self.p = Vector2d._default() if p is None else p  # type: Vector2d
+        self.p: Vector2d = Vector2d._default() if p is None else p
 
     @staticmethod
     def from_all_fields(
-        p,  # type: Vector2d
-    ):
-        # type: (...) -> inputs_states_t
+        p: Vector2d,
+    ) -> "inputs_states_t":
         return inputs_states_t(
             p=p,
         )
 
     @staticmethod
-    def _skytype_meta():
-        # type: () -> T.Dict[str, str]
+    def _skytype_meta() -> T.Dict[str, str]:
         return dict(
             type="struct",
             package="codegen_multi_function_test",
@@ -44,17 +41,14 @@ class inputs_states_t(object):
         )
 
     @classmethod
-    def _default(cls):
-        # type: () -> inputs_states_t
+    def _default(cls) -> "inputs_states_t":
         return cls()
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "inputs_states_t({})".format(
             ", ".join("{}={}".format(name, repr(getattr(self, name))) for name in self.__slots__))
 
-    def __eq__(self, other):
-        # type: (object) -> bool
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, inputs_states_t):
             return NotImplemented
         return (
@@ -63,15 +57,13 @@ class inputs_states_t(object):
     # Disallow hashing for python struct lcmtypes.
     __hash__ = None  # type: ignore
 
-    def encode(self):
-        # type: () -> bytes
+    def encode(self) -> bytes:
         buf = BytesIO()
         buf.write(inputs_states_t._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
-    def _encode_one(self, buf):
-        # type: (T.BinaryIO) -> None
+    def _encode_one(self, buf: T.BinaryIO) -> None:
         if hasattr(self.p, '_get_packed_fingerprint'):
             assert self.p._get_packed_fingerprint() == Vector2d._get_packed_fingerprint()
         else:
@@ -79,8 +71,7 @@ class inputs_states_t(object):
         self.p._encode_one(buf)
 
     @staticmethod
-    def decode(data):
-        # type: (T.Union[bytes, T.BinaryIO]) -> inputs_states_t
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> "inputs_states_t":
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -96,32 +87,28 @@ class inputs_states_t(object):
         return inputs_states_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf):
-        # type: (T.BinaryIO) -> inputs_states_t
+    def _decode_one(buf: T.BinaryIO) -> "inputs_states_t":
         self = inputs_states_t(_skip_initialize=True)
         self.p = Vector2d._decode_one(buf)
         return self
 
     @staticmethod
-    def _get_hash_recursive(parents):
-        # type: (T.List[T.Type]) -> int
+    def _get_hash_recursive(parents: T.List[T.Type]) -> int:
         if inputs_states_t in parents: return 0
         newparents = parents + [inputs_states_t]
         tmphash = (0x12345678017000+ Vector2d._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
 
-    _packed_fingerprint = None  # type: T.Optional[bytes]
+    _packed_fingerprint: T.Optional[bytes] = None
 
     @staticmethod
-    def _get_packed_fingerprint():
-        # type: () -> bytes
+    def _get_packed_fingerprint() -> bytes:
         if inputs_states_t._packed_fingerprint is None:
             inputs_states_t._packed_fingerprint = struct.pack(">Q", inputs_states_t._get_hash_recursive([]))
         return inputs_states_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs):
-        # type: (**T.Any) -> inputs_states_t
+    def deepcopy(self, **kwargs: T.Any) -> "inputs_states_t":
         """
         Deep copy of this LCM type
 
