@@ -82,6 +82,24 @@ const Eigen::Matrix<Scalar, 2, 2> sym::Rot2<Scalar>::ToRotationMatrix() const {
   return _res;
 }
 
+template <typename Scalar>
+const sym::Rot2<Scalar> sym::Rot2<Scalar>::RandomFromUniformSample(const Scalar u1) {
+  // Total ops: 4
+
+  // Input arrays
+
+  // Intermediate terms (1)
+  const Scalar _tmp0 = 2 * Scalar(M_PI) * u1;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 2, 1> _res;
+
+  _res[0] = std::cos(_tmp0);
+  _res[1] = std::sin(_tmp0);
+
+  return sym::Rot2<Scalar>(_res);
+}
+
 // Explicit instantiation
 template class sym::Rot2<double>;
 template class sym::Rot2<float>;

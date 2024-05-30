@@ -13,3 +13,8 @@
         else:
             {{ util.flatten_if_ndarray("z", 2) | indent(width=12) }}
             self.data = list(z)
+
+    @classmethod
+    def random(cls):
+        # type: () -> Rot2
+        return Rot2.random_from_uniform_sample(random.uniform(0, 1))

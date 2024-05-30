@@ -157,6 +157,10 @@ class SymforceCodegenTest(TestCase):
         }
         namespace = "codegen_python_test"
 
+        # TODO(aaron): This should not be necessary, but needs to happen before the load below, or
+        # else other tests will fail
+        import sym  # pylint: disable=unused-import
+
         output_dir = self.make_output_dir("sf_codegen_python_test_")
 
         codegen_data = python_func.generate_function(

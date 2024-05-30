@@ -102,9 +102,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             Codegen.function(func=sf.Rot3.to_tangent_norm, config=config),
             Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
             Codegen.function(
-                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
-                name="random_from_uniform_samples",
-                config=config,
+                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi), config=config
             ),
             Codegen.function(
                 # TODO(aaron): We currently can't generate custom methods with defaults - fix this, and
@@ -164,6 +162,9 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             codegen_mul(sf.Rot2, sf.Vector2),
             Codegen.function(func=sf.Rot2.from_angle, config=config),
             Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
+            Codegen.function(
+                func=functools.partial(sf.Rot2.random_from_uniform_sample, pi=sf.pi), config=config
+            ),
         ],
         sf.Rot3: rot3_functions,
         sf.Pose2: pose_getter_methods(sf.Pose2)

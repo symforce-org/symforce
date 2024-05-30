@@ -52,6 +52,11 @@ class Rot2(object):
                 )
             self.data = list(z)
 
+    @classmethod
+    def random(cls):
+        # type: () -> Rot2
+        return Rot2.random_from_uniform_sample(random.uniform(0, 1))
+
     # --------------------------------------------------------------------------
     # Custom generated methods
     # --------------------------------------------------------------------------
@@ -124,6 +129,26 @@ class Rot2(object):
         _res[0, 1] = -_self[1]
         _res[1, 1] = _self[0]
         return _res
+
+    @staticmethod
+    def random_from_uniform_sample(u1):
+        # type: (float) -> Rot2
+        """
+        Generate a random element of SO2 from a variable uniformly sampled on [0, 1].
+        """
+
+        # Total ops: 4
+
+        # Input arrays
+
+        # Intermediate terms (1)
+        _tmp0 = 2 * math.pi * u1
+
+        # Output terms
+        _res = [0.0] * 2
+        _res[0] = math.cos(_tmp0)
+        _res[1] = math.sin(_tmp0)
+        return Rot2.from_storage(_res)
 
     # --------------------------------------------------------------------------
     # StorageOps concept

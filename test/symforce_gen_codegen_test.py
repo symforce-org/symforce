@@ -6,6 +6,7 @@
 import asyncio
 import dataclasses
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -126,9 +127,16 @@ class SymforceGenCodegenTest(TestCase):
 
             # Run generated example / test from disk in a standalone process
             current_python = sys.executable
+
+            new_pythonpath = os.pathsep.join(
+                [str(output_dir)]
+                + ([os.environ["PYTHONPATH"]] if "PYTHONPATH" in os.environ else [])
+            )
             asyncio.run(
                 python_util.execute_subprocess(
-                    [current_python, str(generated_code_file)], log_stdout=False
+                    [current_python, str(generated_code_file)],
+                    log_stdout=False,
+                    env=dict(os.environ, PYTHONPATH=new_pythonpath),
                 )
             )
 

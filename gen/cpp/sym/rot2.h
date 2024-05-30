@@ -98,6 +98,11 @@ class Rot2 {
    */
   const Eigen::Matrix<Scalar, 2, 2> ToRotationMatrix() const;
 
+  /**
+   * Generate a random element of SO2 from a variable uniformly sampled on [0, 1].
+   */
+  const static sym::Rot2<Scalar> RandomFromUniformSample(const Scalar u1);
+
   // --------------------------------------------------------------------------
   // StorageOps concept
   // --------------------------------------------------------------------------

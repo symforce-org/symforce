@@ -70,16 +70,34 @@ LieGroupOps.register(T.Dataclass, DataclassLieGroupOps)
 # We register NoneType to allow dataclasses to have optional fields which default to "None".
 LieGroupOps.register(type(None), NoneTypeLieGroupOps)
 
-# TODO(hayk): Are these okay here or where can we put them? In theory we could just have this
-# be automatic that if the given type has the methods that it gets registered automatically.
-import sym
+
+class LieGroupSymClass(abc.ABC):
+    """
+    Metaclass for generated numeric geo classes
+
+    We use a metaclass here to avoid having `symforce.ops` depend on `sym`, which would make it
+    impossible to generate `sym` from scratch.
+
+    TODO(aaron): SymClassLieGroupOps does the wrong thing for some methods, e.g. storage_D_tangent
+    returns the wrong type.  We should also implement this for the cam classes, which aren't lie
+    groups.
+    """
+
+    @staticmethod
+    def __subclasshook__(subclass: T.Type) -> bool:
+        for parent in subclass.__mro__:
+            if parent.__module__.startswith("sym."):
+                from symforce import geo
+                from symforce.ops.interfaces.lie_group import LieGroup
+
+                maybe_geo_class = getattr(geo, parent.__name__, None)
+                if maybe_geo_class is not None and issubclass(maybe_geo_class, LieGroup):
+                    return True
+        return False
+
 
 from .impl.sym_class_lie_group_ops import SymClassLieGroupOps
 
-LieGroupOps.register(sym.Rot2, SymClassLieGroupOps)
-LieGroupOps.register(sym.Rot3, SymClassLieGroupOps)
-LieGroupOps.register(sym.Pose2, SymClassLieGroupOps)
-LieGroupOps.register(sym.Pose3, SymClassLieGroupOps)
-LieGroupOps.register(sym.Unit3, SymClassLieGroupOps)
+LieGroupOps.register(LieGroupSymClass, SymClassLieGroupOps)
 
 StorageOps.register(sf.DataBuffer, DataBufferStorageOps)
