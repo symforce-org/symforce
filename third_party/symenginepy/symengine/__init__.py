@@ -61,10 +61,15 @@ if have_numpy:
 __version__ = "0.7.2"
 
 
-# To not expose internals
-del lib.symengine_wrapper
-del lib
-del wrapper
+try:
+    # To not expose internals
+    del lib.symengine_wrapper
+    del lib
+    del wrapper
+except NameError:
+    # If this code is e.g. hot-reloaded, the modules will already be deleted and don't need to be
+    # deleted again
+    pass
 
 
 def test():
