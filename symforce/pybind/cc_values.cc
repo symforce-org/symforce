@@ -294,6 +294,7 @@ void AddValuesWrapper(pybind11::module_ module) {
   RegisterTypeWithValues<sym::LinearCameraCald>(values_class);
   RegisterTypeWithValues<sym::PolynomialCameraCald>(values_class);
   RegisterTypeWithValues<sym::SphericalCameraCald>(values_class);
+  RegisterTypeWithValues<sym::OrthographicCameraCald>(values_class);
   // The template paramater below is 9 because all (and only) matrices up to size 9x9 are supported
   // by sym::Values.
   RegisterMatrices<9>(values_class);

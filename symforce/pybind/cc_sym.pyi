@@ -21,6 +21,7 @@ from sym import ATANCameraCal
 from sym import DoubleSphereCameraCal
 from sym import EquirectangularCameraCal
 from sym import LinearCameraCal
+from sym import OrthographicCameraCal
 from sym import PolynomialCameraCal
 from sym import Pose2
 from sym import Pose3
@@ -996,6 +997,10 @@ class Values:
         Add or update a value by key. Returns true if added, false if updated.
 
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+
+        Add or update a value by key. Returns true if added, false if updated.
+
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
     @typing.overload
     def set(self, key: index_entry_t, value: float) -> None: ...
@@ -1043,6 +1048,10 @@ class Values:
     def set(self, key: Key, value: SphericalCameraCal) -> bool: ...
     @typing.overload
     def set(self, key: index_entry_t, value: SphericalCameraCal) -> None: ...
+    @typing.overload
+    def set(self, key: Key, value: OrthographicCameraCal) -> bool: ...
+    @typing.overload
+    def set(self, key: index_entry_t, value: OrthographicCameraCal) -> None: ...
     @typing.overload
     def set(self, key: Key, value: numpy.ndarray) -> bool: ...
     @typing.overload

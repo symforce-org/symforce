@@ -123,6 +123,18 @@ struct CamCals<sym::ATANCameraCal<Scalar>> {
   }
 };
 
+template <typename Scalar>
+struct CamCals<sym::OrthographicCameraCal<Scalar>> {
+  using T = sym::OrthographicCameraCal<Scalar>;
+  static std::vector<T> Get() {
+    return {
+        CalFromData<T>({90, 90, 60, 80}),
+        CalFromData<T>({380, 380, 320, 240}),
+        CalFromData<T>({500, 500, 1000, 800}),
+    };
+  }
+};
+
 TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", {{ ", ".join(cpp_cam_types) }}) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));

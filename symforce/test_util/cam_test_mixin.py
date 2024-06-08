@@ -38,8 +38,10 @@ class CamTestMixin(_Base):
         - pixel_from_camera_point
         """
         if not self.element().has_camera_ray_from_pixel():
-            # TODO(aaron, dominic, brad): Back projection is not implemented for SphericalCameraCal or
-            # PolynomialCameraCal.
+            # TODO(aaron, dominic, brad): Back projection is not implemented for SphericalCameraCal
+            # or PolynomialCameraCal.
+            # NOTE(peter): Back projection is also not implemented for OrthographicCameraCal because
+            # it is a non-central camera model.
             self.skipTest(f"camera_ray_from_pixel not implemented for {type(self.element())}.")
 
         # Check that we can project a point in 3D into the image and back

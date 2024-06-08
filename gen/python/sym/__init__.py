@@ -12,6 +12,7 @@ from .atan_camera_cal import ATANCameraCal
 from .double_sphere_camera_cal import DoubleSphereCameraCal
 from .equirectangular_camera_cal import EquirectangularCameraCal
 from .linear_camera_cal import LinearCameraCal
+from .orthographic_camera_cal import OrthographicCameraCal
 from .polynomial_camera_cal import PolynomialCameraCal
 from .pose2 import Pose2
 from .pose3 import Pose3

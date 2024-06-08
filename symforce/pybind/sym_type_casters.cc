@@ -18,6 +18,7 @@ constexpr descr<21> handle_sym_type_name<sym::DoubleSphereCameraCald>::name;
 constexpr descr<24> handle_sym_type_name<sym::EquirectangularCameraCald>::name;
 constexpr descr<15> handle_sym_type_name<sym::LinearCameraCald>::name;
 constexpr descr<19> handle_sym_type_name<sym::PolynomialCameraCald>::name;
+constexpr descr<21> handle_sym_type_name<sym::OrthographicCameraCald>::name;
 constexpr descr<18> handle_sym_type_name<sym::SphericalCameraCald>::name;
 
 }  // namespace detail

@@ -21,6 +21,7 @@
 #include <sym/equirectangular_camera_cal.h>
 #include <sym/linear_camera_cal.h>
 #include <sym/ops/storage_ops.h>
+#include <sym/orthographic_camera_cal.h>
 #include <sym/polynomial_camera_cal.h>
 #include <sym/pose2.h>
 #include <sym/pose3.h>
@@ -94,6 +95,11 @@ struct handle_sym_type_name<sym::SphericalCameraCald> {
   static constexpr auto name = _("SphericalCameraCal");
 };
 
+template <>
+struct handle_sym_type_name<sym::OrthographicCameraCald> {
+  static constexpr auto name = _("OrthographicCameraCal");
+};
+
 // type_caster is what does the conversions between python types and C++ types. Needed
 // for custom conversions (which we need for the geo types, since we're not using the wrapper)
 template <typename T>
@@ -155,6 +161,10 @@ struct type_caster<sym::PolynomialCameraCald> : public sym_type_caster<sym::Poly
 };
 template <>
 struct type_caster<sym::SphericalCameraCald> : public sym_type_caster<sym::SphericalCameraCald> {};
+
+template <>
+struct type_caster<sym::OrthographicCameraCald>
+    : public sym_type_caster<sym::OrthographicCameraCald> {};
 
 }  // namespace detail
 }  // namespace pybind11

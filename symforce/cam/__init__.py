@@ -13,9 +13,22 @@ from .camera_cal import CameraCal
 from .double_sphere_camera_cal import DoubleSphereCameraCal
 from .equirectangular_camera_cal import EquirectangularCameraCal
 from .linear_camera_cal import LinearCameraCal
+from .orthographic_camera_cal import OrthographicCameraCal
 from .polynomial_camera_cal import PolynomialCameraCal
 from .posed_camera import PosedCamera
 from .spherical_camera_cal import SphericalCameraCal
 
 # Default generated cam types
-CAM_TYPES = tuple(sorted(CameraCal.__subclasses__(), key=lambda cls: cls.__name__))
+# This order came from having originally sorted the subclasses of CameraCal by name, then later
+# adding OrthographicCameraCal.
+# This order should be maintained, and any new types added at the end to avoid renumbering
+# the camera enum types in "symforce/lcmtypes/symforce_types.lcm"
+CAM_TYPES = (
+    ATANCameraCal,
+    DoubleSphereCameraCal,
+    EquirectangularCameraCal,
+    LinearCameraCal,
+    PolynomialCameraCal,
+    SphericalCameraCal,
+    OrthographicCameraCal,
+)

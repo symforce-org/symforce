@@ -29,6 +29,7 @@
 #include <sym/linear_camera_cal.h>
 #include <sym/ops/group_ops.h>
 #include <sym/ops/lie_group_ops.h>
+#include <sym/orthographic_camera_cal.h>
 #include <sym/polynomial_camera_cal.h>
 #include <sym/pose3.h>
 #include <sym/posed_camera.h>
@@ -126,13 +127,26 @@ struct CamCals<sym::ATANCameraCal<Scalar>> {
   }
 };
 
+template <typename Scalar>
+struct CamCals<sym::OrthographicCameraCal<Scalar>> {
+  using T = sym::OrthographicCameraCal<Scalar>;
+  static std::vector<T> Get() {
+    return {
+        CalFromData<T>({90, 90, 60, 80}),
+        CalFromData<T>({380, 380, 320, 240}),
+        CalFromData<T>({500, 500, 1000, 800}),
+    };
+  }
+};
+
 TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", sym::ATANCameraCal<double>,
                    sym::ATANCameraCal<float>, sym::DoubleSphereCameraCal<double>,
                    sym::DoubleSphereCameraCal<float>, sym::EquirectangularCameraCal<double>,
                    sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
                    sym::LinearCameraCal<float>, sym::PolynomialCameraCal<double>,
                    sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
-                   sym::SphericalCameraCal<float>) {
+                   sym::SphericalCameraCal<float>, sym::OrthographicCameraCal<double>,
+                   sym::OrthographicCameraCal<float>) {
   using T = TestType;
   const T& cam_cal = GENERATE(from_range(CamCals<T>::Get()));
 
@@ -163,7 +177,8 @@ TEMPLATE_TEST_CASE("Test group ops", "[cam_package]", sym::ATANCameraCal<double>
                    sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
                    sym::LinearCameraCal<float>, sym::PolynomialCameraCal<double>,
                    sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
-                   sym::SphericalCameraCal<float>) {
+                   sym::SphericalCameraCal<float>, sym::OrthographicCameraCal<double>,
+                   sym::OrthographicCameraCal<float>) {
   using T = TestType;
 
   const T identity = sym::GroupOps<T>::Identity();
@@ -194,7 +209,8 @@ TEMPLATE_TEST_CASE("Test Lie group ops", "[cam_package]", sym::ATANCameraCal<dou
                    sym::EquirectangularCameraCal<float>, sym::LinearCameraCal<double>,
                    sym::LinearCameraCal<float>, sym::PolynomialCameraCal<double>,
                    sym::PolynomialCameraCal<float>, sym::SphericalCameraCal<double>,
-                   sym::SphericalCameraCal<float>) {
+                   sym::SphericalCameraCal<float>, sym::OrthographicCameraCal<double>,
+                   sym::OrthographicCameraCal<float>) {
   using T = TestType;
 
   const T identity = sym::GroupOps<T>::Identity();

@@ -323,7 +323,7 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values_1.at(key_b), 5)
             self.assertEqual(values_1.at(key_c), 6)
 
-        with self.subTest(msg="Test Values.update (two index overlaod) works as expected"):
+        with self.subTest(msg="Test Values.update (two index overload) works as expected"):
             key_a = cc_sym.Key("a")
             key_b = cc_sym.Key("b")
             key_c = cc_sym.Key("c")
