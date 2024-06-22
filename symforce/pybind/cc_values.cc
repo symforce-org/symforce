@@ -21,18 +21,8 @@
 #include <lcmtypes/sym/type_t.hpp>
 #include <lcmtypes/sym/values_t.hpp>
 
-#include <sym/atan_camera_cal.h>
-#include <sym/double_sphere_camera_cal.h>
-#include <sym/equirectangular_camera_cal.h>
-#include <sym/linear_camera_cal.h>
-#include <sym/ops/storage_ops.h>
-#include <sym/polynomial_camera_cal.h>
-#include <sym/pose2.h>
-#include <sym/pose3.h>
-#include <sym/rot2.h>
-#include <sym/rot3.h>
-#include <sym/spherical_camera_cal.h>
-#include <sym/unit3.h>
+#include <sym/all_cam_types.h>
+#include <sym/all_geo_types.h>
 #include <sym/util/type_ops.h>
 #include <symforce/opt/key.h>
 #include <symforce/opt/values.h>
@@ -122,6 +112,26 @@ void RegisterTypeWithValues(py::class_<sym::Valuesd> cls) {
           py::arg("key"), py::arg("value"),
           "Update a value by index entry with no map lookup (compared to Set(key)). This does NOT "
           "add new values and assumes the key exists already.");
+}
+
+template <typename Tuple>
+void RegisterTupleTypesWithValuesHelperImpl(py::class_<sym::Valuesd> /* cls */) {}
+
+template <typename Tuple, std::size_t First, std::size_t... Rest>
+void RegisterTupleTypesWithValuesHelperImpl(py::class_<sym::Valuesd> cls) {
+  RegisterTypeWithValues<typename std::tuple_element<First, Tuple>::type>(cls);
+  RegisterTupleTypesWithValuesHelperImpl<Tuple, Rest...>(cls);
+}
+
+template <typename Tuple, std::size_t... Is>
+void RegisterTupleTypesWithValuesHelper(py::class_<sym::Valuesd> cls, std::index_sequence<Is...>) {
+  RegisterTupleTypesWithValuesHelperImpl<Tuple, Is...>(cls);
+}
+
+template <typename Tuple>
+void RegisterTupleTypesWithValues(py::class_<sym::Valuesd> cls) {
+  RegisterTupleTypesWithValuesHelper<Tuple>(
+      cls, std::make_index_sequence<std::tuple_size<Tuple>::value>{});
 }
 
 /**
@@ -283,18 +293,8 @@ void AddValuesWrapper(pybind11::module_ module) {
             return sym::Valuesd(lcm_values);
           }));
   RegisterTypeWithValues<double>(values_class);
-  RegisterTypeWithValues<sym::Rot2d>(values_class);
-  RegisterTypeWithValues<sym::Rot3d>(values_class);
-  RegisterTypeWithValues<sym::Pose2d>(values_class);
-  RegisterTypeWithValues<sym::Pose3d>(values_class);
-  RegisterTypeWithValues<sym::Unit3d>(values_class);
-  RegisterTypeWithValues<sym::ATANCameraCald>(values_class);
-  RegisterTypeWithValues<sym::DoubleSphereCameraCald>(values_class);
-  RegisterTypeWithValues<sym::EquirectangularCameraCald>(values_class);
-  RegisterTypeWithValues<sym::LinearCameraCald>(values_class);
-  RegisterTypeWithValues<sym::PolynomialCameraCald>(values_class);
-  RegisterTypeWithValues<sym::SphericalCameraCald>(values_class);
-  RegisterTypeWithValues<sym::OrthographicCameraCald>(values_class);
+  RegisterTupleTypesWithValues<AllGeoTypes<double>>(values_class);
+  RegisterTupleTypesWithValues<AllCamTypes<double>>(values_class);
   // The template paramater below is 9 because all (and only) matrices up to size 9x9 are supported
   // by sym::Values.
   RegisterMatrices<9>(values_class);

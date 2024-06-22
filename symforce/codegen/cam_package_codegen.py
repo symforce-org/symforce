@@ -380,6 +380,13 @@ def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path
                 ),
                 config=config.render_template_config,
             )
+
+        templates.add(
+            template_path=Path("cam_package/all_cam_types.h.jinja"),
+            data=Codegen.common_data(),
+            config=config.render_template_config,
+            output_path=cam_package_dir / "all_cam_types.h",
+        )
     else:
         raise NotImplementedError(f'Unknown config type: "{config}"')
 

@@ -1,0 +1,21 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+#include <tuple>
+
+{% for type in sf.GEO_TYPES %}
+#include <sym/{{ python_util.camelcase_to_snakecase(type.__name__) }}.h>
+{% endfor %}
+
+namespace sym {
+
+template <typename Scalar>
+using AllGeoTypes = std::tuple<
+{% for type in sf.GEO_TYPES %}
+  {{ type.__name__ }}<Scalar>{% if not loop.last %}, {% endif %}
+{% endfor %}
+>;
+
+}  // namespace sym

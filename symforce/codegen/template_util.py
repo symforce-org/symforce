@@ -23,6 +23,7 @@ from symforce.codegen.codegen_config import RenderTemplateConfig
 
 CURRENT_DIR = Path(__file__).parent
 LCM_TEMPLATE_DIR = CURRENT_DIR / "lcm_templates"
+PYBIND_TEMPLATE_DIR = CURRENT_DIR / "pybind_templates"
 
 
 class FileType(enum.Enum):

@@ -1,0 +1,94 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+/* ----------------------------------------------------------------------------
+ * SymForce - Copyright 2022, Skydio, Inc.
+ * This source code is under the Apache 2.0 license found in the LICENSE file.
+ * ---------------------------------------------------------------------------- */
+
+// -----------------------------------------------------------------------------
+// Defines template specializations of pybind11::detail::type_caster<T> for
+// Geo and Cam types
+//
+// Must be included in any file using pybind11 to wrap functions whose argument
+// types or return types are any of the above geometric types.
+// -----------------------------------------------------------------------------
+
+// IWYU pragma: always_keep
+
+#pragma once
+
+#include <fmt/format.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include <sym/ops/storage_ops.h>
+
+{% for type in types %}
+#include <sym/{{ python_util.camelcase_to_snakecase(type) }}.h>
+{% endfor %}
+
+namespace py = pybind11;
+
+namespace pybind11 {
+namespace detail {
+
+// based on pybind11/cast.h:783
+template <typename T>
+struct handle_sym_type_name {
+  static constexpr auto name = _("");
+};
+
+{% for type in types %}
+template <>
+struct handle_sym_type_name<sym::{{ type }}d> {
+  static constexpr auto name = _("{{ type }}");
+};
+
+{% endfor %}
+
+// type_caster is what does the conversions between python types and C++ types. Needed
+// for custom conversions (which we need for the geo types, since we're not using the wrapper)
+template <typename T>
+struct sym_type_caster {
+  PYBIND11_TYPE_CASTER(T, handle_sym_type_name<T>::name);
+
+  sym_type_caster() : value(T::DataVec::Zero()) {}
+
+  bool load(const handle src, bool /* implicit_conversion */) {
+    // Converts src (a thin wrapper of a PyObject*) to a T, and assigns to value (a member of the
+    // class declared by PYBIND11_TYPE_CASTER)
+    if (!py::isinstance(src, py::module_::import("sym").attr(handle_sym_type_name<T>::name.text))) {
+      return false;
+    }
+    const std::vector<double> data_vec = src.attr("to_storage")().cast<std::vector<double>>();
+    value = T(Eigen::Matrix<double, sym::StorageOps<T>::StorageDim(), 1>(data_vec.data()));
+    return true;
+  }
+
+  static handle cast(const T src, return_value_policy /* policy */, handle /* parent */) {
+    // Constructs and returns a py::object representing the same data as src
+    constexpr auto storage_dim = sym::StorageOps<T>::StorageDim();
+    py::list list(storage_dim);
+    const auto data = src.Data();
+    for (int i = 0; i < storage_dim; i++) {
+      list[i] = data[i];
+    }
+    const py::object from_storage =
+        py::module_::import("sym").attr(handle_sym_type_name<T>::name.text).attr("from_storage");
+    py::object result = from_storage(list);
+    result.inc_ref();
+    return std::move(result);
+  }
+};
+
+// Defining type_caster<T> for the sym types
+{% for type in types %}
+template <>
+struct type_caster<sym::{{ type }}d> : public sym_type_caster<sym::{{ type }}d> {};
+{% endfor %}
+
+}  // namespace detail
+}  // namespace pybind11
