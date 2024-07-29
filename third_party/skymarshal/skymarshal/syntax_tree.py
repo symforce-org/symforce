@@ -171,6 +171,10 @@ class Notation(AstNode):
                     name="add_unknown_enum_alias",
                     type="bool",
                 ),
+                NotationSpecProperty(
+                    name="omit_enum_wrapper",
+                    type="bool",
+                ),
             ],
         ),
         "#hashable": NotationSpec(

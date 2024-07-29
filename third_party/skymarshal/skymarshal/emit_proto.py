@@ -130,14 +130,22 @@ class EnumType:
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
         )
         self.proto_message_name = proto_typename
-        self.proto_enum_name = "Enum"
-        self.proto_reference_name = "{}.{}.{}".format(
-            package_name, self.proto_message_name, self.proto_enum_name
-        )
 
         self.lcm_cpp_type = f"::{package_name}::{enum.name}"
         self.proto_cpp_container_type = f"::{package_name}::{self.proto_message_name}"
-        self.proto_cpp_type = f"{self.proto_cpp_container_type}::{self.proto_enum_name}"
+        self.use_enum_wrapper = not enum.get_notation_property("#protobuf", "omit_enum_wrapper")
+        if self.use_enum_wrapper:
+            self.proto_enum_name = "Enum"
+            self.proto_reference_name = "{}.{}.{}".format(
+                package_name, self.proto_message_name, self.proto_enum_name
+            )
+            self.proto_cpp_type = f"{self.proto_cpp_container_type}::{self.proto_enum_name}"
+        else:
+            self.proto_enum_name = self.proto_message_name
+            self.proto_reference_name = "{}.{}".format(
+                package_name, self.proto_message_name
+            )
+            self.proto_cpp_type = self.proto_cpp_container_type
 
         # filenames for generated converter sources
         self.proto_filename = f"{package_name}/pbtypes/{proto_filename_base}.proto"
