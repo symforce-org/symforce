@@ -26,7 +26,10 @@ namespace detail {
 template <typename LCMType>
 struct type_caster<
     LCMType, enable_if_t<std::is_same<decltype(LCMType::getTypeName()), const char*>::value>> {
-  PYBIND11_TYPE_CASTER(LCMType, _(*LCMType::getTypeNameArrayPtr()));
+  PYBIND11_TYPE_CASTER(LCMType, const_name("lcmtypes.") +
+                                    const_name(*LCMType::getPackageNameArrayPtr()) +
+                                    const_name("._") + const_name(*LCMType::getTypeNameArrayPtr()) +
+                                    const_name(".") + const_name(*LCMType::getTypeNameArrayPtr()));
 
   bool load(const handle src, bool /* implicit_conversion */) {
     // Converts src (a thin wrapper of a PyObject*) to a T, and assigns to value (a member of the

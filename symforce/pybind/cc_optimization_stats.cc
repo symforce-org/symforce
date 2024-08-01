@@ -5,6 +5,7 @@
 
 #include "./cc_optimization_stats.h"
 
+#include <pybind11/eigen.h>
 #include <pybind11/stl.h>
 
 #include <lcmtypes/sym/optimization_iteration_t.hpp>

@@ -97,6 +97,25 @@ def format_py(file_contents: str, filename: str) -> str:
         env=dict(os.environ, RUFF_NO_CACHE="true"),
         text=True,
     )
+    result = subprocess.run(
+        [
+            _find_ruff(),
+            "check",
+            "--select=I",
+            "--fix",
+            "--quiet",
+            f"--stdin-filename={filename}",
+            "-",
+        ],
+        input=result.stdout,
+        stdout=subprocess.PIPE,
+        check=True,
+        # Disable the ruff cache.  This is important for running in a hermetic context like a bazel
+        # test, and shouldn't really hurt other use cases.  If it does, we should work around this
+        # differently.
+        env=dict(os.environ, RUFF_NO_CACHE="true"),
+        text=True,
+    )
     return result.stdout
 
 

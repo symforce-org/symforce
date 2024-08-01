@@ -44,7 +44,7 @@ struct handle_sym_type_name {
 {% for type in types %}
 template <>
 struct handle_sym_type_name<sym::{{ type }}d> {
-  static constexpr auto name = _("{{ type }}");
+  static constexpr auto name = _("sym.{{ type }}");
 };
 
 {% endfor %}
@@ -55,12 +55,14 @@ template <typename T>
 struct sym_type_caster {
   PYBIND11_TYPE_CASTER(T, handle_sym_type_name<T>::name);
 
+  static constexpr const char* const kClassName = &handle_sym_type_name<T>::name.text[4];
+
   sym_type_caster() : value(T::DataVec::Zero()) {}
 
   bool load(const handle src, bool /* implicit_conversion */) {
     // Converts src (a thin wrapper of a PyObject*) to a T, and assigns to value (a member of the
     // class declared by PYBIND11_TYPE_CASTER)
-    if (!py::isinstance(src, py::module_::import("sym").attr(handle_sym_type_name<T>::name.text))) {
+    if (!py::isinstance(src, py::module_::import("sym").attr(kClassName))) {
       return false;
     }
     const std::vector<double> data_vec = src.attr("to_storage")().cast<std::vector<double>>();
@@ -77,7 +79,7 @@ struct sym_type_caster {
       list[i] = data[i];
     }
     const py::object from_storage =
-        py::module_::import("sym").attr(handle_sym_type_name<T>::name.text).attr("from_storage");
+        py::module_::import("sym").attr(kClassName).attr("from_storage");
     py::object result = from_storage(list);
     result.inc_ref();
     return std::move(result);

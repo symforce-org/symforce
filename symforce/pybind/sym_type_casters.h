@@ -52,62 +52,62 @@ struct handle_sym_type_name {
 
 template <>
 struct handle_sym_type_name<sym::Rot2d> {
-  static constexpr auto name = _("Rot2");
+  static constexpr auto name = _("sym.Rot2");
 };
 
 template <>
 struct handle_sym_type_name<sym::Rot3d> {
-  static constexpr auto name = _("Rot3");
+  static constexpr auto name = _("sym.Rot3");
 };
 
 template <>
 struct handle_sym_type_name<sym::Pose2d> {
-  static constexpr auto name = _("Pose2");
+  static constexpr auto name = _("sym.Pose2");
 };
 
 template <>
 struct handle_sym_type_name<sym::Pose3d> {
-  static constexpr auto name = _("Pose3");
+  static constexpr auto name = _("sym.Pose3");
 };
 
 template <>
 struct handle_sym_type_name<sym::Unit3d> {
-  static constexpr auto name = _("Unit3");
+  static constexpr auto name = _("sym.Unit3");
 };
 
 template <>
 struct handle_sym_type_name<sym::ATANCameraCald> {
-  static constexpr auto name = _("ATANCameraCal");
+  static constexpr auto name = _("sym.ATANCameraCal");
 };
 
 template <>
 struct handle_sym_type_name<sym::DoubleSphereCameraCald> {
-  static constexpr auto name = _("DoubleSphereCameraCal");
+  static constexpr auto name = _("sym.DoubleSphereCameraCal");
 };
 
 template <>
 struct handle_sym_type_name<sym::EquirectangularCameraCald> {
-  static constexpr auto name = _("EquirectangularCameraCal");
+  static constexpr auto name = _("sym.EquirectangularCameraCal");
 };
 
 template <>
 struct handle_sym_type_name<sym::LinearCameraCald> {
-  static constexpr auto name = _("LinearCameraCal");
+  static constexpr auto name = _("sym.LinearCameraCal");
 };
 
 template <>
 struct handle_sym_type_name<sym::PolynomialCameraCald> {
-  static constexpr auto name = _("PolynomialCameraCal");
+  static constexpr auto name = _("sym.PolynomialCameraCal");
 };
 
 template <>
 struct handle_sym_type_name<sym::SphericalCameraCald> {
-  static constexpr auto name = _("SphericalCameraCal");
+  static constexpr auto name = _("sym.SphericalCameraCal");
 };
 
 template <>
 struct handle_sym_type_name<sym::OrthographicCameraCald> {
-  static constexpr auto name = _("OrthographicCameraCal");
+  static constexpr auto name = _("sym.OrthographicCameraCal");
 };
 
 // type_caster is what does the conversions between python types and C++ types. Needed
@@ -116,12 +116,14 @@ template <typename T>
 struct sym_type_caster {
   PYBIND11_TYPE_CASTER(T, handle_sym_type_name<T>::name);
 
+  static constexpr const char* const kClassName = &handle_sym_type_name<T>::name.text[4];
+
   sym_type_caster() : value(T::DataVec::Zero()) {}
 
   bool load(const handle src, bool /* implicit_conversion */) {
     // Converts src (a thin wrapper of a PyObject*) to a T, and assigns to value (a member of the
     // class declared by PYBIND11_TYPE_CASTER)
-    if (!py::isinstance(src, py::module_::import("sym").attr(handle_sym_type_name<T>::name.text))) {
+    if (!py::isinstance(src, py::module_::import("sym").attr(kClassName))) {
       return false;
     }
     const std::vector<double> data_vec = src.attr("to_storage")().cast<std::vector<double>>();
@@ -138,7 +140,7 @@ struct sym_type_caster {
       list[i] = data[i];
     }
     const py::object from_storage =
-        py::module_::import("sym").attr(handle_sym_type_name<T>::name.text).attr("from_storage");
+        py::module_::import("sym").attr(kClassName).attr("from_storage");
     py::object result = from_storage(list);
     result.inc_ref();
     return std::move(result);
