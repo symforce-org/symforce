@@ -226,7 +226,17 @@ class Notation(AstNode):
 
             unknown_props = provided_props - allowed_props
             if unknown_props:
-                raise KeyError(f"Unknown properties for notation {name}: {sorted(unknown_props)}")
+                if self.allow_unknown_notations:
+                    print(
+                        f"Warning: Unknown properties for notation {name}: {sorted(unknown_props)}"
+                    )
+                    self.raw_properties = {
+                        k: v for k, v in self.raw_properties.items() if k in allowed_props
+                    }
+                else:
+                    raise KeyError(
+                        f"Unknown properties for notation {name}: {sorted(unknown_props)}"
+                    )
 
             # Parse the property values
             self.properties = {
