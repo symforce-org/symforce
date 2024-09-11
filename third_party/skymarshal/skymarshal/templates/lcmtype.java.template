@@ -13,7 +13,11 @@ import java.io.*;
 import java.util.*;
 import lcm.lcm.*;
  
+{% if enum_cases %}
+public final class {{ lcmtype.name }} implements lcm.lcm.LCMEnum
+{% else %}
 public final class {{ lcmtype.name }} implements lcm.lcm.LCMEncodable
+{% endif %}
 {
 {% for member in lcmtype.members %}
 {{ lcmtype.declare_member(member) }}
@@ -109,6 +113,16 @@ public final class {{ lcmtype.name }} implements lcm.lcm.LCMEncodable
         return outobj;
     }
  
+{% if enum_cases %}
+    public final String string_value() {
+        // NOTE(stevemo): We can't use a switch() because that doesn't work for longs
+        // NOTE(stevemo): Explicitly cast to the value type because java lacks unsigned types
+        {% for enum_case in enum_cases %}
+        if (value == {{ enum_storage_type.replace("#", enum_case.value_str) }}) return "{{ enum_case.name }}";
+        {% endfor %}
+        return String.valueOf(value);
+    }
+{% endif %}
 }
 
 
