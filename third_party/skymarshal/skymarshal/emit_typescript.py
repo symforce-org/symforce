@@ -1,5 +1,4 @@
 # mypy: allow-untyped-defs
-# aclint: py3
 """LCM definition files for TypeScript"""
 
 # TODO(danny): I think this whole module could use a refactor. This code uses a combination of

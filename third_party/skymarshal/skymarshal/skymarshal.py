@@ -1,5 +1,4 @@
 # mypy: allow-untyped-defs
-# aclint: py3
 """
 Parse lcm defintion files and generate bindings in different languages.
 """

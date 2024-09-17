@@ -6,7 +6,6 @@
 # Functions are required to have p_ prefix and docstrings that explain the syntax rules.
 # During parsing, the parse stack matches a rule, the corresponding function is executed.
 # A function's p argument is the list of productions in the rule, with p[0] being the output.
-# aclint: py3
 
 from __future__ import annotations
 

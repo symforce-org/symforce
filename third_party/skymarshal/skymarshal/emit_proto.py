@@ -1,5 +1,4 @@
 # mypy: allow-untyped-defs
-# aclint: py3
 """Generate protocol buffers definition files."""
 
 from __future__ import annotations

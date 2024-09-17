@@ -1,7 +1,6 @@
 # mypy: allow-untyped-defs
 # LCM Definition File tokenizer
 # We use PLY and regexes to convert a byte stream into a sequence of tokens.
-# aclint: py3
 
 from __future__ import annotations
 

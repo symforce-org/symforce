@@ -1,4 +1,3 @@
-# aclint: py3
 """
 Generate output files containing just the definition for single LCM types.
 This is used by get_type_for_str, used most notably in json_lcm.

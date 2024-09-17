@@ -1,5 +1,4 @@
 # mypy: allow-untyped-defs
-# aclint: py3
 """Generate djinni enum definitions and conversions."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-# aclint: py3
 import argh
 
 

@@ -1,4 +1,3 @@
-# aclint: py3
 
 from __future__ import annotations
 

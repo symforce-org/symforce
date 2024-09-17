@@ -1,4 +1,3 @@
-# aclint: py3
 "Allow the skymarshal package to be executable"
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-# aclint: py3
 """
 NOTE: if running with bazel, should run from the skymarshal directory
 """
