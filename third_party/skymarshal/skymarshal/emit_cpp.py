@@ -223,6 +223,8 @@ class CppStruct(StructBuilder, CppBase):
                     includes.add(CppInclude(std="array"))
                 elif member.type_ref.name == "boolean":
                     includes.add(CppInclude(std="string"))
+                    if member.ndim > 1:
+                        includes.add(CppInclude(std="vector"))
                 else:
                     includes.add(CppInclude(std="vector"))
             if member.type_ref.name == "string":
