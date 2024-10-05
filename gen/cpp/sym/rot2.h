@@ -215,6 +215,10 @@ class Rot2 {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const Rot2& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

@@ -306,6 +306,10 @@ class Rot3 {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const Rot3& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

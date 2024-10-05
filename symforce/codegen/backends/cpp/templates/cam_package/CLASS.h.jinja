@@ -104,6 +104,10 @@ class {{ cls.__name__ }} {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const {{ cls.__name__ }}& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

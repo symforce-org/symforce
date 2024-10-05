@@ -145,6 +145,10 @@ class PolynomialCameraCal {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const PolynomialCameraCal& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

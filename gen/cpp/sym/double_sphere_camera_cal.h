@@ -176,6 +176,10 @@ class DoubleSphereCameraCal {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const DoubleSphereCameraCal& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

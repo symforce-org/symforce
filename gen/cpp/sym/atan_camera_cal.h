@@ -162,6 +162,10 @@ class ATANCameraCal {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const ATANCameraCal& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

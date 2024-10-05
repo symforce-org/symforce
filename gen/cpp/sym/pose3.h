@@ -253,6 +253,10 @@ class Pose3 {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const Pose3& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

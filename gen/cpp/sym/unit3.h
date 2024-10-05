@@ -230,6 +230,10 @@ class Unit3 {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const Unit3& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

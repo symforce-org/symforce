@@ -158,6 +158,10 @@ class LinearCameraCal {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const LinearCameraCal& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

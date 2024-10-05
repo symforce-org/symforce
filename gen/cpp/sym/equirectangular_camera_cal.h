@@ -159,6 +159,10 @@ class EquirectangularCameraCal {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const EquirectangularCameraCal& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };

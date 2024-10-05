@@ -165,6 +165,10 @@ class SphericalCameraCal {
     return data_ == rhs.Data();
   }
 
+  bool operator!=(const SphericalCameraCal& rhs) const {
+    return !(*this == rhs);
+  }
+
  protected:
   DataVec data_;
 };
