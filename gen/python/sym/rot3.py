@@ -55,23 +55,40 @@ class Rot3(object):
     @classmethod
     def from_rotation_matrix(cls, R, epsilon=0.0):
         # type: (numpy.ndarray, float) -> Rot3
+        """
+        This implementation is based on Shepperd's method (1978)
+        https://arc.aiaa.org/doi/abs/10.2514/3.55767b?journalCode=jgc (this is paywalled)
+
+        See the introduction of these papers for a description of the method:
+        - https://digital.csic.es/bitstream/10261/179990/1/Accurate%20Computation_Sarabandi.pdf
+        - https://arc.aiaa.org/doi/abs/10.2514/1.31730?journalCode=jgcd
+        """
         assert R.shape == (3, 3)
-        w = numpy.sqrt(max(epsilon**2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
-        x = numpy.sqrt(max(epsilon**2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
-        y = numpy.sqrt(max(epsilon**2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
-        z = numpy.sqrt(max(epsilon**2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
-
-        x = abs(x)
-        if (R[2, 1] - R[1, 2]) < 0:
-            x = -x
-
-        y = abs(y)
-        if (R[0, 2] - R[2, 0]) < 0:
-            y = -y
-
-        z = abs(z)
-        if (R[1, 0] - R[0, 1]) < 0:
-            z = -z
+        trace = R[0, 0] + R[1, 1] + R[2, 2]
+        # trace is larger than any of the diagonal elements
+        if trace > R[0, 0] and trace > R[1, 1] and trace > R[2, 2]:
+            w = numpy.sqrt(1.0 + trace) / 2.0
+            x = (R[2, 1] - R[1, 2]) / (4.0 * w)
+            y = (R[0, 2] - R[2, 0]) / (4.0 * w)
+            z = (R[1, 0] - R[0, 1]) / (4.0 * w)
+        # largest diagonal element is R[0,0]
+        elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
+            x = numpy.sqrt(max(epsilon**2, 1.0 + R[0, 0] - R[1, 1] - R[2, 2])) / 2.0
+            y = (R[0, 1] + R[1, 0]) / (4.0 * x)
+            z = (R[0, 2] + R[2, 0]) / (4.0 * x)
+            w = (R[2, 1] - R[1, 2]) / (4.0 * x)
+        # largest diagonal element is R[1,1]
+        elif R[1, 1] > R[2, 2]:
+            y = numpy.sqrt(max(epsilon**2, 1.0 + R[1, 1] - R[0, 0] - R[2, 2])) / 2.0
+            x = (R[0, 1] + R[1, 0]) / (4.0 * y)
+            z = (R[1, 2] + R[2, 1]) / (4.0 * y)
+            w = (R[0, 2] - R[2, 0]) / (4.0 * y)
+        # largest diagonal element is R[2,2]
+        else:
+            z = numpy.sqrt(max(epsilon**2, 1.0 + R[2, 2] - R[0, 0] - R[1, 1])) / 2.0
+            x = (R[0, 2] + R[2, 0]) / (4.0 * z)
+            y = (R[1, 2] + R[2, 1]) / (4.0 * z)
+            w = (R[1, 0] - R[0, 1]) / (4.0 * z)
 
         return Rot3.from_storage([x, y, z, w])
 
