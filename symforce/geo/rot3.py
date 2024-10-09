@@ -225,7 +225,7 @@ class Rot3(LieGroup):
         # i,j,k is an even permutation of 0,1,2, then
         #   R[j, i] - R[i, j] = 4 * w * q_k
         #   R[j, i] + R[i, j] = 4 * q_i * q_j
-        # R[i, i] = 2(w^2 + q_i^2)
+        # R[i, i] = 2(w^2 + q_i^2) - 1
 
         def from_rotation_matrix_w_not_0(R: Matrix33, valid_input: T.Scalar) -> Quaternion:
             """
