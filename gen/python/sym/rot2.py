@@ -131,6 +131,32 @@ class Rot2(object):
         return _res
 
     @staticmethod
+    def from_rotation_matrix(r):
+        # type: (numpy.ndarray) -> Rot2
+        """
+        Create a Rot2 from a 2x2 rotation matrix.
+
+        Returns the closest Rot2 to the input matrix, by the Frobenius norm.  Will be singular when
+        ``r[0, 0] == -r[1, 1]`` and ``r[0, 1] == r[1, 0]`` are both true.
+
+        See notebooks/rot2_from_rotation_matrix_derivation.ipynb for the derivation.
+        """
+
+        # Total ops: 9
+
+        # Input arrays
+
+        # Intermediate terms (2)
+        _tmp0 = r[0, 0] + r[1, 1]
+        _tmp1 = 1 / math.sqrt(_tmp0**2 + (r[0, 1] - r[1, 0]) ** 2)
+
+        # Output terms
+        _res = [0.0] * 2
+        _res[0] = _tmp0 * _tmp1
+        _res[1] = _tmp1 * (-r[0, 1] + r[1, 0])
+        return Rot2.from_storage(_res)
+
+    @staticmethod
     def random_from_uniform_sample(u1):
         # type: (float) -> Rot2
         """

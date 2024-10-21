@@ -152,6 +152,19 @@ class Rot2(LieGroup):
         return Matrix22([[self.z.real, -self.z.imag], [self.z.imag, self.z.real]])
 
     @classmethod
+    def from_rotation_matrix(cls, r: Matrix22) -> Rot2:
+        """
+        Create a Rot2 from a 2x2 rotation matrix.
+
+        Returns the closest Rot2 to the input matrix, by the Frobenius norm.  Will be singular when
+        ``r[0, 0] == -r[1, 1]`` and ``r[0, 1] == r[1, 0]`` are both true.
+
+        See notebooks/rot2_from_rotation_matrix_derivation.ipynb for the derivation.
+        """
+        denominator = sf.sqrt((r[0, 0] + r[1, 1]) ** 2 + (r[0, 1] - r[1, 0]) ** 2)
+        return cls(Complex((r[0, 0] + r[1, 1]) / denominator, (r[1, 0] - r[0, 1]) / denominator))
+
+    @classmethod
     def random(cls) -> Rot2:
         """
         Generate a random element of SO3.
