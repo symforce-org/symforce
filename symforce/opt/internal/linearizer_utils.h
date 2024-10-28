@@ -300,9 +300,9 @@ void AssertConsistentShapes(const int tangent_dim, const LinearizedFactorType& l
     SYM_ASSERT(linearized_factor.residual.rows() == linearized_factor.jacobian.rows());
     SYM_ASSERT(tangent_dim == linearized_factor.jacobian.cols());
   }
-  SYM_ASSERT(tangent_dim == linearized_factor.hessian.rows());
-  SYM_ASSERT(tangent_dim == linearized_factor.hessian.cols());
-  SYM_ASSERT(tangent_dim == linearized_factor.rhs.rows());
+  SYM_ASSERT_EQ(tangent_dim, linearized_factor.hessian.rows());
+  SYM_ASSERT_EQ(tangent_dim, linearized_factor.hessian.cols());
+  SYM_ASSERT_EQ(tangent_dim, linearized_factor.rhs.rows());
 }
 
 template <typename Scalar>
