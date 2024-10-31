@@ -372,16 +372,25 @@ class Matrix(Storage):
         assert len(col_names) == cols
 
         if cols == 1:
+            if ops.StorageOps.use_latex_friendly_symbols():
+                format_string = "{}_{}"
+            else:
+                format_string = "{}[{}]"
+
             symbols = []
             for r_i in range(rows):
-                _name = "{}{}".format(name, row_names[r_i])
+                _name = format_string.format(name, row_names[r_i])
                 symbols.append([sf.Symbol(_name, **kwargs)])
         else:
+            if ops.StorageOps.use_latex_friendly_symbols():
+                format_string = "{}_{{{}, {}}}"
+            else:
+                format_string = "{}[{}, {}]"
             symbols = []
             for r_i in range(rows):
                 col_symbols = []
                 for c_i in range(cols):
-                    _name = "{}{}_{}".format(name, row_names[r_i], col_names[c_i])
+                    _name = format_string.format(name, row_names[r_i], col_names[c_i])
                     col_symbols.append(sf.Symbol(_name, **kwargs))
                 symbols.append(col_symbols)
 

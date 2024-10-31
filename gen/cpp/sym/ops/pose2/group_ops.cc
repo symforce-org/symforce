@@ -145,8 +145,8 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::InverseWithJacobian(const sym::Pose2
   // Intermediate terms (5)
   const Scalar _tmp0 = -_a[1];
   const Scalar _tmp1 = _a[0] * _a[2] + _a[1] * _a[3];
-  const Scalar _tmp2 = _a[0] * _a[3];
-  const Scalar _tmp3 = _a[1] * _a[2];
+  const Scalar _tmp2 = _a[1] * _a[2];
+  const Scalar _tmp3 = _a[0] * _a[3];
   const Scalar _tmp4 = -_a[0];
 
   // Output terms (2)
@@ -155,13 +155,13 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::InverseWithJacobian(const sym::Pose2
   _res[0] = _a[0];
   _res[1] = _tmp0;
   _res[2] = -_tmp1;
-  _res[3] = -_tmp2 + _tmp3;
+  _res[3] = _tmp2 - _tmp3;
 
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
     _res_D_a(0, 0) = -std::pow(_a[0], Scalar(2)) - std::pow(_a[1], Scalar(2));
-    _res_D_a(1, 0) = -_tmp2 + _tmp3;
+    _res_D_a(1, 0) = _tmp2 - _tmp3;
     _res_D_a(2, 0) = _tmp1;
     _res_D_a(0, 1) = 0;
     _res_D_a(1, 1) = _tmp4;
@@ -275,8 +275,8 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(const sym::Pose
   const Scalar _tmp6 = _a[0] * _a[2] + _a[1] * _a[3];
   const Scalar _tmp7 = _a[1] * _b[3];
   const Scalar _tmp8 = _a[0] * _b[2];
-  const Scalar _tmp9 = _a[0] * _a[3];
-  const Scalar _tmp10 = _a[1] * _a[2];
+  const Scalar _tmp9 = _a[1] * _a[2];
+  const Scalar _tmp10 = _a[0] * _a[3];
   const Scalar _tmp11 = _a[0] * _b[3] - _a[1] * _b[2];
   const Scalar _tmp12 = -_a[0];
   const Scalar _tmp13 = -_a[1];
@@ -287,13 +287,13 @@ sym::Pose2<Scalar> GroupOps<Pose2<Scalar>>::BetweenWithJacobians(const sym::Pose
   _res[0] = _tmp2;
   _res[1] = _tmp5;
   _res[2] = -_tmp6 + _tmp7 + _tmp8;
-  _res[3] = _tmp10 + _tmp11 - _tmp9;
+  _res[3] = -_tmp10 + _tmp11 + _tmp9;
 
   if (res_D_a != nullptr) {
     Eigen::Matrix<Scalar, 3, 3>& _res_D_a = (*res_D_a);
 
     _res_D_a(0, 0) = _tmp2 * (-_tmp0 - _tmp1) - std::pow(_tmp5, Scalar(2));
-    _res_D_a(1, 0) = _tmp10 + _tmp11 - _tmp9;
+    _res_D_a(1, 0) = -_tmp10 + _tmp11 + _tmp9;
     _res_D_a(2, 0) = _tmp6 - _tmp7 - _tmp8;
     _res_D_a(0, 1) = 0;
     _res_D_a(1, 1) = _tmp12;

@@ -14,10 +14,20 @@ sympy_py.init_printing()
 
 import symforce
 import symforce.symbolic as sf
+from symforce import ops
 from symforce import typing as T
 
 if symforce.get_symbolic_api() == "symengine":
     sf.sympy.init_printing()
+
+
+def set_notebook_defaults() -> None:
+    """
+    Change SymForce defaults to be more friendly for Jupyter notebooks.
+
+    - Use LaTeX-friendly symbols (`ops.StorageOps.set_use_latex_friendly_symbols`)
+    """
+    ops.StorageOps.set_use_latex_friendly_symbols(True)
 
 
 def display(*args: T.Any) -> None:

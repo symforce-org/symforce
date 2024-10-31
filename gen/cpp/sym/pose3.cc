@@ -74,26 +74,26 @@ const Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::ComposeWithPoint(
   const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
 
   // Intermediate terms (11)
-  const Scalar _tmp0 = 2 * _self[2];
-  const Scalar _tmp1 = _self[3] * _tmp0;
-  const Scalar _tmp2 = 2 * _self[0] * _self[1];
+  const Scalar _tmp0 = 2 * _self[2] * _self[3];
+  const Scalar _tmp1 = 2 * _self[1];
+  const Scalar _tmp2 = _self[0] * _tmp1;
   const Scalar _tmp3 = -2 * std::pow(_self[1], Scalar(2));
   const Scalar _tmp4 = 1 - 2 * std::pow(_self[2], Scalar(2));
-  const Scalar _tmp5 = _self[0] * _tmp0;
-  const Scalar _tmp6 = 2 * _self[3];
-  const Scalar _tmp7 = _self[1] * _tmp6;
+  const Scalar _tmp5 = 2 * _self[0];
+  const Scalar _tmp6 = _self[2] * _tmp5;
+  const Scalar _tmp7 = _self[3] * _tmp1;
   const Scalar _tmp8 = -2 * std::pow(_self[0], Scalar(2));
-  const Scalar _tmp9 = _self[0] * _tmp6;
-  const Scalar _tmp10 = _self[1] * _tmp0;
+  const Scalar _tmp9 = _self[3] * _tmp5;
+  const Scalar _tmp10 = _self[2] * _tmp1;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
-  _res(0, 0) = _self[4] + right(0, 0) * (_tmp3 + _tmp4) + right(1, 0) * (-_tmp1 + _tmp2) +
-               right(2, 0) * (_tmp5 + _tmp7);
-  _res(1, 0) = _self[5] + right(0, 0) * (_tmp1 + _tmp2) + right(1, 0) * (_tmp4 + _tmp8) +
+  _res(0, 0) = _self[4] + right(0, 0) * (_tmp3 + _tmp4) + right(1, 0) * (-_tmp0 + _tmp2) +
+               right(2, 0) * (_tmp6 + _tmp7);
+  _res(1, 0) = _self[5] + right(0, 0) * (_tmp0 + _tmp2) + right(1, 0) * (_tmp4 + _tmp8) +
                right(2, 0) * (_tmp10 - _tmp9);
-  _res(2, 0) = _self[6] + right(0, 0) * (_tmp5 - _tmp7) + right(1, 0) * (_tmp10 + _tmp9) +
+  _res(2, 0) = _self[6] + right(0, 0) * (_tmp6 - _tmp7) + right(1, 0) * (_tmp10 + _tmp9) +
                right(2, 0) * (_tmp3 + _tmp8 + 1);
 
   return _res;
@@ -108,34 +108,34 @@ const Eigen::Matrix<Scalar, 3, 1> sym::Pose3<Scalar>::InverseCompose(
   const Eigen::Matrix<Scalar, 7, 1>& _self = Data();
 
   // Intermediate terms (20)
-  const Scalar _tmp0 = 2 * _self[2];
-  const Scalar _tmp1 = _self[3] * _tmp0;
-  const Scalar _tmp2 = 2 * _self[0] * _self[1];
-  const Scalar _tmp3 = _tmp1 + _tmp2;
-  const Scalar _tmp4 = -2 * std::pow(_self[1], Scalar(2));
-  const Scalar _tmp5 = 1 - 2 * std::pow(_self[2], Scalar(2));
-  const Scalar _tmp6 = _tmp4 + _tmp5;
-  const Scalar _tmp7 = _self[0] * _tmp0;
-  const Scalar _tmp8 = 2 * _self[3];
-  const Scalar _tmp9 = _self[1] * _tmp8;
-  const Scalar _tmp10 = _tmp7 - _tmp9;
-  const Scalar _tmp11 = -_tmp1 + _tmp2;
-  const Scalar _tmp12 = -2 * std::pow(_self[0], Scalar(2));
-  const Scalar _tmp13 = _tmp12 + _tmp5;
-  const Scalar _tmp14 = _self[0] * _tmp8;
-  const Scalar _tmp15 = _self[1] * _tmp0;
-  const Scalar _tmp16 = _tmp14 + _tmp15;
-  const Scalar _tmp17 = _tmp12 + _tmp4 + 1;
-  const Scalar _tmp18 = _tmp7 + _tmp9;
-  const Scalar _tmp19 = -_tmp14 + _tmp15;
+  const Scalar _tmp0 = -2 * std::pow(_self[1], Scalar(2));
+  const Scalar _tmp1 = 1 - 2 * std::pow(_self[2], Scalar(2));
+  const Scalar _tmp2 = _tmp0 + _tmp1;
+  const Scalar _tmp3 = 2 * _self[2];
+  const Scalar _tmp4 = _self[0] * _tmp3;
+  const Scalar _tmp5 = 2 * _self[3];
+  const Scalar _tmp6 = _self[1] * _tmp5;
+  const Scalar _tmp7 = _tmp4 - _tmp6;
+  const Scalar _tmp8 = _self[3] * _tmp3;
+  const Scalar _tmp9 = 2 * _self[0] * _self[1];
+  const Scalar _tmp10 = _tmp8 + _tmp9;
+  const Scalar _tmp11 = -2 * std::pow(_self[0], Scalar(2));
+  const Scalar _tmp12 = _tmp1 + _tmp11;
+  const Scalar _tmp13 = _self[0] * _tmp5;
+  const Scalar _tmp14 = _self[1] * _tmp3;
+  const Scalar _tmp15 = _tmp13 + _tmp14;
+  const Scalar _tmp16 = -_tmp8 + _tmp9;
+  const Scalar _tmp17 = _tmp0 + _tmp11 + 1;
+  const Scalar _tmp18 = _tmp4 + _tmp6;
+  const Scalar _tmp19 = -_tmp13 + _tmp14;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
-  _res(0, 0) = -_self[4] * _tmp6 - _self[5] * _tmp3 - _self[6] * _tmp10 + _tmp10 * point(2, 0) +
-               _tmp3 * point(1, 0) + _tmp6 * point(0, 0);
-  _res(1, 0) = -_self[4] * _tmp11 - _self[5] * _tmp13 - _self[6] * _tmp16 + _tmp11 * point(0, 0) +
-               _tmp13 * point(1, 0) + _tmp16 * point(2, 0);
+  _res(0, 0) = -_self[4] * _tmp2 - _self[5] * _tmp10 - _self[6] * _tmp7 + _tmp10 * point(1, 0) +
+               _tmp2 * point(0, 0) + _tmp7 * point(2, 0);
+  _res(1, 0) = -_self[4] * _tmp16 - _self[5] * _tmp12 - _self[6] * _tmp15 + _tmp12 * point(1, 0) +
+               _tmp15 * point(2, 0) + _tmp16 * point(0, 0);
   _res(2, 0) = -_self[4] * _tmp18 - _self[5] * _tmp19 - _self[6] * _tmp17 + _tmp17 * point(2, 0) +
                _tmp18 * point(0, 0) + _tmp19 * point(1, 0);
 

@@ -51,115 +51,115 @@ void BetweenFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& a,
   const Eigen::Matrix<Scalar, 8, 1>& _a_T_b = a_T_b.Data();
 
   // Intermediate terms (432)
-  const Scalar _tmp0 = -_a[6] - _a_T_b[6] + _b[6];
-  const Scalar _tmp1 = -_a[7] - _a_T_b[7] + _b[7];
-  const Scalar _tmp2 = -_a[5] - _a_T_b[5] + _b[5];
-  const Scalar _tmp3 = -_a[2] - _a_T_b[2] + _b[2];
+  const Scalar _tmp0 = -_a[4] - _a_T_b[4] + _b[4];
+  const Scalar _tmp1 = -_a[5] - _a_T_b[5] + _b[5];
+  const Scalar _tmp2 = -_a[6] - _a_T_b[6] + _b[6];
+  const Scalar _tmp3 = -_a[7] - _a_T_b[7] + _b[7];
   const Scalar _tmp4 = -_a[3] - _a_T_b[3] + _b[3];
-  const Scalar _tmp5 = -_a[1] - _a_T_b[1] + _b[1];
+  const Scalar _tmp5 = -_a[2] - _a_T_b[2] + _b[2];
   const Scalar _tmp6 = -_a[0] - _a_T_b[0] + _b[0];
-  const Scalar _tmp7 = -_a[4] - _a_T_b[4] + _b[4];
-  const Scalar _tmp8 = _tmp0 * sqrt_info(0, 6) + _tmp1 * sqrt_info(0, 7) + _tmp2 * sqrt_info(0, 5) +
-                       _tmp3 * sqrt_info(0, 2) + _tmp4 * sqrt_info(0, 3) + _tmp5 * sqrt_info(0, 1) +
-                       _tmp6 * sqrt_info(0, 0) + _tmp7 * sqrt_info(0, 4);
-  const Scalar _tmp9 = _tmp0 * sqrt_info(1, 6) + _tmp1 * sqrt_info(1, 7) + _tmp2 * sqrt_info(1, 5) +
-                       _tmp3 * sqrt_info(1, 2) + _tmp4 * sqrt_info(1, 3) + _tmp5 * sqrt_info(1, 1) +
-                       _tmp6 * sqrt_info(1, 0) + _tmp7 * sqrt_info(1, 4);
-  const Scalar _tmp10 = _tmp0 * sqrt_info(2, 6) + _tmp1 * sqrt_info(2, 7) +
-                        _tmp2 * sqrt_info(2, 5) + _tmp3 * sqrt_info(2, 2) +
-                        _tmp4 * sqrt_info(2, 3) + _tmp5 * sqrt_info(2, 1) +
-                        _tmp6 * sqrt_info(2, 0) + _tmp7 * sqrt_info(2, 4);
-  const Scalar _tmp11 = _tmp0 * sqrt_info(3, 6) + _tmp1 * sqrt_info(3, 7) +
-                        _tmp2 * sqrt_info(3, 5) + _tmp3 * sqrt_info(3, 2) +
-                        _tmp4 * sqrt_info(3, 3) + _tmp5 * sqrt_info(3, 1) +
-                        _tmp6 * sqrt_info(3, 0) + _tmp7 * sqrt_info(3, 4);
-  const Scalar _tmp12 = _tmp0 * sqrt_info(4, 6) + _tmp1 * sqrt_info(4, 7) +
-                        _tmp2 * sqrt_info(4, 5) + _tmp3 * sqrt_info(4, 2) +
-                        _tmp4 * sqrt_info(4, 3) + _tmp5 * sqrt_info(4, 1) +
-                        _tmp6 * sqrt_info(4, 0) + _tmp7 * sqrt_info(4, 4);
-  const Scalar _tmp13 = _tmp0 * sqrt_info(5, 6) + _tmp1 * sqrt_info(5, 7) +
-                        _tmp2 * sqrt_info(5, 5) + _tmp3 * sqrt_info(5, 2) +
-                        _tmp4 * sqrt_info(5, 3) + _tmp5 * sqrt_info(5, 1) +
-                        _tmp6 * sqrt_info(5, 0) + _tmp7 * sqrt_info(5, 4);
-  const Scalar _tmp14 = _tmp0 * sqrt_info(6, 6) + _tmp1 * sqrt_info(6, 7) +
-                        _tmp2 * sqrt_info(6, 5) + _tmp3 * sqrt_info(6, 2) +
-                        _tmp4 * sqrt_info(6, 3) + _tmp5 * sqrt_info(6, 1) +
-                        _tmp6 * sqrt_info(6, 0) + _tmp7 * sqrt_info(6, 4);
-  const Scalar _tmp15 = _tmp0 * sqrt_info(7, 6) + _tmp1 * sqrt_info(7, 7) +
-                        _tmp2 * sqrt_info(7, 5) + _tmp3 * sqrt_info(7, 2) +
-                        _tmp4 * sqrt_info(7, 3) + _tmp5 * sqrt_info(7, 1) +
-                        _tmp6 * sqrt_info(7, 0) + _tmp7 * sqrt_info(7, 4);
-  const Scalar _tmp16 = std::pow(sqrt_info(6, 0), Scalar(2));
-  const Scalar _tmp17 = std::pow(sqrt_info(0, 0), Scalar(2));
-  const Scalar _tmp18 = std::pow(sqrt_info(2, 0), Scalar(2));
-  const Scalar _tmp19 = std::pow(sqrt_info(7, 0), Scalar(2));
-  const Scalar _tmp20 = std::pow(sqrt_info(5, 0), Scalar(2));
-  const Scalar _tmp21 = std::pow(sqrt_info(4, 0), Scalar(2));
+  const Scalar _tmp7 = -_a[1] - _a_T_b[1] + _b[1];
+  const Scalar _tmp8 = _tmp0 * sqrt_info(0, 4) + _tmp1 * sqrt_info(0, 5) + _tmp2 * sqrt_info(0, 6) +
+                       _tmp3 * sqrt_info(0, 7) + _tmp4 * sqrt_info(0, 3) + _tmp5 * sqrt_info(0, 2) +
+                       _tmp6 * sqrt_info(0, 0) + _tmp7 * sqrt_info(0, 1);
+  const Scalar _tmp9 = _tmp0 * sqrt_info(1, 4) + _tmp1 * sqrt_info(1, 5) + _tmp2 * sqrt_info(1, 6) +
+                       _tmp3 * sqrt_info(1, 7) + _tmp4 * sqrt_info(1, 3) + _tmp5 * sqrt_info(1, 2) +
+                       _tmp6 * sqrt_info(1, 0) + _tmp7 * sqrt_info(1, 1);
+  const Scalar _tmp10 = _tmp0 * sqrt_info(2, 4) + _tmp1 * sqrt_info(2, 5) +
+                        _tmp2 * sqrt_info(2, 6) + _tmp3 * sqrt_info(2, 7) +
+                        _tmp4 * sqrt_info(2, 3) + _tmp5 * sqrt_info(2, 2) +
+                        _tmp6 * sqrt_info(2, 0) + _tmp7 * sqrt_info(2, 1);
+  const Scalar _tmp11 = _tmp0 * sqrt_info(3, 4) + _tmp1 * sqrt_info(3, 5) +
+                        _tmp2 * sqrt_info(3, 6) + _tmp3 * sqrt_info(3, 7) +
+                        _tmp4 * sqrt_info(3, 3) + _tmp5 * sqrt_info(3, 2) +
+                        _tmp6 * sqrt_info(3, 0) + _tmp7 * sqrt_info(3, 1);
+  const Scalar _tmp12 = _tmp0 * sqrt_info(4, 4) + _tmp1 * sqrt_info(4, 5) +
+                        _tmp2 * sqrt_info(4, 6) + _tmp3 * sqrt_info(4, 7) +
+                        _tmp4 * sqrt_info(4, 3) + _tmp5 * sqrt_info(4, 2) +
+                        _tmp6 * sqrt_info(4, 0) + _tmp7 * sqrt_info(4, 1);
+  const Scalar _tmp13 = _tmp0 * sqrt_info(5, 4) + _tmp1 * sqrt_info(5, 5) +
+                        _tmp2 * sqrt_info(5, 6) + _tmp3 * sqrt_info(5, 7) +
+                        _tmp4 * sqrt_info(5, 3) + _tmp5 * sqrt_info(5, 2) +
+                        _tmp6 * sqrt_info(5, 0) + _tmp7 * sqrt_info(5, 1);
+  const Scalar _tmp14 = _tmp0 * sqrt_info(6, 4) + _tmp1 * sqrt_info(6, 5) +
+                        _tmp2 * sqrt_info(6, 6) + _tmp3 * sqrt_info(6, 7) +
+                        _tmp4 * sqrt_info(6, 3) + _tmp5 * sqrt_info(6, 2) +
+                        _tmp6 * sqrt_info(6, 0) + _tmp7 * sqrt_info(6, 1);
+  const Scalar _tmp15 = _tmp0 * sqrt_info(7, 4) + _tmp1 * sqrt_info(7, 5) +
+                        _tmp2 * sqrt_info(7, 6) + _tmp3 * sqrt_info(7, 7) +
+                        _tmp4 * sqrt_info(7, 3) + _tmp5 * sqrt_info(7, 2) +
+                        _tmp6 * sqrt_info(7, 0) + _tmp7 * sqrt_info(7, 1);
+  const Scalar _tmp16 = std::pow(sqrt_info(0, 0), Scalar(2));
+  const Scalar _tmp17 = std::pow(sqrt_info(2, 0), Scalar(2));
+  const Scalar _tmp18 = std::pow(sqrt_info(3, 0), Scalar(2));
+  const Scalar _tmp19 = std::pow(sqrt_info(4, 0), Scalar(2));
+  const Scalar _tmp20 = std::pow(sqrt_info(6, 0), Scalar(2));
+  const Scalar _tmp21 = std::pow(sqrt_info(7, 0), Scalar(2));
   const Scalar _tmp22 = std::pow(sqrt_info(1, 0), Scalar(2));
-  const Scalar _tmp23 = std::pow(sqrt_info(3, 0), Scalar(2));
+  const Scalar _tmp23 = std::pow(sqrt_info(5, 0), Scalar(2));
   const Scalar _tmp24 = _tmp16 + _tmp17 + _tmp18 + _tmp19 + _tmp20 + _tmp21 + _tmp22 + _tmp23;
-  const Scalar _tmp25 = sqrt_info(4, 0) * sqrt_info(4, 1);
-  const Scalar _tmp26 = sqrt_info(5, 0) * sqrt_info(5, 1);
-  const Scalar _tmp27 = sqrt_info(0, 0) * sqrt_info(0, 1);
-  const Scalar _tmp28 = sqrt_info(2, 0) * sqrt_info(2, 1);
-  const Scalar _tmp29 = sqrt_info(1, 0) * sqrt_info(1, 1);
-  const Scalar _tmp30 = sqrt_info(7, 0) * sqrt_info(7, 1);
-  const Scalar _tmp31 = sqrt_info(6, 0) * sqrt_info(6, 1);
-  const Scalar _tmp32 = sqrt_info(3, 0) * sqrt_info(3, 1);
+  const Scalar _tmp25 = sqrt_info(3, 0) * sqrt_info(3, 1);
+  const Scalar _tmp26 = sqrt_info(1, 0) * sqrt_info(1, 1);
+  const Scalar _tmp27 = sqrt_info(2, 0) * sqrt_info(2, 1);
+  const Scalar _tmp28 = sqrt_info(0, 0) * sqrt_info(0, 1);
+  const Scalar _tmp29 = sqrt_info(7, 0) * sqrt_info(7, 1);
+  const Scalar _tmp30 = sqrt_info(6, 0) * sqrt_info(6, 1);
+  const Scalar _tmp31 = sqrt_info(4, 0) * sqrt_info(4, 1);
+  const Scalar _tmp32 = sqrt_info(5, 0) * sqrt_info(5, 1);
   const Scalar _tmp33 = _tmp25 + _tmp26 + _tmp27 + _tmp28 + _tmp29 + _tmp30 + _tmp31 + _tmp32;
-  const Scalar _tmp34 = sqrt_info(4, 0) * sqrt_info(4, 2);
-  const Scalar _tmp35 = sqrt_info(5, 0) * sqrt_info(5, 2);
-  const Scalar _tmp36 = sqrt_info(0, 0) * sqrt_info(0, 2);
-  const Scalar _tmp37 = sqrt_info(2, 0) * sqrt_info(2, 2);
-  const Scalar _tmp38 = sqrt_info(1, 0) * sqrt_info(1, 2);
-  const Scalar _tmp39 = sqrt_info(7, 0) * sqrt_info(7, 2);
-  const Scalar _tmp40 = sqrt_info(6, 0) * sqrt_info(6, 2);
-  const Scalar _tmp41 = sqrt_info(3, 0) * sqrt_info(3, 2);
+  const Scalar _tmp34 = sqrt_info(3, 0) * sqrt_info(3, 2);
+  const Scalar _tmp35 = sqrt_info(1, 0) * sqrt_info(1, 2);
+  const Scalar _tmp36 = sqrt_info(2, 0) * sqrt_info(2, 2);
+  const Scalar _tmp37 = sqrt_info(0, 0) * sqrt_info(0, 2);
+  const Scalar _tmp38 = sqrt_info(7, 0) * sqrt_info(7, 2);
+  const Scalar _tmp39 = sqrt_info(6, 0) * sqrt_info(6, 2);
+  const Scalar _tmp40 = sqrt_info(4, 0) * sqrt_info(4, 2);
+  const Scalar _tmp41 = sqrt_info(5, 0) * sqrt_info(5, 2);
   const Scalar _tmp42 = _tmp34 + _tmp35 + _tmp36 + _tmp37 + _tmp38 + _tmp39 + _tmp40 + _tmp41;
-  const Scalar _tmp43 = sqrt_info(4, 0) * sqrt_info(4, 3);
-  const Scalar _tmp44 = sqrt_info(5, 0) * sqrt_info(5, 3);
-  const Scalar _tmp45 = sqrt_info(0, 0) * sqrt_info(0, 3);
-  const Scalar _tmp46 = sqrt_info(2, 0) * sqrt_info(2, 3);
-  const Scalar _tmp47 = sqrt_info(1, 0) * sqrt_info(1, 3);
-  const Scalar _tmp48 = sqrt_info(7, 0) * sqrt_info(7, 3);
-  const Scalar _tmp49 = sqrt_info(6, 0) * sqrt_info(6, 3);
-  const Scalar _tmp50 = sqrt_info(3, 0) * sqrt_info(3, 3);
+  const Scalar _tmp43 = sqrt_info(3, 0) * sqrt_info(3, 3);
+  const Scalar _tmp44 = sqrt_info(1, 0) * sqrt_info(1, 3);
+  const Scalar _tmp45 = sqrt_info(2, 0) * sqrt_info(2, 3);
+  const Scalar _tmp46 = sqrt_info(0, 0) * sqrt_info(0, 3);
+  const Scalar _tmp47 = sqrt_info(7, 0) * sqrt_info(7, 3);
+  const Scalar _tmp48 = sqrt_info(6, 0) * sqrt_info(6, 3);
+  const Scalar _tmp49 = sqrt_info(4, 0) * sqrt_info(4, 3);
+  const Scalar _tmp50 = sqrt_info(5, 0) * sqrt_info(5, 3);
   const Scalar _tmp51 = _tmp43 + _tmp44 + _tmp45 + _tmp46 + _tmp47 + _tmp48 + _tmp49 + _tmp50;
-  const Scalar _tmp52 = sqrt_info(4, 0) * sqrt_info(4, 4);
-  const Scalar _tmp53 = sqrt_info(5, 0) * sqrt_info(5, 4);
-  const Scalar _tmp54 = sqrt_info(0, 0) * sqrt_info(0, 4);
-  const Scalar _tmp55 = sqrt_info(2, 0) * sqrt_info(2, 4);
-  const Scalar _tmp56 = sqrt_info(1, 0) * sqrt_info(1, 4);
-  const Scalar _tmp57 = sqrt_info(7, 0) * sqrt_info(7, 4);
-  const Scalar _tmp58 = sqrt_info(6, 0) * sqrt_info(6, 4);
-  const Scalar _tmp59 = sqrt_info(3, 0) * sqrt_info(3, 4);
+  const Scalar _tmp52 = sqrt_info(3, 0) * sqrt_info(3, 4);
+  const Scalar _tmp53 = sqrt_info(1, 0) * sqrt_info(1, 4);
+  const Scalar _tmp54 = sqrt_info(2, 0) * sqrt_info(2, 4);
+  const Scalar _tmp55 = sqrt_info(0, 0) * sqrt_info(0, 4);
+  const Scalar _tmp56 = sqrt_info(7, 0) * sqrt_info(7, 4);
+  const Scalar _tmp57 = sqrt_info(6, 0) * sqrt_info(6, 4);
+  const Scalar _tmp58 = sqrt_info(4, 0) * sqrt_info(4, 4);
+  const Scalar _tmp59 = sqrt_info(5, 0) * sqrt_info(5, 4);
   const Scalar _tmp60 = _tmp52 + _tmp53 + _tmp54 + _tmp55 + _tmp56 + _tmp57 + _tmp58 + _tmp59;
-  const Scalar _tmp61 = sqrt_info(4, 0) * sqrt_info(4, 5);
-  const Scalar _tmp62 = sqrt_info(5, 0) * sqrt_info(5, 5);
-  const Scalar _tmp63 = sqrt_info(0, 0) * sqrt_info(0, 5);
-  const Scalar _tmp64 = sqrt_info(2, 0) * sqrt_info(2, 5);
-  const Scalar _tmp65 = sqrt_info(1, 0) * sqrt_info(1, 5);
-  const Scalar _tmp66 = sqrt_info(7, 0) * sqrt_info(7, 5);
-  const Scalar _tmp67 = sqrt_info(6, 0) * sqrt_info(6, 5);
-  const Scalar _tmp68 = sqrt_info(3, 0) * sqrt_info(3, 5);
+  const Scalar _tmp61 = sqrt_info(3, 0) * sqrt_info(3, 5);
+  const Scalar _tmp62 = sqrt_info(1, 0) * sqrt_info(1, 5);
+  const Scalar _tmp63 = sqrt_info(2, 0) * sqrt_info(2, 5);
+  const Scalar _tmp64 = sqrt_info(0, 0) * sqrt_info(0, 5);
+  const Scalar _tmp65 = sqrt_info(7, 0) * sqrt_info(7, 5);
+  const Scalar _tmp66 = sqrt_info(6, 0) * sqrt_info(6, 5);
+  const Scalar _tmp67 = sqrt_info(4, 0) * sqrt_info(4, 5);
+  const Scalar _tmp68 = sqrt_info(5, 0) * sqrt_info(5, 5);
   const Scalar _tmp69 = _tmp61 + _tmp62 + _tmp63 + _tmp64 + _tmp65 + _tmp66 + _tmp67 + _tmp68;
-  const Scalar _tmp70 = sqrt_info(4, 0) * sqrt_info(4, 6);
-  const Scalar _tmp71 = sqrt_info(5, 0) * sqrt_info(5, 6);
-  const Scalar _tmp72 = sqrt_info(0, 0) * sqrt_info(0, 6);
-  const Scalar _tmp73 = sqrt_info(2, 0) * sqrt_info(2, 6);
-  const Scalar _tmp74 = sqrt_info(1, 0) * sqrt_info(1, 6);
-  const Scalar _tmp75 = sqrt_info(7, 0) * sqrt_info(7, 6);
-  const Scalar _tmp76 = sqrt_info(6, 0) * sqrt_info(6, 6);
-  const Scalar _tmp77 = sqrt_info(3, 0) * sqrt_info(3, 6);
+  const Scalar _tmp70 = sqrt_info(3, 0) * sqrt_info(3, 6);
+  const Scalar _tmp71 = sqrt_info(1, 0) * sqrt_info(1, 6);
+  const Scalar _tmp72 = sqrt_info(2, 0) * sqrt_info(2, 6);
+  const Scalar _tmp73 = sqrt_info(0, 0) * sqrt_info(0, 6);
+  const Scalar _tmp74 = sqrt_info(7, 0) * sqrt_info(7, 6);
+  const Scalar _tmp75 = sqrt_info(6, 0) * sqrt_info(6, 6);
+  const Scalar _tmp76 = sqrt_info(4, 0) * sqrt_info(4, 6);
+  const Scalar _tmp77 = sqrt_info(5, 0) * sqrt_info(5, 6);
   const Scalar _tmp78 = _tmp70 + _tmp71 + _tmp72 + _tmp73 + _tmp74 + _tmp75 + _tmp76 + _tmp77;
-  const Scalar _tmp79 = sqrt_info(4, 0) * sqrt_info(4, 7);
-  const Scalar _tmp80 = sqrt_info(5, 0) * sqrt_info(5, 7);
-  const Scalar _tmp81 = sqrt_info(0, 0) * sqrt_info(0, 7);
-  const Scalar _tmp82 = sqrt_info(2, 0) * sqrt_info(2, 7);
-  const Scalar _tmp83 = sqrt_info(1, 0) * sqrt_info(1, 7);
-  const Scalar _tmp84 = sqrt_info(7, 0) * sqrt_info(7, 7);
-  const Scalar _tmp85 = sqrt_info(6, 0) * sqrt_info(6, 7);
-  const Scalar _tmp86 = sqrt_info(3, 0) * sqrt_info(3, 7);
+  const Scalar _tmp79 = sqrt_info(3, 0) * sqrt_info(3, 7);
+  const Scalar _tmp80 = sqrt_info(1, 0) * sqrt_info(1, 7);
+  const Scalar _tmp81 = sqrt_info(2, 0) * sqrt_info(2, 7);
+  const Scalar _tmp82 = sqrt_info(0, 0) * sqrt_info(0, 7);
+  const Scalar _tmp83 = sqrt_info(7, 0) * sqrt_info(7, 7);
+  const Scalar _tmp84 = sqrt_info(6, 0) * sqrt_info(6, 7);
+  const Scalar _tmp85 = sqrt_info(4, 0) * sqrt_info(4, 7);
+  const Scalar _tmp86 = sqrt_info(5, 0) * sqrt_info(5, 7);
   const Scalar _tmp87 = _tmp79 + _tmp80 + _tmp81 + _tmp82 + _tmp83 + _tmp84 + _tmp85 + _tmp86;
   const Scalar _tmp88 = -_tmp25 - _tmp26 - _tmp27 - _tmp28 - _tmp29 - _tmp30 - _tmp31 - _tmp32;
   const Scalar _tmp89 = -_tmp34 - _tmp35 - _tmp36 - _tmp37 - _tmp38 - _tmp39 - _tmp40 - _tmp41;
@@ -168,73 +168,73 @@ void BetweenFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& a,
   const Scalar _tmp92 = -_tmp61 - _tmp62 - _tmp63 - _tmp64 - _tmp65 - _tmp66 - _tmp67 - _tmp68;
   const Scalar _tmp93 = -_tmp70 - _tmp71 - _tmp72 - _tmp73 - _tmp74 - _tmp75 - _tmp76 - _tmp77;
   const Scalar _tmp94 = -_tmp79 - _tmp80 - _tmp81 - _tmp82 - _tmp83 - _tmp84 - _tmp85 - _tmp86;
-  const Scalar _tmp95 = std::pow(sqrt_info(6, 1), Scalar(2));
-  const Scalar _tmp96 = std::pow(sqrt_info(0, 1), Scalar(2));
-  const Scalar _tmp97 = std::pow(sqrt_info(2, 1), Scalar(2));
-  const Scalar _tmp98 = std::pow(sqrt_info(7, 1), Scalar(2));
-  const Scalar _tmp99 = std::pow(sqrt_info(5, 1), Scalar(2));
-  const Scalar _tmp100 = std::pow(sqrt_info(4, 1), Scalar(2));
+  const Scalar _tmp95 = std::pow(sqrt_info(0, 1), Scalar(2));
+  const Scalar _tmp96 = std::pow(sqrt_info(2, 1), Scalar(2));
+  const Scalar _tmp97 = std::pow(sqrt_info(3, 1), Scalar(2));
+  const Scalar _tmp98 = std::pow(sqrt_info(4, 1), Scalar(2));
+  const Scalar _tmp99 = std::pow(sqrt_info(6, 1), Scalar(2));
+  const Scalar _tmp100 = std::pow(sqrt_info(7, 1), Scalar(2));
   const Scalar _tmp101 = std::pow(sqrt_info(1, 1), Scalar(2));
-  const Scalar _tmp102 = std::pow(sqrt_info(3, 1), Scalar(2));
+  const Scalar _tmp102 = std::pow(sqrt_info(5, 1), Scalar(2));
   const Scalar _tmp103 = _tmp100 + _tmp101 + _tmp102 + _tmp95 + _tmp96 + _tmp97 + _tmp98 + _tmp99;
-  const Scalar _tmp104 = sqrt_info(4, 1) * sqrt_info(4, 2);
-  const Scalar _tmp105 = sqrt_info(5, 1) * sqrt_info(5, 2);
-  const Scalar _tmp106 = sqrt_info(0, 1) * sqrt_info(0, 2);
-  const Scalar _tmp107 = sqrt_info(2, 1) * sqrt_info(2, 2);
-  const Scalar _tmp108 = sqrt_info(1, 1) * sqrt_info(1, 2);
-  const Scalar _tmp109 = sqrt_info(7, 1) * sqrt_info(7, 2);
-  const Scalar _tmp110 = sqrt_info(6, 1) * sqrt_info(6, 2);
-  const Scalar _tmp111 = sqrt_info(3, 1) * sqrt_info(3, 2);
+  const Scalar _tmp104 = sqrt_info(3, 1) * sqrt_info(3, 2);
+  const Scalar _tmp105 = sqrt_info(1, 1) * sqrt_info(1, 2);
+  const Scalar _tmp106 = sqrt_info(2, 1) * sqrt_info(2, 2);
+  const Scalar _tmp107 = sqrt_info(0, 1) * sqrt_info(0, 2);
+  const Scalar _tmp108 = sqrt_info(7, 1) * sqrt_info(7, 2);
+  const Scalar _tmp109 = sqrt_info(6, 1) * sqrt_info(6, 2);
+  const Scalar _tmp110 = sqrt_info(4, 1) * sqrt_info(4, 2);
+  const Scalar _tmp111 = sqrt_info(5, 1) * sqrt_info(5, 2);
   const Scalar _tmp112 =
       _tmp104 + _tmp105 + _tmp106 + _tmp107 + _tmp108 + _tmp109 + _tmp110 + _tmp111;
-  const Scalar _tmp113 = sqrt_info(4, 1) * sqrt_info(4, 3);
-  const Scalar _tmp114 = sqrt_info(5, 1) * sqrt_info(5, 3);
-  const Scalar _tmp115 = sqrt_info(0, 1) * sqrt_info(0, 3);
-  const Scalar _tmp116 = sqrt_info(2, 1) * sqrt_info(2, 3);
-  const Scalar _tmp117 = sqrt_info(1, 1) * sqrt_info(1, 3);
-  const Scalar _tmp118 = sqrt_info(7, 1) * sqrt_info(7, 3);
-  const Scalar _tmp119 = sqrt_info(6, 1) * sqrt_info(6, 3);
-  const Scalar _tmp120 = sqrt_info(3, 1) * sqrt_info(3, 3);
+  const Scalar _tmp113 = sqrt_info(3, 1) * sqrt_info(3, 3);
+  const Scalar _tmp114 = sqrt_info(1, 1) * sqrt_info(1, 3);
+  const Scalar _tmp115 = sqrt_info(2, 1) * sqrt_info(2, 3);
+  const Scalar _tmp116 = sqrt_info(0, 1) * sqrt_info(0, 3);
+  const Scalar _tmp117 = sqrt_info(7, 1) * sqrt_info(7, 3);
+  const Scalar _tmp118 = sqrt_info(6, 1) * sqrt_info(6, 3);
+  const Scalar _tmp119 = sqrt_info(4, 1) * sqrt_info(4, 3);
+  const Scalar _tmp120 = sqrt_info(5, 1) * sqrt_info(5, 3);
   const Scalar _tmp121 =
       _tmp113 + _tmp114 + _tmp115 + _tmp116 + _tmp117 + _tmp118 + _tmp119 + _tmp120;
-  const Scalar _tmp122 = sqrt_info(4, 1) * sqrt_info(4, 4);
-  const Scalar _tmp123 = sqrt_info(5, 1) * sqrt_info(5, 4);
-  const Scalar _tmp124 = sqrt_info(0, 1) * sqrt_info(0, 4);
-  const Scalar _tmp125 = sqrt_info(2, 1) * sqrt_info(2, 4);
-  const Scalar _tmp126 = sqrt_info(1, 1) * sqrt_info(1, 4);
-  const Scalar _tmp127 = sqrt_info(7, 1) * sqrt_info(7, 4);
-  const Scalar _tmp128 = sqrt_info(6, 1) * sqrt_info(6, 4);
-  const Scalar _tmp129 = sqrt_info(3, 1) * sqrt_info(3, 4);
+  const Scalar _tmp122 = sqrt_info(3, 1) * sqrt_info(3, 4);
+  const Scalar _tmp123 = sqrt_info(1, 1) * sqrt_info(1, 4);
+  const Scalar _tmp124 = sqrt_info(2, 1) * sqrt_info(2, 4);
+  const Scalar _tmp125 = sqrt_info(0, 1) * sqrt_info(0, 4);
+  const Scalar _tmp126 = sqrt_info(7, 1) * sqrt_info(7, 4);
+  const Scalar _tmp127 = sqrt_info(6, 1) * sqrt_info(6, 4);
+  const Scalar _tmp128 = sqrt_info(4, 1) * sqrt_info(4, 4);
+  const Scalar _tmp129 = sqrt_info(5, 1) * sqrt_info(5, 4);
   const Scalar _tmp130 =
       _tmp122 + _tmp123 + _tmp124 + _tmp125 + _tmp126 + _tmp127 + _tmp128 + _tmp129;
-  const Scalar _tmp131 = sqrt_info(4, 1) * sqrt_info(4, 5);
-  const Scalar _tmp132 = sqrt_info(5, 1) * sqrt_info(5, 5);
-  const Scalar _tmp133 = sqrt_info(0, 1) * sqrt_info(0, 5);
-  const Scalar _tmp134 = sqrt_info(2, 1) * sqrt_info(2, 5);
-  const Scalar _tmp135 = sqrt_info(1, 1) * sqrt_info(1, 5);
-  const Scalar _tmp136 = sqrt_info(7, 1) * sqrt_info(7, 5);
-  const Scalar _tmp137 = sqrt_info(6, 1) * sqrt_info(6, 5);
-  const Scalar _tmp138 = sqrt_info(3, 1) * sqrt_info(3, 5);
+  const Scalar _tmp131 = sqrt_info(3, 1) * sqrt_info(3, 5);
+  const Scalar _tmp132 = sqrt_info(1, 1) * sqrt_info(1, 5);
+  const Scalar _tmp133 = sqrt_info(2, 1) * sqrt_info(2, 5);
+  const Scalar _tmp134 = sqrt_info(0, 1) * sqrt_info(0, 5);
+  const Scalar _tmp135 = sqrt_info(7, 1) * sqrt_info(7, 5);
+  const Scalar _tmp136 = sqrt_info(6, 1) * sqrt_info(6, 5);
+  const Scalar _tmp137 = sqrt_info(4, 1) * sqrt_info(4, 5);
+  const Scalar _tmp138 = sqrt_info(5, 1) * sqrt_info(5, 5);
   const Scalar _tmp139 =
       _tmp131 + _tmp132 + _tmp133 + _tmp134 + _tmp135 + _tmp136 + _tmp137 + _tmp138;
-  const Scalar _tmp140 = sqrt_info(4, 1) * sqrt_info(4, 6);
-  const Scalar _tmp141 = sqrt_info(5, 1) * sqrt_info(5, 6);
-  const Scalar _tmp142 = sqrt_info(0, 1) * sqrt_info(0, 6);
-  const Scalar _tmp143 = sqrt_info(2, 1) * sqrt_info(2, 6);
-  const Scalar _tmp144 = sqrt_info(1, 1) * sqrt_info(1, 6);
-  const Scalar _tmp145 = sqrt_info(7, 1) * sqrt_info(7, 6);
-  const Scalar _tmp146 = sqrt_info(6, 1) * sqrt_info(6, 6);
-  const Scalar _tmp147 = sqrt_info(3, 1) * sqrt_info(3, 6);
+  const Scalar _tmp140 = sqrt_info(3, 1) * sqrt_info(3, 6);
+  const Scalar _tmp141 = sqrt_info(1, 1) * sqrt_info(1, 6);
+  const Scalar _tmp142 = sqrt_info(2, 1) * sqrt_info(2, 6);
+  const Scalar _tmp143 = sqrt_info(0, 1) * sqrt_info(0, 6);
+  const Scalar _tmp144 = sqrt_info(7, 1) * sqrt_info(7, 6);
+  const Scalar _tmp145 = sqrt_info(6, 1) * sqrt_info(6, 6);
+  const Scalar _tmp146 = sqrt_info(4, 1) * sqrt_info(4, 6);
+  const Scalar _tmp147 = sqrt_info(5, 1) * sqrt_info(5, 6);
   const Scalar _tmp148 =
       _tmp140 + _tmp141 + _tmp142 + _tmp143 + _tmp144 + _tmp145 + _tmp146 + _tmp147;
-  const Scalar _tmp149 = sqrt_info(4, 1) * sqrt_info(4, 7);
-  const Scalar _tmp150 = sqrt_info(5, 1) * sqrt_info(5, 7);
-  const Scalar _tmp151 = sqrt_info(0, 1) * sqrt_info(0, 7);
-  const Scalar _tmp152 = sqrt_info(2, 1) * sqrt_info(2, 7);
-  const Scalar _tmp153 = sqrt_info(1, 1) * sqrt_info(1, 7);
-  const Scalar _tmp154 = sqrt_info(7, 1) * sqrt_info(7, 7);
-  const Scalar _tmp155 = sqrt_info(6, 1) * sqrt_info(6, 7);
-  const Scalar _tmp156 = sqrt_info(3, 1) * sqrt_info(3, 7);
+  const Scalar _tmp149 = sqrt_info(3, 1) * sqrt_info(3, 7);
+  const Scalar _tmp150 = sqrt_info(1, 1) * sqrt_info(1, 7);
+  const Scalar _tmp151 = sqrt_info(2, 1) * sqrt_info(2, 7);
+  const Scalar _tmp152 = sqrt_info(0, 1) * sqrt_info(0, 7);
+  const Scalar _tmp153 = sqrt_info(7, 1) * sqrt_info(7, 7);
+  const Scalar _tmp154 = sqrt_info(6, 1) * sqrt_info(6, 7);
+  const Scalar _tmp155 = sqrt_info(4, 1) * sqrt_info(4, 7);
+  const Scalar _tmp156 = sqrt_info(5, 1) * sqrt_info(5, 7);
   const Scalar _tmp157 =
       _tmp149 + _tmp150 + _tmp151 + _tmp152 + _tmp153 + _tmp154 + _tmp155 + _tmp156;
   const Scalar _tmp158 =
@@ -249,64 +249,64 @@ void BetweenFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& a,
       -_tmp140 - _tmp141 - _tmp142 - _tmp143 - _tmp144 - _tmp145 - _tmp146 - _tmp147;
   const Scalar _tmp163 =
       -_tmp149 - _tmp150 - _tmp151 - _tmp152 - _tmp153 - _tmp154 - _tmp155 - _tmp156;
-  const Scalar _tmp164 = std::pow(sqrt_info(6, 2), Scalar(2));
-  const Scalar _tmp165 = std::pow(sqrt_info(0, 2), Scalar(2));
-  const Scalar _tmp166 = std::pow(sqrt_info(2, 2), Scalar(2));
-  const Scalar _tmp167 = std::pow(sqrt_info(7, 2), Scalar(2));
-  const Scalar _tmp168 = std::pow(sqrt_info(5, 2), Scalar(2));
-  const Scalar _tmp169 = std::pow(sqrt_info(4, 2), Scalar(2));
+  const Scalar _tmp164 = std::pow(sqrt_info(0, 2), Scalar(2));
+  const Scalar _tmp165 = std::pow(sqrt_info(2, 2), Scalar(2));
+  const Scalar _tmp166 = std::pow(sqrt_info(3, 2), Scalar(2));
+  const Scalar _tmp167 = std::pow(sqrt_info(4, 2), Scalar(2));
+  const Scalar _tmp168 = std::pow(sqrt_info(6, 2), Scalar(2));
+  const Scalar _tmp169 = std::pow(sqrt_info(7, 2), Scalar(2));
   const Scalar _tmp170 = std::pow(sqrt_info(1, 2), Scalar(2));
-  const Scalar _tmp171 = std::pow(sqrt_info(3, 2), Scalar(2));
+  const Scalar _tmp171 = std::pow(sqrt_info(5, 2), Scalar(2));
   const Scalar _tmp172 =
       _tmp164 + _tmp165 + _tmp166 + _tmp167 + _tmp168 + _tmp169 + _tmp170 + _tmp171;
-  const Scalar _tmp173 = sqrt_info(5, 2) * sqrt_info(5, 3);
-  const Scalar _tmp174 = sqrt_info(4, 2) * sqrt_info(4, 3);
-  const Scalar _tmp175 = sqrt_info(0, 2) * sqrt_info(0, 3);
-  const Scalar _tmp176 = sqrt_info(2, 2) * sqrt_info(2, 3);
-  const Scalar _tmp177 = sqrt_info(1, 2) * sqrt_info(1, 3);
-  const Scalar _tmp178 = sqrt_info(7, 2) * sqrt_info(7, 3);
-  const Scalar _tmp179 = sqrt_info(6, 2) * sqrt_info(6, 3);
-  const Scalar _tmp180 = sqrt_info(3, 2) * sqrt_info(3, 3);
+  const Scalar _tmp173 = sqrt_info(3, 2) * sqrt_info(3, 3);
+  const Scalar _tmp174 = sqrt_info(1, 2) * sqrt_info(1, 3);
+  const Scalar _tmp175 = sqrt_info(2, 2) * sqrt_info(2, 3);
+  const Scalar _tmp176 = sqrt_info(0, 2) * sqrt_info(0, 3);
+  const Scalar _tmp177 = sqrt_info(7, 2) * sqrt_info(7, 3);
+  const Scalar _tmp178 = sqrt_info(6, 2) * sqrt_info(6, 3);
+  const Scalar _tmp179 = sqrt_info(4, 2) * sqrt_info(4, 3);
+  const Scalar _tmp180 = sqrt_info(5, 2) * sqrt_info(5, 3);
   const Scalar _tmp181 =
       _tmp173 + _tmp174 + _tmp175 + _tmp176 + _tmp177 + _tmp178 + _tmp179 + _tmp180;
-  const Scalar _tmp182 = sqrt_info(5, 2) * sqrt_info(5, 4);
-  const Scalar _tmp183 = sqrt_info(4, 2) * sqrt_info(4, 4);
-  const Scalar _tmp184 = sqrt_info(0, 2) * sqrt_info(0, 4);
-  const Scalar _tmp185 = sqrt_info(2, 2) * sqrt_info(2, 4);
-  const Scalar _tmp186 = sqrt_info(1, 2) * sqrt_info(1, 4);
-  const Scalar _tmp187 = sqrt_info(7, 2) * sqrt_info(7, 4);
-  const Scalar _tmp188 = sqrt_info(6, 2) * sqrt_info(6, 4);
-  const Scalar _tmp189 = sqrt_info(3, 2) * sqrt_info(3, 4);
+  const Scalar _tmp182 = sqrt_info(3, 2) * sqrt_info(3, 4);
+  const Scalar _tmp183 = sqrt_info(1, 2) * sqrt_info(1, 4);
+  const Scalar _tmp184 = sqrt_info(2, 2) * sqrt_info(2, 4);
+  const Scalar _tmp185 = sqrt_info(0, 2) * sqrt_info(0, 4);
+  const Scalar _tmp186 = sqrt_info(7, 2) * sqrt_info(7, 4);
+  const Scalar _tmp187 = sqrt_info(6, 2) * sqrt_info(6, 4);
+  const Scalar _tmp188 = sqrt_info(4, 2) * sqrt_info(4, 4);
+  const Scalar _tmp189 = sqrt_info(5, 2) * sqrt_info(5, 4);
   const Scalar _tmp190 =
       _tmp182 + _tmp183 + _tmp184 + _tmp185 + _tmp186 + _tmp187 + _tmp188 + _tmp189;
-  const Scalar _tmp191 = sqrt_info(5, 2) * sqrt_info(5, 5);
-  const Scalar _tmp192 = sqrt_info(4, 2) * sqrt_info(4, 5);
-  const Scalar _tmp193 = sqrt_info(0, 2) * sqrt_info(0, 5);
-  const Scalar _tmp194 = sqrt_info(2, 2) * sqrt_info(2, 5);
-  const Scalar _tmp195 = sqrt_info(1, 2) * sqrt_info(1, 5);
-  const Scalar _tmp196 = sqrt_info(7, 2) * sqrt_info(7, 5);
-  const Scalar _tmp197 = sqrt_info(6, 2) * sqrt_info(6, 5);
-  const Scalar _tmp198 = sqrt_info(3, 2) * sqrt_info(3, 5);
+  const Scalar _tmp191 = sqrt_info(3, 2) * sqrt_info(3, 5);
+  const Scalar _tmp192 = sqrt_info(1, 2) * sqrt_info(1, 5);
+  const Scalar _tmp193 = sqrt_info(2, 2) * sqrt_info(2, 5);
+  const Scalar _tmp194 = sqrt_info(0, 2) * sqrt_info(0, 5);
+  const Scalar _tmp195 = sqrt_info(7, 2) * sqrt_info(7, 5);
+  const Scalar _tmp196 = sqrt_info(6, 2) * sqrt_info(6, 5);
+  const Scalar _tmp197 = sqrt_info(4, 2) * sqrt_info(4, 5);
+  const Scalar _tmp198 = sqrt_info(5, 2) * sqrt_info(5, 5);
   const Scalar _tmp199 =
       _tmp191 + _tmp192 + _tmp193 + _tmp194 + _tmp195 + _tmp196 + _tmp197 + _tmp198;
-  const Scalar _tmp200 = sqrt_info(4, 2) * sqrt_info(4, 6);
-  const Scalar _tmp201 = sqrt_info(5, 2) * sqrt_info(5, 6);
-  const Scalar _tmp202 = sqrt_info(0, 2) * sqrt_info(0, 6);
-  const Scalar _tmp203 = sqrt_info(2, 2) * sqrt_info(2, 6);
-  const Scalar _tmp204 = sqrt_info(1, 2) * sqrt_info(1, 6);
-  const Scalar _tmp205 = sqrt_info(7, 2) * sqrt_info(7, 6);
-  const Scalar _tmp206 = sqrt_info(6, 2) * sqrt_info(6, 6);
-  const Scalar _tmp207 = sqrt_info(3, 2) * sqrt_info(3, 6);
+  const Scalar _tmp200 = sqrt_info(3, 2) * sqrt_info(3, 6);
+  const Scalar _tmp201 = sqrt_info(1, 2) * sqrt_info(1, 6);
+  const Scalar _tmp202 = sqrt_info(2, 2) * sqrt_info(2, 6);
+  const Scalar _tmp203 = sqrt_info(0, 2) * sqrt_info(0, 6);
+  const Scalar _tmp204 = sqrt_info(7, 2) * sqrt_info(7, 6);
+  const Scalar _tmp205 = sqrt_info(6, 2) * sqrt_info(6, 6);
+  const Scalar _tmp206 = sqrt_info(4, 2) * sqrt_info(4, 6);
+  const Scalar _tmp207 = sqrt_info(5, 2) * sqrt_info(5, 6);
   const Scalar _tmp208 =
       _tmp200 + _tmp201 + _tmp202 + _tmp203 + _tmp204 + _tmp205 + _tmp206 + _tmp207;
-  const Scalar _tmp209 = sqrt_info(4, 2) * sqrt_info(4, 7);
-  const Scalar _tmp210 = sqrt_info(5, 2) * sqrt_info(5, 7);
-  const Scalar _tmp211 = sqrt_info(0, 2) * sqrt_info(0, 7);
-  const Scalar _tmp212 = sqrt_info(2, 2) * sqrt_info(2, 7);
-  const Scalar _tmp213 = sqrt_info(1, 2) * sqrt_info(1, 7);
-  const Scalar _tmp214 = sqrt_info(7, 2) * sqrt_info(7, 7);
-  const Scalar _tmp215 = sqrt_info(6, 2) * sqrt_info(6, 7);
-  const Scalar _tmp216 = sqrt_info(3, 2) * sqrt_info(3, 7);
+  const Scalar _tmp209 = sqrt_info(3, 2) * sqrt_info(3, 7);
+  const Scalar _tmp210 = sqrt_info(1, 2) * sqrt_info(1, 7);
+  const Scalar _tmp211 = sqrt_info(2, 2) * sqrt_info(2, 7);
+  const Scalar _tmp212 = sqrt_info(0, 2) * sqrt_info(0, 7);
+  const Scalar _tmp213 = sqrt_info(7, 2) * sqrt_info(7, 7);
+  const Scalar _tmp214 = sqrt_info(6, 2) * sqrt_info(6, 7);
+  const Scalar _tmp215 = sqrt_info(4, 2) * sqrt_info(4, 7);
+  const Scalar _tmp216 = sqrt_info(5, 2) * sqrt_info(5, 7);
   const Scalar _tmp217 =
       _tmp209 + _tmp210 + _tmp211 + _tmp212 + _tmp213 + _tmp214 + _tmp215 + _tmp216;
   const Scalar _tmp218 =
@@ -319,54 +319,54 @@ void BetweenFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& a,
       -_tmp200 - _tmp201 - _tmp202 - _tmp203 - _tmp204 - _tmp205 - _tmp206 - _tmp207;
   const Scalar _tmp222 =
       -_tmp209 - _tmp210 - _tmp211 - _tmp212 - _tmp213 - _tmp214 - _tmp215 - _tmp216;
-  const Scalar _tmp223 = std::pow(sqrt_info(6, 3), Scalar(2));
-  const Scalar _tmp224 = std::pow(sqrt_info(0, 3), Scalar(2));
-  const Scalar _tmp225 = std::pow(sqrt_info(2, 3), Scalar(2));
-  const Scalar _tmp226 = std::pow(sqrt_info(7, 3), Scalar(2));
-  const Scalar _tmp227 = std::pow(sqrt_info(5, 3), Scalar(2));
-  const Scalar _tmp228 = std::pow(sqrt_info(4, 3), Scalar(2));
+  const Scalar _tmp223 = std::pow(sqrt_info(0, 3), Scalar(2));
+  const Scalar _tmp224 = std::pow(sqrt_info(2, 3), Scalar(2));
+  const Scalar _tmp225 = std::pow(sqrt_info(3, 3), Scalar(2));
+  const Scalar _tmp226 = std::pow(sqrt_info(4, 3), Scalar(2));
+  const Scalar _tmp227 = std::pow(sqrt_info(6, 3), Scalar(2));
+  const Scalar _tmp228 = std::pow(sqrt_info(7, 3), Scalar(2));
   const Scalar _tmp229 = std::pow(sqrt_info(1, 3), Scalar(2));
-  const Scalar _tmp230 = std::pow(sqrt_info(3, 3), Scalar(2));
+  const Scalar _tmp230 = std::pow(sqrt_info(5, 3), Scalar(2));
   const Scalar _tmp231 =
       _tmp223 + _tmp224 + _tmp225 + _tmp226 + _tmp227 + _tmp228 + _tmp229 + _tmp230;
-  const Scalar _tmp232 = sqrt_info(5, 3) * sqrt_info(5, 4);
-  const Scalar _tmp233 = sqrt_info(4, 3) * sqrt_info(4, 4);
-  const Scalar _tmp234 = sqrt_info(0, 3) * sqrt_info(0, 4);
-  const Scalar _tmp235 = sqrt_info(2, 3) * sqrt_info(2, 4);
-  const Scalar _tmp236 = sqrt_info(1, 3) * sqrt_info(1, 4);
-  const Scalar _tmp237 = sqrt_info(7, 3) * sqrt_info(7, 4);
-  const Scalar _tmp238 = sqrt_info(6, 3) * sqrt_info(6, 4);
-  const Scalar _tmp239 = sqrt_info(3, 3) * sqrt_info(3, 4);
+  const Scalar _tmp232 = sqrt_info(3, 3) * sqrt_info(3, 4);
+  const Scalar _tmp233 = sqrt_info(1, 3) * sqrt_info(1, 4);
+  const Scalar _tmp234 = sqrt_info(2, 3) * sqrt_info(2, 4);
+  const Scalar _tmp235 = sqrt_info(0, 3) * sqrt_info(0, 4);
+  const Scalar _tmp236 = sqrt_info(7, 3) * sqrt_info(7, 4);
+  const Scalar _tmp237 = sqrt_info(6, 3) * sqrt_info(6, 4);
+  const Scalar _tmp238 = sqrt_info(4, 3) * sqrt_info(4, 4);
+  const Scalar _tmp239 = sqrt_info(5, 3) * sqrt_info(5, 4);
   const Scalar _tmp240 =
       _tmp232 + _tmp233 + _tmp234 + _tmp235 + _tmp236 + _tmp237 + _tmp238 + _tmp239;
-  const Scalar _tmp241 = sqrt_info(5, 3) * sqrt_info(5, 5);
-  const Scalar _tmp242 = sqrt_info(4, 3) * sqrt_info(4, 5);
-  const Scalar _tmp243 = sqrt_info(0, 3) * sqrt_info(0, 5);
-  const Scalar _tmp244 = sqrt_info(2, 3) * sqrt_info(2, 5);
-  const Scalar _tmp245 = sqrt_info(1, 3) * sqrt_info(1, 5);
-  const Scalar _tmp246 = sqrt_info(7, 3) * sqrt_info(7, 5);
-  const Scalar _tmp247 = sqrt_info(6, 3) * sqrt_info(6, 5);
-  const Scalar _tmp248 = sqrt_info(3, 3) * sqrt_info(3, 5);
+  const Scalar _tmp241 = sqrt_info(3, 3) * sqrt_info(3, 5);
+  const Scalar _tmp242 = sqrt_info(1, 3) * sqrt_info(1, 5);
+  const Scalar _tmp243 = sqrt_info(2, 3) * sqrt_info(2, 5);
+  const Scalar _tmp244 = sqrt_info(0, 3) * sqrt_info(0, 5);
+  const Scalar _tmp245 = sqrt_info(7, 3) * sqrt_info(7, 5);
+  const Scalar _tmp246 = sqrt_info(6, 3) * sqrt_info(6, 5);
+  const Scalar _tmp247 = sqrt_info(4, 3) * sqrt_info(4, 5);
+  const Scalar _tmp248 = sqrt_info(5, 3) * sqrt_info(5, 5);
   const Scalar _tmp249 =
       _tmp241 + _tmp242 + _tmp243 + _tmp244 + _tmp245 + _tmp246 + _tmp247 + _tmp248;
-  const Scalar _tmp250 = sqrt_info(4, 3) * sqrt_info(4, 6);
-  const Scalar _tmp251 = sqrt_info(5, 3) * sqrt_info(5, 6);
-  const Scalar _tmp252 = sqrt_info(0, 3) * sqrt_info(0, 6);
-  const Scalar _tmp253 = sqrt_info(2, 3) * sqrt_info(2, 6);
-  const Scalar _tmp254 = sqrt_info(1, 3) * sqrt_info(1, 6);
-  const Scalar _tmp255 = sqrt_info(7, 3) * sqrt_info(7, 6);
-  const Scalar _tmp256 = sqrt_info(6, 3) * sqrt_info(6, 6);
-  const Scalar _tmp257 = sqrt_info(3, 3) * sqrt_info(3, 6);
+  const Scalar _tmp250 = sqrt_info(3, 3) * sqrt_info(3, 6);
+  const Scalar _tmp251 = sqrt_info(1, 3) * sqrt_info(1, 6);
+  const Scalar _tmp252 = sqrt_info(2, 3) * sqrt_info(2, 6);
+  const Scalar _tmp253 = sqrt_info(0, 3) * sqrt_info(0, 6);
+  const Scalar _tmp254 = sqrt_info(7, 3) * sqrt_info(7, 6);
+  const Scalar _tmp255 = sqrt_info(6, 3) * sqrt_info(6, 6);
+  const Scalar _tmp256 = sqrt_info(4, 3) * sqrt_info(4, 6);
+  const Scalar _tmp257 = sqrt_info(5, 3) * sqrt_info(5, 6);
   const Scalar _tmp258 =
       _tmp250 + _tmp251 + _tmp252 + _tmp253 + _tmp254 + _tmp255 + _tmp256 + _tmp257;
-  const Scalar _tmp259 = sqrt_info(4, 3) * sqrt_info(4, 7);
-  const Scalar _tmp260 = sqrt_info(5, 3) * sqrt_info(5, 7);
-  const Scalar _tmp261 = sqrt_info(0, 3) * sqrt_info(0, 7);
-  const Scalar _tmp262 = sqrt_info(2, 3) * sqrt_info(2, 7);
-  const Scalar _tmp263 = sqrt_info(1, 3) * sqrt_info(1, 7);
-  const Scalar _tmp264 = sqrt_info(7, 3) * sqrt_info(7, 7);
-  const Scalar _tmp265 = sqrt_info(6, 3) * sqrt_info(6, 7);
-  const Scalar _tmp266 = sqrt_info(3, 3) * sqrt_info(3, 7);
+  const Scalar _tmp259 = sqrt_info(3, 3) * sqrt_info(3, 7);
+  const Scalar _tmp260 = sqrt_info(1, 3) * sqrt_info(1, 7);
+  const Scalar _tmp261 = sqrt_info(2, 3) * sqrt_info(2, 7);
+  const Scalar _tmp262 = sqrt_info(0, 3) * sqrt_info(0, 7);
+  const Scalar _tmp263 = sqrt_info(7, 3) * sqrt_info(7, 7);
+  const Scalar _tmp264 = sqrt_info(6, 3) * sqrt_info(6, 7);
+  const Scalar _tmp265 = sqrt_info(4, 3) * sqrt_info(4, 7);
+  const Scalar _tmp266 = sqrt_info(5, 3) * sqrt_info(5, 7);
   const Scalar _tmp267 =
       _tmp259 + _tmp260 + _tmp261 + _tmp262 + _tmp263 + _tmp264 + _tmp265 + _tmp266;
   const Scalar _tmp268 =
@@ -377,44 +377,44 @@ void BetweenFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& a,
       -_tmp250 - _tmp251 - _tmp252 - _tmp253 - _tmp254 - _tmp255 - _tmp256 - _tmp257;
   const Scalar _tmp271 =
       -_tmp259 - _tmp260 - _tmp261 - _tmp262 - _tmp263 - _tmp264 - _tmp265 - _tmp266;
-  const Scalar _tmp272 = std::pow(sqrt_info(6, 4), Scalar(2));
-  const Scalar _tmp273 = std::pow(sqrt_info(0, 4), Scalar(2));
-  const Scalar _tmp274 = std::pow(sqrt_info(2, 4), Scalar(2));
-  const Scalar _tmp275 = std::pow(sqrt_info(7, 4), Scalar(2));
-  const Scalar _tmp276 = std::pow(sqrt_info(5, 4), Scalar(2));
-  const Scalar _tmp277 = std::pow(sqrt_info(4, 4), Scalar(2));
+  const Scalar _tmp272 = std::pow(sqrt_info(0, 4), Scalar(2));
+  const Scalar _tmp273 = std::pow(sqrt_info(2, 4), Scalar(2));
+  const Scalar _tmp274 = std::pow(sqrt_info(3, 4), Scalar(2));
+  const Scalar _tmp275 = std::pow(sqrt_info(4, 4), Scalar(2));
+  const Scalar _tmp276 = std::pow(sqrt_info(6, 4), Scalar(2));
+  const Scalar _tmp277 = std::pow(sqrt_info(7, 4), Scalar(2));
   const Scalar _tmp278 = std::pow(sqrt_info(1, 4), Scalar(2));
-  const Scalar _tmp279 = std::pow(sqrt_info(3, 4), Scalar(2));
+  const Scalar _tmp279 = std::pow(sqrt_info(5, 4), Scalar(2));
   const Scalar _tmp280 =
       _tmp272 + _tmp273 + _tmp274 + _tmp275 + _tmp276 + _tmp277 + _tmp278 + _tmp279;
-  const Scalar _tmp281 = sqrt_info(5, 4) * sqrt_info(5, 5);
-  const Scalar _tmp282 = sqrt_info(4, 4) * sqrt_info(4, 5);
-  const Scalar _tmp283 = sqrt_info(0, 4) * sqrt_info(0, 5);
-  const Scalar _tmp284 = sqrt_info(2, 4) * sqrt_info(2, 5);
-  const Scalar _tmp285 = sqrt_info(1, 4) * sqrt_info(1, 5);
-  const Scalar _tmp286 = sqrt_info(7, 4) * sqrt_info(7, 5);
-  const Scalar _tmp287 = sqrt_info(6, 4) * sqrt_info(6, 5);
-  const Scalar _tmp288 = sqrt_info(3, 4) * sqrt_info(3, 5);
+  const Scalar _tmp281 = sqrt_info(3, 4) * sqrt_info(3, 5);
+  const Scalar _tmp282 = sqrt_info(1, 4) * sqrt_info(1, 5);
+  const Scalar _tmp283 = sqrt_info(2, 4) * sqrt_info(2, 5);
+  const Scalar _tmp284 = sqrt_info(0, 4) * sqrt_info(0, 5);
+  const Scalar _tmp285 = sqrt_info(7, 4) * sqrt_info(7, 5);
+  const Scalar _tmp286 = sqrt_info(6, 4) * sqrt_info(6, 5);
+  const Scalar _tmp287 = sqrt_info(4, 4) * sqrt_info(4, 5);
+  const Scalar _tmp288 = sqrt_info(5, 4) * sqrt_info(5, 5);
   const Scalar _tmp289 =
       _tmp281 + _tmp282 + _tmp283 + _tmp284 + _tmp285 + _tmp286 + _tmp287 + _tmp288;
-  const Scalar _tmp290 = sqrt_info(4, 4) * sqrt_info(4, 6);
-  const Scalar _tmp291 = sqrt_info(5, 4) * sqrt_info(5, 6);
-  const Scalar _tmp292 = sqrt_info(0, 4) * sqrt_info(0, 6);
-  const Scalar _tmp293 = sqrt_info(2, 4) * sqrt_info(2, 6);
-  const Scalar _tmp294 = sqrt_info(1, 4) * sqrt_info(1, 6);
-  const Scalar _tmp295 = sqrt_info(7, 4) * sqrt_info(7, 6);
-  const Scalar _tmp296 = sqrt_info(6, 4) * sqrt_info(6, 6);
-  const Scalar _tmp297 = sqrt_info(3, 4) * sqrt_info(3, 6);
+  const Scalar _tmp290 = sqrt_info(3, 4) * sqrt_info(3, 6);
+  const Scalar _tmp291 = sqrt_info(1, 4) * sqrt_info(1, 6);
+  const Scalar _tmp292 = sqrt_info(2, 4) * sqrt_info(2, 6);
+  const Scalar _tmp293 = sqrt_info(0, 4) * sqrt_info(0, 6);
+  const Scalar _tmp294 = sqrt_info(7, 4) * sqrt_info(7, 6);
+  const Scalar _tmp295 = sqrt_info(6, 4) * sqrt_info(6, 6);
+  const Scalar _tmp296 = sqrt_info(4, 4) * sqrt_info(4, 6);
+  const Scalar _tmp297 = sqrt_info(5, 4) * sqrt_info(5, 6);
   const Scalar _tmp298 =
       _tmp290 + _tmp291 + _tmp292 + _tmp293 + _tmp294 + _tmp295 + _tmp296 + _tmp297;
-  const Scalar _tmp299 = sqrt_info(4, 4) * sqrt_info(4, 7);
-  const Scalar _tmp300 = sqrt_info(5, 4) * sqrt_info(5, 7);
-  const Scalar _tmp301 = sqrt_info(0, 4) * sqrt_info(0, 7);
-  const Scalar _tmp302 = sqrt_info(2, 4) * sqrt_info(2, 7);
-  const Scalar _tmp303 = sqrt_info(1, 4) * sqrt_info(1, 7);
-  const Scalar _tmp304 = sqrt_info(7, 4) * sqrt_info(7, 7);
-  const Scalar _tmp305 = sqrt_info(6, 4) * sqrt_info(6, 7);
-  const Scalar _tmp306 = sqrt_info(3, 4) * sqrt_info(3, 7);
+  const Scalar _tmp299 = sqrt_info(3, 4) * sqrt_info(3, 7);
+  const Scalar _tmp300 = sqrt_info(1, 4) * sqrt_info(1, 7);
+  const Scalar _tmp301 = sqrt_info(2, 4) * sqrt_info(2, 7);
+  const Scalar _tmp302 = sqrt_info(0, 4) * sqrt_info(0, 7);
+  const Scalar _tmp303 = sqrt_info(7, 4) * sqrt_info(7, 7);
+  const Scalar _tmp304 = sqrt_info(6, 4) * sqrt_info(6, 7);
+  const Scalar _tmp305 = sqrt_info(4, 4) * sqrt_info(4, 7);
+  const Scalar _tmp306 = sqrt_info(5, 4) * sqrt_info(5, 7);
   const Scalar _tmp307 =
       _tmp299 + _tmp300 + _tmp301 + _tmp302 + _tmp303 + _tmp304 + _tmp305 + _tmp306;
   const Scalar _tmp308 =
@@ -423,136 +423,136 @@ void BetweenFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& a,
       -_tmp290 - _tmp291 - _tmp292 - _tmp293 - _tmp294 - _tmp295 - _tmp296 - _tmp297;
   const Scalar _tmp310 =
       -_tmp299 - _tmp300 - _tmp301 - _tmp302 - _tmp303 - _tmp304 - _tmp305 - _tmp306;
-  const Scalar _tmp311 = std::pow(sqrt_info(6, 5), Scalar(2));
-  const Scalar _tmp312 = std::pow(sqrt_info(0, 5), Scalar(2));
-  const Scalar _tmp313 = std::pow(sqrt_info(2, 5), Scalar(2));
-  const Scalar _tmp314 = std::pow(sqrt_info(7, 5), Scalar(2));
-  const Scalar _tmp315 = std::pow(sqrt_info(5, 5), Scalar(2));
-  const Scalar _tmp316 = std::pow(sqrt_info(4, 5), Scalar(2));
+  const Scalar _tmp311 = std::pow(sqrt_info(0, 5), Scalar(2));
+  const Scalar _tmp312 = std::pow(sqrt_info(2, 5), Scalar(2));
+  const Scalar _tmp313 = std::pow(sqrt_info(3, 5), Scalar(2));
+  const Scalar _tmp314 = std::pow(sqrt_info(4, 5), Scalar(2));
+  const Scalar _tmp315 = std::pow(sqrt_info(6, 5), Scalar(2));
+  const Scalar _tmp316 = std::pow(sqrt_info(7, 5), Scalar(2));
   const Scalar _tmp317 = std::pow(sqrt_info(1, 5), Scalar(2));
-  const Scalar _tmp318 = std::pow(sqrt_info(3, 5), Scalar(2));
+  const Scalar _tmp318 = std::pow(sqrt_info(5, 5), Scalar(2));
   const Scalar _tmp319 =
       _tmp311 + _tmp312 + _tmp313 + _tmp314 + _tmp315 + _tmp316 + _tmp317 + _tmp318;
-  const Scalar _tmp320 = sqrt_info(4, 5) * sqrt_info(4, 6);
-  const Scalar _tmp321 = sqrt_info(5, 5) * sqrt_info(5, 6);
-  const Scalar _tmp322 = sqrt_info(0, 5) * sqrt_info(0, 6);
-  const Scalar _tmp323 = sqrt_info(2, 5) * sqrt_info(2, 6);
-  const Scalar _tmp324 = sqrt_info(1, 5) * sqrt_info(1, 6);
-  const Scalar _tmp325 = sqrt_info(7, 5) * sqrt_info(7, 6);
-  const Scalar _tmp326 = sqrt_info(6, 5) * sqrt_info(6, 6);
-  const Scalar _tmp327 = sqrt_info(3, 5) * sqrt_info(3, 6);
+  const Scalar _tmp320 = sqrt_info(3, 5) * sqrt_info(3, 6);
+  const Scalar _tmp321 = sqrt_info(1, 5) * sqrt_info(1, 6);
+  const Scalar _tmp322 = sqrt_info(2, 5) * sqrt_info(2, 6);
+  const Scalar _tmp323 = sqrt_info(0, 5) * sqrt_info(0, 6);
+  const Scalar _tmp324 = sqrt_info(7, 5) * sqrt_info(7, 6);
+  const Scalar _tmp325 = sqrt_info(6, 5) * sqrt_info(6, 6);
+  const Scalar _tmp326 = sqrt_info(4, 5) * sqrt_info(4, 6);
+  const Scalar _tmp327 = sqrt_info(5, 5) * sqrt_info(5, 6);
   const Scalar _tmp328 =
       _tmp320 + _tmp321 + _tmp322 + _tmp323 + _tmp324 + _tmp325 + _tmp326 + _tmp327;
-  const Scalar _tmp329 = sqrt_info(4, 5) * sqrt_info(4, 7);
-  const Scalar _tmp330 = sqrt_info(5, 5) * sqrt_info(5, 7);
-  const Scalar _tmp331 = sqrt_info(0, 5) * sqrt_info(0, 7);
-  const Scalar _tmp332 = sqrt_info(2, 5) * sqrt_info(2, 7);
-  const Scalar _tmp333 = sqrt_info(1, 5) * sqrt_info(1, 7);
-  const Scalar _tmp334 = sqrt_info(7, 5) * sqrt_info(7, 7);
-  const Scalar _tmp335 = sqrt_info(6, 5) * sqrt_info(6, 7);
-  const Scalar _tmp336 = sqrt_info(3, 5) * sqrt_info(3, 7);
+  const Scalar _tmp329 = sqrt_info(3, 5) * sqrt_info(3, 7);
+  const Scalar _tmp330 = sqrt_info(1, 5) * sqrt_info(1, 7);
+  const Scalar _tmp331 = sqrt_info(2, 5) * sqrt_info(2, 7);
+  const Scalar _tmp332 = sqrt_info(0, 5) * sqrt_info(0, 7);
+  const Scalar _tmp333 = sqrt_info(7, 5) * sqrt_info(7, 7);
+  const Scalar _tmp334 = sqrt_info(6, 5) * sqrt_info(6, 7);
+  const Scalar _tmp335 = sqrt_info(4, 5) * sqrt_info(4, 7);
+  const Scalar _tmp336 = sqrt_info(5, 5) * sqrt_info(5, 7);
   const Scalar _tmp337 =
       _tmp329 + _tmp330 + _tmp331 + _tmp332 + _tmp333 + _tmp334 + _tmp335 + _tmp336;
   const Scalar _tmp338 =
       -_tmp320 - _tmp321 - _tmp322 - _tmp323 - _tmp324 - _tmp325 - _tmp326 - _tmp327;
   const Scalar _tmp339 =
       -_tmp329 - _tmp330 - _tmp331 - _tmp332 - _tmp333 - _tmp334 - _tmp335 - _tmp336;
-  const Scalar _tmp340 = std::pow(sqrt_info(6, 6), Scalar(2));
-  const Scalar _tmp341 = std::pow(sqrt_info(0, 6), Scalar(2));
-  const Scalar _tmp342 = std::pow(sqrt_info(2, 6), Scalar(2));
-  const Scalar _tmp343 = std::pow(sqrt_info(7, 6), Scalar(2));
-  const Scalar _tmp344 = std::pow(sqrt_info(5, 6), Scalar(2));
-  const Scalar _tmp345 = std::pow(sqrt_info(4, 6), Scalar(2));
+  const Scalar _tmp340 = std::pow(sqrt_info(0, 6), Scalar(2));
+  const Scalar _tmp341 = std::pow(sqrt_info(2, 6), Scalar(2));
+  const Scalar _tmp342 = std::pow(sqrt_info(3, 6), Scalar(2));
+  const Scalar _tmp343 = std::pow(sqrt_info(4, 6), Scalar(2));
+  const Scalar _tmp344 = std::pow(sqrt_info(6, 6), Scalar(2));
+  const Scalar _tmp345 = std::pow(sqrt_info(7, 6), Scalar(2));
   const Scalar _tmp346 = std::pow(sqrt_info(1, 6), Scalar(2));
-  const Scalar _tmp347 = std::pow(sqrt_info(3, 6), Scalar(2));
+  const Scalar _tmp347 = std::pow(sqrt_info(5, 6), Scalar(2));
   const Scalar _tmp348 =
       _tmp340 + _tmp341 + _tmp342 + _tmp343 + _tmp344 + _tmp345 + _tmp346 + _tmp347;
-  const Scalar _tmp349 = sqrt_info(4, 6) * sqrt_info(4, 7);
-  const Scalar _tmp350 = sqrt_info(5, 6) * sqrt_info(5, 7);
-  const Scalar _tmp351 = sqrt_info(0, 6) * sqrt_info(0, 7);
-  const Scalar _tmp352 = sqrt_info(2, 6) * sqrt_info(2, 7);
-  const Scalar _tmp353 = sqrt_info(1, 6) * sqrt_info(1, 7);
-  const Scalar _tmp354 = sqrt_info(7, 6) * sqrt_info(7, 7);
-  const Scalar _tmp355 = sqrt_info(6, 6) * sqrt_info(6, 7);
-  const Scalar _tmp356 = sqrt_info(3, 6) * sqrt_info(3, 7);
+  const Scalar _tmp349 = sqrt_info(3, 6) * sqrt_info(3, 7);
+  const Scalar _tmp350 = sqrt_info(1, 6) * sqrt_info(1, 7);
+  const Scalar _tmp351 = sqrt_info(2, 6) * sqrt_info(2, 7);
+  const Scalar _tmp352 = sqrt_info(0, 6) * sqrt_info(0, 7);
+  const Scalar _tmp353 = sqrt_info(7, 6) * sqrt_info(7, 7);
+  const Scalar _tmp354 = sqrt_info(6, 6) * sqrt_info(6, 7);
+  const Scalar _tmp355 = sqrt_info(4, 6) * sqrt_info(4, 7);
+  const Scalar _tmp356 = sqrt_info(5, 6) * sqrt_info(5, 7);
   const Scalar _tmp357 =
       _tmp349 + _tmp350 + _tmp351 + _tmp352 + _tmp353 + _tmp354 + _tmp355 + _tmp356;
   const Scalar _tmp358 =
       -_tmp349 - _tmp350 - _tmp351 - _tmp352 - _tmp353 - _tmp354 - _tmp355 - _tmp356;
-  const Scalar _tmp359 = std::pow(sqrt_info(6, 7), Scalar(2));
-  const Scalar _tmp360 = std::pow(sqrt_info(0, 7), Scalar(2));
-  const Scalar _tmp361 = std::pow(sqrt_info(2, 7), Scalar(2));
-  const Scalar _tmp362 = std::pow(sqrt_info(7, 7), Scalar(2));
-  const Scalar _tmp363 = std::pow(sqrt_info(5, 7), Scalar(2));
-  const Scalar _tmp364 = std::pow(sqrt_info(4, 7), Scalar(2));
+  const Scalar _tmp359 = std::pow(sqrt_info(0, 7), Scalar(2));
+  const Scalar _tmp360 = std::pow(sqrt_info(2, 7), Scalar(2));
+  const Scalar _tmp361 = std::pow(sqrt_info(3, 7), Scalar(2));
+  const Scalar _tmp362 = std::pow(sqrt_info(4, 7), Scalar(2));
+  const Scalar _tmp363 = std::pow(sqrt_info(6, 7), Scalar(2));
+  const Scalar _tmp364 = std::pow(sqrt_info(7, 7), Scalar(2));
   const Scalar _tmp365 = std::pow(sqrt_info(1, 7), Scalar(2));
-  const Scalar _tmp366 = std::pow(sqrt_info(3, 7), Scalar(2));
+  const Scalar _tmp366 = std::pow(sqrt_info(5, 7), Scalar(2));
   const Scalar _tmp367 =
       _tmp359 + _tmp360 + _tmp361 + _tmp362 + _tmp363 + _tmp364 + _tmp365 + _tmp366;
-  const Scalar _tmp368 = _tmp9 * sqrt_info(1, 0);
-  const Scalar _tmp369 = _tmp14 * sqrt_info(6, 0);
-  const Scalar _tmp370 = _tmp15 * sqrt_info(7, 0);
+  const Scalar _tmp368 = _tmp11 * sqrt_info(3, 0);
+  const Scalar _tmp369 = _tmp15 * sqrt_info(7, 0);
+  const Scalar _tmp370 = _tmp8 * sqrt_info(0, 0);
   const Scalar _tmp371 = _tmp10 * sqrt_info(2, 0);
-  const Scalar _tmp372 = _tmp12 * sqrt_info(4, 0);
-  const Scalar _tmp373 = _tmp8 * sqrt_info(0, 0);
+  const Scalar _tmp372 = _tmp14 * sqrt_info(6, 0);
+  const Scalar _tmp373 = _tmp9 * sqrt_info(1, 0);
   const Scalar _tmp374 = _tmp13 * sqrt_info(5, 0);
-  const Scalar _tmp375 = _tmp11 * sqrt_info(3, 0);
-  const Scalar _tmp376 = _tmp9 * sqrt_info(1, 1);
-  const Scalar _tmp377 = _tmp14 * sqrt_info(6, 1);
-  const Scalar _tmp378 = _tmp15 * sqrt_info(7, 1);
+  const Scalar _tmp375 = _tmp12 * sqrt_info(4, 0);
+  const Scalar _tmp376 = _tmp11 * sqrt_info(3, 1);
+  const Scalar _tmp377 = _tmp15 * sqrt_info(7, 1);
+  const Scalar _tmp378 = _tmp8 * sqrt_info(0, 1);
   const Scalar _tmp379 = _tmp10 * sqrt_info(2, 1);
-  const Scalar _tmp380 = _tmp12 * sqrt_info(4, 1);
-  const Scalar _tmp381 = _tmp8 * sqrt_info(0, 1);
+  const Scalar _tmp380 = _tmp14 * sqrt_info(6, 1);
+  const Scalar _tmp381 = _tmp9 * sqrt_info(1, 1);
   const Scalar _tmp382 = _tmp13 * sqrt_info(5, 1);
-  const Scalar _tmp383 = _tmp11 * sqrt_info(3, 1);
-  const Scalar _tmp384 = _tmp9 * sqrt_info(1, 2);
-  const Scalar _tmp385 = _tmp14 * sqrt_info(6, 2);
-  const Scalar _tmp386 = _tmp15 * sqrt_info(7, 2);
+  const Scalar _tmp383 = _tmp12 * sqrt_info(4, 1);
+  const Scalar _tmp384 = _tmp11 * sqrt_info(3, 2);
+  const Scalar _tmp385 = _tmp15 * sqrt_info(7, 2);
+  const Scalar _tmp386 = _tmp8 * sqrt_info(0, 2);
   const Scalar _tmp387 = _tmp10 * sqrt_info(2, 2);
-  const Scalar _tmp388 = _tmp12 * sqrt_info(4, 2);
-  const Scalar _tmp389 = _tmp8 * sqrt_info(0, 2);
+  const Scalar _tmp388 = _tmp14 * sqrt_info(6, 2);
+  const Scalar _tmp389 = _tmp9 * sqrt_info(1, 2);
   const Scalar _tmp390 = _tmp13 * sqrt_info(5, 2);
-  const Scalar _tmp391 = _tmp11 * sqrt_info(3, 2);
-  const Scalar _tmp392 = _tmp9 * sqrt_info(1, 3);
-  const Scalar _tmp393 = _tmp14 * sqrt_info(6, 3);
-  const Scalar _tmp394 = _tmp15 * sqrt_info(7, 3);
+  const Scalar _tmp391 = _tmp12 * sqrt_info(4, 2);
+  const Scalar _tmp392 = _tmp11 * sqrt_info(3, 3);
+  const Scalar _tmp393 = _tmp15 * sqrt_info(7, 3);
+  const Scalar _tmp394 = _tmp8 * sqrt_info(0, 3);
   const Scalar _tmp395 = _tmp10 * sqrt_info(2, 3);
-  const Scalar _tmp396 = _tmp12 * sqrt_info(4, 3);
-  const Scalar _tmp397 = _tmp8 * sqrt_info(0, 3);
+  const Scalar _tmp396 = _tmp14 * sqrt_info(6, 3);
+  const Scalar _tmp397 = _tmp9 * sqrt_info(1, 3);
   const Scalar _tmp398 = _tmp13 * sqrt_info(5, 3);
-  const Scalar _tmp399 = _tmp11 * sqrt_info(3, 3);
-  const Scalar _tmp400 = _tmp9 * sqrt_info(1, 4);
-  const Scalar _tmp401 = _tmp14 * sqrt_info(6, 4);
-  const Scalar _tmp402 = _tmp15 * sqrt_info(7, 4);
+  const Scalar _tmp399 = _tmp12 * sqrt_info(4, 3);
+  const Scalar _tmp400 = _tmp11 * sqrt_info(3, 4);
+  const Scalar _tmp401 = _tmp15 * sqrt_info(7, 4);
+  const Scalar _tmp402 = _tmp8 * sqrt_info(0, 4);
   const Scalar _tmp403 = _tmp10 * sqrt_info(2, 4);
-  const Scalar _tmp404 = _tmp12 * sqrt_info(4, 4);
-  const Scalar _tmp405 = _tmp8 * sqrt_info(0, 4);
+  const Scalar _tmp404 = _tmp14 * sqrt_info(6, 4);
+  const Scalar _tmp405 = _tmp9 * sqrt_info(1, 4);
   const Scalar _tmp406 = _tmp13 * sqrt_info(5, 4);
-  const Scalar _tmp407 = _tmp11 * sqrt_info(3, 4);
-  const Scalar _tmp408 = _tmp9 * sqrt_info(1, 5);
-  const Scalar _tmp409 = _tmp14 * sqrt_info(6, 5);
-  const Scalar _tmp410 = _tmp15 * sqrt_info(7, 5);
+  const Scalar _tmp407 = _tmp12 * sqrt_info(4, 4);
+  const Scalar _tmp408 = _tmp11 * sqrt_info(3, 5);
+  const Scalar _tmp409 = _tmp15 * sqrt_info(7, 5);
+  const Scalar _tmp410 = _tmp8 * sqrt_info(0, 5);
   const Scalar _tmp411 = _tmp10 * sqrt_info(2, 5);
-  const Scalar _tmp412 = _tmp12 * sqrt_info(4, 5);
-  const Scalar _tmp413 = _tmp8 * sqrt_info(0, 5);
+  const Scalar _tmp412 = _tmp14 * sqrt_info(6, 5);
+  const Scalar _tmp413 = _tmp9 * sqrt_info(1, 5);
   const Scalar _tmp414 = _tmp13 * sqrt_info(5, 5);
-  const Scalar _tmp415 = _tmp11 * sqrt_info(3, 5);
-  const Scalar _tmp416 = _tmp9 * sqrt_info(1, 6);
-  const Scalar _tmp417 = _tmp14 * sqrt_info(6, 6);
-  const Scalar _tmp418 = _tmp15 * sqrt_info(7, 6);
+  const Scalar _tmp415 = _tmp12 * sqrt_info(4, 5);
+  const Scalar _tmp416 = _tmp11 * sqrt_info(3, 6);
+  const Scalar _tmp417 = _tmp15 * sqrt_info(7, 6);
+  const Scalar _tmp418 = _tmp8 * sqrt_info(0, 6);
   const Scalar _tmp419 = _tmp10 * sqrt_info(2, 6);
-  const Scalar _tmp420 = _tmp12 * sqrt_info(4, 6);
-  const Scalar _tmp421 = _tmp8 * sqrt_info(0, 6);
+  const Scalar _tmp420 = _tmp14 * sqrt_info(6, 6);
+  const Scalar _tmp421 = _tmp9 * sqrt_info(1, 6);
   const Scalar _tmp422 = _tmp13 * sqrt_info(5, 6);
-  const Scalar _tmp423 = _tmp11 * sqrt_info(3, 6);
-  const Scalar _tmp424 = _tmp9 * sqrt_info(1, 7);
-  const Scalar _tmp425 = _tmp14 * sqrt_info(6, 7);
-  const Scalar _tmp426 = _tmp15 * sqrt_info(7, 7);
+  const Scalar _tmp423 = _tmp12 * sqrt_info(4, 6);
+  const Scalar _tmp424 = _tmp11 * sqrt_info(3, 7);
+  const Scalar _tmp425 = _tmp15 * sqrt_info(7, 7);
+  const Scalar _tmp426 = _tmp8 * sqrt_info(0, 7);
   const Scalar _tmp427 = _tmp10 * sqrt_info(2, 7);
-  const Scalar _tmp428 = _tmp12 * sqrt_info(4, 7);
-  const Scalar _tmp429 = _tmp8 * sqrt_info(0, 7);
+  const Scalar _tmp428 = _tmp14 * sqrt_info(6, 7);
+  const Scalar _tmp429 = _tmp9 * sqrt_info(1, 7);
   const Scalar _tmp430 = _tmp13 * sqrt_info(5, 7);
-  const Scalar _tmp431 = _tmp11 * sqrt_info(3, 7);
+  const Scalar _tmp431 = _tmp12 * sqrt_info(4, 7);
 
   // Output terms (4)
   if (res != nullptr) {

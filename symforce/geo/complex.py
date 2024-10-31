@@ -8,6 +8,7 @@ from __future__ import annotations
 import numpy as np
 
 import symforce.internal.symbolic as sf
+from symforce import ops
 from symforce import typing as T
 from symforce.ops.interfaces import Group
 
@@ -60,7 +61,14 @@ class Complex(Group):
 
     @classmethod
     def symbolic(cls, name: str, **kwargs: T.Any) -> Complex:
-        return cls.from_storage([sf.Symbol(f"{name}_{v}", **kwargs) for v in ["re", "im"]])
+        if ops.StorageOps.use_latex_friendly_symbols():
+            format_string = "{name}_{{{v}}}"
+        else:
+            format_string = "{name}_{v}"
+
+        return cls.from_storage(
+            [sf.Symbol(format_string.format(name=name, v=v), **kwargs) for v in ["re", "im"]]
+        )
 
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops

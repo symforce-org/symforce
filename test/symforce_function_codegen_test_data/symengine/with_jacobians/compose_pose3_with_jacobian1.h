@@ -23,7 +23,7 @@ template <typename Scalar>
 sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
                                              const sym::Pose3<Scalar>& b,
                                              Eigen::Matrix<Scalar, 6, 6>* const res_D_b = nullptr) {
-  // Total ops: 169
+  // Total ops: 173
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
@@ -50,26 +50,26 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
   const Scalar _tmp17 = _a[0] * _b[0];
   const Scalar _tmp18 = _a[3] * _b[3];
   const Scalar _tmp19 = -_tmp15 - _tmp16 - _tmp17 + _tmp18;
-  const Scalar _tmp20 = -2 * std::pow(_a[2], Scalar(2));
-  const Scalar _tmp21 = -2 * std::pow(_a[1], Scalar(2));
-  const Scalar _tmp22 = _tmp20 + _tmp21 + 1;
-  const Scalar _tmp23 = 2 * _a[0];
-  const Scalar _tmp24 = _a[2] * _tmp23;
-  const Scalar _tmp25 = 2 * _a[3];
-  const Scalar _tmp26 = _a[1] * _tmp25;
-  const Scalar _tmp27 = _tmp24 + _tmp26;
-  const Scalar _tmp28 = _a[1] * _tmp23;
-  const Scalar _tmp29 = _a[2] * _tmp25;
-  const Scalar _tmp30 = _tmp28 - _tmp29;
-  const Scalar _tmp31 = 1 - 2 * std::pow(_a[0], Scalar(2));
-  const Scalar _tmp32 = _tmp20 + _tmp31;
-  const Scalar _tmp33 = 2 * _a[1] * _a[2];
-  const Scalar _tmp34 = _a[3] * _tmp23;
-  const Scalar _tmp35 = _tmp33 - _tmp34;
-  const Scalar _tmp36 = _tmp28 + _tmp29;
-  const Scalar _tmp37 = _tmp21 + _tmp31;
-  const Scalar _tmp38 = _tmp33 + _tmp34;
-  const Scalar _tmp39 = _tmp24 - _tmp26;
+  const Scalar _tmp20 = 2 * _a[0];
+  const Scalar _tmp21 = _a[2] * _tmp20;
+  const Scalar _tmp22 = 2 * _a[3];
+  const Scalar _tmp23 = _a[1] * _tmp22;
+  const Scalar _tmp24 = _tmp21 + _tmp23;
+  const Scalar _tmp25 = _a[1] * _tmp20;
+  const Scalar _tmp26 = _a[2] * _tmp22;
+  const Scalar _tmp27 = _tmp25 - _tmp26;
+  const Scalar _tmp28 = -2 * std::pow(_a[2], Scalar(2));
+  const Scalar _tmp29 = -2 * std::pow(_a[1], Scalar(2));
+  const Scalar _tmp30 = _tmp28 + _tmp29 + 1;
+  const Scalar _tmp31 = _tmp25 + _tmp26;
+  const Scalar _tmp32 = 2 * _a[1] * _a[2];
+  const Scalar _tmp33 = _a[0] * _tmp22;
+  const Scalar _tmp34 = _tmp32 - _tmp33;
+  const Scalar _tmp35 = 1 - 2 * std::pow(_a[0], Scalar(2));
+  const Scalar _tmp36 = _tmp28 + _tmp35;
+  const Scalar _tmp37 = _tmp21 - _tmp23;
+  const Scalar _tmp38 = _tmp32 + _tmp33;
+  const Scalar _tmp39 = _tmp29 + _tmp35;
   const Scalar _tmp40 = (Scalar(1) / Scalar(2)) * _tmp10;
   const Scalar _tmp41 = (Scalar(1) / Scalar(2)) * _tmp11;
   const Scalar _tmp42 = (Scalar(1) / Scalar(2)) * _tmp12;
@@ -99,12 +99,12 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
   const Scalar _tmp65 = _tmp45 * _tmp57;
   const Scalar _tmp66 = _tmp51 * _tmp59;
   const Scalar _tmp67 = -_tmp53 + _tmp54 + _tmp55 + _tmp56;
-  const Scalar _tmp68 = -_tmp40 - _tmp41 - _tmp42 + _tmp43;
-  const Scalar _tmp69 = 2 * _tmp68;
-  const Scalar _tmp70 = -_tmp14 * _tmp69;
-  const Scalar _tmp71 = _tmp69 * _tmp9;
+  const Scalar _tmp68 = 2 * _tmp67;
+  const Scalar _tmp69 = -_tmp40 - _tmp41 - _tmp42 + _tmp43;
+  const Scalar _tmp70 = -_tmp45 * _tmp69;
+  const Scalar _tmp71 = _tmp51 * _tmp69;
   const Scalar _tmp72 = _tmp58 * _tmp59;
-  const Scalar _tmp73 = _tmp46 + _tmp47 - _tmp48 + _tmp49;
+  const Scalar _tmp73 = 2 * _tmp46 + 2 * _tmp47 - 2 * _tmp48 + 2 * _tmp49;
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 7, 1> _res;
@@ -113,9 +113,9 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
   _res[1] = _tmp9;
   _res[2] = _tmp14;
   _res[3] = _tmp19;
-  _res[4] = _a[4] + _b[4] * _tmp22 + _b[5] * _tmp30 + _b[6] * _tmp27;
-  _res[5] = _a[5] + _b[4] * _tmp36 + _b[5] * _tmp32 + _b[6] * _tmp35;
-  _res[6] = _a[6] + _b[4] * _tmp39 + _b[5] * _tmp38 + _b[6] * _tmp37;
+  _res[4] = _a[4] + _b[4] * _tmp30 + _b[5] * _tmp27 + _b[6] * _tmp24;
+  _res[5] = _a[5] + _b[4] * _tmp31 + _b[5] * _tmp36 + _b[6] * _tmp34;
+  _res[6] = _a[6] + _b[4] * _tmp37 + _b[5] * _tmp38 + _b[6] * _tmp39;
 
   if (res_D_b != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _res_D_b = (*res_D_b);
@@ -126,36 +126,36 @@ sym::Pose3<Scalar> ComposePose3WithJacobian1(const sym::Pose3<Scalar>& a,
     _res_D_b(3, 0) = 0;
     _res_D_b(4, 0) = 0;
     _res_D_b(5, 0) = 0;
-    _res_D_b(0, 1) = -_tmp51 * _tmp67 + _tmp60 * _tmp68 + _tmp63 - _tmp64;
-    _res_D_b(1, 1) = _tmp52 + _tmp58 * _tmp67 + _tmp61 + _tmp70;
+    _res_D_b(0, 1) = _tmp60 * _tmp69 + _tmp63 - _tmp64 - _tmp68 * _tmp9;
+    _res_D_b(1, 1) = _tmp4 * _tmp68 + _tmp52 + _tmp61 + _tmp70;
     _res_D_b(2, 1) = -_tmp45 * _tmp50 + _tmp60 * _tmp67 + _tmp71 - _tmp72;
     _res_D_b(3, 1) = 0;
     _res_D_b(4, 1) = 0;
     _res_D_b(5, 1) = 0;
-    _res_D_b(0, 2) = -_tmp4 * _tmp69 + _tmp60 * _tmp73 + _tmp65 - _tmp66;
-    _res_D_b(1, 2) = -_tmp45 * _tmp73 + _tmp57 * _tmp60 - _tmp71 + _tmp72;
-    _res_D_b(2, 2) = _tmp51 * _tmp73 + _tmp62 + _tmp70;
+    _res_D_b(0, 2) = _tmp19 * _tmp73 - _tmp58 * _tmp69 + _tmp65 - _tmp66;
+    _res_D_b(1, 2) = -_tmp14 * _tmp73 + _tmp57 * _tmp60 - _tmp71 + _tmp72;
+    _res_D_b(2, 2) = _tmp62 + _tmp70 + _tmp73 * _tmp9;
     _res_D_b(3, 2) = 0;
     _res_D_b(4, 2) = 0;
     _res_D_b(5, 2) = 0;
     _res_D_b(0, 3) = 0;
     _res_D_b(1, 3) = 0;
     _res_D_b(2, 3) = 0;
-    _res_D_b(3, 3) = _tmp22;
-    _res_D_b(4, 3) = _tmp36;
-    _res_D_b(5, 3) = _tmp39;
+    _res_D_b(3, 3) = _tmp30;
+    _res_D_b(4, 3) = _tmp31;
+    _res_D_b(5, 3) = _tmp37;
     _res_D_b(0, 4) = 0;
     _res_D_b(1, 4) = 0;
     _res_D_b(2, 4) = 0;
-    _res_D_b(3, 4) = _tmp30;
-    _res_D_b(4, 4) = _tmp32;
+    _res_D_b(3, 4) = _tmp27;
+    _res_D_b(4, 4) = _tmp36;
     _res_D_b(5, 4) = _tmp38;
     _res_D_b(0, 5) = 0;
     _res_D_b(1, 5) = 0;
     _res_D_b(2, 5) = 0;
-    _res_D_b(3, 5) = _tmp27;
-    _res_D_b(4, 5) = _tmp35;
-    _res_D_b(5, 5) = _tmp37;
+    _res_D_b(3, 5) = _tmp24;
+    _res_D_b(4, 5) = _tmp34;
+    _res_D_b(5, 5) = _tmp39;
   }
 
   return sym::Pose3<Scalar>(_res);

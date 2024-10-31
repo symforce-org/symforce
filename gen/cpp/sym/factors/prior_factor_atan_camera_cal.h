@@ -47,21 +47,21 @@ void PriorFactorAtanCameraCal(const sym::ATANCameraCal<Scalar>& value,
   const Eigen::Matrix<Scalar, 5, 1>& _prior = prior.Data();
 
   // Intermediate terms (10)
-  const Scalar _tmp0 = -_prior[3] + _value[3];
+  const Scalar _tmp0 = -_prior[4] + _value[4];
   const Scalar _tmp1 = -_prior[2] + _value[2];
-  const Scalar _tmp2 = -_prior[0] + _value[0];
-  const Scalar _tmp3 = -_prior[1] + _value[1];
-  const Scalar _tmp4 = -_prior[4] + _value[4];
-  const Scalar _tmp5 = _tmp0 * sqrt_info(0, 3) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0) +
-                       _tmp3 * sqrt_info(0, 1) + _tmp4 * sqrt_info(0, 4);
-  const Scalar _tmp6 = _tmp0 * sqrt_info(1, 3) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0) +
-                       _tmp3 * sqrt_info(1, 1) + _tmp4 * sqrt_info(1, 4);
-  const Scalar _tmp7 = _tmp0 * sqrt_info(2, 3) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 0) +
-                       _tmp3 * sqrt_info(2, 1) + _tmp4 * sqrt_info(2, 4);
-  const Scalar _tmp8 = _tmp0 * sqrt_info(3, 3) + _tmp1 * sqrt_info(3, 2) + _tmp2 * sqrt_info(3, 0) +
-                       _tmp3 * sqrt_info(3, 1) + _tmp4 * sqrt_info(3, 4);
-  const Scalar _tmp9 = _tmp0 * sqrt_info(4, 3) + _tmp1 * sqrt_info(4, 2) + _tmp2 * sqrt_info(4, 0) +
-                       _tmp3 * sqrt_info(4, 1) + _tmp4 * sqrt_info(4, 4);
+  const Scalar _tmp2 = -_prior[3] + _value[3];
+  const Scalar _tmp3 = -_prior[0] + _value[0];
+  const Scalar _tmp4 = -_prior[1] + _value[1];
+  const Scalar _tmp5 = _tmp0 * sqrt_info(0, 4) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 3) +
+                       _tmp3 * sqrt_info(0, 0) + _tmp4 * sqrt_info(0, 1);
+  const Scalar _tmp6 = _tmp0 * sqrt_info(1, 4) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 3) +
+                       _tmp3 * sqrt_info(1, 0) + _tmp4 * sqrt_info(1, 1);
+  const Scalar _tmp7 = _tmp0 * sqrt_info(2, 4) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 3) +
+                       _tmp3 * sqrt_info(2, 0) + _tmp4 * sqrt_info(2, 1);
+  const Scalar _tmp8 = _tmp0 * sqrt_info(3, 4) + _tmp1 * sqrt_info(3, 2) + _tmp2 * sqrt_info(3, 3) +
+                       _tmp3 * sqrt_info(3, 0) + _tmp4 * sqrt_info(3, 1);
+  const Scalar _tmp9 = _tmp0 * sqrt_info(4, 4) + _tmp1 * sqrt_info(4, 2) + _tmp2 * sqrt_info(4, 3) +
+                       _tmp3 * sqrt_info(4, 0) + _tmp4 * sqrt_info(4, 1);
 
   // Output terms (4)
   if (res != nullptr) {

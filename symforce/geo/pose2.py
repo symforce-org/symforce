@@ -97,6 +97,10 @@ class Pose2(LieGroup):
             t=Vector2(*vec[Rot2.storage_dim() : Rot2.storage_dim() + 2]),
         )
 
+    @classmethod
+    def symbolic(cls: T.Type[Pose2T], name: str, **kwargs: T.Any) -> Pose2T:
+        return cls(R=Rot2.symbolic(f"{name}.R"), t=Vector2.symbolic(f"{name}.t"))
+
     # -------------------------------------------------------------------------
     # Group concept - see symforce.ops.group_ops
     # -------------------------------------------------------------------------

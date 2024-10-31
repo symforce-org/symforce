@@ -90,27 +90,27 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
     const Eigen::Matrix<Scalar, 3, 1>& point, const Scalar epsilon, Scalar* const is_valid,
     Eigen::Matrix<Scalar, 2, 7>* const pixel_D_cal,
     Eigen::Matrix<Scalar, 2, 3>* const pixel_D_point) const {
-  // Total ops: 103
+  // Total ops: 101
 
   // Input arrays
   const Eigen::Matrix<Scalar, 8, 1>& _self = Data();
 
   // Intermediate terms (35)
-  const Scalar _tmp0 = std::pow(point(1, 0), Scalar(2));
+  const Scalar _tmp0 = std::pow(point(0, 0), Scalar(2));
   const Scalar _tmp1 = std::max<Scalar>(epsilon, point(2, 0));
   const Scalar _tmp2 = std::pow(_tmp1, Scalar(-2));
   const Scalar _tmp3 = _tmp0 * _tmp2;
-  const Scalar _tmp4 = std::pow(point(0, 0), Scalar(2));
+  const Scalar _tmp4 = std::pow(point(1, 0), Scalar(2));
   const Scalar _tmp5 = _tmp2 * _tmp4;
   const Scalar _tmp6 = _tmp3 + _tmp5 + epsilon;
-  const Scalar _tmp7 = Scalar(1.0) * [&]() {
+  const Scalar _tmp7 = std::pow(_tmp6, Scalar(2));
+  const Scalar _tmp8 = Scalar(1.0) * _tmp7;
+  const Scalar _tmp9 = Scalar(1.0) * [&]() {
     const Scalar base = _tmp6;
     return base * base * base;
   }();
-  const Scalar _tmp8 = std::pow(_tmp6, Scalar(2));
-  const Scalar _tmp9 = Scalar(1.0) * _tmp8;
   const Scalar _tmp10 = Scalar(1.0) * _self[5];
-  const Scalar _tmp11 = _self[6] * _tmp9 + _self[7] * _tmp7 + _tmp10 * _tmp6 + Scalar(1.0);
+  const Scalar _tmp11 = _self[6] * _tmp8 + _self[7] * _tmp9 + _tmp10 * _tmp6 + Scalar(1.0);
   const Scalar _tmp12 = Scalar(1.0) / (_tmp1);
   const Scalar _tmp13 = _tmp11 * _tmp12;
   const Scalar _tmp14 = _self[0] * _tmp13;
@@ -119,17 +119,17 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
   const Scalar _tmp17 =
       _tmp12 * (Scalar(1.0) * _tmp3 + Scalar(1.0) * _tmp5 + Scalar(1.0) * epsilon);
   const Scalar _tmp18 = _self[1] * point(1, 0);
-  const Scalar _tmp19 = _tmp12 * _tmp9;
-  const Scalar _tmp20 = _tmp12 * _tmp7;
+  const Scalar _tmp19 = _tmp12 * _tmp16;
+  const Scalar _tmp20 = _tmp12 * _tmp18;
   const Scalar _tmp21 = _tmp2 * point(0, 0);
-  const Scalar _tmp22 = Scalar(2.0) * _self[5];
-  const Scalar _tmp23 = _self[7] * _tmp8;
-  const Scalar _tmp24 = Scalar(6.0) * _tmp23;
-  const Scalar _tmp25 = _self[6] * _tmp6;
-  const Scalar _tmp26 = Scalar(4.0) * _tmp25;
-  const Scalar _tmp27 = _tmp12 * (_tmp21 * _tmp22 + _tmp21 * _tmp24 + _tmp21 * _tmp26);
+  const Scalar _tmp22 = _self[7] * _tmp7;
+  const Scalar _tmp23 = Scalar(6.0) * _tmp22;
+  const Scalar _tmp24 = _self[6] * _tmp6;
+  const Scalar _tmp25 = Scalar(4.0) * _tmp24;
+  const Scalar _tmp26 = Scalar(2.0) * _self[5];
+  const Scalar _tmp27 = _tmp21 * _tmp23 + _tmp21 * _tmp25 + _tmp21 * _tmp26;
   const Scalar _tmp28 = _tmp2 * point(1, 0);
-  const Scalar _tmp29 = _tmp12 * (_tmp22 * _tmp28 + _tmp24 * _tmp28 + _tmp26 * _tmp28);
+  const Scalar _tmp29 = _tmp23 * _tmp28 + _tmp25 * _tmp28 + _tmp26 * _tmp28;
   const Scalar _tmp30 = (((-epsilon + point(2, 0)) > 0) - ((-epsilon + point(2, 0)) < 0)) + 1;
   const Scalar _tmp31 = (Scalar(1) / Scalar(2)) * _tmp11 * _tmp30;
   const Scalar _tmp32 = _tmp30 / [&]() {
@@ -138,7 +138,7 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
   }();
   const Scalar _tmp33 = -_tmp0 * _tmp32 - _tmp32 * _tmp4;
   const Scalar _tmp34 =
-      _tmp12 * (_tmp10 * _tmp33 + Scalar(3.0) * _tmp23 * _tmp33 + Scalar(2.0) * _tmp25 * _tmp33);
+      _tmp12 * (_tmp10 * _tmp33 + Scalar(3.0) * _tmp22 * _tmp33 + Scalar(2.0) * _tmp24 * _tmp33);
 
   // Output terms (4)
   Eigen::Matrix<Scalar, 2, 1> _pixel;
@@ -167,21 +167,21 @@ Eigen::Matrix<Scalar, 2, 1> PolynomialCameraCal<Scalar>::PixelFromCameraPointWit
     _pixel_D_cal(1, 3) = 1;
     _pixel_D_cal(0, 4) = _tmp16 * _tmp17;
     _pixel_D_cal(1, 4) = _tmp17 * _tmp18;
-    _pixel_D_cal(0, 5) = _tmp16 * _tmp19;
-    _pixel_D_cal(1, 5) = _tmp18 * _tmp19;
-    _pixel_D_cal(0, 6) = _tmp16 * _tmp20;
-    _pixel_D_cal(1, 6) = _tmp18 * _tmp20;
+    _pixel_D_cal(0, 5) = _tmp19 * _tmp8;
+    _pixel_D_cal(1, 5) = _tmp20 * _tmp8;
+    _pixel_D_cal(0, 6) = _tmp19 * _tmp9;
+    _pixel_D_cal(1, 6) = _tmp20 * _tmp9;
   }
 
   if (pixel_D_point != nullptr) {
     Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
 
-    _pixel_D_point(0, 0) = _tmp14 + _tmp16 * _tmp27;
-    _pixel_D_point(1, 0) = _tmp18 * _tmp27;
-    _pixel_D_point(0, 1) = _tmp16 * _tmp29;
-    _pixel_D_point(1, 1) = _tmp15 + _tmp18 * _tmp29;
+    _pixel_D_point(0, 0) = _tmp14 + _tmp19 * _tmp27;
+    _pixel_D_point(1, 0) = _tmp20 * _tmp27;
+    _pixel_D_point(0, 1) = _tmp19 * _tmp29;
+    _pixel_D_point(1, 1) = _tmp15 + _tmp20 * _tmp29;
     _pixel_D_point(0, 2) = -_self[0] * _tmp21 * _tmp31 + _tmp16 * _tmp34;
-    _pixel_D_point(1, 2) = -_self[1] * _tmp28 * _tmp31 + _tmp18 * _tmp34;
+    _pixel_D_point(1, 2) = -_tmp18 * _tmp2 * _tmp31 + _tmp18 * _tmp34;
   }
 
   return _pixel;

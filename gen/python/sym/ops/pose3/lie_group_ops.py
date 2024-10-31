@@ -81,7 +81,7 @@ class LieGroupOps(object):
     def retract(a, vec, epsilon):
         # type: (sym.Pose3, numpy.ndarray, float) -> sym.Pose3
 
-        # Total ops: 47
+        # Total ops: 48
 
         # Input arrays
         _a = a.data
@@ -94,22 +94,23 @@ class LieGroupOps(object):
                 )
             )
 
-        # Intermediate terms (8)
+        # Intermediate terms (9)
         _tmp0 = math.sqrt(epsilon**2 + vec[0, 0] ** 2 + vec[1, 0] ** 2 + vec[2, 0] ** 2)
         _tmp1 = (1.0 / 2.0) * _tmp0
-        _tmp2 = math.sin(_tmp1) / _tmp0
-        _tmp3 = _tmp2 * vec[1, 0]
-        _tmp4 = _tmp2 * vec[2, 0]
-        _tmp5 = _tmp2 * vec[0, 0]
-        _tmp6 = math.cos(_tmp1)
-        _tmp7 = _a[0] * _tmp2
+        _tmp2 = math.cos(_tmp1)
+        _tmp3 = math.sin(_tmp1) / _tmp0
+        _tmp4 = _a[3] * _tmp3
+        _tmp5 = _a[2] * _tmp3
+        _tmp6 = _tmp3 * vec[2, 0]
+        _tmp7 = _a[0] * _tmp3
+        _tmp8 = _a[1] * _tmp3
 
         # Output terms
         _res = [0.0] * 7
-        _res[0] = _a[0] * _tmp6 + _a[1] * _tmp4 - _a[2] * _tmp3 + _a[3] * _tmp5
-        _res[1] = _a[1] * _tmp6 + _a[2] * _tmp5 + _a[3] * _tmp3 - _tmp7 * vec[2, 0]
-        _res[2] = -_a[1] * _tmp5 + _a[2] * _tmp6 + _a[3] * _tmp4 + _tmp7 * vec[1, 0]
-        _res[3] = -_a[1] * _tmp3 - _a[2] * _tmp4 + _a[3] * _tmp6 - _tmp7 * vec[0, 0]
+        _res[0] = _a[0] * _tmp2 + _a[1] * _tmp6 + _tmp4 * vec[0, 0] - _tmp5 * vec[1, 0]
+        _res[1] = _a[1] * _tmp2 + _tmp4 * vec[1, 0] + _tmp5 * vec[0, 0] - _tmp7 * vec[2, 0]
+        _res[2] = _a[2] * _tmp2 + _a[3] * _tmp6 + _tmp7 * vec[1, 0] - _tmp8 * vec[0, 0]
+        _res[3] = -_a[2] * _tmp6 + _a[3] * _tmp2 - _tmp7 * vec[0, 0] - _tmp8 * vec[1, 0]
         _res[4] = _a[4] + vec[3, 0]
         _res[5] = _a[5] + vec[4, 0]
         _res[6] = _a[6] + vec[5, 0]

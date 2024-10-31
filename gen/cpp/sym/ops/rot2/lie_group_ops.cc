@@ -62,14 +62,14 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
 
   // Intermediate terms (2)
-  const Scalar _tmp0 = std::sin(vec(0, 0));
-  const Scalar _tmp1 = std::cos(vec(0, 0));
+  const Scalar _tmp0 = std::cos(vec(0, 0));
+  const Scalar _tmp1 = std::sin(vec(0, 0));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;
 
-  _res[0] = _a[0] * _tmp1 - _a[1] * _tmp0;
-  _res[1] = _a[0] * _tmp0 + _a[1] * _tmp1;
+  _res[0] = _a[0] * _tmp0 - _a[1] * _tmp1;
+  _res[1] = _a[0] * _tmp1 + _a[1] * _tmp0;
 
   return sym::Rot2<Scalar>(_res);
 }

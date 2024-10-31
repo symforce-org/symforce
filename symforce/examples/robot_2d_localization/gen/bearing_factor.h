@@ -56,7 +56,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
   const Scalar _tmp20 = -_pose[0] * _tmp11 + _pose[1] * _tmp13;
   const Scalar _tmp21 = _tmp16 * _tmp20;
   const Scalar _tmp22 = std::pow(_tmp8, Scalar(4)) / std::pow(_tmp15, Scalar(2));
-  const Scalar _tmp23 = _tmp18 * _tmp22;
+  const Scalar _tmp23 = _tmp20 * _tmp22;
 
   // Output terms (4)
   if (res != nullptr) {
@@ -77,11 +77,11 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
     Eigen::Matrix<Scalar, 3, 3>& _hessian = (*hessian);
 
     _hessian(0, 0) = std::pow(_tmp14, Scalar(2)) * _tmp22;
-    _hessian(1, 0) = _tmp14 * _tmp23;
-    _hessian(2, 0) = _tmp14 * _tmp20 * _tmp22;
+    _hessian(1, 0) = _tmp14 * _tmp18 * _tmp22;
+    _hessian(2, 0) = _tmp14 * _tmp23;
     _hessian(0, 1) = 0;
     _hessian(1, 1) = std::pow(_tmp18, Scalar(2)) * _tmp22;
-    _hessian(2, 1) = _tmp20 * _tmp23;
+    _hessian(2, 1) = _tmp18 * _tmp23;
     _hessian(0, 2) = 0;
     _hessian(1, 2) = 0;
     _hessian(2, 2) = std::pow(_tmp20, Scalar(2)) * _tmp22;

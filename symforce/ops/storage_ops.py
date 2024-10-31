@@ -85,3 +85,21 @@ class StorageOps(Ops):
         return StorageOps.from_storage(
             a, list(sf.simplify(sf.sympy.Matrix(StorageOps.to_storage(a))))
         )
+
+    _use_latex_friendly_symbols = False
+
+    @classmethod
+    def use_latex_friendly_symbols(cls) -> bool:
+        """
+        Should `StorageOps.symbolic` produce symbols names that are LaTeX-friendly, as opposed to
+        plaintext friendly?
+        """
+        return cls._use_latex_friendly_symbols
+
+    @classmethod
+    def set_use_latex_friendly_symbols(cls, value: bool) -> None:
+        """
+        Should `StorageOps.symbolic` produce symbols names that are LaTeX-friendly, as opposed to
+        plaintext friendly?
+        """
+        cls._use_latex_friendly_symbols = value

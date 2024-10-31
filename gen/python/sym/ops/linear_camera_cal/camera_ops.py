@@ -120,8 +120,8 @@ class CameraOps(object):
         # Intermediate terms (5)
         _tmp0 = max(epsilon, point[2, 0])
         _tmp1 = 1 / _tmp0
-        _tmp2 = _self[0] * _tmp1
-        _tmp3 = _self[1] * _tmp1
+        _tmp2 = _tmp1 * point[0, 0]
+        _tmp3 = _tmp1 * point[1, 0]
         _tmp4 = (
             (1.0 / 2.0)
             * (
@@ -133,23 +133,23 @@ class CameraOps(object):
 
         # Output terms
         _pixel = numpy.zeros(2)
-        _pixel[0] = _self[2] + _tmp2 * point[0, 0]
-        _pixel[1] = _self[3] + _tmp3 * point[1, 0]
+        _pixel[0] = _self[0] * _tmp2 + _self[2]
+        _pixel[1] = _self[1] * _tmp3 + _self[3]
         _is_valid = max(0, (0.0 if point[2, 0] == 0 else math.copysign(1, point[2, 0])))
         _pixel_D_cal = numpy.zeros((2, 4))
-        _pixel_D_cal[0, 0] = _tmp1 * point[0, 0]
+        _pixel_D_cal[0, 0] = _tmp2
         _pixel_D_cal[1, 0] = 0
         _pixel_D_cal[0, 1] = 0
-        _pixel_D_cal[1, 1] = _tmp1 * point[1, 0]
+        _pixel_D_cal[1, 1] = _tmp3
         _pixel_D_cal[0, 2] = 1
         _pixel_D_cal[1, 2] = 0
         _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 3] = 1
         _pixel_D_point = numpy.zeros((2, 3))
-        _pixel_D_point[0, 0] = _tmp2
+        _pixel_D_point[0, 0] = _self[0] * _tmp1
         _pixel_D_point[1, 0] = 0
         _pixel_D_point[0, 1] = 0
-        _pixel_D_point[1, 1] = _tmp3
+        _pixel_D_point[1, 1] = _self[1] * _tmp1
         _pixel_D_point[0, 2] = -_self[0] * _tmp4 * point[0, 0]
         _pixel_D_point[1, 2] = -_self[1] * _tmp4 * point[1, 0]
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point

@@ -47,11 +47,11 @@ void PriorFactorPose3Position(const sym::Pose3<Scalar>& value,
 
   // Intermediate terms (6)
   const Scalar _tmp0 = _value[5] - prior(1, 0);
-  const Scalar _tmp1 = _value[4] - prior(0, 0);
-  const Scalar _tmp2 = _value[6] - prior(2, 0);
-  const Scalar _tmp3 = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 0) + _tmp2 * sqrt_info(0, 2);
-  const Scalar _tmp4 = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 0) + _tmp2 * sqrt_info(1, 2);
-  const Scalar _tmp5 = _tmp0 * sqrt_info(2, 1) + _tmp1 * sqrt_info(2, 0) + _tmp2 * sqrt_info(2, 2);
+  const Scalar _tmp1 = _value[6] - prior(2, 0);
+  const Scalar _tmp2 = _value[4] - prior(0, 0);
+  const Scalar _tmp3 = _tmp0 * sqrt_info(0, 1) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0);
+  const Scalar _tmp4 = _tmp0 * sqrt_info(1, 1) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0);
+  const Scalar _tmp5 = _tmp0 * sqrt_info(2, 1) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 0);
 
   // Output terms (4)
   if (res != nullptr) {

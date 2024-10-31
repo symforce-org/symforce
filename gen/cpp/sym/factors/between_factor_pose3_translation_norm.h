@@ -38,9 +38,9 @@ void BetweenFactorPose3TranslationNorm(const sym::Pose3<Scalar>& a, const sym::P
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
   // Intermediate terms (30)
-  const Scalar _tmp0 = _a[4] - _b[4];
+  const Scalar _tmp0 = _a[5] - _b[5];
   const Scalar _tmp1 = std::pow(_tmp0, Scalar(2));
-  const Scalar _tmp2 = _a[5] - _b[5];
+  const Scalar _tmp2 = _a[4] - _b[4];
   const Scalar _tmp3 = std::pow(_tmp2, Scalar(2));
   const Scalar _tmp4 = _a[6] - _b[6];
   const Scalar _tmp5 = std::pow(_tmp4, Scalar(2));
@@ -49,24 +49,24 @@ void BetweenFactorPose3TranslationNorm(const sym::Pose3<Scalar>& a, const sym::P
   const Scalar _tmp8 = -_tmp7 + translation_norm;
   const Scalar _tmp9 = Scalar(1.0) / (_tmp7);
   const Scalar _tmp10 = _tmp9 * sqrt_info(0, 0);
-  const Scalar _tmp11 = _tmp0 * _tmp10;
-  const Scalar _tmp12 = _tmp10 * _tmp2;
+  const Scalar _tmp11 = _tmp10 * _tmp2;
+  const Scalar _tmp12 = _tmp0 * _tmp10;
   const Scalar _tmp13 = _tmp10 * _tmp4;
   const Scalar _tmp14 = std::pow(sqrt_info(0, 0), Scalar(2));
   const Scalar _tmp15 = _tmp14 / _tmp6;
-  const Scalar _tmp16 = _tmp1 * _tmp15;
+  const Scalar _tmp16 = _tmp15 * _tmp3;
   const Scalar _tmp17 = _tmp0 * _tmp15;
   const Scalar _tmp18 = _tmp17 * _tmp2;
-  const Scalar _tmp19 = _tmp17 * _tmp4;
+  const Scalar _tmp19 = _tmp15 * _tmp2 * _tmp4;
   const Scalar _tmp20 = -_tmp18;
   const Scalar _tmp21 = -_tmp19;
-  const Scalar _tmp22 = _tmp15 * _tmp3;
-  const Scalar _tmp23 = _tmp15 * _tmp2 * _tmp4;
+  const Scalar _tmp22 = _tmp1 * _tmp15;
+  const Scalar _tmp23 = _tmp17 * _tmp4;
   const Scalar _tmp24 = -_tmp23;
   const Scalar _tmp25 = _tmp15 * _tmp5;
   const Scalar _tmp26 = _tmp14 * _tmp8 * _tmp9;
-  const Scalar _tmp27 = _tmp0 * _tmp26;
-  const Scalar _tmp28 = _tmp2 * _tmp26;
+  const Scalar _tmp27 = _tmp2 * _tmp26;
+  const Scalar _tmp28 = _tmp0 * _tmp26;
   const Scalar _tmp29 = _tmp26 * _tmp4;
 
   // Output terms (4)

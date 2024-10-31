@@ -34,27 +34,27 @@ const sym::Unit3<Scalar> sym::Unit3<Scalar>::FromVector(const Eigen::Matrix<Scal
   // Input arrays
 
   // Intermediate terms (8)
-  const Scalar _tmp0 = Scalar(1) / Scalar(2) - Scalar(1) / Scalar(2) *
-                                                   (((1 - std::pow(epsilon, Scalar(2))) > 0) -
-                                                    ((1 - std::pow(epsilon, Scalar(2))) < 0));
-  const Scalar _tmp1 = std::pow(Scalar(std::pow(a(0, 0), Scalar(2)) + std::pow(a(1, 0), Scalar(2)) +
+  const Scalar _tmp0 = std::pow(Scalar(std::pow(a(0, 0), Scalar(2)) + std::pow(a(1, 0), Scalar(2)) +
                                        std::pow(a(2, 0), Scalar(2)) + epsilon),
                                 Scalar(Scalar(-1) / Scalar(2)));
-  const Scalar _tmp2 = _tmp1 * a(2, 0);
+  const Scalar _tmp1 = _tmp0 * a(2, 0);
+  const Scalar _tmp2 = std::sqrt(Scalar(2 * _tmp1 + epsilon + 2));
   const Scalar _tmp3 =
-      (((-epsilon + std::fabs(_tmp2 + 1)) > 0) - ((-epsilon + std::fabs(_tmp2 + 1)) < 0)) + 1;
+      (((-epsilon + std::fabs(_tmp1 + 1)) > 0) - ((-epsilon + std::fabs(_tmp1 + 1)) < 0)) + 1;
   const Scalar _tmp4 = (Scalar(1) / Scalar(2)) * _tmp3;
-  const Scalar _tmp5 = 1 - _tmp4;
-  const Scalar _tmp6 = std::sqrt(Scalar(2 * _tmp2 + epsilon + 2));
-  const Scalar _tmp7 = _tmp1 * _tmp4 / _tmp6;
+  const Scalar _tmp5 = _tmp0 * _tmp4 / _tmp2;
+  const Scalar _tmp6 = Scalar(1) / Scalar(2) - Scalar(1) / Scalar(2) *
+                                                   (((1 - std::pow(epsilon, Scalar(2))) > 0) -
+                                                    ((1 - std::pow(epsilon, Scalar(2))) < 0));
+  const Scalar _tmp7 = 1 - _tmp4;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _tmp5 * (1 - _tmp0) - _tmp7 * a(1, 0);
-  _res[1] = _tmp0 * _tmp5 + _tmp7 * a(0, 0);
+  _res[0] = -_tmp5 * a(1, 0) + _tmp7 * (1 - _tmp6);
+  _res[1] = _tmp5 * a(0, 0) + _tmp6 * _tmp7;
   _res[2] = 0;
-  _res[3] = (Scalar(1) / Scalar(4)) * _tmp3 * _tmp6;
+  _res[3] = (Scalar(1) / Scalar(4)) * _tmp2 * _tmp3;
 
   return sym::Unit3<Scalar>(_res);
 }

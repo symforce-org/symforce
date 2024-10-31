@@ -368,26 +368,26 @@ class Rot3(object):
             )
 
         # Intermediate terms (7)
-        _tmp0 = 1.0 / 2.0 - 1.0 / 2.0 * (
+        _tmp0 = a[0, 0] * b[0, 0] + a[1, 0] * b[1, 0] + a[2, 0] * b[2, 0]
+        _tmp1 = math.sqrt(2 * _tmp0 + epsilon + 2)
+        _tmp2 = (
+            0.0 if -epsilon + abs(_tmp0 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp0 + 1))
+        ) + 1
+        _tmp3 = (1.0 / 2.0) * _tmp2
+        _tmp4 = _tmp3 / _tmp1
+        _tmp5 = 1.0 / 2.0 - 1.0 / 2.0 * (
             0.0
             if a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon**2 == 0
             else math.copysign(1, a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon**2)
         )
-        _tmp1 = a[0, 0] * b[0, 0] + a[1, 0] * b[1, 0] + a[2, 0] * b[2, 0]
-        _tmp2 = (
-            0.0 if -epsilon + abs(_tmp1 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp1 + 1))
-        ) + 1
-        _tmp3 = (1.0 / 2.0) * _tmp2
-        _tmp4 = 1 - _tmp3
-        _tmp5 = math.sqrt(2 * _tmp1 + epsilon + 2)
-        _tmp6 = _tmp3 / _tmp5
+        _tmp6 = 1 - _tmp3
 
         # Output terms
         _res = [0.0] * 4
-        _res[0] = _tmp4 * (1 - _tmp0) + _tmp6 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0])
-        _res[1] = _tmp0 * _tmp4 + _tmp6 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0])
-        _res[2] = _tmp6 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0])
-        _res[3] = (1.0 / 4.0) * _tmp2 * _tmp5
+        _res[0] = _tmp4 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0]) + _tmp6 * (1 - _tmp5)
+        _res[1] = _tmp4 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0]) + _tmp5 * _tmp6
+        _res[2] = _tmp4 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0])
+        _res[3] = (1.0 / 4.0) * _tmp1 * _tmp2
         return Rot3.from_storage(_res)
 
     # --------------------------------------------------------------------------

@@ -81,25 +81,25 @@ class Unit3(object):
             )
 
         # Intermediate terms (8)
-        _tmp0 = 1.0 / 2.0 - 1.0 / 2.0 * (
-            0.0 if 1 - epsilon**2 == 0 else math.copysign(1, 1 - epsilon**2)
-        )
-        _tmp1 = 1 / math.sqrt(a[0, 0] ** 2 + a[1, 0] ** 2 + a[2, 0] ** 2 + epsilon)
-        _tmp2 = _tmp1 * a[2, 0]
+        _tmp0 = 1 / math.sqrt(a[0, 0] ** 2 + a[1, 0] ** 2 + a[2, 0] ** 2 + epsilon)
+        _tmp1 = _tmp0 * a[2, 0]
+        _tmp2 = math.sqrt(2 * _tmp1 + epsilon + 2)
         _tmp3 = (
-            0.0 if -epsilon + abs(_tmp2 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp2 + 1))
+            0.0 if -epsilon + abs(_tmp1 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp1 + 1))
         ) + 1
         _tmp4 = (1.0 / 2.0) * _tmp3
-        _tmp5 = 1 - _tmp4
-        _tmp6 = math.sqrt(2 * _tmp2 + epsilon + 2)
-        _tmp7 = _tmp1 * _tmp4 / _tmp6
+        _tmp5 = _tmp0 * _tmp4 / _tmp2
+        _tmp6 = 1.0 / 2.0 - 1.0 / 2.0 * (
+            0.0 if 1 - epsilon**2 == 0 else math.copysign(1, 1 - epsilon**2)
+        )
+        _tmp7 = 1 - _tmp4
 
         # Output terms
         _res = [0.0] * 4
-        _res[0] = _tmp5 * (1 - _tmp0) - _tmp7 * a[1, 0]
-        _res[1] = _tmp0 * _tmp5 + _tmp7 * a[0, 0]
+        _res[0] = -_tmp5 * a[1, 0] + _tmp7 * (1 - _tmp6)
+        _res[1] = _tmp5 * a[0, 0] + _tmp6 * _tmp7
         _res[2] = 0
-        _res[3] = (1.0 / 4.0) * _tmp3 * _tmp6
+        _res[3] = (1.0 / 4.0) * _tmp2 * _tmp3
         return Unit3.from_storage(_res)
 
     def to_unit_vector(self):

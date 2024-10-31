@@ -48,44 +48,44 @@ void PriorFactorPolynomialCameraCal(const sym::PolynomialCameraCal<Scalar>& valu
   const Eigen::Matrix<Scalar, 8, 1>& _prior = prior.Data();
 
   // Intermediate terms (16)
-  const Scalar _tmp0 = -_prior[3] + _value[3];
-  const Scalar _tmp1 = -_prior[2] + _value[2];
-  const Scalar _tmp2 = -_prior[0] + _value[0];
-  const Scalar _tmp3 = -_prior[1] + _value[1];
-  const Scalar _tmp4 = -_prior[5] + _value[5];
-  const Scalar _tmp5 = -_prior[6] + _value[6];
-  const Scalar _tmp6 = -_prior[7] + _value[7];
-  const Scalar _tmp7 = -_prior[4] + _value[4];
-  const Scalar _tmp8 = _tmp0 * sqrt_info(0, 3) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0) +
-                       _tmp3 * sqrt_info(0, 1) + _tmp4 * sqrt_info(0, 5) + _tmp5 * sqrt_info(0, 6) +
-                       _tmp6 * sqrt_info(0, 7) + _tmp7 * sqrt_info(0, 4);
-  const Scalar _tmp9 = _tmp0 * sqrt_info(1, 3) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0) +
-                       _tmp3 * sqrt_info(1, 1) + _tmp4 * sqrt_info(1, 5) + _tmp5 * sqrt_info(1, 6) +
-                       _tmp6 * sqrt_info(1, 7) + _tmp7 * sqrt_info(1, 4);
-  const Scalar _tmp10 = _tmp0 * sqrt_info(2, 3) + _tmp1 * sqrt_info(2, 2) +
-                        _tmp2 * sqrt_info(2, 0) + _tmp3 * sqrt_info(2, 1) +
-                        _tmp4 * sqrt_info(2, 5) + _tmp5 * sqrt_info(2, 6) +
-                        _tmp6 * sqrt_info(2, 7) + _tmp7 * sqrt_info(2, 4);
-  const Scalar _tmp11 = _tmp0 * sqrt_info(3, 3) + _tmp1 * sqrt_info(3, 2) +
-                        _tmp2 * sqrt_info(3, 0) + _tmp3 * sqrt_info(3, 1) +
-                        _tmp4 * sqrt_info(3, 5) + _tmp5 * sqrt_info(3, 6) +
-                        _tmp6 * sqrt_info(3, 7) + _tmp7 * sqrt_info(3, 4);
-  const Scalar _tmp12 = _tmp0 * sqrt_info(4, 3) + _tmp1 * sqrt_info(4, 2) +
-                        _tmp2 * sqrt_info(4, 0) + _tmp3 * sqrt_info(4, 1) +
-                        _tmp4 * sqrt_info(4, 5) + _tmp5 * sqrt_info(4, 6) +
-                        _tmp6 * sqrt_info(4, 7) + _tmp7 * sqrt_info(4, 4);
-  const Scalar _tmp13 = _tmp0 * sqrt_info(5, 3) + _tmp1 * sqrt_info(5, 2) +
-                        _tmp2 * sqrt_info(5, 0) + _tmp3 * sqrt_info(5, 1) +
-                        _tmp4 * sqrt_info(5, 5) + _tmp5 * sqrt_info(5, 6) +
-                        _tmp6 * sqrt_info(5, 7) + _tmp7 * sqrt_info(5, 4);
-  const Scalar _tmp14 = _tmp0 * sqrt_info(6, 3) + _tmp1 * sqrt_info(6, 2) +
-                        _tmp2 * sqrt_info(6, 0) + _tmp3 * sqrt_info(6, 1) +
-                        _tmp4 * sqrt_info(6, 5) + _tmp5 * sqrt_info(6, 6) +
-                        _tmp6 * sqrt_info(6, 7) + _tmp7 * sqrt_info(6, 4);
-  const Scalar _tmp15 = _tmp0 * sqrt_info(7, 3) + _tmp1 * sqrt_info(7, 2) +
-                        _tmp2 * sqrt_info(7, 0) + _tmp3 * sqrt_info(7, 1) +
-                        _tmp4 * sqrt_info(7, 5) + _tmp5 * sqrt_info(7, 6) +
-                        _tmp6 * sqrt_info(7, 7) + _tmp7 * sqrt_info(7, 4);
+  const Scalar _tmp0 = -_prior[4] + _value[4];
+  const Scalar _tmp1 = -_prior[5] + _value[5];
+  const Scalar _tmp2 = -_prior[6] + _value[6];
+  const Scalar _tmp3 = -_prior[7] + _value[7];
+  const Scalar _tmp4 = -_prior[2] + _value[2];
+  const Scalar _tmp5 = -_prior[3] + _value[3];
+  const Scalar _tmp6 = -_prior[0] + _value[0];
+  const Scalar _tmp7 = -_prior[1] + _value[1];
+  const Scalar _tmp8 = _tmp0 * sqrt_info(0, 4) + _tmp1 * sqrt_info(0, 5) + _tmp2 * sqrt_info(0, 6) +
+                       _tmp3 * sqrt_info(0, 7) + _tmp4 * sqrt_info(0, 2) + _tmp5 * sqrt_info(0, 3) +
+                       _tmp6 * sqrt_info(0, 0) + _tmp7 * sqrt_info(0, 1);
+  const Scalar _tmp9 = _tmp0 * sqrt_info(1, 4) + _tmp1 * sqrt_info(1, 5) + _tmp2 * sqrt_info(1, 6) +
+                       _tmp3 * sqrt_info(1, 7) + _tmp4 * sqrt_info(1, 2) + _tmp5 * sqrt_info(1, 3) +
+                       _tmp6 * sqrt_info(1, 0) + _tmp7 * sqrt_info(1, 1);
+  const Scalar _tmp10 = _tmp0 * sqrt_info(2, 4) + _tmp1 * sqrt_info(2, 5) +
+                        _tmp2 * sqrt_info(2, 6) + _tmp3 * sqrt_info(2, 7) +
+                        _tmp4 * sqrt_info(2, 2) + _tmp5 * sqrt_info(2, 3) +
+                        _tmp6 * sqrt_info(2, 0) + _tmp7 * sqrt_info(2, 1);
+  const Scalar _tmp11 = _tmp0 * sqrt_info(3, 4) + _tmp1 * sqrt_info(3, 5) +
+                        _tmp2 * sqrt_info(3, 6) + _tmp3 * sqrt_info(3, 7) +
+                        _tmp4 * sqrt_info(3, 2) + _tmp5 * sqrt_info(3, 3) +
+                        _tmp6 * sqrt_info(3, 0) + _tmp7 * sqrt_info(3, 1);
+  const Scalar _tmp12 = _tmp0 * sqrt_info(4, 4) + _tmp1 * sqrt_info(4, 5) +
+                        _tmp2 * sqrt_info(4, 6) + _tmp3 * sqrt_info(4, 7) +
+                        _tmp4 * sqrt_info(4, 2) + _tmp5 * sqrt_info(4, 3) +
+                        _tmp6 * sqrt_info(4, 0) + _tmp7 * sqrt_info(4, 1);
+  const Scalar _tmp13 = _tmp0 * sqrt_info(5, 4) + _tmp1 * sqrt_info(5, 5) +
+                        _tmp2 * sqrt_info(5, 6) + _tmp3 * sqrt_info(5, 7) +
+                        _tmp4 * sqrt_info(5, 2) + _tmp5 * sqrt_info(5, 3) +
+                        _tmp6 * sqrt_info(5, 0) + _tmp7 * sqrt_info(5, 1);
+  const Scalar _tmp14 = _tmp0 * sqrt_info(6, 4) + _tmp1 * sqrt_info(6, 5) +
+                        _tmp2 * sqrt_info(6, 6) + _tmp3 * sqrt_info(6, 7) +
+                        _tmp4 * sqrt_info(6, 2) + _tmp5 * sqrt_info(6, 3) +
+                        _tmp6 * sqrt_info(6, 0) + _tmp7 * sqrt_info(6, 1);
+  const Scalar _tmp15 = _tmp0 * sqrt_info(7, 4) + _tmp1 * sqrt_info(7, 5) +
+                        _tmp2 * sqrt_info(7, 6) + _tmp3 * sqrt_info(7, 7) +
+                        _tmp4 * sqrt_info(7, 2) + _tmp5 * sqrt_info(7, 3) +
+                        _tmp6 * sqrt_info(7, 0) + _tmp7 * sqrt_info(7, 1);
 
   // Output terms (4)
   if (res != nullptr) {

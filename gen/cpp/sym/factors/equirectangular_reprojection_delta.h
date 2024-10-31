@@ -55,58 +55,58 @@ void EquirectangularReprojectionDelta(
   const Eigen::Matrix<Scalar, 4, 1>& _target_calibration = target_calibration.Data();
 
   // Intermediate terms (41)
-  const Scalar _tmp0 = 2 * _target_pose[2];
-  const Scalar _tmp1 = _target_pose[3] * _tmp0;
-  const Scalar _tmp2 = 2 * _target_pose[1];
-  const Scalar _tmp3 = _target_pose[0] * _tmp2;
-  const Scalar _tmp4 = -2 * std::pow(_source_pose[2], Scalar(2));
-  const Scalar _tmp5 = -2 * std::pow(_source_pose[0], Scalar(2));
-  const Scalar _tmp6 = (-_source_calibration[3] + source_pixel(1, 0)) / _source_calibration[1];
-  const Scalar _tmp7 = std::sin(_tmp6);
-  const Scalar _tmp8 = (-_source_calibration[2] + source_pixel(0, 0)) / _source_calibration[0];
-  const Scalar _tmp9 = std::cos(_tmp8);
-  const Scalar _tmp10 = std::cos(_tmp6);
-  const Scalar _tmp11 = std::pow(_tmp10, Scalar(2));
-  const Scalar _tmp12 = std::sin(_tmp8);
-  const Scalar _tmp13 =
-      std::pow(Scalar(_tmp11 * std::pow(_tmp12, Scalar(2)) + _tmp11 * std::pow(_tmp9, Scalar(2)) +
-                      std::pow(_tmp7, Scalar(2)) + epsilon),
+  const Scalar _tmp0 = -2 * std::pow(_target_pose[2], Scalar(2));
+  const Scalar _tmp1 = 1 - 2 * std::pow(_target_pose[1], Scalar(2));
+  const Scalar _tmp2 = 2 * _source_pose[0] * _source_pose[2];
+  const Scalar _tmp3 = 2 * _source_pose[3];
+  const Scalar _tmp4 = _source_pose[1] * _tmp3;
+  const Scalar _tmp5 = (-_source_calibration[2] + source_pixel(0, 0)) / _source_calibration[0];
+  const Scalar _tmp6 = std::cos(_tmp5);
+  const Scalar _tmp7 = (-_source_calibration[3] + source_pixel(1, 0)) / _source_calibration[1];
+  const Scalar _tmp8 = std::cos(_tmp7);
+  const Scalar _tmp9 = std::pow(_tmp8, Scalar(2));
+  const Scalar _tmp10 = std::sin(_tmp5);
+  const Scalar _tmp11 = std::sin(_tmp7);
+  const Scalar _tmp12 =
+      std::pow(Scalar(std::pow(_tmp10, Scalar(2)) * _tmp9 + std::pow(_tmp11, Scalar(2)) +
+                      std::pow(_tmp6, Scalar(2)) * _tmp9 + epsilon),
                Scalar(Scalar(-1) / Scalar(2)));
-  const Scalar _tmp14 = _tmp13 * _tmp7;
+  const Scalar _tmp13 = _tmp12 * _tmp8;
+  const Scalar _tmp14 = _tmp13 * _tmp6;
   const Scalar _tmp15 = 2 * _source_pose[1];
   const Scalar _tmp16 = _source_pose[0] * _tmp15;
-  const Scalar _tmp17 = 2 * _source_pose[3];
-  const Scalar _tmp18 = _source_pose[2] * _tmp17;
-  const Scalar _tmp19 = _tmp10 * _tmp13;
-  const Scalar _tmp20 = _tmp12 * _tmp19;
-  const Scalar _tmp21 = _source_pose[0] * _tmp17;
-  const Scalar _tmp22 = _source_pose[2] * _tmp15;
-  const Scalar _tmp23 = _tmp19 * _tmp9;
-  const Scalar _tmp24 = _tmp14 * (_tmp4 + _tmp5 + 1) + _tmp20 * (_tmp16 + _tmp18) +
-                        _tmp23 * (-_tmp21 + _tmp22) +
-                        source_inverse_range * (_source_pose[5] - _target_pose[5]);
-  const Scalar _tmp25 = _target_pose[0] * _tmp0;
-  const Scalar _tmp26 = _target_pose[3] * _tmp2;
-  const Scalar _tmp27 = 2 * _source_pose[0] * _source_pose[2];
-  const Scalar _tmp28 = _source_pose[1] * _tmp17;
-  const Scalar _tmp29 = 1 - 2 * std::pow(_source_pose[1], Scalar(2));
-  const Scalar _tmp30 = _tmp14 * (_tmp21 + _tmp22) + _tmp20 * (_tmp27 - _tmp28) +
-                        _tmp23 * (_tmp29 + _tmp5) +
-                        source_inverse_range * (_source_pose[6] - _target_pose[6]);
-  const Scalar _tmp31 = -2 * std::pow(_target_pose[2], Scalar(2));
-  const Scalar _tmp32 = 1 - 2 * std::pow(_target_pose[1], Scalar(2));
-  const Scalar _tmp33 = _tmp14 * (_tmp16 - _tmp18) + _tmp20 * (_tmp29 + _tmp4) +
-                        _tmp23 * (_tmp27 + _tmp28) +
+  const Scalar _tmp17 = _source_pose[2] * _tmp3;
+  const Scalar _tmp18 = _tmp11 * _tmp12;
+  const Scalar _tmp19 = -2 * std::pow(_source_pose[2], Scalar(2));
+  const Scalar _tmp20 = 1 - 2 * std::pow(_source_pose[1], Scalar(2));
+  const Scalar _tmp21 = _tmp10 * _tmp13;
+  const Scalar _tmp22 = _tmp14 * (_tmp2 + _tmp4) + _tmp18 * (_tmp16 - _tmp17) +
+                        _tmp21 * (_tmp19 + _tmp20) +
                         source_inverse_range * (_source_pose[4] - _target_pose[4]);
+  const Scalar _tmp23 = 2 * _target_pose[3];
+  const Scalar _tmp24 = _target_pose[2] * _tmp23;
+  const Scalar _tmp25 = 2 * _target_pose[0];
+  const Scalar _tmp26 = _target_pose[1] * _tmp25;
+  const Scalar _tmp27 = _source_pose[0] * _tmp3;
+  const Scalar _tmp28 = _source_pose[2] * _tmp15;
+  const Scalar _tmp29 = -2 * std::pow(_source_pose[0], Scalar(2));
+  const Scalar _tmp30 = _tmp14 * (-_tmp27 + _tmp28) + _tmp18 * (_tmp19 + _tmp29 + 1) +
+                        _tmp21 * (_tmp16 + _tmp17) +
+                        source_inverse_range * (_source_pose[5] - _target_pose[5]);
+  const Scalar _tmp31 = _target_pose[2] * _tmp25;
+  const Scalar _tmp32 = _target_pose[1] * _tmp23;
+  const Scalar _tmp33 = _tmp14 * (_tmp20 + _tmp29) + _tmp18 * (_tmp27 + _tmp28) +
+                        _tmp21 * (_tmp2 - _tmp4) +
+                        source_inverse_range * (_source_pose[6] - _target_pose[6]);
   const Scalar _tmp34 =
-      _tmp24 * (_tmp1 + _tmp3) + _tmp30 * (_tmp25 - _tmp26) + _tmp33 * (_tmp31 + _tmp32);
-  const Scalar _tmp35 = _target_pose[2] * _tmp2;
-  const Scalar _tmp36 = 2 * _target_pose[0] * _target_pose[3];
+      _tmp22 * (_tmp0 + _tmp1) + _tmp30 * (_tmp24 + _tmp26) + _tmp33 * (_tmp31 - _tmp32);
+  const Scalar _tmp35 = 2 * _target_pose[1] * _target_pose[2];
+  const Scalar _tmp36 = _target_pose[0] * _tmp23;
   const Scalar _tmp37 = -2 * std::pow(_target_pose[0], Scalar(2));
   const Scalar _tmp38 =
-      _tmp24 * (_tmp35 - _tmp36) + _tmp30 * (_tmp32 + _tmp37) + _tmp33 * (_tmp25 + _tmp26);
+      _tmp22 * (_tmp31 + _tmp32) + _tmp30 * (_tmp35 - _tmp36) + _tmp33 * (_tmp1 + _tmp37);
   const Scalar _tmp39 =
-      _tmp24 * (_tmp31 + _tmp37 + 1) + _tmp30 * (_tmp35 + _tmp36) + _tmp33 * (-_tmp1 + _tmp3);
+      _tmp22 * (-_tmp24 + _tmp26) + _tmp30 * (_tmp0 + _tmp37 + 1) + _tmp33 * (_tmp35 + _tmp36);
   const Scalar _tmp40 = std::pow(_tmp34, Scalar(2)) + std::pow(_tmp38, Scalar(2));
 
   // Output terms (2)
@@ -128,10 +128,10 @@ void EquirectangularReprojectionDelta(
 
     _is_valid = std::max<Scalar>(0, (((std::pow(_tmp39, Scalar(2)) + _tmp40) > 0) -
                                      ((std::pow(_tmp39, Scalar(2)) + _tmp40) < 0))) *
-                std::max<Scalar>(0, std::min<Scalar>((((Scalar(M_PI) - std::fabs(_tmp8)) > 0) -
-                                                      ((Scalar(M_PI) - std::fabs(_tmp8)) < 0)),
-                                                     (((-std::fabs(_tmp6) + Scalar(M_PI_2)) > 0) -
-                                                      ((-std::fabs(_tmp6) + Scalar(M_PI_2)) < 0))));
+                std::max<Scalar>(0, std::min<Scalar>((((Scalar(M_PI) - std::fabs(_tmp5)) > 0) -
+                                                      ((Scalar(M_PI) - std::fabs(_tmp5)) < 0)),
+                                                     (((-std::fabs(_tmp7) + Scalar(M_PI_2)) > 0) -
+                                                      ((-std::fabs(_tmp7) + Scalar(M_PI_2)) < 0))));
   }
 }  // NOLINT(readability/fn_size)
 

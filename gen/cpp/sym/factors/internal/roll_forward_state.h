@@ -49,24 +49,24 @@ void RollForwardState(const sym::Pose3<Scalar>& pose_i, const Eigen::Matrix<Scal
   const Scalar _tmp0 = -2 * std::pow(_pose_i[1], Scalar(2));
   const Scalar _tmp1 = -2 * std::pow(_pose_i[2], Scalar(2));
   const Scalar _tmp2 = _tmp0 + _tmp1 + 1;
-  const Scalar _tmp3 = 2 * _pose_i[2] * _pose_i[3];
-  const Scalar _tmp4 = 2 * _pose_i[0];
-  const Scalar _tmp5 = _pose_i[1] * _tmp4;
-  const Scalar _tmp6 = -_tmp3 + _tmp5;
-  const Scalar _tmp7 = 2 * _pose_i[1];
-  const Scalar _tmp8 = _pose_i[3] * _tmp7;
-  const Scalar _tmp9 = _pose_i[2] * _tmp4;
-  const Scalar _tmp10 = _tmp8 + _tmp9;
+  const Scalar _tmp3 = 2 * _pose_i[3];
+  const Scalar _tmp4 = _pose_i[1] * _tmp3;
+  const Scalar _tmp5 = 2 * _pose_i[0];
+  const Scalar _tmp6 = _pose_i[2] * _tmp5;
+  const Scalar _tmp7 = _tmp4 + _tmp6;
+  const Scalar _tmp8 = _pose_i[2] * _tmp3;
+  const Scalar _tmp9 = _pose_i[1] * _tmp5;
+  const Scalar _tmp10 = -_tmp8 + _tmp9;
   const Scalar _tmp11 = (Scalar(1) / Scalar(2)) * std::pow(dt, Scalar(2));
-  const Scalar _tmp12 = _pose_i[3] * _tmp4;
-  const Scalar _tmp13 = _pose_i[2] * _tmp7;
-  const Scalar _tmp14 = -_tmp12 + _tmp13;
-  const Scalar _tmp15 = 1 - 2 * std::pow(_pose_i[0], Scalar(2));
-  const Scalar _tmp16 = _tmp1 + _tmp15;
-  const Scalar _tmp17 = _tmp3 + _tmp5;
-  const Scalar _tmp18 = _tmp12 + _tmp13;
-  const Scalar _tmp19 = _tmp0 + _tmp15;
-  const Scalar _tmp20 = -_tmp8 + _tmp9;
+  const Scalar _tmp12 = 1 - 2 * std::pow(_pose_i[0], Scalar(2));
+  const Scalar _tmp13 = _tmp1 + _tmp12;
+  const Scalar _tmp14 = _tmp8 + _tmp9;
+  const Scalar _tmp15 = _pose_i[0] * _tmp3;
+  const Scalar _tmp16 = 2 * _pose_i[1] * _pose_i[2];
+  const Scalar _tmp17 = -_tmp15 + _tmp16;
+  const Scalar _tmp18 = _tmp0 + _tmp12;
+  const Scalar _tmp19 = -_tmp4 + _tmp6;
+  const Scalar _tmp20 = _tmp15 + _tmp16;
 
   // Output terms (2)
   if (res0 != nullptr) {
@@ -80,11 +80,11 @@ void RollForwardState(const sym::Pose3<Scalar>& pose_i, const Eigen::Matrix<Scal
         -_DR[0] * _pose_i[1] + _DR[1] * _pose_i[0] + _DR[2] * _pose_i[3] + _DR[3] * _pose_i[2];
     _res0[3] =
         -_DR[0] * _pose_i[0] - _DR[1] * _pose_i[1] - _DR[2] * _pose_i[2] + _DR[3] * _pose_i[3];
-    _res0[4] = Dp(0, 0) * _tmp2 + Dp(1, 0) * _tmp6 + Dp(2, 0) * _tmp10 + _pose_i[4] +
+    _res0[4] = Dp(0, 0) * _tmp2 + Dp(1, 0) * _tmp10 + Dp(2, 0) * _tmp7 + _pose_i[4] +
                _tmp11 * gravity(0, 0) + dt * vel_i(0, 0);
-    _res0[5] = Dp(0, 0) * _tmp17 + Dp(1, 0) * _tmp16 + Dp(2, 0) * _tmp14 + _pose_i[5] +
+    _res0[5] = Dp(0, 0) * _tmp14 + Dp(1, 0) * _tmp13 + Dp(2, 0) * _tmp17 + _pose_i[5] +
                _tmp11 * gravity(1, 0) + dt * vel_i(1, 0);
-    _res0[6] = Dp(0, 0) * _tmp20 + Dp(1, 0) * _tmp18 + Dp(2, 0) * _tmp19 + _pose_i[6] +
+    _res0[6] = Dp(0, 0) * _tmp19 + Dp(1, 0) * _tmp20 + Dp(2, 0) * _tmp18 + _pose_i[6] +
                _tmp11 * gravity(2, 0) + dt * vel_i(2, 0);
 
     *res0 = sym::Pose3<Scalar>(_res0);
@@ -94,10 +94,10 @@ void RollForwardState(const sym::Pose3<Scalar>& pose_i, const Eigen::Matrix<Scal
     Eigen::Matrix<Scalar, 3, 1>& _res1 = (*res1);
 
     _res1(0, 0) =
-        Dv(0, 0) * _tmp2 + Dv(1, 0) * _tmp6 + Dv(2, 0) * _tmp10 + dt * gravity(0, 0) + vel_i(0, 0);
-    _res1(1, 0) = Dv(0, 0) * _tmp17 + Dv(1, 0) * _tmp16 + Dv(2, 0) * _tmp14 + dt * gravity(1, 0) +
+        Dv(0, 0) * _tmp2 + Dv(1, 0) * _tmp10 + Dv(2, 0) * _tmp7 + dt * gravity(0, 0) + vel_i(0, 0);
+    _res1(1, 0) = Dv(0, 0) * _tmp14 + Dv(1, 0) * _tmp13 + Dv(2, 0) * _tmp17 + dt * gravity(1, 0) +
                   vel_i(1, 0);
-    _res1(2, 0) = Dv(0, 0) * _tmp20 + Dv(1, 0) * _tmp18 + Dv(2, 0) * _tmp19 + dt * gravity(2, 0) +
+    _res1(2, 0) = Dv(0, 0) * _tmp19 + Dv(1, 0) * _tmp20 + Dv(2, 0) * _tmp18 + dt * gravity(2, 0) +
                   vel_i(2, 0);
   }
 }  // NOLINT(readability/fn_size)

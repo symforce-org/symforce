@@ -55,65 +55,65 @@ void AtanReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Eigen::Matrix<Scalar, 5, 1>& _target_calibration = target_calibration.Data();
 
   // Intermediate terms (46)
-  const Scalar _tmp0 = -2 * std::pow(_target_pose[2], Scalar(2));
-  const Scalar _tmp1 = 1 - 2 * std::pow(_target_pose[1], Scalar(2));
-  const Scalar _tmp2 = 2 * _source_pose[0] * _source_pose[2];
-  const Scalar _tmp3 = 2 * _source_pose[1];
-  const Scalar _tmp4 = _source_pose[3] * _tmp3;
-  const Scalar _tmp5 = -_source_calibration[3] + source_pixel(1, 0);
-  const Scalar _tmp6 = std::pow(_tmp5, Scalar(2)) / std::pow(_source_calibration[1], Scalar(2));
-  const Scalar _tmp7 = std::tan(Scalar(0.5) * _source_calibration[4]);
-  const Scalar _tmp8 = -_source_calibration[2] + source_pixel(0, 0);
-  const Scalar _tmp9 = std::pow(_tmp8, Scalar(2)) / std::pow(_source_calibration[0], Scalar(2));
-  const Scalar _tmp10 = _tmp6 + _tmp9 + epsilon;
-  const Scalar _tmp11 = std::sqrt(_tmp10);
-  const Scalar _tmp12 = _source_calibration[4] * _tmp11;
-  const Scalar _tmp13 = std::tan(_tmp12);
-  const Scalar _tmp14 =
-      (Scalar(1) / Scalar(4)) * std::pow(_tmp13, Scalar(2)) / (_tmp10 * std::pow(_tmp7, Scalar(2)));
-  const Scalar _tmp15 = std::pow(Scalar(_tmp14 * _tmp6 + _tmp14 * _tmp9 + epsilon + 1),
+  const Scalar _tmp0 = 2 * _target_pose[2];
+  const Scalar _tmp1 = _target_pose[0] * _tmp0;
+  const Scalar _tmp2 = 2 * _target_pose[1];
+  const Scalar _tmp3 = _target_pose[3] * _tmp2;
+  const Scalar _tmp4 = -2 * std::pow(_source_pose[0], Scalar(2));
+  const Scalar _tmp5 = 1 - 2 * std::pow(_source_pose[1], Scalar(2));
+  const Scalar _tmp6 = -_source_calibration[3] + source_pixel(1, 0);
+  const Scalar _tmp7 = std::pow(_tmp6, Scalar(2)) / std::pow(_source_calibration[1], Scalar(2));
+  const Scalar _tmp8 = std::tan(Scalar(0.5) * _source_calibration[4]);
+  const Scalar _tmp9 = -_source_calibration[2] + source_pixel(0, 0);
+  const Scalar _tmp10 = std::pow(_tmp9, Scalar(2)) / std::pow(_source_calibration[0], Scalar(2));
+  const Scalar _tmp11 = _tmp10 + _tmp7 + epsilon;
+  const Scalar _tmp12 = std::sqrt(_tmp11);
+  const Scalar _tmp13 = _source_calibration[4] * _tmp12;
+  const Scalar _tmp14 = std::tan(_tmp13);
+  const Scalar _tmp15 =
+      (Scalar(1) / Scalar(4)) * std::pow(_tmp14, Scalar(2)) / (_tmp11 * std::pow(_tmp8, Scalar(2)));
+  const Scalar _tmp16 = std::pow(Scalar(_tmp10 * _tmp15 + _tmp15 * _tmp7 + epsilon + 1),
                                  Scalar(Scalar(-1) / Scalar(2)));
-  const Scalar _tmp16 = _source_pose[0] * _tmp3;
-  const Scalar _tmp17 = 2 * _source_pose[3];
-  const Scalar _tmp18 = _source_pose[2] * _tmp17;
-  const Scalar _tmp19 = (Scalar(1) / Scalar(2)) * _tmp13 * _tmp15 / (_tmp11 * _tmp7);
-  const Scalar _tmp20 = _tmp19 * _tmp5 / _source_calibration[1];
-  const Scalar _tmp21 = -2 * std::pow(_source_pose[2], Scalar(2));
-  const Scalar _tmp22 = 1 - 2 * std::pow(_source_pose[1], Scalar(2));
-  const Scalar _tmp23 = _tmp19 * _tmp8 / _source_calibration[0];
-  const Scalar _tmp24 = _tmp15 * (_tmp2 + _tmp4) + _tmp20 * (_tmp16 - _tmp18) +
-                        _tmp23 * (_tmp21 + _tmp22) +
-                        source_inverse_range * (_source_pose[4] - _target_pose[4]);
-  const Scalar _tmp25 = 2 * _target_pose[2];
-  const Scalar _tmp26 = _target_pose[0] * _tmp25;
-  const Scalar _tmp27 = 2 * _target_pose[3];
-  const Scalar _tmp28 = _target_pose[1] * _tmp27;
-  const Scalar _tmp29 = -2 * std::pow(_source_pose[0], Scalar(2));
-  const Scalar _tmp30 = _source_pose[0] * _tmp17;
-  const Scalar _tmp31 = _source_pose[2] * _tmp3;
-  const Scalar _tmp32 = _tmp15 * (_tmp22 + _tmp29) + _tmp20 * (_tmp30 + _tmp31) +
-                        _tmp23 * (_tmp2 - _tmp4) +
+  const Scalar _tmp17 = 2 * _source_pose[0];
+  const Scalar _tmp18 = _source_pose[3] * _tmp17;
+  const Scalar _tmp19 = 2 * _source_pose[2];
+  const Scalar _tmp20 = _source_pose[1] * _tmp19;
+  const Scalar _tmp21 = (Scalar(1) / Scalar(2)) * _tmp14 * _tmp16 / (_tmp12 * _tmp8);
+  const Scalar _tmp22 = _tmp21 * _tmp6 / _source_calibration[1];
+  const Scalar _tmp23 = _source_pose[0] * _tmp19;
+  const Scalar _tmp24 = 2 * _source_pose[1] * _source_pose[3];
+  const Scalar _tmp25 = _tmp21 * _tmp9 / _source_calibration[0];
+  const Scalar _tmp26 = _tmp16 * (_tmp4 + _tmp5) + _tmp22 * (_tmp18 + _tmp20) +
+                        _tmp25 * (_tmp23 - _tmp24) +
                         source_inverse_range * (_source_pose[6] - _target_pose[6]);
-  const Scalar _tmp33 = _target_pose[2] * _tmp27;
-  const Scalar _tmp34 = 2 * _target_pose[0] * _target_pose[1];
-  const Scalar _tmp35 = _tmp15 * (-_tmp30 + _tmp31) + _tmp20 * (_tmp21 + _tmp29 + 1) +
-                        _tmp23 * (_tmp16 + _tmp18) +
+  const Scalar _tmp27 = _target_pose[3] * _tmp0;
+  const Scalar _tmp28 = _target_pose[0] * _tmp2;
+  const Scalar _tmp29 = _source_pose[1] * _tmp17;
+  const Scalar _tmp30 = _source_pose[3] * _tmp19;
+  const Scalar _tmp31 = -2 * std::pow(_source_pose[2], Scalar(2));
+  const Scalar _tmp32 = _tmp16 * (-_tmp18 + _tmp20) + _tmp22 * (_tmp31 + _tmp4 + 1) +
+                        _tmp25 * (_tmp29 + _tmp30) +
                         source_inverse_range * (_source_pose[5] - _target_pose[5]);
+  const Scalar _tmp33 = -2 * std::pow(_target_pose[2], Scalar(2));
+  const Scalar _tmp34 = 1 - 2 * std::pow(_target_pose[1], Scalar(2));
+  const Scalar _tmp35 = _tmp16 * (_tmp23 + _tmp24) + _tmp22 * (_tmp29 - _tmp30) +
+                        _tmp25 * (_tmp31 + _tmp5) +
+                        source_inverse_range * (_source_pose[4] - _target_pose[4]);
   const Scalar _tmp36 =
-      _tmp24 * (_tmp0 + _tmp1) + _tmp32 * (_tmp26 - _tmp28) + _tmp35 * (_tmp33 + _tmp34);
-  const Scalar _tmp37 = -2 * std::pow(_target_pose[0], Scalar(2));
-  const Scalar _tmp38 = _target_pose[1] * _tmp25;
-  const Scalar _tmp39 = _target_pose[0] * _tmp27;
+      _tmp26 * (_tmp1 - _tmp3) + _tmp32 * (_tmp27 + _tmp28) + _tmp35 * (_tmp33 + _tmp34);
+  const Scalar _tmp37 = _target_pose[2] * _tmp2;
+  const Scalar _tmp38 = 2 * _target_pose[0] * _target_pose[3];
+  const Scalar _tmp39 = -2 * std::pow(_target_pose[0], Scalar(2));
   const Scalar _tmp40 =
-      _tmp24 * (_tmp26 + _tmp28) + _tmp32 * (_tmp1 + _tmp37) + _tmp35 * (_tmp38 - _tmp39);
-  const Scalar _tmp41 = std::max<Scalar>(_tmp40, epsilon);
-  const Scalar _tmp42 = std::pow(_tmp41, Scalar(-2));
-  const Scalar _tmp43 =
-      _tmp24 * (-_tmp33 + _tmp34) + _tmp32 * (_tmp38 + _tmp39) + _tmp35 * (_tmp0 + _tmp37 + 1);
-  const Scalar _tmp44 = std::sqrt(Scalar(std::pow(_tmp36, Scalar(2)) * _tmp42 +
-                                         _tmp42 * std::pow(_tmp43, Scalar(2)) + epsilon));
+      _tmp26 * (_tmp37 + _tmp38) + _tmp32 * (_tmp33 + _tmp39 + 1) + _tmp35 * (-_tmp27 + _tmp28);
+  const Scalar _tmp41 =
+      _tmp26 * (_tmp34 + _tmp39) + _tmp32 * (_tmp37 - _tmp38) + _tmp35 * (_tmp1 + _tmp3);
+  const Scalar _tmp42 = std::max<Scalar>(_tmp41, epsilon);
+  const Scalar _tmp43 = std::pow(_tmp42, Scalar(-2));
+  const Scalar _tmp44 = std::sqrt(Scalar(std::pow(_tmp36, Scalar(2)) * _tmp43 +
+                                         std::pow(_tmp40, Scalar(2)) * _tmp43 + epsilon));
   const Scalar _tmp45 = std::atan(2 * _tmp44 * std::tan(Scalar(0.5) * _target_calibration[4])) /
-                        (_target_calibration[4] * _tmp41 * _tmp44);
+                        (_target_calibration[4] * _tmp42 * _tmp44);
 
   // Output terms (2)
   if (reprojection_delta != nullptr) {
@@ -122,15 +122,15 @@ void AtanReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
     _reprojection_delta(0, 0) =
         _target_calibration[0] * _tmp36 * _tmp45 + _target_calibration[2] - target_pixel(0, 0);
     _reprojection_delta(1, 0) =
-        _target_calibration[1] * _tmp43 * _tmp45 + _target_calibration[3] - target_pixel(1, 0);
+        _target_calibration[1] * _tmp40 * _tmp45 + _target_calibration[3] - target_pixel(1, 0);
   }
 
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
 
-    _is_valid = std::max<Scalar>(0, (((_tmp40) > 0) - ((_tmp40) < 0))) *
-                std::max<Scalar>(0, (((-std::fabs(_tmp12) + Scalar(M_PI_2)) > 0) -
-                                     ((-std::fabs(_tmp12) + Scalar(M_PI_2)) < 0)));
+    _is_valid = std::max<Scalar>(0, (((_tmp41) > 0) - ((_tmp41) < 0))) *
+                std::max<Scalar>(0, (((-std::fabs(_tmp13) + Scalar(M_PI_2)) > 0) -
+                                     ((-std::fabs(_tmp13) + Scalar(M_PI_2)) < 0)));
   }
 }  // NOLINT(readability/fn_size)
 

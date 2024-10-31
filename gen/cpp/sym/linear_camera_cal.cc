@@ -84,8 +84,8 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPointWithJac
   // Intermediate terms (5)
   const Scalar _tmp0 = std::max<Scalar>(epsilon, point(2, 0));
   const Scalar _tmp1 = Scalar(1.0) / (_tmp0);
-  const Scalar _tmp2 = _self[0] * _tmp1;
-  const Scalar _tmp3 = _self[1] * _tmp1;
+  const Scalar _tmp2 = _tmp1 * point(0, 0);
+  const Scalar _tmp3 = _tmp1 * point(1, 0);
   const Scalar _tmp4 = (Scalar(1) / Scalar(2)) *
                        ((((-epsilon + point(2, 0)) > 0) - ((-epsilon + point(2, 0)) < 0)) + 1) /
                        std::pow(_tmp0, Scalar(2));
@@ -93,8 +93,8 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPointWithJac
   // Output terms (4)
   Eigen::Matrix<Scalar, 2, 1> _pixel;
 
-  _pixel(0, 0) = _self[2] + _tmp2 * point(0, 0);
-  _pixel(1, 0) = _self[3] + _tmp3 * point(1, 0);
+  _pixel(0, 0) = _self[0] * _tmp2 + _self[2];
+  _pixel(1, 0) = _self[1] * _tmp3 + _self[3];
 
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
@@ -105,10 +105,10 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPointWithJac
   if (pixel_D_cal != nullptr) {
     Eigen::Matrix<Scalar, 2, 4>& _pixel_D_cal = (*pixel_D_cal);
 
-    _pixel_D_cal(0, 0) = _tmp1 * point(0, 0);
+    _pixel_D_cal(0, 0) = _tmp2;
     _pixel_D_cal(1, 0) = 0;
     _pixel_D_cal(0, 1) = 0;
-    _pixel_D_cal(1, 1) = _tmp1 * point(1, 0);
+    _pixel_D_cal(1, 1) = _tmp3;
     _pixel_D_cal(0, 2) = 1;
     _pixel_D_cal(1, 2) = 0;
     _pixel_D_cal(0, 3) = 0;
@@ -118,10 +118,10 @@ Eigen::Matrix<Scalar, 2, 1> LinearCameraCal<Scalar>::PixelFromCameraPointWithJac
   if (pixel_D_point != nullptr) {
     Eigen::Matrix<Scalar, 2, 3>& _pixel_D_point = (*pixel_D_point);
 
-    _pixel_D_point(0, 0) = _tmp2;
+    _pixel_D_point(0, 0) = _self[0] * _tmp1;
     _pixel_D_point(1, 0) = 0;
     _pixel_D_point(0, 1) = 0;
-    _pixel_D_point(1, 1) = _tmp3;
+    _pixel_D_point(1, 1) = _self[1] * _tmp1;
     _pixel_D_point(0, 2) = -_self[0] * _tmp4 * point(0, 0);
     _pixel_D_point(1, 2) = -_self[1] * _tmp4 * point(1, 0);
   }

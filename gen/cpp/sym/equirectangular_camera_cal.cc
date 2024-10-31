@@ -150,24 +150,24 @@ Eigen::Matrix<Scalar, 3, 1> EquirectangularCameraCal<Scalar>::CameraRayFromPixel
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
   // Intermediate terms (3)
-  const Scalar _tmp0 = (-_self[3] + pixel(1, 0)) / _self[1];
-  const Scalar _tmp1 = std::cos(_tmp0);
-  const Scalar _tmp2 = (-_self[2] + pixel(0, 0)) / _self[0];
+  const Scalar _tmp0 = (-_self[2] + pixel(0, 0)) / _self[0];
+  const Scalar _tmp1 = (-_self[3] + pixel(1, 0)) / _self[1];
+  const Scalar _tmp2 = std::cos(_tmp1);
 
   // Output terms (2)
   Eigen::Matrix<Scalar, 3, 1> _camera_ray;
 
-  _camera_ray(0, 0) = _tmp1 * std::sin(_tmp2);
-  _camera_ray(1, 0) = std::sin(_tmp0);
-  _camera_ray(2, 0) = _tmp1 * std::cos(_tmp2);
+  _camera_ray(0, 0) = _tmp2 * std::sin(_tmp0);
+  _camera_ray(1, 0) = std::sin(_tmp1);
+  _camera_ray(2, 0) = _tmp2 * std::cos(_tmp0);
 
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
 
-    _is_valid = std::max<Scalar>(0, std::min<Scalar>((((Scalar(M_PI) - std::fabs(_tmp2)) > 0) -
-                                                      ((Scalar(M_PI) - std::fabs(_tmp2)) < 0)),
-                                                     (((-std::fabs(_tmp0) + Scalar(M_PI_2)) > 0) -
-                                                      ((-std::fabs(_tmp0) + Scalar(M_PI_2)) < 0))));
+    _is_valid = std::max<Scalar>(0, std::min<Scalar>((((Scalar(M_PI) - std::fabs(_tmp0)) > 0) -
+                                                      ((Scalar(M_PI) - std::fabs(_tmp0)) < 0)),
+                                                     (((-std::fabs(_tmp1) + Scalar(M_PI_2)) > 0) -
+                                                      ((-std::fabs(_tmp1) + Scalar(M_PI_2)) < 0))));
   }
 
   return _camera_ray;
@@ -187,26 +187,26 @@ Eigen::Matrix<Scalar, 3, 1> EquirectangularCameraCal<Scalar>::CameraRayFromPixel
   const Eigen::Matrix<Scalar, 4, 1>& _self = Data();
 
   // Intermediate terms (21)
-  const Scalar _tmp0 = -_self[3] + pixel(1, 0);
-  const Scalar _tmp1 = Scalar(1.0) / (_self[1]);
+  const Scalar _tmp0 = -_self[2] + pixel(0, 0);
+  const Scalar _tmp1 = Scalar(1.0) / (_self[0]);
   const Scalar _tmp2 = _tmp0 * _tmp1;
-  const Scalar _tmp3 = std::cos(_tmp2);
-  const Scalar _tmp4 = -_self[2] + pixel(0, 0);
-  const Scalar _tmp5 = Scalar(1.0) / (_self[0]);
+  const Scalar _tmp3 = std::sin(_tmp2);
+  const Scalar _tmp4 = -_self[3] + pixel(1, 0);
+  const Scalar _tmp5 = Scalar(1.0) / (_self[1]);
   const Scalar _tmp6 = _tmp4 * _tmp5;
-  const Scalar _tmp7 = std::sin(_tmp6);
+  const Scalar _tmp7 = std::cos(_tmp6);
   const Scalar _tmp8 = _tmp3 * _tmp7;
-  const Scalar _tmp9 = std::sin(_tmp2);
-  const Scalar _tmp10 = std::cos(_tmp6);
-  const Scalar _tmp11 = _tmp10 * _tmp3;
-  const Scalar _tmp12 = _tmp4 / std::pow(_self[0], Scalar(2));
-  const Scalar _tmp13 = _tmp0 / std::pow(_self[1], Scalar(2));
+  const Scalar _tmp9 = std::sin(_tmp6);
+  const Scalar _tmp10 = std::cos(_tmp2);
+  const Scalar _tmp11 = _tmp10 * _tmp7;
+  const Scalar _tmp12 = _tmp0 / std::pow(_self[0], Scalar(2));
+  const Scalar _tmp13 = _tmp4 / std::pow(_self[1], Scalar(2));
   const Scalar _tmp14 = _tmp13 * _tmp9;
-  const Scalar _tmp15 = _tmp11 * _tmp5;
-  const Scalar _tmp16 = _tmp5 * _tmp8;
-  const Scalar _tmp17 = _tmp1 * _tmp9;
-  const Scalar _tmp18 = _tmp17 * _tmp7;
-  const Scalar _tmp19 = _tmp1 * _tmp3;
+  const Scalar _tmp15 = _tmp1 * _tmp11;
+  const Scalar _tmp16 = _tmp1 * _tmp8;
+  const Scalar _tmp17 = _tmp5 * _tmp9;
+  const Scalar _tmp18 = _tmp17 * _tmp3;
+  const Scalar _tmp19 = _tmp5 * _tmp7;
   const Scalar _tmp20 = _tmp10 * _tmp17;
 
   // Output terms (4)
@@ -219,10 +219,10 @@ Eigen::Matrix<Scalar, 3, 1> EquirectangularCameraCal<Scalar>::CameraRayFromPixel
   if (is_valid != nullptr) {
     Scalar& _is_valid = (*is_valid);
 
-    _is_valid = std::max<Scalar>(0, std::min<Scalar>((((Scalar(M_PI) - std::fabs(_tmp6)) > 0) -
-                                                      ((Scalar(M_PI) - std::fabs(_tmp6)) < 0)),
-                                                     (((-std::fabs(_tmp2) + Scalar(M_PI_2)) > 0) -
-                                                      ((-std::fabs(_tmp2) + Scalar(M_PI_2)) < 0))));
+    _is_valid = std::max<Scalar>(0, std::min<Scalar>((((Scalar(M_PI) - std::fabs(_tmp2)) > 0) -
+                                                      ((Scalar(M_PI) - std::fabs(_tmp2)) < 0)),
+                                                     (((-std::fabs(_tmp6) + Scalar(M_PI_2)) > 0) -
+                                                      ((-std::fabs(_tmp6) + Scalar(M_PI_2)) < 0))));
   }
 
   if (point_D_cal != nullptr) {
@@ -231,8 +231,8 @@ Eigen::Matrix<Scalar, 3, 1> EquirectangularCameraCal<Scalar>::CameraRayFromPixel
     _point_D_cal(0, 0) = -_tmp11 * _tmp12;
     _point_D_cal(1, 0) = 0;
     _point_D_cal(2, 0) = _tmp12 * _tmp8;
-    _point_D_cal(0, 1) = _tmp14 * _tmp7;
-    _point_D_cal(1, 1) = -_tmp13 * _tmp3;
+    _point_D_cal(0, 1) = _tmp14 * _tmp3;
+    _point_D_cal(1, 1) = -_tmp13 * _tmp7;
     _point_D_cal(2, 1) = _tmp10 * _tmp14;
     _point_D_cal(0, 2) = -_tmp15;
     _point_D_cal(1, 2) = 0;

@@ -160,35 +160,35 @@ class Pose3(object):
             )
 
         # Intermediate terms (11)
-        _tmp0 = 2 * _self[2]
-        _tmp1 = _self[3] * _tmp0
-        _tmp2 = 2 * _self[0] * _self[1]
+        _tmp0 = 2 * _self[2] * _self[3]
+        _tmp1 = 2 * _self[1]
+        _tmp2 = _self[0] * _tmp1
         _tmp3 = -2 * _self[1] ** 2
         _tmp4 = 1 - 2 * _self[2] ** 2
-        _tmp5 = _self[0] * _tmp0
-        _tmp6 = 2 * _self[3]
-        _tmp7 = _self[1] * _tmp6
+        _tmp5 = 2 * _self[0]
+        _tmp6 = _self[2] * _tmp5
+        _tmp7 = _self[3] * _tmp1
         _tmp8 = -2 * _self[0] ** 2
-        _tmp9 = _self[0] * _tmp6
-        _tmp10 = _self[1] * _tmp0
+        _tmp9 = _self[3] * _tmp5
+        _tmp10 = _self[2] * _tmp1
 
         # Output terms
         _res = numpy.zeros(3)
         _res[0] = (
             _self[4]
             + right[0, 0] * (_tmp3 + _tmp4)
-            + right[1, 0] * (-_tmp1 + _tmp2)
-            + right[2, 0] * (_tmp5 + _tmp7)
+            + right[1, 0] * (-_tmp0 + _tmp2)
+            + right[2, 0] * (_tmp6 + _tmp7)
         )
         _res[1] = (
             _self[5]
-            + right[0, 0] * (_tmp1 + _tmp2)
+            + right[0, 0] * (_tmp0 + _tmp2)
             + right[1, 0] * (_tmp4 + _tmp8)
             + right[2, 0] * (_tmp10 - _tmp9)
         )
         _res[2] = (
             _self[6]
-            + right[0, 0] * (_tmp5 - _tmp7)
+            + right[0, 0] * (_tmp6 - _tmp7)
             + right[1, 0] * (_tmp10 + _tmp9)
             + right[2, 0] * (_tmp3 + _tmp8 + 1)
         )
@@ -217,44 +217,44 @@ class Pose3(object):
             )
 
         # Intermediate terms (20)
-        _tmp0 = 2 * _self[2]
-        _tmp1 = _self[3] * _tmp0
-        _tmp2 = 2 * _self[0] * _self[1]
-        _tmp3 = _tmp1 + _tmp2
-        _tmp4 = -2 * _self[1] ** 2
-        _tmp5 = 1 - 2 * _self[2] ** 2
-        _tmp6 = _tmp4 + _tmp5
-        _tmp7 = _self[0] * _tmp0
-        _tmp8 = 2 * _self[3]
-        _tmp9 = _self[1] * _tmp8
-        _tmp10 = _tmp7 - _tmp9
-        _tmp11 = -_tmp1 + _tmp2
-        _tmp12 = -2 * _self[0] ** 2
-        _tmp13 = _tmp12 + _tmp5
-        _tmp14 = _self[0] * _tmp8
-        _tmp15 = _self[1] * _tmp0
-        _tmp16 = _tmp14 + _tmp15
-        _tmp17 = _tmp12 + _tmp4 + 1
-        _tmp18 = _tmp7 + _tmp9
-        _tmp19 = -_tmp14 + _tmp15
+        _tmp0 = -2 * _self[1] ** 2
+        _tmp1 = 1 - 2 * _self[2] ** 2
+        _tmp2 = _tmp0 + _tmp1
+        _tmp3 = 2 * _self[2]
+        _tmp4 = _self[0] * _tmp3
+        _tmp5 = 2 * _self[3]
+        _tmp6 = _self[1] * _tmp5
+        _tmp7 = _tmp4 - _tmp6
+        _tmp8 = _self[3] * _tmp3
+        _tmp9 = 2 * _self[0] * _self[1]
+        _tmp10 = _tmp8 + _tmp9
+        _tmp11 = -2 * _self[0] ** 2
+        _tmp12 = _tmp1 + _tmp11
+        _tmp13 = _self[0] * _tmp5
+        _tmp14 = _self[1] * _tmp3
+        _tmp15 = _tmp13 + _tmp14
+        _tmp16 = -_tmp8 + _tmp9
+        _tmp17 = _tmp0 + _tmp11 + 1
+        _tmp18 = _tmp4 + _tmp6
+        _tmp19 = -_tmp13 + _tmp14
 
         # Output terms
         _res = numpy.zeros(3)
         _res[0] = (
-            -_self[4] * _tmp6
-            - _self[5] * _tmp3
-            - _self[6] * _tmp10
-            + _tmp10 * point[2, 0]
-            + _tmp3 * point[1, 0]
-            + _tmp6 * point[0, 0]
+            -_self[4] * _tmp2
+            - _self[5] * _tmp10
+            - _self[6] * _tmp7
+            + _tmp10 * point[1, 0]
+            + _tmp2 * point[0, 0]
+            + _tmp7 * point[2, 0]
         )
         _res[1] = (
-            -_self[4] * _tmp11
-            - _self[5] * _tmp13
-            - _self[6] * _tmp16
-            + _tmp11 * point[0, 0]
-            + _tmp13 * point[1, 0]
-            + _tmp16 * point[2, 0]
+            -_self[4] * _tmp16
+            - _self[5] * _tmp12
+            - _self[6] * _tmp15
+            + _tmp12 * point[1, 0]
+            + _tmp15 * point[2, 0]
+            + _tmp16 * point[0, 0]
         )
         _res[2] = (
             -_self[4] * _tmp18

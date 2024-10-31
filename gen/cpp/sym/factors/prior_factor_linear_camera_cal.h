@@ -47,17 +47,17 @@ void PriorFactorLinearCameraCal(const sym::LinearCameraCal<Scalar>& value,
   const Eigen::Matrix<Scalar, 4, 1>& _prior = prior.Data();
 
   // Intermediate terms (8)
-  const Scalar _tmp0 = -_prior[3] + _value[3];
-  const Scalar _tmp1 = -_prior[2] + _value[2];
+  const Scalar _tmp0 = -_prior[2] + _value[2];
+  const Scalar _tmp1 = -_prior[3] + _value[3];
   const Scalar _tmp2 = -_prior[0] + _value[0];
   const Scalar _tmp3 = -_prior[1] + _value[1];
-  const Scalar _tmp4 = _tmp0 * sqrt_info(0, 3) + _tmp1 * sqrt_info(0, 2) + _tmp2 * sqrt_info(0, 0) +
+  const Scalar _tmp4 = _tmp0 * sqrt_info(0, 2) + _tmp1 * sqrt_info(0, 3) + _tmp2 * sqrt_info(0, 0) +
                        _tmp3 * sqrt_info(0, 1);
-  const Scalar _tmp5 = _tmp0 * sqrt_info(1, 3) + _tmp1 * sqrt_info(1, 2) + _tmp2 * sqrt_info(1, 0) +
+  const Scalar _tmp5 = _tmp0 * sqrt_info(1, 2) + _tmp1 * sqrt_info(1, 3) + _tmp2 * sqrt_info(1, 0) +
                        _tmp3 * sqrt_info(1, 1);
-  const Scalar _tmp6 = _tmp0 * sqrt_info(2, 3) + _tmp1 * sqrt_info(2, 2) + _tmp2 * sqrt_info(2, 0) +
+  const Scalar _tmp6 = _tmp0 * sqrt_info(2, 2) + _tmp1 * sqrt_info(2, 3) + _tmp2 * sqrt_info(2, 0) +
                        _tmp3 * sqrt_info(2, 1);
-  const Scalar _tmp7 = _tmp0 * sqrt_info(3, 3) + _tmp1 * sqrt_info(3, 2) + _tmp2 * sqrt_info(3, 0) +
+  const Scalar _tmp7 = _tmp0 * sqrt_info(3, 2) + _tmp1 * sqrt_info(3, 3) + _tmp2 * sqrt_info(3, 0) +
                        _tmp3 * sqrt_info(3, 1);
 
   // Output terms (4)

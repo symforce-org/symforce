@@ -191,23 +191,23 @@ class CameraOps(object):
             )
 
         # Intermediate terms (3)
-        _tmp0 = (-_self[3] + pixel[1, 0]) / _self[1]
-        _tmp1 = math.cos(_tmp0)
-        _tmp2 = (-_self[2] + pixel[0, 0]) / _self[0]
+        _tmp0 = (-_self[2] + pixel[0, 0]) / _self[0]
+        _tmp1 = (-_self[3] + pixel[1, 0]) / _self[1]
+        _tmp2 = math.cos(_tmp1)
 
         # Output terms
         _camera_ray = numpy.zeros(3)
-        _camera_ray[0] = _tmp1 * math.sin(_tmp2)
-        _camera_ray[1] = math.sin(_tmp0)
-        _camera_ray[2] = _tmp1 * math.cos(_tmp2)
+        _camera_ray[0] = _tmp2 * math.sin(_tmp0)
+        _camera_ray[1] = math.sin(_tmp1)
+        _camera_ray[2] = _tmp2 * math.cos(_tmp0)
         _is_valid = max(
             0,
             min(
-                (0.0 if math.pi - abs(_tmp2) == 0 else math.copysign(1, math.pi - abs(_tmp2))),
+                (0.0 if math.pi - abs(_tmp0) == 0 else math.copysign(1, math.pi - abs(_tmp0))),
                 (
                     0.0
-                    if -abs(_tmp0) + (1.0 / 2.0) * math.pi == 0
-                    else math.copysign(1, -abs(_tmp0) + (1.0 / 2.0) * math.pi)
+                    if -abs(_tmp1) + (1.0 / 2.0) * math.pi == 0
+                    else math.copysign(1, -abs(_tmp1) + (1.0 / 2.0) * math.pi)
                 ),
             ),
         )
@@ -240,26 +240,26 @@ class CameraOps(object):
             )
 
         # Intermediate terms (21)
-        _tmp0 = -_self[3] + pixel[1, 0]
-        _tmp1 = 1 / _self[1]
+        _tmp0 = -_self[2] + pixel[0, 0]
+        _tmp1 = 1 / _self[0]
         _tmp2 = _tmp0 * _tmp1
-        _tmp3 = math.cos(_tmp2)
-        _tmp4 = -_self[2] + pixel[0, 0]
-        _tmp5 = 1 / _self[0]
+        _tmp3 = math.sin(_tmp2)
+        _tmp4 = -_self[3] + pixel[1, 0]
+        _tmp5 = 1 / _self[1]
         _tmp6 = _tmp4 * _tmp5
-        _tmp7 = math.sin(_tmp6)
+        _tmp7 = math.cos(_tmp6)
         _tmp8 = _tmp3 * _tmp7
-        _tmp9 = math.sin(_tmp2)
-        _tmp10 = math.cos(_tmp6)
-        _tmp11 = _tmp10 * _tmp3
-        _tmp12 = _tmp4 / _self[0] ** 2
-        _tmp13 = _tmp0 / _self[1] ** 2
+        _tmp9 = math.sin(_tmp6)
+        _tmp10 = math.cos(_tmp2)
+        _tmp11 = _tmp10 * _tmp7
+        _tmp12 = _tmp0 / _self[0] ** 2
+        _tmp13 = _tmp4 / _self[1] ** 2
         _tmp14 = _tmp13 * _tmp9
-        _tmp15 = _tmp11 * _tmp5
-        _tmp16 = _tmp5 * _tmp8
-        _tmp17 = _tmp1 * _tmp9
-        _tmp18 = _tmp17 * _tmp7
-        _tmp19 = _tmp1 * _tmp3
+        _tmp15 = _tmp1 * _tmp11
+        _tmp16 = _tmp1 * _tmp8
+        _tmp17 = _tmp5 * _tmp9
+        _tmp18 = _tmp17 * _tmp3
+        _tmp19 = _tmp5 * _tmp7
         _tmp20 = _tmp10 * _tmp17
 
         # Output terms
@@ -270,11 +270,11 @@ class CameraOps(object):
         _is_valid = max(
             0,
             min(
-                (0.0 if math.pi - abs(_tmp6) == 0 else math.copysign(1, math.pi - abs(_tmp6))),
+                (0.0 if math.pi - abs(_tmp2) == 0 else math.copysign(1, math.pi - abs(_tmp2))),
                 (
                     0.0
-                    if -abs(_tmp2) + (1.0 / 2.0) * math.pi == 0
-                    else math.copysign(1, -abs(_tmp2) + (1.0 / 2.0) * math.pi)
+                    if -abs(_tmp6) + (1.0 / 2.0) * math.pi == 0
+                    else math.copysign(1, -abs(_tmp6) + (1.0 / 2.0) * math.pi)
                 ),
             ),
         )
@@ -282,8 +282,8 @@ class CameraOps(object):
         _point_D_cal[0, 0] = -_tmp11 * _tmp12
         _point_D_cal[1, 0] = 0
         _point_D_cal[2, 0] = _tmp12 * _tmp8
-        _point_D_cal[0, 1] = _tmp14 * _tmp7
-        _point_D_cal[1, 1] = -_tmp13 * _tmp3
+        _point_D_cal[0, 1] = _tmp14 * _tmp3
+        _point_D_cal[1, 1] = -_tmp13 * _tmp7
         _point_D_cal[2, 1] = _tmp10 * _tmp14
         _point_D_cal[0, 2] = -_tmp15
         _point_D_cal[1, 2] = 0

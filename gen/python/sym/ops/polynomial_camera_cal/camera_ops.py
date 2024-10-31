@@ -119,7 +119,7 @@ class CameraOps(object):
             pixel_D_point: Derivative of pixel with respect to point
         """
 
-        # Total ops: 103
+        # Total ops: 101
 
         # Input arrays
         _self = self.data
@@ -133,18 +133,18 @@ class CameraOps(object):
             )
 
         # Intermediate terms (35)
-        _tmp0 = point[1, 0] ** 2
+        _tmp0 = point[0, 0] ** 2
         _tmp1 = max(epsilon, point[2, 0])
         _tmp2 = _tmp1 ** (-2)
         _tmp3 = _tmp0 * _tmp2
-        _tmp4 = point[0, 0] ** 2
+        _tmp4 = point[1, 0] ** 2
         _tmp5 = _tmp2 * _tmp4
         _tmp6 = _tmp3 + _tmp5 + epsilon
-        _tmp7 = 1.0 * _tmp6**3
-        _tmp8 = _tmp6**2
-        _tmp9 = 1.0 * _tmp8
+        _tmp7 = _tmp6**2
+        _tmp8 = 1.0 * _tmp7
+        _tmp9 = 1.0 * _tmp6**3
         _tmp10 = 1.0 * _self[5]
-        _tmp11 = _self[6] * _tmp9 + _self[7] * _tmp7 + _tmp10 * _tmp6 + 1.0
+        _tmp11 = _self[6] * _tmp8 + _self[7] * _tmp9 + _tmp10 * _tmp6 + 1.0
         _tmp12 = 1 / _tmp1
         _tmp13 = _tmp11 * _tmp12
         _tmp14 = _self[0] * _tmp13
@@ -152,24 +152,24 @@ class CameraOps(object):
         _tmp16 = _self[0] * point[0, 0]
         _tmp17 = _tmp12 * (1.0 * _tmp3 + 1.0 * _tmp5 + 1.0 * epsilon)
         _tmp18 = _self[1] * point[1, 0]
-        _tmp19 = _tmp12 * _tmp9
-        _tmp20 = _tmp12 * _tmp7
+        _tmp19 = _tmp12 * _tmp16
+        _tmp20 = _tmp12 * _tmp18
         _tmp21 = _tmp2 * point[0, 0]
-        _tmp22 = 2.0 * _self[5]
-        _tmp23 = _self[7] * _tmp8
-        _tmp24 = 6.0 * _tmp23
-        _tmp25 = _self[6] * _tmp6
-        _tmp26 = 4.0 * _tmp25
-        _tmp27 = _tmp12 * (_tmp21 * _tmp22 + _tmp21 * _tmp24 + _tmp21 * _tmp26)
+        _tmp22 = _self[7] * _tmp7
+        _tmp23 = 6.0 * _tmp22
+        _tmp24 = _self[6] * _tmp6
+        _tmp25 = 4.0 * _tmp24
+        _tmp26 = 2.0 * _self[5]
+        _tmp27 = _tmp21 * _tmp23 + _tmp21 * _tmp25 + _tmp21 * _tmp26
         _tmp28 = _tmp2 * point[1, 0]
-        _tmp29 = _tmp12 * (_tmp22 * _tmp28 + _tmp24 * _tmp28 + _tmp26 * _tmp28)
+        _tmp29 = _tmp23 * _tmp28 + _tmp25 * _tmp28 + _tmp26 * _tmp28
         _tmp30 = (
             0.0 if -epsilon + point[2, 0] == 0 else math.copysign(1, -epsilon + point[2, 0])
         ) + 1
         _tmp31 = (1.0 / 2.0) * _tmp11 * _tmp30
         _tmp32 = _tmp30 / _tmp1**3
         _tmp33 = -_tmp0 * _tmp32 - _tmp32 * _tmp4
-        _tmp34 = _tmp12 * (_tmp10 * _tmp33 + 3.0 * _tmp23 * _tmp33 + 2.0 * _tmp25 * _tmp33)
+        _tmp34 = _tmp12 * (_tmp10 * _tmp33 + 3.0 * _tmp22 * _tmp33 + 2.0 * _tmp24 * _tmp33)
 
         # Output terms
         _pixel = numpy.zeros(2)
@@ -197,15 +197,15 @@ class CameraOps(object):
         _pixel_D_cal[1, 3] = 1
         _pixel_D_cal[0, 4] = _tmp16 * _tmp17
         _pixel_D_cal[1, 4] = _tmp17 * _tmp18
-        _pixel_D_cal[0, 5] = _tmp16 * _tmp19
-        _pixel_D_cal[1, 5] = _tmp18 * _tmp19
-        _pixel_D_cal[0, 6] = _tmp16 * _tmp20
-        _pixel_D_cal[1, 6] = _tmp18 * _tmp20
+        _pixel_D_cal[0, 5] = _tmp19 * _tmp8
+        _pixel_D_cal[1, 5] = _tmp20 * _tmp8
+        _pixel_D_cal[0, 6] = _tmp19 * _tmp9
+        _pixel_D_cal[1, 6] = _tmp20 * _tmp9
         _pixel_D_point = numpy.zeros((2, 3))
-        _pixel_D_point[0, 0] = _tmp14 + _tmp16 * _tmp27
-        _pixel_D_point[1, 0] = _tmp18 * _tmp27
-        _pixel_D_point[0, 1] = _tmp16 * _tmp29
-        _pixel_D_point[1, 1] = _tmp15 + _tmp18 * _tmp29
+        _pixel_D_point[0, 0] = _tmp14 + _tmp19 * _tmp27
+        _pixel_D_point[1, 0] = _tmp20 * _tmp27
+        _pixel_D_point[0, 1] = _tmp19 * _tmp29
+        _pixel_D_point[1, 1] = _tmp15 + _tmp20 * _tmp29
         _pixel_D_point[0, 2] = -_self[0] * _tmp21 * _tmp31 + _tmp16 * _tmp34
-        _pixel_D_point[1, 2] = -_self[1] * _tmp28 * _tmp31 + _tmp18 * _tmp34
+        _pixel_D_point[1, 2] = -_tmp18 * _tmp2 * _tmp31 + _tmp18 * _tmp34
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point

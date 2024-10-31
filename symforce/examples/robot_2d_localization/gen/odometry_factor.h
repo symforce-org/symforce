@@ -32,21 +32,21 @@ void OdometryFactor(const sym::Pose2<Scalar>& pose_a, const sym::Pose2<Scalar>& 
   const Eigen::Matrix<Scalar, 4, 1>& _pose_b = pose_b.Data();
 
   // Intermediate terms (17)
-  const Scalar _tmp0 = -_pose_a[3] + _pose_b[3];
+  const Scalar _tmp0 = -_pose_a[2] + _pose_b[2];
   const Scalar _tmp1 = std::pow(_tmp0, Scalar(2));
-  const Scalar _tmp2 = -_pose_a[2] + _pose_b[2];
+  const Scalar _tmp2 = -_pose_a[3] + _pose_b[3];
   const Scalar _tmp3 = std::pow(_tmp2, Scalar(2));
   const Scalar _tmp4 = _tmp1 + _tmp3 + epsilon;
   const Scalar _tmp5 = std::sqrt(_tmp4);
   const Scalar _tmp6 = _tmp5 - dist;
   const Scalar _tmp7 = Scalar(1.0) / (_tmp5);
-  const Scalar _tmp8 = _tmp2 * _tmp7;
-  const Scalar _tmp9 = _tmp0 * _tmp7;
+  const Scalar _tmp8 = _tmp0 * _tmp7;
+  const Scalar _tmp9 = _tmp2 * _tmp7;
   const Scalar _tmp10 = Scalar(1.0) / (_tmp4);
-  const Scalar _tmp11 = _tmp10 * _tmp3;
+  const Scalar _tmp11 = _tmp1 * _tmp10;
   const Scalar _tmp12 = _tmp0 * _tmp10 * _tmp2;
   const Scalar _tmp13 = -_tmp12;
-  const Scalar _tmp14 = _tmp1 * _tmp10;
+  const Scalar _tmp14 = _tmp10 * _tmp3;
   const Scalar _tmp15 = _tmp6 * _tmp8;
   const Scalar _tmp16 = _tmp6 * _tmp9;
 
