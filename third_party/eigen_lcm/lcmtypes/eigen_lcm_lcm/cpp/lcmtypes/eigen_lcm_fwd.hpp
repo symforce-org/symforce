@@ -4,12 +4,13 @@ namespace eigen_lcm {
 class Matrix2d;
 class Matrix2f;
 class Matrix2i;
+class Matrix34d;
 class Matrix3d;
 class Matrix3f;
 class Matrix3i;
+class Matrix43f;
 class Matrix4d;
 class Matrix4f;
-class Matrix43f;
 class Matrix4i;
 class Matrix68f;
 class MatrixXd;

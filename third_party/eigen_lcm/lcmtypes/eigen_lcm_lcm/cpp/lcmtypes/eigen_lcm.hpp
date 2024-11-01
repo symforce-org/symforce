@@ -3,6 +3,7 @@
 #include <lcmtypes/eigen_lcm/Matrix2d.hpp>
 #include <lcmtypes/eigen_lcm/Matrix2f.hpp>
 #include <lcmtypes/eigen_lcm/Matrix2i.hpp>
+#include <lcmtypes/eigen_lcm/Matrix34d.hpp>
 #include <lcmtypes/eigen_lcm/Matrix3d.hpp>
 #include <lcmtypes/eigen_lcm/Matrix3f.hpp>
 #include <lcmtypes/eigen_lcm/Matrix3i.hpp>
