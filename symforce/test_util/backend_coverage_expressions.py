@@ -11,7 +11,7 @@ import symforce.symbolic as sf
 from symforce import typing as T
 
 
-def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]:
+def backend_test_function(non_standard_unary_ops, x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]:
     """
     Given input symbols `x` and `y`, return a list of expressions which provide good test coverage
     over symbolic functions supported by symforce.
@@ -23,23 +23,23 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
     just the printer itself.
     """
     constants = (
-        sf.S.Zero,
-        sf.S.One,
-        sf.S.Half,
+        0.0,
+        1.0,
+        0.5,
         1.6,
         sf.Rational(11, 52),
         sf.S.Exp1,
-        1 / sf.log(2),
-        sf.log(2),
-        sf.log(10),
+        1.0 / sf.log(2.0),
+        sf.log(2.0),
+        sf.log(10.0),
         sf.S.Pi,
-        sf.S.Pi / 2,
-        sf.S.Pi / 4,
-        1 / sf.S.Pi,
-        2 / sf.S.Pi,
-        2 / sf.sqrt(sf.S.Pi),
+        sf.S.Pi / 2.0,
+        sf.S.Pi / 4.0,
+        1.0 / sf.S.Pi,
+        2.0 / sf.S.Pi,
+        2.0 / sf.sqrt(sf.S.Pi),
         sf.sqrt(2),
-        1 / sf.sqrt(2),
+        1.0 / sf.sqrt(2),
     )
 
     unary_ops = (
@@ -58,16 +58,12 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         sf.floor,
         sf.ceiling,
         sf.sqrt,
-        sf.sympy.loggamma,
-        sf.sympy.erfc,
         sf.sympy.asinh,
         sf.sympy.acosh,
         sf.sympy.atanh,
-        sf.sympy.erf,
-        sf.sympy.gamma,
         lambda x: sf.Mod(x, 5.5),
-        lambda x: x + 1,
-        lambda x: 2 * x,
+        lambda x: x + 1.0,
+        lambda x: 2.0 * x,
         lambda x: x**2,
         lambda x: x**3,
         lambda x: x**4,
@@ -75,7 +71,7 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         lambda x: x**sf.S.Half,
         lambda x: x ** sf.Rational(3, 2),
         lambda x: sf.Max(0, x).diff(x),  # The heaviside function
-    )
+    ) + non_standard_unary_ops
 
     binary_ops = (
         sf.sympy.atan2,

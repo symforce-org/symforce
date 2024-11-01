@@ -12,7 +12,6 @@ from ruff.__main__ import find_ruff_bin
 
 from symforce import typing as T
 
-
 def format_cpp(file_contents: str, filename: str) -> str:
     """
     Autoformat a given C++ file using clang-format
@@ -113,3 +112,46 @@ def format_py_dir(dirname: T.Openable) -> None:
         env=dict(os.environ, RUFF_NO_CACHE="true"),
         text=True,
     )
+
+_rustfmt_path: T.Optional[Path] = None
+
+def _find_rustfmt() -> Path:
+    """
+    Find the rustfmt binary
+
+    """
+    global _rustfmt_path  # pylint: disable=global-statement
+
+    if _rustfmt_path is not None:
+        return _rustfmt_path
+
+    rustfmt = shutil.which("rustfmt")
+    if rustfmt is None:
+        raise FileNotFoundError("Could not find rustfmt") from ex
+    rustfmt = Path(rustfmt)
+
+    _rustfmt_path = rustfmt
+
+    return rustfmt
+
+def format_rust(file_contents: str, filename: str) -> str:
+    """
+    Autoformat a given Rust file using rustfmt.
+
+    Args:
+        filename: A name that this file might have on disk; this does not have to be a real path,
+            it's only used for ruff to find the correct style file (by traversing upwards from this
+            location)
+    """
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode="w", delete=True) as f:
+        f.write(file_contents)
+        f.flush()
+        result = subprocess.run(
+            [_find_rustfmt(), f.name, "--emit", "stdout"],
+            input=file_contents,
+            stdout=subprocess.PIPE,
+            check=True,
+            text=True,
+        )
+        return "\n".join(result.stdout.split("\n")[1:])

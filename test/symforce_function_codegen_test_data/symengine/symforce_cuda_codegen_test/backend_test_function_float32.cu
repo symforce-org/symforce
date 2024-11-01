@@ -35,7 +35,7 @@ __host__ __device__ void BackendTestFunctionFloat32(
     float* const __restrict__ res53, float* const __restrict__ res54,
     float* const __restrict__ res55, float* const __restrict__ res56,
     float* const __restrict__ res57) {
-  // Total ops: 60
+  // Total ops: 61
 
   // Intermediate terms (5)
   const float _tmp0 = M_LN2;
@@ -46,15 +46,15 @@ __host__ __device__ void BackendTestFunctionFloat32(
 
   // Output terms (58)
   if (res0 != nullptr) {
-    *res0 = 0;
+    *res0 = 0.0F;
   }
 
   if (res1 != nullptr) {
-    *res1 = 1;
+    *res1 = 1.0F;
   }
 
   if (res2 != nullptr) {
-    *res2 = 1.0F / 2.0F;
+    *res2 = 0.5F;
   }
 
   if (res3 != nullptr) {
@@ -86,23 +86,23 @@ __host__ __device__ void BackendTestFunctionFloat32(
   }
 
   if (res10 != nullptr) {
-    *res10 = M_PI_2;
+    *res10 = 0.5F * M_PI;
   }
 
   if (res11 != nullptr) {
-    *res11 = M_PI_4;
+    *res11 = 0.25F * M_PI;
   }
 
   if (res12 != nullptr) {
-    *res12 = _tmp1;
+    *res12 = 1.0F * _tmp1;
   }
 
   if (res13 != nullptr) {
-    *res13 = 2 * _tmp1;
+    *res13 = 2.0F * _tmp1;
   }
 
   if (res14 != nullptr) {
-    *res14 = M_2_SQRTPI;
+    *res14 = 2.0F / sqrtf(M_PI);
   }
 
   if (res15 != nullptr) {
@@ -110,7 +110,7 @@ __host__ __device__ void BackendTestFunctionFloat32(
   }
 
   if (res16 != nullptr) {
-    *res16 = (1.0F / 2.0F) * _tmp2;
+    *res16 = 0.5F * _tmp2;
   }
 
   if (res17 != nullptr) {
@@ -174,71 +174,71 @@ __host__ __device__ void BackendTestFunctionFloat32(
   }
 
   if (res32 != nullptr) {
-    *res32 = lgammaf(x);
+    *res32 = asinhf(x);
   }
 
   if (res33 != nullptr) {
-    *res33 = erfcf(x);
+    *res33 = acoshf(x);
   }
 
   if (res34 != nullptr) {
-    *res34 = asinhf(x);
+    *res34 = atanhf(x);
   }
 
   if (res35 != nullptr) {
-    *res35 = acoshf(x);
+    *res35 = x - 5.5F * floorf(0.181818182F * x);
   }
 
   if (res36 != nullptr) {
-    *res36 = atanhf(x);
+    *res36 = x + 1.0F;
   }
 
   if (res37 != nullptr) {
-    *res37 = erff(x);
+    *res37 = 2.0F * x;
   }
 
   if (res38 != nullptr) {
-    *res38 = tgammaf(x);
+    *res38 = powf(x, 2);
   }
 
   if (res39 != nullptr) {
-    *res39 = x - 5.5F * floorf(0.181818182F * x);
+    *res39 = powf(x, 3);
   }
 
   if (res40 != nullptr) {
-    *res40 = x + 1;
+    *res40 = powf(x, 4);
   }
 
   if (res41 != nullptr) {
-    *res41 = 2 * x;
+    *res41 = powf(x, 5);
   }
 
   if (res42 != nullptr) {
-    *res42 = powf(x, 2);
+    *res42 = _tmp3;
   }
 
   if (res43 != nullptr) {
-    *res43 = powf(x, 3);
+    *res43 = powf(x, 3.0F / 2.0F);
   }
 
   if (res44 != nullptr) {
-    *res44 = powf(x, 4);
+    *res44 = (1.0F / 2.0F) * (((x) > 0) - ((x) < 0)) + 1.0F / 2.0F;
   }
 
   if (res45 != nullptr) {
-    *res45 = powf(x, 5);
+    *res45 = lgammaf(x);
   }
 
   if (res46 != nullptr) {
-    *res46 = _tmp3;
+    *res46 = erfcf(x);
   }
 
   if (res47 != nullptr) {
-    *res47 = powf(x, 3.0F / 2.0F);
+    *res47 = erff(x);
   }
 
   if (res48 != nullptr) {
-    *res48 = (1.0F / 2.0F) * (((x) > 0) - ((x) < 0)) + 1.0F / 2.0F;
+    *res48 = tgammaf(x);
   }
 
   if (res49 != nullptr) {

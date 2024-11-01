@@ -34,6 +34,7 @@ class FileType(enum.Enum):
     MAKEFILE = enum.auto()
     TYPESCRIPT = enum.auto()
     TOML = enum.auto()
+    RUST = enum.auto()
 
     @staticmethod
     def from_extension(extension: str) -> FileType:
@@ -53,6 +54,8 @@ class FileType(enum.Enum):
             return FileType.TYPESCRIPT
         elif extension == "toml":
             return FileType.TOML
+        elif extension == "rs":
+            return FileType.RUST
         else:
             raise ValueError(f"Could not get FileType from extension {extension}")
 
@@ -69,7 +72,7 @@ class FileType(enum.Enum):
         """
         Return the comment prefix for this file type.
         """
-        if self in (FileType.CPP, FileType.CUDA, FileType.LCM):
+        if self in (FileType.CPP, FileType.CUDA, FileType.LCM, FileType.RUST):
             return "//"
         elif self in (FileType.PYTHON, FileType.PYTHON_INTERFACE, FileType.TOML):
             return "#"
@@ -104,6 +107,8 @@ class FileType(enum.Enum):
             return format_util.format_py(file_contents, filename=str(CURRENT_DIR / format_filename))
         elif self == FileType.LCM:
             return file_contents
+        elif self == FileType.RUST:
+            return format_util.format_rust(file_contents, filename=str(CURRENT_DIR / format_filename))
         else:
             raise NotImplementedError(f"Unknown autoformatter for {self}")
 

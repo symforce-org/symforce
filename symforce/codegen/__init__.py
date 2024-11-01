@@ -8,6 +8,7 @@ Package for executable code generation from symbolic expressions.
 """
 
 from .backends.cpp.cpp_config import CppConfig
+from .backends.rust.rust_config import RustConfig
 from .backends.python.python_config import PythonConfig
 from .codegen import Codegen
 from .codegen import CodeGenerationException

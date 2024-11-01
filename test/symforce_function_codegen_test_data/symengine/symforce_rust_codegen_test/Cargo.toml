@@ -1,0 +1,7 @@
+[package]
+name = "symforce_rust_codegen_test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "0"
