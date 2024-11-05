@@ -21,11 +21,11 @@
 
 {%- macro format_vector(T, name, spec) -%}
     {% set size = T.SHAPE[0] * T.SHAPE[1] %}
-    na::SVector::<{{ format_scalar(spec) }}, {{ size }}>
+    nalgebra::SVector::<{{ format_scalar(spec) }}, {{ size }}>
 {%- endmacro -%}
 
 {%- macro format_matrix(T, name, spec) -%}
-    na::SMatrix::<{{ format_scalar(spec) }}, {{ T.SHAPE[0] }}, {{ T.SHAPE[1] }}>
+    nalgebra::SMatrix::<{{ format_scalar(spec) }}, {{ T.SHAPE[0] }}, {{ T.SHAPE[1] }}>
 {%- endmacro -%}
 
 {%- macro format_typename(name, type, spec) -%}
@@ -229,14 +229,14 @@
         {% set T_return = typing_util.get_type(type) %}
         {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
             {% if is_symbolic(type) or T_return.__name__ == "float" %}
-    return {{ terms[0][1] }};
+            {{ terms[0][1] }};
             {% elif issubclass(T_return, Matrix) %}
                 {% set size = T_return.SHAPE[0] * T_return.SHAPE[1] %}
-    return make_{{ format_vector(T_return, name, spec) }}(
+                {{ format_vector(T_return, name, spec) }}::new(
                 {% for lhs, rhs in terms %}
         {{ rhs }}{% if not loop.last %},{% endif %}
                 {% endfor %}
-    );
+    )
             {% else %}
             {{ raise("Cannot return an output of type {}: CUDA backend only supports returning scalars, or vectors up to size 4 as CUDA vectors; other output types must be output arguments.".format(T_return)) }}
             {% endif %}

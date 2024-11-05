@@ -36,9 +36,19 @@ class SymforceRustCodegenTest(TestCase):
     """
 
     def test_codegen(self) -> None:
+        def rust_func(vec3: sf.V3, mat33: sf.M33) -> sf.V3:
+            return mat33 * vec3
+
         output_dir = self.make_output_dir("symforce_rust_codegen_test_")
 
         scalars = (ScalarType.FLOAT, ScalarType.DOUBLE)
+
+        # Generate the symbolic backend test function
+        Codegen.function(
+            rust_func,
+            config=RustConfig(scalar_type=ScalarType.DOUBLE),
+            name=f"vector_matrix_fun",
+        ).generate_function(output_dir, skip_directory_nesting=True)
 
         # Generate the symbolic backend test function
         for scalar in scalars:
@@ -50,6 +60,26 @@ class SymforceRustCodegenTest(TestCase):
 
         self.compare_or_update_directory(output_dir, TEST_DATA_DIR)
 
+        if self.should_update():
+            with open(TEST_DATA_DIR / "../Cargo.toml", "w") as f:
+                f.write(
+                    """
+[package]
+name = "symforce_rust_codegen_test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "0"
+""")
+
+        with open(TEST_DATA_DIR / "lib.rs", "w") as f:
+            f.write(
+                """
+mod backend_test_function_float32;
+mod backend_test_function_float64;
+mod vector_matrix_fun;
+""")
 
 if __name__ == "__main__":
     SymforceRustCodegenTest.main()

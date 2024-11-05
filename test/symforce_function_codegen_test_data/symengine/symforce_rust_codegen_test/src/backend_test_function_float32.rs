@@ -5,9 +5,7 @@
 // Do NOT modify by hand.
 // -----------------------------------------------------------------------------
 
-mod sym {
-
-    use nalgebra as na;
+pub mod sym {
 
     ///
     /// Given input symbols `x` and `y`, return a list of expressions which provide good test coverage

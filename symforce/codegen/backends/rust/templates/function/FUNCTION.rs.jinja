@@ -6,9 +6,7 @@
 {%- import "../util/util.jinja" as util with context -%}
 
 
-mod {{ spec.namespace }} {
-
-    use nalgebra as na;
+pub mod {{ spec.namespace }} {
 
 {% if spec.docstring %}
 {{ util.print_docstring(spec.docstring) }}
