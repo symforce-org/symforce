@@ -61,7 +61,7 @@
         {% elif issubclass(T, Matrix) %}
             {{ format_vector(T, spec.return_key, spec) }}
         {% else %}
-            {{ raise ("Unsupported return type: {}".format(T)) }}
+            {{ raise("Unsupported return type: {}".format(T)) }}
         {% endif %}
     {%- else -%}
         ()
@@ -238,7 +238,7 @@
                 {% endfor %}
     )
             {% else %}
-            {{ raise("Cannot return an output of type {}: CUDA backend only supports returning scalars, or vectors up to size 4 as CUDA vectors; other output types must be output arguments.".format(T_return)) }}
+            {{ raise("Cannot return an output of type {}: The Rust backend only supports returning scalars, vectors, and matrices.".format(T_return)) }}
             {% endif %}
         {% endif %}
     {% endfor %}

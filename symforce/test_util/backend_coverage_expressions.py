@@ -11,7 +11,7 @@ import symforce.symbolic as sf
 from symforce import typing as T
 
 
-def backend_test_function(non_standard_unary_ops, x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]:
+def backend_test_function(non_standard_unary_ops: T.List[T.Any], x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]:
     """
     Given input symbols `x` and `y`, return a list of expressions which provide good test coverage
     over symbolic functions supported by symforce.
@@ -23,26 +23,26 @@ def backend_test_function(non_standard_unary_ops, x: sf.Scalar, y: sf.Scalar) ->
     just the printer itself.
     """
     constants = (
-        0.0,
-        1.0,
-        0.5,
+        sf.S.Zero,
+        sf.S.One,
+        sf.S.Half,
         1.6,
         sf.Rational(11, 52),
         sf.S.Exp1,
-        1.0 / sf.log(2.0),
-        sf.log(2.0),
-        sf.log(10.0),
+        1 / sf.log(2),
+        sf.log(2),
+        sf.log(10),
         sf.S.Pi,
-        sf.S.Pi / 2.0,
-        sf.S.Pi / 4.0,
-        1.0 / sf.S.Pi,
-        2.0 / sf.S.Pi,
-        2.0 / sf.sqrt(sf.S.Pi),
+        sf.S.Pi / 2,
+        sf.S.Pi / 4,
+        1 / sf.S.Pi,
+        2 / sf.S.Pi,
+        2 / sf.sqrt(sf.S.Pi),
         sf.sqrt(2),
-        1.0 / sf.sqrt(2),
+        1 / sf.sqrt(2),
     )
 
-    unary_ops = (
+    unary_ops = [
         sf.Abs,
         sf.sin,
         sf.cos,
@@ -71,7 +71,7 @@ def backend_test_function(non_standard_unary_ops, x: sf.Scalar, y: sf.Scalar) ->
         lambda x: x**sf.S.Half,
         lambda x: x ** sf.Rational(3, 2),
         lambda x: sf.Max(0, x).diff(x),  # The heaviside function
-    ) + non_standard_unary_ops
+    ] + non_standard_unary_ops
 
     binary_ops = (
         sf.sympy.atan2,

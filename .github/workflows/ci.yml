@@ -88,6 +88,10 @@ jobs:
               libgmp-dev \
               pandoc
 
+      - name: Install rust
+        run: |
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
       # NOTE(brad): libunwind-dev is a broken dependency of libgoogle-glog-dev, itself
       # a dependency of ceres. Without this step on jammy, apt-get install libgoogle-glog-dev
       # would fail. If this step could be removed and still have the build succeed, it should.

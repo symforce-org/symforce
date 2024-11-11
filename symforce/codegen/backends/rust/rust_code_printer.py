@@ -23,7 +23,7 @@ class ScalarType(Enum):
 
 class RustCodePrinter(SympyRustCodePrinter):
     """
-    SymForce code printer for Rust. Based on the SymPy C printer.
+    SymForce code printer for Rust. Based on the SymPy Rust printer.
     """
 
     def __init__(
@@ -48,14 +48,52 @@ class RustCodePrinter(SympyRustCodePrinter):
 
         setattr(self, method_name, _print_expr)
 
+    def _print(self, expr: sympy.Expr, **kwargs):
+        # For whatever reason S.Zero is not a sympy.Integer, so we need to handle it separately
+        # by returning "0.0" instead of "0" to avoid compilation errors.
+        if expr == S.Zero:
+            return "0.0"
+        return super()._print(expr, **kwargs)
+
+    def _print_Integer(self, expr: sympy.Integer) -> T.Any:
+        """
+        Customizations:
+            * Cast all integers to either f32 or f64 because Rust does not have implicit casting
+            and needs to know the type of the literal at compile time. We assume that we are only
+            ever operating on floats in SymForce which should make this safe.
+        """
+        if self.scalar_type is float32:
+            return f"{expr.p}_f32"
+        if self.scalar_type is float64:
+            return f"{expr.p}_f64"
+        assert False, f"Scalar type {self.scalar_type} not supported"
+
+    def _print_Pow(self, expr):
+
+        if expr.exp.is_rational:
+            power = self._print_Rational(expr.exp)
+            func = "powf"
+            return f"{self._print(expr.base)}.{func}({power})"
+        else:
+            power = self._print(expr.exp)
+
+        if expr.exp.is_integer:
+            func = "powi"
+        else:
+            func = "powf"
+
+        return f"{expr.base}.{func}({power})"
 
     def _print_ImaginaryUnit(self, expr: sympy.Expr) -> str:
-        raise NotImplementedError(
-            "You tried to print an expression that contains the imaginary unit `i`.  SymForce does "
-            "not support complex numbers in Rust"
-        )
+        """
+        Customizations:
+            * Print 1i instead of I
+            * Cast to Scalar, since the literal is of type std::complex<double>
+        """
+        return "Scalar(1i)"
 
-    def _print_Float(self, flt: sympy.Float) -> str:
+
+    def _print_Float(self, flt: sympy.Float) -> T.Any:
         """
         Customizations:
             * Cast all literals to Scalar at compile time instead of using a suffix at codegen time
@@ -103,7 +141,7 @@ class RustCodePrinter(SympyRustCodePrinter):
         elif self.scalar_type is float64:
             float_suffix = 'f64'
 
-        return '%d_%s/%d.0' % (p, float_suffix, q)
+        return f"({p}_{float_suffix}/{q}_{float_suffix})"
 
 
     def _print_Exp1(self, expr, _type=False):

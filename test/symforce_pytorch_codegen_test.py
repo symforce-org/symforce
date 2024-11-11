@@ -7,6 +7,8 @@ import symforce
 
 symforce.set_epsilon_to_symbol()
 
+import functools
+
 import symforce.symbolic as sf
 from symforce import path_util
 from symforce import typing as T
@@ -46,7 +48,8 @@ class SymforcePyTorchCodegenTest(TestCase):
 
         # Generate the symbolic backend test function
         Codegen.function(
-            backend_test_function, config=PyTorchConfig(), name="backend_test_function"
+            functools.partial(backend_test_function, [sf.sympy.loggamma, sf.sympy.erfc, sf.sympy.erf, sf.sympy.gamma]),
+            config=PyTorchConfig(), name="backend_test_function"
         ).generate_function(output_dir, skip_directory_nesting=True)
 
         self.compare_or_update_directory(output_dir, TEST_DATA_DIR)

@@ -105,7 +105,7 @@ class SymforceCudaCodegenTest(TestCase):
         # Generate the symbolic backend test function
         for scalar in scalars:
             Codegen.function(
-                functools.partial(backend_test_function, (sf.sympy.loggamma, sf.sympy.erfc, sf.sympy.erf, sf.sympy.gamma)),
+                functools.partial(backend_test_function, [sf.sympy.loggamma, sf.sympy.erfc, sf.sympy.erf, sf.sympy.gamma]),
                 config=CudaConfig(inline=False, scalar_type=scalar),
                 name=f"backend_test_function_{scalar.value}",
             ).generate_function(output_dir, skip_directory_nesting=True)

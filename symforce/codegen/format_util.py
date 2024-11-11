@@ -127,12 +127,12 @@ def _find_rustfmt() -> Path:
 
     rustfmt = shutil.which("rustfmt")
     if rustfmt is None:
-        raise FileNotFoundError("Could not find rustfmt") from ex
-    rustfmt = Path(rustfmt)
+        raise FileNotFoundError("Could not find rustfmt")
 
-    _rustfmt_path = rustfmt
-
-    return rustfmt
+    # Ignore the type because mypy can't reason about the fact that we just checked that rustfmt
+    # is not None.
+    _rustfmt_path = Path(rustfmt)
+    return _rustfmt_path
 
 def format_rust(file_contents: str, filename: str) -> str:
     """
@@ -143,15 +143,11 @@ def format_rust(file_contents: str, filename: str) -> str:
             it's only used for ruff to find the correct style file (by traversing upwards from this
             location)
     """
-    import tempfile
-    with tempfile.NamedTemporaryFile(mode="w", delete=True) as f:
-        f.write(file_contents)
-        f.flush()
-        result = subprocess.run(
-            [_find_rustfmt(), f.name, "--emit", "stdout"],
-            input=file_contents,
-            stdout=subprocess.PIPE,
-            check=True,
-            text=True,
-        )
-        return "\n".join(result.stdout.split("\n")[1:])
+    result = subprocess.run(
+        [_find_rustfmt()],
+        input=file_contents,
+        stdout=subprocess.PIPE,
+        check=True,
+        text=True,
+    )
+    return result.stdout
