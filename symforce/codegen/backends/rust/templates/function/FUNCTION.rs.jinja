@@ -8,6 +8,8 @@
 
 pub mod {{ spec.namespace }} {
 
+#[allow(unused_parens)]
+
 {% if spec.docstring %}
 {{ util.print_docstring(spec.docstring) }}
 {% endif %}

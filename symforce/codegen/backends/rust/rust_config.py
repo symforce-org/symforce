@@ -28,7 +28,7 @@ class RustConfig(CodegenConfig):
 
     doc_comment_line_prefix: str = "///"
     line_length: int = 100
-    scalar_type: rust_code_printer.ScalarType = rust_code_printer.ScalarType.FLOAT
+    scalar_type: rust_code_printer.ScalarType = rust_code_printer.ScalarType.DOUBLE
     use_eigen_types: bool = False
 
     @classmethod

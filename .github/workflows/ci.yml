@@ -90,7 +90,9 @@ jobs:
 
       - name: Install rust
         run: |
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > installer.sh
+            chmod +x installer.sh
+            ./installer.sh -y
 
       # NOTE(brad): libunwind-dev is a broken dependency of libgoogle-glog-dev, itself
       # a dependency of ceres. Without this step on jammy, apt-get install libgoogle-glog-dev

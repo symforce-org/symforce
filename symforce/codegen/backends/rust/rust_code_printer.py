@@ -49,11 +49,10 @@ class RustCodePrinter(SympyRustCodePrinter):
         setattr(self, method_name, _print_expr)
 
     def _print(self, expr: sympy.Expr, **kwargs):
-        # For whatever reason S.Zero is not a sympy.Integer, so we need to handle it separately
-        # by returning "0.0" instead of "0" to avoid compilation errors.
-        if expr == S.Zero:
-            return "0.0"
         return super()._print(expr, **kwargs)
+
+    def _print_Zero(self, expr: sympy.Expr) -> str:
+        return "0.0"
 
     def _print_Integer(self, expr: sympy.Integer) -> T.Any:
         """

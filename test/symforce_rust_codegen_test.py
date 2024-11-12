@@ -63,23 +63,6 @@ def write_lib_rs(output_dir: Path) -> None:
         )
     )
 
-def cargo_build(output_dir: Path) -> None:
-    """Run cargo build in the output directory
-
-    Note that this fails when called from within a temporary directory!
-    """
-    result = subprocess.run(
-        ["cargo", "build", "--manifest-path", output_dir / "Cargo.toml"],
-        capture_output=True,
-        text=True,
-    )
-
-    # Always clean up after ourselves even if the build fails.
-    cargo_clean(output_dir)
-
-    if result.returncode != 0:
-        assert False, f"cargo build failed:\n{result.stderr}"
-
 
 
 def cargo_clean(output_dir: Path) -> None:
@@ -138,7 +121,31 @@ class SymforceRustCodegenTest(TestCase):
         # Ideally we would build inside the temporary directory, but cargo build fails there for some reason
         # likely to do with symlinks. Instead we build in the test data directory and make sure that we clean up
         # after ourselves.
-        cargo_build(TEST_DATA_DIR)
+        self.cargo_build(TEST_DATA_DIR)
+
+
+    def cargo_build(self, output_dir: Path) -> None:
+        """Run cargo build in the output directory
+
+        Note that this fails when called from within a temporary directory!
+        """
+
+        # Check if cargo is installed and skip the test if it isn't.
+        cargo = shutil.which("cargo")
+        if cargo is None:
+            return
+
+        result = subprocess.run(
+            ["cargo", "build", "--manifest-path", output_dir / "Cargo.toml"],
+            capture_output=True,
+            text=True,
+        )
+
+        # Always clean up after ourselves even if the build fails.
+        cargo_clean(output_dir)
+
+        if result.returncode != 0:
+            self.fail(f"cargo build failed:\n{result.stderr}")
 
 if __name__ == "__main__":
     SymforceRustCodegenTest.main()

@@ -6,6 +6,8 @@
 
 pub mod sym {
 
+    #[allow(unused_parens)]
+
     ///
     /// Given input symbols `x` and `y`, return a list of expressions which provide good test coverage
     /// over symbolic functions supported by symforce.
@@ -229,11 +231,11 @@ pub mod sym {
         }
 
         if let Some(res36) = res36 {
-            *res36 = x + 1.0_f64;
+            *res36 = x + 1_f64;
         }
 
         if let Some(res37) = res37 {
-            *res37 = 2.0_f64 * x;
+            *res37 = 2_f64 * x;
         }
 
         if let Some(res38) = res38 {
