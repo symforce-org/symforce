@@ -226,11 +226,11 @@ __host__ __device__ void BackendTestFunctionFloat32(
   }
 
   if (res45 != nullptr) {
-    *res45 = lgammaf(x);
+    *res45 = erfcf(x);
   }
 
   if (res46 != nullptr) {
-    *res46 = erfcf(x);
+    *res46 = lgammaf(x);
   }
 
   if (res47 != nullptr) {

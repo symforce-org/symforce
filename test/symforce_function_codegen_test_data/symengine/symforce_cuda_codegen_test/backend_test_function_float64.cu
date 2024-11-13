@@ -228,11 +228,11 @@ __host__ __device__ void BackendTestFunctionFloat64(
   }
 
   if (res45 != nullptr) {
-    *res45 = lgamma(x);
+    *res45 = erfc(x);
   }
 
   if (res46 != nullptr) {
-    *res46 = erfc(x);
+    *res46 = lgamma(x);
   }
 
   if (res47 != nullptr) {

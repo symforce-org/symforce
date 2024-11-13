@@ -23,7 +23,14 @@ class RustConfig(CodegenConfig):
     Args:
         doc_comment_line_prefix: Prefix applied to each line in a docstring
         line_length: Maximum allowed line length in docstrings; used for formatting docstrings.
-        scalar_type: The scalar type to use (float or double)
+        scala_type: The scalar type to use (float or double)
+        use_eigen_types: Use eigen_lcm types for vectors instead of lists
+        render_template_config: Configuration for template rendering, see RenderTemplateConfig for
+                                more information
+        cse_optimizations: Optimizations argument to pass to :func:`sf.cse <symforce.symbolic.cse>`
+        zero_epsilon_behavior: What should codegen do if a default epsilon is not set?
+        normalize_results: Should function outputs be explicitly projected onto the manifold before
+                           returning?
     """
 
     doc_comment_line_prefix: str = "///"
