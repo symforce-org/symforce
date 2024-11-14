@@ -7,8 +7,8 @@ import symforce
 
 symforce.set_epsilon_to_symbol()
 
-import itertools
 import functools
+import itertools
 
 import symforce.symbolic as sf
 from symforce import path_util
@@ -105,7 +105,10 @@ class SymforceCudaCodegenTest(TestCase):
         # Generate the symbolic backend test function
         for scalar in scalars:
             Codegen.function(
-                functools.partial(backend_test_function, [sf.sympy.erfc, sf.sympy.loggamma, sf.sympy.erf, sf.sympy.gamma]),
+                functools.partial(
+                    backend_test_function,
+                    [sf.sympy.erfc, sf.sympy.loggamma, sf.sympy.erf, sf.sympy.gamma],
+                ),
                 config=CudaConfig(inline=False, scalar_type=scalar),
                 name=f"backend_test_function_{scalar.value}",
             ).generate_function(output_dir, skip_directory_nesting=True)

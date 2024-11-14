@@ -8,10 +8,10 @@ import symforce
 symforce.set_epsilon_to_symbol()
 
 import functools
-from pathlib import Path
 import shutil
 import subprocess
 import textwrap
+from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import path_util
@@ -49,8 +49,6 @@ def write_cargo_toml(output_dir: Path) -> None:
     )
 
 
-
-
 def write_lib_rs(output_dir: Path) -> None:
     """Write the lib.rs file that includes the generated functions."""
     (output_dir / "lib.rs").write_text(
@@ -62,7 +60,6 @@ def write_lib_rs(output_dir: Path) -> None:
             """
         )
     )
-
 
 
 def cargo_clean(output_dir: Path) -> None:
@@ -122,7 +119,6 @@ class SymforceRustCodegenTest(TestCase):
         # likely to do with symlinks. Instead we build in the test data directory and make sure that we clean up
         # after ourselves.
         self.cargo_build(TEST_DATA_DIR)
-
 
     def cargo_build(self, output_dir: Path) -> None:
         """Run cargo build in the output directory

@@ -11,7 +11,9 @@ import symforce.symbolic as sf
 from symforce import typing as T
 
 
-def backend_test_function(non_standard_unary_ops: T.List[T.Any], x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]:
+def backend_test_function(
+    non_standard_unary_ops: T.List[T.Any], x: sf.Scalar, y: sf.Scalar
+) -> T.Tuple[sf.Scalar, ...]:
     """
     Given input symbols `x` and `y`, return a list of expressions which provide good test coverage
     over symbolic functions supported by symforce.

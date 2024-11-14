@@ -12,6 +12,7 @@ from ruff.__main__ import find_ruff_bin
 
 from symforce import typing as T
 
+
 def format_cpp(file_contents: str, filename: str) -> str:
     """
     Autoformat a given C++ file using clang-format
@@ -113,7 +114,9 @@ def format_py_dir(dirname: T.Openable) -> None:
         text=True,
     )
 
+
 _rustfmt_path: T.Optional[Path] = None
+
 
 def _find_rustfmt() -> Path:
     """
@@ -133,6 +136,7 @@ def _find_rustfmt() -> Path:
     # is not None.
     _rustfmt_path = Path(rustfmt)
     return _rustfmt_path
+
 
 def format_rust(file_contents: str, filename: str) -> str:
     """

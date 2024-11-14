@@ -108,7 +108,9 @@ class FileType(enum.Enum):
         elif self == FileType.LCM:
             return file_contents
         elif self == FileType.RUST:
-            return format_util.format_rust(file_contents, filename=str(CURRENT_DIR / format_filename))
+            return format_util.format_rust(
+                file_contents, filename=str(CURRENT_DIR / format_filename)
+            )
         else:
             raise NotImplementedError(f"Unknown autoformatter for {self}")
 
