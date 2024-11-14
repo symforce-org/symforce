@@ -91,7 +91,7 @@ class SymforceRustCodegenTest(TestCase):
 
     def test_codegen(self) -> None:
         def rust_func(vec3: sf.V3, mat33: sf.M33) -> sf.Matrix31:
-            return mat33 * vec3
+            return sf.Matrix31(mat33 * vec3)
 
         output_dir_base = self.make_output_dir("symforce_rust_codegen_test_")
         output_dir_src = output_dir_base / "src"
@@ -146,6 +146,7 @@ class SymforceRustCodegenTest(TestCase):
 
         if result.returncode != 0:
             self.fail(f"cargo build failed:\n{result.stderr}")
+
 
 if __name__ == "__main__":
     SymforceRustCodegenTest.main()

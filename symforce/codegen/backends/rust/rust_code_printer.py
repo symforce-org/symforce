@@ -43,18 +43,18 @@ class RustCodePrinter(SympyRustCodePrinter):
         method_name = f"_print_{str(expr)}"
 
         def _print_expr(expr: sympy.Expr) -> str:
-            expr_string = ", ".join(map(self._print, expr.args))
+            expr_string = ", ".join(map(self._print, expr.args)) # type: ignore
             return f"{name}({expr_string})"
 
         setattr(self, method_name, _print_expr)
 
-    def _print(self, expr: sympy.Expr, **kwargs):
+    def _print(self, expr: sympy.Expr, **kwargs: T.Any) -> str:
         return super()._print(expr, **kwargs)
 
     def _print_Zero(self, expr: sympy.Expr) -> str:
         return "0.0"
 
-    def _print_Integer(self, expr: sympy.Integer) -> T.Any:
+    def _print_Integer(self, expr: sympy.Integer, _type: T.Any = None) -> T.Any:
         """
         Customizations:
             * Cast all integers to either f32 or f64 because Rust does not have implicit casting
@@ -67,8 +67,7 @@ class RustCodePrinter(SympyRustCodePrinter):
             return f"{expr.p}_f64"
         assert False, f"Scalar type {self.scalar_type} not supported"
 
-    def _print_Pow(self, expr):
-
+    def _print_Pow(self, expr: T.Any, rational: T.Any = None) -> str:
         if expr.exp.is_rational:
             power = self._print_Rational(expr.exp)
             func = "powf"
@@ -92,7 +91,7 @@ class RustCodePrinter(SympyRustCodePrinter):
         return "Scalar(1i)"
 
 
-    def _print_Float(self, flt: sympy.Float) -> T.Any:
+    def _print_Float(self, flt: sympy.Float, _type: T.Any = None) -> T.Any:
         """
         Customizations:
             * Cast all literals to Scalar at compile time instead of using a suffix at codegen time
@@ -104,25 +103,27 @@ class RustCodePrinter(SympyRustCodePrinter):
 
         raise NotImplementedError(f"Scalar type {self.scalar_type} not supported")
 
-    def _print_Pi(self, expr, _type=False):
+    def _print_Pi(self, expr: T.Any, _type:bool=False) -> str:
         if self.scalar_type is float32:
             return f"core::f32::consts::PI"
         if self.scalar_type is float64:
             return f"core::f64::consts::PI"
+
+        raise NotImplementedError(f"Scalar type {self.scalar_type} not supported")
 
     def _print_Max(self, expr: sympy.Max) -> str:
         """
         Customizations:
             * The first argument calls the max method on the second argument.
         """
-        return "{}.max({})".format(self._print(expr.args[0]), self._print(expr.args[1]))
+        return "{}.max({})".format(self._print(expr.args[0]), self._print(expr.args[1])) # type: ignore
 
     def _print_Min(self, expr: sympy.Min) -> str:
         """
         Customizations:
             * The first argument calls the min method on the second argument.
         """
-        return "{}.min({})".format(self._print(expr.args[0]), self._print(expr.args[1]))
+        return "{}.min({})".format(self._print(expr.args[0]), self._print(expr.args[1])) # type: ignore
 
     def _print_log(self, expr: sympy.log) -> str:
         """
@@ -131,7 +132,7 @@ class RustCodePrinter(SympyRustCodePrinter):
         return "{}.ln()".format(self._print(expr.args[0]))
 
 
-    def _print_Rational(self, expr):
+    def _print_Rational(self, expr: sympy.Rational) -> str:
         p, q = int(expr.p), int(expr.q)
 
         float_suffix = None
@@ -143,8 +144,10 @@ class RustCodePrinter(SympyRustCodePrinter):
         return f"({p}_{float_suffix}/{q}_{float_suffix})"
 
 
-    def _print_Exp1(self, expr, _type=False):
+    def _print_Exp1(self, expr: T.Any, _type: bool=False) -> str:
         if self.scalar_type is float32:
             return 'core::f32::consts::E'
         elif self.scalar_type is float64:
             return 'core::f64::consts::E'
+
+        raise NotImplementedError(f"Scalar type {self.scalar_type} not supported")

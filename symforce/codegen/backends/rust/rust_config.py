@@ -65,3 +65,10 @@ class RustConfig(CodegenConfig):
         if shape[0] == 1:
             return f"{key}[{j}]"
         return f"{key}[({i}, {j})]"
+
+    @staticmethod
+    def format_eigen_lcm_accessor(key: str, i: int) -> str:
+        """
+        Format accessor for eigen_lcm types.
+        """
+        raise NotImplementedError("Rust does not support eigen_lcm")
