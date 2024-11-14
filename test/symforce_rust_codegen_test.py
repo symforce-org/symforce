@@ -15,9 +15,7 @@ from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import path_util
-from symforce import typing as T
 from symforce.codegen import Codegen
-from symforce.codegen import CodeGenerationException
 from symforce.codegen.backends.rust import RustConfig
 from symforce.codegen.backends.rust import ScalarType
 from symforce.test_util import TestCase
@@ -99,7 +97,7 @@ class SymforceRustCodegenTest(TestCase):
         Codegen.function(
             rust_func,
             config=RustConfig(scalar_type=ScalarType.DOUBLE),
-            name=f"vector_matrix_fun",
+            name="vector_matrix_fun",
         ).generate_function(output_dir_src, skip_directory_nesting=True)
 
         # Generate the symbolic backend test function
@@ -131,7 +129,7 @@ class SymforceRustCodegenTest(TestCase):
         if cargo is None:
             return
 
-        result = subprocess.run(
+        result = subprocess.run(  # pylint: disable=subprocess-run-check
             ["cargo", "build", "--manifest-path", output_dir / "Cargo.toml"],
             capture_output=True,
             text=True,

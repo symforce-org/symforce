@@ -8,9 +8,6 @@ from enum import Enum
 import sympy
 from sympy.codegen.ast import float32
 from sympy.codegen.ast import float64
-from sympy.codegen.ast import real
-from sympy.core.numbers import Rational
-from sympy.core.singleton import S
 from sympy.printing.rust import RustCodePrinter as SympyRustCodePrinter
 
 from symforce import typing as T
@@ -43,13 +40,10 @@ class RustCodePrinter(SympyRustCodePrinter):
         method_name = f"_print_{str(expr)}"
 
         def _print_expr(expr: sympy.Expr) -> str:
-            expr_string = ", ".join(map(self._print, expr.args))  # type: ignore
+            expr_string = ", ".join(map(self._print, expr.args))
             return f"{name}({expr_string})"
 
         setattr(self, method_name, _print_expr)
-
-    def _print(self, expr: sympy.Expr, **kwargs: T.Any) -> str:
-        return super()._print(expr, **kwargs)
 
     def _print_Zero(self, expr: sympy.Expr) -> str:
         return "0.0"
@@ -104,9 +98,9 @@ class RustCodePrinter(SympyRustCodePrinter):
 
     def _print_Pi(self, expr: T.Any, _type: bool = False) -> str:
         if self.scalar_type is float32:
-            return f"core::f32::consts::PI"
+            return "core::f32::consts::PI"
         if self.scalar_type is float64:
-            return f"core::f64::consts::PI"
+            return "core::f64::consts::PI"
 
         raise NotImplementedError(f"Scalar type {self.scalar_type} not supported")
 
@@ -115,14 +109,14 @@ class RustCodePrinter(SympyRustCodePrinter):
         Customizations:
             * The first argument calls the max method on the second argument.
         """
-        return "{}.max({})".format(self._print(expr.args[0]), self._print(expr.args[1]))  # type: ignore
+        return "{}.max({})".format(self._print(expr.args[0]), self._print(expr.args[1]))
 
     def _print_Min(self, expr: sympy.Min) -> str:
         """
         Customizations:
             * The first argument calls the min method on the second argument.
         """
-        return "{}.min({})".format(self._print(expr.args[0]), self._print(expr.args[1]))  # type: ignore
+        return "{}.min({})".format(self._print(expr.args[0]), self._print(expr.args[1]))
 
     def _print_log(self, expr: sympy.log) -> str:
         """
