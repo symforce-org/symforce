@@ -21,6 +21,18 @@ struct is_iterable<T, typename std::conditional<false, typename T::pointer, void
 template <typename T>
 constexpr bool is_iterable_v = is_iterable<T>::value;
 
+// Added for C++17 compatibility specifically for NVCC 11; likely an NVCC bug.
+// We use the existence of the clear() member function to differentiate between [arrays]
+// or [vectors and strings].
+template <typename T, typename = void>
+struct is_resizable : std::false_type {};
+
+template <typename T>
+struct is_resizable<T, decltype(std::declval<T&>().clear(), void())> : std::true_type {};
+
+template <typename T>
+constexpr bool is_resizable_v = is_resizable<T>::value;
+
 // Parse a positive integer index, return true if entire input was parsed successfully.
 inline bool parse_index(const char *const str, uint32_t &out)
 {
@@ -454,10 +466,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 
 // for arrays, lists. value of nullptr is special here, it means to delete at that index
 // forward declared because they recursively reference each other.
-template <typename T,
-          std::enable_if_t<is_iterable_v<T> &&
-                               std::is_member_function_pointer<decltype(&T::clear)>::value,
-                           bool> = true>
+template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bool> = true>
 __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value);
 
@@ -469,10 +478,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
                                                 T &item, const char *const value);
 
 // for vectors (handles resizing)
-template <
-    typename T,
-    std::enable_if_t<
-        is_iterable_v<T> && std::is_member_function_pointer<decltype(&T::clear)>::value, bool>>
+template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bool>>
 __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
