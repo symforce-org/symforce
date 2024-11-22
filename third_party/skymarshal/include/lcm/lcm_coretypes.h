@@ -65,7 +65,7 @@ union double_uint64 {
 typedef struct ___lcm_hash_ptr __lcm_hash_ptr;
 struct ___lcm_hash_ptr {
     const __lcm_hash_ptr *parent;
-    int64_t (*v)(void);
+    uint64_t (*v)(void);
 };
 
 #ifndef __cplusplus
