@@ -45,7 +45,16 @@ def snavely_reprojection_residual(
     # do that.
     point_cam = cam_T_world * point
 
-    p = sf.V2(point_cam[:2]) / sf.Max(-point_cam[2], epsilon)
+    # Normally in SymForce, you'd protect against division by 0 here, and enforce valid projection,
+    # e.g. by dividing by `sf.Max(point_cam[2], epsilon)`.  The BAL dataset has some poorly
+    # initialized cameras and points that project behind the camera; in that case doing that
+    # produces an unreasonably large residual here.
+    #
+    # Another way to deal with the (correct) large residual from attempting to project a point
+    # behind the camera is to use a robust loss function, such as a pseudo-Huber loss.  This would
+    # provide some gradient in the correct direction, but not an unbounded amount.  For simplicity,
+    # and to match the default setup for BAL, we don't do that here.
+    p = sf.V2(point_cam[:2]) / -point_cam[2]
 
     r = 1 + k1 * p.squared_norm() + k2 * p.squared_norm() ** 2
 

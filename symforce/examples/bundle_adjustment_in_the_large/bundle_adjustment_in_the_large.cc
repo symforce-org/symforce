@@ -3,10 +3,10 @@
  * This source code is under the Apache 2.0 license found in the LICENSE file.
  * ---------------------------------------------------------------------------- */
 
-#include <algorithm>
 #include <fstream>
 #include <vector>
 
+#include <Eigen/Core>
 #include <spdlog/spdlog.h>
 
 #include <sym/pose3.h>
@@ -16,58 +16,6 @@
 
 #include "./gen/keys.h"
 #include "./gen/snavely_reprojection_factor.h"
-
-/**
- * Calculate median position
- */
-Eigen::Vector3d CalculateMedianPosition(const sym::Valuesd& values, int num_cameras) {
-  if (num_cameras == 0) {
-    return Eigen::Vector3d::Zero();
-  }
-
-  std::vector<Eigen::Vector3d> positions;
-  positions.reserve(num_cameras);
-  for (int i = 0; i < num_cameras; i++) {
-    positions.push_back(values.At<sym::Pose3d>(sym::Keys::CAM_T_WORLD.WithSuper(i)).Position());
-  }
-
-  std::nth_element(
-      positions.begin(), positions.begin() + positions.size() / 2, positions.end(),
-      [](const Eigen::Vector3d& a, const Eigen::Vector3d& b) { return a.norm() < b.norm(); });
-
-  return positions[positions.size() / 2];
-}
-
-/**
- * Remove cameras that are far from the median
- * See https://github.com/symforce-org/symforce/issues/387
- */
-void FilterCameraOutliers(std::vector<sym::Factord>& factors, sym::Valuesd& values,
-                          int& num_cameras, double threshold = 10.0) {
-  std::vector<sym::Pose3d> camera_poses;
-  std::vector<sym::Factord> filtered_factors;
-
-  Eigen::Vector3d mean = CalculateMedianPosition(values, num_cameras);
-
-  int num_filtered_cameras = 0;
-  for (int i = 0; i < num_cameras; i++) {
-    sym::Pose3d pose = values.At<sym::Pose3d>(sym::Keys::CAM_T_WORLD.WithSuper(i));
-    double distance = (pose.Position() - mean).norm();
-
-    if (distance <= threshold) {
-      values.Set(sym::Keys::CAM_T_WORLD.WithSuper(num_filtered_cameras), pose);
-      values.Set(sym::Keys::INTRINSICS.WithSuper(num_filtered_cameras),
-                 values.At<Eigen::Vector3d>(sym::Keys::INTRINSICS.WithSuper(i)));
-
-      filtered_factors.push_back(factors[i]);
-
-      num_filtered_cameras++;
-    }
-  }
-
-  num_cameras = num_filtered_cameras;
-  factors = std::move(filtered_factors);
-}
 
 using namespace sym::Keys;
 
@@ -163,13 +111,14 @@ Problem ReadProblem(const std::string& filename) {
 
   values.Set(EPSILON, sym::kDefaultEpsilond);
 
-  FilterCameraOutliers(factors, values, num_cameras);
+  spdlog::info("Created problem with {} cameras, {} points, {} observations", num_cameras,
+               num_points, num_observations);
 
   return {std::move(factors), std::move(values), num_cameras, num_points, num_observations};
 }
 
 /**
- * Example usage: `bundle_adjustment_in_the_large_example data/problem-21-11315-pre.txt`
+ * Example usage: `bundle_adjustment_in_the_large_example data/trafalgar/problem-21-11315-pre.txt`
  */
 int main(int argc, char** argv) {
   SYM_ASSERT_EQ(argc, 2);

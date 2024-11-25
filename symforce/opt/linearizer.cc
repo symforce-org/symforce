@@ -284,11 +284,28 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
   }
 
   if (include_jacobians_) {
+    // NOTE(aaron): Eigen segfaults if exceeding the below limit.  It's cheap for us to check here
+    // beforehand instead of letting that happen.
+    SYM_ASSERT_LE(
+        jacobian_triplets.size(),
+        static_cast<size_t>(
+            std::numeric_limits<SparseLinearization<double>::Matrix::StorageIndex>::max()),
+        "SymForce currently only supports jacobians with fewer than 2^31 nonzeros.  Please turn "
+        "off include_jacobians, reduce the size of your problem, or open a PR");
     init_linearization_.jacobian.setFromTriplets(jacobian_triplets.begin(),
                                                  jacobian_triplets.end());
     SYM_ASSERT(init_linearization_.jacobian.isCompressed());
   }
 
+  // NOTE(aaron): Eigen segfaults if exceeding the below limit.  It's cheap for us to check here
+  // beforehand instead of letting that happen.
+  SYM_ASSERT_LE(
+      hessian_lower_triplets.size(),
+      static_cast<size_t>(
+          std::numeric_limits<SparseLinearization<double>::Matrix::StorageIndex>::max()),
+      "SymForce currently only supports hessians with fewer than 2^31 nonzeros (as "
+      "initially aggregated across all factors, i.e. counting entries touched by "
+      "multiple factors once per factor).  Please reduce the size of your problem, or open a PR");
   init_linearization_.hessian_lower.setFromTriplets(hessian_lower_triplets.begin(),
                                                     hessian_lower_triplets.end());
   SYM_ASSERT(init_linearization_.hessian_lower.isCompressed());
