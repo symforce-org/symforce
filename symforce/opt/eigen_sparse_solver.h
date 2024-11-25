@@ -105,6 +105,20 @@ class EigenSparseSolver {
   void AnalyzeSparsityPattern(const MatrixType& A) {
     solver_.analyzePattern(A);
   }
+
+  /**
+   * Accessor for the wrapped Eigen solver
+   */
+  const EigenSolver& Solver() const {
+    return solver_;
+  }
+
+  /**
+   * Accessor for the wrapped Eigen solver
+   */
+  EigenSolver& Solver() {
+    return solver_;
+  }
 };
 
 }  // namespace sym

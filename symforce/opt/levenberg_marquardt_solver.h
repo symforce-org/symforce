@@ -129,11 +129,11 @@ namespace sym {
  *   in the optimizer params.
  */
 template <typename ScalarType,
-          typename LinearSolverType = sym::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>>
+          typename _LinearSolverType = sym::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>>
 class LevenbergMarquardtSolver {
  public:
   using Scalar = ScalarType;
-  using LinearSolver = LinearSolverType;
+  using LinearSolverType = _LinearSolverType;
   using MatrixType = typename LinearSolverType::MatrixType;
   using StateType = internal::LevenbergMarquardtState<MatrixType>;
   using LinearizationType = Linearization<MatrixType>;
@@ -147,7 +147,7 @@ class LevenbergMarquardtSolver {
       : p_(p), id_(id), epsilon_(epsilon) {}
 
   LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon,
-                           const LinearSolver& linear_solver)
+                           const LinearSolverType& linear_solver)
       : p_(p), id_(id), epsilon_(epsilon), linear_solver_(linear_solver) {}
 
   void SetIndex(const index_t& index) {
@@ -184,6 +184,14 @@ class LevenbergMarquardtSolver {
   }
 
   void UpdateParams(const optimizer_params_t& p);
+
+  const LinearSolverType& LinearSolver() const {
+    return linear_solver_;
+  }
+
+  LinearSolverType& LinearSolver() {
+    return linear_solver_;
+  }
 
   // Run one iteration of the optimization. Returns the optimization status, which will be empty if
   // the optimization should not exit yet.
@@ -224,7 +232,7 @@ class LevenbergMarquardtSolver {
   // State blocks for the optimizer
   StateType state_;
 
-  LinearSolver linear_solver_{};
+  LinearSolverType linear_solver_{};
   bool solver_analyzed_{false};
 
   // Current elementwise max of the Hessian diagonal across all iterations, used for damping

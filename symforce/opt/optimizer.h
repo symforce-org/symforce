@@ -69,13 +69,13 @@ namespace sym {
  *
  * See symforce/test/symforce_optimizer_test.cc for more examples
  */
-template <typename ScalarType, typename NonlinearSolverType = LevenbergMarquardtSolver<ScalarType>>
+template <typename ScalarType, typename _NonlinearSolverType = LevenbergMarquardtSolver<ScalarType>>
 class Optimizer {
  public:
   using Scalar = ScalarType;
-  using NonlinearSolver = NonlinearSolverType;
-  using FailureReason = typename NonlinearSolver::FailureReason;
-  using MatrixType = typename NonlinearSolver::MatrixType;
+  using NonlinearSolverType = _NonlinearSolverType;
+  using FailureReason = typename NonlinearSolverType::FailureReason;
+  using MatrixType = typename NonlinearSolverType::MatrixType;
   using Stats = OptimizationStats<MatrixType>;
   using LinearizerType = internal::LinearizerSelector_t<MatrixType>;
 
@@ -253,6 +253,12 @@ class Optimizer {
   LinearizerType& Linearizer();
 
   /**
+   * Get the NonlinearSolver object
+   */
+  const NonlinearSolverType& NonlinearSolver() const;
+  NonlinearSolverType& NonlinearSolver();
+
+  /**
    * Update the optimizer params
    */
   void UpdateParams(const optimizer_params_t& params);
@@ -273,7 +279,7 @@ class Optimizer {
   /**
    * Build the `linearize_func` functor for the underlying nonlinear solver
    */
-  typename NonlinearSolver::LinearizeFunc BuildLinearizeFunc(bool check_derivatives);
+  typename NonlinearSolverType::LinearizeFunc BuildLinearizeFunc(bool check_derivatives);
 
   bool IsInitialized() const;
 
@@ -297,7 +303,7 @@ class Optimizer {
   std::string name_;
 
   /// Underlying nonlinear solver class.
-  NonlinearSolver nonlinear_solver_;
+  NonlinearSolverType nonlinear_solver_;
 
   Scalar epsilon_;
   bool debug_stats_;
@@ -321,7 +327,7 @@ class Optimizer {
   mutable ComputeCovariancesStorage compute_covariances_storage_;
 
   /// Functor for interfacing with the optimizer
-  typename NonlinearSolver::LinearizeFunc linearize_func_;
+  typename NonlinearSolverType::LinearizeFunc linearize_func_;
 
   bool verbose_;
 };
