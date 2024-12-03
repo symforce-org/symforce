@@ -18,6 +18,31 @@
 #include "./gen/snavely_reprojection_factor.h"
 
 /**
+ * Remove factors associated with a chosen camera index
+ */
+template <typename Scalar>
+void RemoveFactorsAssociatedWithCamera(std::vector<sym::Factor<Scalar>>& factors,
+                                       int camera_index) {
+  size_t initial_size = factors.size();
+  factors.erase(
+      std::remove_if(factors.begin(), factors.end(),
+                     [camera_index](const sym::Factor<Scalar>& factor) {
+                       auto is_associated = [camera_index](const auto& keys) {
+                         return std::any_of(
+                             keys.begin(), keys.end(), [camera_index](const sym::Key& key) {
+                               return key == sym::Keys::CAM_T_WORLD.WithSuper(camera_index);
+                             });
+                       };
+                       return is_associated(factor.OptimizedKeys());
+                     }),
+      factors.end());
+
+  size_t removed_count = initial_size - factors.size();
+  spdlog::info("Removed {} factors associated with camera {}", removed_count, camera_index);
+  spdlog::info("Remaining factors count: {}", factors.size());
+}
+
+/**
  * Calculate median position
  */
 Eigen::Vector3d CalculateMedianPosition(const sym::Valuesd& values, int num_cameras) {
@@ -45,28 +70,17 @@ Eigen::Vector3d CalculateMedianPosition(const sym::Valuesd& values, int num_came
 void FilterCameraOutliers(std::vector<sym::Factord>& factors, sym::Valuesd& values,
                           int& num_cameras, double threshold = 10.0) {
   std::vector<sym::Pose3d> camera_poses;
-  std::vector<sym::Factord> filtered_factors;
 
   Eigen::Vector3d mean = CalculateMedianPosition(values, num_cameras);
-
-  int num_filtered_cameras = 0;
   for (int i = 0; i < num_cameras; i++) {
     sym::Pose3d pose = values.At<sym::Pose3d>(sym::Keys::CAM_T_WORLD.WithSuper(i));
     double distance = (pose.Position() - mean).norm();
 
-    if (distance <= threshold) {
-      values.Set(sym::Keys::CAM_T_WORLD.WithSuper(num_filtered_cameras), pose);
-      values.Set(sym::Keys::INTRINSICS.WithSuper(num_filtered_cameras),
-                 values.At<Eigen::Vector3d>(sym::Keys::INTRINSICS.WithSuper(i)));
-
-      filtered_factors.push_back(factors[i]);
-
-      num_filtered_cameras++;
+    if (distance > threshold) {
+      RemoveFactorsAssociatedWithCamera(factors, i);
+      num_cameras--;
     }
   }
-
-  num_cameras = num_filtered_cameras;
-  factors = std::move(filtered_factors);
 }
 
 using namespace sym::Keys;
