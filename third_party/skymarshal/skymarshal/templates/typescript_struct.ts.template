@@ -349,7 +349,7 @@ export class {{struct_type.name}} extends LcmMsg {
     return total_size;
   }
 
-  public override encode(): ArrayBuffer {
+  public override encode(): ArrayBufferLike {
     const encoder = new Encoder(8 + this._get_encoded_size()); // hash + rest
     encoder.encode_hash({{struct_type.name}}._get_packed_fingerprint());
     this.encode_one(encoder);

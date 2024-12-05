@@ -69,7 +69,7 @@ export class {{enum_type.name}} extends LcmEnumMsg {
     return {{enum_type.storage_type.storage_size}};
   }
 
-  public override encode(): ArrayBuffer {
+  public override encode(): ArrayBufferLike {
     const total_size = this._get_encoded_size();
     const encoder = new Encoder(total_size);
     this.encode_one(encoder);

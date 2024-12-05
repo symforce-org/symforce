@@ -21,7 +21,7 @@ export default class LcmMsg {
 
   // initialize all fields to undefined
   // @ts-ignore TS6133
-  public decode(buf: ArrayBuffer): LcmMsg {
+  public decode(buf: Uint8Array): LcmMsg {
     throw Error("Can't decode base class!");
   }
 
@@ -30,7 +30,7 @@ export default class LcmMsg {
     throw Error("Can't decode base class!");
   }
 
-  public encode(): ArrayBuffer {
+  public encode(): ArrayBufferLike {
     throw Error("Can't encode base class!");
   }
 
