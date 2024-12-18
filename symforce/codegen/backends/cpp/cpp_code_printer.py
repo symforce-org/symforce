@@ -40,7 +40,8 @@ class CppCodePrinter(CXX11CodePrinter):
 
         setattr(self, method_name, _print_expr)
 
-    def _print_Rational(self, expr: sympy.Rational) -> str:
+    @staticmethod
+    def _print_Rational(expr: sympy.Rational) -> str:
         """
         Customizations:
             * Cast all literals to Scalar at compile time instead of using a suffix at codegen time
@@ -160,8 +161,9 @@ class CppCodePrinter(CXX11CodePrinter):
         )
 
 
-class ComplexCppCodePrinter(CppCodePrinter):  # pylint: disable=too-many-ancestors
-    def _print_Integer(self, expr: sympy.Integer) -> str:
+class ComplexCppCodePrinter(CppCodePrinter):
+    @staticmethod
+    def _print_Integer(expr: sympy.Integer) -> str:
         """
         Customizations:
             * Cast all integers to Scalar, since binary ops between integers and complex aren't
@@ -169,7 +171,8 @@ class ComplexCppCodePrinter(CppCodePrinter):  # pylint: disable=too-many-ancesto
         """
         return f"Scalar({expr.p})"
 
-    def _print_ImaginaryUnit(self, expr: sympy.Expr) -> str:
+    @staticmethod
+    def _print_ImaginaryUnit(expr: sympy.Expr) -> str:
         """
         Customizations:
             * Print 1i instead of I

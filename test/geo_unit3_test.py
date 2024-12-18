@@ -25,7 +25,8 @@ class GeoUnit3Test(LieGroupOpsTestMixin, TestCase):
     def element(cls) -> sf.Unit3:
         return sf.Unit3.from_vector(sf.V3(0, 1, 0))
 
-    def make_test_directions(self) -> T.List[sf.V3]:
+    @staticmethod
+    def make_test_directions() -> T.List[sf.V3]:
         """
         Get a list of fixed and random directions for testing
         """

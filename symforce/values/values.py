@@ -169,7 +169,7 @@ class Values(T.MutableMapping[str, T.Any]):
             elif isinstance(value, (list, tuple)):
                 if not (
                     all(
-                        type(v) == type(value[0])  # pylint: disable=unidiomatic-typecheck
+                        type(v) == type(value[0])  # noqa: E721
                         for v in value
                     )
                     or all(typing_util.scalar_like(v) for v in value)
@@ -807,7 +807,6 @@ class Values(T.MutableMapping[str, T.Any]):
         if isinstance(value, Values):
             return Values({k: Values._apply_to_leaves(v, func) for k, v in value.items()})
         elif isinstance(value, (list, tuple)):
-            # pylint: disable=too-many-function-args
             return type(value)([Values._apply_to_leaves(v, func) for v in value])
         elif isinstance(value, T.Dataclass):
             return Values(
@@ -889,7 +888,6 @@ class Values(T.MutableMapping[str, T.Any]):
             if isinstance(value, Values):
                 return {k: _to_dict_recursive(v) for k, v in value.items()}
             elif isinstance(value, (list, tuple)):
-                # pylint: disable=too-many-function-args
                 return type(value)(_to_dict_recursive(v) for v in value)
             elif isinstance(value, T.Dataclass):
                 return {

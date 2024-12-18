@@ -60,7 +60,7 @@ def _find_ruff() -> Path:
     `shutil.which` should cover most cases, but not all, the better solution would require `ruff`
     putting the binary in `data` like `clang-format` does
     """
-    global _ruff_path  # pylint: disable=global-statement
+    global _ruff_path  # noqa: PLW0603
 
     if _ruff_path is not None:
         return _ruff_path

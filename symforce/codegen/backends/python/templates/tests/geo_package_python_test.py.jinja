@@ -27,15 +27,13 @@ class GeoPackageTest(unittest.TestCase):
     since the math is tested comprehensively in symbolic form.
     """
 
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         np.random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
     {% for cls in all_types %}
-    def test_storage_ops_{{ cls.__name__ }}(self):
-        # type: () -> None
+    def test_storage_ops_{{ cls.__name__ }}(self) -> None:
         """
         Tests:
             sym.{{ cls.__name__ }} StorageOps
@@ -59,8 +57,7 @@ class GeoPackageTest(unittest.TestCase):
         value3 = geo_class.from_storage(vec)
         self.assertNotEqual(value.data, value3.data)
 
-    def test_group_ops_{{ cls.__name__ }}(self):
-        # type: () -> None
+    def test_group_ops_{{ cls.__name__ }}(self) -> None:
         """
         Tests:
             sym.{{ cls.__name__ }} GroupOps
@@ -82,8 +79,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.inverse())
         self.assertEqual(identity, identity.between(identity))
 
-    def test_lie_group_ops_{{ cls.__name__ }}(self):
-        # type: () -> None
+    def test_lie_group_ops_{{ cls.__name__ }}(self) -> None:
         """
         Tests:
             sym.{{ cls.__name__ }} LieGroupOps
@@ -118,8 +114,7 @@ class GeoPackageTest(unittest.TestCase):
 
     {# Skip for Unit3 because the following tests are Rot/Pose specific #}
     {% if "Rot" in cls.__name__ or "Pose" in cls.__name__ %}
-    def test_custom_methods_{{ cls.__name__ }}(self):
-        # type: () -> None
+    def test_custom_methods_{{ cls.__name__ }}(self) -> None:
         """
         Tests:
             sym.{{ cls.__name__ }} custom methods

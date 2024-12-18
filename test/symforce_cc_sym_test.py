@@ -35,7 +35,7 @@ class SymforceCCSymTest(TestCase):
     Test cc_sym.
     """
 
-    def test_key(self) -> None:
+    def test_key(self) -> None:  # noqa: PLR0915
         """
         Tests:
             cc_sym.Key
@@ -128,7 +128,7 @@ class SymforceCCSymTest(TestCase):
                 key_dumps = pickle.dumps(key)
                 self.assertEqual(key, pickle.loads(key_dumps))
 
-    def test_values(self) -> None:
+    def test_values(self) -> None:  # noqa: PLR0915
         """
         Tests:
             cc_sym.Values
@@ -153,9 +153,7 @@ class SymforceCCSymTest(TestCase):
                 return tp.from_storage([0] * tp.storage_dim())
 
         for tp in supported_types:
-            with self.subTest(
-                msg=f"Can set and retrieve {tp.__name__}"  # pylint: disable=no-member
-            ):
+            with self.subTest(msg=f"Can set and retrieve {tp.__name__}"):
                 values = cc_sym.Values()
                 val: T.Any = instantiate_type(tp)
                 values.set(cc_sym.Key("v"), val)
@@ -294,9 +292,7 @@ class SymforceCCSymTest(TestCase):
             self.assertEqual(values.cleanup(), 1)
 
         for tp in supported_types:
-            with self.subTest(
-                msg=f"Can call set as a function of index_entry_t and {tp.__name__}"  # pylint: disable=no-member
-            ):
+            with self.subTest(msg=f"Can call set as a function of index_entry_t and {tp.__name__}"):
                 values = cc_sym.Values()
                 a = cc_sym.Key("a")
                 values.set(a, instantiate_type(tp))
@@ -654,7 +650,7 @@ class SymforceCCSymTest(TestCase):
                 self.compare_optimization_stats(stats, pickle.loads(pickle.dumps(stats)))
             )
 
-    def test_optimizer(self) -> None:
+    def test_optimizer(self) -> None:  # noqa: PLR0915
         """
         Tests:
             cc_sym.default_optimizer_params

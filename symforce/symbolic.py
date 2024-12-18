@@ -20,9 +20,7 @@ It typically isn't necessary to actually access the symbolic API being used inte
 available as well as ``symforce.symbolic.sympy``.
 """
 
-# pylint: disable=wildcard-import
-# pylint: disable=unused-import
-# pylint: disable=unused-wildcard-import
+# ruff: noqa: F401, F403
 
 from symforce.internal.symbolic import *
 

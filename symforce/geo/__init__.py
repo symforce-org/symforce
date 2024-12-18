@@ -21,7 +21,7 @@ from symforce.ops.interfaces.lie_group import LieGroup
 from . import unsupported
 from .complex import Complex
 from .dual_quaternion import DualQuaternion
-from .matrix import *  # pylint: disable=wildcard-import
+from .matrix import *  # noqa: F403
 from .pose2 import Pose2
 from .pose3 import Pose3
 from .quaternion import Quaternion

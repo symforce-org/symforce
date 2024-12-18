@@ -122,7 +122,7 @@ class CMakeBuild(build_ext):
         # Assuming Makefiles
         build_args += ["--", f"-j{multiprocessing.cpu_count()}"]
 
-        self.build_args = build_args  # pylint: disable=attribute-defined-outside-init
+        self.build_args = build_args
 
         env = os.environ.copy()
         env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
@@ -226,19 +226,19 @@ class SymForceEggInfo(egg_info):
 
     def initialize_options(self) -> None:
         super().initialize_options()
-        self.rewrite_local_dependencies = False  # pylint: disable=attribute-defined-outside-init
+        self.rewrite_local_dependencies = False
 
     def finalize_options(self) -> None:
         super().finalize_options()
 
         if not isinstance(self.rewrite_local_dependencies, bool):
-            self.rewrite_local_dependencies = (  # pylint: disable=attribute-defined-outside-init
-                bool(distutils.util.strtobool(self.rewrite_local_dependencies))
+            self.rewrite_local_dependencies = bool(
+                distutils.util.strtobool(self.rewrite_local_dependencies)
             )
 
         if "SYMFORCE_REWRITE_LOCAL_DEPENDENCIES" in os.environ:
-            self.rewrite_local_dependencies = (  # pylint: disable=attribute-defined-outside-init
-                bool(distutils.util.strtobool(os.environ["SYMFORCE_REWRITE_LOCAL_DEPENDENCIES"]))
+            self.rewrite_local_dependencies = bool(
+                distutils.util.strtobool(os.environ["SYMFORCE_REWRITE_LOCAL_DEPENDENCIES"])
             )
 
     def run(self) -> None:
@@ -456,8 +456,8 @@ if __name__ == "__main__":
                 # 6.13 fixes pip >=23.1 support
                 "pip-tools>=6.13",
                 "pybind11-stubgen>=1.0",
-                "pylint~=2.16",
-                "ruff~=0.5.3",
+                # 0.7.2 introduces this bug: https://github.com/astral-sh/ruff/pull/15090
+                "ruff==0.7.1",
                 "types-jinja2",
                 "types-requests",
                 "types-setuptools",

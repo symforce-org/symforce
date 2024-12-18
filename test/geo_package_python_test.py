@@ -29,14 +29,12 @@ class GeoPackageTest(unittest.TestCase):
     since the math is tested comprehensively in symbolic form.
     """
 
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         np.random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
-    def test_storage_ops_Rot2(self):
-        # type: () -> None
+    def test_storage_ops_Rot2(self) -> None:
         """
         Tests:
             sym.Rot2 StorageOps
@@ -60,8 +58,7 @@ class GeoPackageTest(unittest.TestCase):
         value3 = geo_class.from_storage(vec)
         self.assertNotEqual(value.data, value3.data)
 
-    def test_group_ops_Rot2(self):
-        # type: () -> None
+    def test_group_ops_Rot2(self) -> None:
         """
         Tests:
             sym.Rot2 GroupOps
@@ -83,8 +80,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.inverse())
         self.assertEqual(identity, identity.between(identity))
 
-    def test_lie_group_ops_Rot2(self):
-        # type: () -> None
+    def test_lie_group_ops_Rot2(self) -> None:
         """
         Tests:
             sym.Rot2 LieGroupOps
@@ -116,8 +112,7 @@ class GeoPackageTest(unittest.TestCase):
             identity.interpolate(value, 1.0).to_storage(), value.to_storage()
         )
 
-    def test_custom_methods_Rot2(self):
-        # type: () -> None
+    def test_custom_methods_Rot2(self) -> None:
         """
         Tests:
             sym.Rot2 custom methods
@@ -147,8 +142,7 @@ class GeoPackageTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             geo_class([1, 2, 3, 4, 5, 6])
 
-    def test_storage_ops_Rot3(self):
-        # type: () -> None
+    def test_storage_ops_Rot3(self) -> None:
         """
         Tests:
             sym.Rot3 StorageOps
@@ -172,8 +166,7 @@ class GeoPackageTest(unittest.TestCase):
         value3 = geo_class.from_storage(vec)
         self.assertNotEqual(value.data, value3.data)
 
-    def test_group_ops_Rot3(self):
-        # type: () -> None
+    def test_group_ops_Rot3(self) -> None:
         """
         Tests:
             sym.Rot3 GroupOps
@@ -195,8 +188,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.inverse())
         self.assertEqual(identity, identity.between(identity))
 
-    def test_lie_group_ops_Rot3(self):
-        # type: () -> None
+    def test_lie_group_ops_Rot3(self) -> None:
         """
         Tests:
             sym.Rot3 LieGroupOps
@@ -228,8 +220,7 @@ class GeoPackageTest(unittest.TestCase):
             identity.interpolate(value, 1.0).to_storage(), value.to_storage()
         )
 
-    def test_custom_methods_Rot3(self):
-        # type: () -> None
+    def test_custom_methods_Rot3(self) -> None:
         """
         Tests:
             sym.Rot3 custom methods
@@ -259,8 +250,7 @@ class GeoPackageTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             geo_class([1, 2, 3, 4, 5, 6])
 
-    def test_storage_ops_Pose2(self):
-        # type: () -> None
+    def test_storage_ops_Pose2(self) -> None:
         """
         Tests:
             sym.Pose2 StorageOps
@@ -284,8 +274,7 @@ class GeoPackageTest(unittest.TestCase):
         value3 = geo_class.from_storage(vec)
         self.assertNotEqual(value.data, value3.data)
 
-    def test_group_ops_Pose2(self):
-        # type: () -> None
+    def test_group_ops_Pose2(self) -> None:
         """
         Tests:
             sym.Pose2 GroupOps
@@ -307,8 +296,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.inverse())
         self.assertEqual(identity, identity.between(identity))
 
-    def test_lie_group_ops_Pose2(self):
-        # type: () -> None
+    def test_lie_group_ops_Pose2(self) -> None:
         """
         Tests:
             sym.Pose2 LieGroupOps
@@ -340,8 +328,7 @@ class GeoPackageTest(unittest.TestCase):
             identity.interpolate(value, 1.0).to_storage(), value.to_storage()
         )
 
-    def test_custom_methods_Pose2(self):
-        # type: () -> None
+    def test_custom_methods_Pose2(self) -> None:
         """
         Tests:
             sym.Pose2 custom methods
@@ -386,8 +373,7 @@ class GeoPackageTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             geo_class(R=4)  # type: ignore[arg-type]
 
-    def test_storage_ops_Pose3(self):
-        # type: () -> None
+    def test_storage_ops_Pose3(self) -> None:
         """
         Tests:
             sym.Pose3 StorageOps
@@ -411,8 +397,7 @@ class GeoPackageTest(unittest.TestCase):
         value3 = geo_class.from_storage(vec)
         self.assertNotEqual(value.data, value3.data)
 
-    def test_group_ops_Pose3(self):
-        # type: () -> None
+    def test_group_ops_Pose3(self) -> None:
         """
         Tests:
             sym.Pose3 GroupOps
@@ -434,8 +419,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.inverse())
         self.assertEqual(identity, identity.between(identity))
 
-    def test_lie_group_ops_Pose3(self):
-        # type: () -> None
+    def test_lie_group_ops_Pose3(self) -> None:
         """
         Tests:
             sym.Pose3 LieGroupOps
@@ -467,8 +451,7 @@ class GeoPackageTest(unittest.TestCase):
             identity.interpolate(value, 1.0).to_storage(), value.to_storage()
         )
 
-    def test_custom_methods_Pose3(self):
-        # type: () -> None
+    def test_custom_methods_Pose3(self) -> None:
         """
         Tests:
             sym.Pose3 custom methods
@@ -513,8 +496,7 @@ class GeoPackageTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             geo_class(R=4)  # type: ignore[arg-type]
 
-    def test_storage_ops_Unit3(self):
-        # type: () -> None
+    def test_storage_ops_Unit3(self) -> None:
         """
         Tests:
             sym.Unit3 StorageOps
@@ -538,8 +520,7 @@ class GeoPackageTest(unittest.TestCase):
         value3 = geo_class.from_storage(vec)
         self.assertNotEqual(value.data, value3.data)
 
-    def test_group_ops_Unit3(self):
-        # type: () -> None
+    def test_group_ops_Unit3(self) -> None:
         """
         Tests:
             sym.Unit3 GroupOps
@@ -561,8 +542,7 @@ class GeoPackageTest(unittest.TestCase):
         self.assertEqual(identity, identity.inverse())
         self.assertEqual(identity, identity.between(identity))
 
-    def test_lie_group_ops_Unit3(self):
-        # type: () -> None
+    def test_lie_group_ops_Unit3(self) -> None:
         """
         Tests:
             sym.Unit3 LieGroupOps

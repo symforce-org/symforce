@@ -140,7 +140,7 @@ class SymforceCodegenTest(TestCase):
     # -------------------------------------------------------------------------
 
     @slow_on_sympy
-    def test_codegen_python(self) -> None:
+    def test_codegen_python(self) -> None:  # noqa: PLR0914
         """
         Test python code generation.
         """
@@ -159,7 +159,7 @@ class SymforceCodegenTest(TestCase):
 
         # TODO(aaron): This should not be necessary, but needs to happen before the load below, or
         # else other tests will fail
-        import sym  # pylint: disable=unused-import
+        import sym  # noqa: F401
 
         output_dir = self.make_output_dir("sf_codegen_python_test_")
 
@@ -274,7 +274,7 @@ class SymforceCodegenTest(TestCase):
         self.assertStorageNear(matrix_order_gen(), m23)
 
     @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
-    def test_matrix_indexing_python(self) -> None:
+    def test_matrix_indexing_python(self) -> None:  # noqa: PLR0915
         """
         Tests that matrices are indexed into correctly.
         """

@@ -38,16 +38,16 @@ class CamPackageTest(unittest.TestCase):
     }
 
     @staticmethod
-    def cam_cal_from_points(cam_cls, focal_length, principal_point):
-        # type: (T.Type, T.Sequence[float], T.Sequence[float]) -> T.Any
+    def cam_cal_from_points(
+        cam_cls: T.Type, focal_length: T.Sequence[float], principal_point: T.Sequence[float]
+    ) -> T.Any:
         return cam_cls(
             focal_length=focal_length,
             principal_point=principal_point,
             **CamPackageTest._DISTORTION_COEFF_VALS.get(cam_cls.__name__, {}),
         )
 
-    def test_getters_ATANCameraCal(self):
-        # type: () -> None
+    def test_getters_ATANCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -67,8 +67,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_ATANCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_ATANCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.ATANCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -85,9 +84,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_ATANCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_ATANCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.ATANCameraCal.from_storage([1.0, 2.0, 3.0, 4.0, 0.5])
@@ -120,9 +117,7 @@ class CamPackageTest(unittest.TestCase):
             np.array([-2.3, -3.5, 0.6000000000000001, 0.20000000000000018, 0.0]),
         )
 
-    def test_pixel_from_camera_point_ATANCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_ATANCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 
@@ -143,9 +138,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_cal.shape, (2, 5))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
-    def test_camera_ray_from_pixel_ATANCameraCal(self):
-        # type: () -> None
-
+    def test_camera_ray_from_pixel_ATANCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
 
@@ -166,8 +159,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(point_D_cal.shape, (3, 5))
         self.assertEqual(point_D_pixel.shape, (3, 2))
 
-    def test_getters_DoubleSphereCameraCal(self):
-        # type: () -> None
+    def test_getters_DoubleSphereCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -187,8 +179,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_DoubleSphereCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_DoubleSphereCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.DoubleSphereCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -205,9 +196,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_DoubleSphereCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_DoubleSphereCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.DoubleSphereCameraCal.from_storage([1.0, 2.0, 3.0, 4.0, 5.1, -6.2])
@@ -240,9 +229,7 @@ class CamPackageTest(unittest.TestCase):
             np.array([-2.3, -3.5, 0.6000000000000001, 0.20000000000000018, 0.0, 0.0]),
         )
 
-    def test_pixel_from_camera_point_DoubleSphereCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_DoubleSphereCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 
@@ -263,9 +250,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_cal.shape, (2, 6))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
-    def test_camera_ray_from_pixel_DoubleSphereCameraCal(self):
-        # type: () -> None
-
+    def test_camera_ray_from_pixel_DoubleSphereCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
 
@@ -290,8 +275,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(point_D_cal.shape, (3, 6))
         self.assertEqual(point_D_pixel.shape, (3, 2))
 
-    def test_getters_EquirectangularCameraCal(self):
-        # type: () -> None
+    def test_getters_EquirectangularCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -311,8 +295,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_EquirectangularCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_EquirectangularCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.EquirectangularCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -329,9 +312,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_EquirectangularCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_EquirectangularCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.EquirectangularCameraCal.from_storage([1.0, 2.0, 3.0, 4.0])
@@ -363,9 +344,7 @@ class CamPackageTest(unittest.TestCase):
             np.array([-2.3, -3.5, 0.6000000000000001, 0.20000000000000018]),
         )
 
-    def test_pixel_from_camera_point_EquirectangularCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_EquirectangularCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 
@@ -386,9 +365,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_cal.shape, (2, 4))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
-    def test_camera_ray_from_pixel_EquirectangularCameraCal(self):
-        # type: () -> None
-
+    def test_camera_ray_from_pixel_EquirectangularCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
 
@@ -413,8 +390,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(point_D_cal.shape, (3, 4))
         self.assertEqual(point_D_pixel.shape, (3, 2))
 
-    def test_getters_LinearCameraCal(self):
-        # type: () -> None
+    def test_getters_LinearCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -434,8 +410,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_LinearCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_LinearCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.LinearCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -452,9 +427,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_LinearCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_LinearCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.LinearCameraCal.from_storage([1.0, 2.0, 3.0, 4.0])
@@ -486,9 +459,7 @@ class CamPackageTest(unittest.TestCase):
             np.array([-2.3, -3.5, 0.6000000000000001, 0.20000000000000018]),
         )
 
-    def test_pixel_from_camera_point_LinearCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_LinearCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 
@@ -509,9 +480,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_cal.shape, (2, 4))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
-    def test_camera_ray_from_pixel_LinearCameraCal(self):
-        # type: () -> None
-
+    def test_camera_ray_from_pixel_LinearCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
 
@@ -532,8 +501,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(point_D_cal.shape, (3, 4))
         self.assertEqual(point_D_pixel.shape, (3, 2))
 
-    def test_getters_PolynomialCameraCal(self):
-        # type: () -> None
+    def test_getters_PolynomialCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -553,8 +521,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_PolynomialCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_PolynomialCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.PolynomialCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -571,9 +538,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_PolynomialCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_PolynomialCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.PolynomialCameraCal.from_storage(
@@ -612,9 +577,7 @@ class CamPackageTest(unittest.TestCase):
             np.array([-2.3, -3.5, 0.6000000000000001, 0.20000000000000018, 0.0, 0.0, 0.0, 0.0]),
         )
 
-    def test_pixel_from_camera_point_PolynomialCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_PolynomialCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 
@@ -637,8 +600,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_cal.shape, (2, 7))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
-    def test_getters_SphericalCameraCal(self):
-        # type: () -> None
+    def test_getters_SphericalCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -658,8 +620,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_SphericalCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_SphericalCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.SphericalCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -676,9 +637,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_SphericalCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_SphericalCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.SphericalCameraCal.from_storage(
@@ -782,9 +741,7 @@ class CamPackageTest(unittest.TestCase):
             ),
         )
 
-    def test_pixel_from_camera_point_SphericalCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_SphericalCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 
@@ -819,8 +776,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_cal.shape, (2, 10))
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
-    def test_getters_OrthographicCameraCal(self):
-        # type: () -> None
+    def test_getters_OrthographicCameraCal(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -840,8 +796,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_OrthographicCameraCal(self):
-        # type: () -> None
+    def test_storage_ops_OrthographicCameraCal(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.OrthographicCameraCal, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -858,9 +813,7 @@ class CamPackageTest(unittest.TestCase):
 
         self.assertNotEqual(cam_cal, cam_cal_different)
 
-    def test_lie_group_ops_OrthographicCameraCal(self):
-        # type: () -> None
-
+    def test_lie_group_ops_OrthographicCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.OrthographicCameraCal.from_storage([1.0, 2.0, 3.0, 4.0])
@@ -892,9 +845,7 @@ class CamPackageTest(unittest.TestCase):
             np.array([-2.3, -3.5, 0.6000000000000001, 0.20000000000000018]),
         )
 
-    def test_pixel_from_camera_point_OrthographicCameraCal(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_OrthographicCameraCal(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
 

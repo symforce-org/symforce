@@ -4,11 +4,7 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
-# pylint: disable=useless-suppression
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-lines
-# pylint: disable=too-many-statements
-# pylint: disable=unused-argument
+# ruff: noqa: F401, PLR0912, PLR0913, PLR0914, PLR0915, PLR0917, RUF100
 
 import math
 import typing as T
@@ -37,7 +33,7 @@ def numba_test_func(x):
     # Total ops: 0
 
     # Input arrays
-    if not (x.shape == (3, 1) or x.shape == (3,)):
+    if not (x.shape == (3, 1) or x.shape == (3,)):  # noqa: PLR1714
         raise IndexError("x is expected to have shape (3, 1) or (3,)")
     x = x.reshape((3, 1))
 

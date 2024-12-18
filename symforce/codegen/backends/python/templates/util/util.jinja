@@ -141,7 +141,7 @@ def {{ function_name_and_args(spec) }}:
 {% if 1 in shape %}
     {% if use_numba %}
     {# NOTE(brad): Numba will complain if we reshape name inside of a conditional #}
-if not ({{ name }}.shape == {{ shape }} or {{ name }}.shape == ({{ shape | max }},)):
+if not ({{ name }}.shape == {{ shape }} or {{ name }}.shape == ({{ shape | max }},)):  # noqa: PLR1714
     raise IndexError("{{ name }} is expected to have shape {{ shape }} or ({{ shape | max }},)")
 {{ name }} = {{ name }}.reshape({{ shape }})
     {% else %}
@@ -269,7 +269,7 @@ elif {{ name }}.shape != {{ shape }}:
  #}
 {% macro flatten_if_ndarray(array, size) %}
 if isinstance({{ array }}, numpy.ndarray):
-    if {{ array }}.shape in [({{ size }}, 1), (1, {{ size }})]:
+    if {{ array }}.shape in {({{ size }}, 1), (1, {{ size }})}:
         {{ array }} = {{ array }}.flatten()
     elif {{ array }}.shape != ({{ size }},):
         raise IndexError("Expected {{ array }} to be a vector of length {{ size }}; instead had shape {}".format({{ array }}.shape))

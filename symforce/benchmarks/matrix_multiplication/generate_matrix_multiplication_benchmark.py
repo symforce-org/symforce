@@ -51,7 +51,7 @@ def get_matrices() -> T.List[T.Tuple[str, Path, scipy.sparse.csr_matrix]]:
         matrices.append(
             (
                 matrix_name.replace(" ", "").replace("-", "_"),
-                filename,  # pylint: disable=undefined-loop-variable
+                filename,
                 matrix.tocsr(),
             )
         )
@@ -81,7 +81,7 @@ def generate_matrix(
     matrix_name: str,
     matrix: scipy.sparse.csr_matrix,
     symforce_result_is_sparse: bool,
-    i: int,
+    runs_multiplier_index: int,
 ) -> None:
     """
     Generate functions for the given matrix sparsity pattern to compute A, B, and A^T B, in sparse
@@ -199,7 +199,9 @@ def generate_matrix(
             matrix_name_camel=python_util.snakecase_to_camelcase(matrix_name),
             N=matrix.shape[0],
             M=matrix.shape[1],
-            n_runs_multiplier=[100.0, 100.0, 100.0, 10.0, 10.0, 10.0, 1.0, 1.0][i],
+            n_runs_multiplier=[100.0, 100.0, 100.0, 10.0, 10.0, 10.0, 1.0, 1.0][
+                runs_multiplier_index
+            ],
             symforce_result_is_sparse=symforce_result_is_sparse,
             n_symbols=N_SYMBOLS,
             cant_allocate_on_stack=cant_allocate_on_stack,
@@ -214,4 +216,10 @@ def generate(output_dir: Path) -> None:
 
     for i, (matrix_name, _filename, matrix) in enumerate(get_matrices()):
         logger.debug(f"Generating matrix {matrix_name}")
-        generate_matrix(output_dir, matrix_name, matrix, symforce_result_is_sparse=i > 2, i=i)
+        generate_matrix(
+            output_dir,
+            matrix_name,
+            matrix,
+            symforce_result_is_sparse=i > 2,
+            runs_multiplier_index=i,
+        )

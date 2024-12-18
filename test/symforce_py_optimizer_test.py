@@ -30,7 +30,7 @@ class SymforcePyOptimizerTest(TestCase):
         super().setUp()
 
         # Clear the residual cache before each test
-        Factor._generated_residual_cache = (  # pylint: disable=protected-access
+        Factor._generated_residual_cache = (  # noqa: SLF001
             GeneratedResidualCache()
         )
 
@@ -104,7 +104,7 @@ class SymforcePyOptimizerTest(TestCase):
 
         # Check that the factor cache has the expected number of entries
         self.assertEqual(
-            len(Factor._generated_residual_cache),  # pylint: disable=protected-access
+            len(Factor._generated_residual_cache),  # noqa: SLF001
             2,
         )
 
@@ -162,7 +162,7 @@ class SymforcePyOptimizerTest(TestCase):
 
         # Check that the factor cache has the expected number of entries
         self.assertEqual(
-            len(Factor._generated_residual_cache),  # pylint: disable=protected-access
+            len(Factor._generated_residual_cache),  # noqa: SLF001
             2,
         )
 

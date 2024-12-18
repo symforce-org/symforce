@@ -23,7 +23,7 @@ def make_rotation_matrix() -> np.ndarray:
     v = np.random.randn(3)
     w = np.random.randn(3)
 
-    w = w - proj(w, v)
+    w -= proj(w, v)
     v /= np.linalg.norm(v)
     w /= np.linalg.norm(w)
 

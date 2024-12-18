@@ -196,11 +196,14 @@ class SymforceTestCaseMixin(unittest.TestCase):
 
             if data != expected_data:
                 diff = difflib.unified_diff(
-                    expected_data.splitlines(), data.splitlines(), "expected", "got", lineterm=""
+                    expected_data.splitlines(keepends=True),
+                    data.splitlines(keepends=True),
+                    "expected",
+                    "got",
                 )
                 self.fail(
                     "\n"
-                    + "\n".join(diff)
+                    + "".join(diff)
                     + f"\n\n{80*'='}\nData did not match for file {path}, see diff above.  Use "
                     "`--update` to write the changes to the working directory and commit if desired"
                 )
