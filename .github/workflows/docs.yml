@@ -23,7 +23,9 @@ jobs:
             pandoc
 
       - name: Install python dependencies
-        run: pip install -r dev_requirements.txt
+        run: |
+          PY_MINOR_VERSION=$(python -c "import sys; print(sys.version_info.minor)")
+          python -m pip install -r requirements_dev_py3${PY_MINOR_VERSION}.txt
 
       - name: Run cmake build
         run: |
