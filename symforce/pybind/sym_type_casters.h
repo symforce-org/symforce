@@ -15,6 +15,7 @@
 
 #include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <sym/atan_camera_cal.h>
 #include <sym/double_sphere_camera_cal.h>
