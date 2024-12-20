@@ -11,6 +11,8 @@
 // types or return types are any of specialized lcm types.
 // -----------------------------------------------------------------------------
 
+// IWYU pragma: always_keep
+
 #pragma once
 
 #include <fmt/format.h>

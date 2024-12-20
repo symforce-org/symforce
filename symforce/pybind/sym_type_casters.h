@@ -11,6 +11,8 @@
 // types or return types are any of the above geometric types.
 // -----------------------------------------------------------------------------
 
+// IWYU pragma: always_keep
+
 #pragma once
 
 #include <fmt/format.h>

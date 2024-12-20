@@ -9,6 +9,7 @@
 
 #include <lcmtypes/sym/imu_integrated_measurement_t.hpp>
 
+#include <sym/pose3.h>
 #include <sym/rot3.h>
 #include <sym/util/typedefs.h>
 
@@ -31,6 +32,11 @@ struct PreintegratedImuMeasurements {
 
     // Converts this to a LCM type
     imu_integrated_measurement_delta_t GetLcmType() const;
+
+    // Rolls forward the given state by this Delta
+    std::pair<Pose3<Scalar>, Vector3> RollForwardState(const Pose3<Scalar>& pose_i,
+                                                       const Vector3& vel_i,
+                                                       const Vector3& gravity) const;
 
     // The elapsed time of the measurement period
     Scalar Dt{0};

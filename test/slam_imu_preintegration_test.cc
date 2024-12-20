@@ -15,6 +15,7 @@
 #include <sym/factors/internal/imu_manifold_preintegration_update_auto_derivative.h>
 #include <sym/rot3.h>
 #include <sym/util/epsilon.h>
+#include <symforce/slam/imu_preintegration/imu_factor.h>
 #include <symforce/slam/imu_preintegration/imu_preintegrator.h>
 
 using Eigen::Ref;
@@ -442,4 +443,34 @@ TEST_CASE("Verify bias-corrected delta", "[slam]") {
   CHECK(pim0_delta.Dp.isApprox(delta1_corrected.Dp, kTol));
   CHECK(pim0_delta.Dv.isApprox(delta1_corrected.Dv, kTol));
   CHECK(sym::LieGroupOps<sym::Rot3d>::IsClose(pim0_delta.DR, delta1_corrected.DR, kTol));
+}
+
+TEST_CASE("Test RollForwardState", "[slam]") {
+  const double dt = 1e-3;
+  const int iterations = 100;
+
+  sym::ImuPreintegrator<double> integrator(example::kAccelBias, example::kGyroBias);
+
+  for (int k_ = 0; k_ < iterations; k_++) {
+    integrator.IntegrateMeasurement(example::kAccelBias + example::kTrueAccel,
+                                    example::kGyroBias + example::kTrueGyro, example::kAccelCov,
+                                    example::kGyroCov, dt, sym::kDefaultEpsilond);
+  }
+
+  std::mt19937 gen{42};
+
+  const auto p0 = sym::Pose3d::Random(gen);
+  const auto v0 = sym::Random<Vector3d>(gen);
+
+  const auto p1_and_v1 =
+      integrator.PreintegratedMeasurements().delta.RollForwardState(p0, v0, Vector3d::Zero());
+  const auto& p1 = p1_and_v1.first;
+  const auto& v1 = p1_and_v1.second;
+
+  const auto factor = sym::ImuFactord{integrator};
+  sym::Vector9d residual;
+  factor(p0, v0, p1, v1, example::kAccelBias, example::kGyroBias, Vector3d::Zero(),
+         sym::kDefaultEpsilond, &residual);
+
+  CHECK(residual.norm() < 1e-10);
 }

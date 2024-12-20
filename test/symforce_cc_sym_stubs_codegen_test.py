@@ -87,6 +87,8 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             data={
                 "spec": TypeStubParts(
                     lcm_include_type_names=[
+                        "imu_integrated_measurement_delta_t",
+                        "imu_integrated_measurement_t",
                         "index_entry_t",
                         "index_t",
                         "key_t",

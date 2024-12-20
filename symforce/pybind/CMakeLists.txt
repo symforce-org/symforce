@@ -41,6 +41,7 @@ pybind11_add_module(
   cc_logger.cc
   cc_optimization_stats.cc
   cc_optimizer.cc
+  cc_slam.cc
   cc_sym.cc
   cc_values.cc
   sym_type_casters.cc
@@ -59,6 +60,7 @@ target_link_libraries(
   PRIVATE
   symforce_opt
   symforce_gen
+  symforce_slam
 )
 
 # TODO(aaron): Should there be an install action here?  This is currently installed by setup.py if

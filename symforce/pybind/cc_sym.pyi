@@ -6,6 +6,8 @@
 
 import scipy
 
+from lcmtypes.sym._imu_integrated_measurement_delta_t import imu_integrated_measurement_delta_t
+from lcmtypes.sym._imu_integrated_measurement_t import imu_integrated_measurement_t
 from lcmtypes.sym._index_entry_t import index_entry_t
 from lcmtypes.sym._index_t import index_t
 from lcmtypes.sym._key_t import key_t
@@ -40,10 +42,12 @@ import numpy
 
 __all__ = [
     "Factor",
+    "ImuPreintegrator",
     "Key",
     "Linearization",
     "OptimizationStats",
     "Optimizer",
+    "PreintegratedImuMeasurements",
     "Values",
     "default_optimizer_params",
     "optimize",
@@ -163,6 +167,24 @@ class Factor:
         """
         Get the optimized keys for this factor.
         """
+    pass
+
+class ImuPreintegrator:
+    """
+    Class to on-manifold preintegrate IMU measurements for usage in a SymForce optimization problem.
+    """
+    def __init__(self, accel_bias: numpy.ndarray, gyro_bias: numpy.ndarray) -> None: ...
+    def covariance(self) -> numpy.ndarray: ...
+    def integrate_measurement(
+        self,
+        measured_accel: numpy.ndarray,
+        measured_gyro: numpy.ndarray,
+        accel_cov: numpy.ndarray,
+        gyro_cov: numpy.ndarray,
+        dt: float,
+        epsilon: float = 2.220446049250313e-15,
+    ) -> None: ...
+    def preintegrated_measurements(self) -> PreintegratedImuMeasurements: ...
     pass
 
 class Key:
@@ -511,6 +533,126 @@ class Optimizer:
         """
         Update the optimizer params.
         """
+    pass
+
+class PreintegratedImuMeasurements:
+    """
+    Struct of Preintegrated IMU Measurements (not including the covariance of change in orientation, velocity, and position).
+    """
+    class Delta:
+        """
+        A convenient struct that holds the Preintegrated delta.
+        """
+        def from_lcm(self) -> PreintegratedImuMeasurements.Delta: ...
+        def get_lcm_type(self) -> imu_integrated_measurement_delta_t: ...
+        def roll_forward_state(
+            self, pose_i: Pose3, vel_i: numpy.ndarray, gravity: numpy.ndarray
+        ) -> typing.Tuple[Pose3, numpy.ndarray]: ...
+        @property
+        def DR(self) -> Rot3:
+            """
+            :type: Rot3
+            """
+        @DR.setter
+        def DR(self, arg0: Rot3) -> None:
+            pass
+        @property
+        def Dp(self) -> numpy.ndarray:
+            """
+            :type: numpy.ndarray
+            """
+        @Dp.setter
+        def Dp(self, arg0: numpy.ndarray) -> None:
+            pass
+        @property
+        def Dt(self) -> float:
+            """
+            :type: float
+            """
+        @Dt.setter
+        def Dt(self, arg0: float) -> None:
+            pass
+        @property
+        def Dv(self) -> numpy.ndarray:
+            """
+            :type: numpy.ndarray
+            """
+        @Dv.setter
+        def Dv(self, arg0: numpy.ndarray) -> None:
+            pass
+        pass
+
+    def __init__(self, accel_bias: numpy.ndarray, gyro_bias: numpy.ndarray) -> None: ...
+    @staticmethod
+    def from_lcm(arg0: imu_integrated_measurement_t) -> PreintegratedImuMeasurements: ...
+    def get_bias_corrected_delta(
+        self, new_accel_bias: numpy.ndarray, new_gyro_bias: numpy.ndarray
+    ) -> PreintegratedImuMeasurements.Delta: ...
+    def get_lcm_type(self) -> imu_integrated_measurement_t: ...
+    @property
+    def DR_D_gyro_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @DR_D_gyro_bias.setter
+    def DR_D_gyro_bias(self, arg0: numpy.ndarray) -> None:
+        pass
+    @property
+    def Dp_D_accel_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @Dp_D_accel_bias.setter
+    def Dp_D_accel_bias(self, arg0: numpy.ndarray) -> None:
+        pass
+    @property
+    def Dp_D_gyro_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @Dp_D_gyro_bias.setter
+    def Dp_D_gyro_bias(self, arg0: numpy.ndarray) -> None:
+        pass
+    @property
+    def Dv_D_accel_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @Dv_D_accel_bias.setter
+    def Dv_D_accel_bias(self, arg0: numpy.ndarray) -> None:
+        pass
+    @property
+    def Dv_D_gyro_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @Dv_D_gyro_bias.setter
+    def Dv_D_gyro_bias(self, arg0: numpy.ndarray) -> None:
+        pass
+    @property
+    def accel_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @accel_bias.setter
+    def accel_bias(self, arg0: numpy.ndarray) -> None:
+        pass
+    @property
+    def delta(self) -> PreintegratedImuMeasurements.Delta:
+        """
+        :type: PreintegratedImuMeasurements.Delta
+        """
+    @delta.setter
+    def delta(self, arg0: PreintegratedImuMeasurements.Delta) -> None:
+        pass
+    @property
+    def gyro_bias(self) -> numpy.ndarray:
+        """
+        :type: numpy.ndarray
+        """
+    @gyro_bias.setter
+    def gyro_bias(self, arg0: numpy.ndarray) -> None:
+        pass
     pass
 
 class Values:

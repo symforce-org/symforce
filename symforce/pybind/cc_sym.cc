@@ -11,6 +11,7 @@
 #include "./cc_logger.h"
 #include "./cc_optimization_stats.h"
 #include "./cc_optimizer.h"
+#include "./cc_slam.h"
 #include "./cc_values.h"
 
 PYBIND11_MODULE(cc_sym, generated_module) {
@@ -24,5 +25,6 @@ PYBIND11_MODULE(cc_sym, generated_module) {
   sym::AddLinearizationWrapper(generated_module);
   sym::AddOptimizationStatsWrapper(generated_module);
   sym::AddOptimizerWrapper(generated_module);
+  sym::AddSlamWrapper(generated_module);
   sym::AddLoggerWrapper(generated_module);
 }

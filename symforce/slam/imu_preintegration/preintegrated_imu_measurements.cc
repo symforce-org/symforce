@@ -5,6 +5,8 @@
 
 #include "./preintegrated_imu_measurements.h"
 
+#include <sym/factors/internal/roll_forward_state.h>
+
 namespace sym {
 
 template <typename Scalar>
@@ -19,6 +21,17 @@ template <typename Scalar>
 imu_integrated_measurement_delta_t PreintegratedImuMeasurements<Scalar>::Delta::GetLcmType() const {
   return {static_cast<double>(Dt), DR.Quaternion().template cast<double>(),
           Dv.template cast<double>(), Dp.template cast<double>()};
+}
+
+template <typename Scalar>
+std::pair<Pose3<Scalar>, Vector3<Scalar>>
+PreintegratedImuMeasurements<Scalar>::Delta::RollForwardState(const Pose3<Scalar>& pose_i,
+                                                              const Vector3& vel_i,
+                                                              const Vector3& gravity) const {
+  Pose3<Scalar> pose_j;
+  Vector3 vel_j;
+  sym::RollForwardState(pose_i, vel_i, DR, Dv, Dp, gravity, Dt, &pose_j, &vel_j);
+  return {pose_j, vel_j};
 }
 
 template <typename Scalar>
