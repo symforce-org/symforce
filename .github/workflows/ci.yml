@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
-        python: [python3.8, python3.9, python3.10, python3.11, python3.12]
+        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         compiler:
           - C: gcc-11
             CXX: g++-11
@@ -25,7 +25,7 @@ jobs:
         include:
           # gcc 5
           - os: ubuntu-20.04
-            python: python3.8
+            python: "3.8"
             compiler:
               C: gcc-5
               CXX: g++-5
@@ -35,7 +35,7 @@ jobs:
               - '"deb http://us.archive.ubuntu.com/ubuntu/ bionic universe"'
           # Clang 7
           - os: ubuntu-20.04
-            python: python3.8
+            python: "3.8"
             compiler:
               C: clang-7
               CXX: clang++-7
@@ -43,7 +43,7 @@ jobs:
               repos: []
           # Clang 15
           - os: ubuntu-22.04
-            python: python3.10
+            python: "3.10"
             compiler:
               C: clang-15
               CXX: clang++-15
@@ -68,18 +68,9 @@ jobs:
           done
           sudo apt-get install -y ${{ matrix.compiler.package }}
 
-      # - ppa:deadsnakes/ppa is needed to have python3.x-dev available on all ubuntu versions
-      # - python3.x-dev is used instead of python3.x because the -dev version includes python header
-      # files needed to compile C extension modules
-      - name: Install python
-        run: |
-          sudo add-apt-repository -y ppa:deadsnakes/ppa
-          sudo apt-get install -y \
-            ${{ matrix.python }}-dev \
-            ${{ matrix.python }}-distutils \
-            ${{ matrix.python }}-venv
-          curl https://bootstrap.pypa.io/get-pip.py | ${{ matrix.python }}
-          pip install --upgrade setuptools
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
 
       - name: Install general build dependencies
         run: |
@@ -114,7 +105,7 @@ jobs:
 
       # NOTE(aaron): Some packages do not have a version that supports py3.8..py3.12
       - name: Fix py3.12 versions
-        if: ${{ matrix.python == 'python3.12' }}
+        if: ${{ matrix.python == '3.12' }}
         run: |
           sed -i 's|numba==0.58.1|numba~=0.59.0|g' dev_requirements.txt
           sed -i 's|llvmlite==0.41.1|llvmlite~=0.42.0|g' dev_requirements.txt
@@ -131,7 +122,7 @@ jobs:
             -D CMAKE_C_COMPILER=${{ matrix.compiler.C }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.CXX }} \
             -D "SYMFORCE_COMPILE_OPTIONS=-Wall;-Wextra;-Werror" \
-            -D SYMFORCE_PYTHON_OVERRIDE=${{ matrix.python }} \
+            -D SYMFORCE_PYTHON_OVERRIDE=python${{ matrix.python }} \
             -D SYMFORCE_BUILD_BENCHMARKS=ON
           cmake --build build -j $(nproc)
 
@@ -143,7 +134,7 @@ jobs:
         run: |
           pip install build/lcmtypes/python2.7
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          ${{ matrix.python }} test/symforce_requirements_test.py --update
+          python${{ matrix.python }} test/symforce_requirements_test.py --update
           echo "Modifications made to requirements:"
           git diff
           EXIT_CODE=0
@@ -159,5 +150,5 @@ jobs:
       - name: Upload Generated Docs
         uses: actions/upload-artifact@v4
         with:
-          name: docs ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.compiler.C }}
+          name: docs ${{ matrix.os }}-python${{ matrix.python }}-${{ matrix.compiler.C }}
           path: build/docs
