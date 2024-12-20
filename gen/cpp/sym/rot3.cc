@@ -198,6 +198,66 @@ const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(const Scalar yaw, co
 }
 
 template <typename Scalar>
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYaw(const Scalar yaw) {
+  // Total ops: 5
+
+  // Input arrays
+
+  // Intermediate terms (1)
+  const Scalar _tmp0 = (Scalar(1) / Scalar(2)) * yaw;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = 0;
+  _res[1] = 0;
+  _res[2] = Scalar(1.0) * std::sin(_tmp0);
+  _res[3] = Scalar(1.0) * std::cos(_tmp0);
+
+  return sym::Rot3<Scalar>(_res);
+}
+
+template <typename Scalar>
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromPitch(const Scalar pitch) {
+  // Total ops: 5
+
+  // Input arrays
+
+  // Intermediate terms (1)
+  const Scalar _tmp0 = (Scalar(1) / Scalar(2)) * pitch;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = 0;
+  _res[1] = Scalar(1.0) * std::sin(_tmp0);
+  _res[2] = 0;
+  _res[3] = Scalar(1.0) * std::cos(_tmp0);
+
+  return sym::Rot3<Scalar>(_res);
+}
+
+template <typename Scalar>
+const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromRoll(const Scalar roll) {
+  // Total ops: 5
+
+  // Input arrays
+
+  // Intermediate terms (1)
+  const Scalar _tmp0 = (Scalar(1) / Scalar(2)) * roll;
+
+  // Output terms (1)
+  Eigen::Matrix<Scalar, 4, 1> _res;
+
+  _res[0] = Scalar(1.0) * std::sin(_tmp0);
+  _res[1] = 0;
+  _res[2] = 0;
+  _res[3] = Scalar(1.0) * std::cos(_tmp0);
+
+  return sym::Rot3<Scalar>(_res);
+}
+
+template <typename Scalar>
 const sym::Rot3<Scalar> sym::Rot3<Scalar>::FromYawPitchRoll(
     const Eigen::Matrix<Scalar, 3, 1>& ypr) {
   // Total ops: 25

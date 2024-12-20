@@ -96,6 +96,18 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
 
     to_yaw_pitch_roll.__doc__ = sf.Rot3.to_yaw_pitch_roll.__doc__
 
+    def from_yaw(yaw: T.Scalar) -> sf.Rot3:
+        """Construct from yaw angle in radians"""
+        return sf.Rot3.from_yaw_pitch_roll(yaw=yaw)
+
+    def from_pitch(pitch: T.Scalar) -> sf.Rot3:
+        """Construct from pitch angle in radians"""
+        return sf.Rot3.from_yaw_pitch_roll(pitch=pitch)
+
+    def from_roll(roll: T.Scalar) -> sf.Rot3:
+        """Construct from roll angle in radians"""
+        return sf.Rot3.from_yaw_pitch_roll(roll=roll)
+
     rot3_functions = (
         [
             codegen_mul(sf.Rot3, sf.Vector3),
@@ -111,6 +123,9 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
                 config=config,
             ),
             Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
+            Codegen.function(func=from_yaw, config=config),
+            Codegen.function(func=from_pitch, config=config),
+            Codegen.function(func=from_roll, config=config),
         ]
         + (
             # TODO(brad): We don't currently generate this in python because python (unlike C++)

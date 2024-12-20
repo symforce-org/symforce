@@ -309,6 +309,66 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
+    def from_yaw(yaw):
+        # type: (float) -> Rot3
+        """Construct from yaw angle in radians"""
+
+        # Total ops: 5
+
+        # Input arrays
+
+        # Intermediate terms (1)
+        _tmp0 = (1.0 / 2.0) * yaw
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = 0
+        _res[1] = 0
+        _res[2] = 1.0 * math.sin(_tmp0)
+        _res[3] = 1.0 * math.cos(_tmp0)
+        return Rot3.from_storage(_res)
+
+    @staticmethod
+    def from_pitch(pitch):
+        # type: (float) -> Rot3
+        """Construct from pitch angle in radians"""
+
+        # Total ops: 5
+
+        # Input arrays
+
+        # Intermediate terms (1)
+        _tmp0 = (1.0 / 2.0) * pitch
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = 0
+        _res[1] = 1.0 * math.sin(_tmp0)
+        _res[2] = 0
+        _res[3] = 1.0 * math.cos(_tmp0)
+        return Rot3.from_storage(_res)
+
+    @staticmethod
+    def from_roll(roll):
+        # type: (float) -> Rot3
+        """Construct from roll angle in radians"""
+
+        # Total ops: 5
+
+        # Input arrays
+
+        # Intermediate terms (1)
+        _tmp0 = (1.0 / 2.0) * roll
+
+        # Output terms
+        _res = [0.0] * 4
+        _res[0] = 1.0 * math.sin(_tmp0)
+        _res[1] = 0
+        _res[2] = 0
+        _res[3] = 1.0 * math.cos(_tmp0)
+        return Rot3.from_storage(_res)
+
+    @staticmethod
     def from_angle_axis(angle, axis):
         # type: (float, numpy.ndarray) -> Rot3
         """
