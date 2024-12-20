@@ -95,6 +95,10 @@ class values_vec_t
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[17];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "codegen_cpp_test"
          */
@@ -316,9 +320,13 @@ constexpr const char* values_vec_t::getTypeName()
     return *values_vec_t::getTypeNameArrayPtr();
 }
 
+constexpr values_vec_t::package_name_array_t* values_vec_t::getPackageNameArrayPtr() {
+    return &"codegen_cpp_test";
+}
+
 constexpr const char * values_vec_t::getPackageName()
 {
-    return "codegen_cpp_test";
+    return *values_vec_t::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size values_vec_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const

@@ -93,6 +93,10 @@ class VectorXi : public Eigen::Matrix<int32_t, Eigen::Dynamic, 1, Eigen::AutoAli
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -168,8 +172,12 @@ constexpr const char* VectorXi::getTypeName() {
   return *VectorXi::getTypeNameArrayPtr();
 }
 
+constexpr VectorXi::package_name_array_t* VectorXi::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* VectorXi::getPackageName() {
-  return "eigen_lcm";
+  return *VectorXi::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size VectorXi::_encodeNoHash(void* buf, __lcm_buffer_size offset,

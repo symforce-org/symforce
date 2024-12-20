@@ -93,6 +93,10 @@ class VectorXd : public Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlig
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -168,8 +172,12 @@ constexpr const char* VectorXd::getTypeName() {
   return *VectorXd::getTypeNameArrayPtr();
 }
 
+constexpr VectorXd::package_name_array_t* VectorXd::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* VectorXd::getPackageName() {
-  return "eigen_lcm";
+  return *VectorXd::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size VectorXd::_encodeNoHash(void* buf, __lcm_buffer_size offset,

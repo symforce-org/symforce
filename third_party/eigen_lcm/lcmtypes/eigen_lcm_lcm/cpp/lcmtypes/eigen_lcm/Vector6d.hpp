@@ -95,6 +95,10 @@ class Vector6d : public Eigen::Matrix<double, 6, 1, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Vector6d::getTypeName() {
   return *Vector6d::getTypeNameArrayPtr();
 }
 
+constexpr Vector6d::package_name_array_t* Vector6d::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Vector6d::getPackageName() {
-  return "eigen_lcm";
+  return *Vector6d::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Vector6d::_encodeNoHash(void* buf, __lcm_buffer_size offset,

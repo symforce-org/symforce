@@ -79,6 +79,10 @@ class my_dataclass_t
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[13];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "codegen_test"
          */
@@ -228,9 +232,13 @@ constexpr const char* my_dataclass_t::getTypeName()
     return *my_dataclass_t::getTypeNameArrayPtr();
 }
 
+constexpr my_dataclass_t::package_name_array_t* my_dataclass_t::getPackageNameArrayPtr() {
+    return &"codegen_test";
+}
+
 constexpr const char * my_dataclass_t::getPackageName()
 {
-    return "codegen_test";
+    return *my_dataclass_t::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size my_dataclass_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const

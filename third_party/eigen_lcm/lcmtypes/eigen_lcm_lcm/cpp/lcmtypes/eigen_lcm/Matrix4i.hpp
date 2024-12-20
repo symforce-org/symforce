@@ -95,6 +95,10 @@ class Matrix4i : public Eigen::Matrix<int32_t, 4, 4, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Matrix4i::getTypeName() {
   return *Matrix4i::getTypeNameArrayPtr();
 }
 
+constexpr Matrix4i::package_name_array_t* Matrix4i::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Matrix4i::getPackageName() {
-  return "eigen_lcm";
+  return *Matrix4i::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Matrix4i::_encodeNoHash(void* buf, __lcm_buffer_size offset,

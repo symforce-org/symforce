@@ -78,6 +78,10 @@ class outputs_2_t
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[28];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "codegen_multi_function_test"
          */
@@ -215,9 +219,13 @@ constexpr const char* outputs_2_t::getTypeName()
     return *outputs_2_t::getTypeNameArrayPtr();
 }
 
+constexpr outputs_2_t::package_name_array_t* outputs_2_t::getPackageNameArrayPtr() {
+    return &"codegen_multi_function_test";
+}
+
 constexpr const char * outputs_2_t::getPackageName()
 {
-    return "codegen_multi_function_test";
+    return *outputs_2_t::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size outputs_2_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const

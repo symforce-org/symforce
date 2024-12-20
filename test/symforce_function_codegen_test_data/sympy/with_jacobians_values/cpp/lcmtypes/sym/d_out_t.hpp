@@ -81,6 +81,10 @@ class d_out_t
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[4];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "sym"
          */
@@ -232,9 +236,13 @@ constexpr const char* d_out_t::getTypeName()
     return *d_out_t::getTypeNameArrayPtr();
 }
 
+constexpr d_out_t::package_name_array_t* d_out_t::getPackageNameArrayPtr() {
+    return &"sym";
+}
+
 constexpr const char * d_out_t::getPackageName()
 {
-    return "sym";
+    return *d_out_t::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size d_out_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const

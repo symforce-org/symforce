@@ -95,6 +95,10 @@ class SymmetricMatrixXf
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* SymmetricMatrixXf::getTypeName() {
   return *SymmetricMatrixXf::getTypeNameArrayPtr();
 }
 
+constexpr SymmetricMatrixXf::package_name_array_t* SymmetricMatrixXf::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* SymmetricMatrixXf::getPackageName() {
-  return "eigen_lcm";
+  return *SymmetricMatrixXf::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size SymmetricMatrixXf::_encodeNoHash(void* buf, __lcm_buffer_size offset,

@@ -102,6 +102,10 @@ class {{enumtype.name}}
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[{{enumtype.namespace|length + 1}}];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "{{enumtype.namespace}}"
          */
@@ -174,9 +178,13 @@ constexpr const char* {{enumtype.name}}::getTypeName()
     return *{{enumtype.name}}::getTypeNameArrayPtr();
 }
 
+constexpr {{enumtype.name}}::package_name_array_t* {{enumtype.name}}::getPackageNameArrayPtr() {
+    return &"{{enumtype.namespace}}";
+}
+
 constexpr const char * {{enumtype.name}}::getPackageName()
 {
-    return "{{enumtype.namespace}}";
+    return *{{enumtype.name}}::getPackageNameArrayPtr();
 }
 
 {{ size_t }} {{enumtype.name}}::_encodeNoHash(void *buf, {{ size_t }} offset, {{ size_t }} maxlen) const

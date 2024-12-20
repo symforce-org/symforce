@@ -94,6 +94,10 @@ class MatrixXf : public Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eig
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -169,8 +173,12 @@ constexpr const char* MatrixXf::getTypeName() {
   return *MatrixXf::getTypeNameArrayPtr();
 }
 
+constexpr MatrixXf::package_name_array_t* MatrixXf::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* MatrixXf::getPackageName() {
-  return "eigen_lcm";
+  return *MatrixXf::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size MatrixXf::_encodeNoHash(void* buf, __lcm_buffer_size offset,

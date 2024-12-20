@@ -94,6 +94,10 @@ class MatrixXd : public Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Ei
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -169,8 +173,12 @@ constexpr const char* MatrixXd::getTypeName() {
   return *MatrixXd::getTypeNameArrayPtr();
 }
 
+constexpr MatrixXd::package_name_array_t* MatrixXd::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* MatrixXd::getPackageName() {
-  return "eigen_lcm";
+  return *MatrixXd::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size MatrixXd::_encodeNoHash(void* buf, __lcm_buffer_size offset,

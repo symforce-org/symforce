@@ -95,6 +95,10 @@ class Matrix68f : public Eigen::Matrix<float, 6, 8, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Matrix68f::getTypeName() {
   return *Matrix68f::getTypeNameArrayPtr();
 }
 
+constexpr Matrix68f::package_name_array_t* Matrix68f::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Matrix68f::getPackageName() {
-  return "eigen_lcm";
+  return *Matrix68f::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Matrix68f::_encodeNoHash(void* buf, __lcm_buffer_size offset,

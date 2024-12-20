@@ -95,6 +95,10 @@ class Vector5f : public Eigen::Matrix<float, 5, 1, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Vector5f::getTypeName() {
   return *Vector5f::getTypeNameArrayPtr();
 }
 
+constexpr Vector5f::package_name_array_t* Vector5f::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Vector5f::getPackageName() {
-  return "eigen_lcm";
+  return *Vector5f::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Vector5f::_encodeNoHash(void* buf, __lcm_buffer_size offset,

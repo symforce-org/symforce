@@ -95,6 +95,10 @@ class SymmetricMatrix2d : public Eigen::Matrix<double, 2, 2, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* SymmetricMatrix2d::getTypeName() {
   return *SymmetricMatrix2d::getTypeNameArrayPtr();
 }
 
+constexpr SymmetricMatrix2d::package_name_array_t* SymmetricMatrix2d::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* SymmetricMatrix2d::getPackageName() {
-  return "eigen_lcm";
+  return *SymmetricMatrix2d::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size SymmetricMatrix2d::_encodeNoHash(void* buf, __lcm_buffer_size offset,

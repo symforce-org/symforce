@@ -95,6 +95,10 @@ class Vector1i : public Eigen::Matrix<int32_t, 1, 1, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Vector1i::getTypeName() {
   return *Vector1i::getTypeNameArrayPtr();
 }
 
+constexpr Vector1i::package_name_array_t* Vector1i::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Vector1i::getPackageName() {
-  return "eigen_lcm";
+  return *Vector1i::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Vector1i::_encodeNoHash(void* buf, __lcm_buffer_size offset,

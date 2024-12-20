@@ -79,6 +79,10 @@ class states_t
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[20];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "codegen_python_test"
          */
@@ -228,9 +232,13 @@ constexpr const char* states_t::getTypeName()
     return *states_t::getTypeNameArrayPtr();
 }
 
+constexpr states_t::package_name_array_t* states_t::getPackageNameArrayPtr() {
+    return &"codegen_python_test";
+}
+
 constexpr const char * states_t::getPackageName()
 {
-    return "codegen_python_test";
+    return *states_t::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size states_t::_encodeNoHash(void *buf, __lcm_buffer_size offset, __lcm_buffer_size maxlen) const

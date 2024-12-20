@@ -95,6 +95,10 @@ class Vector4d : public Eigen::Matrix<double, 4, 1, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Vector4d::getTypeName() {
   return *Vector4d::getTypeNameArrayPtr();
 }
 
+constexpr Vector4d::package_name_array_t* Vector4d::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Vector4d::getPackageName() {
-  return "eigen_lcm";
+  return *Vector4d::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Vector4d::_encodeNoHash(void* buf, __lcm_buffer_size offset,

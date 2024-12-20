@@ -95,6 +95,10 @@ class SymmetricMatrix4f : public Eigen::Matrix<float, 4, 4, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* SymmetricMatrix4f::getTypeName() {
   return *SymmetricMatrix4f::getTypeNameArrayPtr();
 }
 
+constexpr SymmetricMatrix4f::package_name_array_t* SymmetricMatrix4f::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* SymmetricMatrix4f::getPackageName() {
-  return "eigen_lcm";
+  return *SymmetricMatrix4f::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size SymmetricMatrix4f::_encodeNoHash(void* buf, __lcm_buffer_size offset,

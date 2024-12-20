@@ -103,6 +103,10 @@ class {{lcmtype.name}}
          */
         inline static constexpr const char* getTypeName();
 
+        using package_name_array_t = const char[{{lcmtype.namespace|length + 1}}];
+
+        inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
         /**
          * Returns "{{lcmtype.namespace}}"
          */
@@ -285,9 +289,13 @@ constexpr const char* {{lcmtype.name}}::getTypeName()
     return *{{lcmtype.name}}::getTypeNameArrayPtr();
 }
 
+constexpr {{lcmtype.name}}::package_name_array_t* {{lcmtype.name}}::getPackageNameArrayPtr() {
+    return &"{{lcmtype.namespace}}";
+}
+
 constexpr const char * {{lcmtype.name}}::getPackageName()
 {
-    return "{{lcmtype.namespace}}";
+    return *{{lcmtype.name}}::getPackageNameArrayPtr();
 }
 
 {% if lcmtype.members %}

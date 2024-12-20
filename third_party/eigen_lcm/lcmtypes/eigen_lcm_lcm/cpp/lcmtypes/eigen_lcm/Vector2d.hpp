@@ -95,6 +95,10 @@ class Vector2d : public Eigen::Matrix<double, 2, 1, Eigen::DontAlign> {
    */
   inline static constexpr const char* getTypeName();
 
+  using package_name_array_t = const char[10];
+
+  inline static constexpr package_name_array_t* getPackageNameArrayPtr();
+
   /**
    * Returns "eigen_lcm"
    */
@@ -170,8 +174,12 @@ constexpr const char* Vector2d::getTypeName() {
   return *Vector2d::getTypeNameArrayPtr();
 }
 
+constexpr Vector2d::package_name_array_t* Vector2d::getPackageNameArrayPtr() {
+  return &"eigen_lcm";
+}
+
 constexpr const char* Vector2d::getPackageName() {
-  return "eigen_lcm";
+  return *Vector2d::getPackageNameArrayPtr();
 }
 
 __lcm_buffer_size Vector2d::_encodeNoHash(void* buf, __lcm_buffer_size offset,
