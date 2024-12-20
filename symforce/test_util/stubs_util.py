@@ -58,3 +58,25 @@ def patch_remove_parameters() -> None:
         return maybe_class
 
     pybind11_stubgen.parser.mixins.fix.FixNumpyArrayRemoveParameters.handle_class = handle_class  # type: ignore[method-assign,assignment]
+
+
+def patch_fix_missing_none_hash_field_annotation() -> None:
+    """
+    See https://github.com/sizmailov/pybind11-stubgen/pull/236
+    """
+
+    def handle_field(
+        self: pybind11_stubgen.parser.mixins.fix.FixMissingNoneHashFieldAnnotation,
+        path: pybind11_stubgen.structs.QualifiedName,
+        field: T.Any,
+    ) -> T.Optional[pybind11_stubgen.structs.Field]:
+        result = super(  # type: ignore[safe-super]
+            pybind11_stubgen.parser.mixins.fix.FixMissingNoneHashFieldAnnotation, self
+        ).handle_field(path, field)
+        if result is None:
+            return None
+        if field is None and path[-1] == "__hash__":
+            result.attribute.annotation = self.parse_annotation_str("typing.ClassVar[typing.Any]")
+        return result
+
+    pybind11_stubgen.parser.mixins.fix.FixMissingNoneHashFieldAnnotation.handle_field = handle_field  # type: ignore[method-assign]
