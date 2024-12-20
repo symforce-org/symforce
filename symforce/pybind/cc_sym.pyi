@@ -543,7 +543,10 @@ class PreintegratedImuMeasurements:
         """
         A convenient struct that holds the Preintegrated delta.
         """
-        def from_lcm(self) -> PreintegratedImuMeasurements.Delta: ...
+        @staticmethod
+        def from_lcm(
+            arg0: imu_integrated_measurement_delta_t,
+        ) -> PreintegratedImuMeasurements.Delta: ...
         def get_lcm_type(self) -> imu_integrated_measurement_delta_t: ...
         def roll_forward_state(
             self, pose_i: Pose3, vel_i: numpy.ndarray, gravity: numpy.ndarray

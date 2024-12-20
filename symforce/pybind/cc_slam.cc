@@ -25,7 +25,7 @@ void AddSlamWrapper(pybind11::module_ module) {
 
   py::class_<sym::PreintegratedImuMeasurementsd::Delta>(
       pim, "Delta", "A convenient struct that holds the Preintegrated delta.")
-      .def("from_lcm", &sym::PreintegratedImuMeasurementsd::Delta::FromLcm)
+      .def_static("from_lcm", &sym::PreintegratedImuMeasurementsd::Delta::FromLcm)
       .def("get_lcm_type", &sym::PreintegratedImuMeasurementsd::Delta::GetLcmType)
       .def("roll_forward_state", &sym::PreintegratedImuMeasurementsd::Delta::RollForwardState,
            py::arg("pose_i"), py::arg("vel_i"), py::arg("gravity"))
