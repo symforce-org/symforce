@@ -22,6 +22,7 @@ jobs:
             CXX: g++-11
             package: g++-11
             repos: ['"ppa:ubuntu-toolchain-r/test"']
+        no_fast_math: ["OFF"]
         include:
           # gcc 5
           - os: ubuntu-20.04
@@ -33,6 +34,7 @@ jobs:
               repos:
               - '"deb http://us.archive.ubuntu.com/ubuntu/ bionic main"'
               - '"deb http://us.archive.ubuntu.com/ubuntu/ bionic universe"'
+            no_fast_math: "OFF"
           # Clang 7
           - os: ubuntu-20.04
             python: "3.8"
@@ -41,6 +43,8 @@ jobs:
               CXX: clang++-7
               package: clang-7
               repos: []
+            # Clang -ffast-math is broken before Clang 10
+            no_fast_math: "ON"
           # Clang 15
           - os: ubuntu-22.04
             python: "3.10"
@@ -49,6 +53,7 @@ jobs:
               CXX: clang++-15
               package: clang-15
               repos: []
+            no_fast_math: "OFF"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -123,7 +128,8 @@ jobs:
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.CXX }} \
             -D "SYMFORCE_COMPILE_OPTIONS=-Wall;-Wextra;-Werror" \
             -D SYMFORCE_PYTHON_OVERRIDE=python${{ matrix.python }} \
-            -D SYMFORCE_BUILD_BENCHMARKS=ON
+            -D SYMFORCE_BUILD_BENCHMARKS=ON \
+            -D SYMFORCE_NO_FAST_MATH=${{ matrix.no_fast_math }}
           cmake --build build -j $(nproc)
 
       # - lcmtypes need to be available for tests
