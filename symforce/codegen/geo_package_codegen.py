@@ -236,7 +236,7 @@ def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path
             data["custom_generated_methods"] = custom_generated_methods.get(cls, {})
             if cls == sf.Pose2:
                 data["imported_classes"] = [sf.Rot2]
-            elif cls in (sf.Pose3, sf.Unit3):
+            elif cls in {sf.Pose3, sf.Unit3}:
                 data["imported_classes"] = [sf.Rot3]
 
             for base_dir, relative_path in (

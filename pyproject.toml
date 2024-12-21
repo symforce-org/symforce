@@ -52,14 +52,61 @@ Source = "https://github.com/symforce-org/symforce"
 
 [tool.ruff]
 line-length = 100
-exclude = ["third_party", "build", ".eggs"]
+exclude = ["third_party", "build", ".eggs", "lcmtypes", "*.pyi"]
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
+preview = true
+typing-modules = ["symforce.typing"]
+
 select = [
+  "A",      # flake8
+  "B",      # flake8-bugbear
+  "E4",     # pycodestyle - ERROR - Imports - E401, E402
+  "E7",     # pycodestyle - ERROR - Statements - E701-E743
+  "E9",     # pycodestyle - ERROR - Runtime - E901, E902
+  "F",      # pyflakes - ALL - F401-F901
   "I",      # isort
+  "PLC",    # pylint - convention
+  "PLE",    # pylint - error
+  "PLR",    # pylint - refactor
+  "PLW",    # pylint - warning
   "RUF100", # unused-noqa
+  "SLF",    # flake8-self
 ]
+
+ignore = [
+  # Leave ignored:
+  "B008", # function-call-in-default-argument
+  "E402", # Module level import not at top of file
+  "E731", # Do not assign a `lambda` expression, use a `def`
+  "E741", # Ambiguous variable name: `x`
+  "PLC0415", # import-outside-top-level
+  "PLC2701", # Private name import `_x` from external module `y`
+  "PLR2004", # magic-value-comparison
+  "PLW1514", # unspecified-encoding
+  "PLW1641", # eq-without-hash
+  "PLW2901", # redefined-loop-name
+
+  # Maybe enable later
+  "ARG",    # flake8-unused-arguments
+  "B011",   # Do not `assert False`, raise `AssertionError()`
+]
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["__doc__"]
+
+
+[tool.ruff.lint.per-file-ignores]
+
+# Unused imports in __init__.py
+"__init__.py" = ["F401"]
+
+# Unbound loop variables in benchmark notebooks
+"symforce/benchmarks/notebooks/*.ipynb" = ["B023"]
+
+# Imports shadowing builtins (like display)
+"**/*.ipynb" = ["A004"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["sym", "symforce"]
@@ -75,6 +122,13 @@ section-order = [
 
 [tool.ruff.lint.isort.sections]
 "generated" = ["lcmtypes"]
+
+[tool.ruff.lint.pylint]
+max-args = 10
+max-branches = 20
+max-locals = 20
+max-public-methods = 100
+max-returns = 10
 
 # --------------------------------------------------------------------------------
 # Mypy

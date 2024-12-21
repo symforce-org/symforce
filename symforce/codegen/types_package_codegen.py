@@ -164,7 +164,7 @@ def generate_types(
         else:
             typenames_dict[name] = f"{name}_t"
             namespaces_dict[name] = package_name
-    for typename, data in types_dict.items():
+    for data in types_dict.values():
         # Iterate through types in types_dict. If type is external, use the shared_types to
         # get the namespace.
         unformatted_typenames = T.cast(T.List[str], data["unformatted_typenames"])

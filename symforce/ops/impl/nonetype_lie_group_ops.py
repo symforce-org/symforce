@@ -28,7 +28,7 @@ class NoneTypeLieGroupOps(AbstractVectorLieGroupOps[None]):
     @staticmethod
     def from_storage(a: NoneElementOrType, elements: T.Sequence[T.Scalar]) -> None:
         assert len(elements) == 0
-        return None
+        return None  # noqa: PLR1711
 
     @staticmethod
     def symbolic(a: NoneElementOrType, name: str, **kwargs: T.Dict) -> None:

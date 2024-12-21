@@ -159,7 +159,7 @@ def inverse_range_landmark_reprojection_error_residual(
     return whitened_residual
 
 
-def inverse_range_landmark_gnc_residual(
+def inverse_range_landmark_gnc_residual(  # noqa: PLR0913, PLR0917
     source_pose: sf.Pose3,
     source_calibration: sf.CameraCal,
     target_pose: sf.Pose3,

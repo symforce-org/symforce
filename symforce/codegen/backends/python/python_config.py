@@ -64,16 +64,19 @@ class PythonConfig(CodegenConfig):
     def template_dir(cls) -> Path:
         return CURRENT_DIR / "templates"
 
-    def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
+    @staticmethod
+    def templates_to_render(generated_file_name: str) -> T.List[T.Tuple[str, str]]:
         return [
             ("function/FUNCTION.py.jinja", f"{generated_file_name}.py"),
             ("function/__init__.py.jinja", "__init__.py"),
         ]
 
-    def printer(self) -> CodePrinter:
+    @staticmethod
+    def printer() -> CodePrinter:
         return python_code_printer.PythonCodePrinter()
 
-    def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
+    @staticmethod
+    def format_matrix_accessor(key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
         PythonConfig._assert_indices_in_bounds(i, j, shape)
         return f"{key}[{i}, {j}]"
 

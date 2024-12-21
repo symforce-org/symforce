@@ -13,7 +13,7 @@ from symforce.slam.imu_preintegration.manifold_symbolic import internal_imu_resi
 from symforce.slam.imu_preintegration.manifold_symbolic import roll_forward_state
 
 
-def internal_imu_unit_gravity_residual(
+def internal_imu_unit_gravity_residual(  # noqa: PLR0913, PLR0917
     pose_i: sf.Pose3,
     vel_i: sf.V3,
     pose_j: sf.Pose3,

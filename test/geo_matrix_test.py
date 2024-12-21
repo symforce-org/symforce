@@ -469,13 +469,13 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(sf.V2.unit_x().x, 1)
         self.assertEqual(sf.V2.unit_x().y, 0)
         with self.assertRaises(AttributeError):
-            _ = sf.V2.unit_x().z  # type: ignore[attr-defined]  # pylint: disable=no-member
+            _ = sf.V2.unit_x().z  # type: ignore[attr-defined]
 
         self.assertEqual(sf.V2.unit_y().x, 0)
         self.assertEqual(sf.V2.unit_y().y, 1)
 
         with self.assertRaises(AttributeError):
-            sf.V2.unit_z()  # type: ignore[attr-defined]  # pylint: disable=no-member
+            sf.V2.unit_z()  # type: ignore[attr-defined]
 
         self.assertEqual(sf.V3.unit_x().x, 1)
         self.assertEqual(sf.V3.unit_x().y, 0)

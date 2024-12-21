@@ -4,12 +4,14 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import typing as T
 
 import numpy
 
-import sym  # pylint: disable=useless-suppression,unused-import
+import sym
 
 
 class LieGroupOps(object):

@@ -4,6 +4,9 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import random
 import typing as T
@@ -38,7 +41,7 @@ class Rot3(object):
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
             if isinstance(q, numpy.ndarray):
-                if q.shape in [(4, 1), (1, 4)]:
+                if q.shape in {(4, 1), (1, 4)}:
                     q = q.flatten()
                 elif q.shape != (4,):
                     raise IndexError(
@@ -568,6 +571,6 @@ class Rot3(object):
         if isinstance(other, Rot3):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
-            return getattr(self, "compose_with_point")(other).reshape(other.shape)
+            return self.compose_with_point(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

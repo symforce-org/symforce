@@ -282,9 +282,9 @@ def get_class_for_method(func: T.Callable) -> T.Type:
     if inspect.ismethod(func) or (
         inspect.isbuiltin(func)
         and getattr(func, "__self__", None) is not None
-        and getattr(getattr(func, "__self__"), "__class__", None) is not None
+        and getattr(func.__self__, "__class__", None) is not None
     ):
-        return getattr(getattr(func, "__self__"), "__class__")
+        return func.__self__.__class__
     if inspect.isfunction(func):
         cls = getattr(
             inspect.getmodule(func),
@@ -293,7 +293,9 @@ def get_class_for_method(func: T.Callable) -> T.Type:
         )
         if isinstance(cls, type):
             return cls
-    return getattr(func, "__objclass__")  # handle special descriptor objects
+
+    # handle special descriptor objects
+    return func.__objclass__  # type: ignore[attr-defined]
 
 
 class AttrDict(dict):

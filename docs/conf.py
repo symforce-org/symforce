@@ -27,7 +27,7 @@ os.environ["PYTHONPATH"] = package_path + ":" + os.environ.get("PYTHONPATH", "")
 # -- Project information -----------------------------------------------------
 
 project = "symforce"
-copyright = "2022, Skydio, Inc"
+copyright = "2022, Skydio, Inc"  # noqa: A001
 author = "Skydio"
 
 # The short X.Y version

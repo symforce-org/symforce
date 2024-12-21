@@ -53,21 +53,19 @@ check_types:
 		--exclude "symforce/examples/.*/gen/python2\.7/lcmtypes" \
 		--exclude third_party
 
-# Run pylint on the symforce package, and tests
-# TODO(aaron): Also run on other python code in symforce.  Generated code will require a different
-# config since it is py6 and contains a lot of duplicate code
-pylint:
-	$(PYTHON) -m pylint symforce test/*.py
+# Run ruff check
+ruff_check:
+	ruff check
 
 # Lint check for formatting and type hints
 # This needs pass before any merge.
-lint: check_types check_format pylint
+lint: check_types check_format ruff_check
 
 # Clean all artifacts
 clean: docs_clean coverage_clean
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all reqs format check_format check_types pylint lint clean
+.PHONY: all reqs format check_format check_types ruff_check lint clean
 
 # -----------------------------------------------------------------------------
 # Tests

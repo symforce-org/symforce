@@ -543,7 +543,7 @@ def _load_generated_package_internal(name: str, path: Path) -> T.Tuple[T.Any, T.
     ensure name imports the correct modules.
     """
     if path.is_dir():
-        path = path / "__init__.py"
+        path = path / "__init__.py"  # noqa: PLR6104
 
     parts = name.split(".")
     if len(parts) > 1:
@@ -687,7 +687,7 @@ def load_generated_lcmtype(
     """
     # We need to import the lcmtypes package first so that sys.path is set up correctly, since this
     # is a namespace package
-    import lcmtypes  # pylint: disable=unused-import
+    import lcmtypes  # noqa: F401
 
     return getattr(
         load_generated_package(

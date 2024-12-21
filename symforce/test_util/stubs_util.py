@@ -31,7 +31,7 @@ def patch_handle_docstring() -> None:
             assert isinstance(
                 self, pybind11_stubgen.parser.mixins.parse.ExtractSignaturesFromPybind11Docstrings
             )
-            return self._strip_empty_lines(value.splitlines())  # pylint: disable=protected-access
+            return self._strip_empty_lines(value.splitlines())
         return None
 
     pybind11_stubgen.parser.mixins.parse.BaseParser.handle_docstring = handle_docstring  # type: ignore[method-assign]

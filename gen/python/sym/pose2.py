@@ -4,6 +4,9 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import random
 import typing as T
@@ -60,7 +63,7 @@ class Pose2(object):
         if t is None:
             t = [0.0, 0.0]
         if isinstance(t, numpy.ndarray):
-            if t.shape in [(2, 1), (1, 2)]:
+            if t.shape in {(2, 1), (1, 2)}:
                 t = t.flatten()
             elif t.shape != (2,):
                 raise IndexError(
@@ -351,6 +354,6 @@ class Pose2(object):
         if isinstance(other, Pose2):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
-            return getattr(self, "compose_with_point")(other).reshape(other.shape)
+            return self.compose_with_point(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

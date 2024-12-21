@@ -65,7 +65,7 @@ class Matrix(Storage):
     # this class variable as a strong internal consistency check.
     SHAPE = (-1, -1)
 
-    def __new__(cls, *args: _T.Any, **kwargs: _T.Any) -> Matrix:
+    def __new__(cls, *args: _T.Any, **kwargs: _T.Any) -> Matrix:  # noqa: PLR0915
         """
         Beast of a method for creating a Matrix. Handles a variety of construction use cases
         and *always* returns a fixed size child class of Matrix rather than Matrix itself. The
@@ -116,12 +116,10 @@ class Matrix(Storage):
                             f"Expected {cls.storage_dim()} elements for {cls}, got {len(array)}"
                         )
                     rows, cols = cls.SHAPE
+                elif len(array) == 0:
+                    rows, cols = 0, 0
                 else:
-                    # Only set the second dimension to 1 if the array is nonempty
-                    if len(array) == 0:
-                        rows, cols = 0, 0
-                    else:
-                        rows, cols = len(array), 1
+                    rows, cols = len(array), 1
                 flat_list = list(array)
 
         # 4) If there are two arguments and this is not a fixed size matrix, treat it as a size
@@ -760,16 +758,16 @@ class Matrix(Storage):
             return self.__class__(left * self.mat)
 
     @_T.overload
-    def __div__(
+    def __truediv__(
         self, right: _T.Union[Matrix, sf.sympy.MutableDenseMatrix]
     ) -> Matrix:  # pragma: no cover
         pass
 
     @_T.overload
-    def __div__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
+    def __truediv__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
-    def __div__(
+    def __truediv__(
         self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sf.sympy.MutableDenseMatrix]
     ) -> _T.Union[MatrixT, Matrix]:
         """
@@ -782,8 +780,8 @@ class Matrix(Storage):
         else:
             return self.__class__(self.mat * _T.cast(sf.sympy.MutableDenseMatrix, right).inv())
 
-    def _symengine_(self) -> symengine.Matrix:
-        symengine = symforce._find_symengine()  # pylint: disable=protected-access
+    def _symengine_(self) -> symengine.Matrix:  # noqa: PLW3201
+        symengine = symforce._find_symengine()  # noqa: SLF001
         return symengine.S(self.mat)
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
@@ -866,8 +864,6 @@ class Matrix(Storage):
         Solve a linear system using the given method.
         """
         return self.__class__(self.mat.solve(b, method=method))
-
-    __truediv__ = __div__
 
     @staticmethod
     def are_parallel(a: Vector3, b: Vector3, tolerance: _T.Scalar) -> _T.Scalar:
@@ -952,11 +948,11 @@ class Matrix(Storage):
         """
         return cls.SHAPE[0] > 0 and cls.SHAPE[1] > 0
 
-    def _ipython_display_(self) -> None:
+    def _ipython_display_(self) -> None:  # noqa: PLW3201
         """
         Display ``self.mat`` in IPython, with SymPy's pretty printing
         """
-        display(self.mat)  # type: ignore[name-defined] # pylint: disable=undefined-variable # not defined outside of ipython
+        display(self.mat)  # type: ignore[name-defined] # noqa: F821 # not defined outside of ipython
 
     @staticmethod
     def init_printing() -> None:

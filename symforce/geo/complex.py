@@ -152,7 +152,7 @@ class Complex(Group):
         """
         return self.__class__(-self.real, -self.imag)
 
-    def __div__(self, scalar: T.Scalar) -> Complex:
+    def __truediv__(self, scalar: T.Scalar) -> Complex:
         """
         Scalar element-wise division.
 
@@ -163,8 +163,6 @@ class Complex(Group):
             Complex:
         """
         return self.__class__(self.real / scalar, self.imag / scalar)
-
-    __truediv__ = __div__
 
     @classmethod
     def random_uniform(cls, low: T.Scalar, high: T.Scalar) -> Complex:

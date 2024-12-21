@@ -71,7 +71,7 @@ LieGroupOps.register(T.Dataclass, DataclassLieGroupOps)
 LieGroupOps.register(type(None), NoneTypeLieGroupOps)
 
 
-class LieGroupSymClass(abc.ABC):
+class LieGroupSymClass(abc.ABC):  # noqa: B024
     """
     Metaclass for generated numeric geo classes
 

@@ -11,7 +11,7 @@ from pathlib import Path
 import pybind11_stubgen
 
 # Needed so sys.modules["cc_sym"] exists
-from symforce import cc_sym  # pylint: disable=unused-import
+from symforce import cc_sym  # noqa: F401
 from symforce import path_util
 from symforce.codegen import format_util
 from symforce.test_util import TestCase

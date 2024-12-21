@@ -232,7 +232,9 @@ class Optimizer:
         if debug_stats is not None:
             self.params.debug_stats = debug_stats
             warnings.warn(
-                "debug_stats argument is deprecated, use params.debug_stats", FutureWarning
+                "debug_stats argument is deprecated, use params.debug_stats",
+                FutureWarning,
+                stacklevel=5,
             )
 
         if include_jacobians is not None:
@@ -240,6 +242,7 @@ class Optimizer:
             warnings.warn(
                 "include_jacobians argument is deprecated, use params.include_jacobians",
                 FutureWarning,
+                stacklevel=5,
             )
 
         self._initialized = False

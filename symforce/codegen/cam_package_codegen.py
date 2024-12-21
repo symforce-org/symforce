@@ -163,7 +163,7 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     return data
 
 
-def class_template_data(cls: T.Type, functions_to_doc: T.Sequence[function]) -> T.Dict[str, T.Any]:
+def class_template_data(cls: T.Type, functions_to_doc: T.Sequence[function]) -> T.Dict[str, T.Any]:  # noqa: F821
     data = Codegen.common_data()
     data["doc"] = {}
     assert cls.__doc__ is not None

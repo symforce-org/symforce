@@ -121,7 +121,7 @@ class Factor:
             config = cls.default_codegen_config()
 
         instance = cls.__new__(cls)
-        instance._initialize(
+        instance._initialize(  # noqa: SLF001
             keys=keys,
             codegen_obj=Codegen(
                 inputs=inputs, outputs=Values(residual=residual), config=config, **kwargs
@@ -195,8 +195,6 @@ class Factor:
             else None,
             sparse_linearization=sparse_linearization,
         )
-        # Ignore false positive because we define `self.jacobian` in `_initialize()`
-        # pylint: disable=attribute-defined-outside-init
         self.generated_jacobians[tuple(optimized_keys)] = codegen_with_linearization.outputs[
             "jacobian"
         ]
