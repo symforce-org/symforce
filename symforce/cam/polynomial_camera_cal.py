@@ -59,17 +59,14 @@ class PolynomialCameraCal(CameraCal):
 
         if critical_undistorted_radius is not None:
             self.critical_undistorted_radius = critical_undistorted_radius
+        elif any(
+            isinstance(c, sf.Expr) and not isinstance(c, sf.Number) for c in distortion_coeffs
+        ):
+            raise ValueError(
+                "critical_undistorted_radius must be provided if the distortion_coeffs are not all numerical"
+            )
         else:
-            if any(
-                isinstance(c, sf.Expr) and not isinstance(c, sf.Number) for c in distortion_coeffs
-            ):
-                raise ValueError(
-                    "critical_undistorted_radius must be provided if the distortion_coeffs are not all numerical"
-                )
-            else:
-                self.critical_undistorted_radius = self._compute_critical_undistorted_radius(
-                    max_fov
-                )
+            self.critical_undistorted_radius = self._compute_critical_undistorted_radius(max_fov)
 
     @classmethod
     def from_distortion_coeffs(

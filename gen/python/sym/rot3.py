@@ -4,6 +4,9 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import random
 import typing as T
@@ -38,7 +41,7 @@ class Rot3(object):
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
             if isinstance(q, numpy.ndarray):
-                if q.shape in [(4, 1), (1, 4)]:
+                if q.shape in {(4, 1), (1, 4)}:
                     q = q.flatten()
                 elif q.shape != (4,):
                     raise IndexError(
@@ -55,40 +58,23 @@ class Rot3(object):
     @classmethod
     def from_rotation_matrix(cls, R, epsilon=0.0):
         # type: (numpy.ndarray, float) -> Rot3
-        """
-        This implementation is based on Shepperd's method (1978)
-        https://arc.aiaa.org/doi/abs/10.2514/3.55767b?journalCode=jgc (this is paywalled)
-
-        See the introduction of these papers for a description of the method:
-        - https://digital.csic.es/bitstream/10261/179990/1/Accurate%20Computation_Sarabandi.pdf
-        - https://arc.aiaa.org/doi/abs/10.2514/1.31730?journalCode=jgcd
-        """
         assert R.shape == (3, 3)
-        trace = R[0, 0] + R[1, 1] + R[2, 2]
-        # trace is larger than any of the diagonal elements
-        if trace > R[0, 0] and trace > R[1, 1] and trace > R[2, 2]:
-            w = numpy.sqrt(1.0 + trace) / 2.0
-            x = (R[2, 1] - R[1, 2]) / (4.0 * w)
-            y = (R[0, 2] - R[2, 0]) / (4.0 * w)
-            z = (R[1, 0] - R[0, 1]) / (4.0 * w)
-        # largest diagonal element is R[0,0]
-        elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
-            x = numpy.sqrt(max(epsilon**2, 1.0 + R[0, 0] - R[1, 1] - R[2, 2])) / 2.0
-            y = (R[0, 1] + R[1, 0]) / (4.0 * x)
-            z = (R[0, 2] + R[2, 0]) / (4.0 * x)
-            w = (R[2, 1] - R[1, 2]) / (4.0 * x)
-        # largest diagonal element is R[1,1]
-        elif R[1, 1] > R[2, 2]:
-            y = numpy.sqrt(max(epsilon**2, 1.0 + R[1, 1] - R[0, 0] - R[2, 2])) / 2.0
-            x = (R[0, 1] + R[1, 0]) / (4.0 * y)
-            z = (R[1, 2] + R[2, 1]) / (4.0 * y)
-            w = (R[0, 2] - R[2, 0]) / (4.0 * y)
-        # largest diagonal element is R[2,2]
-        else:
-            z = numpy.sqrt(max(epsilon**2, 1.0 + R[2, 2] - R[0, 0] - R[1, 1])) / 2.0
-            x = (R[0, 2] + R[2, 0]) / (4.0 * z)
-            y = (R[1, 2] + R[2, 1]) / (4.0 * z)
-            w = (R[1, 0] - R[0, 1]) / (4.0 * z)
+        w = numpy.sqrt(max(epsilon**2, 1 + R[0, 0] + R[1, 1] + R[2, 2])) / 2
+        x = numpy.sqrt(max(epsilon**2, 1 + R[0, 0] - R[1, 1] - R[2, 2])) / 2
+        y = numpy.sqrt(max(epsilon**2, 1 - R[0, 0] + R[1, 1] - R[2, 2])) / 2
+        z = numpy.sqrt(max(epsilon**2, 1 - R[0, 0] - R[1, 1] + R[2, 2])) / 2
+
+        x = abs(x)
+        if (R[2, 1] - R[1, 2]) < 0:
+            x = -x
+
+        y = abs(y)
+        if (R[0, 2] - R[2, 0]) < 0:
+            y = -y
+
+        z = abs(z)
+        if (R[1, 0] - R[0, 1]) < 0:
+            z = -z
 
         return Rot3.from_storage([x, y, z, w])
 
@@ -309,66 +295,6 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
-    def from_yaw(yaw):
-        # type: (float) -> Rot3
-        """Construct from yaw angle in radians"""
-
-        # Total ops: 5
-
-        # Input arrays
-
-        # Intermediate terms (1)
-        _tmp0 = (1.0 / 2.0) * yaw
-
-        # Output terms
-        _res = [0.0] * 4
-        _res[0] = 0
-        _res[1] = 0
-        _res[2] = 1.0 * math.sin(_tmp0)
-        _res[3] = 1.0 * math.cos(_tmp0)
-        return Rot3.from_storage(_res)
-
-    @staticmethod
-    def from_pitch(pitch):
-        # type: (float) -> Rot3
-        """Construct from pitch angle in radians"""
-
-        # Total ops: 5
-
-        # Input arrays
-
-        # Intermediate terms (1)
-        _tmp0 = (1.0 / 2.0) * pitch
-
-        # Output terms
-        _res = [0.0] * 4
-        _res[0] = 0
-        _res[1] = 1.0 * math.sin(_tmp0)
-        _res[2] = 0
-        _res[3] = 1.0 * math.cos(_tmp0)
-        return Rot3.from_storage(_res)
-
-    @staticmethod
-    def from_roll(roll):
-        # type: (float) -> Rot3
-        """Construct from roll angle in radians"""
-
-        # Total ops: 5
-
-        # Input arrays
-
-        # Intermediate terms (1)
-        _tmp0 = (1.0 / 2.0) * roll
-
-        # Output terms
-        _res = [0.0] * 4
-        _res[0] = 1.0 * math.sin(_tmp0)
-        _res[1] = 0
-        _res[2] = 0
-        _res[3] = 1.0 * math.cos(_tmp0)
-        return Rot3.from_storage(_res)
-
-    @staticmethod
     def from_angle_axis(angle, axis):
         # type: (float, numpy.ndarray) -> Rot3
         """
@@ -428,26 +354,26 @@ class Rot3(object):
             )
 
         # Intermediate terms (7)
-        _tmp0 = a[0, 0] * b[0, 0] + a[1, 0] * b[1, 0] + a[2, 0] * b[2, 0]
-        _tmp1 = math.sqrt(2 * _tmp0 + epsilon + 2)
-        _tmp2 = (
-            0.0 if -epsilon + abs(_tmp0 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp0 + 1))
-        ) + 1
-        _tmp3 = (1.0 / 2.0) * _tmp2
-        _tmp4 = _tmp3 / _tmp1
-        _tmp5 = 1.0 / 2.0 - 1.0 / 2.0 * (
+        _tmp0 = 1.0 / 2.0 - 1.0 / 2.0 * (
             0.0
             if a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon**2 == 0
             else math.copysign(1, a[1, 0] ** 2 + a[2, 0] ** 2 - epsilon**2)
         )
-        _tmp6 = 1 - _tmp3
+        _tmp1 = a[0, 0] * b[0, 0] + a[1, 0] * b[1, 0] + a[2, 0] * b[2, 0]
+        _tmp2 = (
+            0.0 if -epsilon + abs(_tmp1 + 1) == 0 else math.copysign(1, -epsilon + abs(_tmp1 + 1))
+        ) + 1
+        _tmp3 = (1.0 / 2.0) * _tmp2
+        _tmp4 = 1 - _tmp3
+        _tmp5 = math.sqrt(2 * _tmp1 + epsilon + 2)
+        _tmp6 = _tmp3 / _tmp5
 
         # Output terms
         _res = [0.0] * 4
-        _res[0] = _tmp4 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0]) + _tmp6 * (1 - _tmp5)
-        _res[1] = _tmp4 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0]) + _tmp5 * _tmp6
-        _res[2] = _tmp4 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0])
-        _res[3] = (1.0 / 4.0) * _tmp1 * _tmp2
+        _res[0] = _tmp4 * (1 - _tmp0) + _tmp6 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0])
+        _res[1] = _tmp0 * _tmp4 + _tmp6 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0])
+        _res[2] = _tmp6 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0])
+        _res[3] = (1.0 / 4.0) * _tmp2 * _tmp5
         return Rot3.from_storage(_res)
 
     # --------------------------------------------------------------------------
@@ -568,6 +494,6 @@ class Rot3(object):
         if isinstance(other, Rot3):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
-            return getattr(self, "compose_with_point")(other).reshape(other.shape)
+            return self.compose_with_point(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

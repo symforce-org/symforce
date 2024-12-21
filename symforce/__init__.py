@@ -131,7 +131,7 @@ def _find_symengine() -> ModuleType:
 
         try:
             spec.loader.exec_module(symengine)
-        except:  # pylint: disable=bare-except
+        except:
             # If executing the module fails for any reason, it shouldn't be in `sys.modules`
             del sys.modules["symengine"]
             raise
@@ -145,7 +145,7 @@ _have_imported_symbolic = False
 
 def _set_symbolic_api(sympy_module: T.Literal["sympy", "symengine"]) -> None:
     # Set this as the default symbolic API
-    global _symbolic_api  # pylint: disable=global-statement
+    global _symbolic_api  # noqa: PLW0603
     _symbolic_api = sympy_module
 
 
@@ -163,7 +163,7 @@ def _use_symengine() -> None:
 def _use_sympy() -> None:
     # Import just to make sure it's importable and fail here if it's not (as opposed to failing
     # later)
-    import sympy as sympy_py  # pylint: disable=unused-import
+    import sympy as sympy_py
 
     _set_symbolic_api("sympy")
 
@@ -260,7 +260,7 @@ def _set_epsilon(new_epsilon: T.Any) -> None:
     Args:
         new_epsilon: The new default epsilon to use
     """
-    global _epsilon  # pylint: disable=global-statement
+    global _epsilon  # noqa: PLW0603
 
     if _have_used_epsilon and new_epsilon != _epsilon:
         raise AlreadyUsedEpsilon(

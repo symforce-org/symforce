@@ -13,7 +13,8 @@ class PythonCodePrinter(_PythonCodePrinter):
     behavior for codegen compatibility and efficiency.
     """
 
-    def _print_Rational(self, expr: sympy.Rational) -> str:
+    @staticmethod
+    def _print_Rational(expr: sympy.Rational) -> str:
         """
         Customizations:
             * Decimal points for Python2 support, doesn't exist in some sympy versions.

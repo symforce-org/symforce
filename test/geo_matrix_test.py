@@ -48,13 +48,13 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         # 3B) Matrix22([1, 2, 3, 4])  # Matrix22 with [1, 2, 3, 4] data (must matched fixed shape)
         self.assertIsInstance(sf.M22([1, 2, 3, 4]), sf.M22)
         self.assertEqual(sf.M22([1, 2, 3, 4]).to_flat_list(), [1, 2, 3, 4])
-        self.assertRaises(ValueError, lambda: sf.M22([1, 2, 3]))
-        self.assertRaises(ValueError, lambda: sf.M22([1, 2, 3, 4, 5]))
+        self.assertRaises(AssertionError, lambda: sf.M22([1, 2, 3]))
+        self.assertRaises(AssertionError, lambda: sf.M22([1, 2, 3, 4, 5]))
 
         # 3C) Matrix([1, 2, 3, 4])  # Matrix41 with [1, 2, 3, 4] data - column vector assumed
         self.assertEqual(sf.M([1, 2, 3, 4]), sf.M([[1], [2], [3], [4]]))
         self.assertEqual(sf.M41([1, 2, 3, 4]), sf.M([[1], [2], [3], [4]]))
-        self.assertRaises(ValueError, lambda: sf.M31([1, 2, 3, 4]))
+        self.assertRaises(AssertionError, lambda: sf.M31([1, 2, 3, 4]))
 
         # 4) Matrix(4, 3)  # Zero constructed Matrix43
         self.assertEqual(sf.M(4, 3), sf.M43.zero())
@@ -207,7 +207,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
             self.assertEqual(vec(*rand_vec), sf.Matrix(rand_vec))
 
             rand_vec_long = np.random.rand(i + 2)
-            self.assertRaises(ValueError, vec, rand_vec_long)
+            self.assertRaises(AssertionError, vec, rand_vec_long)
             self.assertRaises(AssertionError, vec, *rand_vec_long)
 
         eye_matrix_constructors = [sf.I1, sf.I2, sf.I3, sf.I4, sf.I5, sf.I6]
@@ -248,7 +248,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         mat = sf.M22.symbolic("a")
         vec = mat[:, 0]
-        self.assertEqual(sf.M42.eye(), mat.jacobian(vec))
+        self.assertRaises(AssertionError, lambda: mat.jacobian(vec))
 
     def test_block_matrix(self) -> None:
         """
@@ -469,13 +469,13 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
         self.assertEqual(sf.V2.unit_x().x, 1)
         self.assertEqual(sf.V2.unit_x().y, 0)
         with self.assertRaises(AttributeError):
-            _ = sf.V2.unit_x().z  # type: ignore[attr-defined]  # pylint: disable=no-member
+            _ = sf.V2.unit_x().z  # type: ignore[attr-defined]
 
         self.assertEqual(sf.V2.unit_y().x, 0)
         self.assertEqual(sf.V2.unit_y().y, 1)
 
         with self.assertRaises(AttributeError):
-            sf.V2.unit_z()  # type: ignore[attr-defined]  # pylint: disable=no-member
+            sf.V2.unit_z()  # type: ignore[attr-defined]
 
         self.assertEqual(sf.V3.unit_x().x, 1)
         self.assertEqual(sf.V3.unit_x().y, 0)

@@ -46,7 +46,7 @@ class TestCase(SymforceTestCaseMixin):
         # can be removed once the fix is in a release:
         # https://github.com/python/cpython/commit/159e3db1f7697b9aecdf674bb833fbb87f3dcad3
         if sys.version_info >= (3, 12, 0) and sys.version_info < (3, 12, 2):
-            sys.modules[unittest.main.__module__]._NO_TESTS_EXITCODE = 0  # type: ignore[attr-defined]  # pylint: disable=protected-access
+            sys.modules[unittest.main.__module__]._NO_TESTS_EXITCODE = 0  # type: ignore[attr-defined]  # noqa: SLF001
 
         SymforceTestCaseMixin.main(*args, **kwargs)
 

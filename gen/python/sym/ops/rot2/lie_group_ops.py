@@ -4,12 +4,14 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import typing as T
 
 import numpy
 
-import sym  # pylint: disable=useless-suppression,unused-import
+import sym
 
 
 class LieGroupOps(object):
@@ -77,13 +79,13 @@ class LieGroupOps(object):
             )
 
         # Intermediate terms (2)
-        _tmp0 = math.cos(vec[0, 0])
-        _tmp1 = math.sin(vec[0, 0])
+        _tmp0 = math.sin(vec[0, 0])
+        _tmp1 = math.cos(vec[0, 0])
 
         # Output terms
         _res = [0.0] * 2
-        _res[0] = _a[0] * _tmp0 - _a[1] * _tmp1
-        _res[1] = _a[0] * _tmp1 + _a[1] * _tmp0
+        _res[0] = _a[0] * _tmp1 - _a[1] * _tmp0
+        _res[1] = _a[0] * _tmp0 + _a[1] * _tmp1
         return sym.Rot2.from_storage(_res)
 
     @staticmethod

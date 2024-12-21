@@ -4,6 +4,9 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import random
 import typing as T
@@ -38,7 +41,7 @@ class Rot2(object):
             self.data = ops.GroupOps.identity().data  # type: T.List[float]
         else:
             if isinstance(z, numpy.ndarray):
-                if z.shape in [(2, 1), (1, 2)]:
+                if z.shape in {(2, 1), (1, 2)}:
                     z = z.flatten()
                 elif z.shape != (2,):
                     raise IndexError(
@@ -51,11 +54,6 @@ class Rot2(object):
                     "Expected z to be a sequence of length 2, was instead length {}.".format(len(z))
                 )
             self.data = list(z)
-
-    @classmethod
-    def random(cls):
-        # type: () -> Rot2
-        return Rot2.random_from_uniform_sample(random.uniform(0, 1))
 
     # --------------------------------------------------------------------------
     # Custom generated methods
@@ -129,52 +127,6 @@ class Rot2(object):
         _res[0, 1] = -_self[1]
         _res[1, 1] = _self[0]
         return _res
-
-    @staticmethod
-    def from_rotation_matrix(r):
-        # type: (numpy.ndarray) -> Rot2
-        """
-        Create a Rot2 from a 2x2 rotation matrix.
-
-        Returns the closest Rot2 to the input matrix, by the Frobenius norm.  Will be singular when
-        ``r[0, 0] == -r[1, 1]`` and ``r[0, 1] == r[1, 0]`` are both true.
-
-        See notebooks/rot2_from_rotation_matrix_derivation.ipynb for the derivation.
-        """
-
-        # Total ops: 9
-
-        # Input arrays
-
-        # Intermediate terms (2)
-        _tmp0 = r[0, 0] + r[1, 1]
-        _tmp1 = 1 / math.sqrt(_tmp0**2 + (r[0, 1] - r[1, 0]) ** 2)
-
-        # Output terms
-        _res = [0.0] * 2
-        _res[0] = _tmp0 * _tmp1
-        _res[1] = _tmp1 * (-r[0, 1] + r[1, 0])
-        return Rot2.from_storage(_res)
-
-    @staticmethod
-    def random_from_uniform_sample(u1):
-        # type: (float) -> Rot2
-        """
-        Generate a random element of SO2 from a variable uniformly sampled on [0, 1].
-        """
-
-        # Total ops: 4
-
-        # Input arrays
-
-        # Intermediate terms (1)
-        _tmp0 = 2 * math.pi * u1
-
-        # Output terms
-        _res = [0.0] * 2
-        _res[0] = math.cos(_tmp0)
-        _res[1] = math.sin(_tmp0)
-        return Rot2.from_storage(_res)
 
     # --------------------------------------------------------------------------
     # StorageOps concept
@@ -294,6 +246,6 @@ class Rot2(object):
         if isinstance(other, Rot2):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
-            return getattr(self, "compose_with_point")(other).reshape(other.shape)
+            return self.compose_with_point(other).reshape(other.shape)
         else:
             raise NotImplementedError("Cannot compose {} with {}.".format(type(self), type(other)))

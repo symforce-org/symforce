@@ -7,12 +7,11 @@ from pathlib import Path
 
 import symforce.symbolic as sf
 from symforce import ops
-from symforce import python_util
 from symforce import typing as T
 from symforce.codegen import Codegen
 from symforce.codegen import CppConfig
 
-TYPES = list(sf.GEO_TYPES) + list(sf.CAM_TYPES) + [sf.V3]
+TYPES = (sf.Rot2, sf.Rot3, sf.V3, sf.Pose2, sf.Pose3)
 
 
 def get_between_factor_docstring(between_argument_name: str) -> str:
@@ -53,7 +52,7 @@ def get_prior_docstring() -> str:
 def between_factor(
     a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = 0
 ) -> sf.Matrix:
-    assert type(a) == type(b) == type(a_T_b)  # pylint: disable=unidiomatic-typecheck
+    assert type(a) is type(b) is type(a_T_b)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
 
     # Compute error
@@ -70,7 +69,7 @@ def between_factor(
 def prior_factor(
     value: T.Element, prior: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = 0
 ) -> sf.Matrix:
-    assert type(value) == type(prior)  # pylint: disable=unidiomatic-typecheck
+    assert type(value) is type(prior)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
 
     # Compute error
@@ -94,10 +93,7 @@ def generate_between_factors(types: T.Sequence[T.Type], output_dir: T.Openable) 
             output_names=["res"],
             config=CppConfig(),
             docstring=get_between_factor_docstring("a_T_b"),
-        ).with_linearization(
-            name=f"between_factor_{python_util.camelcase_to_snakecase(cls.__name__)}",
-            which_args=["a", "b"],
-        )
+        ).with_linearization(name=f"between_factor_{cls.__name__.lower()}", which_args=["a", "b"])
         between_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
         prior_codegen = Codegen.function(
@@ -106,10 +102,7 @@ def generate_between_factors(types: T.Sequence[T.Type], output_dir: T.Openable) 
             output_names=["res"],
             config=CppConfig(),
             docstring=get_prior_docstring(),
-        ).with_linearization(
-            name=f"prior_factor_{python_util.camelcase_to_snakecase(cls.__name__)}",
-            which_args=["value"],
-        )
+        ).with_linearization(name=f"prior_factor_{cls.__name__.lower()}", which_args=["value"])
         prior_codegen.generate_function(output_dir, skip_directory_nesting=True)
 
 

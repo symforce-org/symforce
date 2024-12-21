@@ -62,7 +62,7 @@ class SphericalCameraCal(object):
         # type: (T.Union[T.Sequence[float], numpy.ndarray], T.Union[T.Sequence[float], numpy.ndarray], float, T.Union[T.Sequence[float], numpy.ndarray]) -> None
         self.data = []
         if isinstance(focal_length, numpy.ndarray):
-            if focal_length.shape in [(2, 1), (1, 2)]:
+            if focal_length.shape in {(2, 1), (1, 2)}:
                 focal_length = focal_length.flatten()
             elif focal_length.shape != (2,):
                 raise IndexError(
@@ -77,7 +77,7 @@ class SphericalCameraCal(object):
                 )
             )
         if isinstance(principal_point, numpy.ndarray):
-            if principal_point.shape in [(2, 1), (1, 2)]:
+            if principal_point.shape in {(2, 1), (1, 2)}:
                 principal_point = principal_point.flatten()
             elif principal_point.shape != (2,):
                 raise IndexError(
@@ -92,7 +92,7 @@ class SphericalCameraCal(object):
                 )
             )
         if isinstance(distortion_coeffs, numpy.ndarray):
-            if distortion_coeffs.shape in [(6, 1), (1, 6)]:
+            if distortion_coeffs.shape in {(6, 1), (1, 6)}:
                 distortion_coeffs = distortion_coeffs.flatten()
             elif distortion_coeffs.shape != (6,):
                 raise IndexError(

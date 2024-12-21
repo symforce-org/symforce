@@ -25,16 +25,16 @@ class CamPackageTest(unittest.TestCase):
     _DISTORTION_COEFF_VALS = {{ _DISTORTION_COEFF_VALS }}
 
     @staticmethod
-    def cam_cal_from_points(cam_cls, focal_length, principal_point):
-        # type: (T.Type, T.Sequence[float], T.Sequence[float]) -> T.Any
+    def cam_cal_from_points(
+        cam_cls: T.Type, focal_length: T.Sequence[float], principal_point: T.Sequence[float]
+    ) -> T.Any:
         return cam_cls(
             focal_length=focal_length,
             principal_point=principal_point,
             **CamPackageTest._DISTORTION_COEFF_VALS.get(cam_cls.__name__, {}))
 
     {% for cls in all_types %}
-    def test_getters_{{ cls.__name__ }}(self):
-        # type: () -> None
+    def test_getters_{{ cls.__name__ }}(self) -> None:
         focal_length = [1.0, 2.0]
         principal_point = [3.0, 4.0]
         cam_cal = self.cam_cal_from_points(
@@ -54,8 +54,7 @@ class CamPackageTest(unittest.TestCase):
             for x in new_cam_cal.data:
                 self.assertIsInstance(x, float)
 
-    def test_storage_ops_{{ cls.__name__ }}(self):
-        # type: () -> None
+    def test_storage_ops_{{ cls.__name__ }}(self) -> None:
         cam_cal = self.cam_cal_from_points(
             sym.{{ cls.__name__ }}, focal_length=[1.0, 2.0], principal_point=[3.0, 4.0]
         )
@@ -79,9 +78,7 @@ class CamPackageTest(unittest.TestCase):
     )%}
     {% set epsilon = 1e-8 %}
 
-    def test_lie_group_ops_{{ cls.__name__ }}(self):
-        # type: () -> None
-
+    def test_lie_group_ops_{{ cls.__name__ }}(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         cam_cal = sym.{{ cls.__name__ }}.from_storage({{ symbolic_cam_cal.to_storage() | map("float") | list }})
@@ -124,9 +121,7 @@ class CamPackageTest(unittest.TestCase):
             np.array({{ ops.LieGroupOps.local_coordinates(second_symbolic_cam_cal, symbolic_cam_cal, epsilon=epsilon) | map("float") | list }})
         )
 
-    def test_pixel_from_camera_point_{{ cls.__name__ }}(self):
-        # type: () -> None
-
+    def test_pixel_from_camera_point_{{ cls.__name__ }}(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs
         # of the symbolic class's methods.
         {% set point = Matrix([0.6, 0.8, 0.2]) %}
@@ -150,9 +145,7 @@ class CamPackageTest(unittest.TestCase):
         self.assertEqual(pixel_D_point.shape, (2, 3))
 
     {% if cls.has_camera_ray_from_pixel() %}
-    def test_camera_ray_from_pixel_{{ cls.__name__ }}(self):
-        # type: () -> None
-
+    def test_camera_ray_from_pixel_{{ cls.__name__ }}(self) -> None:
         # NOTE(brad): The magic numbers come from the jinja template, and are the outputs of
         # of the symbolic class's methods.
         {% set pixel = Matrix([0.6, 0.8]) %}

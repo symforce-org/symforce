@@ -67,7 +67,6 @@ TEST_CASE("Test nonlinear convergence", "[optimizer]") {
   INFO("Optimized values: " << values);
 
   // Local minimum from Wolfram Alpha
-  // pylint: disable=line-too-long
   // https://www.wolframalpha.com/input/?i=z+%3D+3+-+0.5+*+sin((x+-+2)+%2F+5)+%2B+1.0+*+sin((y+%2B+2)+%2F+10.)
   const Eigen::Vector2d expected_gt = {9.854, -17.708};
   const Eigen::Vector2d actual = {values.At<double>('x'), values.At<double>('y')};

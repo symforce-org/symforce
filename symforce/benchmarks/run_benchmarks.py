@@ -214,8 +214,8 @@ def main(benchmark: T.Optional[str] = None, out_dir: str = "benchmark_outputs") 
         else:
             run_benchmark(benchmark, CONFIG[benchmark], out_path)
     else:
-        for (  # pylint: disable=redefined-argument-from-local
-            benchmark,
+        for (
+            benchmark,  # noqa: PLR1704
             benchmark_config,
         ) in CONFIG.items():
             run_benchmark(benchmark, benchmark_config, out_path)

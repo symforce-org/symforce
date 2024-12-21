@@ -111,17 +111,12 @@ class Matrix(Storage):
             # 1D array - if fixed size this must match data length. If not, assume column vec.
             else:
                 if cls._is_fixed_size():
-                    if len(array) != cls.storage_dim():
-                        raise ValueError(
-                            f"Expected {cls.storage_dim()} elements for {cls}, got {len(array)}"
-                        )
+                    assert len(array) == cls.storage_dim(), f"Gave args {args} for {cls}"
                     rows, cols = cls.SHAPE
+                elif len(array) == 0:
+                    rows, cols = 0, 0
                 else:
-                    # Only set the second dimension to 1 if the array is nonempty
-                    if len(array) == 0:
-                        rows, cols = 0, 0
-                    else:
-                        rows, cols = len(array), 1
+                    rows, cols = len(array), 1
                 flat_list = list(array)
 
         # 4) If there are two arguments and this is not a fixed size matrix, treat it as a size
@@ -304,6 +299,31 @@ class Matrix(Storage):
             mat[i, i] = x
         return mat
 
+    # NOTE(aaron):  The following set of overloads is the correct signature for `eye`. However, when
+    # I do this mypy thinks the signature is:
+    #
+    #     Overload(def (rows: builtins.int) -> symforce.sf.matrix.Matrix, def (rows: builtins.int,
+    #     cols: builtins.int) -> symforce.sf.matrix.Matrix)
+    #
+    # And I cannot figure out why for the life of me.  So instead we lie to the type checker, and
+    # tell it we always return `cls`, even though we also support returning a superclass if called
+    # with a different shape.
+
+    # @_T.overload
+    # @classmethod
+    # def eye(cls: _T.Type[MatrixT]) -> MatrixT:  # pragma: no cover
+    #     pass
+
+    # @_T.overload
+    # @classmethod
+    # def eye(cls: _T.Type[Matrix], rows: int) -> Matrix:  # pragma: no cover
+    #     pass
+
+    # @_T.overload
+    # @classmethod
+    # def eye(cls: _T.Type[Matrix], rows: int, cols: int) -> Matrix:  # pragma: no cover
+    #     pass
+
     @classmethod
     def eye(
         cls: _T.Type[MatrixT], rows: _T.Optional[int] = None, cols: _T.Optional[int] = None
@@ -319,23 +339,14 @@ class Matrix(Storage):
         If rows and cols are provided, returns a (rows x cols) matrix, with ones on the diagonal.
         """
         if rows is None and cols is None:
-            if not cls._is_fixed_size():
-                raise TypeError(
-                    "Matrix.eye can only be called with no arguments on a fixed-size matrix type"
-                )
-
-            rows, cols = cls.SHAPE
+            assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+            return cls.eye(*cls.SHAPE)
 
         if rows is None:
             raise ValueError("If cols is not None, rows must not be None")
 
-        orig_cols = cols
         if cols is None:
             cols = rows
-
-        if cls._is_fixed_size() and cls.SHAPE != (rows, cols):
-            raise TypeError(f"Called eye({rows=}, cols={orig_cols}) on matrix of shape {cls.SHAPE}")
-
         mat = cls.zeros(rows, cols)
         for i in range(min(rows, cols)):
             mat[i, i] = sf.S.One
@@ -372,25 +383,16 @@ class Matrix(Storage):
         assert len(col_names) == cols
 
         if cols == 1:
-            if ops.StorageOps.use_latex_friendly_symbols():
-                format_string = "{}_{}"
-            else:
-                format_string = "{}[{}]"
-
             symbols = []
             for r_i in range(rows):
-                _name = format_string.format(name, row_names[r_i])
+                _name = "{}{}".format(name, row_names[r_i])
                 symbols.append([sf.Symbol(_name, **kwargs)])
         else:
-            if ops.StorageOps.use_latex_friendly_symbols():
-                format_string = "{}_{{{}, {}}}"
-            else:
-                format_string = "{}[{}, {}]"
             symbols = []
             for r_i in range(rows):
                 col_symbols = []
                 for c_i in range(cols):
-                    _name = format_string.format(name, row_names[r_i], col_names[c_i])
+                    _name = "{}{}_{}".format(name, row_names[r_i], col_names[c_i])
                     col_symbols.append(sf.Symbol(_name, **kwargs))
                 symbols.append(col_symbols)
 
@@ -472,12 +474,21 @@ class Matrix(Storage):
     def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
         """
         Compute the jacobian with respect to the tangent space of X if ``tangent_space = True``,
-        otherwise returns the jacobian with respect to the storage elements of X.
-
-        Note that the jacobian is always 2D, even if self or X are matrices - it will be M x N,
-        where M is the size of self and N is the size of X
+        otherwise returns the jacobian wih respect to the storage elements of X.
         """
-        return ops.LieGroupOps.jacobian(self, X, tangent_space=tangent_space)
+        assert self.cols == 1, "Jacobian is for column vectors."
+
+        if tangent_space and not isinstance(X, Matrix):
+            # This imports geo, so lazily import here
+            from symforce import jacobian_helpers
+
+            # This calls Matrix.jacobian, so don't call it if X is a Matrix to prevent recursion
+            return jacobian_helpers.tangent_jacobians(self, [X])[0]
+        else:
+            # Compute jacobian wrt X storage
+            return Matrix(
+                [[vi.diff(xi) for xi in ops.StorageOps.to_storage(X)] for vi in iter(self.mat)]
+            )
 
     def diff(self, *args: _T.Scalar) -> Matrix:
         """
@@ -760,16 +771,16 @@ class Matrix(Storage):
             return self.__class__(left * self.mat)
 
     @_T.overload
-    def __div__(
+    def __truediv__(
         self, right: _T.Union[Matrix, sf.sympy.MutableDenseMatrix]
     ) -> Matrix:  # pragma: no cover
         pass
 
     @_T.overload
-    def __div__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
+    def __truediv__(self: MatrixT, right: _T.Scalar) -> MatrixT:  # pragma: no cover
         pass
 
-    def __div__(
+    def __truediv__(
         self, right: _T.Union[MatrixT, _T.Scalar, Matrix, sf.sympy.MutableDenseMatrix]
     ) -> _T.Union[MatrixT, Matrix]:
         """
@@ -782,8 +793,8 @@ class Matrix(Storage):
         else:
             return self.__class__(self.mat * _T.cast(sf.sympy.MutableDenseMatrix, right).inv())
 
-    def _symengine_(self) -> symengine.Matrix:
-        symengine = symforce._find_symengine()  # pylint: disable=protected-access
+    def _symengine_(self) -> symengine.Matrix:  # noqa: PLW3201
+        symengine = symforce._find_symengine()  # noqa: SLF001
         return symengine.S(self.mat)
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:
@@ -866,8 +877,6 @@ class Matrix(Storage):
         Solve a linear system using the given method.
         """
         return self.__class__(self.mat.solve(b, method=method))
-
-    __truediv__ = __div__
 
     @staticmethod
     def are_parallel(a: Vector3, b: Vector3, tolerance: _T.Scalar) -> _T.Scalar:
@@ -952,11 +961,11 @@ class Matrix(Storage):
         """
         return cls.SHAPE[0] > 0 and cls.SHAPE[1] > 0
 
-    def _ipython_display_(self) -> None:
+    def _ipython_display_(self) -> None:  # noqa: PLW3201
         """
         Display ``self.mat`` in IPython, with SymPy's pretty printing
         """
-        display(self.mat)  # type: ignore[name-defined] # pylint: disable=undefined-variable # not defined outside of ipython
+        display(self.mat)  # type: ignore[name-defined] # noqa: F821 # not defined outside of ipython
 
     @staticmethod
     def init_printing() -> None:

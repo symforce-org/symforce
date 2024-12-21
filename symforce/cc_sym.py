@@ -16,16 +16,16 @@ from symforce import path_util
 
 try:
     # If cc_sym is availble on the python path, use it
-    from cc_sym import *  # pylint: disable=wildcard-import
-except ImportError as ex:
+    from cc_sym import *  # noqa: F403
+except ImportError:
     try:
         sys.path.append(os.fspath(path_util.cc_sym_install_dir()))
     except path_util.MissingManifestException as ex2:
         raise ImportError from ex2
 
-    from cc_sym import *  # pylint: disable=wildcard-import
+    from cc_sym import *  # noqa: F403
 
 # Set log level, in case the user has set the level in python
-set_log_level(  # pylint: disable=undefined-variable
+set_log_level(  # noqa: F405
     _logging.getLevelName(_logger.getEffectiveLevel())
 )

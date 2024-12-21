@@ -4,12 +4,14 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+# ruff: noqa: PLR0915, F401, PLW0211, PLR0914
+
 import math
 import typing as T
 
 import numpy
 
-import sym  # pylint: disable=useless-suppression,unused-import
+import sym
 
 
 class GroupOps(object):
@@ -106,8 +108,8 @@ class GroupOps(object):
         # Intermediate terms (5)
         _tmp0 = -_a[1]
         _tmp1 = _a[0] * _a[2] + _a[1] * _a[3]
-        _tmp2 = _a[1] * _a[2]
-        _tmp3 = _a[0] * _a[3]
+        _tmp2 = _a[0] * _a[3]
+        _tmp3 = _a[1] * _a[2]
         _tmp4 = -_a[0]
 
         # Output terms
@@ -115,10 +117,10 @@ class GroupOps(object):
         _res[0] = _a[0]
         _res[1] = _tmp0
         _res[2] = -_tmp1
-        _res[3] = _tmp2 - _tmp3
+        _res[3] = -_tmp2 + _tmp3
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = -(_a[0] ** 2) - _a[1] ** 2
-        _res_D_a[1, 0] = _tmp2 - _tmp3
+        _res_D_a[1, 0] = -_tmp2 + _tmp3
         _res_D_a[2, 0] = _tmp1
         _res_D_a[0, 1] = 0
         _res_D_a[1, 1] = _tmp4
@@ -196,8 +198,8 @@ class GroupOps(object):
         _tmp6 = _a[0] * _a[2] + _a[1] * _a[3]
         _tmp7 = _a[1] * _b[3]
         _tmp8 = _a[0] * _b[2]
-        _tmp9 = _a[1] * _a[2]
-        _tmp10 = _a[0] * _a[3]
+        _tmp9 = _a[0] * _a[3]
+        _tmp10 = _a[1] * _a[2]
         _tmp11 = _a[0] * _b[3] - _a[1] * _b[2]
         _tmp12 = -_a[0]
         _tmp13 = -_a[1]
@@ -207,10 +209,10 @@ class GroupOps(object):
         _res[0] = _tmp2
         _res[1] = _tmp5
         _res[2] = -_tmp6 + _tmp7 + _tmp8
-        _res[3] = -_tmp10 + _tmp11 + _tmp9
+        _res[3] = _tmp10 + _tmp11 - _tmp9
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp2 * (-_tmp0 - _tmp1) - _tmp5**2
-        _res_D_a[1, 0] = -_tmp10 + _tmp11 + _tmp9
+        _res_D_a[1, 0] = _tmp10 + _tmp11 - _tmp9
         _res_D_a[2, 0] = _tmp6 - _tmp7 - _tmp8
         _res_D_a[0, 1] = 0
         _res_D_a[1, 1] = _tmp12

@@ -80,15 +80,14 @@ class SphericalCameraCal(CameraCal):
 
         if critical_theta is not None:
             self.critical_theta = critical_theta
+        elif any(
+            isinstance(c, sf.Expr) and not isinstance(c, sf.Number) for c in distortion_coeffs
+        ):
+            raise ValueError(
+                "critical_theta must be provided if the distortion_coeffs are not all numerical"
+            )
         else:
-            if any(
-                isinstance(c, sf.Expr) and not isinstance(c, sf.Number) for c in distortion_coeffs
-            ):
-                raise ValueError(
-                    "critical_theta must be provided if the distortion_coeffs are not all numerical"
-                )
-            else:
-                self.critical_theta = self._compute_critical_theta(max_theta)
+            self.critical_theta = self._compute_critical_theta(max_theta)
 
     @classmethod
     def from_distortion_coeffs(

@@ -52,9 +52,7 @@ class CamSphericalTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
 
     def test_projection_valid(self) -> None:
         # r(theta) = theta - (1/3) * theta^3
-        cal = cal = sf.SphericalCameraCal(
-            (1.0, 1.0), (0.0, 0.0), (-1.0 / 3, 0.0, 0.0, 0.0, 0.0, 0.0)
-        )
+        cal = sf.SphericalCameraCal((1.0, 1.0), (0.0, 0.0), (-1.0 / 3, 0.0, 0.0, 0.0, 0.0, 0.0))
 
         # by construction, projection should be valid for theta <= 1, invalid for theta > 1
         valid_point = sf.V3(1.0, 0.0, 1.0)

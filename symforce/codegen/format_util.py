@@ -60,7 +60,7 @@ def _find_ruff() -> Path:
     `shutil.which` should cover most cases, but not all, the better solution would require `ruff`
     putting the binary in `data` like `clang-format` does
     """
-    global _ruff_path  # pylint: disable=global-statement
+    global _ruff_path  # noqa: PLW0603
 
     if _ruff_path is not None:
         return _ruff_path
@@ -89,25 +89,6 @@ def format_py(file_contents: str, filename: str) -> str:
     result = subprocess.run(
         [_find_ruff(), "format", f"--stdin-filename={filename}", "-"],
         input=file_contents,
-        stdout=subprocess.PIPE,
-        check=True,
-        # Disable the ruff cache.  This is important for running in a hermetic context like a bazel
-        # test, and shouldn't really hurt other use cases.  If it does, we should work around this
-        # differently.
-        env=dict(os.environ, RUFF_NO_CACHE="true"),
-        text=True,
-    )
-    result = subprocess.run(
-        [
-            _find_ruff(),
-            "check",
-            "--select=I",
-            "--fix",
-            "--quiet",
-            f"--stdin-filename={filename}",
-            "-",
-        ],
-        input=result.stdout,
         stdout=subprocess.PIPE,
         check=True,
         # Disable the ruff cache.  This is important for running in a hermetic context like a bazel

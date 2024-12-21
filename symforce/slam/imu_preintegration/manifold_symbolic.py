@@ -48,7 +48,7 @@ def roll_forward_state(
     )
 
 
-def internal_imu_residual(
+def internal_imu_residual(  # noqa: PLR0913, PLR0917
     pose_i: sf.Pose3,
     vel_i: sf.V3,
     pose_j: sf.Pose3,
@@ -224,7 +224,7 @@ def handwritten_new_state_D_state_gyro_accel(
     return sf.M99(new_state_D_old_state), sf.M93(new_state_D_gyro), sf.M93(new_state_D_accel)
 
 
-def imu_manifold_preintegration_update(
+def imu_manifold_preintegration_update(  # noqa: PLR0913, PLR0917
     # Initial state
     DR: sf.Rot3,
     Dv: sf.V3,

@@ -163,7 +163,7 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
     return data
 
 
-def class_template_data(cls: T.Type, functions_to_doc: T.Sequence[function]) -> T.Dict[str, T.Any]:
+def class_template_data(cls: T.Type, functions_to_doc: T.Sequence[function]) -> T.Dict[str, T.Any]:  # noqa: F821
     data = Codegen.common_data()
     data["doc"] = {}
     assert cls.__doc__ is not None
@@ -380,13 +380,6 @@ def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path
                 ),
                 config=config.render_template_config,
             )
-
-        templates.add(
-            template_path=Path("cam_package/all_cam_types.h.jinja"),
-            data=Codegen.common_data(),
-            config=config.render_template_config,
-            output_path=cam_package_dir / "all_cam_types.h",
-        )
     else:
         raise NotImplementedError(f'Unknown config type: "{config}"')
 

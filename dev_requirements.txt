@@ -15,15 +15,13 @@ argh==0.31.2
     # via
     #   skymarshal
     #   symforce (setup.py)
-astroid==2.15.8
-    # via pylint
 asttokens==2.4.1
     # via stack-data
 attrs==23.2.0
     # via
     #   jsonschema
     #   referencing
-babel==2.15.0
+babel==2.14.0
     # via sphinx
 backcall==0.2.0
     # via ipython
@@ -41,30 +39,24 @@ certifi==2024.2.2
     # via requests
 charset-normalizer==3.3.2
     # via requests
-clang-format==18.1.5
+clang-format==18.1.4
     # via symforce (setup.py)
 click==8.1.7
     # via pip-tools
-cmake==3.26.4
-    # via symforce (setup.py)
 comm==0.2.2
     # via ipykernel
 contourpy==1.1.1
     # via matplotlib
-coverage==7.5.1
+coverage==7.5.0
     # via symforce (setup.py)
 cycler==0.12.1
     # via matplotlib
-cython==0.29.37
-    # via symforce (setup.py)
 debugpy==1.8.1
     # via ipykernel
 decorator==5.1.1
     # via ipython
 defusedxml==0.7.1
     # via nbconvert
-dill==0.3.8
-    # via pylint
 docutils==0.20.1
     # via
     #   breathe
@@ -77,7 +69,7 @@ fastjsonschema==2.19.1
     # via nbformat
 fonttools==4.51.0
     # via matplotlib
-furo==2024.5.6
+furo==2024.1.29
     # via symforce (setup.py)
 graphviz==0.20.3
     # via symforce (setup.py)
@@ -90,24 +82,18 @@ importlib-metadata==7.1.0
     #   build
     #   jupyter-client
     #   nbconvert
-    #   numba
     #   sphinx
 importlib-resources==6.4.0
-    # via
-    #   jsonschema
-    #   jsonschema-specifications
-    #   matplotlib
+    # via matplotlib
 ipykernel==6.29.4
     # via symforce (setup.py)
 ipython==8.12.3
     # via ipykernel
 ipython-genutils==0.2.0
     # via symforce (setup.py)
-isort==5.13.2
-    # via pylint
 jedi==0.19.1
     # via ipython
-jinja2==3.1.4
+jinja2==3.1.3
     # via
     #   myst-parser
     #   nbconvert
@@ -115,7 +101,7 @@ jinja2==3.1.4
     #   skymarshal
     #   sphinx
     #   symforce (setup.py)
-jsonschema==4.22.0
+jsonschema==4.21.1
     # via nbformat
 jsonschema-specifications==2023.12.1
     # via jsonschema
@@ -134,8 +120,6 @@ jupyterlab-pygments==0.3.0
     # via nbconvert
 kiwisolver==1.4.5
     # via matplotlib
-lazy-object-proxy==1.10.0
-    # via astroid
 llvmlite==0.41.1
     # via numba
 markdown-it-py==3.0.0
@@ -152,9 +136,7 @@ matplotlib-inline==0.1.7
     # via
     #   ipykernel
     #   ipython
-mccabe==0.7.0
-    # via pylint
-mdit-py-plugins==0.4.1
+mdit-py-plugins==0.4.0
     # via myst-parser
 mdurl==0.1.2
     # via markdown-it-py
@@ -162,15 +144,15 @@ mistune==3.0.2
     # via nbconvert
 mpmath==1.3.0
     # via sympy
-mypy==1.11.0
+mypy==1.8.0
     # via symforce (setup.py)
 mypy-extensions==1.0.0
     # via mypy
-myst-parser==3.0.1
+myst-parser==3.0.0
     # via symforce (setup.py)
 nbclient==0.10.0
     # via nbconvert
-nbconvert==7.16.4
+nbconvert==7.16.3
     # via nbsphinx
 nbformat==5.10.4
     # via
@@ -178,7 +160,7 @@ nbformat==5.10.4
     #   nbconvert
     #   nbsphinx
     #   nbstripout
-nbsphinx==0.9.4
+nbsphinx==0.9.3
     # via symforce (setup.py)
 nbstripout==0.7.1
     # via symforce (setup.py)
@@ -218,13 +200,9 @@ pillow==10.3.0
     # via matplotlib
 pip-tools==7.4.1
     # via symforce (setup.py)
-pkgutil-resolve-name==1.3.10
-    # via jsonschema
-platformdirs==4.2.2
-    # via
-    #   jupyter-core
-    #   pylint
-plotly==5.22.0
+platformdirs==4.2.1
+    # via jupyter-core
+plotly==5.21.0
     # via symforce (setup.py)
 ply==3.11
     # via skymarshal
@@ -236,19 +214,17 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.2
     # via stack-data
-pybind11-stubgen==2.5.1
+pybind11-stubgen==0.16.2
     # via symforce (setup.py)
-pygments==2.18.0
+pygments==2.17.2
     # via
     #   furo
     #   ipython
     #   nbconvert
     #   sphinx
-pylint==2.17.7
-    # via symforce (setup.py)
 pyparsing==3.1.2
     # via matplotlib
-pyproject-hooks==1.1.0
+pyproject-hooks==1.0.0
     # via
     #   build
     #   pip-tools
@@ -258,26 +234,24 @@ python-dateutil==2.9.0.post0
     #   matplotlib
     #   pandas
 pytz==2024.1
-    # via
-    #   babel
-    #   pandas
+    # via pandas
 pyyaml==6.0.1
     # via myst-parser
-pyzmq==26.0.3
+pyzmq==26.0.2
     # via
     #   ipykernel
     #   jupyter-client
-referencing==0.35.1
+referencing==0.34.0
     # via
     #   jsonschema
     #   jsonschema-specifications
 requests==2.31.0
     # via sphinx
-rpds-py==0.18.1
+rpds-py==0.18.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.5.4
+ruff==0.8.2
     # via symforce (setup.py)
 scipy==1.10.1
     # via symforce (setup.py)
@@ -326,7 +300,7 @@ file:./gen/python
     # via symforce (setup.py)
 sympy==1.11.1
     # via symforce (setup.py)
-tenacity==8.3.0
+tenacity==8.2.3
     # via plotly
 tinycss2==1.3.0
     # via nbconvert
@@ -335,9 +309,7 @@ tomli==2.0.1
     #   build
     #   mypy
     #   pip-tools
-    #   pylint
-tomlkit==0.12.5
-    # via pylint
+    #   pyproject-hooks
 tornado==6.4
     # via
     #   ipykernel
@@ -360,14 +332,12 @@ types-markupsafe==1.1.10
     # via types-jinja2
 types-requests==2.31.0.20240406
     # via symforce (setup.py)
-types-setuptools==69.5.0.20240513
+types-setuptools==69.5.0.20240423
     # via symforce (setup.py)
 typing-extensions==4.11.0
     # via
-    #   astroid
     #   ipython
     #   mypy
-    #   pylint
 tzdata==2024.1
     # via pandas
 urllib3==2.2.1
@@ -381,11 +351,7 @@ webencodings==0.5.1
     #   bleach
     #   tinycss2
 wheel==0.43.0
-    # via
-    #   pip-tools
-    #   symforce (setup.py)
-wrapt==1.16.0
-    # via astroid
+    # via pip-tools
 zipp==3.18.1
     # via
     #   importlib-metadata
@@ -393,10 +359,6 @@ zipp==3.18.1
 
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.0
-    # via
-    #   pip-tools
-    #   symforce (setup.py)
+    # via pip-tools
 setuptools==69.5.1
-    # via
-    #   pip-tools
-    #   symforce (setup.py)
+    # via pip-tools

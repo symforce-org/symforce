@@ -55,7 +55,7 @@ class SympyOverridesTest(TestCase):
                 float(sf.Mod(x, y).diff(x).subs({x: nx, y: ny})),
                 numerical_derivative(
                     lambda _x: sf.Mod(x, y).subs(
-                        {x: _x, y: ny}  # pylint: disable=cell-var-from-loop
+                        {x: _x, y: ny}  # noqa: B023
                     ),
                     nx,
                 ),
@@ -65,7 +65,7 @@ class SympyOverridesTest(TestCase):
                 float(sf.Mod(x, y).diff(y).subs({x: nx, y: ny})),
                 numerical_derivative(
                     lambda _y: sf.Mod(x, y).subs(
-                        {x: nx, y: _y}  # pylint: disable=cell-var-from-loop
+                        {x: nx, y: _y}  # noqa: B023
                     ),
                     ny,
                 ),

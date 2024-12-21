@@ -100,7 +100,8 @@ class CppConfig(CodegenConfig):
     def format_data_accessor(prefix: str, index: int) -> str:
         return f"{prefix}.Data()[{index}]"
 
-    def format_matrix_accessor(self, key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
+    @staticmethod
+    def format_matrix_accessor(key: str, i: int, j: int, *, shape: T.Tuple[int, int]) -> str:
         CppConfig._assert_indices_in_bounds(i, j, shape)
         return f"{key}({i}, {j})"
 

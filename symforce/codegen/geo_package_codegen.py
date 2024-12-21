@@ -96,25 +96,15 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
 
     to_yaw_pitch_roll.__doc__ = sf.Rot3.to_yaw_pitch_roll.__doc__
 
-    def from_yaw(yaw: T.Scalar) -> sf.Rot3:
-        """Construct from yaw angle in radians"""
-        return sf.Rot3.from_yaw_pitch_roll(yaw=yaw)
-
-    def from_pitch(pitch: T.Scalar) -> sf.Rot3:
-        """Construct from pitch angle in radians"""
-        return sf.Rot3.from_yaw_pitch_roll(pitch=pitch)
-
-    def from_roll(roll: T.Scalar) -> sf.Rot3:
-        """Construct from roll angle in radians"""
-        return sf.Rot3.from_yaw_pitch_roll(roll=roll)
-
     rot3_functions = (
         [
             codegen_mul(sf.Rot3, sf.Vector3),
             Codegen.function(func=sf.Rot3.to_tangent_norm, config=config),
             Codegen.function(func=sf.Rot3.to_rotation_matrix, config=config),
             Codegen.function(
-                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi), config=config
+                func=functools.partial(sf.Rot3.random_from_uniform_samples, pi=sf.pi),
+                name="random_from_uniform_samples",
+                config=config,
             ),
             Codegen.function(
                 # TODO(aaron): We currently can't generate custom methods with defaults - fix this, and
@@ -123,9 +113,6 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
                 config=config,
             ),
             Codegen.function(func=sf.Rot3.from_yaw_pitch_roll, config=config),
-            Codegen.function(func=from_yaw, config=config),
-            Codegen.function(func=from_pitch, config=config),
-            Codegen.function(func=from_roll, config=config),
         ]
         + (
             # TODO(brad): We don't currently generate this in python because python (unlike C++)
@@ -177,10 +164,6 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
             codegen_mul(sf.Rot2, sf.Vector2),
             Codegen.function(func=sf.Rot2.from_angle, config=config),
             Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
-            Codegen.function(func=sf.Rot2.from_rotation_matrix, config=config),
-            Codegen.function(
-                func=functools.partial(sf.Rot2.random_from_uniform_sample, pi=sf.pi), config=config
-            ),
         ],
         sf.Rot3: rot3_functions,
         sf.Pose2: pose_getter_methods(sf.Pose2)
@@ -236,7 +219,7 @@ def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path
             data["custom_generated_methods"] = custom_generated_methods.get(cls, {})
             if cls == sf.Pose2:
                 data["imported_classes"] = [sf.Rot2]
-            elif cls in (sf.Pose3, sf.Unit3):
+            elif cls in {sf.Pose3, sf.Unit3}:
                 data["imported_classes"] = [sf.Rot3]
 
             for base_dir, relative_path in (
@@ -348,12 +331,6 @@ def generate(config: CodegenConfig, output_dir: T.Optional[Path] = None) -> Path
                 config=config.render_template_config,
             )
 
-        templates.add(
-            template_path=Path("geo_package/all_geo_types.h.jinja"),
-            data=Codegen.common_data(),
-            config=config.render_template_config,
-            output_path=package_dir / "all_geo_types.h",
-        )
     else:
         raise NotImplementedError(f'Unknown config type: "{config}"')
 

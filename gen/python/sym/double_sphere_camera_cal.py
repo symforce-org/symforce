@@ -47,7 +47,7 @@ class DoubleSphereCameraCal(object):
         # type: (T.Union[T.Sequence[float], numpy.ndarray], T.Union[T.Sequence[float], numpy.ndarray], float, float) -> None
         self.data = []
         if isinstance(focal_length, numpy.ndarray):
-            if focal_length.shape in [(2, 1), (1, 2)]:
+            if focal_length.shape in {(2, 1), (1, 2)}:
                 focal_length = focal_length.flatten()
             elif focal_length.shape != (2,):
                 raise IndexError(
@@ -62,7 +62,7 @@ class DoubleSphereCameraCal(object):
                 )
             )
         if isinstance(principal_point, numpy.ndarray):
-            if principal_point.shape in [(2, 1), (1, 2)]:
+            if principal_point.shape in {(2, 1), (1, 2)}:
                 principal_point = principal_point.flatten()
             elif principal_point.shape != (2,):
                 raise IndexError(
