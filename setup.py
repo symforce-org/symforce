@@ -22,6 +22,7 @@ from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 SOURCE_DIR = Path(__file__).resolve().parent
+SOURCE_DIR = str(SOURCE_DIR).replace(' ', '%20')
 
 
 def symforce_version() -> str:
