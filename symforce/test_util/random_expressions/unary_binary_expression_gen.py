@@ -59,10 +59,14 @@ class UnaryBinaryExpressionGen:
         self.ops = list(self.unary_ops) + list(self.binary_ops)
         self.ops_dict = {op.name: op for op in self.ops}
 
-        self.unary_ops_probs = np.array([op.prob for op in self.unary_ops], dtype=np.float64)
+        self.unary_ops_probs: np.ndarray = np.array(
+            [op.prob for op in self.unary_ops], dtype=np.float64
+        )
         self.unary_ops_probs /= sum(self.unary_ops_probs)
 
-        self.binary_ops_probs = np.array([op.prob for op in self.binary_ops], dtype=np.float64)
+        self.binary_ops_probs: np.ndarray = np.array(
+            [op.prob for op in self.binary_ops], dtype=np.float64
+        )
         self.binary_ops_probs /= sum(self.binary_ops_probs)
 
         # D[e][n] represents the number of different binary trees with n nodes
