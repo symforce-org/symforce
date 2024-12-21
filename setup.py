@@ -22,6 +22,7 @@ from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 SOURCE_DIR = Path(__file__).resolve().parent
+ESCAPED_SOURCE_DIR = Path(str(SOURCE_DIR).replace(" ", "%20"))
 
 
 def symforce_version() -> str:
@@ -341,7 +342,7 @@ setup_requirements = [
     "pip",
     "cmake>=3.17,<3.27",
     "cython>=0.19.1,<3",
-    f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
+    f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
 ]
 
 docs_requirements = [
@@ -439,9 +440,9 @@ if __name__ == "__main__":
             "jinja2",
             "numpy",
             "scipy",
-            f"skymarshal @ file://localhost/{SOURCE_DIR}/third_party/skymarshal",
+            f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
             "sympy~=1.11.1",
-            f"symforce-sym @ file://localhost/{SOURCE_DIR}/gen/python",
+            f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
         ],
         setup_requires=setup_requirements,
         extras_require={
