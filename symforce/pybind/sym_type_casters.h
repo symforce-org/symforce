@@ -56,7 +56,17 @@ struct handle_sym_type_name<sym::Rot2d> {
 };
 
 template <>
+struct handle_sym_type_name<sym::Rot2f> {
+  static constexpr auto name = _("sym.Rot2");
+};
+
+template <>
 struct handle_sym_type_name<sym::Rot3d> {
+  static constexpr auto name = _("sym.Rot3");
+};
+
+template <>
+struct handle_sym_type_name<sym::Rot3f> {
   static constexpr auto name = _("sym.Rot3");
 };
 
@@ -66,7 +76,17 @@ struct handle_sym_type_name<sym::Pose2d> {
 };
 
 template <>
+struct handle_sym_type_name<sym::Pose2f> {
+  static constexpr auto name = _("sym.Pose2");
+};
+
+template <>
 struct handle_sym_type_name<sym::Pose3d> {
+  static constexpr auto name = _("sym.Pose3");
+};
+
+template <>
+struct handle_sym_type_name<sym::Pose3f> {
   static constexpr auto name = _("sym.Pose3");
 };
 
@@ -76,7 +96,17 @@ struct handle_sym_type_name<sym::Unit3d> {
 };
 
 template <>
+struct handle_sym_type_name<sym::Unit3f> {
+  static constexpr auto name = _("sym.Unit3");
+};
+
+template <>
 struct handle_sym_type_name<sym::ATANCameraCald> {
+  static constexpr auto name = _("sym.ATANCameraCal");
+};
+
+template <>
+struct handle_sym_type_name<sym::ATANCameraCalf> {
   static constexpr auto name = _("sym.ATANCameraCal");
 };
 
@@ -86,7 +116,17 @@ struct handle_sym_type_name<sym::DoubleSphereCameraCald> {
 };
 
 template <>
+struct handle_sym_type_name<sym::DoubleSphereCameraCalf> {
+  static constexpr auto name = _("sym.DoubleSphereCameraCal");
+};
+
+template <>
 struct handle_sym_type_name<sym::EquirectangularCameraCald> {
+  static constexpr auto name = _("sym.EquirectangularCameraCal");
+};
+
+template <>
+struct handle_sym_type_name<sym::EquirectangularCameraCalf> {
   static constexpr auto name = _("sym.EquirectangularCameraCal");
 };
 
@@ -96,7 +136,17 @@ struct handle_sym_type_name<sym::LinearCameraCald> {
 };
 
 template <>
+struct handle_sym_type_name<sym::LinearCameraCalf> {
+  static constexpr auto name = _("sym.LinearCameraCal");
+};
+
+template <>
 struct handle_sym_type_name<sym::PolynomialCameraCald> {
+  static constexpr auto name = _("sym.PolynomialCameraCal");
+};
+
+template <>
+struct handle_sym_type_name<sym::PolynomialCameraCalf> {
   static constexpr auto name = _("sym.PolynomialCameraCal");
 };
 
@@ -106,7 +156,17 @@ struct handle_sym_type_name<sym::SphericalCameraCald> {
 };
 
 template <>
+struct handle_sym_type_name<sym::SphericalCameraCalf> {
+  static constexpr auto name = _("sym.SphericalCameraCal");
+};
+
+template <>
 struct handle_sym_type_name<sym::OrthographicCameraCald> {
+  static constexpr auto name = _("sym.OrthographicCameraCal");
+};
+
+template <>
+struct handle_sym_type_name<sym::OrthographicCameraCalf> {
   static constexpr auto name = _("sym.OrthographicCameraCal");
 };
 
@@ -126,8 +186,10 @@ struct sym_type_caster {
     if (!py::isinstance(src, py::module_::import("sym").attr(kClassName))) {
       return false;
     }
-    const std::vector<double> data_vec = src.attr("to_storage")().cast<std::vector<double>>();
-    value = T(Eigen::Matrix<double, sym::StorageOps<T>::StorageDim(), 1>(data_vec.data()));
+    const std::vector<typename T::Scalar> data_vec =
+        src.attr("to_storage")().cast<std::vector<typename T::Scalar>>();
+    value =
+        T(Eigen::Matrix<typename T::Scalar, sym::StorageOps<T>::StorageDim(), 1>(data_vec.data()));
     return true;
   }
 
@@ -151,31 +213,59 @@ struct sym_type_caster {
 template <>
 struct type_caster<sym::Rot2d> : public sym_type_caster<sym::Rot2d> {};
 template <>
+struct type_caster<sym::Rot2f> : public sym_type_caster<sym::Rot2f> {};
+template <>
 struct type_caster<sym::Rot3d> : public sym_type_caster<sym::Rot3d> {};
+template <>
+struct type_caster<sym::Rot3f> : public sym_type_caster<sym::Rot3f> {};
 template <>
 struct type_caster<sym::Pose2d> : public sym_type_caster<sym::Pose2d> {};
 template <>
+struct type_caster<sym::Pose2f> : public sym_type_caster<sym::Pose2f> {};
+template <>
 struct type_caster<sym::Pose3d> : public sym_type_caster<sym::Pose3d> {};
+template <>
+struct type_caster<sym::Pose3f> : public sym_type_caster<sym::Pose3f> {};
 template <>
 struct type_caster<sym::Unit3d> : public sym_type_caster<sym::Unit3d> {};
 template <>
+struct type_caster<sym::Unit3f> : public sym_type_caster<sym::Unit3f> {};
+template <>
 struct type_caster<sym::ATANCameraCald> : public sym_type_caster<sym::ATANCameraCald> {};
+template <>
+struct type_caster<sym::ATANCameraCalf> : public sym_type_caster<sym::ATANCameraCalf> {};
 template <>
 struct type_caster<sym::DoubleSphereCameraCald>
     : public sym_type_caster<sym::DoubleSphereCameraCald> {};
 template <>
+struct type_caster<sym::DoubleSphereCameraCalf>
+    : public sym_type_caster<sym::DoubleSphereCameraCalf> {};
+template <>
 struct type_caster<sym::EquirectangularCameraCald>
     : public sym_type_caster<sym::EquirectangularCameraCald> {};
 template <>
+struct type_caster<sym::EquirectangularCameraCalf>
+    : public sym_type_caster<sym::EquirectangularCameraCalf> {};
+template <>
 struct type_caster<sym::LinearCameraCald> : public sym_type_caster<sym::LinearCameraCald> {};
+template <>
+struct type_caster<sym::LinearCameraCalf> : public sym_type_caster<sym::LinearCameraCalf> {};
 template <>
 struct type_caster<sym::PolynomialCameraCald> : public sym_type_caster<sym::PolynomialCameraCald> {
 };
 template <>
+struct type_caster<sym::PolynomialCameraCalf> : public sym_type_caster<sym::PolynomialCameraCalf> {
+};
+template <>
 struct type_caster<sym::SphericalCameraCald> : public sym_type_caster<sym::SphericalCameraCald> {};
+template <>
+struct type_caster<sym::SphericalCameraCalf> : public sym_type_caster<sym::SphericalCameraCalf> {};
 template <>
 struct type_caster<sym::OrthographicCameraCald>
     : public sym_type_caster<sym::OrthographicCameraCald> {};
+template <>
+struct type_caster<sym::OrthographicCameraCalf>
+    : public sym_type_caster<sym::OrthographicCameraCalf> {};
 
 }  // namespace detail
 }  // namespace pybind11

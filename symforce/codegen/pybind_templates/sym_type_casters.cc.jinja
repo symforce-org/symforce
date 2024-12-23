@@ -15,6 +15,7 @@ namespace detail {
 
 {% for type in types %}
 constexpr descr<{{ type | length + 4 }}> handle_sym_type_name<sym::{{ type }}d>::name;
+constexpr descr<{{ type | length + 4 }}> handle_sym_type_name<sym::{{ type }}f>::name;
 {% endfor %}
 
 }  // namespace detail

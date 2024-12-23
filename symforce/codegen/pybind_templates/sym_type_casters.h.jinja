@@ -47,6 +47,11 @@ struct handle_sym_type_name<sym::{{ type }}d> {
   static constexpr auto name = _("sym.{{ type }}");
 };
 
+template <>
+struct handle_sym_type_name<sym::{{ type }}f> {
+  static constexpr auto name = _("sym.{{ type }}");
+};
+
 {% endfor %}
 
 // type_caster is what does the conversions between python types and C++ types. Needed
@@ -65,8 +70,10 @@ struct sym_type_caster {
     if (!py::isinstance(src, py::module_::import("sym").attr(kClassName))) {
       return false;
     }
-    const std::vector<double> data_vec = src.attr("to_storage")().cast<std::vector<double>>();
-    value = T(Eigen::Matrix<double, sym::StorageOps<T>::StorageDim(), 1>(data_vec.data()));
+    const std::vector<typename T::Scalar> data_vec =
+        src.attr("to_storage")().cast<std::vector<typename T::Scalar>>();
+    value =
+        T(Eigen::Matrix<typename T::Scalar, sym::StorageOps<T>::StorageDim(), 1>(data_vec.data()));
     return true;
   }
 
@@ -90,6 +97,8 @@ struct sym_type_caster {
 {% for type in types %}
 template <>
 struct type_caster<sym::{{ type }}d> : public sym_type_caster<sym::{{ type }}d> {};
+template <>
+struct type_caster<sym::{{ type }}f> : public sym_type_caster<sym::{{ type }}f> {};
 {% endfor %}
 
 }  // namespace detail

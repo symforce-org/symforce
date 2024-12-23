@@ -15,17 +15,29 @@ namespace pybind11 {
 namespace detail {
 
 constexpr descr<8> handle_sym_type_name<sym::Rot2d>::name;
+constexpr descr<8> handle_sym_type_name<sym::Rot2f>::name;
 constexpr descr<8> handle_sym_type_name<sym::Rot3d>::name;
+constexpr descr<8> handle_sym_type_name<sym::Rot3f>::name;
 constexpr descr<9> handle_sym_type_name<sym::Pose2d>::name;
+constexpr descr<9> handle_sym_type_name<sym::Pose2f>::name;
 constexpr descr<9> handle_sym_type_name<sym::Pose3d>::name;
+constexpr descr<9> handle_sym_type_name<sym::Pose3f>::name;
 constexpr descr<9> handle_sym_type_name<sym::Unit3d>::name;
+constexpr descr<9> handle_sym_type_name<sym::Unit3f>::name;
 constexpr descr<17> handle_sym_type_name<sym::ATANCameraCald>::name;
+constexpr descr<17> handle_sym_type_name<sym::ATANCameraCalf>::name;
 constexpr descr<25> handle_sym_type_name<sym::DoubleSphereCameraCald>::name;
+constexpr descr<25> handle_sym_type_name<sym::DoubleSphereCameraCalf>::name;
 constexpr descr<28> handle_sym_type_name<sym::EquirectangularCameraCald>::name;
+constexpr descr<28> handle_sym_type_name<sym::EquirectangularCameraCalf>::name;
 constexpr descr<19> handle_sym_type_name<sym::LinearCameraCald>::name;
+constexpr descr<19> handle_sym_type_name<sym::LinearCameraCalf>::name;
 constexpr descr<23> handle_sym_type_name<sym::PolynomialCameraCald>::name;
+constexpr descr<23> handle_sym_type_name<sym::PolynomialCameraCalf>::name;
 constexpr descr<22> handle_sym_type_name<sym::SphericalCameraCald>::name;
+constexpr descr<22> handle_sym_type_name<sym::SphericalCameraCalf>::name;
 constexpr descr<25> handle_sym_type_name<sym::OrthographicCameraCald>::name;
+constexpr descr<25> handle_sym_type_name<sym::OrthographicCameraCalf>::name;
 
 }  // namespace detail
 }  // namespace pybind11
