@@ -416,7 +416,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
       COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
                   --path_to_check ${PROJECT_SOURCE_DIR}/third_party/${project_name}
                   --stamp_file ${git_stampfile}
-                  --cmake_stampdir="${cmake_stampdir}"
+                  --cmake_stampdir=${cmake_stampdir}
       )
 
     add_dependencies(${project_name} ${git_check_rulename})
