@@ -174,71 +174,71 @@ __host__ __device__ void BackendTestFunctionFloat32(
   }
 
   if (res32 != nullptr) {
-    *res32 = lgammaf(x);
+    *res32 = asinhf(x);
   }
 
   if (res33 != nullptr) {
-    *res33 = erfcf(x);
+    *res33 = acoshf(x);
   }
 
   if (res34 != nullptr) {
-    *res34 = asinhf(x);
+    *res34 = atanhf(x);
   }
 
   if (res35 != nullptr) {
-    *res35 = acoshf(x);
+    *res35 = fmodf(1.0F * x, 5.5F);
   }
 
   if (res36 != nullptr) {
-    *res36 = atanhf(x);
+    *res36 = x + 1;
   }
 
   if (res37 != nullptr) {
-    *res37 = erff(x);
+    *res37 = 2 * x;
   }
 
   if (res38 != nullptr) {
-    *res38 = tgammaf(x);
+    *res38 = powf(x, 2);
   }
 
   if (res39 != nullptr) {
-    *res39 = fmodf(1.0F * x, 5.5F);
+    *res39 = powf(x, 3);
   }
 
   if (res40 != nullptr) {
-    *res40 = x + 1;
+    *res40 = powf(x, 4);
   }
 
   if (res41 != nullptr) {
-    *res41 = 2 * x;
+    *res41 = powf(x, 5);
   }
 
   if (res42 != nullptr) {
-    *res42 = powf(x, 2);
+    *res42 = _tmp3;
   }
 
   if (res43 != nullptr) {
-    *res43 = powf(x, 3);
+    *res43 = powf(x, 3.0F / 2.0F);
   }
 
   if (res44 != nullptr) {
-    *res44 = powf(x, 4);
+    *res44 = 0.5F * ((((x) >= 0) - ((x) < 0)) + 1);
   }
 
   if (res45 != nullptr) {
-    *res45 = powf(x, 5);
+    *res45 = erfcf(x);
   }
 
   if (res46 != nullptr) {
-    *res46 = _tmp3;
+    *res46 = lgammaf(x);
   }
 
   if (res47 != nullptr) {
-    *res47 = powf(x, 3.0F / 2.0F);
+    *res47 = erff(x);
   }
 
   if (res48 != nullptr) {
-    *res48 = 0.5F * ((((x) >= 0) - ((x) < 0)) + 1);
+    *res48 = tgammaf(x);
   }
 
   if (res49 != nullptr) {

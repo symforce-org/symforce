@@ -176,71 +176,71 @@ __host__ __device__ void BackendTestFunctionFloat64(
   }
 
   if (res32 != nullptr) {
-    *res32 = lgamma(x);
+    *res32 = asinh(x);
   }
 
   if (res33 != nullptr) {
-    *res33 = erfc(x);
+    *res33 = acosh(x);
   }
 
   if (res34 != nullptr) {
-    *res34 = asinh(x);
+    *res34 = atanh(x);
   }
 
   if (res35 != nullptr) {
-    *res35 = acosh(x);
+    *res35 = fmod(1.0 * x, 5.5);
   }
 
   if (res36 != nullptr) {
-    *res36 = atanh(x);
+    *res36 = x + 1;
   }
 
   if (res37 != nullptr) {
-    *res37 = erf(x);
+    *res37 = 2 * x;
   }
 
   if (res38 != nullptr) {
-    *res38 = tgamma(x);
+    *res38 = pow(x, 2);
   }
 
   if (res39 != nullptr) {
-    *res39 = fmod(1.0 * x, 5.5);
+    *res39 = pow(x, 3);
   }
 
   if (res40 != nullptr) {
-    *res40 = x + 1;
+    *res40 = pow(x, 4);
   }
 
   if (res41 != nullptr) {
-    *res41 = 2 * x;
+    *res41 = pow(x, 5);
   }
 
   if (res42 != nullptr) {
-    *res42 = pow(x, 2);
+    *res42 = _tmp3;
   }
 
   if (res43 != nullptr) {
-    *res43 = pow(x, 3);
+    *res43 = pow(x, 3.0 / 2.0);
   }
 
   if (res44 != nullptr) {
-    *res44 = pow(x, 4);
+    *res44 = 0.5 * ((((x) >= 0) - ((x) < 0)) + 1);
   }
 
   if (res45 != nullptr) {
-    *res45 = pow(x, 5);
+    *res45 = erfc(x);
   }
 
   if (res46 != nullptr) {
-    *res46 = _tmp3;
+    *res46 = lgamma(x);
   }
 
   if (res47 != nullptr) {
-    *res47 = pow(x, 3.0 / 2.0);
+    *res47 = erf(x);
   }
 
   if (res48 != nullptr) {
-    *res48 = 0.5 * ((((x) >= 0) - ((x) < 0)) + 1);
+    *res48 = tgamma(x);
   }
 
   if (res49 != nullptr) {

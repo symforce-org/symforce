@@ -11,7 +11,9 @@ import symforce.symbolic as sf
 from symforce import typing as T
 
 
-def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]:
+def backend_test_function(
+    non_standard_unary_ops: T.List[T.Any], x: sf.Scalar, y: sf.Scalar
+) -> T.Tuple[sf.Scalar, ...]:
     """
     Given input symbols `x` and `y`, return a list of expressions which provide good test coverage
     over symbolic functions supported by symforce.
@@ -42,7 +44,7 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         1 / sf.sqrt(2),
     )
 
-    unary_ops = (
+    unary_ops = [
         sf.Abs,
         sf.sin,
         sf.cos,
@@ -58,13 +60,9 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         sf.floor,
         sf.ceiling,
         sf.sqrt,
-        sf.sympy.loggamma,
-        sf.sympy.erfc,
         sf.sympy.asinh,
         sf.sympy.acosh,
         sf.sympy.atanh,
-        sf.sympy.erf,
-        sf.sympy.gamma,
         lambda x: sf.Mod(x, 5.5),
         lambda x: x + 1,
         lambda x: 2 * x,
@@ -75,7 +73,7 @@ def backend_test_function(x: sf.Scalar, y: sf.Scalar) -> T.Tuple[sf.Scalar, ...]
         lambda x: x**sf.S.Half,
         lambda x: x ** sf.Rational(3, 2),
         lambda x: sf.Max(0, x).diff(x),  # The heaviside function
-    )
+    ] + non_standard_unary_ops
 
     binary_ops = (
         sf.sympy.atan2,

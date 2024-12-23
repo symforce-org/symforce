@@ -132,3 +132,45 @@ def format_py_dir(dirname: T.Openable) -> None:
         env=dict(os.environ, RUFF_NO_CACHE="true"),
         text=True,
     )
+
+
+_rustfmt_path: T.Optional[Path] = None
+
+
+def _find_rustfmt() -> Path:
+    """
+    Find the rustfmt binary
+
+    """
+    global _rustfmt_path  # noqa: PLW0603
+
+    if _rustfmt_path is not None:
+        return _rustfmt_path
+
+    rustfmt = shutil.which("rustfmt")
+    if rustfmt is None:
+        raise FileNotFoundError("Could not find rustfmt")
+
+    # Ignore the type because mypy can't reason about the fact that we just checked that rustfmt
+    # is not None.
+    _rustfmt_path = Path(rustfmt)
+    return _rustfmt_path
+
+
+def format_rust(file_contents: str, filename: str) -> str:
+    """
+    Autoformat a given Rust file using rustfmt.
+
+    Args:
+        filename: A name that this file might have on disk; this does not have to be a real path,
+            it's only used for ruff to find the correct style file (by traversing upwards from this
+            location)
+    """
+    result = subprocess.run(
+        [_find_rustfmt()],
+        input=file_contents,
+        stdout=subprocess.PIPE,
+        check=True,
+        text=True,
+    )
+    return result.stdout

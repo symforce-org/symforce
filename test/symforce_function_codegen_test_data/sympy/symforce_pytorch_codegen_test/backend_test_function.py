@@ -110,25 +110,25 @@ def backend_test_function(x, y, tensor_kwargs=None):
     _res29 = torch.floor(x)
     _res30 = torch.ceil(x)
     _res31 = _tmp3
-    _res32 = torch.lgamma(x)
-    _res33 = torch.erfc(x)
-    _res34 = torch.asinh(x)
-    _res35 = torch.acosh(x)
-    _res36 = torch.atanh(x)
-    _res37 = torch.erf(x)
-    _res38 = torch.lgamma(x).exp()
-    _res39 = torch.remainder(
+    _res32 = torch.asinh(x)
+    _res33 = torch.acosh(x)
+    _res34 = torch.atanh(x)
+    _res35 = torch.remainder(
         torch.tensor(1.0, **tensor_kwargs) * x, torch.tensor(5.5, **tensor_kwargs)
     )
-    _res40 = x + torch.tensor(1, **tensor_kwargs)
-    _res41 = torch.tensor(2, **tensor_kwargs) * x
-    _res42 = torch.pow(x, torch.tensor(2, **tensor_kwargs))
-    _res43 = torch.pow(x, torch.tensor(3, **tensor_kwargs))
-    _res44 = torch.pow(x, torch.tensor(4, **tensor_kwargs))
-    _res45 = torch.pow(x, torch.tensor(5, **tensor_kwargs))
-    _res46 = _tmp3
-    _res47 = torch.pow(x, torch.tensor(3 / 2, **tensor_kwargs))
-    _res48 = torch.heaviside(x, values=torch.tensor(1.0, **tensor_kwargs))
+    _res36 = x + torch.tensor(1, **tensor_kwargs)
+    _res37 = torch.tensor(2, **tensor_kwargs) * x
+    _res38 = torch.pow(x, torch.tensor(2, **tensor_kwargs))
+    _res39 = torch.pow(x, torch.tensor(3, **tensor_kwargs))
+    _res40 = torch.pow(x, torch.tensor(4, **tensor_kwargs))
+    _res41 = torch.pow(x, torch.tensor(5, **tensor_kwargs))
+    _res42 = _tmp3
+    _res43 = torch.pow(x, torch.tensor(3 / 2, **tensor_kwargs))
+    _res44 = torch.heaviside(x, values=torch.tensor(1.0, **tensor_kwargs))
+    _res45 = torch.lgamma(x)
+    _res46 = torch.erfc(x)
+    _res47 = torch.erf(x)
+    _res48 = torch.lgamma(x).exp()
     _res49 = torch.atan2(x, y)
     _res50 = torch.maximum(x, y)
     _res51 = torch.minimum(x, y)
