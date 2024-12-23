@@ -26,14 +26,16 @@ jobs:
         path: dist/*
 
   build-macos:
-    runs-on: ${{ matrix.os.runner }}
+    # This is macos 13 instead of newer, because brew won't pull libgmp for an older macos, so we
+    # just support 13 or newer
+    runs-on: macos-13
     strategy:
       fail-fast: false
       matrix:
         os:
           - runner: macos-13
             arch: x86_64
-          - runner: macos-latest
+          - runner: macos-13
             arch: arm64
         python-version: [cp38, cp39, cp310, cp311, cp312]
 
@@ -42,7 +44,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.17.0
+      uses: pypa/cibuildwheel@v2.22.0
       env:
         CIBW_BUILD: ${{ matrix.python-version }}-*
         CIBW_ARCHS_MACOS: ${{ matrix.os.arch }}
@@ -50,7 +52,7 @@ jobs:
         # For arm64; for x86, it's at /usr/local but cmake finds that ok already
         GMP_ROOT: /opt/homebrew
         CIBW_BEFORE_BUILD: brew install gmp
-        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True MACOSX_DEPLOYMENT_TARGET=13.0
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
@@ -71,7 +73,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.17.0
+      uses: pypa/cibuildwheel@v2.22.0
       env:
         CIBW_BUILD: ${{ matrix.python-version }}-manylinux_x86_64
         CIBW_BUILD_FRONTEND: build
