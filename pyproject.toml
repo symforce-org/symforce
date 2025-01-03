@@ -46,6 +46,9 @@ dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
 "Bug Tracker" = "https://github.com/symforce-org/symforce/issues"
 Source = "https://github.com/symforce-org/symforce"
 
+[tool.setuptools_scm]
+# Empty, presence enables setuptools_scm
+
 # --------------------------------------------------------------------------------
 # Ruff
 # --------------------------------------------------------------------------------
@@ -153,6 +156,7 @@ module = [
   "numba.*",
   "ruff.*",
   "scipy.*",
+  "setuptools_scm.*",
   "skymarshal.*",
   "symengine.*",
   "sympy.*",

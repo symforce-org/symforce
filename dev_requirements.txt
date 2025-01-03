@@ -193,6 +193,7 @@ packaging==24.0
     #   matplotlib
     #   nbconvert
     #   plotly
+    #   setuptools-scm
     #   sphinx
 pandas==2.0.3
     # via symforce (setup.py)
@@ -267,6 +268,8 @@ ruff==0.7.1
     # via symforce (setup.py)
 scipy==1.10.1
     # via symforce (setup.py)
+setuptools-scm==8.1.0
+    # via symforce (setup.py)
 six==1.16.0
     # via
     #   asttokens
@@ -321,6 +324,7 @@ tomli==2.0.1
     #   build
     #   mypy
     #   pip-tools
+    #   setuptools-scm
 tornado==6.4
     # via
     #   ipykernel
@@ -349,6 +353,7 @@ typing-extensions==4.11.0
     # via
     #   ipython
     #   mypy
+    #   setuptools-scm
 tzdata==2024.1
     # via pandas
 urllib3==2.2.1
@@ -378,4 +383,5 @@ pip==24.0
 setuptools==69.5.1
     # via
     #   pip-tools
+    #   setuptools-scm
     #   symforce (setup.py)

@@ -237,35 +237,23 @@ else()
 
   add_custom_target(symforce_eigen_lcm_py ALL DEPENDS eigen_lcm_py)
 
-  # Get SymForce version
-  execute_process(
-    COMMAND ${SYMFORCE_PYTHON} -c "from _version import version; print(version, end='')"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/symforce
-    RESULT_VARIABLE STATUS
-    OUTPUT_VARIABLE SYMFORCE_VERSION
-    ERROR_VARIABLE SYMFORCE_VERSION_STDERR
-  )
-  if(STATUS AND NOT STATUS EQUAL 0)
-    message(FATAL_ERROR
-      "Failed getting symforce version with exit code ${STATUS} and output ${SYMFORCE_VERSION}, stderr ${SYMFORCE_VERSION_STDERR}"
-    )
-  endif()
-
   file(WRITE
-    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/setup.py
+    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/pyproject.toml
     "
-from setuptools import setup, find_packages
-setup(
-  name='lcmtypes',
-  version='${SYMFORCE_VERSION}',
-  description='lcmtype python bindings (installed by SymForce)',
-  long_description='lcmtype python bindings (installed by SymForce)',
-  author='Skydio, Inc',
-  author_email='hayk@skydio.com',
-  license='Apache 2.0',
-  packages=find_packages(),
-  zip_safe=False,
-)
+[build-system]
+requires = ['setuptools', 'setuptools-scm>=8']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'lcmtypes'
+description='lcmtype python bindings (installed by SymForce)'
+authors = [{ name = 'Skydio, Inc.', email = 'hayk@skydio.com' }]
+license = { text = 'Apache 2.0' }
+requires-python = '>=3.5'
+dynamic = ['version']
+
+[tool.setuptools_scm]
+root = '../../..'
     "
   )
 endif()
