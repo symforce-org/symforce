@@ -242,16 +242,19 @@ struct Vector8f {
   float data[8] = 2;
 };
 
+#protobuf { typename="SymmetricMatrix2dPb", filename="SymmetricMatrix2d" }
 #cpp_no_display
 struct SymmetricMatrix2d {
   double data[3] = 3;
 };
 
+#protobuf { typename="SymmetricMatrix3dPb", filename="SymmetricMatrix3d" }
 #cpp_no_display
 struct SymmetricMatrix3d {
   double data[6] = 3;
 };
 
+#protobuf { typename="SymmetricMatrix4dPb", filename="SymmetricMatrix4d" }
 #cpp_no_display
 struct SymmetricMatrix4d {
   double data[10] = 3;
@@ -263,16 +266,19 @@ struct SymmetricMatrixXd {
   double data[data_sz] = 3;
 };
 
+#protobuf { typename="SymmetricMatrix2fPb", filename="SymmetricMatrix2f" }
 #cpp_no_display
 struct SymmetricMatrix2f {
   float data[3] = 2;
 };
 
+#protobuf { typename="SymmetricMatrix3fPb", filename="SymmetricMatrix3f" }
 #cpp_no_display
 struct SymmetricMatrix3f {
   float data[6] = 2;
 };
 
+#protobuf { typename="SymmetricMatrix4fPb", filename="SymmetricMatrix4f" }
 #cpp_no_display
 struct SymmetricMatrix4f {
   float data[10] = 2;
