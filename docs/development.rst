@@ -103,8 +103,8 @@ You should be able to build Python wheels of symforce the standard ways.  We rec
 ``build``, i.e. running ``python3 -m build --wheel`` from the ``symforce`` directory.  By default,
 this will build a wheel that includes local dependencies on the ``skymarshal`` and ``symforce-sym``
 packages (which are separate Python packages from ``symforce`` itself).  For distribution, you'll
-typically want to set the environment variable ``SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True`` when
-building, and also run ``python3 -m build --wheel third_party/skymarshal`` and
+typically want to set the environment variable ``SYMFORCE_REWRITE_LOCAL_DEPENDENCIES`` to the
+release version when building, and also run ``python3 -m build --wheel third_party/skymarshal`` and
 ``python3 -m build --wheel gen/python`` to build wheels for those packages separately.
 
 For SymForce releases, all of this is handled by the ``build_wheels`` GitHub Actions workflow.  This

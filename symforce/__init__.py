@@ -24,7 +24,20 @@ from types import ModuleType
 # -------------------------------------------------------------------------------------------------
 
 # isort: split
-from ._version import version as __version__
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version
+
+try:
+    __version__ = version("symforce")
+except PackageNotFoundError:
+    # package is not installed.  Try running setuptools_scm
+    import setuptools_scm
+
+    try:
+        __version__ = setuptools_scm.get_version()
+    except LookupError:
+        pass
+
 
 # -------------------------------------------------------------------------------------------------
 # Logging configuration

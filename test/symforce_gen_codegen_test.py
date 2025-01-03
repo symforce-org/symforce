@@ -99,7 +99,6 @@ class SymforceGenCodegenTest(TestCase):
             output_path=output_dir / "pyproject.toml",
             data=dict(
                 package_name="symforce-sym",
-                version=symforce.__version__,
                 description="generated numerical python package",
             ),
             config=dataclasses.replace(config.render_template_config, autoformat=False),
