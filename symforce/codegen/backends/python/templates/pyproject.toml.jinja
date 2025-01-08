@@ -4,7 +4,7 @@
  # ---------------------------------------------------------------------------- #}
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -12,11 +12,14 @@ name = "{{ package_name }}"
 description = "{{ description }} (installed by SymForce)"
 authors = [{ name = "Skydio, Inc.", email = "hayk@skydio.com" }]
 license = { text = "Apache 2.0" }
-version = "{{ version }}"
 dependencies = ["numpy"]
 requires-python = ">=3.5"
+dynamic = ["version"]
 
 [project.urls]
 SymForce = "https://symforce.org"
 "Bug Tracker" = "https://github.com/symforce-org/symforce/issues"
 Source = "https://github.com/symforce-org/symforce/tree/main/gen/python"
+
+[tool.setuptools_scm]
+root = "../.."

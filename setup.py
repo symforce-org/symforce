@@ -3,7 +3,6 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-import distutils.util
 import multiprocessing
 import os
 import re
@@ -23,18 +22,6 @@ from setuptools.command.install import install
 
 SOURCE_DIR = Path(__file__).resolve().parent
 ESCAPED_SOURCE_DIR = Path(str(SOURCE_DIR).replace(" ", "%20"))
-
-
-def symforce_version() -> str:
-    """
-    Fetch the current symforce version from _version.py
-
-    We can't import the version here, so we have to do some text parsing
-    """
-    version_file_contents = (Path(__file__).parent / "symforce" / "_version.py").read_text()
-    version_match = re.search(r'^version = "(.+)"$', version_file_contents, flags=re.MULTILINE)
-    assert version_match is not None
-    return version_match.group(1)
 
 
 class CMakeExtension(Extension):
@@ -227,20 +214,13 @@ class SymForceEggInfo(egg_info):
 
     def initialize_options(self) -> None:
         super().initialize_options()
-        self.rewrite_local_dependencies = False
+        self.rewrite_local_dependencies: T.Optional[str] = None
 
     def finalize_options(self) -> None:
         super().finalize_options()
 
-        if not isinstance(self.rewrite_local_dependencies, bool):
-            self.rewrite_local_dependencies = bool(
-                distutils.util.strtobool(self.rewrite_local_dependencies)
-            )
-
         if "SYMFORCE_REWRITE_LOCAL_DEPENDENCIES" in os.environ:
-            self.rewrite_local_dependencies = bool(
-                distutils.util.strtobool(os.environ["SYMFORCE_REWRITE_LOCAL_DEPENDENCIES"])
-            )
+            self.rewrite_local_dependencies = os.environ["SYMFORCE_REWRITE_LOCAL_DEPENDENCIES"]
 
     def run(self) -> None:
         # Rewrite dependencies from the local `file:` versions to generic pinned package versions.
@@ -251,7 +231,7 @@ class SymForceEggInfo(egg_info):
 
             def filter_local(s: str) -> str:
                 if "@" in s:
-                    s = f"{s.split('@')[0]}=={symforce_version()}"
+                    s = f"{s.split('@')[0]}=={self.rewrite_local_dependencies}"
                 return s
 
             self.distribution.install_requires = [  # type: ignore[attr-defined]
@@ -338,6 +318,7 @@ class InstallWithExtras(install):
 
 setup_requirements = [
     "setuptools>=62.3.0",  # For package data globs
+    "setuptools-scm>=8",
     "wheel",
     "pip",
     "cmake>=3.17,<3.27",
@@ -404,7 +385,6 @@ def fixed_readme() -> str:
 
 if __name__ == "__main__":
     setup(
-        version=symforce_version(),
         long_description=fixed_readme(),
         long_description_content_type="text/markdown",
         # The SymForce package is a namespace package (important for data-only subdirectories

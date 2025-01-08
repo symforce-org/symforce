@@ -20,13 +20,6 @@ from dataclasses import dataclass
 from types import ModuleType
 
 # -------------------------------------------------------------------------------------------------
-# Version
-# -------------------------------------------------------------------------------------------------
-
-# isort: split
-from ._version import version as __version__
-
-# -------------------------------------------------------------------------------------------------
 # Logging configuration
 # -------------------------------------------------------------------------------------------------
 
@@ -65,6 +58,34 @@ def set_log_level(log_level: str) -> None:
 
 # Set default
 set_log_level(os.environ.get("SYMFORCE_LOGLEVEL", "INFO"))
+
+# -------------------------------------------------------------------------------------------------
+# Version
+# -------------------------------------------------------------------------------------------------
+
+# isort: split
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version
+
+try:
+    __version__ = version("symforce")
+except PackageNotFoundError:
+    logger.debug(
+        "symforce package is not being run from an installed context; falling back to"
+        " setuptools_scm for __version__"
+    )
+
+    try:
+        import setuptools_scm
+    except ImportError:
+        # setuptools_scm isn't required to be installed
+        logger.debug("setuptools_scm not installed; __version__ will not be set")
+    else:
+        try:
+            __version__ = setuptools_scm.get_version(root="..", relative_to=__file__)
+        except LookupError:
+            logger.debug("setuptools_scm failed to find version; __version__ will not be set")
+
 
 # -------------------------------------------------------------------------------------------------
 # Symbolic API configuration

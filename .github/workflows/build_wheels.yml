@@ -12,6 +12,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        # Should include history since the last tag for setuptools_scm to work
+        fetch-depth: 200
+        fetch-tags: true
 
     - name: Build Wheels
       run: |
@@ -42,6 +46,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        # Should include history since the last tag for setuptools_scm to work
+        fetch-depth: 200
+        fetch-tags: true
+
+    - run: python3 -m pip install setuptools_scm
+    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" >> $GITHUB_ENV
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.22.0
@@ -52,7 +63,7 @@ jobs:
         # For arm64; for x86, it's at /usr/local but cmake finds that ok already
         GMP_ROOT: /opt/homebrew
         CIBW_BEFORE_BUILD: brew install gmp
-        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True MACOSX_DEPLOYMENT_TARGET=13.0
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION MACOSX_DEPLOYMENT_TARGET=13.0
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
@@ -71,6 +82,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        # Should include history since the last tag for setuptools_scm to work
+        fetch-depth: 200
+        fetch-tags: true
+
+    - run: python3 -m pip install setuptools_scm
+    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" >> $GITHUB_ENV
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.22.0
@@ -78,7 +96,7 @@ jobs:
         CIBW_BUILD: ${{ matrix.python-version }}-manylinux_x86_64
         CIBW_BUILD_FRONTEND: build
         CIBW_BEFORE_BUILD: yum install -y gmp-devel git
-        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=True
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION
 
     - name: Upload Wheels
       uses: actions/upload-artifact@v4
