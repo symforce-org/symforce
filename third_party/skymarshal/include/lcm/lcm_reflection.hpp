@@ -318,7 +318,7 @@ inline uint32_t show_field<std::string, true>(std::ostream &stream, const uint32
 // for signed integral types
 template <typename T,
           std::enable_if_t<std::is_integral<T>::value && std::is_signed<T>::value, bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields != 0) {
@@ -344,7 +344,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 // for unsigned integral types
 template <typename T,
           std::enable_if_t<std::is_integral<T>::value && !std::is_signed<T>::value, bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields != 0) {
@@ -369,7 +369,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 
 // for floating types
 template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields != 0) {
@@ -394,7 +394,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 
 // for booleans
 template <>
-__attribute__((nodiscard)) inline uint32_t store_field<bool, true>(const uint32_t field_indices[],
+[[nodiscard]] inline uint32_t store_field<bool, true>(const uint32_t field_indices[],
                                                                    uint32_t num_fields, bool &item,
                                                                    const char *const value)
 {
@@ -422,7 +422,7 @@ __attribute__((nodiscard)) inline uint32_t store_field<bool, true>(const uint32_
 
 // for enums
 template <typename T, std::enable_if_t<std::is_enum<typename T::option_t>::value, bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields != 0) {
@@ -444,7 +444,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 template <typename T,
           std::enable_if_t<std::is_member_function_pointer<decltype(&T::store_field)>::value,
                            bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields == 0) {
@@ -456,30 +456,30 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 // Forward declare the eigen specializations, however they are defined in lcm_reflection_eigen.hpp
 template <typename T, std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value,
                                        bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value);
 template <typename T,
           std::enable_if_t<std::is_member_function_pointer<decltype(&T::toRotationMatrix)>::value,
                            bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value);
 
 // for arrays, lists. value of nullptr is special here, it means to delete at that index
 // forward declared because they recursively reference each other.
 template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value);
 
 template <
     typename T,
     std::enable_if_t<is_iterable_v<T> && std::is_member_function_pointer<decltype(&T::fill)>::value,
                      bool> = true>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value);
 
 // for vectors (handles resizing)
 template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bool>>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields == 0) {
@@ -518,7 +518,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 template <typename T,
           std::enable_if_t<
               is_iterable_v<T> && std::is_member_function_pointer<decltype(&T::fill)>::value, bool>>
-__attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
                                                 T &item, const char *const value)
 {
     if (num_fields == 0) {
@@ -533,7 +533,7 @@ __attribute__((nodiscard)) uint32_t store_field(const uint32_t field_indices[], 
 
 // for strings (specialization of the above for iterables)
 template <>
-__attribute__((nodiscard)) inline uint32_t store_field<std::string, true>(
+[[nodiscard]] inline uint32_t store_field<std::string, true>(
     const uint32_t field_indices[], uint32_t num_fields, std::string &item, const char *const value)
 {
     if (num_fields != 0) {
