@@ -362,7 +362,7 @@ def fixed_readme() -> str:
     """
     Fix things in the README for PyPI
     """
-    readme = Path("README.md").read_text()
+    readme = Path("README.md").read_text(encoding="UTF8")
 
     # Replace relative links with absolute, so images appear correctly on PyPI
     readme = readme.replace(
