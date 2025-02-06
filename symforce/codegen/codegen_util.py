@@ -441,7 +441,7 @@ def get_formatted_list(
             )
             # Only print matches if flattened_value isn't filled with expressions
             if format_as_inputs:
-                matches = list(zip(formatted_symbols, flattened_value))
+                matches = list(itertools.zip_longest(formatted_symbols, flattened_value))
                 error_text += f"The following symbol/value pairs should match: {matches}"
             raise ValueError(error_text)
 
