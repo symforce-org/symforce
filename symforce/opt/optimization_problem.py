@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import functools
 import itertools
 
 import symforce.symbolic as sf
@@ -113,8 +114,9 @@ class OptimizationProblem:
         config: T.Optional[CppConfig] = None,
     ) -> None:
         """
-        Generate everything needed to optimize ``self`` in C++. This currently assumes there is
-        only one factor generated for the optimization problem.
+        Generate everything needed to optimize ``self`` in C++. This will typically only generate
+        one factor, but can be configured to generate multiple different factors by setting the
+        "factor_name" field of the residual blocks to be split into separate factors.
 
         Args:
             output_dir: Directory in which to output the generated files.
@@ -142,6 +144,37 @@ class OptimizationProblem:
                 )
             )
 
+    def residual_blocks_per_factor(self, default_name: str) -> Values:
+        """
+        Returns a Values with the residual blocks split by factor name.
+        """
+        factor_blocks = Values()
+        for block_name, block in self.residual_blocks.items_recursive():
+            factor_name = block.factor_name if block.factor_name is not None else default_name
+            if factor_name not in factor_blocks:
+                factor_blocks[factor_name] = Values()
+            factor_blocks[factor_name][block_name] = block
+        return factor_blocks
+
+    @staticmethod
+    def compute_jacobians(
+        keys: T.Sequence[str], inputs: Values, residual_blocks: Values
+    ) -> sf.Matrix:
+        """
+        Functor that computes the jacobians of the residual with respect to a set of keys
+
+        The set of keys is not known when make_symbolic_factors is called, because we may want
+        to create a :class:`.numeric_factor.NumericFactor` which computes derivatives with
+        respect to different sets of optimized variables.
+        """
+        jacobians = [
+            residual_block.compute_jacobians(
+                [inputs[key] for key in keys], residual_name=residual_name, key_names=keys
+            )
+            for residual_name, residual_block in residual_blocks.items_recursive()
+        ]
+        return sf.Matrix.block_matrix(jacobians)
+
     def make_symbolic_factors(
         self,
         name: str,
@@ -161,21 +194,8 @@ class OptimizationProblem:
         """
         inputs = self.inputs.dataclasses_to_values()
 
-        def compute_jacobians(keys: T.Iterable[str]) -> sf.Matrix:
-            """
-            Functor that computes the jacobians of the residual with respect to a set of keys
-
-            The set of keys is not known when make_symbolic_factors is called, because we may want
-            to create a :class:`.numeric_factor.NumericFactor` which computes derivatives with
-            respect to different sets of optimized variables.
-            """
-            jacobians = [
-                residual_block.compute_jacobians(
-                    [inputs[key] for key in keys], residual_name=residual_key, key_names=keys
-                )
-                for residual_key, residual_block in self.residual_blocks.items_recursive()
-            ]
-            return sf.Matrix.block_matrix(jacobians)
+        # Split blocks by factor
+        factor_blocks = self.residual_blocks_per_factor(default_name=name)
 
         return [
             Factor.from_inputs_and_residual(
@@ -186,11 +206,18 @@ class OptimizationProblem:
                         for key, value in inputs.items_recursive()
                     }
                 ),
-                residual=sf.M(self.residuals.to_storage()),
+                residual=sf.M(
+                    ops.StorageOps.to_storage(
+                        [block.residual for block in residual_blocks.values_recursive()]
+                    )
+                ),
                 config=config,
-                custom_jacobian_func=compute_jacobians,
+                custom_jacobian_func=functools.partial(
+                    self.compute_jacobians, inputs=inputs, residual_blocks=residual_blocks
+                ),
                 name=name,
             )
+            for name, residual_blocks in factor_blocks.items()
         ]
 
     def make_numeric_factors(

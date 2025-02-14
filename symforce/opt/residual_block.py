@@ -22,6 +22,9 @@ class ResidualBlock:
     residual: sf.Matrix
     extra_values: T.Optional[T.Dataclass] = None
     metadata: T.Optional[T.Dict[str, T.Any]] = None
+    # When creating an `OptimizationProblem`, all residual blocks with the same factor_name will
+    # be split out into a separate factor from the main optimization problem factor.
+    factor_name: T.Optional[str] = None
 
     def compute_jacobians(
         self,
@@ -52,6 +55,13 @@ class ResidualBlock:
             self.metadata = {key: value}
         else:
             self.metadata[key] = value
+        return self
+
+    def set_factor_name(self, name: T.Optional[str]) -> ResidualBlock:
+        """
+        Sets the factor name of the residual block and returns the residual block.
+        """
+        self.factor_name = name
         return self
 
 
