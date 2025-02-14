@@ -77,7 +77,7 @@ class GncOptimizer : public BaseOptimizerType {
     stats.Reset(num_iterations);
 
     // Iterate.
-    BaseOptimizer::IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
+    IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
     while (static_cast<int>(stats.iterations.size()) < num_iterations) {
       if (stats.status != optimization_status_t::SUCCESS) {
         // NOTE(aaron): The previous optimization did not converge, so do not continue
@@ -125,7 +125,16 @@ class GncOptimizer : public BaseOptimizerType {
     // Reset values, but do not clear other state
     this->nonlinear_solver_.ResetState(values);
 
-    this->IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
+    IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
+  }
+
+  void IterateToConvergence(Values<Scalar>& values, const int num_iterations,
+                            const bool populate_best_linearization,
+                            typename BaseOptimizer::Stats& stats) {
+    const bool include_debug_jacobians = this->debug_stats_ && this->include_jacobians_;
+    IterateToConvergenceImpl(values, this->nonlinear_solver_, this->linearize_func_, num_iterations,
+                             populate_best_linearization, include_debug_jacobians, this->name_,
+                             stats);
   }
 
   optimizer_gnc_params_t gnc_params_;

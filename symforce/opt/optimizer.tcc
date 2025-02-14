@@ -8,6 +8,7 @@
 #include "./assert.h"
 #include "./internal/covariance_utils.h"
 #include "./internal/derivative_checker.h"
+#include "./internal/optimizer_utils.h"
 #include "./optimizer.h"
 
 namespace sym {
@@ -113,20 +114,13 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values
                                                           int num_iterations,
                                                           bool populate_best_linearization,
                                                           Stats& stats) {
-  SYM_TIME_SCOPE("Optimizer<{}>::Optimize", name_);
-
-  if (num_iterations < 0) {
-    num_iterations = nonlinear_solver_.Params().iterations;
-  }
-
+  // Create the index for the values
   Initialize(values);
 
-  // Clear state for this run
-  nonlinear_solver_.Reset(values);
-  stats.Reset(num_iterations);
-  IterateToConvergence(values, num_iterations, populate_best_linearization, stats);
-
-  MaybeLogStatus(stats);
+  // Call the static helper function to run the optimization
+  const bool include_debug_jacobians = debug_stats_ && include_jacobians_;
+  OptimizeImpl(values, nonlinear_solver_, linearize_func_, num_iterations,
+               populate_best_linearization, name_, include_debug_jacobians, verbose_, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
@@ -286,55 +280,6 @@ const optimizer_params_t& Optimizer<ScalarType, NonlinearSolverType>::Params() c
 // ----------------------------------------------------------------------------
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::IterateToConvergence(
-    Values<Scalar>& values, const int num_iterations, const bool populate_best_linearization,
-    Stats& stats) {
-  SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name_);
-  SYM_ASSERT(num_iterations > 0, "num_iterations must be positive, got {}", num_iterations);
-
-  // Iterate
-  int i;
-  for (i = 0; i < num_iterations; i++) {
-    const auto maybe_status_and_failure_reason = nonlinear_solver_.Iterate(linearize_func_, stats);
-    if (maybe_status_and_failure_reason) {
-      const auto& status_and_failure_reason = maybe_status_and_failure_reason.value();
-
-      SYM_ASSERT(status_and_failure_reason.first != optimization_status_t::INVALID,
-                 "NonlinearSolver::Iterate should never return INVALID");
-      SYM_ASSERT(status_and_failure_reason.first != optimization_status_t::HIT_ITERATION_LIMIT,
-                 "NonlinearSolver::Iterate should never return HIT_ITERATION_LIMIT");
-
-      stats.status = status_and_failure_reason.first;
-      stats.failure_reason = status_and_failure_reason.second.int_value();
-      break;
-    }
-  }
-
-  if (i == num_iterations) {
-    stats.status = optimization_status_t::HIT_ITERATION_LIMIT;
-    stats.failure_reason = {};
-  }
-
-  {
-    SYM_TIME_SCOPE("Optimizer<{}>::CopyValuesAndLinearization", name_);
-    // Save best results
-    values = nonlinear_solver_.GetBestValues();
-
-    if (populate_best_linearization) {
-      // NOTE(aaron): This makes a copy, which doesn't seem ideal.  We could instead put a
-      // Linearization** in the stats, but then we'd have the issue of defining when the pointer
-      // becomes invalid
-      stats.best_linearization = nonlinear_solver_.GetBestLinearization();
-    }
-  }
-
-  if (debug_stats_ && include_jacobians_) {
-    const auto& linearization = nonlinear_solver_.GetBestLinearization();
-    stats.jacobian_sparsity = GetSparseStructure(linearization.jacobian);
-  }
-}
-
-template <typename ScalarType, typename NonlinearSolverType>
 bool Optimizer<ScalarType, NonlinearSolverType>::IsInitialized() const {
   return index_.entries.size() != 0;
 }
@@ -361,22 +306,15 @@ void Optimizer<ScalarType, NonlinearSolverType>::Initialize(const Values<Scalar>
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-const std::string& Optimizer<ScalarType, NonlinearSolverType>::GetName() {
-  return name_;
+void Optimizer<ScalarType, NonlinearSolverType>::MaybeLogStatus(const Stats& stats) const {
+  if (verbose_) {
+    LogStatus<Stats, NonlinearSolverType>(name_, stats);
+  }
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::MaybeLogStatus(const Stats& stats) const {
-  if (verbose_) {
-    if (stats.status == optimization_status_t::FAILED) {
-      spdlog::warn("LM<{}> Optimization finished with status: FAILED, reason: {}", name_,
-                   FailureReason::from_int(stats.failure_reason));
-    } else {
-      spdlog::log(stats.status == optimization_status_t::SUCCESS ? spdlog::level::info
-                                                                 : spdlog::level::warn,
-                  "LM<{}> Optimization finished with status: {}", name_, stats.status);
-    }
-  }
+const std::string& Optimizer<ScalarType, NonlinearSolverType>::GetName() {
+  return name_;
 }
 
 extern template class Optimizer<double>;

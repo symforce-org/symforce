@@ -270,13 +270,6 @@ class Optimizer {
 
  protected:
   /**
-   * Call nonlinear_solver_.Iterate() on the given values (updating in place) until out of
-   * iterations or converged
-   */
-  void IterateToConvergence(Values<Scalar>& values, int num_iterations,
-                            bool populate_best_linearization, Stats& stats);
-
-  /**
    * Build the `linearize_func` functor for the underlying nonlinear solver
    */
   typename NonlinearSolverType::LinearizeFunc BuildLinearizeFunc(bool check_derivatives);
