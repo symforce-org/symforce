@@ -129,19 +129,22 @@ namespace sym {
  *   in the optimizer params.
  */
 template <typename ScalarType,
-          typename _LinearSolverType = sym::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>>
+          typename _LinearSolverType = sym::SparseCholeskySolver<Eigen::SparseMatrix<ScalarType>>,
+          typename _StateType =
+              internal::LevenbergMarquardtState<typename _LinearSolverType::MatrixType>>
 class LevenbergMarquardtSolver {
  public:
   using Scalar = ScalarType;
   using LinearSolverType = _LinearSolverType;
   using MatrixType = typename LinearSolverType::MatrixType;
-  using StateType = internal::LevenbergMarquardtState<MatrixType>;
+  using StateType = _StateType;
   using LinearizationType = Linearization<MatrixType>;
+  using ValuesType = typename StateType::ValuesType;
   using FailureReason = levenberg_marquardt_solver_failure_reason_t;
 
   // Function that evaluates the objective function and produces a quadratic approximation of
   // it by linearizing a least-squares residual.
-  using LinearizeFunc = std::function<void(const Values<Scalar>&, LinearizationType&)>;
+  using LinearizeFunc = std::function<void(const ValuesType&, LinearizationType&)>;
 
   LevenbergMarquardtSolver(const optimizer_params_t& p, const std::string& id, const Scalar epsilon)
       : p_(p), id_(id), epsilon_(epsilon) {}
@@ -150,32 +153,26 @@ class LevenbergMarquardtSolver {
                            const LinearSolverType& linear_solver)
       : p_(p), id_(id), epsilon_(epsilon), linear_solver_(linear_solver) {}
 
+  // Saves the index for the optimized keys, which can be use to retract the state blocks
+  // efficiently.
   void SetIndex(const index_t& index) {
-    index_ = index;
+    state_.SetIndex(index);
   }
 
   // Create an initial state to start a new optimization.
-  void Reset(const Values<Scalar>& values) {
-    // Should have called SetIndex already
-    SYM_ASSERT(!index_.entries.empty());
-
+  void Reset(const ValuesType& values) {
     current_lambda_ = p_.initial_lambda;
     current_nu_ = p_.dynamic_lambda_update_beta;
     iteration_ = -1;
-
     ResetState(values);
   }
 
   // Reset the state values, such as if the cost function changes and linearizations are invalid.
   // Resets the values for optimization, but doesn't reset lambda or the number of iterations.
-  void ResetState(const Values<Scalar>& values) {
+  void ResetState(const ValuesType& values) {
     SYM_TIME_SCOPE("LM<{}>::ResetState", id_);
-    // Should have called SetIndex already
-    SYM_ASSERT(!index_.entries.empty());
-
     have_max_diagonal_ = false;
     have_last_update_ = false;
-
     state_.Reset(values);
   }
 
@@ -198,7 +195,7 @@ class LevenbergMarquardtSolver {
   optional<std::pair<optimization_status_t, FailureReason>> Iterate(
       const LinearizeFunc& func, OptimizationStats<MatrixType>& stats);
 
-  const Values<Scalar>& GetBestValues() const {
+  const ValuesType& GetBestValues() const {
     SYM_ASSERT(state_.BestIsValid());
     return state_.Best().values;
   }
@@ -220,9 +217,6 @@ class LevenbergMarquardtSolver {
   void PopulateIterationStats(optimization_iteration_t& iteration_stats, const StateType& state,
                               Scalar new_error, Scalar new_error_linear, Scalar relative_reduction,
                               Scalar gain_ratio) const;
-
-  void Update(const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
-              Values<Scalar>& updated_values) const;
 
   optimizer_params_t p_;
   std::string id_;
@@ -257,9 +251,6 @@ class LevenbergMarquardtSolver {
   VectorX<Scalar> undamped_diagonal_;
   Eigen::Array<bool, Eigen::Dynamic, 1> zero_diagonal_;
   std::vector<int> zero_diagonal_indices_;
-
-  // Index for the associated values, used for values.Update or Retract
-  index_t index_{};
 };
 
 }  // namespace sym

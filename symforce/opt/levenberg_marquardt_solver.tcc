@@ -19,8 +19,8 @@ namespace sym {
 // Private methods
 // ----------------------------------------------------------------------------
 
-template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
+template <typename ScalarType, typename LinearSolverType, typename StateType>
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::DampHessian(
     MatrixType& hessian_lower, bool& have_max_diagonal, VectorX<Scalar>& max_diagonal,
     const Scalar lambda, VectorX<Scalar>& damping_vector,
     VectorX<Scalar>& undamped_diagonal) const {
@@ -53,8 +53,8 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::DampHessian(
   hessian_lower.diagonal() += damping_vector;
 }
 
-template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagonal(
+template <typename ScalarType, typename LinearSolverType, typename StateType>
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::CheckHessianDiagonal(
     const MatrixType& hessian_lower_damped, const Scalar lambda) {
   zero_diagonal_ = hessian_lower_damped.diagonal().array().abs() < epsilon_;
 
@@ -89,8 +89,8 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::CheckHessianDiagona
   }
 }
 
-template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationStats(
+template <typename ScalarType, typename LinearSolverType, typename StateType>
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::PopulateIterationStats(
     optimization_iteration_t& iteration_stats, const StateType& state, const Scalar new_error,
     const Scalar new_error_linear, const Scalar relative_reduction, const Scalar gain_ratio) const {
   SYM_TIME_SCOPE("LM<{}>: IterationStats", id_);
@@ -114,7 +114,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
 
   if (p_.debug_stats) {
     iteration_stats.update = update_.template cast<double>();
-    iteration_stats.values = state.New().values.template Cast<double>().GetLcmType();
+    iteration_stats.values = state.GetLcmType(state.New());
     const VectorX<Scalar> residual_vec = state.New().GetLinearization().residual;
     iteration_stats.residual = residual_vec.template cast<double>();
     const MatrixX<Scalar> jacobian_vec = JacobianValues(state.New().GetLinearization().jacobian);
@@ -122,30 +122,12 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::PopulateIterationSt
   }
 }
 
-template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Update(
-    const Values<Scalar>& values, const index_t& index, const VectorX<Scalar>& update,
-    Values<Scalar>& updated_values) const {
-  SYM_ASSERT(update.rows() == index.tangent_dim);
-
-  if (updated_values.NumEntries() == 0) {
-    // If the state_ blocks are empty the first time, copy in the full structure
-    updated_values = values;
-  } else {
-    // Otherwise just copy the keys being optimized
-    updated_values.Update(index, values);
-  }
-
-  // Apply the update
-  updated_values.Retract(index, update.data(), epsilon_);
-}
-
 // ----------------------------------------------------------------------------
 // Public methods
 // ----------------------------------------------------------------------------
 
-template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
+template <typename ScalarType, typename LinearSolverType, typename StateType>
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::UpdateParams(
     const optimizer_params_t& p) {
   if (p_.verbose) {
     spdlog::info("LM<{}>: UPDATING OPTIMIZER PARAMS", id_);
@@ -153,9 +135,9 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::UpdateParams(
   p_ = p;
 }
 
-template <typename ScalarType, typename LinearSolverType>
+template <typename ScalarType, typename LinearSolverType, typename StateType>
 optional<std::pair<optimization_status_t, levenberg_marquardt_solver_failure_reason_t>>
-LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
+LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::Iterate(
     const LinearizeFunc& func, OptimizationStats<MatrixType>& stats) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
 
@@ -182,7 +164,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
     iteration_stats.current_lambda = current_lambda_;
 
     if (p_.debug_stats) {
-      iteration_stats.values = state_.Init().values.template Cast<double>().GetLcmType();
+      iteration_stats.values = state_.GetLcmType(state_.Init());
       const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
       iteration_stats.residual = residual_vec.template cast<double>();
       const MatrixX<Scalar> jacobian_vec =
@@ -242,10 +224,13 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
 
   {
     SYM_TIME_SCOPE("LM<{}>: Update", id_);
-    Update(state_.Init().values, index_, update_, state_.New().values);
+    state_.UpdateNewFromInit(update_, epsilon_);
   }
 
-  state_.New().Relinearize(func);
+  {
+    SYM_TIME_SCOPE("LM<{}>: Relinearize", id_);
+    state_.New().Relinearize(func);
+  }
 
   const Scalar new_error = state_.New().Error();
   const Scalar relative_reduction =
@@ -353,8 +338,8 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType>::Iterate(
   return status;
 }
 
-template <typename ScalarType, typename LinearSolverType>
-void LevenbergMarquardtSolver<ScalarType, LinearSolverType>::ComputeCovariance(
+template <typename ScalarType, typename LinearSolverType, typename StateType>
+void LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::ComputeCovariance(
     const MatrixType& hessian_lower, MatrixX<Scalar>& covariance) {
   SYM_TIME_SCOPE("LM<{}>: ComputeCovariance()", id_);
 
