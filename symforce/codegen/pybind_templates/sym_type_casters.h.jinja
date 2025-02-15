@@ -88,8 +88,7 @@ struct sym_type_caster {
     const py::object from_storage =
         py::module_::import("sym").attr(kClassName).attr("from_storage");
     py::object result = from_storage(list);
-    result.inc_ref();
-    return std::move(result);
+    return result.release();
   }
 };
 
