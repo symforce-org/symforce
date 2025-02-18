@@ -2,8 +2,9 @@ name: docs
 
 on:
   push:
-    branches:
-     - 'main'
+    # branches:
+    #  - 'main'
+  workflow_dispatch:
 
 jobs:
   update-docs:
@@ -12,6 +13,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Should include history since the last tag for setuptools_scm to work
+          fetch-depth: 200
+          fetch-tags: true
 
       - name: Install build dependencies
         run: |
@@ -48,6 +53,8 @@ jobs:
           rm build/docs/.buildinfo
 
       - name: Deploy docs
+        # Don't deploy on workflow_dispatch runs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: symforce-org/github-action-push-to-another-repository@10a3e9ec247be83fedd82f7bb7c3ed1f7218528e
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DOCUMENTATION_DEPLOY_KEY }}
