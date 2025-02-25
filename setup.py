@@ -17,7 +17,6 @@ from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
 from setuptools.command.develop import develop
-from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 SOURCE_DIR = Path(__file__).resolve().parent
@@ -197,53 +196,17 @@ class CMakeBuild(build_ext):
         self.copy_file(extension_source_paths[ext.name], str(dest_path))
 
 
-class SymForceEggInfo(egg_info):
-    """
-    Custom Egg info, that optionally rewrites local dependencies (that are stored in the symforce
-    repo) to package dependencies
-    """
+def maybe_rewrite_local_dependencies(dep_list: T.List[str]) -> T.List[str]:
+    if "SYMFORCE_REWRITE_LOCAL_DEPENDENCIES" in os.environ:
 
-    user_options = egg_info.user_options + [
-        (
-            "rewrite-local-dependencies=",
-            None,
-            "Rewrite in-repo Python dependencies from `package @ file:` to `package==version`.  Can"
-            " also be provided as the environment variable SYMFORCE_REWRITE_LOCAL_DEPENDENCIES",
-        )
-    ]
+        def filter_local(s: str) -> str:
+            if "@" in s:
+                s = f"{s.split('@')[0]}=={os.environ['SYMFORCE_REWRITE_LOCAL_DEPENDENCIES']}"
+            return s
 
-    def initialize_options(self) -> None:
-        super().initialize_options()
-        self.rewrite_local_dependencies: T.Optional[str] = None
-
-    def finalize_options(self) -> None:
-        super().finalize_options()
-
-        if "SYMFORCE_REWRITE_LOCAL_DEPENDENCIES" in os.environ:
-            self.rewrite_local_dependencies = os.environ["SYMFORCE_REWRITE_LOCAL_DEPENDENCIES"]
-
-    def run(self) -> None:
-        # Rewrite dependencies from the local `file:` versions to generic pinned package versions.
-        # This is what we want when e.g. building wheels for PyPI, where those local dependencies
-        # are hosted as their own PyPI packages.  We can't just decide whether to do this e.g. based
-        # on whether we're building a wheel, since `pip install .` also builds a wheel to install.
-        if self.rewrite_local_dependencies:
-
-            def filter_local(s: str) -> str:
-                if "@" in s:
-                    s = f"{s.split('@')[0]}=={self.rewrite_local_dependencies}"
-                return s
-
-            self.distribution.install_requires = [  # type: ignore[attr-defined]
-                filter_local(requirement)
-                for requirement in self.distribution.install_requires  # type: ignore[attr-defined]
-            ]
-            self.distribution.extras_require = {  # type: ignore[attr-defined]
-                k: [filter_local(requirement) for requirement in v]
-                for k, v in self.distribution.extras_require.items()  # type: ignore[attr-defined]
-            }
-
-        super().run()
+        return [filter_local(dependency) for dependency in dep_list]
+    else:
+        return dep_list
 
 
 def maybe_find_symengine_wrapper(build_dir: Path, ext_filename: str) -> T.Optional[Path]:
@@ -407,42 +370,45 @@ if __name__ == "__main__":
         cmdclass=dict(
             build_ext=CMakeBuild,
             install=InstallWithExtras,
-            egg_info=SymForceEggInfo,
             develop=PatchDevelop,
         ),
         # Build C++ extension module
         ext_modules=[CMakeExtension("cc_sym"), CMakeExtension("lcmtypes")],
         # Barebones packages needed to run symforce
-        install_requires=[
-            "ruff",
-            "clang-format",
-            "graphviz",
-            "jinja2",
-            "numpy",
-            "scipy",
-            f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
-            "sympy~=1.11.1",
-            f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
-        ],
+        install_requires=maybe_rewrite_local_dependencies(
+            [
+                "ruff",
+                "clang-format",
+                "graphviz",
+                "jinja2",
+                "numpy",
+                "scipy",
+                f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
+                "sympy~=1.11.1",
+                f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
+            ]
+        ),
         setup_requires=setup_requirements,
         extras_require={
-            "docs": docs_requirements,
-            "dev": docs_requirements
-            + [
-                "argh",
-                "coverage",
-                "jinja2~=3.0",
-                "mypy~=1.11.0",
-                "numba",
-                # 6.13 fixes pip >=23.1 support
-                "pip-tools>=6.13",
-                "pybind11-stubgen>=1.0",
-                # 0.7.2 introduces this bug: https://github.com/astral-sh/ruff/pull/15090
-                "ruff==0.7.1",
-                "types-jinja2",
-                "types-requests",
-                "types-setuptools",
-            ],
-            "_setup": setup_requirements,
+            "docs": maybe_rewrite_local_dependencies(docs_requirements),
+            "dev": maybe_rewrite_local_dependencies(
+                docs_requirements
+                + [
+                    "argh",
+                    "coverage",
+                    "jinja2~=3.0",
+                    "mypy~=1.11.0",
+                    "numba",
+                    # 6.13 fixes pip >=23.1 support
+                    "pip-tools>=6.13",
+                    "pybind11-stubgen>=1.0",
+                    # 0.7.2 introduces this bug: https://github.com/astral-sh/ruff/pull/15090
+                    "ruff==0.7.1",
+                    "types-jinja2",
+                    "types-requests",
+                    "types-setuptools",
+                ]
+            ),
+            "_setup": maybe_rewrite_local_dependencies(setup_requirements),
         },
     )
