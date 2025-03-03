@@ -225,7 +225,7 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.2
     # via stack-data
-pybind11-stubgen==2.5.1
+pybind11-stubgen==2.5.3
     # via symforce (setup.py)
 pygments==2.18.0
     # via
