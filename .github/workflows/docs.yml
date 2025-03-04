@@ -5,6 +5,7 @@ on:
     branches:
      - 'main'
      - 'skydio-export-master'
+  workflow_dispatch:
 
 jobs:
   update-docs:
@@ -13,6 +14,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Should include history since the last tag for setuptools_scm to work
+          fetch-depth: 300
+          fetch-tags: true
+
 
       - name: Install build dependencies
         run: |
@@ -22,6 +28,10 @@ jobs:
             doxygen \
             libgmp-dev \
             pandoc
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
 
       - name: Install python dependencies
         run: pip install -r dev_requirements.txt
@@ -49,6 +59,8 @@ jobs:
           rm build/docs/.buildinfo
 
       - name: Deploy docs
+        # Don't deploy on workflow_dispatch runs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: symforce-org/github-action-push-to-another-repository@10a3e9ec247be83fedd82f7bb7c3ed1f7218528e
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DOCUMENTATION_DEPLOY_KEY }}
