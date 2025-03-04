@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - 'main'
+     - 'skydio-export-master'
   workflow_dispatch:
 
 jobs:
@@ -52,7 +53,7 @@ jobs:
         fetch-tags: true
 
     - run: python3 -m pip install setuptools_scm
-    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" >> $GITHUB_ENV
+    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" | tee $GITHUB_ENV
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.22.0
@@ -87,7 +88,7 @@ jobs:
         fetch-tags: true
 
     - run: python3 -m pip install setuptools_scm
-    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" >> $GITHUB_ENV
+    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" | tee $GITHUB_ENV
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.22.0
@@ -96,6 +97,7 @@ jobs:
         CIBW_BUILD_FRONTEND: build
         CIBW_BEFORE_BUILD: yum install -y gmp-devel git
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION
+        CIBW_ENVIRONMENT_PASS_LINUX: SYMFORCE_VERSION
 
     - name: Upload Wheels
       uses: actions/upload-artifact@v4

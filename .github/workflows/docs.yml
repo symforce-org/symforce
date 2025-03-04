@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - 'main'
+     - 'skydio-export-master'
 
 jobs:
   update-docs:
