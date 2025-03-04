@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           # Should include history since the last tag for setuptools_scm to work
-          fetch-depth: 200
+          fetch-depth: 300
           fetch-tags: true
 
       - name: Install build dependencies
@@ -26,6 +26,10 @@ jobs:
             doxygen \
             libgmp-dev \
             pandoc
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
 
       - name: Install python dependencies
         run: pip install -r dev_requirements.txt
