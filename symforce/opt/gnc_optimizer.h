@@ -93,6 +93,8 @@ class GncOptimizer : public BaseOptimizerType {
       // Update the GNC parameter.
       values.template Set<Scalar>(gnc_mu_key_,
                                   values.template At<Scalar>(mu_index) + gnc_params_.mu_step);
+      // Relax damping params after each GNC update.
+      this->nonlinear_solver_.RelaxDampingToInitial();
 
       // Check if we hit the non-convexity threshold.
       if (values.template At<Scalar>(mu_index) >= gnc_params_.mu_max) {

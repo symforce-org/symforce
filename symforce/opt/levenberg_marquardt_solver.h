@@ -167,6 +167,12 @@ class LevenbergMarquardtSolver {
     ResetState(values);
   }
 
+  // Sets the trust radius of the solver to the largest between its initial and current value.
+  void RelaxDampingToInitial() {
+    current_lambda_ = std::min(current_lambda_, static_cast<Scalar>(p_.initial_lambda));
+    current_nu_ = p_.dynamic_lambda_update_beta;
+  }
+
   // Reset the state values, such as if the cost function changes and linearizations are invalid.
   // Resets the values for optimization, but doesn't reset lambda or the number of iterations.
   void ResetState(const ValuesType& values) {
