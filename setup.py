@@ -403,8 +403,7 @@ if __name__ == "__main__":
                     "pip-tools>=6.13",
                     # For https://github.com/sizmailov/pybind11-stubgen/pull/243
                     "pybind11-stubgen>=2.5.3",
-                    # 0.7.2 introduces this bug: https://github.com/astral-sh/ruff/pull/15090
-                    "ruff==0.7.1",
+                    "ruff~=0.9.7",
                     "types-jinja2",
                     "types-requests",
                     "types-setuptools",

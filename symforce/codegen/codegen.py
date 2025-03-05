@@ -207,10 +207,10 @@ class Codegen:
         assert all(k.isidentifier() for k in outputs.keys())
 
         # Symbols in inputs must be unique
-        assert len(input_symbols) == len(
-            input_symbols_list
-        ), "Symbols in inputs must be unique. Duplicate symbols = {}".format(
-            [symbol for symbol in input_symbols_list if input_symbols_list.count(symbol) > 1]
+        assert len(input_symbols) == len(input_symbols_list), (
+            "Symbols in inputs must be unique. Duplicate symbols = {}".format(
+                [symbol for symbol in input_symbols_list if input_symbols_list.count(symbol) > 1]
+            )
         )
 
         if any(key in outputs.keys() for key in inputs.keys()):
@@ -475,9 +475,9 @@ class Codegen:
             skip_directory_nesting: Generate the output file directly into output_dir instead of
                                     adding the usual directory structure inside output_dir
         """
-        assert (
-            self.name is not None
-        ), "Name should be set either at construction or by with_jacobians"
+        assert self.name is not None, (
+            "Name should be set either at construction or by with_jacobians"
+        )
 
         if not self.name.isidentifier():
             raise InvalidNameError(
@@ -652,9 +652,9 @@ class Codegen:
         include_results: bool,
         linearization_mode: T.Optional[LinearizationMode],
     ) -> str:
-        assert (
-            self.name is not None
-        ), "Codegen name must have been provided already to automatically generate a name with derivatives"
+        assert self.name is not None, (
+            "Codegen name must have been provided already to automatically generate a name with derivatives"
+        )
 
         name = self.name
         if linearization_mode == LinearizationMode.FULL_LINEARIZATION:

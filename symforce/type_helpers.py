@@ -83,9 +83,9 @@ def symbolic_inputs(
     if input_types is None:
         input_types = deduce_input_types(func)
     else:
-        assert len(parameters) == len(
-            input_types
-        ), f"Parameters: {parameters}, inputs_types: {input_types}"
+        assert len(parameters) == len(input_types), (
+            f"Parameters: {parameters}, inputs_types: {input_types}"
+        )
 
     # Formulate symbolic arguments to function
     inputs = Values()

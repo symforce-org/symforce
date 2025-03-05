@@ -392,10 +392,10 @@ def get_formatted_list(
                     )
                 )
 
-            assert len(formatted_symbols) == len(
-                set(formatted_symbols)
-            ), "Non-unique keys:\n{}".format(
-                [symbol for symbol in formatted_symbols if formatted_symbols.count(symbol) > 1]
+            assert len(formatted_symbols) == len(set(formatted_symbols)), (
+                "Non-unique keys:\n{}".format(
+                    [symbol for symbol in formatted_symbols if formatted_symbols.count(symbol) > 1]
+                )
             )
         elif issubclass(arg_cls, (list, tuple)):
             # Term is a list, so we loop over the index of the list, i.e.
@@ -416,10 +416,10 @@ def get_formatted_list(
                     )
                 )
 
-            assert len(formatted_symbols) == len(
-                set(formatted_symbols)
-            ), "Non-unique keys:\n{}".format(
-                [symbol for symbol in formatted_symbols if formatted_symbols.count(symbol) > 1]
+            assert len(formatted_symbols) == len(set(formatted_symbols)), (
+                "Non-unique keys:\n{}".format(
+                    [symbol for symbol in formatted_symbols if formatted_symbols.count(symbol) > 1]
+                )
             )
         else:
             if format_as_inputs:

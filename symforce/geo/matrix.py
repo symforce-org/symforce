@@ -94,9 +94,9 @@ class Matrix(Storage):
             # 2D array, shape is known
             if len(array) > 0 and isinstance(array[0], (_T.Sequence, np.ndarray)):
                 # 2D array of scalars
-                assert not isinstance(
-                    array[0][0], Matrix
-                ), "Use Matrix.block_matrix to construct using matrices"
+                assert not isinstance(array[0][0], Matrix), (
+                    "Use Matrix.block_matrix to construct using matrices"
+                )
                 rows, cols = len(array), len(array[0])
                 if cls._is_fixed_size():
                     assert (
@@ -427,16 +427,16 @@ class Matrix(Storage):
             block_rows = mat_row[0].shape[0]
             block_cols = 0
             for mat in mat_row:
-                assert (
-                    mat.shape[0] == block_rows
-                ), "Inconsistent row number accross block: expected {} got {}".format(
-                    block_rows, mat.shape[0]
+                assert mat.shape[0] == block_rows, (
+                    "Inconsistent row number accross block: expected {} got {}".format(
+                        block_rows, mat.shape[0]
+                    )
                 )
                 block_cols += mat.shape[1]
-            assert (
-                block_cols == cols
-            ), "Inconsistent column number accross block: expected {} got {}".format(
-                cols, block_cols
+            assert block_cols == cols, (
+                "Inconsistent column number accross block: expected {} got {}".format(
+                    cols, block_cols
+                )
             )
 
         # Fill the new matrix data vector

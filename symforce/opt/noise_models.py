@@ -125,9 +125,9 @@ class IsotropicNoiseModel(ScalarNoiseModel):
             # User has given the square root information, so we can avoid taking the square root
             self.scalar_sqrt_information = scalar_sqrt_information
         else:
-            assert (
-                scalar_information is not None
-            ), 'Either "scalar_information" or "scalar_sqrt_information" must be provided.'
+            assert scalar_information is not None, (
+                'Either "scalar_information" or "scalar_sqrt_information" must be provided.'
+            )
             self.scalar_sqrt_information = sf.sqrt(scalar_information)
 
     @classmethod
@@ -211,9 +211,9 @@ class DiagonalNoiseModel(NoiseModel):
             # User has given the square root information, so we can avoid taking the square root
             self.sqrt_information_matrix = sf.Matrix.diag(sqrt_information_diag)
         else:
-            assert (
-                information_diag is not None
-            ), 'Either "information_diag" or "sqrt_information_diag" must be provided.'
+            assert information_diag is not None, (
+                'Either "information_diag" or "sqrt_information_diag" must be provided.'
+            )
             self.sqrt_information_matrix = sf.Matrix.diag(information_diag).applyfunc(sf.sqrt)
 
     @classmethod

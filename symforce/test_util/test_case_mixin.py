@@ -204,7 +204,7 @@ class SymforceTestCaseMixin(unittest.TestCase):
                 self.fail(
                     "\n"
                     + "".join(diff)
-                    + f"\n\n{80*'='}\nData did not match for file {path}, see diff above.  Use "
+                    + f"\n\n{80 * '='}\nData did not match for file {path}, see diff above.  Use "
                     "`--update` to write the changes to the working directory and commit if desired"
                 )
 

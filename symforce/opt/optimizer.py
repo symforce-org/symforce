@@ -190,9 +190,9 @@ class Optimizer:
             self.optimized_keys = []
         else:
             self.optimized_keys = list(optimized_keys)
-            assert len(optimized_keys) == len(
-                set(optimized_keys)
-            ), f"Duplicates in optimized keys: {optimized_keys}"
+            assert len(optimized_keys) == len(set(optimized_keys)), (
+                f"Duplicates in optimized keys: {optimized_keys}"
+            )
 
         optimized_keys_set = set(self.optimized_keys)
 
