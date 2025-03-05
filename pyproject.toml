@@ -76,14 +76,24 @@ select = [
   "PLW",    # pylint - warning
   "RUF100", # unused-noqa
   "SLF",    # flake8-self
+  "TC",     # flake8-type-checking
+  "TD",     # flake8-todos
 ]
 
 ignore = [
-  # Leave ignored:
+  # --------------------------------------------------------------------------------
+  # Leave ignored
+  # --------------------------------------------------------------------------------
+
+  # B (flake8-bugbear)
   "B008", # function-call-in-default-argument
+
+  # E (pycodestyle)
   "E402", # Module level import not at top of file
   "E731", # Do not assign a `lambda` expression, use a `def`
   "E741", # Ambiguous variable name: `x`
+
+  # PL (pylint)
   "PLC0415", # import-outside-top-level
   "PLC2701", # Private name import `_x` from external module `y`
   "PLR2004", # magic-value-comparison
@@ -91,7 +101,22 @@ ignore = [
   "PLW1641", # eq-without-hash
   "PLW2901", # redefined-loop-name
 
+  # TC (flake8-type-checking)
+  # SymForce does runtime resolution of annotations, so we disable rules that are designed with no
+  # runtime resolution of annotations in mind.
+  "TC001",  # typing-only-first-party-import
+  "TC002",  # typing-only-third-party-import
+  "TC003",  # typing-only-standard-library-import
+  "TC006",  # runtime-cast-value
+  "TC007",  # unquoted-type-alias
+
+  # TD (flake8-todos)
+  "TD003",  # missing-todo-link
+
+  # --------------------------------------------------------------------------------
   # Maybe enable later
+  # --------------------------------------------------------------------------------
+
   "ARG",    # flake8-unused-arguments
   "B011",   # Do not `assert False`, raise `AssertionError()`
 ]

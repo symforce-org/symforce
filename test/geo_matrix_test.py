@@ -353,7 +353,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
                 def scalar_clamp_norm(x: sf.Scalar, epsilon: sf.Scalar) -> sf.Scalar:
                     return sf.V3(0, 0, x).clamp_norm(2, epsilon)[2, 0]
 
-                # TODO: Also test the derivative
+                # TODO(aaron): Also test the derivative
                 # SymPy is currently incapable of evaluating the derivative here
                 self.assertTrue(
                     epsilon_handling.is_value_with_epsilon_correct(
