@@ -41,7 +41,6 @@ class Matrix(Storage):
         7) Matrix22(1, 2, 3, 4)  # Matrix22 with [1, 2, 3, 4] data (must match fixed length)
 
     References:
-
         https://docs.sympy.org/latest/tutorial/matrices.html
         https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html
         https://en.wikipedia.org/wiki/Vector_space

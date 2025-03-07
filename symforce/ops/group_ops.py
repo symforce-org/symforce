@@ -18,7 +18,6 @@ class GroupOps(StorageOps):
     called the group axioms - closure, associativity, identity and invertibility.
 
     References:
-
         * https://en.wikipedia.org/wiki/Group_(mathematics)
     """
 

@@ -24,7 +24,6 @@ class Quaternion(Group):
     Storage is (x, y, z, w).
 
     References:
-
         https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
     """
 

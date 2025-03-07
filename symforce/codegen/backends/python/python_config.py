@@ -24,7 +24,7 @@ class PythonConfig(CodegenConfig):
     also generate an `__init__.py` file that imports all of them - you can use
     :func:`symforce.codegen.backends.python.generate_module_init` for this.
 
-    See also:
+    See Also:
         :func:`symforce.codegen.backends.python.generate_module_init`
 
     Args:

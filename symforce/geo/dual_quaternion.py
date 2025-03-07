@@ -19,7 +19,6 @@ class DualQuaternion(Group):
     and in applications to 3D computer graphics, robotics and computer vision.
 
     References:
-
         https://en.wikipedia.org/wiki/Dual_quaternion
     """
 

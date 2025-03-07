@@ -25,7 +25,7 @@ def symbolic_eval(func: T.Callable[..., _T]) -> _T:
     Returns:
         The outputs of ``func`` evaluated on the constructed symbolic args
 
-    See also:
+    See Also:
         :func:`symforce.type_helpers.symbolic_inputs`
     """
     return func(**symbolic_inputs(func))
@@ -47,7 +47,7 @@ def lambdify(f: T.Callable, use_numba: bool = False) -> T.Callable:
     Returns:
         A numerical function equivalent to ``f``
 
-    See also:
+    See Also:
         :meth:`Codegen.lambdify <symforce.codegen.codegen.Codegen.lambdify>`
         :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>`
         :class:`codegen.PythonConfig <symforce.codegen.backends.python.python_config.PythonConfig>`
@@ -60,7 +60,7 @@ def numbify(f: T.Callable) -> T.Callable:
     """
     Shorthand for ``lambdify(f, use_numba=True)``
 
-    See also:
+    See Also:
         :func:`lambdify`
     """
     return lambdify(f, use_numba=True)
@@ -85,7 +85,7 @@ def specialize_types(
         Codegen.function(specialize_types(f, {sf.CameraCal: sf.LinearCameraCal}), ...)
         Codegen.function(specialize_types(f, {sf.CameraCal: sf.PolynomialCameraCal}), ...)
 
-    See also:
+    See Also:
         :func:`specialize_args`
     """
 
@@ -119,7 +119,7 @@ def specialize_args(
             specialize_types(f, {"x": sf.LinearCameraCal, "y": sf.PolynomialCameraCal}), ...
         )
 
-    See also:
+    See Also:
         :func:`specialize_types`
     """
 

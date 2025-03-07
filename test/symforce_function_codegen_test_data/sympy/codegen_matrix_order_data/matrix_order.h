@@ -15,8 +15,6 @@ namespace codegen_matrix_order {
  *
  * Symbolic function: matrix_order
  *
- * Args:
- *
  * Outputs:
  *     res: Matrix23
  */

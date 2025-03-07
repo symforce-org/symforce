@@ -85,7 +85,7 @@ class LieGroup(Group):
         spaces around self and X. If tangent_space is False, the jacobian is computed in the storage
         spaces of self and X.
 
-        See also:
+        See Also:
             :func:`symforce.ops.lie_group_ops.LieGroupOps.jacobian`
             :func:`symforce.jacobian_helpers.tangent_jacobians`
 

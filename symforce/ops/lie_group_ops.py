@@ -36,7 +36,6 @@ class LieGroupOps(GroupOps):
     differentiable chart.
 
     References:
-
         * https://en.wikipedia.org/wiki/Manifold
         * https://en.wikipedia.org/wiki/Differentiable_manifold
         * https://en.wikipedia.org/wiki/Lie_group
@@ -160,7 +159,7 @@ class LieGroupOps(GroupOps):
         spaces around self and X. If tangent_space is False, the jacobian is computed in the storage
         spaces of self and X.
 
-        See also:
+        See Also:
             :func:`symforce.jacobian_helpers.tangent_jacobians`
             :func:`symforce.ops.interfaces.lie_group.LieGroup.jacobian`
 

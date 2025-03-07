@@ -25,7 +25,6 @@ class Complex(Group):
     A complex number is also a convenient way to store a two-dimensional rotation.
 
     References:
-
         https://en.wikipedia.org/wiki/Complex_number
     """
 

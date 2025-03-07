@@ -21,6 +21,8 @@ Currently, the body of of count_ops is the body as found in sympy, modified only
 with those comments, formatting, and material changes to the implementation.
 """
 
+# ruff: noqa: D213, D411, D416
+
 from sympy import Add
 from sympy import Basic
 from sympy import Derivative

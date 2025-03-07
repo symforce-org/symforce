@@ -15,8 +15,6 @@ namespace sym {
  *
  * Symbolic function: <lambda>
  *
- * Args:
- *
  * Outputs:
  *     res: Rot2
  */

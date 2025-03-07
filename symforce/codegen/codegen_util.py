@@ -346,6 +346,7 @@ def get_formatted_list(
                 required
         format_as_inputs: True if values defines the input symbols, false if values defines output
                           expressions.
+
     Returns:
         flattened_formatted_symbolic_values: nested list of formatted scalar symbols
         flattened_original_values: nested list of original scalar values
