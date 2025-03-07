@@ -5,7 +5,7 @@
 
 # NOTE(aaron): This is the minimum version for policy range support, not sure if we need newer;
 # certainly no newer than 3.15 required.  This will use NEW policies up to CMake 3.25; this should
-# be the maximum tested CMake version, matching dev_requirements.txt
+# be the maximum tested CMake version, matching requirements_dev.txt
 cmake_minimum_required(VERSION 3.19...3.25)
 
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.27)
@@ -237,23 +237,35 @@ else()
 
   add_custom_target(symforce_eigen_lcm_py ALL DEPENDS eigen_lcm_py)
 
+  # Get SymForce version
+  execute_process(
+    COMMAND ${SYMFORCE_PYTHON} -c "from _version import version; print(version, end='')"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/symforce
+    RESULT_VARIABLE STATUS
+    OUTPUT_VARIABLE SYMFORCE_VERSION
+    ERROR_VARIABLE SYMFORCE_VERSION_STDERR
+  )
+  if(STATUS AND NOT STATUS EQUAL 0)
+    message(FATAL_ERROR
+      "Failed getting symforce version with exit code ${STATUS} and output ${SYMFORCE_VERSION}, stderr ${SYMFORCE_VERSION_STDERR}"
+    )
+  endif()
+
   file(WRITE
-    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/pyproject.toml
+    ${CMAKE_CURRENT_BINARY_DIR}/lcmtypes/python2.7/setup.py
     "
-[build-system]
-requires = ['setuptools', 'setuptools-scm>=8']
-build-backend = 'setuptools.build_meta'
-
-[project]
-name = 'lcmtypes'
-description='lcmtype python bindings (installed by SymForce)'
-authors = [{ name = 'Skydio, Inc.', email = 'hayk@skydio.com' }]
-license = { text = 'Apache 2.0' }
-requires-python = '>=3.5'
-dynamic = ['version']
-
-[tool.setuptools_scm]
-root = '../../..'
+from setuptools import setup, find_packages
+setup(
+  name='lcmtypes',
+  version='${SYMFORCE_VERSION}',
+  description='lcmtype python bindings (installed by SymForce)',
+  long_description='lcmtype python bindings (installed by SymForce)',
+  author='Skydio, Inc',
+  author_email='hayk@skydio.com',
+  license='Apache 2.0',
+  packages=find_packages(),
+  zip_safe=False,
+)
     "
   )
 endif()
@@ -404,7 +416,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
       COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
                   --path_to_check ${PROJECT_SOURCE_DIR}/third_party/${project_name}
                   --stamp_file ${git_stampfile}
-                  --cmake_stampdir=${cmake_stampdir}
+                  --cmake_stampdir="${cmake_stampdir}"
       )
 
     add_dependencies(${project_name} ${git_check_rulename})
