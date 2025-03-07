@@ -121,18 +121,11 @@ jobs:
               libgoogle-glog-dev \
               libeigen3-dev
 
-      # NOTE(aaron): Some packages do not have a version that supports py3.8..py3.12
-      - name: Fix py3.12 versions
-        if: ${{ matrix.python == '3.12' }}
-        run: |
-          sed -i 's|numba==0.58.1|numba~=0.59.0|g' dev_requirements.txt
-          sed -i 's|llvmlite==0.41.1|llvmlite~=0.42.0|g' dev_requirements.txt
-          sed -i 's|numpy==1.24.4|numpy~=1.26.0|g' dev_requirements.txt
-          sed -i 's|scipy==1.10.1|scipy~=1.12.0|g' dev_requirements.txt
-          sed -i 's|pandas==2.0.3|pandas~=2.2.0|g' dev_requirements.txt
-
       - name: Install python dependencies
-        run: pip install -r dev_requirements.txt
+        run: |
+          PY_MINOR_VERSION=$(python${{ matrix.python }} -c "import sys; print(sys.version_info.minor)")
+          python${{ matrix.python }} -m pip install pip==24.0 setuptools==69.5.1
+          python${{ matrix.python }} -m pip install -r requirements_dev_py3${PY_MINOR_VERSION}.txt
 
       - name: Run cmake build
         run: |
@@ -144,17 +137,11 @@ jobs:
             -D SYMFORCE_BUILD_BENCHMARKS=ON
           cmake --build build -j $(nproc)
 
-      # - lcmtypes need to be available for tests
-      # - Exact contents of dev_requirements.txt depend on python version. Need to update file to
-      # match current python version to avoid failure of corresponding gen test. symforce needs
-      # to be on the PYTHONPATH to run gen test in this manner.
+      # lcmtypes and symforce need to be available for tests
       - name: Run tests
         run: |
           pip install build/lcmtypes/python2.7
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          python${{ matrix.python }} test/symforce_requirements_test.py --update
-          echo "Modifications made to requirements:"
-          git diff
           EXIT_CODE=0
           ctest --test-dir build -j $(nproc) || EXIT_CODE=$?
           if [ $EXIT_CODE -ne 0 ]; then
