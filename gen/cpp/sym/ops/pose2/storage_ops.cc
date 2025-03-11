@@ -23,7 +23,8 @@ void StorageOps<Pose2<ScalarType>>::ToStorage(const Pose2<ScalarType>& a, Scalar
 template <typename ScalarType>
 Pose2<ScalarType> StorageOps<Pose2<ScalarType>>::FromStorage(const ScalarType* data) {
   assert(data != nullptr);
-  return Pose2<ScalarType>(Eigen::Map<const typename Pose2<ScalarType>::DataVec>(data));
+  return Pose2<ScalarType>(Eigen::Map<const typename Pose2<ScalarType>::DataVec>(data),
+                           /* normalize */ false);
 }
 
 }  // namespace sym

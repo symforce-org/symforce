@@ -61,6 +61,10 @@ class {{ cls.__name__ }} {
   explicit {{ cls.__name__ }}(const DataVec& data, const bool normalize = true)
   {% if cls in (sf.Rot2, sf.Rot3, sf.Unit3) %}
       : data_(normalize ? data.normalized() : data) {}
+  {% elif cls == sf.Pose3 %}
+      : data_(data) { if (normalize) { data_.template head<4>() = data_.template head<4>().normalized();} }
+  {% elif cls == sf.Pose2 %}
+      : data_(data) { if (normalize) { data_.template head<2>() = data_.template head<2>().normalized();} }
   {% else %}
       : data_(data) { (void)normalize; }
   {% endif %}

@@ -64,7 +64,9 @@ class Pose2 {
    *     vector may be faster, e.g. with `FromStorage`.
    */
   explicit Pose2(const DataVec& data, const bool normalize = true) : data_(data) {
-    (void)normalize;
+    if (normalize) {
+      data_.template head<2>() = data_.template head<2>().normalized();
+    }
   }
 
   // Default construct to identity
