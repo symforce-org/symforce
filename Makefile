@@ -27,16 +27,17 @@ FIND_CPP_FILES_TO_FORMAT=find . \
 
 # Format using ruff and clang-format
 RUFF_FORMAT_CMD=ruff format .
-RUFF_ISORT_CMD=ruff check . --select=I
 format:
+	ruff check . --fixable=I,D --fix-only
 	$(RUFF_FORMAT_CMD)
-	$(RUFF_ISORT_CMD) --fix
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) -i
 
 # Check formatting using ruff and clang-format - print diff, do not modify files
+# NOTE(aaron): This doesn't check docstring rules with ruff, I'm not sure how to filter to docstring
+# rules but keep the exclusions from our ruff config
 check_format:
+	ruff check . --select=I --diff
 	$(RUFF_FORMAT_CMD) --check --diff
-	$(RUFF_ISORT_CMD) --diff
 	$(FIND_CPP_FILES_TO_FORMAT) | xargs $(CPP_FORMAT) --dry-run -Werror
 
 # Check type hints using mypy
