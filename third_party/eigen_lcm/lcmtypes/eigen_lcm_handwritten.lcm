@@ -3,9 +3,17 @@
 
 package eigen_lcm;
 
+struct Matrix24d {
+  double data[8];
+};
+
 struct Matrix34d {
   double data[12];
-}
+};
+
+struct Matrix54d {
+  double data[20];
+};
 
 struct Matrix43f {
   float data[12];
