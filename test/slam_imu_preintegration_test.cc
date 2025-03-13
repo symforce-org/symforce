@@ -9,6 +9,7 @@
 #include <thread>
 
 #include <Eigen/Core>
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include <sym/factors/internal/imu_manifold_preintegration_update.h>
@@ -473,4 +474,53 @@ TEST_CASE("Test RollForwardState", "[slam]") {
          sym::kDefaultEpsilond, &residual);
 
   CHECK(residual.norm() < 1e-10);
+}
+
+TEMPLATE_TEST_CASE("Test StorageOps", "[slam]", float, double) {
+  using Scalar = TestType;
+
+  std::mt19937 gen{42};
+  const auto accel_bias = sym::Random<sym::Vector3<Scalar>>(gen);
+  const auto gyro_bias = sym::Random<sym::Vector3<Scalar>>(gen);
+  sym::PreintegratedImuMeasurements<Scalar> pim(accel_bias, gyro_bias);
+  const auto Dt = sym::Random<Scalar>(gen);
+  const auto DR = sym::Random<sym::Rot3<Scalar>>(gen);
+  const auto Dv = sym::Random<sym::Vector3<Scalar>>(gen);
+  const auto Dp = sym::Random<sym::Vector3<Scalar>>(gen);
+  pim.delta = typename sym::PreintegratedImuMeasurements<Scalar>::Delta{Dt, DR, Dv, Dp};
+  pim.DR_D_gyro_bias = sym::Random<sym::Matrix33<Scalar>>(gen);
+  pim.Dv_D_accel_bias = sym::Random<sym::Matrix33<Scalar>>(gen);
+  pim.Dv_D_gyro_bias = sym::Random<sym::Matrix33<Scalar>>(gen);
+  pim.Dp_D_gyro_bias = sym::Random<sym::Matrix33<Scalar>>(gen);
+  pim.Dp_D_accel_bias = sym::Random<sym::Matrix33<Scalar>>(gen);
+
+  {
+    static_assert(sym::PreintegratedImuMeasurements<Scalar>::StorageDim() ==
+                  sym::StorageOps<sym::PreintegratedImuMeasurements<Scalar>>::StorageDim());
+  }
+
+  {
+    std::array<Scalar, sym::PreintegratedImuMeasurements<Scalar>::StorageDim()> storage;
+    pim.ToStorage(storage.data());
+    const auto pim2 = sym::PreintegratedImuMeasurements<Scalar>::FromStorage(storage.data());
+
+    CHECK(pim2.GetLcmType() == pim.GetLcmType());
+  }
+
+  {
+    std::array<Scalar, sym::PreintegratedImuMeasurements<Scalar>::StorageDim()> storage;
+    sym::StorageOps<sym::PreintegratedImuMeasurements<Scalar>>::ToStorage(pim, storage.data());
+    const auto pim2 =
+        sym::StorageOps<sym::PreintegratedImuMeasurements<Scalar>>::FromStorage(storage.data());
+
+    CHECK(pim2.GetLcmType() == pim.GetLcmType());
+  }
+
+  {
+    sym::Values<Scalar> v;
+    v.Set('p', pim);
+
+    const auto pim2 = v.template At<sym::PreintegratedImuMeasurements<Scalar>>('p');
+    CHECK(pim2.GetLcmType() == pim.GetLcmType());
+  }
 }

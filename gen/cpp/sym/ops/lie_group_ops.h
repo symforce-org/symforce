@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <limits>
-
 #include <Eigen/Core>
 
 #include <sym/ops/storage_ops.h>
@@ -17,21 +15,26 @@ namespace sym {
 
 /**
  * C++ LieGroupOps concept, specialized per type.
+ *
+ * Required methods are shown below.
+ *
  * See `symforce.ops.lie_group_ops` for details.
  */
 template <typename T>
 struct LieGroupOps {
-  using Scalar = typename T::Scalar;
+  // using Scalar = typename T::Scalar;
 
-  static constexpr int32_t TangentDim();
-  using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
+  // static constexpr int32_t TangentDim();
+  // using TangentVec = Eigen::Matrix<Scalar, TangentDim(), 1>;
 
-  static T FromTangent(const TangentVec& vec, const Scalar epsilon);
-  static TangentVec ToTangent(const T& a, const Scalar epsilon);
-  static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon);
-  static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
-  static T Interpolate(const T& a, const T& b, const Scalar alpha, const Scalar epsilon);
-  static bool IsClose(const T& a, const T& b, const Scalar epsilon, const Scalar tol);
+  // static T FromTangent(const TangentVec& vec, const Scalar epsilon);
+  // static TangentVec ToTangent(const T& a, const Scalar epsilon);
+  // static T Retract(const T& a, const TangentVec& vec, const Scalar epsilon);
+  // static TangentVec LocalCoordinates(const T& a, const T& b, const Scalar epsilon);
+  // static T Interpolate(const T& a, const T& b, const Scalar alpha, const Scalar epsilon);
+
+  // Can be implemented by inheriting from LieGroupOpsBase<T, Scalar>
+  // static bool IsClose(const T& a, const T& b, const Scalar epsilon, const Scalar tol);
 };
 
 namespace internal {

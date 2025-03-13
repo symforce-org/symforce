@@ -18,14 +18,17 @@ enum type_t : int32_t {
   {% for cls in sf.GEO_TYPES %}
   {{ python_util.camelcase_to_screaming_snakecase(cls.__name__) }} = {{ k.value }},
   {% set k.value = k.value + 1 %}
-  {% if k.value == 6 %}
-    {# Skip 6, used for DATABUFFER #}
+  {% if k.value == 6 or k.value == 8 %}
+    {# Skip 6, used for DATABUFFER, and 8, used for PREINTEGRATED_IMU_MEASUREMENTS #}
     {% set k.value = k.value + 1 %}
   {% endif %}
   {% endfor %}
 
   // DataBuffer
   DATABUFFER = 6,
+
+  // Preintegrated IMU measurements
+  PREINTEGRATED_IMU_MEASUREMENTS = 8,
 
   // Vector types, dynamic and fixed
   VECTORX = 10,

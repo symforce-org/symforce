@@ -155,7 +155,15 @@ index_t Values<Scalar>::CreateIndex(const std::vector<Key>& keys) const {
     const auto& entry = it->second;
     index.entries.push_back(entry);
     index.storage_dim += entry.storage_dim;
-    index.tangent_dim += entry.tangent_dim;
+
+    // If the tangent_dim of any of the keys is invalid, the tangent_dim of the index is invalid
+    if (index.tangent_dim >= 0) {
+      if (entry.tangent_dim >= 0) {
+        index.tangent_dim += entry.tangent_dim;
+      } else {
+        index.tangent_dim = -1;
+      }
+    }
   }
   return index;
 }
@@ -240,6 +248,11 @@ BY_TYPE_HELPER(RetractByType, RetractHelper, MatrixRetractHelper);
 
 template <typename Scalar>
 void Values<Scalar>::Retract(const index_t& index, const Scalar* delta, const Scalar epsilon) {
+  SYM_ASSERT_GE(index.tangent_dim, 0,
+                "index has tangent_dim {} < 0, indicating it contains a key which does not "
+                "implement LieGroupOps",
+                index.tangent_dim);
+
   size_t tangent_inx = 0;
   for (const index_entry_t& entry : index.entries) {
     RetractByType<Scalar>(entry.type, /* tangent_data */ delta + tangent_inx, epsilon,
@@ -276,6 +289,11 @@ BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper, MatrixLocalCoordi
 template <typename Scalar>
 VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, const index_t& index,
                                                  const Scalar epsilon) {
+  SYM_ASSERT_GE(index.tangent_dim, 0,
+                "index has tangent_dim {} < 0, indicating it contains a key which does not "
+                "implement LieGroupOps",
+                index.tangent_dim);
+
   VectorX<Scalar> tangent_vec(index.tangent_dim);
   size_t tangent_inx = 0;
 

@@ -12,18 +12,22 @@ namespace sym {
 
 /**
  * C++ StorageOps concept, specialized per type.
+ *
+ * Required methods are shown below.
+ *
  * See `symforce.ops.storage_ops` for details.
  */
 template <typename T>
 struct StorageOps {
-  using Scalar = typename T::Scalar;
-  static constexpr int32_t StorageDim();
-  static void ToStorage(const T& a, Scalar* out);
-  static T FromStorage(const Scalar* data);
-  static constexpr type_t TypeEnum();
+  // using Scalar = typename T::Scalar;
+  // static constexpr int32_t StorageDim();
+  // static void ToStorage(const T& a, Scalar* out);
+  // static T FromStorage(const Scalar* data);
+  // static constexpr type_t TypeEnum();
 
-  template <typename Generator>
-  static T Random(Generator& gen);
+  // Optional:
+  // template <typename Generator>
+  // static T Random(Generator& gen);
 };
 
 template <typename T, typename Generator>

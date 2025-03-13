@@ -12,25 +12,28 @@ namespace sym {
 
 /**
  * C++ GroupOps concept, specialized per type.
+ *
+ * Required methods are shown below.
+ *
  * See `symforce.ops.group_ops` for details.
  */
 template <typename T>
 struct GroupOps {
-  static T Identity();
-  static T Inverse(const T& a);
-  static T Compose(const T& a, const T& b);
-  static T Between(const T& a, const T& b);
+  // static T Identity();
+  // static T Inverse(const T& a);
+  // static T Compose(const T& a, const T& b);
+  // static T Between(const T& a, const T& b);
 
-  using SelfJacobian =
-      Eigen::Matrix<typename T::Scalar, LieGroupOps<T>::TangentDim(), LieGroupOps<T>::TangentDim()>;
+  // using SelfJacobian = Eigen::Matrix<typename T::Scalar, LieGroupOps<T>::TangentDim(),
+  //                                    LieGroupOps<T>::TangentDim()>;
 
-  static T InverseWithJacobian(const T& a, SelfJacobian* const res_D_a);
+  // static T InverseWithJacobian(const T& a, SelfJacobian* const res_D_a);
 
-  static T ComposeWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a,
-                                SelfJacobian* const res_D_b);
+  // static T ComposeWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a,
+  //                               SelfJacobian* const res_D_b);
 
-  static T BetweenWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a,
-                                SelfJacobian* const res_D_b);
+  // static T BetweenWithJacobians(const T& a, const T& b, SelfJacobian* const res_D_a,
+  //                               SelfJacobian* const res_D_b);
 };
 
 }  // namespace sym

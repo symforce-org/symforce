@@ -19,8 +19,9 @@ namespace sym {
  * Struct of Preintegrated IMU Measurements (not including the covariance of change in
  * orientation, velocity, and position).
  */
-template <typename Scalar>
+template <typename ScalarType>
 struct PreintegratedImuMeasurements {
+  using Scalar = ScalarType;
   using Rot3 = sym::Rot3<Scalar>;
   using Vector3 = sym::Vector3<Scalar>;
   using Matrix33 = sym::Matrix33<Scalar>;
@@ -70,6 +71,17 @@ struct PreintegratedImuMeasurements {
   // Converts this to a LCM type
   imu_integrated_measurement_t GetLcmType() const;
 
+  // --------------------------------------------------------------------------
+  // StorageOps concept
+  // --------------------------------------------------------------------------
+
+  static constexpr int32_t StorageDim() {
+    return StorageOps<PreintegratedImuMeasurements>::StorageDim();
+  }
+
+  void ToStorage(Scalar* const vec) const;
+  static PreintegratedImuMeasurements FromStorage(const Scalar* vec);
+
   // The original accelerometer bias used during preintegration
   Vector3 accel_bias;
 
@@ -90,10 +102,31 @@ struct PreintegratedImuMeasurements {
   Matrix33 Dp_D_gyro_bias;
 };
 
+template <typename ScalarType>
+struct StorageOps<PreintegratedImuMeasurements<ScalarType>> {
+  using T = PreintegratedImuMeasurements<ScalarType>;
+  using Scalar = ScalarType;
+
+  static constexpr int32_t StorageDim() {
+    const auto delta_storage_dim = 1 + 4 + 3 + 3;
+    return 3 + 3 + delta_storage_dim + 3 * 3 * 5;
+  }
+
+  static void ToStorage(const T& a, ScalarType* out);
+  static T FromStorage(const ScalarType* data);
+
+  static constexpr type_t TypeEnum() {
+    return type_t::PREINTEGRATED_IMU_MEASUREMENTS;
+  }
+};
+
 using PreintegratedImuMeasurementsd = PreintegratedImuMeasurements<double>;
 using PreintegratedImuMeasurementsf = PreintegratedImuMeasurements<float>;
 
 }  // namespace sym
 
+// Explicit instantiation
 extern template struct sym::PreintegratedImuMeasurements<double>;
 extern template struct sym::PreintegratedImuMeasurements<float>;
+extern template struct sym::StorageOps<sym::PreintegratedImuMeasurements<double>>;
+extern template struct sym::StorageOps<sym::PreintegratedImuMeasurements<float>>;

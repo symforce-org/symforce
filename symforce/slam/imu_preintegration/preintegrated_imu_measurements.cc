@@ -86,7 +86,93 @@ imu_integrated_measurement_t PreintegratedImuMeasurements<Scalar>::GetLcmType() 
   return msg;
 }
 
+// --------------------------------------------------------------------------
+// StorageOps concept
+// --------------------------------------------------------------------------
+
+template <typename Scalar>
+void PreintegratedImuMeasurements<Scalar>::ToStorage(Scalar* const vec) const {
+  StorageOps<PreintegratedImuMeasurements>::ToStorage(*this, vec);
+}
+
+template <typename Scalar>
+PreintegratedImuMeasurements<Scalar> PreintegratedImuMeasurements<Scalar>::FromStorage(
+    const Scalar* vec) {
+  return StorageOps<PreintegratedImuMeasurements>::FromStorage(vec);
+}
+
+template <typename ScalarType>
+void StorageOps<PreintegratedImuMeasurements<ScalarType>>::ToStorage(const T& a, ScalarType* out) {
+  int idx = 0;
+
+  // Store biases
+  StorageOps<Vector3<ScalarType>>::ToStorage(a.accel_bias, out + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+  StorageOps<Vector3<ScalarType>>::ToStorage(a.gyro_bias, out + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+
+  // Store delta
+  out[idx++] = a.delta.Dt;
+  StorageOps<Rot3<ScalarType>>::ToStorage(a.delta.DR, out + idx);
+  idx += StorageOps<Rot3<ScalarType>>::StorageDim();
+  StorageOps<Vector3<ScalarType>>::ToStorage(a.delta.Dv, out + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+  StorageOps<Vector3<ScalarType>>::ToStorage(a.delta.Dp, out + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+
+  // Store derivatives
+  StorageOps<Matrix33<ScalarType>>::ToStorage(a.DR_D_gyro_bias, out + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  StorageOps<Matrix33<ScalarType>>::ToStorage(a.Dv_D_accel_bias, out + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  StorageOps<Matrix33<ScalarType>>::ToStorage(a.Dv_D_gyro_bias, out + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  StorageOps<Matrix33<ScalarType>>::ToStorage(a.Dp_D_accel_bias, out + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  StorageOps<Matrix33<ScalarType>>::ToStorage(a.Dp_D_gyro_bias, out + idx);
+}
+
+template <typename ScalarType>
+typename StorageOps<PreintegratedImuMeasurements<ScalarType>>::T
+StorageOps<PreintegratedImuMeasurements<ScalarType>>::FromStorage(const ScalarType* data) {
+  int idx = 0;
+
+  // Load biases
+  const Vector3<ScalarType> accel_bias = StorageOps<Vector3<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+  const Vector3<ScalarType> gyro_bias = StorageOps<Vector3<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+
+  // Create result with biases
+  T result(accel_bias, gyro_bias);
+
+  // Load delta
+  result.delta.Dt = data[idx++];
+  result.delta.DR = StorageOps<Rot3<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Rot3<ScalarType>>::StorageDim();
+  result.delta.Dv = StorageOps<Vector3<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+  result.delta.Dp = StorageOps<Vector3<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Vector3<ScalarType>>::StorageDim();
+
+  // Load derivatives
+  result.DR_D_gyro_bias = StorageOps<Matrix33<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  result.Dv_D_accel_bias = StorageOps<Matrix33<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  result.Dv_D_gyro_bias = StorageOps<Matrix33<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  result.Dp_D_accel_bias = StorageOps<Matrix33<ScalarType>>::FromStorage(data + idx);
+  idx += StorageOps<Matrix33<ScalarType>>::StorageDim();
+  result.Dp_D_gyro_bias = StorageOps<Matrix33<ScalarType>>::FromStorage(data + idx);
+
+  return result;
+}
+
 }  // namespace sym
 
+// Explicit instantiation
 template struct sym::PreintegratedImuMeasurements<double>;
 template struct sym::PreintegratedImuMeasurements<float>;
+template struct sym::StorageOps<sym::PreintegratedImuMeasurements<double>>;
+template struct sym::StorageOps<sym::PreintegratedImuMeasurements<float>>;

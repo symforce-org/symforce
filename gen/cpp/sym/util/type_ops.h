@@ -137,6 +137,7 @@ inline bool IsEigenType(const type_t type) {
     case type_t::SPHERICAL_CAMERA_CAL:
     case type_t::ORTHOGRAPHIC_CAMERA_CAL:
     case type_t::DATABUFFER:
+    case type_t::PREINTEGRATED_IMU_MEASUREMENTS:
       return false;
     case type_t::INVALID:
       SYM_ASSERT(false, "Invalid type");

@@ -25,6 +25,9 @@ enum type_t : int32_t {
   // DataBuffer
   DATABUFFER = 6,
 
+  // Preintegrated IMU measurements
+  PREINTEGRATED_IMU_MEASUREMENTS = 8,
+
   // Vector types, dynamic and fixed
   VECTORX = 10,
   VECTOR1 = 11,
