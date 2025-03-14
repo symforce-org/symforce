@@ -1,0 +1,25 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2025, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+#pragma once
+
+#include <cuda_runtime.h>
+
+namespace caspar {
+{% for nodetype in caslib.exposed_types%}
+
+cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const float* stacked_data,
+                                                    float* cas_data,
+                                                    const unsigned int cas_stride,
+                                                    const unsigned int cas_offset,
+                                                    const unsigned int num_objects);
+
+cudaError_t {{nodetype.__name__}}_caspar_to_stacked(const float* cas_data,
+                                                    float* stacked_data,
+                                                    const unsigned int cas_stride,
+                                                    const unsigned int cas_offset,
+                                                    const unsigned int num_objects);
+{% endfor %}
+
+}  // namespace caspar

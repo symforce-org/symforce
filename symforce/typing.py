@@ -7,19 +7,27 @@
 Common type definitions.
 """
 
-# ruff: noqa: F403, F405, A005
+# ruff: noqa: F403, F405, A005, F401
 
 import abc
 import dataclasses
 import os
+import sys
 
 # Expose all types.
 from typing import *
 
+if sys.version_info < (3, 9):
+    from typing_extensions import Annotated
+
+if not TYPE_CHECKING and sys.version_info < (3, 9):
+    from typing_extensions import get_type_hints
+
+
 # This is kind of a heavy/unnecessary dependency,here so only import when type checking so we can
 # resolve the annotation below
 if TYPE_CHECKING:
-    import numpy as np  # noqa: F401
+    import numpy as np
 
 # TODO(hayk,aaron): Either make this a union of "Scalar types", or different typevars for numeric
 # and symbolic scalars or something
@@ -37,6 +45,20 @@ Openable = Union[str, os.PathLike]
 
 # Represents any Group element object
 Element = Any
+
+# Alias for object accepted by StorageOps.
+Storable = Any
+# Alias for object accepted by GroupOps.
+GroupElement = Any
+# Alias for object accepted by LieGroupOps.
+LieGroupElement = Any
+
+# Alias for object or type accepted by StorageOps.
+StorableOrType = Any
+# Alias for object or type accepted by GroupOps.
+GroupElementOrType = Any
+# Alias for object or type accepted by LieGroupOps.
+LieGroupElementOrType = Any
 
 # Represents any Group element type or object
 ElementOrType = Union[Element, Type]

@@ -1,0 +1,22 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2025, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+#pragma once
+
+#include <cuda_runtime.h>
+
+#include "shared_indices.h"
+
+namespace caspar {
+
+void {{kernel.name}} (
+    {% for desc in kernel.accessors %}
+    {% for name, typ in desc.kernel_sig.items() %}
+    {{ typ }} {{ name }},
+    {% endfor %}
+    {% endfor %}
+    size_t problem_size
+);
+
+}  // namespace caspar
