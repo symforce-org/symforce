@@ -94,8 +94,18 @@ struct MaybeTangentDim {
   static constexpr int32_t value = -1;
 };
 
+// Pre-C++17 void_t implementation
+// See https://en.cppreference.com/w/cpp/types/void_t
+template <typename... Ts>
+struct make_void {
+  typedef void type;
+};
+
+template <typename... Ts>
+using void_t = typename make_void<Ts...>::type;
+
 template <typename T>
-struct MaybeTangentDim<T, std::void_t<decltype(LieGroupOps<T>::TangentDim())>> {
+struct MaybeTangentDim<T, void_t<decltype(LieGroupOps<T>::TangentDim())>> {
   static constexpr int32_t value = LieGroupOps<T>::TangentDim();
 };
 }  // namespace internal
