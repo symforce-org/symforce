@@ -11,6 +11,8 @@ AllowShortLoopsOnASingleLine: false
 
 DerivePointerAlignment: false
 
+LineEnding:      LF
+
 ---
 Language:        Cpp
 

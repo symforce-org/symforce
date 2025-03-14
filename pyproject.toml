@@ -58,6 +58,9 @@ line-length = 100
 exclude = ["third_party", "build", ".eggs", "lcmtypes", "*.pyi"]
 extend-include = ["*.ipynb"]
 
+[tool.ruff.format]
+line-ending = "lf"
+
 [tool.ruff.lint]
 preview = true
 typing-modules = ["symforce.typing"]
