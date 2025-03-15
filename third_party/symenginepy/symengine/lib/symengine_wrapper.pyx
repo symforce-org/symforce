@@ -3271,9 +3271,17 @@ cdef class DenseMatrixBase(MatrixBase):
         if v is None and col is not None:
             self.thisptr = new symengine.DenseMatrix(row, col)
             return
+
+        # at this point, we have 1 or 3 arguments
+
         if col is None:
             v = row
             row = 0
+
+        # at this point:
+        # 1 argument - v is a sequence, row is 0, col is None
+        # 3 arguments - v is a sequence, row is not None, col is not None
+
         cdef symengine.vec_basic v_
         cdef DenseMatrixBase A
         cdef Basic e_
@@ -3302,12 +3310,17 @@ cdef class DenseMatrixBase(MatrixBase):
                 v_.push_back(e_.thisptr)
                 if col is None:
                     row = row + 1
+
+        # at this point, v is a sequence, row is number of rows, col may be None
+
         if (row == 0):
+            if col is None:
+                col = 0
             if (v_.size() != 0):
-                self.thisptr = new symengine.DenseMatrix(0, 0, v_)
+                self.thisptr = new symengine.DenseMatrix(row, col, v_)
                 raise ValueError("sizes don't match.")
             else:
-                self.thisptr = new symengine.DenseMatrix(0, 0, v_)
+                self.thisptr = new symengine.DenseMatrix(row, col, v_)
         else:
             self.thisptr = new symengine.DenseMatrix(row, v_.size() / row, v_)
 
@@ -3372,6 +3385,8 @@ cdef class DenseMatrixBase(MatrixBase):
                 return []
             return [self.get(i // self.ncols(), i % self.ncols()) for i in range(*item.indices(len(self)))]
         elif isinstance(item, int):
+            if self.ncols() == 0:
+                raise IndexError
             return self.get(item // self.ncols(), item % self.ncols())
         elif isinstance(item, tuple) and len(item) == 2:
             if is_sequence(item[0]) or is_sequence(item[1]):
@@ -3410,7 +3425,12 @@ cdef class DenseMatrixBase(MatrixBase):
                     raise IndexError
                 return self._submatrix(*s)
         elif is_sequence(item):
-            return [self.get(ind // self.ncols(), ind % self.ncols()) for ind in item]
+            result = []
+            for ind in item:
+                if self.ncols() == 0:
+                    raise IndexError
+                result.append(self.get(ind // self.ncols(), ind % self.ncols()))
+            return result
         else:
             raise NotImplementedError
 
@@ -4961,7 +4981,7 @@ cdef class LambdaDouble(_Lambdify):
         c_inp = np.ascontiguousarray(inp.ravel(order=self.order), dtype=self.numpy_dtype)
         c_out = out
         for idx in range(nbroadcast):
-            self.lambda_double[0].call(&c_out[idx*self.tot_out_size], &c_inp[idx*self.args_size]) 
+            self.lambda_double[0].call(&c_out[idx*self.tot_out_size], &c_inp[idx*self.args_size])
 
     cpdef as_scipy_low_level_callable(self):
         from ctypes import c_double, c_void_p, c_int, cast, POINTER, CFUNCTYPE
@@ -5207,7 +5227,7 @@ def Lambdify(args, *exprs, cppbool real=True, backend=None, order='C',
                     raise ValueError("Long double not supported on this platform")
             else:
                 raise ValueError("Unknown numpy dtype.")
-                
+
             if as_scipy:
                 return ret.as_scipy_low_level_callable()
             return ret

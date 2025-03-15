@@ -64,7 +64,7 @@ class Matrix(Storage):
     # this class variable as a strong internal consistency check.
     SHAPE = (-1, -1)
 
-    def __new__(cls, *args: _T.Any, **kwargs: _T.Any) -> Matrix:  # noqa: PLR0915
+    def __new__(cls, *args: _T.Any, **kwargs: _T.Any) -> Matrix:  # noqa: PLR0912, PLR0915
         """
         Beast of a method for creating a Matrix. Handles a variety of construction use cases
         and *always* returns a fixed size child class of Matrix rather than Matrix itself. The
@@ -74,17 +74,17 @@ class Matrix(Storage):
 
         # 1) Default construction allowed for fixed size.
         if len(args) == 0:
-            assert cls._is_fixed_size(), "Cannot default construct non-fixed matrix."
+            if not cls._is_fixed_size():
+                raise TypeError("Cannot default construct non-fixed matrix.")
             return cls.zero()
 
         # 2) Construct with another Matrix - this is easy
         elif len(args) == 1 and hasattr(args[0], "is_Matrix") and args[0].is_Matrix:
             rows, cols = args[0].shape
-            if cls._is_fixed_size():
-                assert cls.SHAPE == (
-                    rows,
-                    cols,
-                ), f"Inconsistent shape: expected shape {cls.SHAPE} but found shape {(rows, cols)}"
+            if cls._is_fixed_size() and cls.SHAPE != (rows, cols):
+                raise ValueError(
+                    f"Inconsistent shape: expected shape {cls.SHAPE} but found shape {(rows, cols)}"
+                )
             flat_list = list(args[0])
 
         # 3) If there's one argument and it's an array, works for fixed or dynamic size.
@@ -93,18 +93,15 @@ class Matrix(Storage):
             # 2D array, shape is known
             if len(array) > 0 and isinstance(array[0], (_T.Sequence, np.ndarray)):
                 # 2D array of scalars
-                assert not isinstance(array[0][0], Matrix), (
-                    "Use Matrix.block_matrix to construct using matrices"
-                )
+                if isinstance(array[0][0], Matrix):
+                    raise TypeError("Use Matrix.block_matrix to construct using matrices")
                 rows, cols = len(array), len(array[0])
-                if cls._is_fixed_size():
-                    assert (
-                        rows,
-                        cols,
-                    ) == cls.SHAPE, f"{cls} has shape {cls.SHAPE} but arg has shape {(rows, cols)}"
-                assert all(len(arr) == cols for arr in array), "Inconsistent columns: {}".format(
-                    args
-                )
+                if cls._is_fixed_size() and (rows, cols) != cls.SHAPE:
+                    raise ValueError(
+                        f"{cls} has shape {cls.SHAPE} but arg has shape {(rows, cols)}"
+                    )
+                if not all(len(arr) == cols for arr in array):
+                    raise ValueError(f"Inconsistent columns: {args}")
                 flat_list = [v for row in array for v in row]
 
             # 1D array - if fixed size this must match data length. If not, assume column vec.
@@ -130,24 +127,31 @@ class Matrix(Storage):
         # to an sm.Matrix, do the operation, then convert back.
         elif len(args) == 2 and cls.SHAPE == (-1, -1):
             rows, cols = args[0], args[1]
-            assert isinstance(rows, int)
-            assert isinstance(cols, int)
+            if not isinstance(rows, int) or rows < 0:
+                raise ValueError(f"rows must be a nonnegative integer, got {rows}")
+            if not isinstance(cols, int) or cols < 0:
+                raise ValueError(f"cols must be a nonnegative integer, got {cols}")
             flat_list = [0 for row in range(rows) for col in range(cols)]
 
         # 5) If there are two integer arguments and then a sequence, treat this as a shape and a
         # data list directly.
         elif len(args) == 3 and isinstance(args[-1], (np.ndarray, _T.Sequence)):
-            assert isinstance(args[0], int), args
-            assert isinstance(args[1], int), args
+            if not isinstance(args[0], int) or args[0] < 0:
+                raise ValueError(f"rows must be a nonnegative integer, got {args[0]}")
+            if not isinstance(args[1], int) or args[1] < 0:
+                raise ValueError(f"cols must be a nonnegative integer, got {args[1]}")
             rows, cols = args[0], args[1]
-            assert len(args[2]) == rows * cols, f"Inconsistent args: {args}"
+            if len(args[2]) != rows * cols:
+                raise ValueError(f"Inconsistent args: {args}")
             flat_list = list(args[2])
 
         # 6) Two integer arguments plus a callable to initialize values based on (row, col)
         # NOTE(hayk): sympy.Symbol is callable, hence the last check.
         elif len(args) == 3 and callable(args[-1]) and not hasattr(args[-1], "is_Symbol"):
-            assert isinstance(args[0], int), args
-            assert isinstance(args[1], int), args
+            if not isinstance(args[0], int) or args[0] < 0:
+                raise ValueError(f"rows must be a nonnegative integer, got {args[0]}")
+            if not isinstance(args[1], int) or args[1] < 0:
+                raise ValueError(f"cols must be a nonnegative integer, got {args[1]}")
             rows, cols = args[0], args[1]
             flat_list = [args[2](row, col) for row in range(rows) for col in range(cols)]
 
@@ -160,7 +164,7 @@ class Matrix(Storage):
 
         # 8) No match, error out.
         else:
-            raise AssertionError(f"Unknown {cls} constructor for: {args}")
+            raise ValueError(f"Unknown {cls} constructor for: {args}")
 
         # Get the proper fixed size child class
         fixed_size_type = matrix_type_from_shape((rows, cols))
@@ -177,7 +181,9 @@ class Matrix(Storage):
         if _T.TYPE_CHECKING:
             self.mat = sf.sympy.Matrix(*args, **kwargs)
 
-        assert self.__class__.SHAPE == self.mat.shape, "Inconsistent Matrix"
+        assert self.__class__.SHAPE == self.mat.shape, (
+            f"Inconsistent Matrix: {self.__class__.SHAPE} != {self.mat.shape}"
+        )
 
     @property
     def rows(self) -> int:
@@ -207,14 +213,16 @@ class Matrix(Storage):
 
     @classmethod
     def storage_dim(cls) -> int:
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if not cls._is_fixed_size():
+            raise TypeError(f"Type has no size info: {cls}")
         return cls.SHAPE[0] * cls.SHAPE[1]
 
     @classmethod
     def from_storage(
         cls: _T.Type[MatrixT], vec: _T.Union[_T.Sequence[_T.Scalar], Matrix]
     ) -> MatrixT:
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if not cls._is_fixed_size():
+            raise TypeError(f"Type has no size info: {cls}")
         if isinstance(vec, Matrix):
             vec = list(vec)
         rows, cols = cls.SHAPE
@@ -251,7 +259,8 @@ class Matrix(Storage):
         """
         Matrix of zeros.
         """
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if not cls._is_fixed_size():
+            raise TypeError(f"Type has no size info: {cls}")
         return cls.zeros(*cls.SHAPE)
 
     @classmethod
@@ -269,7 +278,8 @@ class Matrix(Storage):
         """
         Matrix of ones.
         """
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if not cls._is_fixed_size():
+            raise TypeError(f"Type has no size info: {cls}")
         return cls.ones(*cls.SHAPE)
 
     @classmethod
@@ -359,14 +369,19 @@ class Matrix(Storage):
             name (str): Name prefix of the symbols
             **kwargs (dict): Forwarded to `sf.Symbol`
         """
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if not cls._is_fixed_size():
+            raise TypeError(f"Type has no size info: {cls}")
         rows, cols = cls.SHAPE
 
         row_names = [str(r_i) for r_i in range(rows)]
         col_names = [str(c_i) for c_i in range(cols)]
 
-        assert len(row_names) == rows
-        assert len(col_names) == cols
+        if len(row_names) != rows:
+            raise ValueError(f"Number of row names {len(row_names)} does not match rows {rows}")
+        if len(col_names) != cols:
+            raise ValueError(
+                f"Number of column names {len(col_names)} does not match columns {cols}"
+            )
 
         if cols == 1:
             if ops.StorageOps.use_latex_friendly_symbols():
@@ -377,7 +392,7 @@ class Matrix(Storage):
             symbols = []
             for r_i in range(rows):
                 _name = format_string.format(name, row_names[r_i])
-                symbols.append([sf.Symbol(_name, **kwargs)])
+                symbols.append(sf.Symbol(_name, **kwargs))
         else:
             if ops.StorageOps.use_latex_friendly_symbols():
                 format_string = "{}_{{{}, {}}}"
@@ -385,13 +400,11 @@ class Matrix(Storage):
                 format_string = "{}[{}, {}]"
             symbols = []
             for r_i in range(rows):
-                col_symbols = []
                 for c_i in range(cols):
                     _name = format_string.format(name, row_names[r_i], col_names[c_i])
-                    col_symbols.append(sf.Symbol(_name, **kwargs))
-                symbols.append(col_symbols)
+                    symbols.append(sf.Symbol(_name, **kwargs))
 
-        return cls(sf.sympy.Matrix(symbols))
+        return cls(sf.sympy.Matrix(rows, cols, symbols))
 
     def row_join(self, right: Matrix) -> Matrix:
         """
@@ -426,17 +439,19 @@ class Matrix(Storage):
             block_rows = mat_row[0].shape[0]
             block_cols = 0
             for mat in mat_row:
-                assert mat.shape[0] == block_rows, (
-                    "Inconsistent row number accross block: expected {} got {}".format(
-                        block_rows, mat.shape[0]
+                if mat.shape[0] != block_rows:
+                    raise ValueError(
+                        "Inconsistent row number accross block: expected {}, got {}".format(
+                            block_rows, mat.shape[0]
+                        )
+                    )
+                block_cols += mat.shape[1]
+            if block_cols != cols:
+                raise ValueError(
+                    "Inconsistent column number accross block: expected {}, got {}".format(
+                        cols, block_cols
                     )
                 )
-                block_cols += mat.shape[1]
-            assert block_cols == cols, (
-                "Inconsistent column number accross block: expected {} got {}".format(
-                    cols, block_cols
-                )
-            )
 
         # Fill the new matrix data vector
         flat_list = []
@@ -625,7 +640,8 @@ class Matrix(Storage):
         Do the elementwise multiplication between self and rhs, and return the result as a new
         :class:`Matrix`
         """
-        assert self.shape == rhs.shape
+        if self.shape != rhs.shape:
+            raise TypeError(f"Cannot multiply elementwise: shapes {self.shape} and {rhs.shape}")
         return self.__class__(self.mat.multiply_elementwise(rhs.mat))
 
     def applyfunc(self: MatrixT, func: _T.Callable) -> MatrixT:
@@ -898,7 +914,8 @@ class Matrix(Storage):
 
     @classmethod
     def from_flat_list(cls, vec: _T.Sequence[_T.Scalar]) -> Matrix:
-        assert cls._is_fixed_size(), f"Type has no size info: {cls}"
+        if not cls._is_fixed_size():
+            raise TypeError(f"Type has no size info: {cls}")
         return cls(vec)
 
     def to_numpy(self, scalar_type: type = np.float64) -> np.ndarray:
@@ -920,8 +937,8 @@ class Matrix(Storage):
 
         for col in columns:
             # assert that each column is a vector
-            assert col.shape == columns[0].shape
-            assert sum(dim > 1 for dim in col.shape) <= 1
+            if col.shape != columns[0].shape or sum(dim > 1 for dim in col.shape) > 1:
+                raise TypeError(f"Column has shape {col.shape}, should be a vector (N, 1)")
 
         return cls([col.to_flat_list() for col in columns]).T
 
@@ -929,7 +946,8 @@ class Matrix(Storage):
         return (self.shape[0] == 1) or (self.shape[1] == 1)
 
     def _assert_is_vector(self) -> None:
-        assert self.is_vector(), "Not a vector."
+        if not self.is_vector():
+            raise TypeError(f"Not a vector, shape {self.shape}")
 
     def _assert_sanity(self) -> None:
         assert self.shape == self.SHAPE, "Inconsistent Matrix!. shape={}, SHAPE={}".format(
@@ -945,7 +963,7 @@ class Matrix(Storage):
         Return ``True`` if this is a type with fixed dimensions set, e.g. :class:`Matrix31` instead
         of :class:`Matrix`.
         """
-        return cls.SHAPE[0] > 0 and cls.SHAPE[1] > 0
+        return cls.SHAPE[0] > -1 and cls.SHAPE[1] > -1
 
     def _ipython_display_(self) -> None:  # noqa: PLW3201
         """
