@@ -22,7 +22,8 @@ inline void add_solver_pybinding(pybind11::module_ module) {
        )
 
       .def("set_params", &{{solver.struct_name}}::set_params)
-      .def("solve", &{{ solver.struct_name }}::solve, py::call_guard<py::gil_scoped_release>())
+      .def("solve", &{{ solver.struct_name }}::solve, py::call_guard<py::gil_scoped_release>(),
+           py::arg("print_progress") = false)
       .def("finish_indices", &{{solver.struct_name}}::finish_indices)
       .def("get_allocation_size", &{{solver.struct_name}}::get_allocation_size)
 

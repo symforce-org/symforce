@@ -84,7 +84,10 @@ __global__ void __launch_bounds__(1024, 1)
 ```
 
 ### Factors
-TODO
+
+The `examples/multiple_factors` directory demonstrates how to create a graph with various node and factor types.
+
+The `examples/bal` directory provides an example of how Caspar can be utilized to optimize Bundle Adjustment in the Large (BAL) problems.
 
 ### Memory Accessors
 Correct memory management is key to generating efficient CUDA kernels.

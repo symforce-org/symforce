@@ -34,8 +34,6 @@ size_t sort_indices_get_tmp_nbytes(size_t problem_size) {
   auto err =
       cub::DeviceRadixSort::SortPairs(nullptr, tmp_storage_bytes, (uint*)nullptr, (uint*)nullptr,
                                       (uint*)nullptr, (uint*)nullptr, (uint)problem_size);
-  printf("err: %d\n", (int)err);
-
   return tmp_storage_bytes;
 }
 

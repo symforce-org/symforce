@@ -44,7 +44,7 @@ def from_diagonal_and_lower_triangle(diag_data: sf.Matrix, ltril_data: sf.Matrix
     Reconstructs a matrix from its diagonal and lower triangular part.
     """
     n = len(diag_data)
-    vec_loc = [v for v in ltril_data]
+    vec_loc = ltril_data.to_storage()
     mat = sf.Matrix(n, n)
     for i in range(n):
         for j in range(i + 1, mat.shape[0]):

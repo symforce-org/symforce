@@ -101,7 +101,7 @@ size_t {{ solver.struct_name }}::get_allocation_size(){
 }
 
 
-float GraphSolver::solve() {
+float GraphSolver::solve(bool print_progress) {
   float score_best;
   float score_best_pcg;
   float diag = params_.diag_init;
@@ -117,9 +117,10 @@ float GraphSolver::solve() {
 
   std::chrono::time_point<std::chrono::steady_clock> t0 = std::chrono::steady_clock::now();
   std::chrono::time_point<std::chrono::steady_clock> t_prev = t0;
-
   score_best = do_res_jac_first();
-  printf("score_best: %.6e\n", score_best);
+  if (print_progress) {
+    printf("                                 score_init: % .6e\n", score_best);
+  }
 
   for (solver_iter_ = 0; solver_iter_ < params_.solver_iter_max; solver_iter_++) {
     if (solver_iter_ != 0 && solver_iter_ < params_.solver_iter_max - 1){
@@ -170,9 +171,9 @@ float GraphSolver::solve() {
     if (score_best_pcg < score_best * params_.solver_rel_decrease_min) {
       quality = (score_best - score_best_pcg) / get_pred_decrease();
       const float quality_tmp = 2 * quality - 1;
-      float scale = 
+      float scale =
           std::max(params_.diag_scaling_down, 1.0f - quality_tmp * quality_tmp * quality_tmp);
-      diag = diag * scale;
+      diag = std::max(params_.diag_min, diag * scale);
       cudaMemcpy(solver__current_diag_, &diag, sizeof(float), cudaMemcpyHostToDevice);
       up_scale = params_.diag_scaling_up;
       score_best = score_best_pcg;
@@ -191,16 +192,22 @@ float GraphSolver::solve() {
       up_scale *= 2;
     }
     const auto t_now = std::chrono::steady_clock::now();
-    printf("solver_iter_: % 3d  ", solver_iter_);
-    printf("pcg_iter_: % 3d  ", pcg_iter_);
-    printf("score_best: % .6e  ", score_best);
-    printf("quality: % 6.3f  ", quality);
-    printf("diag: % 6.3e  ", diag);
-    printf("dt_inc: % 10.6f  ", (float)(t_now - t_prev).count() * 1e-9);
-    printf("dt_tot: % 10.6f  ", (float)(t_now - t0).count() * 1e-9);
-    t_prev = t_now;
-    printf("\n");
+    if (print_progress) {
+      printf("solver_iter: % 3d  ", solver_iter_);
+      printf("pcg_iter: % 3d  ", pcg_iter_);
+      printf("score_best: % .6e  ", score_best);
+      printf("step_quality: % 6.3f  ", quality);
+      printf("diag: % 6.3e  ", diag);
+      printf("dt_inc: % 10.6f  ", (float)(t_now - t_prev).count() * 1e-9);
+      printf("dt_tot: % 10.6f  ", (float)(t_now - t0).count() * 1e-9);
+      t_prev = t_now;
+      printf("\n");
+    }
+    if (score_best <= params_.score_exit_value) {
+      break;
+    }
   }
+
   return score_best;
 }
 
@@ -314,25 +321,24 @@ void {{ solver.struct_name }}::do_jp() {
 
 void {{ solver.struct_name }}::do_jtjp() {
     float* p_kp1;
-    {% set ns = namespace(done=[]) %}
+
+    {% for nodetype in solver.node_types %}
+    p_kp1 = pcg_iter_ % 2 ? {{node_key(nodetype, "p_k_a")}} : {{node_key(nodetype, "p_k_b")}};
+    {{nodetype.__name__}}_start_w(
+        {{node_key(nodetype, "precond_diag")}},
+        {{num_max_key(nodetype)}},
+        solver__current_diag_,
+        p_kp1,
+        {{num_max_key(nodetype)}},
+        {{node_key(nodetype, "w")}},
+        {{num_max_key(nodetype)}},
+        {{num_key(nodetype)}}
+    );
+    {% endfor %}
+
     {% for fac in solver.factors %}
     if ({{num_key(fac)}}) {
         {% for arg, typ in fac.jnjtr_args.items() %}
-        p_kp1 = pcg_iter_ % 2 ? {{node_key(typ, "p_k_a")}} : {{node_key(typ, "p_k_b")}};
-        {% if  typ.__name__ in ns.done %}
-        {{typ.__name__}}_start_w_contribute(
-        {% else %}
-        {{typ.__name__}}_start_w(
-        {% endif %}
-            {{node_key(typ, "precond_diag")}},
-            {{num_max_key(typ)}},
-            solver__current_diag_,
-            p_kp1,
-            {{num_max_key(typ)}},
-            {{node_key(typ, "w")}},
-            {{num_max_key(typ)}},
-            {{num_key(typ)}}
-        );
         {{fac.name}}_{{arg}}_jtjnjtr(
             {{arg_key(fac, arg, "jac")}},
             {{num_max_key(fac)}},
@@ -346,7 +352,6 @@ void {{ solver.struct_name }}::do_jtjp() {
             {{arg_key(fac, arg, "idx_sorted_shared")}},
             {{num_key(fac)}}
         );
-        {% set ns.done = ns.done + [typ.__name__] %}
         {% endfor %}
     }
     {% endfor %}
@@ -639,7 +644,7 @@ void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_host(
   if (num != {{num_key(fac)}}){
     throw std::runtime_error(
         std::to_string(num)
-        + " != {{num_key(fac)}}. Use set_{{num_key(fac)}} before setting indices.");
+        + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
   }
   cudaMemcpy((unsigned int*)marker__scratch_inout_, indices, num * sizeof(unsigned int),
              cudaMemcpyHostToDevice);
@@ -653,7 +658,7 @@ void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_device(
   if (num != {{num_key(fac)}}){
     throw std::runtime_error(
         std::to_string(num)
-        + " != {{num_key(fac)}}. Use set_{{num_key(fac)}} before setting indices.");
+        + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
   }
 
   size_t tmp_size = sort_indices_get_tmp_nbytes(num);

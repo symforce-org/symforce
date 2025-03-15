@@ -31,8 +31,9 @@ class SolverParams:
     diag_exit_value: float
 
     solver_rel_decrease_min: float
-    pcg_rel_decrease_min: float
+    score_exit_value: float
 
+    pcg_rel_decrease_min: float
     pcg_rel_error_exit: float
     pcg_rel_score_exit: float
 
@@ -49,7 +50,7 @@ class {{solver.struct_name}}:
         Set the solver parameters.
         """
 
-    def solve(self) -> None:
+    def solve(self, print_progress: bool = False) -> None:
         """
         Run the solver.
         """

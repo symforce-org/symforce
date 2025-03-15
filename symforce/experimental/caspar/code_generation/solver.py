@@ -172,16 +172,14 @@ class Solver:
             fields[fac_key(fac, "res_tot")] = MemDesc(1, num_blocks_key(fac), alignment=alignment)
         fields["marker__res_tot_end_"] = MemDesc(0, 0, alignment=4)
 
-        for thing in [
-            "z",
-            "p_k_a",
-            "p_k_b",
-            "step_k_a",
-            "step_k_b",
-            "w",
-        ]:
+        for thing in ["z", "p_k_a", "p_k_b", "step_k_a", "step_k_b"]:
             for typ in caslib.node_types:
                 fields[node_key(typ, thing)] = MemDesc(Ops.tangent_dim(typ), num_key(typ))
+
+        fields["marker__w_start_"] = MemDesc(0, 0)
+        for typ in caslib.node_types:
+            fields[node_key(typ, "w")] = MemDesc(Ops.tangent_dim(typ), num_key(typ))
+        fields["marker__w_end_"] = MemDesc(0, 0, alignment=4)
 
         # USED IN THE njtr_precond
         fields["marker__r_k_a_start_"] = MemDesc(0, 0)

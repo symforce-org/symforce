@@ -40,11 +40,22 @@ def get_default_caspar_layout(stype: T.StorableOrType) -> list[list[int]]:
     return layout
 
 
-def caspar_size(size: int) -> int:
+def caspar_size(size: int | T.StorableOrType) -> int:
     """
     Number of elements the caspar layout uses for a given size.
     """
+    if not isinstance(size, int):
+        size = Ops.storage_dim(size)
     return size if size % 4 != 3 else size + 1
+
+
+def stacked_size(size: int | T.StorableOrType) -> int:
+    """
+    Number of elements the caspar layout uses for a given size.
+    """
+    if not isinstance(size, int):
+        size = Ops.storage_dim(size)
+    return size
 
 
 def chunk_dim(chunk: list[int]) -> int:

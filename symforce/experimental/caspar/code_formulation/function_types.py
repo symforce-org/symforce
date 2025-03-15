@@ -422,32 +422,37 @@ class Div(Func):
 # TRIGONOMETRIC FUNCTIONS
 class Cos(Func):
     def assign_code(self, outs: list[str], args: list[str]) -> str:
-        return f"{outs[0]} = cos({args[0]});"
+        return f"{outs[0]} = cosf({args[0]});"
 
 
 class Sin(Func):
     def assign_code(self, outs: list[str], args: list[str]) -> str:
-        return f"{outs[0]} = sin({args[0]});"
+        return f"{outs[0]} = sinf({args[0]});"
 
 
 class Tan(Func):
     def assign_code(self, outs: list[str], args: list[str]) -> str:
-        return f"{outs[0]} = tan({args[0]});"
+        return f"{outs[0]} = tanf({args[0]});"
 
 
 class ACos(Func):
     def assign_code(self, outs: list[str], args: list[str]) -> str:
-        return f"{outs[0]} = acos({args[0]});"
+        return f"{outs[0]} = acosf({args[0]});"
 
 
 class ASin(Func):
     def assign_code(self, outs: list[str], args: list[str]) -> str:
-        return f"{outs[0]} = asin({args[0]});"
+        return f"{outs[0]} = asinf({args[0]});"
 
 
 class ATan(Func):
     def assign_code(self, outs: list[str], args: list[str]) -> str:
-        return f"{outs[0]} = atan({args[0]});"
+        return f"{outs[0]} = atanf({args[0]});"
+
+
+class ATan2(Func):
+    def assign_code(self, outs: list[str], args: list[str]) -> str:
+        return f"{outs[0]} = atan2f({args[0]}, {args[1]});"
 
 
 class SinCos(Func):
@@ -561,6 +566,7 @@ EXPR_TO_FUNC: dict[T.Type[sf.Basic], T.Type[Func]] = {
     symengine_wrapper.acos: ACos,
     symengine_wrapper.asin: ASin,
     symengine_wrapper.atan: ATan,
+    symengine_wrapper.atan2: ATan2,
     symengine_wrapper.sign: Sign,
     sf.Min: Min,
     sf.Max: Max,

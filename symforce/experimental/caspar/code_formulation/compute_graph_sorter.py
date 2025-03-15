@@ -43,7 +43,7 @@ class ComputeGraphSorter:
         for func in funcs:
             for out in func.outs:
                 if not out.vod.missing_contribs:
-                    logging.warning("Missing contribs: " + str(out))
+                    logging.debug("Missing contribs: " + str(out))
 
             if func.is_accumulator():
                 assert len(func.args) > 1

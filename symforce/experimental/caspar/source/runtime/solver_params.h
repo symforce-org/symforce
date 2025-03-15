@@ -11,9 +11,11 @@ struct SolverParams {
   float diag_init = 1.0;
   float diag_scaling_up = 2.0;
   float diag_scaling_down = 0.333333f;
+  float diag_exit_value = 1e3;
+  float diag_min = 1e-12;
+  float score_exit_value = 0.0f;
   int solver_iter_max = 100;
   int pcg_iter_max = 5;
-  float diag_exit_value = 1e3;
   float pcg_rel_error_exit = 1e-2;
   float pcg_rel_score_exit = 0.9f;
   float pcg_rel_decrease_min = 1.0f;

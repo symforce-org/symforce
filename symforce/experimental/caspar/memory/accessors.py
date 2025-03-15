@@ -76,7 +76,7 @@ class Accessor:
 
     def shared_size_req(self) -> int:
         if isinstance(self, _UsingSharedMem):
-            return max(map(len, self.chunk_indices)) * CUDA_BLOCK_SIZE
+            return max(map(len, self.chunk_indices), default=0) * CUDA_BLOCK_SIZE
         return 0
 
 

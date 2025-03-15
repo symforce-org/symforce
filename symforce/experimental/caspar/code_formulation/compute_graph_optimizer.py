@@ -59,13 +59,14 @@ class ComputeGraphOptimizer:
     ):
         expr_map: dict[sf.Basic, Var] = {}
 
-        for arg in inputs:
+        for arg_id, arg in enumerate(inputs):
             storage = Ops.to_storage(arg.storage)
 
             for i, indices in enumerate(arg.chunk_indices):
                 func = ftypes.READ_FUNCS[len(indices) - 1](
                     data=(arg.name, i),
                     custom_code=arg.read_template(i),
+                    unique_id=arg_id,
                 )
                 for el, var in zip(indices, func.outs):
                     expr_map[storage[el]] = var

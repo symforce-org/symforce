@@ -94,7 +94,7 @@ solver.finish_indices()
 
 solver.set_fac_reprojection_pixel_data_from_stacked_host(pixels)
 
-solver.solve()
+solver.solve(print_progress=True)
 
 pointdata_out = np.empty_like(pointdata)
 solver.get_Point_nodes_to_stacked_host(pointdata_out)
