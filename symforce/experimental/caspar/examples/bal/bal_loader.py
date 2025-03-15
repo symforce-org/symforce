@@ -35,15 +35,14 @@ def load_bal(
             nrows: int,
             cols: int | T.Sequence[int] | None = None,
         ) -> np.ndarray:
-            a = np.loadtxt(file, typ, skiprows=start, max_rows=nrows, usecols=cols)  # type: ignore[arg-type]
-            return a
+            return np.loadtxt(file, typ, skiprows=start, max_rows=nrows, usecols=cols)  # type: ignore[arg-type]
 
         n_cams, n_points, n_facs = load(fpath, np.int32, 0, 1)
         cam_ids, point_ids = np.ascontiguousarray(load(fpath, np.int32, 1, n_facs, (0, 1)).T)
         pixels = load(fpath, np.float32, 1, n_facs, (2, 3))
         camdata_tangent = load(fpath, np.float32, 1 + n_facs, n_cams * 9)
         camdata_tangent = camdata_tangent.reshape(n_cams, 9)
-        camdata = np.array(
+        camdata: np.ndarray = np.array(
             [
                 [*sf.Pose3(sf.Rot3.from_tangent(d[:3]), sf.V3(d[3:6])).to_storage(), *d[6:]]
                 for d in camdata_tangent.astype(float)
