@@ -27,7 +27,9 @@ class SymforceLinterTest(TestCase):
         try:
             asyncio.run(
                 python_util.execute_subprocess(
-                    ["make", "lint"], cwd=SYMFORCE_DIR, env=dict(os.environ, PYTHON=sys.executable)
+                    ["make", "lint", "--keep-going"],
+                    cwd=SYMFORCE_DIR,
+                    env=dict(os.environ, PYTHON=sys.executable),
                 )
             )
         except subprocess.CalledProcessError as exc:
