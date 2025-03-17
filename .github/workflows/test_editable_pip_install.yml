@@ -26,7 +26,7 @@ jobs:
         name: Set up user-managed python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Upgrade versions
         run: |
@@ -67,9 +67,9 @@ jobs:
       - name: Set expected install locations for macos
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          echo CC_SYM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/cc_sym.cpython-311-darwin.so >> $GITHUB_ENV
-          echo SYM_LOCATION=/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sym/__init__.py >> $GITHUB_ENV
-          echo SKYMARSHAL_LOCATION=/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
+          echo CC_SYM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/cc_sym.cpython-313-darwin.so >> $GITHUB_ENV
+          echo SYM_LOCATION=/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.11/site-packages/sym/__init__.py >> $GITHUB_ENV
+          echo SKYMARSHAL_LOCATION=/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.11/site-packages/skymarshal/__init__.py >> $GITHUB_ENV
           echo SYMENGINE_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/third_party/symenginepy/symengine/__init__.py >> $GITHUB_ENV
           echo LCMTYPES_SYM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/sym/__init__.py >> $GITHUB_ENV
           echo LCMTYPES_EIGEN_LCM_LOCATION=/Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/lcmtypes_build/lcmtypes/eigen_lcm/__init__.py >> $GITHUB_ENV
