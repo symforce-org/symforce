@@ -140,6 +140,10 @@ class SymforceRequirementsTest(TestCase):
 
     @requires_source_build
     @sympy_only
+    def test_dev_requirements_py313(self) -> None:
+        self.check_dev_requirements_for_version(13)
+
+    @sympy_only
     def test_build_requirements(self) -> None:
         """
         Generate requirements_build.txt
