@@ -193,6 +193,8 @@ disallow_untyped_defs = true
 mypy_path = [".", "gen/python", "$SYMFORCE_LCMTYPES_DIR", "symforce/pybind"]
 explicit_package_bases = true
 
+enable_error_code = ["ignore-without-code"]
+
 [[tool.mypy.overrides]]
 module = [
   "IPython.*",

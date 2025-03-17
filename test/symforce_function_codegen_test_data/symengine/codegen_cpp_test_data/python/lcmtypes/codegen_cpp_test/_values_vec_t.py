@@ -80,7 +80,7 @@ class values_vec_t(object):
             (self.list_of_lists==other.list_of_lists)
         )
     # Disallow hashing for python struct lcmtypes.
-    __hash__ = None  # type: ignore
+    __hash__ = None  # type: ignore[assignment]
 
     def encode(self) -> bytes:
         buf = BytesIO()

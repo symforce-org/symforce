@@ -55,7 +55,7 @@ class inputs_states_t(object):
             (self.p==other.p)
         )
     # Disallow hashing for python struct lcmtypes.
-    __hash__ = None  # type: ignore
+    __hash__ = None  # type: ignore[assignment]
 
     def encode(self) -> bytes:
         buf = BytesIO()

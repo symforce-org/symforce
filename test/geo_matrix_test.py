@@ -383,7 +383,7 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         with self.assertRaises(TypeError):
             # This should fail mypy, since it's actually wrong
-            a.multiply_elementwise(sf.M43())  # type: ignore
+            a.multiply_elementwise(sf.M43())  # type: ignore[arg-type]
 
     def test_dot_product(self) -> None:
         """

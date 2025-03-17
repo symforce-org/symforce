@@ -166,9 +166,9 @@ class UnaryBinaryExpressionGen:
 
             # The annotations in numpy are wrong, and don't include the Sequence[Any] overload
             if arity == 1:
-                op = np.random.choice(self.unary_ops, p=self.unary_ops_probs)  # type: ignore
+                op = np.random.choice(self.unary_ops, p=self.unary_ops_probs)  # type: ignore[arg-type]
             else:
-                op = np.random.choice(self.binary_ops, p=self.binary_ops_probs)  # type: ignore
+                op = np.random.choice(self.binary_ops, p=self.binary_ops_probs)  # type: ignore[arg-type]
 
             e += arity - 1 - k  # created empty nodes - skipped future leaves
             t_leaves += arity - 1  # update number of total leaves

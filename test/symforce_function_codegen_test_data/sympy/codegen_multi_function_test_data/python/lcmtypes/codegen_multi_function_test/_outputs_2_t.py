@@ -54,7 +54,7 @@ class outputs_2_t(object):
             (self.foo==other.foo)
         )
     # Disallow hashing for python struct lcmtypes.
-    __hash__ = None  # type: ignore
+    __hash__ = None  # type: ignore[assignment]
 
     def encode(self) -> bytes:
         buf = BytesIO()

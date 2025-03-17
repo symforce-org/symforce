@@ -9,7 +9,7 @@ from symforce import typing as T
 
 try:
     # Attempt, works if we're in ipython
-    _default_display_func = display  # type: ignore
+    _default_display_func = display  # type: ignore[name-defined]
 except NameError:
     _default_display_func = print
 

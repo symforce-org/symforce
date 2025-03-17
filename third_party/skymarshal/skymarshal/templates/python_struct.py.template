@@ -88,7 +88,7 @@ class {{ lcmtype.name }}(object):
         ))
 {% else %}
     # Disallow hashing for python struct lcmtypes.
-    __hash__ = None  # type: ignore
+    __hash__ = None  # type: ignore[assignment]
 {% endif %}
 
     def encode(self) -> bytes:

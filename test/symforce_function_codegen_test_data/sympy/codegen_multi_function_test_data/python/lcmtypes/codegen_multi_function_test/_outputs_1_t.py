@@ -87,7 +87,7 @@ class outputs_1_t(object):
             (self.small_matrix_from_big_matrix==other.small_matrix_from_big_matrix)
         )
     # Disallow hashing for python struct lcmtypes.
-    __hash__ = None  # type: ignore
+    __hash__ = None  # type: ignore[assignment]
 
     def encode(self) -> bytes:
         buf = BytesIO()

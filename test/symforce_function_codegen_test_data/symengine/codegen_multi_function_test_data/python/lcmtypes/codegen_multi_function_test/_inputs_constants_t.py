@@ -54,7 +54,7 @@ class inputs_constants_t(object):
             (self.epsilon==other.epsilon)
         )
     # Disallow hashing for python struct lcmtypes.
-    __hash__ = None  # type: ignore
+    __hash__ = None  # type: ignore[assignment]
 
     def encode(self) -> bytes:
         buf = BytesIO()

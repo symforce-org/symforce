@@ -39,8 +39,8 @@ class SymforcePyFactorTest(TestCase):
         """
         ### Between factors
 
-        def between(x: value_type, y: value_type) -> value_type:  # type: ignore
-            return x.local_coordinates(y, epsilon=epsilon)  # type: ignore
+        def between(x: value_type, y: value_type) -> value_type:  # type: ignore[valid-type]
+            return x.local_coordinates(y, epsilon=epsilon)  # type: ignore[attr-defined]
 
         for i in range(len(keys) - 1):
             yield Factor(keys=[keys[i], keys[i + 1]], residual=between)

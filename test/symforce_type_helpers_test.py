@@ -30,7 +30,7 @@ class SymforceTypeHelpersTest(TestCase):
         self.assertEqual(deduce_input_types(sf.Rot3.compose), [sf.Rot3, sf.Rot3])
 
         # Can't deduce types that aren't annotated
-        def my_function_partly_typed(a: sf.Pose3, b) -> None:  # type: ignore
+        def my_function_partly_typed(a: sf.Pose3, b) -> None:  # type: ignore[no-untyped-def]
             pass
 
         self.assertRaises(ValueError, deduce_input_types, my_function_partly_typed)
@@ -65,7 +65,7 @@ class SymforceTypeHelpersTest(TestCase):
 
         # Fails for nonexistant types annotated as 2-part strings in expected modules
         def my_function_annotated_with_something_that_doesnt_exist(
-            a: "sf.Foo",  # type: ignore
+            a: "sf.Foo",  # type: ignore[name-defined]
         ) -> None:
             pass
 
