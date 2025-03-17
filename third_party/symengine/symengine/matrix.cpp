@@ -50,7 +50,7 @@ hash_t MatrixBase::hash() const
     hash_combine<unsigned>(seed, nrows());
     hash_combine<unsigned>(seed, ncols());
     for (unsigned i = 0; i < this->nrows(); i++) {
-        for (unsigned j = 0; j < this->nrows(); j++) {
+        for (unsigned j = 0; j < this->ncols(); j++) {
             hash_combine<Basic>(seed, *get(i, j));
         }
     }
