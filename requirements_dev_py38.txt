@@ -2,21 +2,21 @@
 #    python test/symforce_requirements_test.py --update
 alabaster==0.7.13
     # via sphinx
-argh==0.31.2
+argh==0.31.3
     # via
     #   symforce (pyproject.toml)
     #   skymarshal
-asttokens==2.4.1
+asttokens==3.0.0
     # via stack-data
-attrs==23.2.0
+attrs==25.3.0
     # via
     #   jsonschema
     #   referencing
-babel==2.15.0
+babel==2.17.0
     # via sphinx
 backcall==0.2.0
     # via ipython
-beautifulsoup4==4.12.3
+beautifulsoup4==4.13.3
     # via
     #   furo
     #   nbconvert
@@ -24,11 +24,11 @@ bleach==6.1.0
     # via nbconvert
 breathe==4.35.0
     # via symforce (pyproject.toml)
-certifi==2024.2.2
+certifi==2025.1.31
     # via requests
-charset-normalizer==3.3.2
+charset-normalizer==3.4.1
     # via requests
-clang-format==18.1.5
+clang-format==20.1.0
     # via symforce (pyproject.toml)
 cmake==3.26.4
     # via symforce (pyproject.toml)
@@ -36,15 +36,15 @@ comm==0.2.2
     # via ipykernel
 contourpy==1.1.1
     # via matplotlib
-coverage==7.5.1
+coverage==7.6.1
     # via symforce (pyproject.toml)
 cycler==0.12.1
     # via matplotlib
 cython==0.29.37
     # via symforce (pyproject.toml)
-debugpy==1.8.1
+debugpy==1.8.13
     # via ipykernel
-decorator==5.1.1
+decorator==5.2.1
     # via ipython
 defusedxml==0.7.1
     # via nbconvert
@@ -54,40 +54,40 @@ docutils==0.20.1
     #   myst-parser
     #   nbsphinx
     #   sphinx
-executing==2.0.1
+executing==2.2.0
     # via stack-data
-fastjsonschema==2.19.1
+fastjsonschema==2.21.1
     # via nbformat
-fonttools==4.51.0
+fonttools==4.56.0
     # via matplotlib
-furo==2024.5.6
+furo==2024.8.6
     # via symforce (pyproject.toml)
 graphviz==0.20.3
     # via symforce (pyproject.toml)
-idna==3.7
+idna==3.10
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==7.1.0
+importlib-metadata==8.5.0
     # via
     #   jupyter-client
     #   nbconvert
     #   numba
     #   sphinx
-importlib-resources==6.4.0
+importlib-resources==6.4.5
     # via
     #   jsonschema
     #   jsonschema-specifications
     #   matplotlib
-ipykernel==6.29.4
+ipykernel==6.29.5
     # via symforce (pyproject.toml)
 ipython==8.12.3
     # via ipykernel
 ipython-genutils==0.2.0
     # via symforce (pyproject.toml)
-jedi==0.19.1
+jedi==0.19.2
     # via ipython
-jinja2==3.1.4
+jinja2==3.1.6
     # via
     #   symforce (pyproject.toml)
     #   myst-parser
@@ -95,11 +95,11 @@ jinja2==3.1.4
     #   nbsphinx
     #   skymarshal
     #   sphinx
-jsonschema==4.22.0
+jsonschema==4.23.0
     # via nbformat
 jsonschema-specifications==2023.12.1
     # via jsonschema
-jupyter-client==8.6.1
+jupyter-client==8.6.3
     # via
     #   ipykernel
     #   nbclient
@@ -112,7 +112,7 @@ jupyter-core==5.7.2
     #   nbformat
 jupyterlab-pygments==0.3.0
     # via nbconvert
-kiwisolver==1.4.5
+kiwisolver==1.4.7
     # via matplotlib
 llvmlite==0.41.1
     # via numba
@@ -130,23 +130,25 @@ matplotlib-inline==0.1.7
     # via
     #   ipykernel
     #   ipython
-mdit-py-plugins==0.4.1
+mdit-py-plugins==0.4.2
     # via myst-parser
 mdurl==0.1.2
     # via markdown-it-py
-mistune==3.0.2
+mistune==3.1.2
     # via nbconvert
 mpmath==1.3.0
     # via sympy
-mypy==1.11.0
+mypy==1.11.2
     # via symforce (pyproject.toml)
 mypy-extensions==1.0.0
     # via mypy
 myst-parser==3.0.1
     # via symforce (pyproject.toml)
-nbclient==0.10.0
+narwhals==1.30.0
+    # via plotly
+nbclient==0.10.1
     # via nbconvert
-nbconvert==7.16.4
+nbconvert==7.16.6
     # via nbsphinx
 nbformat==5.10.4
     # via
@@ -154,9 +156,9 @@ nbformat==5.10.4
     #   nbconvert
     #   nbsphinx
     #   nbstripout
-nbsphinx==0.9.4
+nbsphinx==0.9.7
     # via symforce (pyproject.toml)
-nbstripout==0.7.1
+nbstripout==0.8.1
     # via symforce (pyproject.toml)
 nest-asyncio==1.6.0
     # via ipykernel
@@ -172,7 +174,7 @@ numpy==1.24.4
     #   scipy
     #   skymarshal
     #   symforce-sym
-packaging==24.0
+packaging==24.2
     # via
     #   ipykernel
     #   matplotlib
@@ -190,48 +192,48 @@ pexpect==4.9.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pillow==10.3.0
+pillow==10.4.0
     # via matplotlib
-pip==24.0
+pip==25.0.1
     # via symforce (pyproject.toml)
 pkgutil-resolve-name==1.3.10
     # via jsonschema
-platformdirs==4.2.2
+platformdirs==4.3.6
     # via jupyter-core
-plotly==5.22.0
+plotly==6.0.0
     # via symforce (pyproject.toml)
 ply==3.11
     # via skymarshal
-prompt-toolkit==3.0.43
+prompt-toolkit==3.0.50
     # via ipython
-psutil==5.9.8
+psutil==7.0.0
     # via ipykernel
 ptyprocess==0.7.0
     # via pexpect
-pure-eval==0.2.2
+pure-eval==0.2.3
     # via stack-data
 pybind11-stubgen==2.5.3
     # via symforce (pyproject.toml)
-pygments==2.18.0
+pygments==2.19.1
     # via
     #   furo
     #   ipython
     #   nbconvert
     #   sphinx
-pyparsing==3.1.2
+pyparsing==3.1.4
     # via matplotlib
 python-dateutil==2.9.0.post0
     # via
     #   jupyter-client
     #   matplotlib
     #   pandas
-pytz==2024.1
+pytz==2025.1
     # via
     #   babel
     #   pandas
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via myst-parser
-pyzmq==26.0.3
+pyzmq==26.3.0
     # via
     #   ipykernel
     #   jupyter-client
@@ -239,32 +241,31 @@ referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via sphinx
-rpds-py==0.18.1
+rpds-py==0.20.1
     # via
     #   jsonschema
     #   referencing
-ruff==0.9.7
+ruff==0.9.10
     # via symforce (pyproject.toml)
 scipy==1.10.1
     # via symforce (pyproject.toml)
-setuptools==69.5.1
+setuptools==75.3.2
     # via
     #   symforce (pyproject.toml)
     #   setuptools-scm
-setuptools-scm==8.1.0
+setuptools-scm==8.2.0
     # via symforce (pyproject.toml)
-six==1.16.0
+six==1.17.0
     # via
-    #   asttokens
     #   bleach
     #   python-dateutil
 file:./third_party/skymarshal
     # via symforce (pyproject.toml)
 snowballstemmer==2.2.0
     # via sphinx
-soupsieve==2.5
+soupsieve==2.6
     # via beautifulsoup4
 sphinx==7.1.2
     # via
@@ -300,15 +301,13 @@ file:./gen/python
     # via symforce (pyproject.toml)
 sympy==1.11.1
     # via symforce (pyproject.toml)
-tenacity==8.3.0
-    # via plotly
-tinycss2==1.3.0
-    # via nbconvert
-tomli==2.0.1
+tinycss2==1.2.1
+    # via bleach
+tomli==2.2.1
     # via
     #   mypy
     #   setuptools-scm
-tornado==6.4
+tornado==6.4.2
     # via
     #   ipykernel
     #   jupyter-client
@@ -328,18 +327,20 @@ types-jinja2==2.11.9
     # via symforce (pyproject.toml)
 types-markupsafe==1.1.10
     # via types-jinja2
-types-requests==2.31.0.20240406
+types-requests==2.32.0.20241016
     # via symforce (pyproject.toml)
-types-setuptools==69.5.0.20240513
+types-setuptools==75.8.0.20250110
     # via symforce (pyproject.toml)
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via
+    #   beautifulsoup4
     #   ipython
+    #   mistune
     #   mypy
     #   setuptools-scm
-tzdata==2024.1
+tzdata==2025.1
     # via pandas
-urllib3==2.2.1
+urllib3==2.2.3
     # via
     #   requests
     #   types-requests
@@ -351,9 +352,9 @@ webencodings==0.5.1
     # via
     #   bleach
     #   tinycss2
-wheel==0.43.0
+wheel==0.45.1
     # via symforce (pyproject.toml)
-zipp==3.18.1
+zipp==3.20.2
     # via
     #   importlib-metadata
     #   importlib-resources

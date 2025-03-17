@@ -124,7 +124,7 @@ jobs:
       - name: Install python dependencies
         run: |
           PY_MINOR_VERSION=$(python -c "import sys; print(sys.version_info.minor)")
-          python -m pip install pip==24.0 setuptools==69.5.1
+          python -m pip install pip==25.0.1 setuptools==75.3.2
           python -m pip install -r requirements_dev_py3${PY_MINOR_VERSION}.txt
 
       - name: Run cmake build

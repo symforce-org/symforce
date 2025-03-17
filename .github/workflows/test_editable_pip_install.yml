@@ -16,8 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04, macos-latest]
-        pip_version: [24.0]
-        setuptools_version: [69.5.1]
+        pip_version: [25.0.1]
+        setuptools_version: [75.3.2]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
