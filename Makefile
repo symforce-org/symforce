@@ -23,7 +23,7 @@ FIND_CPP_FILES_TO_FORMAT=find . \
 	-and -not -path "./build/*" \
 	-and -not -path "./.eggs/*" \
 	-and -not -path "./symforce/benchmarks/matrix_multiplication/gen/*" \
-	-regextype posix-extended -regex ".*\.(h|cc|tcc)"
+	-regextype posix-extended -regex ".*\.(h|cc|tcc|cu|cuh)"
 
 # Format using ruff and clang-format
 RUFF_FORMAT_CMD=ruff format .
