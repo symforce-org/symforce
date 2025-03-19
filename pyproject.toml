@@ -199,7 +199,6 @@ module = [
   "argh.*",
   "clang_format",
   "graphviz.*",
-  "matplotlib.*",
   "mpl_toolkits.*",
   "numba.*",
   "ruff.*",
@@ -215,3 +214,12 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "lcmtypes"
 follow_imports = "silent"
+
+# matplotlib has some overly restrictive / wrong annotations, on animation.FuncAnimation.  It also
+# requires annotating Axes3d to get proper typing
+[[tool.mypy.overrides]]
+module = "matplotlib.*"
+follow_imports = "skip"
+follow_imports_for_stubs = true
+# the py3.8 version of matplotlib has no type stubs, so we fully ignore it
+ignore_missing_imports = true

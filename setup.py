@@ -52,7 +52,7 @@ class PatchDevelop(develop):
         # regardless of whether we're building with develop or build_editable,
         # (both before and after version 64.0.0), we patch develop to add this
         # field to build_ext and set it to True.
-        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[union-attr]
+        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[misc]
         super().run()
 
 
@@ -381,7 +381,9 @@ if __name__ == "__main__":
                 "clang-format",
                 "graphviz",
                 "jinja2",
-                "numpy",
+                # numpy 2.0 isn't supported until SymPy 1.13.0
+                # https://github.com/sympy/sympy/wiki/Release-Notes-for-1.13.0
+                "numpy<2.0",
                 "scipy",
                 f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
                 "sympy~=1.11.1",
@@ -399,16 +401,16 @@ if __name__ == "__main__":
                     "jinja2~=3.0",
                     "mypy~=1.11.0",
                     "numba",
-                    # 6.13 fixes pip >=23.1 support
-                    "pip-tools>=6.13",
                     # For https://github.com/sizmailov/pybind11-stubgen/pull/243
                     "pybind11-stubgen>=2.5.3",
                     "ruff~=0.9.7",
                     "types-jinja2",
                     "types-requests",
                     "types-setuptools",
+                    # Oldest version that solves to the right requirements
+                    "uv>=0.2.0",
                 ]
             ),
-            "_setup": maybe_rewrite_local_dependencies(setup_requirements),
+            "setup": maybe_rewrite_local_dependencies(setup_requirements),
         },
     )
