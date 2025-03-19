@@ -34,18 +34,10 @@ jobs:
             pip==${{ matrix.pip_version }} \
             setuptools==${{ matrix.setuptools_version }}
 
-      # NOTE(aaron): Some packages do not have a version that supports py3.8..py3.12
-      - name: Fix py3.12 versions
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
+      - name: install requirements
         run: |
-          sed -i 's|numba==0.58.1|numba~=0.59.0|g' dev_requirements.txt
-          sed -i 's|llvmlite==0.41.1|llvmlite~=0.42.0|g' dev_requirements.txt
-          sed -i 's|numpy==1.24.4|numpy~=1.26.0|g' dev_requirements.txt
-          sed -i 's|scipy==1.10.1|scipy~=1.12.0|g' dev_requirements.txt
-          sed -i 's|pandas==2.0.3|pandas~=2.2.0|g' dev_requirements.txt
-
-      - name: install dev_requirements.txt
-        run: python -m pip install -r dev_requirements.txt
+          PY_MINOR_VERSION=$(python -c "import sys; print(sys.version_info.minor)")
+          python -m pip install -r requirements_dev_py3${PY_MINOR_VERSION}.txt
 
       - name: editable install
         run: python -m pip install -v -e .
