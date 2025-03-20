@@ -52,7 +52,7 @@ class PatchDevelop(develop):
         # regardless of whether we're building with develop or build_editable,
         # (both before and after version 64.0.0), we patch develop to add this
         # field to build_ext and set it to True.
-        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[union-attr]
+        self.distribution.get_command_obj("build_ext").editable_mode = True  # type: ignore[misc]
         super().run()
 
 
@@ -381,7 +381,9 @@ if __name__ == "__main__":
                 "clang-format",
                 "graphviz",
                 "jinja2",
-                "numpy",
+                # numpy 2.0 isn't supported until SymPy 1.13.0
+                # https://github.com/sympy/sympy/wiki/Release-Notes-for-1.13.0
+                "numpy<2.0",
                 "scipy",
                 f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
                 "sympy~=1.11.1",
