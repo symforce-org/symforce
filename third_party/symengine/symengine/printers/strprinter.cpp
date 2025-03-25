@@ -1,4 +1,5 @@
 #include <limits>
+#include <symengine/basic.h>
 #include <symengine/printers/strprinter.h>
 
 namespace SymEngine
@@ -1095,6 +1096,8 @@ std::vector<std::string> init_str_printer_names()
     names[SYMENGINE_SIGN] = "sign";
     names[SYMENGINE_CONJUGATE] = "conjugate";
     names[SYMENGINE_UNEVALUATED_EXPR] = "";
+    names[SYMENGINE_SIGN_NO_ZERO] = "sign_no_zero";
+    names[SYMENGINE_COPYSIGN_NO_ZERO] = "copysign_no_zero";
     return names;
 }
 

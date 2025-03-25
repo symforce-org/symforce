@@ -805,6 +805,19 @@ void DiffVisitor::bvisit(const DataBufferElement &self)
     result_ = zero;
 }
 
+void DiffVisitor::bvisit(const SignNoZero &self)
+{
+    result_ = zero;
+}
+
+void DiffVisitor::bvisit(const CopysignNoZero &self)
+{
+    // abs(arg1) * sign_no_zero(arg2)
+    // arg1.diff(x) * sign_no_zero(arg1) * sign_no_zero(arg2)
+    apply(self.get_arg1());
+    result_ = mul(mul(result_, sign_no_zero(self.get_arg1())), sign_no_zero(self.get_arg2()));
+}
+
 const RCP<const Basic> &DiffVisitor::apply(const Basic &b)
 {
     apply(b.rcp_from_this());

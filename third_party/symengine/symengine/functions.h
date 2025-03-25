@@ -1302,6 +1302,35 @@ public:
 
 RCP<const Basic> unevaluated_expr(const RCP<const Basic> &arg);
 
+
+class SignNoZero : public OneArgFunction
+{
+public:
+    IMPLEMENT_TYPEID(SYMENGINE_SIGN_NO_ZERO)
+    //! SignNoZero Constructor
+    SignNoZero(const RCP<const Basic> &arg);
+    //! \return `true` if canonical
+    bool is_canonical(const RCP<const Basic> &arg) const;
+    //! \return canonicalized SignNoZero
+    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+};
+
+RCP<const Basic> sign_no_zero(const RCP<const Basic> &arg);
+
+class CopysignNoZero : public TwoArgFunction
+{
+public:
+    IMPLEMENT_TYPEID(SYMENGINE_COPYSIGN_NO_ZERO)
+    //! CopysignNoZero Constructor
+    CopysignNoZero(const RCP<const Basic> &x, const RCP<const Basic> &y);
+    //! \return `true` if canonical
+    bool is_canonical(const RCP<const Basic> &x, const RCP<const Basic> &y) const;
+    //! \return canonicalized CopysignNoZero
+    virtual RCP<const Basic> create(const RCP<const Basic> &x, const RCP<const Basic> &y) const;
+};
+
+RCP<const Basic> copysign_no_zero(const RCP<const Basic> &x, const RCP<const Basic> &y);
+
 } // SymEngine
 
 #endif

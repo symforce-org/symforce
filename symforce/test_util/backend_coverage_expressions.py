@@ -73,6 +73,7 @@ def backend_test_function(
         lambda x: x**sf.S.Half,
         lambda x: x ** sf.Rational(3, 2),
         lambda x: sf.Max(0, x).diff(x),  # The heaviside function
+        sf.SignNoZero,
     ] + non_standard_unary_ops
 
     binary_ops = (
@@ -85,6 +86,7 @@ def backend_test_function(
         lambda x, y: x**y,
         lambda x, y: (x + y) ** 2,
         lambda x, y: (x + y) ** 3,
+        sf.CopysignNoZero,
     )
 
     return tuple(list(constants) + [op(x) for op in unary_ops] + [op(x, y) for op in binary_ops])

@@ -32,7 +32,9 @@ from .lib.symengine_wrapper import (
     eulergamma as EulerGamma,
     DataBuffer,
     Mod,
-    solve
+    solve,
+    SignNoZero,
+    CopysignNoZero
 )
 from .utilities import var, symbols
 from .functions import *

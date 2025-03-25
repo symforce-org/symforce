@@ -11,6 +11,7 @@ from sympy.codegen.ast import float64
 from sympy.codegen.ast import real
 from sympy.printing.c import C11CodePrinter
 
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -74,3 +75,11 @@ class CudaCodePrinter(C11CodePrinter):
         return "{}[static_cast<size_t>({})]".format(
             expr.parent, self._print(expr.j + expr.i * expr.parent.shape[1])
         )
+
+    def _print_SignNoZero(self, expr: sf.SymPySignNoZero) -> str:
+        suffix = self._get_func_suffix(real)
+        return f"copysign{suffix}(1.0, {self._print(expr.args[0])})"
+
+    def _print_CopysignNoZero(self, expr: sf.SymPyCopysignNoZero) -> str:
+        suffix = self._get_func_suffix(real)
+        return f"copysign{suffix}({self._print(expr.args[0])}, {self._print(expr.args[1])})"

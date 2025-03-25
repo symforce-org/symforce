@@ -3,6 +3,8 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 """
 The (symforce-internal) core symbolic API
 
@@ -55,11 +57,11 @@ if symforce._symbolic_api is None:
 # module depends on are modified after importing
 symforce._have_imported_symbolic = True
 
+# Import sympy, for methods that convert to sympy types or call sympy functions below
+import sympy as _sympy_py
+
 if not T.TYPE_CHECKING and symforce.get_symbolic_api() == "symengine":
     sympy = symforce._find_symengine()
-
-    # Import sympy, for methods that convert to sympy types or call sympy functions below
-    import sympy as _sympy_py
 
     # isort: split
 
@@ -449,20 +451,6 @@ def angle_diff(x: Scalar, y: Scalar) -> Scalar:
     return wrap_angle(x - y)
 
 
-def sign_no_zero(x: Scalar) -> Scalar:
-    """
-    Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.
-    """
-    return 2 * Min(sign(x), 0) + 1
-
-
-def copysign_no_zero(x: Scalar, y: Scalar) -> Scalar:
-    """
-    Returns a value with the magnitude of x and sign of y. If y is zero, returns positive x.
-    """
-    return Abs(x) * sign_no_zero(y)
-
-
 def argmax_onehot(vals: T.Iterable[Scalar], tolerance: Scalar = epsilon()) -> T.List[Scalar]:
     """
     Returns a list ``l`` such that ``l[i] = 1.0`` if ``i`` is the smallest index such that
@@ -554,6 +542,167 @@ def set_eval_on_sympify(eval_on_sympy: bool = True) -> None:
 
     else:
         logger.debug("set_eval_on_sympify has no effect when not using symengine")
+
+
+# --------------------------------------------------------------------------------
+# Custom functions sign_no_zero and copysign_no_zero
+# --------------------------------------------------------------------------------
+
+
+class SignNoZero(_sympy_py.Function):
+    @classmethod
+    def eval(cls, *args: T.Any) -> T.Any:
+        # NOTE(aaron): This doesn't implement nice simplifications like
+        #
+        #     x * sign_no_zero(y) -> copysign_no_zero(x, y) if x > 0
+        #
+        # We can't implement those on a Function afaik.  We should implement pre-CSE
+        # optimizations that do this
+        if len(args) != 1:
+            raise ValueError(f"sign_no_zero takes one argument, got {len(args)}")
+
+        x = args[0]
+        if x.is_positive:
+            return _sympy_py.S.One
+        elif x.is_negative:
+            return _sympy_py.S.NegativeOne
+        elif x.is_zero:
+            return _sympy_py.S.One
+        else:
+            return None
+
+    # --------------------------------------------------------------------------------
+    # Override print functions for SymPy printers
+    #
+    # For SymForce-only printers, like PyTorch, we don't need to override here.  We do this so that
+    # printing these works if you use the actual SymPy printers (like
+    # sympy.printing.pycode.PythonCodePrinter) for something, in addition to the SymForce subclasses
+    # (like symforce.codegen.backends.python.python_code_printer.PythonCodePrinter)
+    # --------------------------------------------------------------------------------
+
+    def _sympystr(self, printer: _sympy_py.printing.StrPrinter, **kwargs: T.Any) -> T.Any:
+        return f"sign_no_zero({printer._print(self.args[0], **kwargs)})"
+
+    def _pretty(self, printer: T.Any, **kwargs: T.Any) -> T.Any:
+        return printer._print_Function(self, func_name="sign_no_zero")
+
+    def _latex(self, printer: T.Any, **kwargs: T.Any) -> T.Any:
+        name = printer._hprint_Function("sign_no_zero")
+        arg = printer._print(self.args[0], **kwargs)
+        can_fold_brackets = printer._settings[
+            "fold_func_brackets"
+        ] and not printer._needs_function_brackets(self.args[0])
+        if can_fold_brackets:
+            return f"{name}{arg}"
+        else:
+            return rf"{name}{{\left({arg} \right)}}"
+
+    def _pythoncode(self, printer: T.Any, **kwargs: T.Any) -> T.Any:
+        f = printer._module_format("math.copysign")
+        arg0 = printer._print(self.args[0], **kwargs)
+        return f"{f}(1, {arg0})"
+
+    def _eval_evalf(self, prec: T.Any) -> T.Any:
+        return (2 * _sympy_py.Min(_sympy_py.sign(self.args[0]), 0) + 1)._eval_evalf(prec)
+
+    @staticmethod
+    def fdiff(argindex: T.Optional[int] = 1) -> T.Any:
+        assert argindex == 1
+        return _sympy_py.S.Zero
+
+
+SymPySignNoZero = SignNoZero
+
+
+class CopysignNoZero(_sympy_py.Function):
+    @classmethod
+    def eval(cls, *args: T.Any) -> T.Any:
+        if len(args) != 2:
+            raise ValueError(f"copysign_no_zero takes two arguments, got {len(args)}")
+
+        x = args[0]
+        y = args[1]
+
+        if x.is_zero:
+            return x
+        elif x.is_positive and (y.is_positive or y.is_zero):
+            return x
+        elif x.is_negative and y.is_negative:
+            return x
+        elif x.is_negative and (y.is_positive or y.is_zero):
+            return -x
+        elif x.is_positive and y.is_negative:
+            return -x
+        else:
+            return None
+
+    # --------------------------------------------------------------------------------
+    # Override print functions for SymPy printers
+    #
+    # For SymForce-only printers, like PyTorch, we don't need to override here.  We do this so that
+    # printing these works if you use the actual SymPy printers (like
+    # sympy.printing.pycode.PythonCodePrinter) for something, in addition to the SymForce subclasses
+    # (like symforce.codegen.backends.python.python_code_printer.PythonCodePrinter)
+    # --------------------------------------------------------------------------------
+
+    def _sympystr(self, printer: _sympy_py.printing.StrPrinter, **kwargs: T.Any) -> T.Any:
+        arg0 = printer._print(self.args[0], **kwargs)
+        arg1 = printer._print(self.args[1], **kwargs)
+        return f"copysign_no_zero({arg0}, {arg1})"
+
+    def _pretty(self, printer: T.Any, **kwargs: T.Any) -> T.Any:
+        return printer._print_Function(self, func_name="copysign_no_zero")
+
+    def _latex(self, printer: T.Any, **kwargs: T.Any) -> T.Any:
+        name = printer._hprint_Function("copysign_no_zero")
+        arg0 = printer._print(self.args[0], **kwargs)
+        arg1 = printer._print(self.args[1], **kwargs)
+        return rf"{name}{{\left({arg0}, {arg1} \right)}}"
+
+    def _pythoncode(self, printer: T.Any, **kwargs: T.Any) -> T.Any:
+        f = printer._module_format("math.copysign")
+        arg0 = printer._print(self.args[0], **kwargs)
+        arg1 = printer._print(self.args[1], **kwargs)
+        return f"{f}({arg0}, {arg1})"
+
+    def _eval_evalf(self, prec: T.Any) -> T.Any:
+        return (_sympy_py.Abs(self.args[0]) * SymPySignNoZero(self.args[1]))._eval_evalf(prec)
+
+    def fdiff(self, argindex: T.Optional[int] = 1) -> T.Any:
+        if argindex == 1:
+            return SymPySignNoZero(self.args[0]) * SymPySignNoZero(self.args[1])
+        elif argindex == 2:
+            return _sympy_py.S.Zero
+
+
+SymPyCopysignNoZero = CopysignNoZero
+
+
+if not T.TYPE_CHECKING and sympy.__package__ == "symengine":
+    del SignNoZero
+    del CopysignNoZero
+    from symengine import CopysignNoZero
+    from symengine import SignNoZero
+elif sympy.__package__ == "sympy":
+    pass
+else:
+    raise symforce.InvalidSymbolicApiError(sympy.__package__)
+
+
+def sign_no_zero(x: Scalar) -> sf.Expr:
+    """
+    Returns -1 if x is negative, 1 if x is positive, and 1 if x is zero.
+    """
+    return SignNoZero(x)
+
+
+def copysign_no_zero(x: Scalar, y: Scalar) -> Scalar:
+    """
+    Returns a value with the magnitude of x and sign of y
+
+    If y is zero, returns positive x.
+    """
+    return CopysignNoZero(x, y)
 
 
 # --------------------------------------------------------------------------------

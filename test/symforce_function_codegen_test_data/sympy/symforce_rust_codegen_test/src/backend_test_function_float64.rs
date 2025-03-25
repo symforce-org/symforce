@@ -75,8 +75,10 @@ pub mod sym {
         res51: Option<&mut f64>,
         res52: Option<&mut f64>,
         res53: Option<&mut f64>,
+        res54: Option<&mut f64>,
+        res55: Option<&mut f64>,
     ) -> () {
-        // Total ops: 49
+        // Total ops: 51
 
         // Intermediate terms (5)
         let _tmp0: f64 = 2_f64.ln();
@@ -85,7 +87,7 @@ pub mod sym {
         let _tmp3: f64 = x.powf((1_f64 / 2_f64));
         let _tmp4: f64 = x + y;
 
-        // Output terms (54)
+        // Output terms (56)
         if let Some(res0) = res0 {
             *res0 = 0.0;
         }
@@ -273,39 +275,47 @@ pub mod sym {
         }
 
         if let Some(res45) = res45 {
-            *res45 = x.atan2(y);
+            *res45 = x.signum();
         }
 
         if let Some(res46) = res46 {
-            *res46 = x.max(y);
+            *res46 = x.atan2(y);
         }
 
         if let Some(res47) = res47 {
-            *res47 = x.min(y);
+            *res47 = x.max(y);
         }
 
         if let Some(res48) = res48 {
-            *res48 = x - y * (x / y).floor();
+            *res48 = x.min(y);
         }
 
         if let Some(res49) = res49 {
-            *res49 = _tmp4;
+            *res49 = x - y * (x / y).floor();
         }
 
         if let Some(res50) = res50 {
-            *res50 = x * y;
+            *res50 = _tmp4;
         }
 
         if let Some(res51) = res51 {
-            *res51 = x.powf(y);
+            *res51 = x * y;
         }
 
         if let Some(res52) = res52 {
-            *res52 = _tmp4.powf((2_f64 / 1_f64));
+            *res52 = x.powf(y);
         }
 
         if let Some(res53) = res53 {
-            *res53 = _tmp4.powf((3_f64 / 1_f64));
+            *res53 = _tmp4.powf((2_f64 / 1_f64));
+        }
+
+        if let Some(res54) = res54 {
+            *res54 = _tmp4.powf((3_f64 / 1_f64));
+        }
+
+        if let Some(res55) = res55 {
+            *res55 = x.copysign(y);
         }
     }
 } // mod sym

@@ -34,8 +34,9 @@ __host__ __device__ void BackendTestFunctionFloat32(
     float* const __restrict__ res51, float* const __restrict__ res52,
     float* const __restrict__ res53, float* const __restrict__ res54,
     float* const __restrict__ res55, float* const __restrict__ res56,
-    float* const __restrict__ res57) {
-  // Total ops: 53
+    float* const __restrict__ res57, float* const __restrict__ res58,
+    float* const __restrict__ res59) {
+  // Total ops: 55
 
   // Intermediate terms (5)
   const float _tmp0 = M_LN2;
@@ -44,7 +45,7 @@ __host__ __device__ void BackendTestFunctionFloat32(
   const float _tmp3 = sqrtf(x);
   const float _tmp4 = x + y;
 
-  // Output terms (58)
+  // Output terms (60)
   if (res0 != nullptr) {
     *res0 = 0;
   }
@@ -226,55 +227,63 @@ __host__ __device__ void BackendTestFunctionFloat32(
   }
 
   if (res45 != nullptr) {
-    *res45 = erfcf(x);
+    *res45 = copysignf(1.0, x);
   }
 
   if (res46 != nullptr) {
-    *res46 = lgammaf(x);
+    *res46 = erfcf(x);
   }
 
   if (res47 != nullptr) {
-    *res47 = erff(x);
+    *res47 = lgammaf(x);
   }
 
   if (res48 != nullptr) {
-    *res48 = tgammaf(x);
+    *res48 = erff(x);
   }
 
   if (res49 != nullptr) {
-    *res49 = atan2f(x, y);
+    *res49 = tgammaf(x);
   }
 
   if (res50 != nullptr) {
-    *res50 = fmaxf(x, y);
+    *res50 = atan2f(x, y);
   }
 
   if (res51 != nullptr) {
-    *res51 = fminf(x, y);
+    *res51 = fmaxf(x, y);
   }
 
   if (res52 != nullptr) {
-    *res52 = fmodf(x, y);
+    *res52 = fminf(x, y);
   }
 
   if (res53 != nullptr) {
-    *res53 = _tmp4;
+    *res53 = fmodf(x, y);
   }
 
   if (res54 != nullptr) {
-    *res54 = x * y;
+    *res54 = _tmp4;
   }
 
   if (res55 != nullptr) {
-    *res55 = powf(x, y);
+    *res55 = x * y;
   }
 
   if (res56 != nullptr) {
-    *res56 = powf(_tmp4, 2);
+    *res56 = powf(x, y);
   }
 
   if (res57 != nullptr) {
-    *res57 = powf(_tmp4, 3);
+    *res57 = powf(_tmp4, 2);
+  }
+
+  if (res58 != nullptr) {
+    *res58 = powf(_tmp4, 3);
+  }
+
+  if (res59 != nullptr) {
+    *res59 = copysignf(x, y);
   }
 }
 

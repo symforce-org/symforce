@@ -422,6 +422,19 @@ public:
         throw SymEngineException(
             "Unexpectedly reached end of Piecewise function.");
     }
+
+    void bvisit(const SignNoZero &x)
+    {
+        double tmp = apply(*(x.get_arg()));
+        result_ = std::copysign(1.0, tmp);
+    }
+
+    void bvisit(const CopysignNoZero &x)
+    {
+        double tmp1 = apply(*(x.get_arg1()));
+        double tmp2 = apply(*(x.get_arg2()));
+        result_ = std::copysign(tmp1, tmp2);
+    }
 };
 
 class EvalRealDoubleVisitorPattern
@@ -672,6 +685,17 @@ std::vector<fn> init_eval_double()
         double tmp = eval_double_single_dispatch(
             *(down_cast<const Erfc &>(x)).get_args()[0]);
         return ::erfc(tmp);
+    };
+    table[SYMENGINE_SIGN_NO_ZERO] = [](const Basic &x) {
+        double tmp = eval_double_single_dispatch(
+            *(down_cast<const SignNoZero &>(x)).get_arg());
+        return std::copysign(1.0, tmp);
+    };
+    table[SYMENGINE_COPYSIGN_NO_ZERO] = [](const Basic &x) {
+        const CopysignNoZero &c = down_cast<const CopysignNoZero &>(x);
+        double tmp1 = eval_double_single_dispatch(*(c.get_arg1()));
+        double tmp2 = eval_double_single_dispatch(*(c.get_arg2()));
+        return std::copysign(tmp1, tmp2);
     };
     table[SYMENGINE_EQUALITY] = [](const Basic &x) {
         double lhs = eval_double_single_dispatch(

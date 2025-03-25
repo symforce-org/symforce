@@ -7,6 +7,7 @@ import sympy
 from sympy.printing.c import get_math_macros
 from sympy.printing.cxx import CXX11CodePrinter
 
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -159,6 +160,15 @@ class CppCodePrinter(CXX11CodePrinter):
         return "{}[static_cast<size_t>({})]".format(
             expr.parent, self._print(expr.j + expr.i * expr.parent.shape[1])
         )
+
+    def _print_SignNoZero(self, expr: sf.SymPySignNoZero) -> str:
+        arg = self._print(expr.args[0])
+        return f"std::copysign(Scalar(1.0), {arg})"
+
+    def _print_CopysignNoZero(self, expr: sf.SymPyCopysignNoZero) -> str:
+        arg0 = self._print(expr.args[0])
+        arg1 = self._print(expr.args[1])
+        return f"std::copysign({arg0}, {arg1})"
 
 
 class ComplexCppCodePrinter(CppCodePrinter):

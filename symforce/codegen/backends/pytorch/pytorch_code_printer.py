@@ -8,6 +8,7 @@ import sympy
 from sympy.printing.codeprinter import CodePrinter
 from sympy.printing.pycode import PythonCodePrinter
 
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 _known_functions_torch = {
@@ -39,6 +40,7 @@ _known_functions_torch = {
     "Sqrt": "sqrt",
     "tan": "tan",
     "tanh": "tanh",
+    "CopysignNoZero": "copysign",
 }
 
 _known_constants_math = {
@@ -68,6 +70,10 @@ class PyTorchCodePrinter(CodePrinter):
     This is more different from PythonCodePrinter than it is similar, so we go mostly from scratch
     and call some methods from that printer where desired.
     """
+
+    # NOTE(aaron): We need to override this from the value set by StrPrinter, so that we don't use
+    # expressions' implementations of `_sympystr`, even though we don't make use of `_pytorch`.
+    printmethod = "_pytorch"
 
     known_functions = _known_functions_torch
     language = "Python"
@@ -174,6 +180,10 @@ class PyTorchCodePrinter(CodePrinter):
     def _print_gamma(self, expr: sympy.functions.special.gamma_functions.gamma) -> str:
         # PyTorch does not have the gamma function, this is the best we can do
         return f"torch.lgamma({self._print(expr.args[0])}).exp()"
+
+    def _print_SignNoZero(self, expr: sf.SymPySignNoZero) -> str:
+        arg = self._print(expr.args[0])
+        return f"torch.copysign(torch.tensor(1.0, **tensor_kwargs), {arg})"
 
 
 for k in _known_functions_torch:

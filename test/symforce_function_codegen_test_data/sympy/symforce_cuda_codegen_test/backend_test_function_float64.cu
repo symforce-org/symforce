@@ -36,8 +36,9 @@ __host__ __device__ void BackendTestFunctionFloat64(
     double* const __restrict__ res51, double* const __restrict__ res52,
     double* const __restrict__ res53, double* const __restrict__ res54,
     double* const __restrict__ res55, double* const __restrict__ res56,
-    double* const __restrict__ res57) {
-  // Total ops: 53
+    double* const __restrict__ res57, double* const __restrict__ res58,
+    double* const __restrict__ res59) {
+  // Total ops: 55
 
   // Intermediate terms (5)
   const double _tmp0 = M_LN2;
@@ -46,7 +47,7 @@ __host__ __device__ void BackendTestFunctionFloat64(
   const double _tmp3 = sqrt(x);
   const double _tmp4 = x + y;
 
-  // Output terms (58)
+  // Output terms (60)
   if (res0 != nullptr) {
     *res0 = 0;
   }
@@ -228,55 +229,63 @@ __host__ __device__ void BackendTestFunctionFloat64(
   }
 
   if (res45 != nullptr) {
-    *res45 = erfc(x);
+    *res45 = copysign(1.0, x);
   }
 
   if (res46 != nullptr) {
-    *res46 = lgamma(x);
+    *res46 = erfc(x);
   }
 
   if (res47 != nullptr) {
-    *res47 = erf(x);
+    *res47 = lgamma(x);
   }
 
   if (res48 != nullptr) {
-    *res48 = tgamma(x);
+    *res48 = erf(x);
   }
 
   if (res49 != nullptr) {
-    *res49 = atan2(x, y);
+    *res49 = tgamma(x);
   }
 
   if (res50 != nullptr) {
-    *res50 = fmax(x, y);
+    *res50 = atan2(x, y);
   }
 
   if (res51 != nullptr) {
-    *res51 = fmin(x, y);
+    *res51 = fmax(x, y);
   }
 
   if (res52 != nullptr) {
-    *res52 = fmod(x, y);
+    *res52 = fmin(x, y);
   }
 
   if (res53 != nullptr) {
-    *res53 = _tmp4;
+    *res53 = fmod(x, y);
   }
 
   if (res54 != nullptr) {
-    *res54 = x * y;
+    *res54 = _tmp4;
   }
 
   if (res55 != nullptr) {
-    *res55 = pow(x, y);
+    *res55 = x * y;
   }
 
   if (res56 != nullptr) {
-    *res56 = pow(_tmp4, 2);
+    *res56 = pow(x, y);
   }
 
   if (res57 != nullptr) {
-    *res57 = pow(_tmp4, 3);
+    *res57 = pow(_tmp4, 2);
+  }
+
+  if (res58 != nullptr) {
+    *res58 = pow(_tmp4, 3);
+  }
+
+  if (res59 != nullptr) {
+    *res59 = copysign(x, y);
   }
 }
 

@@ -9,7 +9,9 @@ import sympy
 from sympy.codegen.ast import float32
 from sympy.codegen.ast import float64
 from sympy.printing.rust import RustCodePrinter as SympyRustCodePrinter
+from sympy.printing.rust import known_functions as sympy_known_functions
 
+import symforce.internal.symbolic as sf
 from symforce import typing as T
 
 
@@ -30,6 +32,15 @@ class RustCodePrinter(SympyRustCodePrinter):
         override_methods: T.Optional[T.Dict[sympy.Function, str]] = None,
     ) -> None:
         super().__init__(dict(settings or {}))
+
+        self.known_functions = dict(sympy_known_functions, CopysignNoZero="copysign")
+
+        # This is bugged, before https://github.com/sympy/sympy/pull/27736
+        del self.known_functions["sign"]
+
+        if settings is not None:
+            userfuncs = settings.get("user_functions", {})
+            self.known_functions.update(userfuncs)
 
         self.scalar_type = scalar_type.value
         self.override_methods = override_methods or {}
@@ -144,3 +155,10 @@ class RustCodePrinter(SympyRustCodePrinter):
             return "core::f64::consts::E"
 
         raise NotImplementedError(f"Scalar type {self.scalar_type} not supported")
+
+    def _print_sign(self, expr: sympy.sign) -> str:
+        arg = self._print(expr.args[0])
+        return f"(if ({arg} == 0.0) {{0.0}} else {{({arg}).signum()}})"
+
+    def _print_SignNoZero(self, expr: sf.SymPySignNoZero) -> str:
+        return f"{self._print(expr.args[0])}.signum()"

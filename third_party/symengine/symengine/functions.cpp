@@ -3720,4 +3720,48 @@ RCP<const Basic> unevaluated_expr(const RCP<const Basic> &arg)
     return make_rcp<const UnevaluatedExpr>(arg);
 }
 
+SignNoZero::SignNoZero(const RCP<const Basic> &arg)
+    : OneArgFunction(arg)
+{
+    SYMENGINE_ASSIGN_TYPEID()
+    SYMENGINE_ASSERT(is_canonical(arg))
+}
+
+bool SignNoZero::is_canonical(const RCP<const Basic> &arg) const
+{
+    return true;
+}
+
+RCP<const Basic> SignNoZero::create(const RCP<const Basic> &arg) const
+{
+    return sign_no_zero(arg);
+}
+
+RCP<const Basic> sign_no_zero(const RCP<const Basic> &arg)
+{
+    return make_rcp<const SignNoZero>(arg);
+}
+
+CopysignNoZero::CopysignNoZero(const RCP<const Basic> &x, const RCP<const Basic> &y)
+    : TwoArgFunction(x, y)
+{
+    SYMENGINE_ASSIGN_TYPEID()
+    SYMENGINE_ASSERT(is_canonical(x, y))
+}
+
+bool CopysignNoZero::is_canonical(const RCP<const Basic> &x, const RCP<const Basic> &y) const
+{
+    return true;
+}
+
+RCP<const Basic> CopysignNoZero::create(const RCP<const Basic> &x, const RCP<const Basic> &y) const
+{
+    return copysign_no_zero(x, y);
+}
+
+RCP<const Basic> copysign_no_zero(const RCP<const Basic> &x, const RCP<const Basic> &y)
+{
+    return make_rcp<const CopysignNoZero>(x, y);
+}
+
 } // SymEngine

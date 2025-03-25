@@ -34,7 +34,7 @@ def _broadcast_and_stack(tensors, dim=-1):
 
 
 def backend_test_function(x, y, tensor_kwargs=None):
-    # type: (torch.Tensor, torch.Tensor, T.Optional[TensorKwargs]) -> T.Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
+    # type: (torch.Tensor, torch.Tensor, T.Optional[TensorKwargs]) -> T.Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
     """
     Given input symbols `x` and `y`, return a list of expressions which provide good test coverage
     over symbolic functions supported by symforce.
@@ -60,7 +60,7 @@ def backend_test_function(x, y, tensor_kwargs=None):
     default to the device and dtype of the first input tensor, or the empty dict if there are no inputs.
     """
 
-    # Total ops: 60
+    # Total ops: 62
 
     # Deduce expected tensor device and dtype if not provided
     if tensor_kwargs is None:
@@ -127,19 +127,21 @@ def backend_test_function(x, y, tensor_kwargs=None):
     _res44 = (torch.tensor(1 / 2, **tensor_kwargs)) * torch.sign(x) + torch.tensor(
         1 / 2, **tensor_kwargs
     )
-    _res45 = torch.lgamma(x)
-    _res46 = torch.erfc(x)
-    _res47 = torch.erf(x)
-    _res48 = torch.lgamma(x).exp()
-    _res49 = torch.atan2(x, y)
-    _res50 = torch.maximum(x, y)
-    _res51 = torch.minimum(x, y)
-    _res52 = x - y * torch.floor(x / y)
-    _res53 = _tmp4
-    _res54 = x * y
-    _res55 = torch.pow(x, y)
-    _res56 = torch.pow(_tmp4, torch.tensor(2, **tensor_kwargs))
-    _res57 = torch.pow(_tmp4, torch.tensor(3, **tensor_kwargs))
+    _res45 = torch.copysign(torch.tensor(1.0, **tensor_kwargs), x)
+    _res46 = torch.lgamma(x)
+    _res47 = torch.erfc(x)
+    _res48 = torch.erf(x)
+    _res49 = torch.lgamma(x).exp()
+    _res50 = torch.atan2(x, y)
+    _res51 = torch.maximum(x, y)
+    _res52 = torch.minimum(x, y)
+    _res53 = x - y * torch.floor(x / y)
+    _res54 = _tmp4
+    _res55 = x * y
+    _res56 = torch.pow(x, y)
+    _res57 = torch.pow(_tmp4, torch.tensor(2, **tensor_kwargs))
+    _res58 = torch.pow(_tmp4, torch.tensor(3, **tensor_kwargs))
+    _res59 = torch.copysign(x, y)
 
     return (
         _res0,
@@ -200,4 +202,6 @@ def backend_test_function(x, y, tensor_kwargs=None):
         _res55,
         _res56,
         _res57,
+        _res58,
+        _res59,
     )

@@ -52,19 +52,14 @@ class LieGroupOps(object):
     def to_tangent(a, epsilon):
         # type: (sym.Unit3, float) -> numpy.ndarray
 
-        # Total ops: 17
+        # Total ops: 14
 
         # Input arrays
         _a = a.data
 
         # Intermediate terms (2)
         _tmp0 = min(abs(_a[3]), 1 - epsilon)
-        _tmp1 = (
-            2
-            * (2 * min(0, (0.0 if _a[3] == 0 else math.copysign(1, _a[3]))) + 1)
-            * math.acos(_tmp0)
-            / math.sqrt(1 - _tmp0**2)
-        )
+        _tmp1 = 2 * math.copysign(1, _a[3]) * math.acos(_tmp0) / math.sqrt(1 - _tmp0**2)
 
         # Output terms
         _res = numpy.zeros(2)
@@ -110,7 +105,7 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Unit3, sym.Unit3, float) -> numpy.ndarray
 
-        # Total ops: 38
+        # Total ops: 35
 
         # Input arrays
         _a = a.data
@@ -119,12 +114,7 @@ class LieGroupOps(object):
         # Intermediate terms (3)
         _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
         _tmp1 = min(abs(_tmp0), 1 - epsilon)
-        _tmp2 = (
-            2
-            * (2 * min(0, (0.0 if _tmp0 == 0 else math.copysign(1, _tmp0))) + 1)
-            * math.acos(_tmp1)
-            / math.sqrt(1 - _tmp1**2)
-        )
+        _tmp2 = 2 * math.copysign(1, _tmp0) * math.acos(_tmp1) / math.sqrt(1 - _tmp1**2)
 
         # Output terms
         _res = numpy.zeros(2)
@@ -136,7 +126,7 @@ class LieGroupOps(object):
     def interpolate(a, b, alpha, epsilon):
         # type: (sym.Unit3, sym.Unit3, float, float) -> sym.Unit3
 
-        # Total ops: 78
+        # Total ops: 75
 
         # Input arrays
         _a = a.data
@@ -144,19 +134,19 @@ class LieGroupOps(object):
 
         # Intermediate terms (14)
         _tmp0 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
-        _tmp1 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _tmp2 = min(abs(_tmp1), 1 - epsilon)
-        _tmp3 = 1 - _tmp2**2
-        _tmp4 = 2 * min(0, (0.0 if _tmp1 == 0 else math.copysign(1, _tmp1))) + 1
-        _tmp5 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
-        _tmp6 = math.acos(_tmp2)
-        _tmp7 = 4 * _tmp4**2 * _tmp6**2 * alpha**2 / _tmp3
-        _tmp8 = math.sqrt(_tmp0**2 * _tmp7 + _tmp5**2 * _tmp7 + epsilon**2)
+        _tmp1 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
+        _tmp2 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
+        _tmp3 = min(abs(_tmp2), 1 - epsilon)
+        _tmp4 = 1 - _tmp3**2
+        _tmp5 = math.acos(_tmp3)
+        _tmp6 = math.copysign(1, _tmp2)
+        _tmp7 = 4 * _tmp5**2 * _tmp6**2 * alpha**2 / _tmp4
+        _tmp8 = math.sqrt(_tmp0**2 * _tmp7 + _tmp1**2 * _tmp7 + epsilon**2)
         _tmp9 = (1.0 / 2.0) * _tmp8
-        _tmp10 = 2 * _tmp4 * _tmp6 * alpha * math.sin(_tmp9) / (math.sqrt(_tmp3) * _tmp8)
+        _tmp10 = 2 * _tmp5 * _tmp6 * alpha * math.sin(_tmp9) / (math.sqrt(_tmp4) * _tmp8)
         _tmp11 = _tmp0 * _tmp10
         _tmp12 = math.cos(_tmp9)
-        _tmp13 = _tmp10 * _tmp5
+        _tmp13 = _tmp1 * _tmp10
 
         # Output terms
         _res = [0.0] * 4

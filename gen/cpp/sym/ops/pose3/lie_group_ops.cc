@@ -42,15 +42,15 @@ sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::FromTangent(const TangentVec& vec
 template <typename Scalar>
 typename LieGroupOps<Pose3<Scalar>>::TangentVec LieGroupOps<Pose3<Scalar>>::ToTangent(
     const sym::Pose3<Scalar>& a, const Scalar epsilon) {
-  // Total ops: 17
+  // Total ops: 14
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
 
   // Intermediate terms (2)
   const Scalar _tmp0 = std::min<Scalar>(std::fabs(_a[3]), 1 - epsilon);
-  const Scalar _tmp1 = 2 * (2 * std::min<Scalar>(0, (((_a[3]) > 0) - ((_a[3]) < 0))) + 1) *
-                       std::acos(_tmp0) / std::sqrt(Scalar(1 - std::pow(_tmp0, Scalar(2))));
+  const Scalar _tmp1 = 2 * std::copysign(Scalar(1.0), _a[3]) * std::acos(_tmp0) /
+                       std::sqrt(Scalar(1 - std::pow(_tmp0, Scalar(2))));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 6, 1> _res;
@@ -104,7 +104,7 @@ sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::Retract(const sym::Pose3<Scalar>&
 template <typename Scalar>
 typename LieGroupOps<Pose3<Scalar>>::TangentVec LieGroupOps<Pose3<Scalar>>::LocalCoordinates(
     const sym::Pose3<Scalar>& a, const sym::Pose3<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 50
+  // Total ops: 47
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
@@ -114,9 +114,8 @@ typename LieGroupOps<Pose3<Scalar>>::TangentVec LieGroupOps<Pose3<Scalar>>::Loca
   const Scalar _tmp0 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2];
   const Scalar _tmp1 = _a[3] * _b[3];
   const Scalar _tmp2 = std::min<Scalar>(1 - epsilon, std::fabs(_tmp0 - _tmp1));
-  const Scalar _tmp3 =
-      2 * (2 * std::min<Scalar>(0, (((-_tmp0 + _tmp1) > 0) - ((-_tmp0 + _tmp1) < 0))) + 1) *
-      std::acos(_tmp2) / std::sqrt(Scalar(1 - std::pow(_tmp2, Scalar(2))));
+  const Scalar _tmp3 = 2 * std::copysign(Scalar(1.0), -_tmp0 + _tmp1) * std::acos(_tmp2) /
+                       std::sqrt(Scalar(1 - std::pow(_tmp2, Scalar(2))));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 6, 1> _res;
@@ -136,42 +135,42 @@ sym::Pose3<Scalar> LieGroupOps<Pose3<Scalar>>::Interpolate(const sym::Pose3<Scal
                                                            const sym::Pose3<Scalar>& b,
                                                            const Scalar alpha,
                                                            const Scalar epsilon) {
-  // Total ops: 108
+  // Total ops: 106
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 7, 1>& _b = b.Data();
 
-  // Intermediate terms (17)
-  const Scalar _tmp0 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2];
-  const Scalar _tmp1 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1];
-  const Scalar _tmp2 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2];
-  const Scalar _tmp3 = _a[3] * _b[3];
-  const Scalar _tmp4 = std::min<Scalar>(1 - epsilon, std::fabs(_tmp2 - _tmp3));
+  // Intermediate terms (18)
+  const Scalar _tmp0 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1];
+  const Scalar _tmp1 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2];
+  const Scalar _tmp2 = _a[3] * _b[3];
+  const Scalar _tmp3 = std::copysign(Scalar(1.0), -_tmp1 + _tmp2);
+  const Scalar _tmp4 = std::min<Scalar>(1 - epsilon, std::fabs(_tmp1 - _tmp2));
   const Scalar _tmp5 = std::acos(_tmp4);
-  const Scalar _tmp6 =
-      2 * std::min<Scalar>(0, (((-_tmp2 + _tmp3) > 0) - ((-_tmp2 + _tmp3) < 0))) + 1;
+  const Scalar _tmp6 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0];
   const Scalar _tmp7 = 1 - std::pow(_tmp4, Scalar(2));
-  const Scalar _tmp8 = 4 * std::pow(_tmp5, Scalar(2)) * std::pow(_tmp6, Scalar(2)) *
+  const Scalar _tmp8 = 4 * std::pow(_tmp3, Scalar(2)) * std::pow(_tmp5, Scalar(2)) *
                        std::pow(alpha, Scalar(2)) / _tmp7;
-  const Scalar _tmp9 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0];
+  const Scalar _tmp9 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2];
   const Scalar _tmp10 =
-      std::sqrt(Scalar(std::pow(_tmp0, Scalar(2)) * _tmp8 + std::pow(_tmp1, Scalar(2)) * _tmp8 +
+      std::sqrt(Scalar(std::pow(_tmp0, Scalar(2)) * _tmp8 + std::pow(_tmp6, Scalar(2)) * _tmp8 +
                        _tmp8 * std::pow(_tmp9, Scalar(2)) + std::pow(epsilon, Scalar(2))));
   const Scalar _tmp11 = (Scalar(1) / Scalar(2)) * _tmp10;
-  const Scalar _tmp12 = 2 * _tmp5 * _tmp6 * alpha * std::sin(_tmp11) / (_tmp10 * std::sqrt(_tmp7));
-  const Scalar _tmp13 = _tmp0 * _tmp12;
-  const Scalar _tmp14 = _tmp1 * _tmp12;
-  const Scalar _tmp15 = std::cos(_tmp11);
-  const Scalar _tmp16 = _tmp12 * _tmp9;
+  const Scalar _tmp12 = 2 * _tmp3 * _tmp5 * alpha * std::sin(_tmp11) / (_tmp10 * std::sqrt(_tmp7));
+  const Scalar _tmp13 = _a[2] * _tmp12;
+  const Scalar _tmp14 = std::cos(_tmp11);
+  const Scalar _tmp15 = _a[1] * _tmp12;
+  const Scalar _tmp16 = _a[3] * _tmp12;
+  const Scalar _tmp17 = _a[0] * _tmp12;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 7, 1> _res;
 
-  _res[0] = _a[0] * _tmp15 + _a[1] * _tmp13 - _a[2] * _tmp14 + _a[3] * _tmp16;
-  _res[1] = -_a[0] * _tmp13 + _a[1] * _tmp15 + _a[2] * _tmp16 + _a[3] * _tmp14;
-  _res[2] = _a[0] * _tmp14 - _a[1] * _tmp16 + _a[2] * _tmp15 + _a[3] * _tmp13;
-  _res[3] = -_a[0] * _tmp16 - _a[1] * _tmp14 - _a[2] * _tmp13 + _a[3] * _tmp15;
+  _res[0] = _a[0] * _tmp14 - _tmp0 * _tmp13 + _tmp15 * _tmp9 + _tmp16 * _tmp6;
+  _res[1] = _a[1] * _tmp14 + _tmp0 * _tmp16 + _tmp13 * _tmp6 - _tmp17 * _tmp9;
+  _res[2] = _a[2] * _tmp14 + _tmp0 * _tmp17 - _tmp15 * _tmp6 + _tmp16 * _tmp9;
+  _res[3] = _a[3] * _tmp14 - _tmp0 * _tmp15 - _tmp13 * _tmp9 - _tmp17 * _tmp6;
   _res[4] = _a[4] + alpha * (-_a[4] + _b[4]);
   _res[5] = _a[5] + alpha * (-_a[5] + _b[5]);
   _res[6] = _a[6] + alpha * (-_a[6] + _b[6]);

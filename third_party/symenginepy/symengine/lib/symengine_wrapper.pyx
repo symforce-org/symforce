@@ -265,6 +265,10 @@ cdef object c2py(rcp_const_basic o):
         r = Function.__new__(UnevaluatedExpr)
     elif (symengine.is_a_DataBufferElement(deref(o))):
         r = Expr.__new__(DataBufferElement)
+    elif (symengine.is_a_SignNoZero(deref(o))):
+        r = Function.__new__(SignNoZero)
+    elif (symengine.is_a_CopysignNoZero(deref(o))):
+        r = Function.__new__(CopysignNoZero)
     else:
         raise Exception("Unsupported SymEngine class.")
     r.thisptr = o
@@ -476,6 +480,10 @@ def sympy2symengine(a, raise_error=False):
         return set_complement(*(a.args))
     elif isinstance(a, sympy.ImageSet):
         return imageset(*(a.args))
+    elif a.__class__.__name__ == "SignNoZero":
+        return SignNoZero(a.args[0])
+    elif a.__class__.__name__ == "CopysignNoZero":
+        return CopysignNoZero(a.args[0], a.args[1])
     elif isinstance(a, sympy.Function):
         return PyFunction(a, a.args, a.func, sympy_module)
     elif isinstance(a, sympy.UnevaluatedExpr):
@@ -2379,6 +2387,25 @@ class OneArgFunction(Function):
         return getattr(sage, self.__class__.__name__.lower())(self.get_arg()._sage_())
 
 
+class TwoArgFunction(Function):
+
+    def get_arg1(Basic self):
+        cdef RCP[const symengine.TwoArgFunction] X = symengine.rcp_static_cast_TwoArgFunction(self.thisptr)
+        return c2py(deref(X).get_arg1())
+
+    def get_arg2(Basic self):
+        cdef RCP[const symengine.TwoArgFunction] X = symengine.rcp_static_cast_TwoArgFunction(self.thisptr)
+        return c2py(deref(X).get_arg2())
+
+    def _sympy_(self):
+        import sympy
+        return getattr(sympy, self.__class__.__name__)(self.get_arg1()._sympy_(), self.get_arg2()._sympy_(), evaluate=__EVAL_ON_SYMPY__)
+
+    def _sage_(self):
+        import sage.all as sage
+        return getattr(sage, self.__class__.__name__.lower())(self.get_arg1()._sage_(), self.get_arg2()._sage_())
+
+
 class HyperbolicFunction(OneArgFunction):
     pass
 
@@ -2735,6 +2762,27 @@ class UnevaluatedExpr(OneArgFunction):
     @property
     def is_finite(self):
         return self.args[0].is_finite
+
+
+class SignNoZero(OneArgFunction):
+    def __new__(cls, x):
+        cdef Basic X = sympify(x)
+        return c2py(symengine.sign_no_zero(X.thisptr))
+
+    def _sympy_(self):
+        import symforce.internal.symbolic as sf
+        return sf.SymPySignNoZero(self.args[0], evaluate=__EVAL_ON_SYMPY__)
+
+
+class CopysignNoZero(TwoArgFunction):
+    def __new__(cls, x, y):
+        cdef Basic X = sympify(x)
+        cdef Basic Y = sympify(y)
+        return c2py(symengine.copysign_no_zero(X.thisptr, Y.thisptr))
+
+    def _sympy_(self):
+        import symforce.internal.symbolic as sf
+        return sf.SymPyCopysignNoZero(self.args[0], self.args[1], evaluate=__EVAL_ON_SYMPY__)
 
 
 class Abs(OneArgFunction):

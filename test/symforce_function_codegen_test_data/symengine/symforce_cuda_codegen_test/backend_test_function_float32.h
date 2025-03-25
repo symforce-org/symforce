@@ -48,6 +48,7 @@ __host__ __device__ void BackendTestFunctionFloat32(
     float* const __restrict__ res51 = nullptr, float* const __restrict__ res52 = nullptr,
     float* const __restrict__ res53 = nullptr, float* const __restrict__ res54 = nullptr,
     float* const __restrict__ res55 = nullptr, float* const __restrict__ res56 = nullptr,
-    float* const __restrict__ res57 = nullptr);
+    float* const __restrict__ res57 = nullptr, float* const __restrict__ res58 = nullptr,
+    float* const __restrict__ res59 = nullptr);
 
 }  // namespace sym

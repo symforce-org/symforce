@@ -55,19 +55,14 @@ class LieGroupOps(object):
     def to_tangent(a, epsilon):
         # type: (sym.Pose3, float) -> numpy.ndarray
 
-        # Total ops: 17
+        # Total ops: 14
 
         # Input arrays
         _a = a.data
 
         # Intermediate terms (2)
         _tmp0 = min(abs(_a[3]), 1 - epsilon)
-        _tmp1 = (
-            2
-            * (2 * min(0, (0.0 if _a[3] == 0 else math.copysign(1, _a[3]))) + 1)
-            * math.acos(_tmp0)
-            / math.sqrt(1 - _tmp0**2)
-        )
+        _tmp1 = 2 * math.copysign(1, _a[3]) * math.acos(_tmp0) / math.sqrt(1 - _tmp0**2)
 
         # Output terms
         _res = numpy.zeros(6)
@@ -122,7 +117,7 @@ class LieGroupOps(object):
     def local_coordinates(a, b, epsilon):
         # type: (sym.Pose3, sym.Pose3, float) -> numpy.ndarray
 
-        # Total ops: 50
+        # Total ops: 47
 
         # Input arrays
         _a = a.data
@@ -132,12 +127,7 @@ class LieGroupOps(object):
         _tmp0 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2]
         _tmp1 = _a[3] * _b[3]
         _tmp2 = min(1 - epsilon, abs(_tmp0 - _tmp1))
-        _tmp3 = (
-            2
-            * (2 * min(0, (0.0 if -_tmp0 + _tmp1 == 0 else math.copysign(1, -_tmp0 + _tmp1))) + 1)
-            * math.acos(_tmp2)
-            / math.sqrt(1 - _tmp2**2)
-        )
+        _tmp3 = 2 * math.copysign(1, -_tmp0 + _tmp1) * math.acos(_tmp2) / math.sqrt(1 - _tmp2**2)
 
         # Output terms
         _res = numpy.zeros(6)
@@ -153,37 +143,38 @@ class LieGroupOps(object):
     def interpolate(a, b, alpha, epsilon):
         # type: (sym.Pose3, sym.Pose3, float, float) -> sym.Pose3
 
-        # Total ops: 108
+        # Total ops: 106
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (17)
-        _tmp0 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]
-        _tmp1 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
-        _tmp2 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2]
-        _tmp3 = _a[3] * _b[3]
-        _tmp4 = min(1 - epsilon, abs(_tmp2 - _tmp3))
+        # Intermediate terms (18)
+        _tmp0 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
+        _tmp1 = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2]
+        _tmp2 = _a[3] * _b[3]
+        _tmp3 = math.copysign(1, -_tmp1 + _tmp2)
+        _tmp4 = min(1 - epsilon, abs(_tmp1 - _tmp2))
         _tmp5 = math.acos(_tmp4)
-        _tmp6 = 2 * min(0, (0.0 if -_tmp2 + _tmp3 == 0 else math.copysign(1, -_tmp2 + _tmp3))) + 1
+        _tmp6 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
         _tmp7 = 1 - _tmp4**2
-        _tmp8 = 4 * _tmp5**2 * _tmp6**2 * alpha**2 / _tmp7
-        _tmp9 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
-        _tmp10 = math.sqrt(_tmp0**2 * _tmp8 + _tmp1**2 * _tmp8 + _tmp8 * _tmp9**2 + epsilon**2)
+        _tmp8 = 4 * _tmp3**2 * _tmp5**2 * alpha**2 / _tmp7
+        _tmp9 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]
+        _tmp10 = math.sqrt(_tmp0**2 * _tmp8 + _tmp6**2 * _tmp8 + _tmp8 * _tmp9**2 + epsilon**2)
         _tmp11 = (1.0 / 2.0) * _tmp10
-        _tmp12 = 2 * _tmp5 * _tmp6 * alpha * math.sin(_tmp11) / (_tmp10 * math.sqrt(_tmp7))
-        _tmp13 = _tmp0 * _tmp12
-        _tmp14 = _tmp1 * _tmp12
-        _tmp15 = math.cos(_tmp11)
-        _tmp16 = _tmp12 * _tmp9
+        _tmp12 = 2 * _tmp3 * _tmp5 * alpha * math.sin(_tmp11) / (_tmp10 * math.sqrt(_tmp7))
+        _tmp13 = _a[2] * _tmp12
+        _tmp14 = math.cos(_tmp11)
+        _tmp15 = _a[1] * _tmp12
+        _tmp16 = _a[3] * _tmp12
+        _tmp17 = _a[0] * _tmp12
 
         # Output terms
         _res = [0.0] * 7
-        _res[0] = _a[0] * _tmp15 + _a[1] * _tmp13 - _a[2] * _tmp14 + _a[3] * _tmp16
-        _res[1] = -_a[0] * _tmp13 + _a[1] * _tmp15 + _a[2] * _tmp16 + _a[3] * _tmp14
-        _res[2] = _a[0] * _tmp14 - _a[1] * _tmp16 + _a[2] * _tmp15 + _a[3] * _tmp13
-        _res[3] = -_a[0] * _tmp16 - _a[1] * _tmp14 - _a[2] * _tmp13 + _a[3] * _tmp15
+        _res[0] = _a[0] * _tmp14 - _tmp0 * _tmp13 + _tmp15 * _tmp9 + _tmp16 * _tmp6
+        _res[1] = _a[1] * _tmp14 + _tmp0 * _tmp16 + _tmp13 * _tmp6 - _tmp17 * _tmp9
+        _res[2] = _a[2] * _tmp14 + _tmp0 * _tmp17 - _tmp15 * _tmp6 + _tmp16 * _tmp9
+        _res[3] = _a[3] * _tmp14 - _tmp0 * _tmp15 - _tmp13 * _tmp9 - _tmp17 * _tmp6
         _res[4] = _a[4] + alpha * (-_a[4] + _b[4])
         _res[5] = _a[5] + alpha * (-_a[5] + _b[5])
         _res[6] = _a[6] + alpha * (-_a[6] + _b[6])

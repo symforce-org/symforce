@@ -213,6 +213,7 @@ cdef extern from "<symengine/basic.h>" namespace "SymEngine":
     RCP[const Mul] rcp_static_cast_Mul "SymEngine::rcp_static_cast<const SymEngine::Mul>"(rcp_const_basic &b) nogil
     RCP[const Pow] rcp_static_cast_Pow "SymEngine::rcp_static_cast<const SymEngine::Pow>"(rcp_const_basic &b) nogil
     RCP[const OneArgFunction] rcp_static_cast_OneArgFunction "SymEngine::rcp_static_cast<const SymEngine::OneArgFunction>"(rcp_const_basic &b) nogil
+    RCP[const TwoArgFunction] rcp_static_cast_TwoArgFunction "SymEngine::rcp_static_cast<const SymEngine::TwoArgFunction>"(rcp_const_basic &b) nogil
     RCP[const FunctionSymbol] rcp_static_cast_FunctionSymbol "SymEngine::rcp_static_cast<const SymEngine::FunctionSymbol>"(rcp_const_basic &b) nogil
     RCP[const FunctionWrapper] rcp_static_cast_FunctionWrapper "SymEngine::rcp_static_cast<const SymEngine::FunctionWrapper>"(rcp_const_basic &b) nogil
     RCP[const Abs] rcp_static_cast_Abs "SymEngine::rcp_static_cast<const SymEngine::Abs>"(rcp_const_basic &b) nogil
@@ -327,6 +328,8 @@ cdef extern from "<symengine/basic.h>" namespace "SymEngine":
     bool is_a_Or "SymEngine::is_a<SymEngine::Or>"(const Basic &b) nogil
     bool is_a_Xor "SymEngine::is_a<SymEngine::Xor>"(const Basic &b) nogil
     bool is_a_DataBufferElement "SymEngine::is_a<SymEngine::DataBufferElement>"(const Basic &b) nogil
+    bool is_a_SignNoZero "SymEngine::is_a<SymEngine::SignNoZero>"(const Basic &b) nogil
+    bool is_a_CopysignNoZero "SymEngine::is_a<SymEngine::CopysignNoZero>"(const Basic &b) nogil
     rcp_const_basic expand(rcp_const_basic &o, bool deep) nogil except +
     void as_numer_denom(rcp_const_basic &x, const Ptr[RCP[Basic]] &numer, const Ptr[RCP[Basic]] &denom) nogil
     void as_real_imag(rcp_const_basic &x, const Ptr[RCP[Basic]] &real, const Ptr[RCP[Basic]] &imag) nogil
@@ -556,12 +559,18 @@ cdef extern from "<symengine/functions.h>" namespace "SymEngine":
     cdef rcp_const_basic log(rcp_const_basic &x) nogil except+
     cdef rcp_const_basic log(rcp_const_basic &x, rcp_const_basic &y) nogil except+
     cdef rcp_const_basic unevaluated_expr(rcp_const_basic &x) nogil except+
+    cdef rcp_const_basic sign_no_zero(rcp_const_basic &x) nogil except+
+    cdef rcp_const_basic copysign_no_zero(rcp_const_basic &x, rcp_const_basic &y) nogil except+
 
     cdef cppclass Function(Basic):
         pass
 
     cdef cppclass OneArgFunction(Function):
         rcp_const_basic get_arg() nogil
+
+    cdef cppclass TwoArgFunction(Function):
+        rcp_const_basic get_arg1() nogil
+        rcp_const_basic get_arg2() nogil
 
     cdef cppclass TrigFunction(OneArgFunction):
         pass

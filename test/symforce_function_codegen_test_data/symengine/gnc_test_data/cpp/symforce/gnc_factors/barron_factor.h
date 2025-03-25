@@ -34,7 +34,7 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
                   Eigen::Matrix<Scalar, 5, 5>* const jacobian = nullptr,
                   Eigen::Matrix<Scalar, 5, 5>* const hessian = nullptr,
                   Eigen::Matrix<Scalar, 5, 1>* const rhs = nullptr) {
-  // Total ops: 105
+  // Total ops: 102
 
   // Input arrays
 
@@ -47,7 +47,7 @@ void BarronFactor(const Eigen::Matrix<Scalar, 5, 1>& x, const Eigen::Matrix<Scal
   const Scalar _tmp5 = Scalar(1.0) / (_tmp4);
   const Scalar _tmp6 = _tmp2 * _tmp5 + 1;
   const Scalar _tmp7 = 2 - _tmp3;
-  const Scalar _tmp8 = _tmp7 + eps * (2 * std::min<Scalar>(0, (((_tmp7) > 0) - ((_tmp7) < 0))) + 1);
+  const Scalar _tmp8 = _tmp7 + eps * std::copysign(Scalar(1.0), _tmp7);
   const Scalar _tmp9 = (Scalar(1) / Scalar(2)) * _tmp8;
   const Scalar _tmp10 = 2 * _tmp4 / _tmp8;
   const Scalar _tmp11 = _tmp10 * (std::pow(_tmp6, _tmp9) - 1) + eps;
