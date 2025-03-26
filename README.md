@@ -614,6 +614,24 @@ SymForce does not currently integrate with CMake's `find_package` (see [#209](ht
 
 If you see `'sympy'` here instead of `'symengine'`, or can't import `cc_sym`, your installation is probably broken and you should submit an [issue](https://github.com/symforce-org/symforce/issues).
 
+# Limitations
+
+The separation between symbolic and runtime contexts
+requires thinking at a higher level of abstraction than directly writing runtime code. There are many benefits to this
+approach, but it takes practice.
+
+- Conditional statements in Python will not result in branches
+in runtime code. Users must conceptualize instruction-level
+branching and employ our concept of epsilon to avoid singularities.
+
+- Our method of flattening expressions becomes impractical with highly nested expressions, such as long chains of integrations or loops. Since the generated code unrolls these chains, it can lead to long compile times, poor cache performance, or other bottlenecks. Further work is required to handle loops or sub-functions as a construct of symbolic expressions.  Similar bottlenecks can happen when attempting to generate a linearization function with a very large number of variables. In some cases, it is a better tradeoff to generate multiple functions and call them dynamically at runtime, with some sacrifices made in shared subexpressions.
+
+- Some symbolic routines, like simplification and factorization, become slow with large expressions. We recommend understanding the computational cost of these routines and using them in careful and targeted ways, but this requires some domain knowledge and experience.
+
+- SymForce is most suitable for generating functions with up to hundreds of input variables, and hundreds of thousands of instructions. However, functions can be invoked dynamically in much larger optimization problems. SymForce does not directly support dense data parallelism like operating over pixels of an image, and does not attempt to compete with libraries that do so. However, it can efficiently generate the inner kernel e.g. for a single pixel in such a use case.
+
+- Our optimizer does not yet support hard constraints, but this is not a fundamental limitation and is something we plan to add.  We do have utilities for soft constraints via [barrier functions](https://github.com/symforce-org/symforce/blob/main/symforce/opt/barrier_functions.py), which we have found to work well in many cases.
+
 # License
 
 SymForce is released under the [Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license.
