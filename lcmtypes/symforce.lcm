@@ -208,6 +208,13 @@ struct optimizer_gnc_params_t {
   double mu_initial;
 
   // Amount to change mu each step.
+  //
+  // After the previous GNC step has converged, the value of gnc_mu_key will be set to
+  // min(mu_previous + mu_step, mu_max).
+  //
+  // If mu_step <= 0, then the GncOptimizer will behave like an Optimizer; it will iterate to
+  // convergence once, with the value of gnc_mu_key set to mu_initial and convergence threshold
+  // early_exit_min_reduction.
   double mu_step;
 
   // Maximum mu value

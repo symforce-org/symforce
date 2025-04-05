@@ -54,7 +54,7 @@ class GncOptimizer : public BaseOptimizerType {
       num_iterations = this->nonlinear_solver_.Params().iterations;
     }
 
-    bool updating_gnc = (gnc_params_.mu_initial < gnc_params_.mu_max);
+    bool updating_gnc = (gnc_params_.mu_initial < gnc_params_.mu_max && gnc_params_.mu_step > 0.0);
 
     // Initialize the value of mu
     values.template Set<Scalar>(gnc_mu_key_, gnc_params_.mu_initial);
