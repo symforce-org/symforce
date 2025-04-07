@@ -125,7 +125,7 @@ size_t Values<Scalar>::Cleanup() {
   const ArrayType data_copy = data_;
 
   // Build an index of all keys
-  const index_t full_index = CreateIndex(Keys());
+  const index_t full_index = CreateIndex(/* sort_by_offset = */ true);
 
   // Re-allocate data to the appropriate size
   data_.resize(full_index.storage_dim);
@@ -139,6 +139,31 @@ size_t Values<Scalar>::Cleanup() {
     new_offset += entry.storage_dim;
   }
   return data_copy.size() - data_.size();
+}
+
+template <typename Scalar>
+index_t Values<Scalar>::CreateIndex(const bool sort_by_offset) const {
+  index_t index{};
+  index.entries.reserve(map_.size());
+  for (const auto& key_entry : map_) {
+    const auto& entry = key_entry.second;
+    index.entries.push_back(entry);
+    index.storage_dim += entry.storage_dim;
+
+    // If the tangent_dim of any of the keys is invalid, the tangent_dim of the index is invalid
+    if (index.tangent_dim >= 0) {
+      if (entry.tangent_dim >= 0) {
+        index.tangent_dim += entry.tangent_dim;
+      } else {
+        index.tangent_dim = -1;
+      }
+    }
+  }
+  if (sort_by_offset) {
+    std::sort(index.entries.begin(), index.entries.end(),
+              [](const index_entry_t& a, const index_entry_t& b) { return a.offset < b.offset; });
+  }
+  return index;
 }
 
 template <typename Scalar>
@@ -188,8 +213,8 @@ optional<index_entry_t> Values<Scalar>::MaybeIndexEntryAt(const Key& key) const 
 }
 
 template <typename Scalar>
-void Values<Scalar>::FillLcmType(LcmType& msg, bool sort_keys) const {
-  msg.index = CreateIndex(Keys(sort_keys));
+void Values<Scalar>::FillLcmType(LcmType& msg, const bool sort_keys) const {
+  msg.index = CreateIndex(sort_keys);
   msg.data = data_;
 }
 
@@ -330,7 +355,7 @@ BY_TYPE_HELPER(FormatByType, FormatHelper, MatrixFormatHelper);
 template <typename Scalar>
 std::ostream& operator<<(std::ostream& os, const Values<Scalar>& v) {
   // Make an index so we iterate through in offset order
-  const index_t index = v.CreateIndex(v.Keys(/* sort by offset */ true));
+  const index_t index = v.CreateIndex(/* sort by offset = */ true);
 
   // Print header
   fmt::print(os, "<Values{} entries={} array={} storage_dim={} tangent_dim={}\n",

@@ -543,6 +543,20 @@ class Values:
         It will INVALIDATE all indices, offset increments, and pointers.
         Re-create an index with create_index().
         """
+    @typing.overload
+    def create_index(self, sort_by_offset: bool) -> lcmtypes.sym._index_t.index_t:
+        """
+        Create an index for all keys in this Values. This object can then be used
+        for repeated efficient operations.
+
+        If sort_by_offset is true, the index will be sorted by offset.  Otherwise, the ordering is
+        not specified.
+
+        An index will be INVALIDATED if the following happens:
+          1) Remove() is called with a contained key, or RemoveAll() is called
+          2) Cleanup() is called to re-pack the data array
+        """
+    @typing.overload
     def create_index(self, keys: list[Key]) -> lcmtypes.sym._index_t.index_t:
         """
         Create an index from the given ordered subset of keys. This object can then be used

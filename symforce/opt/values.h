@@ -164,10 +164,27 @@ class Values {
   size_t Cleanup();
 
   /**
+   * Create an index for all keys in this Values. This object can then be used
+   * for repeated efficient operations.
+   *
+   * If sort_by_offset is true, the index will be sorted by offset.  Otherwise, the ordering is
+   * not specified.
+   *
+   * An index will be INVALIDATED if the following happens:
+   *
+   *  1) Remove() is called with a contained key, or RemoveAll() is called
+   *  2) Cleanup() is called to re-pack the data array
+   *
+   * NOTE(hayk): We could also add a simple UpdateIndex(&index) method, since the offset is the
+   * only thing that needs to get updated after repacking.
+   */
+  index_t CreateIndex(bool sort_by_offset) const;
+
+  /**
    * Create an index from the given ordered subset of keys. This object can then be used
    * for repeated efficient operations on that subset of keys.
    *
-   * If you want an index of all the keys, call `values.CreateIndex(values.Keys())`.
+   * If you want an index of all the keys, call `values.CreateIndex(sort_by_offset)`.
    *
    * An index will be INVALIDATED if the following happens:
    *

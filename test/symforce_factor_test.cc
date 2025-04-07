@@ -855,7 +855,7 @@ TEMPLATE_TEST_CASE("Test factor maybe_index_entry_cache", "[factors]", double, f
     factor.Linearize(values);
 
     // Able to linearize with index_entry_cache
-    std::vector<sym::index_entry_t> cache = values.CreateIndex({'x'}).entries;
+    std::vector<sym::index_entry_t> cache = values.CreateIndex({{'x'}}).entries;
     factor.Linearize(values, &cache);
 
     // Using the wrong size cache throws

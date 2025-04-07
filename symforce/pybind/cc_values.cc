@@ -217,7 +217,21 @@ void AddValuesWrapper(pybind11::module_ module) {
           It will INVALIDATE all indices, offset increments, and pointers.
           Re-create an index with create_index().
       )")
-      .def("create_index", &sym::Valuesd::CreateIndex, py::arg("keys"), R"(
+      .def("create_index", py::overload_cast<bool>(&sym::Valuesd::CreateIndex, py::const_),
+           py::arg("sort_by_offset"), R"(
+          Create an index for all keys in this Values. This object can then be used
+          for repeated efficient operations.
+
+          If sort_by_offset is true, the index will be sorted by offset.  Otherwise, the ordering is
+          not specified.
+
+          An index will be INVALIDATED if the following happens:
+            1) Remove() is called with a contained key, or RemoveAll() is called
+            2) Cleanup() is called to re-pack the data array
+      )")
+      .def("create_index",
+           py::overload_cast<const std::vector<Key>&>(&sym::Valuesd::CreateIndex, py::const_),
+           py::arg("keys"), R"(
           Create an index from the given ordered subset of keys. This object can then be used
           for repeated efficient operations on that subset of keys.
 

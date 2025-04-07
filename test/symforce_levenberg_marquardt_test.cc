@@ -55,7 +55,7 @@ TEMPLATE_TEST_CASE("Converges for a linear problem in one iteration", "[levenber
 
   sym::Values<Scalar> values_init{};
   values_init.Set('v', (StateVector::Ones() * 100).eval());
-  sym::index_t index = values_init.CreateIndex({'v'});
+  sym::index_t index = values_init.CreateIndex(/* sort_by_offset */ false);
   sym::SparseLinearization<Scalar> linearization{};
 
   residual_func(values_init, linearization);

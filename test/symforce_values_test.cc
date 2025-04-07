@@ -87,15 +87,33 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
 
   // Right now since we removed a scalar the data array is one longer than the actual storage dim
   CHECK(v.NumEntries() == 7);
-  const sym::index_t index_1 = v.CreateIndex(v.Keys());
+  // Some tests below use this index, and require it's ordered
+  const sym::index_t index_1 = v.CreateIndex(/* sort_by_offset */ true);
   CHECK(static_cast<int>(v.Data().size()) == index_1.storage_dim + 1);
   CHECK(index_1.tangent_dim == index_1.storage_dim - 1);
+
+  // Test that different CreateIndex functions match
+  {
+    const auto index_1 = v.CreateIndex(/* sort_by_offset */ true);
+    const auto index_2 = v.CreateIndex(v.Keys(/* sort_by_offset */ true));
+    CHECK(index_1 == index_2);
+
+    const auto index_3 = v.CreateIndex(/* sort_by_offset */ false);
+    const auto index_4 = v.CreateIndex(v.Keys(/* sort_by_offset */ false));
+    CHECK(index_1.entries.size() == index_3.entries.size());
+    CHECK(index_1.storage_dim == index_3.storage_dim);
+    CHECK(index_1.tangent_dim == index_3.tangent_dim);
+    CHECK(index_1.entries.size() == index_4.entries.size());
+    CHECK(index_1.storage_dim == index_4.storage_dim);
+    CHECK(index_1.tangent_dim == index_4.tangent_dim);
+  }
 
   // Cleanup to get rid of the empty space from the scalar
   v.Cleanup();
   CHECK(v.NumEntries() == 7);
   CHECK(static_cast<int>(v.Data().size()) == index_1.storage_dim);
-  const sym::index_t index_2 = v.CreateIndex(v.Keys());
+  // GetLcmType test below assumes this is ordered
+  const sym::index_t index_2 = v.CreateIndex(/* sort_by_offset */ true);
   CHECK(R1_new == v.template At<sym::Rot3<Scalar>>(R1_key));
   CHECK(Scalar(4.2) == v.template At<Scalar>({'f', 1}));
   CHECK(index_2.storage_dim == index_1.storage_dim);
@@ -116,7 +134,8 @@ TEMPLATE_TEST_CASE("Test values", "[values]", double, float) {
   sym::Values<Scalar> v2(msg);
   CHECK(v2.NumEntries() == v.NumEntries());
   CHECK(v2.Data() == v.Data());
-  CHECK(v.CreateIndex(v.Keys()) == v2.CreateIndex(v2.Keys()));
+  CHECK(v.Keys() == v2.Keys());
+  CHECK(v.CreateIndex(/* sort_by_offset */ false) == v2.CreateIndex(/* sort_by_offset */ false));
 
   // Print
   CAPTURE(v);
@@ -155,7 +174,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test Retract and LocalCoordinates of camera cals", "
 
   const T camera_cal = sym::GroupOps<T>::Identity();
   values.Set('a', camera_cal);
-  const sym::index_t index = values.CreateIndex({'a'});
+  const sym::index_t index = values.CreateIndex({{'a'}});
   const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(camera_cal, sym::kDefaultEpsilond);
   values.Retract(index, tangent_vec.data(), sym::kDefaultEpsilond);
 
@@ -319,7 +338,7 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
   sym::Values<Scalar> v1;
   const T element = sym::GroupOps<T>::Identity();
   v1.Set('x', element);
-  const sym::index_t index = v1.CreateIndex({'x'});
+  const sym::index_t index = v1.CreateIndex({{'x'}});
 
   // Test a bunch of retractions and local coordinates
   std::mt19937 gen(42);

@@ -237,7 +237,7 @@ class LevenbergMarquardtState
   // On the first call, caches the full index to avoid recomputing it on subsequent calls.
   sym::values_t GetLcmTypeImpl(const ValuesType& values) const {
     if (full_index_cached_.entries.size() == 0) {
-      full_index_cached_ = values.CreateIndex(values.Keys());
+      full_index_cached_ = values.CreateIndex(/* sort_by_offset = */ false);
     }
     return sym::values_t{full_index_cached_, values.template Cast<double>().Data()};
   }
