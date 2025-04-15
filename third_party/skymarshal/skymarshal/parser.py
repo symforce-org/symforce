@@ -312,7 +312,7 @@ def lcmparse(
     src: str,
     verbose: bool = True,
     cache: bool = False,
-    debug_src_path: str = None,
+    debug_src_path: str | None = None,
     allow_unknown_notations: bool = False,
 ) -> T.List[syntax_tree.Package]:
     """Parse an LCM definition source into a list of packages"""

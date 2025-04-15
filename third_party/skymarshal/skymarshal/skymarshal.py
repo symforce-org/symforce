@@ -68,7 +68,7 @@ def parse_args(
 
 def main(
     languages: T.Sequence[T.Type[SkymarshalLanguage]],
-    args: T.Sequence[str] = None,
+    args: T.Sequence[str] | None = None,
     print_generated: bool = True,
 ) -> None:
     """The primary executable for generating lcmtypes code from struct definitions.

@@ -12,7 +12,7 @@ FILE_CACHE: T.Dict[T.Tuple[str, bool], T.List[syntax_tree.Package]] = dict()
 
 
 def merge_packages(
-    packages: T.List[syntax_tree.Package], package_map: T.Dict[str, syntax_tree.Package] = None
+    packages: T.List[syntax_tree.Package], package_map: T.Dict[str, syntax_tree.Package] | None = None
 ) -> T.Dict[str, syntax_tree.Package]:
     """Converts a list of packages to a map.
     NOTE(matt): This makes copies instead of modifying the input packages.
