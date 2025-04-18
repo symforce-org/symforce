@@ -8,6 +8,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/SparseCore>
+#include <fmt/ostream.h>
 
 // Import all the known types.
 #include <lcmtypes/sym/type_t.hpp>
@@ -313,7 +314,7 @@ inline std::pair<int, int> EigenTypeShape(const type_t type) {
     case type_t::MATRIX99:
       return {9, 9};
     default:
-      SYM_ASSERT(false);
+      SYM_ASSERT(false, "Invalid type for EigenTypeShape: {}", type);
   }
 }
 
@@ -359,7 +360,7 @@ inline std::pair<int, int> EigenTypeShape(const type_t type) {
       case type_t::ORTHOGRAPHIC_CAMERA_CAL:                          \
         return func<sym::OrthographicCameraCal<Scalar>>(args...);    \
       default:                                                       \
-        SYM_ASSERT(false);                                           \
+        SYM_ASSERT(false, "Unhandled type: {}", type);               \
     }                                                                \
   }
 

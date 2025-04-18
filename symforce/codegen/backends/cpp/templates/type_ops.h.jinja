@@ -7,6 +7,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/SparseCore>
+#include <fmt/ostream.h>
 
 // Import all the known types.
 #include <sym/ops/lie_group_ops.h>
@@ -72,7 +73,7 @@ inline std::pair<int, int> EigenTypeShape(const type_t type) {
     {% endfor %}
     {% endfor %}
     default:
-      SYM_ASSERT(false);
+      SYM_ASSERT(false, "Invalid type for EigenTypeShape: {}", type);
   }
 }
 
@@ -102,7 +103,7 @@ inline std::pair<int, int> EigenTypeShape(const type_t type) {
         return func<sym::{{ cls.__name__ }}<Scalar>>(args...);         \
       {% endfor %}
       default:                                                         \
-        SYM_ASSERT(false);                                             \
+        SYM_ASSERT(false, "Unhandled type: {}", type);                 \
     }                                                                  \
   }
 
