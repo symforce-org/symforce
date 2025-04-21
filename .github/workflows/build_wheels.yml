@@ -31,16 +31,14 @@ jobs:
         path: dist/*
 
   build-macos:
-    # This is macos 13 instead of newer, because brew won't pull libgmp for an older macos, so we
-    # just support 13 or newer
-    runs-on: macos-13
+    runs-on: macos-${{ matrix.os.version }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - runner: macos-13
+          - version: 13
             arch: x86_64
-          - runner: macos-13
+          - version: 14
             arch: arm64
         python-version: [cp38, cp39, cp310, cp311, cp312]
 
@@ -52,8 +50,11 @@ jobs:
         fetch-depth: 300
         fetch-tags: true
 
-    - run: python3 -m pip install setuptools_scm
-    - run: echo "SYMFORCE_VERSION=$(python3 -m setuptools_scm)" | tee $GITHUB_ENV
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - run: pip install setuptools_scm
+    - run: echo "SYMFORCE_VERSION=$(python -m setuptools_scm)" | tee $GITHUB_ENV
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.22.0
@@ -63,7 +64,7 @@ jobs:
         CIBW_BUILD_FRONTEND: build
         # For arm64; for x86, it's at /usr/local but cmake finds that ok already
         GMP_ROOT: /opt/homebrew
-        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION MACOSX_DEPLOYMENT_TARGET=13.0
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.version }}.0
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
