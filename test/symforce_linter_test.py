@@ -12,7 +12,8 @@ from pathlib import Path
 from symforce import logger
 from symforce import python_util
 from symforce.test_util import TestCase
-from symforce.test_util import slow_on_sympy
+from symforce.test_util import requires_source_build
+from symforce.test_util import symengine_only
 
 SYMFORCE_DIR = Path(__file__).parent.parent
 
@@ -22,7 +23,8 @@ class SymforceLinterTest(TestCase):
     Make sure linting passes, as a merge guard.
     """
 
-    @slow_on_sympy
+    @requires_source_build
+    @symengine_only
     def test_linter(self) -> None:
         try:
             asyncio.run(

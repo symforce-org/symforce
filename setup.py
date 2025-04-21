@@ -361,7 +361,9 @@ if __name__ == "__main__":
             "symengine": "third_party/symenginepy/symengine",
             "lcmtypes": "lcmtypes_build/lcmtypes",
         },
-        package_data={"": ["*.jinja", "*.mtx", "README*", ".clang-format", "py.typed"]},
+        package_data={
+            "": ["*.jinja", "*.mtx", "README*", ".clang-format", "py.typed", "ruff.toml"]
+        },
         # pyproject.toml doesn't allow specifying url or homepage separately, and if it's not
         # specified separately PyPI sorts all the links alphabetically
         # https://github.com/pypi/warehouse/issues/3097

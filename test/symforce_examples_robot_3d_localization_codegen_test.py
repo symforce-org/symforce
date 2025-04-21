@@ -24,7 +24,7 @@ class Robot3DScanMatchingCodegenTest(TestCase):
         self.compare_or_update_directory(
             actual_dir=output_dir,
             expected_dir=(
-                path_util.symforce_data_root()
+                path_util.symforce_data_root(__file__)
                 / "symforce"
                 / "examples"
                 / "robot_3d_localization"

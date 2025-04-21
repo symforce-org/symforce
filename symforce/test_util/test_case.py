@@ -3,6 +3,7 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import os
 import random
 import sys
 import unittest
@@ -61,6 +62,16 @@ class TestCase(SymforceTestCaseMixin):
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
 
+def requires_source_build(func: T.Callable) -> T.Callable:
+    """
+    Decorator to mark a test as skipped for wheel installs (as opposed to from-source builds)
+    """
+    if "SYMFORCE_WHEEL_TESTS" in os.environ:
+        return unittest.skip("Skipping for wheel install")(func)
+    else:
+        return func
+
+
 def sympy_only(func: T.Callable) -> T.Callable:
     """
     Decorator to mark a test to only run on SymPy, and skip otherwise.
@@ -83,7 +94,7 @@ def symengine_only(func: T.Callable) -> T.Callable:
 
 def expected_failure_on_sympy(func: T.Callable) -> T.Callable:
     """
-    Decorator to mark a test to be expected to fail only on SymPy..
+    Decorator to mark a test to be expected to fail only on SymPy
     """
     if symforce.get_symbolic_api() == "sympy":
         return unittest.expectedFailure(func)

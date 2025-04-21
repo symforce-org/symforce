@@ -30,7 +30,7 @@ class SymforcePybindCodegenTest(TestCase):
 
             self.compare_or_update_file(
                 new_file=output_dir / output_name,
-                path=path_util.symforce_data_root() / "symforce" / "pybind" / output_name,
+                path=path_util.symforce_data_root(__file__) / "symforce" / "pybind" / output_name,
             )
 
 

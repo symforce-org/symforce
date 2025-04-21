@@ -38,7 +38,7 @@ def get_matrices() -> T.List[T.Tuple[str, Path, scipy.sparse.csr_matrix]]:
     matrices = []
 
     for path in (Path(__file__).parent / "matrices").iterdir():
-        if not path.is_dir():
+        if not path.is_dir() or path.name == "__pycache__":
             continue
 
         matrix_name = path.name

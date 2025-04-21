@@ -31,7 +31,7 @@ from symforce.slam.imu_preintegration.generate import generate_manifold_imu_prei
 from symforce.test_util import TestCase
 from symforce.test_util import symengine_only
 
-SYMFORCE_DIR = path_util.symforce_data_root()
+SYMFORCE_DIR = path_util.symforce_data_root(__file__)
 TEST_DATA_DIR = (
     SYMFORCE_DIR / "test" / "symforce_function_codegen_test_data" / symforce.get_symbolic_api()
 )

@@ -28,7 +28,7 @@ class SymforceLcmCodegenTest(TestCase):
 
         self.compare_or_update_file(
             new_file=output_dir / "symforce_types.lcm",
-            path=path_util.symforce_data_root() / "lcmtypes" / "symforce_types.lcm",
+            path=path_util.symforce_data_root(__file__) / "lcmtypes" / "symforce_types.lcm",
         )
 
 

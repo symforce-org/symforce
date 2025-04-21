@@ -1,0 +1,126 @@
+line-length = 100
+exclude = ["third_party", "build", ".eggs", "lcmtypes", "*.pyi"]
+extend-include = ["*.ipynb"]
+
+[format]
+line-ending = "lf"
+
+[lint]
+preview = true
+typing-modules = ["symforce.typing"]
+
+select = [
+  "A",      # flake8
+  "B",      # flake8-bugbear
+  "D",      # docstrings
+  "E4",     # pycodestyle - ERROR - Imports - E401, E402
+  "E7",     # pycodestyle - ERROR - Statements - E701-E743
+  "E9",     # pycodestyle - ERROR - Runtime - E901, E902
+  "F",      # pyflakes - ALL - F401-F901
+  "I",      # isort
+  "PLC",    # pylint - convention
+  "PLE",    # pylint - error
+  "PLR",    # pylint - refactor
+  "PLW",    # pylint - warning
+  "RUF100", # unused-noqa
+  "SLF",    # flake8-self
+  "TC",     # flake8-type-checking
+  "TD",     # flake8-todos
+]
+
+ignore = [
+  # --------------------------------------------------------------------------------
+  # Leave ignored
+  # --------------------------------------------------------------------------------
+
+  # B (flake8-bugbear)
+  "B008", # function-call-in-default-argument
+
+  # D (pydocstyle)
+  # differences on top of default google conventions:
+  "D1",    # undocumented-*
+  "D417",  # undocumented-param
+  "D200",  # fits-on-one-line  # Good rule, fix not always available
+  "D202",  # no-blank-line-after-function
+  "D205",  # blank-line-after-summary  # Requires 1-line summaries, fix not always available
+  "D212",  # nulti-line-summary-first-line  # Disagreement between Google and Skydio style
+  "D402",  # no-signature  # Good rule, has false positives
+  "D403",  # first-line-capitalized
+  "D415",  # ends-in-punctuation
+
+  # E (pycodestyle)
+  "E402", # Module level import not at top of file
+  "E731", # Do not assign a `lambda` expression, use a `def`
+  "E741", # Ambiguous variable name: `x`
+
+  # PL (pylint)
+  "PLC0415", # import-outside-top-level
+  "PLC2701", # Private name import `_x` from external module `y`
+  "PLR2004", # magic-value-comparison
+  "PLW1514", # unspecified-encoding
+  "PLW1641", # eq-without-hash
+  "PLW2901", # redefined-loop-name
+
+  # TC (flake8-type-checking)
+  # SymForce does runtime resolution of annotations, so we disable rules that are designed with no
+  # runtime resolution of annotations in mind.
+  "TC001",  # typing-only-first-party-import
+  "TC002",  # typing-only-third-party-import
+  "TC003",  # typing-only-standard-library-import
+  "TC006",  # runtime-cast-value
+  "TC007",  # unquoted-type-alias
+
+  # TD (flake8-todos)
+  "TD003",  # missing-todo-link
+
+  # --------------------------------------------------------------------------------
+  # Maybe enable later
+  # --------------------------------------------------------------------------------
+
+  "ARG",    # flake8-unused-arguments
+  "B011",   # Do not `assert False`, raise `AssertionError()`
+]
+
+extend-select = [
+  "D213",  # multi-line-summary-second-line  # Disagreement between Google and SymForce style
+]
+
+[lint.flake8-builtins]
+builtins-ignorelist = ["__doc__"]
+
+
+[lint.per-file-ignores]
+
+# Unused imports in __init__.py
+"__init__.py" = ["F401"]
+
+# Unbound loop variables in benchmark notebooks
+"benchmarks/notebooks/*.ipynb" = ["B023"]
+
+# Imports shadowing builtins (like display)
+"**/*.ipynb" = ["A004"]
+
+[lint.isort]
+known-first-party = ["sym", "symforce"]
+force-single-line = true
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "generated",
+  "first-party",
+  "local-folder",
+]
+
+[lint.isort.sections]
+"generated" = ["lcmtypes"]
+
+[lint.pylint]
+max-args = 10
+max-branches = 20
+max-locals = 20
+max-public-methods = 100
+max-returns = 10
+
+[lint.pydocstyle]
+convention = "google"

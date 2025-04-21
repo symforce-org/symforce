@@ -111,7 +111,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
 
         self.compare_or_update_file(
             new_file=output_dir / "cc_sym.pyi",
-            path=path_util.symforce_data_root() / "symforce" / "pybind" / "cc_sym.pyi",
+            path=path_util.symforce_data_root(__file__) / "symforce" / "pybind" / "cc_sym.pyi",
         )
 
 

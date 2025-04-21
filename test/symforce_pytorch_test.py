@@ -14,7 +14,7 @@ from symforce.codegen import codegen_util
 from symforce.test_util import TestCase
 
 TEST_DATA_DIR = (
-    path_util.symforce_data_root()
+    path_util.symforce_data_root(__file__)
     / "test"
     / "symforce_function_codegen_test_data"
     / symforce.get_symbolic_api()

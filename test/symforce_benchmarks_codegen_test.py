@@ -13,7 +13,7 @@ from symforce.benchmarks.matrix_multiplication import generate_matrix_multiplica
 from symforce.test_util import TestCase
 from symforce.test_util import sympy_only
 
-BENCHMARKS_DIR = path_util.symforce_data_root() / "symforce" / "benchmarks"
+BENCHMARKS_DIR = path_util.symforce_data_root(__file__) / "symforce" / "benchmarks"
 
 
 class SymforceBenchmarksCodegenTest(TestCase):
