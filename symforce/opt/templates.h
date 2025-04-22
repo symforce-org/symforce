@@ -10,16 +10,6 @@
 namespace sym {
 
 // ------------------------------------------------------------------------------------------------
-// C++14 implementation of remove_cvref
-template <class T>
-struct remove_cvref {
-  using type = std::remove_cv_t<std::remove_reference_t<T>>;
-};
-
-template <typename T>
-using remove_cvref_t = typename remove_cvref<T>::type;
-
-// ------------------------------------------------------------------------------------------------
 // Function traits
 //
 // Extracts the number of arguments and types of the arguments and return value.

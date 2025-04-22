@@ -14,7 +14,7 @@ See the `module reference </api/symforce.html>`_ for the core package structure.
 *************************************************
 Build
 *************************************************
-SymForce is primarily written in Python and C++, and is Python 3.8+ and C++14 compatible.  The build
+SymForce is primarily written in Python and C++, and is Python 3.8+ and C++17+ compatible.  The build
 system is CMake for the C++ components, and optionally pip / setuptools on top for Python packaging.
 See the Build section on the `Homepage </index.html#build-from-source>`_ for build instructions.
 
