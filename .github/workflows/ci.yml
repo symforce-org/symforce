@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04]
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
         compiler:
           # Newest gcc on 24.04
           - C: gcc-14
@@ -37,7 +37,7 @@ jobs:
               warning_options: "-Wall;-Wextra;-Werror"
           # gcc 14 (Newest gcc available on Ubuntu 24.04)
           - os: ubuntu-24.04
-            python: "3.12"
+            python: "3.13"
             compiler:
               C: gcc-14
               CXX: g++-14
@@ -54,7 +54,7 @@ jobs:
               warning_options: "-Wall;-Wextra;-Werror"
           # Clang 19 (Newest clang available on Ubuntu 24.04)
           - os: ubuntu-24.04
-            python: "3.12"
+            python: "3.13"
             compiler:
               C: clang-19
               CXX: clang++-19

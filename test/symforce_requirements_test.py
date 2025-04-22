@@ -12,7 +12,6 @@ from symforce import path_util
 from symforce import python_util
 from symforce import typing as T
 from symforce.test_util import TestCase
-from symforce.test_util import requires_source_build
 from symforce.test_util import sympy_only
 
 
@@ -109,36 +108,34 @@ class SymforceRequirementsTest(TestCase):
         output_requirements_file.write_text(requirements_contents)
 
         self.compare_or_update_file(
-            path_util.symforce_data_root(__file__) / f"requirements_dev_py3{version}.txt",
+            path_util.symforce_data_root() / f"requirements_dev_py3{version}.txt",
             output_requirements_file,
         )
 
-    @requires_source_build
     @sympy_only
     def test_dev_requirements_py38(self) -> None:
         self.check_dev_requirements_for_version(8)
 
-    @requires_source_build
     @sympy_only
     def test_dev_requirements_py39(self) -> None:
         self.check_dev_requirements_for_version(9)
 
-    @requires_source_build
     @sympy_only
     def test_dev_requirements_py310(self) -> None:
         self.check_dev_requirements_for_version(10)
 
-    @requires_source_build
     @sympy_only
     def test_dev_requirements_py311(self) -> None:
         self.check_dev_requirements_for_version(11)
 
-    @requires_source_build
     @sympy_only
     def test_dev_requirements_py312(self) -> None:
         self.check_dev_requirements_for_version(12)
 
-    @requires_source_build
+    @sympy_only
+    def test_dev_requirements_py313(self) -> None:
+        self.check_dev_requirements_for_version(13)
+
     @sympy_only
     def test_build_requirements(self) -> None:
         """
@@ -190,7 +187,7 @@ class SymforceRequirementsTest(TestCase):
         output_requirements_file.write_text(requirements_contents)
 
         self.compare_or_update_file(
-            path_util.symforce_data_root(__file__) / "requirements_build.txt",
+            path_util.symforce_data_root() / "requirements_build.txt",
             output_requirements_file,
         )
 
