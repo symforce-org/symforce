@@ -25,7 +25,7 @@ jobs:
             # -Wdangling-reference was added to the warnings list in gcc 13, and has false positives
             # in fmtlib, so we exclude it.  array-bounds similarly has false positives in Eigen on
             # gcc 12+.
-            warning_options: "-Wall;-Wextra;-Wno-dangling-reference;-Wno-array-bounds;-Werror"
+            warning_options: "-Wall;-Wextra;-Wno-dangling-reference;-Wno-array-bounds;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
         include:
           # gcc 9 (Oldest gcc available on Ubuntu 22.04)
           - os: ubuntu-22.04
@@ -34,7 +34,7 @@ jobs:
               C: gcc-9
               CXX: g++-9
               package: g++-9
-              warning_options: "-Wall;-Wextra;-Werror"
+              warning_options: "-Wall;-Wextra;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
           # gcc 14 (Newest gcc available on Ubuntu 24.04)
           - os: ubuntu-24.04
             python: "3.12"
@@ -42,7 +42,7 @@ jobs:
               C: gcc-14
               CXX: g++-14
               package: g++-14
-              warning_options: "-Wall;-Wextra;-Wno-dangling-reference;-Wno-array-bounds;-Werror"
+              warning_options: "-Wall;-Wextra;-Wno-dangling-reference;-Wno-array-bounds;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
           # Clang 11 (Oldest clang available on Ubuntu 22.04)
           - os: ubuntu-22.04
             python: "3.8"
@@ -51,7 +51,7 @@ jobs:
               CXX: clang++-11
               package: clang-11
               repos: []
-              warning_options: "-Wall;-Wextra;-Werror"
+              warning_options: "-Wall;-Wextra;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
           # Clang 19 (Newest clang available on Ubuntu 24.04)
           - os: ubuntu-24.04
             python: "3.12"
@@ -60,7 +60,7 @@ jobs:
               CXX: clang++-19
               package: clang-19
               repos: []
-              warning_options: "-Wall;-Wextra;-Werror"
+              warning_options: "-Wall;-Wextra;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
     steps:
       - name: Checkout
         uses: actions/checkout@v4

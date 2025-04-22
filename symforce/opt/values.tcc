@@ -33,14 +33,28 @@ T Values<Scalar>::At(const index_entry_t& entry) const {
                     entry.type, type));
   }
 
-  // Construct the object
-#if 1
-  return sym::StorageOps<T>::FromStorage(data_.data() + entry.offset);
+  // By default, we allow types that have alignment requirements larger than sizeof(Scalar),
+  // and extract these using FromStorage.  But, for SymForce-native types, this should only be the
+  // case for certain aligned Eigen types.  In SymForce CI builds, we set this flag to check this.
+#if SYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES
+  constexpr bool use_from_storage = kIsEigenType<T> && alignof(T) > sizeof(Scalar);
 #else
-  // NOTE(hayk): It could be more efficient to reinterpret_cast here, and we could provide
-  // mutable references if desired. But also technically undefined?
-  return *reinterpret_cast<const T*>(data_.data() + entry.offset);
+  constexpr bool use_from_storage = alignof(T) > sizeof(Scalar);
 #endif
+
+  // Construct the object
+  if constexpr (use_from_storage) {
+    return sym::StorageOps<T>::FromStorage(data_.data() + entry.offset);
+  } else {
+    // NOTE(aaron): In order to reinterpret_cast the result, we need 1) its size to fit into the
+    // amount of memory it's given in the data_ array, and 2) its alignment to be less than or equal
+    // to the alignment of the Scalar type (which will be its alignment in the data_ array).
+    // If you have a type that meets the alignment requirement, but the size requirement, you should
+    // fix its StorageDim, which is why use_from_storage only considers the alignment.
+    static_assert(sizeof(T) <= sym::StorageOps<T>::StorageDim() * sizeof(Scalar));
+    static_assert(alignof(T) <= sizeof(Scalar));
+    return *reinterpret_cast<const T*>(data_.data() + entry.offset);
+  }
 }
 
 template <typename Scalar>

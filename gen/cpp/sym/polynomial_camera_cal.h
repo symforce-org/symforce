@@ -38,7 +38,7 @@ class PolynomialCameraCal {
   // Typedefs
   using Scalar = ScalarType;
   using Self = PolynomialCameraCal<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 8, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 8, 1, Eigen::DontAlign>;
 
   // Construct from focal_length, principal_point, critical_undistorted_radius, and
   // distortion_coeffs.
@@ -166,6 +166,11 @@ std::ostream& operator<<(std::ostream& os, const PolynomialCameraCal<float>& a);
 // Externs to reduce duplicate instantiation
 extern template class sym::PolynomialCameraCal<double>;
 extern template class sym::PolynomialCameraCal<float>;
+
+static_assert(sizeof(sym::PolynomialCameraCal<double>) == 8 * sizeof(double));
+static_assert(alignof(sym::PolynomialCameraCal<double>) == sizeof(double));
+static_assert(sizeof(sym::PolynomialCameraCal<float>) == 8 * sizeof(float));
+static_assert(alignof(sym::PolynomialCameraCal<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/polynomial_camera_cal/group_ops.h"

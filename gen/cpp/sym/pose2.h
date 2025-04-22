@@ -52,7 +52,7 @@ class Pose2 {
   // Typedefs
   using Scalar = ScalarType;
   using Self = Pose2<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 4, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 4, 1, Eigen::DontAlign>;
   using TangentVec = Eigen::Matrix<Scalar, 3, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, 3, 3>;
 
@@ -274,6 +274,11 @@ std::ostream& operator<<(std::ostream& os, const Pose2<float>& a);
 // Externs to reduce duplicate instantiation
 extern template class sym::Pose2<double>;
 extern template class sym::Pose2<float>;
+
+static_assert(sizeof(sym::Pose2<double>) == 4 * sizeof(double));
+static_assert(alignof(sym::Pose2<double>) == sizeof(double));
+static_assert(sizeof(sym::Pose2<float>) == 4 * sizeof(float));
+static_assert(alignof(sym::Pose2<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/pose2/group_ops.h"

@@ -30,7 +30,7 @@ class EquirectangularCameraCal {
   // Typedefs
   using Scalar = ScalarType;
   using Self = EquirectangularCameraCal<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 4, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 4, 1, Eigen::DontAlign>;
 
   // Construct from focal_length, and principal_point.
   EquirectangularCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
@@ -180,6 +180,11 @@ std::ostream& operator<<(std::ostream& os, const EquirectangularCameraCal<float>
 // Externs to reduce duplicate instantiation
 extern template class sym::EquirectangularCameraCal<double>;
 extern template class sym::EquirectangularCameraCal<float>;
+
+static_assert(sizeof(sym::EquirectangularCameraCal<double>) == 4 * sizeof(double));
+static_assert(alignof(sym::EquirectangularCameraCal<double>) == sizeof(double));
+static_assert(sizeof(sym::EquirectangularCameraCal<float>) == 4 * sizeof(float));
+static_assert(alignof(sym::EquirectangularCameraCal<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/equirectangular_camera_cal/group_ops.h"

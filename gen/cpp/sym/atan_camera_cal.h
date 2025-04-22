@@ -33,7 +33,7 @@ class ATANCameraCal {
   // Typedefs
   using Scalar = ScalarType;
   using Self = ATANCameraCal<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 5, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 5, 1, Eigen::DontAlign>;
 
   // Construct from focal_length, principal_point, and omega.
   ATANCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
@@ -183,6 +183,11 @@ std::ostream& operator<<(std::ostream& os, const ATANCameraCal<float>& a);
 // Externs to reduce duplicate instantiation
 extern template class sym::ATANCameraCal<double>;
 extern template class sym::ATANCameraCal<float>;
+
+static_assert(sizeof(sym::ATANCameraCal<double>) == 5 * sizeof(double));
+static_assert(alignof(sym::ATANCameraCal<double>) == sizeof(double));
+static_assert(sizeof(sym::ATANCameraCal<float>) == 5 * sizeof(float));
+static_assert(alignof(sym::ATANCameraCal<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/atan_camera_cal/group_ops.h"

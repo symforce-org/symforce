@@ -59,7 +59,7 @@ class SphericalCameraCal {
   // Typedefs
   using Scalar = ScalarType;
   using Self = SphericalCameraCal<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 11, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 11, 1, Eigen::DontAlign>;
 
   // Construct from focal_length, principal_point, critical_theta, and distortion_coeffs.
   SphericalCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
@@ -186,6 +186,11 @@ std::ostream& operator<<(std::ostream& os, const SphericalCameraCal<float>& a);
 // Externs to reduce duplicate instantiation
 extern template class sym::SphericalCameraCal<double>;
 extern template class sym::SphericalCameraCal<float>;
+
+static_assert(sizeof(sym::SphericalCameraCal<double>) == 11 * sizeof(double));
+static_assert(alignof(sym::SphericalCameraCal<double>) == sizeof(double));
+static_assert(sizeof(sym::SphericalCameraCal<float>) == 11 * sizeof(float));
+static_assert(alignof(sym::SphericalCameraCal<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/spherical_camera_cal/group_ops.h"

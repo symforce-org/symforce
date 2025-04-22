@@ -32,7 +32,7 @@ class Rot3 {
   // Typedefs
   using Scalar = ScalarType;
   using Self = Rot3<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 4, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 4, 1, Eigen::DontAlign>;
   using TangentVec = Eigen::Matrix<Scalar, 3, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, 3, 3>;
 
@@ -44,7 +44,7 @@ class Rot3 {
    *     vector may be faster, e.g. with `FromStorage`.
    */
   explicit Rot3(const DataVec& data, const bool normalize = true)
-      : data_(normalize ? data.normalized() : data) {}
+      : data_(normalize ? DataVec(data.normalized()) : data) {}
 
   // Default construct to identity
   Rot3() : Rot3(GroupOps<Self>::Identity()) {}
@@ -342,6 +342,11 @@ std::ostream& operator<<(std::ostream& os, const Rot3<float>& a);
 // Externs to reduce duplicate instantiation
 extern template class sym::Rot3<double>;
 extern template class sym::Rot3<float>;
+
+static_assert(sizeof(sym::Rot3<double>) == 4 * sizeof(double));
+static_assert(alignof(sym::Rot3<double>) == sizeof(double));
+static_assert(sizeof(sym::Rot3<float>) == 4 * sizeof(float));
+static_assert(alignof(sym::Rot3<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/rot3/group_ops.h"

@@ -123,6 +123,13 @@ struct StorageOps<PreintegratedImuMeasurements<ScalarType>> {
 using PreintegratedImuMeasurementsd = PreintegratedImuMeasurements<double>;
 using PreintegratedImuMeasurementsf = PreintegratedImuMeasurements<float>;
 
+static_assert(sizeof(PreintegratedImuMeasurementsd) ==
+              StorageOps<PreintegratedImuMeasurementsd>::StorageDim() * sizeof(double));
+static_assert(alignof(PreintegratedImuMeasurementsd) == sizeof(double));
+static_assert(sizeof(PreintegratedImuMeasurementsf) ==
+              StorageOps<PreintegratedImuMeasurementsf>::StorageDim() * sizeof(float));
+static_assert(alignof(PreintegratedImuMeasurementsf) == sizeof(float));
+
 }  // namespace sym
 
 // Explicit instantiation

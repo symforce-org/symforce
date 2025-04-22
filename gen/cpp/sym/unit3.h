@@ -48,7 +48,7 @@ class Unit3 {
   // Typedefs
   using Scalar = ScalarType;
   using Self = Unit3<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 4, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 4, 1, Eigen::DontAlign>;
   using TangentVec = Eigen::Matrix<Scalar, 2, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, 2, 2>;
 
@@ -60,7 +60,7 @@ class Unit3 {
    *     vector may be faster, e.g. with `FromStorage`.
    */
   explicit Unit3(const DataVec& data, const bool normalize = true)
-      : data_(normalize ? data.normalized() : data) {}
+      : data_(normalize ? DataVec(data.normalized()) : data) {}
 
   // Default construct to identity
   Unit3() : Unit3(GroupOps<Self>::Identity()) {}
@@ -247,6 +247,11 @@ std::ostream& operator<<(std::ostream& os, const Unit3<float>& a);
 // Externs to reduce duplicate instantiation
 extern template class sym::Unit3<double>;
 extern template class sym::Unit3<float>;
+
+static_assert(sizeof(sym::Unit3<double>) == 4 * sizeof(double));
+static_assert(alignof(sym::Unit3<double>) == sizeof(double));
+static_assert(sizeof(sym::Unit3<float>) == 4 * sizeof(float));
+static_assert(alignof(sym::Unit3<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/unit3/group_ops.h"

@@ -46,7 +46,7 @@ class DoubleSphereCameraCal {
   // Typedefs
   using Scalar = ScalarType;
   using Self = DoubleSphereCameraCal<Scalar>;
-  using DataVec = Eigen::Matrix<Scalar, 6, 1>;
+  using DataVec = Eigen::Matrix<Scalar, 6, 1, Eigen::DontAlign>;
 
   // Construct from focal_length, principal_point, xi, and alpha.
   DoubleSphereCameraCal(const Eigen::Matrix<Scalar, 2, 1>& focal_length,
@@ -197,6 +197,11 @@ std::ostream& operator<<(std::ostream& os, const DoubleSphereCameraCal<float>& a
 // Externs to reduce duplicate instantiation
 extern template class sym::DoubleSphereCameraCal<double>;
 extern template class sym::DoubleSphereCameraCal<float>;
+
+static_assert(sizeof(sym::DoubleSphereCameraCal<double>) == 6 * sizeof(double));
+static_assert(alignof(sym::DoubleSphereCameraCal<double>) == sizeof(double));
+static_assert(sizeof(sym::DoubleSphereCameraCal<float>) == 6 * sizeof(float));
+static_assert(alignof(sym::DoubleSphereCameraCal<float>) == sizeof(float));
 
 // Concept implementations for this class
 #include "./ops/double_sphere_camera_cal/group_ops.h"
