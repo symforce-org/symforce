@@ -55,27 +55,6 @@ else()
 endif()
 
 # ------------------------------------------------------------------------------
-# tl::optional
-
-find_package(tl-optional QUIET)
-if (NOT tl-optional_FOUND)
-  message(STATUS "tl::optional not found, adding with FetchContent")
-  function(add_tl_optional)
-    set(OPTIONAL_BUILD_TESTS OFF CACHE INTERNAL "tl::optional shouldn't build tests")
-    FetchContent_Declare(
-      tl_optional
-      URL https://github.com/TartanLlama/optional/archive/v1.1.0.zip
-      URL_HASH SHA256=a336bb10f51945369c1dd6dc6d2a7086602ab9cab52c98a7a6224bfd782bc0c7
-    )
-    FetchContent_MakeAvailable(tl_optional)
-  endfunction()
-
-  add_tl_optional()
-else()
-  message(STATUS "tl::optional found: ${tl-optional_VERSION}")
-endif()
-
-# ------------------------------------------------------------------------------
 # METIS
 
 function(add_metis)
@@ -147,7 +126,6 @@ target_link_libraries(symforce_opt
   symforce_cholesky
   fmt::fmt
   spdlog::spdlog
-  tl::optional
   ${SYMFORCE_EIGEN_TARGET}
 )
 

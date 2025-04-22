@@ -5,13 +5,14 @@
 
 #pragma once
 
+#include <optional>
+
 #include <Eigen/SparseCore>
 
 #include <lcmtypes/sym/optimization_iteration_t.hpp>
 #include <lcmtypes/sym/optimization_stats_t.hpp>
 
 #include "./linearization.h"
-#include "./optional.h"
 
 namespace sym {
 
@@ -34,7 +35,7 @@ struct OptimizationStats {
 
   /// The linearization at best_index (at optimized_values), filled out if
   /// populate_best_linearization = true
-  optional<Linearization<MatrixType>> best_linearization{};
+  std::optional<Linearization<MatrixType>> best_linearization{};
 
   /// The sparsity pattern of the problem jacobian
   ///

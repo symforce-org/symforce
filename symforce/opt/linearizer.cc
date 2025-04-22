@@ -5,9 +5,10 @@
 
 #include "./linearizer.h"
 
+#include <optional>
+
 #include "./assert.h"
 #include "./internal/linearizer_utils.h"
-#include "./optional.h"
 #include "./tic_toc.h"
 #include "symforce/opt/factor.h"
 
@@ -314,7 +315,7 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
 
   // Create a hash map from the sparse nonzero indices of the jacobian/hessian to their storage
   // offset within the sparse array.
-  optional<internal::CoordsToStorageMap> jacobian_row_col_to_storage_offset{};
+  std::optional<internal::CoordsToStorageMap> jacobian_row_col_to_storage_offset{};
   if (include_jacobians_) {
     jacobian_row_col_to_storage_offset.emplace(
         internal::CoordsToStorageOffset(init_linearization_.jacobian));

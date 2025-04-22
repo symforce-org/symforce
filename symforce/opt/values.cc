@@ -203,7 +203,7 @@ index_entry_t Values<Scalar>::IndexEntryAt(const Key& key) const {
 }
 
 template <typename Scalar>
-optional<index_entry_t> Values<Scalar>::MaybeIndexEntryAt(const Key& key) const {
+std::optional<index_entry_t> Values<Scalar>::MaybeIndexEntryAt(const Key& key) const {
   const auto it = map_.find(key);
   if (it == map_.end()) {
     return {};

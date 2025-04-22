@@ -136,7 +136,7 @@ void LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::UpdatePa
 }
 
 template <typename ScalarType, typename LinearSolverType, typename StateType>
-optional<std::pair<optimization_status_t, levenberg_marquardt_solver_failure_reason_t>>
+std::optional<std::pair<optimization_status_t, levenberg_marquardt_solver_failure_reason_t>>
 LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::Iterate(
     const LinearizeFunc& func, OptimizationStats<MatrixType>& stats) {
   SYM_TIME_SCOPE("LM<{}>::Iterate()", id_);
@@ -257,7 +257,7 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::Iterate(
     }
   }
 
-  optional<std::pair<optimization_status_t, FailureReason>> status{};
+  std::optional<std::pair<optimization_status_t, FailureReason>> status{};
 
   if (relative_reduction > -p_.early_exit_min_reduction / 10 &&
       relative_reduction < p_.early_exit_min_reduction) {

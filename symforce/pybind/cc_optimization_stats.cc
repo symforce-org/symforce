@@ -12,7 +12,6 @@
 
 #include <symforce/opt/linearization.h>
 #include <symforce/opt/optimization_stats.h>
-#include <symforce/opt/optional.h>
 
 #include "./lcm_type_casters.h"
 

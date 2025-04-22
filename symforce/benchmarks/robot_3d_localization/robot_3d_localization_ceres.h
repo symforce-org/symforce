@@ -56,8 +56,6 @@ class RelativePoseError {
         new RelativePoseError(a_q_b, a_t_b, info_matrix));
   }
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
  private:
   const Eigen::Quaterniond a_q_b_measured_;
   const Eigen::Vector3d a_t_b_measured_;
@@ -95,8 +93,6 @@ class ScanMatchingError {
     return new ceres::AutoDiffCostFunction<ScanMatchingError, 3, 4, 3>(
         new ScanMatchingError(body_t_landmark, world_t_landmark, sigma));
   }
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
  private:
   const Eigen::Vector3d body_t_landmark_;

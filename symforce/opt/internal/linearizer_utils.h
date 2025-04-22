@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "../factor.h"
-#include "../optional.h"
 #include "./hash_combine.h"
 
 namespace sym {
@@ -98,7 +98,7 @@ CoordsToStorageMap CoordsToStorageOffset(const Eigen::SparseMatrix<Scalar>& mat)
 
 template <typename Scalar>
 void ComputeKeyHelperSparseColOffsets(
-    const optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
+    const std::optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
     linearization_dense_factor_helper_t& factor_helper) {
   for (int key_i = 0; key_i < static_cast<int>(factor_helper.key_helpers.size()); ++key_i) {
@@ -146,7 +146,7 @@ void ComputeKeyHelperSparseColOffsets(
 template <typename Scalar>
 void ComputeKeyHelperSparseMap(
     const typename Factor<Scalar>::LinearizedSparseFactor& linearized_factor,
-    const optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
+    const std::optional<CoordsToStorageMap>& jacobian_row_col_to_storage_offset,
     const CoordsToStorageMap& hessian_row_col_to_storage_offset,
     linearization_sparse_factor_helper_t& factor_helper) {
   // We're computing this in UpdateFromSparseOnesFactorIntoTripletLists too...
