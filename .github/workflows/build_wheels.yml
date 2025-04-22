@@ -65,6 +65,13 @@ jobs:
         # For arm64; for x86, it's at /usr/local but cmake finds that ok already
         GMP_ROOT: /opt/homebrew
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.version }}.0
+        CIBW_BEFORE_TEST: >
+          pip install build setuptools_scm &&
+          python -m build --wheel {project}/third_party/skymarshal --outdir /tmp/wheel-test-dist &&
+          python -m build --wheel {project}/gen/python --outdir /tmp/wheel-test-dist &&
+          pip install /tmp/wheel-test-dist/*
+        CIBW_TEST_COMMAND: python {project}/.github/scripts/run_wheel_tests.py {project}
+        CIBW_TEST_EXTRAS: dev
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
@@ -99,6 +106,13 @@ jobs:
         CIBW_BEFORE_BUILD: yum install -y gmp-devel git
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION
         CIBW_ENVIRONMENT_PASS_LINUX: SYMFORCE_VERSION
+        CIBW_BEFORE_TEST: >
+          pip install build setuptools_scm &&
+          python -m build --wheel {project}/third_party/skymarshal --outdir /tmp/wheel-test-dist &&
+          python -m build --wheel {project}/gen/python --outdir /tmp/wheel-test-dist &&
+          pip install /tmp/wheel-test-dist/*
+        CIBW_TEST_COMMAND: python {project}/.github/scripts/run_wheel_tests.py {project}
+        CIBW_TEST_EXTRAS: dev
 
     - name: Upload Wheels
       uses: actions/upload-artifact@v4
