@@ -163,14 +163,8 @@ void AddOptimizerWrapper(pybind11::module_ module) {
           py::arg("key"));
 
   // Wrapping free functions
-  // NOTE(brad): the overload cast is only necessary because we temporarily have two overloads,
-  // one for the new signature, and one for a deprecated signature. The overload cast could be
-  // removed once the deprecated overload is removed.
-  module.def("optimize",
-             py::overload_cast<const optimizer_params_t&, const std::vector<Factord>&, Valuesd&,
-                               const double>(&Optimize<double>),
-             py::arg("params"), py::arg("factors"), py::arg("values"),
-             py::arg("epsilon") = kDefaultEpsilond,
+  module.def("optimize", &Optimize<double>, py::arg("params"), py::arg("factors"),
+             py::arg("values"), py::arg("epsilon") = kDefaultEpsilond,
              "Simple wrapper to make optimization one function call.");
   module.def("default_optimizer_params", &DefaultOptimizerParams,
              "Sensible default parameters for Optimizer.");

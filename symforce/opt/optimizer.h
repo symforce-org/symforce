@@ -93,11 +93,6 @@ class Optimizer {
             const std::string& name = "sym::Optimize", std::vector<Key> keys = {},
             const Scalar epsilon = sym::kDefaultEpsilon<Scalar>);
 
-  [[deprecated("Use the constructor that takes a params struct")]] Optimizer(
-      const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const Scalar epsilon,
-      const std::string& name, std::vector<Key> keys, bool debug_stats,
-      bool check_derivatives = false, bool include_jacobians = false);
-
   /**
    * Constructor that copies in factors and keys, with arguments for the nonlinear solver
    *
@@ -108,12 +103,6 @@ class Optimizer {
   Optimizer(const optimizer_params_t& params, std::vector<Factor<Scalar>> factors,
             const std::string& name, std::vector<Key> keys, Scalar epsilon,
             NonlinearSolverArgs&&... nonlinear_solver_args);
-
-  template <typename... NonlinearSolverArgs>
-  [[deprecated("Use the constructor that takes a params struct")]] Optimizer(
-      const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, Scalar epsilon,
-      const std::string& name, std::vector<Key> keys, bool debug_stats, bool check_derivatives,
-      bool include_jacobians, NonlinearSolverArgs&&... nonlinear_solver_args);
 
   // This cannot be moved or copied because the linearization keeps a pointer to the factors
   Optimizer(Optimizer&&) = delete;

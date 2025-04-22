@@ -40,23 +40,6 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& 
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
-Optimizer<ScalarType, NonlinearSolverType>::Optimizer(const optimizer_params_t& params,
-                                                      std::vector<Factor<Scalar>> factors,
-                                                      const Scalar epsilon, const std::string& name,
-                                                      std::vector<Key> keys, const bool debug_stats,
-                                                      const bool check_derivatives,
-                                                      const bool include_jacobians)
-    : Optimizer(
-          [&]() {
-            auto modified_params = params;
-            modified_params.debug_stats = debug_stats;
-            modified_params.check_derivatives = check_derivatives;
-            modified_params.include_jacobians = include_jacobians;
-            return modified_params;
-          }(),
-          std::move(factors), name, std::move(keys), epsilon) {}
-
-template <typename ScalarType, typename NonlinearSolverType>
 template <typename... NonlinearSolverArgs>
 Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
     const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const std::string& name,
@@ -78,23 +61,6 @@ Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
 
   SYM_ASSERT(!params.check_derivatives || params.include_jacobians);
 }
-
-template <typename ScalarType, typename NonlinearSolverType>
-template <typename... NonlinearSolverArgs>
-Optimizer<ScalarType, NonlinearSolverType>::Optimizer(
-    const optimizer_params_t& params, std::vector<Factor<Scalar>> factors, const Scalar epsilon,
-    const std::string& name, std::vector<Key> keys, bool debug_stats, bool check_derivatives,
-    bool include_jacobians, NonlinearSolverArgs&&... nonlinear_solver_args)
-    : Optimizer(
-          [&]() {
-            auto modified_params = params;
-            modified_params.debug_stats = debug_stats;
-            modified_params.check_derivatives = check_derivatives;
-            modified_params.include_jacobians = include_jacobians;
-            return modified_params;
-          }(),
-          std::move(factors), name, std::move(keys), epsilon,
-          std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...) {}
 
 // ----------------------------------------------------------------------------
 // Public methods

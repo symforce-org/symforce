@@ -114,8 +114,12 @@ def main() -> None:
     optimizer = Optimizer(
         factors=factors,
         optimized_keys=optimized_keys,
-        debug_stats=True,  # Return problem stats for every iteration
-        params=Optimizer.Params(verbose=True),  # Customize optimizer behavior
+        params=Optimizer.Params(  # Customize optimizer behavior
+            # Print information about each iteration
+            verbose=True,
+            # Return problem stats for every iteration
+            debug_stats=True,
+        ),
     )
 
     # Solve and return the result

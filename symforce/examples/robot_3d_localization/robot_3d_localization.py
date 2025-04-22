@@ -239,10 +239,14 @@ def main() -> None:
     optimizer = Optimizer(
         factors=factors,
         optimized_keys=optimized_keys,
-        # Return problem stats for every iteration
-        debug_stats=True,
         # Customize optimizer behavior
-        params=Optimizer.Params(verbose=True, initial_lambda=1e4, lambda_down_factor=1 / 2.0),
+        params=Optimizer.Params(
+            verbose=True,
+            initial_lambda=1e4,
+            lambda_down_factor=1 / 2.0,
+            # Return problem stats for every iteration
+            debug_stats=True,
+        ),
     )
 
     # Solve and return the result

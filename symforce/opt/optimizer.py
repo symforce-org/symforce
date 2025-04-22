@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -182,8 +181,6 @@ class Optimizer:
         factors: T.Iterable[T.Union[Factor, NumericFactor]],
         optimized_keys: T.Optional[T.Sequence[str]] = None,
         params: T.Optional[OptimizerParams] = None,
-        debug_stats: T.Optional[bool] = None,
-        include_jacobians: T.Optional[bool] = None,
     ):
         if optimized_keys is None:
             # This will be filled with the optimized keys of the numeric factors
@@ -228,22 +225,6 @@ class Optimizer:
             self.params = OptimizerParams(verbose=True)
         else:
             self.params = params
-
-        if debug_stats is not None:
-            self.params.debug_stats = debug_stats
-            warnings.warn(
-                "debug_stats argument is deprecated, use params.debug_stats",
-                FutureWarning,
-                stacklevel=5,
-            )
-
-        if include_jacobians is not None:
-            self.params.include_jacobians = include_jacobians
-            warnings.warn(
-                "include_jacobians argument is deprecated, use params.include_jacobians",
-                FutureWarning,
-                stacklevel=5,
-            )
 
         self._initialized = False
 

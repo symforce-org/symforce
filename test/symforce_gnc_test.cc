@@ -27,7 +27,7 @@ TEST_CASE("Test GNC", "[gnc]") {
   // Create values
   sym::Valuesd initial_values;
   initial_values.Set<sym::Vector5d>('x', sym::Vector5d::Ones());
-  initial_values.Set('e', kEpsilon);
+  initial_values.Set('e', sym::kDefaultEpsilond);
 
   // Pick random normal samples, with some outliers
   std::mt19937 gen(42);
@@ -48,11 +48,12 @@ TEST_CASE("Test GNC", "[gnc]") {
 
   auto params = sym::DefaultOptimizerParams();
   params.verbose = true;
+  params.check_derivatives = true;
+  params.include_jacobians = true;
 
-  sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(
-      params, DefaultGncParams(), 'u', factors, kEpsilon, "sym::Optimize",
-      /* keys */ std::vector<sym::Key>{}, /* debug_stats */ false,
-      /* check_derivatives */ true, /* include_jacobians */ true);
+  sym::GncOptimizer<sym::Optimizerd> gnc_optimizer(params, DefaultGncParams(), 'u', factors,
+                                                   "sym::Optimize",
+                                                   /* keys */ std::vector<sym::Key>{}, kEpsilon);
 
   INFO("Initial x: " << initial_values.At<sym::Vector5d>('x').transpose());
 
@@ -62,7 +63,7 @@ TEST_CASE("Test GNC", "[gnc]") {
 
   sym::Valuesd regular_optimized_values = initial_values;
   regular_optimized_values.Set('u', 0.0);
-  sym::Optimize(params, factors, regular_optimized_values, kEpsilon);
+  sym::Optimize(params, factors, regular_optimized_values);
 
   INFO("Final x without GNC:" << regular_optimized_values.At<sym::Vector5d>('x').transpose());
 
