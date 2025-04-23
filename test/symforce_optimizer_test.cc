@@ -477,3 +477,36 @@ TEST_CASE("Test dynamic lambda update", "[optimizer]") {
     CHECK(stats.iterations.size() == 27);
   }
 }
+
+TEST_CASE("The best linearization can be filled out without debug_stats", "[optimizer]") {
+  auto params = sym::DefaultOptimizerParams();
+  params.lambda_update_type = sym::lambda_update_type_t::DYNAMIC;
+  CHECK(params.debug_stats == false);
+
+  auto factors_and_values = CreatePoseSmoothingProblem();
+  const auto& factors = factors_and_values.first;
+  auto& values = factors_and_values.second;
+
+  auto optimizer = sym::Optimizer(params, factors);
+  const auto stats =
+      optimizer.Optimize(values, /* num_iterations */ -1, /* populate_best_linearization */ true);
+
+  CHECK(stats.status == sym::optimization_status_t::SUCCESS);
+  CHECK(stats.failure_reason == sym::levenberg_marquardt_solver_failure_reason_t::INVALID);
+  CHECK(stats.iterations.size() == 27);
+  CHECK(stats.best_linearization.has_value());
+  CHECK(stats.best_linearization->residual.size() == 66);
+  CHECK(stats.best_linearization->residual.array().isFinite().all());
+  CHECK(stats.best_linearization->jacobian.rows() == 0);
+  CHECK(stats.best_linearization->jacobian.cols() == 0);
+  CHECK(stats.best_linearization->hessian_lower.rows() == 60);
+  CHECK(stats.best_linearization->hessian_lower.cols() == 60);
+  CHECK(stats.best_linearization->hessian_lower.nonZeros() == 534);
+  CHECK(Eigen::Map<const Eigen::VectorXd>(stats.best_linearization->hessian_lower.valuePtr(),
+                                          stats.best_linearization->hessian_lower.nonZeros())
+            .array()
+            .isFinite()
+            .all());
+  CHECK(stats.best_linearization->rhs.size() == 60);
+  CHECK(stats.best_linearization->rhs.array().isFinite().all());
+}
