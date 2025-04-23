@@ -150,8 +150,8 @@ void AddOptimizerWrapper(pybind11::module_ module) {
            [](const Optimizerd& opt) -> py::dict {
              // Convert to cc_sym.Key, which is hashable
              py::dict py_index;
-             for (const auto& key_and_entry : opt.Linearizer().StateIndex()) {
-               py_index[py::cast(Key(key_and_entry.first))] = key_and_entry.second;
+             for (const auto& [key, entry] : opt.Linearizer().StateIndex()) {
+               py_index[py::cast(Key(key))] = entry;
              }
              return py_index;
            })

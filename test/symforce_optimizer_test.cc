@@ -140,9 +140,7 @@ std::pair<std::vector<sym::Factord>, sym::Valuesd> CreatePoseSmoothingProblem() 
  * interpolation, and when the between factors are strong it should act as a mean.
  */
 TEST_CASE("Test pose smoothing", "[optimizer]") {
-  auto factors_and_values = CreatePoseSmoothingProblem();
-  const auto& factors = factors_and_values.first;
-  auto& values = factors_and_values.second;
+  auto [factors, values] = CreatePoseSmoothingProblem();
 
   INFO("Initial values: " << values);
 
@@ -466,11 +464,9 @@ TEST_CASE("Test dynamic lambda update", "[optimizer]") {
     params.lambda_update_type = sym::lambda_update_type_t::DYNAMIC;
     params.verbose = true;
 
-    auto factors_and_values = CreatePoseSmoothingProblem();
-    const auto& factors = factors_and_values.first;
-    auto& values = factors_and_values.second;
+    auto [factors, values] = CreatePoseSmoothingProblem();
 
-    const auto stats = sym::Optimize(params, factors, values);
+    const auto stats = sym::Optimize(params, std::move(factors), values);
 
     CHECK(stats.status == sym::optimization_status_t::SUCCESS);
     CHECK(stats.failure_reason == sym::levenberg_marquardt_solver_failure_reason_t::INVALID);
@@ -483,11 +479,9 @@ TEST_CASE("The best linearization can be filled out without debug_stats", "[opti
   params.lambda_update_type = sym::lambda_update_type_t::DYNAMIC;
   CHECK(params.debug_stats == false);
 
-  auto factors_and_values = CreatePoseSmoothingProblem();
-  const auto& factors = factors_and_values.first;
-  auto& values = factors_and_values.second;
+  auto [factors, values] = CreatePoseSmoothingProblem();
 
-  auto optimizer = sym::Optimizer(params, factors);
+  auto optimizer = sym::Optimizer(params, std::move(factors));
   const auto stats =
       optimizer.Optimize(values, /* num_iterations */ -1, /* populate_best_linearization */ true);
 

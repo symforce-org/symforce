@@ -17,10 +17,10 @@ Values<Scalar>::Values(std::initializer_list<Values<Scalar>> others) {
   for (const auto& other : others) {
     // add in the Keys with a different offset
     const size_t offset = data_.size();
-    for (const auto& it : other.map_) {
-      SYM_ASSERT(map_.find(it.first) == map_.end());
-      map_[it.first] = it.second;
-      map_[it.first].offset += offset;
+    for (const auto& [key, index_entry] : other.map_) {
+      SYM_ASSERT(map_.find(key) == map_.end());
+      map_[key] = index_entry;
+      map_[key].offset += offset;
     }
 
     // copy data from other Values
@@ -76,10 +76,10 @@ std::vector<Key> Values<Scalar>::Keys(const bool sort_by_offset) const {
     offsets.reserve(map_.size());
   }
 
-  for (const auto& kv : map_) {
-    keys.push_back(kv.first);
+  for (const auto& [key, value] : map_) {
+    keys.push_back(key);
     if (sort_by_offset) {
-      offsets.push_back(kv.second.offset);
+      offsets.push_back(value.offset);
     }
   }
 

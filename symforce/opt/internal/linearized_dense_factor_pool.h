@@ -80,11 +80,11 @@ class LinearizedDenseFactorPool {
     // Invariant: dims_to_index contains a key (dim1, dim2) iff AppendFactorSize was called with
     // those dims. dims_to_index[(dim1, dim2)] = n  ==> AppendFactorSize was first called with
     // those dims on its nth call.
-    const auto index_at_and_was_inserted =
+    const auto [index_at, was_inserted] =
         dims_to_index.emplace(std::make_pair(res_dim, rhs_dim), unique_linearized_factors_.size());
 
-    index_per_factor_.push_back(index_at_and_was_inserted.first->second);
-    if (index_at_and_was_inserted.second) {
+    index_per_factor_.push_back(index_at->second);
+    if (was_inserted) {
       unique_linearized_factors_.emplace_back();
       LinearizedDenseFactor& new_linearization = unique_linearized_factors_.back();
 

@@ -34,21 +34,20 @@ class CoordsToStorageOrderedMap {
   }
 
   void insert(const std::pair<std::pair<int32_t, int32_t>, int32_t>& key_and_value) {
-    const auto& key = key_and_value.first;
-    const auto& value = key_and_value.second;
+    const auto& [key, value] = key_and_value;
     SYM_ASSERT(data_.empty() || ColumnOrderingLessThan(data_.back().first, key));
     data_.emplace_back(key, value);
   }
 
   int32_t at(const std::pair<int32_t, int32_t>& key) const {
     // Binary search data_ for key
-    const auto at_and_after_iterator =
+    const auto [at, after] =
         std::equal_range(data_.begin(), data_.end(), std::make_pair(key, /* unused value */ 0),
                          ColumnOrderingPairLessThan);
-    if (at_and_after_iterator.first + 1 != at_and_after_iterator.second) {
+    if (at + 1 != after) {
       throw std::out_of_range("Key not in CoordsToStorageMap");
     }
-    return at_and_after_iterator.first->second;
+    return at->second;
   }
 
  private:

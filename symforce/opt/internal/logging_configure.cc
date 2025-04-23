@@ -44,8 +44,9 @@ bool SetLogLevel(const std::string& log_level) {
     return false;
   }
 
-  spdlog::set_level(maybe_log_level->second);
-  spdlog::debug("Set log level to: {}", maybe_log_level->first);
+  const auto& [level_name, level_enum] = *maybe_log_level;
+  spdlog::set_level(level_enum);
+  spdlog::debug("Set log level to: {}", level_name);
   return true;
 }
 

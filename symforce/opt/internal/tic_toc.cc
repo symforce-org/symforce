@@ -129,8 +129,8 @@ void TicTocManager::PrintTimingResults(std::ostream& out) const {
   });
 
   int longest_name = 0;
-  for (const auto& block : blocks) {
-    longest_name = std::max<int>(block.first.size(), longest_name);
+  for (const auto& [name, _] : blocks) {
+    longest_name = std::max<int>(name.size(), longest_name);
   }
 
   const std::string header_fmt =
@@ -150,10 +150,7 @@ void TicTocManager::PrintTimingResults(std::ostream& out) const {
   fmt::print(out, legend);
   fmt::print(out, separator + "\n");
 
-  for (const auto& block_pair : blocks) {
-    const auto& name = block_pair.first;
-    const auto& block = block_pair.second;
-
+  for (const auto& [name, block] : blocks) {
     fmt::print(out, output_fmt, name, block.Count(), float(block.TotalTime()),
                float(block.AverageTime()), float(block.MaxTime()), float(block.MinTime()));
   }
@@ -162,8 +159,8 @@ void TicTocManager::PrintTimingResults(std::ostream& out) const {
 void TicTocManager::Consume(const std::unordered_map<std::string, TicTocStats>& thread_map) {
   // Lock the consumer thread
   std::lock_guard<std::mutex> lock(tictoc_blocks_mutex_);
-  for (const auto& pair : thread_map) {
-    GetStatsWithoutLock(pair.first).Merge(pair.second);
+  for (const auto& [name, other] : thread_map) {
+    GetStatsWithoutLock(name).Merge(other);
   }
 }
 

@@ -34,10 +34,7 @@ std::vector<Correspondence<Scalar>> GenerateCorrespondences(
     const size_t num_outliers = 0) {
   // Create correspondence for each sample
   std::vector<Correspondence<Scalar>> correspondences;
-  for (const auto& observation : source_observations) {
-    const auto& source_uv = observation.first;
-    const auto& inverse_range = observation.second;
-
+  for (const auto& [source_uv, inverse_range] : source_observations) {
     Correspondence<Scalar> correspondence;
     correspondence.source_uv = source_uv;
 

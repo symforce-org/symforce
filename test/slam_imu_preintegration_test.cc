@@ -463,10 +463,8 @@ TEST_CASE("Test RollForwardState", "[slam]") {
   const auto p0 = sym::Pose3d::Random(gen);
   const auto v0 = sym::Random<Vector3d>(gen);
 
-  const auto p1_and_v1 =
+  const auto [p1, v1] =
       integrator.PreintegratedMeasurements().delta.RollForwardState(p0, v0, Vector3d::Zero());
-  const auto& p1 = p1_and_v1.first;
-  const auto& v1 = p1_and_v1.second;
 
   const auto factor = sym::ImuFactord{integrator};
   sym::Vector9d residual;

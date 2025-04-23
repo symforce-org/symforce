@@ -45,15 +45,15 @@ void IterateToConvergenceImpl(ValuesType& values, NonlinearSolver& nonlinear_sol
   for (i = 0; i < num_iterations; i++) {
     const auto maybe_status_and_failure_reason = nonlinear_solver.Iterate(linearize_func, stats);
     if (maybe_status_and_failure_reason) {
-      const auto& status_and_failure_reason = maybe_status_and_failure_reason.value();
+      const auto& [status, failure_reason] = maybe_status_and_failure_reason.value();
 
-      SYM_ASSERT(status_and_failure_reason.first != optimization_status_t::INVALID,
+      SYM_ASSERT(status != optimization_status_t::INVALID,
                  "NonlinearSolver::Iterate should never return INVALID");
-      SYM_ASSERT(status_and_failure_reason.first != optimization_status_t::HIT_ITERATION_LIMIT,
+      SYM_ASSERT(status != optimization_status_t::HIT_ITERATION_LIMIT,
                  "NonlinearSolver::Iterate should never return HIT_ITERATION_LIMIT");
 
-      stats.status = status_and_failure_reason.first;
-      stats.failure_reason = status_and_failure_reason.second.int_value();
+      stats.status = status;
+      stats.failure_reason = failure_reason.int_value();
       break;
     }
   }

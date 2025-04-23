@@ -198,13 +198,12 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
                                         factor_indices_.back());
       }
 
-      auto helper_and_dimension =
+      auto [helper, dimension] =
           internal::ComputeFactorHelper<linearization_sparse_factor_helper_t>(
               linearized_factor, values, factor.OptimizedKeys(), state_index_, name_,
               combined_residual_offset);
-      internal::AssertConsistentShapes(helper_and_dimension.second, linearized_factor,
-                                       include_jacobians_);
-      sparse_factor_update_helpers_.push_back(std::move(helper_and_dimension.first));
+      internal::AssertConsistentShapes(dimension, linearized_factor, include_jacobians_);
+      sparse_factor_update_helpers_.push_back(std::move(helper));
       const auto& factor_helper = sparse_factor_update_helpers_.back();
 
       UpdateFromSparseFactorIntoTripletLists(linearized_factor, factor_helper, jacobian_triplets,
@@ -233,13 +232,11 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
                                                  dense_factor_size_tracker);
 
       // Create dense factor helper
-      auto helper_and_dimension =
-          internal::ComputeFactorHelper<linearization_dense_factor_helper_t>(
-              linearized_dense_factor, values, factor.OptimizedKeys(), state_index_, name_,
-              combined_residual_offset);
-      internal::AssertConsistentShapes(helper_and_dimension.second, linearized_dense_factor,
-                                       include_jacobians_);
-      dense_factor_update_helpers_.push_back(std::move(helper_and_dimension.first));
+      auto [helper, dimension] = internal::ComputeFactorHelper<linearization_dense_factor_helper_t>(
+          linearized_dense_factor, values, factor.OptimizedKeys(), state_index_, name_,
+          combined_residual_offset);
+      internal::AssertConsistentShapes(dimension, linearized_dense_factor, include_jacobians_);
+      dense_factor_update_helpers_.push_back(std::move(helper));
 
       const auto& factor_helper = dense_factor_update_helpers_.back();
 

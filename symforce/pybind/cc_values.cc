@@ -51,15 +51,15 @@ py::object PyAt(const sym::Valuesd& v, const sym::index_entry_t& index_entry) {
 
 template <typename Scalar>
 py::object PyAtMatrix(const sym::Valuesd& v, const sym::index_entry_t& index_entry) {
-  const auto shape = EigenTypeShape(index_entry.type);
-  if (shape.first == 1 || shape.second == 1) {
-    return py::cast(Eigen::Map<const Eigen::VectorXd>(v.Data().data() + index_entry.offset,
-                                                      shape.first * shape.second),
-                    py::return_value_policy::copy);
+  const auto [rows, cols] = EigenTypeShape(index_entry.type);
+  if (rows == 1 || cols == 1) {
+    return py::cast(
+        Eigen::Map<const Eigen::VectorXd>(v.Data().data() + index_entry.offset, rows * cols),
+        py::return_value_policy::copy);
   } else {
-    return py::cast(Eigen::Map<const Eigen::MatrixXd>(v.Data().data() + index_entry.offset,
-                                                      shape.first, shape.second),
-                    py::return_value_policy::copy);
+    return py::cast(
+        Eigen::Map<const Eigen::MatrixXd>(v.Data().data() + index_entry.offset, rows, cols),
+        py::return_value_policy::copy);
   }
 }
 
