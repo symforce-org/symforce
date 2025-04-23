@@ -28,5 +28,7 @@ file:./gen/python
     # via symforce (pyproject.toml)
 sympy
     # via symforce (pyproject.toml)
+typing-extensions
+    # via symforce (pyproject.toml)
 wheel
     # via symforce (pyproject.toml)
