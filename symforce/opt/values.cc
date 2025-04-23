@@ -70,15 +70,49 @@ template <typename Scalar>
 std::vector<Key> Values<Scalar>::Keys(const bool sort_by_offset) const {
   std::vector<Key> keys;
   keys.reserve(map_.size());
+
+  std::vector<int64_t> offsets;
+  if (sort_by_offset) {
+    offsets.reserve(map_.size());
+  }
+
   for (const auto& kv : map_) {
     keys.push_back(kv.first);
+    if (sort_by_offset) {
+      offsets.push_back(kv.second.offset);
+    }
   }
 
   // Sort the keys by offset so iterating through is saner and more memory friendly
   if (sort_by_offset) {
-    std::sort(keys.begin(), keys.end(), [&](const sym::Key& a, const sym::Key& b) {
-      return map_.at(a).offset < map_.at(b).offset;
-    });
+    std::vector<int64_t> indices(keys.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    std::sort(indices.begin(), indices.end(),
+              [&](const int64_t& a, const int64_t& b) { return offsets[a] < offsets[b]; });
+
+    // Free offsets
+    offsets = {};
+
+    // Apply the permutation in-place using cycle decomposition
+    std::vector<bool> visited(keys.size(), false);
+    for (int64_t i = 0; i < static_cast<int64_t>(keys.size()); ++i) {
+      if (visited[i] || indices[i] == i) {
+        continue;
+      }
+
+      int64_t j = i;
+      auto tmp = std::move(keys[i]);
+
+      while (!visited[j]) {
+        visited[j] = true;
+        if (indices[j] == i) {
+          keys[j] = std::move(tmp);
+        } else {
+          keys[j] = std::move(keys[indices[j]]);
+        }
+        j = indices[j];
+      }
+    }
   }
 
   return keys;
