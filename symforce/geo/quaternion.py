@@ -81,8 +81,12 @@ class Quaternion(Group):
         return cls(xyz=Vector3(0, 0, 0), w=1)
 
     def compose(self, other: Quaternion) -> Quaternion:
+        # This intentionally has xyz on the left of these multiplies.  w is an unknown scalar type,
+        # so we want to prefer our __mul__ over any __mul__ that w has defined.  For example, on
+        # numpy scalars, __mul__ will convert the rhs to a numpy array and return that, which isn't
+        # what we want.
         return self.__class__(
-            xyz=self.w * other.xyz + other.w * self.xyz + self.xyz.cross(other.xyz),
+            xyz=other.xyz * self.w + self.xyz * other.w + self.xyz.cross(other.xyz),
             w=self.w * other.w - self.xyz.dot(other.xyz),
         )
 

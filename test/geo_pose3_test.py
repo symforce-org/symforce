@@ -73,6 +73,16 @@ class GeoPose3Test(LieGroupOpsTestMixin, TestCase):
         value = LieGroupOps.from_tangent(element, tangent_vec, epsilon=self.EPSILON)
         self.assertStorageNear(value.t, tangent_vec[3:], places=7)
 
+    def test_issue_435(self) -> None:
+        """
+        https://github.com/symforce-org/symforce/issues/435
+        """
+
+        p1 = sf.Pose3.from_storage([0, 0, 0, 1, 0, 0, 0])
+        p2 = sf.Pose3.from_storage(np.array([0, 0, 0, 1, 0, 0, 0], dtype=np.float64))  # type: ignore[arg-type]
+        self.assertIsInstance(p1 * p2, sf.Pose3)
+        self.assertIsInstance(p2 * p1, sf.Pose3)
+
 
 if __name__ == "__main__":
     TestCase.main()
