@@ -333,6 +333,7 @@ types-setuptools==75.8.0.20250110
     # via symforce (pyproject.toml)
 typing-extensions==4.12.2
     # via
+    #   symforce (pyproject.toml)
     #   beautifulsoup4
     #   ipython
     #   mistune
