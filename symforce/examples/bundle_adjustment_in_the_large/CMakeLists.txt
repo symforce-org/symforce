@@ -8,6 +8,8 @@ add_executable(
     bundle_adjustment_in_the_large.cc
 )
 
+target_compile_options(bundle_adjustment_in_the_large_example PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
+
 target_link_libraries(
     bundle_adjustment_in_the_large_example
     symforce_gen
