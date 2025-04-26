@@ -93,17 +93,17 @@ class Rot2(LieGroup):
         theta = vec[0]
         return Matrix22([[0, -theta], [theta, 0]])
 
-    def storage_D_tangent(self) -> Matrix21:
+    def storage_D_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> Matrix21:
         """
         Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
         return Matrix21([[-self.z.imag], [self.z.real]])
 
-    def tangent_D_storage(self) -> Matrix12:
+    def tangent_D_storage(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix12:
         """
         Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
-        return T.cast(Matrix12, self.storage_D_tangent().T)
+        return T.cast(Matrix12, self.storage_D_tangent(epsilon).T)
 
     # -------------------------------------------------------------------------
     # Helper methods

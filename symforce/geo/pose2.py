@@ -137,21 +137,21 @@ class Pose2(LieGroup):
         theta = self.R.to_tangent(epsilon=epsilon)[0]
         return [theta, self.t[0], self.t[1]]
 
-    def storage_D_tangent(self) -> Matrix:
+    def storage_D_tangent(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         """
         Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
-        storage_D_tangent_R = self.R.storage_D_tangent()
+        storage_D_tangent_R = self.R.storage_D_tangent(epsilon)
         storage_D_tangent_t = Matrix22.eye()
         return Matrix.block_matrix(
             [[storage_D_tangent_R, Matrix.zeros(2, 2)], [Matrix.zeros(2, 1), storage_D_tangent_t]]
         )
 
-    def tangent_D_storage(self) -> Matrix:
+    def tangent_D_storage(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         """
         Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
-        tangent_D_storage_R = self.R.tangent_D_storage()
+        tangent_D_storage_R = self.R.tangent_D_storage(epsilon)
         tangent_D_storage_t = Matrix22.eye()
         return Matrix.block_matrix(
             [[tangent_D_storage_R, Matrix.zeros(1, 2)], [Matrix.zeros(2, 2), tangent_D_storage_t]]

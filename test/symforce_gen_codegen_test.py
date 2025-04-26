@@ -71,8 +71,8 @@ class SymforceGenCodegenTest(TestCase):
         for cls in sf.GEO_TYPES:
             tangent_D_storage_codegen = codegen.Codegen.function(
                 func=ops.LieGroupOps.tangent_D_storage,
-                input_types=[cls],
                 config=codegen.CppConfig(),
+                input_types=[cls, sf.Scalar],
             )
             tangent_D_storage_codegen.generate_function(
                 output_dir=output_dir,

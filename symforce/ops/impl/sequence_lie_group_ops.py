@@ -39,7 +39,7 @@ class SequenceLieGroupOps(SequenceGroupOps):
         return [x for v in a for x in LieGroupOps.to_tangent(v, epsilon)]
 
     @staticmethod
-    def storage_D_tangent(a: T.SequenceElement) -> geo.Matrix:
+    def storage_D_tangent(a: T.SequenceElement, epsilon: T.Scalar) -> geo.Matrix:
         from symforce import geo
 
         mat = geo.Matrix(StorageOps.storage_dim(a), LieGroupOps.tangent_dim(a))
@@ -48,13 +48,15 @@ class SequenceLieGroupOps(SequenceGroupOps):
         for v in a:
             s_dim = StorageOps.storage_dim(v)
             t_dim = LieGroupOps.tangent_dim(v)
-            mat[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = LieGroupOps.storage_D_tangent(v)
+            mat[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = LieGroupOps.storage_D_tangent(
+                v, epsilon
+            )
             s_inx += s_dim
             t_inx += t_dim
         return mat
 
     @staticmethod
-    def tangent_D_storage(a: T.SequenceElement) -> geo.Matrix:
+    def tangent_D_storage(a: T.SequenceElement, epsilon: T.Scalar) -> geo.Matrix:
         from symforce import geo
 
         mat = geo.Matrix(LieGroupOps.tangent_dim(a), StorageOps.storage_dim(a))
@@ -63,7 +65,9 @@ class SequenceLieGroupOps(SequenceGroupOps):
         for v in a:
             t_dim = LieGroupOps.tangent_dim(v)
             s_dim = StorageOps.storage_dim(v)
-            mat[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = LieGroupOps.tangent_D_storage(v)
+            mat[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = LieGroupOps.tangent_D_storage(
+                v, epsilon
+            )
             t_inx += t_dim
             s_inx += s_dim
         return mat

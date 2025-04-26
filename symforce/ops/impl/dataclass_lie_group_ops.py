@@ -97,7 +97,7 @@ class DataclassLieGroupOps(DataclassGroupOps):
         return tangent
 
     @staticmethod
-    def storage_D_tangent(a: T.Dataclass) -> geo.Matrix:
+    def storage_D_tangent(a: T.Dataclass, epsilon: T.Scalar) -> geo.Matrix:
         from symforce import geo
 
         mat = geo.Matrix(StorageOps.storage_dim(a), LieGroupOps.tangent_dim(a))
@@ -108,14 +108,14 @@ class DataclassLieGroupOps(DataclassGroupOps):
             s_dim = StorageOps.storage_dim(field_instance)
             t_dim = LieGroupOps.tangent_dim(field_instance)
             mat[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = LieGroupOps.storage_D_tangent(
-                field_instance
+                field_instance, epsilon
             )
             s_inx += s_dim
             t_inx += t_dim
         return mat
 
     @staticmethod
-    def tangent_D_storage(a: T.Dataclass) -> geo.Matrix:
+    def tangent_D_storage(a: T.Dataclass, epsilon: T.Scalar) -> geo.Matrix:
         from symforce import geo
 
         mat = geo.Matrix(LieGroupOps.tangent_dim(a), StorageOps.storage_dim(a))
@@ -126,7 +126,7 @@ class DataclassLieGroupOps(DataclassGroupOps):
             s_dim = StorageOps.storage_dim(field_instance)
             t_dim = LieGroupOps.tangent_dim(field_instance)
             mat[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = LieGroupOps.tangent_D_storage(
-                field_instance
+                field_instance, epsilon
             )
             s_inx += s_dim
             t_inx += t_dim

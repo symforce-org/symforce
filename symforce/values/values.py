@@ -457,7 +457,7 @@ class Values(T.MutableMapping[str, T.Any]):
             vec.extend(ops.LieGroupOps.local_coordinates(va, vb, epsilon))
         return vec
 
-    def storage_D_tangent(self) -> geo.Matrix:
+    def storage_D_tangent(self, epsilon: sf.Scalar = sf.epsilon()) -> geo.Matrix:
         """
         Returns a matrix with dimensions (storage_dim x tangent_dim) which represents
         the jacobian of the flat storage space of self wrt to the flat tangent space of
@@ -471,13 +471,13 @@ class Values(T.MutableMapping[str, T.Any]):
             s_dim = ops.StorageOps.storage_dim(v)
             t_dim = ops.LieGroupOps.tangent_dim(v)
             storage_D_tangent[s_inx : s_inx + s_dim, t_inx : t_inx + t_dim] = (
-                ops.LieGroupOps.storage_D_tangent(v)
+                ops.LieGroupOps.storage_D_tangent(v, epsilon)
             )
             s_inx += s_dim
             t_inx += t_dim
         return storage_D_tangent
 
-    def tangent_D_storage(self) -> geo.Matrix:
+    def tangent_D_storage(self, epsilon: sf.Scalar = sf.epsilon()) -> geo.Matrix:
         """
         Returns a matrix with dimensions (tangent_dim x storage_dim) which represents
         the jacobian of the flat tangent space of self wrt to the flat storage space of
@@ -491,7 +491,7 @@ class Values(T.MutableMapping[str, T.Any]):
             t_dim = ops.LieGroupOps.tangent_dim(v)
             s_dim = ops.StorageOps.storage_dim(v)
             tangent_D_storage[t_inx : t_inx + t_dim, s_inx : s_inx + s_dim] = (
-                ops.LieGroupOps.tangent_D_storage(v)
+                ops.LieGroupOps.tangent_D_storage(v, epsilon)
             )
             t_inx += t_dim
             s_inx += s_dim

@@ -17,8 +17,11 @@ namespace sym {
  * that element.
  */
 template <typename Scalar>
-Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a) {
+Eigen::Matrix<Scalar, 6, 7> TangentDStorage(const sym::Pose3<Scalar>& a, const Scalar epsilon) {
   // Total ops: 7
+
+  // Unused inputs
+  (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _a = a.Data();

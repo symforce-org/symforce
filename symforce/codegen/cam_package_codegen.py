@@ -23,6 +23,7 @@ from symforce.codegen import PythonConfig
 from symforce.codegen import template_util
 from symforce.codegen.ops_codegen_util import make_group_ops_funcs
 from symforce.codegen.ops_codegen_util import make_lie_group_ops_funcs
+from symforce.codegen.ops_codegen_util import make_manifold_ops_funcs
 
 
 def pixel_from_camera_point_with_jacobians(
@@ -39,8 +40,8 @@ def pixel_from_camera_point_with_jacobians(
 
     """
     pixel, is_valid = self.pixel_from_camera_point(point, epsilon)
-    pixel_D_cal = pixel.jacobian(self.parameters())
-    pixel_D_point = pixel.jacobian(point)
+    pixel_D_cal = pixel.jacobian(self.parameters(), epsilon=epsilon)
+    pixel_D_point = pixel.jacobian(point, epsilon=epsilon)
     return pixel, is_valid, pixel_D_cal, pixel_D_point
 
 
@@ -57,8 +58,8 @@ def camera_ray_from_pixel_with_jacobians(
         point_D_pixel: Derivation of point with respect to pixel
     """
     point, is_valid = self.camera_ray_from_pixel(pixel, epsilon)
-    point_D_cal = point.jacobian(self.parameters())
-    point_D_pixel = point.jacobian(pixel)
+    point_D_cal = point.jacobian(self.parameters(), epsilon=epsilon)
+    point_D_pixel = point.jacobian(pixel, epsilon=epsilon)
     return point, is_valid, point_D_cal, point_D_pixel
 
 
@@ -152,6 +153,13 @@ def cam_class_data(cls: T.Type, config: CodegenConfig) -> T.Dict[str, T.Any]:
 
     for func in make_lie_group_ops_funcs(cls, config):
         data["specs"]["LieGroupOps"].append(func)
+
+    for func in make_manifold_ops_funcs(cls, config):
+        data["specs"]["LieGroupOps"].append(func)
+
+    data["is_group"] = True
+    data["is_lie_group"] = True
+    data["is_manifold"] = True
 
     for func in make_camera_funcs(cls, config):
         data["specs"]["CameraOps"].append(func)

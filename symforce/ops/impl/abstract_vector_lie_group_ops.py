@@ -41,13 +41,13 @@ class AbstractVectorLieGroupOps(AbstractVectorGroupOps[ElementT]):
         return cls.to_storage(a)
 
     @classmethod
-    def storage_D_tangent(cls, a: ElementT) -> geo.Matrix:
+    def storage_D_tangent(cls, a: ElementT, epsilon: T.Scalar) -> geo.Matrix:
         from symforce import geo
 
         return geo.Matrix.eye(cls.storage_dim(a))
 
     @classmethod
-    def tangent_D_storage(cls, a: ElementT) -> geo.Matrix:
+    def tangent_D_storage(cls, a: ElementT, epsilon: T.Scalar) -> geo.Matrix:
         from symforce import geo
 
         return geo.Matrix.eye(cls.storage_dim(a))

@@ -547,7 +547,13 @@ class SymforceValuesTest(LieGroupOpsTestMixin, TestCase):
         v_geo = Values()
         with v_geo.scope("geo_types"):
             for geo_type in sf.ALL_GEO_TYPES:
-                v_geo[geo_type.__name__] = ops.GroupOps.identity(geo_type)
+                try:
+                    v_geo[geo_type.__name__] = ops.GroupOps.identity(geo_type)
+                except NotImplementedError as err:
+                    if hasattr(geo_type, "random"):
+                        v_geo[geo_type.__name__] = geo_type.random()
+                    else:
+                        raise ValueError(f"{geo_type.__name__} has no 'random' method") from err
 
         self.assertEqual(v_geo, Values.from_storage_index(v_geo.to_storage(), v_geo.index()))
 

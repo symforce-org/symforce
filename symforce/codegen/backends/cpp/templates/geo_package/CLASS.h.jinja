@@ -46,7 +46,7 @@ class {{ cls.__name__ }} {
   using Scalar = ScalarType;
   using Self = {{ cls.__name__ }}<Scalar>;
   using DataVec = Eigen::Matrix<Scalar, {{ ops.StorageOps.storage_dim(cls) }}, 1, Eigen::DontAlign>;
-  {% if is_lie_group %}
+  {% if is_manifold %}
   using TangentVec = Eigen::Matrix<Scalar, {{ ops.LieGroupOps.tangent_dim(cls) }}, 1>;
   using SelfJacobian = Eigen::Matrix<Scalar, {{ ops.LieGroupOps.tangent_dim(cls) }}, {{ ops.LieGroupOps.tangent_dim(cls) }}>;
   {% endif %}
@@ -69,8 +69,10 @@ class {{ cls.__name__ }} {
       : data_(data) { (void)normalize; }
   {% endif %}
 
+  {% if is_group %}
   // Default construct to identity
   {{ cls.__name__ }}() : {{ cls.__name__ }}(GroupOps<Self>::Identity()) {}
+  {% endif %}
 
   // Access underlying storage as const
   inline const DataVec& Data() const {
@@ -124,6 +126,13 @@ class {{ cls.__name__ }} {
     return StorageOps<Self>::FromStorage(vec);
   }
 
+  {% if compose_with_point.defined %}
+  Vector{{ compose_with_point.dimension }} Compose(const Vector{{ compose_with_point.dimension }}& point) const {
+    return ComposeWithPoint(point);
+  }
+  {% endif %}
+
+  {% if is_group %}
   // --------------------------------------------------------------------------
   // GroupOps concept
   // --------------------------------------------------------------------------
@@ -139,12 +148,6 @@ class {{ cls.__name__ }} {
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
   }
-
-  {% if compose_with_point.defined %}
-  Vector{{ compose_with_point.dimension }} Compose(const Vector{{ compose_with_point.dimension }}& point) const {
-    return ComposeWithPoint(point);
-  }
-  {% endif %}
 
   Self Between(const Self& b) const {
     return GroupOps<Self>::Between(*this, b);
@@ -169,8 +172,9 @@ class {{ cls.__name__ }} {
   auto operator*(const Other& b) const -> decltype(Compose(b)) {
     return Compose(b);
   }
+  {% endif %}
 
-  {% if is_lie_group %}
+  {% if is_manifold %}
   // --------------------------------------------------------------------------
   // LieGroupOps concept
   // --------------------------------------------------------------------------
@@ -179,6 +183,7 @@ class {{ cls.__name__ }} {
     return LieGroupOps<Self>::TangentDim();
   }
 
+  {% if is_lie_group %}
   static Self FromTangent(const TangentVec& vec, const Scalar epsilon = kDefaultEpsilon<Scalar>) {
     return LieGroupOps<Self>::FromTangent(vec, epsilon);
   }
@@ -187,6 +192,7 @@ class {{ cls.__name__ }} {
     return LieGroupOps<Self>::ToTangent(*this, epsilon);
   }
 
+  {% endif %}
   Self Retract(const TangentVec& vec, const Scalar epsilon = kDefaultEpsilon<Scalar>) const {
     return LieGroupOps<Self>::Retract(*this, vec, epsilon);
   }
@@ -260,7 +266,5 @@ static_assert(
 
 // Concept implementations for this class
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
-{% if is_lie_group %}
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h"
-{% endif %}
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"

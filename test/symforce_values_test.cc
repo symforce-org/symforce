@@ -224,7 +224,8 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
-  values.Set<sym::Unit3d>('R', sym::Unit3d::Identity());
+  values.Set<sym::Unit3d>(
+      'R', sym::Unit3d::FromVector(sym::Vector3d(1.0, 2.0, 3.0), sym::kDefaultEpsilon<double>));
   CAPTURE(values);
 }
 
@@ -334,21 +335,22 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
   const Scalar tolerance = epsilon * 1000;
   CAPTURE(epsilon, tolerance);
 
-  // Create a values object that stores an identity element, and an index for it
+  // Create a values object that stores an random element, and an index for it
+  std::mt19937 gen(42);
   sym::Values<Scalar> v1;
-  const T element = sym::GroupOps<T>::Identity();
+  const T element = sym::StorageOps<T>::Random(gen);
   v1.Set('x', element);
   const sym::index_t index = v1.CreateIndex({{'x'}});
 
   // Test a bunch of retractions and local coordinates
-  std::mt19937 gen(42);
   for (int i = 0; i < 100; ++i) {
     v1.Set('x', element);
     const sym::Values<Scalar> v2 = v1;
 
     const T random_element = sym::StorageOps<T>::Random(gen);
     CAPTURE(random_element);
-    const auto tangent_vec = sym::LieGroupOps<T>::ToTangent(random_element, epsilon);
+    const auto tangent_vec =
+        sym::LieGroupOps<T>::LocalCoordinates(element, random_element, epsilon);
     CAPTURE(tangent_vec.transpose());
 
     // test retraction

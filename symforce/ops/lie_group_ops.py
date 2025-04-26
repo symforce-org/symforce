@@ -151,7 +151,9 @@ class LieGroupOps(GroupOps):
         )
 
     @staticmethod
-    def jacobian(a: T.Element, b: T.Element, tangent_space: bool = True) -> geo.Matrix:
+    def jacobian(
+        a: T.Element, b: T.Element, tangent_space: bool = True, epsilon: sf.Scalar = sf.epsilon()
+    ) -> geo.Matrix:
         """
         Computes the jacobian of a with respect to b
 
@@ -169,7 +171,7 @@ class LieGroupOps(GroupOps):
         if tangent_space:
             from symforce import jacobian_helpers
 
-            return jacobian_helpers.tangent_jacobians(a, [b])[0]
+            return jacobian_helpers.tangent_jacobians(a, [b], epsilon)[0]
         else:
             from symforce import geo
             from symforce import ops
@@ -182,13 +184,13 @@ class LieGroupOps(GroupOps):
             )
 
     @staticmethod
-    def storage_D_tangent(a: T.Element) -> geo.Matrix:
+    def storage_D_tangent(a: T.Element, epsilon: sf.Scalar = sf.epsilon()) -> geo.Matrix:
         """
         Computes the jacobian of the storage space of an element with respect to the tangent space around
         that element.
         """
         try:
-            return LieGroupOps.implementation(get_type(a)).storage_D_tangent(a)
+            return LieGroupOps.implementation(get_type(a)).storage_D_tangent(a, epsilon)
         except NotImplementedError:
             logger.error(
                 "storage_D_tangent not implemented for {}; use storage_D_tangent.ipynb to compute".format(
@@ -198,13 +200,13 @@ class LieGroupOps(GroupOps):
             raise
 
     @staticmethod
-    def tangent_D_storage(a: T.Element) -> geo.Matrix:
+    def tangent_D_storage(a: T.Element, epsilon: sf.Scalar = sf.epsilon()) -> geo.Matrix:
         """
         Computes the jacobian of the tangent space around an element with respect to the storage space of
         that element.
         """
         try:
-            return LieGroupOps.implementation(get_type(a)).tangent_D_storage(a)
+            return LieGroupOps.implementation(get_type(a)).tangent_D_storage(a, epsilon)
         except NotImplementedError:
             logger.error(
                 "tangent_D_storage not implemented for {}; use tangent_D_storage.ipynb to compute".format(

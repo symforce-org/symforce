@@ -33,9 +33,10 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         - tangent_dim
         - from_tangent
         - to_tangent
-        - retract
-        - local_coordinates
         """
+        if not self.VALID_GROUP:
+            raise unittest.SkipTest("This test only applies to valid group elements.")
+
         # Create an identity and non-identity element
         element = self.element()
         identity = LieGroupOps.identity(element)
@@ -69,6 +70,17 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         tangent_zero_actual = LieGroupOps.to_tangent(identity, epsilon=self.EPSILON)
         self.assertStorageNear(tangent_zero_actual, sf.M.zeros(dim, 1), places=7)
 
+    def test_manifold_ops(self) -> None:
+        """
+        Tests:
+
+        - retract
+        - local_coordinates
+        """
+        element = self.element()
+        dim = LieGroupOps.tangent_dim(element)
+        perturbation = list(np.random.normal(scale=0.1, size=(dim,)))
+
         # Test zero retraction
         element_actual = LieGroupOps.retract(element, [0] * dim, epsilon=self.EPSILON)
         self.assertStorageNear(element_actual, element, places=7)
@@ -96,7 +108,8 @@ class LieGroupOpsTestMixin(GroupOpsTestMixin):
         """
         if not self.MANIFOLD_IS_DEFINED_IN_TERMS_OF_GROUP_OPS:
             raise unittest.SkipTest(
-                "This object does not satisfy the constraints this test is evaluating"
+                "This object does not satisfy the constraint that manifold "
+                "ops are can be equivalently described in terms of group ops."
             )
 
         # Create a non-identity element and a perturbation

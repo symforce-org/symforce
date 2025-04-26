@@ -142,21 +142,21 @@ class Pose3(LieGroup):
         R_tangent = Vector3(self.R.to_tangent(epsilon=epsilon))
         return R_tangent.col_join(self.t).to_flat_list()
 
-    def storage_D_tangent(self: Pose3T) -> Matrix:
+    def storage_D_tangent(self: Pose3T, epsilon: T.Scalar = sf.epsilon()) -> Matrix:
         """
         Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
-        storage_D_tangent_R = self.R.storage_D_tangent()
+        storage_D_tangent_R = self.R.storage_D_tangent(epsilon)
         storage_D_tangent_t = Matrix33.eye()
         return Matrix.block_matrix(
             [[storage_D_tangent_R, Matrix.zeros(4, 3)], [Matrix.zeros(3, 3), storage_D_tangent_t]]
         )
 
-    def tangent_D_storage(self: Pose3T) -> Matrix:
+    def tangent_D_storage(self: Pose3T, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         """
         Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
-        tangent_D_storage_R = self.R.tangent_D_storage()
+        tangent_D_storage_R = self.R.tangent_D_storage(epsilon)
         tangent_D_storage_t = Matrix33.eye()
         return Matrix.block_matrix(
             [[tangent_D_storage_R, Matrix.zeros(3, 3)], [Matrix.zeros(3, 4), tangent_D_storage_t]]

@@ -76,7 +76,9 @@ class LieGroup(Group):
         """
         return self.between(b).to_tangent(epsilon=epsilon)
 
-    def jacobian(self: LieGroupT, X: T.Any, tangent_space: bool = True) -> geo.Matrix:
+    def jacobian(
+        self: LieGroupT, X: T.Any, tangent_space: bool = True, epsilon: T.Scalar = sf.epsilon()
+    ) -> geo.Matrix:
         """
         Computes the jacobian of this LieGroup element with respect to the input X, where X is
         anything that supports LieGroupOps
@@ -92,7 +94,7 @@ class LieGroup(Group):
         Returns: the jacobian matrix of shape MxN, where M is the dimension of the tangent (or
             storage) space of self and N is the dimension of the tangent (or storage) space of X.
         """
-        return ops.LieGroupOps.jacobian(self, X, tangent_space)
+        return ops.LieGroupOps.jacobian(self, X, tangent_space, epsilon=epsilon)
 
 
 from ..impl.class_lie_group_ops import ClassLieGroupOps

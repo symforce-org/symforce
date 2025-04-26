@@ -244,10 +244,10 @@ class Matrix(Storage):
     def to_tangent(self, epsilon: _T.Scalar = sf.epsilon()) -> _T.List[_T.Scalar]:
         return self.to_storage()
 
-    def storage_D_tangent(self) -> Matrix:
+    def storage_D_tangent(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         return Matrix.eye(self.storage_dim(), self.tangent_dim())
 
-    def tangent_D_storage(self) -> Matrix:
+    def tangent_D_storage(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         return Matrix.eye(self.tangent_dim(), self.storage_dim())
 
     # -------------------------------------------------------------------------
@@ -481,7 +481,9 @@ class Matrix(Storage):
         """
         return self.from_flat_list([sf.limit(e, *args, **kwargs) for e in self.to_flat_list()])
 
-    def jacobian(self, X: _T.Any, tangent_space: bool = True) -> Matrix:
+    def jacobian(
+        self, X: _T.Any, tangent_space: bool = True, epsilon: _T.Scalar = sf.epsilon()
+    ) -> Matrix:
         """
         Compute the jacobian with respect to the tangent space of X if ``tangent_space = True``,
         otherwise returns the jacobian with respect to the storage elements of X.
@@ -489,7 +491,7 @@ class Matrix(Storage):
         Note that the jacobian is always 2D, even if self or X are matrices - it will be M x N,
         where M is the size of self and N is the size of X
         """
-        return ops.LieGroupOps.jacobian(self, X, tangent_space=tangent_space)
+        return ops.LieGroupOps.jacobian(self, X, tangent_space=tangent_space, epsilon=epsilon)
 
     def diff(self, *args: _T.Scalar) -> Matrix:
         """

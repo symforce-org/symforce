@@ -88,17 +88,22 @@ def generate_between_factors(types: T.Sequence[T.Type], output_dir: T.Openable) 
     """
     for cls in types:
         tangent_dim = ops.LieGroupOps.tangent_dim(cls)
-        between_codegen = Codegen.function(
-            func=between_factor,
-            input_types=[cls, cls, cls, sf.M(tangent_dim, tangent_dim), sf.Symbol],
-            output_names=["res"],
-            config=CppConfig(),
-            docstring=get_between_factor_docstring("a_T_b"),
-        ).with_linearization(
-            name=f"between_factor_{python_util.camelcase_to_snakecase(cls.__name__)}",
-            which_args=["a", "b"],
-        )
-        between_codegen.generate_function(output_dir, skip_directory_nesting=True)
+
+        try:
+            between_codegen = Codegen.function(
+                func=between_factor,
+                input_types=[cls, cls, cls, sf.M(tangent_dim, tangent_dim), sf.Symbol],
+                output_names=["res"],
+                config=CppConfig(),
+                docstring=get_between_factor_docstring("a_T_b"),
+            ).with_linearization(
+                name=f"between_factor_{python_util.camelcase_to_snakecase(cls.__name__)}",
+                which_args=["a", "b"],
+            )
+            between_codegen.generate_function(output_dir, skip_directory_nesting=True)
+        except NotImplementedError:
+            # Skip classes that don't implement standard group operations.
+            pass
 
         prior_codegen = Codegen.function(
             func=prior_factor,

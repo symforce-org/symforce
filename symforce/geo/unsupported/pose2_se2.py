@@ -69,21 +69,21 @@ class Pose2_SE2(Pose2):
         t_tangent = V_inv * self.t
         return [theta, t_tangent[0], t_tangent[1]]
 
-    def storage_D_tangent(self) -> Matrix:
+    def storage_D_tangent(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         """
         Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
-        storage_D_tangent_R = self.R.storage_D_tangent()
+        storage_D_tangent_R = self.R.storage_D_tangent(epsilon)
         storage_D_tangent_t = self.R.to_rotation_matrix()
         return Matrix.block_matrix(
             [[storage_D_tangent_R, Matrix.zeros(2, 2)], [Matrix.zeros(2, 1), storage_D_tangent_t]]
         )
 
-    def tangent_D_storage(self) -> Matrix:
+    def tangent_D_storage(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix:
         """
         Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
-        tangent_D_storage_R = self.R.tangent_D_storage()
+        tangent_D_storage_R = self.R.tangent_D_storage(epsilon)
         tangent_D_storage_t = self.R.to_rotation_matrix().T
         return Matrix.block_matrix(
             [[tangent_D_storage_R, Matrix.zeros(1, 2)], [Matrix.zeros(2, 2), tangent_D_storage_t]]

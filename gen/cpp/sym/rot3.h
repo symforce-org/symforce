@@ -225,6 +225,10 @@ class Rot3 {
     return StorageOps<Self>::FromStorage(vec);
   }
 
+  Vector3 Compose(const Vector3& point) const {
+    return ComposeWithPoint(point);
+  }
+
   // --------------------------------------------------------------------------
   // GroupOps concept
   // --------------------------------------------------------------------------
@@ -239,10 +243,6 @@ class Rot3 {
 
   Self Compose(const Self& b) const {
     return GroupOps<Self>::Compose(*this, b);
-  }
-
-  Vector3 Compose(const Vector3& point) const {
-    return ComposeWithPoint(point);
   }
 
   Self Between(const Self& b) const {

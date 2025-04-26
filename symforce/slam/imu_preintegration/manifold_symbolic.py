@@ -312,9 +312,9 @@ def imu_manifold_preintegration_update(  # noqa: PLR0913, PLR0917
         def new_state_D(wrt_variables: T.List[T.Any]) -> sf.Matrix:
             return sf.Matrix.block_matrix(
                 [
-                    tangent_jacobians(new_DR, wrt_variables),
-                    tangent_jacobians(new_Dv, wrt_variables),
-                    tangent_jacobians(new_Dp, wrt_variables),
+                    tangent_jacobians(new_DR, wrt_variables, epsilon),
+                    tangent_jacobians(new_Dv, wrt_variables, epsilon),
+                    tangent_jacobians(new_Dp, wrt_variables, epsilon),
                 ]
             )
 

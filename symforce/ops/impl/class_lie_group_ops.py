@@ -28,12 +28,12 @@ class ClassLieGroupOps(ClassGroupOps):
         return a.to_tangent(epsilon)
 
     @staticmethod
-    def storage_D_tangent(a: T.Element) -> geo.Matrix:
-        return a.storage_D_tangent()
+    def storage_D_tangent(a: T.Element, epsilon: T.Scalar) -> geo.Matrix:
+        return a.storage_D_tangent(epsilon)
 
     @staticmethod
-    def tangent_D_storage(a: T.Element) -> geo.Matrix:
-        return a.tangent_D_storage()
+    def tangent_D_storage(a: T.Element, epsilon: T.Scalar) -> geo.Matrix:
+        return a.tangent_D_storage(epsilon)
 
     @staticmethod
     def retract(a: T.Element, vec: T.Sequence[T.Scalar], epsilon: T.Scalar) -> T.Element:

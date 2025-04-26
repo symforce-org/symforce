@@ -20,58 +20,10 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.Unit3
-
-        # Total ops: 13
-
-        # Input arrays
-        if vec.shape == (2,):
-            vec = vec.reshape((2, 1))
-        elif vec.shape != (2, 1):
-            raise IndexError(
-                "vec is expected to have shape (2, 1) or (2,); instead had shape {}".format(
-                    vec.shape
-                )
-            )
-
-        # Intermediate terms (3)
-        _tmp0 = math.sqrt(epsilon**2 + vec[0, 0] ** 2 + vec[1, 0] ** 2)
-        _tmp1 = (1.0 / 2.0) * _tmp0
-        _tmp2 = math.sin(_tmp1) / _tmp0
-
-        # Output terms
-        _res = [0.0] * 4
-        _res[0] = -_tmp2 * vec[1, 0]
-        _res[1] = _tmp2 * vec[0, 0]
-        _res[2] = 0
-        _res[3] = math.cos(_tmp1)
-        return sym.Unit3.from_storage(_res)
-
-    @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (sym.Unit3, float) -> numpy.ndarray
-
-        # Total ops: 14
-
-        # Input arrays
-        _a = a.data
-
-        # Intermediate terms (2)
-        _tmp0 = min(abs(_a[3]), 1 - epsilon)
-        _tmp1 = 2 * math.copysign(1, _a[3]) * math.acos(_tmp0) / math.sqrt(1 - _tmp0**2)
-
-        # Output terms
-        _res = numpy.zeros(2)
-        _res[0] = _a[1] * _tmp1
-        _res[1] = -_a[0] * _tmp1
-        return _res
-
-    @staticmethod
     def retract(a, vec, epsilon):
         # type: (sym.Unit3, numpy.ndarray, float) -> sym.Unit3
 
-        # Total ops: 33
+        # Total ops: 84
 
         # Input arrays
         _a = a.data
@@ -84,74 +36,178 @@ class LieGroupOps(object):
                 )
             )
 
-        # Intermediate terms (7)
-        _tmp0 = math.sqrt(epsilon**2 + vec[0, 0] ** 2 + vec[1, 0] ** 2)
-        _tmp1 = (1.0 / 2.0) * _tmp0
-        _tmp2 = math.cos(_tmp1)
-        _tmp3 = math.sin(_tmp1) / _tmp0
-        _tmp4 = _tmp3 * vec[0, 0]
-        _tmp5 = _tmp3 * vec[1, 0]
-        _tmp6 = _a[1] * _tmp3
+        # Intermediate terms (25)
+        _tmp0 = _a[2] + epsilon * math.copysign(1, _a[2])
+        _tmp1 = math.sqrt(epsilon + vec[0, 0] ** 2 + vec[1, 0] ** 2)
+        _tmp2 = _tmp1 + epsilon * math.copysign(1, _tmp1)
+        _tmp3 = math.sin(_tmp2) / _tmp2
+        _tmp4 = _tmp3 * vec[1, 0]
+        _tmp5 = _a[0] - 1
+        _tmp6 = _a[1] ** 2
+        _tmp7 = max(
+            0,
+            -(
+                0.0
+                if _a[2] ** 2 + _tmp6 - 10 * epsilon * math.copysign(1, _a[0]) == 0
+                else math.copysign(1, _a[2] ** 2 + _tmp6 - 10 * epsilon * math.copysign(1, _a[0]))
+            ),
+        )
+        _tmp8 = 1 - _tmp7
+        _tmp9 = _tmp5**2
+        _tmp10 = _tmp0**2
+        _tmp11 = _tmp10 + _tmp6
+        _tmp12 = 1 / (_tmp11 + _tmp9)
+        _tmp13 = 2 * _tmp12
+        _tmp14 = _tmp13 * _tmp8
+        _tmp15 = _tmp14 * _tmp5
+        _tmp16 = _tmp3 * vec[0, 0]
+        _tmp17 = math.cos(_tmp1)
+        _tmp18 = 1 / _tmp11
+        _tmp19 = _a[1] * _tmp0
+        _tmp20 = 2 * _tmp18 * _tmp19 * _tmp7
+        _tmp21 = _tmp14 * _tmp19
+        _tmp22 = 2 * _tmp6
+        _tmp23 = _tmp15 * _tmp17
+        _tmp24 = 2 * _tmp10
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] * _tmp2 - _a[2] * _tmp4 - _a[3] * _tmp5
-        _res[1] = _a[1] * _tmp2 - _a[2] * _tmp5 + _a[3] * _tmp4
-        _res[2] = _a[0] * _tmp4 + _a[2] * _tmp2 + _tmp6 * vec[1, 0]
-        _res[3] = _a[0] * _tmp5 + _a[3] * _tmp2 - _tmp6 * vec[0, 0]
+        _res = [0.0] * 3
+        _res[0] = (
+            _a[1] * _tmp15 * _tmp16
+            - _tmp0 * _tmp15 * _tmp4
+            + _tmp17 * (_tmp7 + _tmp8 * (-_tmp13 * _tmp9 + 1))
+        )
+        _res[1] = (
+            -_a[1] * _tmp23
+            + _tmp16 * (-_tmp7 * (-_tmp18 * _tmp22 + 1) - _tmp8 * (-_tmp12 * _tmp22 + 1))
+            + _tmp4 * (-_tmp20 - _tmp21)
+        )
+        _res[2] = (
+            -_tmp0 * _tmp23
+            + _tmp16 * (_tmp20 + _tmp21)
+            + _tmp4 * (_tmp7 * (-_tmp18 * _tmp24 + 1) + _tmp8 * (-_tmp12 * _tmp24 + 1))
+        )
         return sym.Unit3.from_storage(_res)
 
     @staticmethod
     def local_coordinates(a, b, epsilon):
         # type: (sym.Unit3, sym.Unit3, float) -> numpy.ndarray
 
-        # Total ops: 35
+        # Total ops: 77
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (3)
-        _tmp0 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _tmp1 = min(abs(_tmp0), 1 - epsilon)
-        _tmp2 = 2 * math.copysign(1, _tmp0) * math.acos(_tmp1) / math.sqrt(1 - _tmp1**2)
+        # Intermediate terms (19)
+        _tmp0 = _a[1] ** 2
+        _tmp1 = max(
+            0,
+            -(
+                0.0
+                if _a[2] ** 2 + _tmp0 - 10 * epsilon * math.copysign(1, _a[0]) == 0
+                else math.copysign(1, _a[2] ** 2 + _tmp0 - 10 * epsilon * math.copysign(1, _a[0]))
+            ),
+        )
+        _tmp2 = _a[2] + epsilon * math.copysign(1, _a[2])
+        _tmp3 = _tmp2**2
+        _tmp4 = _tmp0 + _tmp3
+        _tmp5 = 2 / _tmp4
+        _tmp6 = _a[1] * _tmp2
+        _tmp7 = _tmp1 * _tmp5 * _tmp6
+        _tmp8 = 1 - _tmp1
+        _tmp9 = _a[0] - 1
+        _tmp10 = _tmp9**2
+        _tmp11 = 2 / (_tmp10 + _tmp4)
+        _tmp12 = _tmp11 * _tmp8
+        _tmp13 = _tmp12 * _tmp6
+        _tmp14 = _tmp12 * _tmp9
+        _tmp15 = _a[1] * _tmp14
+        _tmp16 = _tmp14 * _tmp2
+        _tmp17 = min(
+            1 - epsilon,
+            max(
+                epsilon - 1,
+                _b[0] * (_tmp1 + _tmp8 * (-_tmp10 * _tmp11 + 1)) - _b[1] * _tmp15 - _b[2] * _tmp16,
+            ),
+        )
+        _tmp18 = math.acos(_tmp17) / math.sqrt(1 - _tmp17**2)
 
         # Output terms
         _res = numpy.zeros(2)
-        _res[0] = _tmp2 * (_a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1])
-        _res[1] = -_tmp2 * (-_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0])
+        _res[0] = _tmp18 * (
+            _b[0] * _tmp15
+            + _b[1] * (-_tmp1 * (-_tmp0 * _tmp5 + 1) - _tmp8 * (-_tmp0 * _tmp11 + 1))
+            + _b[2] * (_tmp13 + _tmp7)
+        )
+        _res[1] = _tmp18 * (
+            -_b[0] * _tmp16
+            + _b[1] * (-_tmp13 - _tmp7)
+            + _b[2] * (_tmp1 * (-_tmp3 * _tmp5 + 1) + _tmp8 * (-_tmp11 * _tmp3 + 1))
+        )
         return _res
 
     @staticmethod
     def interpolate(a, b, alpha, epsilon):
         # type: (sym.Unit3, sym.Unit3, float, float) -> sym.Unit3
 
-        # Total ops: 75
+        # Total ops: 115
 
         # Input arrays
         _a = a.data
         _b = b.data
 
-        # Intermediate terms (14)
-        _tmp0 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
-        _tmp1 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
-        _tmp2 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _tmp3 = min(abs(_tmp2), 1 - epsilon)
-        _tmp4 = 1 - _tmp3**2
-        _tmp5 = math.acos(_tmp3)
-        _tmp6 = math.copysign(1, _tmp2)
-        _tmp7 = 4 * _tmp5**2 * _tmp6**2 * alpha**2 / _tmp4
-        _tmp8 = math.sqrt(_tmp0**2 * _tmp7 + _tmp1**2 * _tmp7 + epsilon**2)
-        _tmp9 = (1.0 / 2.0) * _tmp8
-        _tmp10 = 2 * _tmp5 * _tmp6 * alpha * math.sin(_tmp9) / (math.sqrt(_tmp4) * _tmp8)
+        # Intermediate terms (37)
+        _tmp0 = _a[0] - 1
+        _tmp1 = _a[1] ** 2
+        _tmp2 = max(
+            0,
+            -(
+                0.0
+                if _a[2] ** 2 + _tmp1 - 10 * epsilon * math.copysign(1, _a[0]) == 0
+                else math.copysign(1, _a[2] ** 2 + _tmp1 - 10 * epsilon * math.copysign(1, _a[0]))
+            ),
+        )
+        _tmp3 = 1 - _tmp2
+        _tmp4 = _tmp0**2
+        _tmp5 = _a[2] + epsilon * math.copysign(1, _a[2])
+        _tmp6 = _tmp5**2
+        _tmp7 = _tmp1 + _tmp6
+        _tmp8 = 1 / (_tmp4 + _tmp7)
+        _tmp9 = 2 * _tmp8
+        _tmp10 = _tmp3 * _tmp9
         _tmp11 = _tmp0 * _tmp10
-        _tmp12 = math.cos(_tmp9)
-        _tmp13 = _tmp1 * _tmp10
+        _tmp12 = _a[1] * _tmp11
+        _tmp13 = 1 / _tmp7
+        _tmp14 = _a[1] * _tmp5
+        _tmp15 = 2 * _tmp13 * _tmp14 * _tmp2
+        _tmp16 = _tmp10 * _tmp14
+        _tmp17 = _tmp15 + _tmp16
+        _tmp18 = 2 * _tmp1
+        _tmp19 = -_tmp2 * (-_tmp13 * _tmp18 + 1) - _tmp3 * (-_tmp18 * _tmp8 + 1)
+        _tmp20 = _b[0] * _tmp12 + _b[1] * _tmp19 + _b[2] * _tmp17
+        _tmp21 = _tmp2 + _tmp3 * (-_tmp4 * _tmp9 + 1)
+        _tmp22 = _tmp11 * _tmp5
+        _tmp23 = min(
+            1 - epsilon, max(epsilon - 1, _b[0] * _tmp21 - _b[1] * _tmp12 - _b[2] * _tmp22)
+        )
+        _tmp24 = 1 - _tmp23**2
+        _tmp25 = math.acos(_tmp23)
+        _tmp26 = _tmp25**2 * alpha**2 / _tmp24
+        _tmp27 = -_tmp15 - _tmp16
+        _tmp28 = 2 * _tmp6
+        _tmp29 = _tmp2 * (-_tmp13 * _tmp28 + 1) + _tmp3 * (-_tmp28 * _tmp8 + 1)
+        _tmp30 = -_b[0] * _tmp22 + _b[1] * _tmp27 + _b[2] * _tmp29
+        _tmp31 = math.sqrt(_tmp20**2 * _tmp26 + _tmp26 * _tmp30**2 + epsilon)
+        _tmp32 = _tmp31 + epsilon * math.copysign(1, _tmp31)
+        _tmp33 = _tmp25 * alpha * math.sin(_tmp32) / (math.sqrt(_tmp24) * _tmp32)
+        _tmp34 = _tmp20 * _tmp33
+        _tmp35 = _tmp30 * _tmp33
+        _tmp36 = math.cos(_tmp31)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] * _tmp12 - _a[2] * _tmp11 + _a[3] * _tmp13
-        _res[1] = _a[1] * _tmp12 + _a[2] * _tmp13 + _a[3] * _tmp11
-        _res[2] = _a[0] * _tmp11 - _a[1] * _tmp13 + _a[2] * _tmp12
-        _res[3] = -_a[0] * _tmp13 - _a[1] * _tmp11 + _a[3] * _tmp12
+        _res = [0.0] * 3
+        _res[0] = _tmp12 * _tmp34 + _tmp21 * _tmp36 - _tmp22 * _tmp35
+        _res[1] = -_tmp12 * _tmp36 + _tmp19 * _tmp34 + _tmp27 * _tmp35
+        _res[2] = _tmp17 * _tmp34 - _tmp22 * _tmp36 + _tmp29 * _tmp35
         return sym.Unit3.from_storage(_res)

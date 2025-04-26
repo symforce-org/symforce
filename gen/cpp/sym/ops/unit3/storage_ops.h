@@ -29,7 +29,7 @@ struct StorageOps<Unit3<ScalarType>> {
   using Scalar = ScalarType;
 
   static constexpr int32_t StorageDim() {
-    return 4;
+    return 3;
   }
 
   static void ToStorage(const T& a, ScalarType* out);

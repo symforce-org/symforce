@@ -16,6 +16,7 @@ def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for group ops on the given class.
     """
+
     identity = Codegen.function(
         name="identity",
         func=(lambda: ops.GroupOps.identity(cls)),
@@ -50,41 +51,55 @@ def make_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     ]
 
 
+def make_manifold_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
+    """
+    Create func spec arguments for manifold ops on the given class.
+    """
+    tangent_vec = sf.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
+
+    retract = Codegen.function(
+        func=ops.LieGroupOps.retract,
+        input_types=[cls, tangent_vec, sf.Symbol],
+        config=config,
+        docstring=ops.LieGroupOps.retract.__doc__,
+    )
+
+    local_coordinates = Codegen.function(
+        func=ops.LieGroupOps.local_coordinates,
+        input_types=[cls, cls, sf.Symbol],
+        config=config,
+        docstring=ops.LieGroupOps.local_coordinates.__doc__,
+    )
+
+    interpolate = Codegen.function(
+        func=ops.LieGroupOps.interpolate,
+        input_types=[cls, cls, sf.Symbol, sf.Symbol],
+        config=config,
+        docstring=ops.LieGroupOps.interpolate.__doc__,
+    )
+
+    return [retract, local_coordinates, interpolate]
+
+
 def make_lie_group_ops_funcs(cls: T.Type, config: CodegenConfig) -> T.List[Codegen]:
     """
     Create func spec arguments for lie group ops on the given class.
     """
     tangent_vec = sf.M(list(range(ops.LieGroupOps.tangent_dim(cls))))
-    return [
-        Codegen.function(
-            name="from_tangent",
-            func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
-            input_types=[tangent_vec, sf.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.from_tangent.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.to_tangent,
-            input_types=[cls, sf.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.to_tangent.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.retract,
-            input_types=[cls, tangent_vec, sf.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.retract.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.local_coordinates,
-            input_types=[cls, cls, sf.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.local_coordinates.__doc__,
-        ),
-        Codegen.function(
-            func=ops.LieGroupOps.interpolate,
-            input_types=[cls, cls, sf.Symbol, sf.Symbol],
-            config=config,
-            docstring=ops.LieGroupOps.interpolate.__doc__,
-        ),
-    ]
+
+    from_tangent = Codegen.function(
+        name="from_tangent",
+        func=(lambda vec, epsilon: ops.LieGroupOps.from_tangent(cls, vec, epsilon)),
+        input_types=[tangent_vec, sf.Symbol],
+        config=config,
+        docstring=ops.LieGroupOps.from_tangent.__doc__,
+    )
+
+    to_tangent = Codegen.function(
+        func=ops.LieGroupOps.to_tangent,
+        input_types=[cls, sf.Symbol],
+        config=config,
+        docstring=ops.LieGroupOps.to_tangent.__doc__,
+    )
+
+    return [from_tangent, to_tangent]

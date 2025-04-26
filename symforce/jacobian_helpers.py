@@ -9,7 +9,9 @@ from symforce.ops import LieGroupOps
 from symforce.ops import StorageOps
 
 
-def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[sf.Matrix]:
+def tangent_jacobians(
+    expr: T.Element, args: T.Sequence[T.Element], epsilon: sf.Scalar = sf.epsilon()
+) -> T.List[sf.Matrix]:
     """
     Compute jacobians of expr, a Lie Group element which is a function of the Lie Group elements in
     args.  Jacobians are derivatives in the tangent space of expr with respect to changes in the
@@ -28,11 +30,11 @@ def tangent_jacobians(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[sf
             ``MxN``, with ``M`` the tangent space dimension of ``expr`` and ``N`` the tangent space
             dimension of ``arg``
     """
-    return tangent_jacobians_first_order(expr, args)
+    return tangent_jacobians_first_order(expr, args, epsilon)
 
 
 def tangent_jacobians_first_order(
-    expr: T.Element, args: T.Sequence[T.Element]
+    expr: T.Element, args: T.Sequence[T.Element], epsilon: sf.Scalar = sf.epsilon()
 ) -> T.List[sf.Matrix]:
     """
     An implementation of :func:`tangent_jacobians` using first-order simplifications of retract
@@ -66,14 +68,16 @@ def tangent_jacobians_first_order(
         """
         return StorageOps.from_storage(
             a,
-            (sf.M(StorageOps.to_storage(a)) + LieGroupOps.storage_D_tangent(a) * v).to_storage(),
+            (
+                sf.M(StorageOps.to_storage(a)) + LieGroupOps.storage_D_tangent(a, epsilon) * v
+            ).to_storage(),
         )
 
     def infinitesimal_local_coordinates(a: T.Element, b: T.Element) -> sf.Matrix:
         """
         Returns a first order (in b - a) approximation to LieGroupOps.local_coordinates(a, b)
         """
-        return LieGroupOps.tangent_D_storage(a) * (
+        return LieGroupOps.tangent_D_storage(a, epsilon) * (
             sf.M(StorageOps.to_storage(b)) - sf.M(StorageOps.to_storage(a))
         )
 
@@ -98,14 +102,16 @@ def tangent_jacobians_first_order(
 
         result = infinitesimal_local_coordinates(expr, expr_perturbed)
         # Use tangent_space=False here to avoid recursion
-        arg_jacobian = result.jacobian(xi, tangent_space=False).subs(xi, xi.zero())
+        arg_jacobian = result.jacobian(xi, tangent_space=False, epsilon=epsilon).subs(xi, xi.zero())
 
         jacobians.append(arg_jacobian)
 
     return jacobians
 
 
-def tangent_jacobians_chain_rule(expr: T.Element, args: T.Sequence[T.Element]) -> T.List[sf.Matrix]:
+def tangent_jacobians_chain_rule(
+    expr: T.Element, args: T.Sequence[T.Element], epsilon: sf.Scalar = sf.epsilon()
+) -> T.List[sf.Matrix]:
     """
     An implementation of :func:`tangent_jacobians` using the symbolic chain rule with
     ``tangent_D_storage`` and ``storage_D_tangent``.
@@ -132,15 +138,15 @@ def tangent_jacobians_chain_rule(expr: T.Element, args: T.Sequence[T.Element]) -
     # Compute jacobians in the space of the storage, then chain rule on the left and right sides
     # to get jacobian wrt the tangent space of both the arg and the result
     expr_storage = sf.M(StorageOps.to_storage(expr))
-    expr_tangent_D_storage = LieGroupOps.tangent_D_storage(expr)
+    expr_tangent_D_storage = LieGroupOps.tangent_D_storage(expr, epsilon)
 
     for arg in args:
         # Use tangent_space=False here to avoid recursion
         expr_storage_D_arg_storage = expr_storage.jacobian(
-            StorageOps.to_storage(arg), tangent_space=False
+            StorageOps.to_storage(arg), tangent_space=False, epsilon=epsilon
         )
         arg_jacobian = expr_tangent_D_storage * (
-            expr_storage_D_arg_storage * LieGroupOps.storage_D_tangent(arg)
+            expr_storage_D_arg_storage * LieGroupOps.storage_D_tangent(arg, epsilon)
         )
 
         jacobians.append(arg_jacobian)

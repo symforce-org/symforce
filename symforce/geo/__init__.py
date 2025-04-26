@@ -38,6 +38,13 @@ GEO_TYPES: T.Tuple[T.Type[LieGroup], ...] = (
     Unit3,
 )
 
+GROUP_GEO_TYPES: T.Tuple[T.Type[LieGroup], ...] = (
+    Rot2,
+    Rot3,
+    Pose2,
+    Pose3,
+)
+
 # All geo types, including GEO_TYPES plus types used for internal representations that are not
 # generated
 ALL_GEO_TYPES = GEO_TYPES + (

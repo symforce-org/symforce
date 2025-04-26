@@ -164,6 +164,7 @@ class Codegen:
         # All symbols in outputs must be present in inputs
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
+
         if not self.output_symbols.issubset(input_symbols):
             missing_outputs = self.output_symbols - input_symbols
             error_msg = textwrap.dedent(
@@ -310,7 +311,9 @@ class Codegen:
                 output_names = [f"res{i}" for i in range(len(res))]
             # If a return key is given, it must be valid (i.e. in output_names)
             if return_key is not None:
-                assert return_key in output_names, "Return key not found in named outputs"
+                assert return_key in output_names, (
+                    f"Return key {return_key} not found in named outputs {output_names}"
+                )
         else:
             # Function returns single object
             output_terms = (res,)

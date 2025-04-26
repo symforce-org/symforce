@@ -103,7 +103,7 @@ class Rot3(LieGroup):
     def hat(cls, vec: T.Sequence[T.Scalar]) -> Matrix33:
         return Matrix33([[0, -vec[2], vec[1]], [vec[2], 0, -vec[0]], [-vec[1], vec[0], 0]])
 
-    def storage_D_tangent(self) -> Matrix43:
+    def storage_D_tangent(self, epsilon: T.Scalar = sf.epsilon()) -> Matrix43:
         """
         Note: generated from ``symforce/notebooks/storage_D_tangent.ipynb``
         """
@@ -120,11 +120,11 @@ class Rot3(LieGroup):
             )
         )
 
-    def tangent_D_storage(self) -> Matrix34:
+    def tangent_D_storage(self, epsilon: sf.Scalar = sf.epsilon()) -> Matrix34:
         """
         Note: generated from ``symforce/notebooks/tangent_D_storage.ipynb``
         """
-        return 4 * T.cast(Matrix34, self.storage_D_tangent().T)
+        return 4 * T.cast(Matrix34, self.storage_D_tangent(epsilon).T)
 
     # -------------------------------------------------------------------------
     # Helper methods
