@@ -99,6 +99,10 @@ To set the symbolic API, you can either use :func:`symforce.set_symbolic_api()` 
 Building wheels
 *************************************************
 
+Wheels are built automatically for pushes to the main branch, by the ``build_wheels`` GitHub
+Actions workflow.  Previous runs of this workflow will have the built wheels available as an
+artifact.  The workflow can also be run manually on a branch.
+
 You should be able to build Python wheels of symforce the standard ways.  We recommend using
 ``build``, i.e. running ``python3 -m build --wheel`` from the ``symforce`` directory.  By default,
 this will build a wheel that includes local dependencies on the ``skymarshal`` and ``symforce-sym``
@@ -106,12 +110,6 @@ packages (which are separate Python packages from ``symforce`` itself).  For dis
 typically want to set the environment variable ``SYMFORCE_REWRITE_LOCAL_DEPENDENCIES`` to the
 release version when building, and also run ``python3 -m build --wheel third_party/skymarshal`` and
 ``python3 -m build --wheel gen/python`` to build wheels for those packages separately.
-
-For SymForce releases, all of this is handled by the ``build_wheels`` GitHub Actions workflow.  This
-workflow is currently run manually on a commit, and produces a ``symforce-wheels.zip`` artifact with
-wheels (and sdists) for distribution (e.g. on PyPI).  It doesn't upload them to PyPI - to do that
-(after verifying that the built wheels work as expected) you should download and unzip the archive,
-and upload to PyPI with ``python -m twine upload [--repository testpypi] --verbose *``.
 
 *************************************************
 Adding new types
