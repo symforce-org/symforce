@@ -95,7 +95,7 @@ sparse_matrix_structure_t GetSparseStructure(const Eigen::SparseMatrix<Scalar>& 
   return {Eigen::Map<const VectorX<typename Eigen::SparseMatrix<Scalar>::StorageIndex>>(
               matrix.innerIndexPtr(), matrix.nonZeros()),
           Eigen::Map<const VectorX<typename Eigen::SparseMatrix<Scalar>::StorageIndex>>(
-              matrix.outerIndexPtr(), matrix.outerSize()),
+              matrix.outerIndexPtr(), matrix.outerSize() + 1),
           {matrix.rows(), matrix.cols()}};
 }
 
@@ -129,7 +129,7 @@ template <typename MatrixType, typename Scalar,
 Eigen::Map<const Eigen::SparseMatrix<Scalar>> MatrixViewFromSparseStructure(
     const sparse_matrix_structure_t& structure, const MatrixX<Scalar>& values) {
   SYM_ASSERT_EQ(structure.shape.size(), 2, "Invalid shape for sparse matrix: {}", structure.shape);
-  SYM_ASSERT_EQ(structure.column_pointers.size(), structure.shape.at(1));
+  SYM_ASSERT_EQ(structure.column_pointers.size(), structure.shape.at(1) + 1);
   SYM_ASSERT_EQ(structure.row_indices.size(), values.rows());
   SYM_ASSERT_EQ(values.cols(), 1);
   return {structure.shape.at(0),        structure.shape.at(1),
