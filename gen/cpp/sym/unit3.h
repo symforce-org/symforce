@@ -85,29 +85,33 @@ class Unit3 {
     return RandomFromUniformSamples(u1, u2, epsilon);
   }
 
-  // --------------------------------------------------------------------------
-  // Custom generated methods
-  // --------------------------------------------------------------------------
-
   /**
    * Return a :class:`Unit3` that points along the direction of vector ``a``
    *
    * ``a`` will be normalized.
    */
-  const static sym::Unit3<Scalar> FromVector(const Vector3& a, const Scalar epsilon);
-
-  /**
-   * Returns a :class:`Matrix32` with the basis vectors of the tangent space (in R^3) at the
-   * current Unit3 direction.
-   */
-  const Eigen::Matrix<Scalar, 3, 2> Basis(const Scalar epsilon) const;
+  const static sym::Unit3<Scalar> FromVector(const Vector3& a) {
+    return sym::Unit3<Scalar>(a);
+  }
 
   /**
    * Return a :class:`Unit3` that points along the direction of vector ``a``
    *
    * ``a`` is expected to be a unit vector.
    */
-  const static sym::Unit3<Scalar> FromUnitVector(const Vector3& a);
+  const static sym::Unit3<Scalar> FromUnitVector(const Vector3& a) {
+    return sym::Unit3<Scalar>(a, false);
+  }
+
+  // --------------------------------------------------------------------------
+  // Custom generated methods
+  // --------------------------------------------------------------------------
+
+  /**
+   * Returns a :class:`Matrix32` with the basis vectors of the tangent space (in R^3) at the
+   * current Unit3 direction.
+   */
+  const Eigen::Matrix<Scalar, 3, 2> Basis(const Scalar epsilon) const;
 
   /**
    * Returns a :class:`Vector3` version of the unit direction.

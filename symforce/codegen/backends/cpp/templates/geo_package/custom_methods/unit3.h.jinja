@@ -12,3 +12,21 @@
     const auto u2 = dist(gen);
     return RandomFromUniformSamples(u1, u2, epsilon);
   }
+
+  /**
+   * Return a :class:`Unit3` that points along the direction of vector ``a``
+   *
+   * ``a`` will be normalized.
+   */
+  const static sym::Unit3<Scalar> FromVector(const Vector3& a) {
+    return sym::Unit3<Scalar>(a);
+  }
+
+  /**
+   * Return a :class:`Unit3` that points along the direction of vector ``a``
+   *
+   * ``a`` is expected to be a unit vector.
+   */
+  const static sym::Unit3<Scalar> FromUnitVector(const Vector3& a) {
+    return sym::Unit3<Scalar>(a, false);
+  }

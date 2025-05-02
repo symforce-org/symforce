@@ -224,8 +224,7 @@ TEST_CASE("Test implicit construction", "[values]") {
   values.Set<sym::Rot3d>({'R', 1}, sym::Rot3d::Identity());
   values.Set<sym::Rot3d>({'R', 2}, sym::Rot3d::FromYawPitchRoll(1.0, 0.0, 0.0));
   values.Set<sym::Pose3d>('P', sym::Pose3d::Identity());
-  values.Set<sym::Unit3d>(
-      'R', sym::Unit3d::FromVector(sym::Vector3d(1.0, 2.0, 3.0), sym::kDefaultEpsilon<double>));
+  values.Set<sym::Unit3d>('U', sym::Unit3d::FromVector(sym::Vector3d(1.0, 2.0, 3.0)));
   CAPTURE(values);
 }
 

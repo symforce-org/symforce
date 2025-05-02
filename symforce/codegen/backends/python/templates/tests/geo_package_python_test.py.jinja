@@ -165,6 +165,8 @@ class GeoPackageTest(unittest.TestCase):
 
         np.testing.assert_almost_equal(a.interpolate(b, 0.0).to_storage(), a.to_storage())
         np.testing.assert_almost_equal(a.interpolate(b, 1.0).to_storage(), b.to_storage())
+        {% else %}
+        {{ raise("Generation failed for class {}. Add class to `group_geo_types` or write custom tests for confirming lie group operations.".format(cls.__name__))}}
         {% endif %}
 
 

@@ -27,28 +27,6 @@ std::ostream& operator<<(std::ostream& os, const Unit3f& a) {
 // --------------------------------------------------------------------------
 
 template <typename Scalar>
-const sym::Unit3<Scalar> sym::Unit3<Scalar>::FromVector(const Eigen::Matrix<Scalar, 3, 1>& a,
-                                                        const Scalar epsilon) {
-  // Total ops: 10
-
-  // Input arrays
-
-  // Intermediate terms (1)
-  const Scalar _tmp0 = std::pow(Scalar(std::pow(a(0, 0), Scalar(2)) + std::pow(a(1, 0), Scalar(2)) +
-                                       std::pow(a(2, 0), Scalar(2)) + epsilon),
-                                Scalar(Scalar(-1) / Scalar(2)));
-
-  // Output terms (1)
-  Eigen::Matrix<Scalar, 3, 1> _res;
-
-  _res[0] = _tmp0 * a(0, 0);
-  _res[1] = _tmp0 * a(1, 0);
-  _res[2] = _tmp0 * a(2, 0);
-
-  return sym::Unit3<Scalar>(_res);
-}
-
-template <typename Scalar>
 const Eigen::Matrix<Scalar, 3, 2> sym::Unit3<Scalar>::Basis(const Scalar epsilon) const {
   // Total ops: 50
 
@@ -84,24 +62,6 @@ const Eigen::Matrix<Scalar, 3, 2> sym::Unit3<Scalar>::Basis(const Scalar epsilon
   _res(2, 1) = _tmp1 * (-_tmp5 * _tmp8 + 1) + _tmp2 * (-_tmp5 * _tmp7 + 1);
 
   return _res;
-}
-
-template <typename Scalar>
-const sym::Unit3<Scalar> sym::Unit3<Scalar>::FromUnitVector(const Eigen::Matrix<Scalar, 3, 1>& a) {
-  // Total ops: 0
-
-  // Input arrays
-
-  // Intermediate terms (0)
-
-  // Output terms (1)
-  Eigen::Matrix<Scalar, 3, 1> _res;
-
-  _res[0] = a(0, 0);
-  _res[1] = a(1, 0);
-  _res[2] = a(2, 0);
-
-  return sym::Unit3<Scalar>(_res);
 }
 
 template <typename Scalar>

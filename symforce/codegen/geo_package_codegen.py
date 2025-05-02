@@ -185,12 +185,18 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
         ]
 
     unit3_functions = [
-        Codegen.function(func=sf.Unit3.from_vector, config=config),
         Codegen.function(func=sf.Unit3.basis, config=config),
-        Codegen.function(func=sf.Unit3.from_unit_vector, config=config),
         Codegen.function(func=sf.Unit3.to_unit_vector, config=config),
         Codegen.function(func=sf.Unit3.random_from_uniform_samples, config=config),
     ]
+    # TODO(chet): because the generated C++ config has normalization default option for class
+    # initialization, these functions are custom written. For Python config, the normalization
+    # default does not exist and so generating these functions automatically is not-redundant.
+    if isinstance(config, PythonConfig):
+        unit3_functions += [
+            Codegen.function(func=sf.Unit3.from_vector, config=config),
+            Codegen.function(func=sf.Unit3.from_unit_vector, config=config),
+        ]
 
     return {
         sf.Rot2: [

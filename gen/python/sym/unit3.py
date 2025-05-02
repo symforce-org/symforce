@@ -84,35 +84,6 @@ class Unit3(object):
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    @staticmethod
-    def from_vector(a, epsilon):
-        # type: (numpy.ndarray, float) -> Unit3
-        """
-        Return a :class:`Unit3` that points along the direction of vector ``a``
-
-        ``a`` will be normalized.
-        """
-
-        # Total ops: 10
-
-        # Input arrays
-        if a.shape == (3,):
-            a = a.reshape((3, 1))
-        elif a.shape != (3, 1):
-            raise IndexError(
-                "a is expected to have shape (3, 1) or (3,); instead had shape {}".format(a.shape)
-            )
-
-        # Intermediate terms (1)
-        _tmp0 = 1 / math.sqrt(a[0, 0] ** 2 + a[1, 0] ** 2 + a[2, 0] ** 2 + epsilon)
-
-        # Output terms
-        _res = [0.0] * 3
-        _res[0] = _tmp0 * a[0, 0]
-        _res[1] = _tmp0 * a[1, 0]
-        _res[2] = _tmp0 * a[2, 0]
-        return Unit3.from_storage(_res)
-
     def basis(self, epsilon):
         # type: (Unit3, float) -> numpy.ndarray
         """
@@ -157,34 +128,6 @@ class Unit3(object):
         _res[1, 1] = -_tmp10 - _tmp11
         _res[2, 1] = _tmp1 * (-_tmp5 * _tmp8 + 1) + _tmp2 * (-_tmp5 * _tmp7 + 1)
         return _res
-
-    @staticmethod
-    def from_unit_vector(a):
-        # type: (numpy.ndarray) -> Unit3
-        """
-        Return a :class:`Unit3` that points along the direction of vector ``a``
-
-        ``a`` is expected to be a unit vector.
-        """
-
-        # Total ops: 0
-
-        # Input arrays
-        if a.shape == (3,):
-            a = a.reshape((3, 1))
-        elif a.shape != (3, 1):
-            raise IndexError(
-                "a is expected to have shape (3, 1) or (3,); instead had shape {}".format(a.shape)
-            )
-
-        # Intermediate terms (0)
-
-        # Output terms
-        _res = [0.0] * 3
-        _res[0] = a[0, 0]
-        _res[1] = a[1, 0]
-        _res[2] = a[2, 0]
-        return Unit3.from_storage(_res)
 
     def to_unit_vector(self):
         # type: (Unit3) -> numpy.ndarray
@@ -232,6 +175,63 @@ class Unit3(object):
         _res[0] = _tmp1 * _tmp7
         _res[1] = _tmp5 * _tmp7
         _res[2] = _tmp2 * _tmp6
+        return Unit3.from_storage(_res)
+
+    @staticmethod
+    def from_vector(a, epsilon):
+        # type: (numpy.ndarray, float) -> Unit3
+        """
+        Return a :class:`Unit3` that points along the direction of vector ``a``
+
+        ``a`` will be normalized.
+        """
+
+        # Total ops: 10
+
+        # Input arrays
+        if a.shape == (3,):
+            a = a.reshape((3, 1))
+        elif a.shape != (3, 1):
+            raise IndexError(
+                "a is expected to have shape (3, 1) or (3,); instead had shape {}".format(a.shape)
+            )
+
+        # Intermediate terms (1)
+        _tmp0 = 1 / math.sqrt(a[0, 0] ** 2 + a[1, 0] ** 2 + a[2, 0] ** 2 + epsilon)
+
+        # Output terms
+        _res = [0.0] * 3
+        _res[0] = _tmp0 * a[0, 0]
+        _res[1] = _tmp0 * a[1, 0]
+        _res[2] = _tmp0 * a[2, 0]
+        return Unit3.from_storage(_res)
+
+    @staticmethod
+    def from_unit_vector(a):
+        # type: (numpy.ndarray) -> Unit3
+        """
+        Return a :class:`Unit3` that points along the direction of vector ``a``
+
+        ``a`` is expected to be a unit vector.
+        """
+
+        # Total ops: 0
+
+        # Input arrays
+        if a.shape == (3,):
+            a = a.reshape((3, 1))
+        elif a.shape != (3, 1):
+            raise IndexError(
+                "a is expected to have shape (3, 1) or (3,); instead had shape {}".format(a.shape)
+            )
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = [0.0] * 3
+        _res[0] = a[0, 0]
+        _res[1] = a[1, 0]
+        _res[2] = a[2, 0]
         return Unit3.from_storage(_res)
 
     # --------------------------------------------------------------------------
