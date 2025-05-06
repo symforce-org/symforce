@@ -37,7 +37,7 @@ jobs:
       - name: install requirements
         run: |
           PY_MINOR_VERSION=$(python -c "import sys; print(sys.version_info.minor)")
-          python -m pip install -r requirements_dev_py3${PY_MINOR_VERSION}.txt
+          python -m pip install -r requirements/dev_py3${PY_MINOR_VERSION}.txt
 
       - name: editable install
         run: python -m pip install -v -e .

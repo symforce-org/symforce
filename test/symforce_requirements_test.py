@@ -47,9 +47,9 @@ class SymforceRequirementsTest(TestCase):
     def check_dev_requirements_for_version(self, version: int) -> None:
         output_dir = self.make_output_dir("sf_requirements_test_dev_")
 
-        output_requirements_file = output_dir / f"requirements_dev_py3{version}.txt"
+        output_requirements_file = output_dir / f"dev_py3{version}.txt"
         symforce_requirements_file = (
-            path_util.symforce_root() / f"requirements_dev_py3{version}.txt"
+            path_util.symforce_root() / "requirements" / f"dev_py3{version}.txt"
         )
 
         local_requirements_map = {
@@ -109,43 +109,18 @@ class SymforceRequirementsTest(TestCase):
         output_requirements_file.write_text(requirements_contents)
 
         self.compare_or_update_file(
-            path_util.symforce_data_root(__file__) / f"requirements_dev_py3{version}.txt",
+            path_util.symforce_data_root(__file__) / "requirements" / f"dev_py3{version}.txt",
             output_requirements_file,
         )
 
     @requires_source_build
     @sympy_only
-    def test_dev_requirements_py38(self) -> None:
-        self.check_dev_requirements_for_version(8)
-
-    @requires_source_build
-    @sympy_only
-    def test_dev_requirements_py39(self) -> None:
-        self.check_dev_requirements_for_version(9)
-
-    @requires_source_build
-    @sympy_only
-    def test_dev_requirements_py310(self) -> None:
-        self.check_dev_requirements_for_version(10)
-
-    @requires_source_build
-    @sympy_only
-    def test_dev_requirements_py311(self) -> None:
-        self.check_dev_requirements_for_version(11)
-
-    @requires_source_build
-    @sympy_only
-    def test_dev_requirements_py312(self) -> None:
-        self.check_dev_requirements_for_version(12)
-
-    @requires_source_build
-    @sympy_only
-    def test_build_requirements(self) -> None:
+    def check_build_requirements_for_version(self, version: int) -> None:
         """
-        Generate requirements_build.txt
+        Generate requirements/build_py3{version}.txt
         """
         output_dir = self.make_output_dir("sf_requirements_test_build_")
-        output_requirements_file = output_dir / "requirements_build.txt"
+        output_requirements_file = output_dir / f"build_py3{version}.txt"
 
         local_requirements_map = {
             "skymarshal @ file://{}/third_party/skymarshal": "file:./third_party/skymarshal",
@@ -162,6 +137,7 @@ class SymforceRequirementsTest(TestCase):
                     "--extra=setup",
                     "--no-cache",
                     f"--output-file={output_requirements_file}",
+                    f"--python-version=3.{version}",
                     "pyproject.toml",
                 ],
                 cwd=path_util.symforce_root(),
@@ -190,9 +166,38 @@ class SymforceRequirementsTest(TestCase):
         output_requirements_file.write_text(requirements_contents)
 
         self.compare_or_update_file(
-            path_util.symforce_data_root(__file__) / "requirements_build.txt",
+            path_util.symforce_data_root(__file__) / "requirements" / f"build_py3{version}.txt",
             output_requirements_file,
         )
+
+    def check_requirements_for_version(self, version: int) -> None:
+        self.check_dev_requirements_for_version(version)
+        self.check_build_requirements_for_version(version)
+
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py38(self) -> None:
+        self.check_requirements_for_version(8)
+
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py39(self) -> None:
+        self.check_requirements_for_version(9)
+
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py310(self) -> None:
+        self.check_requirements_for_version(10)
+
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py311(self) -> None:
+        self.check_requirements_for_version(11)
+
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py312(self) -> None:
+        self.check_requirements_for_version(12)
 
 
 if __name__ == "__main__":
