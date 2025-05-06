@@ -42,6 +42,10 @@ class FixedSizeState
   sym::values_t GetLcmTypeImpl(const ValuesType& values) const {
     return {sym::index_t{}, {values.x, values.y}};
   }
+
+  void ResetValues(const fixed_size_opt_vars_t& new_values) {
+    this->New().values = new_values;
+  }
 };
 
 // Let a and b be constants in the linearization function

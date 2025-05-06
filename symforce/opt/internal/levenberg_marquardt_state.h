@@ -51,6 +51,7 @@ class LevenbergMarquardtStateBase {
 
     void ResetLinearization() {
       linearization_.Reset();
+      have_cached_error_ = false;
     }
 
     template <typename LinearizeFunc>
@@ -78,9 +79,8 @@ class LevenbergMarquardtStateBase {
 
   // Reset the state
   void Reset(const ValuesType& values) {
-    New().values = values;
-    Init().values = {};
-    Free().values = {};
+    static_cast<Derived*>(this)->ResetValues(values);
+
     New().ResetLinearization();
     Init().ResetLinearization();
     Free().ResetLinearization();
@@ -184,7 +184,6 @@ class LevenbergMarquardtStateBase {
   // purposes.
   index_t index_{};
 
- private:
   StateBlock& Free() {
     return state_blocks_[free_idx_];
   }
@@ -224,6 +223,12 @@ class LevenbergMarquardtState
     if (new_values.NumEntries() == 0) {
       // If the state_ blocks are empty the first time, copy in the full structure
       new_values = init_values;
+      initialized_[this->new_idx_] = true;
+    } else if (!initialized_[this->new_idx_]) {
+      // If the state_ block has the right structure, but invalid data, copy the data
+      SYM_ASSERT_EQ(new_values.Data().size(), init_values.Data().size());
+      std::copy(init_values.Data().begin(), init_values.Data().end(), new_values.DataPointer());
+      initialized_[this->new_idx_] = true;
     } else {
       // Otherwise just copy the keys being optimized
       new_values.Update(this->index_, init_values);
@@ -242,10 +247,26 @@ class LevenbergMarquardtState
     return sym::values_t{full_index_cached_, values.template Cast<double>().Data()};
   }
 
+  void ResetValues(const ValuesType& values) {
+    if (this->New().values.NumEntries() == 0) {
+      this->New().values = values;
+    } else {
+      auto& new_values = this->New().values;
+      SYM_ASSERT_EQ(new_values.Data().size(), values.Data().size());
+      std::copy(values.Data().begin(), values.Data().end(), new_values.DataPointer());
+    }
+    initialized_[this->new_idx_] = true;
+    initialized_[this->init_idx_] = false;
+    initialized_[this->free_idx_] = false;
+  }
+
  private:
   // Index of the Values, including both optimized variables and constants. We assume the structure
   // of the Values does not change.
   mutable index_t full_index_cached_{};
+
+  // Whether each block has valid values
+  std::array<bool, 3> initialized_{false, false, false};
 };
 
 }  // namespace internal

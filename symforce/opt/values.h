@@ -132,6 +132,18 @@ class Values {
   const ArrayType& Data() const;
 
   /**
+   * Mutable pointer to the underlying data buffer.
+   *
+   * This pointer may be invalidated by any operation which changes the Values' size or layout, and
+   * may be null if the Values is empty.
+   *
+   * In C++20, this would be better exposed as a std::span.  We want to allow modifying the values,
+   * but not the size.
+   */
+
+  Scalar* DataPointer();
+
+  /**
    * Cast to another Scalar type (returns a copy)
    */
   template <typename NewScalar>

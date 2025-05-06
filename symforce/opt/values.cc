@@ -129,6 +129,11 @@ const typename Values<Scalar>::ArrayType& Values<Scalar>::Data() const {
 }
 
 template <typename Scalar>
+Scalar* Values<Scalar>::DataPointer() {
+  return data_.data();
+}
+
+template <typename Scalar>
 template <typename NewScalar>
 Values<NewScalar> Values<Scalar>::Cast() const {
   Values<NewScalar> new_values{};
