@@ -22,7 +22,6 @@ FixedSizeOptimizer<ScalarType, NonlinearSolverType>::FixedSizeOptimizer(
       nonlinear_solver_(params, name, epsilon),
       epsilon_(epsilon),
       debug_stats_(params.debug_stats),
-      include_jacobians_(params.include_jacobians),
       verbose_(params.verbose) {
   SYM_ASSERT(!params.check_derivatives || params.include_jacobians);
 }
@@ -37,7 +36,6 @@ FixedSizeOptimizer<ScalarType, NonlinearSolverType>::FixedSizeOptimizer(
                         std::forward<NonlinearSolverArgs>(nonlinear_solver_args)...),
       epsilon_(epsilon),
       debug_stats_(params.debug_stats),
-      include_jacobians_(params.include_jacobians),
       verbose_(params.verbose) {
   SYM_ASSERT(!params.check_derivatives || params.include_jacobians);
 }
@@ -60,9 +58,8 @@ template <typename ScalarType, typename NonlinearSolverType>
 void FixedSizeOptimizer<ScalarType, NonlinearSolverType>::Optimize(
     ValuesType& values, const LinearizeFunc& linearize_func, int num_iterations,
     bool populate_best_linearization, Stats& stats) {
-  const bool include_debug_jacobians = debug_stats_ && include_jacobians_;
   OptimizeImpl(values, nonlinear_solver_, linearize_func, num_iterations,
-               populate_best_linearization, name_, include_debug_jacobians, verbose_, stats);
+               populate_best_linearization, name_, verbose_, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>

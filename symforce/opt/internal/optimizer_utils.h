@@ -35,8 +35,8 @@ template <typename ValuesType, typename NonlinearSolver, typename LinearizeFunc,
           typename OptimizationStats>
 void IterateToConvergenceImpl(ValuesType& values, NonlinearSolver& nonlinear_solver,
                               const LinearizeFunc& linearize_func, const int num_iterations,
-                              const bool populate_best_linearization, const bool include_jacobians,
-                              const std::string& name, OptimizationStats& stats) {
+                              const bool populate_best_linearization, const std::string& name,
+                              OptimizationStats& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::IterateToConvergence", name);
   SYM_ASSERT(num_iterations > 0, "num_iterations must be positive, got {}", num_iterations);
 
@@ -75,11 +75,6 @@ void IterateToConvergenceImpl(ValuesType& values, NonlinearSolver& nonlinear_sol
       stats.best_linearization = nonlinear_solver.GetBestLinearization();
     }
   }
-
-  if (include_jacobians) {
-    const auto& linearization = nonlinear_solver.GetBestLinearization();
-    stats.jacobian_sparsity = GetSparseStructure(linearization.jacobian);
-  }
 }
 
 /**
@@ -90,7 +85,7 @@ template <typename ValuesType, typename NonlinearSolver, typename LinearizeFunc,
 void OptimizeImpl(ValuesType& values, NonlinearSolver& nonlinear_solver,
                   const LinearizeFunc& linearize_func, int num_iterations,
                   const bool populate_best_linearization, const std::string& name,
-                  const bool include_jacobians, const bool verbose, OptimizationStats& stats) {
+                  const bool verbose, OptimizationStats& stats) {
   SYM_TIME_SCOPE("Optimizer<{}>::Optimize", name);
 
   if (num_iterations < 0) {
@@ -101,7 +96,7 @@ void OptimizeImpl(ValuesType& values, NonlinearSolver& nonlinear_solver,
   nonlinear_solver.Reset(values);
   stats.Reset(num_iterations);
   IterateToConvergenceImpl(values, nonlinear_solver, linearize_func, num_iterations,
-                           populate_best_linearization, include_jacobians, name, stats);
+                           populate_best_linearization, name, stats);
 
   if (verbose) {
     LogStatus<OptimizationStats, NonlinearSolver>(name, stats);

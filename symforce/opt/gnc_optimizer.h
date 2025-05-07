@@ -133,10 +133,8 @@ class GncOptimizer : public BaseOptimizerType {
   void IterateToConvergence(Values<Scalar>& values, const int num_iterations,
                             const bool populate_best_linearization,
                             typename BaseOptimizer::Stats& stats) {
-    const bool include_debug_jacobians = this->debug_stats_ && this->include_jacobians_;
     IterateToConvergenceImpl(values, this->nonlinear_solver_, this->linearize_func_, num_iterations,
-                             populate_best_linearization, include_debug_jacobians, this->name_,
-                             stats);
+                             populate_best_linearization, this->name_, stats);
   }
 
   optimizer_gnc_params_t gnc_params_;

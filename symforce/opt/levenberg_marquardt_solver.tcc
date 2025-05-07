@@ -165,11 +165,15 @@ LevenbergMarquardtSolver<ScalarType, LinearSolverType, StateType>::Iterate(
 
     if (p_.debug_stats) {
       iteration_stats.values = state_.GetLcmType(state_.Init());
-      const VectorX<Scalar> residual_vec = state_.Init().GetLinearization().residual;
-      iteration_stats.residual = residual_vec.template cast<double>();
-      const MatrixX<Scalar> jacobian_vec =
-          JacobianValues(state_.Init().GetLinearization().jacobian);
-      iteration_stats.jacobian_values = jacobian_vec.template cast<double>();
+
+      const auto& linearization = state_.Init().GetLinearization();
+      iteration_stats.residual = linearization.residual.template cast<double>();
+
+      if (p_.include_jacobians) {
+        iteration_stats.jacobian_values =
+            JacobianValues(linearization.jacobian).template cast<double>();
+        stats.jacobian_sparsity = GetSparseStructure(linearization.jacobian);
+      }
     }
 
     if (!std::isfinite(state_.Init().Error())) {

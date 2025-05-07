@@ -176,7 +176,6 @@ class FixedSizeOptimizer {
 
   Scalar epsilon_;
   bool debug_stats_;
-  bool include_jacobians_;
 
   bool verbose_;
 };

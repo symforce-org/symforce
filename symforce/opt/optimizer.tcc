@@ -84,9 +84,8 @@ void Optimizer<ScalarType, NonlinearSolverType>::Optimize(Values<Scalar>& values
   Initialize(values);
 
   // Call the static helper function to run the optimization
-  const bool include_debug_jacobians = debug_stats_ && include_jacobians_;
   OptimizeImpl(values, nonlinear_solver_, linearize_func_, num_iterations,
-               populate_best_linearization, name_, include_debug_jacobians, verbose_, stats);
+               populate_best_linearization, name_, verbose_, stats);
 }
 
 template <typename ScalarType, typename NonlinearSolverType>
