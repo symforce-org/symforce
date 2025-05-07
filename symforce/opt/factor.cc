@@ -48,13 +48,20 @@ template <typename Scalar>
 void Factor<Scalar>::Linearize(
     const Values<Scalar>& values, VectorX<Scalar>* residual,
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
-  const auto& index_entry_cache =
-      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
-
   if (IsSparse()) {
-    sparse_hessian_func_(values, index_entry_cache, residual, nullptr, nullptr, nullptr);
+    if (maybe_index_entry_cache) {
+      sparse_hessian_func_(values, *maybe_index_entry_cache, residual, nullptr, nullptr, nullptr);
+    } else {
+      sparse_hessian_func_(values, values.CreateIndex(AllKeys()).entries, residual, nullptr,
+                           nullptr, nullptr);
+    }
   } else {
-    hessian_func_(values, index_entry_cache, residual, nullptr, nullptr, nullptr);
+    if (maybe_index_entry_cache) {
+      hessian_func_(values, *maybe_index_entry_cache, residual, nullptr, nullptr, nullptr);
+    } else {
+      hessian_func_(values, values.CreateIndex(AllKeys()).entries, residual, nullptr, nullptr,
+                    nullptr);
+    }
   }
 }
 
@@ -63,10 +70,13 @@ void Factor<Scalar>::Linearize(
     const Values<Scalar>& values, VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(!IsSparse());
-  const auto& index_entry_cache =
-      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
-  hessian_func_(values, index_entry_cache, residual, jacobian, nullptr, nullptr);
+  if (maybe_index_entry_cache) {
+    hessian_func_(values, *maybe_index_entry_cache, residual, jacobian, nullptr, nullptr);
+  } else {
+    hessian_func_(values, values.CreateIndex(AllKeys()).entries, residual, jacobian, nullptr,
+                  nullptr);
+  }
 }
 
 template <typename Scalar>
@@ -74,10 +84,13 @@ void Factor<Scalar>::Linearize(
     const Values<Scalar>& values, VectorX<Scalar>* residual, Eigen::SparseMatrix<Scalar>* jacobian,
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(IsSparse());
-  const auto& index_entry_cache =
-      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
 
-  sparse_hessian_func_(values, index_entry_cache, residual, jacobian, nullptr, nullptr);
+  if (maybe_index_entry_cache) {
+    sparse_hessian_func_(values, *maybe_index_entry_cache, residual, jacobian, nullptr, nullptr);
+  } else {
+    sparse_hessian_func_(values, values.CreateIndex(AllKeys()).entries, residual, jacobian, nullptr,
+                         nullptr);
+  }
 }
 
 template <typename Scalar>
@@ -86,12 +99,14 @@ void Factor<Scalar>::Linearize(
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(!IsSparse());
 
-  const auto& index_entry_cache =
-      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
-
-  // TODO(hayk): Maybe the function should just accept a LinearizedDenseFactor*
-  hessian_func_(values, index_entry_cache, &linearized_factor.residual, &linearized_factor.jacobian,
-                &linearized_factor.hessian, &linearized_factor.rhs);
+  if (maybe_index_entry_cache) {
+    // TODO(hayk): Maybe the function should just accept a LinearizedDenseFactor*
+    hessian_func_(values, *maybe_index_entry_cache, &linearized_factor.residual,
+                  &linearized_factor.jacobian, &linearized_factor.hessian, &linearized_factor.rhs);
+  } else {
+    hessian_func_(values, values.CreateIndex(AllKeys()).entries, &linearized_factor.residual,
+                  &linearized_factor.jacobian, &linearized_factor.hessian, &linearized_factor.rhs);
+  }
 }
 
 template <typename Scalar>
@@ -100,13 +115,16 @@ void Factor<Scalar>::Linearize(
     const std::vector<index_entry_t>* const maybe_index_entry_cache) const {
   SYM_ASSERT(IsSparse());
 
-  const auto& index_entry_cache =
-      maybe_index_entry_cache ? *maybe_index_entry_cache : values.CreateIndex(AllKeys()).entries;
-
-  // TODO(hayk): Maybe the function should just accept a LinearizedSparseFactor*
-  sparse_hessian_func_(values, index_entry_cache, &linearized_factor.residual,
-                       &linearized_factor.jacobian, &linearized_factor.hessian,
-                       &linearized_factor.rhs);
+  if (maybe_index_entry_cache) {
+    // TODO(hayk): Maybe the function should just accept a LinearizedSparseFactor*
+    sparse_hessian_func_(values, *maybe_index_entry_cache, &linearized_factor.residual,
+                         &linearized_factor.jacobian, &linearized_factor.hessian,
+                         &linearized_factor.rhs);
+  } else {
+    sparse_hessian_func_(values, values.CreateIndex(AllKeys()).entries, &linearized_factor.residual,
+                         &linearized_factor.jacobian, &linearized_factor.hessian,
+                         &linearized_factor.rhs);
+  }
 }
 
 template <typename Scalar>
