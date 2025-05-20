@@ -298,12 +298,22 @@ TEST_CASE("Test preintegrated derivatives wrt IMU biases", "[slam]") {
     numerical_state_D_bias.col(i).segment(6, 3) = (perturbed_delta.Dp - delta.Dp) / perturbation;
   }
 
-  const Eigen::MatrixXd relative_error =
-      numerical_state_D_bias.binaryExpr(state_D_bias, [](const double x, const double y) -> double {
-        return std::abs((x - y) / (std::abs(x) + 1e-10));
-      });
+  const auto passed = numerical_state_D_bias
+                          .binaryExpr(state_D_bias,
+                                      [](const double x, const double y) -> bool {
+                                        if (std::abs(x - y) < 1e-10) {
+                                          return true;
+                                        }
 
-  CHECK(relative_error.maxCoeff() < 0.05);
+                                        if (std::abs((x - y) / x) < 1e-6) {
+                                          return true;
+                                        }
+
+                                        return false;
+                                      })
+                          .eval();
+
+  CHECK(passed.all());
 }
 
 TEST_CASE("Verify handwritten and auto-derivative impls are equivalent", "[slam]") {
