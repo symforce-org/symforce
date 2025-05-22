@@ -1240,6 +1240,25 @@ class SymforceCodegenTest(TestCase):
         return_rot = codegen_dataclass_in_values_test(my_dataclass_t)
         self.assertEqual(return_rot.data, my_dataclass_t.rot.data)
 
+    def test_eigen_maps(self) -> None:
+        """
+        Test CppConfig.use_maps_for_outputs
+        """
+
+        def foo(x: sf.Scalar) -> T.Tuple[sf.M33, sf.V3, sf.Rot3, sf.Scalar]:
+            return sf.M33.eye(), sf.V3.zero(), sf.Rot3.identity(), x
+
+        output_dir = self.make_output_dir("sf_codegen_eigen_maps_")
+
+        codegen.Codegen.function(
+            foo, config=codegen.CppConfig(use_maps_for_outputs=True)
+        ).generate_function(output_dir=output_dir)
+
+        self.compare_or_update_directory(
+            actual_dir=output_dir,
+            expected_dir=TEST_DATA_DIR / "codegen_eigen_maps_test_data",
+        )
+
 
 if __name__ == "__main__":
     TestCase.main()

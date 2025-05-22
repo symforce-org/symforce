@@ -57,6 +57,8 @@ class CppConfig(CodegenConfig):
         databuffer_type: Changes the type of any DataBuffers to the given type instead of using
             the default Scalar type. Useful for cases where DataBuffers have a different type than
             other arguments to the generated function.
+        use_maps_for_outputs: Use ``Eigen::Map`` for dense matrix output arguments, instead of
+            pointers to ``Eigen::Matrix`` types
     """
 
     doc_comment_line_prefix: str = " * "
@@ -69,6 +71,7 @@ class CppConfig(CodegenConfig):
     override_methods: T.Optional[T.Dict[sympy.Function, str]] = None
     extra_imports: T.Optional[T.List[str]] = None
     databuffer_type: T.Optional[str] = None
+    use_maps_for_outputs: bool = False
 
     @classmethod
     def backend_name(cls) -> str:

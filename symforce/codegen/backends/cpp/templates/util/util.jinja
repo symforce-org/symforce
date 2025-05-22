@@ -135,6 +135,18 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
 
 {# ------------------------------------------------------------------------- #}
 
+{# Format Eigen::Map argument
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     name (str):
+ #}
+{%- macro format_map_arg(T_or_value, name, scalar_type="Scalar") %}
+    Eigen::Map<{{- format_typename(T_or_value, name, scalar_type) -}}> {{ name }}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
 {# Generate input arguments declaration.
  #
  # Args:
@@ -154,7 +166,12 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
     {%- endfor -%}
     {%- for name, type in spec.outputs.items() -%}
         {%- if name != spec.return_key -%}
-            {{- format_pointer_arg(type, name, is_declaration, scalar_type) -}}
+            {# Should this be per-output? #}
+            {% if issubclass(typing_util.get_type(type), Matrix) and spec.config.use_maps_for_outputs %}
+                {{- format_map_arg(type, name, scalar_type) -}}
+            {% else %}
+                {{- format_pointer_arg(type, name, is_declaration, scalar_type) -}}
+            {% endif %}
             {%- if not loop.last -%}
                 {%- if not (loop.revindex0 == 1 and loop.nextitem[0] == spec.return_key) -%}
                 , {% endif -%}
@@ -325,9 +342,11 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
  #}
 {% macro format_output_dense(name, type, terms, spec, scalar_type="Scalar") -%}
 {% set T = typing_util.get_type(type) %}
-{% if (issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type)) %}
-    {% set T_return = typing_util.get_type(type) %}
-    {% if name == spec.return_key and T_return.__name__ != 'NoneType' %}
+{% set created_output_temporary = False %}
+{% if issubclass(T, Matrix) and name != spec.return_key and spec.config.use_maps_for_outputs %}
+    {# Eigen::Map outputs don't need a temporary #}
+{% elif issubclass(T, Matrix) or issubclass(T, Values) or is_symbolic(type) or is_sequence(type) %}
+    {% if name == spec.return_key %}
         {# Create a new object to return #}
 {{ format_typename(type, name, scalar_type) }} _{{ name }};
     {% else %}
@@ -338,39 +357,47 @@ Eigen::Matrix<{{ scalar_type }}, {{ rows }}, {{ cols }}>
     {# geo/cam object. Since we can't access individual element of data, create a copy #}
     {# TODO(nathan): Maybe add a [] operator to geo/cam objects so we don't have to do this? #}
     {% set dims = ops.StorageOps.storage_dim(type) %}
+    {% set created_output_temporary = True %}
 {{ vector_type(dims, scalar_type) }} _{{ name }};
 {% endif %}
 
+{% if issubclass(T, Matrix) and spec.config.use_maps_for_outputs and name != spec.return_key %}
+{% set maybe_underscore = "" %}
+{% else %}
+{% set maybe_underscore = "_" %}
+{% endif %}
 {% set set_zero = issubclass(T, Matrix) and should_set_zero(
     spec.outputs[name], spec.config.zero_initialization_sparsity_threshold) %}
 {% if set_zero %}
-_{{ name }}.setZero();
+{{ maybe_underscore }}{{ name }}.setZero();
 {% endif %}
 
 {% for lhs, rhs in terms %}
 {% if not set_zero or rhs != "0" %}
-_{{ lhs }} = {{ rhs }};
+{{ maybe_underscore }}{{ lhs }} = {{ rhs }};
 {% endif %}
 {% endfor %}
-{% if name != spec.return_key %}
-    {% if not issubclass(T, Matrix) and not issubclass(T, Values) and not is_symbolic(type) and not is_sequence(type) %}
+{% if name != spec.return_key and created_output_temporary %}
+    {% set typename = format_typename(type, name, scalar_type) %}
+    {% set normalize = "" if spec.config.normalize_results else ", /* normalize */ false" %}
 
-        {% set typename = format_typename(type, name, scalar_type) %}
-        {% set normalize = "" if spec.config.normalize_results else ", /* normalize */ false" %}
 *{{ name }} = {{ typename }}(_{{ name }}{{ normalize }});
-    {% endif %}
 {% endif %}
 {% endmacro -%}
 
 {# ------------------------------------------------------------------------- #}
 
-{# Helper to generate all pointer outputs #}
+{# Helper to generate all output arguments #}
 {% macro format_outputs_dense_and_sparse(spec, scalar_type="Scalar") -%}
     {% for name, type, terms in spec.print_code_results.dense_terms %}
         {% if name == spec.return_key %}
     {{ format_output_dense(name, type, terms, spec, scalar_type) | indent(width=4) | trim }}
         {% else %}
+            {% if issubclass(typing_util.get_type(type), Matrix) and spec.config.use_maps_for_outputs %}
+    if ( {{ name }}.data() != nullptr ) {
+            {% else %}
     if ( {{ name }} != nullptr ) {
+            {% endif %}
         {{ format_output_dense(name, type, terms, spec, scalar_type) | indent(width=8) | trim }}
     }
         {% endif %}

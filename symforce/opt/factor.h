@@ -149,6 +149,16 @@ class Factor {
    * creating a Codegen object from a Python function which returns the residual, then calling
    * with_linearization with linearization_mode=STACKED_JACOBIAN
    *
+   * Supported types of output arguments for the residual and jacobian:
+   *
+   * - pointer to Eigen::SparseMatrix for matrices, VectorX<Scalar> for vectors
+   * - pointer to MatrixX<Scalar> for matrices, VectorX<Scalar> for vectors
+   * - pointer to Eigen::Matrix (or vector) with fixed size
+   * - Eigen::Map<Eigen::Matrix> (or vector) with fixed size
+   *
+   * Types must match across arguments - for example, you can't mix a fixed-size residual with a
+   * dynamic-size jacobian.
+   *
    * See `symforce_factor_test.cc` for many examples.
    *
    * @param keys_to_func: The set of input arguments, in order, accepted by func.
@@ -171,6 +181,17 @@ class Factor {
    * `func` can be generated easily by creating a Codegen object from a Python function which
    * returns the residual, then calling with_linearization with
    * linearization_mode=FULL_LINEARIZATION (the default)
+   *
+   * Supported types of output arguments for the residual, jacobian, hessian, and rhs:
+   *
+   * - pointer to Eigen::SparseMatrix for matrices, VectorX<Scalar> for vectors
+   * - pointer to Eigen::SparseMatrix for matrices, fixed size vectors
+   * - pointer to Eigen::Matrix (or vector) with dynamic size
+   * - pointer to Eigen::Matrix (or vector) with fixed size
+   * - Eigen::Map<Eigen::Matrix> (or vector) with fixed size
+   *
+   * Types must match across arguments - for example, you can't mix a sparse Jacobian with a dense
+   * Hessian.
    *
    * See `symforce_factor_test.cc` for many examples.
    *

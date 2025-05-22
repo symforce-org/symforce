@@ -244,6 +244,16 @@ TEST_CASE("Test jacobian constructors", "[factors]") {
       },
       keys_to_func, keys_to_optimize);
   INFO(binary_rot3_with_epsilon.Linearize(values));
+
+  // Test with Eigen::Map output arguments
+  const sym::Factord binary_rot3_map = sym::Factord::Jacobian(
+      [](const sym::Rot3d& a, const sym::Rot3d& b, Eigen::Map<Eigen::Matrix<double, 3, 1>> res,
+         Eigen::Map<Eigen::Matrix<double, 3, 6>> jac) {
+        res << a.LocalCoordinates(b);
+        jac << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
+      },
+      {{'R', 1}, {'R', 2}});
+  INFO(binary_rot3_map.Linearize(values));
 }
 
 TEST_CASE("Test hessian constructors", "[factors]") {
@@ -579,6 +589,23 @@ TEST_CASE("Test hessian constructors", "[factors]") {
       },
       keys_to_func, keys_to_optimize);
   INFO(binary_rot3_with_epsilon.Linearize(values));
+
+  // Binary with Rot3
+  const sym::Factord binary_rot3_map = sym::Factord::Hessian(
+      [](const sym::Rot3d& a, const sym::Rot3d& b, Eigen::Map<Eigen::Matrix<double, 3, 1>> res,
+         Eigen::Map<Eigen::Matrix<double, 3, 6>> jac,
+         Eigen::Map<Eigen::Matrix<double, 6, 6>> hessian,
+         Eigen::Map<Eigen::Matrix<double, 6, 1>> rhs) {
+        res << a.LocalCoordinates(b);
+        jac << a.ToRotationMatrix(), b.ToRotationMatrix();  // fake
+
+        hessian.resize(jac.cols(), jac.cols());
+        hessian.triangularView<Eigen::Lower>() =
+            (jac.transpose() * jac).triangularView<Eigen::Lower>();
+        rhs = jac.transpose() * res;
+      },
+      {{'R', 1}, {'R', 2}});
+  INFO(binary_rot3_map.Linearize(values));
 }
 
 template <typename MatrixType>

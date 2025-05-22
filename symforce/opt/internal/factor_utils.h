@@ -22,10 +22,10 @@ namespace internal {
 // ------------------------------------------------------------------------------------------------
 // Factor::Jacobian constructor dispatcher
 //
-// Struct to allow partial specialization based on whether matrices are dynamic and/or sparse
+// Struct to allow partial specialization based on whether matrices are dynamic, sparse, and/or maps
 // ------------------------------------------------------------------------------------------------
 
-template <bool IsDynamic, bool IsSparse, typename Scalar>
+template <bool IsDynamic, bool IsSparse, bool IsMap, typename Scalar>
 struct JacobianDispatcher {
   template <typename Functor>
   auto operator()(Functor&& func);
@@ -61,7 +61,6 @@ struct JacobianFuncValuesExtractor {
     return values.template At<ArgType<Index>>(keys[Index]);
   }
 
-  /** Invokes the user function with the proper input args extracted from the Values. */
   template <std::size_t... S>
   static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
                             const std::vector<index_entry_t>& keys, ResidualVec* residual,
@@ -69,9 +68,34 @@ struct JacobianFuncValuesExtractor {
     func(GetValue<S>(values, keys)..., residual, jacobian);
   }
 
+  /**
+   * Invokes the user function with the proper input args extracted from the Values.
+   *
+   * Overload for pointer-to-matrix outputs
+   */
   static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
                      const std::vector<index_entry_t>& keys, ResidualVec* residual,
                      JacobianMat* jacobian) {
+    constexpr auto num_inputs = function_traits<Functor>::num_arguments - 2;
+    SYM_ASSERT(keys.size() == num_inputs);
+    InvokeAtRange(func, values, keys, residual, jacobian, std::make_index_sequence<num_inputs>());
+  }
+
+  template <std::size_t... S>
+  static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
+                            const std::vector<index_entry_t>& keys, ResidualVec residual,
+                            JacobianMat jacobian, std::index_sequence<S...>) {
+    func(GetValue<S>(values, keys)..., residual, jacobian);
+  }
+
+  /**
+   * Invokes the user function with the proper input args extracted from the Values.
+   *
+   * Overload for Eigen::Map outputs
+   */
+  static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
+                     const std::vector<index_entry_t>& keys, ResidualVec residual,
+                     JacobianMat jacobian) {
     constexpr auto num_inputs = function_traits<Functor>::num_arguments - 2;
     SYM_ASSERT(keys.size() == num_inputs);
     InvokeAtRange(func, values, keys, residual, jacobian, std::make_index_sequence<num_inputs>());
@@ -145,7 +169,7 @@ auto JacobianDynamic(Functor&& func) {
 
 /** Specialize the dispatch mechanism */
 template <typename Scalar, bool IsSparse>
-struct JacobianDispatcher<true /* is_dynamic */, IsSparse, Scalar> {
+struct JacobianDispatcher<true /* is_dynamic */, IsSparse, false /* is_map */, Scalar> {
   template <typename Functor>
   auto operator()(Functor&& func) {
     return JacobianDynamic<Scalar>(std::forward<Functor>(func));
@@ -205,20 +229,72 @@ auto JacobianFixed(Functor&& func) {
 
 /** Specialize the dispatch mechanism */
 template <typename Scalar>
-struct JacobianDispatcher<false /* is_dynamic */, false /* is_sparse */, Scalar> {
+struct JacobianDispatcher<false /* is_dynamic */, false /* is_sparse */, false /* is_map */,
+                          Scalar> {
   template <typename Functor>
   auto operator()(Functor&& func) {
     return JacobianFixed<Scalar>(std::forward<Functor>(func));
   }
 };
 
+template <typename Scalar, typename Functor>
+auto JacobianFixedMap(Functor&& func) {
+  using Traits = function_traits<Functor>;
+  using FunctorType = std::decay_t<Functor>;
+
+  // Get matrix types from function signature
+  using JacobianMat = typename std::remove_pointer_t<
+      typename Traits::template arg<Traits::num_arguments - 1>::type>;
+
+  return [func = std::forward<Functor>(func)](const Values<Scalar>& values,
+                                              const std::vector<index_entry_t>& keys_to_func,
+                                              VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
+                                              MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
+    // Get dimensions (these have already been sanity checked in Factor::Jacobian)
+    constexpr int M = JacobianMat::RowsAtCompileTime;
+    constexpr int N = JacobianMat::ColsAtCompileTime;
+
+    SYM_ASSERT(residual != nullptr);
+    residual->resize(M);
+    const Eigen::Map<Eigen::Matrix<Scalar, M, 1>> residual_map{residual->data()};
+
+    if (jacobian != nullptr) {
+      // jacobian is requested
+      jacobian->resize(M, N);
+      const Eigen::Map<Eigen::Matrix<Scalar, M, N>> jacobian_map{jacobian->data()};
+      JacobianFuncValuesExtractor<Scalar, FunctorType>::Invoke(func, values, keys_to_func,
+                                                               residual_map, jacobian_map);
+      CalculateHessianRhs(*residual, *jacobian, hessian, rhs);
+    } else {
+      // jacobian not requested
+      Eigen::Map<Eigen::Matrix<Scalar, M, N>> const jacobian_invoke_arg{nullptr, M, N};
+      JacobianFuncValuesExtractor<Scalar, FunctorType>::Invoke(func, values, keys_to_func,
+                                                               residual_map, jacobian_invoke_arg);
+
+      // Check that the hessian and rhs weren't requested without the jacobian
+      SYM_ASSERT(hessian == nullptr);
+      SYM_ASSERT(rhs == nullptr);
+    }
+  };
+}
+
+/** Specialize the dispatch mechanism */
+template <typename Scalar>
+struct JacobianDispatcher<false /* is_dynamic */, false /* is_sparse */, true /* is_map */,
+                          Scalar> {
+  template <typename Functor>
+  auto operator()(Functor&& func) {
+    return JacobianFixedMap<Scalar>(std::forward<Functor>(func));
+  }
+};
+
 // ------------------------------------------------------------------------------------------------
 // Factor::Hessian constructor dispatcher
 //
-// Struct to allow partial specialization based on whether matrices are dynamic and/or sparse
+// Struct to allow partial specialization based on whether matrices are dynamic, sparse, and/or maps
 // ------------------------------------------------------------------------------------------------
 
-template <bool IsDynamic, bool IsSparse, typename Scalar>
+template <bool IsDynamic, bool IsSparse, bool IsMap, typename Scalar>
 struct HessianDispatcher {
   template <typename Functor>
   auto operator()(Functor&& func);
@@ -258,7 +334,6 @@ struct HessianFuncValuesExtractor {
     return values.template At<ArgType<Index>>(keys[Index]);
   }
 
-  /** Invokes the user function with the proper input args extracted from the Values. */
   template <std::size_t... S>
   static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
                             const std::vector<index_entry_t>& keys, ResidualVec* residual,
@@ -267,9 +342,36 @@ struct HessianFuncValuesExtractor {
     func(GetValue<S>(values, keys)..., residual, jacobian, hessian, rhs);
   }
 
+  /**
+   * Invokes the user function with the proper input args extracted from the Values.
+   *
+   * Overload for pointer-to-matrix outputs
+   */
   static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
                      const std::vector<index_entry_t>& keys, ResidualVec* residual,
                      JacobianMat* jacobian, HessianMat* hessian, RhsVec* rhs) {
+    constexpr auto num_inputs = function_traits<Functor>::num_arguments - 4;
+    SYM_ASSERT(keys.size() == num_inputs);
+    InvokeAtRange(func, values, keys, residual, jacobian, hessian, rhs,
+                  std::make_index_sequence<num_inputs>());
+  }
+
+  template <std::size_t... S>
+  static void InvokeAtRange(const Functor& func, const sym::Values<Scalar>& values,
+                            const std::vector<index_entry_t>& keys, ResidualVec residual,
+                            JacobianMat jacobian, HessianMat hessian, RhsVec rhs,
+                            std::index_sequence<S...>) {
+    func(GetValue<S>(values, keys)..., residual, jacobian, hessian, rhs);
+  }
+
+  /**
+   * Invokes the user function with the proper input args extracted from the Values.
+   *
+   * Overload for Eigen::Map outputs
+   */
+  static void Invoke(const Functor& func, const sym::Values<Scalar>& values,
+                     const std::vector<index_entry_t>& keys, ResidualVec residual,
+                     JacobianMat jacobian, HessianMat hessian, RhsVec rhs) {
     constexpr auto num_inputs = function_traits<Functor>::num_arguments - 4;
     SYM_ASSERT(keys.size() == num_inputs);
     InvokeAtRange(func, values, keys, residual, jacobian, hessian, rhs,
@@ -298,7 +400,7 @@ auto HessianDynamic(Functor&& func) {
 
 /** Specialize the dispatch mechanism */
 template <bool IsSparse, typename Scalar>
-struct HessianDispatcher<true /* is_dynamic */, IsSparse, Scalar> {
+struct HessianDispatcher<true /* is_dynamic */, IsSparse, false /* is_map */, Scalar> {
   template <typename Functor>
   auto operator()(Functor&& func) {
     return HessianDynamic<Scalar>(std::forward<Functor>(func));
@@ -353,10 +455,67 @@ auto HessianFixedDense(Functor&& func) {
 
 /** Specialize the dispatch mechanism */
 template <typename Scalar>
-struct HessianDispatcher<false /* is_dynamic */, false /* is_sparse */, Scalar> {
+struct HessianDispatcher<false /* is_dynamic */, false /* is_sparse */, false /* is_map */,
+                         Scalar> {
   template <typename Functor>
   auto operator()(Functor&& func) {
     return HessianFixedDense<Scalar>(std::forward<Functor>(func));
+  }
+};
+
+template <typename Scalar, typename Functor>
+auto HessianFixedMapDense(Functor&& func) {
+  // Get matrix types from function signature
+  using JacobianMat = typename HessianFuncValuesExtractor<Scalar, Functor>::JacobianMat;
+  using FunctorType = std::decay_t<Functor>;
+
+  // Get dimensions (these have already been sanity checked in Factor::Hessian)
+  constexpr int M = JacobianMat::RowsAtCompileTime;
+  constexpr int N = JacobianMat::ColsAtCompileTime;
+
+  return [func = std::forward<Functor>(func)](const Values<Scalar>& values,
+                                              const std::vector<index_entry_t>& keys_to_func,
+                                              VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
+                                              MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
+    if (residual != nullptr) {
+      residual->resize(M);
+    }
+
+    if (jacobian != nullptr) {
+      jacobian->resize(M, N);
+    }
+
+    if (hessian != nullptr) {
+      hessian->resize(N, N);
+    }
+
+    if (rhs != nullptr) {
+      rhs->resize(N);
+    }
+
+    const auto residual_map = residual
+                                  ? Eigen::Map<Eigen::Matrix<Scalar, M, 1>>{residual->data(), M}
+                                  : Eigen::Map<Eigen::Matrix<Scalar, M, 1>>{nullptr, M};
+    const auto jacobian_map = jacobian
+                                  ? Eigen::Map<Eigen::Matrix<Scalar, M, N>>{jacobian->data(), M, N}
+                                  : Eigen::Map<Eigen::Matrix<Scalar, M, N>>{nullptr, M, N};
+    const auto hessian_map = hessian
+                                 ? Eigen::Map<Eigen::Matrix<Scalar, N, N>>{hessian->data(), N, N}
+                                 : Eigen::Map<Eigen::Matrix<Scalar, N, N>>{nullptr, N, N};
+    const auto rhs_map = rhs ? Eigen::Map<Eigen::Matrix<Scalar, N, 1>>{rhs->data(), N}
+                             : Eigen::Map<Eigen::Matrix<Scalar, N, 1>>{nullptr, N};
+
+    HessianFuncValuesExtractor<Scalar, FunctorType>::Invoke(
+        func, values, keys_to_func, residual_map, jacobian_map, hessian_map, rhs_map);
+  };
+}
+
+/** Specialize the dispatch mechanism */
+template <typename Scalar>
+struct HessianDispatcher<false /* is_dynamic */, false /* is_sparse */, true /* is_map */, Scalar> {
+  template <typename Functor>
+  auto operator()(Functor&& func) {
+    return HessianFixedMapDense<Scalar>(std::forward<Functor>(func));
   }
 };
 
@@ -396,7 +555,7 @@ auto HessianFixedSparse(Functor&& func) {
 
 /** Specialize the dispatch mechanism */
 template <typename Scalar>
-struct HessianDispatcher<false /* is_dynamic */, true /* is_sparse */, Scalar> {
+struct HessianDispatcher<false /* is_dynamic */, true /* is_sparse */, false /* is_map */, Scalar> {
   template <typename Functor>
   auto operator()(Functor&& func) {
     return HessianFixedSparse<Scalar>(std::forward<Functor>(func));

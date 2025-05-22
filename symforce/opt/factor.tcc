@@ -77,10 +77,12 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
   constexpr bool is_fixed = (M != Eigen::Dynamic) && (N != Eigen::Dynamic);
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
+  constexpr bool is_map = std::is_same_v<ResidualVec, Eigen::Map<Eigen::Matrix<Scalar, M, 1>>>;
+
   // Dispatch to either the dynamic size or fixed size implementations
-  return Factor<Scalar>(
-      internal::JacobianDispatcher<is_dynamic, is_sparse, Scalar>{}(std::forward<Functor>(func)),
-      keys_to_func, keys_to_optimize);
+  return Factor<Scalar>(internal::JacobianDispatcher<is_dynamic, is_sparse, is_map, Scalar>{}(
+                            std::forward<Functor>(func)),
+                        keys_to_func, keys_to_optimize);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -140,10 +142,13 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& k
   constexpr bool is_fixed = (M != Eigen::Dynamic) && (N != Eigen::Dynamic);
   static_assert((is_dynamic || is_fixed), "Matrices cannot be mixed fixed and dynamic.");
 
+  constexpr bool is_map = std::is_same_v<ResidualVec, Eigen::Map<Eigen::Matrix<Scalar, M, 1>>>;
+
   // Dispatch to either the dynamic size or fixed size implementations
-  return Factor<Scalar>(internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, Scalar>{}(
-                            std::forward<Functor>(func)),
-                        keys_to_func, keys_to_optimize);
+  return Factor<Scalar>(
+      internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, is_map, Scalar>{}(
+          std::forward<Functor>(func)),
+      keys_to_func, keys_to_optimize);
 }
 
 // ----------------------------------------------------------------------------
