@@ -37,7 +37,7 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
                        Eigen::Matrix<Scalar, 1, 2>* const jacobian = nullptr,
                        Eigen::Matrix<Scalar, 2, 2>* const hessian = nullptr,
                        Eigen::Matrix<Scalar, 2, 1>* const rhs = nullptr) {
-  // Total ops: 59
+  // Total ops: 57
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
@@ -57,7 +57,7 @@ void BetweenFactorRot2(const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b,
   const Scalar _tmp9 = _a_T_b[0] * _tmp2;
   const Scalar _tmp10 = _a_T_b[1] * _tmp6;
   const Scalar _tmp11 = _tmp10 + _tmp9;
-  const Scalar _tmp12 = _tmp11 + epsilon * ((((_tmp11) > 0) - ((_tmp11) < 0)) + Scalar(0.5));
+  const Scalar _tmp12 = _tmp11 + std::copysign(epsilon, _tmp11);
   const Scalar _tmp13 = std::atan2(_tmp8, _tmp12);
   const Scalar _tmp14 = -_tmp0 - _tmp1;
   const Scalar _tmp15 = Scalar(1.0) / (_tmp12);

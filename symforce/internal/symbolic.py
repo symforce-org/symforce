@@ -492,9 +492,7 @@ def argmax(vals: T.Iterable[Scalar]) -> Scalar:
 
 
 def atan2(y: Scalar, x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:
-    # NOTE(aaron): This is a little nonstandard to not use sign_no_zero, but is fewer ops, and is
-    # safe here
-    return sympy.atan2(y, x + (sign(x) + 0.5) * epsilon)
+    return sympy.atan2(y, x + copysign_no_zero(epsilon, x))
 
 
 def asin_safe(x: Scalar, epsilon: Scalar = epsilon()) -> Scalar:

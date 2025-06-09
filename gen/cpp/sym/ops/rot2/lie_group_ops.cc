@@ -35,7 +35,7 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::FromTangent(const TangentVec& vec,
 template <typename Scalar>
 typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::ToTangent(
     const sym::Rot2<Scalar>& a, const Scalar epsilon) {
-  // Total ops: 5
+  // Total ops: 3
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
@@ -45,7 +45,7 @@ typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::ToTang
   // Output terms (1)
   Eigen::Matrix<Scalar, 1, 1> _res;
 
-  _res(0, 0) = std::atan2(_a[1], _a[0] + epsilon * ((((_a[0]) > 0) - ((_a[0]) < 0)) + Scalar(0.5)));
+  _res(0, 0) = std::atan2(_a[1], _a[0] + std::copysign(epsilon, _a[0]));
 
   return _res;
 }
@@ -77,7 +77,7 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Retract(const sym::Rot2<Scalar>& a,
 template <typename Scalar>
 typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::LocalCoordinates(
     const sym::Rot2<Scalar>& a, const sym::Rot2<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 11
+  // Total ops: 9
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
@@ -89,8 +89,7 @@ typename LieGroupOps<Rot2<Scalar>>::TangentVec LieGroupOps<Rot2<Scalar>>::LocalC
   // Output terms (1)
   Eigen::Matrix<Scalar, 1, 1> _res;
 
-  _res(0, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
-                          _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+  _res(0, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _tmp0 + std::copysign(epsilon, _tmp0));
 
   return _res;
 }
@@ -99,7 +98,7 @@ template <typename Scalar>
 sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Interpolate(const sym::Rot2<Scalar>& a,
                                                          const sym::Rot2<Scalar>& b,
                                                          const Scalar alpha, const Scalar epsilon) {
-  // Total ops: 20
+  // Total ops: 18
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _a = a.Data();
@@ -108,8 +107,7 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Interpolate(const sym::Rot2<Scalar>
   // Intermediate terms (4)
   const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
   const Scalar _tmp1 =
-      alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
-                         _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+      alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _tmp0 + std::copysign(epsilon, _tmp0));
   const Scalar _tmp2 = std::cos(_tmp1);
   const Scalar _tmp3 = std::sin(_tmp1);
 

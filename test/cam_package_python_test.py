@@ -353,14 +353,14 @@ class CamPackageTest(unittest.TestCase):
 
         pixel, is_valid = cam_cal.pixel_from_camera_point(point=point, epsilon=1e-08)
 
-        np.testing.assert_allclose(pixel, np.array([4.24904574989825, 5.80366449289037]))
+        np.testing.assert_allclose(pixel, np.array([4.24904575739825, 5.80366449289037]))
         self.assertEqual(is_valid, 1.0)
 
         j_pixel, j_is_valid, pixel_D_cal, pixel_D_point = (
             cam_cal.pixel_from_camera_point_with_jacobians(point=point, epsilon=1e-08)
         )
 
-        np.testing.assert_allclose(j_pixel, np.array([4.24904574989825, 5.80366449289037]))
+        np.testing.assert_allclose(j_pixel, np.array([4.24904575739825, 5.80366449289037]))
         self.assertEqual(j_is_valid, 1.0)
         self.assertEqual(pixel_D_cal.shape, (2, 4))
         self.assertEqual(pixel_D_point.shape, (2, 3))

@@ -70,7 +70,7 @@ class CameraOps(object):
             is_valid: 1 if the operation is within bounds else 0
         """
 
-        # Total ops: 19
+        # Total ops: 17
 
         # Input arrays
         _self = self.data
@@ -83,21 +83,17 @@ class CameraOps(object):
                 )
             )
 
-        # Intermediate terms (1)
+        # Intermediate terms (2)
         _tmp0 = point[0, 0] ** 2 + point[2, 0] ** 2
+        _tmp1 = math.sqrt(_tmp0 + epsilon)
 
         # Output terms
         _pixel = numpy.zeros(2)
         _pixel[0] = (
-            _self[0]
-            * math.atan2(
-                point[0, 0],
-                epsilon * ((0.0 if point[2, 0] == 0 else math.copysign(1, point[2, 0])) + 0.5)
-                + point[2, 0],
-            )
+            _self[0] * math.atan2(point[0, 0], point[2, 0] + math.copysign(epsilon, point[2, 0]))
             + _self[2]
         )
-        _pixel[1] = _self[1] * math.atan2(point[1, 0], math.sqrt(_tmp0 + epsilon)) + _self[3]
+        _pixel[1] = _self[1] * math.atan2(point[1, 0], _tmp1) + _self[3]
         _is_valid = max(
             0,
             (0.0 if _tmp0 + point[1, 0] ** 2 == 0 else math.copysign(1, _tmp0 + point[1, 0] ** 2)),
@@ -117,7 +113,7 @@ class CameraOps(object):
             pixel_D_point: Derivative of pixel with respect to point
         """
 
-        # Total ops: 34
+        # Total ops: 33
 
         # Input arrays
         _self = self.data
@@ -130,42 +126,40 @@ class CameraOps(object):
                 )
             )
 
-        # Intermediate terms (10)
-        _tmp0 = (
-            epsilon * ((0.0 if point[2, 0] == 0 else math.copysign(1, point[2, 0])) + 0.5)
-            + point[2, 0]
-        )
+        # Intermediate terms (11)
+        _tmp0 = point[2, 0] + math.copysign(epsilon, point[2, 0])
         _tmp1 = math.atan2(point[0, 0], _tmp0)
         _tmp2 = point[0, 0] ** 2
         _tmp3 = _tmp2 + point[2, 0] ** 2
         _tmp4 = math.sqrt(_tmp3 + epsilon)
-        _tmp5 = math.atan2(point[1, 0], _tmp4)
-        _tmp6 = _tmp3 + point[1, 0] ** 2
-        _tmp7 = _self[0] / (_tmp0**2 + _tmp2)
-        _tmp8 = _self[1] / (_tmp6 + epsilon)
-        _tmp9 = _tmp8 * point[1, 0] / _tmp4
+        _tmp5 = _tmp4
+        _tmp6 = math.atan2(point[1, 0], _tmp5)
+        _tmp7 = point[1, 0] ** 2
+        _tmp8 = _self[0] / (_tmp0**2 + _tmp2)
+        _tmp9 = _self[1] / (_tmp5**2 + _tmp7)
+        _tmp10 = _tmp9 * point[1, 0] / _tmp4
 
         # Output terms
         _pixel = numpy.zeros(2)
         _pixel[0] = _self[0] * _tmp1 + _self[2]
-        _pixel[1] = _self[1] * _tmp5 + _self[3]
-        _is_valid = max(0, (0.0 if _tmp6 == 0 else math.copysign(1, _tmp6)))
+        _pixel[1] = _self[1] * _tmp6 + _self[3]
+        _is_valid = max(0, (0.0 if _tmp3 + _tmp7 == 0 else math.copysign(1, _tmp3 + _tmp7)))
         _pixel_D_cal = numpy.zeros((2, 4))
         _pixel_D_cal[0, 0] = _tmp1
         _pixel_D_cal[1, 0] = 0
         _pixel_D_cal[0, 1] = 0
-        _pixel_D_cal[1, 1] = _tmp5
+        _pixel_D_cal[1, 1] = _tmp6
         _pixel_D_cal[0, 2] = 1
         _pixel_D_cal[1, 2] = 0
         _pixel_D_cal[0, 3] = 0
         _pixel_D_cal[1, 3] = 1
         _pixel_D_point = numpy.zeros((2, 3))
-        _pixel_D_point[0, 0] = _tmp0 * _tmp7
-        _pixel_D_point[1, 0] = -_tmp9 * point[0, 0]
+        _pixel_D_point[0, 0] = _tmp0 * _tmp8
+        _pixel_D_point[1, 0] = -_tmp10 * point[0, 0]
         _pixel_D_point[0, 1] = 0
-        _pixel_D_point[1, 1] = _tmp4 * _tmp8
-        _pixel_D_point[0, 2] = -_tmp7 * point[0, 0]
-        _pixel_D_point[1, 2] = -_tmp9 * point[2, 0]
+        _pixel_D_point[1, 1] = _tmp5 * _tmp9
+        _pixel_D_point[0, 2] = -_tmp8 * point[0, 0]
+        _pixel_D_point[1, 2] = -_tmp10 * point[2, 0]
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point
 
     @staticmethod

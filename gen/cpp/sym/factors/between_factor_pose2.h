@@ -38,7 +38,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
                         Eigen::Matrix<Scalar, 3, 6>* const jacobian = nullptr,
                         Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
                         Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 265
+  // Total ops: 263
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -58,7 +58,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp9 = _a_T_b[1] * _tmp2;
   const Scalar _tmp10 = _a_T_b[0] * _tmp6;
   const Scalar _tmp11 = _tmp10 + _tmp9;
-  const Scalar _tmp12 = _tmp11 + epsilon * ((((_tmp11) > 0) - ((_tmp11) < 0)) + Scalar(0.5));
+  const Scalar _tmp12 = _tmp11 + std::copysign(epsilon, _tmp11);
   const Scalar _tmp13 = std::atan2(_tmp8, _tmp12);
   const Scalar _tmp14 = _a[1] * _a[2];
   const Scalar _tmp15 = _a[0] * _a[3];
@@ -75,13 +75,13 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp24 =
       _tmp13 * sqrt_info(2, 0) + _tmp17 * sqrt_info(2, 2) + _tmp21 * sqrt_info(2, 1);
   const Scalar _tmp25 = -_tmp4 - _tmp5;
-  const Scalar _tmp26 = std::pow(_tmp12, Scalar(2));
-  const Scalar _tmp27 = _tmp8 / _tmp26;
-  const Scalar _tmp28 = Scalar(1.0) / (_tmp12);
-  const Scalar _tmp29 = _tmp26 + std::pow(_tmp8, Scalar(2));
-  const Scalar _tmp30 = _tmp26 / _tmp29;
+  const Scalar _tmp26 = Scalar(1.0) / (_tmp12);
+  const Scalar _tmp27 = std::pow(_tmp12, Scalar(2));
+  const Scalar _tmp28 = _tmp8 / _tmp27;
+  const Scalar _tmp29 = _tmp27 + std::pow(_tmp8, Scalar(2));
+  const Scalar _tmp30 = _tmp27 / _tmp29;
   const Scalar _tmp31 =
-      _tmp30 * (-_tmp27 * (_a_T_b[1] * _tmp25 + _tmp3) + _tmp28 * (_a_T_b[0] * _tmp25 - _tmp9));
+      _tmp30 * (_tmp26 * (_a_T_b[0] * _tmp25 - _tmp9) - _tmp28 * (_a_T_b[1] * _tmp25 + _tmp3));
   const Scalar _tmp32 = _tmp18 - _tmp19 - _tmp20;
   const Scalar _tmp33 = _tmp14 - _tmp15 + _tmp16;
   const Scalar _tmp34 =
@@ -110,7 +110,7 @@ void BetweenFactorPose2(const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b
   const Scalar _tmp54 = -_tmp52 - _tmp53;
   const Scalar _tmp55 = _tmp0 - _tmp1;
   const Scalar _tmp56 =
-      -_tmp27 * (_a_T_b[0] * _tmp55 + _tmp7) + _tmp28 * (-_a_T_b[1] * _tmp55 + _tmp10);
+      _tmp26 * (-_a_T_b[1] * _tmp55 + _tmp10) - _tmp28 * (_a_T_b[0] * _tmp55 + _tmp7);
   const Scalar _tmp57 = _tmp30 * _tmp56;
   const Scalar _tmp58 = _tmp57 * sqrt_info(0, 0);
   const Scalar _tmp59 = _tmp57 * sqrt_info(1, 0);

@@ -37,7 +37,7 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::FromTangent(const TangentVec& vec
 template <typename Scalar>
 typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::ToTangent(
     const sym::Pose2<Scalar>& a, const Scalar epsilon) {
-  // Total ops: 5
+  // Total ops: 3
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -47,7 +47,7 @@ typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::ToTa
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
-  _res(0, 0) = std::atan2(_a[1], _a[0] + epsilon * ((((_a[0]) > 0) - ((_a[0]) < 0)) + Scalar(0.5)));
+  _res(0, 0) = std::atan2(_a[1], _a[0] + std::copysign(epsilon, _a[0]));
   _res(1, 0) = _a[2];
   _res(2, 0) = _a[3];
 
@@ -84,7 +84,7 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Retract(const sym::Pose2<Scalar>&
 template <typename Scalar>
 typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::LocalCoordinates(
     const sym::Pose2<Scalar>& a, const sym::Pose2<Scalar>& b, const Scalar epsilon) {
-  // Total ops: 13
+  // Total ops: 11
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -96,8 +96,7 @@ typename LieGroupOps<Pose2<Scalar>>::TangentVec LieGroupOps<Pose2<Scalar>>::Loca
   // Output terms (1)
   Eigen::Matrix<Scalar, 3, 1> _res;
 
-  _res(0, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
-                          _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+  _res(0, 0) = std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _tmp0 + std::copysign(epsilon, _tmp0));
   _res(1, 0) = -_a[2] + _b[2];
   _res(2, 0) = -_a[3] + _b[3];
 
@@ -109,7 +108,7 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Interpolate(const sym::Pose2<Scal
                                                            const sym::Pose2<Scalar>& b,
                                                            const Scalar alpha,
                                                            const Scalar epsilon) {
-  // Total ops: 26
+  // Total ops: 24
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
@@ -118,8 +117,7 @@ sym::Pose2<Scalar> LieGroupOps<Pose2<Scalar>>::Interpolate(const sym::Pose2<Scal
   // Intermediate terms (4)
   const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
   const Scalar _tmp1 =
-      alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0],
-                         _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+      alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _tmp0 + std::copysign(epsilon, _tmp0));
   const Scalar _tmp2 = std::sin(_tmp1);
   const Scalar _tmp3 = std::cos(_tmp1);
 

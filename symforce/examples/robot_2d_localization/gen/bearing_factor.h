@@ -25,7 +25,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
                    Eigen::Matrix<Scalar, 1, 3>* const jacobian = nullptr,
                    Eigen::Matrix<Scalar, 3, 3>* const hessian = nullptr,
                    Eigen::Matrix<Scalar, 3, 1>* const rhs = nullptr) {
-  // Total ops: 66
+  // Total ops: 64
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _pose = pose.Data();
@@ -39,7 +39,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
   const Scalar _tmp5 = _pose[1] * landmark(1, 0);
   const Scalar _tmp6 = _pose[0] * landmark(0, 0);
   const Scalar _tmp7 = -_tmp4 + _tmp5 + _tmp6;
-  const Scalar _tmp8 = _tmp7 + epsilon * ((((_tmp7) > 0) - ((_tmp7) < 0)) + Scalar(0.5));
+  const Scalar _tmp8 = _tmp7 + std::copysign(epsilon, _tmp7);
   const Scalar _tmp9 = -angle + std::atan2(_tmp3, _tmp8);
   const Scalar _tmp10 =
       _tmp9 - 2 * Scalar(M_PI) *
@@ -56,7 +56,7 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
   const Scalar _tmp20 = -_pose[0] * _tmp11 + _pose[1] * _tmp13;
   const Scalar _tmp21 = _tmp16 * _tmp20;
   const Scalar _tmp22 = std::pow(_tmp8, Scalar(4)) / std::pow(_tmp15, Scalar(2));
-  const Scalar _tmp23 = _tmp20 * _tmp22;
+  const Scalar _tmp23 = _tmp14 * _tmp22;
 
   // Output terms (4)
   if (res != nullptr) {
@@ -77,11 +77,11 @@ void BearingFactor(const sym::Pose2<Scalar>& pose, const Eigen::Matrix<Scalar, 2
     Eigen::Matrix<Scalar, 3, 3>& _hessian = (*hessian);
 
     _hessian(0, 0) = std::pow(_tmp14, Scalar(2)) * _tmp22;
-    _hessian(1, 0) = _tmp14 * _tmp18 * _tmp22;
-    _hessian(2, 0) = _tmp14 * _tmp23;
+    _hessian(1, 0) = _tmp18 * _tmp23;
+    _hessian(2, 0) = _tmp20 * _tmp23;
     _hessian(0, 1) = 0;
     _hessian(1, 1) = std::pow(_tmp18, Scalar(2)) * _tmp22;
-    _hessian(2, 1) = _tmp18 * _tmp23;
+    _hessian(2, 1) = _tmp18 * _tmp20 * _tmp22;
     _hessian(0, 2) = 0;
     _hessian(1, 2) = 0;
     _hessian(2, 2) = std::pow(_tmp20, Scalar(2)) * _tmp22;

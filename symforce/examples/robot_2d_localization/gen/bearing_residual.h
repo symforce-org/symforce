@@ -19,7 +19,7 @@ template <typename Scalar>
 Eigen::Matrix<Scalar, 1, 1> BearingResidual(const sym::Pose2<Scalar>& pose,
                                             const Eigen::Matrix<Scalar, 2, 1>& landmark,
                                             const Scalar angle, const Scalar epsilon) {
-  // Total ops: 27
+  // Total ops: 25
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _pose = pose.Data();
@@ -27,10 +27,9 @@ Eigen::Matrix<Scalar, 1, 1> BearingResidual(const sym::Pose2<Scalar>& pose,
   // Intermediate terms (2)
   const Scalar _tmp0 = -_pose[0] * _pose[2] + _pose[0] * landmark(0, 0) - _pose[1] * _pose[3] +
                        _pose[1] * landmark(1, 0);
-  const Scalar _tmp1 =
-      -angle + std::atan2(-_pose[0] * _pose[3] + _pose[0] * landmark(1, 0) + _pose[1] * _pose[2] -
-                              _pose[1] * landmark(0, 0),
-                          _tmp0 + epsilon * ((((_tmp0) > 0) - ((_tmp0) < 0)) + Scalar(0.5)));
+  const Scalar _tmp1 = -angle + std::atan2(-_pose[0] * _pose[3] + _pose[0] * landmark(1, 0) +
+                                               _pose[1] * _pose[2] - _pose[1] * landmark(0, 0),
+                                           _tmp0 + std::copysign(epsilon, _tmp0));
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 1, 1> _res;

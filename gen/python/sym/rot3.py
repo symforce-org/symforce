@@ -263,18 +263,20 @@ class Rot3(object):
         # Input arrays
         _self = self.data
 
-        # Intermediate terms (5)
+        # Intermediate terms (7)
         _tmp0 = 2 * _self[0]
         _tmp1 = 2 * _self[2]
         _tmp2 = _self[2] ** 2
         _tmp3 = _self[0] ** 2
         _tmp4 = -(_self[1] ** 2) + _self[3] ** 2
+        _tmp5 = -_tmp2 + _tmp3 + _tmp4
+        _tmp6 = _tmp2 - _tmp3 + _tmp4
 
         # Output terms
         _res = numpy.zeros(3)
-        _res[0] = math.atan2(_self[1] * _tmp0 + _self[3] * _tmp1, -_tmp2 + _tmp3 + _tmp4)
+        _res[0] = math.atan2(_self[1] * _tmp0 + _self[3] * _tmp1, _tmp5)
         _res[1] = -math.asin(max(-1, min(1, -2 * _self[1] * _self[3] + _self[2] * _tmp0)))
-        _res[2] = math.atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp2 - _tmp3 + _tmp4)
+        _res[2] = math.atan2(_self[1] * _tmp1 + _self[3] * _tmp0, _tmp6)
         return _res
 
     @staticmethod

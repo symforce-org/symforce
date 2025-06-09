@@ -36,7 +36,7 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
                      Eigen::Matrix<Scalar, 1, 1>* const jacobian = nullptr,
                      Eigen::Matrix<Scalar, 1, 1>* const hessian = nullptr,
                      Eigen::Matrix<Scalar, 1, 1>* const rhs = nullptr) {
-  // Total ops: 32
+  // Total ops: 30
 
   // Input arrays
   const Eigen::Matrix<Scalar, 2, 1>& _value = value.Data();
@@ -47,7 +47,7 @@ void PriorFactorRot2(const sym::Rot2<Scalar>& value, const sym::Rot2<Scalar>& pr
   const Scalar _tmp1 = _prior[0] * _value[1];
   const Scalar _tmp2 = -_tmp0 + _tmp1;
   const Scalar _tmp3 = _prior[0] * _value[0] + _prior[1] * _value[1];
-  const Scalar _tmp4 = _tmp3 + epsilon * ((((_tmp3) > 0) - ((_tmp3) < 0)) + Scalar(0.5));
+  const Scalar _tmp4 = _tmp3 + std::copysign(epsilon, _tmp3);
   const Scalar _tmp5 = std::atan2(_tmp2, _tmp4);
   const Scalar _tmp6 = std::pow(_tmp4, Scalar(2));
   const Scalar _tmp7 = std::pow(_tmp2, Scalar(2)) + _tmp6;

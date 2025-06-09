@@ -46,7 +46,7 @@ void EquirectangularReprojectionDelta(
     const Eigen::Matrix<Scalar, 2, 1>& target_pixel, const Scalar epsilon,
     Eigen::Matrix<Scalar, 2, 1>* const reprojection_delta = nullptr,
     Scalar* const is_valid = nullptr) {
-  // Total ops: 148
+  // Total ops: 146
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _source_pose = source_pose.Data();
@@ -54,7 +54,7 @@ void EquirectangularReprojectionDelta(
   const Eigen::Matrix<Scalar, 7, 1>& _target_pose = target_pose.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _target_calibration = target_calibration.Data();
 
-  // Intermediate terms (41)
+  // Intermediate terms (42)
   const Scalar _tmp0 = -2 * std::pow(_target_pose[2], Scalar(2));
   const Scalar _tmp1 = 1 - 2 * std::pow(_target_pose[1], Scalar(2));
   const Scalar _tmp2 = 2 * _source_pose[0] * _source_pose[2];
@@ -83,44 +83,42 @@ void EquirectangularReprojectionDelta(
   const Scalar _tmp22 = _tmp14 * (_tmp2 + _tmp4) + _tmp18 * (_tmp16 - _tmp17) +
                         _tmp21 * (_tmp19 + _tmp20) +
                         source_inverse_range * (_source_pose[4] - _target_pose[4]);
-  const Scalar _tmp23 = 2 * _target_pose[3];
-  const Scalar _tmp24 = _target_pose[2] * _tmp23;
-  const Scalar _tmp25 = 2 * _target_pose[0];
-  const Scalar _tmp26 = _target_pose[1] * _tmp25;
+  const Scalar _tmp23 = 2 * _target_pose[2];
+  const Scalar _tmp24 = _target_pose[3] * _tmp23;
+  const Scalar _tmp25 = 2 * _target_pose[1];
+  const Scalar _tmp26 = _target_pose[0] * _tmp25;
   const Scalar _tmp27 = _source_pose[0] * _tmp3;
   const Scalar _tmp28 = _source_pose[2] * _tmp15;
   const Scalar _tmp29 = -2 * std::pow(_source_pose[0], Scalar(2));
   const Scalar _tmp30 = _tmp14 * (-_tmp27 + _tmp28) + _tmp18 * (_tmp19 + _tmp29 + 1) +
                         _tmp21 * (_tmp16 + _tmp17) +
                         source_inverse_range * (_source_pose[5] - _target_pose[5]);
-  const Scalar _tmp31 = _target_pose[2] * _tmp25;
-  const Scalar _tmp32 = _target_pose[1] * _tmp23;
+  const Scalar _tmp31 = _target_pose[0] * _tmp23;
+  const Scalar _tmp32 = _target_pose[3] * _tmp25;
   const Scalar _tmp33 = _tmp14 * (_tmp20 + _tmp29) + _tmp18 * (_tmp27 + _tmp28) +
                         _tmp21 * (_tmp2 - _tmp4) +
                         source_inverse_range * (_source_pose[6] - _target_pose[6]);
   const Scalar _tmp34 =
       _tmp22 * (_tmp0 + _tmp1) + _tmp30 * (_tmp24 + _tmp26) + _tmp33 * (_tmp31 - _tmp32);
-  const Scalar _tmp35 = 2 * _target_pose[1] * _target_pose[2];
-  const Scalar _tmp36 = _target_pose[0] * _tmp23;
+  const Scalar _tmp35 = _target_pose[2] * _tmp25;
+  const Scalar _tmp36 = 2 * _target_pose[0] * _target_pose[3];
   const Scalar _tmp37 = -2 * std::pow(_target_pose[0], Scalar(2));
   const Scalar _tmp38 =
       _tmp22 * (_tmp31 + _tmp32) + _tmp30 * (_tmp35 - _tmp36) + _tmp33 * (_tmp1 + _tmp37);
   const Scalar _tmp39 =
       _tmp22 * (-_tmp24 + _tmp26) + _tmp30 * (_tmp0 + _tmp37 + 1) + _tmp33 * (_tmp35 + _tmp36);
   const Scalar _tmp40 = std::pow(_tmp34, Scalar(2)) + std::pow(_tmp38, Scalar(2));
+  const Scalar _tmp41 = std::sqrt(Scalar(_tmp40 + epsilon));
 
   // Output terms (2)
   if (reprojection_delta != nullptr) {
     Eigen::Matrix<Scalar, 2, 1>& _reprojection_delta = (*reprojection_delta);
 
     _reprojection_delta(0, 0) =
-        _target_calibration[0] *
-            std::atan2(_tmp34,
-                       _tmp38 + epsilon * ((((_tmp38) > 0) - ((_tmp38) < 0)) + Scalar(0.5))) +
+        _target_calibration[0] * std::atan2(_tmp34, _tmp38 + std::copysign(epsilon, _tmp38)) +
         _target_calibration[2] - target_pixel(0, 0);
-    _reprojection_delta(1, 0) =
-        _target_calibration[1] * std::atan2(_tmp39, std::sqrt(Scalar(_tmp40 + epsilon))) +
-        _target_calibration[3] - target_pixel(1, 0);
+    _reprojection_delta(1, 0) = _target_calibration[1] * std::atan2(_tmp39, _tmp41) +
+                                _target_calibration[3] - target_pixel(1, 0);
   }
 
   if (is_valid != nullptr) {
