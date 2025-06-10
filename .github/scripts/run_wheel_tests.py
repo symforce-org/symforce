@@ -17,14 +17,7 @@ async def run_test(
         # that the tests pass, but allow them to generate different code than is checked in.
         include_update_flag = (
             platform.system() == "Darwin"
-            and test_file.name
-            in {
-                "symforce_codegen_test.py",
-                "symforce_examples_robot_3d_localization_codegen_test.py",
-                "symforce_examples_custom_factor_generation_codegen_test.py",
-                "symforce_examples_bundle_adjustment_fixed_size_codegen_test.py",
-                "symforce_gen_codegen_test.py",
-            }
+            and test_file.name.endswith("_codegen_test.py")
             and symbolic_api == "symengine"
         )
         if include_update_flag:
