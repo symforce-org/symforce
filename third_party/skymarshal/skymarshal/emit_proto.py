@@ -239,12 +239,24 @@ class StructField:
                 return f"out.{self.lcm_name} = {in_expression};"
 
             in_expression = field_type.convert_pb_to_lcm(f"in.{self.proto_name}(i)")
+            dim = self.struct.member_map[self.lcm_name].dims[0]
             if self.type_ref.name == "byte":
                 # bytes need special logic to convert between string and vector
                 in_expression = f"in.{self.proto_name}()"
-                return "out.{} = std::vector<uint8_t>({in_expr}.begin(), {in_expr}.end());".format(
-                    self.lcm_name, in_expr=in_expression
-                )
+                if dim and dim.size_int is None:
+                    # Dynamically sized arrays are std::vectors
+                    return "out.{} = std::vector<uint8_t>({in_expr}.begin(), {in_expr}.end());".format(
+                                        self.lcm_name, in_expr=in_expression
+                                        )
+                else:
+                    # Fixed size arrays are std::arrays, which dont have constructor that takes
+                    # iterators
+                    # NOTE(bojanin):
+                    # since were translating from vector<T> to array<T, N> we want to take
+                    # copy K items where K = std::min(N,vector.size())
+                    return "std::copy({in_expr}.begin(), {in_expr}.begin() + std::min({in_expr}.size(),out.{}.size()), out.{}.begin());".format(
+                        self.lcm_name,self.lcm_name, in_expr=in_expression
+                    )
 
             dim = self.struct.member_map[self.lcm_name].dims[0]
             var_max_expression = f"in.{self.proto_name}_size()"
@@ -300,11 +312,20 @@ class StructField:
                     self.proto_name,
                     in_expr=in_expression,
                 )
-            return "out->set_{}(std::string({expr}.begin(), {expr}.begin() + in.{dim}));".format(
-                self.proto_name,
-                expr=in_expression,
-                dim=dim.size_str,
-            )
+            elif dim and dim.size_int is None:
+                # Dynamic sized array
+                return "out->set_{}(std::string({expr}.begin(), {expr}.begin() + in.{dim}));".format(
+                    self.proto_name,
+                    expr=in_expression,
+                    dim=dim.size_str,
+                )
+            else:
+                # Fixed size array
+                return "out->set_{}(std::string({expr}.begin(), {expr}.begin() + {dim}));".format(
+                    self.proto_name,
+                    expr=in_expression,
+                    dim=dim.size_int,
+                )
 
         max_expression = f"in.{dim.size_str}" if dim.size_int is None else dim.size_int
         if dim.auto_member:
