@@ -6,7 +6,6 @@
 #include "./values.h"
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #include "./assert.h"
 

@@ -12,7 +12,7 @@ include(FetchContent)
 # ------------------------------------------------------------------------------
 # fmtlib
 
-find_package(fmt 8...<9 QUIET)
+find_package(fmt 8 QUIET)
 if (NOT fmt_FOUND)
   message(STATUS "fmt not found, adding with FetchContent")
   function(add_fmt)
