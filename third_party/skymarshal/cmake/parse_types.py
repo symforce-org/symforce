@@ -1,5 +1,6 @@
 import argh
 
+
 def main(lcmtypes_dir: str) -> None:
     import skymarshal.package_map
 
