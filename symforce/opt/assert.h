@@ -25,8 +25,9 @@ inline std::string FormatFailure(const char* error, const char* func, const char
 template <typename... T>
 inline std::string FormatFailure(const char* error, const char* func, const char* file, int line,
                                  const char* fmt, T&&... args) {
-  return fmt::format("SYM_ASSERT: {}\n    --> {}\n    --> {}:{}\n{}\n", error, func, file, line,
-                     fmt::format(fmt, std::forward<T>(args)...));
+  return fmt::format("SYM_ASSERT: {}\n    --> {}\n    --> {}:{}\n{}\n",
+                     error, func, file, line,
+                     fmt::format(fmt::runtime(fmt), std::forward<T>(args)...));
 }
 
 }  // namespace sym
