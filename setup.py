@@ -43,7 +43,7 @@ class PatchDevelop(develop):
     of setuptools).
     """
 
-    def run(self) -> None:  # type: ignore[override]
+    def run(self) -> None:  # type: ignore[override, unused-ignore]
         # NOTE(brad): In setuptools 64.0.0, the editable_mode field of the
         # build_ext was added and is set to True during a pep 660 editable
         # install.
@@ -284,7 +284,7 @@ setup_requirements = [
     "setuptools-scm>=8",
     "wheel",
     "pip",
-    "cmake>=3.17,<3.27",
+    "cmake>=3.17",
     "cython>=0.19.1,<3",
     f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
 ]
