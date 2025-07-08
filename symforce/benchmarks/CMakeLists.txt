@@ -16,12 +16,12 @@ find_package(Sophus QUIET)
 if (NOT Sophus_FOUND)
   message(STATUS "Sophus not found, adding with FetchContent")
   function(add_sophus)
-    set(BUILD_TESTS OFF CACHE INTERNAL "Sophus shouldn't build tests by default")
+    set(BUILD_SOPHUS_TESTS OFF CACHE INTERNAL "Sophus shouldn't build tests by default")
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       sophus
-      URL https://github.com/strasdat/Sophus/archive/refs/tags/v1.0.0.zip
-      URL_HASH SHA256=60c8a18f750fdfd75c828253c8f123fac15493ced0baaee8a19df64a4acbf548
+      URL https://github.com/strasdat/Sophus/archive/refs/tags/1.24.6.zip
+      URL_HASH SHA256=149bb58e4f136c25349fde84cc6244d7669a8e8101006fd8543478152cb20f45
     )
     FetchContent_MakeAvailable(sophus)
     find_package(Sophus)
@@ -53,11 +53,14 @@ if (NOT gtsam_FOUND)
     set(GTSAM_SLOW_BUT_CORRECT_BETWEENFACTOR ON CACHE INTERNAL "Use the correct BetweenFactor")
     # NOTE(aaron): This has no effect other than making inverse compose chained slower
     set(GTSAM_USE_QUATERNIONS ON CACHE INTERNAL "Use quaternions for Rot3")
+    set(GTSAM_USE_SYSTEM_EIGEN ON CACHE INTERNAL "Use system Eigen")
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       gtsam
-      URL https://github.com/borglab/gtsam/archive/refs/tags/4.1.1.zip
-      URL_HASH SHA256=f03cd72884647aaa0a24df5ee262ad0824b343554c763d81b2957836f4cab99d
+      # Need https://github.com/borglab/gtsam/pull/1899 to build with CMake 4.0
+      # This isn't in a stable release yet, so we use 4.3a0
+      URL https://github.com/borglab/gtsam/archive/refs/tags/4.3a0.zip
+      URL_HASH SHA256=fccfffe225fb5e7e9e8a8e0a07f15881da54ecfdbcc3a02c5f090d298228f16b
     )
     FetchContent_MakeAvailable(gtsam)
   endfunction()
@@ -86,10 +89,12 @@ if (NOT Ceres_FOUND)
       CERES_THREADING_MODEL "NO_THREADS" CACHE INTERNAL "Don't use threads for benchmarking" FORCE
     )
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
+    # We don't need this, and Ceres/CMake can have issues with CUDA setup
+    set(USE_CUDA OFF)
     FetchContent_Declare(
       ceres
-      URL https://github.com/ceres-solver/ceres-solver/archive/refs/tags/2.0.0.zip
-      URL_HASH SHA256=db12d37b4cebb26353ae5b7746c7985e00877baa8e7b12dc4d3a1512252fff3b
+      URL https://github.com/ceres-solver/ceres-solver/archive/refs/tags/2.2.0.zip
+      URL_HASH SHA256=1fc28e22ce190ce4c1db04d0c2ddfdf8dc836609866d09372ea8533c8b6d490b
     )
     FetchContent_MakeAvailable(ceres)
   endfunction()
@@ -135,15 +140,14 @@ add_executable(
     inverse_compose_jacobian/inverse_compose_jacobian_benchmark.cc
 )
 
-find_package(Sophus REQUIRED)
 target_link_libraries(
     inverse_compose_jacobian_benchmark
     gtsam
     Catch2::Catch2WithMain
+    Sophus::Sophus
     symforce_gen
     symforce_opt
 )
-target_include_directories(inverse_compose_jacobian_benchmark PRIVATE ${Sophus_INCLUDE_DIR})
 
 set_target_properties(inverse_compose_jacobian_benchmark
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/benchmarks

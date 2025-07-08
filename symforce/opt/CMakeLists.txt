@@ -59,6 +59,11 @@ endif()
 
 function(add_metis)
   set(CMAKE_POSITION_INDEPENDENT_CODE True)
+  # CMake 4.0 removed compatibility with CMake 3.5: https://cmake.org/cmake/help/v4.0/release/4.0.html#deprecated-and-removed-features
+  # See the note below on METIS versioning; newest GKlib at https://github.com/KarypisLab/GKlib does
+  # support newer CMake, but we'd need to make sure the memory bugs mentioned below are resolved to
+  # upgrade.  The current copy of GKlib only declares it supports CMake 2.8.
+  set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
   FetchContent_Declare(
     metis
     # METIS does not have releases recently.  Previously were using nearly the initial commit on

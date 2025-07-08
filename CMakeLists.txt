@@ -3,10 +3,9 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
-# NOTE(aaron): This is the minimum version for policy range support, not sure if we need newer;
-# certainly no newer than 3.15 required.  This will use NEW policies up to CMake 3.25; this should
+# NOTE(aaron): This will use NEW policies up to CMake 4.0; this should
 # be the maximum tested CMake version, matching requirements/dev_py38.txt
-cmake_minimum_required(VERSION 3.19...3.25)
+cmake_minimum_required(VERSION 3.19...4.0)
 
 project(symforce)
 
@@ -363,7 +362,8 @@ if(SYMFORCE_BUILD_SYMENGINE)
                -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
                -DCMAKE_POLICY_DEFAULT_CMP0074=NEW
                -DCMAKE_PREFIX_PATH=${EXTERNAL_PREFIX_PATH}
-    UPDATE_COMMAND ${CMAKE_COMMAND} -E echo "No update step"
+               -DWITH_COTIRE=OFF
+               -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   )
 
   # ------------------------------------------------------------------------------
@@ -382,13 +382,14 @@ if(SYMFORCE_BUILD_SYMENGINE)
         --build-type=Release
         --symengine-dir ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}/lib/
         --define CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        --define CMAKE_POLICY_VERSION_MINIMUM=3.5
     INSTALL_COMMAND env ${SYMENGINEPY_INSTALL_ENV} ${SYMFORCE_PYTHON}
         ${PROJECT_SOURCE_DIR}/third_party/symenginepy/setup.py
         --verbose
         install
         --prefix ${SYMFORCE_SYMENGINE_INSTALL_PREFIX}
         --define CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
-    UPDATE_COMMAND ${CMAKE_COMMAND} -E echo "No update step"
+        --define CMAKE_POLICY_VERSION_MINIMUM=3.5
   )
 
   # Rebuild symengine[py] on changed files
@@ -398,6 +399,7 @@ if(SYMFORCE_BUILD_SYMENGINE)
     set(git_check_rulename ${project_name}_check_git_clean)
     add_custom_target(${git_check_rulename}
       COMMAND ${SYMFORCE_PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rerun_if_needed.py
+                  --name ${project_name}
                   --path_to_check ${PROJECT_SOURCE_DIR}/third_party/${project_name}
                   --stamp_file ${git_stampfile}
                   --cmake_stampdir=${cmake_stampdir}

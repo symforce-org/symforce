@@ -114,13 +114,12 @@ auto BuildCeresProblem() {
   // Set up a problem
   ceres::Problem problem;
 
-  ceres::LocalParameterization* quaternion_local_parameterization =
-      new ceres::EigenQuaternionParameterization;
+  ceres::Manifold* quaternion_manifold = new ceres::QuaternionManifold;
 
   // Set up odom residuals
   Eigen::Matrix<double, 6, 1> odometry_info_diagonal;
   odometry_info_diagonal << 1 / 0.05, 1 / 0.05, 1 / 0.05, 1 / 0.2, 1 / 0.2, 1 / 0.2;
-  for (int i = 0; i < odometry_relative_pose_measurements.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(odometry_relative_pose_measurements.size()); ++i) {
     Eigen::Quaterniond a_q_b = odometry_relative_pose_measurements[i].Rotation().Quaternion();
     Eigen::Vector3d a_t_b = odometry_relative_pose_measurements[i].Position();
 
@@ -130,15 +129,16 @@ auto BuildCeresProblem() {
                              positions[i].data(), rotations[i + 1].coeffs().data(),
                              positions[i + 1].data());
 
-    problem.SetParameterization(rotations[i].coeffs().data(), quaternion_local_parameterization);
-    problem.SetParameterization(rotations[i + 1].coeffs().data(),
-                                quaternion_local_parameterization);
+    problem.SetManifold(rotations[i].coeffs().data(), quaternion_manifold);
+    problem.SetManifold(rotations[i + 1].coeffs().data(), quaternion_manifold);
   }
 
   // Set up landmark residuals
   double landmark_sigma = 0.1;
-  for (int pose_idx = 0; pose_idx < body_t_landmark_measurements.size(); ++pose_idx) {
-    for (int lm_idx = 0; lm_idx < body_t_landmark_measurements[pose_idx].size(); ++lm_idx) {
+  for (int pose_idx = 0; pose_idx < static_cast<int>(body_t_landmark_measurements.size());
+       ++pose_idx) {
+    for (int lm_idx = 0; lm_idx < static_cast<int>(body_t_landmark_measurements[pose_idx].size());
+         ++lm_idx) {
       Eigen::Vector3d world_t_landmark = landmark_positions[lm_idx];
 
       ceres::CostFunction* cost_function = ScanMatchingError::Create(

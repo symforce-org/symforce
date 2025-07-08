@@ -35,10 +35,13 @@ gtsam::ExpressionFactorGraph BuildGtsamFactors() {
   auto matching_sigma = gtsam::noiseModel::Isotropic::Sigma(3, 0.1);
   for (int pose_idx = 0; pose_idx < kNumPoses; ++pose_idx) {
     for (int landmark_idx = 0; landmark_idx < kNumLandmarks; ++landmark_idx) {
-      graph.addExpressionFactor(
-          gtsam::Expression<gtsam::Point3>(&gtsam::Pose3::transformTo, world_T_body_vec[pose_idx],
-                                           world_t_landmark_vec[landmark_idx]),
-          body_t_landmark_measurements[pose_idx][landmark_idx], matching_sigma);
+      using TransformToType = gtsam::Point3 (gtsam::Pose3::*)(
+          const gtsam::Point3&, gtsam::OptionalJacobian<3, 6>, gtsam::OptionalJacobian<3, 3>) const;
+      graph.addExpressionFactor(gtsam::Expression<gtsam::Point3>(
+                                    static_cast<TransformToType>(&gtsam::Pose3::transformTo),
+                                    world_T_body_vec[pose_idx], world_t_landmark_vec[landmark_idx]),
+                                body_t_landmark_measurements[pose_idx][landmark_idx],
+                                matching_sigma);
     }
   }
 

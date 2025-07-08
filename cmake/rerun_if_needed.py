@@ -173,6 +173,7 @@ def main() -> None:
         description="Check whether the given path has changed "
         "(according to git), and (re)run the command if necessary"
     )
+    parser.add_argument("-n", "--name", help="Project name", required=True)
     parser.add_argument(
         "-p",
         "--path_to_check",
@@ -190,7 +191,11 @@ def main() -> None:
     if need_to_run:
         for path in Path(args.cmake_stampdir).iterdir():
             # This file is not recreated by cmake on rebuilds and is not a stamp
-            if path.name.endswith("-source_dirinfo.txt"):
+            if path.name in {
+                f"{args.name}-source_dirinfo.txt",
+                f"{args.name}-patch-info.txt",
+                f"{args.name}-update-info.txt",
+            }:
                 continue
 
             # Newer versions of cmake create empty directories in here at configure time, but

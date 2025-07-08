@@ -154,7 +154,7 @@ TEST_CASE("gtsam_linearize") {
   // Initial values.
   Values initial;
   for (int i = 0; i < kNumPoses; ++i) {
-    initial.insert(i, Pose3::identity());
+    initial.insert(i, Pose3::Identity());
   }
 
   // Build optimizer
@@ -184,7 +184,7 @@ TEST_CASE("gtsam_iterate") {
   // Initial values.
   Values initial;
   for (int i = 0; i < kNumPoses; ++i) {
-    initial.insert(i, Pose3::identity());
+    initial.insert(i, Pose3::Identity());
   }
 
   // Build optimizer
