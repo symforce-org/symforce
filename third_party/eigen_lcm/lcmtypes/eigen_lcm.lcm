@@ -98,6 +98,7 @@ struct Vector4i {
   int32_t data[4] = 1;
 };
 
+#protobuf { typename="VectorXiPb", filename="VectorXi" }
 #cpp_no_display
 struct VectorXi {
   int32_t rows;
@@ -152,6 +153,7 @@ struct Vector4d {
   double data[4] = 3;
 };
 
+#protobuf { typename="VectorXdPb", filename="VectorXd" }
 #cpp_no_display
 struct VectorXd {
   int32_t rows;
@@ -206,6 +208,7 @@ struct Vector4f {
   float data[4] = 2;
 };
 
+#protobuf { typename="VectorXfPb", filename="VectorXf" }
 #cpp_no_display
 struct VectorXf {
   int32_t rows;
