@@ -556,15 +556,15 @@ class GeoPackageTest(unittest.TestCase):
         # Test around random vector (because we can't test around identity)
         perturbation = np.random.rand(tangent_dim)
         a = geo_class.random()
-        b = a.retract(perturbation)
-        recovered_perturbation = a.local_coordinates(b)
+        b = a.retract(perturbation, epsilon=sym.epsilon)
+        recovered_perturbation = a.local_coordinates(b, epsilon=sym.epsilon)
         np.testing.assert_almost_equal(perturbation, recovered_perturbation)
 
-        reverse_perturbation = b.local_coordinates(a)
-        recovered_a = b.retract(reverse_perturbation)
+        reverse_perturbation = b.local_coordinates(a, epsilon=sym.epsilon)
+        recovered_a = b.retract(reverse_perturbation, epsilon=sym.epsilon)
         np.testing.assert_almost_equal(recovered_a.to_storage(), a.to_storage())
 
-        perturbation_zero = a.local_coordinates(recovered_a)
+        perturbation_zero = a.local_coordinates(recovered_a, epsilon=sym.epsilon)
         np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
 
         np.testing.assert_almost_equal(a.interpolate(b, 0.0).to_storage(), a.to_storage())
