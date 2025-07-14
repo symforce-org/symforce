@@ -8,7 +8,6 @@
 #include <algorithm>
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
 namespace sym {
