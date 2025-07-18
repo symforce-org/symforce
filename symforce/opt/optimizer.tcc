@@ -174,9 +174,9 @@ size_t ComputeBlockDimension(const LinearizerType& linearizer, const std::vector
 }  // namespace internal
 
 template <typename ScalarType, typename NonlinearSolverType>
-void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
+Eigen::ComputationInfo Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
     const Linearization<MatrixType>& linearization, const std::vector<Key>& keys,
-    std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key) {
+    std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key, const bool c_is_block_diagonal) {
   const bool same_order = internal::CheckKeyOrderMatchesLinearizerKeysStart(linearizer_, keys);
   SYM_ASSERT(same_order);
   const size_t block_dim = internal::ComputeBlockDimension(linearizer_, keys);
@@ -184,11 +184,18 @@ void Optimizer<ScalarType, NonlinearSolverType>::ComputeCovariances(
   // Copy into modifiable storage
   compute_covariances_storage_.H_damped = linearization.hessian_lower;
 
-  internal::ComputeCovarianceBlockWithSchurComplement(compute_covariances_storage_.H_damped,
-                                                      block_dim, epsilon_,
-                                                      compute_covariances_storage_.covariance);
+  const auto info = internal::ComputeCovarianceBlockWithSchurComplement(
+      compute_covariances_storage_.H_damped, block_dim, epsilon_,
+      compute_covariances_storage_.covariance, c_is_block_diagonal);
+
+  if (info != Eigen::Success) {
+    return info;
+  }
+
   internal::SplitCovariancesByKey(linearizer_, compute_covariances_storage_.covariance, keys,
                                   covariances_by_key);
+
+  return Eigen::Success;
 }
 
 template <typename ScalarType, typename NonlinearSolverType>

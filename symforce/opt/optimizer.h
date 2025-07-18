@@ -191,23 +191,33 @@ class Optimizer {
   /**
    * Get covariances for the given subset of keys at the given linearization
    *
-   * This version is potentially much more efficient than computing the covariances for all keys in
-   * the problem.
+   * This version is potentially much more efficient in both time and memory than computing the
+   * covariances for all keys in the problem, by using the Schur complement trick.
    *
    * Currently requires that `keys` corresponds to a set of keys at the start of the list of keys
-   * for the full problem, and in the same order.  It uses the Schur complement trick, so will be
-   * most efficient if the hessian is of the following form, with C block diagonal:
+   * for the full problem, and in the same order.
+   *
+   * Given a matrix of structure:
    *
    *     A = ( B    E )
    *         ( E^T  C )
+   *
+   * where B corresponds to the variables in @param keys;
+   *
+   * If @param c_is_block_diagonal is true, the C matrix must be block diagonal, and a more
+   * efficient solver for that structure is used.
+   *
+   * If @param c_is_block_diagonal is false, C can have any structure, but the computation is more
+   * efficient if C is easy to factorize.
    *
    * Will reuse entries in `covariances_by_key`, allocating new entries so that the result contains
    * exactly the set of keys requested.  `covariances_by_key` must not contain any keys that are not
    * in `keys`.
    */
-  void ComputeCovariances(const Linearization<MatrixType>& linearization,
-                          const std::vector<Key>& keys,
-                          std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key);
+  Eigen::ComputationInfo ComputeCovariances(
+      const Linearization<MatrixType>& linearization, const std::vector<Key>& keys,
+      std::unordered_map<Key, MatrixX<Scalar>>& covariances_by_key,
+      bool c_is_block_diagonal = true);
 
   /**
    * Get the full problem covariance at the given linearization
