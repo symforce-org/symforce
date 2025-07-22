@@ -352,7 +352,7 @@ BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper, MatrixLocalCoordi
 
 template <typename Scalar>
 VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, const index_t& index,
-                                                 const Scalar epsilon) {
+                                                 const Scalar epsilon) const {
   SYM_ASSERT_GE(index.tangent_dim, 0,
                 "index has tangent_dim {} < 0, indicating it contains a key which does not "
                 "implement LieGroupOps",

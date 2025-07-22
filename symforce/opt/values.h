@@ -284,7 +284,7 @@ class Values {
    * @param epsilon: Small constant to avoid singularities (do not use zero)
    */
   VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, const index_t& index,
-                                   Scalar epsilon);
+                                   Scalar epsilon) const;
 
   /**
    * Serialize to LCM.
