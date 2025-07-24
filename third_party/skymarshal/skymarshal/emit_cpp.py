@@ -219,6 +219,9 @@ class CppStruct(StructBuilder, CppBase):
         includes = set()
         for member in self.members:
             if isinstance(member, ArrayMember):
+                last_dim = member.dims[-1]
+                if last_dim.auto_member:
+                    includes.add(CppInclude(std="limits"))
                 if member.is_constant_size():
                     includes.add(CppInclude(std="array"))
                 elif member.type_ref.name == "boolean":
@@ -391,6 +394,14 @@ class CppStruct(StructBuilder, CppBase):
             last_dim = member.dims[-1]
 
             if last_dim.auto_member:
+                # If the inner-most dimension of the array is dynamic size and based on a primitive
+                # type, check that the size of the array to encode can be represented by this type's
+                # max value. If not, return -1 to indicate error.
+                code(1,
+                     "if(%s > static_cast<std::size_t>(std::numeric_limits<%s>::max())) return -1;",
+                     dim_size_access(last_dim, member),
+                     map_to_cpptype(last_dim.auto_member.type_ref)
+                )
                 code(
                     1,
                     "%s %s = %s;",
