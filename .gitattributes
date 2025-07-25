@@ -1,12 +1,13 @@
 *.ipynb filter=nbstripout
 *.ipynb diff=ipynb
 
-# Do not use git-fat for images in SymForce, to be copybara
+# Do not use git-fat for files in SymForce, to be copybara
 # compatible and to show them from the README on Github.
 *.ico filter=
 *.png filter=
 *.jpg filter=
 *.gif filter=
+*.bin filter=
 
 # mark some files as generated for purposes of Github review
 gen/** linguist-generated=true
