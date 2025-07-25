@@ -21,7 +21,9 @@ DenseLinearizer<Scalar>::DenseLinearizer(const std::string& name,
       state_index_{},
       is_initialized_{false},
       include_jacobians_{include_jacobians},
-      debug_checks_{debug_checks} {
+      debug_checks_{debug_checks},
+      total_state_dimension_{0},
+      total_residual_dimension_{0} {
   if (key_order.empty()) {
     keys_ = ComputeKeysToOptimize(factors);
   } else {
@@ -243,12 +245,23 @@ void DenseLinearizer<Scalar>::InitialLinearization(const Values<Scalar>& values,
   }
 
   linearization.SetInitialized();
+  is_initialized_ = true;
+  total_state_dimension_ = N;
+  total_residual_dimension_ = combined_residual.size();
 }
 
 template <typename ScalarType>
 void DenseLinearizer<ScalarType>::Relinearize(const Values<ScalarType>& values,
                                               DenseLinearization<ScalarType>& linearization) {
   if (is_initialized_) {
+    // Resize as necessary. resize() is a no-op if the size is already correct.
+    linearization.residual.resize(total_residual_dimension_);
+    linearization.hessian_lower.resize(total_state_dimension_, total_state_dimension_);
+    linearization.rhs.resize(total_state_dimension_);
+    if (include_jacobians_) {
+      linearization.jacobian.resize(total_residual_dimension_, total_state_dimension_);
+    }
+
     // Set rhs & hessian_lower to 0 as they will be built additively
     linearization.rhs.setZero();
     linearization.hessian_lower.template triangularView<Eigen::Lower>().setZero();

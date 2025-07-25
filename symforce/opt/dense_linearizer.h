@@ -84,6 +84,9 @@ class DenseLinearizer {
   bool is_initialized_;
   bool include_jacobians_;
   bool debug_checks_;
+  // Cache the state size to avoid recomputing.
+  int total_state_dimension_;
+  int total_residual_dimension_;
 
   // The index for each factor in the values. Cached the first time we linearize, to avoid repeated
   // unordered_map lookups

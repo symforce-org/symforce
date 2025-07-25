@@ -59,6 +59,9 @@ TEST_CASE("Correct hessian when factor key order doesn't match problem order",
 
   CHECK(expected_J == linearization.jacobian);
   CHECK(expected_H == M3(linearization.hessian_lower.template selfadjointView<Eigen::Lower>()));
+
+  // We linearized, so it should be initialized.
+  CHECK(linearizer.IsInitialized());
 }
 
 TEST_CASE("Residual, jacobian, hessian, and rhs are all consistent", "[dense-linearizer]") {
@@ -127,6 +130,8 @@ TEST_CASE("Residual, jacobian, hessian, and rhs are all consistent", "[dense-lin
             .cwiseAbs()
             .maxCoeff() < 1e-15);
   CHECK((rhs - linearization.rhs).cwiseAbs().maxCoeff() < 1e-15);
+
+  CHECK(linearizer.IsInitialized());
 }
 
 TEST_CASE("Jacobian is not allocated if include_jacobians is false", "[dense-linearizer]") {
@@ -156,4 +161,5 @@ TEST_CASE("Jacobian is not allocated if include_jacobians is false", "[dense-lin
   linearizer.Relinearize(values, linearization);
 
   CHECK(linearization.jacobian.size() == 0);
+  CHECK(linearizer.IsInitialized());
 }
