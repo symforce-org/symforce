@@ -73,10 +73,10 @@ class CudaConfig(CodegenConfig):
 
     def templates_to_render(self, generated_file_name: str) -> T.List[T.Tuple[str, str]]:
         if self.inline:
-            return [("function/FUNCTION.h.jinja", f"{generated_file_name}.h")]
+            return [("function/FUNCTION.cuh.jinja", f"{generated_file_name}.cuh")]
         else:
             return [
-                ("function/FUNCTION.h.jinja", f"{generated_file_name}.h"),
+                ("function/FUNCTION.cuh.jinja", f"{generated_file_name}.cuh"),
                 ("function/FUNCTION.cu.jinja", f"{generated_file_name}.cu"),
             ]
 
