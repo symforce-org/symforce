@@ -354,9 +354,15 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
     sym::Values<Scalar> v2;
     v2.Set('x', random_element);
 
-    const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
+    // Check the LocalCoordinates implementation with and without a provided index. The only
+    // difference is that the index saves some map lookups.
+    const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, epsilon);
     CAPTURE(local_coords);
     CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, tolerance));
+
+    const sym::VectorX<Scalar> local_coords_with_index = v1.LocalCoordinates(v2, index, epsilon);
+    CAPTURE(local_coords_with_index);
+    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords_with_index, tangent_vec, tolerance));
 
     v1.Retract(index, tangent_vec.data(), epsilon);
     const T retracted_element = v1.template At<T>('x');

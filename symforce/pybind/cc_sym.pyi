@@ -595,6 +595,17 @@ class Values:
         Args:
             sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
         """
+    @typing.overload
+    def local_coordinates(self, others: Values, epsilon: float) -> numpy.ndarray:
+        """
+            Compute the tangent space delta needed to transform this into others. Uses the map of
+            each Values object to compute the required indices.
+
+        Args:
+            others: The other Values that the local coordinate is relative to
+            epsilon: Small constant to avoid singularities (do not use zero)
+        """
+    @typing.overload
     def local_coordinates(
         self, others: Values, index: lcmtypes.sym._index_t.index_t, epsilon: float
     ) -> numpy.ndarray:

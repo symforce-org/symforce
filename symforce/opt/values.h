@@ -277,6 +277,15 @@ class Values {
   void Retract(const index_t& index, const Scalar* delta, Scalar epsilon);
 
   /**
+   * Compute the tangent space delta needed to transform this into others. Uses the map of each
+   * Values object to compute the required indices.
+   *
+   * @param others: The other Values that the local coordinate is relative to
+   * @param epsilon: Small constant to avoid singularities (do not use zero)
+   */
+  VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, Scalar epsilon) const;
+
+  /**
    * Compute the tangent space delta needed to transform this into others.
    *
    * @param others: The other Values that the local coordinate is relative to

@@ -274,8 +274,21 @@ void AddValuesWrapper(pybind11::module_ module) {
                   delta: Update vector - MUST be the size of index.tangent_dim!
                   epsilon: Small constant to avoid singularities (do not use zero)
           )")
-      .def("local_coordinates", &sym::Valuesd::LocalCoordinates, py::arg("others"),
-           py::arg("index"), py::arg("epsilon"), R"(
+      .def("local_coordinates",
+           py::overload_cast<const sym::Valuesd&, double>(&sym::Valuesd::LocalCoordinates,
+                                                          py::const_),
+           py::arg("others"), py::arg("epsilon"), R"(
+              Compute the tangent space delta needed to transform this into others. Uses the map of
+              each Values object to compute the required indices.
+
+          Args:
+              others: The other Values that the local coordinate is relative to
+              epsilon: Small constant to avoid singularities (do not use zero)
+           )")
+      .def("local_coordinates",
+           py::overload_cast<const sym::Valuesd&, const sym::index_t&, double>(
+               &sym::Valuesd::LocalCoordinates, py::const_),
+           py::arg("others"), py::arg("index"), py::arg("epsilon"), R"(
           Compute the tangent space delta needed to transform this into others.
 
           Args:
