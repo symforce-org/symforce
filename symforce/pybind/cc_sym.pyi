@@ -599,7 +599,7 @@ class Values:
         self, others: Values, index: lcmtypes.sym._index_t.index_t, epsilon: float
     ) -> numpy.ndarray:
         """
-        Express this Values in the local coordinate of others Values, i.e., this \\ominus others
+        Compute the tangent space delta needed to transform this into others.
 
         Args:
             others: The other Values that the local coordinate is relative to

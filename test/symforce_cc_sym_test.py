@@ -361,7 +361,7 @@ class SymforceCCSymTest(TestCase):
             values_2 = cc_sym.Values()
             values_2.set(a, 10)
             self.assertEqual(
-                values_2.local_coordinates(values_1, values_1.create_index([a]), 0), 10
+                values_1.local_coordinates(values_2, values_1.create_index([a]), 0), 10
             )
 
         with self.subTest(msg="Test that Values.get_lcm_type returns a values_t"):

@@ -344,7 +344,6 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
   // Test a bunch of retractions and local coordinates
   for (int i = 0; i < 100; ++i) {
     v1.Set('x', element);
-    const sym::Values<Scalar> v2 = v1;
 
     const T random_element = sym::StorageOps<T>::Random(gen);
     CAPTURE(random_element);
@@ -352,15 +351,17 @@ TEMPLATE_PRODUCT_TEST_CASE("Test lie group ops", "[values]",
         sym::LieGroupOps<T>::LocalCoordinates(element, random_element, epsilon);
     CAPTURE(tangent_vec.transpose());
 
-    // test retraction
+    sym::Values<Scalar> v2;
+    v2.Set('x', random_element);
+
+    const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
+    CAPTURE(local_coords);
+    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, tolerance));
+
     v1.Retract(index, tangent_vec.data(), epsilon);
     const T retracted_element = v1.template At<T>('x');
     CAPTURE(retracted_element);
     CHECK(sym::IsClose(random_element, retracted_element, tolerance));
-
-    // test local coordinates
-    const sym::VectorX<Scalar> local_coords = v1.LocalCoordinates(v2, index, epsilon);
-    CHECK(sym::IsClose<sym::VectorX<Scalar>>(local_coords, tangent_vec, tolerance));
   }
 }
 

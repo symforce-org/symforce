@@ -277,7 +277,7 @@ class Values {
   void Retract(const index_t& index, const Scalar* delta, Scalar epsilon);
 
   /**
-   * Express this Values in the local coordinate of others Values, i.e., this \ominus others
+   * Compute the tangent space delta needed to transform this into others.
    *
    * @param others: The other Values that the local coordinate is relative to
    * @param index: Ordered list of keys to include (MUST be valid for both this and others Values)

@@ -276,7 +276,7 @@ void AddValuesWrapper(pybind11::module_ module) {
           )")
       .def("local_coordinates", &sym::Valuesd::LocalCoordinates, py::arg("others"),
            py::arg("index"), py::arg("epsilon"), R"(
-          Express this Values in the local coordinate of others Values, i.e., this \ominus others
+          Compute the tangent space delta needed to transform this into others.
 
           Args:
               others: The other Values that the local coordinate is relative to

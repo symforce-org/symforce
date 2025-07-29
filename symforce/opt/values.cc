@@ -334,17 +334,16 @@ void LocalCoordinatesHelper(const Scalar* const storage_this, const Scalar* cons
                             const int32_t /* tangent_dim */) {
   const T t1 = sym::StorageOps<T>::FromStorage(storage_this);
   const T t2 = sym::StorageOps<T>::FromStorage(storage_others);
-  const typename sym::LieGroupOps<T>::TangentVec tangent_vec =
-      sym::LieGroupOps<T>::LocalCoordinates(t2, t1, epsilon);
-  // TODO(alvin): can we avoid this copy?
-  std::copy_n(tangent_vec.data(), sym::LieGroupOps<T>::TangentDim(), tangent_out);
+  Eigen::Map<typename sym::LieGroupOps<T>::TangentVec> tangent_map(tangent_out);
+  tangent_map = sym::LieGroupOps<T>::LocalCoordinates(t1, t2, epsilon);
 }
+
 template <typename Scalar>
 void MatrixLocalCoordinatesHelper(const Scalar* const storage_this,
                                   const Scalar* const storage_others, Scalar* const tangent_out,
                                   const Scalar /* epsilon */, const int32_t tangent_dim) {
   for (int32_t i = 0; i < tangent_dim; ++i) {
-    tangent_out[i] = storage_this[i] - storage_others[i];
+    tangent_out[i] = storage_others[i] - storage_this[i];
   }
 }
 
