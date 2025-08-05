@@ -64,7 +64,7 @@ namespace sym {
  *     params.early_exit_min_reduction = 0.0001;
  *
  *     // Optimize
- *     sym::Optimizer<double> optimizer(params, factors, epsilon);
+ *     sym::Optimizer<double> optimizer(params, factors);
  *     optimizer.Optimize(values);
  *
  * See symforce/test/symforce_optimizer_test.cc for more examples
