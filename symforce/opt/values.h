@@ -277,13 +277,20 @@ class Values {
   void Retract(const index_t& index, const Scalar* delta, Scalar epsilon);
 
   /**
-   * Compute the tangent space delta needed to transform this into others. Uses the map of each
-   * Values object to compute the required indices.
+   * Compute the tangent space delta needed to transform this into others. Returns the tangent
+   * space delta needed to transform this into others, using the variable ordering from the provided
+   * keys. Uses the map of this and others values to look up the index of each key.
    *
    * @param others: The other Values that the local coordinate is relative to
+   * @param keys: A forward iterable container of Key in the order they should be in the resulting
+   *    tangent space delta
+   * @param tangent_dimension: Optional argument specifying the total tangent dimension of the
+   *    resulting vector. If not provided, the tangent dimension will be computed using the map.
    * @param epsilon: Small constant to avoid singularities (do not use zero)
    */
-  VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, Scalar epsilon) const;
+  template <typename R, typename = decltype(std::begin(std::declval<R const&>()))>
+  VectorX<Scalar> LocalCoordinates(const Values<Scalar>& others, const R& keys, Scalar epsilon,
+                                   std::optional<size_t> tangent_dimension = std::nullopt) const;
 
   /**
    * Compute the tangent space delta needed to transform this into others.

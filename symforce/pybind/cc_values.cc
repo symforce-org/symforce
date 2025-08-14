@@ -274,28 +274,35 @@ void AddValuesWrapper(pybind11::module_ module) {
                   delta: Update vector - MUST be the size of index.tangent_dim!
                   epsilon: Small constant to avoid singularities (do not use zero)
           )")
-      .def("local_coordinates",
-           py::overload_cast<const sym::Valuesd&, double>(&sym::Valuesd::LocalCoordinates,
-                                                          py::const_),
-           py::arg("others"), py::arg("epsilon"), R"(
-              Compute the tangent space delta needed to transform this into others. Uses the map of
-              each Values object to compute the required indices.
-
-          Args:
-              others: The other Values that the local coordinate is relative to
-              epsilon: Small constant to avoid singularities (do not use zero)
-           )")
-      .def("local_coordinates",
-           py::overload_cast<const sym::Valuesd&, const sym::index_t&, double>(
-               &sym::Valuesd::LocalCoordinates, py::const_),
-           py::arg("others"), py::arg("index"), py::arg("epsilon"), R"(
-          Compute the tangent space delta needed to transform this into others.
-
-          Args:
-              others: The other Values that the local coordinate is relative to
-              index: Ordered list of keys to include (MUST be valid for both this and others Values)
-              epsilon: Small constant to avoid singularities (do not use zero)
-           )")
+      .def(
+          "local_coordinates",
+          [](const sym::Valuesd& self, const sym::Valuesd& others,
+             const std::vector<sym::Key>& keys, double epsilon,
+             std::optional<size_t> tangent_dimension) {
+            return self.template LocalCoordinates<std::vector<sym::Key>>(others, keys, epsilon,
+                                                                         tangent_dimension);
+          },
+          py::arg("others"), py::arg("keys"), py::arg("epsilon"),
+          py::arg("tangent_dimension") = py::none(),  // maps to std::nullopt
+          R"(
+      Compute the tangent space delta needed to transform this into others.
+      Args:
+        others: The other Values that the local coordinate is relative to
+        keys: Keys (in order) for the resulting tangent space delta
+        epsilon: Small constant to avoid singularities (do not use zero)
+        tangent_dimension: Total tangent dimension; None to infer
+        )")
+      .def(
+          "local_coordinates",
+          [](const sym::Valuesd& self, const sym::Valuesd& others, const sym::index_t& index,
+             double epsilon) { return self.LocalCoordinates(others, index, epsilon); },
+          R"(
+      Compute the tangent space delta needed to transform this into others.
+      Args:
+        others: The other Values that the local coordinate is relative to
+        index: Ordered list of keys to include (valid for both Values)
+        epsilon: Small constant to avoid singularities (do not use zero)
+        )")
       .def("get_lcm_type", &sym::Valuesd::GetLcmType, py::arg("sort_keys") = false,
            "Serialize to LCM.")
       .def("__repr__", [](const sym::Valuesd& values) { return fmt::format("{}", values); })

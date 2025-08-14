@@ -596,26 +596,27 @@ class Values:
             sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
         """
     @typing.overload
-    def local_coordinates(self, others: Values, epsilon: float) -> numpy.ndarray:
-        """
-            Compute the tangent space delta needed to transform this into others. Uses the map of
-            each Values object to compute the required indices.
-
-        Args:
-            others: The other Values that the local coordinate is relative to
-            epsilon: Small constant to avoid singularities (do not use zero)
-        """
-    @typing.overload
     def local_coordinates(
-        self, others: Values, index: lcmtypes.sym._index_t.index_t, epsilon: float
+        self, others: Values, keys: list[Key], epsilon: float, tangent_dimension: int | None = None
     ) -> numpy.ndarray:
         """
         Compute the tangent space delta needed to transform this into others.
-
         Args:
-            others: The other Values that the local coordinate is relative to
-            index: Ordered list of keys to include (MUST be valid for both this and others Values)
-            epsilon: Small constant to avoid singularities (do not use zero)
+          others: The other Values that the local coordinate is relative to
+          keys: Keys (in order) for the resulting tangent space delta
+          epsilon: Small constant to avoid singularities (do not use zero)
+          tangent_dimension: Total tangent dimension; None to infer
+        """
+    @typing.overload
+    def local_coordinates(
+        self, arg0: Values, arg1: lcmtypes.sym._index_t.index_t, arg2: float
+    ) -> numpy.ndarray:
+        """
+        Compute the tangent space delta needed to transform this into others.
+        Args:
+          others: The other Values that the local coordinate is relative to
+          index: Ordered list of keys to include (valid for both Values)
+          epsilon: Small constant to avoid singularities (do not use zero)
         """
     def num_entries(self) -> int:
         """

@@ -171,4 +171,61 @@ void Values<Scalar>::SetInternal(const index_entry_t& entry, const T& value) {
   StorageOps<T>::ToStorage(value, data_.data() + entry.offset);
 }
 
+/**
+ * Polymorphic helper to compute local coordinates
+ */
+template <typename T, typename Scalar = typename sym::StorageOps<T>::Scalar>
+void LocalCoordinatesHelper(const Scalar* const storage_this, const Scalar* const storage_others,
+                            Scalar* const tangent_out, const Scalar epsilon,
+                            const int32_t /* tangent_dim */) {
+  const T t1 = sym::StorageOps<T>::FromStorage(storage_this);
+  const T t2 = sym::StorageOps<T>::FromStorage(storage_others);
+  Eigen::Map<typename sym::LieGroupOps<T>::TangentVec> tangent_map(tangent_out);
+  tangent_map = sym::LieGroupOps<T>::LocalCoordinates(t1, t2, epsilon);
+}
+
+template <typename Scalar>
+void MatrixLocalCoordinatesHelper(const Scalar* const storage_this,
+                                  const Scalar* const storage_others, Scalar* const tangent_out,
+                                  const Scalar /* epsilon */, const int32_t tangent_dim) {
+  for (int32_t i = 0; i < tangent_dim; ++i) {
+    tangent_out[i] = storage_others[i] - storage_this[i];
+  }
+}
+
+BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper, MatrixLocalCoordinatesHelper);
+
+template <typename Scalar>
+template <typename R, typename>
+VectorX<Scalar> Values<Scalar>::LocalCoordinates(
+    const Values<Scalar>& others, const R& keys, const Scalar epsilon,
+    const std::optional<size_t> tangent_dimension) const {
+  // If not provided, we must compute the total tangent dimension.
+  const size_t tangent_dimension_final = [&]() {
+    if (tangent_dimension) {
+      return *tangent_dimension;
+    }
+    size_t tangent_dim = 0;
+    for (const sym::Key& key : keys) {
+      tangent_dim += map_.at(key).tangent_dim;
+    }
+    return tangent_dim;
+  }();
+
+  VectorX<Scalar> tangent_vec(tangent_dimension_final);
+  size_t tangent_inx = 0;
+
+  for (const sym::Key& key : keys) {
+    const index_entry_t index_entry = map_.at(key);
+    const index_entry_t other_index_entry = others.IndexEntryAt(key);
+    LocalCoordinatesByType<Scalar>(index_entry.type, data_.data() + index_entry.offset,
+                                   others.data_.data() + other_index_entry.offset,
+                                   tangent_vec.data() + tangent_inx, epsilon,
+                                   index_entry.tangent_dim);
+    tangent_inx += index_entry.tangent_dim;
+  }
+
+  return tangent_vec;
+}
+
 }  // namespace sym

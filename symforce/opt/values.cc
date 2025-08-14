@@ -325,54 +325,6 @@ void Values<Scalar>::Retract(const index_t& index, const Scalar* delta, const Sc
   }
 }
 
-/**
- * Polymorphic helper to compute local coordinates
- */
-template <typename T, typename Scalar = typename sym::StorageOps<T>::Scalar>
-void LocalCoordinatesHelper(const Scalar* const storage_this, const Scalar* const storage_others,
-                            Scalar* const tangent_out, const Scalar epsilon,
-                            const int32_t /* tangent_dim */) {
-  const T t1 = sym::StorageOps<T>::FromStorage(storage_this);
-  const T t2 = sym::StorageOps<T>::FromStorage(storage_others);
-  Eigen::Map<typename sym::LieGroupOps<T>::TangentVec> tangent_map(tangent_out);
-  tangent_map = sym::LieGroupOps<T>::LocalCoordinates(t1, t2, epsilon);
-}
-
-template <typename Scalar>
-void MatrixLocalCoordinatesHelper(const Scalar* const storage_this,
-                                  const Scalar* const storage_others, Scalar* const tangent_out,
-                                  const Scalar /* epsilon */, const int32_t tangent_dim) {
-  for (int32_t i = 0; i < tangent_dim; ++i) {
-    tangent_out[i] = storage_others[i] - storage_this[i];
-  }
-}
-
-BY_TYPE_HELPER(LocalCoordinatesByType, LocalCoordinatesHelper, MatrixLocalCoordinatesHelper);
-
-template <typename Scalar>
-VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others,
-                                                 const Scalar epsilon) const {
-  // First, we must compute the total tangent dimension.
-  int32_t tangent_dim = 0;
-  for (const auto& [key, index_entry] : map_) {
-    tangent_dim += index_entry.tangent_dim;
-  }
-
-  VectorX<Scalar> tangent_vec(tangent_dim);
-  size_t tangent_inx = 0;
-
-  for (const auto& [key, index_entry] : map_) {
-    const index_entry_t other_index_entry = others.IndexEntryAt(key);
-    LocalCoordinatesByType<Scalar>(index_entry.type, data_.data() + index_entry.offset,
-                                   others.data_.data() + other_index_entry.offset,
-                                   tangent_vec.data() + tangent_inx, epsilon,
-                                   index_entry.tangent_dim);
-    tangent_inx += index_entry.tangent_dim;
-  }
-
-  return tangent_vec;
-}
-
 template <typename Scalar>
 VectorX<Scalar> Values<Scalar>::LocalCoordinates(const Values<Scalar>& others, const index_t& index,
                                                  const Scalar epsilon) const {
