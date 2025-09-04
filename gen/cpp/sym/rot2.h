@@ -87,6 +87,13 @@ class Rot2 {
   const Vector2 ComposeWithPoint(const Vector2& right) const;
 
   /**
+   * Get the angle of this Rot2 in radians
+   *
+   * This is equivalent to ``to_tangent()[0]``
+   */
+  const Scalar ToAngle(const Scalar epsilon) const;
+
+  /**
    * Create a Rot2 from an angle ``theta`` in radians
    *
    * This is equivalent to ``from_tangent([theta])``

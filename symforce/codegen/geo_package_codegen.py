@@ -201,6 +201,7 @@ def _custom_generated_methods(config: CodegenConfig) -> T.Dict[T.Type, T.List[Co
     return {
         sf.Rot2: [
             codegen_mul(sf.Rot2, sf.Vector2),
+            Codegen.function(func=sf.Rot2.to_angle, config=config),
             Codegen.function(func=sf.Rot2.from_angle, config=config),
             Codegen.function(func=sf.Rot2.to_rotation_matrix, config=config),
             Codegen.function(func=sf.Rot2.from_rotation_matrix, config=config),

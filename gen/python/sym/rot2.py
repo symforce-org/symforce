@@ -91,6 +91,25 @@ class Rot2(object):
         _res[1] = _self[0] * right[1, 0] + _self[1] * right[0, 0]
         return _res
 
+    def to_angle(self, epsilon):
+        # type: (Rot2, float) -> float
+        """
+        Get the angle of this Rot2 in radians
+
+        This is equivalent to ``to_tangent()[0]``
+        """
+
+        # Total ops: 3
+
+        # Input arrays
+        _self = self.data
+
+        # Intermediate terms (0)
+
+        # Output terms
+        _res = math.atan2(_self[1], _self[0] + math.copysign(epsilon, _self[0]))
+        return _res
+
     @staticmethod
     def from_angle(theta):
         # type: (float) -> Rot2

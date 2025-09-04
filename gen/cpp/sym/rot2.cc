@@ -46,6 +46,23 @@ const Eigen::Matrix<Scalar, 2, 1> sym::Rot2<Scalar>::ComposeWithPoint(
 }
 
 template <typename Scalar>
+const Scalar sym::Rot2<Scalar>::ToAngle(const Scalar epsilon) const {
+  // Total ops: 3
+
+  // Input arrays
+  const Eigen::Matrix<Scalar, 2, 1>& _self = Data();
+
+  // Intermediate terms (0)
+
+  // Output terms (1)
+  Scalar _res;
+
+  _res = std::atan2(_self[1], _self[0] + std::copysign(epsilon, _self[0]));
+
+  return _res;
+}
+
+template <typename Scalar>
 const sym::Rot2<Scalar> sym::Rot2<Scalar>::FromAngle(const Scalar theta) {
   // Total ops: 2
 
