@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import typing as T
 
-from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import syntax_tree
 
 
 class SkymarshalLanguage:

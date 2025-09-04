@@ -75,12 +75,12 @@ class {{enumtype.name}}(enum.Enum):
 
     @T.overload
     @classmethod
-    def from_int(cls, value, default=None):  # pylint: disable=function-redefined
+    def from_int(cls, value, default=None):
         # type: (int, None) -> T.Optional[{{enumtype.name}}]
         pass
 
     @classmethod
-    def from_int(cls, value, default=None):  # pylint: disable=function-redefined
+    def from_int(cls, value, default=None):
         # type: (int, T.Optional[{{enumtype.name}}]) -> T.Optional[{{enumtype.name}}]
         """
         An alternative to "{{enumtype.name}}(value)" which will return

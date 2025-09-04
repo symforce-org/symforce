@@ -16,7 +16,7 @@ from ply import yacc
 from . import syntax_tree
 
 # PLY relies on the existence of these names for parsing
-from .tokenizer import tokens  # pylint: disable=unused-import
+from .tokenizer import tokens
 from .tokenizer import lexer
 
 
@@ -316,7 +316,7 @@ def lcmparse(
     allow_unknown_notations: bool = False,
 ) -> T.List[syntax_tree.Package]:
     """Parse an LCM definition source into a list of packages"""
-    global PARSER  # pylint: disable=global-statement
+    global PARSER
     lexer.lineno = 1  # reset the line number on repeat calls to lcmgen
 
     kwargs = dict(debug=False, write_tables=False)

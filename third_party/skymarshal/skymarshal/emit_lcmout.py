@@ -5,11 +5,11 @@ This is used by get_type_for_str, used most notably in json_lcm.
 
 from __future__ import annotations
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import os
 import typing as T
 
-from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import syntax_tree
 from skymarshal.language_plugin import SkymarshalLanguage
 
 

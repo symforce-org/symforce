@@ -5,7 +5,7 @@
 # mypy: disallow-untyped-defs
 
 import copy
-import typing as T  # pylint: disable=unused-import
+import typing as T
 
 from io import BytesIO
 import struct

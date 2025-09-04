@@ -3,18 +3,18 @@
 
 from __future__ import annotations
 
-import argparse  # typing # pylint: disable=unused-import
+import argparse  # typing
 import json
 import os
 import typing as T
 
-from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import syntax_tree
 from skymarshal.common_util import camelcase_to_snakecase, snakecase_to_camelcase
 from skymarshal.emit_helpers import TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage
 from skymarshal.syntax_tree import ArrayMember, ConstMember
 
-# pylint: disable=too-many-instance-attributes
+
 
 
 class PrimitiveType:
@@ -480,7 +480,7 @@ class ForeignType:
     def get_proto_info(type_map: T.Dict[str, ProtoType]) -> T.Dict[str, ProtoJsonInfo]:
         data = {}
         for type_wrapper in type_map.values():
-            data[type_wrapper.definition_name] = ProtoJsonInfo(  # pylint: disable=not-callable
+            data[type_wrapper.definition_name] = ProtoJsonInfo(
                 reference_name=type_wrapper.proto_reference_name,
                 definition_name=type_wrapper.definition_name,
                 proto_import_path=type_wrapper.proto_import_path,

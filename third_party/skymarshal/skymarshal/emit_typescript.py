@@ -9,15 +9,15 @@
 
 from __future__ import annotations
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import os
 import typing as T
 
-from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import syntax_tree
 from skymarshal.emit_helpers import BaseBuilder, EnumBuilder, StructBuilder, TemplateRenderer
 from skymarshal.language_plugin import SkymarshalLanguage
 
-# pylint: disable=too-many-instance-attributes
+
 
 # types that don't need to be imported because they're already TS types
 TS_DUPLICATE_TYPES = {"string", "boolean"}

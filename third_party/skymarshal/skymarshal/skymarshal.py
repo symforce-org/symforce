@@ -11,7 +11,7 @@ import shlex
 import sys
 import typing as T
 
-from skymarshal.language_plugin import SkymarshalLanguage  # pylint: disable=unused-import
+from skymarshal.language_plugin import SkymarshalLanguage
 from skymarshal.package_map import parse_lcmtypes
 
 

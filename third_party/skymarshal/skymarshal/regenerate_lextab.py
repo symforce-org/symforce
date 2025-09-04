@@ -143,7 +143,7 @@ def regenerate_lextab(py_ver: PyVersion, write: bool = False) -> None:
             # if not writing out, do a check to see if the files match
             cached = Lextab(imp.load_source("cached", LEXTABS[py_ver]))
             generated = Lextab(imp.load_source("generated", generated_path))
-            if not cached == generated:  # pylint: disable=unneeded-not
+            if not cached == generated:
                 raise LexerGenerationError("Attribute mismatches between generated and cached")
         else:
             # write the file out

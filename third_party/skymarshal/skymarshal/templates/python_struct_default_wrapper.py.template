@@ -9,6 +9,6 @@
 {% endif %}
 
 import copy
-import typing as T  # pylint: disable=unused-import
+import typing as T
 
 {% include "./python_struct.py.template" %}

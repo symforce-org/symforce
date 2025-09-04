@@ -452,7 +452,7 @@ class PythonClass(StructBuilder):
         members[:] = []
 
     def decode_members(self, indent: int) -> T.Text:
-        # pylint: disable=too-many-statements, too-many-branches
+
         code = Code()
 
         grouping = []

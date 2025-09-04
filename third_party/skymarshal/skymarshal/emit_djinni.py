@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import os
 import typing as T
 
-from skymarshal import syntax_tree  # pylint: disable=unused-import
+from skymarshal import syntax_tree
 from skymarshal import emit_proto
 from skymarshal.common_util import snakecase_to_camelcase
 from skymarshal.emit_helpers import TemplateRenderer
@@ -30,7 +30,7 @@ class EnumCase:
 class EnumType:
     """A template-friendly wrapper object for LCM #djinni Enums"""
 
-    # pylint: disable=too-many-instance-attributes
+
 
     def __init__(self, package_name, enum, args):
         # converted name strings

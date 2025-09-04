@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import collections
 import os
 import string
@@ -26,9 +26,9 @@ TYPE_MAP = {
     "string": PrimitiveInfo(
         "String",
         None,
-        "__strbuf = new char[ins.readInt()-1]; for (int _i = 0; _i < __strbuf.length; _i++) __strbuf[_i] = (char) (ins.readByte()&0xff); ins.readByte(); # = new String(__strbuf);",  # pylint: disable=line-too-long
+        "__strbuf = new char[ins.readInt()-1]; for (int _i = 0; _i < __strbuf.length; _i++) __strbuf[_i] = (char) (ins.readByte()&0xff); ins.readByte(); # = new String(__strbuf);",
         "__strbuf = new char[#.length()]; #.getChars(0, #.length(), __strbuf, 0); outs.writeInt(__strbuf.length+1); for (int _i = 0; _i < __strbuf.length; _i++) outs.write(__strbuf[_i]); outs.writeByte(0);",
-    ),  # pylint: disable=line-too-long
+    ),
     "boolean": PrimitiveInfo(
         "boolean", None, "# = ins.readByte()!=0;", "outs.writeByte( # ? 1 : 0);"
     ),

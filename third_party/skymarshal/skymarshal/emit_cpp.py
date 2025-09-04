@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import argparse  # pylint: disable=unused-import
+import argparse
 import copy
 import os
 import typing as T
