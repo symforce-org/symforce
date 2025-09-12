@@ -59,7 +59,7 @@ namespace sym {
  *         {key0, key1}));
  *
  *     // Set up the params
- *     sym::optimizer_params_t params = DefaultLmParams();
+ *     sym::optimizer_params_t params = sym::DefaultOptimizerParams();
  *     params.iterations = 50;
  *     params.early_exit_min_reduction = 0.0001;
  *

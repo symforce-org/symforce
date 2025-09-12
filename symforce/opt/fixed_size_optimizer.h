@@ -55,7 +55,7 @@ namespace sym {
  *         sym::LevenbergMarquardtSolver<double, LinearSolverType, CustomOptimizationState>;
  *     using CustomOptimizer = sym::FixedSizeOptimizer<double, CustomNonlinearSolver>;
  *
- *     CustomOptimizer optimizer(DefaultLmParams());
+ *     CustomOptimizer optimizer(sym::DefaultOptimizerParams());
  *     CustomValuesType custom_values{...};
  *     optimizer.Optimize(custom_values, LinearizeCustomValues);
  *
