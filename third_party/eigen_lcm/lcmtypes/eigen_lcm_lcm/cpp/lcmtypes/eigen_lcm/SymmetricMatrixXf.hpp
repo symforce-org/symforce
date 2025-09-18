@@ -122,16 +122,18 @@ __lcm_buffer_size SymmetricMatrixXf::encode(void* buf, __lcm_buffer_size offset,
   uint64_t hash = getHash();
 
   tlen = __uint64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   tlen = this->_encodeNoHash(buf, offset + pos, maxlen - pos);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   return pos;
 }
@@ -142,18 +144,21 @@ __lcm_buffer_size SymmetricMatrixXf::decode(const void* buf, __lcm_buffer_size o
 
   uint64_t hash;
   thislen = __uint64_t_decode_array(buf, offset + pos, maxlen - pos, &hash, 1);
-  if (thislen < 0)
+  if (thislen < 0) {
     return thislen;
-  else
+  } else {
     pos += thislen;
-  if (hash != getHash())
+  }
+  if (hash != getHash()) {
     return -1;
+  }
 
   thislen = this->_decodeNoHash(buf, offset + pos, maxlen - pos);
-  if (thislen < 0)
+  if (thislen < 0) {
     return thislen;
-  else
+  } else {
     pos += thislen;
+  }
 
   return pos;
 }
@@ -192,10 +197,11 @@ __lcm_buffer_size SymmetricMatrixXf::_encodeNoHash(void* buf, __lcm_buffer_size 
 
   int32_t data_sz = this->rows() * (this->rows() + 1) / 2;
   tlen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, &data_sz, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   if (data_sz > 0) {
     // Pack the lower triangle of the symmetric matrix into a vector
@@ -210,10 +216,11 @@ __lcm_buffer_size SymmetricMatrixXf::_encodeNoHash(void* buf, __lcm_buffer_size 
     }
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, flattened_lower_triangle.data(),
                                 flattened_lower_triangle.size());
-    if (tlen < 0)
+    if (tlen < 0) {
       return tlen;
-    else
+    } else {
       pos += tlen;
+    }
   }
 
   return pos;
@@ -225,10 +232,11 @@ __lcm_buffer_size SymmetricMatrixXf::_decodeNoHash(const void* buf, __lcm_buffer
 
   int32_t data_sz;
   tlen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, &data_sz, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   if (data_sz) {
     Eigen::VectorXf flattened_lower_triangle(data_sz);
@@ -236,10 +244,11 @@ __lcm_buffer_size SymmetricMatrixXf::_decodeNoHash(const void* buf, __lcm_buffer
                                 data_sz);
 
     // Unpack the lower triangle of the symmetric matrix from the vector
-    if (tlen < 0)
+    if (tlen < 0) {
       return tlen;
-    else
+    } else {
       pos += tlen;
+    }
     int rows =
         (-1 + std::sqrt(1 + 8 * data_sz)) / 2;  // Quadratic equation solution for n in l = n(n+1)/2
     this->resize(rows, rows);

@@ -121,16 +121,18 @@ __lcm_buffer_size MatrixXi::encode(void* buf, __lcm_buffer_size offset,
   uint64_t hash = getHash();
 
   tlen = __uint64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   tlen = this->_encodeNoHash(buf, offset + pos, maxlen - pos);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   return pos;
 }
@@ -141,18 +143,21 @@ __lcm_buffer_size MatrixXi::decode(const void* buf, __lcm_buffer_size offset,
 
   uint64_t hash;
   thislen = __uint64_t_decode_array(buf, offset + pos, maxlen - pos, &hash, 1);
-  if (thislen < 0)
+  if (thislen < 0) {
     return thislen;
-  else
+  } else {
     pos += thislen;
-  if (hash != getHash())
+  }
+  if (hash != getHash()) {
     return -1;
+  }
 
   thislen = this->_decodeNoHash(buf, offset + pos, maxlen - pos);
-  if (thislen < 0)
+  if (thislen < 0) {
     return thislen;
-  else
+  } else {
     pos += thislen;
+  }
 
   return pos;
 }
@@ -187,24 +192,27 @@ __lcm_buffer_size MatrixXi::_encodeNoHash(void* buf, __lcm_buffer_size offset,
 
   int32_t rows = this->rows();
   tlen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, &rows, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   int32_t data_sz = this->size();
   tlen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, &data_sz, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   if (this->size() > 0) {
     tlen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, this->data(), this->size());
-    if (tlen < 0)
+    if (tlen < 0) {
       return tlen;
-    else
+    } else {
       pos += tlen;
+    }
   }
 
   return pos;
@@ -216,27 +224,30 @@ __lcm_buffer_size MatrixXi::_decodeNoHash(const void* buf, __lcm_buffer_size off
 
   int32_t rows;
   tlen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, &rows, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   int32_t data_sz;
   tlen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, &data_sz, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   if (data_sz) {
     this->resize(rows, data_sz / rows);
   }
   if (data_sz) {
     tlen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, this->data(), this->size());
-    if (tlen < 0)
+    if (tlen < 0) {
       return tlen;
-    else
+    } else {
       pos += tlen;
+    }
   }
 
   return pos;

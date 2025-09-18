@@ -122,16 +122,18 @@ __lcm_buffer_size SymmetricMatrix4d::encode(void* buf, __lcm_buffer_size offset,
   uint64_t hash = getHash();
 
   tlen = __uint64_t_encode_array(buf, offset + pos, maxlen - pos, &hash, 1);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   tlen = this->_encodeNoHash(buf, offset + pos, maxlen - pos);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   return pos;
 }
@@ -142,18 +144,21 @@ __lcm_buffer_size SymmetricMatrix4d::decode(const void* buf, __lcm_buffer_size o
 
   uint64_t hash;
   thislen = __uint64_t_decode_array(buf, offset + pos, maxlen - pos, &hash, 1);
-  if (thislen < 0)
+  if (thislen < 0) {
     return thislen;
-  else
+  } else {
     pos += thislen;
-  if (hash != getHash())
+  }
+  if (hash != getHash()) {
     return -1;
+  }
 
   thislen = this->_decodeNoHash(buf, offset + pos, maxlen - pos);
-  if (thislen < 0)
+  if (thislen < 0) {
     return thislen;
-  else
+  } else {
     pos += thislen;
+  }
 
   return pos;
 }
@@ -195,10 +200,11 @@ __lcm_buffer_size SymmetricMatrix4d::_encodeNoHash(void* buf, __lcm_buffer_size 
 
   tlen =
       __double_encode_array(buf, offset + pos, maxlen - pos, flattened_lower_triangle.data(), 10);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   return pos;
 }
@@ -210,10 +216,11 @@ __lcm_buffer_size SymmetricMatrix4d::_decodeNoHash(const void* buf, __lcm_buffer
   Eigen::Matrix<double, 10, 1> flattened_lower_triangle;
   tlen =
       __double_decode_array(buf, offset + pos, maxlen - pos, flattened_lower_triangle.data(), 10);
-  if (tlen < 0)
+  if (tlen < 0) {
     return tlen;
-  else
+  } else {
     pos += tlen;
+  }
 
   // Unpack the lower triangle of the symmetric matrix from the vector
   this->block<4, 1>(0, 0) = flattened_lower_triangle.segment<4>(0);
