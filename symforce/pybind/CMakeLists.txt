@@ -9,6 +9,9 @@
 
 include(FetchContent)
 
+# NOTE(aaron): cc_sym builds with pybind 2.13.6 and up, but the stubs are generated using pybind
+# 3 (and pybind 3.x does produce different stubs from 2.x).  We'll use pybind 2.x if we find it, but
+# for CI (or for reproducing the stubs locally), pybind 3.x is required.
 find_package(pybind11 2.13.6 QUIET)
 if (NOT pybind11_FOUND)
   message(STATUS "pybind11 not found, adding with FetchContent")
@@ -17,8 +20,8 @@ if (NOT pybind11_FOUND)
   set(PYTHON_EXECUTABLE ${SYMFORCE_PYTHON})
   FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/v2.13.6.zip
-    URL_HASH SHA256=d0a116e91f64a4a2d8fb7590c34242df92258a61ec644b79127951e821b47be6
+    URL https://github.com/pybind/pybind11/archive/v3.0.1.zip
+    URL_HASH SHA256=20fb420fe163d0657a262a8decb619b7c3101ea91db35f1a7227e67c426d4c7e
   )
   FetchContent_MakeAvailable(pybind11)
 else()

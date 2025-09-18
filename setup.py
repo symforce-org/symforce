@@ -404,8 +404,8 @@ if __name__ == "__main__":
                     "jinja2~=3.0",
                     "mypy~=1.11.0",
                     "numba",
-                    # For https://github.com/sizmailov/pybind11-stubgen/pull/243
-                    "pybind11-stubgen>=2.5.3",
+                    # Base for https://github.com/sizmailov/pybind11-stubgen/pull/263
+                    "pybind11-stubgen>=2.5.5",
                     "ruff~=0.9.7",
                     "types-jinja2",
                     "types-requests",

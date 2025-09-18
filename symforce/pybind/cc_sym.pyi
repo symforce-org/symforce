@@ -10,10 +10,13 @@ This module wraps many of the C++ optimization classes.
 
 from __future__ import annotations
 
+import collections.abc
 import typing
 
 import numpy
+import numpy.typing
 import scipy.sparse
+import typing_extensions
 
 import lcmtypes.sym._imu_integrated_measurement_delta_t
 import lcmtypes.sym._imu_integrated_measurement_t
@@ -30,7 +33,7 @@ import lcmtypes.sym._values_t
 
 import sym
 
-__all__ = [
+__all__: list[str] = [
     "Factor",
     "ImuPreintegrator",
     "Key",
@@ -54,10 +57,10 @@ class Factor:
     @staticmethod
     @typing.overload
     def jacobian(
-        jacobian_func: typing.Callable[
-            [Values, list[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
+        jacobian_func: collections.abc.Callable[
+            [Values, collections.abc.Sequence[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
         ],
-        keys: list[Key],
+        keys: collections.abc.Sequence[Key],
         sparse: bool = False,
     ) -> Factor:
         """
@@ -77,11 +80,11 @@ class Factor:
     @staticmethod
     @typing.overload
     def jacobian(
-        jacobian_func: typing.Callable[
-            [Values, list[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
+        jacobian_func: collections.abc.Callable[
+            [Values, collections.abc.Sequence[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
         ],
-        keys_to_func: list[Key],
-        keys_to_optimize: list[Key],
+        keys_to_func: collections.abc.Sequence[Key],
+        keys_to_optimize: collections.abc.Sequence[Key],
         sparse: bool = False,
     ) -> Factor:
         """
@@ -102,10 +105,10 @@ class Factor:
     @typing.overload
     def __init__(
         self,
-        hessian_func: typing.Callable[
-            [Values, list[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
+        hessian_func: collections.abc.Callable[
+            [Values, collections.abc.Sequence[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
         ],
-        keys: list[Key],
+        keys: collections.abc.Sequence[Key],
         sparse: bool = False,
     ) -> None:
         """
@@ -121,11 +124,11 @@ class Factor:
     @typing.overload
     def __init__(
         self,
-        hessian_func: typing.Callable[
-            [Values, list[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
+        hessian_func: collections.abc.Callable[
+            [Values, collections.abc.Sequence[lcmtypes.sym._index_entry_t.index_entry_t]], tuple
         ],
-        keys_to_func: list[Key],
-        keys_to_optimize: list[Key],
+        keys_to_func: collections.abc.Sequence[Key],
+        keys_to_optimize: collections.abc.Sequence[Key],
         sparse: bool = False,
     ) -> None:
         """
@@ -170,16 +173,20 @@ class ImuPreintegrator:
     """
     Class to on-manifold preintegrate IMU measurements for usage in a SymForce optimization problem.
     """
-    def __init__(self, accel_bias: numpy.ndarray, gyro_bias: numpy.ndarray) -> None: ...
-    def covariance(self) -> numpy.ndarray: ...
+    def __init__(
+        self, accel_bias: numpy.typing.ArrayLike, gyro_bias: numpy.typing.ArrayLike
+    ) -> None: ...
+    def covariance(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[9, 9]"]: ...
     def integrate_measurement(
         self,
-        measured_accel: numpy.ndarray,
-        measured_gyro: numpy.ndarray,
-        accel_cov: numpy.ndarray,
-        gyro_cov: numpy.ndarray,
-        dt: float,
-        epsilon: float = 2.220446049250313e-15,
+        measured_accel: numpy.typing.ArrayLike,
+        measured_gyro: numpy.typing.ArrayLike,
+        accel_cov: numpy.typing.ArrayLike,
+        gyro_cov: numpy.typing.ArrayLike,
+        dt: typing.SupportsFloat,
+        epsilon: typing.SupportsFloat = 2.220446049250313e-15,
     ) -> None: ...
     def preintegrated_measurements(self) -> PreintegratedImuMeasurements: ...
 
@@ -197,9 +204,9 @@ class Key:
     @typing.overload
     def __init__(self, letter: str) -> None: ...
     @typing.overload
-    def __init__(self, letter: str, sub: int) -> None: ...
+    def __init__(self, letter: str, sub: typing.SupportsInt) -> None: ...
     @typing.overload
-    def __init__(self, letter: str, sub: int, super: int) -> None: ...
+    def __init__(self, letter: str, sub: typing.SupportsInt, super: typing.SupportsInt) -> None: ...
     def __repr__(self) -> str: ...
     def __setstate__(self, arg0: tuple) -> None: ...
     def get_lcm_type(self) -> lcmtypes.sym._key_t.key_t: ...
@@ -211,11 +218,11 @@ class Key:
         """
         Creates a new key with a modified letter from an existing one.
         """
-    def with_sub(self, sub: int) -> Key:
+    def with_sub(self, sub: typing.SupportsInt) -> Key:
         """
         Creates a new key with a modified subscript from an existing one.
         """
-    def with_super(self, super: int) -> Key:
+    def with_super(self, super: typing.SupportsInt) -> Key:
         """
         Creates a new key with a modified superscript from an existing one.
         """
@@ -242,8 +249,6 @@ class Linearization:
 
     hessian_lower: scipy.sparse.csc_matrix
     jacobian: scipy.sparse.csc_matrix
-    residual: numpy.ndarray
-    rhs: numpy.ndarray
     def __getstate__(self) -> tuple: ...
     def __init__(self) -> None: ...
     def __setstate__(self, arg0: tuple) -> None: ...
@@ -253,20 +258,28 @@ class Linearization:
         Returns whether the linearization is currently valid for the corresponding values. Accessing any of the members when this is false could result in unexpected behavior.
         """
     def linear_delta_error(
-        self, x_update: numpy.ndarray, damping_vector: numpy.ndarray
+        self, x_update: numpy.typing.ArrayLike, damping_vector: numpy.typing.ArrayLike
     ) -> float: ...
     def reset(self) -> None:
         """
         Set to invalid.
         """
     def set_initialized(self, initialized: bool = True) -> None: ...
+    @property
+    def residual(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]: ...
+    @residual.setter
+    def residual(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def rhs(self) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]: ...
+    @rhs.setter
+    def rhs(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
 class OptimizationStats:
     """
     Debug stats for a full optimization run.
     """
-
-    iterations: list[lcmtypes.sym._optimization_iteration_t.optimization_iteration_t]
     def __getstate__(self) -> tuple: ...
     def __init__(self) -> None: ...
     def __setstate__(self, arg0: tuple) -> None: ...
@@ -277,7 +290,7 @@ class OptimizationStats:
         Index into iterations of the best iteration (containing the optimal Values).
         """
     @best_index.setter
-    def best_index(self, arg0: int) -> None: ...
+    def best_index(self, arg0: typing.SupportsInt) -> None: ...
     @property
     def best_linearization(self) -> typing.Optional[Linearization]:
         """
@@ -302,7 +315,18 @@ class OptimizationStats:
         If status == FAILED, why?  This should be cast to the NonlinearSolver::FailureReason enum for the nonlinear solver you used.
         """
     @failure_reason.setter
-    def failure_reason(self, arg0: int) -> None: ...
+    def failure_reason(self, arg0: typing.SupportsInt) -> None: ...
+    @property
+    def iterations(
+        self,
+    ) -> list[lcmtypes.sym._optimization_iteration_t.optimization_iteration_t]: ...
+    @iterations.setter
+    def iterations(
+        self,
+        arg0: collections.abc.Sequence[
+            lcmtypes.sym._optimization_iteration_t.optimization_iteration_t
+        ],
+    ) -> None: ...
     @property
     def jacobian_sparsity(
         self,
@@ -315,12 +339,14 @@ class OptimizationStats:
         self, arg0: lcmtypes.sym._sparse_matrix_structure_t.sparse_matrix_structure_t
     ) -> None: ...
     @property
-    def linear_solver_ordering(self) -> numpy.ndarray:
+    def linear_solver_ordering(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.int32], "[m, 1]"]:
         """
         Ordering used by the linear solver (filled out if debug_stats=True)
         """
     @linear_solver_ordering.setter
-    def linear_solver_ordering(self, arg0: numpy.ndarray) -> None: ...
+    def linear_solver_ordering(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
     def status(self) -> lcmtypes.sym._optimization_status_t.optimization_status_t:
         """
@@ -336,20 +362,22 @@ class Optimizer:
     def __init__(
         self,
         params: lcmtypes.sym._optimizer_params_t.optimizer_params_t,
-        factors: list[Factor],
+        factors: collections.abc.Sequence[Factor],
         name: str = "sym::Optimize",
-        keys: list[Key] = [],
-        epsilon: float = 2.220446049250313e-15,
+        keys: collections.abc.Sequence[Key] = [],
+        epsilon: typing.SupportsFloat = 2.220446049250313e-15,
     ) -> None: ...
-    def compute_all_covariances(self, linearization: Linearization) -> dict[Key, numpy.ndarray]:
+    def compute_all_covariances(
+        self, linearization: Linearization
+    ) -> dict[Key, typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]]:
         """
         Get covariances for each optimized key at the given linearization
 
         May not be called before either optimize or linearize has been called.
         """
     def compute_covariances(
-        self, linearization: Linearization, keys: list[Key]
-    ) -> dict[Key, numpy.ndarray]:
+        self, linearization: Linearization, keys: collections.abc.Sequence[Key]
+    ) -> dict[Key, typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]]:
         """
         Get covariances for the given subset of keys at the given linearization
 
@@ -363,7 +391,9 @@ class Optimizer:
             A = ( B    E )
                 ( E^T  C )
         """
-    def compute_full_covariance(self, linearization: Linearization) -> numpy.ndarray:
+    def compute_full_covariance(
+        self, linearization: Linearization
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]:
         """
         Get the full problem covariance at the given linearization
 
@@ -391,7 +421,10 @@ class Optimizer:
         """
     @typing.overload
     def optimize(
-        self, values: Values, num_iterations: int = -1, populate_best_linearization: bool = False
+        self,
+        values: Values,
+        num_iterations: typing.SupportsInt = -1,
+        populate_best_linearization: bool = False,
     ) -> OptimizationStats:
         """
         Optimize the given values in-place
@@ -408,7 +441,7 @@ class Optimizer:
     def optimize(
         self,
         values: Values,
-        num_iterations: int,
+        num_iterations: typing.SupportsInt,
         populate_best_linearization: bool,
         stats: OptimizationStats,
     ) -> None:
@@ -427,7 +460,9 @@ class Optimizer:
           stats: An OptimizationStats to fill out with the result - if filling out dynamically allocated fields here, will not reallocate if memory is already allocated in the required shape (e.g. for repeated calls to Optimize)
         """
     @typing.overload
-    def optimize(self, values: Values, num_iterations: int, stats: OptimizationStats) -> None:
+    def optimize(
+        self, values: Values, num_iterations: typing.SupportsInt, stats: OptimizationStats
+    ) -> None:
         """
         Optimize the given values in-place
 
@@ -467,9 +502,6 @@ class PreintegratedImuMeasurements:
         """
 
         DR: sym.Rot3
-        Dp: numpy.ndarray
-        Dt: float
-        Dv: numpy.ndarray
         @staticmethod
         def from_lcm(
             arg0: lcmtypes.sym._imu_integrated_measurement_delta_t.imu_integrated_measurement_delta_t,
@@ -480,28 +512,83 @@ class PreintegratedImuMeasurements:
             lcmtypes.sym._imu_integrated_measurement_delta_t.imu_integrated_measurement_delta_t
         ): ...
         def roll_forward_state(
-            self, pose_i: sym.Pose3, vel_i: numpy.ndarray, gravity: numpy.ndarray
-        ) -> tuple[sym.Pose3, numpy.ndarray]: ...
+            self, pose_i: sym.Pose3, vel_i: numpy.typing.ArrayLike, gravity: numpy.typing.ArrayLike
+        ) -> tuple[
+            sym.Pose3, typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]
+        ]: ...
+        @property
+        def Dp(
+            self,
+        ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+        @Dp.setter
+        def Dp(self, arg0: numpy.typing.ArrayLike) -> None: ...
+        @property
+        def Dt(self) -> float: ...
+        @Dt.setter
+        def Dt(self, arg0: typing.SupportsFloat) -> None: ...
+        @property
+        def Dv(
+            self,
+        ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+        @Dv.setter
+        def Dv(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
-    DR_D_gyro_bias: numpy.ndarray
-    Dp_D_accel_bias: numpy.ndarray
-    Dp_D_gyro_bias: numpy.ndarray
-    Dv_D_accel_bias: numpy.ndarray
-    Dv_D_gyro_bias: numpy.ndarray
-    accel_bias: numpy.ndarray
     delta: PreintegratedImuMeasurements.Delta
-    gyro_bias: numpy.ndarray
     @staticmethod
     def from_lcm(
         arg0: lcmtypes.sym._imu_integrated_measurement_t.imu_integrated_measurement_t,
     ) -> PreintegratedImuMeasurements: ...
-    def __init__(self, accel_bias: numpy.ndarray, gyro_bias: numpy.ndarray) -> None: ...
+    def __init__(
+        self, accel_bias: numpy.typing.ArrayLike, gyro_bias: numpy.typing.ArrayLike
+    ) -> None: ...
     def get_bias_corrected_delta(
-        self, new_accel_bias: numpy.ndarray, new_gyro_bias: numpy.ndarray
+        self, new_accel_bias: numpy.typing.ArrayLike, new_gyro_bias: numpy.typing.ArrayLike
     ) -> PreintegratedImuMeasurements.Delta: ...
     def get_lcm_type(
         self,
     ) -> lcmtypes.sym._imu_integrated_measurement_t.imu_integrated_measurement_t: ...
+    @property
+    def DR_D_gyro_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    @DR_D_gyro_bias.setter
+    def DR_D_gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def Dp_D_accel_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    @Dp_D_accel_bias.setter
+    def Dp_D_accel_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def Dp_D_gyro_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    @Dp_D_gyro_bias.setter
+    def Dp_D_gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def Dv_D_accel_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    @Dv_D_accel_bias.setter
+    def Dv_D_accel_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def Dv_D_gyro_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    @Dv_D_gyro_bias.setter
+    def Dv_D_gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def accel_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+    @accel_bias.setter
+    def accel_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
+    @property
+    def gyro_bias(
+        self,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+    @gyro_bias.setter
+    def gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
 class Values:
     """
@@ -557,7 +644,7 @@ class Values:
           2) Cleanup() is called to re-pack the data array
         """
     @typing.overload
-    def create_index(self, keys: list[Key]) -> lcmtypes.sym._index_t.index_t:
+    def create_index(self, keys: collections.abc.Sequence[Key]) -> lcmtypes.sym._index_t.index_t:
         """
         Create an index from the given ordered subset of keys. This object can then be used
         for repeated efficient operations on that subset of keys.
@@ -597,8 +684,12 @@ class Values:
         """
     @typing.overload
     def local_coordinates(
-        self, others: Values, keys: list[Key], epsilon: float, tangent_dimension: int | None = None
-    ) -> numpy.ndarray:
+        self,
+        others: Values,
+        keys: collections.abc.Sequence[Key],
+        epsilon: typing.SupportsFloat,
+        tangent_dimension: typing.SupportsInt | None = None,
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
         """
         Compute the tangent space delta needed to transform this into others.
         Args:
@@ -609,8 +700,8 @@ class Values:
         """
     @typing.overload
     def local_coordinates(
-        self, arg0: Values, arg1: lcmtypes.sym._index_t.index_t, arg2: float
-    ) -> numpy.ndarray:
+        self, arg0: Values, arg1: lcmtypes.sym._index_t.index_t, arg2: typing.SupportsFloat
+    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
         """
         Compute the tangent space delta needed to transform this into others.
         Args:
@@ -634,7 +725,10 @@ class Values:
         Remove all keys and empty out the storage.
         """
     def retract(
-        self, index: lcmtypes.sym._index_t.index_t, delta: list[float], epsilon: float
+        self,
+        index: lcmtypes.sym._index_t.index_t,
+        delta: collections.abc.Sequence[typing.SupportsFloat],
+        epsilon: typing.SupportsFloat,
     ) -> None:
         """
         Perform a retraction from an update vector.
@@ -645,12 +739,14 @@ class Values:
             epsilon: Small constant to avoid singularities (do not use zero)
         """
     @typing.overload
-    def set(self, key: Key, value: float) -> bool:
+    def set(self, key: Key, value: typing.SupportsFloat) -> bool:
         """
         Add or update a value by key. Returns true if added, false if updated.
         """
     @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: float) -> None:
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: typing.SupportsFloat
+    ) -> None:
         """
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
@@ -787,12 +883,14 @@ class Values:
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
     @typing.overload
-    def set(self, key: Key, value: numpy.ndarray) -> bool:
+    def set(self, key: Key, value: numpy.typing.ArrayLike) -> bool:
         """
         Add or update a value by key. Returns true if added, false if updated.
         """
     @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: numpy.ndarray) -> None:
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: numpy.typing.ArrayLike
+    ) -> None:
         """
         Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
         """
@@ -826,9 +924,9 @@ def default_optimizer_params() -> lcmtypes.sym._optimizer_params_t.optimizer_par
 
 def optimize(
     params: lcmtypes.sym._optimizer_params_t.optimizer_params_t,
-    factors: list[Factor],
+    factors: collections.abc.Sequence[Factor],
     values: Values,
-    epsilon: float = 2.220446049250313e-15,
+    epsilon: typing.SupportsFloat = 2.220446049250313e-15,
 ) -> OptimizationStats:
     """
     Simple wrapper to make optimization one function call.
