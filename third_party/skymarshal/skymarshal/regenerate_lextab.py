@@ -12,7 +12,6 @@ import subprocess
 import sys
 import types
 import typing as T
-from enum import Enum
 
 # try to get build workspace dir if it exists, otherwise just use paths relative to this file
 if os.environ.get("SKYMARSHAL_TEST"):
@@ -37,24 +36,6 @@ class LexerGenerationError(Exception):
     """
     Errors thrown when Lexer regeneration fails
     """
-
-
-class PyVersion(Enum):
-
-    PY2 = 0
-    PY3 = 1
-
-
-LEXTABS = {
-    PyVersion.PY2: os.path.join(SKYMARSHAL_DIR, "lextab_py2.py"),
-    PyVersion.PY3: os.path.join(SKYMARSHAL_DIR, "lextab_py3.py"),
-}
-
-
-def get_py_ver() -> PyVersion:
-    if sys.version_info.major < 3:
-        return PyVersion.PY2
-    return PyVersion.PY3
 
 
 class Lextab:
@@ -123,7 +104,7 @@ class Lextab:
         return self_re == other_re and self_token == other_token
 
 
-def regenerate_lextab(py_ver: PyVersion, write: bool = False) -> None:
+def regenerate_lextab(write: bool = False) -> None:
 
     tokenizer_path = os.path.join(SKYMARSHAL_DIR, "tokenizer.py")
     generated_path = os.path.join(SKYMARSHAL_DIR, "lextab.py")
@@ -139,15 +120,17 @@ def regenerate_lextab(py_ver: PyVersion, write: bool = False) -> None:
 
         subprocess.check_call([sys.executable, tokenizer_path], env=env)
 
+        lextab = os.path.join(SKYMARSHAL_DIR, "lextab_py3.py")
+
         if not write:
             # if not writing out, do a check to see if the files match
-            cached = Lextab(imp.load_source("cached", LEXTABS[py_ver]))
+            cached = Lextab(imp.load_source("cached", lextab))
             generated = Lextab(imp.load_source("generated", generated_path))
             if not cached == generated:
                 raise LexerGenerationError("Attribute mismatches between generated and cached")
         else:
             # write the file out
-            shutil.move(generated_path, LEXTABS[py_ver])
+            shutil.move(generated_path, lextab)
 
     finally:
         if os.path.exists(generated_path):
@@ -168,8 +151,7 @@ def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 
-    py_ver = get_py_ver()
-    regenerate_lextab(py_ver, not args.check)
+    regenerate_lextab(not args.check)
 
 
 if __name__ == "__main__":
