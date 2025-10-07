@@ -174,7 +174,6 @@ class FixNumpyArrayRemoveParameters(pybind11_stubgen.IParser):
 
     def parse_annotation_str(self, annotation_str: str) -> ResolvedType | InvalidExpression | Value:
         result = super().parse_annotation_str(annotation_str)  # type: ignore[safe-super]
-        print(result)
         if isinstance(result, ResolvedType) and result.name == QualifiedName.from_str(
             "typing.Annotated"
         ):
@@ -183,9 +182,7 @@ class FixNumpyArrayRemoveParameters(pybind11_stubgen.IParser):
                 and len(result.parameters) >= 1
                 and isinstance(result.parameters[0], ResolvedType)
             )
-            print(f"Annotated: {result.parameters[0].name}")
             if result.parameters[0].name == self.__ndarray_name:
-                print("Found ndarray")
                 return result.parameters[0]
         return result
 
