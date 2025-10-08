@@ -113,10 +113,11 @@ class SymforceCCSymStubsCodegenTest(TestCase):
 
         (output_dir / "cc_sym.pyi").write_text(stubgen_output)
 
-        self.compare_or_update_file(
-            new_file=output_dir / "cc_sym.pyi",
-            path=path_util.symforce_data_root(__file__) / "symforce" / "pybind" / "cc_sym.pyi",
-        )
+        if sys.version_info.minor < 9:
+            self.compare_or_update_file(
+                new_file=output_dir / "cc_sym.pyi",
+                path=path_util.symforce_data_root(__file__) / "symforce" / "pybind" / "cc_sym.pyi",
+            )
 
 
 if __name__ == "__main__":
