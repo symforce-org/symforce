@@ -18,6 +18,14 @@ if (NOT pybind11_FOUND)
   # NOTE(brad): Set PYTHON_EXECUTABLE to ensure pybind11 uses the same
   # python as the rest of symforce.
   set(PYTHON_EXECUTABLE ${SYMFORCE_PYTHON})
+  # Disable FindPython.  This causes issues in cibuildwheel when the Python it finds is different
+  # from the one we want, and we've specified the python we want above.  We could maybe only disable
+  # if SYMFORCE_PYTHON is set?
+  set(PYBIND11_FINDPYTHON OFF)
+  if(NOT PYTHON_EXECUTABLE)
+    message(FATAL_ERROR "PYTHON_EXECUTABLE not set - cannot configure pybind11")
+  endif()
+  message(STATUS "Using Python executable: ${PYTHON_EXECUTABLE}")
   FetchContent_Declare(
     pybind11
     URL https://github.com/pybind/pybind11/archive/v3.0.1.zip
