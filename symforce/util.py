@@ -36,6 +36,8 @@ def lambdify(f: T.Callable, use_numba: bool = False) -> T.Callable:
     Convert a symbolic function to a numerical one.  This is a thin wrapper around
     :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>` provided for convenience.
 
+    See ``symforce_util_test`` for examples
+
     Args:
         f: A callable with symbolic inputs and outputs - see
             :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>` for details

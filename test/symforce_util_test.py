@@ -9,6 +9,7 @@ symforce.set_epsilon_to_symbol()
 
 import importlib
 import unittest
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -42,6 +43,31 @@ class SymforceUtilTest(TestCase):
         self.assertIsInstance(z, np.ndarray)
         self.assertIsInstance(w, np.ndarray)
         self.assertIsInstance(r, sym.Rot3)
+
+    def test_lambdify_lcmtypes(self) -> None:
+        @dataclass
+        class TestType:
+            x: sf.Scalar
+            y: sf.V2
+
+        @dataclass
+        class TestTypeContainer:
+            inner: TestType
+
+        def f(a: sf.Scalar, b: TestTypeContainer) -> TestType:
+            return TestType(x=a + b.inner.x, y=b.inner.y)
+
+        # Test that lambdify works with lcmtypes generated from Values/dataclasses
+        numeric_f = util.lambdify(f)
+
+        # Result can be invoked with any type with the same structure as TestTypeContainer.
+        # Technically the expected argument type is the generated lcmtype
+        result = numeric_f(1.0, TestTypeContainer(inner=TestType(x=2.0, y=np.array([3.0, 4.0]))))  # type: ignore[arg-type]
+
+        # Return types of python functions (including lambdified functions) are currently the
+        # storage of the result for lcmtypes, which is real dumb
+        # self.assertIsInstance(result, TestType)
+        self.assertEqual(result, [3.0, 3.0, 4.0])
 
     @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
     def test_numbify(self) -> None:

@@ -958,10 +958,10 @@ class Codegen:
 
         name_was_none = False
         if self.name is None:
-            self.name = "lambda"
+            self.name = "_lambda"
             name_was_none = True
 
-        data = self.generate_function(namespace="lambda")
+        data = self.generate_function(namespace="_lambda")
         generated_function = codegen_util.load_generated_function(
             self.name, data.function_dir, evict=not self.config.use_numba
         )
