@@ -12,8 +12,6 @@ stamp file
 For builds not in a git repo, we just run the command every time.
 """
 
-from __future__ import print_function
-
 import argparse
 import errno
 import os
