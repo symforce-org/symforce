@@ -107,6 +107,15 @@ def snakecase_to_camelcase(s: str) -> str:
     )
 
 
+def snakecase_to_lower_camelcase(s: str) -> str:
+    """
+    Convert snake_case -> lowerCamelCase
+    Same as `snakecase_to_camelcase` but with the first letter lowercased.
+    """
+    result = snakecase_to_camelcase(s)
+    return result[0].lower() + result[1:]
+
+
 def camelcase_to_screaming_snakecase(s: str) -> str:
     """
     Convert CamelCase -> SCREAMING_SNAKE_CASE

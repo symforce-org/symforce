@@ -1,0 +1,270 @@
+{# ----------------------------------------------------------------------------
+ # SymForce - Copyright 2022, Skydio, Inc.
+ # This source code is under the Apache 2.0 license found in the LICENSE file.
+ # ---------------------------------------------------------------------------- #}
+
+{# ------------------------------------------------------------------------- #}
+{# Utilities for TypeScript code generation templates.                       #}
+{# ------------------------------------------------------------------------- #}
+
+{# Convert a class to the emitted TypeScript type string
+ #
+ # Args:
+ #     T_or_value (type or Element):
+ #     name (str): Name in case type is a generated struct
+ #     output (bool): Whether the type is an input or output
+ #}
+{%- macro format_typename(T_or_value, name, output) %}
+    {%- set T = typing_util.get_type(T_or_value) -%}
+    {%- if T.__name__ == 'Symbol' or T.__name__ == "float" or is_symbolic(T_or_value) -%}
+        number
+    {%- elif T.__name__ == 'NoneType' -%}
+        void
+    {%- elif issubclass(T, Matrix) -%}
+        {% if output %}
+            {%- if T.SHAPE[0] == 1 -%}
+                Vector{{ T.SHAPE[1] }}
+            {%- elif T.SHAPE[1] == 1 -%}
+                Vector{{ T.SHAPE[0] }}
+            {%- else -%}
+                Matrix{{ T.SHAPE[0] }}{{ T.SHAPE[1] }}
+            {%- endif -%}
+        {% else %}
+            {% if T.SHAPE[0] == 1 or T.SHAPE[1] == 1 %}
+                number[]
+            {% else %}
+                number[][]
+            {% endif %}
+        {% endif %}
+    {%- else -%}
+        {{ raise("Unsupported type {} for value {}".format(T, name)) }}
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Get the return type of the function
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro get_return_type(spec) %}
+    {%- if spec.outputs.keys() | length == 0 -%}
+        void
+    {%- elif spec.outputs.keys() | length == 1 -%}
+        {%- set name, type = spec.outputs.items() | first -%}
+        {{ format_typename(type, name, true) }}
+    {%- else -%}
+{
+    {% for name, type in spec.outputs.items() %}
+  {{ name }}: {{ format_typename(type, name, true) }};
+    {% endfor %}
+}
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Prints code to initialize a matrix of the given size to zeros
+ #
+ # Args:
+ #     rows (int):
+ #     cols (int):
+ #}
+{%- macro initialize_matrix(rows, cols) %}
+    {%- if rows == 1 -%}
+        [ {%- for _ in range(cols) %}0{%- if not loop.last %}, {% endif -%}{%- endfor -%}]
+    {%- elif cols == 1 -%}
+        [{%- for _ in range(rows) %}0{%- if not loop.last %}, {% endif -%}{%- endfor -%}]
+    {%- else -%}
+    [
+        {%- for _ in range(rows) %}
+            [ {%- for _ in range(cols) %}0{%- if not loop.last %}, {% endif -%}{%- endfor -%}]
+        {%- if not loop.last %}, {% endif -%}
+        {%- endfor -%}
+    ]
+    {%- endif -%}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function docstring
+ #
+ # Args:
+ #     docstring (str):
+ #}
+{% macro print_docstring(docstring) %}
+{%- if docstring %}
+/**
+{% for line in docstring.strip().split('\n') %}
+ *{{ ' {}'.format(line).rstrip() }}
+{% endfor -%}
+ */
+{%- endif -%}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Format function input argument
+ #
+ # Args:
+ #     name (str):
+ #     T_or_value (type or Element):
+ #     spec (Codegen):
+ #}
+{%- macro format_input_arg(name, T_or_value, spec) %}
+    {% if name in spec.unused_arguments %}_{% endif %}{{- name -}}: {{ format_typename(T_or_value, name, false) -}}
+{% endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate input arguments declaration.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro input_args_declaration(spec) -%}
+    {%- for name, type in spec.inputs.items() -%}
+        {{- format_input_arg(name, type, spec) -}}
+        {%- if not loop.last -%}, {% endif -%}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Emit code to define matrix types
+ #
+ # Args:
+ #     elements (List):
+ #}
+{% macro print_matrix_types(elements) %}
+{% set matrix_types_to_generate = [] %}
+{% for element in elements %}
+    {% set T = typing_util.get_type(element) %}
+    {% if issubclass(T, Matrix) %}
+        {{ matrix_types_to_generate.append({"name": T.__name__, "type": T}) or ""}}
+    {% endif %}
+{% endfor %}
+{% for matrix in matrix_types_to_generate | unique(attribute="name") | sort(attribute="name") %}
+type {{ format_typename(matrix.type, "", true) }} = [
+{%- if matrix.type.SHAPE[0] != 1 and matrix.type.SHAPE[1] != 1 -%}
+        {%- for _ in range(matrix.type.SHAPE[0]) %}
+            [
+                {%- for _ in range(matrix.type.SHAPE[1]) %}
+                    number{% if not loop.last %}, {% endif %}
+                {%- endfor %}
+            ]{% if not loop.last %}, {% endif %}
+        {%- endfor %}
+{%- else -%}
+    {% if matrix.type.SHAPE[0] == 1 %}
+            {%- for _ in range(matrix.type.SHAPE[1]) %}
+                number{% if not loop.last %}, {% endif %}
+            {%- endfor %}
+    {% else %}
+        {%- for _ in range(matrix.type.SHAPE[0]) %}
+            number{% if not loop.last %}, {% endif %}
+        {%- endfor %}
+    {%- endif -%}
+{%- endif -%}
+];
+{% endfor %}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate function declaration
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{%- macro function_declaration(spec) -%}
+export function {{ python_util.snakecase_to_lower_camelcase(spec.name) }}({{- input_args_declaration(spec) -}}): {{ get_return_type(spec) }}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Helper to generate code to fill out an output
+ #
+ # Args:
+ #     name (str): Name of the output object
+ #     type (type): Type of the output object
+ #     terms (List[Tuple[str]]): List of output terms for this object
+ #}
+{% macro format_output(name, type, terms, spec) %}
+{% set T = typing_util.get_type(type) %}
+{% if issubclass(T, Matrix) %}
+    {% set rows = T.SHAPE[0] %}
+    {% set cols = T.SHAPE[1] %}
+    const _{{ name }}: {{ format_typename(T, name, true) }} = {{ initialize_matrix(rows, cols) }};
+    {% if rows == 1 or cols == 1 %}
+        {% for i in range(rows * cols) %}
+    _{{ name }}[{{ i }}] = {{ terms[i][1] }};
+        {% endfor %}
+    {% else %}
+        {% set ns = namespace(iter=0) %}
+        {% for j in range(cols) %}
+            {% for i in range(rows) %}
+    _{{ name }}[{{ i }}][{{ j }}] = {{ terms[ns.iter][1] }};
+                {% set ns.iter = ns.iter + 1 %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+{% elif is_symbolic(type) or T.__name__ == "float" %}
+    const _{{ name }} = {{ terms[0][1] }};
+{% endif %}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Helper to generate all outputs #}
+{% macro format_outputs(spec) %}
+    {% for name, type, terms in spec.print_code_results.dense_terms -%}
+{{ format_output(name, type, terms, spec) }}
+    {%- endfor %}
+    {%- for name, type, terms in spec.print_code_results.sparse_terms %}
+        {{ raise("Cannot return sparse output {}; TypeScript does not support sparse matrices".format(name)) }}
+    {% endfor -%}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate return statement
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro return_statement(spec) %}
+{%- if spec.outputs.keys() | length == 1 %}
+    {% set name, type = spec.outputs.items() | first %}
+    return _{{ name }};
+{%- else %}
+    return {
+        {% for name, type in spec.outputs.items() %}
+        {{ name }}: _{{ name }},
+        {% endfor %}
+    };
+{%- endif -%}
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+
+{# Generate inner code for computing the given expression.
+ #
+ # Args:
+ #     spec (Codegen):
+ #}
+{% macro expr_code(spec) %}
+  // Total ops: {{ spec.print_code_results.total_ops }}
+
+  {% if spec.print_code_results.intermediate_terms | length > 0 %}
+
+  // Intermediate terms ({{ spec.print_code_results.intermediate_terms | length }})
+  {% for lhs, rhs in spec.print_code_results.intermediate_terms %}
+    const {{ lhs }} = {{ rhs }};
+  {% endfor %}
+  {% endif %}
+
+  // Output terms ({{ spec.outputs.items() | length }})
+{{ format_outputs(spec) }}
+{{ return_statement(spec) -}}
+{% endmacro %}

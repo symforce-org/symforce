@@ -3,12 +3,14 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
 
 from symforce import typing as T
+from symforce.path_util import symforce_dir
 from symforce.python_util import find_ruff_bin
 
 
@@ -138,6 +140,61 @@ def format_rust(file_contents: str, filename: str) -> str:
     """
     result = subprocess.run(
         [_find_rustfmt()],
+        input=file_contents,
+        stdout=subprocess.PIPE,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
+_prettier_cmd: T.Optional[T.List[str]] = None
+
+
+def _get_prettier_cmd() -> T.List[str]:
+    """
+    Returns a command to run prettier with any necessary args
+    """
+    global _prettier_cmd  # noqa: PLW0603
+
+    if _prettier_cmd is not None:
+        return _prettier_cmd
+
+    # A path to a local prettier binary can be specified in the paths.json file with they key
+    # "prettier_bin_path". The path should be relative to the symforce root directory.
+    # If not provided, we will use npx or yarn if installed.
+    paths_file = symforce_dir() / "build" / "paths.json"
+
+    if paths_file.exists():
+        with open(paths_file, "r") as f:
+            paths_data = json.load(f)
+            if prettier_path := paths_data.get("prettier_bin_path"):
+                _prettier_cmd = [symforce_dir() / prettier_path]
+                # NOTE(nathan): This is necessary when using aspect_rules_js to suppress the warning
+                # about BAZEL_BINDIR not being set. Otherwise it's unnecessary.
+                if "BAZEL_BINDIR" not in os.environ:
+                    os.environ["BAZEL_BINDIR"] = "."
+    elif npx := shutil.which("npx"):
+        _prettier_cmd = [npx, "prettier"]
+    elif yarn := shutil.which("yarn"):
+        _prettier_cmd = [yarn, "prettier"]
+
+    if not _prettier_cmd:
+        raise FileNotFoundError("Could not find prettier")
+
+    return _prettier_cmd
+
+
+def format_typescript(file_contents: str, config_path: Path) -> str:
+    """
+    Autoformat a given TypeScript file using prettier.
+    """
+    # NOTE(nathan): We would use the "--stdin-filepath" arg with a dummy file like we do for the
+    # other formatters, but there seems to be a prettier bug where it doesn't want to use the config
+    # file that is found by traversing upwards from the dummy file. Instead we just point to the
+    # config file directly, which seems to work.
+    result = subprocess.run(
+        [*_get_prettier_cmd(), "--config", config_path, "--parser", "typescript"],
         input=file_contents,
         stdout=subprocess.PIPE,
         check=True,

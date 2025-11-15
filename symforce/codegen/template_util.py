@@ -23,6 +23,7 @@ from symforce.codegen.codegen_config import RenderTemplateConfig
 CURRENT_DIR = Path(__file__).parent
 LCM_TEMPLATE_DIR = CURRENT_DIR / "lcm_templates"
 PYBIND_TEMPLATE_DIR = CURRENT_DIR / "pybind_templates"
+PRETTIER_CONFIG_PATH = CURRENT_DIR.parent.parent / "prettier.config.mjs"
 
 
 class FileType(enum.Enum):
@@ -72,7 +73,13 @@ class FileType(enum.Enum):
         """
         Return the comment prefix for this file type.
         """
-        if self in {FileType.CPP, FileType.CUDA, FileType.LCM, FileType.RUST}:
+        if self in {
+            FileType.CPP,
+            FileType.CUDA,
+            FileType.LCM,
+            FileType.RUST,
+            FileType.TYPESCRIPT,
+        }:
             return "//"
         elif self in {FileType.PYTHON, FileType.PYTHON_INTERFACE, FileType.TOML}:
             return "#"
@@ -111,6 +118,8 @@ class FileType(enum.Enum):
             return format_util.format_rust(
                 file_contents, filename=str(CURRENT_DIR / format_filename)
             )
+        elif self == FileType.TYPESCRIPT:
+            return format_util.format_typescript(file_contents, PRETTIER_CONFIG_PATH)
         else:
             raise NotImplementedError(f"Unknown autoformatter for {self}")
 
