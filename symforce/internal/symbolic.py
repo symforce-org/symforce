@@ -136,7 +136,6 @@ if not T.TYPE_CHECKING and symforce.get_symbolic_api() == "symengine":
     from symengine import init_printing
     from symengine import integer_nthroot
     from symengine import isprime
-    from symengine import lambdify
     from symengine import latex
     from symengine import linsolve
     from symengine import log
@@ -239,7 +238,6 @@ elif symforce.get_symbolic_api() == "sympy":
     from sympy import init_printing
     from sympy import integer_nthroot
     from sympy import isprime
-    from sympy import lambdify
     from sympy import latex
     from sympy import linsolve
     from sympy import log

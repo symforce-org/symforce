@@ -32,6 +32,8 @@ from symforce.cam import *
 
 # isort: split
 from symforce import util
+from symforce.util import lambdify
+from symforce.util import numbify
 
 # This doesn't change the runtime behavior, but tells Sphinx to document everything in here
 __all__ = list(globals().keys())
