@@ -3,11 +3,14 @@
 # This source code is under the Apache 2.0 license found in the LICENSE file.
 # ----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 import functools
 
 from symforce import codegen
 from symforce import typing as T
 from symforce.type_helpers import symbolic_inputs
+from symforce.values import Values
 
 _T = T.TypeVar("_T")
 
@@ -31,16 +34,30 @@ def symbolic_eval(func: T.Callable[..., _T]) -> _T:
     return func(**symbolic_inputs(func))
 
 
-def lambdify(f: T.Callable, use_numba: bool = False) -> T.Callable:
+def lambdify(
+    f_or_args: T.Callable | T.Sequence[T.Element],
+    expr: T.Element | T.Sequence[T.Element] | None = None,
+    *,
+    use_numba: bool = False,
+) -> T.Callable:
     """
-    Convert a symbolic function to a numerical one.  This is a thin wrapper around
-    :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>` provided for convenience.
+    Convert a symbolic function, or expression(s), to a numerical function.
 
-    See ``symforce_util_test`` for examples
+    This is a thin wrapper around
+    :meth:`Codegen.lambdify <symforce.codegen.codegen.Codegen.lambdify>` provided for convenience.
+
+    See ``symforce_util_test`` for examples.
+
+    Can be called either with a symbolic function, like
+    :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>`::
+
+        sf.lambdify(my_symbolic_function)
+
+    Or with separate arguments and expression(s), like :func:`sympy.lambdify`::
+
+        sf.lambdify([x, y], x**2 + y**2)
 
     Args:
-        f: A callable with symbolic inputs and outputs - see
-            :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>` for details
         use_numba: If True, use Numba to compile the generated function.  This can be much faster,
                    but has some limitations - see
                    :class:`codegen.PythonConfig <symforce.codegen.backends.python.python_config.PythonConfig>`
@@ -54,18 +71,39 @@ def lambdify(f: T.Callable, use_numba: bool = False) -> T.Callable:
         :meth:`Codegen.function <symforce.codegen.codegen.Codegen.function>`
         :class:`codegen.PythonConfig <symforce.codegen.backends.python.python_config.PythonConfig>`
     """
-    codegen_obj = codegen.Codegen.function(f, config=codegen.PythonConfig(use_numba=use_numba))
+    if callable(f_or_args):
+        codegen_obj = codegen.Codegen.function(
+            f_or_args, config=codegen.PythonConfig(use_numba=use_numba)
+        )
+    else:
+        if expr is None:
+            raise ValueError("If not passed a callable, must be passed both args and expr")
+
+        inputs = Values.from_elements(f_or_args)
+
+        if isinstance(expr, T.Sequence):
+            outputs = Values({f"output_{i}": e for i, e in enumerate(expr)})
+        else:
+            outputs = Values({"output": expr})
+
+        codegen_obj = codegen.Codegen(
+            inputs=inputs, outputs=outputs, config=codegen.PythonConfig(use_numba=use_numba)
+        )
+
     return codegen_obj.lambdify()
 
 
-def numbify(f: T.Callable) -> T.Callable:
+def numbify(
+    f_or_args: T.Callable | T.Sequence[T.Element],
+    expr: T.Element | T.Sequence[T.Element] | None = None,
+) -> T.Callable:
     """
-    Shorthand for ``lambdify(f, use_numba=True)``
+    Shorthand for ``lambdify(..., use_numba=True)``
 
     See Also:
         :func:`lambdify`
     """
-    return lambdify(f, use_numba=True)
+    return lambdify(f_or_args, expr, use_numba=True)
 
 
 SymbolicFunction = T.TypeVar("SymbolicFunction", bound=T.Callable)

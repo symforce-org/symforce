@@ -899,6 +899,27 @@ class Values(T.MutableMapping[str, T.Any]):
 
         return _to_dict_recursive(self)
 
+    @staticmethod
+    def from_elements(elements: T.Iterable[T.Element]) -> Values:
+        """
+        Construct a Values from a list of elements, making a best guess at appropriate keys.
+
+        For elements that are symbols, will use the symbol name.  For other elements, will pick a
+        unique name.
+        """
+        i = 0
+        values = Values()
+        for e in elements:
+            if hasattr(e, "name"):
+                # This is probably a reasonable proxy for "is this a symbol"?  It should cover
+                # sf.Symbol, sympy.Symbol, and symengine.Symbol
+                values[e.name] = e
+            else:
+                values[f"_e{i}"] = e
+                i += 1
+
+        return values
+
     def __getstate__(self) -> T.Dict[str, T.Any]:
         """
         Called when pickling this Values. Because some symengine objects cannot be pickled, we first

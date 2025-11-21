@@ -674,6 +674,32 @@ class SymforceValuesWithDataclassesTest(StorageOpsTestMixin, TestCase):
 
         self.assertEqual(values_no_dataclasses, values_no_dataclasses_expected)
 
+    def test_from_elements(self) -> None:
+        """
+        Tests Values.from_elements
+        """
+        # Test with symbols
+        x = sf.Symbol("x")
+        y = sf.Symbol("y")
+        z = sf.Symbol("z")
+
+        values = Values.from_elements([x, y, z])
+        self.assertEqual(values["x"], x)
+        self.assertEqual(values["y"], y)
+        self.assertEqual(values["z"], z)
+
+        # Test with non-symbols
+        a = sf.Symbol("a")
+        b = 2.5
+        c = [1, 2, 3]
+        d = sf.Rot3.symbolic("R")
+
+        values = Values.from_elements([a, b, c, d])
+        self.assertEqual(values["a"], a)
+        self.assertEqual(values["_e0"], b)
+        self.assertEqual(values["_e1"], c)
+        self.assertEqual(values["_e2"], d)
+
     def test_pickle(self) -> None:
         """
         Test that we can pickle and unpickle Values objects without changing the data

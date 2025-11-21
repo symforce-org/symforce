@@ -69,6 +69,25 @@ class SymforceUtilTest(TestCase):
         # self.assertIsInstance(result, TestType)
         self.assertEqual(result, [3.0, 3.0, 4.0])
 
+    def test_lambdify_expr(self) -> None:
+        x, y, z = sf.symbols("x y z")
+        R = sf.Rot3.symbolic("R")
+        expr0 = R * sf.V3(x, y, z)
+        expr1 = x + y
+
+        f0 = util.lambdify([x, y, z, R], expr0)
+        f1 = util.lambdify([x, y, z, R], [expr0])
+        f2 = util.lambdify([x, y, z, R], [expr0, expr1])
+
+        result0 = f0(1.0, 2.0, 3.0, sym.Rot3.identity())
+        result1 = f1(1.0, 2.0, 3.0, sym.Rot3.identity())
+        result2, result3 = f2(1.0, 2.0, 3.0, sym.Rot3.identity())
+
+        self.assertEqual(result0, np.array([1.0, 2.0, 3.0]))
+        self.assertEqual(result1, np.array([1.0, 2.0, 3.0]))
+        self.assertEqual(result2, np.array([1.0, 2.0, 3.0]))
+        self.assertEqual(result3, 3.0)
+
     @unittest.skipIf(importlib.util.find_spec("numba") is None, "Requires numba")
     def test_numbify(self) -> None:
         import numba
