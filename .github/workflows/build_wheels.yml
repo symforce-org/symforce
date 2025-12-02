@@ -4,13 +4,15 @@ on:
   push:
     branches:
      - 'main'
-     - 'skydio-export-master'
     tags:
      - 'v*.*.*'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 jobs:
   build-extra:
+    if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -33,6 +35,7 @@ jobs:
         path: dist/*
 
   build-macos:
+    if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: macos-${{ matrix.os.version }}
     strategy:
       fail-fast: false
@@ -82,6 +85,7 @@ jobs:
         path: wheelhouse/*.whl
 
   build-linux:
+    if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -123,6 +127,7 @@ jobs:
         path: wheelhouse/*.whl
 
   merge-wheel-artifacts:
+    if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
     needs:
       - build-extra
